@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<configuration>
+  
+  <!-- Configuration section definition -->
+  <configSections>
+    <section
+      name="phpNet"
+      type="PHP.Core.ConfigurationSectionHandler, PhpNetCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71" />
+  </configSections>
+
+  <!-- CodeDOM provider definition -->
+  <system.codedom>
+    <compilers>
+      <compiler 
+         language="PHP" 
+         extension=".php"
+         type="PHP.Core.CodeDom.PhpCodeProvider, PhpNetCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71"
+         compilerOptions=""  
+         warningLevel="1" />
+    </compilers>
+  </system.codedom>
+
+  <!-- The Phalanger configuration section -->
+  <phpNet>
+    <paths>
+      <set name="DynamicWrappers" value="{$TARGETDIR}\Dynamic" />
+      <set name="Libraries" value="{$TARGETDIR}\Bin" />
+      <set name="ExtManager" value="{$TARGETDIR}\Bin" />
+      <set name="ExtWrappers" value="{$TARGETDIR}\Wrappers" />
+      <set name="ExtTypeDefs" value="{$TARGETDIR}\TypeDefs" />
+      <set name="ExtNatives" value="{$TARGETDIR}\Extensions" />
+    </paths>
+    <classLibrary>
+      <add assembly="mscorlib" />
+      <add assembly="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+      <add assembly="PhpNetClassLibrary, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb" section="bcl" />
+      
+      <add assembly="PhpNetXmlDom, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03" section="dom" />
+      <add assembly="PhpNetMemcached, Version=2.0.0.0,Culture=Neutral,PublicKeyToken=2771987119c16a03" section="memcached" />
+      
+      <!--
+      <add assembly="php_calendar.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3" section="calendar" />
+      <add assembly="php_image.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3" section="image" />
+      <add assembly="php_ftp.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3" section="ftp" />
+      <add assembly="php_zlib.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3" section="zlib" />
+      -->
+    </classLibrary>
+  </phpNet>
+  
+</configuration>

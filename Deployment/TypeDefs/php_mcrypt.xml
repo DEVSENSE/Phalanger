@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="mcrypt_cbc" description="Encrypt/decrypt data in CBC mode.">
+    <param type="int" name="cipher" />
+    <param type="string" name="key" />
+    <param type="string" name="data" />
+    <param type="int" name="mode" />
+    <param optional="true" type="string" name="iv" />
+  </function>
+  <function returnType="string" name="mcrypt_cfb" description="Encrypt/decrypt data in CFB mode.">
+    <param type="int" name="cipher" />
+    <param type="string" name="key" />
+    <param type="string" name="data" />
+    <param type="int" name="mode" />
+    <param type="string" name="iv" />
+  </function>
+  <function returnType="string" name="mcrypt_create_iv" description="Create an initialization vector (IV) from a random source.">
+    <param type="int" name="size" />
+    <param type="int" name="source" />
+  </function>
+  <function returnType="string" name="mcrypt_decrypt" description="Decrypts crypttext with given parameters.">
+    <param type="string" name="cipher" />
+    <param type="string" name="key" />
+    <param type="string" name="data" />
+    <param type="string" name="mode" />
+    <param optional="true" type="string" name="iv" />
+  </function>
+  <function returnType="string" name="mcrypt_ecb" description="Deprecated: Encrypt/decrypt data in ECB mode.">
+    <param type="int" name="cipher" />
+    <param type="string" name="key" />
+    <param type="string" name="data" />
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="string" name="mcrypt_enc_get_algorithms_name" description="Returns the name of the opened algorithm.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="int" name="mcrypt_enc_get_block_size" description="Returns the blocksize of the opened algorithm.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="int" name="mcrypt_enc_get_iv_size" description="Returns the size of the IV of the opened algorithm.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="int" name="mcrypt_enc_get_key_size" description="Returns the maximum supported keysize of the opened mode.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="string" name="mcrypt_enc_get_modes_name" description="Returns the name of the opened mode.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="array" name="mcrypt_enc_get_supported_key_sizes" description="Returns an array with the supported keysizes of the opened algorithm.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="bool" name="mcrypt_enc_is_block_algorithm_mode" description="Checks whether the encryption of the opened mode works on blocks.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="bool" name="mcrypt_enc_is_block_algorithm" description="Checks whether the algorithm of the opened mode is a block algorithm.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="bool" name="mcrypt_enc_is_block_mode" description="Checks whether the opened mode outputs blocks.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="bool" name="mcrypt_enc_self_test" description="This function runs a self test on the opened module.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="string" name="mcrypt_encrypt" description="Encrypts plaintext with given parameters.">
+    <param type="string" name="cipher" />
+    <param type="string" name="key" />
+    <param type="string" name="data" />
+    <param type="string" name="mode" />
+    <param optional="true" type="string" name="iv" />
+  </function>
+  <function returnType="bool" name="mcrypt_generic_deinit" description="This function deinitializes an encryption module.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="bool" name="mcrypt_generic_end" description="This function terminates encryption.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="int" name="mcrypt_generic_init" description="This function initializes all buffers needed for encryption.">
+    <param type="resource" name="td" />
+    <param type="string" name="key" />
+    <param type="string" name="iv" />
+  </function>
+  <function returnType="string" name="mcrypt_generic" description="This function encrypts data.">
+    <param type="resource" name="td" />
+    <param type="string" name="data" />
+  </function>
+  <function returnType="int" name="mcrypt_get_block_size" description="Get the block size of the specified cipher.">
+    <param type="int" name="cipher" />
+  </function>
+  <function returnType="string" name="mcrypt_get_cipher_name" description="Get the name of the specified cipher.">
+    <param type="int" name="cipher" />
+  </function>
+  <function returnType="int" name="mcrypt_get_iv_size" description="Returns the size of the IV belonging to a specific cipher/mode combination.">
+    <param type="string" name="cipher" />
+    <param type="string" name="mode" />
+  </function>
+  <function returnType="int" name="mcrypt_get_key_size" description="Get the key size of the specified cipher.">
+    <param type="int" name="cipher" />
+  </function>
+  <function returnType="array" name="mcrypt_list_algorithms" description="Get an array of all supported ciphers.">
+    <param optional="true" type="string" name="lib_dir" />
+  </function>
+  <function returnType="array" name="mcrypt_list_modes" description="Get an array of all supported modes.">
+    <param optional="true" type="string" name="lib_dir" />
+  </function>
+  <function returnType="bool" name="mcrypt_module_close" description="Close the mcrypt module.">
+    <param type="resource" name="td" />
+  </function>
+  <function returnType="int" name="mcrypt_module_get_algo_block_size" description="Returns the blocksize of the specified algorithm.">
+    <param type="string" name="algorithm" />
+    <param optional="true" type="string" name="lib_dir" />
+  </function>
+  <function returnType="int" name="mcrypt_module_get_algo_key_size" description="Returns the maximum supported keysize of the opened mode.">
+    <param type="string" name="algorithm" />
+    <param optional="true" type="string" name="lib_dir" />
+  </function>
+  <function returnType="array" name="mcrypt_module_get_supported_key_sizes" description="Returns an array with the supported keysizes of the opened algorithm.">
+    <param type="string" name="algorithm" />
+    <param optional="true" type="string" name="lib_dir" />
+  </function>
+  <function returnType="bool" name="mcrypt_module_is_block_algorithm_mode" description="returns if the specified module is a block algorithm or not.">
+    <param type="string" name="mode" />
+    <param optional="true" type="string" name="lib_dir" />
+  </function>
+  <function returnType="bool" name="mcrypt_module_is_block_algorithm" description="This function checks whether the specified algorithm is a block algorithm.">
+    <param type="string" name="algorithm" />
+    <param optional="true" type="string" name="lib_dir" />
+  </function>
+  <function returnType="bool" name="mcrypt_module_is_block_mode" description="Returns if the specified mode outputs blocks or not.">
+    <param type="string" name="mode" />
+    <param optional="true" type="string" name="lib_dir" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="mcrypt_module_open" description="Opens the module of the algorithm and the mode to be used.">
+    <param type="string" name="algorithm" />
+    <param type="string" name="algorithm_directory" />
+    <param type="string" name="mode" />
+    <param type="string" name="mode_directory" />
+  </function>
+  <function returnType="bool" name="mcrypt_module_self_test" description="This function runs a self test on the specified module.">
+    <param type="string" name="algorithm" />
+    <param optional="true" type="string" name="lib_dir" />
+  </function>
+  <function returnType="string" name="mcrypt_ofb" description="Encrypt/decrypt data in OFB mode.">
+    <param type="int" name="cipher" />
+    <param type="string" name="key" />
+    <param type="string" name="data" />
+    <param type="int" name="mode" />
+    <param type="string" name="iv" />
+  </function>
+  <function returnType="string" name="mdecrypt_generic" description="Decrypt data.">
+    <param type="resource" name="td" />
+    <param type="string" name="data" />
+  </function>
+</module>

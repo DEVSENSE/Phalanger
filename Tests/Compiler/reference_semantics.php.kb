@@ -1,0 +1,68 @@
+[expect exact]
+-----------------------------------------------
+function return
+-----------------------------------------------
+string(3) "foo"
+foo
+string(3) "foo"
+foo
+string(3) "foo"
+foo
+-----------------------------------------------
+-ok-
+-----------------------------------------------
+ok
+[file]
+<?
+
+/* Tests changed semantics of references since PHP 5.1 */
+
+echo "-----------------------------------------------\n";
+
+function func() {
+    return 'function return';
+}
+
+$x = 'original value';
+$y =& $x;
+$y = &func();
+echo $x;
+
+echo "\n";
+echo "-----------------------------------------------\n";
+
+function &f() 
+{
+    $x = "foo";
+    var_dump($x);
+    print "$x\n";
+    return($a);
+}
+
+for ($i = 0; $i < 3; $i++) 
+{
+    $h = &f();
+}
+
+echo "-----------------------------------------------\n";
+
+$arr = array('a1' => array('alfa' => 'ok'));
+$arr =& $arr['a1'];
+echo '-'.$arr['alfa']."-\n";
+
+echo "-----------------------------------------------\n";
+
+function & foo() {
+    $var = 'ok';
+    return $var;
+}
+
+function & bar() {
+    return foo();
+}
+
+$a =& bar();
+echo "$a\n";
+
+
+?>

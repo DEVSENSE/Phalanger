@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="yaz_addinfo" description="Returns additional error information.">
+    <param type="resource" name="id" />
+  </function>
+  <function returnType="int" name="yaz_ccl_conf" description="Configure CCL parser.">
+    <param type="resource" name="id" />
+    <param type="array" name="config" />
+  </function>
+  <function returnType="bool" name="yaz_ccl_parse" description="Invoke CCL Parser.">
+    <param type="resource" name="id" />
+    <param type="string" name="query" />
+    <param direction="out" type="array" name="result" />
+  </function>
+  <function returnType="bool" name="yaz_close" description="Close YAZ connection.">
+    <param type="resource" name="id" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="yaz_connect" description="Prepares for a connection to a Z39.50 server.">
+    <param type="string" name="zurl" />
+    <param optional="true" type="mixed" name="options" />
+  </function>
+  <function returnType="bool" name="yaz_database" description="Specifies the databases within a session.">
+    <param type="resource" name="id" />
+    <param type="string" name="databases" />
+  </function>
+  <function returnType="bool" name="yaz_element" description="Specifies Element-Set Name for retrieval.">
+    <param type="resource" name="id" />
+    <param type="string" name="elementset" />
+  </function>
+  <function returnType="int" name="yaz_errno" description="Returns error number.">
+    <param type="resource" name="id" />
+  </function>
+  <function returnType="string" name="yaz_error" description="Returns error description.">
+    <param type="resource" name="id" />
+  </function>
+  <function returnType="array" name="yaz_es_result" description="Inspects Extended Services Result.">
+    <param type="resource" name="id" />
+  </function>
+  <function returnType="string" name="yaz_get_option" description="Returns value of option for connection.">
+    <param type="resource" name="id" />
+    <param type="string" name="name" />
+  </function>
+  <function returnType="int" name="yaz_hits" description="Returns number of hits for last search.">
+    <param type="resource" name="id" />
+  </function>
+  <function returnType="int" name="yaz_itemorder" description="Prepares for Z39.50 Item Order with an ILL-Request package.">
+    <param type="resource" name="id" />
+    <param type="array" name="args" />
+  </function>
+  <function returnType="bool" name="yaz_present" description="Prepares for retrieval (Z39.50 present).">
+    <param type="resource" name="id" />
+  </function>
+  <function returnType="bool" name="yaz_range" description="Specifies the maximum number of records to retrieve.">
+    <param type="resource" name="id" />
+    <param type="int" name="start" />
+    <param type="int" name="number" />
+  </function>
+  <function returnType="string" name="yaz_record" description="Returns a record.">
+    <param type="resource" name="id" />
+    <param type="int" name="pos" />
+    <param type="string" name="type" />
+  </function>
+  <function returnType="array" name="yaz_scan_result" description="Returns Scan Response result.">
+    <param type="resource" name="id" />
+    <param direction="out" optional="true" type="array" name="result" />
+  </function>
+  <function returnType="int" name="yaz_scan" description="Prepares for a scan.">
+    <param type="resource" name="id" />
+    <param type="string" name="type" />
+    <param type="string" name="startterm" />
+    <param optional="true" type="array" name="flags" />
+  </function>
+  <function returnType="int" name="yaz_schema" description="Specifies schema for retrieval.">
+    <param type="resource" name="id" />
+    <param type="string" name="schema" />
+  </function>
+  <function returnType="int" name="yaz_search" description="Prepares for a search.">
+    <param type="resource" name="id" />
+    <param type="string" name="type" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="string" name="yaz_set_option" description="Sets one or more options for connection.">
+    <param type="resource" name="id" />
+    <param type="string" name="name" />
+    <param type="string" name="value" />
+  </function>
+  <function returnType="int" name="yaz_sort" description="Sets sorting criteria.">
+    <param type="resource" name="id" />
+    <param type="string" name="criteria" />
+  </function>
+  <function returnType="int" name="yaz_syntax" description="Specifies the preferred record syntax for retrieval.">
+    <param type="resource" name="id" />
+    <param type="string" name="syntax" />
+  </function>
+  <function returnType="int" name="yaz_wait" description="Wait for Z39.50 requests to complete.">
+    <param optional="true" type="array" name="options" />
+  </function>
+</module>

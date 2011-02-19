@@ -1,0 +1,4136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module earlyInit="true">
+  <class name="GtkAccelGroup">
+    <function returnType="void" name="lock" />
+    <function returnType="void" name="unlock" />
+  </class>
+  <class name="GtkAccelLabel">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkAccelLabel">
+      <param type="string" name="string" />
+    </function>
+    <function returnType="int" name="get_accel_width" />
+    <function returnType="void" name="set_accel_widget">
+      <param type="object" name="accel_widget" />
+    </function>
+    <function returnType="bool" name="refetch" />
+  </class>
+  <class name="GtkAdjustment">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkAdjustment">
+      <param type="float" name="value" />
+      <param type="float" name="lower" />
+      <param type="float" name="upper" />
+      <param type="float" name="step_increment" />
+      <param type="float" name="page_increment" />
+      <param type="float" name="page_size" />
+    </function>
+    <function returnType="void" name="changed" />
+    <function returnType="void" name="value_changed" />
+    <function returnType="void" name="clamp_page">
+      <param type="float" name="lower" />
+      <param type="float" name="upper" />
+    </function>
+    <function returnType="void" name="set_value">
+      <param type="float" name="value" />
+    </function>
+  </class>
+  <class name="GtkAlignment">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkAlignment">
+      <param type="float" name="xalign" />
+      <param type="float" name="yalign" />
+      <param type="float" name="xscale" />
+      <param type="float" name="yscale" />
+    </function>
+    <function returnType="void" name="set">
+      <param type="float" name="xalign" />
+      <param type="float" name="yalign" />
+      <param type="float" name="xscale" />
+      <param type="float" name="yscale" />
+    </function>
+  </class>
+  <class name="GtkArrow">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkArrow">
+      <param type="object" name="arrow_type" />
+      <param type="object" name="shadow_type" />
+    </function>
+    <function returnType="void" name="set">
+      <param type="object" name="arrow_type" />
+      <param type="object" name="shadow_type" />
+    </function>
+  </class>
+  <class name="GtkAspectFrame">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkAspectFrame">
+      <param optional="true" type="string" name="label" />
+      <param optional="true" type="float" name="xalign" />
+      <param optional="true" type="float" name="yalign" />
+      <param optional="true" type="float" name="ratio" />
+      <param optional="true" type="bool" name="obey_child" />
+    </function>
+    <function returnType="void" name="set">
+      <param type="float" name="xalign" />
+      <param type="float" name="yalign" />
+      <param type="float" name="ratio" />
+      <param type="bool" name="obey_child" />
+    </function>
+  </class>
+  <class name="GtkBin">
+    <function returnType="int" static="true" name="get_type" />
+  </class>
+  <class name="GtkBox">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="void" name="pack_start">
+      <param type="object" name="child" />
+      <param optional="true" type="bool" name="expand" />
+      <param optional="true" type="bool" name="fill" />
+      <param optional="true" type="int" name="padding" />
+    </function>
+    <function returnType="void" name="pack_end">
+      <param type="object" name="child" />
+      <param optional="true" type="bool" name="expand" />
+      <param optional="true" type="bool" name="fill" />
+      <param optional="true" type="int" name="padding" />
+    </function>
+    <function returnType="void" name="pack_start_defaults">
+      <param type="object" name="widget" />
+    </function>
+    <function returnType="void" name="pack_end_defaults">
+      <param type="object" name="widget" />
+    </function>
+    <function returnType="void" name="set_homogeneous">
+      <param type="bool" name="homogeneous" />
+    </function>
+    <function returnType="void" name="set_spacing">
+      <param type="int" name="spacing" />
+    </function>
+    <function returnType="void" name="reorder_child">
+      <param type="object" name="child" />
+      <param type="int" name="position" />
+    </function>
+    <function returnType="void" name="set_child_packing">
+      <param type="object" name="child" />
+      <param type="bool" name="expand" />
+      <param type="bool" name="fill" />
+      <param type="int" name="padding" />
+      <param type="object" name="pack_type" />
+    </function>
+    <function returnType="array" name="query_child_packing">
+      <param type="object" name="child" />
+    </function>
+  </class>
+  <class name="GtkButton">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkButton">
+      <param optional="true" type="string" name="label" />
+    </function>
+    <function returnType="void" name="pressed" />
+    <function returnType="void" name="released" />
+    <function returnType="void" name="clicked" />
+    <function returnType="void" name="enter" />
+    <function returnType="void" name="leave" />
+    <function returnType="void" name="set_relief">
+      <param type="object" name="newstyle" />
+    </function>
+    <function returnType="object" name="get_relief" />
+  </class>
+  <class name="GtkButtonBox">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="int" name="get_spacing" />
+    <function returnType="object" name="get_layout" />
+    <function returnType="void" name="set_spacing">
+      <param type="int" name="spacing" />
+    </function>
+    <function returnType="void" name="set_layout">
+      <param type="object" name="layout_style" />
+    </function>
+    <function returnType="void" name="set_child_size">
+      <param type="int" name="min_width" />
+      <param type="int" name="min_height" />
+    </function>
+    <function returnType="void" name="set_child_ipadding">
+      <param type="int" name="ipad_x" />
+      <param type="int" name="ipad_y" />
+    </function>
+  </class>
+  <class name="GtkCalendar">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkCalendar" />
+    <function returnType="int" name="select_month">
+      <param type="int" name="month" />
+      <param type="int" name="year" />
+    </function>
+    <function returnType="void" name="select_day">
+      <param type="int" name="day" />
+    </function>
+    <function returnType="int" name="mark_day">
+      <param type="int" name="day" />
+    </function>
+    <function returnType="int" name="unmark_day">
+      <param type="int" name="day" />
+    </function>
+    <function returnType="void" name="clear_marks" />
+    <function returnType="void" name="display_options">
+      <param type="object" name="flags" />
+    </function>
+    <function returnType="array" name="get_date" />
+    <function returnType="void" name="freeze" />
+    <function returnType="void" name="thaw" />
+  </class>
+  <class name="GtkCheckButton">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkCheckButton">
+      <param optional="true" type="string" name="label" />
+    </function>
+  </class>
+  <class name="GtkCheckMenuItem">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkCheckMenuItem">
+      <param optional="true" type="string" name="label" />
+    </function>
+    <function returnType="void" name="set_active">
+      <param type="bool" name="is_active" />
+    </function>
+    <function returnType="void" name="set_show_toggle">
+      <param type="bool" name="always" />
+    </function>
+    <function returnType="void" name="toggled" />
+  </class>
+  <class name="GtkCList">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkCList">
+      <param type="int" name="columns" />
+      <param type="array" name="titles" />
+    </function>
+    <function returnType="void" name="set_hadjustment">
+      <param type="object" name="adjustment" />
+    </function>
+    <function returnType="void" name="set_vadjustment">
+      <param type="object" name="adjustment" />
+    </function>
+    <function returnType="object" name="get_hadjustment" />
+    <function returnType="object" name="get_vadjustment" />
+    <function returnType="void" name="set_shadow_type">
+      <param type="object" name="type" />
+    </function>
+    <function returnType="void" name="set_selection_mode">
+      <param type="object" name="mode" />
+    </function>
+    <function returnType="void" name="set_reorderable">
+      <param type="bool" name="reorderable" />
+    </function>
+    <function returnType="void" name="set_use_drag_icons">
+      <param type="bool" name="use_icons" />
+    </function>
+    <function returnType="void" name="set_button_actions">
+      <param type="int" name="button" />
+      <param type="object" name="button_actions" />
+    </function>
+    <function returnType="void" name="freeze" />
+    <function returnType="void" name="thaw" />
+    <function returnType="void" name="column_titles_show" />
+    <function returnType="void" name="column_titles_hide" />
+    <function returnType="void" name="column_title_active">
+      <param type="int" name="column" />
+    </function>
+    <function returnType="void" name="column_title_passive">
+      <param type="int" name="column" />
+    </function>
+    <function returnType="void" name="column_titles_active" />
+    <function returnType="void" name="column_titles_passive" />
+    <function returnType="void" name="set_column_title">
+      <param type="int" name="column" />
+      <param type="string" name="title" />
+    </function>
+    <function returnType="string" name="get_column_title">
+      <param type="int" name="column" />
+    </function>
+    <function returnType="void" name="set_column_widget">
+      <param type="int" name="column" />
+      <param type="object" name="widget" />
+    </function>
+    <function returnType="object" name="get_column_widget">
+      <param type="int" name="column" />
+    </function>
+    <function returnType="void" name="set_column_justification">
+      <param type="int" name="column" />
+      <param type="object" name="justification" />
+    </function>
+    <function returnType="void" name="set_column_visibility">
+      <param type="int" name="column" />
+      <param type="bool" name="visible" />
+    </function>
+    <function returnType="void" name="set_column_resizeable">
+      <param type="int" name="column" />
+      <param type="bool" name="resizeable" />
+    </function>
+    <function returnType="void" name="set_column_auto_resize">
+      <param type="int" name="column" />
+      <param type="bool" name="auto_resize" />
+    </function>
+    <function returnType="int" name="columns_autosize" />
+    <function returnType="int" name="optimal_column_width">
+      <param type="int" name="column" />
+    </function>
+    <function returnType="void" name="set_column_width">
+      <param type="int" name="column" />
+      <param type="int" name="width" />
+    </function>
+    <function returnType="void" name="set_column_min_width">
+      <param type="int" name="column" />
+      <param type="int" name="min_width" />
+    </function>
+    <function returnType="void" name="set_column_max_width">
+      <param type="int" name="column" />
+      <param type="int" name="max_width" />
+    </function>
+    <function returnType="void" name="set_row_height">
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" name="moveto">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+      <param type="float" name="row_align" />
+      <param type="float" name="col_align" />
+    </function>
+    <function returnType="object" name="row_is_visible">
+      <param type="int" name="row" />
+    </function>
+    <function returnType="object" name="get_cell_type">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+    </function>
+    <function returnType="void" name="set_text">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+      <param type="string" name="text" />
+    </function>
+    <function returnType="string" name="get_text">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+    </function>
+    <function returnType="void" name="set_pixmap">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+      <param type="object" name="pixmap" />
+      <param type="object" name="mask" />
+    </function>
+    <function returnType="void" name="set_pixtext">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+      <param type="string" name="text" />
+      <param type="int" name="spacing" />
+      <param type="object" name="pixmap" />
+      <param type="object" name="mask" />
+    </function>
+    <function returnType="void" name="set_foreground">
+      <param type="int" name="row" />
+      <param type="object" name="color" />
+    </function>
+    <function returnType="void" name="set_background">
+      <param type="int" name="row" />
+      <param type="object" name="color" />
+    </function>
+    <function returnType="void" name="set_cell_style">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+      <param type="object" name="style" />
+    </function>
+    <function returnType="object" name="get_cell_style">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+    </function>
+    <function returnType="void" name="set_row_style">
+      <param type="int" name="row" />
+      <param type="object" name="style" />
+    </function>
+    <function returnType="object" name="get_row_style">
+      <param type="int" name="row" />
+    </function>
+    <function returnType="void" name="set_shift">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+      <param type="int" name="vertical" />
+      <param type="int" name="horizontal" />
+    </function>
+    <function returnType="void" name="set_selectable">
+      <param type="int" name="row" />
+      <param type="bool" name="selectable" />
+    </function>
+    <function returnType="bool" name="get_selectable">
+      <param type="int" name="row" />
+    </function>
+    <function returnType="void" name="prepend">
+      <param type="array" name="text" />
+    </function>
+    <function returnType="int" name="append">
+      <param type="array" name="text" />
+    </function>
+    <function returnType="void" name="insert">
+      <param type="int" name="row" />
+      <param type="array" name="text" />
+    </function>
+    <function returnType="void" name="remove">
+      <param type="int" name="row" />
+    </function>
+    <function returnType="void" name="select_row">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+    </function>
+    <function returnType="void" name="unselect_row">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+    </function>
+    <function returnType="void" name="undo_selection" />
+    <function returnType="void" name="clear" />
+    <function returnType="void" name="select_all" />
+    <function returnType="void" name="unselect_all" />
+    <function returnType="void" name="swap_rows">
+      <param type="int" name="row1" />
+      <param type="int" name="row2" />
+    </function>
+    <function returnType="void" name="row_move">
+      <param type="int" name="source_row" />
+      <param type="int" name="dest_row" />
+    </function>
+    <function returnType="void" name="set_sort_column">
+      <param type="int" name="column" />
+    </function>
+    <function returnType="void" name="set_sort_type">
+      <param type="object" name="sort_type" />
+    </function>
+    <function returnType="void" name="sort" />
+    <function returnType="void" name="set_auto_sort">
+      <param type="bool" name="auto_sort" />
+    </function>
+  </class>
+  <class name="GtkColorSelection">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkColorSelection" />
+    <function returnType="void" name="set_update_policy">
+      <param type="object" name="policy" />
+    </function>
+    <function returnType="void" name="set_opacity">
+      <param type="int" name="use_opacity" />
+    </function>
+    <function returnType="mixed" name="set_color">
+      <param type="mixed" name="arg" />
+    </function>
+    <function returnType="mixed" name="get_color">
+      <param type="mixed" name="arg" />
+    </function>
+  </class>
+  <class name="GtkColorSelectionDialog">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkColorSelectionDialog">
+      <param type="string" name="title" />
+    </function>
+  </class>
+  <class name="GtkCombo">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkCombo" />
+    <function returnType="void" name="set_value_in_list">
+      <param type="bool" name="val" />
+      <param type="bool" name="ok_if_empty" />
+    </function>
+    <function returnType="void" name="set_use_arrows">
+      <param type="bool" name="val" />
+    </function>
+    <function returnType="void" name="set_use_arrows_always">
+      <param type="bool" name="val" />
+    </function>
+    <function returnType="void" name="set_case_sensitive">
+      <param type="bool" name="val" />
+    </function>
+    <function returnType="void" name="set_item_string">
+      <param type="object" name="item" />
+      <param type="string" name="item_value" />
+    </function>
+    <function returnType="array" name="set_popdown_strings">
+      <param type="array" name="item_labels" />
+    </function>
+    <function returnType="void" name="disable_activate" />
+  </class>
+  <class name="GtkComboButton">
+    <function returnType="int" static="true" name="get_type" />
+  </class>
+  <class name="GtkContainer">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="void" name="set_border_width">
+      <param type="int" name="border_width" />
+    </function>
+    <function returnType="void" name="add">
+      <param type="object" name="widget" />
+    </function>
+    <function returnType="void" name="remove">
+      <param type="object" name="widget" />
+    </function>
+    <function returnType="void" name="set_resize_mode">
+      <param type="object" name="resize_mode" />
+    </function>
+    <function returnType="void" name="check_resize" />
+    <function returnType="array" name="children" />
+    <function returnType="int" name="focus">
+      <param type="object" name="direction" />
+    </function>
+    <function returnType="void" name="set_reallocate_redraws">
+      <param type="bool" name="needs_redraws" />
+    </function>
+    <function returnType="void" name="set_focus_child">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="void" name="set_focus_vadjustment">
+      <param type="object" name="adjustment" />
+    </function>
+    <function returnType="void" name="set_focus_hadjustment">
+      <param type="object" name="adjustment" />
+    </function>
+    <function returnType="void" name="register_toplevel" />
+    <function returnType="void" name="unregister_toplevel" />
+    <function returnType="void" name="resize_children" />
+    <function returnType="int" name="child_type" />
+  </class>
+  <class name="GtkCTree">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkCTree">
+      <param type="int" name="nColumns" />
+      <param type="int" name="nTreeGraphicCol" />
+      <param type="array" name="arColTitles" />
+    </function>
+    <function returnType="object" name="insert_node">
+      <param type="object" name="parent" />
+      <param type="object" name="sibling" />
+      <param type="array" name="labels" />
+      <param type="int" name="pixmap_spacing" />
+      <param type="object" name="pixmap_closed" />
+      <param type="object" name="mask_closed" />
+      <param type="object" name="pixmap_open" />
+      <param type="object" name="mask_open" />
+      <param type="bool" name="is_leaf" />
+      <param type="bool" name="is_expanded" />
+    </function>
+    <function returnType="void" name="remove_node">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="void" name="post_recursive">
+      <param type="object" name="node" />
+      <param type="string" name="callback" />
+      <param type="mixed" name="own_parameter" />
+    </function>
+    <function returnType="void" name="post_recursive_to_depth">
+      <param type="object" name="node" />
+      <param type="int" name="depth" />
+      <param type="string" name="callback" />
+      <param type="mixed" name="own_parameter" />
+    </function>
+    <function returnType="void" name="pre_recursive">
+      <param type="object" name="node" />
+      <param type="string" name="callback" />
+      <param type="mixed" name="own_parameter" />
+    </function>
+    <function returnType="void" name="pre_recursive_to_depth">
+      <param type="object" name="node" />
+      <param type="int" name="depth" />
+      <param type="string" name="callback" />
+      <param type="mixed" name="own_parameter" />
+    </function>
+    <function returnType="bool" name="is_viewable">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="object" name="last">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="object" name="node_nth">
+      <param type="int" name="row" />
+    </function>
+    <function returnType="bool" name="find">
+      <param type="object" name="node" />
+      <param type="object" name="child" />
+    </function>
+    <function returnType="object" name="find_by_row_data">
+      <param type="object" name="node" />
+      <param type="mixed" name="???" />
+    </function>
+    <function returnType="array" name="find_by_row_data">
+      <param type="object" name="node" />
+      <param type="mixed" name="???" />
+    </function>
+    <function returnType="bool" name="is_ancestor">
+      <param type="object" name="node" />
+      <param type="object" name="child" />
+    </function>
+    <function returnType="bool" name="is_hot_spot">
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" name="move">
+      <param type="object" name="node" />
+      <param type="object" name="new_parent" />
+      <param type="object" name="new_sibling" />
+    </function>
+    <function returnType="void" name="expand">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="void" name="expand_recursive">
+      <param optional="true" type="object" name="node" />
+    </function>
+    <function returnType="void" name="expand_to_depth">
+      <param type="object" name="node" />
+      <param type="int" name="depth" />
+    </function>
+    <function returnType="void" name="collapse">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="void" name="collapse_recursive">
+      <param optional="true" type="object" name="node" />
+    </function>
+    <function returnType="void" name="collapse_to_depth">
+      <param type="object" name="node" />
+      <param type="int" name="depth" />
+    </function>
+    <function returnType="void" name="toggle_expansion">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="void" name="toggle_expansion_recursive">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="void" name="select">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="void" name="select_recursive">
+      <param optional="true" type="object" name="node" />
+    </function>
+    <function returnType="void" name="unselect">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="void" name="unselect_recursive">
+      <param optional="true" type="object" name="node" />
+    </function>
+    <function returnType="void" name="node_set_text">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+      <param type="string" name="text" />
+    </function>
+    <function returnType="void" name="node_set_pixmap">
+      <param type="object" name="node" />
+      <param type="int" name="column" />
+      <param type="object" name="pixmap" />
+      <param type="object" name="mask" />
+    </function>
+    <function returnType="void" name="node_set_pixtext">
+      <param type="object" name="node" />
+      <param type="int" name="column" />
+      <param type="string" name="text" />
+      <param type="int" name="spacing" />
+      <param type="object" name="pixmap" />
+      <param type="object" name="mask" />
+    </function>
+    <function returnType="void" name="set_node_info">
+      <param type="object" name="node" />
+      <param type="string" name="text" />
+      <param type="int" name="spacing" />
+      <param type="object" name="pixmap_closed" />
+      <param type="object" name="mask_closed" />
+      <param type="object" name="pixmap_opened" />
+      <param type="object" name="mask_opened" />
+      <param type="bool" name="is_leaf" />
+      <param type="bool" name="expanded" />
+    </function>
+    <function returnType="void" name="node_set_shift">
+      <param type="object" name="node" />
+      <param type="int" name="column" />
+      <param type="int" name="vertical" />
+      <param type="int" name="horizontal" />
+    </function>
+    <function returnType="void" name="node_set_selectable">
+      <param type="object" name="node" />
+      <param type="bool" name="selectable" />
+    </function>
+    <function returnType="bool" name="node_get_selectable">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="object" name="node_get_cell_type">
+      <param type="object" name="node" />
+      <param type="int" name="column" />
+    </function>
+    <function returnType="string" name="node_get_text">
+      <param type="object" name="node" />
+      <param type="int" name="column" />
+    </function>
+    <function returnType="array" name="node_get_pixtext">
+      <param type="object" name="node" />
+      <param type="int" name="column" />
+    </function>
+    <function returnType="array" name="get_node_info">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="void" name="node_set_row_style">
+      <param type="object" name="node" />
+      <param type="object" name="style" />
+    </function>
+    <function returnType="object" name="node_get_row_style">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="void" name="node_set_cell_style">
+      <param type="object" name="node" />
+      <param type="int" name="column" />
+      <param type="object" name="style" />
+    </function>
+    <function returnType="object" name="node_get_cell_style">
+      <param type="object" name="node" />
+      <param type="int" name="column" />
+    </function>
+    <function returnType="void" name="node_set_foreground">
+      <param type="object" name="node" />
+      <param type="object" name="color" />
+    </function>
+    <function returnType="void" name="node_set_background">
+      <param type="object" name="node" />
+      <param type="object" name="color" />
+    </function>
+    <function returnType="void" name="node_set_row_data">
+      <param type="object" name="node" />
+      <param type="object" name="custom" />
+    </function>
+    <function returnType="object" name="node_get_row_data">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="void" name="node_moveto">
+      <param type="object" name="node" />
+      <param type="int" name="column" />
+      <param type="float" name="row_align" />
+      <param type="float" name="col_align" />
+    </function>
+    <function returnType="object" name="node_is_visible">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="void" name="set_indent">
+      <param type="int" name="indent" />
+    </function>
+    <function returnType="void" name="set_spacing">
+      <param type="int" name="spacing" />
+    </function>
+    <function returnType="void" name="set_show_stub">
+      <param type="bool" name="show_stub" />
+    </function>
+    <function returnType="void" name="set_line_style">
+      <param type="object" name="line_style" />
+    </function>
+    <function returnType="void" name="set_expander_style">
+      <param type="object" name="expander_style" />
+    </function>
+    <function returnType="void" name="sort_node">
+      <param type="object" name="node" />
+    </function>
+    <function returnType="void" name="sort_recursive">
+      <param optional="true" type="object" name="node" />
+    </function>
+  </class>
+  <class name="GtkData">
+    <function returnType="int" static="true" name="get_type" />
+  </class>
+  <class name="GtkCurve">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkCurve" />
+    <function returnType="void" name="reset" />
+    <function returnType="void" name="set_gamma">
+      <param type="float" name="gamma" />
+    </function>
+    <function returnType="void" name="set_range">
+      <param type="float" name="min_x" />
+      <param type="float" name="max_x" />
+      <param type="float" name="min_y" />
+      <param type="float" name="max_y" />
+    </function>
+    <function returnType="mixed" name="get_vector">
+      <param type="mixed" name="arg" />
+    </function>
+    <function returnType="mixed" name="set_vector">
+      <param type="mixed" name="arg" />
+    </function>
+    <function returnType="void" name="set_curve_type">
+      <param type="object" name="type" />
+    </function>
+  </class>
+  <class name="GtkDialog">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkDialog" />
+  </class>
+  <class name="GtkDrawingArea">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkDrawingArea" />
+    <function returnType="void" name="size">
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+  </class>
+  <class name="GtkEditable">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="void" name="select_region">
+      <param type="int" name="start" />
+      <param type="int" name="end" />
+    </function>
+    <function returnType="void" name="insert_text">
+      <param type="string" name="text_string" />
+      <param type="int" name="position" />
+    </function>
+    <function returnType="void" name="delete_text">
+      <param type="int" name="start_pos" />
+      <param type="int" name="end_pos" />
+    </function>
+    <function returnType="string" name="get_chars">
+      <param type="int" name="start_pos" />
+      <param type="int" name="end_pos" />
+    </function>
+    <function returnType="void" name="cut_clipboard" />
+    <function returnType="void" name="copy_clipboard" />
+    <function returnType="void" name="paste_clipboard" />
+    <function returnType="void" name="claim_selection">
+      <param type="bool" name="claim" />
+      <param type="int" name="time" />
+    </function>
+    <function returnType="void" name="delete_selection" />
+    <function returnType="void" name="changed" />
+    <function returnType="void" name="set_position">
+      <param type="int" name="position" />
+    </function>
+    <function returnType="int" name="get_position" />
+    <function returnType="void" name="set_editable">
+      <param type="bool" name="is_editable" />
+    </function>
+  </class>
+  <class name="GtkEntry">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkEntry" />
+    <function returnType="void" name="set_text">
+      <param type="string" name="text" />
+    </function>
+    <function returnType="void" name="append_text">
+      <param type="string" name="text" />
+    </function>
+    <function returnType="void" name="prepend_text">
+      <param type="string" name="text" />
+    </function>
+    <function returnType="void" name="set_position">
+      <param type="int" name="position" />
+    </function>
+    <function returnType="string" name="get_text" />
+    <function returnType="void" name="select_region">
+      <param type="int" name="start" />
+      <param type="int" name="end" />
+    </function>
+    <function returnType="void" name="set_visibility">
+      <param type="bool" name="visible" />
+    </function>
+    <function returnType="void" name="set_editable">
+      <param type="bool" name="editable" />
+    </function>
+    <function returnType="void" name="set_max_length">
+      <param type="int" name="max" />
+    </function>
+  </class>
+  <class name="GtkEventBox">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkEventBox" />
+  </class>
+  <class name="GtkFileSelection">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkFileSelection">
+      <param optional="true" type="string" name="title" />
+    </function>
+    <function returnType="void" name="set_filename">
+      <param type="string" name="filename" />
+    </function>
+    <function returnType="string" name="get_filename" />
+    <function returnType="void" name="complete">
+      <param type="string" name="pattern" />
+    </function>
+    <function returnType="void" name="show_fileop_buttons" />
+    <function returnType="void" name="hide_fileop_buttons" />
+  </class>
+  <class name="GtkFixed">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkFixed" />
+    <function returnType="void" name="put">
+      <param type="object" name="widget" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" name="move">
+      <param type="object" name="widget" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+  </class>
+  <class name="GtkFontSelection">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkFontSelection" />
+    <function returnType="string" name="get_font_name" />
+    <function returnType="object" name="get_font" />
+    <function returnType="bool" name="set_font_name">
+      <param type="string" name="fontname" />
+    </function>
+    <function returnType="string" name="get_preview_text" />
+    <function returnType="void" name="set_preview_text">
+      <param type="string" name="text" />
+    </function>
+  </class>
+  <class name="GtkFontSelectionDialog">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkFontSelectionDialog">
+      <param type="string" name="title" />
+    </function>
+    <function returnType="string" name="get_font_name" />
+    <function returnType="object" name="get_font" />
+    <function returnType="bool" name="set_font_name">
+      <param type="string" name="fontname" />
+    </function>
+    <function returnType="string" name="get_preview_text" />
+    <function returnType="void" name="set_preview_text">
+      <param type="string" name="text" />
+    </function>
+  </class>
+  <class name="GtkFrame">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkFrame">
+      <param optional="true" type="string" name="label" />
+    </function>
+    <function returnType="void" name="set_label">
+      <param type="string" name="label" />
+    </function>
+    <function returnType="void" name="set_label_align">
+      <param type="float" name="xalign" />
+      <param type="float" name="yalign" />
+    </function>
+    <function returnType="void" name="set_shadow_type">
+      <param type="object" name="type" />
+    </function>
+  </class>
+  <class name="GtkGammaCurve">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkGammaCurve" />
+  </class>
+  <class name="GtkHandleBox">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkHandleBox" />
+    <function returnType="void" name="set_shadow_type">
+      <param type="object" name="type" />
+    </function>
+    <function returnType="void" name="set_handle_position">
+      <param type="object" name="position" />
+    </function>
+    <function returnType="void" name="set_snap_edge">
+      <param type="object" name="edge" />
+    </function>
+  </class>
+  <class name="GtkHBox">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkHBox">
+      <param optional="true" type="bool" name="homogeneous" />
+      <param optional="true" type="int" name="spacing" />
+    </function>
+  </class>
+  <class name="GtkHButtonBox">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkHButtonBox" />
+  </class>
+  <class name="GtkHPaned">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkHPaned" />
+  </class>
+  <class name="GtkSHPaned">
+    <function returnType="int" static="true" name="get_type" />
+  </class>
+  <class name="GtkSPaned">
+    <function returnType="int" static="true" name="get_type" />
+  </class>
+  <class name="GtkSVPaned">
+    <function returnType="int" static="true" name="get_type" />
+  </class>
+  <class name="GtkHRuler">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkHRuler" />
+  </class>
+  <class name="GtkHScale">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkHScale">
+      <param type="object" name="adjustment" />
+    </function>
+  </class>
+  <class name="GtkHScrollbar">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkHScrollbar">
+      <param type="object" name="adjustment" />
+    </function>
+  </class>
+  <class name="GtkHSeparator">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkHSeparator" />
+  </class>
+  <class name="GtkImage">
+    <function returnType="int" static="true" name="get_type" />
+  </class>
+  <class name="GtkInputDialog">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkInputDialog" />
+  </class>
+  <class name="GtkInvisible">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkInvisible" />
+  </class>
+  <class name="GtkItem">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="void" name="select" />
+    <function returnType="void" name="deselect" />
+    <function returnType="void" name="toggle" />
+  </class>
+  <class name="GtkItemFactory">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkItemFactory">
+      <param type="object" name="container_type" />
+      <param type="string" name="path" />
+      <param type="object" name="accel_group" />
+    </function>
+    <function returnType="bool" name="create_items">
+      <param type="array" name="items" />
+    </function>
+    <function returnType="object" name="get_item">
+      <param type="string" name="path" />
+    </function>
+    <function returnType="object" name="get_widget">
+      <param type="string" name="path" />
+    </function>
+    <function returnType="object" name="get_widget_by_action">
+      <param type="int" name="action" />
+    </function>
+    <function returnType="object" name="get_item_by_action">
+      <param type="int" name="action" />
+    </function>
+    <function returnType="void" name="delete_item">
+      <param type="string" name="path" />
+    </function>
+    <function returnType="void" name="popup">
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="mouse_button" />
+      <param type="int" name="time" />
+    </function>
+  </class>
+  <class name="GtkLabel">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkLabel">
+      <param optional="true" type="string" name="label_text" />
+    </function>
+    <function returnType="void" name="set_text">
+      <param type="string" name="label_text" />
+    </function>
+    <function returnType="void" name="set_justify">
+      <param type="object" name="justification" />
+    </function>
+    <function returnType="void" name="set_pattern">
+      <param optional="true" type="string" name="pattern" />
+    </function>
+    <function returnType="void" name="set_line_wrap">
+      <param type="bool" name="wrap" />
+    </function>
+    <function returnType="string" name="get" />
+    <function returnType="int" name="parse_uline">
+      <param type="string" name="string" />
+    </function>
+  </class>
+  <class name="GtkLayout">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkLayout">
+      <param type="object" name="hadjustment" />
+      <param type="object" name="vadjustment" />
+    </function>
+    <function returnType="void" name="put">
+      <param type="object" name="widget" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" name="move">
+      <param type="object" name="widget" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" name="set_size">
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="object" name="get_hadjustment" />
+    <function returnType="object" name="get_vadjustment" />
+    <function returnType="void" name="freeze" />
+    <function returnType="void" name="thaw" />
+  </class>
+  <class name="GtkList">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkList" />
+    <function returnType="void" name="append_items">
+      <param type="array" name="listItems" />
+    </function>
+    <function returnType="void" name="clear_items">
+      <param type="int" name="start" />
+      <param type="int" name="end" />
+    </function>
+    <function returnType="void" name="select_item">
+      <param type="int" name="row" />
+    </function>
+    <function returnType="void" name="unselect_item">
+      <param type="int" name="row" />
+    </function>
+    <function returnType="void" name="select_child">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="void" name="unselect_child">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="int" name="child_position">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="void" name="set_selection_mode">
+      <param type="object" name="mode" />
+    </function>
+    <function returnType="void" name="extend_selection">
+      <param type="object" name="scroll_type" />
+      <param type="float" name="position" />
+      <param type="bool" name="auto_start_selection" />
+    </function>
+    <function returnType="void" name="start_selection" />
+    <function returnType="void" name="end_selection" />
+    <function returnType="void" name="select_all" />
+    <function returnType="void" name="unselect_all" />
+    <function returnType="void" name="scroll_horizontal">
+      <param type="object" name="scroll_type" />
+      <param type="float" name="position" />
+    </function>
+    <function returnType="void" name="scroll_vertical">
+      <param type="object" name="scroll_type" />
+      <param type="float" name="position" />
+    </function>
+    <function returnType="void" name="toggle_add_mode" />
+    <function returnType="void" name="toggle_focus_row" />
+    <function returnType="void" name="toggle_row">
+      <param type="object" name="item" />
+    </function>
+    <function returnType="void" name="undo_selection" />
+    <function returnType="void" name="end_drag_selection" />
+  </class>
+  <class name="GtkListItem">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkListItem">
+      <param optional="true" type="string" name="label" />
+    </function>
+    <function returnType="void" name="select" />
+    <function returnType="void" name="deselect" />
+  </class>
+  <class name="GtkMenu">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkMenu" />
+    <function returnType="void" name="popup">
+      <param optional="true" type="object" name="parent_menu_shell" />
+      <param optional="true" type="object" name="parent_menu_item" />
+      <param optional="true" type="object" name="pos_function" />
+      <param optional="true" type="int" name="button" />
+      <param optional="true" type="int" name="activate_time" />
+    </function>
+    <function returnType="void" name="reposition" />
+    <function returnType="void" name="popdown" />
+    <function returnType="object" name="get_active" />
+    <function returnType="void" name="set_active">
+      <param type="int" name="index" />
+    </function>
+    <function returnType="void" name="set_accel_group">
+      <param type="object" name="accel_group" />
+    </function>
+    <function returnType="object" name="get_accel_group" />
+    <function returnType="object" name="get_uline_accel_group" />
+    <function returnType="object" name="ensure_uline_accel_group" />
+    <function returnType="void" name="attach_to_widget">
+      <param type="object" name="attach_widget" />
+    </function>
+    <function returnType="void" name="detach" />
+    <function returnType="object" name="get_attach_widget" />
+    <function returnType="void" name="set_tearoff_state">
+      <param type="bool" name="torn_off" />
+    </function>
+    <function returnType="void" name="set_title">
+      <param type="string" name="title" />
+    </function>
+    <function returnType="void" name="reorder_child">
+      <param type="object" name="child" />
+      <param type="int" name="position" />
+    </function>
+  </class>
+  <class name="GtkMenuBar">
+    <function name="GtkMenuBar" />
+    <function returnType="void" name="set_shadow_type">
+      <param type="object" name="type" />
+    </function>
+  </class>
+  <class name="GtkMenuItem">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkMenuItem">
+      <param optional="true" type="string" name="label" />
+    </function>
+    <function returnType="void" name="set_submenu">
+      <param type="object" name="submenu" />
+    </function>
+    <function returnType="void" name="remove_submenu" />
+    <function returnType="void" name="set_placement">
+      <param type="object" name="placement" />
+    </function>
+    <function returnType="void" name="configure">
+      <param type="int" name="show_toggle_indicator" />
+      <param type="int" name="show_submenu_indicator" />
+    </function>
+    <function returnType="void" name="select" />
+    <function returnType="void" name="deselect" />
+    <function returnType="void" name="activate" />
+    <function returnType="void" name="right_justify" />
+  </class>
+  <class name="GtkMenuShell">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="void" name="append">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="void" name="prepend">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="void" name="insert">
+      <param type="object" name="child" />
+      <param type="int" name="position" />
+    </function>
+    <function returnType="void" name="deactivate" />
+    <function returnType="void" name="select_item">
+      <param type="object" name="menu_item" />
+    </function>
+    <function returnType="void" name="deselect" />
+    <function returnType="void" name="activate_item">
+      <param type="object" name="menu_item" />
+      <param type="bool" name="force_deactivate" />
+    </function>
+  </class>
+  <class name="GtkMisc">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="void" name="set_alignment">
+      <param type="float" name="xalign" />
+      <param type="float" name="yalign" />
+    </function>
+    <function returnType="void" name="set_padding">
+      <param type="int" name="xpad" />
+      <param type="int" name="ypad" />
+    </function>
+  </class>
+  <class name="GtkNotebook">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkNotebook" />
+    <function returnType="void" name="append_page">
+      <param type="object" name="child" />
+      <param optional="true" type="object" name="tab_label" />
+    </function>
+    <function returnType="void" name="append_page_menu">
+      <param type="object" name="child" />
+      <param type="object" name="tab_label" />
+      <param type="object" name="menu_label" />
+    </function>
+    <function returnType="void" name="prepend_page">
+      <param type="object" name="child" />
+      <param optional="true" type="object" name="tab_label" />
+    </function>
+    <function returnType="void" name="prepend_page_menu">
+      <param type="object" name="child" />
+      <param type="object" name="tab_label" />
+      <param type="object" name="menu_label" />
+    </function>
+    <function returnType="void" name="insert_page">
+      <param type="object" name="child" />
+      <param optional="true" type="object" name="tab_label" />
+      <param optional="true" type="int" name="position" />
+    </function>
+    <function returnType="void" name="insert_page_menu">
+      <param type="object" name="child" />
+      <param type="object" name="tab_label" />
+      <param type="object" name="menu_label" />
+      <param type="int" name="position" />
+    </function>
+    <function returnType="void" name="remove_page">
+      <param type="int" name="page_num" />
+    </function>
+    <function returnType="int" name="get_current_page" />
+    <function returnType="object" name="get_nth_page">
+      <param type="int" name="page_num" />
+    </function>
+    <function returnType="int" name="page_num">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="void" name="set_page">
+      <param type="int" name="page_num" />
+    </function>
+    <function returnType="void" name="next_page" />
+    <function returnType="void" name="prev_page" />
+    <function returnType="void" name="set_show_border">
+      <param type="bool" name="show_border" />
+    </function>
+    <function returnType="void" name="set_show_tabs">
+      <param type="bool" name="show_tabs" />
+    </function>
+    <function returnType="void" name="set_tab_pos">
+      <param type="object" name="pos" />
+    </function>
+    <function returnType="void" name="set_homogeneous_tabs">
+      <param type="bool" name="homogeneous" />
+    </function>
+    <function returnType="void" name="set_tab_border">
+      <param type="int" name="border_width" />
+    </function>
+    <function returnType="void" name="set_tab_hborder">
+      <param type="int" name="tab_hborder" />
+    </function>
+    <function returnType="void" name="set_tab_vborder">
+      <param type="int" name="tab_vborder" />
+    </function>
+    <function returnType="void" name="set_scrollable">
+      <param type="bool" name="scrollable" />
+    </function>
+    <function returnType="void" name="popup_enable" />
+    <function returnType="void" name="popup_disable" />
+    <function returnType="object" name="get_tab_label">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="void" name="set_tab_label">
+      <param type="object" name="child" />
+      <param type="object" name="tab_label" />
+    </function>
+    <function returnType="void" name="set_tab_label_text">
+      <param type="object" name="child" />
+      <param type="string" name="tab_text" />
+    </function>
+    <function returnType="object" name="get_menu_label">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="void" name="set_menu_label">
+      <param type="object" name="child" />
+      <param type="object" name="menu_label" />
+    </function>
+    <function returnType="void" name="set_menu_label_text">
+      <param type="object" name="child" />
+      <param type="string" name="menu_text" />
+    </function>
+    <function returnType="void" name="set_tab_label_packing">
+      <param type="object" name="child" />
+      <param type="bool" name="expand" />
+      <param type="bool" name="fill" />
+      <param type="object" name="pack_type" />
+    </function>
+    <function returnType="void" name="reorder_child">
+      <param type="object" name="child" />
+      <param type="int" name="position" />
+    </function>
+  </class>
+  <class name="GtkObject">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="int" name="flags" />
+    <function returnType="void" name="set_flags">
+      <param type="object" name="flags" />
+    </function>
+    <function returnType="void" name="unset_flags">
+      <param type="object" name="flags" />
+    </function>
+    <function returnType="void" name="default_construct" />
+    <function returnType="void" name="constructed" />
+    <function returnType="void" name="sink" />
+    <function returnType="void" name="ref" />
+    <function returnType="void" name="unref" />
+    <function returnType="void" name="destroy" />
+    <function returnType="mixed" name="get_arg">
+      <param type="string" name="arg_name" />
+    </function>
+    <function returnType="void" name="set_arg">
+      <param type="array" name="arg_name" />
+    </function>
+    <function returnType="void" name="set_data">
+      <param type="string" name="key" />
+      <param type="mixed" name="value" />
+    </function>
+    <function returnType="mixed" name="get_data">
+      <param type="string" name="key" />
+    </function>
+    <function returnType="void" name="remove_data">
+      <param type="string" name="key" />
+    </function>
+    <function returnType="int" name="emit">
+      <param type="string" name="signal_type" />
+    </function>
+    <function returnType="void" name="emit_stop">
+      <param type="int" name="signal_id" />
+    </function>
+    <function returnType="void" name="emit_stop_by_name">
+      <param type="string" name="signal_name" />
+    </function>
+    <function returnType="int" name="connect">
+      <param type="string" name="signal" />
+      <param type="string" name="function" />
+      <param optional="true" type="mixed" name="custom_data" />
+    </function>
+    <function returnType="int" name="connect_after">
+      <param type="string" name="signal" />
+      <param type="string" name="function" />
+      <param type="mixed" name="custom" />
+    </function>
+    <function returnType="int" name="connect_object">
+      <param type="string" name="signal" />
+      <param type="string" name="function" />
+      <param bind="true" optional="vararg" type="object" name="param" />
+    </function>
+    <function returnType="int" name="connect_object_after">
+      <param type="string" name="signal" />
+      <param type="string" name="function" />
+      <param bind="true" optional="vararg" type="object" name="param" />
+    </function>
+    <function returnType="void" name="disconnect">
+      <param type="int" name="handler_id" />
+    </function>
+    <function returnType="void" name="signal_handler_block">
+      <param type="int" name="handler_id" />
+    </function>
+    <function returnType="void" name="signal_handler_unblock">
+      <param type="int" name="handler_id" />
+    </function>
+    <function returnType="int" name="signal_handler_pending">
+      <param type="int" name="signal_id" />
+      <param type="bool" name="may_be_blocked" />
+    </function>
+    <function returnType="int" name="signal_handler_pending_by_id">
+      <param type="int" name="handler_id" />
+      <param type="bool" name="may_be_blocked" />
+    </function>
+    <function returnType="void" name="signal_handlers_destroy" />
+  </class>
+  <class name="GtkOptionMenu">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkOptionMenu" />
+    <function returnType="object" name="get_menu" />
+    <function returnType="void" name="set_menu">
+      <param type="object" name="menu" />
+    </function>
+    <function returnType="void" name="remove_menu" />
+    <function returnType="void" name="set_history">
+      <param type="int" name="index" />
+    </function>
+  </class>
+  <class name="GtkPacker">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkPacker" />
+    <function returnType="void" name="add_defaults">
+      <param type="object" name="child" />
+      <param type="object" name="side" />
+      <param type="object" name="anchor" />
+      <param type="object" name="options" />
+    </function>
+    <function returnType="void" name="add">
+      <param type="object" name="child" />
+      <param type="object" name="side" />
+      <param type="object" name="anchor" />
+      <param type="object" name="options" />
+      <param optional="true" type="int" name="border_width" />
+      <param optional="true" type="int" name="pad_x" />
+      <param optional="true" type="int" name="pad_y" />
+      <param optional="true" type="int" name="i_pad_x" />
+      <param optional="true" type="int" name="i_pad_y" />
+    </function>
+    <function returnType="void" name="set_child_packing">
+      <param type="object" name="child" />
+      <param type="object" name="side" />
+      <param type="object" name="anchor" />
+      <param type="object" name="options" />
+      <param optional="true" type="int" name="border_width" />
+      <param optional="true" type="int" name="pad_x" />
+      <param optional="true" type="int" name="pad_y" />
+      <param optional="true" type="int" name="i_pad_x" />
+      <param optional="true" type="int" name="i_pad_y" />
+    </function>
+    <function returnType="void" name="reorder_child">
+      <param type="object" name="child" />
+      <param type="int" name="position" />
+    </function>
+    <function returnType="void" name="set_spacing">
+      <param type="int" name="spacing" />
+    </function>
+    <function returnType="void" name="set_default_border_width">
+      <param type="int" name="border" />
+    </function>
+    <function returnType="void" name="set_default_pad">
+      <param type="int" name="pad_x" />
+      <param type="int" name="pad_y" />
+    </function>
+    <function returnType="void" name="set_default_ipad">
+      <param type="int" name="i_pad_x" />
+      <param type="int" name="i_pad_y" />
+    </function>
+  </class>
+  <class name="GtkPaned">
+    <function returnType="void" name="add1">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="void" name="add2">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="void" name="pack1">
+      <param type="object" name="child" />
+      <param optional="true" type="bool" name="resize" />
+      <param optional="true" type="bool" name="shrink" />
+    </function>
+    <function returnType="void" name="pack2">
+      <param type="object" name="child" />
+      <param optional="true" type="bool" name="resize" />
+      <param optional="true" type="bool" name="shrink" />
+    </function>
+    <function returnType="void" name="set_position">
+      <param type="int" name="position" />
+    </function>
+    <function returnType="void" name="set_handle_size">
+      <param type="int" name="size" />
+    </function>
+    <function returnType="void" name="set_gutter_size">
+      <param type="int" name="size" />
+    </function>
+  </class>
+  <class name="GtkPixmap">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkPixmap">
+      <param type="object" name="pixmap" />
+      <param type="object" name="mask" />
+    </function>
+    <function returnType="void" name="set">
+      <param type="object" name="val" />
+      <param type="object" name="mask" />
+    </function>
+    <function returnType="void" name="set_build_insensitive">
+      <param type="int" name="build" />
+    </function>
+  </class>
+  <class name="GtkPlug">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkPlug">
+      <param type="int" name="socket_id" />
+    </function>
+  </class>
+  <class name="GtkPreview">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkPreview">
+      <param type="object" name="type" />
+    </function>
+    <function returnType="void" name="size">
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" name="put">
+      <param type="object" name="window" />
+      <param type="object" name="gc" />
+      <param type="int" name="srcx" />
+      <param type="int" name="srcy" />
+      <param type="int" name="destx" />
+      <param type="int" name="desty" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" name="draw_row">
+      <param type="string" name="data" />
+      <param type="int" name="start" />
+      <param type="int" name="row" />
+      <param type="int" name="pixels" />
+    </function>
+    <function returnType="void" name="set_expand">
+      <param type="bool" name="expand" />
+    </function>
+  </class>
+  <class name="GtkProgress">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="void" name="set_show_text">
+      <param type="bool" name="show_text" />
+    </function>
+    <function returnType="void" name="set_text_alignment">
+      <param type="float" name="x_align" />
+      <param type="float" name="y_align" />
+    </function>
+    <function returnType="void" name="set_format_string">
+      <param type="string" name="format" />
+    </function>
+    <function returnType="void" name="set_adjustment">
+      <param type="object" name="adjustment" />
+    </function>
+    <function returnType="void" name="configure">
+      <param type="float" name="value" />
+      <param type="float" name="min" />
+      <param type="float" name="max" />
+    </function>
+    <function returnType="void" name="set_percentage">
+      <param type="float" name="percentage" />
+    </function>
+    <function returnType="void" name="set_value">
+      <param type="float" name="value" />
+    </function>
+    <function returnType="float" name="get_value" />
+    <function returnType="void" name="set_activity_mode">
+      <param type="bool" name="activity_mode" />
+    </function>
+    <function returnType="string" name="get_current_text" />
+    <function returnType="string" name="get_text_from_value">
+      <param type="float" name="value" />
+    </function>
+    <function returnType="float" name="get_current_percentage" />
+    <function returnType="float" name="get_percentage_from_value">
+      <param type="float" name="value" />
+    </function>
+  </class>
+  <class name="GtkProgressBar">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkProgressBar">
+      <param type="object" name="adjustment" />
+    </function>
+    <function returnType="void" name="set_bar_style">
+      <param type="object" name="style" />
+    </function>
+    <function returnType="void" name="set_discrete_blocks">
+      <param type="int" name="blocks" />
+    </function>
+    <function returnType="void" name="set_activity_step">
+      <param type="int" name="step" />
+    </function>
+    <function returnType="void" name="set_activity_blocks">
+      <param type="int" name="blocks" />
+    </function>
+    <function returnType="void" name="set_orientation">
+      <param type="object" name="orientation" />
+    </function>
+    <function returnType="void" name="update">
+      <param type="float" name="percentage" />
+    </function>
+  </class>
+  <class name="GtkRadioButton">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="object" name="GtkRadioButton">
+      <param type="string" name="group" />
+      <param type="mixed" name="label" />
+    </function>
+  </class>
+  <class name="GtkRadioMenuItem">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="object" name="GtkRadioMenuItem">
+      <param type="string" name="group" />
+      <param type="mixed" name="label" />
+    </function>
+  </class>
+  <class name="GtkRange">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="object" name="get_adjustment" />
+    <function returnType="void" name="set_adjustment">
+      <param type="object" name="adjustment" />
+    </function>
+    <function returnType="void" name="set_update_policy">
+      <param type="object" name="policy" />
+    </function>
+  </class>
+  <class name="GtkRuler">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="void" name="set_metric">
+      <param type="object" name="metric" />
+    </function>
+    <function returnType="void" name="set_range">
+      <param type="float" name="lower" />
+      <param type="float" name="upper" />
+      <param type="float" name="position" />
+      <param type="float" name="max_size" />
+    </function>
+    <function returnType="void" name="draw_ticks" />
+    <function returnType="void" name="draw_pos" />
+  </class>
+  <class name="GtkScale">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="void" name="set_digits">
+      <param type="int" name="digits" />
+    </function>
+    <function returnType="void" name="set_draw_value">
+      <param type="bool" name="draw_value" />
+    </function>
+    <function returnType="void" name="set_value_pos">
+      <param type="object" name="pos" />
+    </function>
+    <function returnType="int" name="get_value_width" />
+  </class>
+  <class name="GtkScrolledWindow">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkScrolledWindow">
+      <param optional="true" type="object" name="hadjustment" />
+      <param optional="true" type="object" name="vadjustment" />
+    </function>
+    <function returnType="object" name="get_hadjustment" />
+    <function returnType="object" name="get_vadjustment" />
+    <function returnType="void" name="set_policy">
+      <param type="object" name="hscrollbar_policy" />
+      <param type="object" name="vscrollbar_policy" />
+    </function>
+    <function returnType="void" name="set_placement">
+      <param type="object" name="window_placement" />
+    </function>
+    <function returnType="void" name="add_with_viewport">
+      <param type="object" name="child" />
+    </function>
+  </class>
+  <class name="GtkScrollBar">
+    <function returnType="int" static="true" name="get_type" />
+  </class>
+  <class name="GtkScrollPane">
+    <function returnType="int" static="true" name="get_type" />
+  </class>
+  <class name="GtkSelectionData">
+    <function returnType="void" name="set" />
+  </class>
+  <class name="GtkSeparator">
+    <function returnType="int" static="true" name="get_type" />
+  </class>
+  <class name="GtkSocket">
+     <function returnType="int" static="true" name="get_type" />
+   <function name="GtkSocket" />
+    <function returnType="void" name="steal">
+      <param type="int" name="wid" />
+    </function>
+  </class>
+  <class name="GtkSpinButton">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkSpinButton">
+      <param optional="true" type="object" name="adjustment" />
+      <param optional="true" type="float" name="climb_rate" />
+      <param optional="true" type="int" name="digits" />
+    </function>
+    <function returnType="void" name="configure">
+      <param type="object" name="adjustment" />
+      <param type="float" name="climb_rate" />
+      <param type="int" name="digits" />
+    </function>
+    <function returnType="void" name="set_adjustment">
+      <param type="object" name="adjustment" />
+    </function>
+    <function returnType="object" name="get_adjustment" />
+    <function returnType="void" name="set_digits">
+      <param type="int" name="digits" />
+    </function>
+    <function returnType="float" name="get_value_as_float" />
+    <function returnType="int" name="get_value_as_int" />
+    <function returnType="void" name="set_value">
+      <param type="float" name="value" />
+    </function>
+    <function returnType="void" name="set_update_policy">
+      <param type="object" name="policy" />
+    </function>
+    <function returnType="void" name="set_numeric">
+      <param type="bool" name="numeric" />
+    </function>
+    <function returnType="void" name="spin">
+      <param type="object" name="direction" />
+      <param type="float" name="increment" />
+    </function>
+    <function returnType="void" name="set_wrap">
+      <param type="bool" name="wrap" />
+    </function>
+    <function returnType="void" name="set_shadow_type">
+      <param type="object" name="shadow_type" />
+    </function>
+    <function returnType="void" name="set_snap_to_ticks">
+      <param type="bool" name="snap_to_ticks" />
+    </function>
+    <function returnType="void" name="update" />
+  </class>
+  <class name="GtkStatusbar">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkStatusbar" />
+    <function returnType="int" name="get_context_id">
+      <param type="string" name="context_description" />
+    </function>
+    <function returnType="int" name="push">
+      <param type="int" name="context_id" />
+      <param type="string" name="text" />
+    </function>
+    <function returnType="void" name="pop">
+      <param type="int" name="context_id" />
+    </function>
+    <function returnType="void" name="remove">
+      <param type="int" name="context_id" />
+      <param type="int" name="message_id" />
+    </function>
+  </class>
+  <class name="GtkStyle">
+    <function name="GtkStyle" />
+    <function returnType="object" name="copy" />
+  </class>
+  <class name="GtkTable">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkTable">
+      <param optional="true" type="int" name="rows" />
+      <param optional="true" type="int" name="columns" />
+      <param optional="true" type="bool" name="homogeneous" />
+    </function>
+    <function returnType="void" name="resize">
+      <param type="int" name="rows" />
+      <param type="int" name="columns" />
+    </function>
+    <function returnType="void" name="attach">
+      <param type="object" name="child" />
+      <param type="int" name="left_attach" />
+      <param type="int" name="right_attach" />
+      <param type="int" name="top_attach" />
+      <param type="int" name="bottom_attach" />
+      <param optional="true" type="object" name="xoptions" />
+      <param optional="true" type="object" name="yoptions" />
+      <param optional="true" type="int" name="xpadding" />
+      <param optional="true" type="int" name="ypadding" />
+    </function>
+    <function returnType="void" name="attach_defaults">
+      <param type="object" name="widget" />
+      <param type="int" name="left_attach" />
+      <param type="int" name="right_attach" />
+      <param type="int" name="top_attach" />
+      <param type="int" name="bottom_attach" />
+    </function>
+    <function returnType="void" name="set_row_spacing">
+      <param type="int" name="row" />
+      <param type="int" name="spacing" />
+    </function>
+    <function returnType="void" name="set_col_spacing">
+      <param type="int" name="column" />
+      <param type="int" name="spacing" />
+    </function>
+    <function returnType="void" name="set_row_spacings">
+      <param type="int" name="spacing" />
+    </function>
+    <function returnType="void" name="set_col_spacings">
+      <param type="int" name="spacing" />
+    </function>
+    <function returnType="void" name="set_homogeneous">
+      <param type="bool" name="homogeneous" />
+    </function>
+  </class>
+  <class name="GtkTearoffMenuItem">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkTearoffMenuItem" />
+  </class>
+  <class name="GtkText">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkText">
+      <param optional="true" type="object" name="hadj" />
+      <param optional="true" type="object" name="vadj" />
+    </function>
+    <function returnType="void" name="set_editable">
+      <param type="bool" name="editable" />
+    </function>
+    <function returnType="void" name="set_word_wrap">
+      <param type="bool" name="word_wrap" />
+    </function>
+    <function returnType="void" name="set_line_wrap">
+      <param type="bool" name="line_wrap" />
+    </function>
+    <function returnType="void" name="set_adjustments">
+      <param type="object" name="hadj" />
+      <param type="object" name="vadj" />
+    </function>
+    <function returnType="void" name="set_point">
+      <param type="int" name="index" />
+    </function>
+    <function returnType="int" name="get_point" />
+    <function returnType="int" name="get_length" />
+    <function returnType="void" name="freeze" />
+    <function returnType="void" name="thaw" />
+    <function returnType="void" name="insert">
+      <param type="object" name="font" />
+      <param type="object" name="fore" />
+      <param type="object" name="back" />
+      <param type="string" name="chars" />
+      <param optional="true" type="int" name="length" />
+    </function>
+    <function returnType="int" name="backward_delete">
+      <param type="int" name="nchars" />
+    </function>
+    <function returnType="int" name="forward_delete">
+      <param type="int" name="nchars" />
+    </function>
+  </class>
+  <class name="GtkTipsQuery">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkTipsQuery" />
+    <function returnType="void" name="start_query" />
+    <function returnType="void" name="stop_query" />
+    <function returnType="void" name="set_caller">
+      <param type="object" name="caller" />
+    </function>
+    <function returnType="void" name="set_labels">
+      <param type="string" name="label_inactive" />
+      <param type="string" name="label_no_tip" />
+    </function>
+  </class>
+  <class name="GtkToggleButton">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkToggleButton">
+      <param optional="true" type="string" name="label" />
+    </function>
+    <function returnType="void" name="set_mode">
+      <param type="bool" name="draw_indicator" />
+    </function>
+    <function returnType="void" name="set_active">
+      <param type="bool" name="is_active" />
+    </function>
+    <function returnType="bool" name="get_active" />
+    <function returnType="void" name="toggled" />
+  </class>
+  <class name="GtkToolbar">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkToolbar">
+      <param type="object" name="orientation" />
+      <param type="object" name="style" />
+    </function>
+    <function returnType="void" name="add">
+      <param type="object" name="widget" />
+    </function>
+    <function returnType="void" name="append_space" />
+    <function returnType="void" name="prepend_space" />
+    <function returnType="void" name="insert_space">
+      <param type="int" name="position" />
+    </function>
+    <function returnType="object" name="append_element">
+      <param type="object" name="widget_type" />
+      <param type="object" name="widget" />
+      <param type="string" name="button_text" />
+      <param type="string" name="tooltip_text" />
+      <param type="string" name="tooltip_private_text" />
+      <param type="object" name="icon" />
+      <param type="string" name="callback" />
+      <param optional="true" type="mixed" name="userparam" />
+    </function>
+    <function returnType="object" name="prepend_element">
+      <param type="object" name="widget_type" />
+      <param type="object" name="widget" />
+      <param type="string" name="button_text" />
+      <param type="string" name="tooltip_text" />
+      <param type="string" name="tooltip_private_text" />
+      <param type="object" name="icon" />
+      <param type="string" name="callback" />
+      <param optional="true" type="mixed" name="userparam" />
+    </function>
+    <function returnType="object" name="insert_element">
+      <param type="object" name="widget_type" />
+      <param type="object" name="widget" />
+      <param type="string" name="button_text" />
+      <param type="string" name="tooltip_text" />
+      <param type="string" name="tooltip_private_text" />
+      <param type="object" name="icon" />
+      <param type="int" name="position" />
+      <param type="string" name="callback" />
+      <param optional="true" type="mixed" name="userparam" />
+    </function>
+    <function returnType="object" name="append_item">
+      <param type="string" name="button_text" />
+      <param type="string" name="tooltip_text" />
+      <param type="string" name="tooltip_private_text" />
+      <param type="object" name="icon" />
+      <param type="string" name="callback" />
+      <param optional="true" type="mixed" name="userparam" />
+    </function>
+    <function returnType="object" name="prepend_item">
+      <param type="string" name="button_text" />
+      <param type="string" name="tooltip_text" />
+      <param type="string" name="tooltip_private_text" />
+      <param type="object" name="icon" />
+      <param type="string" name="callback" />
+      <param optional="true" type="mixed" name="userparam" />
+    </function>
+    <function returnType="object" name="insert_item">
+      <param type="string" name="button_text" />
+      <param type="string" name="tooltip_text" />
+      <param type="string" name="tooltip_private_text" />
+      <param type="object" name="icon" />
+      <param type="int" name="position" />
+      <param type="string" name="callback" />
+      <param optional="true" type="mixed" name="userparam" />
+    </function>
+    <function returnType="void" name="append_widget">
+      <param type="object" name="widget" />
+      <param type="string" name="tooltip_text" />
+      <param type="string" name="tooltip_private_text" />
+    </function>
+    <function returnType="void" name="prepend_widget">
+      <param type="object" name="widget" />
+      <param type="string" name="tooltip_text" />
+      <param type="string" name="tooltip_private_text" />
+    </function>
+    <function returnType="void" name="insert_widget">
+      <param type="object" name="widget" />
+      <param type="string" name="tooltip_text" />
+      <param type="string" name="tooltip_private_text" />
+      <param type="int" name="position" />
+    </function>
+    <function returnType="void" name="set_orientation">
+      <param type="object" name="orientation" />
+    </function>
+    <function returnType="void" name="set_style">
+      <param type="object" name="style" />
+    </function>
+    <function returnType="void" name="set_space_size">
+      <param type="int" name="space_size" />
+    </function>
+    <function returnType="void" name="set_space_style">
+      <param type="object" name="space_style" />
+    </function>
+    <function returnType="void" name="set_tooltips">
+      <param type="int" name="enable" />
+    </function>
+    <function returnType="void" name="set_button_relief">
+      <param type="object" name="relief" />
+    </function>
+    <function returnType="object" name="get_button_relief" />
+  </class>
+  <class name="GtkTooltips">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkTooltips" />
+    <function returnType="void" name="enable" />
+    <function returnType="void" name="disable" />
+    <function returnType="void" name="set_delay">
+      <param type="int" name="delay" />
+    </function>
+    <function returnType="void" name="set_tip">
+      <param type="object" name="widget" />
+      <param type="string" name="tip_text" />
+      <param type="string" name="tip_private" />
+    </function>
+    <function returnType="void" name="set_colors">
+      <param type="object" name="background" />
+      <param type="object" name="foreground" />
+    </function>
+    <function returnType="void" name="force_window" />
+  </class>
+  <class name="GtkTree">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkTree" />
+    <function returnType="void" name="append">
+      <param type="object" name="tree_item" />
+    </function>
+    <function returnType="void" name="prepend">
+      <param type="object" name="tree_item" />
+    </function>
+    <function returnType="void" name="insert">
+      <param type="object" name="tree_item" />
+      <param type="int" name="position" />
+    </function>
+    <function returnType="void" name="remove_item">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="void" name="clear_items">
+      <param type="int" name="start" />
+      <param type="int" name="end" />
+    </function>
+    <function returnType="void" name="select_item">
+      <param type="int" name="position" />
+    </function>
+    <function returnType="void" name="unselect_item">
+      <param type="int" name="position" />
+    </function>
+    <function returnType="void" name="select_child">
+      <param type="object" name="tree_item" />
+    </function>
+    <function returnType="void" name="unselect_child">
+      <param type="object" name="tree_item" />
+    </function>
+    <function returnType="int" name="child_position">
+      <param type="object" name="child" />
+    </function>
+    <function returnType="void" name="set_selection_mode">
+      <param type="object" name="mode" />
+    </function>
+    <function returnType="void" name="set_view_mode">
+      <param type="object" name="mode" />
+    </function>
+    <function returnType="void" name="set_view_lines">
+      <param type="int" name="flag" />
+    </function>
+  </class>
+  <class name="GtkTreeItem">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkTreeItem">
+      <param type="string" name="node_text" />
+    </function>
+    <function returnType="void" name="set_subtree">
+      <param type="object" name="subtree" />
+    </function>
+    <function returnType="void" name="remove_subtree" />
+    <function returnType="void" name="select" />
+    <function returnType="void" name="deselect" />
+    <function returnType="void" name="expand" />
+    <function returnType="void" name="collapse" />
+  </class>
+  <class name="GtkVBox">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkVBox">
+      <param optional="true" type="bool" name="homogeneous" />
+      <param optional="true" type="int" name="spacing" />
+    </function>
+  </class>
+  <class name="GtkVButtonBox">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkVButtonBox" />
+  </class>
+  <class name="GtkViewport">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkViewport">
+      <param optional="true" type="object" name="hadjustment" />
+      <param optional="true" type="object" name="vadjustment" />
+    </function>
+    <function returnType="object" name="get_hadjustment" />
+    <function returnType="object" name="get_vadjustment" />
+    <function returnType="void" name="set_shadow_type">
+      <param type="object" name="type" />
+    </function>
+  </class>
+  <class name="GtkVPaned">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkVPaned" />
+  </class>
+  <class name="GtkVRuler">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkVRuler" />
+  </class>
+  <class name="GtkVScale">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkVScale">
+      <param optional="true" type="object" name="adjustment" />
+    </function>
+  </class>
+  <class name="GtkVScrollbar">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkVScrollbar">
+      <param optional="true" type="object" name="adjustment" />
+    </function>
+  </class>
+  <class name="GtkVSeparator">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkVSeparator" />
+  </class>
+  <class name="GtkWidget">
+    <function returnType="int" static="true" name="get_type" />
+    <function returnType="void" name="drag_highlight" />
+    <function returnType="void" name="drag_unhighlight" />
+    <function returnType="void" name="drag_dest_set">
+      <param type="object" name="flags" />
+      <param type="array" name="targets" />
+      <param type="object" name="actions" />
+    </function>
+    <function returnType="void" name="drag_dest_unset" />
+    <function returnType="void" name="drag_source_set">
+      <param type="object" name="start_button_mask" />
+      <param type="array" name="targets" />
+      <param type="object" name="actions" />
+    </function>
+    <function returnType="void" name="drag_source_unset" />
+    <function returnType="void" name="drag_source_set_icon">
+      <param type="object" name="colormap" />
+      <param type="object" name="pixmap" />
+      <param type="object" name="mask" />
+    </function>
+    <function returnType="int" name="selection_owner_set">
+      <param type="object" name="selection" />
+      <param type="int" name="time" />
+    </function>
+    <function returnType="void" name="selection_add_target">
+      <param type="object" name="selection" />
+      <param type="object" name="target" />
+      <param type="int" name="info" />
+    </function>
+    <function returnType="int" name="selection_convert">
+      <param type="object" name="selection" />
+      <param type="object" name="target" />
+      <param type="int" name="time" />
+    </function>
+    <function returnType="void" name="selection_remove_all" />
+    <function returnType="void" name="unparent" />
+    <function returnType="void" name="show" />
+    <function returnType="void" name="show_now" />
+    <function returnType="void" name="hide" />
+    <function returnType="void" name="show_all" />
+    <function returnType="void" name="hide_all" />
+    <function returnType="void" name="map" />
+    <function returnType="void" name="unmap" />
+    <function returnType="void" name="realize" />
+    <function returnType="void" name="unrealize" />
+    <function returnType="void" name="queue_draw" />
+    <function returnType="void" name="queue_draw_area">
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" name="queue_clear" />
+    <function returnType="void" name="queue_clear_area">
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" name="queue_resize" />
+    <function returnType="void" name="draw">
+      <param type="object" name="area" />
+    </function>
+    <function returnType="void" name="draw_focus" />
+    <function returnType="void" name="draw_default" />
+    <function returnType="void" name="add_accelerator">
+      <param type="string" name="accel_signal" />
+      <param type="object" name="accel_group" />
+      <param type="int" name="accel_key" />
+      <param type="object" name="accel_mods" />
+      <param type="object" name="accel_flags" />
+    </function>
+    <function returnType="void" name="remove_accelerator">
+      <param type="object" name="accel_group" />
+      <param type="int" name="accel_key" />
+      <param type="object" name="accel_mods" />
+    </function>
+    <function returnType="void" name="remove_accelerators">
+      <param type="string" name="accel_signal" />
+      <param type="bool" name="visible_only" />
+    </function>
+    <function returnType="void" name="lock_accelerators" />
+    <function returnType="void" name="unlock_accelerators" />
+    <function returnType="bool" name="accelerators_locked" />
+    <function returnType="int" name="event">
+      <param type="object" name="event" />
+    </function>
+    <function returnType="bool" name="activate" />
+    <function returnType="void" name="reparent">
+      <param type="object" name="new_parent" />
+    </function>
+    <function returnType="void" name="popup">
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="object" name="intersect">
+      <param type="object" name="area" />
+    </function>
+    <function returnType="void" name="grab_focus" />
+    <function returnType="void" name="grab_default" />
+    <function returnType="void" name="set_name">
+      <param type="string" name="name" />
+    </function>
+    <function returnType="string" name="get_name" />
+    <function returnType="void" name="set_state">
+      <param type="object" name="state" />
+    </function>
+    <function returnType="void" name="set_sensitive">
+      <param type="bool" name="sensitive" />
+    </function>
+    <function returnType="void" name="set_app_paintable">
+      <param type="bool" name="app_paintable" />
+    </function>
+    <function returnType="void" name="set_parent">
+      <param type="object" name="container" />
+    </function>
+    <function returnType="void" name="set_parent_window">
+      <param type="object" name="parent_window" />
+    </function>
+    <function returnType="object" name="get_parent_window" />
+    <function returnType="void" name="set_uposition">
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" name="set_usize">
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" name="set_events">
+      <param type="object" name="events" />
+    </function>
+    <function returnType="void" name="add_events">
+      <param type="object" name="events" />
+    </function>
+    <function returnType="object" name="get_toplevel" />
+    <function returnType="object" name="get_ancestor">
+      <param type="int" name="widget_type" />
+    </function>
+    <function returnType="object" name="get_colormap" />
+    <function returnType="object" name="get_visual" />
+    <function returnType="void" name="set_colormap">
+      <param type="object" name="colormap" />
+    </function>
+    <function returnType="void" name="set_visual">
+      <param type="object" name="visual" />
+    </function>
+    <function returnType="int" name="get_events" />
+    <function returnType="bool" name="is_ancestor">
+      <param type="object" name="ancestor" />
+    </function>
+    <function returnType="int" name="hide_on_delete" />
+    <function returnType="void" name="set_style">
+      <param type="object" name="style" />
+    </function>
+    <function returnType="void" name="set_rc_style" />
+    <function returnType="void" name="ensure_style" />
+    <function returnType="object" name="get_style" />
+    <function returnType="void" name="restore_default_style" />
+    <function returnType="void" name="set_composite_name">
+      <param type="string" name="name" />
+    </function>
+    <function returnType="string" name="get_composite_name" />
+    <function returnType="void" name="reset_rc_styles" />
+    <function returnType="void" name="shape_combine_mask">
+      <param type="object" name="shape_mask" />
+      <param type="int" name="offset_x" />
+      <param type="int" name="offset_y" />
+    </function>
+  </class>
+  <class name="GtkWindow">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkWindow">
+      <param optional="true" type="object" name="type" />
+    </function>
+    <function returnType="void" name="set_title">
+      <param type="string" name="title" />
+    </function>
+    <function returnType="void" name="set_wmclass">
+      <param type="string" name="wmclass_name" />
+      <param type="string" name="wmclass_class" />
+    </function>
+    <function returnType="void" name="set_policy">
+      <param type="int" name="allow_shrink" />
+      <param type="int" name="allow_grow" />
+      <param type="int" name="auto_shrink" />
+    </function>
+    <function returnType="void" name="add_accel_group">
+      <param type="object" name="accel_group" />
+    </function>
+    <function returnType="void" name="remove_accel_group">
+      <param type="object" name="accel_group" />
+    </function>
+    <function returnType="void" name="set_position">
+      <param type="object" name="position" />
+    </function>
+    <function returnType="int" name="activate_focus" />
+    <function returnType="int" name="activate_default" />
+    <function returnType="void" name="set_transient_for">
+      <param type="object" name="parent" />
+    </function>
+    <function returnType="void" name="set_default_size">
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" name="set_modal">
+      <param type="bool" name="modal" />
+    </function>
+    <function returnType="void" name="set_focus">
+      <param type="object" name="focus" />
+    </function>
+    <function returnType="void" name="set_default">
+      <param type="object" name="defaultw" />
+    </function>
+  </class>
+  <class name="gtk">
+    <function returnType="object" static="true" name="accel_group_get_default" />
+    <function returnType="void" static="true" name="button_box_get_child_ipadding_default">
+      <param direction="out" type="int" name="ipad_x" />
+      <param direction="out" type="int" name="ipad_y" />
+    </function>  
+    <function returnType="void" static="true" name="button_box_set_child_ipadding_default">
+      <param type="int" name="ipad_x" />
+      <param type="int" name="ipad_y" />
+    </function>
+    <function returnType="void" static="true" name="button_box_get_child_size_default">
+      <param direction="out" type="int" name="ipad_x" />
+      <param direction="out" type="int" name="ipad_y" />
+    </function>  
+    <function returnType="void" static="true" name="button_box_set_child_size_default">
+      <param type="int" name="min_width" />
+      <param type="int" name="min_height" />
+    </function>
+    <function returnType="string" static="true" name="check_version">
+      <param type="int" name="required_major" />
+      <param type="int" name="required_minor" />
+      <param type="int" name="required_micro" />
+    </function>
+    <function returnType="void" static="true" name="drag_finish">
+      <param type="object" name="context" />
+      <param type="bool" name="success" />
+      <param type="bool" name="del" />
+      <param type="int" name="time" />
+    </function>
+    <function returnType="object" static="true" name="drag_get_source_widget">
+      <param type="object" name="context" />
+    </function>
+    <function returnType="void" static="true" name="drag_set_default_icon">
+      <param type="object" name="colormap" />
+      <param type="object" name="pixmap" />
+      <param type="object" name="mask" />
+      <param type="int" name="hot_x" />
+      <param type="int" name="hot_y" />
+    </function>
+    <function returnType="void" static="true" name="drag_set_icon_default">
+      <param type="object" name="context" />
+    </function>
+    <function returnType="void" static="true" name="drag_set_icon_pixmap">
+      <param type="object" name="context" />
+      <param type="object" name="colormap" />
+      <param type="object" name="pixmap" />
+      <param type="object" name="mask" />
+      <param type="int" name="hot_x" />
+      <param type="int" name="hot_y" />
+    </function>
+    <function returnType="void" static="true" name="drag_set_icon_widget">
+      <param type="object" name="context" />
+      <param type="object" name="widget" />
+      <param type="int" name="hot_x" />
+      <param type="int" name="hot_y" />
+    </function>
+    <function returnType="void" static="true" name="drag_dest_handle_event">
+      <param type="object" name="toplevel" />
+      <param type="object" name="event" />
+    </function>
+    <function returnType="void" static="true" name="drag_source_handle_event">
+      <param type="object" name="widget" />
+      <param type="object" name="event" />
+    </function>
+    <function returnType="void" static="true" name="draw_arrow">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="arrow_type" />
+      <param type="bool" name="fill" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="draw_box">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="draw_diamond">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="draw_hline">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="int" name="x1" />
+      <param type="int" name="x2" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" static="true" name="draw_oval">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="draw_shadow">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="draw_string">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="string" name="string" />
+    </function>
+    <function returnType="void" static="true" name="draw_vline">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="int" name="y1" />
+      <param type="int" name="y2" />
+      <param type="int" name="x" />
+    </function>
+    <function returnType="object" static="true" name="entry_new_with_max_length">
+      <param type="int" name="max" />
+    </function>
+    <function returnType="int" static="true" name="events_pending" />
+    <function returnType="int" static="true" name="false" />
+    <function returnType="object" static="true" name="hbutton_box_get_layout_default" />
+    <function returnType="int" static="true" name="hbutton_box_get_spacing_default" />
+    <function returnType="void" static="true" name="grab_add">
+      <param type="object" name="widget" />
+    </function>
+    <function returnType="object" static="true" name="grab_get_current" />
+    <function returnType="void" static="true" name="grab_remove">
+      <param type="object" name="widget" />
+    </function>
+    <function returnType="void" static="true" name="hbutton_box_set_layout_default">
+      <param type="object" name="layout" />
+    </function>
+    <function returnType="void" static="true" name="hbutton_box_set_spacing_default">
+      <param type="int" name="spacing" />
+    </function>
+    <function returnType="int" static="true" name="idle_add">
+      <param type="object" name="function" />
+      <param optional="true" type="mixed" name="data" />
+    </function>
+    <function returnType="void" static="true" name="idle_remove">
+      <param type="int" name="idle_handler_id" />
+    </function>
+    <function returnType="mixed" static="true" name="input_add">
+      <param type="mixed" name="arg" />
+    </function>
+    <function returnType="void" static="true" name="input_remove">
+      <param type="int" name="input_handler_id" />
+    </function>
+    <function returnType="void" static="true" name="item_factories_path_delete">
+      <param type="string" name="ifactory_path" />
+      <param type="string" name="path" />
+    </function>
+    <function returnType="object" static="true" name="item_factory_add_foreign">
+      <param optional="vararg" type="object" name="args" />
+    </function>
+    <function returnType="object" static="true" name="item_factory_from_path">
+      <param type="string" name="path" />
+    </function>
+    <function returnType="object" static="true" name="item_factory_from_widget">
+      <param type="object" name="widget" />
+    </function>
+    <function returnType="void" static="true" name="item_factory_parse_rc">
+      <param type="string" name="file_name" />
+    </function>
+    <function returnType="void" static="true" name="item_factory_parse_rc_string">
+      <param type="string" name="rc_string" />
+    </function>
+    <function returnType="string" static="true" name="item_factory_path_from_widget">
+      <param type="object" name="widget" />
+    </function>
+    <function returnType="void" static="true" name="main" />
+    <function returnType="void" static="true" name="main_do_event">
+      <param type="object" name="event" />
+    </function>
+    <function returnType="int" static="true" name="main_iteration" />
+    <function returnType="int" static="true" name="main_iteration_do">
+      <param optional="true" type="bool" name="blocking" />
+    </function>
+    <function returnType="int" static="true" name="main_level" />
+    <function returnType="void" static="true" name="main_quit" />
+    <function returnType="void" static="true" name="paint_arrow">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="object" name="arrow_type" />
+      <param type="bool" name="fill" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="paint_box">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="paint_box_gap">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+      <param type="object" name="gap_side" />
+      <param type="int" name="gap_x" />
+      <param type="int" name="gap_width" />
+    </function>
+    <function returnType="void" static="true" name="paint_check">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="paint_cross">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="paint_diamond">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="paint_extension">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+      <param type="object" name="gap_side" />
+    </function>
+    <function returnType="void" static="true" name="paint_flat_box">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="paint_focus">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="paint_handle">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+      <param type="object" name="orientation" />
+    </function>
+    <function returnType="void" static="true" name="paint_hline">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x1" />
+      <param type="int" name="x2" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" static="true" name="paint_option">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="paint_oval">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="paint_ramp">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="object" name="arrow_type" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="paint_shadow">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="paint_shadow_gap">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+      <param type="object" name="gap_side" />
+      <param type="int" name="gap_x" />
+      <param type="int" name="gap_width" />
+    </function>
+    <function returnType="void" static="true" name="paint_slider">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+      <param type="object" name="orientation" />
+    </function>
+    <function returnType="void" static="true" name="paint_string">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="string" name="string" />
+    </function>
+    <function returnType="void" static="true" name="paint_tab">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="shadow_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="paint_vline">
+      <param type="object" name="style" />
+      <param type="object" name="window" />
+      <param type="object" name="state_type" />
+      <param type="object" name="area" />
+      <param type="object" name="widget" />
+      <param type="string" name="detail" />
+      <param type="int" name="y1" />
+      <param type="int" name="y2" />
+      <param type="int" name="x" />
+    </function>
+    <function returnType="object" static="true" name="preview_get_cmap" />
+    <function returnType="object" static="true" name="preview_get_visual" />
+    <function returnType="void" static="true" name="preview_reset" />
+    <function returnType="void" static="true" name="preview_set_color_cube">
+      <param type="int" name="nred_shades" />
+      <param type="int" name="ngreen_shades" />
+      <param type="int" name="nblue_shades" />
+      <param type="int" name="ngray_shades" />
+    </function>
+    <function returnType="void" static="true" name="preview_set_gamma">
+      <param type="float" name="gamma" />
+    </function>
+    <function returnType="void" static="true" name="preview_set_install_cmap">
+      <param type="int" name="install_cmap" />
+    </function>
+    <function returnType="void" static="true" name="preview_set_reserved">
+      <param type="int" name="nreserved" />
+    </function>
+    <function returnType="int" static="true" name="quit_add">
+      <param type="int" name="level" />
+      <param type="string" name="callback" />
+      <param optional="true" type="mixed" name="data" />
+    </function>
+    <function returnType="void" static="true" name="quit_remove">
+      <param type="int" name="quit_handler_id" />
+    </function>
+    <function returnType="void" static="true" name="rc_add_default_file">
+      <param type="string" name="filename" />
+    </function>
+    <function returnType="string" static="true" name="rc_get_module_dir" />
+    <function returnType="object" static="true" name="rc_get_style">
+      <param type="object" name="widget" />
+    </function>
+    <function returnType="string" static="true" name="rc_find_module_in_path">
+      <param type="string" name="module_file" />
+    </function>
+    <function returnType="void" static="true" name="rc_parse">
+      <param type="string" name="filename" />
+    </function>
+    <function returnType="void" static="true" name="rc_parse_string">
+      <param type="string" name="rc_string" />
+    </function>
+    <function returnType="bool" static="true" name="rc_reparse_all" />
+    <function returnType="string" static="true" name="rc_get_theme_dir" />
+    <function returnType="object" static="true" name="rc_load_image">
+      <param type="object" name="colormap" />
+      <param type="object" name="transparent_color" />
+      <param type="string" name="filename" />
+    </function>
+    <function returnType="object" static="true" name="signal_add_emission_hook">
+      <param optional="vararg" type="object" name="args" />
+    </function>
+    <function returnType="object" static="true" name="signal_lookup">
+      <param optional="vararg" type="object" name="args" />
+    </function>
+    <function returnType="object" static="true" name="signal_name">
+      <param optional="vararg" type="object" name="args" />
+    </function>
+    <function returnType="object" static="true" name="signal_remove_emission_hook">
+      <param optional="vararg" type="object" name="args" />
+    </function>
+    <function returnType="int" static="true" name="timeout_add">
+      <param type="int" name="interval" />
+      <param type="object" name="function" />
+      <param optional="true" type="mixed" name="data" />
+    </function>
+    <function returnType="void" static="true" name="timeout_remove">
+      <param type="int" name="timeout_handler_id" />
+    </function>
+    <function returnType="int" static="true" name="true" />
+    <function returnType="int" static="true" name="type_from_name">
+      <param type="string" name="name" />
+    </function>
+    <function returnType="string" static="true" name="type_name">
+      <param type="int" name="type" />
+    </function>
+    <function returnType="object" static="true" name="vbutton_box_get_layout_default" />
+    <function returnType="int" static="true" name="vbutton_box_get_spacing_default" />
+    <function returnType="void" static="true" name="vbutton_box_set_layout_default">
+      <param type="object" name="layout" />
+    </function>
+    <function returnType="void" static="true" name="vbutton_box_set_spacing_default">
+      <param type="int" name="spacing" />
+    </function>
+    <function returnType="object" static="true" name="widget_get_default_colormap" />
+    <function returnType="object" static="true" name="widget_get_default_style" />
+    <function returnType="object" static="true" name="widget_get_default_visual" />
+    <function returnType="void" static="true" name="widget_pop_colormap" />
+    <function returnType="void" static="true" name="widget_pop_composite_child" />
+    <function returnType="void" static="true" name="widget_pop_style" />
+    <function returnType="void" static="true" name="widget_pop_visual" />
+    <function returnType="void" static="true" name="widget_push_colormap">
+      <param type="object" name="cmap" />
+    </function>
+    <function returnType="void" static="true" name="widget_push_composite_child" />
+    <function returnType="void" static="true" name="widget_push_style">
+      <param type="object" name="style" />
+    </function>
+    <function returnType="void" static="true" name="widget_push_visual">
+      <param type="object" name="visual" />
+    </function>
+    <function returnType="void" static="true" name="widget_set_default_colormap">
+      <param type="object" name="colormap" />
+    </function>
+    <function returnType="void" static="true" name="widget_set_default_style">
+      <param type="object" name="style" />
+    </function>
+    <function returnType="void" static="true" name="widget_set_default_visual">
+      <param type="object" name="visual" />
+    </function>
+  </class>
+  <class name="GdkBitmap">
+    <function returnType="array" name="extents" />
+    <function returnType="int" name="lock" />
+    <function returnType="int" name="height" />
+    <function returnType="int" name="width" />
+  </class>
+  <class name="GdkColor">
+    <function name="GdkColor">
+      <param type="int" name="red" />
+      <param type="int" name="green" />
+      <param type="int" name="blue" />
+    </function>
+  </class>
+  <class name="GdkColormap">
+    <function returnType="void" name="size" />
+    <function returnType="void" name="alloc" />
+  </class>
+  <class name="GdkFont">
+    <function returnType="array" name="extents">
+      <param type="string" name="text_string" />
+    </function>
+    <function returnType="int" name="measure">
+      <param type="string" name="text_string" />
+    </function>
+    <function returnType="int" name="height">
+      <param type="string" name="text_string" />
+    </function>
+    <function returnType="int" name="width">
+      <param type="string" name="text_string" />
+    </function>
+  </class>
+  <class name="GdkGC">
+    <function returnType="void" name="set_dashes">
+      <param type="int" name="offset" />
+      <param type="array" name="dash_list" />
+    </function>
+  </class>
+  <class name="GdkPixmap">
+    <function returnType="void" name="new_gc" />
+    <function returnType="void" name="property_get" />
+    <function returnType="void" name="property_change" />
+    <function returnType="void" name="property_delete" />
+  </class>
+  <class name="GdkWindow">
+    <function returnType="void" name="raise" />
+    <function returnType="void" name="lower" />
+    <function returnType="array" name="get_pointer" />
+    <function returnType="void" name="set_cursor">
+      <param optional="true" type="object" name="cursor" />
+    </function>
+    <function returnType="void" name="new_gc" />
+    <function returnType="void" name="property_get" />
+    <function returnType="void" name="property_change" />
+    <function returnType="void" name="property_delete" />
+    <function returnType="void" name="set_icon">
+      <param type="object" name="window" />
+      <param type="object" name="pixmap" />
+      <param type="object" name="mask" />
+    </function>
+  </class>
+  <class name="gdk">
+    <function returnType="object" static="true" name="atom_intern">
+      <param type="string" name="atom_name" />
+      <param optional="true" type="int" name="only_if_exists" />
+    </function>
+    <function returnType="void" static="true" name="beep" />
+    <function returnType="object" static="true" name="colormap_new">
+      <param type="object" name="visual" />
+      <param type="bool" name="allocate" />
+    </function>
+    <function returnType="object" static="true" name="colormap_get_system" />
+    <function returnType="int" static="true" name="colormap_get_system_size" />
+    <function returnType="object" static="true" name="color_parse">
+      <param type="string" name="color_spec" />
+    </function>
+    <function returnType="object" static="true" name="cursor_new">
+      <param type="object" name="cursor_type" />
+    </function>
+    <function returnType="object" static="true" name="cursor_new_from_pixmap">
+      <param type="object" name="source" />
+      <param type="object" name="mask" />
+      <param type="object" name="fg" />
+      <param type="object" name="bg" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" static="true" name="drag_status">
+      <param type="object" name="context" />
+      <param type="object" name="action" />
+      <param type="int" name="time" />
+    </function>
+    <function returnType="void" static="true" name="draw_arc">
+      <param type="object" name="drawable" />
+      <param type="object" name="gc" />
+      <param type="int" name="filled" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+      <param type="int" name="angle1" />
+      <param type="int" name="angle2" />
+    </function>
+    <function returnType="void" static="true" name="draw_gray_image">
+      <param type="object" name="drawable" />
+      <param type="object" name="gc" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+      <param type="object" name="dith" />
+      <param type="string" name="buf" />
+      <param type="int" name="rowstride" />
+    </function>
+    <function returnType="void" static="true" name="draw_line">
+      <param type="object" name="drawable" />
+      <param type="object" name="gc" />
+      <param type="int" name="x1" />
+      <param type="int" name="y1" />
+      <param type="int" name="x2" />
+      <param type="int" name="y2" />
+    </function>
+    <function returnType="void" static="true" name="draw_pixmap">
+      <param type="object" name="drawable" />
+      <param type="object" name="gc" />
+      <param type="object" name="src" />
+      <param type="int" name="xsrc" />
+      <param type="int" name="ysrc" />
+      <param type="int" name="xdest" />
+      <param type="int" name="ydest" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="draw_point">
+      <param type="object" name="drawable" />
+      <param type="object" name="gc" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" static="true" name="draw_rectangle">
+      <param type="object" name="drawable" />
+      <param type="object" name="gc" />
+      <param type="int" name="filled" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" static="true" name="draw_rgb_32_image">
+      <param type="object" name="drawable" />
+      <param type="object" name="gc" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+      <param type="object" name="dith" />
+      <param type="string" name="buf" />
+      <param type="int" name="rowstride" />
+    </function>
+    <function returnType="void" static="true" name="draw_rgb_image">
+      <param type="object" name="drawable" />
+      <param type="object" name="gc" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+      <param type="object" name="dith" />
+      <param type="string" name="rgb_buf" />
+      <param type="int" name="rowstride" />
+    </function>
+    <function returnType="void" static="true" name="draw_rgb_image_dithalign">
+      <param type="object" name="drawable" />
+      <param type="object" name="gc" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+      <param type="object" name="dith" />
+      <param type="string" name="rgb_buf" />
+      <param type="int" name="rowstride" />
+      <param type="int" name="xdith" />
+      <param type="int" name="ydith" />
+    </function>
+    <function returnType="void" static="true" name="draw_string">
+      <param type="object" name="drawable" />
+      <param type="object" name="font" />
+      <param type="object" name="gc" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="string" name="string" />
+    </function>
+    <function returnType="void" static="true" name="draw_text">
+      <param type="object" name="drawable" />
+      <param type="object" name="font" />
+      <param type="object" name="gc" />
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+      <param type="string" name="text" />
+      <param type="int" name="text_length" />
+    </function>
+    <function returnType="void" static="true" name="flush" />
+    <function returnType="object" static="true" name="font_load">
+      <param type="string" name="font_name" />
+    </function>
+    <function returnType="object" static="true" name="fontset_load">
+      <param type="string" name="fontset_name" />
+    </function>
+    <function returnType="string" static="true" name="get_display" />
+    <function returnType="void" static="true" name="input_remove">
+      <param type="int" name="tag" />
+    </function>
+    <function returnType="object" static="true" name="keyboard_grab">
+      <param optional="vararg" type="object" name="args" />
+    </function>
+    <function returnType="object" static="true" name="keyboard_ungrab">
+      <param optional="vararg" type="object" name="args" />
+    </function>
+    <function returnType="object" static="true" name="pointer_grab">
+      <param optional="vararg" type="object" name="args" />
+    </function>
+    <function returnType="object" static="true" name="pointer_ungrab">
+      <param optional="vararg" type="object" name="args" />
+    </function>
+    <function returnType="mixed" static="true" name="pixmap_colormap_create_from_xpm">
+      <param type="mixed" name="arg" />
+    </function>
+    <function returnType="mixed" static="true" name="pixmap_colormap_create_from_xpm_d">
+      <param type="mixed" name="arg" />
+    </function>
+    <function returnType="array" static="true" name="pixmap_create_from_xpm">
+      <param type="object" name="window" />
+      <param type="object" name="transparent_color" />
+      <param type="string" name="filename" />
+    </function>
+    <function returnType="array" static="true" name="pixmap_create_from_xpm_d">
+      <param type="object" name="window" />
+      <param type="object" name="transparent_color" />
+      <param type="array" name="data" />
+    </function>
+    <function returnType="bool" static="true" name="pointer_is_grabbed" />
+    <function returnType="void" static="true" name="rgb_gc_set_background">
+      <param type="object" name="gc" />
+      <param type="int" name="rgb" />
+    </function>
+    <function returnType="void" static="true" name="rgb_gc_set_foreground">
+      <param type="object" name="gc" />
+      <param type="int" name="rgb" />
+    </function>
+    <function returnType="object" static="true" name="rgb_get_cmap" />
+    <function returnType="object" static="true" name="rgb_get_visual" />
+    <function returnType="int" static="true" name="rgb_xpixel_from_rgb">
+      <param type="int" name="rgb" />
+    </function>
+    <function returnType="int" static="true" name="screen_height" />
+    <function returnType="int" static="true" name="screen_height_mm" />
+    <function returnType="int" static="true" name="screen_width" />
+    <function returnType="int" static="true" name="screen_width_mm" />
+    <function returnType="void" static="true" name="threads_enter" />
+    <function returnType="void" static="true" name="threads_leave" />
+    <function returnType="object" static="true" name="visual_get_best" />
+    <function returnType="object" static="true" name="visual_get_best_with_both">
+      <param type="int" name="depth" />
+      <param type="object" name="visual_type" />
+    </function>
+    <function returnType="object" static="true" name="visual_get_best_with_depth">
+      <param type="int" name="depth" />
+    </function>
+    <function returnType="object" static="true" name="visual_get_best_with_type">
+      <param type="object" name="visual_type" />
+    </function>
+    <function returnType="object" static="true" name="visual_get_system" />
+  </class>
+  <class name="GetSheet">
+    <function name="GetSheet">
+      <param type="int" name="rows" />
+      <param type="int" name="cols" />
+      <param type="string" name="title" />
+    </function>
+  </class>
+  <class name="GtkSheet">
+    <function name="add_column">
+      <param type="int" name="position" />
+    </function>
+    <function name="add_row">
+      <param type="int" name="position" />
+    </function>
+    <function returnType="void" name="attach">
+      <param type="object" name="widget" />
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+      <param type="float" name="offset" />
+      <param type="float" name="???" />
+    </function>
+    <function returnType="void" name="button_attach">
+      <param type="object" name="widget" />
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+      <param type="float" name="offset" />
+      <param type="float" name="???" />
+    </function>
+    <function returnType="void" name="cell_clear">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+    </function>
+    <function name="cell_delete">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+    </function>
+    <function returnType="int" name="cell_get_state">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+    </function>
+    <function returnType="string" name="cell_get_text">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+    </function>
+    <function name="change_entry">
+      <param type="int" name="???" />
+    </function>
+    <function name="columns_labels_set_visibility">
+      <param type="bool" name="b" />
+    </function>
+    <function name="columns_set_sensitivity">
+      <param type="bool" name="b" />
+    </function>
+    <function name="column_button_add_label">
+      <param type="int" name="column" />
+      <param type="string" name="title" />
+    </function>
+    <function name="column_button_justify">
+      <param type="int" name="row" />
+      <param type="mixed" name="style" />
+    </function>
+    <function name="column_label_set_visibility">
+      <param type="int" name="column" />
+      <param type="bool" name="visibility" />
+    </function>
+    <function name="column_set_justification">
+      <param type="int" name="column" />
+      <param type="mixed" name="style" />
+    </function>
+    <function name="column_set_sensitivity">
+      <param type="int" name="column" />
+      <param type="bool" name="sensitivity" />
+    </function>
+    <function name="column_set_visibility">
+      <param type="int" name="column" />
+      <param type="bool" name="visibility" />
+    </function>
+    <function name="construct">
+      <param type="int" name="???" />
+    </function>
+    <function name="construct_browser">
+      <param type="int" name="???" />
+      <param type="int" name="???" />
+      <param type="string" name="???" />
+    </function>
+    <function name="construct_with_custom_entry">
+      <param type="int" name="???" />
+      <param type="int" name="???" />
+      <param type="string" name="???" />
+      <param type="int" name="???" />
+    </function>
+    <function name="delete_columns">
+      <param type="int" name="column_begin" />
+      <param type="int" name="column_amount" />
+    </function>
+    <function name="delete_rows">
+      <param type="int" name="row_begin" />
+      <param type="int" name="row_amount" />
+    </function>
+    <function name="freeze" />
+    <function returnType="array" name="get_active_cell" />
+    <function returnType="int" name="get_columns_count" />
+    <function returnType="object" name="get_entry" />
+    <function returnType="object" name="get_entry_widget" />
+    <function returnType="int" name="get_rows_count" />
+    <function returnType="int" name="get_state" />
+    <function returnType="bool" name="grid_visible" />
+    <function returnType="void" name="hide_column_titles" />
+    <function returnType="void" name="hide_row_titles" />
+    <function name="insert_columns">
+      <param type="int" name="column_begin" />
+      <param type="int" name="column_amount" />
+    </function>
+    <function name="insert_rows">
+      <param type="int" name="row_begin" />
+      <param type="int" name="row_amount" />
+    </function>
+    <function name="moveto">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+      <param type="float" name="???" />
+      <param type="float" name="???" />
+    </function>
+    <function name="move_child">
+      <param type="object" name="widget" />
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+    </function>
+    <function name="remove_link">
+      <param type="int" name="???" />
+    </function>
+    <function name="rows_labels_set_visibility">
+      <param type="bool" name="visibility" />
+    </function>
+    <function name="rows_set_sensitivity">
+      <param type="bool" name="sensitivity" />
+    </function>
+    <function name="row_button_add_label">
+      <param type="int" name="row" />
+      <param type="string" name="title" />
+    </function>
+    <function name="row_button_justify">
+      <param type="int" name="row" />
+      <param type="mixed" name="style" />
+    </function>
+    <function name="row_label_set_visibility">
+      <param type="int" name="row" />
+      <param type="bool" name="visibility" />
+    </function>
+    <function name="row_set_sensitivity">
+      <param type="int" name="row" />
+      <param type="bool" name="sensitivity" />
+    </function>
+    <function name="row_set_visibility">
+      <param type="int" name="row" />
+      <param type="bool" name="visibility" />
+    </function>
+    <function name="select_column">
+      <param type="int" name="column" />
+    </function>
+    <function name="select_row">
+      <param type="int" name="row" />
+    </function>
+    <function returnType="bool" name="set_active_cell">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+    </function>
+    <function name="set_background">
+      <param type="object" name="bg_color" />
+    </function>
+    <function name="set_cell">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+      <param type="mixed" name="style" />
+      <param type="string" name="text" />
+    </function>
+    <function name="set_cell_text">
+      <param type="int" name="row" />
+      <param type="int" name="column" />
+      <param type="string" name="text" />
+    </function>
+    <function name="set_column_title">
+      <param type="int" name="column" />
+      <param type="string" name="text" />
+    </function>
+    <function name="set_column_titles_height">
+      <param type="int" name="height" />
+    </function>
+    <function name="set_column_width">
+      <param type="int" name="column" />
+      <param type="int" name="width" />
+    </function>
+    <function name="set_grid">
+      <param type="object" name="color" />
+    </function>
+    <function name="set_hadjustment">
+      <param type="object" name="???" />
+    </function>
+    <function name="set_row_height">
+      <param type="int" name="row" />
+      <param type="int" name="height" />
+    </function>
+    <function name="set_row_title">
+      <param type="int" name="row" />
+      <param type="string" name="text" />
+    </function>
+    <function name="set_row_titles_width">
+      <param type="int" name="width" />
+    </function>
+    <function name="set_selection_mode">
+      <param type="int" name="mode" />
+    </function>
+    <function name="set_title">
+      <param type="string" name="text" />
+    </function>
+    <function name="set_vadjustment">
+      <param type="object" name="???" />
+    </function>
+    <function name="show_column_titles" />
+    <function name="show_grid">
+      <param type="bool" name="visibility" />
+    </function>
+    <function name="show_row_titles" />
+    <function name="thaw" />
+    <function name="unclip_range">
+      <param type="int" name="???" />
+    </function>
+    <function name="unselect_range" />
+  </class>
+  <class name="GladeXML">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GladeXML">
+      <param type="string" name="fname" />
+      <param optional="true" type="string" name="root" />
+      <param optional="true" type="string" name="domain" />
+    </function>
+    <function returnType="object" name="get_widget">
+      <param type="string" name="name" />
+    </function>
+    <function returnType="object" name="get_widget_by_long_name">
+      <param type="string" name="path" />
+    </function>
+    <function returnType="void" name="signal_connect">
+      <param type="string" name="handler" />
+      <param type="mixed" name="callback" />
+      <param optional="true" type="mixed" name="user_param" />
+    </function>
+    <function returnType="void" name="signal_connect_object">
+      <param type="string" name="handler" />
+      <param type="mixed" name="callback" />
+      <param optional="true" type="mixed" name="user_param" />
+    </function>
+    <function returnType="void" name="signal_autoconnect">
+      <param optional="true" type="array" name="handlers" />
+    </function>
+    <function returnType="void" name="signal_autoconnect_object">
+      <param optional="true" type="array" name="handlers" />
+    </function>
+    <function returnType="string" name="relative_file">
+      <param type="string" name="filename" />
+    </function>
+  </class>
+  <class name="GtkScintilla">
+    <function name="GtkScintilla" />
+    <function returnType="int" name="find_text">
+      <param type="int" name="FLAGS" />
+      <param type="string" name="search" />
+      <param type="int" name="start" />
+      <param type="int" name="end" />
+    </function>
+    <function name="add_text">
+      <param type="string" name="text" />
+    </function>
+    <function returnType="void" name="insert_text">
+      <param type="int" name="pos" />
+      <param type="string" name="text" />
+    </function>
+    <function returnType="void" name="clear_all" />
+    <function returnType="void" name="clear_document_style" />
+    <function returnType="int" name="get_length" />
+    <function returnType="int" name="get_current_pos" />
+    <function returnType="int" name="get_char_at">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="int" name="get_anchor" />
+    <function returnType="int" name="get_style_at">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="void" name="redo" />
+    <function returnType="void" name="set_undo_collection">
+      <param type="int" name="collect_undo" />
+    </function>
+    <function returnType="void" name="select_all" />
+    <function returnType="void" name="set_save_point" />
+    <function returnType="int" name="marker_line_from_handle">
+      <param type="int" name="handle" />
+    </function>
+    <function returnType="void" name="marker_delete_handle">
+      <param type="int" name="handle" />
+    </function>
+    <function returnType="int" name="get_undo_collection" />
+    <function returnType="int" name="get_view_ws" />
+    <function returnType="void" name="set_view_ws">
+      <param type="int" name="view_ws" />
+    </function>
+    <function returnType="int" name="position_from_point">
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" name="goto_line">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="void" name="goto_pos">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="void" name="set_anchor">
+      <param type="int" name="pos_anchor" />
+    </function>
+    <function name="arrayget_cur_line" />
+    <function returnType="int" name="get_end_styled" />
+    <function returnType="void" name="convert_eols">
+      <param type="int" name="eol_mode" />
+    </function>
+    <function returnType="int" name="get_eol_mode" />
+    <function returnType="void" name="set_eol_mode">
+      <param type="int" name="eol_mode" />
+    </function>
+    <function returnType="void" name="start_styling">
+      <param type="int" name="pos" />
+      <param type="int" name="mask" />
+    </function>
+    <function returnType="void" name="set_styling">
+      <param type="int" name="length" />
+      <param type="int" name="style" />
+    </function>
+    <function returnType="int" name="get_buffered_draw" />
+    <function returnType="void" name="set_buffered_draw">
+      <param type="int" name="buffered" />
+    </function>
+    <function returnType="void" name="set_tab_width">
+      <param type="int" name="tab_width" />
+    </function>
+    <function returnType="int" name="get_tab_width" />
+    <function returnType="void" name="set_code_page">
+      <param type="int" name="code_page" />
+    </function>
+    <function returnType="void" name="set_use_palette">
+      <param type="int" name="use_palette" />
+    </function>
+    <function returnType="void" name="marker_define">
+      <param type="int" name="marker_number" />
+      <param type="int" name="marker_symbol" />
+    </function>
+    <function returnType="void" name="marker_set_fore">
+      <param type="int" name="marker_number" />
+      <param type="int" name="fore" />
+    </function>
+    <function returnType="void" name="marker_set_back">
+      <param type="int" name="marker_number" />
+      <param type="int" name="back" />
+    </function>
+    <function returnType="void" name="marker_add">
+      <param type="int" name="line" />
+      <param type="int" name="marker_number" />
+    </function>
+    <function returnType="void" name="marker_delete">
+      <param type="int" name="line" />
+      <param type="int" name="marker_number" />
+    </function>
+    <function returnType="void" name="marker_delete_all">
+      <param type="int" name="marker_number" />
+    </function>
+    <function returnType="int" name="marker_get">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="int" name="marker_next">
+      <param type="int" name="line_start" />
+      <param type="int" name="marker_mask" />
+    </function>
+    <function returnType="int" name="marker_previous">
+      <param type="int" name="line_start" />
+      <param type="int" name="marker_mask" />
+    </function>
+    <function returnType="void" name="set_margin_type_n">
+      <param type="int" name="margin" />
+      <param type="int" name="margin_type" />
+    </function>
+    <function returnType="int" name="get_margin_type_n">
+      <param type="int" name="margin" />
+    </function>
+    <function returnType="void" name="set_margin_width_n">
+      <param type="int" name="margin" />
+      <param type="int" name="pixel_width" />
+    </function>
+    <function returnType="int" name="get_margin_width_n">
+      <param type="int" name="margin" />
+    </function>
+    <function returnType="void" name="set_margin_mask_n">
+      <param type="int" name="margin" />
+      <param type="int" name="mask" />
+    </function>
+    <function returnType="int" name="get_margin_mask_n">
+      <param type="int" name="margin" />
+    </function>
+    <function returnType="void" name="set_margin_sensitive_n">
+      <param type="int" name="margin" />
+      <param type="int" name="sensitive" />
+    </function>
+    <function returnType="int" name="get_margin_sensitive_n">
+      <param type="int" name="margin" />
+    </function>
+    <function returnType="void" name="style_clear_all" />
+    <function returnType="void" name="style_set_fore">
+      <param type="int" name="style" />
+      <param type="int" name="fore" />
+    </function>
+    <function returnType="void" name="style_set_back">
+      <param type="int" name="style" />
+      <param type="int" name="back" />
+    </function>
+    <function returnType="void" name="style_set_bold">
+      <param type="int" name="style" />
+      <param type="int" name="bold" />
+    </function>
+    <function returnType="void" name="style_set_italic">
+      <param type="int" name="style" />
+      <param type="int" name="italic" />
+    </function>
+    <function returnType="void" name="style_set_size">
+      <param type="int" name="style" />
+      <param type="int" name="size_points" />
+    </function>
+    <function returnType="void" name="style_set_font">
+      <param type="int" name="style" />
+      <param type="string" name="font_name" />
+    </function>
+    <function returnType="void" name="style_set_eol_filled">
+      <param type="int" name="style" />
+      <param type="int" name="filled" />
+    </function>
+    <function returnType="void" name="style_reset_default" />
+    <function returnType="void" name="style_set_underline">
+      <param type="int" name="style" />
+      <param type="int" name="underline" />
+    </function>
+    <function returnType="void" name="style_set_case">
+      <param type="int" name="style" />
+      <param type="int" name="case_force" />
+    </function>
+    <function returnType="void" name="style_set_character_set">
+      <param type="int" name="style" />
+      <param type="int" name="character_set" />
+    </function>
+    <function returnType="void" name="set_sel_fore">
+      <param type="int" name="use_setting" />
+      <param type="int" name="fore" />
+    </function>
+    <function returnType="void" name="set_sel_back">
+      <param type="int" name="use_setting" />
+      <param type="int" name="back" />
+    </function>
+    <function returnType="void" name="set_caret_fore">
+      <param type="int" name="fore" />
+    </function>
+    <function returnType="int" name="get_caret_fore" />
+    <function returnType="void" name="clear_all_cmd_keys" />
+    <function returnType="void" name="set_styling_ex">
+      <param type="int" name="length" />
+      <param type="string" name="styles" />
+    </function>
+    <function returnType="void" name="style_set_visible">
+      <param type="int" name="style" />
+      <param type="int" name="visible" />
+    </function>
+    <function returnType="int" name="get_caret_period" />
+    <function returnType="void" name="set_caret_period">
+      <param type="int" name="period_milliseconds" />
+    </function>
+    <function returnType="void" name="set_word_chars">
+      <param type="string" name="characters" />
+    </function>
+    <function returnType="void" name="begin_undo_action" />
+    <function returnType="void" name="end_undo_action" />
+    <function returnType="void" name="indic_set_style">
+      <param type="int" name="indic" />
+      <param type="int" name="style" />
+    </function>
+    <function returnType="int" name="indic_get_style">
+      <param type="int" name="indic" />
+    </function>
+    <function returnType="void" name="indic_set_fore">
+      <param type="int" name="indic" />
+      <param type="int" name="fore" />
+    </function>
+    <function returnType="int" name="indic_get_fore">
+      <param type="int" name="indic" />
+    </function>
+    <function returnType="void" name="set_style_bits">
+      <param type="int" name="bits" />
+    </function>
+    <function returnType="int" name="get_style_bits" />
+    <function returnType="void" name="set_line_state">
+      <param type="int" name="line" />
+      <param type="int" name="state" />
+    </function>
+    <function returnType="int" name="get_line_state">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="int" name="get_max_line_state" />
+    <function returnType="void" name="set_caret_line_visible">
+      <param type="int" name="show" />
+    </function>
+    <function returnType="int" name="get_caret_line_visible" />
+    <function returnType="int" name="get_caret_line_back" />
+    <function returnType="void" name="set_caret_line_back">
+      <param type="int" name="back" />
+    </function>
+    <function returnType="void" name="autoc_show">
+      <param type="int" name="len_entered" />
+      <param type="string" name="item_list" />
+    </function>
+    <function returnType="void" name="autoc_cancel" />
+    <function returnType="int" name="autoc_active" />
+    <function returnType="int" name="autoc_pos_start" />
+    <function returnType="void" name="autoc_complete" />
+    <function returnType="void" name="autoc_stops">
+      <param type="string" name="character_set" />
+    </function>
+    <function returnType="void" name="autoc_set_separator">
+      <param type="int" name="separator_character" />
+    </function>
+    <function returnType="int" name="autoc_get_separator" />
+    <function returnType="void" name="autoc_select">
+      <param type="string" name="text" />
+    </function>
+    <function returnType="void" name="autoc_set_cancel_at_start">
+      <param type="int" name="cancel" />
+    </function>
+    <function returnType="int" name="autoc_get_cancel_at_start" />
+    <function returnType="void" name="autoc_set_fill_ups">
+      <param type="string" name="character_set" />
+    </function>
+    <function returnType="void" name="autoc_set_choose_single">
+      <param type="int" name="choose_single" />
+    </function>
+    <function returnType="int" name="autoc_get_choose_single" />
+    <function returnType="void" name="autoc_set_ignore_case">
+      <param type="int" name="ignore_case" />
+    </function>
+    <function returnType="int" name="autoc_get_ignore_case" />
+    <function returnType="void" name="user_list_show">
+      <param type="int" name="list_type" />
+      <param type="string" name="item_list" />
+    </function>
+    <function returnType="void" name="autoc_set_auto_hide">
+      <param type="int" name="auto_hide" />
+    </function>
+    <function returnType="int" name="autoc_get_auto_hide" />
+    <function returnType="void" name="set_indent">
+      <param type="int" name="indent_size" />
+    </function>
+    <function returnType="int" name="get_indent" />
+    <function returnType="void" name="set_use_tabs">
+      <param type="int" name="use_tabs" />
+    </function>
+    <function returnType="int" name="get_use_tabs" />
+    <function returnType="void" name="set_line_indentation">
+      <param type="int" name="line" />
+      <param type="int" name="indent_size" />
+    </function>
+    <function returnType="int" name="get_line_indentation">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="int" name="get_line_indent_position">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="int" name="get_column">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="void" name="set_h_scroll_bar">
+      <param type="int" name="show" />
+    </function>
+    <function returnType="int" name="get_h_scroll_bar" />
+    <function returnType="void" name="set_indentation_guides">
+      <param type="int" name="show" />
+    </function>
+    <function returnType="int" name="get_indentation_guides" />
+    <function returnType="void" name="set_highlight_guide">
+      <param type="int" name="column" />
+    </function>
+    <function returnType="int" name="get_highlight_guide" />
+    <function returnType="int" name="get_line_end_position">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="int" name="get_code_page" />
+    <function returnType="int" name="get_use_palette" />
+    <function returnType="int" name="get_read_only" />
+    <function returnType="void" name="set_current_pos">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="void" name="set_selection_start">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="int" name="get_selection_start" />
+    <function returnType="void" name="set_selection_end">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="int" name="get_selection_end" />
+    <function returnType="void" name="set_print_magnification">
+      <param type="int" name="magnification" />
+    </function>
+    <function returnType="int" name="get_print_magnification" />
+    <function returnType="void" name="set_print_colour_mode">
+      <param type="int" name="mode" />
+    </function>
+    <function returnType="int" name="get_print_colour_mode" />
+    <function returnType="int" name="get_first_visible_line" />
+    <function returnType="string" name="get_line">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="int" name="get_line_count" />
+    <function returnType="void" name="set_margin_left">
+      <param type="int" name="pixel_width" />
+    </function>
+    <function returnType="int" name="get_margin_left" />
+    <function returnType="void" name="set_margin_right">
+      <param type="int" name="pixel_width" />
+    </function>
+    <function returnType="int" name="get_margin_right" />
+    <function returnType="int" name="get_modify" />
+    <function returnType="void" name="set_sel">
+      <param type="int" name="start" />
+      <param type="int" name="end" />
+    </function>
+    <function returnType="string" name="get_sel_text" />
+    <function returnType="void" name="hide_selection">
+      <param type="int" name="normal" />
+    </function>
+    <function returnType="int" name="point_x_from_position">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="int" name="point_y_from_position">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="int" name="line_from_position">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="int" name="position_from_line">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="void" name="line_scroll">
+      <param type="int" name="columns" />
+      <param type="int" name="lines" />
+    </function>
+    <function returnType="void" name="scroll_caret" />
+    <function returnType="void" name="replace_sel">
+      <param type="string" name="text" />
+    </function>
+    <function returnType="void" name="set_read_only">
+      <param type="int" name="read_only" />
+    </function>
+    <function returnType="void" name="null" />
+    <function returnType="int" name="can_redo" />
+    <function returnType="int" name="can_paste" />
+    <function returnType="int" name="can_undo" />
+    <function returnType="void" name="empty_undo_buffer" />
+    <function returnType="void" name="undo" />
+    <function returnType="void" name="cut" />
+    <function returnType="void" name="copy" />
+    <function returnType="void" name="paste" />
+    <function returnType="void" name="clear" />
+    <function returnType="void" name="set_text">
+      <param type="string" name="text" />
+    </function>
+    <function name="stringget_text" />
+    <function returnType="int" name="get_text_length" />
+    <function returnType="int" name="get_direct_function" />
+    <function returnType="int" name="get_direct_pointer" />
+    <function returnType="void" name="set_overtype">
+      <param type="int" name="overtype" />
+    </function>
+    <function returnType="int" name="get_overtype" />
+    <function returnType="void" name="set_caret_width">
+      <param type="int" name="pixel_width" />
+    </function>
+    <function returnType="int" name="get_caret_width" />
+    <function returnType="void" name="set_target_start">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="int" name="get_target_start" />
+    <function returnType="void" name="set_target_end">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="int" name="get_target_end" />
+    <function returnType="mixed" name="replace_target">
+      <param type="mixed" name="arg" />
+    </function>
+    <function returnType="mixed" name="replace_target_re">
+      <param type="mixed" name="arg" />
+    </function>
+    <function returnType="mixed" name="search_in_target">
+      <param type="mixed" name="arg" />
+    </function>
+    <function returnType="void" name="set_search_flags">
+      <param type="int" name="flags" />
+    </function>
+    <function returnType="int" name="get_search_flags" />
+    <function returnType="void" name="call_tip_show">
+      <param type="int" name="pos" />
+      <param type="string" name="definition" />
+    </function>
+    <function returnType="void" name="call_tip_cancel" />
+    <function returnType="int" name="call_tip_active" />
+    <function returnType="int" name="call_tip_pos_start" />
+    <function returnType="void" name="call_tip_set_hlt">
+      <param type="int" name="start" />
+      <param type="int" name="end" />
+    </function>
+    <function returnType="void" name="call_tip_set_back">
+      <param type="int" name="back" />
+    </function>
+    <function returnType="int" name="visible_from_doc_line">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="int" name="doc_line_from_visible">
+      <param type="int" name="line_display" />
+    </function>
+    <function returnType="void" name="set_fold_level">
+      <param type="int" name="line" />
+      <param type="int" name="level" />
+    </function>
+    <function returnType="int" name="get_fold_level">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="int" name="get_last_child">
+      <param type="int" name="line" />
+      <param type="int" name="level" />
+    </function>
+    <function returnType="int" name="get_fold_parent">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="void" name="show_lines">
+      <param type="int" name="line_start" />
+      <param type="int" name="line_end" />
+    </function>
+    <function returnType="void" name="hide_lines">
+      <param type="int" name="line_start" />
+      <param type="int" name="line_end" />
+    </function>
+    <function returnType="int" name="get_line_visible">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="void" name="set_fold_expanded">
+      <param type="int" name="line" />
+      <param type="int" name="expanded" />
+    </function>
+    <function returnType="int" name="get_fold_expanded">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="void" name="toggle_fold">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="void" name="ensure_visible">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="void" name="set_fold_flags">
+      <param type="int" name="flags" />
+    </function>
+    <function returnType="void" name="set_tab_indents">
+      <param type="int" name="tab_indents" />
+    </function>
+    <function returnType="int" name="get_tab_indents" />
+    <function returnType="void" name="set_backspace_unindents">
+      <param type="int" name="bs_unindents" />
+    </function>
+    <function returnType="int" name="get_backspace_unindents" />
+    <function returnType="void" name="line_down" />
+    <function returnType="void" name="line_down_extend" />
+    <function returnType="void" name="line_up" />
+    <function returnType="void" name="line_up_extend" />
+    <function returnType="void" name="char_left" />
+    <function returnType="void" name="char_left_extend" />
+    <function returnType="void" name="char_right" />
+    <function returnType="void" name="char_right_extend" />
+    <function returnType="void" name="word_left" />
+    <function returnType="void" name="word_left_extend" />
+    <function returnType="void" name="word_right" />
+    <function returnType="void" name="word_right_extend" />
+    <function returnType="void" name="home" />
+    <function returnType="void" name="home_extend" />
+    <function returnType="void" name="line_end" />
+    <function returnType="void" name="line_end_extend" />
+    <function returnType="void" name="document_start" />
+    <function returnType="void" name="document_start_extend" />
+    <function returnType="void" name="document_end" />
+    <function returnType="void" name="document_end_extend" />
+    <function returnType="void" name="page_up" />
+    <function returnType="void" name="page_up_extend" />
+    <function returnType="void" name="page_down" />
+    <function returnType="void" name="page_down_extend" />
+    <function returnType="void" name="edit_toggle_overtype" />
+    <function returnType="void" name="cancel" />
+    <function returnType="void" name="delete_back" />
+    <function returnType="void" name="tab" />
+    <function returnType="void" name="back_tab" />
+    <function returnType="void" name="new_line" />
+    <function returnType="void" name="form_feed" />
+    <function returnType="void" name="v_c_home" />
+    <function returnType="void" name="v_c_home_extend" />
+    <function returnType="void" name="zoom_in" />
+    <function returnType="void" name="zoom_out" />
+    <function returnType="void" name="del_word_left" />
+    <function returnType="void" name="del_word_right" />
+    <function returnType="void" name="line_cut" />
+    <function returnType="void" name="line_delete" />
+    <function returnType="void" name="line_transpose" />
+    <function returnType="void" name="lower_case" />
+    <function returnType="void" name="upper_case" />
+    <function returnType="void" name="line_scroll_down" />
+    <function returnType="void" name="line_scroll_up" />
+    <function returnType="void" name="move_caret_inside_view" />
+    <function returnType="int" name="line_length">
+      <param type="int" name="line" />
+    </function>
+    <function returnType="int" name="brace_match">
+      <param type="int" name="position" />
+    </function>
+    <function returnType="void" name="brace_highlight">
+      <param type="int" name="pos1" />
+      <param type="int" name="pos2" />
+    </function>
+    <function returnType="void" name="brace_bad_light">
+      <param type="int" name="pos" />
+    </function>
+    <function returnType="int" name="get_view_eol" />
+    <function returnType="void" name="set_view_eol">
+      <param type="int" name="visible" />
+    </function>
+    <function returnType="int" name="get_doc_pointer" />
+    <function returnType="void" name="set_doc_pointer">
+      <param type="int" name="pointer" />
+    </function>
+    <function returnType="void" name="set_mod_event_mask">
+      <param type="int" name="mask" />
+    </function>
+    <function returnType="int" name="get_edge_column" />
+    <function returnType="void" name="set_edge_column">
+      <param type="int" name="column" />
+    </function>
+    <function returnType="int" name="get_edge_mode" />
+    <function returnType="void" name="set_edge_mode">
+      <param type="int" name="mode" />
+    </function>
+    <function returnType="int" name="get_edge_colour" />
+    <function returnType="void" name="set_edge_colour">
+      <param type="int" name="edge_colour" />
+    </function>
+    <function returnType="void" name="search_anchor" />
+    <function returnType="int" name="search_next">
+      <param type="int" name="flags" />
+      <param type="string" name="text" />
+    </function>
+    <function returnType="int" name="search_prev">
+      <param type="int" name="flags" />
+      <param type="string" name="text" />
+    </function>
+    <function returnType="void" name="set_caret_policy">
+      <param type="int" name="caret_policy" />
+      <param type="int" name="caret_slop" />
+    </function>
+    <function returnType="int" name="lines_on_screen" />
+    <function returnType="void" name="use_pop_up">
+      <param type="int" name="allow_pop_up" />
+    </function>
+    <function returnType="int" name="selection_is_rectangle" />
+    <function returnType="void" name="set_zoom">
+      <param type="int" name="zoom" />
+    </function>
+    <function returnType="int" name="get_zoom" />
+    <function returnType="int" name="create_document" />
+    <function returnType="void" name="add_ref_document">
+      <param type="int" name="doc" />
+    </function>
+    <function returnType="void" name="release_document">
+      <param type="int" name="doc" />
+    </function>
+    <function returnType="int" name="get_mod_event_mask" />
+    <function returnType="void" name="set_focus">
+      <param type="int" name="focus" />
+    </function>
+    <function returnType="int" name="get_focus" />
+    <function returnType="void" name="set_status">
+      <param type="int" name="status_code" />
+    </function>
+    <function returnType="int" name="get_status" />
+    <function returnType="void" name="set_mouse_down_captures">
+      <param type="int" name="captures" />
+    </function>
+    <function returnType="int" name="get_mouse_down_captures" />
+    <function returnType="void" name="set_cursor">
+      <param type="int" name="cursor_type" />
+    </function>
+    <function returnType="int" name="get_cursor" />
+    <function returnType="void" name="word_part_left" />
+    <function returnType="void" name="word_part_left_extend" />
+    <function returnType="void" name="word_part_right" />
+    <function returnType="void" name="word_part_right_extend" />
+    <function returnType="void" name="set_visible_policy">
+      <param type="int" name="visible_policy" />
+      <param type="int" name="visible_slop" />
+    </function>
+    <function returnType="void" name="del_line_left" />
+    <function returnType="void" name="del_line_right" />
+    <function returnType="void" name="grab_focus" />
+    <function returnType="void" name="start_record" />
+    <function returnType="void" name="stop_record" />
+    <function returnType="void" name="set_lexer">
+      <param type="int" name="lexer" />
+    </function>
+    <function returnType="int" name="get_lexer" />
+    <function returnType="void" name="colourise">
+      <param type="int" name="start" />
+      <param type="int" name="end" />
+    </function>
+    <function returnType="void" name="set_property">
+      <param type="string" name="key" />
+      <param type="string" name="value" />
+    </function>
+    <function returnType="void" name="set_keywords">
+      <param type="int" name="keyword_set" />
+      <param type="string" name="key_words" />
+    </function>
+    <function returnType="void" name="set_lexer_language">
+      <param type="string" name="language" />
+    </function>
+  </class>
+  <class name="GtkSQPane">
+    <function returnType="int" static="true" name="get_type" />
+    <function name="GtkSQPane" />
+    <function returnType="void" name="set_position">
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" name="set_handle_size">
+      <param type="int" name="size" />
+    </function>
+    <function returnType="void" name="compute_position">
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+  </class>
+</module>

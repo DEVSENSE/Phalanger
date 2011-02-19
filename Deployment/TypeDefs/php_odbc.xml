@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="mixed" name="odbc_autocommit" description="Toggle autocommit behaviour.">
+    <param type="resource" name="connection_id" />
+    <param optional="true" type="bool" name="OnOff" />
+  </function>
+  <function returnType="bool" name="odbc_binmode" description="Handling of binary column data.">
+    <param type="resource" name="result_id" />
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="void" name="odbc_close_all" description="Close all ODBC connections." />
+  <function returnType="void" name="odbc_close" description="Close an ODBC connection.">
+    <param type="resource" name="connection_id" />
+  </function>
+  <function returnType="resource" name="odbc_columnprivileges" description="Returns a result identifier that can be used to fetch a list of columns and associated privileges.">
+    <param type="resource" name="connection_id" />
+    <param type="string" name="qualifier" />
+    <param type="string" name="owner" />
+    <param type="string" name="table_name" />
+    <param type="string" name="column_name" />
+  </function>
+  <function returnType="resource" name="odbc_columns" description="Lists the column names in specified tables.">
+    <param type="resource" name="connection_id" />
+    <param optional="true" type="string" name="qualifier" />
+    <param optional="true" type="string" name="schema" />
+    <param optional="true" type="string" name="table_name" />
+    <param optional="true" type="string" name="column_name" />
+  </function>
+  <function returnType="bool" name="odbc_commit" description="Commit an ODBC transaction.">
+    <param type="resource" name="connection_id" />
+  </function>
+  <function returnType="resource" name="odbc_connect" description="Connect to a datasource.">
+    <param type="string" name="dsn" />
+    <param type="string" name="user" />
+    <param type="string" name="password" />
+    <param optional="true" type="int" name="cursor_type" />
+  </function>
+  <function returnType="string" name="odbc_cursor" description="Get cursorname.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="array" name="odbc_data_source" description="Returns information about a current connection.">
+    <param type="resource" name="connection_id" />
+    <param type="int" name="fetch_type" />
+  </function>
+  <function returnType="resource" name="odbc_do" description="Synonym for odbc_exec().">
+    <param type="resource" name="conn_id" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="string" name="odbc_error" description="Get the last error code.">
+    <param optional="true" type="resource" name="connection_id" />
+  </function>
+  <function returnType="string" name="odbc_errormsg" description="Get the last error message.">
+    <param optional="true" type="resource" name="connection_id" />
+  </function>
+  <function returnType="resource" name="odbc_exec" description="Prepare and execute a SQL statement.">
+    <param type="resource" name="connection_id" />
+    <param type="string" name="query_string" />
+    <param optional="true" type="int" name="flags" />
+  </function>
+  <function returnType="bool" name="odbc_execute" description="Execute a prepared statement.">
+    <param type="resource" name="result_id" />
+    <param optional="true" type="array" name="parameters_array" />
+  </function>
+  <function returnType="array" name="odbc_fetch_array" description="Fetch a result row as an associative array.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="rownumber" />
+  </function>
+  <function returnType="int" name="odbc_fetch_into" description="Fetch one result row into array.">
+    <param type="resource" name="result_id" />
+    <param direction="inout" type="array" name="result_array" />
+    <param optional="true" type="int" name="rownumber" />
+  </function>
+  <function returnType="object" name="odbc_fetch_object" description="Fetch a result row as an object.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="rownumber" />
+  </function>
+  <function returnType="bool" name="odbc_fetch_row" description="Fetch a row.">
+    <param type="resource" name="result_id" />
+    <param optional="true" type="int" name="row_number" />
+  </function>
+  <function returnType="int" name="odbc_field_len" description="Get the length (precision) of a field.">
+    <param type="resource" name="result_id" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="string" name="odbc_field_name" description="Get the columnname.">
+    <param type="resource" name="result_id" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="int" name="odbc_field_num" description="Return column number.">
+    <param type="resource" name="result_id" />
+    <param type="string" name="field_name" />
+  </function>
+  <function returnType="int" name="odbc_field_precision" description="Synonym for odbc_field_len().">
+    <param type="resource" name="result_id" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="int" name="odbc_field_scale" description="Get the scale of a field.">
+    <param type="resource" name="result_id" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="string" name="odbc_field_type" description="Datatype of a field.">
+    <param type="resource" name="result_id" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="resource" name="odbc_foreignkeys" description="Returns a list of foreign keys in the specified table or a list of foreign keys in other tables that refer to the primary key in the specified table.">
+    <param type="resource" name="connection_id" />
+    <param type="string" name="pk_qualifier" />
+    <param type="string" name="pk_owner" />
+    <param type="string" name="pk_table" />
+    <param type="string" name="fk_qualifier" />
+    <param type="string" name="fk_owner" />
+    <param type="string" name="fk_table" />
+  </function>
+  <function returnType="bool" name="odbc_free_result" description="Free resources associated with a result.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="resource" name="odbc_gettypeinfo" description="Returns a result identifier containing information about data types supported by the data source.">
+    <param type="resource" name="connection_id" />
+    <param optional="true" type="int" name="data_type" />
+  </function>
+  <function returnType="bool" name="odbc_longreadlen" description="Handling of LONG columns.">
+    <param type="resource" name="result_id" />
+    <param type="int" name="length" />
+  </function>
+  <function returnType="bool" name="odbc_next_result" description="Checks if multiple results are available.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="int" name="odbc_num_fields" description="Number of columns in a result.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="int" name="odbc_num_rows" description="Number of rows in a result.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="resource" name="odbc_pconnect" description="Open a persistent database connection.">
+    <param type="string" name="dsn" />
+    <param type="string" name="user" />
+    <param type="string" name="password" />
+    <param optional="true" type="int" name="cursor_type" />
+  </function>
+  <function returnType="resource" name="odbc_prepare" description="Prepares a statement for execution.">
+    <param type="resource" name="connection_id" />
+    <param type="string" name="query_string" />
+  </function>
+  <function returnType="resource" name="odbc_primarykeys" description="Returns a result identifier that can be used to fetch the column names that comprise the primary key for a table.">
+    <param type="resource" name="connection_id" />
+    <param type="string" name="qualifier" />
+    <param type="string" name="owner" />
+    <param type="string" name="table" />
+  </function>
+  <function returnType="resource" name="odbc_procedurecolumns" description="Retrieve information about parameters to procedures.">
+    <param type="resource" name="connection_id" />
+    <param optional="true" type="string" name="qualifier" />
+    <param optional="true" type="string" name="owner" />
+    <param optional="true" type="string" name="proc" />
+    <param optional="true" type="string" name="column" />
+  </function>
+  <function returnType="resource" name="odbc_procedures" description="Get the list of procedures stored in a specific data source.">
+    <param type="resource" name="connection_id" />
+    <param optional="true" type="string" name="qualifier" />
+    <param optional="true" type="string" name="owner" />
+    <param optional="true" type="string" name="name" />
+  </function>
+  <function returnType="int" name="odbc_result_all" description="Print result as HTML table.">
+    <param type="resource" name="result_id" />
+    <param optional="true" type="string" name="format" />
+  </function>
+  <function returnType="mixed" name="odbc_result" description="Get result data.">
+    <param type="resource" name="result_id" />
+    <param type="mixed" name="field" />
+  </function>
+  <function returnType="bool" name="odbc_rollback" description="Rollback a transaction.">
+    <param type="resource" name="connection_id" />
+  </function>
+  <function returnType="bool" name="odbc_setoption" description="Adjust ODBC settings.">
+    <param type="resource" name="id" />
+    <param type="int" name="function" />
+    <param type="int" name="option" />
+    <param type="int" name="param" />
+  </function>
+  <function returnType="resource" name="odbc_specialcolumns" description="Returns either the optimal set of columns that uniquely identifies a row in the table or columns that are automatically updated when any value in the row is updated by a transaction.">
+    <param type="resource" name="connection_id" />
+    <param type="int" name="type" />
+    <param type="string" name="qualifier" />
+    <param type="string" name="owner" />
+    <param type="string" name="table" />
+    <param type="int" name="scope" />
+    <param type="int" name="nullable" />
+  </function>
+  <function returnType="resource" name="odbc_statistics" description="Retrieve statistics about a table.">
+    <param type="resource" name="connection_id" />
+    <param type="string" name="qualifier" />
+    <param type="string" name="owner" />
+    <param type="string" name="table_name" />
+    <param type="int" name="unique" />
+    <param type="int" name="accuracy" />
+  </function>
+  <function returnType="resource" name="odbc_tableprivileges" description="Lists tables and the privileges associated with each table.">
+    <param type="resource" name="connection_id" />
+    <param type="string" name="qualifier" />
+    <param type="string" name="owner" />
+    <param type="string" name="name" />
+  </function>
+  <function returnType="resource" name="odbc_tables" description="Get the list of table names stored in a specific data source.">
+    <param type="resource" name="connection_id" />
+    <param optional="true" type="string" name="qualifier" />
+    <param optional="true" type="string" name="owner" />
+    <param optional="true" type="string" name="name" />
+    <param optional="true" type="string" name="types" />
+  </function>
+</module>

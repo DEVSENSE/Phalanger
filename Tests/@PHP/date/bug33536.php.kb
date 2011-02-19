@@ -1,0 +1,9 @@
+[expect php]
+[file]
+<?php
+
+date_default_timezone_set("GMT");
+echo (strtotime("monkey")),"\n";
+print date("Y-m-d", strtotime("monkey")) ."\n";
+print date("Y-m-d", false) ."\n";
+?>

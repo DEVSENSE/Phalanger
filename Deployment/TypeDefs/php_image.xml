@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="array" name="iptcparse" castToFalse="true" description="Parse a binary IPTC http://www.iptc.org/ block into single tags.">
+    <param type="string" name="iptcblock" />
+  </function>
+  <function returnType="array" name="iptcembed" castToFalse="true" description="Embed binary IPTC data into a JPEG image.">
+    <param type="string" name="iptcdata" />
+    <param type="string" name="jpeg_file_name" />
+    <param optional="true" type="int" name="spool" />
+  </function>
+  <function returnType="string" name="image_type_to_mime_type" description="Get Mime-Type for image-type returned by getimagesize, exif_read_data, exif_thumbnail, exif_imagetype.">
+    <param type="int" name="imagetype" />
+  </function>
+  <function returnType="array" name="getimagesize" castToFalse="true" description="Get the size of an image.">
+    <param type="string" name="filename" />
+    <param optional="true" type="array" name="imageinfo" />
+  </function>
+</module>

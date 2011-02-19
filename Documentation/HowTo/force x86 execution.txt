@@ -1,0 +1,14 @@
+/target:exe, /target:winform
+
+You can force WoW64 mode for scripts compiled by phalanger (or any other AnyCPU assemblies) by using corflags.exe tool.
+The tool is a part of .NET Framework SDK.
+
+sample usage:
+
+"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Bin\corflags.exe" /32BIT+ test.exe
+
+
+
+/target:web
+
+Configure your IIS AppPool to Enable 32-bit support (IIS Manager -> Application Pools -> select the pool running your website -> Advanced Settings).

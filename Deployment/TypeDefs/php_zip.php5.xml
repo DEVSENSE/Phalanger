@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="void" name="zip_close" description="Closes the given ZIP file archive.">
+    <param type="resource" name="zip" />
+  </function>
+  <function returnType="bool" name="zip_entry_close" description="Closes the specified directory entry.">
+    <param type="resource" name="zip_entry" />
+  </function>
+  <function returnType="int" name="zip_entry_compressedsize" description="Returns the compressed size of the specified directory entry.">
+    <param type="resource" name="zip_entry" />
+  </function>
+  <function returnType="string" name="zip_entry_compressionmethod" description="Returns the compression method of the directory entry specified by zip_entry.">
+    <param type="resource" name="zip_entry" />
+  </function>
+  <function returnType="int" name="zip_entry_filesize" description="Returns the actual size of the specified directory entry.">
+    <param type="resource" name="zip_entry" />
+  </function>
+  <function returnType="string" name="zip_entry_name" description="Returns the name of the specified directory entry.">
+    <param type="resource" name="zip_entry" />
+  </function>
+  <function returnType="bool" name="zip_entry_open" description="Opens a directory entry in a zip file for reading.">
+    <param type="resource" name="zip" />
+    <param type="resource" name="zip_entry" />
+    <param type="string" name="mode" optional="true" />
+  </function>
+  <function returnType="string" name="zip_entry_read" description="Reads from an open directory entry.">
+    <param type="resource" name="zip_entry" />
+    <param type="int" name="length" optional="true" />
+  </function>
+  <function returnType="mixed" castToFalse="true" name="zip_open" description="Opens a new zip archive for reading.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="mixed" castToFalse="true" name="zip_read" description="Reads the next entry in a zip file archive.">
+    <param type="resource" name="zip" />
+  </function>
+  <class name="ZipArchive" description="A ZIP archive class.">
+    <function returnType="bool" name="addEmptyDir" description="Adds an empty directory in the archive.">
+      <param type="string" name="dirname" />
+    </function>
+    <function returnType="bool" name="addFile" description="Adds a file to a ZIP archive from a given path.">
+      <param type="string" name="filename" />
+      <param type="string" name="localname" optional="true" />
+    </function>
+    <function returnType="bool" name="addFromString" description="Adds a file to a ZIP archive using its contents.">
+      <param type="string" name="localname" />
+      <param type="string" name="contents" />
+    </function>
+    <function returnType="bool" name="close" description="Close opened or created archive and save changes. This method is automatically called at the end of the script.">
+    </function>
+    <function returnType="bool" name="deleteIndex" description="Delete an entry in the archive using its index.">
+      <param type="int" name="index" />
+    </function>
+    <function returnType="bool" name="deleteName" description="Delete an entry in the archive using its name.">
+      <param type="string" name="name" />
+    </function>
+    <function returnType="bool" name="extractTo" description="Extract the complete archive or the given files to the specified destination.">
+      <param type="string" name="destination" />
+      <param type="mixed" name="entries" optional="true" />
+    </function>
+    <function returnType="string" name="getArchiveComment" description="Returns the Zip archive comment.">
+    </function>
+    <function returnType="string" name="getCommentIndex" description="Returns the comment of an entry using the entry index.">
+      <param type="int" name="index" />
+      <param type="int" name="flags" optional="true" />
+    </function>
+    <function returnType="string" name="getCommentName" description="Returns the comment of an entry using the entry name.">
+      <param type="string" name="name" />
+      <param type="int" name="flags" optional="true" />
+    </function>
+    <function returnType="mixed" name="getFromIndex" description="Returns the entry contents using its index.">
+      <param type="int" name="index" />
+      <param type="int" name="flags" optional="true" />
+    </function>
+    <function returnType="mixed" name="getFromName" description="Returns the entry contents using its name.">
+      <param type="string" name="name" />
+      <param type="int" name="flags" optional="true" />
+    </function>
+    <function returnType="string" name="getNameIndex" description="Returns the name of an entry using its index.">
+      <param type="int" name="index" />
+    </function>
+    <function returnType="string" name="getStatusString" description="Returns the status error message, system and/or zip messages.">
+    </function>
+    <function returnType="resource" name="getStream" description="Get a file handler to the entry defined by its name. For now it only supports read operations.">
+      <param type="string" name="name" />
+    </function>
+    <function returnType="mixed" name="locateName" description="Locates an entry using its name.">
+      <param type="string" name="name" />
+      <param type="int" name="flags" optional="true" />
+    </function>
+    <function returnType="mixed" name="open" description="Opens a new zip archive for reading, writing or modifying.">
+      <param type="string" name="filename" />
+      <param type="int" name="flags" optional="true" />
+    </function>
+    <function returnType="bool" name="renameIndex" description="Renames an entry defined by its index.">
+      <param type="int" name="index" />
+      <param type="int" name="newname" />
+    </function>
+    <function returnType="bool" name="renameName" description="Renames an entry defined by its name.">
+      <param type="string" name="name" />
+      <param type="int" name="newname" />
+    </function>
+    <function returnType="mixed" name="setArchiveComment" description="Set the comment of a ZIP archive.">
+      <param type="string" name="name" />
+    </function>
+    <function returnType="mixed" name="setCommentIndex" description="Set the comment of an entry defined by its index.">
+      <param type="int" name="index" />
+      <param type="string" name="comment" />
+    </function>
+    <function returnType="mixed" name="setCommentName" description="Set the comment of an entry defined by its name.">
+      <param type="string" name="name" />
+      <param type="string" name="comment" />
+    </function>
+    <function returnType="mixed" name="statIndex" description="The function obtains information about the entry defined by its index.">
+      <param type="int" name="index" />
+      <param type="int" name="flags" optional="true" />
+    </function>
+    <function returnType="mixed" name="statIndex" description="The function obtains information about the entry defined by its name.">
+      <param type="string" name="name" />
+      <param type="int" name="flags" optional="true" />
+    </function>
+    <function returnType="mixed" name="unchangeAll" description="Undo all changes done in the archive.">
+    </function>
+    <function returnType="mixed" name="unchangeArchive" description="Revert all global changes to the archive. For now, this only reverts archive comment changes.">
+    </function>
+    <function returnType="mixed" name="unchangeIndex" description="Revert all changes done to an entry at the given index.">
+        <param type="int" name="index" />
+    </function>
+    <function returnType="mixed" name="unchangeName" description="Revert all changes done to an entry.">
+        <param type="string" name="name" />
+    </function>
+  </class>
+</module>

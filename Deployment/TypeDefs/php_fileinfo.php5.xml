@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="finfo_buffer" description="This function is used to get information about binary data in a string.">
+    <param type="resource" name="finfo" />
+    <param type="string" name="string" optional="true" />
+    <param type="int" name="options" optional="true" />
+    <param type="resource" name="context" optional="true" />
+  </function>
+  <function returnType="bool" name="finfo_close" description="This function closes the resource opened by finfo_open().">
+    <param type="resource" name="finfo" />
+  </function>
+  <function returnType="string" name="finfo_file" description="This function is used to get information about a file.">
+    <param type="resource" name="finfo" />
+    <param type="string" name="file_name" />
+    <param type="int" name="options" optional="true" />
+    <param type="resource" name="context" optional="true" />
+  </function>
+  <function returnType="resource" name="finfo_open" description="This function opens a magic database and returns its resource.">
+    <param type="int" name="options" optional="true" />
+    <param type="string" name="magic_file" optional="true" />
+  </function>
+  <function returnType="bool" name="finfo_set_flags" description="This function sets various Fileinfo options. Options can be set also directly in finfo_open() or other Fileinfo functions.">
+    <param type="resource" name="finfo" />
+    <param type="int" name="options" />
+  </function>
+  <function returnType="string" name="mime_content_type" description="Returns the MIME content type for a file as determined by using information from the magic.mime file.">
+    <param type="string" name="filename" />
+  </function>
+  <class name="finfo" description="Finfo class, which exports methods which resemble finfo functions." >
+    <function returnType="string" name="buffer" description="This function is used to get information about binary data in a string.">
+        <param type="string" name="string" optional="true" />
+        <param type="int" name="options" optional="true" />
+        <param type="resource" name="context" optional="true" />
+      </function>
+    <function returnType="string" name="file" description="This function is used to get information about a file.">
+      <param type="string" name="file_name" />
+      <param type="int" name="options" optional="true" />
+      <param type="resource" name="context" optional="true" />
+    </function>
+    <function returnType="bool" name="set_flags" description="This function sets various Fileinfo options. Options can be set also directly in finfo_open() or other Fileinfo functions.">
+      <param type="int" name="options" />
+    </function>
+  </class>
+</module>

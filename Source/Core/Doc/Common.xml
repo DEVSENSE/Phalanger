@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<docs>
+  <method name="Compare(x,y)">
+    <param name="x">The first item to compare.</param>
+    <param name="y">The second item to compare.</param>
+    <returns>
+      Negative integer if <paramref name="x"/> is less than <paramref name="y"/>,
+      zero if <paramref name="x"/> equals to <paramref name="y"/> and positive integer
+      if <paramref name="x"/> is greater than <paramref name="y"/>.
+    </returns>
+  </method>
+
+  <method name="CompareEntries">
+    <param name="keyA">The key of the first entry.</param>
+    <param name="valueA">The value of the first entry.</param>
+    <param name="keyB">The key of the second entry.</param>
+    <param name="valueB">The value of the second entry.</param>
+    <returns>
+      Negative integer if (<paramref name="keyA"/>,<paramref name="valueA"/>) is less than (<paramref name="keyB"/>,<paramref name="valueB"/>),
+      zero if (<paramref name="keyA"/>,<paramref name="valueA"/>) equals to (<paramref name="keyA"/>,<paramref name="valueA"/>) and positive integer
+      if (<paramref name="keyA"/>,<paramref name="valueA"/>) is greater than (<paramref name="keyA"/>,<paramref name="valueA"/>).
+    </returns>
+  </method>
+
+  <method name="CompareTo(obj,comparer)">
+	  <param name="obj">An object to compare with this instance.</param>
+	  <param name="comparer">A comparer to be used for comparing items contained in this instance.</param>
+    <returns>
+      Negative integer if this instance is less than <paramref name="obj"/>,
+      zero if this instance equals to <paramref name="obj"/> and positive integer
+      if this instance is greater than <paramref name="obj"/>.
+    </returns>
+    <remarks>
+      The <paramref name="comparer"/> is used to compare items which contained in this instance (useful when the instance
+      is an array or object etc.).
+    </remarks>
+  </method>
+
+  <method name="CompareTo(obj)">
+	  <param name="obj">An object to compare with this instance.</param>
+	  <returns>
+      Negative integer if this instance is less than <paramref name="obj"/>,
+      zero if this instance equals to <paramref name="obj"/> and positive integer
+      if this instance is greater than <paramref name="obj"/>.
+    </returns>
+    <remarks>
+      If the <paramref name="obj"/> is also if type <see cref="PhpArray"/>
+      the <see cref="PhpComparer.Default"/> comparer is used for comparing its items. 
+    </remarks>
+  </method>
+  
+  <method name="PhpStack.AddFrame">
+		<summary>
+		  Pushes item(s) to the top of a stack.
+		</summary>
+		<remarks>
+		  Sets a size of the current 
+		</remarks>
+		<exception cref="IndexOutOfRangeException">If there is not enough space in the stack.</exception>
+  </method>
+  
+  <method name="GetObjectData">
+	  <summary>
+	    Populates a <see cref="SerializationInfo"/> with the data needed to serialize the target object.
+	  </summary>
+	  <param name="info">The <see cref="SerializationInfo"/> to populate with data. </param>
+	  <param name="context">The destination (see <see cref="StreamingContext"/>) for this serialization.</param>
+  </method>
+  
+  <method name="serialization.ctor">
+	  <summary>
+	    Creates an instance from deserialized data using the specified <see cref="SerializationInfo"/> and <see cref="StreamingContext"/>.
+	  </summary>
+	  <param name="info">The <see cref="SerializationInfo"/> to receive data from.</param>
+	  <param name="context">The source (see <see cref="StreamingContext"/>) for this deserialization.</param>
+  </method>
+  
+  <method name="GetRealObject">
+	  <summary>
+	    Returns the real object that should be deserialized, rather than the object that the serialized stream specifies.
+	  </summary>
+	  <param name="context">The <see cref="StreamingContext"/> from which the current object is deserialized.</param>
+	  <returns>Returns the actual object that is put into the graph.</returns>
+  </method>
+  
+  <method name="OnDeserialization">
+	  <summary>
+	    Runs when the entire object graph has been deserialized.
+	  </summary>
+	  <param name="sender">The object that initiated the callback.</param>
+  </method>
+  
+</docs>

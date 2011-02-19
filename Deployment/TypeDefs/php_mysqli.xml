@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="int" name="mysqli_affected_rows" description="Gets the number of affected rows in a previous MySQL operation.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="bool" name="mysqli_autocommit" description="Turns on or off auto-commiting database modifications.">
+    <param type="object" name="link" />
+    <param type="bool" name="mode" />
+  </function>
+  <function returnType="bool" name="mysqli_close" description="Closes a previously opened database connection.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="bool" name="mysqli_commit" description="Commits the current transaction.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="int" name="mysqli_connect_errno" description="Returns the error code from last connect call." />
+  <function returnType="string" name="mysqli_connect_error" description="Returns a string description of the last connect error." />
+  <function returnType="bool" name="mysqli_data_seek" description="Adjusts the result pointer to an arbitary row in the result.">
+    <param type="object" name="result" />
+    <param type="int" name="offset" />
+  </function>
+  <function returnType="bool" name="mysqli_debug" description="Performs debugging operations.">
+    <param type="string" name="debug" />
+  </function>
+  <function returnType="bool" name="mysqli_disable_reads_from_master" description="Disable reads from master.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="bool" name="mysqli_disable_rpl_parse" description="Disable RPL parse.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="object" castToFalse="true" name="mysqli_embedded_connect" description="Open a connection to an embedded mysql server.">
+    <param optional="true" type="string" name="dbname" />
+  </function>
+  <function returnType="bool" name="mysqli_enable_reads_from_master" description="Enable reads from master.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="bool" name="mysqli_enable_rpl_parse" description="Enable RPL parse.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="int" name="mysqli_errno" description="Returns the error code for the most recent function call.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="string" name="mysqli_error" description="Returns a string description of the last error.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="mixed" name="mysqli_fetch_array" description="Fetch a result row as an associative, a numeric array, or both.">
+    <param type="object" name="result" />
+    <param optional="true" type="int" name="resulttype" />
+  </function>
+  <function returnType="array" name="mysqli_fetch_assoc" description="Fetch a result row as an associative array.">
+    <param type="object" name="result" />
+  </function>
+  <function returnType="object" castToFalse="true" name="mysqli_fetch_field" description="Returns the next field in the result set.">
+    <param type="object" name="result" />
+  </function>
+  <function returnType="array" name="mysqli_fetch_field_direct" description="Fetch meta-data for a single field.">
+    <param type="object" name="result" />
+    <param type="int" name="fieldnr" />
+  </function>
+  <function returnType="array" name="mysqli_fetch_lengths" description="Returns the lengths of the columns of the current row in the result set.">
+    <param type="object" name="result" />
+  </function>
+  <function returnType="mixed" name="mysqli_fetch_object" description="Returns the current row of a result set as an object.">
+    <param type="object" name="result" />
+  </function>
+  <function returnType="mixed" name="mysqli_fetch_row" description="Get a result row as an enumerated array.">
+    <param type="object" name="result" />
+  </function>
+  <function returnType="int" name="mysqli_field_count" description="Returns the number of columns for the most recent query.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="bool" name="mysqli_field_seek" description="Set result pointer to a specified field offset.">
+    <param type="object" name="result" />
+    <param type="int" name="fieldnr" />
+  </function>
+  <function returnType="void" name="mysqli_free_result" description="Frees the memory associated with a result.">
+    <param type="object" name="result" />
+  </function>
+  <function returnType="string" name="mysqli_get_client_info" description="Returns the MySQL client version as a string." />
+  <function returnType="int" name="mysqli_get_client_version" description="Get MySQL client info." />
+  <function returnType="string" name="mysqli_get_server_info" description="Returns the version of the MySQL server.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="int" name="mysqli_get_server_version" description="Returns the version of the MySQL server as an integer.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="bool" name="mysqli_change_user" description="Changes the user of the specified database connection.">
+    <param type="object" name="link" />
+    <param type="string" name="user" />
+    <param type="string" name="password" />
+    <param type="string" name="database" />
+  </function>
+  <function returnType="string" name="mysqli_character_set_name" description="Returns the default character set for the database connection.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="string" name="mysqli_info" description="Retrieves information about the most recently executed query.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="object" castToFalse="true" name="mysqli_init" description="Initializes MySQLi and returns a resource for use with mysqli_real_connect()." />
+  <function returnType="int" name="mysqli_insert_id" description="Returns the auto generated id used in the last query.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="bool" name="mysqli_kill" description="Asks the server to kill a MySQL thread.">
+    <param type="object" name="link" />
+    <param type="int" name="processid" />
+  </function>
+  <function returnType="bool" name="mysqli_master_query" description="Enforce execution of a query on the master in a master/slave setup.">
+    <param type="object" name="link" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="bool" name="mysqli_multi_query" description="Performs a query on the database.">
+    <param type="object" name="link" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="string" name="mysql_info" description="Get information about the most recent query.">
+    <param optional="true" type="object" name="link_identifier" />
+  </function>
+  <function returnType="int" name="mysql_insert_id" description="Get the ID generated from the previous INSERT operation.">
+    <param optional="true" type="object" name="link_identifier" />
+  </function>
+  <function returnType="int" name="mysqli_num_rows" description="Gets the number of rows in a result.">
+    <param type="object" name="result" />
+  </function>
+  <function returnType="bool" name="mysqli_options" description="Set options.">
+    <param type="object" name="link" />
+    <param type="int" name="option" />
+    <param type="mixed" name="value" />
+  </function>
+  <function returnType="bool" name="mysqli_ping" description="Pings a server connection, or tries to reconnect if the connection has gone down.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="mixed" name="mysqli_query" description="Performs a query on the database.">
+    <param type="object" name="link" />
+    <param type="string" name="query" />
+    <param optional="true" type="int" name="resultmode" />
+  </function>
+  <function returnType="string" name="mysqli_real_escape_string" description="Escapes special characters in a string for use in a SQL statement, taking into account the current charset of the connection.">
+    <param type="object" name="link" />
+    <param type="string" name="escapestr" />
+  </function>
+  <function returnType="bool" name="mysqli_report" description="Enables or disables internal report functions.">
+    <param type="int" name="flags" />
+  </function>
+  <function returnType="int" name="mysqli_rpl_parse_enabled" description="Check if RPL parse is enabled.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="bool" name="mysqli_rpl_probe" description="RPL probe.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="int" name="mysqli_rpl_query_type" description="Returns RPL query type.">
+    <param type="object" name="link" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="bool" name="mysqli_send_query" description="Send the query and return.">
+    <param type="object" name="link" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="void" name="mysqli_server_end" description="Shut down the embedded server." />
+  <function returnType="bool" name="mysqli_server_init" description="Initialize embedded server.">
+    <param optional="true" type="array" name="server" />
+    <param optional="true" type="array" name="groups" />
+  </function>
+  <function returnType="string" name="mysqli_sqlstate" description="Returns the SQLSTATE error from previous MySQL operation.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="bool" name="mysqli_ssl_set" description="Used for establishing secure connections using SSL.">
+    <param type="object" name="link" />
+    <param type="string" name="key" />
+    <param type="string" name="cert" />
+    <param type="string" name="ca" />
+    <param type="string" name="capath" />
+    <param type="string" name="cipher" />
+  </function>
+  <function returnType="string" name="mysqli_stat" description="Gets the current system status.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="bool" name="mysqli_stmt_bind_param" description="Binds variables to a prepared statement as parameters.">
+    <param type="object" name="stmt" />
+    <param type="string" name="types" />
+    <param type="mixed" name="var1" />
+    <param optional="vararg" type="mixed" name="..." />
+    <alias name="mysqli_bind_param" />
+  </function>
+  <function returnType="bool" name="mysqli_stmt_bind_result" description="Binds variables to a prepared statement for result storage.">
+    <param type="object" name="stmt" />
+    <param type="mixed" name="var1" />
+    <param optional="vararg" type="mixed" name="..." />
+    <alias name="mysqli_bind_result" />
+  </function>
+  <function returnType="bool" name="mysqli_stmt_close" description="Closes a prepared statement.">
+    <param type="object" name="stmt" />
+  </function>
+  <function returnType="void" name="mysqli_stmt_data_seek" description="Seeks to an arbitray row in statement result set.">
+    <param type="object" name="statement" />
+    <param type="int" name="offset" />
+  </function>
+  <function returnType="string" name="mysqli_stmt_error" description="Returns a string description for last statement error.">
+    <param type="object" name="stmt" />
+  </function>
+  <function returnType="bool" name="mysqli_stmt_execute" description="Executes a prepared Query.">
+    <param type="object" name="stmt" />
+    <alias name="mysqli_execute" />
+  </function>
+  <function returnType="bool" name="mysqli_stmt_fetch" description="Fetch results from a prepared statement into the bound variables.">
+    <param type="object" name="stmt" />
+    <alias name="mysqli_fetch" />
+  </function>
+  <function returnType="void" name="mysqli_stmt_free_result" description="Frees stored result memory for the given statement handle.">
+    <param type="object" name="stmt" />
+  </function>  
+  <function returnType="int" name="mysqli_stmt_param_count" description="Returns the number of parameter for the given statement.">
+    <param type="object" name="stmt" />
+    <alias name="mysqli_param_count" />
+  </function>
+  <function returnType="bool" name="mysqli_stmt_reset" description="Resets a prepared statement.">
+    <param type="object" name="stmt" />
+  </function>
+  <function returnType="object" castToFalse="true" name="mysqli_stmt_result_metadata" description="Returns result set metadata from a prepared statement.">
+    <param type="object" name="stmt" />
+    <alias name="mysqli_get_metadata" />
+  </function>
+  <function returnType="bool" name="mysqli_stmt_send_long_data" description="Send data in blocks.">
+    <param type="object" name="stmt" />
+    <param type="int" name="param_nr" />
+    <param type="string" name="data" />
+    <alias name="mysqli_send_long_data" />
+  </function>
+  <function returnType="string" name="mysqli_stmt_sqlstate" description="Returns SQLSTATE error from previous statement operation.">
+    <param type="object" name="stmt" />
+  </function>
+  <function returnType="bool" name="mysqli_stmt_store_result" description="Transfers a result set from a prepared statement.">
+    <param type="object" name="stmt" />
+  </function>
+  <function returnType="object" castToFalse="true" name="mysqli_store_result" description="Transfers a result set from the last query.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="int" name="mysqli_thread_id" description="Returns the thread ID for the current connection.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="bool" name="mysqli_thread_safe" description="Returns whether thread safety is given or not." />
+  <function returnType="object" castToFalse="true" name="mysqli_use_result" description="Initiate a result set retrieval.">
+    <param type="object" name="link" />
+  </function>
+  <function returnType="int" name="mysqli_warning_count" description="Returns the number of warnings from the last query for the given link.">
+    <param type="object" name="link" />
+  </function>
+</module>

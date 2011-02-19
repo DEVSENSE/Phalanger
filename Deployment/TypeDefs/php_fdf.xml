@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="bool" name="fdf_set_javascript_action" description="Sets the javascript action for a field.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="fieldname" />
+    <param type="int" name="whichtrigger" />
+    <param type="string" name="script" />
+  </function>
+  <function returnType="bool" name="fdf_set_value" description="Sets the value of a field.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="fieldname" />
+    <param type="string" name="value" />
+    <param type="int" name="isname" />
+  </function>
+  <function returnType="bool" name="fdf_set_ap" description="Sets the appearence of a field.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="fieldname" />
+    <param type="int" name="face" />
+    <param type="string" name="filename" />
+    <param type="int" name="pagenr" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="fdf_open" description="Opens a new FDF document.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="bool" name="fdf_add_template" description="Adds a template into the FDF document.">
+    <param type="resource" name="fdfdoc" />
+    <param type="int" name="newpage" />
+    <param type="string" name="filename" />
+    <param type="string" name="template" />
+    <param type="int" name="rename" />
+  </function>
+  <function returnType="bool" name="fdf_close" description="Closes the FDF document.">
+    <param type="resource" name="fdfdoc" />
+  </function>
+  <function returnType="string" name="fdf_get_file" description="Gets the value of /F key.">
+    <param type="resource" name="fdfdoc" />
+  </function>
+  <function returnType="string" name="fdf_next_field_name" description="Gets the name of the next field name or the first field name.">
+    <param type="resource" name="fdfdoc" />
+    <param optional="true" type="string" name="fieldname" />
+  </function>
+  <function returnType="bool" name="fdf_set_encoding" description="Sets FDF encoding (either &quot;Shift-JIS&quot; or &quot;Unicode&quot;).">
+    <param type="int" name="fdf_document" />
+    <param type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="fdf_get_status" description="Gets the value of /Status key.">
+    <param type="resource" name="fdfdoc" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="fdf_create" description="Creates a new FDF document." />
+  <function returnType="bool" name="fdf_save" description="Writes out the FDF file.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="bool" name="fdf_set_submit_form_action" description="Sets the submit form action for a field.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="fieldname" />
+    <param type="int" name="whichtrigger" />
+    <param type="string" name="url" />
+    <param type="int" name="flags" />
+  </function>
+  <function returnType="string" name="fdf_get_value" description="Gets the value of a field as string.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="fieldname" />
+  </function>
+  <function returnType="bool" name="fdf_set_file" description="Sets the value of /F key.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="bool" name="fdf_set_flags" description="Sets flags for a field in the FDF document.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="fieldname" />
+    <param type="int" name="whichflags" />
+    <param type="int" name="newflags" />
+  </function>
+  <function returnType="bool" name="fdf_set_status" description="Sets the value of /Status key.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="status" />
+  </function>
+  <function returnType="bool" name="fdf_set_opt" description="Sets a value in the opt array for a field.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="fieldname" />
+    <param type="int" name="element" />
+    <param type="string" name="value" />
+    <param type="string" name="name" />
+  </function>
+  <function returnType="bool" name="fdf_enum_values" description="Call a user defined function for each document value.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="function" />
+    <param optional="true" type="mixed" name="userdata" />
+  </function>
+  <function returnType="int" name="fdf_errno" description="Return error code for last fdf operation." />
+  <function returnType="string" name="fdf_error" description="Return error description for fdf error code.">
+    <param optional="true" type="int" name="error_code" />
+  </function>
+  <function returnType="bool" name="fdf_get_ap" description="Get the appearance of a field.">
+    <param type="resource" name="fdf_document" />
+    <param type="string" name="field" />
+    <param type="int" name="face" />
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="array" name="fdf_get_attachment" description="Extracts uploaded file embedded in the FDF.">
+    <param type="resource" name="fdf_document" />
+    <param type="string" name="fieldname" />
+    <param type="string" name="savepath" />
+  </function>
+  <function returnType="string" name="fdf_get_encoding" description="Get the value of the /Encoding key.">
+    <param type="resource" name="fdf_document" />
+  </function>
+  <function returnType="int" name="fdf_get_flags" description="Gets the flags of a field.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="fieldname" />
+    <param type="int" name="whichflags" />
+  </function>
+  <function returnType="mixed" name="fdf_get_opt" description="Gets a value from the opt array of a field.">
+    <param type="resource" name="fdfdof" />
+    <param type="string" name="fieldname" />
+    <param optional="true" type="int" name="element" />
+  </function>
+  <function returnType="string" name="fdf_get_version" description="Gets version number for FDF API or file.">
+    <param optional="true" type="resource" name="fdf_document" />
+  </function>
+  <function returnType="void" name="fdf_header" description="Sets FDF-specific output headers." />
+  <function returnType="resource" name="fdf_open_string" description="Read a FDF document from a string.">
+    <param type="string" name="fdf_data" />
+  </function>
+  <function returnType="bool" name="fdf_remove_item" description="Sets target frame for form.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="fieldname" />
+    <param type="int" name="item" />
+  </function>
+  <function returnType="string" name="fdf_save_string" description="Returns the FDF document as a string.">
+    <param type="resource" name="fdf_document" />
+  </function>
+  <function returnType="bool" name="fdf_set_on_import_javascript" description="Adds javascript code to be executed when Acrobat opens the FDF.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="script" />
+    <param type="bool" name="before_data_import" />
+  </function>
+  <function returnType="bool" name="fdf_set_target_frame" description="Set target frame for form display.">
+    <param type="resource" name="fdf_document" />
+    <param type="string" name="frame_name" />
+  </function>
+  <function returnType="bool" name="fdf_set_version" description="Sets version number for a FDF file.">
+    <param type="resource" name="fdf_document" />
+    <param type="string" name="version" />
+  </function>
+  <function returnType="bool" name="fdf_add_doc_javascript" description="Adds javascript code to the FDF document.">
+    <param type="resource" name="fdfdoc" />
+    <param type="string" name="script_name" />
+    <param type="string" name="script_code" />
+  </function>
+</module>

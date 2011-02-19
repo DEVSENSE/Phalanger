@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="int" name="mhash_get_block_size" description="Gets the block size of hash.">
+    <param type="int" name="hash" />
+  </function>
+  <function returnType="string" name="mhash_keygen_s2k" description="Generates a key using hash functions.">
+    <param type="int" name="hash" />
+    <param type="string" name="input_password" />
+    <param type="string" name="salt" />
+    <param type="int" name="bytes" />
+  </function>
+  <function returnType="string" name="mhash" description="Hash data with hash.">
+    <param type="int" name="hash" />
+    <param type="string" name="data" />
+    <param optional="true" type="string" name="key" />
+  </function>
+  <function returnType="string" name="mhash_get_hash_name" description="Gets the name of hash.">
+    <param type="int" name="hash" />
+  </function>
+  <function returnType="int" name="mhash_count" description="Gets the number of available hashes." />
+</module>

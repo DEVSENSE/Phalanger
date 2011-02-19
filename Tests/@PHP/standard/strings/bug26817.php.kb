@@ -1,0 +1,23 @@
+[expect php]
+[file]
+<?php
+require('Phalanger.inc');
+class test { 
+	protected $foo;
+	private $bar;
+	public $test;
+
+	function foo()
+	{
+		$this->bar = 'meuh';
+		$this->foo = 'lala';
+		$this->test = 'test';
+
+		__var_dump(http_build_query($this));
+	}
+}
+
+$obj = new test();
+$obj->foo();
+__var_dump(http_build_query($obj));
+?>

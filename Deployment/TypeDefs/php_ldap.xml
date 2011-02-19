@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="ldap_8859_to_t61" description="Translate 8859 characters to t61 characters.">
+    <param type="string" name="value" />
+  </function>
+  <function returnType="bool" name="ldap_add" description="Add entries to LDAP directory.">
+    <param type="resource" name="link_identifier" />
+    <param type="string" name="dn" />
+    <param type="array" name="entry" />
+  </function>
+  <function returnType="bool" name="ldap_bind" description="Bind to LDAP directory.">
+    <param type="resource" name="link_identifier" />
+    <param optional="true" type="string" name="bind_rdn" />
+    <param optional="true" type="string" name="bind_password" />
+  </function>
+  <function returnType="bool" name="ldap_close" description="Close link to LDAP server.">
+    <param type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="ldap_compare" description="Compare value of attribute found in entry specified with DN.">
+    <param type="resource" name="link_identifier" />
+    <param type="string" name="dn" />
+    <param type="string" name="attribute" />
+    <param type="string" name="value" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ldap_connect" description="Connect to an LDAP server.">
+    <param optional="true" type="string" name="hostname" />
+    <param optional="true" type="int" name="port" />
+  </function>
+  <function returnType="int" name="ldap_count_entries" description="Count the number of entries in a search.">
+    <param type="resource" name="link_identifier" />
+    <param type="resource" name="result_identifier" />
+  </function>
+  <function returnType="bool" name="ldap_delete" description="Delete an entry from a directory.">
+    <param type="resource" name="link_identifier" />
+    <param type="string" name="dn" />
+  </function>
+  <function returnType="string" name="ldap_dn2ufn" description="Convert DN to User Friendly Naming format.">
+    <param type="string" name="dn" />
+  </function>
+  <function returnType="string" name="ldap_err2str" description="Convert LDAP error number into string error message.">
+    <param type="int" name="errno" />
+  </function>
+  <function returnType="int" name="ldap_errno" description="Return the LDAP error number of the last LDAP command.">
+    <param type="resource" name="link_identifier" />
+  </function>
+  <function returnType="string" name="ldap_error" description="Return the LDAP error message of the last LDAP command.">
+    <param type="resource" name="link_identifier" />
+  </function>
+  <function returnType="array" name="ldap_explode_dn" description="Splits DN into its component parts.">
+    <param type="string" name="dn" />
+    <param type="int" name="with_attrib" />
+  </function>
+  <function returnType="string" name="ldap_first_attribute" description="Return first attribute.">
+    <param type="resource" name="link_identifier" />
+    <param type="resource" name="result_entry_identifier" />
+    <param type="int" name="ber_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ldap_first_entry" description="Return first result id.">
+    <param type="resource" name="link_identifier" />
+    <param type="resource" name="result_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ldap_first_reference" description="Return first reference.">
+    <param type="resource" name="link" />
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="bool" name="ldap_free_result" description="Free result memory.">
+    <param type="resource" name="result_identifier" />
+  </function>
+  <function returnType="array" name="ldap_get_attributes" description="Get attributes from a search result entry.">
+    <param type="resource" name="link_identifier" />
+    <param type="resource" name="result_entry_identifier" />
+  </function>
+  <function returnType="string" name="ldap_get_dn" description="Get the DN of a result entry.">
+    <param type="resource" name="link_identifier" />
+    <param type="resource" name="result_entry_identifier" />
+  </function>
+  <function returnType="array" name="ldap_get_entries" description="Get all result entries.">
+    <param type="resource" name="link_identifier" />
+    <param type="resource" name="result_identifier" />
+  </function>
+  <function returnType="bool" name="ldap_get_option" description="Get the current value for given option.">
+    <param type="resource" name="link_identifier" />
+    <param type="int" name="option" />
+    <param direction="out" type="mixed" name="retval" />
+  </function>
+  <function returnType="array" name="ldap_get_values_len" description="Get all binary values from a result entry.">
+    <param type="resource" name="link_identifier" />
+    <param type="resource" name="result_entry_identifier" />
+    <param type="string" name="attribute" />
+  </function>
+  <function returnType="array" name="ldap_get_values" description="Get all values from a result entry.">
+    <param type="resource" name="link_identifier" />
+    <param type="resource" name="result_entry_identifier" />
+    <param type="string" name="attribute" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ldap_list" description="Single-level search.">
+    <param type="resource" name="link_identifier" />
+    <param type="string" name="base_dn" />
+    <param type="string" name="filter" />
+    <param optional="true" type="array" name="attributes" />
+    <param optional="true" type="int" name="attrsonly" />
+    <param optional="true" type="int" name="sizelimit" />
+    <param optional="true" type="int" name="timelimit" />
+    <param optional="true" type="int" name="deref" />
+  </function>
+  <function returnType="bool" name="ldap_mod_add" description="Add attribute values to current attributes.">
+    <param type="resource" name="link_identifier" />
+    <param type="string" name="dn" />
+    <param type="array" name="entry" />
+  </function>
+  <function returnType="bool" name="ldap_mod_del" description="Delete attribute values from current attributes.">
+    <param type="resource" name="link_identifier" />
+    <param type="string" name="dn" />
+    <param type="array" name="entry" />
+  </function>
+  <function returnType="bool" name="ldap_mod_replace" description="Replace attribute values with new ones.">
+    <param type="resource" name="link_identifier" />
+    <param type="string" name="dn" />
+    <param type="array" name="entry" />
+  </function>
+  <function returnType="bool" name="ldap_modify" description="Modify an LDAP entry.">
+    <param type="resource" name="link_identifier" />
+    <param type="string" name="dn" />
+    <param type="array" name="entry" />
+  </function>
+  <function returnType="string" name="ldap_next_attribute" description="Get the next attribute in result.">
+    <param type="resource" name="link_identifier" />
+    <param type="resource" name="result_entry_identifier" />
+    <param type="resource" name="ber_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ldap_next_entry" description="Get next result entry.">
+    <param type="resource" name="link_identifier" />
+    <param type="resource" name="result_entry_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ldap_next_reference" description="Get next reference.">
+    <param type="resource" name="link" />
+    <param type="resource" name="entry" />
+  </function>
+  <function returnType="bool" name="ldap_parse_reference" description="Extract information from reference entry.">
+    <param type="resource" name="link" />
+    <param type="resource" name="entry" />
+    <param type="array" name="referrals" />
+  </function>
+  <function returnType="bool" name="ldap_parse_result" description="Extract information from result.">
+    <param type="resource" name="link" />
+    <param type="resource" name="result" />
+    <param type="int" name="errcode" />
+    <param type="string" name="matcheddn" />
+    <param type="string" name="errmsg" />
+    <param type="array" name="referrals" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ldap_read" description="Read an entry.">
+    <param type="resource" name="link_identifier" />
+    <param type="string" name="base_dn" />
+    <param type="string" name="filter" />
+    <param optional="true" type="array" name="attributes" />
+    <param optional="true" type="int" name="attrsonly" />
+    <param optional="true" type="int" name="sizelimit" />
+    <param optional="true" type="int" name="timelimit" />
+    <param optional="true" type="int" name="deref" />
+  </function>
+  <function returnType="bool" name="ldap_rename" description="Modify the name of an entry.">
+    <param type="resource" name="link_identifier" />
+    <param type="string" name="dn" />
+    <param type="string" name="newrdn" />
+    <param type="string" name="newparent" />
+    <param type="bool" name="deleteoldrdn" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ldap_search" description="Search LDAP tree.">
+    <param type="resource" name="link_identifier" />
+    <param type="string" name="base_dn" />
+    <param type="string" name="filter" />
+    <param optional="true" type="array" name="attributes" />
+    <param optional="true" type="int" name="attrsonly" />
+    <param optional="true" type="int" name="sizelimit" />
+    <param optional="true" type="int" name="timelimit" />
+    <param optional="true" type="int" name="deref" />
+  </function>
+  <function returnType="bool" name="ldap_set_option" description="Set the value of the given option.">
+    <param type="resource" name="link_identifier" />
+    <param type="int" name="option" />
+    <param type="mixed" name="newval" />
+  </function>
+  <function returnType="bool" name="ldap_set_rebind_proc" description="Set a callback function to do re-binds on referral chasing.">
+    <param type="resource" name="link" />
+    <param type="string" name="callback" />
+  </function>
+  <function returnType="bool" name="ldap_sort" description="Sort LDAP result entries.">
+    <param type="resource" name="link" />
+    <param type="resource" name="result" />
+    <param type="string" name="sortfilter" />
+  </function>
+  <function returnType="bool" name="ldap_start_tls" description="Start TLS.">
+    <param type="resource" name="link" />
+  </function>
+  <function returnType="string" name="ldap_t61_to_8859" description="Translate t61 characters to 8859 characters.">
+    <param type="string" name="value" />
+  </function>
+  <function returnType="bool" name="ldap_unbind" description="Unbind from LDAP directory.">
+    <param type="resource" name="link_identifier" />
+  </function>
+</module>

@@ -1,0 +1,248 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Name>RegEditPHP</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{d5a73f0b-7dea-4f46-879c-14913395db11}</ProjectGuid>
+    <CompilationMode>Pure</CompilationMode>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>RegEditPHP</AssemblyName>
+    <RootNamespace>RegEditPHP</RootNamespace>
+    <ApplicationIcon>Resources\Regedit.ico</ApplicationIcon>
+    <TargetPlatform>v2</TargetPlatform>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+   
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IncludeDebugInformation>true</IncludeDebugInformation>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <IncludeDebugInformation>false</IncludeDebugInformation>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+      <AssemblyName>
+      </AssemblyName>
+    </Reference>
+    <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CLRException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="dlgAbout.user.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="dlgAbout.php">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InputBox.user.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InputBox.php">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LanguageSelector.user.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LanguageSelector.php">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NumericEditor.user.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NumericEditor.php">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Program.php" />
+    <Compile Include="frmMain.user.php" />
+    <Compile Include="frmMain.php">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ResourceAccessor.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SettingsProvider.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Sorter.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ValueEditor.user.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ValueEditor.php">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="dlgAbout.cs.resx">
+      <DependentUpon>dlgAbout.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dlgAbout.hr.resx">
+      <DependentUpon>dlgAbout.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dlgAbout.resx">
+      <DependentUpon>dlgAbout.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmMain.cs.resx">
+      <DependentUpon>frmMain.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmMain.hr.resx">
+      <DependentUpon>frmMain.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmMain.resx">
+      <DependentUpon>frmMain.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputBox.cs.resx">
+      <DependentUpon>InputBox.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputBox.hr.resx">
+      <DependentUpon>InputBox.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputBox.resx">
+      <DependentUpon>InputBox.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LanguageSelector.cs.resx">
+      <DependentUpon>LanguageSelector.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LanguageSelector.hr.resx">
+      <DependentUpon>LanguageSelector.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LanguageSelector.resx">
+      <DependentUpon>LanguageSelector.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NumericEditor.cs.resx">
+      <DependentUpon>NumericEditor.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NumericEditor.hr.resx">
+      <DependentUpon>NumericEditor.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NumericEditor.resx">
+      <DependentUpon>NumericEditor.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources.cs.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources.hr.resx" />
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ValueEditor.cs.resx">
+      <DependentUpon>ValueEditor.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ValueEditor.hr.resx">
+      <DependentUpon>ValueEditor.php</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ValueEditor.resx">
+      <DependentUpon>ValueEditor.php</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RegEditPHP.exe.manifest">
+      <SubType>Content</SubType>
+    </None>
+    <Content Include="readme.cs.rtf">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="readme.hr.rtf">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="readme.rtf">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\asc.png">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\binary.ico">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\copy.png">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\delete.png">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\desc.png">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\edit.png">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\folder_close.ico">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\folder_open.ico">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\new.png">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\numeric.ico">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\Phalanger.png">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\readme.txt">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\refresh.png">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\Regedit.png">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\rename.png">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\save.png">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\string.ico">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\unknown.ico">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Resources\warning.png">
+      <SubType>Content</SubType>
+    </Content>
+    <None Include="Resources\Regedit.ico">
+      <SubType>Content</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.0\Phalanger.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mt.exe -nologo -manifest "$(ProjectDir)$(TargetName).exe.manifest" -outputresource:"$(TargetDir)$(TargetName).exe;#1"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

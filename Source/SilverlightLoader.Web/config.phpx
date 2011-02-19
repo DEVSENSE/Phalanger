@@ -1,0 +1,22 @@
+﻿<?
+/*****************************************************************************/
+/**
+ * Phalanger 'Helicopter Game'
+ * Contains configuration of the game.
+ *
+ * @author Tomas Petricek <tomas@tomasp.net>
+ * @package sldemos
+ */
+/*****************************************************************************/
+
+/**
+ * Constant - initial speed of the 'screen' movement
+ */ 
+define("SHIFT_INITSPEED", 2);
+
+/**
+ * Constant - acceleration of the 'screen' movement over time
+ */ 
+define("SHIFT_ACCELERATION", 5);
+
+?>

@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="array" name="xmlrpc_decode_request" description="Decodes XML into native PHP types.">
+    <param type="string" name="xml" />
+    <param type="string" name="method" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="array" name="xmlrpc_decode" description="Decodes XML into native PHP types.">
+    <param type="string" name="xml" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="xmlrpc_encode" description="Generates XML for a PHP value.">
+    <param type="mixed" name="value" />
+  </function>
+  <function returnType="bool" name="xmlrpc_server_register_method" description="Register a PHP function to handle method matching method_name.">
+    <param type="resource" name="server" />
+    <param type="string" name="method_name" />
+    <param type="string" name="function" />
+  </function>
+  <function returnType="array" name="xmlrpc_parse_method_descriptions" description="Decodes XML into a list of method descriptions.">
+    <param type="string" name="xml" />
+  </function>
+  <function returnType="mixed" name="xmlrpc_server_call_method" description="Parses XML requests and call methods.">
+    <param type="resource" name="server" />
+    <param type="string" name="xml" />
+    <param type="mixed" name="user_data" />
+    <param optional="true" type="array" name="output_options" />
+  </function>
+  <function returnType="int" name="xmlrpc_server_add_introspection_data" description="Adds introspection documentation.">
+    <param type="resource" name="server" />
+    <param type="array" name="desc" />
+  </function>
+  <function returnType="string" name="xmlrpc_get_type" description="Gets xmlrpc type for a PHP value. Especially useful for base64 and datetime strings.">
+    <param type="mixed" name="value" />
+  </function>
+  <function returnType="bool" name="xmlrpc_set_type" description="Sets xmlrpc type, base64 or datetime, for a PHP string value.">
+    <param type="string" name="value" />
+    <param type="string" name="type" />
+  </function>
+  <function returnType="bool" name="xmlrpc_server_register_introspection_callback" description="Register a PHP function to generate documentation.">
+    <param type="resource" name="server" />
+    <param type="string" name="function" />
+  </function>
+  <function returnType="string" name="xmlrpc_encode_request" description="Generates XML for a method request.">
+    <param type="string" name="method" />
+    <param type="mixed" name="params" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="xmlrpc_server_create" description="Creates an xmlrpc server." />
+  <function returnType="void" name="xmlrpc_server_destroy" description="Destroys server resources.">
+    <param type="resource" name="server" />
+  </function>
+  <function returnType="bool" name="xmlrpc_is_fault" description="Determines if an array value represents an XMLRPC fault.">
+    <param type="array" name="arg" />
+  </function>
+</module>

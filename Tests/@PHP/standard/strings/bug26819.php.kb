@@ -1,0 +1,7 @@
+[expect php]
+[file]
+<?php
+require('Phalanger.inc');
+$a = array();
+__var_dump(http_build_query($a));
+?>

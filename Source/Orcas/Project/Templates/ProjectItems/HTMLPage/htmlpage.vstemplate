@@ -1,0 +1,13 @@
+<VSTemplate Version="2.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+      <Name>HTML page</Name>
+      <Description>An empty HTML page</Description>
+      <Icon>HTMLPage.ico</Icon>
+    <ProjectType>Phalanger</ProjectType>
+    <SortOrder>340</SortOrder>
+    <DefaultName>HTMLPage.htm</DefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem ReplaceParameters="true">HTMLPage.htm</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

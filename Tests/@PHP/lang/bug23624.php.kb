@@ -1,0 +1,9 @@
+[expect php]
+[file]
+<?php
+require('Phalanger.inc');
+    $arr = array ('one', 'two', 'three');
+    __var_dump(current($arr));
+    foreach($arr as $key => $value);
+    __var_dump(current($arr));
+?>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<docs>
+<method name="AddCSlashes">
+  <summary>
+    Adds backslashes before specified characters.
+  </summary>
+  <param name="str">The string to be processed.</param>
+  <param name="mask">The list of characters to backslash. May contain intervals "a..b" where 
+    <I>a</I>, <I>b</I> are characters and <I>a</I> is less than or equal to <I>b</I>.</param>
+  <returns>
+    The string in which all characters contained in <paramref name="mask"/> list are backslashed
+    and each backslashed character which isn't between '\u0032' and '\u007f'
+    is converted in its octal representation (e.g. "\\123") except of '\a', '\b', '\f', '\n', '\r', '\t', '\v'
+    characters which are converted into their string form (e.g. '\n' -> "\\n", '\t' -> "\\t" etc.).
+  </returns>
+</method>
+<method name="ConvertCyrillic">
+  <summary>
+    Converts a string from one Cyrillic character set to another.
+  </summary>
+  <param name="bytes">The string to convert.</param>
+  <param name="srcCharset">The source character set. Can be one of 'k', 'w', 'i', 'a', 'd', 'm'.</param>
+  <param name="dstCharset">The destination character set. Can be one of 'k', 'w', 'i', 'a', 'd', 'm'.</param>
+  <returns>The converted string.</returns>
+</method>
+    
+</docs>

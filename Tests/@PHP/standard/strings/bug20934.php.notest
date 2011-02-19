@@ -1,0 +1,13 @@
+[expect php]
+[file]
+<?
+include('Phalanger.inc');
+
+if (!function_exists("utf8_encode") || !function_exists("utf8_decode")) {
+	die("SKIP Neither utf8_encode() nor utf8_decode() are available");
+}
+
+$str = utf8_encode("\xe0\xe1");
+__var_dump(bin2hex(utf8_decode($str)));
+__var_dump(bin2hex(utf8_decode(htmlspecialchars($str, ENT_COMPAT, "UTF-8"))));
+?>

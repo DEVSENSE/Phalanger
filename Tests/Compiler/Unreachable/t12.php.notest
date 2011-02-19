@@ -1,0 +1,15 @@
+[expect ct-warning] Unreachable code
+
+[file]
+<?
+$a = 2;
+switch($a)
+{
+	case 1: function f() { echo 1; }
+	case 2:  if(false);
+		 function f() { echo 2; }
+}
+
+f();
+
+?>

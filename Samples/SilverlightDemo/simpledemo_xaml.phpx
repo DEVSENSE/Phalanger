@@ -1,0 +1,28 @@
+﻿<?
+/*****************************************************************************/
+/**
+ * Simple GUI demo
+ */
+ 
+import namespace System:::Windows:::Input;
+
+include("slutils.phpx");
+
+global $count;
+$count = 0;
+
+function OnClick()
+{
+	global $canvas;
+	global $count;
+	
+	$canvas->anim->Begin();
+	$canvas->smiley->{ "Canvas.Left" } = rand(100, 600);
+	$canvas->smiley->{ "Canvas.Top" } = rand(100, 500);
+	$canvas->txt->Text = "Score: ".(++$count);
+}
+
+$canvas->smiley->MouseLeftButtonDown->Add
+	(new MouseEventHandler("OnClick"));
+
+?>

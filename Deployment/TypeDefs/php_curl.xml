@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="curl_getinfo" description="Get information regarding a specific transfer.">
+    <param type="resource" name="ch" />
+    <param optional="true" type="int" name="opt" />
+  </function>
+  <function returnType="string" name="curl_error" description="Return a string contain the last error for the current session.">
+    <param type="resource" name="ch" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="curl_init" description="Initialize a CURL session.">
+    <param optional="true" type="string" name="url" />
+  </function>
+  <function returnType="int" name="curl_errno" description="Return an integer containing the last error number.">
+    <param type="resource" name="ch" />
+  </function>
+  <function returnType="string" name="curl_version" description="Return the CURL version string." />
+  <function returnType="void" name="curl_close" description="Close a CURL session.">
+    <param type="resource" name="ch" />
+  </function>
+  <function returnType="bool" name="curl_setopt" description="Set an option for a CURL transfer.">
+    <param type="resource" name="ch" />
+    <param type="string" name="option" />
+    <param type="mixed" name="value" />
+  </function>
+  <function returnType="bool" name="curl_setopt" description="Set an option for a CURL transfer.">
+    <param type="resource" name="ch" />
+    <param type="int" name="option" />
+    <param type="mixed" name="value" />
+  </function>
+  <function returnType="mixed" name="curl_exec" description="Perform a CURL session.">
+    <param type="resource" name="ch" />
+  </function>
+  <function returnType="resource" name="curl_copy_handle" description="Copy a cURL handle along with all of its preferences.">
+    <param type="resource" name="ch" />
+  </function>
+  <function returnType="int" name="curl_multi_add_handle" description="Add a normal cURL handle to a cURL multi handle.">
+    <param type="resource" name="mh" />
+    <param type="resource" name="ch" />
+  </function>
+  <function returnType="void" name="curl_multi_close" description="Close a set of cURL handles.">
+    <param type="resource" name="mh" />
+  </function>
+  <function returnType="int" name="curl_multi_exec" description="Run the sub-connections of the current cURL handle.">
+    <param type="resource" name="mh" />
+    <param direction="inout" type="int" name="still_running" />
+  </function>
+  <function returnType="string" name="curl_multi_getcontent" description="Return the content of a cURL handle if CURLOPT_RETURNTRANSFER is set.">
+    <param type="resource" name="ch" />
+  </function>
+  <function returnType="array" name="curl_multi_info_read" description="Get information about the current transfers.">
+    <param type="resource" name="mh" />
+  </function>
+  <function returnType="resource" name="curl_multi_init" description="Returns a new cURL multi handle." />
+  <function returnType="int" name="curl_multi_remove_handle" description="Remove a multi handle from a set of cURL handles.">
+    <param type="resource" name="mh" />
+    <param type="resource" name="ch" />
+  </function>
+  <function returnType="int" name="curl_multi_select" description="Get all the sockets associated with the cURL extension, which can then be &quot;selected=&quot;.">
+    <param type="resource" name="mh" />
+    <param optional="true" type="float" name="timeout" />
+  </function>
+</module>

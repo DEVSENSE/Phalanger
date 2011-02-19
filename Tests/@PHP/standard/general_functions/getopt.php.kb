@@ -1,0 +1,6 @@
+[expect php]
+[file]
+<?php
+require('Phalanger.inc');
+__var_dump(getopt("d:m:j:vht"));
+?>

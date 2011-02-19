@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="resource" castToFalse="true" name="bi_from_str" description=" converts string representation of number str with base base  to resource resource. If base is not set, function assumes that it is equal to 10">
+    <param type="string" name="str" />
+    <param optional="true" type="string" name="base" />
+  </function>
+  <function returnType="string" name="bi_to_str" description=" converts resource number num to string representation with base base. If base is not set, function assumes that it is equal to 10.">
+    <param type="resource" name="num" />
+    <param optional="true" type="int" name="base" />
+  </function>
+  <function returnType="string" name="bi_base_convert" description=" converts string representation of number str with base base_from  into string representation with base base_to.">
+    <param type="string" name="str" />
+    <param type="int" name="base_from" />
+    <param type="int" name="base_to" />	
+  </function>
+  <function returnType="string" name="bi_serialize" description=" serializes number a to bytestream.">
+    <param type="resource" name="a" />
+    <param optional="true" type="bool" name="is_sign" />
+  </function>
+  <function returnType="resource" name="bi_unserialize" description=" unserializes number from bytestream str.">
+    <param type="string" name="str" />
+    <param optional="true" type="bool" name="is_sign" />
+  </function>
+  <function returnType="resource" name="bi_add" description="Returns: a + b or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+  </function>
+  <function returnType="resource" name="bi_sub" description="Returns: a - b or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+  </function>
+ <function returnType="resource" name="bi_mul" description="Returns: a * b or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+  </function>
+ <function returnType="resource" name="bi_div" description="Returns: a / b or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+  </function>
+ <function returnType="resource" name="bi_muladd" description="Returns: c + a * b or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+    <param type="resource" name="c" />
+  </function>
+  <function returnType="resource" name="bi_sqr" description="Returns: sqr(num) or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="resource" name="bi_abs" description="Returns: abs(num) or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="resource" name="bi_neg" description="Returns: -(num) or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="resource" name="bi_inc" description="Returns: num + 1 or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="resource" name="bi_dec" description="Returns: num - 1 or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="bool" name="bi_is_zero" description="Returns: TRUE, if num equals to zero. FALSE otherwise or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="bool" name="bi_is_one" description="Returns: TRUE, if num equals to 1. FALSE otherwise or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="int" name="bi_sign" description="Returns:1, if num &gt; 0; 0, if num = 0; -1, if num &lt; 0; or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="int" name="bi_cmp" description=" Returns:-1, if a &lt; b; 0, if a = b; 1, if a &gt; b; or NULL on error">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+  </function>
+ <function returnType="int" name="bi_cmp_abs" description=" Returns:-1, if abs(a) &lt; abs(b); 0, if abs(a) = abs(b); 1, if abs(a) &gt; abs(b) or NULL on error">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+  </function>
+  <function returnType="resource" name="bi_or" description=" Returns: a or b or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+    <param type="int" name="start_pos" />
+  </function>
+  <function returnType="resource" name="bi_and" description=" Returns: a and b or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+    <param type="int" name="start_pos" />
+  </function>
+  <function returnType="resource" name="bi_xor" description=" Returns: a xor b or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+    <param type="int" name="start_pos" />
+  </function>
+  <function returnType="resource" name="bi_andnot" description=" Returns: a and !b or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+    <param type="int" name="start_pos" />
+  </function>
+  <function returnType="int" name="bi_bit_len" description="Returns: bit length of num or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="int" name="bi_bit1_cnt" description="Returns: number of 1-bits in the num or NULL on error">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="resource" name="bi_lshift" description="Returns: shifted number or NULL on error.">
+    <param type="resource" name="num" />
+    <param type="int" name="bits_cnt" />
+  </function>
+  <function returnType="resource" name="bi_rshift" description=" Returns: shifted number or NULL on error">
+    <param type="resource" name="num" />
+    <param type="int" name="bits_cnt" />
+  </function>
+  <function returnType="resource" name="bi_set_bit" description=" Returns: num with bit number bit_pos setted to 1 or NULL on error.">
+    <param type="resource" name="num" />
+    <param type="int" name="bit_pos" />
+  </function>
+  <function returnType="resource" name="bi_clr_bit" description=" Returns: num with bit number bit_pos cleared to 0 or NULL on error.">
+    <param type="resource" name="num" />
+    <param type="int" name="bit_pos" />
+  </function>
+  <function returnType="resource" name="bi_inv_bit" description=" Returns: num with inverted bit number bit_pos or NULL on error.">
+    <param type="resource" name="num" />
+    <param type="int" name="bit_pos" />
+  </function>
+  <function returnType="int" name="bi_test_bit" description=" Returns: value of bit number bit_pos in the num or NULL on error.">
+    <param type="resource" name="num" />
+    <param type="int" name="bit_pos" />
+  </function>
+  <function returnType="int" name="bi_scan0_bit" description=" Returns: founded next position of the 0-bit or NULL on error.">
+    <param type="resource" name="num" />
+    <param type="int" name="start_pos" />
+  </function>
+  <function returnType="int" name="bi_scan1_bit" description=" Returns: founded next position of the 1-bit or NULL on error.">
+    <param type="resource" name="num" />
+    <param type="int" name="start_pos" />
+  </function>
+  <function returnType="int" name="bi_hamming_distance" description=" Returns: founded next position of the 1-bit or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+  </function>
+  <function returnType="resource" name="bi_subint" description=" If is_invert is not 0, then invert cutted bits. Returns: number, containing of cutted bits or NULL on error.">
+    <param type="resource" name="num" />
+    <param type="int" name="start_pos" />
+    <param type="int" name="len" />
+    <param optional="true" type="int" name="is_invert" />
+  </function>
+  <function returnType="resource" name="bi_addmod" description="Returns: a + b (mod modulus) or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+    <param type="resource" name="modulus" />
+  </function>
+  <function returnType="resource" name="bi_submod" description=" Returns: a - b (mod modulus) or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+    <param type="resource" name="modulus" />
+  </function>
+  <function returnType="resource" name="bi_mulmod" description=" Returns: a - b (mod modulus) or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+    <param type="resource" name="modulus" />
+  </function>
+  <function returnType="resource" name="bi_divmod" description=" Returns: a / b (mod modulus) or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+    <param type="resource" name="modulus" />
+  </function>
+  <function returnType="resource" name="bi_powmod" description=" Returns: pow(a, b) (mod modulus) or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+    <param type="resource" name="modulus" />
+  </function>
+  <function returnType="resource" name="bi_factmod" description=" Returns: num! (mod modulus) or NULL on error.">
+    <param type="resource" name="num" />
+    <param type="resource" name="modulus" />
+  </function>
+  <function returnType="resource" name="bi_absmod" description=" Returns: num (mod modulus) or NULL on error.">
+    <param type="resource" name="num" />
+    <param type="resource" name="modulus" />
+  </function>
+  <function returnType="resource" name="bi_invmod" description=" Returns: pow(num, -1) (mod modulus) or NULL on error.">
+    <param type="resource" name="num" />
+    <param type="resource" name="modulus" />
+  </function>
+  <function returnType="resource" name="bi_sqrmod" description=" Returns: sqr(num) (mod modulus) or NULL on error.">
+    <param type="resource" name="num" />
+    <param type="resource" name="modulus" />
+  </function>
+  <function returnType="int" name="bi_cmpmod" description="Returns: -1, if a &lt; b (mod modulus); 0, if a = b (mod modulus); 1, if a &gt; b (mod modulus); or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+    <param type="resource" name="modulus" />
+  </function>
+  <function returnType="resource" name="bi_sqrt" description=" Returns: sqrt(num) or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="resource" name="bi_sqr_rem" description=" Returns: remainder of square root of num or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="resource" name="bi_gcd" description=" Returns: remainder of square root of num or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+  </function>
+  <function returnType="array" name="bi_gcd_extended" description=" Returns array(0 => gcd(a, b),1 => u,2 => v,); Where abs(a) * u + abs(b) * v = gcd(a, b)">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+  </function>
+  <function returnType="int" name="bi_is_prime" description=" Returns:0, if num is composite 1, if num is pseudoprime 2, if num is proven prime or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="resource" name="bi_next_prime" description=" Returns: next strong pseudoprime after num or NULL on error.">
+    <param type="resource" name="num" />
+  </function>
+  <function returnType="array" name="bi_div_extended" description=" Returns: array(q, r) or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+  </function>
+  <function returnType="resource" name="bi_rand" description=" generates equidistributed pseudorandom number with length bits_cnt bitsr.">
+    <param type="int" name="bits_cnt" />
+    <param optional="true" type="string" name="rand_func_name" />
+  </function>
+  <function returnType="int" name="bi_miller_test" description=" Returns:0, if a is composite 1, if a is pseudoprime by base base or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="base" />
+  </function>
+  <function returnType="int" name="bi_jacobi" description=" Returns: Jacobi symbol or NULL on error.">
+    <param type="resource" name="a" />
+    <param type="resource" name="b" />
+  </function>
+  <function returnType="resource" name="bi_fact" description=" Returns: a! or NULL on error.">
+    <param type="int" name="a" />
+  </function>
+  <function returnType="resource" name="bi_pow" description=" Returns: pow(a, b) or NULL on error.">
+    <param type="int" name="a" />
+    <param type="int" name="b" />
+  </function>
+  <function returnType="array" name="bi_info" description=" Returns associative array, containing information, related to resource extension:">
+  </function>
+</module>

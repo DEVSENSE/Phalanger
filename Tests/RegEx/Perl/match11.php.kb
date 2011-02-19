@@ -1,0 +1,23 @@
+[comment]
+This test is failing because there is a bug in .NET Regex class in v1.1, version 2.0 is ok.
+[expect php]
+
+[file]
+<?
+
+function preg_addslashes ($foo)
+{
+   return preg_replace("/([^A-z0-9_-]|[\\\[\]])/", "\\\\\\1", $foo);
+}
+
+$foo = "([/com|et\])";
+$true = preg_match ("/^".preg_addslashes($foo)."$/", $foo);
+
+// without preg_addslashes you'd get an error and $true = false.
+
+if ($true)
+	echo "true";
+else
+	echo "false";
+
+?> 

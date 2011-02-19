@@ -1,0 +1,223 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3D131DA2-05BE-4B3D-9CE0-27DD0982349A}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SilverlightDemo</RootNamespace>
+    <AssemblyName>SilverlightDemo</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>false</ThrowErrorsInValidation>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>ClientBin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>ClientBin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="agclr" />
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="system.Xml.core" />
+    <Reference Include="system.silverlight" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="config.phpx" />
+    <None Include="callback.phpx" />
+    <None Include="simplecallback.phpx" />
+    <None Include="simpledemo_xaml.phpx" />
+    <None Include="simpledemo_php.phpx" />
+    <None Include="interactive.phpx" />
+    <None Include="game.phpx" />
+    <None Include="manipulatehtml.phpx" />
+    <None Include="photos.phpx" />
+    <None Include="photos_list.php" />
+    <None Include="python\Code.py" />
+    <None Include="simplegui.phpx" />
+    <None Include="slutils.phpx" />
+    <None Include="Silverlight.js" />
+    <None Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="articles\phparch.html" />
+    <Content Include="callback.html" />
+    <Content Include="callback.html.js" />
+    <Content Include="simplecallback.html" />
+    <Content Include="simpledemo_xaml.html" />
+    <Content Include="simpledemo_php.html" />
+    <Content Include="interactive.html" />
+    <Content Include="interactive.html.js" />
+    <Content Include="game.html" />
+    <Content Include="game.html.js" />
+    <Content Include="img\copter.png" />
+    <Content Include="manipulatehtml.html" />
+    <Content Include="manipulatehtml.html.js" />
+    <Content Include="photos.html" />
+    <Content Include="photos.html.js" />
+    <Content Include="photos\Gallery Four\07.jpg" />
+    <Content Include="photos\Gallery Four\08.jpg" />
+    <Content Include="photos\Gallery Four\09.jpg" />
+    <Content Include="photos\Gallery Four\10.jpg" />
+    <Content Include="photos\Gallery Four\11.jpg" />
+    <Content Include="photos\Gallery Four\12.jpg" />
+    <Content Include="photos\Gallery Four\P1020122.JPG" />
+    <Content Include="photos\Gallery Four\P1030545.JPG" />
+    <Content Include="photos\Gallery Four\P1030548.JPG" />
+    <Content Include="photos\Gallery Four\P1030632.JPG" />
+    <Content Include="photos\Gallery Four\P1030638.JPG" />
+    <Content Include="photos\Gallery Four\P1030654.JPG" />
+    <Content Include="photos\Gallery One\00.jpg" />
+    <Content Include="photos\Gallery One\01.jpg" />
+    <Content Include="photos\Gallery One\02.jpg" />
+    <Content Include="photos\Gallery One\03.jpg" />
+    <Content Include="photos\Gallery One\04.jpg" />
+    <Content Include="photos\Gallery One\05.jpg" />
+    <Content Include="photos\Gallery One\06.jpg" />
+    <Content Include="photos\Gallery One\P1030190.JPG" />
+    <Content Include="photos\Gallery One\P1030216.JPG" />
+    <Content Include="photos\Gallery One\P1030245.JPG" />
+    <Content Include="photos\Gallery One\P1030246.JPG" />
+    <Content Include="photos\Gallery One\P1030660.JPG" />
+    <Content Include="photos\Gallery Three\00.jpg" />
+    <Content Include="photos\Gallery Three\01.jpg" />
+    <Content Include="photos\Gallery Three\02.jpg" />
+    <Content Include="photos\Gallery Three\03.JPG" />
+    <Content Include="photos\Gallery Three\04.jpg" />
+    <Content Include="photos\Gallery Three\05.JPG" />
+    <Content Include="photos\Gallery Three\06.JPG" />
+    <Content Include="photos\Gallery Three\P1020641.JPG" />
+    <Content Include="photos\Gallery Three\P1020655.JPG" />
+    <Content Include="photos\Gallery Three\P1020679.JPG" />
+    <Content Include="photos\Gallery Three\P1020686.JPG" />
+    <Content Include="photos\Gallery Three\P1020714.JPG" />
+    <Content Include="photos\Gallery Two\07.jpg" />
+    <Content Include="photos\Gallery Two\08.jpg" />
+    <Content Include="photos\Gallery Two\09.jpg" />
+    <Content Include="photos\Gallery Two\10.JPG" />
+    <Content Include="photos\Gallery Two\11.jpg" />
+    <Content Include="photos\Gallery Two\12.JPG" />
+    <Content Include="photos\Gallery Two\DSCF0012.JPG" />
+    <Content Include="photos\Gallery Two\DSCF0016.JPG" />
+    <Content Include="photos\Gallery Two\P1000431.JPG" />
+    <Content Include="photos\Gallery Two\P1000592.JPG" />
+    <Content Include="photos\Gallery Two\P1030486.JPG" />
+    <Content Include="photos\Gallery Two\P1030705.JPG" />
+    <Content Include="python\default.html" />
+    <Content Include="python\default.html.js" />
+    <Content Include="python\images\eagle.jpg" />
+    <Content Include="python\images\gorilla.jpg" />
+    <Content Include="python\images\gyr.jpg" />
+    <Content Include="python\images\heron1.jpg" />
+    <Content Include="python\images\heron2.jpg" />
+    <Content Include="python\images\jaguar.jpg" />
+    <Content Include="python\images\penguin1.jpg" />
+    <Content Include="python\images\penguin2.jpg" />
+    <Content Include="python\images\penguin3.jpg" />
+    <Content Include="python\images\tamarin.jpg" />
+    <Content Include="python\Silverlight.js" />
+    <Content Include="simplegui.html" />
+    <Content Include="simplegui.html.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Source\ClassLibrary\ClassLibrary %28Silverlight%29.csproj">
+      <Project>{761E1265-9628-4F87-906D-414E9BEACFF3}</Project>
+      <Name>ClassLibrary %28Silverlight%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Source\Core\Core %28Silverlight%29.csproj">
+      <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>
+      <Name>Core %28Silverlight%29</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Game.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Interactive.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Callback.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="python\Scene.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="simplegui.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="manipulatehtml.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+    <Page Include="photos.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="simpledemo_php.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="simpledemo_xaml.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="simplecallback.xaml">
+      <Generator>MSBuild:MarkupCompilePass1</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

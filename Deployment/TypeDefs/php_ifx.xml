@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="int" name="ifx_affected_rows" description="Get number of rows affected by a query.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="void" name="ifx_blobinfile_mode" description="Set the default blob mode for all select queries.">
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="void" name="ifx_byteasvarchar" description="Set the default byte mode.">
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="bool" name="ifx_close" description="Close Informix connection.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ifx_connect" description="Open Informix server connection.">
+    <param optional="true" type="string" name="database" />
+    <param optional="true" type="string" name="userid" />
+    <param optional="true" type="string" name="password" />
+  </function>
+  <function returnType="int" name="ifx_copy_blob" description="Duplicates the given blob object.">
+    <param type="int" name="bid" />
+  </function>
+  <function returnType="int" name="ifx_create_blob" description="Creates an blob object.">
+    <param type="int" name="type" />
+    <param type="int" name="mode" />
+    <param type="string" name="param" />
+  </function>
+  <function returnType="int" name="ifx_create_char" description="Creates an char object.">
+    <param type="string" name="param" />
+  </function>
+  <function returnType="bool" name="ifx_do" description="Execute a previously prepared SQL-statement.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="string" name="ifx_error" description="Returns error code of last Informix call." />
+  <function returnType="string" name="ifx_errormsg" description="Returns error message of last Informix call.">
+    <param optional="true" type="int" name="errorcode" />
+  </function>
+  <function returnType="array" name="ifx_fetch_row" description="Get row as enumerated array.">
+    <param type="resource" name="result_id" />
+    <param optional="true" type="mixed" name="position" />
+  </function>
+  <function returnType="array" name="ifx_fieldproperties" description="List of SQL fieldproperties.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="array" name="ifx_fieldtypes" description="List of Informix SQL fields.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="bool" name="ifx_free_blob" description="Deletes the blob object.">
+    <param type="int" name="bid" />
+  </function>
+  <function returnType="bool" name="ifx_free_char" description="Deletes the char object.">
+    <param type="int" name="bid" />
+  </function>
+  <function returnType="bool" name="ifx_free_result" description="Releases resources for the query.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="string" name="ifx_get_blob" description="Return the content of a blob object.">
+    <param type="int" name="bid" />
+  </function>
+  <function returnType="string" name="ifx_get_char" description="Return the content of the char object.">
+    <param type="int" name="bid" />
+  </function>
+  <function returnType="array" name="ifx_getsqlca" description="Get the contents of sqlca.sqlerrd[0..5] after a query.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="int" name="ifx_htmltbl_result" description="Formats all rows of a query into a HTML table.">
+    <param type="resource" name="result_id" />
+    <param optional="true" type="string" name="html_table_options" />
+  </function>
+  <function returnType="void" name="ifx_nullformat" description="Sets the default return value on a fetch row.">
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="int" name="ifx_num_fields" description="Returns the number of columns in the query.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="int" name="ifx_num_rows" description="Count the rows already fetched from a query.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ifx_pconnect" description="Open persistent Informix connection.">
+    <param optional="true" type="string" name="database" />
+    <param optional="true" type="string" name="userid" />
+    <param optional="true" type="string" name="password" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ifx_prepare" description="Prepare an SQL-statement for execution.">
+    <param type="string" name="query" />
+    <param type="resource" name="conn_id" />
+    <param optional="true" type="int" name="cursor_def" />
+    <param optional="true" type="mixed" name="blobidarray" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ifx_query" description="Send Informix query.">
+    <param type="string" name="query" />
+    <param type="resource" name="link_identifier" />
+    <param optional="true" type="int" name="cursor_type" />
+    <param optional="true" type="mixed" name="blobidarray" />
+  </function>
+  <function returnType="void" name="ifx_textasvarchar" description="Set the default text mode.">
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="bool" name="ifx_update_blob" description="Updates the content of the blob object.">
+    <param type="int" name="bid" />
+    <param type="string" name="content" />
+  </function>
+  <function returnType="bool" name="ifx_update_char" description="Updates the content of the char object.">
+    <param type="int" name="bid" />
+    <param type="string" name="content" />
+  </function>
+  <function returnType="bool" name="ifxus_close_slob" description="Deletes the slob object.">
+    <param type="int" name="bid" />
+  </function>
+  <function returnType="int" name="ifxus_create_slob" description="Creates an slob object and opens it.">
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="bool" name="ifxus_free_slob" description="Deletes the slob object.">
+    <param type="int" name="bid" />
+  </function>
+  <function returnType="int" name="ifxus_open_slob" description="Opens an slob object.">
+    <param type="int" name="bid" />
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="string" name="ifxus_read_slob" description="Reads nbytes of the slob object.">
+    <param type="int" name="bid" />
+    <param type="int" name="nbytes" />
+  </function>
+  <function returnType="int" name="ifxus_seek_slob" description="Sets the current file or seek position.">
+    <param type="int" name="bid" />
+    <param type="int" name="mode" />
+    <param type="int" name="offset" />
+  </function>
+  <function returnType="int" name="ifxus_tell_slob" description="Returns the current file or seek position.">
+    <param type="int" name="bid" />
+  </function>
+  <function returnType="int" name="ifxus_write_slob" description="Writes a string into the slob object.">
+    <param type="int" name="bid" />
+    <param type="string" name="content" />
+  </function>
+</module>

@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PHP.Core.Reflection.DMemberDesc" Collapsed="true">
+    <Position X="15.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CEEQAAAIQBAAAADEAAAAAAAIACAogAAAKAAAACgAAAA=</HashCode>
+      <FileName>Reflection\Members.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.DConstantDesc" Collapsed="true">
+    <Position X="1.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAggAAACAAAIAgAAAA=</HashCode>
+      <FileName>Reflection\Constants.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.DRoutineDesc" Collapsed="true">
+    <Position X="6.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIBAkABAAIIAgQAAAgAAELAAAAAAAIAAAkAAAAAAA=</HashCode>
+      <FileName>Reflection\MethodDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.DPropertyDesc" Collapsed="true">
+    <Position X="11.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAIABAAAAACBABAAAEAABEAAAEhiAAAAEAQAQABAAA=</HashCode>
+      <FileName>Reflection\Properties.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.DTypeDesc" Collapsed="true">
+    <Position X="22" Y="1.75" Width="1.5" />
+    <NestedTypes>
+      <Delegate Name="PHP.Core.Reflection.DTypeDesc.GetMemberDictionary&lt;N, T&gt;" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Reflection\TypeDescs.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Enum Name="PHP.Core.Reflection.DTypeDesc.LookupFlags" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Reflection\TypeDescs.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="PHP.Core.Reflection.DTypeDesc.MakeGenericArgumentsResult" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Reflection\TypeDescs.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>GaICYqgAFQbAgrAASwkEwAkFgQBgxWoKATAoSYcTSNA=</HashCode>
+      <FileName>Reflection\TypeDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.UnknownTypeDesc" Collapsed="true">
+    <Position X="13.5" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAAQgAAwAABAAAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>Reflection\TypeDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.GlobalTypeDesc" Collapsed="true">
+    <Position X="16" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAACAAQgAAQAAFAAAAAAAAAAAAAAABAIA=</HashCode>
+      <FileName>Reflection\TypeDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.GenericParameterDesc" Collapsed="true">
+    <Position X="18.25" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAAQhAAQAAFAAAAQAEBEAAAAQAAAIA=</HashCode>
+      <FileName>Reflection\TypeDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.ConstructedTypeDesc" Collapsed="true">
+    <Position X="20.75" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>CAAIEAAAAAAAACAAQgAAwAABAAAgAAAAIAAAAAgAAIA=</HashCode>
+      <FileName>Reflection\TypeDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.PhpTypeCompletionDesc" Collapsed="true">
+    <Position X="23.25" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQADAAUgAAwAABAAAAABAAAAAQAAAAAIA=</HashCode>
+      <FileName>Reflection\TypeDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.PrimitiveTypeDesc" Collapsed="true">
+    <Position X="26" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABACAACQAQgAAwAABAAAIgAAAAAAAAAAAAIA=</HashCode>
+      <FileName>Reflection\TypeDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.PhpTypeDesc" Collapsed="true">
+    <Position X="28.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAIIAAAQQGABQggBQAABAABAAEAoAAAQAQEFA4A=</HashCode>
+      <FileName>Reflection\TypeDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.ClrTypeDesc" Collapsed="true">
+    <Position X="30.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gIAgAEAAAAAAgCAgwgAAYIgBAAFABAAAAAAAgAAGAIA=</HashCode>
+      <FileName>Reflection\TypeDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.PhpRoutineDesc" Collapsed="true">
+    <Position X="4" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAABAAAggAAAAAAAABAAAAA=</HashCode>
+      <FileName>Reflection\MethodDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.PhpLibraryFunctionDesc" Collapsed="true">
+    <Position X="6.25" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAABAAAggAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Reflection\MethodDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.ClrMethodDesc" Collapsed="true">
+    <Position X="9" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAABAAAggAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Reflection\MethodDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.DPhpFieldDesc" Collapsed="true">
+    <Position X="11.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAABAAAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Reflection\Properties.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.ClrGenericMethodDesc" Collapsed="true">
+    <Position X="9" Y="4.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAABAAAAAggAAAAAABAAQAA=</HashCode>
+      <FileName>Reflection\MethodDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.ClrDelegateDesc" Collapsed="true">
+    <Position X="30.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAACAAAAAAAIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Reflection\TypeDescs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

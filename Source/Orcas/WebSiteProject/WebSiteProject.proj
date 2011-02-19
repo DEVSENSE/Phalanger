@@ -1,0 +1,267 @@
+﻿<Project DefaultTargets="BuildZipFiles" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+
+	<!--Global properties for the project-->
+	<PropertyGroup>
+		<!--Default configuration is Debug-->
+		<Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
+    <Configuration Condition="'$(Configuration)'=='Debug'">Debug</Configuration>
+  
+		<!--Set the output path-->
+		<OutputPath>..\bin\$(Configuration)\WebTemplates\</OutputPath>
+
+		<!--Make sure that the intermediate path is set-->
+		<IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">obj\$(Configuration)</IntermediateOutputPath>
+	</PropertyGroup>
+
+	<!--Item to Zip-->
+	<ItemGroup>
+    
+    <!-- (ProjectItems\PHPScript) Empty PHP Script file -->
+    <ZipItem Include="Templates\ProjectItems\PHPScript\script.php">
+      <RootPath>Templates\ProjectItems\PHPScript</RootPath>
+    </ZipItem>
+    <ZipItem Include="Templates\ProjectItems\PHPScript\PHPScript.vstemplate">
+      <RootPath>Templates\ProjectItems\PHPScript</RootPath>
+    </ZipItem>
+    <ZipItem Include="Templates\ProjectItems\PHPScript\__TemplateIcon.ico">
+      <RootPath>Templates\ProjectItems\PHPScript</RootPath>
+    </ZipItem>
+
+    <!-- (ProjectItems\PHPSilverlightControl) PHP Sileverlight (XAML) control -->
+    <ZipItem Include="Templates\ProjectItems\PHPSilverlightControl\Control.phpx">
+      <RootPath>Templates\ProjectItems\PHPSilverlightControl</RootPath>
+    </ZipItem>
+    <ZipItem Include="Templates\ProjectItems\PHPSilverlightControl\Control.xaml">
+      <RootPath>Templates\ProjectItems\PHPSilverlightControl</RootPath>
+    </ZipItem>
+    <ZipItem Include="Templates\ProjectItems\PHPSilverlightControl\PHPSilverlightControl.vstemplate">
+      <RootPath>Templates\ProjectItems\PHPSilverlightControl</RootPath>
+    </ZipItem>
+    <ZipItem Include="Templates\ProjectItems\PHPSilverlightControl\__TemplateIcon.ico">
+      <RootPath>Templates\ProjectItems\PHPSilverlightControl</RootPath>
+    </ZipItem>
+
+    <!-- (Projects\PHPWebSite) Default PHP Web site -->
+    <ZipProject Include="Templates\Projects\PHPWebSite\__TemplateIcon.ico">
+      <RootPath>Templates\Projects\PHPWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPWebSite\default.php">
+      <RootPath>Templates\Projects\PHPWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPWebSite\Web.config">
+      <RootPath>Templates\Projects\PHPWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPWebSite\PHPWebSite.vstemplate">
+      <RootPath>Templates\Projects\PHPWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPWebSite\PHPWebSite.webproj">
+      <RootPath>Templates\Projects\PHPWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+
+    <!-- (Projects\PHPEmptyWebSite) Empty PHP Web site -->
+    <ZipProject Include="Templates\Projects\PHPEmptyWebSite\__TemplateIcon.ico">
+      <RootPath>Templates\Projects\PHPEmptyWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPEmptyWebSite\PHPEmptyWeb.vstemplate">
+      <RootPath>Templates\Projects\PHPEmptyWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPEmptyWebSite\PHPEmptyWeb.webproj">
+      <RootPath>Templates\Projects\PHPEmptyWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    
+    <!-- (Projects\PHPClientWebSite) Client-side only PHP Silverlight Web -->
+    <ZipProject Include="Templates\Projects\PHPClientWebSite\ClientBin\PhpNetClassLibrary.dll">
+      <RootPath>Templates\Projects\PHPClientWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPClientWebSite\ClientBin\PhpNetCore.dll">
+      <RootPath>Templates\Projects\PHPClientWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPClientWebSite\__TemplateIcon.ico">
+      <RootPath>Templates\Projects\PHPClientWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPClientWebSite\slutils.phpx">
+      <RootPath>Templates\Projects\PHPClientWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPClientWebSite\Silverlight.js">
+      <RootPath>Templates\Projects\PHPClientWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPClientWebSite\PHPClientWebSite.vstemplate">
+      <RootPath>Templates\Projects\PHPClientWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPClientWebSite\PHPClientWebSite.webproj">
+      <RootPath>Templates\Projects\PHPClientWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPClientWebSite\default.phpx">
+      <RootPath>Templates\Projects\PHPClientWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPClientWebSite\default.html">
+      <RootPath>Templates\Projects\PHPClientWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPClientWebSite\default.html.js">
+      <RootPath>Templates\Projects\PHPClientWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\PHPClientWebSite\default.xaml">
+      <RootPath>Templates\Projects\PHPClientWebSite</RootPath>
+      <Visible>false</Visible>
+    </ZipProject>
+
+
+    <!--
+    <!- - Master Page item template - ->
+		<ZipItem Include="Templates\ProjectItems\MasterPage\MasterPage.master">
+			<RootPath>Templates\ProjectItems\MasterPage</RootPath>
+		</ZipItem>
+		<ZipItem Include="Templates\ProjectItems\MasterPage\MasterPage.vstemplate">
+			<RootPath>Templates\ProjectItems\MasterPage</RootPath>
+		</ZipItem>
+		<ZipItem Include="Templates\ProjectItems\MasterPage\MasterPage_cb.master">
+			<RootPath>Templates\ProjectItems\MasterPage</RootPath>
+		</ZipItem>
+
+		<!- - HTML Page item template - ->
+		<ZipItem Include="Templates\ProjectItems\HTMLPage\HTMLPage.htm" />
+		<ZipItem Include="Templates\ProjectItems\HTMLPage\HTMLPage.vstemplate" />
+
+		<!- - Class item template - ->
+		<ZipItem Include="Templates\ProjectItems\Class\Class.py" />
+		<ZipItem Include="Templates\ProjectItems\Class\Class.vstemplate" />
+		<ZipItem Include="Templates\ProjectItems\Class\__TemplateIcon.ico" />
+
+		<!- - WebForm item template - ->
+		<ZipItem Include="Templates\ProjectItems\WebForm\ContentPage.aspx">
+			<RootPath>Templates\ProjectItems\WebForm</RootPath>
+		</ZipItem>
+		<ZipItem Include="Templates\ProjectItems\WebForm\ContentPage_cb.aspx">
+			<RootPath>Templates\ProjectItems\WebForm</RootPath>
+		</ZipItem>
+		<ZipItem Include="Templates\ProjectItems\WebForm\WebForm.aspx">
+			<RootPath>Templates\ProjectItems\WebForm</RootPath>
+		</ZipItem>
+		<ZipItem Include="Templates\ProjectItems\WebForm\WebForm.vstemplate">
+			<RootPath>Templates\ProjectItems\WebForm</RootPath>
+		</ZipItem>
+		<ZipItem Include="Templates\ProjectItems\WebForm\WebForm_cb.aspx">
+			<RootPath>Templates\ProjectItems\WebForm</RootPath>
+		</ZipItem>
+
+		<!- - Empty WEB site- ->
+		<ZipProject Include="Templates\Projects\EmptyWeb\__TemplateIcon.ico" />
+		<ZipProject Include="Templates\Projects\EmptyWeb\EmptyWeb.webproj" />
+		<ZipProject Include="Templates\Projects\EmptyWeb\EmptyWeb.vstemplate" />
+
+		<!- - WEB site Application- ->
+		<ZipProject Include="$(IntermediateOutputPath)\Projects\WebApplication\__TemplateIcon.ico">
+			<RootPath>$(IntermediateOutputPath)\Projects\WebApplication</RootPath>
+			<Visible>false</Visible>
+		</ZipProject>
+		<ZipProject Include="$(IntermediateOutputPath)\Projects\WebApplication\bin\IronMath.dll">
+			<RootPath>$(IntermediateOutputPath)\Projects\WebApplication</RootPath>
+			<Visible>false</Visible>
+		</ZipProject>
+		<ZipProject Include="$(IntermediateOutputPath)\Projects\WebApplication\bin\IronPython.dll">
+			<RootPath>$(IntermediateOutputPath)\Projects\WebApplication</RootPath>
+			<Visible>false</Visible>
+		</ZipProject>
+		<ZipProject Include="$(IntermediateOutputPath)\Projects\WebApplication\Default.aspx">
+			<RootPath>$(IntermediateOutputPath)\Projects\WebApplication</RootPath>
+			<Visible>false</Visible>
+		</ZipProject>
+		<ZipProject Include="$(IntermediateOutputPath)\Projects\WebApplication\WebApplication.vstemplate">
+			<RootPath>$(IntermediateOutputPath)\Projects\WebApplication</RootPath>
+			<Visible>false</Visible>
+		</ZipProject>
+		<ZipProject Include="$(IntermediateOutputPath)\Projects\WebApplication\WebApplication.webproj">
+			<RootPath>$(IntermediateOutputPath)\Projects\WebApplication</RootPath>
+			<Visible>false</Visible>
+		</ZipProject>
+		<ZipProject Include="$(IntermediateOutputPath)\Projects\WebApplication\Web.config">
+			<RootPath>$(IntermediateOutputPath)\Projects\WebApplication</RootPath>
+			<Visible>false</Visible>
+		</ZipProject>
+
+		<!- -WEB service- ->
+		<ZipProject Include="Templates\Projects\WebService\__TemplateIcon.ico" />
+		<ZipProject Include="Templates\Projects\WebService\Service.asmx" />
+		<ZipProject Include="Templates\Projects\WebService\Service.py" />
+		<ZipProject Include="Templates\Projects\WebService\Web.config" />
+		<ZipProject Include="Templates\Projects\WebService\WebService.vstemplate" />
+		<ZipProject Include="Templates\Projects\WebService\WebService.webproj " />
+	-->
+  
+  </ItemGroup>
+  
+  <!--
+	<ItemGroup>
+		<None Include="Templates\Projects\WebApplication\__TemplateIcon.ico" />
+		<None Include="Templates\Projects\WebApplication\Default.aspx" />
+		<None Include="Templates\Projects\WebApplication\WebApplication.vstemplate" />
+		<None Include="Templates\Projects\WebApplication\WebApplication.webproj" />
+		<None Include="Templates\Projects\WebApplication\Web.config" />
+	</ItemGroup>
+  -->
+  
+	<PropertyGroup>
+		<TargetRegistryRoot Condition=" '$(TargetRegistryRoot)' == '' ">Software\Microsoft\VisualStudio\9.0Exp</TargetRegistryRoot>
+		<VsTemplateLanguage>Web\Phalanger</VsTemplateLanguage>
+		<RegisterOutputPackage Condition="'$(RegisterOutputPackage)' == ''">true</RegisterOutputPackage>
+	</PropertyGroup>
+
+	<Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+	<Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\VSSDK\Microsoft.VsSDK.targets" />
+
+	<!-- Target that builds the tree of items to ZIP to create a default WEB site -->
+	<Target Name="BuildWebApplicationProjectTree" DependsOnTargets="FindSDKInstallation">
+		<!-- Create the directories- ->
+		<MakeDir Directories="$(IntermediateOutputPath)\Projects\WebApplication\bin" />
+
+		<!- -Copy the files- ->
+		<Copy DestinationFolder="$(IntermediateOutputPath)\Projects\WebApplication" 
+			  SourceFiles="Templates\Projects\WebApplication\__TemplateIcon.ico;Templates\Projects\WebApplication\Default.aspx;Templates\Projects\WebApplication\WebApplication.vstemplate;Templates\Projects\WebApplication\WebApplication.webproj;Templates\Projects\WebApplication\Web.config"
+			  SkipUnchangedFiles="true" />
+
+		<Copy DestinationFolder="$(IntermediateOutputPath)\Projects\WebApplication\bin" 
+			  SourceFiles="$(VsSDKInstall)\VisualStudioIntegration\Common\Assemblies\IronMath.dll;$(VsSDKInstall)\VisualStudioIntegration\Common\Assemblies\IronPython.dll" 
+			  SkipUnchangedFiles="true" />
+     -->
+  </Target>
+
+  <!--Make the ZIP task depend on this one so that it will be executed before zipping the files-->
+	<PropertyGroup>
+		<ZipFilesDependsOn>$(ZipFilesDependsOn);BuildWebApplicationProjectTree</ZipFilesDependsOn>
+	</PropertyGroup>
+
+  <!--List of tasks to perform to build the templates-->
+  <PropertyGroup>
+    <BuildZipFilesDependsOn>
+      ZipProjects;
+      ZipItems;
+      IncrementalClean;
+    </BuildZipFilesDependsOn>
+  </PropertyGroup>
+  
+  <!--This target is used as entry point for the build of this project.
+      It does nothing, but its depends on list defines the set of tasks to perform
+      to build the templates.-->
+  <Target Name="BuildZipFiles"
+          DependsOnTargets="$(BuildZipFilesDependsOn)">
+    <!--Do Nothing-->
+  </Target>
+</Project>

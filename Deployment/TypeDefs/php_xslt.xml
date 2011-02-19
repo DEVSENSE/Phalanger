@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="void" name="xslt_set_sax_handlers" description="Set the SAX handlers to be called when the XML document gets processed.">
+    <param type="resource" name="processor" />
+    <param type="array" name="handlers" />
+  </function>
+  <function returnType="void" name="xslt_set_error_handler" description="Set the error handler, to be called when an XSLT error happens.">
+    <param type="resource" name="processor" />
+    <param type="mixed" name="error_func" />
+  </function>
+  <function returnType="string" name="xslt_error" description="Error string.">
+    <param type="resource" name="processor" />
+  </function>
+  <function returnType="void" name="xslt_free" description="Free the xslt processor up.">
+    <param type="resource" name="processor" />
+  </function>
+  <function returnType="void" name="xslt_set_scheme_handlers" description="Set the scheme handlers for the XSLT processor.">
+    <param type="resource" name="processor" />
+    <param type="array" name="handlers" />
+  </function>
+  <function returnType="void" name="xslt_set_encoding" description="Set the output encoding for the current stylesheet.">
+    <param type="resource" name="processor" />
+    <param type="string" name="encoding" />
+  </function>
+  <function returnType="void" name="xslt_set_base" description="Sets the base URI for all XSLT transformations.">
+    <param type="resource" name="processor" />
+    <param type="string" name="base" />
+  </function>
+  <function returnType="string" name="xslt_process" description="Perform the xslt transformation.">
+    <param type="resource" name="processor" />
+    <param type="string" name="xml" />
+    <param type="string" name="xslt" />
+    <param optional="true" type="string" name="result" />
+    <param optional="true" type="array" name="args" />
+    <param optional="true" type="array" name="params" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="xslt_create" description="Create a new XSLT processor." />
+  <function returnType="void" name="xslt_set_log" description="Set the log file to write the errors to (defaults to stderr).">
+    <param type="resource" name="processor" />
+    <param type="string" name="logfile" />
+  </function>
+  <function returnType="int" name="xslt_errno" description="Error number.">
+    <param type="resource" name="processor" />
+  </function>
+</module>

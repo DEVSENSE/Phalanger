@@ -1,0 +1,19 @@
+<VSTemplate Version="2.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name>Extension</Name>
+    <Description>Creates a pure PHP/CLR class library behaving like a managed PHP extension</Description>
+    <Icon>__TemplateIcon.ico</Icon>
+    <ProjectType>Phalanger</ProjectType>
+    <SortOrder>40</SortOrder>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>ClassLibrary</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+      <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
+  </TemplateData>
+  <TemplateContent>
+    <Project File="Extension.phpproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true">Extension.php</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

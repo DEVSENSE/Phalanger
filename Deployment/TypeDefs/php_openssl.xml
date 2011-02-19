@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="resource" castToFalse="true" name="openssl_get_privatekey" description="Gets private keys.">
+    <param type="string" name="key" />
+    <param optional="true" type="string" name="passphrase" />
+  </function>
+  <function returnType="bool" name="openssl_public_decrypt" description="Decrypts data with public key.">
+    <param type="string" name="data" />
+    <param type="string" name="crypted" />
+    <param type="resource" name="key" />
+    <param optional="true" type="int" name="padding" />
+  </function>
+  <function returnType="bool" name="openssl_pkey_export" description="Gets an exportable representation of a key into a string or file.">
+    <param type="mixed" name="key" />
+    <param direction="out" type="mixed" name="out" />
+    <param optional="true" type="string" name="passphrase" />
+    <param optional="true" type="array" name="config_args" />
+  </function>
+  <function returnType="int" name="openssl_seal" description="Seals data.">
+    <param type="string" name="data" />
+    <param direction="out" type="string" name="sealdata" />
+    <param direction="out" type="array" name="ekeys" />
+    <param type="array" name="pubkeys" />
+  </function>
+  <function returnType="bool" name="openssl_csr_export" description="Exports a CSR to file or a var.">
+    <param type="resource" name="csr" />
+    <param direction="out" type="string" name="out" />
+    <param optional="true" type="bool" name="notext" />
+  </function>
+  <function returnType="bool" name="openssl_pkey_export_to_file" description="Gets an exportable representation of a key into a file.">
+    <param type="mixed" name="key" />
+    <param type="string" name="outfilename" />
+    <param type="string" name="passphrase" />
+    <param type="array" name="config_args" />
+  </function>
+  <function returnType="bool" name="openssl_x509_export" description="Exports a CERT to file or a var.">
+    <param type="mixed" name="x509" />
+    <param direction="out" type="string" name="out" />
+    <param optional="true" type="bool" name="notext" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="openssl_csr_sign" description="Signs a cert with another CERT.">
+    <param type="mixed" name="csr" />
+    <param type="mixed" name="x509" />
+    <param type="mixed" name="priv_key" />
+    <param type="int" name="days" />
+  </function>
+  <function returnType="bool" name="openssl_pkcs7_sign" description="Signs the MIME message in the file named infile with signcert/signkey and output the result to file name outfile. headers lists plain text headers to exclude from the signed portion of the message, and should include to, from and subject as a minimum.">
+    <param type="string" name="infile" />
+    <param type="string" name="outfile" />
+    <param type="mixed" name="signcert" />
+    <param type="mixed" name="signkey" />
+    <param type="array" name="headers" />
+    <param optional="true" type="int" name="flags" />
+    <param optional="true" type="string" name="extracertsfilename" />
+  </function>
+  <function returnType="bool" name="openssl_csr_export_to_file" description="Exports a CSR to file or a var.">
+    <param type="resource" name="csr" />
+    <param type="string" name="outfilename" />
+    <param optional="true" type="bool" name="notext" />
+  </function>
+  <function returnType="bool" name="openssl_pkcs7_verify" description="Verifys that the data block is intact, the signer is who they say they are, and returns the CERTs of the signers.">
+    <param type="string" name="filename" />
+    <param type="int" name="flags" />
+    <param optional="true" type="string" name="signerscerts" />
+    <param optional="true" type="array" name="cainfo" />
+    <param optional="true" type="string" name="extracerts" />
+  </function>
+  <function returnType="bool" name="openssl_pkcs7_decrypt" description="Decrypts the S/MIME message in the file name infilename and output the results to the file name outfilename.  recipcert is a CERT for one of the recipients. recipkey specifies the private key matching recipcert, if recipcert does not include the key.">
+    <param type="string" name="infilename" />
+    <param type="string" name="outfilename" />
+    <param type="mixed" name="recipcert" />
+    <param optional="true" type="mixed" name="recipkey" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="openssl_pkey_get_private" description="Gets private keys.">
+    <param type="string" name="key" />
+    <param optional="true" type="string" name="passphrase" />
+  </function>
+  <function returnType="void" name="openssl_pkey_free" description="Frees a key.">
+    <param type="resource" name="key" />
+  </function>
+  <function returnType="mixed" name="openssl_error_string" description="Returns a description of the last error, and alters the index of the error messages. Returns false when the are no more messages." />
+  <function returnType="bool" name="openssl_public_encrypt" description="Encrypts data with public key.">
+    <param type="string" name="data" />
+    <param type="string" name="crypted" />
+    <param type="mixed" name="key" />
+    <param optional="true" type="int" name="padding" />
+  </function>
+  <function returnType="bool" name="openssl_csr_new" description="Generates a privkey and CSR.">
+    <param type="array" name="dn" />
+    <param direction="out" type="resource" name="privkey" />
+    <param type="array" name="extraattribs" />
+    <param type="array" name="configargs" />
+  </function>
+  <function returnType="bool" name="openssl_x509_check_private_key" description="Checks if a private key corresponds to a CERT.">
+    <param type="mixed" name="cert" />
+    <param type="mixed" name="key" />
+  </function>
+  <function returnType="int" name="openssl_x509_checkpurpose" description="Checks the CERT to see if it can be used for the purpose in purpose. cainfo holds information about trusted CAs.">
+    <param type="mixed" name="x509cert" />
+    <param type="int" name="purpose" />
+    <param type="array" name="cainfo" />
+    <param optional="true" type="string" name="untrustedfile" />
+  </function>
+  <function returnType="array" name="openssl_x509_parse" description="Returns an array of the fields/values of the CERT.">
+    <param type="mixed" name="x509" />
+    <param optional="true" type="bool" name="shortnames" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="openssl_x509_read" description="Reads X.509 certificates.">
+    <param type="mixed" name="cert" />
+  </function>
+  <function returnType="bool" name="openssl_open" description="Opens data.">
+    <param type="string" name="data" />
+    <param direction="out" type="string" name="opendata" />
+    <param type="string" name="ekey" />
+    <param type="mixed" name="privkey" />
+  </function>
+  <function returnType="void" name="openssl_x509_free" description="Frees X.509 certificates.">
+    <param type="resource" name="x509" />
+  </function>
+  <function returnType="bool" name="openssl_private_encrypt" description="Encrypts data with private key.">
+    <param type="string" name="data" />
+    <param type="string" name="crypted" />
+    <param type="mixed" name="key" />
+    <param optional="true" type="int" name="padding" />
+  </function>
+  <function returnType="bool" name="openssl_private_decrypt" description="Decrypts data with private key.">
+    <param type="string" name="data" />
+    <param type="string" name="crypted" />
+    <param type="mixed" name="key" />
+    <param optional="true" type="int" name="padding" />
+  </function>
+  <function returnType="int" name="openssl_verify" description="Verifys data.">
+    <param type="string" name="data" />
+    <param type="string" name="signature" />
+    <param type="mixed" name="key" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="openssl_get_publickey" description="Gets public key from X.509 certificate.">
+    <param type="mixed" name="cert" />
+  </function>
+  <function returnType="bool" name="openssl_pkcs7_encrypt" description="Encrypts the message in the file named infile with the certificates in recipcerts and output the result to the file named outfile.">
+    <param type="string" name="infile" />
+    <param type="string" name="outfile" />
+    <param type="mixed" name="recipcerts" />
+    <param type="array" name="headers" />
+    <param optional="true" type="int" name="flags" />
+  </function>
+  <function returnType="void" name="openssl_free_key" description="Frees a key.">
+    <param type="resource" name="key" />
+  </function>
+  <function returnType="bool" name="openssl_x509_export_to_file" description="Exports a CERT to file or a var.">
+    <param type="mixed" name="x509" />
+    <param type="string" name="outfilename" />
+    <param optional="true" type="bool" name="notext" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="openssl_pkey_new" description="Generates a new private key.">
+    <param optional="true" type="array" name="configargs" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="openssl_pkey_get_public" description="Gets public key from X.509 certificate.">
+    <param type="mixed" name="cert" />
+  </function>
+  <function returnType="bool" name="openssl_sign" description="Signs data.">
+    <param type="string" name="data" />
+    <param direction="out" type="string" name="signature" />
+    <param type="mixed" name="key" />
+  </function>
+</module>

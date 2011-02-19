@@ -1,0 +1,12 @@
+[expect] bdebdcec
+[expect ct-error] redeclares function d
+
+[file]
+<?
+include "b06.inc";
+include "d06.inc";
+b();
+c();
+d();
+e();
+?>

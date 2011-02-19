@@ -1,0 +1,67 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "php_pcre.php5", "pcre\pcre.vcproj", "{04D7164E-15BB-4DB9-98D4-0BA324696C0C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "php_zip.php5", "zip\zip.vcproj", "{B9899DD1-E8C0-46DA-BEF5-A189B6948C6F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E86BFDC1-B33E-4442-B596-05CD7C65E7A0} = {E86BFDC1-B33E-4442-B596-05CD7C65E7A0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "php_fileinfo.php5", "fileinfo\fileinfo.vcproj", "{E86BFDC1-B33E-4442-B596-05CD7C65E7A0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{04D7164E-15BB-4DB9-98D4-0BA324696C0C} = {04D7164E-15BB-4DB9-98D4-0BA324696C0C}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs01
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = pcre\\pcre.vcproj
+		SccProjectName1 = pcre
+		SccLocalPath1 = pcre
+		SccProjectUniqueName2 = zip\\zip.vcproj
+		SccProjectName2 = zip
+		SccLocalPath2 = zip
+		SccProjectUniqueName3 = fileinfo\\fileinfo.vcproj
+		SccProjectName3 = fileinfo
+		SccLocalPath3 = fileinfo
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		MinSizeRel|Win32 = MinSizeRel|Win32
+		Release|Win32 = Release|Win32
+		RelWithDebInfo|Win32 = RelWithDebInfo|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{04D7164E-15BB-4DB9-98D4-0BA324696C0C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{04D7164E-15BB-4DB9-98D4-0BA324696C0C}.Debug|Win32.Build.0 = Debug|Win32
+		{04D7164E-15BB-4DB9-98D4-0BA324696C0C}.MinSizeRel|Win32.ActiveCfg = Release|Win32
+		{04D7164E-15BB-4DB9-98D4-0BA324696C0C}.MinSizeRel|Win32.Build.0 = Release|Win32
+		{04D7164E-15BB-4DB9-98D4-0BA324696C0C}.Release|Win32.ActiveCfg = Release|Win32
+		{04D7164E-15BB-4DB9-98D4-0BA324696C0C}.Release|Win32.Build.0 = Release|Win32
+		{04D7164E-15BB-4DB9-98D4-0BA324696C0C}.RelWithDebInfo|Win32.ActiveCfg = Release|Win32
+		{04D7164E-15BB-4DB9-98D4-0BA324696C0C}.RelWithDebInfo|Win32.Build.0 = Release|Win32
+		{B9899DD1-E8C0-46DA-BEF5-A189B6948C6F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B9899DD1-E8C0-46DA-BEF5-A189B6948C6F}.Debug|Win32.Build.0 = Debug|Win32
+		{B9899DD1-E8C0-46DA-BEF5-A189B6948C6F}.MinSizeRel|Win32.ActiveCfg = Release|Win32
+		{B9899DD1-E8C0-46DA-BEF5-A189B6948C6F}.MinSizeRel|Win32.Build.0 = Release|Win32
+		{B9899DD1-E8C0-46DA-BEF5-A189B6948C6F}.Release|Win32.ActiveCfg = Release|Win32
+		{B9899DD1-E8C0-46DA-BEF5-A189B6948C6F}.Release|Win32.Build.0 = Release|Win32
+		{B9899DD1-E8C0-46DA-BEF5-A189B6948C6F}.RelWithDebInfo|Win32.ActiveCfg = Release|Win32
+		{B9899DD1-E8C0-46DA-BEF5-A189B6948C6F}.RelWithDebInfo|Win32.Build.0 = Release|Win32
+		{E86BFDC1-B33E-4442-B596-05CD7C65E7A0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E86BFDC1-B33E-4442-B596-05CD7C65E7A0}.Debug|Win32.Build.0 = Debug|Win32
+		{E86BFDC1-B33E-4442-B596-05CD7C65E7A0}.MinSizeRel|Win32.ActiveCfg = Release|Win32
+		{E86BFDC1-B33E-4442-B596-05CD7C65E7A0}.MinSizeRel|Win32.Build.0 = Release|Win32
+		{E86BFDC1-B33E-4442-B596-05CD7C65E7A0}.Release|Win32.ActiveCfg = Release|Win32
+		{E86BFDC1-B33E-4442-B596-05CD7C65E7A0}.Release|Win32.Build.0 = Release|Win32
+		{E86BFDC1-B33E-4442-B596-05CD7C65E7A0}.RelWithDebInfo|Win32.ActiveCfg = Release|Win32
+		{E86BFDC1-B33E-4442-B596-05CD7C65E7A0}.RelWithDebInfo|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

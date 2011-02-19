@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="int" name="filepro_fieldcount" description="Find out how many fields are in a filePro database." />
+  <function returnType="int" name="filepro_fieldwidth" description="Gets the width of a field.">
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="int" name="filepro_rowcount" description="Find out how many rows are in a filePro database." />
+  <function returnType="string" name="filepro_fieldname" description="Gets the name of a field.">
+    <param type="int" name="fieldnumber" />
+  </function>
+  <function returnType="bool" name="filepro" description="Read and verify the map file.">
+    <param type="string" name="directory" />
+  </function>
+  <function returnType="string" name="filepro_retrieve" description="Retrieves data from a filePro database.">
+    <param type="int" name="row_number" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="string" name="filepro_fieldtype" description="Gets the type of a field.">
+    <param type="int" name="field_number" />
+  </function>
+</module>

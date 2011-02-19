@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="mixed" name="mysql" description="Send a MySQL query.">
+    <param type="string" name="database" />
+    <param type="string" name="query" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="int" name="mysql_affected_rows" description="Get number of affected rows in previous MySQL operation.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="int" name="mysql_change_user" description="Change logged in user of the active connection.">
+    <param type="string" name="user" />
+    <param type="string" name="password" />
+    <param optional="true" type="string" name="database" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="string" name="mysql_client_encoding" description="Returns the name of the character set.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="mysql_close" description="Close MySQL connection.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="mysql_connect" description="Open a connection to a MySQL Server.">
+    <param optional="true" type="string" name="server" />
+    <param optional="true" type="string" name="username" />
+    <param optional="true" type="string" name="password" />
+    <param optional="true" type="bool" name="new_link" />
+    <param optional="true" type="int" name="client_flags" />
+  </function>
+  <function returnType="bool" name="mysql_createdb" description="Create a MySQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="mysql_create_db" description="Create a MySQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="mysql_data_seek" description="Move internal result pointer.">
+    <param type="resource" name="result_identifier" />
+    <param type="int" name="row_number" />
+  </function>
+  <function returnType="string" castToFalse="true" name="mysql_dbname" description="Get result data.">
+    <param type="resource" name="result" />
+    <param type="int" name="row" />
+    <param optional="true" type="mixed" name="field" />
+  </function>
+  <function returnType="string" castToFalse="true" name="mysql_db_name" description="Get result data.">
+    <param type="resource" name="result" />
+    <param type="int" name="row" />
+    <param optional="true" type="mixed" name="field" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="mysql_db_query" description="Send a MySQL query.">
+    <param type="string" name="database" />
+    <param type="string" name="query" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="mysql_dropdb" description="Drop (delete) a MySQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="mysql_drop_db" description="Drop (delete) a MySQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="int" name="mysql_errno" description="Returns the numerical value of the error message from previous MySQL operation.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="string" name="mysql_error" description="Returns the text of the error message from previous MySQL operation.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="string" name="mysql_escape_string" description="Escapes a string for use in a mysql_query.">
+    <param type="string" name="unescaped_string" />
+  </function>
+  <function returnType="array" castToFalse="true" name="mysql_fetch_array" description="Fetch a result row as an associative array, a numeric array, or both.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="result_type" />
+  </function>
+  <function returnType="array" castToFalse="true" name="mysql_fetch_assoc" description="Fetch a result row as an associative array.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="object" castToFalse="true" name="mysql_fetch_field" description="Get column information from a result and return as an object.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="field_offset" />
+  </function>
+  <function returnType="array" castToFalse="true" name="mysql_fetch_lengths" description="Get the length of each output in a result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="object" castToFalse="true" name="mysql_fetch_object" description="Fetch a result row as an object.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="array" castToFalse="true" name="mysql_fetch_row" description="Get a result row as an enumerated array.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="string" name="mysql_fieldflags" description="Get the flags associated with the specified field in a result.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="string" name="mysql_field_flags" description="Get the flags associated with the specified field in a result.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="int" name="mysql_fieldlen" description="Returns the length of the specified field.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="int" name="mysql_field_len" description="Returns the length of the specified field.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="string" name="mysql_field_name" description="Get the name of the specified field in a result.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_index" />
+  </function>
+  <function returnType="string" name="mysql_fieldname" description="Get the name of the specified field in a result.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_index" />
+  </function>
+  <function returnType="int" name="mysql_field_seek" description="Set result pointer to a specified field offset.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="string" name="mysql_fieldtable" description="Get name of the table the specified field is in.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="string" name="mysql_field_table" description="Get name of the table the specified field is in.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="string" name="mysql_fieldtype" description="Get the type of the specified field in a result.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="string" name="mysql_field_type" description="Get the type of the specified field in a result.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="bool" name="mysql_freeresult" description="Free result memory.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="bool" name="mysql_free_result" description="Free result memory.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="string" name="mysql_get_client_info" description="Get MySQL client info." />
+  <function returnType="string" name="mysql_get_host_info" description="Get MySQL host info.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="int" name="mysql_get_proto_info" description="Get MySQL protocol info.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="string" name="mysql_get_server_info" description="Get MySQL server info.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="string" castToFalse="true" name="mysql_info" description="Get information about the most recent query.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="int" name="mysql_insert_id" description="Get the ID generated from the previous INSERT operation.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" name="mysql_listdbs" description="List databases available on a MySQL server.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" name="mysql_list_dbs" description="List databases available on a MySQL server.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="mysql_listfields" description="List MySQL table fields.">
+    <param type="string" name="database_name" />
+    <param type="string" name="table_name" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="mysql_list_fields" description="List MySQL table fields.">
+    <param type="string" name="database_name" />
+    <param type="string" name="table_name" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" name="mysql_list_processes" description="List MySQL processes.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="mysql_listtables" description="List tables in a MySQL database.">
+    <param type="string" name="database" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="mysql_list_tables" description="List tables in a MySQL database.">
+    <param type="string" name="database" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="int" name="mysql_numfields" description="Get number of fields in result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="mysql_num_fields" description="Get number of fields in result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="mysql_numrows" description="Get number of rows in result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="mysql_num_rows" description="Get number of rows in result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="mysql_pconnect" description="Open a persistent connection to a MySQL server.">
+    <param optional="true" type="string" name="server" />
+    <param optional="true" type="string" name="username" />
+    <param optional="true" type="string" name="password" />
+    <param optional="true" type="int" name="client_flags" />
+  </function>
+  <function returnType="bool" name="mysql_ping" description="Ping a server connection or reconnect if there is no connection.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="mixed" name="mysql_query" description="Send a MySQL query.">
+    <param type="string" name="query" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="string" name="mysql_real_escape_string" description="Escapes special characters in a string for use in a SQL statement, taking into account the current charset of the connection.">
+    <param type="string" name="unescaped_string" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="mixed" name="mysql_result" description="Get result data.">
+    <param type="resource" name="result" />
+    <param type="int" name="row" />
+    <param optional="true" type="mixed" name="field" />
+  </function>
+  <function returnType="bool" name="mysql_selectdb" description="Select a MySQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="mysql_select_db" description="Select a MySQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="string" castToFalse="true" name="mysql_stat" description="Get current system status.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="string" name="mysql_tablename" description="Get table name of field.">
+    <param type="resource" name="result" />
+    <param type="int" name="i" />
+  </function>
+  <function returnType="string" name="mysql_table_name" description="Get table name of field.">
+    <param type="resource" name="result" />
+    <param type="int" name="i" />
+  </function>
+  <function returnType="int" name="mysql_thread_id" description="Return the current thread ID.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="mixed" name="mysql_unbuffered_query" description="Send an SQL query to MySQL, without fetching and buffering the result rows.">
+    <param type="string" name="query" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+</module>

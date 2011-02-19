@@ -1,0 +1,7 @@
+[expect php]
+[file]
+<?
+include('Phalanger.inc');
+	printf("%10.5e\n", 1.1); 
+	__var_dump(sprintf("%10.5e\n", 1.1));
+?>

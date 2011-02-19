@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<doc>
+	<method name="Analyze">
+	
+	</method>
+  <method name="Expression.Analyze">
+    <summary>
+      Analyzes an AST node containing a specialization of an expression.
+    </summary>
+    <remarks>
+			This method 
+    </remarks>
+    <param name="analyzer">An analyzer which analyzes the node.</param>
+    <param name="info">Informations from parent in AST.</param>
+    <returns>AST node that should replace this node in AST</returns>
+  </method>
+  <method name="Statement.Analyze">
+    <summary>
+      Analyzes an AST node containing a specialization of a statement.
+    </summary>
+    <param name="analyzer">An analyzer which analyzes the node.</param>
+    <returns>???</returns>
+  </method>
+  <method name="Emit">
+    <summary>
+      Emits AST node respective IL code.
+    </summary>
+    <param name="codeGenerator">A code generator which generates code of this node.</param>
+    <returns>A type code of item which has been placed on the top of the evaluation stack by this method.</returns>
+  </method>
+  <method name="IsDeeplyCopied">
+    <summary>
+      Decides whether an expression represented by this node should be copied if a certain operation is performed.
+    </summary>
+    <param name="reason">Reason of copying (a kind of the operation performed).</param>
+    <param name="nestingLevel">A level of nesting. Used for optimizing copies on assignment during nested assignments (a = b = c = ...)</param>
+    <returns>Whether to make a deep copy of expression result when the expression is on rhs of operator =.</returns>
+  </method>
+  <method name="StoreOnAssignment">
+    <summary>
+      Decides whether an expression represented by this node should be stored to a temporary local if assigned.
+    </summary>
+    <returns>Whether to store the value of expression to a temporary local for later use when the expression is on rhs of operator =.</returns>
+  </method>
+</doc>

@@ -1,0 +1,41 @@
+<asp:imagebutton runat="server" Imageurl="Images/button-login.gif" skinid="login" />
+
+<asp:image runat="server" Imageurl="Images/button-create.gif" skinid="create" />
+<asp:image runat="server" ImageUrl="Images/button-download.gif" skinid="download"/>
+<asp:image runat="Server" ImageUrl="images/button-dwn_res.gif" skinid="dwn_res" />
+
+<asp:image runat="Server" ImageUrl="images/button-gallery.jpg" skinid="gallery" />
+<asp:imagebutton runat="server" imageurl="Images/button-tog8.jpg" skinid="tog8"/>
+<asp:imagebutton runat="server" imageurl="Images/button-tog24.jpg" skinid="tog24"/>
+
+<asp:ImageButton runat="server" ImageUrl="Images/button-first.jpg" skinid="first"/>
+<asp:ImageButton runat="server" ImageUrl="images/button-prev.jpg" skinid="prev"/>
+<asp:ImageButton runat="server" ImageUrl="images/button-next.jpg" skinid="next"/>
+<asp:ImageButton runat="server" ImageUrl="Images/button-last.jpg" skinid="last"/>
+
+<asp:image runat="Server" ImageUrl="images/album-l1.gif" skinid="b01" />
+<asp:image runat="Server" ImageUrl="images/album-mtl.gif" skinid="b02" />
+<asp:image runat="Server" ImageUrl="images/album-mtr.gif" skinid="b03" />
+<asp:image runat="Server" ImageUrl="images/album-r1.gif" skinid="b04" />
+<asp:image runat="Server" ImageUrl="images/album-l2.gif" skinid="b05" />
+<asp:image runat="Server" ImageUrl="images/album-r2.gif" skinid="b06" />
+<asp:image runat="Server" ImageUrl="images/album-l3.gif" skinid="b07" />
+<asp:image runat="Server" ImageUrl="images/album-r3.gif" skinid="b08" />
+<asp:image runat="Server" ImageUrl="images/album-l4.gif" skinid="b09" />
+<asp:image runat="Server" ImageUrl="images/album-mbl.gif" skinid="b10" />
+<asp:image runat="Server" ImageUrl="images/album-mbr.gif" skinid="b11" />
+<asp:image runat="Server" ImageUrl="images/album-r4.gif" skinid="b12" />
+
+
+<asp:ImageButton Runat="server" ImageUrl="images/button-add.gif" skinid="add"/>
+
+<asp:gridview runat="server" backcolor="#606060">
+    <AlternatingRowStyle backcolor="#656565" />
+</asp:gridview>
+<asp:image runat="Server" ImageUrl="Images/button-edit.gif" skinid="edit" />
+<asp:ImageButton Runat="server" ImageUrl="Images/button-rename.gif" SkinID="rename" />
+<asp:ImageButton Runat="server" ImageUrl="Images/button-delete.gif" SkinID="delete" />
+<asp:ImageButton Runat="server" ImageUrl="Images/button-save.gif" SkinID="save" />
+<asp:ImageButton Runat="server" ImageUrl="Images/button-cancel.gif" SkinID="cancel" />
+
+<asp:ImageButton Runat="server" ImageUrl="Images/button-import.gif" SkinID="import" />

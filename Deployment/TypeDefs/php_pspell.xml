@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="int" name="pspell_add_to_personal" description="Add the word to a personal wordlist.">
+    <param type="int" name="dictionary_link" />
+    <param type="string" name="word" />
+  </function>
+  <function returnType="int" name="pspell_add_to_session" description="Add the word to the wordlist in the current session.">
+    <param type="int" name="dictionary_link" />
+    <param type="string" name="word" />
+  </function>
+  <function returnType="bool" name="pspell_check" description="Check a word.">
+    <param type="int" name="dictionary_link" />
+    <param type="string" name="word" />
+  </function>
+  <function returnType="int" name="pspell_clear_session" description="Clear the current session.">
+    <param type="int" name="dictionary_link" />
+  </function>
+  <function returnType="int" name="pspell_config_create" description="Create a config used to open a dictionary.">
+    <param type="string" name="language" />
+    <param optional="true" type="string" name="spelling" />
+    <param optional="true" type="string" name="jargon" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="int" name="pspell_config_ignore" description="Ignore words less than N characters long.">
+    <param type="int" name="dictionary_link" />
+    <param type="int" name="n" />
+  </function>
+  <function returnType="int" name="pspell_config_mode" description="Change the mode number of suggestions returned.">
+    <param type="int" name="dictionary_link" />
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="int" name="pspell_config_personal" description="Set a file that contains personal wordlist.">
+    <param type="int" name="dictionary_link" />
+    <param type="string" name="file" />
+  </function>
+  <function returnType="int" name="pspell_config_repl" description="Set a file that contains replacement pairs.">
+    <param type="int" name="dictionary_link" />
+    <param type="string" name="file" />
+  </function>
+  <function returnType="int" name="pspell_config_runtogether" description="Consider run-together words as valid compounds.">
+    <param type="int" name="dictionary_link" />
+    <param type="bool" name="flag" />
+  </function>
+  <function returnType="int" name="pspell_config_save_repl" description="Determine whether to save a replacement pairs list along with the wordlist.">
+    <param type="int" name="dictionary_link" />
+    <param type="bool" name="flag" />
+  </function>
+  <function returnType="int" name="pspell_new_config" description="Load a new dictionary with settings based on a given config.">
+    <param type="int" name="config" />
+  </function>
+  <function returnType="int" name="pspell_new_personal" description="Load a new dictionary with personal wordlist.">
+    <param type="string" name="personal" />
+    <param type="string" name="language" />
+    <param optional="true" type="string" name="spelling" />
+    <param optional="true" type="string" name="jargon" />
+    <param optional="true" type="string" name="encoding" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="int" name="pspell_new" description="Load a new dictionary.">
+    <param type="string" name="language" />
+    <param optional="true" type="string" name="spelling" />
+    <param optional="true" type="string" name="jargon" />
+    <param optional="true" type="string" name="encoding" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="int" name="pspell_save_wordlist" description="Save the personal wordlist to a file.">
+    <param type="int" name="dictionary_link" />
+  </function>
+  <function returnType="int" name="pspell_store_replacement" description="Store a replacement pair for a word.">
+    <param type="int" name="dictionary_link" />
+    <param type="string" name="misspelled" />
+    <param type="string" name="correct" />
+  </function>
+  <function returnType="array" name="pspell_suggest" description="Suggest spellings of a word.">
+    <param type="int" name="dictionary_link" />
+    <param type="string" name="word" />
+  </function>
+  <function returnType="bool" name="pspell_config_data_dir" description="location of language data files.">
+    <param type="int" name="conf" />
+    <param type="string" name="directory" />
+  </function>
+  <function returnType="bool" name="pspell_config_dict_dir" description="Location of the main word list.">
+    <param type="int" name="conf" />
+    <param type="string" name="directory" />
+  </function>
+</module>

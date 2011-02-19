@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<siteMap>
+	<siteMapNode title="Home" url="Default.aspx">
+		<siteMapNode title="Resume" url="Resume.aspx" />
+		<siteMapNode title="Links" url="Links.aspx" />
+		<siteMapNode title="Albums" url="Albums.aspx" >
+			<siteMapNode title="Photos" url="Photos.aspx" >
+				<siteMapNode title="Details" url="Details.aspx" />
+			</siteMapNode>
+		</siteMapNode>
+		<siteMapNode title="Register" url="Register.aspx" />
+		<siteMapNode title="Manage" url="Admin/Albums.aspx" >
+			<siteMapNode title="Photos" url="Admin/Photos.aspx" >
+				<siteMapNode title="Details" url="Admin/Details.aspx" />
+			</siteMapNode>
+		</siteMapNode>
+	</siteMapNode>
+</siteMap>

@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{F0CD5B9D-43B4-49B3-95FA-7F4F8FAFA5C0}") = "RegEditPHP", "RegEditPHP\RegEditPHP.phpproj", "{D5A73F0B-7DEA-4F46-879C-14913395DB11}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 2
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs01.codeplex.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = RegEditPHP\\RegEditPHP.phpproj
+		SccProjectName1 = RegEditPHP
+		SccLocalPath1 = RegEditPHP
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D5A73F0B-7DEA-4F46-879C-14913395DB11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5A73F0B-7DEA-4F46-879C-14913395DB11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5A73F0B-7DEA-4F46-879C-14913395DB11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5A73F0B-7DEA-4F46-879C-14913395DB11}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

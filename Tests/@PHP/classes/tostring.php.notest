@@ -1,0 +1,49 @@
+[expect php]
+[file]
+<?
+include('Phalanger.inc');
+class test1 {
+}
+
+class test2 {
+    function __toString() {
+    	echo __METHOD__ . "()\n";
+        return "Converted\n";
+    }
+}
+
+echo "====test1====\n";
+$o = new test1;
+__var_dump($o);
+__var_dump(substr_compare(@(string)$o, "object", 0, 5, true));
+__var_dump($o);
+
+echo "====test2====\n";
+$o = new test2;
+__var_dump($o);
+print $o;
+__var_dump($o);
+echo "====test3====\n";
+echo $o;
+
+echo "====test4====\n";
+echo "string:".$o;
+
+echo "====test5====\n";
+echo 1 . $o;
+
+echo "====test6====\n";
+echo $o.$o;
+
+echo "====test7====\n";
+$ar = array();
+$ar[$o->__toString()] = "ERROR";
+echo $ar[$o];
+
+echo "====test8====\n";
+@__var_dump(trim($o));
+__var_dump(trim((string)$o));
+
+echo "====test9====\n";
+echo sprintf("%s", $o);
+?>

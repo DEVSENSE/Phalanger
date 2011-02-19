@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="bool" name="ora_bind" description="Binds a PHP variable to an Oracle parameter.">
+    <param type="resource" name="cursor" />
+    <param type="string" name="PHP_variable_name" />
+    <param type="string" name="SQL_parameter_name" />
+    <param type="int" name="length" />
+    <param optional="true" type="int" name="type" />
+  </function>
+  <function returnType="bool" name="ora_close" description="Closes an Oracle cursor.">
+    <param type="resource" name="cursor" />
+  </function>
+  <function returnType="string" name="ora_columnname" description="Gets the name of an Oracle result column.">
+    <param type="resource" name="cursor" />
+    <param type="int" name="column" />
+  </function>
+  <function returnType="int" name="ora_columnsize" description="Returns the size of an Oracle result column.">
+    <param type="resource" name="cursor" />
+    <param type="int" name="column" />
+  </function>
+  <function returnType="string" name="ora_columntype" description="Gets the type of an Oracle result column.">
+    <param type="resource" name="cursor" />
+    <param type="int" name="column" />
+  </function>
+  <function returnType="bool" name="ora_commit" description="Commit an Oracle transaction.">
+    <param type="resource" name="conn" />
+  </function>
+  <function returnType="bool" name="ora_commitoff" description="Disable automatic commit.">
+    <param type="resource" name="conn" />
+  </function>
+  <function returnType="bool" name="ora_commiton" description="Enable automatic commit.">
+    <param type="resource" name="conn" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ora_do" description="Parse, Exec, Fetch.">
+    <param type="resource" name="conn" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="string" name="ora_error" description="Gets an Oracle error message.">
+    <param type="resource" name="cursor_or_connection" />
+  </function>
+  <function returnType="int" name="ora_errorcode" description="Gets an Oracle error code.">
+    <param type="resource" name="cursor_or_connection" />
+  </function>
+  <function returnType="bool" name="ora_exec" description="Execute a parsed statement on an Oracle cursor.">
+    <param type="resource" name="cursor" />
+  </function>
+  <function returnType="int" name="ora_fetch_into" description="Fetch a row into the specified result array.">
+    <param type="resource" name="cursor" />
+    <param type="array" name="result" />
+    <param optional="true" type="int" name="flags" />
+  </function>
+  <function returnType="bool" name="ora_fetch" description="Fetch a row of data from a cursor.">
+    <param type="resource" name="cursor" />
+  </function>
+  <function returnType="mixed" name="ora_getcolumn" description="Get data from a fetched column.">
+    <param type="resource" name="cursor" />
+    <param type="int" name="column" />
+  </function>
+  <function returnType="bool" name="ora_logoff" description="Close an Oracle connection.">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ora_logon" description="Open an Oracle connection.">
+    <param type="string" name="user" />
+    <param type="string" name="password" />
+  </function>
+  <function returnType="int" name="ora_numcols" description="Returns the number of columns.">
+    <param type="resource" name="cursor" />
+  </function>
+  <function returnType="int" name="ora_numrows" description="Returns the number of rows.">
+    <param type="resource" name="cursor" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ora_open" description="Opens an Oracle cursor.">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="bool" name="ora_parse" description="Parse an SQL statement with Oracle.">
+    <param type="resource" name="cursor" />
+    <param type="string" name="sql_statement" />
+    <param type="int" name="defer" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ora_plogon" description="Open a persistent Oracle connection.">
+    <param type="string" name="user" />
+    <param type="string" name="password" />
+  </function>
+  <function returnType="bool" name="ora_rollback" description="Rolls back a transaction.">
+    <param type="resource" name="connection" />
+  </function>
+</module>

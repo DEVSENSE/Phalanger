@@ -1,0 +1,18 @@
+PE Base Addresses (should not overlap to prevent relocations)
+=============================================================
+
+Image                   Image Base Mapped Size
+----------------------  ---------- ----------
+PhpNetCore.dll          0x18000000 0x00188000
+PhpNetCore.IL.dll       0x18E00000 0x00001000
+ShmChannel.dll          0x18F00000 0x0000E000
+PhpNetClassLibrary.dll  0x19000000 0x0008E000
+PhpNetMsSql.dll         0x1A000000 0x00009000
+PhpNetMySql.dll         0x1A100000 0x00009000
+MySql.Data.dll          0x1A200000 0x00023000
+PhpNetXmlDom.dll        0x1A300000 0x00010000
+php4ts.dll              0x1B000000 0x0009E000
+
+
+Managed wrappers, dynamic wrappers, compiled libraries
+are all at 0x00400000 (impossible to specify using SRE).

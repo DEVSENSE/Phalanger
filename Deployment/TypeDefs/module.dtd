@@ -1,0 +1,30 @@
+<!ENTITY % phpType "bool | int | float | string | array | resource | object | mixed">
+
+<!ELEMENT module (class | function)*>
+<!ELEMENT class (function*)>
+<!ELEMENT function (param*, alias*)>
+<!ELEMENT alias EMPTY>
+<!ELEMENT param EMPTY>
+
+<!ATTLIST module
+			earlyInit (false | true) "false">
+<!ATTLIST class
+			name CDATA #REQUIRED
+			arrayGetter CDATA #IMPLIED
+			arraySetter CDATA #IMPLIED
+      description CDATA #IMPLIED>
+<!ATTLIST function
+			name CDATA #REQUIRED
+			returnType (%phpType; | void) "mixed"
+			static (false | true) "false"
+			castToFalse (false | true) "false"
+			marshalBoundVars (none | in | out | inout) "none"
+			description CDATA #IMPLIED>
+<!ATTLIST alias
+      name CDATA #REQUIRED>
+<!ATTLIST param
+			name CDATA #IMPLIED
+			type (%phpType;) "mixed"
+			bind (false | true) "false"
+			direction (in | out | inout) "in"
+			optional (false | true | vararg) "false">

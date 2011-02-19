@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="array" name="iconv_get_encoding" description="Get internal encoding and output encoding for ob_iconv_handler().">
+    <param optional="true" type="string" name="type" />
+  </function>
+  <function returnType="array" name="iconv_mime_decode_headers" description="Decodes multiple MIME header fields at once.">
+    <param type="string" name="encoded_headers" />
+    <param optional="true" type="int" name="mode" />
+    <param optional="true" type="string" name="charset" />
+  </function>
+  <function returnType="string" name="iconv_mime_decode" description="Decodes a MIME header field.">
+    <param type="string" name="encoded_header" />
+    <param optional="true" type="int" name="mode" />
+    <param optional="true" type="string" name="charset" />
+  </function>
+  <function returnType="string" name="iconv_mime_encode" description="Composes a MIME header field.">
+    <param type="string" name="field_name" />
+    <param type="string" name="field_value" />
+    <param optional="true" type="array" name="preferences" />
+  </function>
+  <function returnType="bool" name="iconv_set_encoding" description="Set current setting for character encoding conversion.">
+    <param type="string" name="type" />
+    <param type="string" name="charset" />
+  </function>
+  <function returnType="int" name="iconv_strlen" description="Returns the character count of a string.">
+    <param type="string" name="str" />
+    <param optional="true" type="string" name="charset" />
+  </function>
+  <function returnType="int" name="iconv_strpos" description="Finds position of first occurrence of a needle within a haystack.">
+    <param type="string" name="haystack" />
+    <param type="string" name="needle" />
+    <param type="int" name="offset" />
+    <param optional="true" type="string" name="charset" />
+  </function>
+  <function returnType="int" name="iconv_strrpos" description="Finds the last occurrence of a needle within the specified range of haystack.">
+    <param type="string" name="haystack" />
+    <param type="string" name="needle" />
+    <param optional="true" type="string" name="charset" />
+  </function>
+  <function returnType="string" name="iconv_substr" description="Cut out part of a string.">
+    <param type="string" name="str" />
+    <param type="int" name="offset" />
+    <param optional="true" type="int" name="length" />
+    <param optional="true" type="string" name="charset" />
+  </function>
+  <function returnType="string" name="iconv" description="Returns str converted to the out_charset character set.">
+    <param type="string" name="in_charset" />
+    <param type="string" name="out_charset" />
+    <param type="string" name="str" />
+  </function>
+  <function returnType="string" name="ob_iconv_handler" description="Returns str in output buffer converted to the iconv.output_encoding character set.">
+    <param type="string" name="contents" />
+    <param type="int" name="status" />
+  </function>
+</module>

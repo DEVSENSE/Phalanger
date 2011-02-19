@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<docs>
+  <method name="GetTypeCode">
+    <summary>Returns code of type which implements this interface.</summary>
+    <returns>The converted value.</returns>
+  </method>
+  <method name="ToDouble">
+    <summary>Converts instance to its <see cref="double" /> representation according to PHP conversion algorithm.</summary>
+    <returns>The converted value.</returns>
+  </method>
+  <method name="ToInteger">
+    <summary>Converts instance to its <see cref="int" /> representation according to PHP conversion algorithm.</summary>
+    <returns>The converted value.</returns>
+  </method>
+	<method name="ToLongInteger">
+		<summary>
+			Converts instance to its <see cref="long" /> representation according to PHP conversion algorithm.
+		</summary>
+		<returns>The converted value.</returns>
+	</method>
+	<method name="ToBoolean">
+    <summary>Converts instance to its <see cref="bool" /> representation according to PHP conversion algorithm.</summary>
+    <returns>The converted value.</returns>
+  </method>
+  <method name="ToPhpBytes">
+    <summary>Converts instance to its binary representation (<see cref="PhpBytes"/>).</summary>
+    <returns>The converted value.</returns>
+  </method>
+  <method name="ToString">
+    <summary>Converts instance to its string representation according to PHP conversion algorithm.</summary>
+    <returns>The converted value.</returns>
+  </method>
+  <method name="ToNumber">
+    <summary>Converts instance to a number of type <see cref="double" />, <see cref="long"/> or <see cref="int" />.</summary>
+		<param name="intValue">
+			The integer value. Valid iff <see cref="Convert.NumberInfo.Integer"/> is returned.
+		</param>
+		<param name="longValue">
+			The long integer value. Valid iff <see cref="Convert.NumberInfo.LongInteger"/> is returned.
+		</param>
+		<param name="doubleValue">
+			The double value. Valid iff <see cref="Convert.NumberInfo.Double"/> is returned.
+		</param>
+		<returns>Type of the conversion result.</returns>
+  </method>
+  <method name="ObjectToArrayKey">
+    <remarks>
+      <para>
+        <paramref name="obj" /> is converted to <see cref="string" /> and <see cref="int" />
+        returned in <paramref name="skey" /> and <paramref name="ikey" />, respectively.
+      </para>
+      <list type="table">
+        <listheader>
+          <term>Actual type of <paramref name="obj" /></term>
+          <term>Action</term>
+        </listheader>
+        <item>
+          <term><see cref="string" /> or <see cref="PhpBytes" /></term>
+          <description>
+            Values {-?[1-9][0-9]*|0} are converted to their numeric equivalents (e.g. "2" is converted to 2)
+            and returned. The others are returned unchanged.
+          </description>
+        </item>
+        <item>
+          <term>
+            <see cref="bool" />
+          </term>
+          <description>
+            The <B>true</B> is converted to integer value 1, the <B>false</B> to 0.
+          </description>
+        </item>
+        <item>
+          <term>
+            <see cref="double" />
+          </term>
+          <description>
+            The value is converted to <see cref="int" /> with the overflow unchecked.
+          </description>
+        </item>
+        <item>
+          <term>
+            <B>null</B>
+          </term>
+          <description>
+            The <see cref="String.Empty" /> is returned.
+          </description>
+        </item>
+        <item>
+          <term>otherwise</term>
+          <description>
+            The key is considered to be invalid.
+          </description>
+        </item>
+      </list>
+    </remarks>
+  </method>
+</docs>

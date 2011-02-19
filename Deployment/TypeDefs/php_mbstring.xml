@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="i18n_convert" description="Convert character encoding.">
+    <param type="string" name="str" />
+    <param type="string" name="to-encoding" />
+    <param optional="true" type="mixed" name="from-encoding" />
+  </function>
+  <function returnType="string" name="i18n_discover_encoding" description="Detect character encoding.">
+    <param type="string" name="str" />
+    <param optional="true" type="mixed" name="encoding-list" />
+  </function>
+  <function returnType="string" name="i18n_http_input" description="Detect HTTP input character encoding.">
+    <param optional="true" type="string" name="type" />
+  </function>
+  <function returnType="string" name="i18n_http_output" description="Set/Get HTTP output character encoding.">
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="mixed" name="i18n_internal_encoding" description="Set/Get internal character encoding.">
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="i18n_ja_jp_hantozen" description="Convert &quot;kana&quot; one from another (&quot;zen-kaku&quot;, &quot;han-kaku&quot; and more).">
+    <param type="string" name="str" />
+    <param type="string" name="option" />
+    <param optional="true" type="mixed" name="encoding" />
+  </function>
+  <function returnType="string" name="i18n_mime_header_decode" description="Decode string in MIME header field.">
+    <param type="string" name="str" />
+  </function>
+  <function returnType="string" name="i18n_mime_header_encode" description="Encode string for MIME header.">
+    <param type="string" name="str" />
+    <param optional="true" type="string" name="charset" />
+    <param optional="true" type="string" name="transfer-encoding" />
+    <param optional="true" type="string" name="linefeed" />
+  </function>
+  <function returnType="string" name="mb_convert_case" description="Perform case folding on a string.">
+    <param type="string" name="str" />
+    <param type="int" name="mode" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="mb_convert_encoding" description="Convert character encoding.">
+    <param type="string" name="str" />
+    <param type="string" name="to-encoding" />
+    <param optional="true" type="mixed" name="from-encoding" />
+  </function>
+  <function returnType="string" name="mb_convert_kana" description="Convert &quot;kana&quot; one from another (&quot;zen-kaku&quot;, &quot;han-kaku&quot; and more).">
+    <param type="string" name="str" />
+    <param type="string" name="option" />
+    <param optional="true" type="mixed" name="encoding" />
+  </function>
+  <function returnType="string" name="mb_convert_variables" description="Convert character code in variable(s).">
+    <param type="string" name="to-encoding" />
+    <param type="mixed" name="from-encoding" />
+    <param direction="inout" optional="vararg" type="mixed" name="vars" />
+  </function>
+  <function returnType="string" name="mb_decode_mimeheader" description="Decode string in MIME header field.">
+    <param type="string" name="str" />
+  </function>
+  <function returnType="string" name="mb_decode_numericentity" description="Decode HTML numeric string reference to character.">
+    <param type="string" name="str" />
+    <param type="array" name="convmap" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="mb_detect_encoding" description="Detect character encoding.">
+    <param type="string" name="str" />
+    <param optional="true" type="mixed" name="encoding-list" />
+  </function>
+  <function returnType="array" name="mb_detect_order" description="Set/Get character encoding detection order.">
+    <param optional="true" type="mixed" name="encoding-list" />
+  </function>
+  <function returnType="string" name="mb_encode_mimeheader" description="Encode string for MIME header.">
+    <param type="string" name="str" />
+    <param optional="true" type="string" name="charset" />
+    <param optional="true" type="string" name="transfer-encoding" />
+    <param optional="true" type="string" name="linefeed" />
+  </function>
+  <function returnType="string" name="mb_encode_numericentity" description="Encode character to HTML numeric string reference.">
+    <param type="string" name="str" />
+    <param type="array" name="convmap" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="bool" name="mb_ereg_match" description="Regular expression match for multibyte string.">
+    <param type="string" name="pattern" />
+    <param type="string" name="string" />
+    <param optional="true" type="string" name="option" />
+  </function>
+  <function returnType="string" name="mb_ereg_replace" description="Replace regular expression with multibyte support.">
+    <param type="string" name="pattern" />
+    <param type="string" name="replacement" />
+    <param type="string" name="string" />
+    <param optional="true" type="array" name="option" />
+  </function>
+  <function returnType="array" name="mb_ereg_search_getpos" description="Returns start point for next regular expression match." />
+  <function returnType="array" name="mb_ereg_search_getregs" description="Retrieve the result from the last multibyte regular expression match." />
+  <function returnType="array" name="mb_ereg_search_init" description="Setup string and regular expression for multibyte regular expression match.">
+    <param type="string" name="string" />
+    <param optional="true" type="string" name="pattern" />
+    <param optional="true" type="string" name="option" />
+  </function>
+  <function returnType="array" name="mb_ereg_search_pos" description="Return position and length of matched part of multibyte regular expression for predefined multibyte string.">
+    <param optional="true" type="string" name="pattern" />
+    <param optional="true" type="string" name="option" />
+  </function>
+  <function returnType="array" name="mb_ereg_search_regs" description="Returns the matched part of multibyte regular expression.">
+    <param optional="true" type="string" name="pattern" />
+    <param optional="true" type="string" name="option" />
+  </function>
+  <function returnType="array" name="mb_ereg_search_setpos" description="Set start point of next regular expression match." />
+  <function returnType="bool" name="mb_ereg_search" description="Multibyte regular expression match for predefined multibyte string.">
+    <param optional="true" type="string" name="pattern" />
+    <param optional="true" type="string" name="option" />
+  </function>
+  <function returnType="int" name="mb_ereg" description="Regular expression match with multibyte support.">
+    <param type="string" name="pattern" />
+    <param type="string" name="string" />
+    <param direction="inout" optional="true" type="array" name="regs" />
+  </function>
+  <function returnType="string" name="mb_eregi_replace" description="Replace regular expression with multibyte support ignoring case.">
+    <param type="string" name="pattern" />
+    <param type="string" name="replace" />
+    <param type="string" name="string" />
+  </function>
+  <function returnType="int" name="mb_eregi" description="Regular expression match ignoring case with multibyte support.">
+    <param type="string" name="pattern" />
+    <param type="string" name="string" />
+    <param direction="inout" optional="true" type="array" name="regs" />
+  </function>
+  <function returnType="string" name="mb_get_info" description="Get internal settings of mbstring.">
+    <param optional="true" type="string" name="type" />
+  </function>
+  <function returnType="string" name="mb_http_input" description="Detect HTTP input character encoding.">
+    <param optional="true" type="string" name="type" />
+  </function>
+  <function returnType="string" name="mb_http_output" description="Set/Get HTTP output character encoding.">
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="mixed" name="mb_internal_encoding" description="Set/Get internal character encoding.">
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="mb_language" description="Set/Get current language.">
+    <param optional="true" type="string" name="language" />
+  </function>
+  <function returnType="array" name="mb_list_encodings" description="Returns an array of all supported encodings." />
+  <function returnType="string" name="mb_output_handler" description="Callback function converts character encoding in output buffer.">
+    <param type="string" name="contents" />
+    <param type="int" name="status" />
+  </function>
+  <function returnType="bool" name="mb_parse_str" description="Parse GET/POST/COOKIE data and set global variable.">
+    <param type="string" name="encoded_string" />
+    <param optional="true" type="array" name="result" />
+  </function>
+  <function returnType="string" name="mb_preferred_mime_name" description="Get MIME charset string.">
+    <param type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="mb_regex_encoding" description="Returns current encoding for multibyte regex as string.">
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="mb_regex_set_options" description="Set/Get the default options for mbregex functions.">
+    <param optional="true" type="string" name="options" />
+  </function>
+  <function returnType="bool" name="mb_send_mail" description="Send encoded mail.">
+    <param type="string" name="to" />
+    <param type="string" name="subject" />
+    <param type="string" name="message" />
+    <param optional="true" type="string" name="additional_headers" />
+    <param optional="true" type="string" name="additional_parameter" />
+  </function>
+  <function returnType="array" name="mb_split" description="Split multibyte string using regular expression.">
+    <param type="string" name="pattern" />
+    <param type="string" name="string" />
+    <param optional="true" type="int" name="limit" />
+  </function>
+  <function returnType="string" name="mb_strcut" description="Get part of string.">
+    <param type="string" name="str" />
+    <param type="int" name="start" />
+    <param optional="true" type="int" name="length" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="mb_strimwidth" description="Get truncated string with specified width.">
+    <param type="string" name="str" />
+    <param type="int" name="start" />
+    <param type="int" name="width" />
+    <param type="string" name="trimmarker" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="int" name="mb_strlen" description="Get string length.">
+    <param type="string" name="str" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="mixed" name="mb_strpos" description="Find position of first occurrence of string in a string.">
+    <param type="string" name="haystack" />
+    <param type="string" name="needle" />
+    <param optional="true" type="int" name="offset" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="int" name="mb_strrpos" description="Find position of last occurrence of a string in a string.">
+    <param type="string" name="haystack" />
+    <param type="string" name="needle" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="mb_strtolower" description="Make a string lowercase.">
+    <param type="string" name="str" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="mb_strtoupper" description="Make a string uppercase.">
+    <param type="string" name="str" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="int" name="mb_strwidth" description="Return width of string.">
+    <param type="string" name="str" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="mixed" name="mb_substitute_character" description="Set/Get substitution character.">
+    <param optional="true" type="mixed" name="substrchar" />
+  </function>
+  <function returnType="int" name="mb_substr_count" description="Count the number of substring occurrences.">
+    <param type="string" name="haystack" />
+    <param type="string" name="needle" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="mb_substr" description="Get part of string.">
+    <param type="string" name="str" />
+    <param type="int" name="start" />
+    <param optional="true" type="int" name="length" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="int" name="mbereg" description="Regular expression match with multibyte support.">
+    <param type="string" name="pattern" />
+    <param type="string" name="string" />
+    <param direction="inout" optional="true" type="array" name="regs" />
+  </function>
+  <function returnType="bool" name="mbereg_match" description="Regular expression match for multibyte string.">
+    <param type="string" name="pattern" />
+    <param type="string" name="string" />
+    <param optional="true" type="string" name="option" />
+  </function>
+  <function returnType="string" name="mbereg_replace" description="Replace regular expression with multibyte support.">
+    <param type="string" name="pattern" />
+    <param type="string" name="replacement" />
+    <param type="string" name="string" />
+    <param optional="true" type="array" name="option" />
+  </function>
+  <function returnType="array" name="mbereg_search_getpos" description="Returns start point for next regular expression match." />
+  <function returnType="array" name="mbereg_search_getregs" description="Retrieve the result from the last multibyte regular expression match." />
+  <function returnType="array" name="mbereg_search_init" description="Setup string and regular expression for multibyte regular expression match.">
+    <param type="string" name="string" />
+    <param optional="true" type="string" name="pattern" />
+    <param optional="true" type="string" name="option" />
+  </function>
+  <function returnType="array" name="mbereg_search_pos" description="Return position and length of matched part of multibyte regular expression for predefined multibyte string.">
+    <param optional="true" type="string" name="pattern" />
+    <param optional="true" type="string" name="option" />
+  </function>
+  <function returnType="array" name="mbereg_search_regs" description="Returns the matched part of multibyte regular expression.">
+    <param optional="true" type="string" name="pattern" />
+    <param optional="true" type="string" name="option" />
+  </function>
+  <function returnType="array" name="mbereg_search_setpos" description="Set start point of next regular expression match." />
+  <function returnType="bool" name="mbereg_search" description="Multibyte regular expression match for predefined multibyte string.">
+    <param optional="true" type="string" name="pattern" />
+    <param optional="true" type="string" name="option" />
+  </function>
+  <function returnType="int" name="mberegi" description="Regular expression match ignoring case with multibyte support.">
+    <param type="string" name="pattern" />
+    <param type="string" name="string" />
+    <param direction="inout" optional="true" type="array" name="regs" />
+  </function>
+  <function returnType="string" name="mberegi_replace" description="Replace regular expression with multibyte support ignoring case.">
+    <param type="string" name="pattern" />
+    <param type="string" name="replace" />
+    <param type="string" name="string" />
+  </function>
+  <function returnType="string" name="mbregex_encoding" description="Returns current encoding for multibyte regex as string.">
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="array" name="mbsplit" description="Split multibyte string using regular expression.">
+    <param type="string" name="pattern" />
+    <param type="string" name="string" />
+    <param optional="true" type="int" name="limit" />
+  </function>
+  <function returnType="string" name="mbstrcut" description="Get part of string.">
+    <param type="string" name="str" />
+    <param type="int" name="start" />
+    <param optional="true" type="int" name="length" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="mbstrlen" description="Get string length.">
+    <param type="string" name="str" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="int" name="mbstrpos" description="Find position of first occurrence of string in a string.">
+    <param type="string" name="haystack" />
+    <param type="string" name="needle" />
+    <param optional="true" type="int" name="offset" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="int" name="mbstrrpos" description="Find position of last occurrence of a string in a string.">
+    <param type="string" name="haystack" />
+    <param type="string" name="needle" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="string" name="mbsubstr" description="Get part of string.">
+    <param type="string" name="str" />
+    <param type="int" name="start" />
+    <param optional="true" type="int" name="length" />
+    <param optional="true" type="string" name="encoding" />
+  </function>
+</module>

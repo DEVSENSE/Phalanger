@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9,00"
+	Name="MSIL (Orcas)"
+	ProjectGUID="{DAA5AC00-A25D-4680-959C-349E564742B3}"
+	RootNamespace="Core.MSIL"
+	SccProjectName="SAK"
+	SccAuxPath="SAK"
+	SccLocalPath="SAK"
+	SccProvider="SAK"
+	Keyword="MakeFileProj"
+	TargetFrameworkVersion="131072"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="Debug"
+			IntermediateDirectory="Debug"
+			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			DeleteExtensionsOnClean=""
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="&quot;$(ProjectDir)build.cmd&quot; &quot;$(TargetPath)&quot; Debug"
+				ReBuildCommandLine="&quot;$(ProjectDir)build.cmd&quot; &quot;$(TargetPath)&quot; Debug"
+				CleanCommandLine="del /Q $(TargetDir)*"
+				Output="Debug/PhpNetCore.IL.dll"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="Release"
+			IntermediateDirectory="Release"
+			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="&quot;$(ProjectDir)build.cmd&quot; &quot;$(TargetPath)&quot; Release"
+				ReBuildCommandLine="&quot;$(ProjectDir)build.cmd&quot; &quot;$(TargetPath)&quot; Release"
+				CleanCommandLine="del /Q $(TargetDir)*"
+				Output="Release/PhpNetCore.IL.dll"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="DebugNoGac|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			DeleteExtensionsOnClean=""
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="&quot;$(ProjectDir)build.cmd&quot; &quot;$(TargetPath)&quot; Debug"
+				ReBuildCommandLine="&quot;$(ProjectDir)build.cmd&quot; &quot;$(TargetPath)&quot; Debug"
+				CleanCommandLine="del /Q $(TargetDir)*"
+				Output="Debug/PhpNetCore.IL.dll"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="Doc"
+			>
+			<File
+				RelativePath=".\Doc\PhpNetCore.IL.xml"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath=".\Assembly.il"
+			>
+		</File>
+		<File
+			RelativePath=".\build.cmd"
+			>
+		</File>
+		<File
+			RelativePath=".\PhpInterfaces.il"
+			>
+		</File>
+		<File
+			RelativePath=".\Utils.il"
+			>
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

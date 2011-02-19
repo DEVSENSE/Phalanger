@@ -1,0 +1,7 @@
+[expect php]
+[file]
+<?php
+include('Phalanger.inc');
+	print ini_get('default_charset')."\n";
+	__var_dump(bin2hex(htmlentities("\xa1\xa2\xa1\xa3\xa1\xa4", ENT_QUOTES, '')));
+?>

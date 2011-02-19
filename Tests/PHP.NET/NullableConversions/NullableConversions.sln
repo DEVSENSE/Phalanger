@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{F0CD5B9D-43B4-49B3-95FA-7F4F8FAFA5C0}") = "NullableConversions", "NullableConversions.phpproj", "{A83C781C-F7CF-494A-A014-0D29B8EBF31B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpNullableLib", "CSharpNullableLib\CSharpNullableLib.csproj", "{AADF6A75-2BAE-4EAE-8607-C243A378B977}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A83C781C-F7CF-494A-A014-0D29B8EBF31B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A83C781C-F7CF-494A-A014-0D29B8EBF31B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A83C781C-F7CF-494A-A014-0D29B8EBF31B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A83C781C-F7CF-494A-A014-0D29B8EBF31B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AADF6A75-2BAE-4EAE-8607-C243A378B977}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AADF6A75-2BAE-4EAE-8607-C243A378B977}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AADF6A75-2BAE-4EAE-8607-C243A378B977}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AADF6A75-2BAE-4EAE-8607-C243A378B977}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

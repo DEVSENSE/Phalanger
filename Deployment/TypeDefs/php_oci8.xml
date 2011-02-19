@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="ocifreecollection" description="Deletes collection object.">
+    <param type="object" name="lob" />
+  </function>
+  <function returnType="string" name="ociloadlob" description="Loads a large object.">
+    <param type="object" name="lob" />
+  </function>
+  <function returnType="bool" name="ocicommit" description="Commit the current context.">
+    <param type="resource" name="conn" />
+  </function>
+  <function returnType="bool" name="oci_commit" description="Commit the current context.">
+    <param type="resource" name="conn" />
+  </function>
+  <function returnType="int" name="ocicolumnscale" description="Tell the scale of a column.">
+    <param type="resource" name="stmt" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="string" name="ocicollassign" description="Assign a collection from another existing collection.">
+    <param type="object" name="collection" />
+  </function>
+  <function returnType="bool" name="ocirollback" description="Rollback the current context.">
+    <param type="resource" name="conn" />
+  </function>
+  <function returnType="string" name="ocicolltrim" description="Trim num elements from the end of a collection.">
+    <param type="object" name="collection" />
+    <param name="num" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ociparse" description="Parse a query and return a statement.">
+    <param type="resource" name="conn" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="int" name="ocirowcount" description="Return the row count of an OCI statement.">
+    <param type="resource" name="stmt" />
+  </function>
+  <function returnType="string" name="ocicollassignelem" description="Assign element val to collection at index ndx.">
+    <param type="object" name="collection" />
+    <param name="ndx" />
+    <param name="val" />
+  </function>
+  <function returnType="bool" name="ocisetprefetch" description="Sets the number of rows to be prefetched on execute to prefetch_rows for stmt.">
+    <param type="resource" name="stmt" />
+    <param type="int" name="prefetch_rows" />
+  </function>
+  <function returnType="string" name="ocicollmax">
+    <param type="object" name="collection" />
+  </function>
+  <function returnType="bool" name="ocifetch" description="Prepare a new row of data for reading.">
+    <param type="resource" name="stmt" />
+  </function>
+  <function returnType="bool" name="ocilogoff" description="Disconnect from database.">
+    <param type="resource" name="conn" />
+  </function>
+  <function returnType="bool" name="oci_close" description="Closes Oracle connection.">
+    <param type="resource" name="conn" />
+  </function>
+  <function returnType="int" name="ocifetchinto" description="Fetch a row of result data into an array.">
+    <param type="resource" name="stmt" />
+    <param direction="out" type="array" name="output" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="bool" name="ocicolumnisnull" description="Tell whether a column is NULL.">
+    <param type="resource" name="stmt" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="bool" name="ocifreecursor" description="Free all resources associated with a statement.">
+    <param type="resource" name="stmt" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ocinlogon" description="Connect to an Oracle database and log on. returns a new session.">
+    <param type="string" name="user" />
+    <param type="string" name="pass" />
+    <param optional="true" type="string" name="db" />
+  </function>
+  <function returnType="string" name="ocisavelobfile" description="Saves a large object file.">
+    <param type="object" name="lob" />
+  </function>
+  <function returnType="string" name="ocicollgetelem" description="Retrieve the value at collection index ndx.">
+    <param type="object" name="collection" />
+    <param name="ndx" />
+  </function>
+  <function returnType="string" name="ocicolumnname" description="Tell the name of a column.">
+    <param type="resource" name="stmt" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="void" name="ociwritelobtofile" description="Writes a large object into a file.">
+    <param type="object" name="lob" />
+    <param optional="true" type="string" name="filename" />
+    <param optional="true" type="int" name="start" />
+    <param optional="true" type="int" name="length" />
+  </function>
+  <function returnType="string" name="ocisavelob" description="Saves a large object.">
+    <param type="object" name="lob" />
+  </function>
+  <function returnType="bool" name="ocicancel" description="Cancels reading from cursor.">
+    <param type="resource" name="stmt" />
+  </function>
+  <function returnType="bool" name="oci_cancel" description="Cancels reading from cursor.">
+    <param type="resource" name="stmt" />
+  </function>
+  <function returnType="array" name="ocierror" description="Return the last error of stmt|conn|global. If no error happened returns false.">
+    <param optional="true" type="resource" name="stmt|conn|global" />
+  </function>
+  <function returnType="array" name="oci_error" description="Return the last error of stmt|conn|global. If no error happened returns false.">
+    <param optional="true" type="resource" name="stmt|conn|global" />
+  </function>
+  <function returnType="string" name="ocicollsize" description="Return the size of a collection.">
+    <param type="object" name="collection" />
+  </function>
+  <function returnType="string" name="ocicollappend" description="Append an object to the collection.">
+    <param type="object" name="collection" />
+    <param name="value" />
+  </function>
+  <function returnType="bool" name="ocifreedesc" description="Deletes large object description.">
+    <param type="object" name="lob" />
+  </function>
+  <function returnType="resource" name="ocilogon" description="Establishes a connection to the Oracle server.">
+    <param type="string" name="username" />
+    <param type="string" name="password" />
+    <param optional="true" type="string" name="db" />
+    <param optional="true" type="string" name="charset" />
+    <param optional="true" type="int" name="session_mode" />
+  </function>
+  <function returnType="resource" name="oci_connect" description="Establishes a connection to the Oracle server.">
+    <param type="string" name="username" />
+    <param type="string" name="password" />
+    <param optional="true" type="string" name="db" />
+    <param optional="true" type="string" name="charset" />
+    <param optional="true" type="int" name="session_mode" />
+  </function>
+  <function returnType="mixed" name="ocicolumntyperaw" description="Tell the raw oracle data type of a column.">
+    <param type="resource" name="stmt" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ocinewcursor" description="Return a new cursor (Statement-Handle) - use this to bind ref-cursors!">
+    <param type="resource" name="conn" />
+  </function>
+  <function returnType="void" name="ociinternaldebug" description="Toggle internal debugging output for the OCI extension.">
+    <param type="int" name="onoff" />
+  </function>
+  <function returnType="string" name="ocistatementtype" description="Return the query type of an OCI statement.">
+    <param type="resource" name="stmt" />
+  </function>
+  <function returnType="string" name="ocinewcollection" description="Initialize a new collection.">
+    <param type="resource" name="connection" />
+    <param type="string" name="tdo" />
+    <param optional="true" type="string" name="schema" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ociplogon" description="Connect to an Oracle database using a persistent connection and log on. Returns a new session.">
+    <param type="string" name="user" />
+    <param type="string" name="pass" />
+    <param optional="true" type="string" name="db" />
+  </function>
+  <function returnType="string" name="ociserverversion" description="Return a string containing server version information.">
+    <param type="resource" name="conn" />
+  </function>
+  <function returnType="bool" name="ocifreestatement" description="Free all resources associated with a statement.">
+    <param type="resource" name="stmt" />
+  </function>
+  <function returnType="mixed" name="ocicolumntype" description="Tell the data type of a column.">
+    <param type="resource" name="stmt" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="bool" name="ocidefinebyname" description="Define a PHP variable to an Oracle column by name.">
+    <param type="resource" name="stmt" />
+    <param type="string" name="name" />
+    <param bind="true" direction="inout" type="mixed" name="var" />
+    <param optional="true" type="int" name="type" />
+  </function>
+  <function returnType="bool" name="oci_define_by_name" description="Define a PHP variable to an Oracle column by name.">
+    <param type="resource" name="stmt" />
+    <param type="string" name="name" />
+    <param bind="true" direction="inout" type="mixed" name="var" />
+    <param optional="true" type="int" name="type" />
+  </function>
+  <function returnType="int" name="ocifetchstatement" description="Fetch all rows of result data into an array.">
+    <param type="resource" name="stmt" />
+    <param direction="out" type="array" name="output" />
+    <param optional="true" type="int" name="skip" />
+    <param optional="true" type="int" name="maxrows" />
+    <param optional="true" type="int" name="flags" />
+  </function>
+  <function returnType="mixed" name="ociresult" description="Return a single column of result data.">
+    <param type="resource" name="stmt" />
+    <param type="mixed" name="column" />
+  </function>
+  <function returnType="bool" name="ocibindbyname" description="Bind a PHP variable to an Oracle placeholder by name.">
+    <param type="resource" name="stmt" />
+    <param type="string" name="name" />
+    <param bind="true" direction="inout" type="mixed" name="var" />
+    <param optional="true" type="int" name="maxlength" />
+    <param optional="true" type="int" name="type" />
+  </function>
+  <function returnType="bool" name="oci_bind_by_name" description="Bind a PHP variable to an Oracle placeholder by name.">
+    <param type="resource" name="stmt" />
+    <param type="string" name="name" />
+    <param bind="true" direction="inout" type="mixed" name="var" />
+    <param optional="true" type="int" name="maxlength" />
+    <param optional="true" type="int" name="type" />
+  </function>
+  <function returnType="object" name="ocinewdescriptor" description="Initialize a new empty descriptor LOB/FILE (LOB is default).">
+    <param type="resource" name="connection" />
+    <param optional="true" type="int" name="type" />
+  </function>
+  <function returnType="int" name="ocinumcols" description="Return the number of result columns in a statement.">
+    <param type="resource" name="stmt" />
+  </function>
+  <function marshalBoundVars="inout" returnType="bool" name="ociexecute" description="Execute a parsed statement.">
+    <param type="resource" name="stmt" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function marshalBoundVars="inout" returnType="bool" name="oci_execute" description="Execute a parsed statement.">
+    <param type="resource" name="stmt" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="int" name="ocicolumnsize" description="Tell the maximum data size of a column.">
+    <param type="resource" name="stmt" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="int" name="ocicolumnprecision" description="Tell the precision of a column.">
+    <param type="resource" name="stmt" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="bool" name="oci_fetch" description="Fetches the next row into result-buffer.">
+    <param type="resource" name="statement" />
+  </function>
+  <function returnType="int" name="oci_fetch_all" description="Fetches all rows of result data into an array.">
+    <param type="resource" name="statement" />
+    <param direction="inout" type="array" name="output" />
+    <param optional="true" type="int" name="skip" />
+    <param optional="true" type="int" name="maxrows" />
+    <param optional="true" type="int" name="flags" />
+  </function>
+  <function returnType="array" name="oci_fetch_array" description="Returns the next row from the result data as an associative or numeric array, or both.">
+    <param type="resource" name="statement" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="array" name="oci_fetch_assoc" description="Returns the next row from the result data as an associative array.">
+    <param type="resource" name="statement" />
+  </function>
+  <function returnType="object" name="oci_fetch_object" description="Returns the next row from the result data as an object.">
+    <param type="resource" name="statement" />
+  </function>
+  <function returnType="array" name="oci_fetch_row" description="Returns the next row from the result data as a numeric array.">
+    <param type="resource" name="statement" />
+  </function>
+  <function returnType="bool" name="oci_field_is_null" description="Checks if the field is NULL.">
+    <param type="resource" name="stmt" />
+    <param type="mixed" name="field" />
+  </function>
+  <function returnType="string" name="oci_field_name" description="Returns the name of a field from the statement.">
+    <param type="resource" name="statement" />
+    <param type="int" name="field" />
+  </function>
+  <function returnType="int" name="oci_field_precision" description="Tell the precision of a field.">
+    <param type="resource" name="statement" />
+    <param type="int" name="field" />
+  </function>
+  <function returnType="int" name="oci_field_scale" description="Tell the scale of the field.">
+    <param type="resource" name="statement" />
+    <param type="int" name="field" />
+  </function>
+  <function returnType="int" name="oci_field_size" description="Returns field's size.">
+    <param type="resource" name="stmt" />
+    <param type="mixed" name="field" />
+  </function>
+  <function returnType="mixed" name="oci_field_type" description="Returns field's data type.">
+    <param type="resource" name="stmt" />
+    <param type="int" name="field" />
+  </function>
+  <function returnType="int" name="oci_field_type_raw" description="Tell the raw Oracle data type of the field.">
+    <param type="resource" name="statement" />
+    <param type="int" name="field" />
+  </function>
+  <function returnType="bool" name="oci_free_statement" description="Frees all resources associated with statement or cursor.">
+    <param type="resource" name="statement" />
+  </function>
+  <function returnType="void" name="oci_internal_debug" description="Enables or disables internal debug output.">
+    <param type="int" name="onoff" />
+  </function>
+  <function returnType="bool" name="oci_lob_copy" description="Copies large object.">
+    <param type="object" name="lob_to" />
+    <param type="object" name="lob_from" />
+    <param optional="true" type="int" name="length" />
+  </function>
+  <function returnType="bool" name="oci_lob_is_equal" description="Compares two LOB/FILE locators for equality.">
+    <param type="object" name="lob1" />
+    <param type="object" name="lob2" />
+  </function>
+  <function returnType="object" name="oci_new_collection" description="Allocates new collection object.">
+    <param type="resource" name="connection" />
+    <param type="string" name="tdo" />
+    <param optional="true" type="string" name="schema" />
+  </function>
+  <function returnType="resource" name="oci_new_connect" description="Establishes a new connection to the Oracle server.">
+    <param type="string" name="username" />
+    <param type="string" name="password" />
+    <param optional="true" type="string" name="db" />
+    <param optional="true" type="string" name="charset" />
+    <param optional="true" type="int" name="session_mode" />
+  </function>
+  <function returnType="resource" name="oci_new_cursor" description="Allocates and returns a new cursor (statement handle).">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="object" name="oci_new_descriptor" description="Initializes a new empty LOB or FILE descriptor.">
+    <param type="resource" name="connection" />
+    <param optional="true" type="int" name="type" />
+  </function>
+  <function returnType="int" name="oci_num_fields" description="Returns the number of result columns in a statement.">
+    <param type="resource" name="statement" />
+  </function>
+  <function returnType="int" name="oci_num_rows" description="Returns number of rows affected during statement execution.">
+    <param type="resource" name="stmt" />
+  </function>
+  <function returnType="resource" name="oci_parse" description="Prepares Oracle statement for execution.">
+    <param type="resource" name="connection" />
+    <param type="string" name="query" />
+  </function>
+  <function returnType="bool" name="oci_password_change" description="Changes password of Oracle's user.">
+    <param type="resource" name="connection" />
+    <param type="string" name="username" />
+    <param type="string" name="old_password" />
+    <param type="string" name="new_password" />
+  </function>
+  <function returnType="resource" name="oci_pconnect" description="Connect to an Oracle database using a persistent connection.">
+    <param type="string" name="username" />
+    <param type="string" name="password" />
+    <param optional="true" type="string" name="db" />
+    <param optional="true" type="string" name="charset" />
+    <param optional="true" type="int" name="session_mode" />
+  </function>
+  <function returnType="mixed" name="oci_result" description="Returns field's value from the fetched row.">
+    <param type="resource" name="statement" />
+    <param type="mixed" name="field" />
+  </function>
+  <function returnType="bool" name="oci_rollback" description="Rolls back outstanding transaction.">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="string" name="oci_server_version" description="Returns server version.">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="bool" name="oci_set_prefetch" description="Sets number of rows to be prefetched.">
+    <param type="resource" name="statement" />
+    <param optional="true" type="int" name="rows" />
+  </function>
+  <function returnType="string" name="oci_statement_type" description="Returns the type of an OCI statement.">
+    <param type="resource" name="statement" />
+  </function>
+
+  <class name="collection">
+    <function returnType="bool" name="append" description="Appends an object to the collection.">
+	  <param type="mixed" name="value" />
+    </function>
+    <function returnType="bool" name="assign" description="Assigns a value to the collection from another existing collection.">
+	  <param type="object" name="from" />
+    </function>
+    <function returnType="bool" name="assignElem" description="Assigns a value to the element of the collection.">
+	  <param type="int" name="index" />
+	  <param type="mixed" name="value" />
+    </function>
+    <function returnType="mixed" name="getElem" description="Returns value of the element.">
+      <param type="int" name="index" />
+    </function>
+    <function returnType="int" name="max" description="Gets the maximum number of elements in the collection." />
+    <function returnType="int" name="size" description="Returns size of the collection." />
+    <function returnType="bool" name="trim" description="Trims elements from the end of the collection.">
+      <param type="int" name="num" />
+    </function>
+    <function returnType="bool" name="free" description="Frees resources associated with collection object." />
+  </class>
+  
+  <class name="descriptor">
+    <function returnType="bool" name="free" description="Frees resources associated with descriptor." />
+  </class>
+  
+  <class name="lob">
+    <function returnType="bool" name="append" description="Appends data from the large object to another large object.">
+      <param type="object" name="lob_from" />
+    </function>
+    <function returnType="bool" name="close" description="Closes LOB descriptor." />
+    <function returnType="bool" name="eof" description="Tests for end-of-file on a large object's descriptor." />
+    <function returnType="int" name="erase" description="Erases a specified portion of the internal LOB data.">
+      <param optional="true" type="int" name="offset" />
+      <param optional="true" type="int" name="length" />
+    </function>
+    <function returnType="bool" name="export" description="Exports LOB's contents to a file.">
+      <param type="string" name="filename" />
+      <param optional="true" type="int" name="start" />
+      <param optional="true" type="int" name="length" />
+    </function>
+    <function returnType="bool" name="flush" description="Flushes/writes buffer of the LOB to the server.">
+      <param optional="true" type="int" name="flag" />
+    </function>
+    <function returnType="bool" name="import" description="Imports file data to the LOB.">
+      <param type="string" name="filename" />
+    </function>
+    <function returnType="string" name="load" description="Returns large object's contents." />
+    <function returnType="string" name="read" description="Reads part of large object.">
+      <param type="int" name="length" />
+    </function>
+    <function returnType="bool" name="rewind" description="Moves the internal pointer to the beginning of the large object." />
+    <function returnType="bool" name="save" description="Saves data to the large object.">
+      <param type="string" name="data" />
+      <param optional="true" type="int" name="offset" />
+    </function>
+    <function returnType="bool" name="seek" description="Sets the internal pointer of the large object.">
+      <param type="int" name="offset" />
+      <param optional="true" type="int" name="whence" />
+    </function>
+    <function returnType="int" name="size" description="Returns size of large object." />
+    <function returnType="int" name="tell" description="Returns current position of internal pointer of large object." />
+    <function returnType="bool" name="truncate" description="Truncates large object.">
+      <param optional="true" type="int" name="length" />
+    </function>
+    <function returnType="bool" name="writeTemporary" description="Writes temporary large object.">
+      <param type="string" name="data" />
+      <param optional="true" type="int" name="lob_type" />
+    </function>
+    <function returnType="int" name="write" description="Writes data to the large object.">
+      <param type="string" name="data" />
+      <param optional="true" type="int" name="length" />
+    </function>
+    <function returnType="bool" name="getBuffering" description="Returns current state of buffering for large object." />
+    <function returnType="bool" name="setBuffering" description="Changes current state of buffering for large object.">
+      <param type="bool" name="on_off" />
+    </function>
+  </class>
+</module>

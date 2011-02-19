@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<docs>
+  <method name="Extract">
+    <remarks>
+      <para>
+        A variable name can be used as it is or prefixed by <paramref name="prefix"/> according to
+        <paramref name="type"/> 
+        (see the following table). Regardless which name is used (prefixed or not) it is always tested by 
+        method <see cref="PhpVariable.IsValidName"/> before the extraction is made.
+      </para>
+      <para>
+        <list type="table">
+          <listheader>
+            <term>Value of the <paramref name="type"/> &amp; <see cref="ExtractType.NonFlags"/></term>
+            <description>The action taken</description>
+          </listheader>
+          <item>
+            <term>
+              <see cref="ExtractType.Overwrite" />
+            </term>
+            <description>
+              If a variable doesn't exist yet it is created otherwise its value is overwritten.
+            </description>
+          </item>
+          <item>
+            <term>
+              <see cref="ExtractType.Skip" />
+            </term>
+            <description>
+              If a variable already exists it is skipped (its value is left untouched).
+              Otherwise, a new variable is created.
+            </description>
+          </item>
+          <item>
+            <term>
+              <see cref="ExtractType.IfExists" />
+            </term>
+            <description>
+              If a variable already exists its value is overwritten. Otherwise, the variable is skipped
+              (i.e. no new variables are created).
+            </description>
+          </item>
+          <item>
+            <term>
+              <see cref="ExtractType.PrefixAll" />
+            </term>
+            <description>
+              A variable name is prefixed and if a variable with that name doesn't
+              exists it is created and, otherwise its value is overwritten.
+            </description>
+          </item>        
+          <item>
+            <term>
+              <see cref="ExtractType.PrefixSame" />
+            </term>
+            <description>
+              If a variable already exists its name is prefixed and a new variable 
+              with that name is created. Otherwise, the variable's value is overwritten.
+            </description>
+          </item>               
+          <item>
+            <term>
+              <see cref="ExtractType.PrefixIfExists" />
+            </term>
+            <description>
+              If a variable already exists its name is prefixed and a new variable 
+              with that name is created. Otherwise, the variable is skipped.
+            </description>
+          </item>               
+        </list>      
+      </para>
+      <para>
+        Moreover, <paramref name="type"/> can be OR'ed by <see cref="ExtractType.Refs"/>
+        which causes that refereces preserved - if there is a reference in <paramref name="vars"/>
+        the target variable will be referencing the same thing.
+      </para>
+    </remarks>     
+  </method>        
+</docs>

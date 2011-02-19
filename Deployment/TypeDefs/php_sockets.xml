@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="int" name="socket_write" description="Writes the buffer to the file descriptor fd, length is optional.">
+    <param type="resource" name="socket" />
+    <param type="string" name="buf" />
+    <param optional="true" type="int" name="length" />
+  </function>
+  <function returnType="bool" name="socket_iovec_set" description="Sets the data held in iovec_id[iovec_position] to new_val.">
+    <param type="resource" name="iovec" />
+    <param type="int" name="iovec_position" />
+    <param type="string" name="new_val" />
+  </function>
+  <function returnType="void" name="socket_clear_error" description="Clears the error on the socket.">
+    <param optional="true" type="resource" name="socket" />
+  </function>
+  <function returnType="bool" name="socket_listen" description="Sets the maximum number of connections allowed to be waited for on the socket specified by fd.">
+    <param type="resource" name="socket" />
+    <param optional="true" type="int" name="backlog" />
+  </function>
+  <function returnType="int" name="socket_select" description="Runs the select() system call on the sets mentioned with a timeout specified by tv_sec and tv_usec.">
+    <param direction="inout" type="array" name="read_fds" />
+    <param direction="inout" type="array" name="write_fds" />
+    <param direction="inout" type="array" name="except_fds" />
+    <param type="mixed" name="tv_sec" />
+    <param optional="true" type="int" name="tv_usec" />
+  </function>
+  <function returnType="bool" name="socket_getpeername" description="Given an fd, stores a string representing sa.sin_addr and the value of sa.sin_port into addr and port describing the remote side of a socket.">
+    <param type="resource" name="socket" />
+    <param direction="out" type="string" name="addr" />
+    <param optional="true" direction="out" type="int" name="port" />
+  </function>
+  <function returnType="bool" name="socket_set_block" description="Sets blocking mode on a socket resource.">
+    <param type="resource" name="socket" />
+  </function>
+  <function returnType="mixed" name="socket_getopt" description="Gets socket options for the socket.">
+    <param type="resource" name="socket" />
+    <param type="int" name="level" />
+    <param type="int" name="optname" />
+  </function>
+  <function returnType="int" name="socket_recvfrom" description="Receives data from a socket, connected or not.">
+    <param type="resource" name="socket" />
+    <param direction="out" type="string" name="buf" />
+    <param type="int" name="len" />
+    <param type="int" name="flags" />
+    <param direction="out" type="string" name="name" />
+    <param direction="out" optional="true" type="int" name="port" />
+  </function>
+  <function returnType="bool" name="socket_sendmsg" description="Sends a message to a socket, regardless of whether it is connection-oriented or not.">
+    <param type="resource" name="socket" />
+    <param type="resource" name="iovec" />
+    <param type="int" name="flags" />
+    <param type="string" name="addr" />
+    <param optional="true" type="int" name="port" />
+  </function>
+  <function returnType="bool" name="socket_iovec_free" description="Frees the iovec specified by iovec_id.">
+    <param type="resource" name="iovec" />
+  </function>
+  <function returnType="bool" name="socket_bind" description="Binds an open socket to a listening port, port is only specified in AF_INET family.">
+    <param type="resource" name="socket" />
+    <param type="string" name="addr" />
+    <param optional="true" type="int" name="port" />
+  </function>
+  <function returnType="string" name="socket_iovec_fetch" description="Returns the data held in the iovec specified by iovec_id[iovec_position].">
+    <param type="resource" name="iovec" />
+    <param type="int" name="iovec_position" />
+  </function>
+  <function returnType="int" name="socket_send" description="Sends data to a connected socket.">
+    <param type="resource" name="socket" />
+    <param type="string" name="buf" />
+    <param type="int" name="len" />
+    <param type="int" name="flags" />
+  </function>
+  <function returnType="bool" name="socket_create_pair" description="Creates a pair of indistinguishable sockets and stores them in fds.">
+    <param type="int" name="domain" />
+    <param type="int" name="type" />
+    <param type="int" name="protocol" />
+    <param direction="out" type="array" name="fd" />
+  </function>
+  <function returnType="bool" name="socket_connect" description="Opens a connection to addr:port on the socket specified by socket.">
+    <param type="resource" name="socket" />
+    <param type="string" name="addr" />
+    <param optional="true" type="int" name="port" />
+  </function>
+  <function returnType="bool" name="socket_getsockname" description="Given an fd, stores a string representing sa.sin_addr and the value of sa.sin_port into addr and port describing the local side of a socket.">
+    <param type="resource" name="socket" />
+    <param direction="out" type="string" name="addr" />
+    <param optional="true" direction="out" type="int" name="port" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="socket_iovec_alloc" description="Builds a 'struct iovec' for use with sendmsg, recvmsg, writev, and readv.">
+    <param type="int" name="num_vectors" />
+    <param optional="vararg" type="int" name="..." />
+  </function>
+  <function returnType="int" name="socket_last_error" description="Returns the last error on the socket.">
+    <param optional="true" type="resource" name="socket" />
+  </function>
+  <function returnType="bool" name="socket_set_nonblock" description="Sets nonblocking mode on a socket resource.">
+    <param type="resource" name="socket" />
+  </function>
+  <function returnType="bool" name="socket_shutdown" description="Shuts down a socket for receiving, sending, or both.">
+    <param type="resource" name="socket" />
+    <param optional="true" type="int" name="how" />
+  </function>
+  <function returnType="mixed" name="socket_read" description="Reads length bytes from socket.">
+    <param type="resource" name="socket" />
+    <param type="int" name="length" />
+    <param optional="true" type="int" name="type" />
+  </function>
+  <function returnType="void" name="socket_close" description="Closes a file descriptor.">
+    <param type="resource" name="socket" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="socket_accept" description="Accepts a connection on the listening socket fd.">
+    <param type="resource" name="socket" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="socket_create" description="Creates an endpoint for communication in the domain specified by domain, of type specified by type.">
+    <param type="int" name="domain" />
+    <param type="int" name="type" />
+    <param type="int" name="protocol" />
+  </function>
+  <function returnType="bool" name="socket_iovec_add" description="Adds a new vector to the scatter/gather array.">
+    <param type="resource" name="iovec" />
+    <param type="int" name="iov_len" />
+  </function>
+  <function returnType="string" name="socket_strerror" description="Returns a string describing an error.">
+    <param type="int" name="errno" />
+  </function>
+  <function returnType="bool" name="socket_setopt" description="Sets socket options for the socket.">
+    <param type="resource" name="socket" />
+    <param type="int" name="level" />
+    <param type="int" name="optname" />
+    <param type="mixed" name="optval" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="socket_create_listen" description="Opens a socket on port to accept connections.">
+    <param type="int" name="port" />
+    <param optional="true" type="int" name="backlog" />
+  </function>
+  <function returnType="bool" name="socket_writev" description="Writes to a file descriptor, fd, using the scatter-gather array defined by iovec_id.">
+    <param type="resource" name="socket" />
+    <param type="resource" name="iovec_id" />
+  </function>
+  <function returnType="int" name="socket_recv" description="Receives data from a connected socket.">
+    <param type="resource" name="socket" />
+    <param direction="out" type="string" name="buf" />
+    <param type="int" name="len" />
+    <param type="int" name="flags" />
+  </function>
+  <function returnType="int" name="socket_sendto" description="Sends a message to a socket, whether it is connected or not.">
+    <param type="resource" name="socket" />
+    <param type="string" name="buf" />
+    <param type="int" name="len" />
+    <param type="int" name="flags" />
+    <param type="string" name="addr" />
+    <param optional="true" type="int" name="port" />
+  </function>
+  <function returnType="bool" name="socket_iovec_delete" description="Deletes a vector from an array of vectors.">
+    <param type="resource" name="iovec" />
+    <param type="int" name="iov_pos" />
+  </function>
+  <function returnType="bool" name="socket_readv" description="Reads from an fd, using the scatter-gather array defined by iovec_id.">
+    <param type="resource" name="socket" />
+    <param type="resource" name="iovec_id" />
+  </function>
+  <function returnType="mixed" name="socket_get_option" description="Gets socket options for the socket.">
+    <param type="resource" name="socket" />
+    <param type="int" name="level" />
+    <param type="int" name="optname" />
+  </function>
+  <function returnType="bool" name="socket_set_option" description="Sets socket options for the socket.">
+    <param type="resource" name="socket" />
+    <param type="int" name="level" />
+    <param type="int" name="optname" />
+    <param type="mixed" name="optval" />
+  </function>
+</module>

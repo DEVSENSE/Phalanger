@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{1EA040D2-53F6-4409-9FA4-7C60E868BB52}") = "SPL", "SPL.phpproj", "{811EC666-2C08-4739-AD11-0AF772B892E6}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 2
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs01.codeplex.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = SPL.phpproj
+		SccLocalPath1 = .
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{811EC666-2C08-4739-AD11-0AF772B892E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{811EC666-2C08-4739-AD11-0AF772B892E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{811EC666-2C08-4739-AD11-0AF772B892E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{811EC666-2C08-4739-AD11-0AF772B892E6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

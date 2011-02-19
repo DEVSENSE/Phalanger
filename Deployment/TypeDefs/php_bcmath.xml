@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="bcadd" description="Add two arbitrary precision numbers.">
+    <param type="string" name="left_operand" />
+    <param type="string" name="right_operand" />
+    <param optional="true" type="int" name="scale" />
+  </function>
+  <function returnType="int" name="bccomp" description="Compare two arbitrary precision numbers.">
+    <param type="string" name="left_operand" />
+    <param type="string" name="right_operand" />
+    <param optional="true" type="int" name="scale" />
+  </function>
+  <function returnType="string" name="bcdiv" description="Divide two arbitrary precision numbers.">
+    <param type="string" name="left_operand" />
+    <param type="string" name="right_operand" />
+    <param optional="true" type="int" name="scale" />
+  </function>
+  <function returnType="string" name="bcmod" description="Get modulus of an arbitrary precision number.">
+    <param type="string" name="left_operand" />
+    <param type="string" name="modulus" />
+  </function>
+  <function returnType="string" name="bcmul" description="Multiply two arbitrary precision number.">
+    <param type="string" name="left_operand" />
+    <param type="string" name="right_operand" />
+    <param optional="true" type="int" name="scale" />
+  </function>
+  <function returnType="string" name="bcpow" description="Raise an arbitrary precision number to another.">
+    <param type="string" name="x" />
+    <param type="string" name="y" />
+    <param optional="true" type="int" name="scale" />
+  </function>
+  <function returnType="string" name="bcpowmod" description="Raise an arbitrary precision number to another, reduced by a specified modulus.">
+    <param type="string" name="x" />
+    <param type="string" name="y" />
+    <param type="string" name="modulus" />
+    <param optional="true" type="int" name="scale" />
+  </function>
+  <function returnType="bool" name="bcscale" description="Set default scale parameter for all bc math functions.">
+    <param type="int" name="scale" />
+  </function>
+  <function returnType="string" name="bcsqrt" description="Get the square root of an arbitrary precision number.">
+    <param type="string" name="operand" />
+    <param optional="true" type="int" name="scale" />
+  </function>
+  <function returnType="string" name="bcsub" description="Subtract one arbitrary precision number from another.">
+    <param type="string" name="left_operand" />
+    <param type="string" name="right_operand" />
+    <param optional="true" type="int" name="scale" />
+  </function>
+</module>

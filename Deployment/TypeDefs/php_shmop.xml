@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="shmop_read" description="Reads from a shm segment.">
+    <param type="int" name="shmid" />
+    <param type="int" name="start" />
+    <param type="int" name="count" />
+  </function>
+  <function returnType="int" name="shmop_open" description="Gets and attaches a shared memory segment.">
+    <param type="int" name="key" />
+    <param type="string" name="flags" />
+    <param type="int" name="mode" />
+    <param type="int" name="size" />
+  </function>
+  <function returnType="int" name="shmop_size" description="Returns the shm size.">
+    <param type="int" name="shmid" />
+  </function>
+  <function returnType="void" name="shmop_close" description="Closes a shared memory segment.">
+    <param type="int" name="shmid" />
+  </function>
+  <function returnType="bool" name="shmop_delete" description="Mark segment for deletion.">
+    <param type="int" name="shmid" />
+  </function>
+  <function returnType="int" name="shmop_write" description="Writes to a shared memory segment.">
+    <param type="int" name="shmid" />
+    <param type="string" name="data" />
+    <param type="int" name="offset" />
+  </function>
+</module>

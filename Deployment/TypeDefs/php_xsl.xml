@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <class name="XSLTProcessor">
+    <function returnType="string" name="getParameter" description="Get value of a parameter.">
+      <param type="string" name="namespaceURI" />
+      <param type="string" name="localName" />
+    </function>
+    <function returnType="bool" name="hasExsltSupport" description="Determine if PHP has EXSLT support." />
+    <function returnType="void" name="importStylesheet" description="Import stylesheet.">
+      <param type="object" name="stylesheet" />
+    </function>
+    <function returnType="void" name="registerPHPFunctions" description="Enables the ability to use PHP functions as XSLT functions.">
+      <param optional="true" type="mixed" name="restrict" />
+    </function>
+    <function returnType="bool" name="removeParameter" description="Remove parameter.">
+      <param type="string" name="namespaceURI" />
+      <param type="string" name="localName" />
+    </function>
+    <function returnType="bool" name="setParameter" description="Set value for a parameter.">
+      <param type="string" name="namespace" />
+      <param type="string" name="name" />
+      <param type="string" name="value" />
+    </function>
+    <function returnType="object" name="transformToDoc" description="Transform to a DOMDocument.">
+      <param type="object" name="doc" />
+    </function>
+    <function returnType="int" name="transformToURI" description="Transform to URI.">
+      <param type="object" name="doc" />
+      <param type="string" name="uri" />
+    </function>
+    <function returnType="string" name="transformToXML" description="Transform to XML.">
+      <param type="object" name="doc" />
+    </function>
+  </class>
+</module>

@@ -1,0 +1,40 @@
+[expect php]
+[file]
+<?
+function f()
+{
+ $this = 1;
+ echo $this;
+ $this->a = 1;
+ echo $this->a;
+}
+
+class A
+{
+	var $b;
+	static function m()
+	{
+		$this = 1;
+		echo $this;
+		$this->a = 1;
+		echo $this->a;
+		$this->b = 1;
+		echo $this->b;
+	}
+	
+	function n()
+	{
+		$this = 1;
+		echo $this;
+		$this->a = 1;
+		echo $this->a;
+		$this->b = 1;
+		echo $this->b;
+	}
+}
+
+$this = 1;
+ echo $this;
+ $this->a = 1;
+ echo $this->a; 
+?>

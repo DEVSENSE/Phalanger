@@ -1,0 +1,40 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Name>"Sample"</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{e97d0d1a-eabb-4b50-aca5-bc61b74212ea}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Program</RootNamespace>
+    <AssemblyName>Test1</AssemblyName>
+    <MainFile>Test1.php</MainFile>
+    <TargetPlatform>v2</TargetPlatform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IncludeDebugInformation>true</IncludeDebugInformation>
+    <OutputPath>bin</OutputPath>
+    <TargetKind>exe</TargetKind>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <IncludeDebugInformation>false</IncludeDebugInformation>
+    <OutputPath>bin\Release\</OutputPath>
+    <TargetKind>exe</TargetKind>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Test1.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Test2.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Test3.php">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.config">
+      <SubType>Content</SubType>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.0\Phalanger.targets" />
+</Project>

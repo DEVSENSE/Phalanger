@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="resource" castToFalse="true" name="bzopen" description="Opens a new BZip2 stream.">
+    <param type="mixed" name="file" />
+    <param type="string" name="mode" />
+  </function>
+  <function returnType="string" name="bzcompress" description="Compresses a string into BZip2 encoded data.">
+    <param type="string" name="source" />
+    <param optional="true" type="int" name="blocksize100k" />
+    <param optional="true" type="int" name="workfactor" />
+  </function>
+  <function returnType="int" name="bzflush" description="Flushes a BZip2 stream.">
+    <param type="resource" name="bz" />
+  </function>
+  <function returnType="array" name="bzerror" description="Returns the error number and error string in an associative array.">
+    <param type="resource" name="bz" />
+  </function>
+  <function returnType="int" name="bzwrite" description="Writes data to the BZip2 stream given by bz.">
+    <param type="resource" name="bz" />
+    <param type="string" name="data" />
+    <param optional="true" type="int" name="len" />
+  </function>
+  <function returnType="string" name="bzerrstr" description="Returns the error string.">
+    <param type="resource" name="bz" />
+  </function>
+  <function returnType="string" name="bzread" description="Reads len bytes from the BZip2 stream given by bz.">
+    <param type="resource" name="bz" />
+    <param optional="true" type="int" name="len" />
+  </function>
+  <function returnType="int" name="bzerrno" description="Returns the error number.">
+    <param type="resource" name="bz" />
+  </function>
+  <function returnType="int" name="bzclose" description="Closes a BZip2 stream.">
+    <param type="resource" name="bz" />
+  </function>
+  <function returnType="string" name="bzdecompress" description="Decompresses BZip2 compressed data.">
+    <param type="string" name="source" />
+    <param optional="true" type="int" name="small" />
+  </function>
+</module>

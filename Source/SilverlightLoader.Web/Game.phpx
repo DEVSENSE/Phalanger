@@ -1,0 +1,535 @@
+﻿<?
+/*****************************************************************************/
+/**
+ * Phalanger 'Helicopter Game'
+ * Implements the helicopter game and interaction with the SL control.
+ *
+ * @author Tomas Petricek <tomas@tomasp.net>
+ * @package sldemos
+ *
+ * @todo Use 'private', once the issue in Phalanger on SL is solved!
+ */
+/*****************************************************************************/
+
+import namespace System;
+import namespace System:::Threading;
+import namespace System:::IO;
+import namespace System:::IO:::IsolatedStorage;
+import namespace System:::Net;
+import namespace System:::Windows;
+import namespace System:::Windows:::Markup;
+import namespace System:::Windows:::Browser;
+import namespace System:::Windows:::Shapes;
+import namespace System:::Windows:::Controls;
+import namespace System:::Windows:::Media;
+import namespace System:::Windows:::Input;
+import namespace System:::Windows:::Media:::Imaging;
+import namespace System:::Windows:::Media:::Animation;
+
+include("config.phpx");
+include("slutils.phpx");
+
+/**
+ * Represents horizontal line from 'start' to 'End' with vertical offset.
+ *
+ * @property int Start   The smaller X value of the line.
+ * @property int End     The bigger X value of the line.
+ * @property int Offset  The Y location of the line.
+ */
+class HorzLine
+{
+	public $Start;
+	public $End;
+	public $Offset;
+
+	/**
+	 * Initializes the horizontal line.
+	 */
+	function __construct($s, $e, $ofs) 
+	{
+		$this->Start = $s;
+		$this->End = $e;
+		$this->Offset = $ofs;
+	}
+}
+
+/**
+ * Represents a simplified shape of the helicopter in the game.
+ * The copter is represented as a set of horizontal lines that can
+ * colide with the lines defining the borders.
+ *
+ * @property int $Left					 Represents X position of the copter
+ * @property int $Top						 Represents Y position of the copter
+ * @property HorzLine[] $hlines  Stores the horizontal lines of the shape.
+ */
+class SimpleGeometry
+{
+	public $Left;
+	public $Top;	
+	
+	/* private */ public $hlines;
+	
+	function __construct($hl)
+	{
+		$this->hlines = $hl;
+	}
+	
+	/**
+	 * Tests whether the geometry (ie. any of the horizontal lines)
+	 * collides with the specified line of the terrain.
+	 */
+	function CollideWithLine($x1, $y1, $x2, $y2)
+	{
+		foreach($this->hlines as $l)
+		{
+			$start = $l->Start + $this->Left;
+			$end = $l->End + $this->Left;
+			$ofs = $this->Top - $l->Offset;
+			
+			$tx = ($ofs - $y1)/($y2 - $y1)*($x2 - $x1) + $x1; 
+			if (($ofs > $y1 && $ofs < $y2 && $tx > $start && $tx < $end)
+			  || ($ofs > $y2 && $ofs < $y1 && $tx > $start && $tx < $end))
+				return true;
+		}	
+		return false;
+	}
+}
+
+/*****************************************************************************/
+
+/**
+ * Implements the Phalanger Helicopter game!
+ *
+ * The object is created by the @see OnLoad function (declared later)
+ * when the Silverlight control is loaded in the browser.
+ *
+ * The game inherits from @see CanvasWrapper utility class from the 
+ * 'slutils.phpx' file. This class provides simplified access to SL elements
+ * and properties of the elements.
+ */
+class CopterGame extends CanvasWrapper
+{
+	/**
+	 * Silverlight Storyboard used for creating 'game loop'.
+	 * Note that we cannot use timers, since the access to elemetns
+	 * can be done only from the main thread, so this is workaround.
+	 */
+  /* private */ public $loop;
+  
+  /**
+   * State of the game:
+   * 0 - ended/not started yet, 1 - playing, 
+   * 2 - just died (wait some time before allowing next game)
+   */ 
+	/* private */ public $state;	
+
+	/**	
+	 * Represents the helicopter geomtery. @see SimpleGeometry.
+	 */
+	/* private */ public $coptergeom;
+	
+	/* private */ public $lasttime;
+	
+	/***************  Game initialization, starting, etc... ********************/
+
+	function __construct($canv)
+	{
+		parent::__construct($canv);
+
+		// initialize event handlers
+		$this->MouseLeftButtonDown->Add(new MouseButtonEventHandler(array($this,"MouseDown")));
+		$this->MouseLeftButtonUp->Add(new MouseButtonEventHandler(array($this,"MouseUp")));
+
+		// initialize the game loop
+		$this->loop = slwrap(new Storyboard());
+		$this->loop->{ "FrameworkElement.Name" } = "loop";
+		$this->Resources->Add("loop",$this->loop->Element);
+		$this->loop->Completed->Add(new EventHandler(array($this,"GameLoop")));
+
+    // initialize copter & game
+		$this->coptergeom = new SimpleGeometry
+			(array(new HorzLine(0, 119, 3), new HorzLine(4, 50, 18), new HorzLine(59, 93, 35)));
+		$this->coptergeom->Left = 100;	
+		$this->InitGame();	
+		$this->state = 0;
+	}
+
+	/** 
+	 * Generates initial terrain (which is easy, so the player doesn't 
+	 * crash on the first screen :-))
+	 */
+	function InitGame()
+	{
+		$this->toppts1 = array();
+		$this->bottompts1 = array();		
+		$ptst = array();
+		$ptsb = array();
+		
+		for($i=0; $i<=5; $i++)
+		{
+			$this->toppts0[$i] = rand(0, 100);
+			$this->bottompts0[$i] = rand(0, 100);
+			$ptst[$i] = new Point($i*160, $this->toppts0[$i]);
+			$ptsb[$i] = new Point($i*160, 600 - $this->bottompts0[$i]);
+		}
+		
+		$this->ConfigureBorder($ptst, 0, "top");
+		$this->ConfigureBorder($ptsb, 0, "bottom");		
+		$this->GenerateBorder(1);		
+	}
+
+	/**
+	 * Starts the game - runs the animations declared in XAML
+	 * (either 'restartGame' or 'startGame') and initializes game values..
+	 */
+	function StartGame()
+	{
+		// run some animations
+		if ($this->end->Opacity == 1)
+		{
+			$this->InitGame();
+			$this->restartGame->Begin();
+			//These lines make it won't work:
+			//$this->{ "scroll0" }->{ "Canvas.Left" } = 0;
+			//$this->{ "scroll1" }->{ "Canvas.Left" } = 800;
+		}
+		else
+			$this->startGame->Begin();
+		
+		// init game values...
+		$this->mousedown = false;
+		$this->y = 300;
+		$this->speed = 0;
+		$this->power = 0;
+		$this->starttime = $this->lasttime = microtime(true);
+		$this->loop->Begin();
+	}	
+	
+	/*********************  Collision testing  *********************************/
+	
+	/**
+	 * Tests collision with signle 'block' of terrain.
+	 *
+	 * @param string $topbott   Whether testing 'top' or 'bottom' part
+	 * @param int $i            Index of the terrain line that we're testing
+	 * @param int $index        Are we testing block 0 or block 1?
+	 */
+	function TestCollisionSingle($topbott, $i, $index)
+	{
+		$pts = $this->{ $topbott."pts".$index };
+		$ofs = $this->{ "offs".$index };
+						
+		$x1 = $ofs + 160*$i;
+		$x2 = $ofs + 160*($i + 1);
+		$y1 = $pts[$i];
+		$y2 = $pts[$i+1];
+	
+		if ($topbott == "top")
+		{
+			$y1 = 600 - $y1;
+			$y2 = 600 - $y2;
+		}
+		return $this->coptergeom->CollideWithLine($x1, $y1, $x2, $y2, $topbott=="bottom");
+	}	
+	
+	
+	/**
+	 * Tests collision of the helicopter with the terrain.
+	 *
+	 * @return bool  Returns 'false' when the copter crashes.
+	 */
+	function TestCollisions()
+	{
+		// workaround for bugs - if it falls to quickly it misses the terrain lines...
+		if ($this->coptergeom->Top > (600-35) || $this->coptergeom->Top < 0)  
+			return false;
+			
+		// test collision with all terrain parts
+		for($i=0; $i<5; $i++)
+			if ($this->TestCollisionSingle("bottom", $i, 0) ||
+					$this->TestCollisionSingle("bottom", $i, 1) || 
+					$this->TestCollisionSingle("top", $i, 0) || 
+					$this->TestCollisionSingle("top", $i, 1)) return false;
+		return true;
+	}
+	
+	/******************   Terrain generation and 'rendering'  ******************/
+
+	/* Stores all the information about generated terrain */
+	
+	/* private */ public $toppts0;
+	/* private */ public $toppts1;
+	/* private */ public $bottompts0;
+	/* private */ public $bottompts1;
+	
+	/**
+	 * Generates block of terrain.
+	 *
+	 * @param string $topbott   Whether testing 'top' or 'bottom' part
+	 * @param int $index        Are we generating block 0 or block 1?
+	 * @param string $other     Empty string when generating first block, 'top' or
+	 *                          'bottom' when the other part is already generated.
+	 */
+	function GeneratePoints($topbott, $index, $other)
+	{
+		// get previous part of terraing & oposite terrain 
+		// (if it is already generated)
+		if ($other != "") 
+			$ohgt = $this->{ $other."pts".$index };
+		$last = $this->{ $topbott."pts".(1 - $index) };
+
+		// generate heights..
+		$hgt = array();
+		$hgt[0] = $last[5];
+		for($i=1; $i<=5; $i++)
+			if ($ohgt != null) 
+				$hgt[$i] = rand(0, 600 - 280 - $ohgt[$i]); 
+			else
+				$hgt[$i] = rand(0, 320);
+		
+		// generate points for the lines
+		$pts = array(); 
+		for($i=0; $i<=5; $i++)
+		{
+			if ($topbott == "top") $h = $hgt[$i];
+			else $h = 600 - $hgt[$i];
+			$pts[$i] = new Point($i*160, $h);
+		}
+		
+		// store heights
+		$this->{ $topbott."pts".$index } = $hgt;
+		return $pts;
+	}
+
+	/**
+	 * Configures the terrain border - this method generates 'PathGeometry'
+	 * (polygon) and configures the Silverlight elements (declared in XAML).
+	 *	 
+	 * @param Point[] $pts      Points generated by the @see GeneratePoints func.
+	 * @param string $topbott   Whether testing 'top' or 'bottom' part
+	 * @param int $index        Are we generating block 0 or block 1?
+	 */
+	function ConfigureBorder($pts, $index, $topbott)
+	{
+	  $o = ($topbott == "top") ? -50 : 650;
+		$pts[5+1] = new Point(800, $o);
+		
+		$path = new PathFigure();
+		$path->Segments = new PathSegmentCollection();
+		$path->StartPoint = new Point(-1, $o);
+		$pts[0]->X = -2; 
+
+		$seg = new PolyLineSegment();		
+		
+		foreach($pts as $pt)
+		{
+			$seg->Points->Add($pt);
+		}
+		
+		$path->Segments->Add($seg);
+
+		$geo = new PathGeometry();
+		$geo->Figures = new PathFigureCollection();
+		$geo->Figures->Add($path);
+				
+		$this->{ $topbott."Border".$index }->Data = $geo;
+	}
+	
+	/** 
+	 * Generates the border for specified block index.
+	 * The game uses two blocks of terrain to reduce flickering, so we
+	 * just switch between them when the other is not visible.
+	 *
+	 * @param int $index        Are we generating block 0 or block 1?
+	 */
+	function GenerateBorder($index)
+	{
+		// which one will be generated first?
+		if (rand(0, 2) == 0) $order=array("top", "bottom"); else $order=array("bottom", "top");
+		
+		// first part of the block
+		$pts = $this->GeneratePoints($order[0], $index, "");		
+		$this->ConfigureBorder($pts, $index, $order[0]);
+		
+		// second part of the block
+		$pts = $this->GeneratePoints($order[1], $index, $order[0]);		
+		$this->ConfigureBorder($pts, $index, $order[1]);
+	}
+		
+	/***********************   Movement of the terrain   ***********************/
+	
+	/* Stores offsets of the terrain */
+	/* private */ public $offs0;	
+	/* private */ public $offs1;
+		
+	/**
+	 * Scroll single block of terrain - the block is stored in element
+	 * 'scrollX' (where X is index), so we just move this element.
+	 *
+	 * @param int $index        Are we scrolling block 0 or block 1?
+	 */		
+	function ScrollSingle($index, $ds)
+	{
+		$s = $this->{ "scroll".$index }->{ "Canvas.Left" } - $ds;
+		if ($s < -800) 
+		{
+		  // out of range - generate second border!
+			$this->GenerateBorder($index);
+			$s += 1600;		
+		}
+		$this->{ "scroll".$index }->{ "Canvas.Left" } = $s;
+		$this->{ "offs".$index } = $s;
+	}
+		
+  /** 
+   * Scroll both borders of the terrain.
+   *
+   * @param int $msec  Number of milliseconds since the terrain was last moved.
+   */		
+	function ScrollBorders($msec)
+	{
+		$speedq = SHIFT_INITSPEED + (microtime(true) - $this->starttime) / 100 * SHIFT_ACCELERATION;
+		$ds = ($msec/10) * $speedq;
+		
+		$this->ScrollSingle(0, $ds);
+		$this->ScrollSingle(1, $ds);
+	}
+	
+	/*************************  The main GAME LOOP    **************************/
+	
+	/**
+	 * Y location of the helicopter.
+	 */
+	/* private */ public $y;
+
+	/**
+	 * Is the mouse pressed - is the copter flying up?
+	 */	
+	/* private */ public $mousedown;
+	
+	/* private */ public $starttime;
+	/* private */ public $speed;
+	/* private */ public $power;
+		
+	/**
+	 * The Game Loop.
+	 */
+	function GameLoop()
+	{
+	  // Game is running...
+		if ($this->state == 1)	
+		{
+			// Calculate time since the last 'update'
+			$msec = (microtime(true) - $this->lasttime) * 1000;
+			$this->lasttime = microtime(true);
+			$k = $msec / 1000;			
+
+			// Calculate the score
+			$score = round((microtime(true) - $this->starttime) * 10);
+			$this->txt->Text = "Score: ".($score);
+
+			// Update the copter location
+			if ($this->mousedown) 
+				$this->power = min($this->power + 1*$k, 0.6);
+			$this->speed = $this->speed + 15*$k - $this->power; 
+			$this->y = $this->y - $this->speed;
+
+			// Copter geometry & silverlight image location
+			$this->copter->{ "Canvas.Top" } = 600 - $this->y;			
+			$this->coptergeom->Top = $this->y;
+
+			// Scroll the terrain & test for collision
+			$this->ScrollBorders($msec);
+			if (!$this->TestCollisions())
+				$this->EndGame($score);				
+			$cont = true;
+		}	
+		
+		// Waiting some time before we switch to the 'initial' state..
+		if ($this->state == 2)
+		{
+			$cont = (microtime(true) - $this->lasttime) < 2;
+			if (!$cont) $this->state = 0;
+		}				
+		
+		// Restart 'loop' storyboard if we want to continue...
+		if ($cont) $this->loop->Begin();
+	}
+
+	/**
+	 * Mouse was released - set copter 'power' to zero.
+	 */
+	function MouseUp()
+	{
+		$this->power = 0;
+		$this->mousedown = false;
+	}
+	
+	/**
+	 * Mouse was clicked - if we're in state 0 (not playing) then initialize
+	 * the game, otherwise we add some power and set 'mousedown' property.
+	 */
+	function MouseDown()
+	{
+		if ($this->state == 0)
+		{
+			$this->state = 1;
+			$this->StartGame();
+		}
+		$this->power += 0.3;
+		$this->mousedown = true;
+	}
+
+	/**
+	 * End of the game.
+	 * @property int $score   Score of the finished game.
+	 */
+	function EndGame($score)
+	{
+	
+		// End game animatin
+		$this->endGame->Begin();		
+		
+		// load the 'top' score on the current machine
+		$top = $score;
+		$fh = fopen("copterscore.txt", 'r');
+		$top = fgets($fh);
+		fclose($fh);
+		$this->txt->Text = "";
+		
+		// if we have better score then save it..
+		if ($score >= $top)
+		{
+			$fh = fopen("copterscore.txt", 'w');
+			fwrite($fh, (string)$score);
+			fclose($fh);
+			$top = $score;
+		}
+			    
+		// Display some information..			    
+		$this->scoreTop->Text = "Top score: ".$top;
+		$this->scoreCur->Text = "Your score: ".$score;		
+		$this->state = 2;
+	}
+}
+
+/*****************************************************************************/
+
+function FileLoaded($file)
+{
+	global $canvas;
+	global $app;
+	
+	$res = XamlReader::Load($file);
+	$_CANVAS->Children->add($res);
+	
+	$app = new CopterGame($res);
+	
+}
+
+
+loadfile("Game.xaml","FileLoaded");
+
+
+
+?>

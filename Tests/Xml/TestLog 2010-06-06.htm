@@ -1,0 +1,367 @@
+<html>
+<head>
+<title>PHP.NET Compiler test log</title>
+<style type="text/css">
+BODY { FONT-SIZE: 12px; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif }
+TABLE { border-collapse:collapse }
+TD { FONT-SIZE: 12px; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; border: 1px solid DimGray; }
+TR.status TD.succeeded { background-color: #CFC }
+TR.status TD.failed { background-color: #FCC }
+TD.succeeded { background-color: #EFE }
+TD.failed { background-color: #FEE }
+A.succeeded:link, A.succeeded:visited { color:green; text-decoration: none; }
+A.failed:link, A.failed:visited { color:red; text-decoration: none; }
+TR.detail{visibility:hidden;position:absolute;
+</style>
+</head>
+<body>
+<h1>PHP.NET Compiler test log</h1>
+(89%) 39 succeeded, 5 failed <br>
+<table width="100%" border="1" cellspacing="0" cellpadding="3">
+<tr>
+<td valign="top"><b>Test Result</b></td><td valign="top"><b>Compiler error output</b></td><td valign="top"><b>Expected test result</b></td><td valign="top"><b></b></td><td valign="top"><b></b></td><tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="005.php">005.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="006.php">006.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="007.php">007.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="008.php">008.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="009.php">009.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="011.php">011.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="013.php">013.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="017.php">017.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="018.php">018.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="019.php">019.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="020.php">020.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="021.php">021.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="failed" colspan="5"><a class="failed" href="025.php">025.php</a>: <font color="red"><b>FAILED</b></font></td>
+</tr>
+<tr>
+<td class="failed" valign="top" rowspan="1">Unexpected output</td><td class="failed" valign="top">No errors</td><td class="failed" valign="top">Success</td><td class="failed" valign="top" colspan="2"><table><tr><td>Expected test output</td><td>Real script output</td></tr><tr><td><pre>array
+{
+  'xhtml' =&gt; 'http://www.w3.org/TR/REC-html40'
+}
+array
+{
+  'xhtml' =&gt; 'http://www.w3.org/TR/REC-html40'
+  'html' =&gt; 'http://www.w3.org/1999/xhtml'
+  'foo' =&gt; 'foobar'
+}
+array
+{
+  'html' =&gt; 'http://www.w3.org/1999/xhtml'
+  'xhtml' =&gt; 'http://www.w3.org/TR/REC-html40'
+}
+array
+{
+  'html' =&gt; 'http://www.w3.org/1999/xhtml'
+  'xhtml' =&gt; 'http://www.w3.org/TR/REC-html40'
+  'foo' =&gt; 'foobar'
+  'baz' =&gt; 'foobarbaz'
+}
+array
+{
+  '' =&gt; 'http://www.w3.org/1999/xhtml'
+}
+array
+{
+  '' =&gt; 'http://www.w3.org/1999/xhtml'
+}
+array
+{
+}
+array
+{
+}</pre></td><td><pre>array
+{
+  'xhtml' =&gt; 'http://www.w3.org/TR/REC-html40'
+  'html' =&gt; 'http://www.w3.org/1999/xhtml'
+}
+array
+{
+  'xhtml' =&gt; 'http://www.w3.org/TR/REC-html40'
+  'html' =&gt; 'http://www.w3.org/1999/xhtml'
+  'baz' =&gt; 'foobarbaz'
+  'foo' =&gt; 'foobar'
+}
+array
+{
+  'xhtml' =&gt; 'http://www.w3.org/TR/REC-html40'
+  'html' =&gt; 'http://www.w3.org/1999/xhtml'
+}
+array
+{
+  'xhtml' =&gt; 'http://www.w3.org/TR/REC-html40'
+  'html' =&gt; 'http://www.w3.org/1999/xhtml'
+  'baz' =&gt; 'foobarbaz'
+  'foo' =&gt; 'foobar'
+}
+array
+{
+  '' =&gt; 'http://www.w3.org/1999/xhtml'
+}
+array
+{
+  '' =&gt; 'http://www.w3.org/1999/xhtml'
+}
+array
+{
+}
+array
+{
+}</pre></td></tr></table></td></tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="026.php">026.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="027.php">027.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="028.php">028.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="failed" colspan="5"><a class="failed" href="029.php">029.php</a>: <font color="red"><b>FAILED</b></font></td>
+</tr>
+<tr>
+<td class="failed" valign="top" rowspan="1">Unexpected output</td><td class="failed" valign="top">No errors</td><td class="failed" valign="top">Success</td><td class="failed" valign="top" colspan="2"><table><tr><td>Expected test output</td><td>Real script output</td></tr><tr><td><pre>'Joe'
+integer(3)
+integer(0)
+'John'
+integer(3)
+integer(1)
+'Jane'
+integer(3)
+integer(0)</pre></td><td><pre>'Joe'
+integer(1)
+integer(1)
+'John'
+integer(1)
+integer(1)
+'Jane'
+integer(1)
+integer(1)</pre></td></tr></table></td></tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="030.php">030.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="failed" colspan="5"><a class="failed" href="032.php">032.php</a>: <font color="red"><b>FAILED</b></font></td>
+</tr>
+<tr>
+<td class="failed" valign="top" rowspan="1">Unexpected output</td><td class="failed" valign="top">No errors</td><td class="failed" valign="top">Success</td><td class="failed" valign="top" colspan="2"><table><tr><td>Expected test output</td><td>Real script output</td></tr><tr><td><pre>FALSE
+FALSE
+FALSE</pre></td><td><pre>TRUE
+TRUE
+TRUE</pre></td></tr></table></td></tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="033.php">033.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="bug26384.php">bug26384.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="bug28721.php">bug28721.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="bug28817.php">bug28817.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="bug32615.php">bug32615.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="bug33853.php">bug33853.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="bug34276.php">bug34276.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="bug35342.php">bug35342.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="bug36756.php">bug36756.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="bug37277.php">bug37277.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="dom002.php">dom002.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="dom003.php">dom003.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="dom006.php">dom006.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="dom007.php">dom007.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="dom_set_attr_node.php">dom_set_attr_node.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="xslt001.php">xslt001.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="xslt002.php">xslt002.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="xslt003.php">xslt003.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="xslt004.php">xslt004.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="xslt005.php">xslt005.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="xslt006.php">xslt006.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="xslt007.php">xslt007.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr class="status">
+<td class="failed" colspan="5"><a class="failed" href="xslt010.php">xslt010.php</a>: <font color="red"><b>FAILED</b></font></td>
+</tr>
+<tr>
+<td class="failed" valign="top" rowspan="1">Unexpected output</td><td class="failed" valign="top">No errors</td><td class="failed" valign="top">Success</td><td class="failed" valign="top" colspan="2"><table><tr><td>Expected test output</td><td>Real script output</td></tr><tr><td><pre>Test 10: EXSLT Support
+  
+  
+  Test Date : 0001-12-31Z
+    year                 : 1
+    leap-year            : false
+    month-in-year        : 12
+    month-name           : December
+    month-abbreviation   : Dec
+    week-in-year         : 1
+    day-in-year          : 365
+    day-in-month         : 31
+    day-of-week-in-month : 5
+    day-in-week          : 2
+    day-name             : Monday
+    day-abbreviation     : Mon
+    time                 : 
+    hour-in-day          : NaN
+    minute-in-hour       : NaN
+    second-in-minute     : NaN
+  
+  Test Date : 3000-01-31
+    year                 : 3000
+    leap-year            : false
+    month-in-year        : 1
+    month-name           : January
+    month-abbreviation   : Jan
+    week-in-year         : 5
+    day-in-year          : 31
+    day-in-month         : 31
+    day-of-week-in-month : 5
+    day-in-week          : 6
+    day-name             : Friday
+    day-abbreviation     : Fri
+    time                 : 
+    hour-in-day          : NaN
+    minute-in-hour       : NaN
+    second-in-minute     : NaN
+  
+  Test Date : 2000-02-29
+    year                 : 2000
+    leap-year            : true
+    month-in-year        : 2
+    month-name           : February
+    month-abbreviation   : Feb
+    week-in-year         : 9
+    day-in-year          : 60
+    day-in-month         : 29
+    day-of-week-in-month : 5
+    day-in-week          : 3
+    day-name             : Tuesday
+    day-abbreviation     : Tue
+    time                 : 
+    hour-in-day          : NaN
+    minute-in-hour       : NaN
+    second-in-minute     : NaN
+  
+  Test Date : 9990001-12-31Z
+    year                 : 9990001
+    leap-year            : false
+    month-in-year        : 12
+    month-name           : December
+    month-abbreviation   : Dec
+    week-in-year         : 1
+    day-in-year          : 365
+    day-in-month         : 31
+    day-of-week-in-month : 5
+    day-in-week          : 2
+    day-name             : Monday
+    day-abbreviation     : Mon
+    time                 : 
+    hour-in-day          : NaN
+    minute-in-hour       : NaN
+    second-in-minute     : NaN
+  
+  Test Date : -0004-02-29
+    year                 : -4
+    leap-year            : true
+    month-in-year        : 2
+    month-name           : February
+    month-abbreviation   : Feb
+    week-in-year         : 9
+    day-in-year          : 60
+    day-in-month         : 29
+    day-of-week-in-month : 5
+    day-in-week          : 1
+    day-name             : Sunday
+    day-abbreviation     : Sun
+    time                 : 
+    hour-in-day          : NaN
+    minute-in-hour       : NaN
+    second-in-minute     : NaN</pre></td><td><pre>Test 10: EXSLT Support
+Warning: Cannot find the script or external object that implements prefix 'http://exslt.org/dates-and-times'. in D:\Documents\Documents\Visual Studio 2008\Projects\Phalanger\Tests\Xml\__input.txt at expression on line 14, column 3.
+
+Warning: Illegal string offset '-1' in D:\Documents\Documents\Visual Studio 2008\Projects\Phalanger\Tests\Phalanger.inc at expression on line 7, column 6.</pre></td></tr></table></td></tr>
+<tr class="status">
+<td class="failed" colspan="5"><a class="failed" href="xslt011.php">xslt011.php</a>: <font color="red"><b>FAILED</b></font></td>
+</tr>
+<tr>
+<td class="failed" valign="top" rowspan="1">Unexpected output</td><td class="failed" valign="top">No errors</td><td class="failed" valign="top">Success</td><td class="failed" valign="top" colspan="2"><table><tr><td>Expected test output</td><td>Real script output</td></tr><tr><td><pre>Test 11: php:function Support
+
+Warning: XSLTProcessor::transformToXml(): A PHP Object cannot be converted to a XPath-string in D:\Documents\Documents\Visual Studio 2008\Projects\Phalanger\Tests\Xml\__input.txt on line 18
+&lt;?xml version=&quot;1.0&quot;?&gt;
+foobar - secondArg
+foobar - 
+this is from an external DomDocument
+from the Input Document
+static</pre></td><td><pre>Test 11: php:function Support
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;foobar - secondArg
+foobar - 
+this is from an external DomDocument
+from the Input Document
+static
+not a DomNode object</pre></td></tr></table></td></tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="xslt012.php">xslt012.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+</table>
+</body>
+</html>

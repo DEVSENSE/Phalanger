@@ -1,0 +1,17 @@
+[expect php]
+[file]
+<?php
+class test {
+
+  protected function __clone() {
+  }
+}
+
+$obj = new test;
+$clone = clone $obj;
+$obj = NULL;
+
+echo "Done\n";
+?>
+--EXPECTF--
+Fatal error: Call to protected test::__clone() from context '' %sfactory_and_singleton_007.php on line %d

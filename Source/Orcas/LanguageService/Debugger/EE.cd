@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PHP.VisualStudio.PhalangerLanguageService.Debugger.EnumDebugPropertyInfo" Collapsed="true">
+    <Position X="1.25" Y="1" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AiQAACAACAASBFACEoAAAAQAAACAAKBAAAAAAAAAEBA=</HashCode>
+      <FileName>Debugger\EnumFieldBased.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PHP.VisualStudio.PhalangerLanguageService.Debugger.EnumDebugPropertyInfoViaList" Collapsed="true">
+    <Position X="0.5" Y="2.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAAAAAEAAABFAAAAAAAAAABAAAAAAAAAAAAAAAEBA=</HashCode>
+      <FileName>Debugger\EnumFieldBased.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.VisualStudio.PhalangerLanguageService.Debugger.EnumDebugPropretyInfoViaFields" Collapsed="true">
+    <Position X="3.25" Y="2.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAAACAAAAABAAAAAAAAAAAEAAAAAABAAAAAAAAEBA=</HashCode>
+      <FileName>Debugger\EnumFieldBased.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.VisualStudio.PhalangerLanguageService.Debugger.PropertyBase" Collapsed="true">
+    <Position X="6.25" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIIAAAIAgJAECYyAIQCAQSQEkIBAUAAIAAQAAAwAAAA=</HashCode>
+      <FileName>Debugger\PropertyBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PHP.VisualStudio.PhalangerLanguageService.Debugger.DotNetGetSetProperty" Collapsed="true">
+    <Position X="6" Y="2.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAQQAAAACACBAAAAIAEQAAAAAAAAAAAw=</HashCode>
+      <FileName>Debugger\DotNetGetSetProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.VisualStudio.PhalangerLanguageService.Debugger.LocalOrParamProperty" Collapsed="true">
+    <Position X="8" Y="2.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAQQAAAAAACAAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Debugger\LocalOrParamProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.VisualStudio.PhalangerLanguageService.Debugger.MemberProperty" Collapsed="true">
+    <Position X="10" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAQQAAAAAACAAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Debugger\MemberProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.VisualStudio.PhalangerLanguageService.Debugger.MethodProperty" Collapsed="true">
+    <Position X="11.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgABAAAQAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Debugger\MethodProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.VisualStudio.PhalangerLanguageService.Debugger.ObjectProperty" Collapsed="true">
+    <Position X="13.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAQQAAAAAACAAAAAAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Debugger\ObjectProperty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Microsoft.VisualStudio.Debugger.Interop.IDebugClassField" Collapsed="true">
+    <Position X="5.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.VisualStudio.Debugger.Interop.IDebugContainerField" Collapsed="true">
+    <Position X="5.5" Y="5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.VisualStudio.Debugger.Interop.IDebugField" Collapsed="true">
+    <Position X="5.5" Y="4" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.VisualStudio.Debugger.Interop.IDebugMethodField" Collapsed="true">
+    <Position X="7.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.VisualStudio.Debugger.Interop.IDebugPropertyField" Collapsed="true">
+    <Position X="3.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.VisualStudio.Debugger.Interop.IDebugObject" Collapsed="true">
+    <Position X="9.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.VisualStudio.Debugger.Interop.IDebugObject2" Collapsed="true">
+    <Position X="11.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.VisualStudio.Debugger.Interop.IDebugPointerObject" Collapsed="true">
+    <Position X="8" Y="4.75" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.VisualStudio.Debugger.Interop.IDebugPointerObject2" Collapsed="true">
+    <Position X="9.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.VisualStudio.Debugger.Interop.IDebugFunctionObject" Collapsed="true">
+    <Position X="13.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Microsoft.VisualStudio.Debugger.Interop.IDebugFunctionObject2" Collapsed="true">
+    <Position X="13.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

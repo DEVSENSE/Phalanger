@@ -1,0 +1,119 @@
+﻿<?
+/*****************************************************************************/
+/**
+ * Simple GUI demo
+ */
+ 
+import namespace System:::Windows:::Input;
+
+include("slutils.phpx");
+
+global $count;
+$count = 0;
+
+function OnClick()
+{
+	global $canvas;
+	global $count;
+	
+	$canvas->anim->Begin();
+	$canvas->smiley->{ "Canvas.Left" } = rand(100, 600);
+	$canvas->smiley->{ "Canvas.Top" } = rand(100, 500);
+	$canvas->txt->Text = "Score: ".(++$count);
+}
+
+$canv = slcreate("Canvas", array(
+	"Canvas.Name" => "smiley"), 
+	array(
+		slcreate("Ellipse", array(
+			"Ellipse.Name" => "face",
+			"Width" => 100,
+			"Height" => 100,
+			"Fill" => "#FFFF00")),
+		slcreate("Image", array(
+			"Source" => "Smiley.png"))),
+	$canvas);
+
+slcreate("TextBlock", 
+	array(
+		"TextBlock.Name" => "txt",
+		"Canvas.Top" => 10,
+		"Canvas.Left" => 300,
+		"FontFamily" => "Arial",
+		"FontSize" => 20,
+		"Text" => "Score: $count"), array(),
+	$canvas);
+	
+	
+slcreate("Storyboard", 
+	array(
+		"Storyboard.Name" => "anim", 
+		"AutoReverse" => true),
+	array(
+		slcreate("ColorAnimation", array(
+			"From" => "#FFFF00",
+			"To" => "#FF4000",
+			"Duration" => "0:0:0.4",
+			"Storyboard.TargetName" => "face",
+			"Storyboard.TargetProperty" => "(Fill).(Color)"))),
+	$canvas->Resources);	
+
+//$canvas->anim->Begin();
+$canvas->smiley->MouseLeftButtonDown->Add
+	(new MouseEventHandler("OnClick"));
+
+?>
+
+
+<?
+/*	
+	$canv = slcreate("Canvas", array(
+			"Width" => 800,
+			"Height" => 600,
+			"Background" => new SolidColorBrush(Colors::$Black)), 
+		array(
+			slcreate("Ellipse", array(
+				"Ellipse.Name" => "el",
+				"Width" => 100,
+				"Height" => 100,
+				"Canvas.Top" => 50,
+				"Canvas.Left" => 50,
+				"Fill" => new SolidColorBrush(Colors::$Orange))),
+			slcreate("TextBlock", array(
+				"TextBlock.Name" => "txt",
+				"Width" => 300,
+				"Height" => 100,
+				"Canvas.Top" => 50,
+				"Canvas.Left" => 200,
+				"FontFamily" => "Arial",
+				"FontSize" => 48,
+				"Text" => "Hello world!",
+				"FontWeight" => FontWeights::Bold,
+				"Foreground" => new SolidColorBrush(Color::FromRgb(74,26,98) )))),
+		$canvas);
+	
+	$story = slcreatex("Storyboard", 
+		array(
+			"Storyboard.Name" => "moveEllipse", 
+			"AutoReverse" => true,
+			"RepeatBehavior" => "2x" ),
+		array(
+			slcreatex("DoubleAnimation", array(
+				"From" => 100,
+				"To" => 600,
+				"Duration" => "0:0:2",
+				"Storyboard.TargetName" => "el",
+				"Storyboard.TargetProperty" => "(Canvas.Left)")),
+			slcreatex("DoubleAnimation", array(
+				"From" => 200,
+				"To" => 400,
+				"RepeatBehavior" => "2x",
+				"AutoReverse" => true,
+				"Duration" => "0:0:0.5",
+				"Storyboard.TargetName" => "el",
+				"Storyboard.TargetProperty" => "(Canvas.Top)"))),
+		$canvas->Resources);	
+	
+	$story->Begin();
+*/	
+?>

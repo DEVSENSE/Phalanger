@@ -1,0 +1,19 @@
+[expect php]
+[file]
+<?php
+error_reporting(0);
+abstract class fail {
+	abstract static function show();
+}
+
+class pass extends fail {
+	static function show() {
+		echo "Call to function show()\n";
+	}
+}
+
+pass::show();
+fail::show();
+
+echo "Done\n"; // shouldn't be displayed
+?>

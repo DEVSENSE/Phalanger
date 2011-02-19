@@ -1,0 +1,155 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Name>SPL</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{811ec666-2c08-4739-ad11-0af772b892e6}</ProjectGuid>
+    <CompilationMode>Pure</CompilationMode>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SPL</RootNamespace>
+    <AssemblyName>SPL</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IncludeDebugInformation>true</IncludeDebugInformation>
+    <OutputPath>bin\Debug\</OutputPath>
+    <TargetKind>dll</TargetKind>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <IncludeDebugInformation>false</IncludeDebugInformation>
+    <OutputPath>bin\Release\</OutputPath>
+    <TargetKind>dll</TargetKind>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.0\Phalanger.targets" />
+  <ItemGroup>
+    <Compile Include="AppendIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ArrayIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ArrayObject.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BadFunctionCallException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BadMethodCallException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CachingIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Countable.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DirectoryIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DomainException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EmptyIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FilterIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InfiniteIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InvalidArgumentException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IteratorIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LengthException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LimitIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LogicException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NorewindIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OuterIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OutOfBoundsException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OutOfRangeException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OverflowException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ParentIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RangeException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RecursiveArrayIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RecursiveCachingIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RecursiveDirectoryIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RecursiveFilterIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RecursiveIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RecursiveIteratorIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RuntimeException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SeekableIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SimpleXMLIterator.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SPL.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SplFileInfo.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SplFileObject.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SplObjectStorage.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SplObserver.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SplSubject.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SplTempFileObject.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UnderFlowException.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UnexpectedValueException.php">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>

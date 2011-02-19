@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="object" name="domxml_parser_end" description="Ends parsing and returns DomDocument.">
+    <param optional="true" type="string" name="chunk" />
+  </function>
+  <function returnType="bool" name="domxml_node_set_content" description="Sets content of a node.">
+    <param type="string" name="content" />
+  </function>
+  <function returnType="object" name="domxml_node_has_attributes" description="Returns true if node has attributes." />
+  <function returnType="int" name="domxml_dump_mem_file" description="Dumps document into file and uses compression if specified. Returns false on error, otherwise the length of the xml-document (uncompressed).">
+    <param type="string" name="filename" />
+    <param optional="true" type="int" name="compressmode" />
+    <param optional="true" type="int" name="format" />
+  </function>
+  <function returnType="object" name="domxml_node" description="Creates node.">
+    <param type="string" name="name" />
+  </function>
+  <function returnType="array" name="domxml_node_children" description="Returns list of children nodes." />
+  <function returnType="object" name="xmldocfile" description="Creates DOM object of XML document in file.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="object" name="domxml_xslt_stylesheet_doc" description="Creates XSLT Stylesheet object from DOM Document object.">
+    <param type="object" name="xmldoc" />
+  </function>
+  <function returnType="int" name="xptr_eval" description="Evaluates the XPtr Location Path in the given string.">
+    <param type="int" name="xpathctx_handle" />
+    <param type="string" name="str" />
+  </function>
+  <function returnType="void" name="domxml_node_unlink_node" description="Deletes the node.">
+    <param optional="true" type="object" name="node" />
+  </function>
+  <function returnType="bool" name="domxml_set_attribute" description="Sets value of given attribute.">
+    <param type="string" name="attrname" />
+    <param type="string" name="value" />
+  </function>
+  <function returnType="string" name="domxml_html_dump_mem" description="Dumps document into string as HTML.">
+    <param optional="true" type="int" name="doc_handle" />
+  </function>
+  <function returnType="object" name="domxml_xslt_process" description="Perform an XSLT transformation.">
+    <param type="object" name="xslstylesheet" />
+    <param type="object" name="xmldoc" />
+    <param optional="true" type="array" name="xslt_parameters" />
+    <param optional="true" type="bool" name="xpath_parameters" />
+  </function>
+  <function returnType="array" name="domxml_node_attributes" description="Returns list of attributes of node." />
+  <function returnType="string" name="domxml_dumpmem" description="Dumps document into string and optionally formats it.">
+    <param type="object" name="doc_handle" />
+    <param optional="true" type="int" name="format" />
+    <param optional="true" name="encoding" />
+  </function>
+  <function returnType="array" name="domxml_children" description="Returns list of children nodes." />
+  <function returnType="object" name="domxml_new_doc" description="Creates new xmldoc.">
+    <param type="string" name="version" />
+  </function>
+  <function returnType="array" name="domxml_doc_document_element" description="Returns root node of document." />
+  <function returnType="bool" name="domxml_parser_add_chunk" description="Adds xml-chunk to parser.">
+    <param type="string" name="chunk" />
+  </function>
+  <function returnType="object" name="xpath_eval" description="Evaluates the XPath Location Path in the given string.">
+    <param type="object" name="xpathctx_handle" />
+    <param type="string" name="str" />
+  </function>
+  <function returnType="object" name="domxml_node_new_child" description="Adds child node to parent node.">
+    <param type="string" name="name" />
+    <param type="string" name="content" />
+  </function>
+  <function returnType="object" name="domxml_new_xmldoc" description="Creates new xmldoc.">
+    <param type="string" name="version" />
+  </function>
+  <function returnType="object" name="domxml_xmltree" description="Creates a tree of PHP objects from an XML document.">
+    <param type="string" name="xmltree" />
+  </function>
+  <function returnType="object" name="new_xmldoc" description="Creates new xmldoc.">
+    <param type="string" name="version" />
+  </function>
+  <function returnType="array" name="domxml_attributes" description="Returns list of attributes of node." />
+  <function returnType="object" name="xmltree" description="Creates a tree of PHP objects from an XML document.">
+    <param type="string" name="xmltree" />
+  </function>
+  <function returnType="object" name="domxml_add_root" description="Adds root node to document.">
+    <param type="string" name="name" />
+  </function>
+  <function returnType="void" name="domxml_unlink_node" description="Deletes the node.">
+    <param optional="true" type="object" name="node" />
+  </function>
+  <function returnType="bool" name="xpath_register_ns" description="Registeres the given namespace in the passed XPath context.">
+    <param type="object" name="xpathctx_handle" />
+    <param type="string" name="namespace_prefix" />
+    <param type="string" name="namespace_uri" />
+  </function>
+  <function returnType="array" name="domxml_root" description="Returns root node of document." />
+  <function returnType="bool" name="set_content" description="Sets content of a node.">
+    <param type="string" name="content" />
+  </function>
+  <function returnType="string" name="domxml_dump_node" description="Dumps node into string.">
+    <param type="object" name="doc_handle" />
+    <param type="object" name="node_handle" />
+    <param optional="true" type="int" name="format" />
+    <param optional="true" type="int" name="level" />
+  </function>
+  <function returnType="object" name="xpath_eval_expression" description="Evaluates the XPath expression in the given string.">
+    <param type="object" name="xpathctx_handle" />
+    <param type="string" name="str" />
+  </function>
+  <function returnType="object" name="xpath_new_context" description="Creates new XPath context.">
+    <param optional="true" type="int" name="doc_handle" />
+  </function>
+  <function returnType="string" name="domxml_getattr" description="Returns value of given attribute.">
+    <param type="string" name="attrname" />
+  </function>
+  <function returnType="string" name="domxml_get_attribute" description="Returns value of given attribute.">
+    <param type="string" name="attrname" />
+  </function>
+  <function returnType="object" name="domxml_xslt_stylesheet_file" description="Creates XSLT Stylesheet object from file.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="string" name="domxml_doc_get_element_by_id" description="Returns element for given id or false if not found.">
+    <param type="string" name="id" />
+  </function>
+  <function returnType="bool" name="domxml_setattr" description="Sets value of given attribute.">
+    <param type="string" name="attrname" />
+    <param type="string" name="value" />
+  </function>
+  <function returnType="object" name="html_doc_file" description="Creates DOM object of HTML document in file.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="string" name="domxml_node_get_content" />
+  <function returnType="string" name="domxml_elem_get_attribute" description="Returns value of given attribute.">
+    <param type="string" name="attrname" />
+  </function>
+  <function returnType="string" name="domxml_doc_get_elements_by_tagname" description="Returns array with nodes with given tagname in document or empty array, if not found.">
+    <param type="string" name="tagname" />
+    <param optional="true" type="object" name="xpathctx_handle" />
+  </function>
+  <function returnType="string" name="domxml_dump_mem" description="Dumps document into string and optionally formats it.">
+    <param type="object" name="doc_handle" />
+    <param optional="true" type="int" name="format" />
+    <param optional="true" name="encoding" />
+  </function>
+  <function returnType="bool" name="domxml_elem_set_attribute" description="Sets value of given attribute.">
+    <param type="string" name="attrname" />
+    <param type="string" name="value" />
+  </function>
+  <function returnType="object" name="domxml_open_mem" description="Creates DOM object of XML document.">
+    <param type="string" name="xmldoc" />
+    <param optional="true" type="int" name="mode" />
+    <param optional="true" direction="out" type="array" name="error" />
+  </function>
+  <function returnType="object" name="xmldoc" description="Creates DOM object of XML document.">
+    <param type="string" name="xmldoc" />
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="object" name="domxml_parser" description="Creates new xmlparser.">
+    <param type="string" name="buf" />
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="object" name="domxml_new_child" description="Adds child node to parent node.">
+    <param type="string" name="name" />
+    <param type="string" name="content" />
+  </function>
+  <function returnType="string" name="domxml_version" description="Get XML library version." />
+  <function returnType="object" name="domxml_open_file" description="Creates DOM object of XML document in file.">
+    <param type="string" name="filename" />
+    <param optional="true" type="int" name="mode" />
+    <param optional="true" direction="out" type="array" name="error" />
+  </function>
+  <function returnType="object" name="domxml_xslt_stylesheet" description="Creates XSLT Stylesheet object from string.">
+    <param type="string" name="xsltstylesheet" />
+  </function>
+  <function returnType="string" name="domxml_xslt_version" description="Get XSLT library version." />
+  <function returnType="bool" name="domxml_substitute_entities_default" description="Set and return the previous value for default entity support.">
+    <param type="bool" name="enable" />
+  </function>
+  <function returnType="object" name="html_doc" description="Creates DOM object of HTML document.">
+    <param type="string" name="html_doc" />
+    <param optional="true" type="bool" name="from_file" />
+  </function>
+  <function returnType="object" name="xptr_new_context" description="Creates new XPath context.">
+    <param optional="true" type="int" name="doc_handle" />
+  </function>
+</module>

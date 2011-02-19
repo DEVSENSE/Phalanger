@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="bool" name="ftp_cdup" description="Changes to the parent directory.">
+    <param type="resource" name="ftp_stream" />
+  </function>
+  <function returnType="bool" name="ftp_chdir" description="Changes the current directory on a FTP server.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="directory" />
+  </function>
+  <function returnType="bool" name="ftp_close" description="Closes an FTP connection.">
+    <param type="resource" name="ftp_stream" />
+  </function>
+  <function returnType="resource" name="ftp_connect" description="Opens an FTP connection.">
+    <param type="string" name="host" />
+    <param optional="true" type="int" name="port" />
+    <param optional="true" type="int" name="timeout" />
+  </function>
+  <function returnType="bool" name="ftp_delete" description="Deletes a file on the FTP server.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="path" />
+  </function>
+  <function returnType="bool" name="ftp_exec" description="Requests execution of a program on the FTP server.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="command" />
+  </function>
+  <function returnType="bool" name="ftp_fget" description="Downloads a file from the FTP server and saves to an open file.">
+    <param type="resource" name="ftp_stream" />
+    <param type="resource" name="handle" />
+    <param type="string" name="remote_file" />
+    <param type="int" name="mode" />
+    <param optional="true" type="int" name="resumepos" />
+  </function>
+  <function returnType="bool" name="ftp_fput" description="Uploads from an open file to the FTP server.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="remote_file" />
+    <param type="resource" name="handle" />
+    <param type="int" name="mode" />
+    <param optional="true" type="int" name="startpos" />
+  </function>
+  <function returnType="mixed" name="ftp_get_option" description="Retrieves various runtime behaviours of the current FTP stream.">
+    <param type="resource" name="ftp_stream" />
+    <param type="int" name="option" />
+  </function>
+  <function returnType="bool" name="ftp_get" description="Downloads a file from the FTP server.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="local_file" />
+    <param type="string" name="remote_file" />
+    <param type="int" name="mode" />
+    <param optional="true" type="int" name="resumepos" />
+  </function>
+  <function returnType="bool" name="ftp_login" description="Logs in to an FTP connection.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="username" />
+    <param type="string" name="password" />
+  </function>
+  <function returnType="int" name="ftp_mdtm" description="Returns the last modified time of the given file.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="remote_file" />
+  </function>
+  <function returnType="string" name="ftp_mkdir" description="Creates a directory.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="directory" />
+  </function>
+  <function returnType="int" name="ftp_nb_continue" description="Continues retrieving/sending a file (non-blocking).">
+    <param type="resource" name="ftp_stream" />
+  </function>
+  <function returnType="int" name="ftp_nb_fget" description="Retrieves a file from the FTP server and writes it to an open file (non-blocking).">
+    <param type="resource" name="ftp_stream" />
+    <param type="resource" name="handle" />
+    <param type="string" name="remote_file" />
+    <param type="int" name="mode" />
+    <param optional="true" type="int" name="resumepos" />
+  </function>
+  <function returnType="int" name="ftp_nb_fput" description="Stores a file from an open file to the FTP server (non-blocking).">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="remote_file" />
+    <param type="resource" name="handle" />
+    <param type="int" name="mode" />
+    <param optional="true" type="int" name="startpos" />
+  </function>
+  <function returnType="int" name="ftp_nb_get" description="Retrieves a file from the FTP server and writes it to a local file (non-blocking).">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="local_file" />
+    <param type="string" name="remote_file" />
+    <param type="int" name="mode" />
+    <param optional="true" type="int" name="resumepos" />
+  </function>
+  <function returnType="int" name="ftp_nb_put" description="Stores a file on the FTP server (non-blocking).">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="remote_file" />
+    <param type="string" name="local_file" />
+    <param type="int" name="mode" />
+    <param optional="true" type="int" name="startpos" />
+  </function>
+  <function returnType="array" name="ftp_nlist" description="Returns a list of files in the given directory.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="directory" />
+  </function>
+  <function returnType="bool" name="ftp_pasv" description="Turns passive mode on or off.">
+    <param type="resource" name="ftp_stream" />
+    <param type="bool" name="pasv" />
+  </function>
+  <function returnType="bool" name="ftp_put" description="Uploads a file to the FTP server.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="remote_file" />
+    <param type="string" name="local_file" />
+    <param type="int" name="mode" />
+    <param optional="true" type="int" name="startpos" />
+  </function>
+  <function returnType="string" name="ftp_pwd" description="Returns the current directory name.">
+    <param type="resource" name="ftp_stream" />
+  </function>
+  <function returnType="bool" name="ftp_quit" description="Closes an FTP connection.">
+    <param type="resource" name="ftp_stream" />
+  </function>
+  <function returnType="array" name="ftp_rawlist" description="Returns a detailed list of files in the given directory.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="directory" />
+    <param optional="true" type="bool" name="recursive" />
+  </function>
+  <function returnType="bool" name="ftp_rename" description="Renames a file or a directory on the FTP server.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="oldname" />
+    <param type="string" name="newname" />
+  </function>
+  <function returnType="bool" name="ftp_rmdir" description="Removes a directory.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="directory" />
+  </function>
+  <function returnType="bool" name="ftp_set_option" description="Set miscellaneous runtime FTP options.">
+    <param type="resource" name="ftp_stream" />
+    <param type="int" name="option" />
+    <param type="mixed" name="value" />
+  </function>
+  <function returnType="bool" name="ftp_site" description="Sends a SITE command to the server.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="command" />
+  </function>
+  <function returnType="int" name="ftp_size" description="Returns the size of the given file.">
+    <param type="resource" name="ftp_stream" />
+    <param type="string" name="remote_file" />
+  </function>
+  <function returnType="string" name="ftp_systype" description="Returns the system type identifier of the remote FTP server.">
+    <param type="resource" name="ftp_stream" />
+  </function>
+</module>

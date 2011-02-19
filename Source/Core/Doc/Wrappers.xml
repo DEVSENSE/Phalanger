@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<docs>
+
+<method name="Open">
+  <summary>
+  Called by <c>fopen()</c> for the specific wrapper determined by the scheme portion of an URL. 
+  Override in descendants to make new instances of <see cref="PhpStream"/>s.
+  </summary>
+  <param name="path">The path passed to <c>fopen()</c> which will be set to the opened absolute path.</param>
+  <param name="mode">The mode passed to <c>fopen()</c>.</param>
+  <param name="options">Combination of <see cref="PHP.Core.StreamOpenOptions"/>.</param>
+  <param name="context">The context provided for the stream wrapper at the call to <c>fopen()</c>.</param>
+  <returns>A new instance of <see cref="PhpStream" /> encapsulating the data Stream.
+  Returns null in case of failure - will be cast to false for <c>fopen()</c>.
+  </returns>
+</method>
+
+<method name="Stat">
+  <summary>
+  Creates the stat-structure for a specified file.
+  </summary>
+  <remarks>
+  Regarding the stream_wrapper_register(), the stat() is an instance
+  method of a stream. Maybe a PhpStream should remember the open-path
+  of the contained file for such purposes but currently I can see
+  no PHP function requiring stat() on an opened stream.
+  </remarks>
+  <param name="path">The target filename.</param>
+  <param name="options">Additional options.</param>
+  <param name="context">Wrapper-specific options.</param>
+  <returns>A <see cref="StatStruct"/> containing the stat information about the target file 
+  or with st_size set to <c>-1</c> in case of failure.</returns>
+  <exception cref="PhpException">Throws a warning in case of failure.</exception>
+</method>
+
+<method name="Unlink">
+  <summary>
+  Deletes the specified file using an appropriate stream-wrapper
+  depending on the scheme portion of the given <paramref name="path"/>.
+  </summary>
+  <remarks>
+  Only the file and ftp wrappers support file deletion.
+  </remarks>
+  <param name="path">The URL to the file to be deleted.</param>
+  <param name="options">Additional options.</param>
+  <param name="context">Wrapper-specific options.</param>
+  <returns>True if the file was deleted otherwise false.</returns>
+</method>
+
+<method name="Listing">
+  <summary>
+  Provides an array of filenames used to create a DirectoryListing
+  for directory enumeration.
+  </summary>
+  <param name="path">The directory to be explored.</param>
+  <param name="options">This parameter is unused.</param>
+  <param name="context">Wrapper-specific options.</param>
+  <returns>An array of filenames or null in case of failure.</returns>
+</method>
+
+<method name="Rename">
+  <summary>
+  Renames the file specified by <paramref name="fromPath"/> to <paramref name="toPath"/>.
+  Does not work accross wrappers.
+  </summary>
+  <param name="fromPath">The original filename.</param>
+  <param name="toPath">The new filename.</param>
+  <param name="options">Unused.</param>
+  <param name="context">Wrapper-specific options.</param>
+  <returns>True in case of success.</returns>
+</method>
+
+<method name="MakeDirectory">
+  <summary>
+  Creates a directory or a whole branch of directories in the specified path.
+  </summary>
+  <param name="path">The directory to create (may work recursively).</param>
+  <param name="accessMode">Directory access mode (for UNIX systems, defaults to 0777).</param>
+  <param name="options">Additional options.</param>
+  <param name="context">Wrapper-specific options.</param>
+  <returns>True in case of success.</returns>
+</method>
+
+<method name="RemoveDirectory">
+  <summary>
+  Removes the specified directory.
+  </summary>
+  <param name="path">The directory to remove.</param>
+  <param name="options">Unused.</param>
+  <param name="context">Wrapper-specific options.</param>
+  <returns>True in case of success.</returns>
+</method>
+
+<property name="Label">
+  <summary>
+  Gets the text identifier of this StreamWrapper used in error messages.
+  </summary>
+</property>
+
+<property name="Scheme">
+  <summary>
+  Gets the protocol portion of URL handled by this wrapper.
+  </summary>
+</property>
+
+<property name="IsUrl">
+  <summary>
+  Gets whether or not this wrapper is affected by the AllowUrlFopen configuration.
+  </summary>
+</property>
+
+</docs>

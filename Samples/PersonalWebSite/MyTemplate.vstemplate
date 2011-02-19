@@ -1,0 +1,196 @@
+<VSTemplate Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>Personal Web Site Starter Kit</Name>
+    <Description>Starter kit for creating a personal Web site</Description>
+    <ProjectType>Web</ProjectType>
+    <ProjectSubType>Phalanger</ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>Personal Web Site Starter Kit</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <Icon>__TemplateIcon.ico</Icon>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="ProjectName.webproj" File="ProjectName.webproj" ReplaceParameters="true">
+      <Folder Name="Admin" TargetFolderName="Admin">
+        <ProjectItem ReplaceParameters="true" TargetFileName="Albums.aspx">Albums.aspx</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Albums.aspx.php">Albums.aspx.php</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Details.aspx">Details.aspx</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Details.aspx.php">Details.aspx.php</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Photos.aspx">Photos.aspx</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Photos.aspx.php">Photos.aspx.php</ProjectItem>
+      </Folder>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Albums.aspx">Albums.aspx</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Albums.aspx.php">Albums.aspx.php</ProjectItem>
+      <Folder Name="App_Code" TargetFolderName="App_Code">
+        <ProjectItem ReplaceParameters="true" TargetFileName="Album.php">Album.php</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Photo.php">Photo.php</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="PhotoManager.php">PhotoManager.php</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="PhotoSize.php">PhotoSize.php</ProjectItem>
+      </Folder>
+      <Folder Name="App_Data" TargetFolderName="App_Data">
+        <ProjectItem ReplaceParameters="false" TargetFileName="personal-add.sql">personal-add.sql</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="personal-remove.sql">personal-remove.sql</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="Personal.mdf">Personal.mdf</ProjectItem>
+      </Folder>
+      <Folder Name="App_Themes" TargetFolderName="App_Themes">
+        <Folder Name="Black" TargetFolderName="Black">
+          <ProjectItem ReplaceParameters="true" TargetFileName="Default.css">Default.css</ProjectItem>
+          <ProjectItem ReplaceParameters="true" TargetFileName="Default.skin">Default.skin</ProjectItem>
+          <ProjectItem ReplaceParameters="true" TargetFileName="frame.css">frame.css</ProjectItem>
+          <Folder Name="Images" TargetFolderName="Images">
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-bstretch.gif">album-bstretch.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-l1.gif">album-l1.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-l2.gif">album-l2.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-l3.gif">album-l3.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-l4.gif">album-l4.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-lstretch.gif">album-lstretch.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-mbl.gif">album-mbl.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-mbr.gif">album-mbr.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-mtl.gif">album-mtl.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-mtr.gif">album-mtr.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-r1.gif">album-r1.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-r2.gif">album-r2.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-r3.gif">album-r3.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-r4.gif">album-r4.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-rstretch.gif">album-rstretch.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-tstretch.gif">album-tstretch.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="background.gif">background.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="bullet-1.gif">bullet-1.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="bullet-2.gif">bullet-2.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-add.gif">button-add.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-cancel.gif">button-cancel.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-create.gif">button-create.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-delete.gif">button-delete.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-download.gif">button-download.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-dwn_res.gif">button-dwn_res.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-edit.gif">button-edit.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-first.jpg">button-first.jpg</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-gallery.jpg">button-gallery.jpg</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-import.gif">button-import.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-insert.gif">button-insert.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-last.jpg">button-last.jpg</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-login.gif">button-login.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-next.jpg">button-next.jpg</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-play.jpg">button-play.jpg</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-prev.jpg">button-prev.jpg</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-rename.gif">button-rename.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-save.gif">button-save.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-tog24.jpg">button-tog24.jpg</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-tog8.jpg">button-tog8.jpg</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="footer.gif">footer.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-bot--x.gif">frame-bot--x.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-bot-x-.gif">frame-bot-x-.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-botx--.gif">frame-botx--.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-mid--x.gif">frame-mid--x.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-midx--.gif">frame-midx--.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-top--x.gif">frame-top--x.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-top-x-.gif">frame-top-x-.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-topx--.gif">frame-topx--.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="header.gif">header.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="photonav.gif">photonav.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="spacer.gif">spacer.gif</ProjectItem>
+          </Folder>
+        </Folder>
+        <Folder Name="White" TargetFolderName="White">
+          <ProjectItem ReplaceParameters="true" TargetFileName="Default.css">Default.css</ProjectItem>
+          <ProjectItem ReplaceParameters="true" TargetFileName="Default.skin">Default.skin</ProjectItem>
+          <ProjectItem ReplaceParameters="true" TargetFileName="Frame.css">Frame.css</ProjectItem>
+          <Folder Name="Images" TargetFolderName="Images">
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-bstretch.gif">album-bstretch.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-l1.gif">album-l1.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-l2.gif">album-l2.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-l3.gif">album-l3.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-l4.gif">album-l4.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-lstretch.gif">album-lstretch.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-mbl.gif">album-mbl.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-mbr.gif">album-mbr.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-mtl.gif">album-mtl.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-mtr.gif">album-mtr.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-r1.gif">album-r1.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-r2.gif">album-r2.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-r3.gif">album-r3.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-r4.gif">album-r4.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-rstretch.gif">album-rstretch.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="album-tstretch.gif">album-tstretch.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="background.gif">background.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="body-repeat-photo.gif">body-repeat-photo.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="body-repeat.gif">body-repeat.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="bullet-1.gif">bullet-1.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="bullet-2.gif">bullet-2.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-add.gif">button-add.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-cancel.gif">button-cancel.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-create.gif">button-create.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-delete.gif">button-delete.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-download.gif">button-download.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-dwn_res.gif">button-dwn_res.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-edit.gif">button-edit.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-first.gif">button-first.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-gallery.gif">button-gallery.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-import.gif">button-import.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-insert.gif">button-insert.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-last.gif">button-last.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-login.gif">button-login.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-next.gif">button-next.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-play.gif">button-play.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-prev.gif">button-prev.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-rename.gif">button-rename.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-save.gif">button-save.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-tog24.gif">button-tog24.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="button-tog8.gif">button-tog8.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="content-shim-none.gif">content-shim-none.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="content-shim-photo.gif">content-shim-photo.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="content-shim-stretch.gif">content-shim-stretch.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="content-shim.gif">content-shim.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="footer-side.gif">footer-side.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="footer.gif">footer.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-bot--x.gif">frame-bot--x.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-bot-x-.gif">frame-bot-x-.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-botx--.gif">frame-botx--.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-mid--x.gif">frame-mid--x.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-midx--.gif">frame-midx--.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-top--x.gif">frame-top--x.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-top-x-.gif">frame-top-x-.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="frame-topx--.gif">frame-topx--.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="header.gif">header.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="photonav-bg.gif">photonav-bg.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="photonav-top-bg.gif">photonav-top-bg.gif</ProjectItem>
+            <ProjectItem ReplaceParameters="false" TargetFileName="spacer.gif">spacer.gif</ProjectItem>
+          </Folder>
+        </Folder>
+      </Folder>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Default.aspx">Default.aspx</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Default.aspx.php">Default.aspx.php</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Default.master">Default.master</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Default.master.php">Default.master.php</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Details.aspx">Details.aspx</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Details.aspx.php">Details.aspx.php</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Download.aspx">Download.aspx</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Download.aspx.php">Download.aspx.php</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Global.asax">Global.asax</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Handler.ashx">Handler.ashx</ProjectItem>
+      <Folder Name="Images" TargetFolderName="Images">
+        <ProjectItem ReplaceParameters="false" TargetFileName="placeholder-100.jpg">placeholder-100.jpg</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="placeholder-200.jpg">placeholder-200.jpg</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="placeholder-600.jpg">placeholder-600.jpg</ProjectItem>
+        <ProjectItem ReplaceParameters="false" TargetFileName="resume-photo.jpg">resume-photo.jpg</ProjectItem>
+      </Folder>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Links.aspx">Links.aspx</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Links.aspx.php">Links.aspx.php</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Photos.aspx">Photos.aspx</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Photos.aspx.php">Photos.aspx.php</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Register.aspx">Register.aspx</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Register.aspx.php">Register.aspx.php</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Resume.aspx">Resume.aspx</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Resume.aspx.php">Resume.aspx.php</ProjectItem>
+      <Folder Name="Upload" TargetFolderName="Upload">
+        <ProjectItem ReplaceParameters="false" TargetFileName="_dummy">_dummy</ProjectItem>
+      </Folder>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Web.config">Web.config</ProjectItem>
+      <ProjectItem ReplaceParameters="false" TargetFileName="Web.sitemap">Web.sitemap</ProjectItem>
+      <ProjectItem OpenInWebBrowser="true" ReplaceParameters="true" TargetFileName="Welcome.html">Welcome.html</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

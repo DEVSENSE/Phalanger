@@ -1,0 +1,7 @@
+[expect php]
+
+[file]
+<?php
+// Never cast an unknown fraction to integer, as this can sometimes lead to unexpected results.
+echo (int) ( (0.1+0.7) * 10 ); // echoes 7!
+?>

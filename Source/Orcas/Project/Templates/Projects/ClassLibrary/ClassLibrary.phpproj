@@ -1,0 +1,41 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Name>$safeprojectname$</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>$guid1$</ProjectGuid>
+		<CompilationMode>Pure</CompilationMode>
+    <OutputType>Library</OutputType>
+    <RootNamespace>$safeprojectname$</RootNamespace>
+    <AssemblyName>$safeprojectname$</AssemblyName>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IncludeDebugInformation>true</IncludeDebugInformation>
+    <OutputPath>bin\Debug\</OutputPath>
+		<TargetKind>dll</TargetKind>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<IncludeDebugInformation>false</IncludeDebugInformation>
+		<OutputPath>bin\Release\</OutputPath>
+		<TargetKind>dll</TargetKind>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Reference Include="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+			<Name>mscorlib</Name>
+			<AssemblyName>mscorlib.dll</AssemblyName>
+		</Reference>
+		<Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+			<Name>System</Name>
+			<AssemblyName>System.dll</AssemblyName>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+    <Compile Include="Library.php" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.0\Phalanger.targets" />
+</Project>

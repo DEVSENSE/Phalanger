@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="bool" name="dbase_close" description="Closes an open dBase-format database file.">
+    <param type="int" name="identifier" />
+  </function>
+  <function returnType="array" name="dbase_get_record" description="Returns an array representing a record from the database.">
+    <param type="int" name="identifier" />
+    <param type="int" name="record" />
+  </function>
+  <function returnType="bool" name="dbase_delete_record" description="Marks a record to be deleted.">
+    <param type="int" name="identifier" />
+    <param type="int" name="record" />
+  </function>
+  <function returnType="int" name="dbase_open" description="Opens a dBase-format database file.">
+    <param type="string" name="name" />
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="array" name="dbase_get_record_with_names" description="Returns an associative array representing a record from the database.">
+    <param type="int" name="identifier" />
+    <param type="int" name="record" />
+  </function>
+  <function returnType="int" name="dbase_numrecords" description="Returns the number of records in the database.">
+    <param type="int" name="identifier" />
+  </function>
+  <function returnType="bool" name="dbase_pack" description="Packs the database (deletes records marked for deletion).">
+    <param type="int" name="identifier" />
+  </function>
+  <function returnType="bool" name="dbase_add_record" description="Adds a record to the database.">
+    <param type="int" name="identifier" />
+    <param type="array" name="data" />
+  </function>
+  <function returnType="bool" name="dbase_replace_record" description="Replaces a record to the database.">
+    <param type="int" name="identifier" />
+    <param type="array" name="data" />
+    <param type="int" name="recnum" />
+  </function>
+  <function returnType="int" name="dbase_numfields" description="Returns the number of fields (columns) in the database.">
+    <param type="int" name="identifier" />
+  </function>
+  <function returnType="int" name="dbase_create" description="Creates a new dBase-format database file.">
+    <param type="string" name="filename" />
+    <param type="array" name="fields" />
+  </function>
+  <function returnType="array" name="dbase_get_header_info" description="Gets the header info of a database.">
+    <param type="int" name="dbase_identifier" />
+  </function>
+</module>

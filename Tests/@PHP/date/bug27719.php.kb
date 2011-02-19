@@ -1,0 +1,44 @@
+[expect php]
+[file]
+<?php /* $Id: bug27719.php.kb,v 1.1 2006/02/18 14:33:28 matot0am Exp $ */
+	putenv("TZ=EST");  // No DST
+	$a = mktime(0, 0, 0, 4, 4, 2004, 0);
+	$b = mktime(0, 0, 0, 4, 4, 2004, 1);
+	$c = mktime(0, 0, 0, 4, 4, 2004, -1);
+	echo "$a ".date("m/d/y h:i:s\n",$a);
+	//echo "$b ".date("m/d/y h:i:s\n",$b);
+	echo "$c ".date("m/d/y h:i:s\n",$c);
+	echo "\n";
+	putenv("TZ=EST5EDT");  // DST not in effect
+	$a = mktime(0, 0, 0, 2, 4, 2004, 0);
+	$b = mktime(0, 0, 0, 2, 4, 2004, 1);
+	$c = mktime(0, 0, 0, 2, 4, 2004, -1);
+	echo "$a ".date("m/d/y h:i:s\n",$a);
+	echo "$b ".date("m/d/y h:i:s\n",$b);
+	echo "$c ".date("m/d/y h:i:s\n",$c);
+	echo "\n";
+	putenv("TZ=EST5EDT");  // Just before DST changeover
+	$a = mktime(0, 0, 0, 4, 4, 2004, 0);
+	$b = mktime(0, 0, 0, 4, 4, 2004, 1);
+	$c = mktime(0, 0, 0, 4, 4, 2004, -1);
+	echo "$a ".date("m/d/y h:i:s\n",$a);
+	echo "$b ".date("m/d/y h:i:s\n",$b);
+	echo "$c ".date("m/d/y h:i:s\n",$c);
+	echo "\n";
+	putenv("TZ=EST5EDT");  // Just after DST changeover
+	$a = mktime(3, 0, 0, 4, 4, 2004, 0);
+	$b = mktime(3, 0, 0, 4, 4, 2004, 1);
+	$c = mktime(3, 0, 0, 4, 4, 2004, -1);
+	echo "$a ".date("m/d/y h:i:s\n",$a);
+	echo "$b ".date("m/d/y h:i:s\n",$b);
+	echo "$c ".date("m/d/y h:i:s\n",$c);
+	echo "\n";
+	putenv("TZ=EST5EDT");  // DST in effect
+	$a = mktime(0, 0, 0, 6, 4, 2004, 0);
+	$b = mktime(0, 0, 0, 6, 4, 2004, 1);
+	$c = mktime(0, 0, 0, 6, 4, 2004, -1);
+	echo "$a ".date("m/d/y h:i:s\n",$a);
+	echo "$b ".date("m/d/y h:i:s\n",$b);
+	echo "$c ".date("m/d/y h:i:s\n",$c);
+	echo "\n";
+?>

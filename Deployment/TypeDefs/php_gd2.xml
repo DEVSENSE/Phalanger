@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="int" name="imagerectangle" description="Draw a rectangle.">
+    <param type="resource" name="im" />
+    <param type="int" name="x1" />
+    <param type="int" name="y1" />
+    <param type="int" name="x2" />
+    <param type="int" name="y2" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="int" name="imagesettile" description="Set the tile image to $tile when filling $image with the &quot;IMG_COLOR_TILED&quot; color.">
+    <param type="resource" name="image" />
+    <param type="resource" name="tile" />
+  </function>
+  <function returnType="int" name="imagefontheight" description="Get font height.">
+    <param type="int" name="font" />
+  </function>
+  <function returnType="int" name="imagesy" description="Get image height.">
+    <param type="resource" name="im" />
+  </function>
+  <function returnType="int" name="imagefilledpolygon" description="Draw a filled polygon.">
+    <param type="resource" name="im" />
+    <param type="array" name="point" />
+    <param type="int" name="num_points" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="imagecreatefromstring" description="Create a new image from the image stream in the string.">
+    <param type="string" name="image" />
+  </function>
+  <function returnType="int" name="imagecopy" description="Copy part of an image.">
+    <param type="resource" name="dst_im" />
+    <param type="resource" name="src_im" />
+    <param type="int" name="dst_x" />
+    <param type="int" name="dst_y" />
+    <param type="int" name="src_x" />
+    <param type="int" name="src_y" />
+    <param type="int" name="src_w" />
+    <param type="int" name="src_h" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="imagecreate" description="Create a new image.">
+    <param type="int" name="x_size" />
+    <param type="int" name="y_size" />
+  </function>
+  <function returnType="void" name="imagealphablending" description="Turn alpha blending mode on or off for the given image.">
+    <param type="resource" name="im" />
+    <param type="bool" name="on" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="imagecreatefromxbm" description="Create a new image from XBM file or URL.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="int" name="imagearc" description="Draw a partial ellipse.">
+    <param type="resource" name="im" />
+    <param type="int" name="cx" />
+    <param type="int" name="cy" />
+    <param type="int" name="w" />
+    <param type="int" name="h" />
+    <param type="int" name="s" />
+    <param type="int" name="e" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="imagecreatefromgif" description="Create a new image from GIF file or URL.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="void" name="png2wbmp" description="Convert PNG image to WBMP image.">
+    <param type="string" name="f_org" />
+    <param type="string" name="f_dest" />
+    <param type="int" name="d_height" />
+    <param type="int" name="d_width" />
+    <param type="int" name="threshold" />
+  </function>
+  <function returnType="int" name="imagegammacorrect" description="Apply a gamma correction to a GD image.">
+    <param type="resource" name="im" />
+    <param type="float" name="inputgamma" />
+    <param type="float" name="outputgamma" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="imagecreatefromgd2" description="Create a new image from GD2 file or URL.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="imagecreatefrompng" description="Create a new image from PNG file or URL.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="void" name="imagesetthickness" description="Set line thickness for drawing lines, ellipses, rectangles, polygons etc.">
+    <param type="resource" name="im" />
+    <param type="int" name="thickness" />
+  </function>
+  <function returnType="void" name="imagetruecolortopalette" description="Convert a true colour image to a palette based image with a number of colours, optionally using dithering.">
+    <param type="resource" name="im" />
+    <param type="bool" name="ditherFlag" />
+    <param type="int" name="colorsWanted" />
+  </function>
+  <function returnType="int" name="imagecopymergegray" description="Merge one part of an image with another.">
+    <param type="resource" name="src_im" />
+    <param type="resource" name="dst_im" />
+    <param type="int" name="dst_x" />
+    <param type="int" name="dst_y" />
+    <param type="int" name="src_x" />
+    <param type="int" name="src_y" />
+    <param type="int" name="src_w" />
+    <param type="int" name="src_h" />
+    <param type="int" name="pct" />
+  </function>
+  <function returnType="int" name="imagecolorclosest" description="Get the index of the closest color to the specified color.">
+    <param type="resource" name="im" />
+    <param type="int" name="red" />
+    <param type="int" name="green" />
+    <param type="int" name="blue" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="imagecreatefromwbmp" description="Create a new image from WBMP file or URL.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="array" name="imagettfbbox" description="Give the bounding box of a text using TrueType fonts.">
+    <param type="int" name="size" />
+    <param type="int" name="angle" />
+    <param type="string" name="font_file" />
+    <param type="string" name="text" />
+  </function>
+  <function returnType="int" name="imagedashedline" description="Draw a dashed line.">
+    <param type="resource" name="im" />
+    <param type="int" name="x1" />
+    <param type="int" name="y1" />
+    <param type="int" name="x2" />
+    <param type="int" name="y2" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="int" name="imagecolortransparent" description="Define a color as transparent.">
+    <param type="resource" name="im" />
+    <param optional="true" type="int" name="col" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="imagecreatefromjpeg" description="Create a new image from JPEG file or URL.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="int" name="imagecolorclosestalpha" description="Find the closest matching colour with alpha transparency.">
+    <param type="resource" name="im" />
+    <param type="int" name="red" />
+    <param type="int" name="green" />
+    <param type="int" name="blue" />
+    <param type="int" name="alpha" />
+  </function>
+  <function returnType="void" name="imagefilledellipse" description="Draw an ellipse.">
+    <param type="resource" name="im" />
+    <param type="int" name="cx" />
+    <param type="int" name="cy" />
+    <param type="int" name="w" />
+    <param type="int" name="h" />
+    <param type="int" name="color" />
+  </function>
+  <function returnType="int" name="imagejpeg" description="Output JPEG image to browser or file.">
+    <param type="resource" name="im" />
+    <param optional="true" type="string" name="filename" />
+    <param optional="true" type="int" name="quality" />
+  </function>
+  <function returnType="int" name="imageloadfont" description="Load a new font.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="int" name="imagewbmp" description="Output WBMP image to browser or file.">
+    <param type="resource" name="im" />
+    <param optional="true" type="string" name="filename" />
+    <param optional="true" type="int" name="foreground" />
+  </function>
+  <function returnType="int" name="imagecolorallocate" description="Allocate a color for an image.">
+    <param type="resource" name="im" />
+    <param type="int" name="red" />
+    <param type="int" name="green" />
+    <param type="int" name="blue" />
+  </function>
+  <function returnType="int" name="imagepolygon" description="Draw a polygon.">
+    <param type="resource" name="im" />
+    <param type="array" name="point" />
+    <param type="int" name="num_points" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="int" name="imagecolorresolvealpha" description="Resolve/Allocate a colour with an alpha level.  Works for true colour and palette based images.">
+    <param type="resource" name="im" />
+    <param type="int" name="red" />
+    <param type="int" name="green" />
+    <param type="int" name="blue" />
+    <param type="int" name="alpha" />
+  </function>
+  <function returnType="array" name="imageftbbox" description="Give the bounding box of a text using fonts via freetype2.">
+    <param type="int" name="size" />
+    <param type="int" name="angle" />
+    <param type="string" name="font_file" />
+    <param type="string" name="text" />
+    <param type="array" name="extrainfo" />
+  </function>
+  <function returnType="int" name="imagecolorstotal" description="Find out the number of colors in an image's palette.">
+    <param type="resource" name="im" />
+  </function>
+  <function returnType="int" name="imagecolordeallocate" description="De-allocate a color for an image.">
+    <param type="resource" name="im" />
+    <param type="int" name="index" />
+  </function>
+  <function returnType="array" name="imagecolorsforindex" description="Get the colors for an index.">
+    <param type="resource" name="im" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="int" name="imagesetbrush" description="Set the brush image to $brush when filling $image with the &quot;IMG_COLOR_BRUSHED&quot; color.">
+    <param type="resource" name="image" />
+    <param type="resource" name="brush" />
+  </function>
+  <function returnType="array" name="imagettftext" description="Write text to the image using a TrueType font.">
+    <param type="resource" name="im" />
+    <param type="int" name="size" />
+    <param type="int" name="angle" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+    <param type="int" name="col" />
+    <param type="string" name="font_file" />
+    <param type="string" name="text" />
+  </function>
+  <function returnType="int" name="imagefilltoborder" description="Flood fill to specific color.">
+    <param type="resource" name="im" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+    <param type="int" name="border" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="int" name="imageinterlace" description="Enable or disable interlace.">
+    <param type="resource" name="im" />
+    <param optional="true" type="int" name="interlace" />
+  </function>
+  <function returnType="int" name="imagecopyresampled" description="Copy and resize part of an image using resampling to help ensure clarity.">
+    <param type="resource" name="dst_im" />
+    <param type="resource" name="src_im" />
+    <param type="int" name="dst_x" />
+    <param type="int" name="dst_y" />
+    <param type="int" name="src_x" />
+    <param type="int" name="src_y" />
+    <param type="int" name="dst_w" />
+    <param type="int" name="dst_h" />
+    <param type="int" name="src_w" />
+    <param type="int" name="src_h" />
+  </function>
+  <function returnType="int" name="imagegd2" description="Output GD2 image to browser or file.">
+    <param type="resource" name="im" />
+    <param optional="true" type="string" name="filename" />
+  </function>
+  <function returnType="int" name="imagecopyresized" description="Copy and resize part of an image.">
+    <param type="resource" name="dst_im" />
+    <param type="resource" name="src_im" />
+    <param type="int" name="dst_x" />
+    <param type="int" name="dst_y" />
+    <param type="int" name="src_x" />
+    <param type="int" name="src_y" />
+    <param type="int" name="dst_w" />
+    <param type="int" name="dst_h" />
+    <param type="int" name="src_w" />
+    <param type="int" name="src_h" />
+  </function>
+  <function returnType="int" name="imagepng" description="Output PNG image to browser or file.">
+    <param type="resource" name="im" />
+    <param optional="true" type="string" name="filename" />
+  </function>
+  <function returnType="int" name="imagegif" description="Output image to browser or file.">
+    <param type="resource" name="im" />
+    <param optional="true" type="string" name="filename" />
+  </function>
+  <function returnType="int" name="imagefilledarc" description="Draw a filled partial ellipse.">
+    <param type="resource" name="im" />
+    <param type="int" name="cx" />
+    <param type="int" name="cy" />
+    <param type="int" name="w" />
+    <param type="int" name="h" />
+    <param type="int" name="s" />
+    <param type="int" name="e" />
+    <param type="int" name="col" />
+    <param type="int" name="style" />
+  </function>
+  <function returnType="int" name="imagechar" description="Draw a character.">
+    <param type="resource" name="im" />
+    <param type="int" name="font" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+    <param type="string" name="c" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="int" name="imagecopymerge" description="Merge one part of an image with another.">
+    <param type="resource" name="src_im" />
+    <param type="resource" name="dst_im" />
+    <param type="int" name="dst_x" />
+    <param type="int" name="dst_y" />
+    <param type="int" name="src_x" />
+    <param type="int" name="src_y" />
+    <param type="int" name="src_w" />
+    <param type="int" name="src_h" />
+    <param type="int" name="pct" />
+  </function>
+  <function returnType="int" name="imagefill" description="Flood fill.">
+    <param type="resource" name="im" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="int" name="imagestring" description="Draw a string horizontally.">
+    <param type="resource" name="im" />
+    <param type="int" name="font" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+    <param type="string" name="str" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="void" name="imageellipse" description="Draw an ellipse.">
+    <param type="resource" name="im" />
+    <param type="int" name="cx" />
+    <param type="int" name="cy" />
+    <param type="int" name="w" />
+    <param type="int" name="h" />
+    <param type="int" name="color" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="imagecreatetruecolor" description="Create a new true color image.">
+    <param type="int" name="x_size" />
+    <param type="int" name="y_size" />
+  </function>
+  <function returnType="int" name="imagetypes" description="Return the types of images supported in a bitfield - 1=GIF, 2=JPEG, 4=PNG, 8=WBMP, 16=XPM." />
+  <function returnType="resource" castToFalse="true" name="imagecreatefromgd2part" description="Create a new image from a given part of GD2 file or URL.">
+    <param type="string" name="filename" />
+    <param type="int" name="srcX" />
+    <param type="int" name="srcY" />
+    <param type="int" name="width" />
+    <param type="int" name="height" />
+  </function>
+  <function returnType="int" name="imagecolorexactalpha" description="Find exact match for colour with transparency.">
+    <param type="resource" name="im" />
+    <param type="int" name="red" />
+    <param type="int" name="green" />
+    <param type="int" name="blue" />
+    <param type="int" name="alpha" />
+  </function>
+  <function returnType="int" name="imagecolorat" description="Get the index of the color of a pixel.">
+    <param type="resource" name="im" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+  </function>
+  <function returnType="int" name="image2wbmp" description="Output WBMP image to browser or file.">
+    <param type="resource" name="im" />
+    <param optional="true" type="string" name="filename" />
+    <param optional="true" type="int" name="threshold" />
+  </function>
+  <function returnType="int" name="imagegd" description="Output GD image to browser or file.">
+    <param type="resource" name="im" />
+    <param optional="true" type="string" name="filename" />
+  </function>
+  <function returnType="int" name="imagefontwidth" description="Get font width.">
+    <param type="int" name="font" />
+  </function>
+  <function returnType="void" name="imagesetstyle" description="Set the line drawing styles for use with imageline and IMG_COLOR_STYLED.">
+    <param type="resource" name="im" />
+    <param type="array" name="styles" />
+  </function>
+  <function returnType="int" name="imageline" description="Draw a line.">
+    <param type="resource" name="im" />
+    <param type="int" name="x1" />
+    <param type="int" name="y1" />
+    <param type="int" name="x2" />
+    <param type="int" name="y2" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="int" name="imagecolorset" description="Set the color for the specified palette index.">
+    <param type="resource" name="im" />
+    <param type="int" name="col" />
+    <param type="int" name="red" />
+    <param type="int" name="green" />
+    <param type="int" name="blue" />
+  </function>
+  <function returnType="void" name="jpeg2wbmp" description="Convert JPEG image to WBMP image.">
+    <param type="string" name="f_org" />
+    <param type="string" name="f_dest" />
+    <param type="int" name="d_height" />
+    <param type="int" name="d_width" />
+    <param type="int" name="threshold" />
+  </function>
+  <function returnType="int" name="imagecolorexact" description="Get the index of the specified color.">
+    <param type="resource" name="im" />
+    <param type="int" name="red" />
+    <param type="int" name="green" />
+    <param type="int" name="blue" />
+  </function>
+  <function returnType="int" name="imagesetpixel" description="Set a single pixel.">
+    <param type="resource" name="im" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="int" name="imagepalettecopy" description="Copy the palette from the src image onto the dst image.">
+    <param type="resource" name="dst" />
+    <param type="resource" name="src" />
+  </function>
+  <function returnType="int" name="imagesx" description="Get image width.">
+    <param type="resource" name="im" />
+  </function>
+  <function returnType="int" name="imagecharup" description="Draw a character rotated 90 degrees counter-clockwise.">
+    <param type="resource" name="im" />
+    <param type="int" name="font" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+    <param type="string" name="c" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="int" name="imagestringup" description="Draw a string vertically - rotated 90 degrees counter-clockwise.">
+    <param type="resource" name="im" />
+    <param type="int" name="font" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+    <param type="string" name="str" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="int" name="imagecolorresolve" description="Get the index of the specified color or its closest possible alternative.">
+    <param type="resource" name="im" />
+    <param type="int" name="red" />
+    <param type="int" name="green" />
+    <param type="int" name="blue" />
+  </function>
+  <function returnType="array" name="imagefttext" description="Write text to the image using fonts via freetype2.">
+    <param type="resource" name="im" />
+    <param type="int" name="size" />
+    <param type="int" name="angle" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+    <param type="int" name="col" />
+    <param type="string" name="font_file" />
+    <param type="string" name="text" />
+    <param optional="true" type="array" name="extrainfo" />
+  </function>
+  <function returnType="int" name="imagedestroy" description="Destroy an image.">
+    <param type="resource" name="im" />
+  </function>
+  <function returnType="int" name="imagecreatefromgd" description="Create a new image from GD file or URL.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="int" name="imagefilledrectangle" description="Draw a filled rectangle.">
+    <param type="resource" name="im" />
+    <param type="int" name="x1" />
+    <param type="int" name="y1" />
+    <param type="int" name="x2" />
+    <param type="int" name="y2" />
+    <param type="int" name="col" />
+  </function>
+  <function returnType="array" name="gd_info" description="Retrieve information about the currently installed GD library." />
+  <function returnType="bool" name="imageantialias" description="Should antialias functions be used or not.">
+    <param type="resource" name="im" />
+    <param type="bool" name="on" />
+  </function>
+  <function returnType="int" name="imagecolorallocatealpha" description="Allocate a color for an image.">
+    <param type="resource" name="image" />
+    <param type="int" name="red" />
+    <param type="int" name="green" />
+    <param type="int" name="blue" />
+    <param type="int" name="alpha" />
+  </function>
+  <function returnType="bool" name="imagecolormatch" description="Makes the colors of the palette version of an image more closely match the true color version.">
+    <param type="resource" name="image1" />
+    <param type="resource" name="image2" />
+  </function>
+  <function returnType="bool" name="imagefilter" description="Applies a filter to an image.">
+    <param type="resource" name="src_im" />
+    <param type="int" name="filtertype" />
+    <param optional="true" type="int" name="arg1" />
+    <param optional="true" type="int" name="arg2" />
+    <param optional="true" type="int" name="arg3" />
+  </function>
+  <function returnType="bool" name="imageistruecolor" description="Finds whether an image is a truecolor image.">
+    <param type="resource" name="image" />
+  </function>
+  <function returnType="bool" name="imagelayereffect" description="Set the alpha blending flag to use the bundled libgd layering effects.">
+    <param type="resource" name="image" />
+    <param type="int" name="effect" />
+  </function>
+  <function returnType="array" name="imagepsbbox" description="Give the bounding box of a text rectangle using PostScript Type1 fonts.">
+    <param type="string" name="text" />
+    <param type="int" name="font" />
+    <param type="int" name="size" />
+    <param optional="true" type="int" name="space" />
+    <param optional="true" type="int" name="tightness" />
+    <param optional="true" type="float" name="angle" />
+  </function>
+  <function returnType="bool" name="imagepsencodefont" description="Change the character encoding vector of a font.">
+    <param type="resource" name="font_index" />
+    <param type="string" name="encodingfile" />
+  </function>
+  <function returnType="bool" name="imagepsextendfont" description="Extend or condense a font.">
+    <param type="int" name="font_index" />
+    <param type="float" name="extend" />
+  </function>
+  <function returnType="bool" name="imagepsfreefont" description="Free memory used by a PostScript Type 1 font.">
+    <param type="resource" name="fontindex" />
+  </function>
+  <function returnType="resource" name="imagepsloadfont" description="Load a PostScript Type 1 font from file.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="bool" name="imagepsslantfont" description="Slant a font.">
+    <param type="resource" name="font_index" />
+    <param type="float" name="slant" />
+  </function>
+  <function returnType="array" name="imagepstext" description="To draw a text string over an image using PostScript Type1 fonts.">
+    <param type="resource" name="image" />
+    <param type="string" name="text" />
+    <param type="resource" name="font" />
+    <param type="int" name="size" />
+    <param type="int" name="foreground" />
+    <param type="int" name="background" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+    <param optional="true" type="int" name="space" />
+    <param optional="true" type="int" name="tightness" />
+    <param optional="true" type="float" name="angle" />
+    <param optional="true" type="int" name="antialias_steps" />
+  </function>
+  <function returnType="resource" name="imagerotate" description="Rotate an image with a given angle.">
+    <param type="resource" name="src_im" />
+    <param type="float" name="angle" />
+    <param type="int" name="bgd_color" />
+    <param optional="true" type="int" name="ignore_transparent" />
+  </function>
+  <function returnType="bool" name="imagesavealpha" description="Set the flag to save full alpha channel information (as opposed to single-color transparency) when saving PNG images.">
+    <param type="resource" name="image" />
+    <param type="bool" name="saveflag" />
+  </function>
+  <function returnType="bool" name="imagexbm" description="Output XBM image to browser or file.">
+    <param type="resource" name="image" />
+    <param type="string" name="filename" />
+    <param optional="true" type="int" name="foreground" />
+  </function>
+</module>

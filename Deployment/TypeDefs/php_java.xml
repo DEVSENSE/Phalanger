@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="void" name="java_last_exception_clear" description="Clear last Java exception." />
+  <function returnType="object" name="java_last_exception_get" description="Get last Java exception." />
+  
+  <class name="Java">
+    <function name="Java" description="Constructor.">
+      <param type="string" name="java_class_name" />
+      <param type="array" name="args" />
+    </function>
+    <function returnType="mixed" name="__call" description="Calls a Java method.">
+      <param type="string" name="java_method_name" />
+      <param type="array" name="args" />
+    </function>
+    <function returnType="mixed" name="__get" description="Reads a Java property.">
+      <param type="string" name="java_property_name" />
+    </function>
+    <function returnType="void" name="__set" description="Writes a Java property.">
+      <param type="string" name="java_property_name" />
+      <param type="mixed" name="value" />
+    </function>
+  </class>
+</module>

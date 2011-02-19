@@ -1,0 +1,11 @@
+[expect php]
+[file]
+<?
+include('Phalanger.inc');
+
+$array = array("foo"=>"bar","baz"=>1,"test"=>"a ' \" ", "abc");
+__var_dump(http_build_query($array));
+__var_dump(http_build_query($array, 'foo'));
+__var_dump(http_build_query($array, 'foo', ';'));
+
+?>

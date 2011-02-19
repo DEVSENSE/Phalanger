@@ -1,0 +1,19 @@
+<VSTemplate Version="2.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name>Phalanger Class Library</Name>
+    <Description>Creates a Phalanger (pure PHP/CLR) class library</Description>
+    <Icon>__TemplateIcon.ico</Icon>
+    <ProjectType>Phalanger</ProjectType>
+    <SortOrder>10</SortOrder>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>ClassLibrary</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+      <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
+  </TemplateData>
+  <TemplateContent>
+    <Project File="ClassLibrary.phpproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" OpenInEditor="false">Library.php</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

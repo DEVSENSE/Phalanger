@@ -1,0 +1,10 @@
+to debug PHP website using VisualStudio
+
+option 1 - using Phalanger VS2008 integration
+1. just create PHP WebSite, hit F5
+
+option 2 - Using any VisualStudio without our integration (best for debugging Phalanger internals)
+1. open your solution
+2. right click, add, Existing Web Site
+3. select e.g. Local IIS, and your website (in case of IIS7, 7.5, see "website in IIS7.txt")
+4. run the website, when asked - allow to modify web.config to enable debugging

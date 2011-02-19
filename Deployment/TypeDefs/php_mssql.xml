@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="bool" name="mssql_bind" description="Adds a parameter to a stored procedure or a remote stored procedure.">
+    <param type="resource" name="stmt" />
+    <param type="string" name="param_name" />
+    <param bind="true" direction="inout" type="mixed" name="var" />
+    <param type="int" name="type" />
+    <param optional="true" type="bool" name="is_output" />
+    <param optional="true" type="bool" name="is_null" />
+    <param optional="true" type="int" name="maxlen" />
+  </function>
+  <function returnType="bool" name="mssql_close" description="Close MS SQL Server connection.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="mssql_connect" description="Open MS SQL server connection.">
+    <param optional="true" type="string" name="servername" />
+    <param optional="true" type="string" name="username" />
+    <param optional="true" type="string" name="password" />
+  </function>
+  <function returnType="bool" name="mssql_data_seek" description="Moves internal row pointer.">
+    <param type="resource" name="result_identifier" />
+    <param type="int" name="row_number" />
+  </function>
+  <function marshalBoundVars="out" returnType="mixed" name="mssql_execute" description="Executes a stored procedure on a MS SQL server database.">
+    <param type="resource" name="stmt" />
+    <param optional="true" type="bool" name="skip_results" />
+  </function>
+  <function returnType="array" castToFalse="true" name="mssql_fetch_array" description="Fetch a result row as an associative array, a numeric array, or both.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="result_type" />
+  </function>
+  <function returnType="array" name="mssql_fetch_assoc" description="Returns an associative array of the current row in the result set specified by result_id.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="int" name="mssql_fetch_batch" description="Returns the next batch of records.">
+    <param type="resource" name="result_index" />
+  </function>
+  <function returnType="object" name="mssql_fetch_field" description="Get field information.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="field_offset" />
+  </function>
+  <function returnType="object" name="mssql_fetch_object" description="Fetch row as object.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="array" name="mssql_fetch_row" description="Get row as enumerated array.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="mssql_field_length" description="Get the length of a field.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="offset" />
+  </function>
+  <function returnType="string" name="mssql_field_name" description="Get the name of a field.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="offset" />
+  </function>
+  <function returnType="bool" name="mssql_field_seek" description="Seeks to the specified field offset.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="string" name="mssql_field_type" description="Gets the type of a field.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="offset" />
+  </function>
+  <function returnType="bool" name="mssql_free_result" description="Free result memory.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="bool" name="mssql_free_statement" description="Free statement memory.">
+    <param type="resource" name="statement" />
+  </function>
+  <function returnType="string" name="mssql_get_last_message" description="Returns the last message from the server." />
+  <function returnType="string" name="mssql_guid_string" description="Converts a 16 byte binary GUID to a string.">
+    <param type="string" name="binary" />
+    <param optional="true" type="int" name="short_format" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="mssql_init" description="Initializes a stored procedure or a remote stored procedure.">
+    <param type="string" name="sp_name" />
+    <param optional="true" type="resource" name="conn_id" />
+  </function>
+  <function returnType="void" name="mssql_min_error_severity" description="Sets the lower error severity.">
+    <param type="int" name="severity" />
+  </function>
+  <function returnType="void" name="mssql_min_message_severity" description="Sets the lower message severity.">
+    <param type="int" name="severity" />
+  </function>
+  <function returnType="bool" name="mssql_next_result" description="Move the internal result pointer to the next result.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="int" name="mssql_num_fields" description="Gets the number of fields in result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="mssql_num_rows" description="Gets the number of rows in result.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="mssql_pconnect" description="Open persistent MS SQL connection.">
+    <param optional="true" type="string" name="servername" />
+    <param optional="true" type="string" name="username" />
+    <param optional="true" type="string" name="password" />
+  </function>
+  <function returnType="mixed" castToFalse="false" name="mssql_query" description="Send MS SQL query.">
+    <param type="string" name="query" />
+    <param optional="true" type="resource" name="link_identifier" />
+    <param optional="true" type="int" name="batch_size" />
+  </function>
+  <function returnType="string" name="mssql_result" description="Get result data.">
+    <param type="resource" name="result" />
+    <param type="int" name="row" />
+    <param type="mixed" name="field" />
+  </function>
+  <function returnType="int" name="mssql_rows_affected" description="Returns the number of records affected by the query.">
+    <param type="resource" name="conn_id" />
+  </function>
+  <function returnType="bool" name="mssql_select_db" description="Select MS SQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+</module>

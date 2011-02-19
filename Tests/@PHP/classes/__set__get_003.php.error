@@ -1,0 +1,9 @@
+[expect php]
+[file]
+<?php
+class Test {
+	function __set() {
+	}
+}
+
+?>

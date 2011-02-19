@@ -1,0 +1,209 @@
+﻿<?
+/*****************************************************************************/
+/**
+ * Callback Demo
+ */
+import namespace System;
+import namespace System:::Windows;
+import namespace System:::Windows:::Media;
+import namespace System:::Windows:::Input;
+import namespace System:::Windows:::Controls;
+import namespace System:::Windows:::Media:::Animation; 
+
+include("slutils.phpx");
+
+function RequestPhotos($loc)
+{
+	$fh = fopen("http://localhost:12345/SilverlightDemo/photos_list.php?loc=$loc&".(rand()), 'r');
+	$n = 0;
+	$lines = array();
+	while(($s = fgets($fh)) !== false) 
+		$lines[$n++] = substr($s, 0, strlen($s)-1);
+	return $lines;
+}
+
+class PhotoGallery extends CanvasWrapper
+{
+	function __construct($canv)
+	{
+		parent::__construct($canv);
+		$this->LoadRootDir();
+		$this->fullHide->Completed->Add(new EventHandler(array($this,"RemoveFullImage")));
+	}
+	
+	public $images;
+	public $txt;
+	
+	function ClearCurrentView()
+	{
+		while($this->Children->Count > 0)
+			$this->Children->RemoveAt(0);
+			
+		$tx = slwrap(new TextBlock());
+		$tx->Foreground = new SolidColorBrush(Colors::$White);
+		$tx->{ "Canvas.Left" } = 10;
+		$tx->{ "Canvas.Top" } = 680;
+		
+		$this->Children->Add($tx->Element);
+		$this->txt = $tx;
+	}
+	
+	function LoadRootDir()
+	{
+		$lines = RequestPhotos("");
+		$x = 0; $y = 0;
+		$this->images = array();
+		for($i = 0; $i<sizeof($lines); $i+=2)
+		{
+			$this->images["img$n"] = $lines[$i];
+			
+			$cv = slwrap(new Canvas());
+			$cv->{ "Canvas.Name" } = "cnv".($n);
+			$cv->{ "Canvas.Left" } = 60 + $x*360;
+			$cv->{ "Canvas.Top" } = $y*310;
+			
+			$tx = slwrap(new TextBlock());
+			$tx->Foreground = new SolidColorBrush(Colors::$White);
+			$tx->Text = $lines[$i];
+			$tx->{ "Canvas.Left" } = 120;
+			$tx->{ "Canvas.Top" } = 0;
+			$cv->Children->Add($tx->Element);
+			
+			$img = slwrap(new Image());
+			$img->{ "Image.Name" } = "img".($n++);
+			$img->Source = new Uri("photos/".$lines[$i]."/".$lines[$i+1], UriKind::Relative);
+			$img->{ "Canvas.Left" } = 0;
+			$img->{ "Canvas.Top" } = 20;
+			$img->Width = 320;
+			$img->MouseEnter->Add(new MouseEventHandler(array($this, "RootMouseOverImage")));
+			$img->MouseLeave->Add(new EventHandler(array($this, "RootMouseOutImage")));
+			$img->MouseLeftButtonDown->Add(new MouseEventHandler(array($this, "RootMouseClickImage")));
+			$cv->Children->Add($img->Element);
+			
+			$this->Children->Add($cv->Element);
+			
+			if ($x++ == 1) { $y++; $x=0; }
+		}
+	}
+	
+	function LoadDirectory($dir)
+	{
+		$lines = RequestPhotos($dir);
+		$x = 0; $y = 0;
+		for($i = 0; $i<sizeof($lines); $i++)
+		{		
+			$cv = slwrap(new Canvas());
+			$cv->{ "Canvas.Name" } = "c_img".($n);
+			$cv->{ "Canvas.Left" } = 20 + $x*220;
+			$cv->{ "Canvas.Top" } = 60 + $y*200;
+			$img = slwrap(new Image());
+			$img->{ "Image.Name" } = "img".($n++);
+			$img->Source = new Uri("photos/".$dir."/".$lines[$i], UriKind::Relative);
+			$img->{ "Canvas.Left" } = 0;
+			$img->{ "Canvas.Top" } = 0;
+			$img->Width = 180;
+			$img->MouseEnter->Add(new MouseEventHandler(array($this, "GalMouseOverImage")));
+			$img->MouseLeave->Add(new EventHandler(array($this, "GalMouseOutImage")));
+			$img->MouseLeftButtonDown->Add(new MouseEventHandler(array($this, "GalMouseClickImage")));
+			$cv->Children->Add($img->Element);
+			$this->Children->Add($cv->Element);
+			
+			if ($x++ == 3) { $y++; $x=0; }
+		}
+	}
+	
+	function SetTargetNames($name, $sb, $n)
+	{
+		for($i=0; $i<$n; $i++)
+		{
+			$anim = slwrap($sb->Children->get_Item($i));
+			$anim->{ "Storyboard.TargetName" } = $name;
+		}
+	}
+	
+	/********************* Root - gallery listing view *************************/
+	
+	function RootMouseClickImage($sender, $e)
+	{
+		$this->ClearCurrentView();
+		$this->LoadDirectory($this->images[slwrap($sender)->{ "Image.Name" }]);
+		$this->txt->MouseLeftButtonDown->Add(new MouseEventHandler(array($this, "BackToGalleries")));
+		$this->txt->Text = "<< Go back to the list of galleries";
+	}
+		
+	function RootMouseOverImage($sender, $e)
+	{
+		$this->mouseOver->Stop();
+		$this->SetTargetNames(slwrap($sender)->{ "Image.Name" }, $this->mouseOver, 2);
+		$this->mouseOver->Begin();
+	}
+
+	function RootMouseOutImage($sender, $e)
+	{
+		$this->mouseOut->Stop();
+		$this->SetTargetNames(slwrap($sender)->{ "Image.Name" }, $this->mouseOut, 2);
+		$this->mouseOut->Begin();
+	}
+	
+	/********************* Galllery view  **************************************/
+	
+	public $fullImg;
+	
+	function BackToGalleries($sender, $e)
+	{
+		$this->ClearCurrentView();
+		$this->LoadRootDir();
+	}
+	
+	function GalMouseClickImage($sender, $e)
+	{
+		$img = slwrap(new Image());
+		$this->fullImg = $img;
+		$img->{ "Image.Name" } = "fullimg";
+		$img->Source = $sender->Source;
+		$img->{ "Canvas.Left" } = 0;
+		$img->{ "Canvas.Top" } = 0;
+		$img->Width = 900;
+		$img->Opacity = 0.5;
+		$img->MouseLeftButtonDown->Add(new MouseEventHandler(array($this, "CloseFullImage")));
+		$this->Children->Add($img->Element);
+		
+		$this->fullShow->Stop();
+		$this->SetTargetNames("fullimg", $this->fullShow, 1);
+		$this->fullShow->Begin();
+	}
+	
+	function CloseFullImage($sender, $e)
+	{
+		$this->fullHide->Stop();
+		$this->SetTargetNames("fullimg", $this->fullHide, 1);
+		$this->fullHide->Begin();
+	}
+	
+	function RemoveFullImage($sender, $e)
+	{
+		$this->Children->Remove($this->fullImg->Element);
+		$this->fullImg = null;
+	}
+		
+	function GalMouseOverImage($sender, $e)
+	{
+		$this->mouseOverGal->Stop();
+		$this->SetTargetNames(slwrap($sender)->{ "Image.Name" }, $this->mouseOverGal, 3);
+		$this->mouseOverGal->Begin();
+	}
+
+	function GalMouseOutImage($sender, $e)
+	{
+		$this->mouseOutGal->Stop();
+		$this->SetTargetNames(slwrap($sender)->{ "Image.Name" }, $this->mouseOutGal, 3);
+		$this->mouseOutGal->Begin();
+	}	
+}
+
+function OnLoad()
+{
+	$app = new PhotoGallery($_CANVAS);
+}
+
+?>

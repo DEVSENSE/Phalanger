@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="bool" name="dbx_close">
+    <param type="mixed" name="dbx_link" />
+  </function>
+  <function returnType="mixed" name="dbx_query" description="Returns a dbx_link_object on success and returns 0 on failure.">
+    <param type="mixed" name="dbx_link" />
+    <param type="string" name="sql_statement" />
+    <param optional="true" type="int" name="flags" />
+  </function>
+  <function returnType="string" name="dbx_error">
+    <param type="mixed" name="dbx_link" />
+  </function>
+  <function returnType="int" name="dbx_compare" description="Returns row_y[columnname] - row_x[columnname], converted to -1, 0 or 1.">
+    <param type="array" name="row_x" />
+    <param type="array" name="row_y" />
+    <param type="string" name="columnname" />
+    <param optional="true" type="int" name="flags" />
+  </function>
+  <function returnType="int" name="dbx_sort" description="Returns 0 on failure, 1 on success.">
+    <param type="mixed" name="dbx_result" />
+    <param type="string" name="compare_function_name" />
+  </function>
+  <function returnType="mixed" name="dbx_connect" description="Returns a dbx_link_object on success and returns 0 on failure.">
+    <param type="mixed" name="module_name" />
+    <param type="string" name="host" />
+    <param type="string" name="db" />
+    <param type="string" name="username" />
+    <param type="string" name="password" />
+    <param optional="true" type="bool" name="persistent" />
+  </function>
+</module>

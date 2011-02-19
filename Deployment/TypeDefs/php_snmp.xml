@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="array" name="snmpwalk" description="Return all objects under the specified object id.">
+    <param type="string" name="host" />
+    <param type="string" name="community" />
+    <param type="string" name="object_id" />
+    <param optional="true" type="int" name="timeout" />
+    <param optional="true" type="int" name="retries" />
+  </function>
+  <function returnType="string" name="snmpget" description="Fetch a SNMP object.">
+    <param type="string" name="host" />
+    <param type="string" name="community" />
+    <param type="string" name="object_id" />
+    <param optional="true" type="int" name="timeout" />
+    <param optional="true" type="int" name="retries" />
+  </function>
+  <function returnType="array" name="snmprealwalk" description="Return all objects including their respective object id withing the specified one.">
+    <param type="string" name="host" />
+    <param type="string" name="community" />
+    <param type="string" name="object_id" />
+    <param optional="true" type="int" name="timeout" />
+    <param optional="true" type="int" name="retries" />
+  </function>
+  <function returnType="void" name="snmp_set_quick_print" description="Return all objects including their respective object id withing the specified one.">
+    <param type="int" name="quick_print" />
+  </function>
+  <function returnType="array" name="snmpwalkoid" description="Return all objects including their respective object id withing the specified one.">
+    <param type="string" name="host" />
+    <param type="string" name="community" />
+    <param type="string" name="object_id" />
+    <param optional="true" type="int" name="timeout" />
+    <param optional="true" type="int" name="retries" />
+  </function>
+  <function returnType="bool" name="snmp_get_quick_print" description="Return the current status of quick_print." />
+  <function returnType="int" name="snmpset" description="Set the value of a SNMP object.">
+    <param type="string" name="host" />
+    <param type="string" name="community" />
+    <param type="string" name="object_id" />
+    <param type="string" name="type" />
+    <param type="mixed" name="value" />
+    <param optional="true" type="int" name="timeout" />
+    <param optional="true" type="int" name="retries" />
+  </function>
+  <function returnType="string" name="snmpgetnext" description="Fetch a SNMP object.">
+    <param type="string" name="host" />
+    <param type="string" name="community" />
+    <param type="string" name="object_id" />
+    <param optional="true" type="int" name="timeout" />
+    <param optional="true" type="int" name="retries" />
+  </function>
+  <function returnType="void" name="snmp_set_valueretrieval" description="Specify the method how the SNMP values will be returned.">
+    <param type="int" name="method" />
+  </function>
+  <function returnType="bool" name="snmp_read_mib" description="Reads and parses a MIB file into the active MIB tree.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="int" name="snmp_get_valueretrieval" description="Return the method how the SNMP values will be returned." />
+</module>

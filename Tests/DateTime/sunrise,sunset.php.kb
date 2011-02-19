@@ -1,0 +1,36 @@
+[expect php]
+[file]
+<?
+date_default_timezone_set("Europe/Prague");
+
+for($a=1;$a<=12;$a++)
+{
+	printf("%d %s %8.5f\n",
+	  date_sunrise(mktime(1,1,1,$a,1,2003),SUNFUNCS_RET_TIMESTAMP,31.76670,35.23330,90.83,2),
+	  date_sunrise(mktime(1,1,1,$a,1,2003),SUNFUNCS_RET_STRING,31.76670,35.23330,90.83,2),
+	  date_sunrise(mktime(1,1,1,$a,1,2003),SUNFUNCS_RET_DOUBLE,31.76670,35.23330,90.83,2));
+	
+	printf("%d %s %.5f\n",
+	  date_sunset(mktime(1,1,1,$a,1,2003),SUNFUNCS_RET_TIMESTAMP,31.76670,35.23330,90.83,2),
+	  date_sunset(mktime(1,1,1,$a,1,2003),SUNFUNCS_RET_STRING,31.76670,35.23330,90.83,2),
+	  date_sunset(mktime(1,1,1,$a,1,2003),SUNFUNCS_RET_DOUBLE,31.76670,35.23330,90.83,2));
+}
+
+foreach (array("Europe/Prague","Africa/Kampala","US/Central","Israel","Europe/Rome","UTC") as $zone)
+{                    
+  date_default_timezone_set($zone);
+
+  $time = mktime(1,1,1,1,1,2003);
+  
+  echo "idate(Z)=",idate('Z', $time),"\n";
+  $t = gettimeofday();
+  echo "gettimeofday()['minuteswest']=",$t["minuteswest"],"\n";
+  
+  printf("%.5f %.5f %.5f %.5f %.5f\n",
+	  date_sunset($time,SUNFUNCS_RET_DOUBLE),
+	  date_sunset($time,SUNFUNCS_RET_DOUBLE,31.76670),
+	  date_sunset($time,SUNFUNCS_RET_DOUBLE,31.76670,35.23330),
+    date_sunset($time,SUNFUNCS_RET_DOUBLE,31.76670,35.23330,90.83),
+    date_sunset($time,SUNFUNCS_RET_DOUBLE,31.76670,35.23330,90.83,0));
+}
+?>

@@ -1,0 +1,31 @@
+PHP code dom test utility
+© Ðonny 2007
+Reads PHP source file, parses it and rewrites output
+PHP source is read from file 'Test.php' in working directory
+
+Command line options:
+[-i] ['wait'] ... Output in PHP
+'?' [-i] ['wait'] .................... Asks for language of output
+'??' [-i] ['wait'] ................... Asks for language of output in loop
+langauge [option] [-i] ['wait'] ...... Showns output in given languages with option
+'-h','-?','/h','/?' ['wait'] ............. Shows this help
+If last command line argument is 'wait' than application waits key to be pressed before exit.
+Last (or pre-last if 'wait' used) argument can be '-i' immediatelly followed by path to file to load (instead of Test.php).
+
+Languages and options (case insensitive):
+(Options are different providers for the same language)
+
+Visual Basic .... vb, visual basic, basic
+C# .............. cs, c#
+IronPython ...... py, python, ironpython, iron python
+C++/CLI ......... c++, cpp, vc, vc++, vcpp, c
+        7 ....... Microsoft.VisualC.CppCodeProvider7
+        vs ...... Microsoft.VisualC.VSCodeProvider
+        <other> . Microsoft.VisualC.CppCodeProvider
+JavaScript ..... jscript, javascript, java script, js
+J# ............. j#, jsl
+CIL assembler ... msil, cil
+F# .............. f#, fs
+        asp ..... Microsoft.FSharp.Compiler.CodeDom.FSharpAspNetCodeProvider
+        <other> . Microsoft.FSharp.Compiler.CodeDom.FSharpCodeProvider
+Phalanger ....... <other>

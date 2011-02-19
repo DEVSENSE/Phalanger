@@ -1,0 +1,2205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Argument_StringZeroLength" xml:space="preserve">
+    <value>Řetězec nesmí být prázdný.</value>
+  </data>
+  <data name="Argument_IllegalEnvVarName" xml:space="preserve">
+    <value>Proměnná prostředí nesmí obsahovat znak "rovná se" (=).</value>
+  </data>
+  <data name="Argument_LongEnvVarValue" xml:space="preserve">
+    <value>Jméno a hodnota proměnné prostředí jsou přílíš dlouhé.</value>
+  </data>
+  <data name="Argument_StringFirstCharIsZero" xml:space="preserve">
+    <value>První znak v řetězci je nulový.</value>
+  </data>
+  <data name="UnknownError_Num" xml:space="preserve">
+    <value>Neznámá chyba "{0}".</value>
+  </data>
+  <data name="invalid_array_rank" xml:space="preserve">
+    <value>Chybný rozměr pole.</value>
+  </data>
+  <data name="invalid_field_reference" xml:space="preserve">
+    <value>Neplatná reference na vlastnost.</value>
+  </data>
+  <data name="field_not_exists" xml:space="preserve">
+    <value>Vlastnost '{0}' neexistuje.</value>
+  </data>
+  <data name="not_enought_space_in_target_array" xml:space="preserve">
+    <value>V cílovém poli není dost místa.</value>
+  </data>
+  <data name="item_removed_from_empty_array" xml:space="preserve">
+    <value>Nemohu odstranit položku z prázdného pole</value>
+  </data>
+  <data name="enumerator_not_referencing_this_table" xml:space="preserve">
+    <value>Specifikovaný enumerátor nereferencuje tuto tabulku.</value>
+  </data>
+  <data name="argument_equals" xml:space="preserve">
+    <value>Argument {0} nesmí být roven {1}.</value>
+  </data>
+  <data name="for_internal_usage_only" xml:space="preserve">
+    <value>{0} je určen pouze k internímu použití.</value>
+  </data>
+  <data name="invalid_node" xml:space="preserve">
+    <value>Neplatný uzel.</value>
+  </data>
+  <data name="missing_attribute" xml:space="preserve">
+    <value>Chybějící atribut '{0}'.</value>
+  </data>
+  <data name="invalid_attribute_value" xml:space="preserve">
+    <value>Hodnota atributu '{0}' je neplatná.</value>
+  </data>
+  <data name="invalid_attribute_location" xml:space="preserve">
+    <value>Atribut '{0}' namůže být použit v konfiguračním souboru nacházejícím se na virtuální cestě '{0}'.</value>
+  </data>
+  <data name="invalid_node_location" xml:space="preserve">
+    <value>Uzel nemůže být použit v konfiguračním souboru nacházejícím se na virtuální cestě '{0}' protože {1}.</value>
+  </data>
+  <data name="defines_app_wide_config" xml:space="preserve">
+    <value>definuje konfiguraci na úrovni aplikace</value>
+  </data>
+  <data name="defines_machine_wide_config" xml:space="preserve">
+    <value>definuje konfiguraci na úrovni počítače</value>
+  </data>
+  <data name="invalid_library_descriptor" xml:space="preserve">
+    <value>Typ '{0}' je neplatný popisovač knihovny.</value>
+  </data>
+  <data name="library_section_redeclared" xml:space="preserve">
+    <value>Seklce konfigurace knihoven '{0}' již byla přifařena ke knihovně '{1}'.</value>
+  </data>
+  <data name="cannot_change_library_section" xml:space="preserve">
+    <value>Nemohu změnit část načtené knihovny. Knihovna '{0}' již byla načtena do konfigurační sekce '{1}'.</value>
+  </data>
+  <data name="library_assembly_loading_failed" xml:space="preserve">
+    <value>Sestavení knihovny '{0}' nemůže být načteno.</value>
+  </data>
+  <data name="dynamic_wrapper_loading_failed" xml:space="preserve">
+    <value>Dynamický wrapper '{0}' nemohl být načten.</value>
+  </data>
+  <data name="referenced_assembly_loading_failed" xml:space="preserve">
+    <value>Odkazované PHP sestavení '{0}' nelze načíst.</value>
+  </data>
+  <data name="constant_reimplemented" xml:space="preserve">
+    <value>Konstanta '{0}' implemetována {1}.{2} již byla implementována jinde.</value>
+  </data>
+  <data name="function_reimplemented" xml:space="preserve">
+    <value>Funkce '{0}' implementovaná {1}.{2} již byla implementována jinde se stejným počtem parametrů.</value>
+  </data>
+  <data name="invalid_call_context_data" xml:space="preserve">
+    <value>Neplatný kontext volání ve slotu {0}.</value>
+  </data>
+  <data name="last_is_less_than_first" xml:space="preserve">
+    <value>Poslední musí být větší nebo roven prvnímu.</value>
+  </data>
+  <data name="page_instantiation_failed" xml:space="preserve">
+    <value>Nemohu vytvořit instanci stránky '{0}'.</value>
+  </data>
+  <data name="directory_not_exists" xml:space="preserve">
+    <value>Adresář '{0}' neexistuje.</value>
+  </data>
+  <data name="incomplete_path" xml:space="preserve">
+    <value>Cesta '{0}' je nekompletní. Cesta je relativní nebo neobsahuje specifikaci disku.</value>
+  </data>
+  <data name="file_not_exists" xml:space="preserve">
+    <value>Soubor '{0}' neexistuje.</value>
+  </data>
+  <data name="invalid_regular_expression" xml:space="preserve">
+    <value>Neplatný regulární výraz.</value>
+  </data>
+  <data name="invalid_registering_order" xml:space="preserve">
+    <value>Neplatné pořadí registrace globálních proměnných.</value>
+  </data>
+  <data name="invalid_library_contant_type" xml:space="preserve">
+    <value>Neplatný typ konstanty knihovny '{0}'.</value>
+  </data>
+  <data name="missing_configuration" xml:space="preserve">
+    <value>Konfigurační volba {0} nebyla definována.</value>
+  </data>
+  <data name="console_only_option" xml:space="preserve">
+    <value>Tato volba je platná jen pro konfiguraci konzolové aplikace.</value>
+  </data>
+  <data name="web_only_option" xml:space="preserve">
+    <value>Volba je platná jen v konfiguraci webové aplikace.</value>
+  </data>
+  <data name="script_not_found" xml:space="preserve">
+    <value>Soubor skriptu '{0}' nenalezen.</value>
+  </data>
+  <data name="error_creating_file" xml:space="preserve">
+    <value>Neoučekávaná chyba při vytváření souboru '{0}': {1}</value>
+  </data>
+  <data name="library_config_handler_failed" xml:space="preserve">
+    <value>Handler konfigurace knihovny '{0}' selhal.</value>
+  </data>
+  <data name="out_of_range" xml:space="preserve">
+    <value>Hodnota by měla být mezi {0} a {1} včetně.</value>
+  </data>
+  <data name="invalid_base" xml:space="preserve">
+    <value>Neplatný základ.</value>
+  </data>
+  <data name="configuration_not_loaded" xml:space="preserve">
+    <value>Konfigurace nebyla ještě načtena</value>
+  </data>
+  <data name="cannot_modify_option" xml:space="preserve">
+    <value>Konfigurační volba zde nemůže být změněna, protože to bylo znemožněno atributem 'allowOverride' v konfiguračním souboru '{0}'.</value>
+  </data>
+  <data name="unknown_session_handler" xml:space="preserve">
+    <value>Session handler '{0}' je neznámý. Nebyl registrován žádnou z načtených knihoven.</value>
+  </data>
+  <data name="invalid_main_routine" xml:space="preserve">
+    <value>Neplatná rutina main.</value>
+  </data>
+  <data name="invalid_method_implementation" xml:space="preserve">
+    <value>Neplatná implementace metody '{0}'.</value>
+  </data>
+  <data name="cant_generate_sys_class_builders" xml:space="preserve">
+    <value>Nemohu generovat buildera pro systémové třídy.</value>
+  </data>
+  <data name="cant_create_sys_class_types" xml:space="preserve">
+    <value>Nemohu vytvořit typ ze systémové třídy.</value>
+  </data>
+  <data name="cant_clone_sys_table" xml:space="preserve">
+    <value>Nemohu klonovat systémovou tabulku tříd.</value>
+  </data>
+  <data name="unable_to_connect_extmanager" xml:space="preserve">
+    <value>Nemohu se připojit k ExtManageru.</value>
+  </data>
+  <data name="unable_to_launch_extmanager" xml:space="preserve">
+    <value>Nemohu spustit ExtManager.</value>
+  </data>
+  <data name="could_not_create_event" xml:space="preserve">
+    <value>Nemohu vytvořit událost.</value>
+  </data>
+  <data name="timeout_waiting_for_extmanager" xml:space="preserve">
+    <value>Timeout při čekání na spuštění ExtManagera.</value>
+  </data>
+  <data name="cannot_change_target_instance" xml:space="preserve">
+    <value>Změna císlové instance nenív podporována pokud cíl byl již určen.</value>
+  </data>
+  <data name="must_target_instance_method" xml:space="preserve">
+    <value>Musí cílit na instanční metodu.</value>
+  </data>
+  <data name="must_be_static" xml:space="preserve">
+    <value>Musí být statická.</value>
+  </data>
+  <data name="must_be_phpobject_subclass" xml:space="preserve">
+    <value>Musí být řída odvozená od PhpObject.</value>
+  </data>
+  <data name="must_be_iphpmemberhandle" xml:space="preserve">
+    <value>Musí být IPhpMemberHandle.</value>
+  </data>
+  <data name="must_be_associated_instance_method" xml:space="preserve">
+    <value>Musí být přifařeno instanční metodě třídy asociované s touto tabulkou.</value>
+  </data>
+  <data name="must_be_associated_method" xml:space="preserve">
+    <value>Musí být přifařeno metodě třídy asociované s touto tabulkou.</value>
+  </data>
+  <data name="must_be_associated_static_method" xml:space="preserve">
+    <value>Musí být přifařeno statické metodě asociované s touto tabulkou.</value>
+  </data>
+  <data name="must_be_associated_instance_field" xml:space="preserve">
+    <value>Je potřeba reflektovat instanční proměnnou typu PhpReference deklarovanou ve třídě přiřaditelní ze třídy asociovatelné s touto tabulkou.</value>
+  </data>
+  <data name="must_be_declaringtype_instance" xml:space="preserve">
+    <value>Musí být instance DeclaringType.</value>
+  </data>
+  <data name="class_instantiation_failed" xml:space="preserve">
+    <value>Nemohu instanciovat třídu '{0}'.</value>
+  </data>
+  <data name="incarnation_type_mismatch" xml:space="preserve">
+    <value>Musí být stejného typu jako tato instance.</value>
+  </data>
+  <data name="field_already_exists" xml:space="preserve">
+    <value>Proměnná se stejným názvem již existuje na úrovni tohoto objektu.</value>
+  </data>
+  <data name="buffers_must_not_be_empty" xml:space="preserve">
+    <value>Buffery musí být neprázdné.</value>
+  </data>
+  <data name="too_little_data_buffered" xml:space="preserve">
+    <value>Příliš málo dat nabufferováno.</value>
+  </data>
+  <data name="casting_to_stream_unsupported" xml:space="preserve">
+    <value>Tento stream není možno přetypovat na System.IO.Stream.</value>
+  </data>
+  <data name="set_return_custom_attr_unsupported" xml:space="preserve">
+    <value>Metoda není nadále podporována. Použijte raději MethodBuilder.DefineParameter.</value>
+  </data>
+  <data name="define_method_unsupported" xml:space="preserve">
+    <value>Metoda již není podporána. Použijte TypeBuilder.DefineMethod namísto ní.</value>
+  </data>
+  <data name="networkutils_unsupported" xml:space="preserve">
+    <value>NetworkUtils nejsou na tomto systému podporovány.</value>
+  </data>
+  <data name="class_has_no_unserializer" xml:space="preserve">
+    <value>Třída {0} nemá deinicializátor</value>
+  </data>
+  <data name="invalid_script_assembly" xml:space="preserve">
+    <value>Setavení '{0}' není platné kompilované sestavení skriptů Phalanger</value>
+  </data>
+  <data name="unable_to_resolve_script_type" xml:space="preserve">
+    <value>Nemohu odhalit typ skriptu (zdrojová adresa '{0}', referenční typ '{1}')</value>
+  </data>
+  <data name="instance_disposed" xml:space="preserve">
+    <value>Instance již byla uvolněna</value>
+  </data>
+  <data name="session_state_unavailable" xml:space="preserve">
+    <value>Session state nedostupný, operace se sezením nemůže být provedena</value>
+  </data>
+  <data name="empty_path" xml:space="preserve">
+    <value>Cesta musí být neprázdná</value>
+  </data>
+  <data name="invalid_path" xml:space="preserve">
+    <value>Cesta není platná.</value>
+  </data>
+  <data name="no_source_files_to_compile" xml:space="preserve">
+    <value>Nebyly specifikovány soubory ke kompilaci.</value>
+  </data>
+  <data name="configuration_file_not_found" xml:space="preserve">
+    <value>Konfigurační soubor '{0}' nenalezen.</value>
+  </data>
+  <data name="referenced_assembly_not_found" xml:space="preserve">
+    <value>Odkaz na assembly je chybný - cílová assembly neexistuje.</value>
+  </data>
+  <data name="source_file_not_found" xml:space="preserve">
+    <value>Zdrojový soubor nenalezen.</value>
+  </data>
+  <data name="directory_not_found" xml:space="preserve">
+    <value>Adresář nenalezen.</value>
+  </data>
+  <data name="invalid_value" xml:space="preserve">
+    <value>Chybná hodnota.</value>
+  </data>
+  <data name="invalid_option" xml:space="preserve">
+    <value>Chybná volba.</value>
+  </data>
+  <data name="application_config_file_copied" xml:space="preserve">
+    <value>Konfigurační soubor aplikace zkopírován.</value>
+  </data>
+  <data name="entrypoint_not_specified" xml:space="preserve">
+    <value>Vstupní bod (entry-point) aplikace nebyl specifikován.</value>
+  </data>
+  <data name="invalid_file_extension" xml:space="preserve">
+    <value>Chybná přípona souboru.</value>
+  </data>
+  <data name="cannot_create_config_file" xml:space="preserve">
+    <value>Nelze vytvořit konfigurační soubor '{0}'. Chyba: {1}</value>
+  </data>
+  <data name="loaded_libraries" xml:space="preserve">
+    <value>Načtené knihovny</value>
+  </data>
+  <data name="configuration_error" xml:space="preserve">
+    <value>Chyba konfigurace</value>
+  </data>
+  <data name="performing_compilation" xml:space="preserve">
+    <value>Kompiluji</value>
+  </data>
+  <data name="Arguments" xml:space="preserve">
+    <value>Volby</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Chyba</value>
+  </data>
+  <data name="value" xml:space="preserve">
+    <value>hodnota</value>
+  </data>
+  <data name="option" xml:space="preserve">
+    <value>volba</value>
+  </data>
+  <data name="phpc_arg:help" xml:space="preserve">
+    <value>Zobrazí informace o použití.</value>
+  </data>
+  <data name="phpc_arg:debug" xml:space="preserve">
+    <value>Zkompilovat v režimu ladění (ladící informace jsou vygenerovány do .pdb souborů, asserty jsou ignorovány).</value>
+  </data>
+  <data name="phpc_arg:target_web" xml:space="preserve">
+    <value>Sestaví web aplikaci.</value>
+  </data>
+  <data name="phpc_arg:target_exe" xml:space="preserve">
+    <value>Sestaví spustitelnou konzolovou aplikaci.</value>
+  </data>
+  <data name="phpc_arg:target_dll" xml:space="preserve">
+    <value>Sestaví knihovnu.</value>
+  </data>
+  <data name="phpc_arg:target_winexe" xml:space="preserve">
+    <value>Sestaví Windows aplikaci</value>
+  </data>
+  <data name="phpc_arg:out_path" xml:space="preserve">
+    <value>Pro webové aplikace definuje adresář, do kterého je uložena výsledná assembly.\nPro ostatní aplikace specifikuje jmnéno výsledné assembly.</value>
+  </data>
+  <data name="phpc_arg:doc" xml:space="preserve">
+    <value>Generovat XML dokumantaci do XML souboru pojmenovaného jako výsledné sestavení a umístěného do stejné složky.</value>
+  </data>
+  <data name="phpc_arg:doc_path" xml:space="preserve">
+    <value>Generovat XML dokumentaci do specifikovaného XML souboru.</value>
+  </data>
+  <data name="phpc_arg:root_path" xml:space="preserve">
+    <value>Cesta ke kořenové složce kompilované webové/konzolové/okenní aplikace nebo knihovny. Jako výchozí hodnota je použit aktuální adresář.</value>
+  </data>
+  <data name="phpc_arg:config_path" xml:space="preserve">
+    <value>Cesta ke konfiguračnímu souboru pro načtení a zpracování před kompilací. Více voleb může být specifikováno. Pořadí zpracování konfiguračních nastavení:\n1. nastavení z Machine.config\n2. nastavení z phpc.exe.config\n3. nastavení ze souborů specifikovaných touto volbou (pokud specifikováno)\n4. soubory App.config/Web.config k kořenu zdroje aplikace pokud existují a žádné volby /config nejsou specifikovány.</value>
+  </data>
+  <data name="phpc_arg:reference_path" xml:space="preserve">
+    <value>Cesta k referencovanému sestavení knihovny PHP. Těchto voleb může být použito více.</value>
+  </data>
+  <data name="phpc_arg:entrypoint" xml:space="preserve">
+    <value>Ten z kompilovaných skriptů, který bude použit jako vstupní bod konzolové aplikce.</value>
+  </data>
+  <data name="phpc_arg:namespaces" xml:space="preserve">
+    <value>Předpojit před názvy generovaných typů jmenné prostory odvozené od názvů souborů.</value>
+  </data>
+  <data name="phpc_arg:static" xml:space="preserve">
+    <value>Povolit statické inkluze.</value>
+  </data>
+  <data name="phpc_arg:recurse" xml:space="preserve">
+    <value>Složka, které bude rekurzivně prohledáhna za účelem nalezení souborů ke kompilaci. Může být specifikována opakovaně.</value>
+  </data>
+  <data name="phpc_arg:ext" xml:space="preserve">
+    <value>Čárkou oddělený seznam přípon souborů, které budou přikompilovány během rekurzivního procházení složek. Výchozí hodnota je 'php,inc'.</value>
+  </data>
+  <data name="phpc_arg:encoding" xml:space="preserve">
+    <value>Kódování skriptů. Např.: UTF-8, Windows-1250, Latin1, Latin2 atd. Viz metoda System.Text.Encoding.GetEncoding(string).</value>
+  </data>
+  <data name="phpc_arg:key" xml:space="preserve">
+    <value>Soubor obsahujíc pár klíčů generovaný utilitou sn. Zapříčiní, že výsledné sestavení bude silně pojmenované.</value>
+  </data>
+  <data name="phpc_arg:version" xml:space="preserve">
+    <value>Verze výsledného sestavení. Výchozí je 1.0.0.0.</value>
+  </data>
+  <data name="phpc_arg:win32icon" xml:space="preserve">
+    <value>Soubor obsahující ikonu Win32 (nebo více ikon), který bude vložen do výsledného sestavení.</value>
+  </data>
+  <data name="phpc_arg:dw_warning_number" xml:space="preserve">
+    <value>Vypne varování se specifickým číslem.</value>
+  </data>
+  <data name="phpc_arg:dw_DeferredToRuntime" xml:space="preserve">
+    <value>Vypnout varování spojená s odloženou kompilací.</value>
+  </data>
+  <data name="phpc_arg:dw_InclusionsMapping" xml:space="preserve">
+    <value>Vypnout varování generované když selže mapování inkluze. Automaticky vypnuto, když je specifikováno /dw:DeferredToRuntime.</value>
+  </data>
+  <data name="phpc_arg:dw_CompilerStrict" xml:space="preserve">
+    <value>Vypnout striktní varování kompilátorujako nedosažitelný kód, použití modifikátoru &amp; ve volání funkcí atp.</value>
+  </data>
+  <data name="phpc_arg:dw_AmpModifiers" xml:space="preserve">
+    <value>Vypnout varování ohledně modifikátorů ampersand (reference). Automaticky vypnuty, pokud je specifikováno /dw:CompilerStrict.</value>
+  </data>
+  <data name="phpc_arg:ew" xml:space="preserve">
+    <value>Povolit specifická varování (stejné volby jako /dw).</value>
+  </data>
+  <data name="phpc_arg:verbose" xml:space="preserve">
+    <value>Zobrazovat doplňující informace o procesu kompilace?</value>
+  </data>
+  <data name="phpc_other_args" xml:space="preserve">
+    <value>Cesta ke skriptům, které mají být zkompilovány, by měla být uvedena na příkazové řádce za volbami. Cesty mohou být absolutní nebo relativní ke složce /root.\nPokud žádné soubory nejsou specifikovány ale je použita volba /recurse, složka /root je rekurzivně prohledána pátrajíce po skriptech ke kompilaci.</value>
+  </data>
+  <data name="default_exception_message" xml:space="preserve">
+    <value>Neznámá výjimka</value>
+  </data>
+  <data name="stringified_exception_debug" xml:space="preserve">
+    <value>výjimka '{0}' se zprávou '{1}' v {2}:{3}:{4}
+Výpis zásobníku:
+{5}</value>
+  </data>
+  <data name="stringified_exception" xml:space="preserve">
+    <value>výjimika '{0}' se zprávou '{1}'
+Výpis zásobníku:
+{2}</value>
+  </data>
+  <data name="getiterator_must_return_traversable" xml:space="preserve">
+    <value>Objekty vrácené {0}::getIterator() musí být procházitelné nebo implementovat rozhraní Iterator</value>
+  </data>
+  <data name="uncaught_exception" xml:space="preserve">
+    <value>Nezachyceno {0}</value>
+  </data>
+  <data name="exception_cannot_be_thrown" xml:space="preserve">
+    <value>Výjimka nemůže být vyhozena zde: {0}</value>
+  </data>
+  <data name="serialize_must_return_null_or_string" xml:space="preserve">
+    <value>{0}::serialize() musí vrátit řetězec nebo NULL</value>
+  </data>
+  <data name="(related_location)" xml:space="preserve">
+    <value>(předružené umístění)</value>
+  </data>
+  <data name="property_gotten_on_non_object" xml:space="preserve">
+    <value>Pokus o získání vlastnosti ne-objektu</value>
+  </data>
+  <data name="property_assigned_to_non_object" xml:space="preserve">
+    <value>Pokus o přiřazení vlastnosti ne-objektu</value>
+  </data>
+  <data name="method_called_on_non_object" xml:space="preserve">
+    <value>Volání členské funkce {0}() neobjektu</value>
+  </data>
+  <data name="clone_called_on_non_object" xml:space="preserve">
+    <value>Metoda __clone volána na ne-objektu</value>
+  </data>
+  <data name="default_object_created" xml:space="preserve">
+    <value>Vytvářím defaultní objekt z prázdné hodnoty</value>
+  </data>
+  <data name="undefined_method_called" xml:space="preserve">
+    <value>Volání nedefinované metody: {0}::{1}()</value>
+  </data>
+  <data name="protected_method_called" xml:space="preserve">
+    <value>Volání protected metody {0}::{1}() z kontextu '{2}'</value>
+  </data>
+  <data name="private_method_called" xml:space="preserve">
+    <value>Volání privátní metody {0}::{1}() z kontextu '{2}'</value>
+  </data>
+  <data name="undefined_property_accessed" xml:space="preserve">
+    <value>Nedefinovaná vlastnost: {0}::${1}</value>
+  </data>
+  <data name="protected_property_accessed" xml:space="preserve">
+    <value>Nemohu přistupovat k protected vlastnosti {0}::${1}</value>
+  </data>
+  <data name="private_property_accessed" xml:space="preserve">
+    <value>Nelze přistupovat k privátní vlastnosti {0}::${1}</value>
+  </data>
+  <data name="undefined_property_when_access_overloaded" xml:space="preserve">
+    <value>Nemohu přistupovat k nedefinované vlastnosti objaktu s přetíženým přístupem k vlastnostem</value>
+  </data>
+  <data name="sleep_must_return_array" xml:space="preserve">
+    <value>__sleep by měla vracet pole názvů instančních proměnných k serializaci</value>
+  </data>
+  <data name="tostring_must_return_string" xml:space="preserve">
+    <value>Metoda {0}::__toString() musí vracet jedinou hodnotu</value>
+  </data>
+  <data name="clone_cannot_be_static" xml:space="preserve">
+    <value>Klonovací metoda {0}::__clone() nesmí být statická</value>
+  </data>
+  <data name="constructor_cannot_be_static" xml:space="preserve">
+    <value>Konstruktor {0}::{1}() nemůže být statický</value>
+  </data>
+  <data name="destructor_cannot_be_static" xml:space="preserve">
+    <value>Destruktor {0}::{1}() nemůže být statický</value>
+  </data>
+  <data name="invalid_class_name" xml:space="preserve">
+    <value>Název třídy musí být platný objekt nebo řetězec</value>
+  </data>
+  <data name="invalid_method_name" xml:space="preserve">
+    <value>Název metody musí být žetězec</value>
+  </data>
+  <data name="abstract_method_called" xml:space="preserve">
+    <value>Nemohu volat abstraktní metodu {0}::{1}()</value>
+  </data>
+  <data name="interface_instantiated" xml:space="preserve">
+    <value>Nemohu vtyvořit instanci rozhraní '{0}'</value>
+  </data>
+  <data name="abstract_class_instantiated" xml:space="preserve">
+    <value>Nemohu vytvořit instanci abstraktní třídy {0}</value>
+  </data>
+  <data name="class_redeclared" xml:space="preserve">
+    <value>Nemohu znovudeklarovat třídu/rozhraní '{0}'</value>
+  </data>
+  <data name="class_not_found" xml:space="preserve">
+    <value>Třída '{0}' nenalezena</value>
+  </data>
+  <data name="this_used_out_of_object" xml:space="preserve">
+    <value>Použití $this mimo kontext objektu</value>
+  </data>
+  <data name="unserialize_callback_failed" xml:space="preserve">
+    <value>Funkce {0}() nedefinovala třídu, pro kterou byla volána</value>
+  </data>
+  <data name="undefined_class_constant" xml:space="preserve">
+    <value>Nedefinovaná třídní konstanta '{0}'</value>
+  </data>
+  <data name="nonstatic_method_called_statically" xml:space="preserve">
+    <value>Nestatická metoda {0}::{1}() by neměla být volána staticky</value>
+  </data>
+  <data name="self_accessed_out_of_class" xml:space="preserve">
+    <value>Nelze přistoupit k self::, když není aktivní žádný rozsah třídy</value>
+  </data>
+  <data name="parent_accessed_out_of_class" xml:space="preserve">
+    <value>parent:: je nepřístupný, když žádný rozsah třídy není aktivní</value>
+  </data>
+  <data name="parent_accessed_in_parentless_class" xml:space="preserve">
+    <value>parent:: je nepřístupný, když rozsah třídy nemáv žádného rodiče</value>
+  </data>
+  <data name="undeclared_static_property_accessed" xml:space="preserve">
+    <value>Přístup k nedefinované statické vlastnosti: {0}::${1}</value>
+  </data>
+  <data name="static_property_unset" xml:space="preserve">
+    <value>Pokus odnastavit statickou vlastnost {0}::${1}</value>
+  </data>
+  <data name="cannot_reassign_this" xml:space="preserve">
+    <value>Nemohu znovupřiřadit $this</value>
+  </data>
+  <data name="incomparable_objects_compared" xml:space="preserve">
+    <value>Neporovnatelné objekty porovnány</value>
+  </data>
+  <data name="illegal_key_return_type" xml:space="preserve">
+    <value>Špatný typ vrácený z {0}::key()</value>
+  </data>
+  <data name="dotdot_not_allowed_in_path" xml:space="preserve">
+    <value>Žádné části '..' nejsou v cestě povoleny</value>
+  </data>
+  <data name="path_contains_invalid_characters" xml:space="preserve">
+    <value>Cesta obsahuje neplatné znaky</value>
+  </data>
+  <data name="constant_value_neither_scalar_nor_null" xml:space="preserve">
+    <value>Nemohu definovat hodnotu, která není ani skalární ani NULL jako konstantu</value>
+  </data>
+  <data name="constant_redefined" xml:space="preserve">
+    <value>Pokus o redefinici konstanty '{0}'</value>
+  </data>
+  <data name="undefined_variable" xml:space="preserve">
+    <value>Nedefinovaná proměnná '{0}'</value>
+  </data>
+  <data name="undefined_constant" xml:space="preserve">
+    <value>Nedefinovaná konstanta '{0}' - výchozí hodnota "{0}" použita namísto ní</value>
+  </data>
+  <data name="object_used_as_array" xml:space="preserve">
+    <value>Objekt typu '{0}' použit jako pole</value>
+  </data>
+  <data name="string_used_as_array" xml:space="preserve">
+    <value>Řetězec použit jako pole</value>
+  </data>
+  <data name="scalar_used_as_array" xml:space="preserve">
+    <value>Skalár typu '{0}' použit jako pole</value>
+  </data>
+  <data name="empty_used_as_array" xml:space="preserve">
+    <value>Prázdná proměnná použita jako pole</value>
+  </data>
+  <data name="array_used_as_object" xml:space="preserve">
+    <value>Pole použito jako objekt</value>
+  </data>
+  <data name="string_used_as_object" xml:space="preserve">
+    <value>Řetězec použitý jako objekt</value>
+  </data>
+  <data name="scalar_used_as_object" xml:space="preserve">
+    <value>Skalár typu '{0}' použit jako objekt</value>
+  </data>
+  <data name="empty_used_as_object" xml:space="preserve">
+    <value>Prázdná proměnná použita jako objekt</value>
+  </data>
+  <data name="string_item_used_as_reference" xml:space="preserve">
+    <value>Položka typu řetězec použita jako reference</value>
+  </data>
+  <data name="invalid_implicit_cast" xml:space="preserve">
+    <value>Nemohu konvertovat {0} na {1} implicitně při volání funkce {2}()</value>
+  </data>
+  <data name="array_to_string_conversion" xml:space="preserve">
+    <value>Konverze pole a řetězec</value>
+  </data>
+  <data name="function_not_supported" xml:space="preserve">
+    <value>Funkce není podporována</value>
+  </data>
+  <data name="undefined_function_called" xml:space="preserve">
+    <value>Volání nedefonované funkce: '{0}'</value>
+  </data>
+  <data name="undefined_external_function_called" xml:space="preserve">
+    <value>Volání nedefinované externí funkce '{0}', rozšíření '{1}' - zkontrolujte konfiguraci</value>
+  </data>
+  <data name="no_function_context" xml:space="preserve">
+    <value>Voláno z globálního rozsahu, žádný kontext funkce</value>
+  </data>
+  <data name="argument_not_passed_to_function" xml:space="preserve">
+    <value>Argument '{0}' nepředán funkci</value>
+  </data>
+  <data name="invalid_callback" xml:space="preserve">
+    <value>Neplatné zpětné volání</value>
+  </data>
+  <data name="invalid_function_name" xml:space="preserve">
+    <value>Název funkce musí být řetězec</value>
+  </data>
+  <data name="function_redeclared_rt" xml:space="preserve">
+    <value>Nemohu předeklarovat funkci '{0}'</value>
+  </data>
+  <data name="invalid_argument" xml:space="preserve">
+    <value>Neplatný argument '{0}'</value>
+  </data>
+  <data name="invalid_argument_value" xml:space="preserve">
+    <value>Hodnota '{1}' je pro argument '{0}' neplatná</value>
+  </data>
+  <data name="invalid_argument_with_message" xml:space="preserve">
+    <value>Neplatný argument:</value>
+  </data>
+  <data name="invalid_argument_count_for" xml:space="preserve">
+    <value>Špatný počet argumentů pro {0}()</value>
+  </data>
+  <data name="invalid_argument_count" xml:space="preserve">
+    <value>Špatný počet argumentů</value>
+  </data>
+  <data name="invalid_argument_type" xml:space="preserve">
+    <value>Argument '{0}' musí být typu '{1}'</value>
+  </data>
+  <data name="argument_null" xml:space="preserve">
+    <value>Argument '{0}' by neměl být NULL</value>
+  </data>
+  <data name="reference_null" xml:space="preserve">
+    <value>Argument '{0}' je předáván odkazem, pročež by neměl být NULL</value>
+  </data>
+  <data name="noncallable_callback" xml:space="preserve">
+    <value>Callback '{0}' specifikovaný v argumentu '{1}' není volatelný</value>
+  </data>
+  <data name="argument_not_passed_byref" xml:space="preserve">
+    <value>Argument #{0} by měl být předáván odkazem</value>
+  </data>
+  <data name="argument_not_passed_byref_to" xml:space="preserve">
+    <value>Argument #{0} gby měl do {1}() být předáván odkazem</value>
+  </data>
+  <data name="missing_argument" xml:space="preserve">
+    <value>Chybějící argument #{0}</value>
+  </data>
+  <data name="missing_argument_for" xml:space="preserve">
+    <value>Chybějící argument #{0} pro {1}()</value>
+  </data>
+  <data name="parameter_must_be_byref" xml:space="preserve">
+    <value>Parametr '{0}' musí být předán odkazem</value>
+  </data>
+  <data name="argument_value_not_supported" xml:space="preserve">
+    <value>Určená hodnota argumentu '{0}' není podporována</value>
+  </data>
+  <data name="operator[]_used_for_reading" xml:space="preserve">
+    <value>Není možno použít [] pro čtení</value>
+  </data>
+  <data name="integer_key_reached_max_value" xml:space="preserve">
+    <value>Nemohu přidat položku do pole - celočíselný klíč dosáhl své maximální hodnoty (2^31-1)</value>
+  </data>
+  <data name="illegal_offset_type" xml:space="preserve">
+    <value>Špatný typ offsetu</value>
+  </data>
+  <data name="undefined_offset" xml:space="preserve">
+    <value>Nedefinovaný offset ({0})</value>
+  </data>
+  <data name="illegal_string_offset" xml:space="preserve">
+    <value>Špatný offset v řetězci '{0}'</value>
+  </data>
+  <data name="uninitialized_string_offset" xml:space="preserve">
+    <value>Offset řetězce '{0}' nebyl inicializován</value>
+  </data>
+  <data name="unsupported_operand_types" xml:space="preserve">
+    <value>Nepodporované typy operandů</value>
+  </data>
+  <data name="unsupported_operand_type" xml:space="preserve">
+    <value>Nepodporovaný typ operandu</value>
+  </data>
+  <data name="cannot_unset_string_offsets" xml:space="preserve">
+    <value>Nemohu odnastavit offset v řetězci</value>
+  </data>
+  <data name="invalid_exception_object" xml:space="preserve">
+    <value>Výjimky musí být platné objekty zděděné od třídy Exception</value>
+  </data>
+  <data name="offsetGet_must_return_byref" xml:space="preserve">
+    <value>Metoda offsetGet() objektu použita bez operátoru [] následovaného inkrementací, dekrementací, přiřazením do reference, nebo dalšími operátory [], které musejí vracet referenci</value>
+  </data>
+  <data name="context_expected" xml:space="preserve">
+    <value>Poskytnutý zdroj není platným zdrojem v kontextu streamu</value>
+  </data>
+  <data name="wrapper_op_unsupported" xml:space="preserve">
+    <value>{0} operace není tímto stream wrapperem podporována</value>
+  </data>
+  <data name="stream_read_io_error" xml:space="preserve">
+    <value>Nastala V/V chyba při čtení ze streamu: {0}</value>
+  </data>
+  <data name="stream_write_io_error" xml:space="preserve">
+    <value>V/V chyba při zápisu do streamu: {0}</value>
+  </data>
+  <data name="stream_read_error" xml:space="preserve">
+    <value>Nastala chyba při čtení ze streamu: {0}</value>
+  </data>
+  <data name="stream_write_error" xml:space="preserve">
+    <value>Chyba při zápisu do streamu: {0}</value>
+  </data>
+  <data name="stream_write_failed" xml:space="preserve">
+    <value>Nemohu zapisovat do streamu (zapsáno jen {0} z {1} bytů)</value>
+  </data>
+  <data name="stream_read_off" xml:space="preserve">
+    <value>Tento stream nebyl otevřen pro čtení.</value>
+  </data>
+  <data name="stream_write_off" xml:space="preserve">
+    <value>Stream nebyl otevřen pro zápis.</value>
+  </data>
+  <data name="stream_bad_wrapper" xml:space="preserve">
+    <value>Nemuhu nalézt wrapper '{0}' - zapoměl jsi jej povolit při konfiguraci PHP?</value>
+  </data>
+  <data name="url_fopen_disabled" xml:space="preserve">
+    <value>Přístup k souborům pomocí URL je zakázán konfigurací serveru.</value>
+  </data>
+  <data name="stream_bad_filename" xml:space="preserve">
+    <value>Selhalo otevření streamu ({0}): Specifikovaný soubor neexistuje</value>
+  </data>
+  <data name="stream_bad_directory" xml:space="preserve">
+    <value>Selhalo otevření streamu ({0}): Specifikovaná složka neexistuje</value>
+  </data>
+  <data name="stream_open_read_unsupported" xml:space="preserve">
+    <value>Nemohu otevřít {0} pro čtení</value>
+  </data>
+  <data name="stream_open_write_unsupported" xml:space="preserve">
+    <value>Nemohu otevřít {0} pro zápis</value>
+  </data>
+  <data name="ambiguous_file_mode" xml:space="preserve">
+    <value>Nejednoznačný způsob přístupu k souboru (předpokládám binární). Specifikujte buďto '{0}b' nebo '{0}t'</value>
+  </data>
+  <data name="empty_file_mode" xml:space="preserve">
+    <value>Poskytnutý způsob přístupu k souboru je prázdný</value>
+  </data>
+  <data name="invalid_file_mode" xml:space="preserve">
+    <value>Poskytnutý způsob přístupu k souboru ({0}) je neplatný</value>
+  </data>
+  <data name="url_resource_missing" xml:space="preserve">
+    <value>Nebyl specifikován URL zdroje</value>
+  </data>
+  <data name="open_basedir_effect" xml:space="preserve">
+    <value>Omezení AllowedPathPrefixes v akci. Soubor ({0}) není mezi povolenými cestami: ({1})</value>
+  </data>
+  <data name="invalid_filter_name" xml:space="preserve">
+    <value>Nemohu vytvořit filtr ({0})</value>
+  </data>
+  <data name="stream_filename_invalid" xml:space="preserve">
+    <value>Nemohu přistupovat k ({0}): Jméno souboru je neplatné</value>
+  </data>
+  <data name="stream_file_access_denied" xml:space="preserve">
+    <value>Nemohu přistupovat k ({0}): Přídtup odepřen</value>
+  </data>
+  <data name="stream_file_invalid" xml:space="preserve">
+    <value>Otevření streamu selhalo ({0}): Specifikované jméno souboru je neplatné</value>
+  </data>
+  <data name="stream_url_invalid" xml:space="preserve">
+    <value>Otevření streamu selhalo ({0}): Specifikovaný URL je neplatný</value>
+  </data>
+  <data name="stream_url_method_invalid" xml:space="preserve">
+    <value>Otevření streamu selhalo ({0}): Specifikovaná žádací metoda je neplatná</value>
+  </data>
+  <data name="stream_file_io_error" xml:space="preserve">
+    <value>Otevření streamu selhalo ({0}) z důvodů V/V chyby: {1}</value>
+  </data>
+  <data name="stream_file_not_exists" xml:space="preserve">
+    <value>Specifikovaný soibor neexistuje ({0})</value>
+  </data>
+  <data name="stream_directory_not_exists" xml:space="preserve">
+    <value>Specifikovaný adresář neexistuje ({0})</value>
+  </data>
+  <data name="stream_path_not_exists" xml:space="preserve">
+    <value>Specifikovaná cesta neexistuje ({0})</value>
+  </data>
+  <data name="stream_file_exists" xml:space="preserve">
+    <value>Specifikovaný soubor již existuje ({0})</value>
+  </data>
+  <data name="stream_stat_invalid_path" xml:space="preserve">
+    <value>Selhání stat ({0}) - neplatné jméno souboru</value>
+  </data>
+  <data name="stream_unlink_file_not_found" xml:space="preserve">
+    <value>Nemohu provést unlink souboru ({0}): Uvedené jméno souboru je neplatné</value>
+  </data>
+  <data name="stream_unlink_io_error" xml:space="preserve">
+    <value>Nemohu provést unlink souboru ({0}) z důvodu V/V chyby: {1}</value>
+  </data>
+  <data name="stream_unlink_error" xml:space="preserve">
+    <value>Nemohu provést unlink souboru ({0}): nepředpokládaná chyba</value>
+  </data>
+  <data name="stream_rmdir_io_error" xml:space="preserve">
+    <value>Nemohu odstranit složku ({0}): složka není prázdná</value>
+  </data>
+  <data name="stream_rename_file_exists" xml:space="preserve">
+    <value>Nelze přejmenovat '{0}' na '{1}': cílový soubor existuje</value>
+  </data>
+  <data name="stream_error" xml:space="preserve">
+    <value>Nemohu přistupovat ke zdroji ({0}): neočekávaná chyba</value>
+  </data>
+  <data name="stream_socket_error" xml:space="preserve">
+    <value>Chyba soketu: {0}</value>
+  </data>
+  <data name="stream_directory_access_denied" xml:space="preserve">
+    <value>Nemohu vytvořit složku ({0}): Přístup odepřen</value>
+  </data>
+  <data name="stream_directory_error" xml:space="preserve">
+    <value>Nemohu vytvořit složku ({0}): Složka není prázdná nebo je jen ke čtení</value>
+  </data>
+  <data name="stream_directory_make_root" xml:space="preserve">
+    <value>Nemohu vytvořit složku ({0}): Nemohu vytvořit kořenovou složku</value>
+  </data>
+  <data name="stream_directory_make_parent" xml:space="preserve">
+    <value>Nemohu vytvořit složku ({0}): Použijte rekurzivní režim k vytvoření více než jedné složky najednou</value>
+  </data>
+  <data name="path_argument_empty" xml:space="preserve">
+    <value>Argument Path nemůže být prázdný</value>
+  </data>
+  <data name="stream_seek_filtered" xml:space="preserve">
+    <value>Posouvání ve streamu {0}! To může způsobit nepředpokládané výsledky.</value>
+  </data>
+  <data name="error_message_html_debug" xml:space="preserve">
+    <value>&lt;strong&gt;{0}&lt;/strong&gt;: {1} {2} in &lt;strong&gt;{3}&lt;/strong&gt; ve výrazu na řádce &lt;strong&gt;{4}&lt;/strong&gt;, sloupec &lt;strong&gt;{5}&lt;/strong&gt;.&lt;br/&gt;&lt;br/&gt;</value>
+  </data>
+  <data name="error_message_plain_debug" xml:space="preserve">
+    <value>{0}:{1} {2} v {3} ve výrazu na řádce {4}, sloupec {5}.
+</value>
+  </data>
+  <data name="error_message_html" xml:space="preserve">
+    <value>&lt;strong&gt;{0}&lt;/strong&gt;: {1} {2}.&lt;br/&gt;&lt;br/&gt;</value>
+  </data>
+  <data name="error_message_plain" xml:space="preserve">
+    <value>{0}:{1} {2}.
+</value>
+  </data>
+  <data name="error_message_html_eval_debug" xml:space="preserve">
+    <value>v {0} (na řádce &lt;strong&gt;{1}&lt;/strong&gt;, sloupec &lt;strong&gt;{2}&lt;/strong&gt;)</value>
+  </data>
+  <data name="error_message_plain_eval_debug" xml:space="preserve">
+    <value>v {0} (na řádce {1}, sloupec {2})</value>
+  </data>
+  <data name="error_message_html_eval" xml:space="preserve">
+    <value>{0} v {0}</value>
+  </data>
+  <data name="error_message_plain_eval" xml:space="preserve">
+    <value>{0} v {0}</value>
+  </data>
+  <data name="extensions_not_installed" xml:space="preserve">
+    <value>Nativní PHP rozšíření nejsou instalována nebo správně nakonfigurována</value>
+  </data>
+  <data name="extensions_not_installed_in_invoke" xml:space="preserve">
+    <value>Volání nedefinované externí funkce '{0}', rozšíření '{1}' - nativní PHP rozšíření nejsou instalována nebo správně nakonfigurována</value>
+  </data>
+  <data name="buffering_level_decreased_under_zero" xml:space="preserve">
+    <value>Úroveň bufferování nemůže být snížena pod nulu</value>
+  </data>
+  <data name="output_buffering_disabled" xml:space="preserve">
+    <value>Bufferování výstupu je vypnuto.</value>
+  </data>
+  <data name="object_to_string_conversion" xml:space="preserve">
+    <value>Konverze objektu třídy {0} na řetězec</value>
+  </data>
+  <data name="invalid_foreach_argument" xml:space="preserve">
+    <value>Neplatný argument pro příkaz foreach</value>
+  </data>
+  <data name="incomparable_arrays_compared" xml:space="preserve">
+    <value>Neporovnatelná pole porovnána.</value>
+  </data>
+  <data name="lengths_are_different" xml:space="preserve">
+    <value>Počet položek v {0} by měl být stejný jako v {1}</value>
+  </data>
+  <data name="assertion_failed" xml:space="preserve">
+    <value>Přiřazení '{0}' selhalo</value>
+  </data>
+  <data name="invalid_break_level_count" xml:space="preserve">
+    <value>Nemohu provést brek/continue přes {0} úrovní</value>
+  </data>
+  <data name="could_not_load_extension" xml:space="preserve">
+    <value>Nemohu načíst rozšíření:</value>
+  </data>
+  <data name="unable_to_find_extension" xml:space="preserve">
+    <value>Nemohu najít rozšíření '{0}'</value>
+  </data>
+  <data name="web_server_not_available" xml:space="preserve">
+    <value>Kontext webového serveru není dostupný.</value>
+  </data>
+  <data name="script_inclusion_failed" xml:space="preserve">
+    <value>Inkluze skriptu '{0}' Selhala. Důvod: {1} Vyhledávací cesty: include_path je '{2}', working pracovní adresář '{3}' </value>
+  </data>
+  <data name="assembly_script_inclusion_failed" xml:space="preserve">
+    <value>Inkluzev '{0}' skriptu selhala. Typ skriptu '{1}' nebyl nalezen v sestavení aplikace</value>
+  </data>
+  <data name="function_needs_variables" xml:space="preserve">
+    <value>Funkce potřebuje tabulku zděděných proměnných</value>
+  </data>
+  <data name="execution_timed_out" xml:space="preserve">
+    <value>Maximální čas vykonávání {0} sekund překročen</value>
+  </data>
+  <data name="generating_assembly" xml:space="preserve">
+    <value>Generuji sestavení ...</value>
+  </data>
+  <data name="info_directive" xml:space="preserve">
+    <value>Direktiva</value>
+  </data>
+  <data name="info_script_dependent" xml:space="preserve">
+    <value>Skript závislý</value>
+  </data>
+  <data name="info_shared" xml:space="preserve">
+    <value>Sdílený</value>
+  </data>
+  <data name="info_script_value" xml:space="preserve">
+    <value>Hodnota skriptu</value>
+  </data>
+  <data name="info_master_value" xml:space="preserve">
+    <value>Master hodnota</value>
+  </data>
+  <data name="info_value" xml:space="preserve">
+    <value>Hodnota</value>
+  </data>
+  <data name="info_variable" xml:space="preserve">
+    <value>Proměnná</value>
+  </data>
+  <data name="info_config" xml:space="preserve">
+    <value>Konfigurace</value>
+  </data>
+  <data name="info_credits" xml:space="preserve">
+    <value>Zásluhy</value>
+  </data>
+  <data name="info_loaded_extensions" xml:space="preserve">
+    <value>Načtená nativní rozšíření</value>
+  </data>
+  <data name="info_environment_variables" xml:space="preserve">
+    <value>Prostředí</value>
+  </data>
+  <data name="info_global_variables" xml:space="preserve">
+    <value>Globální proměnné</value>
+  </data>
+  <data name="info_license" xml:space="preserve">
+    <value>Licence</value>
+  </data>
+  <data name="info_license_text" xml:space="preserve">
+    <value>
+    &lt;p style='text-align:justify'&gt;
+      Tento program může být používán a distribuován jen podle podmínek licence Phalager, která se nachází v distribuovaném souboru License.txt a je též k sipozici na
+      &lt;a href="http://www.php-compiler.net/License.txt"&gt;http://www.php-compiler.net/License.txt&lt;/a&gt;.
+    &lt;/p&gt;
+    &lt;p style='text-aling:justify'&gt;
+      TENTO SOFTWARE JE AUTORY POSKYTOVÁN TAK, JAK JE BEZ JAKÝCHKOLI VÝSLOVNÝCH ČI PŘEDPOKLÁDANÝCH ZÁRUK VČETNĚ, ALE NIKOLI VÝHRADNĚ, PŘEDPOKLÁDANÝCH ZÁRUK VZTAHUJÍCÍCH SE K OBCHODOVATELNOSTI A VHODNOSTI PRO URČITÝ ÚČEL.
+    &lt;/p&gt;
+    &lt;p align='justify'&gt;
+      AUTOŘI NENESOU V ŽÁDNÉM PŘÍPADĚ ODPOVĚDNOST ZA JAKÉKOLI PŘÍMÉ, NEPŘÍMÉ, NÁHODNÉ, ZVLÁŠTNÍ, TĚŽKÉ ANI NÁSLEDNÉ ŠKODY (VČETNĚ, ALE NIKOLI VÝHRADNĚ, OBSTARÁNÍ NÁHRADNÍHO ZBOŽÍ NEBO SLUŽEB, ZTRÁTY MOŽNOSTI POUŽÍVÁNÍ, DAT NEBO ZISKŮ, ČI PŘERUŠENÍ OBCHODNÍ ČINNOSTI) JAKKOLI ZPŮSOBENÝCH A VZNIKLÝCH PŘI POUŽÍVÁNÍ TOHOTO SOFTWARU NA ZÁKLADĚ JAKÉKOLI TEORETICKÉ ODPOVĚDNOSTI, AŤ SE JEDNÁ O SMLUVNÍ, ABSOLUTNÍ NEBO TRESTNĚPRÁVNÍ ODPOVĚDNOST (VČETNĚ NEDBALOSTNÍ ČI JINÉ), I PŘES UPOZORNĚNÍ NA MOŽNOST TAKOVÉ ŠKODY.
+    &lt;/p&gt;
+    </value>
+  </data>
+  <data name="credits_overall_concept" xml:space="preserve">
+    <value>Základní koncept</value>
+  </data>
+  <data name="credits_specific_features_compilation" xml:space="preserve">
+    <value>Kompilace specifických vlastností jazyka PHP</value>
+  </data>
+  <data name="credits_oo_features_compilation" xml:space="preserve">
+    <value>Kompilace objektově orientovaných vlastností jazyka PHP</value>
+  </data>
+  <data name="credits_overall_compiler_design" xml:space="preserve">
+    <value>Základní návrh kompilátoru</value>
+  </data>
+  <data name="credits_code_analysis" xml:space="preserve">
+    <value>Analýza kódu</value>
+  </data>
+  <data name="credits_extmgr_wrappers" xml:space="preserve">
+    <value>Správa rozšíření a wrappery</value>
+  </data>
+  <data name="credits_ast" xml:space="preserve">
+    <value>Abstraktní syntaktický strom</value>
+  </data>
+  <data name="credits_compiler_tables" xml:space="preserve">
+    <value>Tabulky kompilátoru</value>
+  </data>
+  <data name="credits_code_generator" xml:space="preserve">
+    <value>Generátor kódu</value>
+  </data>
+  <data name="credits_configuration" xml:space="preserve">
+    <value>Konfigurace</value>
+  </data>
+  <data name="credits_aspnet" xml:space="preserve">
+    <value>Kooperace s ASP.NET</value>
+  </data>
+  <data name="credits_automatic_tests" xml:space="preserve">
+    <value>Automatické testy</value>
+  </data>
+  <data name="credits_interactive_tests" xml:space="preserve">
+    <value>Interaktivní testy</value>
+  </data>
+  <data name="credits_documentation" xml:space="preserve">
+    <value>Dokumantace</value>
+  </data>
+  <data name="credits_core_functionality" xml:space="preserve">
+    <value>Funkcionalita jádra</value>
+  </data>
+  <data name="credits_lexical_syntactic_analisis" xml:space="preserve">
+    <value>Lexikální a syntaktická analýza</value>
+  </data>
+  <data name="credits_semantic_analisis" xml:space="preserve">
+    <value>Sémantická analýza</value>
+  </data>
+  <data name="credits_code_generation" xml:space="preserve">
+    <value>Generování kódu</value>
+  </data>
+  <data name="credits_extensions_management" xml:space="preserve">
+    <value>Správa rozšíření</value>
+  </data>
+  <data name="credits_vsnet" xml:space="preserve">
+    <value>Intergrace pro Visual Studio</value>
+  </data>
+  <data name="credits_streams" xml:space="preserve">
+    <value>Streamy, V/V wrappery, a filtry</value>
+  </data>
+  <data name="credits_automatic_tester" xml:space="preserve">
+    <value>Automatický tester</value>
+  </data>
+  <data name="credits_utilities" xml:space="preserve">
+    <value>Utility</value>
+  </data>
+  <data name="credits_installation" xml:space="preserve">
+    <value>Instalace</value>
+  </data>
+  <data name="credits_implementation" xml:space="preserve">
+    <value>Implementace</value>
+  </data>
+  <data name="credits_design" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="credits_authors" xml:space="preserve">
+    <value>Autoři</value>
+  </data>
+  <data name="credits_contribution" xml:space="preserve">
+    <value>Spolupráce</value>
+  </data>
+  <data name="property_declared_abstract" xml:space="preserve">
+    <value>Vlastnosti nemohou být deklarovány jako abstraktní</value>
+  </data>
+  <data name="property_declared_final" xml:space="preserve">
+    <value>Vlastnosti nemohou být deklarovány jako finální</value>
+  </data>
+  <data name="conditionally_redeclared_warning" xml:space="preserve">
+    <value>{0} {1} deklarováno podmíněnně, ale zde je nepodmíněná deklarace {2}{3}</value>
+  </data>
+  <data name="conditionally_redeclared_warning_include" xml:space="preserve">
+    <value>{0} '{1}' v {2}{3} deklarováno podmíněně, ale zde je nepodmíněná deklarace {4}{5}</value>
+  </data>
+  <data name="redeclared_previous_decl" xml:space="preserve">
+    <value>Nemohu bpředeklarovat {0} '{1}', dříve deklarováno v{2}{3}</value>
+  </data>
+  <data name="redeclared_previous_decl_include" xml:space="preserve">
+    <value>Inkluze '{2}{3}' předeklarovává {0} '{1}' dříve deklarované v {4}{5}</value>
+  </data>
+  <data name="class_redeclared_runtime" xml:space="preserve">
+    <value>Nemohu předeklarovat třídu/rozhraní {0}</value>
+  </data>
+  <data name="class_redeclared_runtime_include" xml:space="preserve">
+    <value>Inkluze redeklarovává třídu/rozhraní {0} v {1}{2}</value>
+  </data>
+  <data name="class_redeclared_system" xml:space="preserve">
+    <value>Nemohu předeklarovat systémovou třídu/rozhraní {0}</value>
+  </data>
+  <data name="class_redeclared_system_include" xml:space="preserve">
+    <value>Inkluze předeklarovává systémovou třídu/rozhraní {0} v {1}{2}</value>
+  </data>
+  <data name="method_redeclared" xml:space="preserve">
+    <value>Nemohu předeklarovat metodu {0}::{1} dříve deklarovanou na {2}</value>
+  </data>
+  <data name="field_redeclared" xml:space="preserve">
+    <value>Nemohu předeklarovařt vlastnost {0}::${1} dříve deklarovanou na {2}</value>
+  </data>
+  <data name="constant_redeclared" xml:space="preserve">
+    <value>Nemohu předeklarovat konstantu {0}::{1} dřiva deklarovanou na {2}</value>
+  </data>
+  <data name="class_name_reserved" xml:space="preserve">
+    <value>Nemohu použít {0} jako jméno třídy, protože toto jméno je rezervováno</value>
+  </data>
+  <data name="non_interface_implemented" xml:space="preserve">
+    <value>{0} nemůže implementovat {1} - není to rozhraní (deklarováno v {2}{3})</value>
+  </data>
+  <data name="final_class_extended" xml:space="preserve">
+    <value>Třída {0} nemůže dědit od finální třídy ({1} deklarované v {2}{3})</value>
+  </data>
+  <data name="abstract_final_method_declared" xml:space="preserve">
+    <value>Abstraktní metoda nemůže být deklerována final</value>
+  </data>
+  <data name="abstract_private_method_declared" xml:space="preserve">
+    <value>Abstraktní metoda nemůže být deklarována jako privátní</value>
+  </data>
+  <data name="clone_cannot_take_arguments" xml:space="preserve">
+    <value>Klonovací metoda {0}::__clone() musí být bez argumentů</value>
+  </data>
+  <data name="destruct_cannot_take_arguments" xml:space="preserve">
+    <value>Destruktor {0}::__destruct() nemůže mít argumenty</value>
+  </data>
+  <data name="destruct_cannot_be_static" xml:space="preserve">
+    <value>Destruktor {0}::__destruct() nemůže být statický</value>
+  </data>
+  <data name="construct_cannot_be_static" xml:space="preserve">
+    <value>Konstruktor {0}::{1}() nemůže být statický</value>
+  </data>
+  <data name="interface_method_non_public" xml:space="preserve">
+    <value>Viditelnost metody rozhraní {0}::{1}() musí být vynechána nebo deklarována jako veřejná</value>
+  </data>
+  <data name="class_implements_class" xml:space="preserve">
+    <value>{0} nemůže implementovat {1} - protože to není rozhraní (deklarováno v {2}{3})</value>
+  </data>
+  <data name="override_final_method" xml:space="preserve">
+    <value>není možno předefinovat finální metodu {0}::{1}()</value>
+  </data>
+  <data name="make_static_method_non-static" xml:space="preserve">
+    <value>Nemohu vytvořit statickou metodu {0}::{1}() nestatickou ve třídě {2}</value>
+  </data>
+  <data name="make_non-static_method_static" xml:space="preserve">
+    <value>Nemohu vytvořit nestatickou metodu {0}::{1}() statickou ve třídě {2}</value>
+  </data>
+  <data name="non-abstract_method_overridden_with_abstract" xml:space="preserve">
+    <value>Nemohu udělat neabstraktní metodu {0}::{1}() abstraktní ve třídě {2}</value>
+  </data>
+  <data name="overriding_method_restrict_visibility" xml:space="preserve">
+    <value>Viditelnost {0}::{1}() musí být nanejvýše '{2}' (jako ve třídě {3})</value>
+  </data>
+  <data name="make_static_field_non-static" xml:space="preserve">
+    <value>Nemohu předeklarovat statické {0}::${1} jako nestatické {2}::${1} statické deklarováno v {3})</value>
+  </data>
+  <data name="make_non-static_field_static" xml:space="preserve">
+    <value>Nemohu předeklarovat nestatické {0}::${1} na statické {2}::${1} (nestatické deklarováno v {3})</value>
+  </data>
+  <data name="overriding_field_restrict_visibility" xml:space="preserve">
+    <value>Viditelnost {0}::${1} musí být {2} (jako ve třídě {3} deklarované v {4}) [nebo větší]</value>
+  </data>
+  <data name="overriding_static_field_with_static" xml:space="preserve">
+    <value>Není možno redeklarovat statickou vlastnost {3} {0}::${1} ve třídě {2} (dříve deklarovanou v {4})</value>
+  </data>
+  <data name="overriding_interface_constant" xml:space="preserve">
+    <value>Není možno předefinovat konstantu {0} definovanou v rozhraní {1}</value>
+  </data>
+  <data name="inheriting_previously_inherited_constant" xml:space="preserve">
+    <value>Nemohu zdědit konstantu {0}::{1} dřícve deklarovanou v rozhraní {2}</value>
+  </data>
+  <data name="redeclaring_inherited_constant" xml:space="preserve">
+    <value>Nemohu deklarovat zděděnou konstantu {0} z rozhraní {1} ve třídě/rozhraní {2}</value>
+  </data>
+  <data name="redeclaring_abstract_method" xml:space="preserve">
+    <value>Nemohu zdědit abstraktní metodu {0}::{1}() dříve deklarovanou jako abstraktní v {2}</value>
+  </data>
+  <data name="overriding_protected_static_with_init_value" xml:space="preserve">
+    <value>Není možno změnit výchozí hodnotu statické pčrotected vlastnosti {0}::${1} ve třídě {2} (dříve deklarované v {3})</value>
+  </data>
+  <data name="class_redeclared_in_assembly" xml:space="preserve">
+    <value>Třída nebo rozhraní '{0}' je předeklarováváno v rozsahu setavení</value>
+  </data>
+  <data name="method_not_compatible" xml:space="preserve">
+    <value>Deklarace metody {0}::{1}() musí být kompatibilní s deklarací abstraktní metody {2}::{1}()</value>
+  </data>
+  <data name="abstract_method_not_implemented" xml:space="preserve">
+    <value>Třída {0} neimplementuje abstraktní metodu {1}::{2}()</value>
+  </data>
+  <data name="extension_loading_error" xml:space="preserve">
+    <value>Chyba při načítání knihovny (rozšíření) tříd: </value>
+  </data>
+  <data name="library_func_redeclared" xml:space="preserve">
+    <value>Nemožno předeklarovat knihovní funkci '{0}'</value>
+  </data>
+  <data name="nonabstract_bodyless_method" xml:space="preserve">
+    <value>Neabstraktní metoda {0}::{1}() musí mít tělo</value>
+  </data>
+  <data name="abstract_bodyful_method" xml:space="preserve">
+    <value>Abstraktní metoda {0}::{1}() nesmí mít tělo</value>
+  </data>
+  <data name="interface_bodyful_method" xml:space="preserve">
+    <value>Metoda rozhraní {0}::{1}() nesmí mít tělo</value>
+  </data>
+  <data name="abstract_method_name_not_matching_implementation" xml:space="preserve">
+    <value>Jména abstraktní metody {0}::{1}() a její implementace {2}::{3}() musí být stejná (case-sensitive) v této verzi Phalangeru</value>
+  </data>
+  <data name="parameter_specified_twice" xml:space="preserve">
+    <value>Parametr '{0}' je f deklaraci funkce/metody specifikován 2×</value>
+  </data>
+  <data name="construct_not_supported" xml:space="preserve">
+    <value>Konstrukt {0} není zatím podporován</value>
+  </data>
+  <data name="key_alias" xml:space="preserve">
+    <value>Položka klíče nemůže být reference.</value>
+  </data>
+  <data name="multiple_visibility_modifiers" xml:space="preserve">
+    <value>Vícenásobné modifikátory viditelnosti nejsou povoleny</value>
+  </data>
+  <data name="act_param_with_ampersand" xml:space="preserve">
+    <value>Modifikátor '&amp;' ignorován při volání funkce ,použijte modifikátor '&amp;' v deklaraci funkce k předávání parametrů odkazem</value>
+  </data>
+  <data name="semicolon_ignored" xml:space="preserve">
+    <value>Středník ignorován, použití tohoto kontextu je možné v PHP 5, ale zastaralé v PHP.NET</value>
+  </data>
+  <data name="unexpected_char" xml:space="preserve">
+    <value>Neočekávaný vstupní znak: '{0}' (ASCII={1}) stav={2}</value>
+  </data>
+  <data name="unterminated_comment" xml:space="preserve">
+    <value>Neukončený komentář začínající na řádku {0}</value>
+  </data>
+  <data name="hex_number_too_big" xml:space="preserve">
+    <value>Hexačíslo {0} je příliš velké, namísto něj bude použit maximální integer</value>
+  </data>
+  <data name="too_big_int_conversion" xml:space="preserve">
+    <value>Celé číslo {0} je příliš velké, převedeno na desetinné číslo s dvojitou přesností</value>
+  </data>
+  <data name="php_track_vars_not_supported" xml:space="preserve">
+    <value>&lt;?php_track_vars?&gt; není podporováno</value>
+  </data>
+  <data name="check_varuse_fault" xml:space="preserve">
+    <value>Návratová hodnota funkce/metody namůže být použita v kontextu zápisu</value>
+  </data>
+  <data name="field_in_interface" xml:space="preserve">
+    <value>Rozhraní nemohou mít vlastnosti</value>
+  </data>
+  <data name="nonvar_passed_by_ref" xml:space="preserve">
+    <value>Jen proměnné mohou být předávány odkazem</value>
+  </data>
+  <data name="assign_to_autoglobal" xml:space="preserve">
+    <value>Autoglobal {0} nemůže být přiřazeno do</value>
+  </data>
+  <data name="method_body_in_interface" xml:space="preserve">
+    <value>Metoda deklarovaná v rozhraní nesmí mít tělo</value>
+  </data>
+  <data name="empty_index_in_read_context" xml:space="preserve">
+    <value>Není nmožno použít [] pro čtení</value>
+  </data>
+  <data name="self_out_of_method" xml:space="preserve">
+    <value>'self' použito mimo metodu</value>
+  </data>
+  <data name="parent_out_of_method" xml:space="preserve">
+    <value>'parent' použit mimo metodu</value>
+  </data>
+  <data name="no_parent" xml:space="preserve">
+    <value>Třída '{0}' nemá rodiče</value>
+  </data>
+  <data name="array_in_cls_const" xml:space="preserve">
+    <value>Pole nejsou povolena jako třídní konstanty</value>
+  </data>
+  <data name="formal_param_redeclaration" xml:space="preserve">
+    <value>Funkce již má parametr {0}</value>
+  </data>
+  <data name="unknown_class_in_eval" xml:space="preserve">
+    <value>Nadřazená třída nebo rozhraní třídy '{0}' není na tomto místě známo</value>
+  </data>
+  <data name="wrong_break_or_continue_param" xml:space="preserve">
+    <value>Nemohu provést break/continue přes {0} úrovní</value>
+  </data>
+  <data name="unknown_st_mtd" xml:space="preserve">
+    <value>Třída '{0}' neobsahuje definici metody '{1}'</value>
+  </data>
+  <data name="too_much_st_mtd_params" xml:space="preserve">
+    <value>Metoda {0} staticky volána s {1} parametry ale deklarována s {2} parametry</value>
+  </data>
+  <data name="too_few_st_mtd_params" xml:space="preserve">
+    <value>Metoda {0} staticky volána s {1} parametry ale deklarována s {2} povinnými parametry</value>
+  </data>
+  <data name="too_much_ctor_params" xml:space="preserve">
+    <value>Konstruktor třídy '{0}' volán s {1} parametry ale deklarován s {2} parametry</value>
+  </data>
+  <data name="too_few_ctor_params" xml:space="preserve">
+    <value>Konstruktor třídy '{0}' volán s {1} parametry ale deklarován s {2} povinnými paramtery</value>
+  </data>
+  <data name="too_much_usr_fcn_params" xml:space="preserve">
+    <value>Uživatelská funkce '{0}' volaná s {1} parametry ale deklarovaná s {2} parametry</value>
+  </data>
+  <data name="too_few_usr_fcn_params" xml:space="preserve">
+    <value>Uživatelská funkce '{0}' volána s {1} parametry ale deklarováhna s {2} povinnými parametry</value>
+  </data>
+  <data name="too_many_local_variables" xml:space="preserve">
+    <value>Uživatelská funkce nebo metoda '{0}' deklaruje příliš mnoho lokálních proměnných ({1}), což může vést k neoptimálbnímu výkonu</value>
+  </data>
+  <data name="bad_system_fcn_params_count" xml:space="preserve">
+    <value>Knihovní funkce '{0}' volaná se špatným počtem argumentů</value>
+  </data>
+  <data name="more_switch_cases_with_same_value" xml:space="preserve">
+    <value>Návěští  'case' s hodnotou {0} již bylo deklarováno</value>
+  </data>
+  <data name="more_then_one_default_in_switch" xml:space="preserve">
+    <value>'switch' již obsahuje sekci 'default'</value>
+  </data>
+  <data name="unknown_class_used" xml:space="preserve">
+    <value>Třída '{0}' je na tomto místě v době kompilace neznámá</value>
+  </data>
+  <data name="unknown_fcn_used" xml:space="preserve">
+    <value>Funkce '{0}' je na tomto místě v době kompilace neznámá</value>
+  </data>
+  <data name="unknown_base_cls_or_interface" xml:space="preserve">
+    <value>Nadřazená třída nebo rozhraní třídy '{0}' není v době kompilace na tomto místě známo, kompilace odložena na dobu běhu</value>
+  </data>
+  <data name="unreachable_code" xml:space="preserve">
+    <value>Detekován nedosažitelný kód</value>
+  </data>
+  <data name="no_ctor_defined" xml:space="preserve">
+    <value>Třída '{0}' nemá žádný definovaný konstruktor</value>
+  </data>
+  <data name="inclusion_deferred_to_runtime" xml:space="preserve">
+    <value>Inkluze souboru '{0}' odložena na dobu běhu protože: {1}</value>
+  </data>
+  <data name="inclusion_replacement_failed" xml:space="preserve">
+    <value>Žádný model inkluze neodpovídá výrazu '{0}'</value>
+  </data>
+  <data name="cyclic_inclusion" xml:space="preserve">
+    <value>Cyklická inkluze mezi soubory '{0}' a '{1}' detekována, inkluze souboru '{0}' odložena na dobu běhu</value>
+  </data>
+  <data name="static_in_global_code" xml:space="preserve">
+    <value>Konstrukt 'static' použit v globálním kódu</value>
+  </data>
+  <data name="mandatory_behind_optional_param" xml:space="preserve">
+    <value>Povinný parametr '{0}' deklarovaný za volitelným parametrem</value>
+  </data>
+  <data name="abstract_class_or_interface_instantiated" xml:space="preserve">
+    <value>Instanciace abstraktní třídy nebo rozhraní '{0}'</value>
+  </data>
+  <data name="this_out_of_method" xml:space="preserve">
+    <value>Proměnné $this použita mimo metodu</value>
+  </data>
+  <data name="this_in_write_context" xml:space="preserve">
+    <value>Proměnná $this použita v kontextu zápisu</value>
+  </data>
+  <data name="begin_compile" xml:space="preserve">
+    <value>Kompiluji {0} ...</value>
+  </data>
+  <data name="end_compile" xml:space="preserve">
+    <value>{0} úspěšně zkompilováno</value>
+  </data>
+  <data name="skip_compile" xml:space="preserve">
+    <value>Kompilace {0} přeskočena, soubor je již kompilován</value>
+  </data>
+  <data name="invalid_resource_visibility" xml:space="preserve">
+    <value>Neplatná viditelnost zdroje. Muí být private nebo public</value>
+  </data>
+  <data name="phpc_arg_resource" xml:space="preserve">
+    <value>Soubor nebo složka, který/á bude vložen do výsledného sestavení jako spravovaný zdroj (složka bude vložena tak, že bude vložen rekurzivně celý její obsah). Může být použito vícekrát. Volitelně může obsahovat specifikaci jména zdroje a jeho viditelnosti - jen pro soubory. Výchozí jméno je jméno souboru a viditelnost veřejná.</value>
+  </data>
+  <data name="configuration_record_read_only" xml:space="preserve">
+    <value>Nastavení je jen pro čtení.</value>
+  </data>
+  <data name="invalid_icon_format" xml:space="preserve">
+    <value>Ikona má neplatný formát.</value>
+  </data>
+  <data name="library_load_failed" xml:space="preserve">
+    <value>Knihovna '{0}' nemůže být načtena; {1}</value>
+  </data>
+  <data name="extension_already_loaded" xml:space="preserve">
+    <value>Rozšíření '{0}' (soubor '{1}') již bylo načteno.</value>
+  </data>
+  <data name="extmanager_path_not_configured" xml:space="preserve">
+    <value>Alespoň jedno z rozčíření je konfigurováno pro běh v izolovaném režimu, ale cesta k ExtManageru není nastavena.</value>
+  </data>
+  <data name="no_suitable_method_overload" xml:space="preserve">
+    <value>Žádné dostupné přetížení metody '{0}:::{1}' není kompatibilní s danými argumenty</value>
+  </data>
+  <data name="no_suitable_function_overload" xml:space="preserve">
+    <value>Žádné dostupné přetížení funkce '{1}' není kompatibilní s danými argumenty</value>
+  </data>
+  <data name="property_type_mismatch" xml:space="preserve">
+    <value>Nemohu přiřadit danou hodnotu do '{0}:::{1}'. Neexistuje žádná vhodná konverze.</value>
+  </data>
+  <data name="invalid_dynamic_wrapper_format" xml:space="preserve">
+    <value>Neplatný formát dynamického wrapperu '{0}'.</value>
+  </data>
+  <data name="invalid_class_library" xml:space="preserve">
+    <value>Knihovna '{0}' není platnou knihovnou tříd Phalanger.</value>
+  </data>
+  <data name="invalid_class_library_wrapper" xml:space="preserve">
+    <value>Dynamický wrapper knihovny, soubor '{0}', je neplatný. Smažte soubory wrapperu, aby mohl být znovu automaticky vytvořen během příštího požadavku.</value>
+  </data>
+  <data name="argless_stub_not_found" xml:space="preserve">
+    <value>Bezparametrový stub metody '{0}' nebyl nalezen.</value>
+  </data>
+  <data name="field_implementor_not_found" xml:space="preserve">
+    <value>Odkazovaná proměnná '{0}' má neznámou implementaci. Nesprávné použití PhpPublicFieldAttribute.</value>
+  </data>
+  <data name="not_all_methods_reflected" xml:space="preserve">
+    <value>Ne všechny vyplněné metody byly odkázány.</value>
+  </data>
+  <data name="not_all_fields_reflected" xml:space="preserve">
+    <value>Ne všechny vyplněné proměnné byly odkázány.</value>
+  </data>
+  <data name="not_all_constants_reflected" xml:space="preserve">
+    <value>Ne všechny vyplněné konstanty byly odkázány.</value>
+  </data>
+  <data name="precompiled_assembly_corrupted" xml:space="preserve">
+    <value>Předkompilované sestavní '{0}' je poškozeno (není možno rozlišit token typu 0x{1:X8}).</value>
+  </data>
+  <data name="precompiled_assembly_no_source_watching" xml:space="preserve">
+    <value>Předkompilované sestavení '{0}' nebylo zkomilováno s podporou sledování zdrojového kódu.</value>
+  </data>
+  <data name="overload_has_different_impl_options" xml:space="preserve">
+    <value>{0}.{1}: Toto přetížení metody '{2}' má odlišné volby implementace než ostatní přetížení.</value>
+  </data>
+  <data name="overload_has_lesser_param_count" xml:space="preserve">
+    <value>{0}.{1}. Přetížení má menší počet povinných parametrů než ostatní, přesto však má volitelné argumenty.</value>
+  </data>
+  <data name="invalid_method_modifiers" xml:space="preserve">
+    <value>{0}.{1}: metoda implementující PHP funkci by měla být veřejná a statická.</value>
+  </data>
+  <data name="first_param_not_dictionary" xml:space="preserve">
+    <value>{0}.{1}: První parametr by měl být typu IDictionary kvůli volbě NeedsVariables.</value>
+  </data>
+  <data name="invalid_parameter_type" xml:space="preserve">
+    <value>{0}.{1}: Neplatný parametr '{2} typu ({3}).</value>
+  </data>
+  <data name="invalid_return_type" xml:space="preserve">
+    <value>{0}.{1}: Neplatný návratový typ ({2}).</value>
+  </data>
+  <data name="overloads_not_contiguous" xml:space="preserve">
+    <value>{0}.{1}: Neoptimální implementace. Přetížení metody '{2}' nejsou v tabulce metadat umístěna za sebou.</value>
+  </data>
+  <data name="invalid_constant_name" xml:space="preserve">
+    <value>{0}.{1}: Neplatné jméno konstanty '{2}'.</value>
+  </data>
+  <data name="invalid_constant_field" xml:space="preserve">
+    <value>{0}.{1}: Proměná implementující PHP konstantu by měla být veřejný literál.</value>
+  </data>
+  <data name="invalid_constant_type" xml:space="preserve">
+    <value>{0}.{1}: Neplatný typ konstanty ({2}).</value>
+  </data>
+  <data name="invalid_type_visibility" xml:space="preserve">
+    <value>{0}: Typ implementující PHP funkci nebo konstantu by měl být veřejný.</value>
+  </data>
+  <data name="invalid_type_namespace" xml:space="preserve">
+    <value>{0}: Typ implementující PHP funkci nebo konstantu by měl být ve jmenném prostoru {1} nebo vněkterém z vnořených jmenných prostorů.</value>
+  </data>
+  <data name="reading_configuration" xml:space="preserve">
+    <value>Načítání nastavení</value>
+  </data>
+  <data name="invalid_command_line_argument" xml:space="preserve">
+    <value>Neplatný parametr příkazové řádky '/{0}': {1}</value>
+  </data>
+  <data name="invalid_command_line_argument_noname" xml:space="preserve">
+    <value>Neplatné parametry příkazové řádky: {0}</value>
+  </data>
+  <data name="invalid_source" xml:space="preserve">
+    <value>Neplatný zdrohový soubor nebo složka: {0}</value>
+  </data>
+  <data name="code_generation_error" xml:space="preserve">
+    <value>Během generování sestavení došlo k chybě: {0}</value>
+  </data>
+  <data name="internal_error" xml:space="preserve">
+    <value>Vnitřní chyba!
+Oznamte tuto chybu prostřednictvím {0}, prosím.
+Další informace:
+{1}</value>
+  </data>
+  <data name="phpc_arg_help" xml:space="preserve">
+    <value>Zobrazí tuto informaci o použití.</value>
+  </data>
+  <data name="phpc_arg_debug" xml:space="preserve">
+    <value>Zkomilovat v režimu ladění (ladicí informace jsou vygenerovány do .pdb souborů, asserty jsou ignorovány).</value>
+  </data>
+  <data name="phpc_arg_target_web" xml:space="preserve">
+    <value>Zkompilovat webovou aplikaci.</value>
+  </data>
+  <data name="phpc_arg_target_exe" xml:space="preserve">
+    <value>Zkompilovat spustitelnou konzolovou aplikaci.</value>
+  </data>
+  <data name="phpc_arg_target_dll" xml:space="preserve">
+    <value>Zkompilovat kniihovnu.</value>
+  </data>
+  <data name="phpc_arg_target_winexe" xml:space="preserve">
+    <value>Zkompilovat aplikaci pro Windows.</value>
+  </data>
+  <data name="phpc_arg_lang" xml:space="preserve">
+    <value>Povolit vlastnosti jazyka specifické pro danou verzi PHP.</value>
+  </data>
+  <data name="phpc_arg_pure" xml:space="preserve">
+    <value>Zkompilovat čistou PHP/CLR aplikaci.</value>
+  </data>
+  <data name="phpc_arg_mta" xml:space="preserve">
+    <value>Určuje, že model vláken COM pro aplikaci bude mjultithreaded apartment. Vypnuto ve výchozím nastavení.</value>
+  </data>
+  <data name="phpc_arg_out_path" xml:space="preserve">
+    <value>Pokud cílem je webová aplikace, určuje složku, kde bude výsledné sestavení uloženo.</value>
+  </data>
+  <data name="phpc_arg_doc" xml:space="preserve">
+    <value>Vygenerovat dokumantaci do XML souboru pojmenovaného stejně jako výsledné sestavení a uloženého ve stejné složce.</value>
+  </data>
+  <data name="phpc_arg_doc_path" xml:space="preserve">
+    <value>Vygenerovat dokumentaci do zadaného XML souboru.</value>
+  </data>
+  <data name="phpc_arg_root_path" xml:space="preserve">
+    <value>Cesta ke kořenové složce kompilované webové/konzolové/Windows aplikace nebo knihovny. Výchozí je aktuální složka.</value>
+  </data>
+  <data name="phpc_arg_config_path" xml:space="preserve">
+    <value>Cesta ke konfiguračnímu souboru, který bud enačten a zpracován před kompilací. Může být určeno i více voleb. Konfigurační nastavení jsou zpracovávána v následujícím pořadí:
+1. nastavení v machine.config
+2. nasvaení v phpc.exe.comfig
+3. nastavení v souborech určených touto volbou (pokud jsou určeny)
+4. App.config/Web.config nacházející se v kořenové složce zdrojového kódu aplikace, pokud existuje a žádná volba /config není určena</value>
+  </data>
+  <data name="phpc_arg_reference_path" xml:space="preserve">
+    <value>Cesta k odkazovanému sestavní PHP knihovny. Více než jedna volba může být použita.</value>
+  </data>
+  <data name="phpc_arg_entrypoint" xml:space="preserve">
+    <value>Jeden z kompilovaných skriptů, který bude použit jako vstupní bod aplikace.</value>
+  </data>
+  <data name="phpc_arg_static" xml:space="preserve">
+    <value>Povolit statické includy.</value>
+  </data>
+  <data name="phpc_arg_recurse" xml:space="preserve">
+    <value>Složka, která budev rekutzivně prohledána na soubory ke kompilaci. Může být určena opakovaně.</value>
+  </data>
+  <data name="phpc_arg_ext" xml:space="preserve">
+    <value>Čárkou oddělený seznam přípon souborů, které budou přidány do kompilace při rekurzivním prohledávání složek. Výchozí nastavení je 'php,inc'.</value>
+  </data>
+  <data name="phpc_arg_encoding" xml:space="preserve">
+    <value>Kódování skriptů. Příklady: UTF-8, Windows-1250, Latin1, Latin2 atd. Viz metoda System.TextEncoding.GetEncoding(string).</value>
+  </data>
+  <data name="phpc_arg_key" xml:space="preserve">
+    <value>Soubor s párem klíčů vygenerovaným utilitou sn. Zapříčiní, že výsledné sestavení bude silně pojmenované.</value>
+  </data>
+  <data name="phpc_arg_version" xml:space="preserve">
+    <value>Verze cílového sestavní. Výchozí hodnota je 1.0.0.0.</value>
+  </data>
+  <data name="phpc_arg_win32icon" xml:space="preserve">
+    <value>Soubor obsahující Win32 ikonu (nebo více ikon), které budou vloženy do výsledného sestavení.</value>
+  </data>
+  <data name="phpc_arg_nowarn_warning_numbers" xml:space="preserve">
+    <value>Vypíná jedno či více varování podle čísel. Více čísel varování oddělte čárkou.</value>
+  </data>
+  <data name="phpc_arg_dw_DeferredToRuntime" xml:space="preserve">
+    <value>Vypíná varování vztahující se k odložené kompilaci.</value>
+  </data>
+  <data name="phpc_arg_dw_InclusionsMapping" xml:space="preserve">
+    <value>Vypíná varování ohledně selhání mapování includů. Automaticky vypnuto, pokud je použito /dw:DefferedToRuntime.</value>
+  </data>
+  <data name="phpc_arg_dw_CompilerStrict" xml:space="preserve">
+    <value>Vypíná striktní varování kompilátoru jako nedsažitelný kód, použití modifikátoru &amp; při volání funkce atp.</value>
+  </data>
+  <data name="phpc_arg_dw_AmpModifiers" xml:space="preserve">
+    <value>Vypíná varování vztahující se k modifikátoru andpresand (referencím). Automaticky vypnuto pokud je použito /dw:CompilerStrict.</value>
+  </data>
+  <data name="phpc_arg_ew" xml:space="preserve">
+    <value>Povolit zadaná varování (stejné volby jako /dw).</value>
+  </data>
+  <data name="phpc_arg_verbose" xml:space="preserve">
+    <value>Zobrazovat doplňující informace o procesu kompilace?</value>
+  </data>
+  <data name="phpc_arg_at_path" xml:space="preserve">
+    <value>Nakradit tyto argumenty argumenty ze zadaného souboru.</value>
+  </data>
+  <data name="phpc_arg_quiet" xml:space="preserve">
+    <value>Nezobrazovat žádné hlášky.</value>
+  </data>
+  <data name="invalid_header" xml:space="preserve">
+    <value>Hklavička '{0}' je neplatná: {1}</value>
+  </data>
+  <data name="protected_ctor_called" xml:space="preserve">
+    <value>Volání chráněného konstruktoru {0}::{1}() z kontextu '{2}'</value>
+  </data>
+  <data name="private_ctor_called" xml:space="preserve">
+    <value>Volání privátního konstruktoru {0}::{1}() z kontextu '{2}'</value>
+  </data>
+  <data name="circular_base_class_dependency" xml:space="preserve">
+    <value>Kruhová závislost dědičnosti tříd pro '{0}' a '{1}'</value>
+  </data>
+  <data name="circular_base_interface_dependency" xml:space="preserve">
+    <value>Kruhová závislost dědičnosti rozhraní pro '{0}' a '{1}'</value>
+  </data>
+  <data name="readonly_property_written" xml:space="preserve">
+    <value>Nemohu zapsat do vlastnosti jen pro četní {0}::${1}</value>
+  </data>
+  <data name="writeonly_property_read" xml:space="preserve">
+    <value>Nemohu číst z vlastnosti jen pro zápis {0}::${1}</value>
+  </data>
+  <data name="event_written" xml:space="preserve">
+    <value>Namohu zapistovat do události {0}::${1}, použijte {0}::${1}-&gt;Add() a {0}::${1}-&gt;Remove() pro přidání a odebrání ovladače události.</value>
+  </data>
+  <data name="protected_constant_accessed" xml:space="preserve">
+    <value>Nemohu přistupovat k chráněné konstantě {0}::{1} z kontextu '{2}'</value>
+  </data>
+  <data name="private_constant_accessed" xml:space="preserve">
+    <value>Nemohu přistupovat k privátní konstantě {0}::{1} z kontextu '{2}'</value>
+  </data>
+  <data name="sleep_returned_bad_field" xml:space="preserve">
+    <value>'{0}' bylo navráceno jako členská proměnná z __sleep(), ale neexistuje</value>
+  </data>
+  <data name="constructor_less_type_instantiated" xml:space="preserve">
+    <value>Nemohu vytvořit instanci třídy '{0}', protože nemá žádný viditelný konstruktor</value>
+  </data>
+  <data name="class_has_no_visible_ctor" xml:space="preserve">
+    <value>Třída '{0}' nemá žádný viditelný konstruktor</value>
+  </data>
+  <data name="type_redeclared" xml:space="preserve">
+    <value>Nemohu znovu deklarovat třídu/rozhraní '{0}'</value>
+  </data>
+  <data name="function_redeclared" xml:space="preserve">
+    <value>Nemohu znovu deklarovat funkci '{0}'</value>
+  </data>
+  <data name="ambiguous_name_match" xml:space="preserve">
+    <value>Duplicitní název: '{1}' a '{2}' jsou importovány jako '{0}'</value>
+  </data>
+  <data name="ambiguous_type_match" xml:space="preserve">
+    <value>Duplicitní název typu: '{1}' a '{2}' jsou importovány jako '{0}'</value>
+  </data>
+  <data name="ambiguous_function_match" xml:space="preserve">
+    <value>Duplicitní název funkce: '{1}' a '{2}' jsou importovány jako '{0}'</value>
+  </data>
+  <data name="ambiguous_constant_match" xml:space="preserve">
+    <value>Duplicitiní název konstanty: '{1}' a '{2}' jsou importovány jako '{0}'</value>
+  </data>
+  <data name="circular_constant_definition_global" xml:space="preserve">
+    <value>Kruhová definice konstanty zakrnující globální konstantu '{0}'</value>
+  </data>
+  <data name="circular_constant_definition_class" xml:space="preserve">
+    <value>Kruhová definice konstanty zahrnující třídní konstantu '{0}::{1}'</value>
+  </data>
+  <data name="generic_call_to_library_function" xml:space="preserve">
+    <value>Př volání knihovní funkce nelze použít generické argumenty</value>
+  </data>
+  <data name="generic_parameters_disallowed_on_ctor" xml:space="preserve">
+    <value>Generické parametry nelze definova pro konstruktor</value>
+  </data>
+  <data name="missing_entry_point" xml:space="preserve">
+    <value>Chybějící vstupní bod; žádná statická metoda nebo funkce '{0}' bez parametrů nebyla nalezena</value>
+  </data>
+  <data name="entry_point_redefined" xml:space="preserve">
+    <value>Vstupní bod již byl definován</value>
+  </data>
+  <data name="delegate_unrecognized_ctor_args" xml:space="preserve">
+    <value>Nerozpoznané argumenty konstruktoru byly předány delegátu '{0}'. Použijte "function", array($instance,"method") nebo array("class","method")</value>
+  </data>
+  <data name="delegate_target_instance_missing" xml:space="preserve">
+    <value>Instance objektu musí být předána nestatické metodě '{1}::{2}', při vytváření delegáta '{0}'. Použijte array($instance,"{2}")</value>
+  </data>
+  <data name="event_has_no_add_accessor" xml:space="preserve">
+    <value>Událost '{0}::{1}' nemá metodu Add</value>
+  </data>
+  <data name="event_has_no_remove_accessor" xml:space="preserve">
+    <value>Událost '{0}::{1}' nemá metody Remove</value>
+  </data>
+  <data name="string_should_be_single_character" xml:space="preserve">
+    <value>Řetězes by se měl stávat z jediného znaku</value>
+  </data>
+  <data name="type_argument_not_passed_to_function" xml:space="preserve">
+    <value>Generický typový argument #{0} nebyl metodě/funkci předán</value>
+  </data>
+  <data name="invalid_argument_count_for_function" xml:space="preserve">
+    <value>Neplatný počet argumentů při volání funkce '{0}'</value>
+  </data>
+  <data name="invalid_argument_count_for_method" xml:space="preserve">
+    <value>Neplatný počet argumentů při volání metody '{0}::{1}'</value>
+  </data>
+  <data name="missing_type_argument" xml:space="preserve">
+    <value>Chybějící generický typový argument #{0}</value>
+  </data>
+  <data name="missing_type_argument_for" xml:space="preserve">
+    <value>Chybějíc generický typový argument #{0} pro {1}()</value>
+  </data>
+  <data name="too_many_type_arguments_in_type_use" xml:space="preserve">
+    <value>Použití typu '{0}' vyžaduje nanejvýše {1} generických typových argumentů</value>
+  </data>
+  <data name="missing_type_argument_in_type_use" xml:space="preserve">
+    <value>Použití typu '{0}' vyžaduje, aby generický typový argument #{1} ('{2}') byl určen (výchozí typ nelze použít)</value>
+  </data>
+  <data name="non_generic_type_used_with_type_arguments" xml:space="preserve">
+    <value>Typ '{0}' nemůže být použit s generickými typovými argumenty</value>
+  </data>
+  <data name="incompatible_type_parameter_constraints_type" xml:space="preserve">
+    <value>Třída/rozhraní '{0}' je nekompatibilní s omezením pro generický typováý argument #{1} ('{2}') typem '{3}'</value>
+  </data>
+  <data name="incompatible_type_parameter_constraints_method" xml:space="preserve">
+    <value>Třída/rozhraní '{0}' není kompatibilní s omezením pro generický typový argument #{1} ('{2}') metodou '{3}'</value>
+  </data>
+  <data name="division_by_zero" xml:space="preserve">
+    <value>Dělení nulou</value>
+  </data>
+  <data name="invalid_query_source" xml:space="preserve">
+    <value>Neplatný zdroj dotazu</value>
+  </data>
+  <data name="invalid_stream_resource" xml:space="preserve">
+    <value>Dodaný zdroj není platný zdroj proudu</value>
+  </data>
+  <data name="invalid_socket_stream_resource" xml:space="preserve">
+    <value>Dodaný zdroj není platný zdroj soketového proudu</value>
+  </data>
+  <data name="multiple_statements_in_assertion" xml:space="preserve">
+    <value>Assert obsahuje více příkazů, ale jen první z nich je relevantní</value>
+  </data>
+  <data name="credits_php_clr" xml:space="preserve">
+    <value>Rozčíření jazyka PHP/CLR</value>
+  </data>
+  <data name="credits_lexical_syntactic_analysis" xml:space="preserve">
+    <value>Lexikální a syntaktická analýza§</value>
+  </data>
+  <data name="credits_semantic_analysis" xml:space="preserve">
+    <value>Sémantická analýza</value>
+  </data>
+  <data name="credits_clr_features" xml:space="preserve">
+    <value>Integrace vlastností CLR</value>
+  </data>
+  <data name="conditionally_redeclared" xml:space="preserve">
+    <value>Deklarace {0} {1} způsobí chybu při běhu, když bude vykonána, protože {0} byla již deklarována zde</value>
+  </data>
+  <data name="conditionally_redeclared_by_inclusion" xml:space="preserve">
+    <value>Inkluze způsobí chybu za běhu, když bude vykonána - redeklarace {0} {1}</value>
+  </data>
+  <data name="library_class_redeclared" xml:space="preserve">
+    <value>Nelze předeklarovat knihovní třídu/rozhraní {0}</value>
+  </data>
+  <data name="library_class_redeclared_by_inclusion" xml:space="preserve">
+    <value>Inkluze způsobí chybu za běhu, když bude vykonána, protože předeklarovává knihovní třídu/rozhraní {0}</value>
+  </data>
+  <data name="property_redeclared" xml:space="preserve">
+    <value>Nelze znovu deklarovat vlastnost {0}::${1}</value>
+  </data>
+  <data name="cannot_use_reserved_name" xml:space="preserve">
+    <value>Název '{0}' je rezervovaný a nemůže být použit na tomto místě</value>
+  </data>
+  <data name="non_interface_extended" xml:space="preserve">
+    <value>Nemohu dědit od '{0}' protože to není rozhraní</value>
+  </data>
+  <data name="non_class_extended" xml:space="preserve">
+    <value>Nemohu dědit od '{0}' protože to není třída</value>
+  </data>
+  <data name="make_nonstatic_method_static" xml:space="preserve">
+    <value>Nemohu z nestatické metody {0}::{1}() udělat statickou ve třídě '{2}'</value>
+  </data>
+  <data name="nonabstract_method_overridden_with_abstract" xml:space="preserve">
+    <value>Nemohu dělat z neabstraktní metody {0}::{1}() abstraktní ve třídě '{2}'</value>
+  </data>
+  <data name="make_static_property_nonstatic" xml:space="preserve">
+    <value>Nemohu předeklarovat statickou vlastnost {0}::${1} jako nestatickou {2}::${1} (statická deklarována v '{3}')</value>
+  </data>
+  <data name="make_nonstatic_property_static" xml:space="preserve">
+    <value>Nemohu předeklarovat nestatickou vlastnost {0}::${1} jako statickou {2}::${1} (nestatická deklarována v '{3}')</value>
+  </data>
+  <data name="overriding_property_restrict_visibility" xml:space="preserve">
+    <value>{0}::${1} musí mít viditelnost alespoň jako '{2}' definovanou v třídě/rozhraní '{3}'</value>
+  </data>
+  <data name="abstract_property_not_implemented" xml:space="preserve">
+    <value>Třída '{0}' neimplementuje abstraktní vlastnost {1}::${2}</value>
+  </data>
+  <data name="conflicting_type_aliases" xml:space="preserve">
+    <value>Typ '{0}' již byl importován</value>
+  </data>
+  <data name="conflicting_function_aliases" xml:space="preserve">
+    <value>Funkce '{0}' již byla importována</value>
+  </data>
+  <data name="conflicting_constant_aliases" xml:space="preserve">
+    <value>Konstanta '{0}' již byla importována</value>
+  </data>
+  <data name="expecting_parent_ctor_invocation" xml:space="preserve">
+    <value>Očkáváno volání konstruktoru rodičovské třídy</value>
+  </data>
+  <data name="unexpected_parent_ctor_invocation" xml:space="preserve">
+    <value>Neočekávané volání konstruktoru rodičovské třídy (tato volání sjou možná v konstruktorech tříd dědících od CLR typů)</value>
+  </data>
+  <data name="missing_ctor_in_clr_subclass" xml:space="preserve">
+    <value>Chybějící konstruktor - třída '{0}' dědí od CLR typu bez výchozího konstruktoru takže musí implementovat konstruktor</value>
+  </data>
+  <data name="missing_imported_entity" xml:space="preserve">
+    <value>Očekáván typ předmětu importu (zadejte 'namespace', 'class', 'interface', 'function' nebo 'const')</value>
+  </data>
+  <data name="duplicate_parameter_name" xml:space="preserve">
+    <value>Duplicitní název parametru '{0}'</value>
+  </data>
+  <data name="invalid_escape_sequence_length" xml:space="preserve">
+    <value>Escapovací sekvence '{0}' požaduje přesně {1} hexačísel</value>
+  </data>
+  <data name="invalid_code_point" xml:space="preserve">
+    <value>Hodnota '{0}' nekóduje platný Unicode znak</value>
+  </data>
+  <data name="invalid_code_point_name" xml:space="preserve">
+    <value>Hodnota '{0}' nekóduje platný Unicode znak pro jméno</value>
+  </data>
+  <data name="inclusion_in_pure_unit" xml:space="preserve">
+    <value>Includy nejsou v čistém kódu dovoleny.</value>
+  </data>
+  <data name="invalid_line_pragma" xml:space="preserve">
+    <value>Line pragma má neplatnou hodnotu</value>
+  </data>
+  <data name="global_code_in_pure_unit" xml:space="preserve">
+    <value>Globální kód není povolen v čistém kódu</value>
+  </data>
+  <data name="invalid_interface_modifier" xml:space="preserve">
+    <value>Modifikátor nelze aplikovat na rozhraní</value>
+  </data>
+  <data name="generic_parameter_must_be_type" xml:space="preserve">
+    <value>Generický parametr musí odkazovat na typ v tomto kontextu</value>
+  </data>
+  <data name="generic_parameter_is_reserved_identifier" xml:space="preserve">
+    <value>Generický typový parametr musí být identifikátor jiný než 'self' nebo 'parent' v tomto kontextu</value>
+  </data>
+  <data name="duplicate_generic_parameter" xml:space="preserve">
+    <value>Duplicitní generický typový parametr</value>
+  </data>
+  <data name="generic_parameter_collides_with_declarer" xml:space="preserve">
+    <value>Generický typový parametr '{0}' má stejné jméno jako obsahující tříd/rozhraní</value>
+  </data>
+  <data name="cannot_derive_from_type_parameter" xml:space="preserve">
+    <value>Nemohu zdědit od '{0}' protože to hje generický typový parametr</value>
+  </data>
+  <data name="private_class_in_global_ns" xml:space="preserve">
+    <value>Nelze deklarovat privátní třídu v globální jmenném prostoru</value>
+  </data>
+  <data name="missing_partial_modifier" xml:space="preserve">
+    <value>Chybějící modifikátor 'partial' u deklarace třídy/rozhraní '{0}' - existuje jiná částečná deklrarace tohoto typu </value>
+  </data>
+  <data name="partial_transient_declaration" xml:space="preserve">
+    <value>Modifikátor 'partial' nerní povolen v kódu pro eval()</value>
+  </data>
+  <data name="partial_conditional_declaration" xml:space="preserve">
+    <value>Modifikátor 'partial' nelze použít v podmíněné deklaraci</value>
+  </data>
+  <data name="partial_impure_declaration" xml:space="preserve">
+    <value>Modifikátor 'partialˇlze použít jen v čistém kódu</value>
+  </data>
+  <data name="incompatible_partial_declarations" xml:space="preserve">
+    <value>Částečné deklarace '{0}'  musí být všechny třídy nebo rozhraní</value>
+  </data>
+  <data name="conflicting_partial_visibility" xml:space="preserve">
+    <value>Všechny částečné deklarace '{0}' musí mít všechny stejnou viditelnost</value>
+  </data>
+  <data name="partial_declarations_differ_in_base" xml:space="preserve">
+    <value>Částečné deklarace '{0}' nemohou určovat různé bázové třídy</value>
+  </data>
+  <data name="partial_declarations_differ_in_type_parameter" xml:space="preserve">
+    <value>Všechny částečné deklarace '{0}' musí mít stejné definice typových parametrů</value>
+  </data>
+  <data name="partial_declarations_differ_in_type_parameter_count" xml:space="preserve">
+    <value>Všchny částečné deklarace '{0}' musí mít stejný počet typových parametrů</value>
+  </data>
+  <data name="unknown_custom_attribute" xml:space="preserve">
+    <value>Neznámí uživatelský atribut; ani jeden z typů '{0}', '{1}' neexistuje</value>
+  </data>
+  <data name="not_custom_attribute_class" xml:space="preserve">
+    <value>'{0}' není třídou uživatelského atributu</value>
+  </data>
+  <data name="invalid_attribute_usage" xml:space="preserve">
+    <value>Neplatné použití atributu '{0}'</value>
+  </data>
+  <data name="invalid_attribute_target_selector" xml:space="preserve">
+    <value>'{0}' ne neplatný selektor cíle uživatelského strubutu (zadejte 'return', 'assembly', nebo 'module')</value>
+  </data>
+  <data name="invalid_attribute_expression" xml:space="preserve">
+    <value>Argument atributu musí být konstantní výraz</value>
+  </data>
+  <data name="duplicate_attribute_usage" xml:space="preserve">
+    <value>Duplicitní atribut '{0}'</value>
+  </data>
+  <data name="out_attribute_on_byval_param" xml:space="preserve">
+    <value>Atribut 'Out' může být použit jen s parametry předávanými odkazem; přidejte modifikátor '&amp;' k parametru '${0}'</value>
+  </data>
+  <data name="export_attribute_in_non_pure" xml:space="preserve">
+    <value>Atribut 'Export' lze použít jen v čistém kódu</value>
+  </data>
+  <data name="class_behavior_may_be_unexpected" xml:space="preserve">
+    <value>Použití třídy '{0}' v PHP kódu není doporučována, protože výsledný efekt bude pravděpodobně jiný než očekáváte</value>
+  </data>
+  <data name="syntax_error" xml:space="preserve">
+    <value>Syntaktická chyba: {0}</value>
+  </data>
+  <data name="unexpected_token" xml:space="preserve">
+    <value>neočekávaný token '{0}'</value>
+  </data>
+  <data name="invalid_identifier" xml:space="preserve">
+    <value>'{0}' není platný identifikátor; identifikátor nemůže být prázdný a nesmí obsahovat žádný ze znaků '&lt;', '&gt;' a '#'</value>
+  </data>
+  <data name="self_used_out_of_class" xml:space="preserve">
+    <value>'self' použito mimo deklaraci třídy</value>
+  </data>
+  <data name="parent_used_out_of_class" xml:space="preserve">
+    <value>'parent' použito mimo deklaraci třídy</value>
+  </data>
+  <data name="class_has_no_parent" xml:space="preserve">
+    <value>Třída '{0}' nemá žádného rodiče</value>
+  </data>
+  <data name="incomplete_class" xml:space="preserve">
+    <value>Třída '{0}' je nekompletní - její bázová třída nebo rozhraní je neznámé</value>
+  </data>
+  <data name="unknown_method_called" xml:space="preserve">
+    <value>Třída '{0}' neobsahuje definici metody '{1}'</value>
+  </data>
+  <data name="too_few_method_params" xml:space="preserve">
+    <value>Chybějící parametry volání '{0}::{1}' - alespoň {2} parametry jsou požadována, ale jen {3} předány</value>
+  </data>
+  <data name="too_few_function_params" xml:space="preserve">
+    <value>Cgybějící parametry volání '{0}' - alespoň {1} parameztry požadovány, ale jen {2} předány</value>
+  </data>
+  <data name="too_many_local_variables_function" xml:space="preserve">
+    <value>Funkce '{0}' deklaruje tak moc lokálních proměnných ({1}), že to může vést ke snížení výkonnosti</value>
+  </data>
+  <data name="too_many_local_variables_method" xml:space="preserve">
+    <value>Metoda '{0}::{1}' deklaruje tak moc lokálních proměnných ({2}), že to může vést ke snížení výkonnosti</value>
+  </data>
+  <data name="unused_label" xml:space="preserve">
+    <value>Návěští '{0}' je deklarováno, ale není v tomto rozsahu použito</value>
+  </data>
+  <data name="undefined_label" xml:space="preserve">
+    <value>Použití nedefinovaného návěští '{0}'</value>
+  </data>
+  <data name="label_redeclared" xml:space="preserve">
+    <value>Návěští '{0}' je již deklarováno</value>
+  </data>
+  <data name="unknown_class_used_with_alias" xml:space="preserve">
+    <value>Třída '{0}' (importována jako '{1}') je na tomto místě neznámá v době kompilace</value>
+  </data>
+  <data name="unknown_function_used" xml:space="preserve">
+    <value>Funkce '{0}' je na tomto místě neznámá v době kompilace</value>
+  </data>
+  <data name="unknown_function_used_with_alias" xml:space="preserve">
+    <value>Funkce '{0}' (importována jako '{1}') je na tomto místě naznámá v době kompilace</value>
+  </data>
+  <data name="unknown_constant_used" xml:space="preserve">
+    <value>Konstante '{0}' je na tomto místě naznámá v době kompice</value>
+  </data>
+  <data name="unknown_constant_used_with_alias" xml:space="preserve">
+    <value>Konstanta '{0}' (importována jako '{1}')v je na tomto místě neznámá v době kompilace</value>
+  </data>
+  <data name="cdp_unsup_global_method_func" xml:space="preserve">
+    <value>Funkce deklarované na úrovni globálního kódu nebo v metodách nejsou podporována při generování CodeDOM</value>
+  </data>
+  <data name="cdp_unsup_global_constants" xml:space="preserve">
+    <value>Globální konstanty nejsou podporovány pro generování CodeDOM</value>
+  </data>
+  <data name="cdp_unsup_global_statement" xml:space="preserve">
+    <value>PHP příkaz global není podporován pro generování CodeDOM</value>
+  </data>
+  <data name="cdp_unsup_unknown_statement" xml:space="preserve">
+    <value>Neznámý PHP příkaz {0} není podporován pro generování CodeDOM</value>
+  </data>
+  <data name="cdp_start_must_be_less_tahn_number_of_conditions" xml:space="preserve">
+    <value>Start musí být menší než počet podmínek</value>
+  </data>
+  <data name="cdp_unsup_else_separatelly" xml:space="preserve">
+    <value>Klauzule 'else' nemůže být přeložena samostatně.</value>
+  </data>
+  <data name="cdp_unsup_else_last" xml:space="preserve">
+    <value>Klauzule 'else' musí být poslední klauzulí příkazu if.</value>
+  </data>
+  <data name="cdp_unsup_ref_assign" xml:space="preserve">
+    <value>Přiřazení referencí není podporováno při překladu z PHO do CodeDOM</value>
+  </data>
+  <data name="cdp_unsup_empty_ex" xml:space="preserve">
+    <value>Prázdné výrazy nejsou podporovány při překladu z PHP do CodeDOM</value>
+  </data>
+  <data name="cdp_unsup_eval" xml:space="preserve">
+    <value>Eval není podporováno</value>
+  </data>
+  <data name="cdp_unsup_include_require" xml:space="preserve">
+    <value>Includy a requirey nejsou podporovány pře překladu z PHP do CodeDOM</value>
+  </data>
+  <data name="cdp_unsup_LINQ" xml:space="preserve">
+    <value>LINQ není podporován při překladu z PHP do COdeDOM</value>
+  </data>
+  <data name="cdp_unsup_unsup_ex" xml:space="preserve">
+    <value>Dosažen nepodporovaný typ výrazu {0}. Tento typ výrazu není podporován při překladu z PHP do CodeDOM</value>
+  </data>
+  <data name="cdp_unsup_unsup_binop" xml:space="preserve">
+    <value>Dosažen nepodporovaný binární operátor {0} ({1}). Jedná se vůbec o binární výraz?</value>
+  </data>
+  <data name="cdp_unsup_unsup_assign" xml:space="preserve">
+    <value>Dosažen nepodporovaný operátor přiřazení {0} ({1}). Jedná se vůbec o operátor přiřazení?</value>
+  </data>
+  <data name="cdp_unsup_unsup_unop" xml:space="preserve">
+    <value>Dosažen nepodporovaný unární operítor {0:F} ({0:D}). Tento operátor není podporován při překladu z PHO do CodeDOM.</value>
+  </data>
+  <data name="cdp_unsup_unsup_delegate_creartion" xml:space="preserve">
+    <value>Dosaženo nepodporované vytvoření delegáta. Delegát musí být vytvořen pomocí NewEx s jediným parametrem typu ArrayEx, který má 2 ValueItem bez indexu, kde ValueExpr 2. položky je StringLiteral.</value>
+  </data>
+  <data name="cdp_unsup_CodeVariableReferenceExpression_excpected" xml:space="preserve">
+    <value>Očekávaným výsledkem TranslateVariableUse pro DirectVarUse bylo CodeVariableReferenceException. Poznámka: Statické proměnné nejsou podporovány jako DirectVarUse (např. proměnná pro výjímku klauzule Catch příkazuv Try).</value>
+  </data>
+  <data name="cdp_unsup_static_var" xml:space="preserve">
+    <value>Statické proměnné mohou být použity jen uvnitř metod, které jsou čelny tříd.</value>
+  </data>
+  <data name="cdp_unsup_unknown_var_kind" xml:space="preserve">
+    <value>Dosažen neznámý typ použití proměnné {0}. tento typ ppoužití proměnné není podporován při překladu z PHP do CodeDOM.</value>
+  </data>
+  <data name="cdp_unsup_null" xml:space="preserve">
+    <value>use.IsMemberOf nesmí být null.</value>
+  </data>
+  <data name="cdp_unsup_nonobj_func" xml:space="preserve">
+    <value>Volání funkcí, které nejsou čelyn objektů nelze přeložit.</value>
+  </data>
+  <data name="cdp_unsup_unknown_varlike_construct_use" xml:space="preserve">
+    <value>Dsoažen neznámý typ použití konstruktu podobného proměnné {0}. Tento typ použití není podporován při překladu z PHP do DoceDOM.</value>
+  </data>
+  <data name="cdp_unsup_array_item_reference" xml:space="preserve">
+    <value>Položky polí předávané odkazem nejsou podporovány při překladu PHP do CodeDOM</value>
+  </data>
+  <data name="cdp_unsup_unknown_array_item_type" xml:space="preserve">
+    <value>DOsažen neznámý ty položky pole {0}. Tento typ položky pole není podporován při překladu z PHP do CodeDOM.</value>
+  </data>
+  <data name="cdp_unsup_assoc_arr_init_context" xml:space="preserve">
+    <value>Inicializace asociativního pole PHP nemůže být provedena v místě, kde není možno vkládat další příkazy.</value>
+  </data>
+  <data name="cdp_unsup_pseudoconstant_type" xml:space="preserve">
+    <value>Dsažen nepodporovaný typ presudo-konstanty {0} ({1}). Tento typ není podporován při překladu PHP do CodeDOM.</value>
+  </data>
+  <data name="cdp_unsup_list_context" xml:space="preserve">
+    <value>ýrazy typu list není možné použít mimo metody.</value>
+  </data>
+  <data name="cdp_unsup_isset_no_var" xml:space="preserve">
+    <value>isset bez jediné proměnné, není možno přeložit z PHP do CodeDOM</value>
+  </data>
+  <data name="cdp_not_enough_items_in_list" xml:space="preserve">
+    <value>V seznamu není dostatek položek</value>
+  </data>
+  <data name="cdp_start_less_than_zero" xml:space="preserve">
+    <value>start nemůže být nižší než 0</value>
+  </data>
+  <data name="cdp_unsup_not_enough_expressions_in_list" xml:space="preserve">
+    <value>V seznamu není dostatek položek</value>
+  </data>
+  <data name="cdp_start_greater_than_zero" xml:space="preserve">
+    <value>Začátek musí být vyšší nebo roven nule</value>
+  </data>
+  <data name="cdp_unsup_empty_ex_list" xml:space="preserve">
+    <value>Nemohu přeložit prázdný seznam výrazů</value>
+  </data>
+  <data name="cdp_unsup_indirect_type_ref" xml:space="preserve">
+    <value>Nepřímé odkazy na typy nejsou při překladu PHP do CodeDOM podporovány.</value>
+  </data>
+  <data name="cdp_unsup_unknown_ref_kind" xml:space="preserve">
+    <value>Dosažen neznámý typ reference na typ {0}. Tato reference na typ není podporována při překladu PHP do CodeDOM.</value>
+  </data>
+  <data name="cdp_unsup_unknown_switch" xml:space="preserve">
+    <value>Dosažena neznámá položka příkazu switch {0}. Tento typ položek příkazu switch není podporován při překladu z PHP do CodeDOM.</value>
+  </data>
+  <data name="cdp_unsup_unknown_event_op" xml:space="preserve">
+    <value>Dosažena naznámá operace s událostí. Podporovány jsou jen operace Add a Remove.</value>
+  </data>
+  <data name="cdp_unsup_invalid_event" xml:space="preserve">
+    <value>Neplatný výraz pro překlad události.</value>
+  </data>
+  <data name="cdp_unsup_break_non_constant" xml:space="preserve">
+    <value>Příkaz break s nekonstantním agumentem není podporován při překladu z PHP do CodeDOM.</value>
+  </data>
+  <data name="cdp_unsup_no_jump_label" xml:space="preserve">
+    <value>Obsahující blok nevrátil žádné návěští pro skok příkazu break</value>
+  </data>
+  <data name="cdp_unsup_2_stat_vars_with_same_name" xml:space="preserve">
+    <value>Dvě statické proměnné se stejným názvem</value>
+  </data>
+  <data name="cdp_unsup_static_var_otside_method" xml:space="preserve">
+    <value>Nemohu přidat statickou proměnnou, když nejsem v metodě</value>
+  </data>
+  <data name="cdp_unsup_loc_var_context" xml:space="preserve">
+    <value>Deklarace lokálních proměnných nejsou podporovány na této úrovni (např. jmenný prostor nebo třída)</value>
+  </data>
+  <data name="cdp_unsup_loc_var_class_namespace" xml:space="preserve">
+    <value>Nemohu přidat lokální proměnnou na této úrovni (např. jmenný protor nebo třída)</value>
+  </data>
+  <data name="cdp_unsup_levels_0" xml:space="preserve">
+    <value>Počel úrovní příkazo break musí být 1 či více</value>
+  </data>
+  <data name="cdp_unsup_break_continue_only" xml:space="preserve">
+    <value>CodeTargetRequest podporuje jen break a continue</value>
+  </data>
+  <data name="cdp_statement_not_found" xml:space="preserve">
+    <value>Příkaz nenalezen</value>
+  </data>
+  <data name="cdp_unsup_not_allowed_at_block_level" xml:space="preserve">
+    <value>Objekt typu {0} není povolen na úrovni blokového příkazu</value>
+  </data>
+  <data name="cdp_unsup_only_loop_jump" xml:space="preserve">
+    <value>Jen smyčky mohou poskytovat návěští pro skok</value>
+  </data>
+  <data name="cdp_unsup_not_allowed_at_method_level" xml:space="preserve">
+    <value>Objekt typu {0} není povolen na úrovni metody</value>
+  </data>
+  <data name="cdp_index_not_within_catch_calusules" xml:space="preserve">
+    <value>Index neukazuje mezi klauzule catch</value>
+  </data>
+  <data name="cdp_unsup_not_allowed_at_file_level" xml:space="preserve">
+    <value>Objekt typu {0} není podporován na úrovni souboru</value>
+  </data>
+  <data name="cdp_unsup_not_allowed_at_namespace_level" xml:space="preserve">
+    <value>Objekt typu {0} není podporován na úrovni jmenného prostoru</value>
+  </data>
+  <data name="cdp_unsup_anything_delegate" xml:space="preserve">
+    <value>Do delegáta není možné nic přidat</value>
+  </data>
+  <data name="cdp_unsup_filed_delegate" xml:space="preserve">
+    <value>Nemohu přidat proměnnou do rozhraní</value>
+  </data>
+  <data name="cdp_unsup_in_enum" xml:space="preserve">
+    <value>Jen konstantní statické proměnné mohou být přidávány do výčtů</value>
+  </data>
+  <data name="cdp_unsup_in_enum_other" xml:space="preserve">
+    <value>Jen proměnné mohou být přidávány do výčtů</value>
+  </data>
+  <data name="cdp_unsup_unsupported_at_type_level" xml:space="preserve">
+    <value>Objekt typu {0} není podporován na úrovni typu</value>
+  </data>
+</root>

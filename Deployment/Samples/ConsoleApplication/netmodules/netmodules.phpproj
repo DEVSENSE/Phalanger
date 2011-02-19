@@ -1,0 +1,48 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Name>netmodules</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{cfdce4db-7273-4d4e-879c-4b4ed2eab558}</ProjectGuid>
+    <CompilationMode>Standard</CompilationMode>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>netmodules</AssemblyName>
+    <StartupObject>Program.php</StartupObject>
+    <RootNamespace>netmodules</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IncludeDebugInformation>true</IncludeDebugInformation>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <IncludeDebugInformation>false</IncludeDebugInformation>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Name>mscorlib</Name>
+      <AssemblyName>mscorlib.dll</AssemblyName>
+    </Reference>
+    <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Name>System</Name>
+      <AssemblyName>System.dll</AssemblyName>
+    </Reference>
+    <Reference Include="PhpNetClassLibrary, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb">
+      <Name>PhpNetClassLibrary</Name>
+      <AssemblyName>PhpNetClassLibrary.dll</AssemblyName>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="a.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="b.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="main.php">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Program.php" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.0\Phalanger.targets" />
+</Project>

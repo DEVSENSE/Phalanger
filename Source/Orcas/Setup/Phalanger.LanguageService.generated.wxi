@@ -1,0 +1,67 @@
+<Include>
+
+  <Registry Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Packages\{2eea826f-071b-41b6-a133-743df69cad91}" Value="PHP.VisualStudio.PhalangerLanguageService.PhalangerPackage, Phalanger.LanguageService, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null" Type="string">
+    <Registry Name="InprocServer32" Value="[SystemFolder]mscoree.dll" Type="string" />
+    <Registry Name="Class" Value="PHP.VisualStudio.PhalangerLanguageService.PhalangerPackage" Type="string" />
+    <Registry Name="CodeBase" Value="[#File_Phalanger.LanguageService.dll]" Type="string" />
+    <Registry Name="ID" Value="101" Type="integer" />
+    <Registry Name="MinEdition" Value="standard" Type="string" />
+    <Registry Name="ProductVersion" Value="2.0" Type="string" />
+    <Registry Name="ProductName" Value="Phalanger Visual Studio Integration" Type="string" />
+    <Registry Name="CompanyName" Value="Phalanger Team" Type="string" />
+  </Registry>
+
+  <Registry Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Languages\File Extensions\.php" Value="{16b0638d-251a-4705-98d2-5251112c4139}" Type="string" />
+
+  <Registry Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Languages\File Extensions\.phpx" Value="{16b0638d-251a-4705-98d2-5251112c4139}" Type="string" />
+
+  <Registry Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Languages\Language Services\Phalanger" Value="{16b0638d-251a-4705-98d2-5251112c4139}" Type="string">
+    <Registry Name="Package" Value="{2eea826f-071b-41b6-a133-743df69cad91}" Type="string" />
+    <Registry Name="LangResID" Value="100" Type="integer" />
+    <Registry Name="ShowCompletion" Value="1" Type="integer" />
+    <Registry Name="ShowMatchingBrace" Value="1" Type="integer" />
+    <Registry Name="CodeSense" Value="1" Type="integer" />
+    <Registry Name="MatchBraces" Value="1" Type="integer" />
+    <Registry Name="EnableCommenting" Value="1" Type="integer" />
+    <Registry Name="DefaultToInsertSpaces" Value="1" Type="integer" />
+  </Registry>
+
+  <Registry Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Languages\IntellisenseProviders\PhalangerCodeProvider">
+    <Registry Name="GUID" Value="{a6ee83a2-51ec-4b0a-8300-0523174a757b}" Type="string" />
+    <Registry Name="AddItemLanguageName" Value="Phalanger" Type="string" />
+    <Registry Name="DefaultExtension" Value=".phpx" Type="string" />
+    <Registry Name="ShortLanguageName" Value="Phalanger;PHP" Type="string" />
+    <Registry Name="TemplateFolderName" Value="Phalanger" Type="string" />
+  </Registry>
+
+  <Registry Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Languages\CodeExpansions\PHP" Value="{16b0638d-251a-4705-98d2-5251112c4139}" Type="string">
+    <Registry Name="DisplayName" Value="131" Type="string" />
+    <Registry Name="IndexPath" Value="C:\Tomas\Projects\Phalanger\Source\Source\Orcas\Setup\[$ComponentPath]\CodeSnippets\SnippetsIndex.xml" Type="string" />
+    <Registry Name="LangStringId" Value="php" Type="string" />
+    <Registry Name="Package" Value="{2eea826f-071b-41b6-a133-743df69cad91}" Type="string" />
+    <Registry Name="ShowRoots" Value="0" Type="integer" />
+  </Registry>
+
+  <Registry Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Languages\CodeExpansions\PHP\ForceCreateDirs">
+    <Registry Name="PHP" Value="C:\Tomas\Projects\Phalanger\Source\Source\Orcas\Setup\[$ComponentPath]\CodeSnippets\Snippets\;%MyDocs%\Code Snippets\Phalanger\My Code Snippets\" Type="string" />
+  </Registry>
+
+  <Registry Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Languages\CodeExpansions\PHP\Paths">
+    <Registry Name="PHP" Value="C:\Tomas\Projects\Phalanger\Source\Source\Orcas\Setup\[$ComponentPath]\CodeSnippets\Snippets\;%MyDocs%\Code Snippets\Phalanger\My Code Snippets\" Type="string" />
+  </Registry>
+
+  <Registry Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\CLSID\{a6ee83a2-51ec-4b0a-8300-0523174a757b}" Value="PHP.VisualStudio.PhalangerLanguageService.PhalangerIntellisenseProvider" Type="string">
+    <Registry Name="InprocServer32" Value="[SystemFolder]mscoree.dll" Type="string" />
+    <Registry Name="Class" Value="PHP.VisualStudio.PhalangerLanguageService.PhalangerIntellisenseProvider" Type="string" />
+    <Registry Name="CodeBase" Value="[#File_Phalanger.LanguageService.dll]" Type="string" />
+    <Registry Name="ThreadingModel" Value="Both" Type="string" />
+  </Registry>
+
+  <Registry Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Services\{cfbaf3f9-b5d2-467f-a36d-ded3e065ebdf}" Value="{2eea826f-071b-41b6-a133-743df69cad91}" Type="string">
+    <Registry Name="Name" Value="IPhalangerLibraryManager" Type="string" />
+  </Registry>
+
+  <Registry Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Services\{16b0638d-251a-4705-98d2-5251112c4139}" Value="{2eea826f-071b-41b6-a133-743df69cad91}" Type="string">
+    <Registry Name="Name" Value="Phalanger" Type="string" />
+  </Registry>
+</Include>

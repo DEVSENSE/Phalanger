@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PHP.Core.Reflection.DMember" Collapsed="true">
+    <Position X="25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gEEQAAAISBABAIjEACAAoAIIEKAAAAAIAAAAAEgAAAg=</HashCode>
+      <FileName>Reflection\Members.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.DConstant" Collapsed="true">
+    <Position X="4.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAAAAAAIAABIAgAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Reflection\Constants.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.DRoutine" Collapsed="true">
+    <Position X="16" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgBCCQACAAAAAAAIAAEAAAAAABAMAAAAA=</HashCode>
+      <FileName>Reflection\Methods.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.DProperty" Collapsed="true">
+    <Position X="28.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAAAAAAIAAAoAAAAAAAAAAAEIAEAA=</HashCode>
+      <FileName>Reflection\Properties.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.DType" Collapsed="true">
+    <Position X="41.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>eRgBCEAAAKbCgAAAoSBAJIAwIYCoQMAAAIRAQYBIRAA=</HashCode>
+      <FileName>Reflection\Types.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PHP.Core.Reflection.UnknownType" Collapsed="true">
+    <Position X="35" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>oRACAEAAAIACAAAAgABgpAAAAAAAAAAIAAAAQAAAAAA=</HashCode>
+      <FileName>Reflection\Types.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.KnownType" Collapsed="true">
+    <Position X="41.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAAgAAAAAAIAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Reflection\Types.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.ConstructedType" Collapsed="true">
+    <Position X="48.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>qRABAAAAAIICAAAAgABApIAAIICoAQCoIIUAQCkCAAA=</HashCode>
+      <FileName>Reflection\Types.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PHP.Core.Reflection.UnknownClassConstant" Collapsed="true">
+    <Position X="1.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>iAAAAAAAIAAAAAAAAAAAgAAABAAAAAAIAAAAAAgAAAA=</HashCode>
+      <FileName>Reflection\Constants.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.UnknownGlobalConstant" Collapsed="true">
+    <Position X="3.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAIAAAAAAAAAAAgAAABAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Reflection\Constants.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.KnownConstant" Collapsed="true">
+    <Position X="7" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQIBAAAAJAAAAgAgEAEAgAAABAAAAQAAAAAAAAEAAQA=</HashCode>
+      <FileName>Reflection\Constants.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PHP.Core.Reflection.KnownRoutine" Collapsed="true">
+    <Position X="13.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAIAAAAAAAAAAAAQAAEAoAYAAAAAQAAAAAgAAAACAAA=</HashCode>
+      <FileName>Reflection\Methods.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.UnknownFunction" Collapsed="true">
+    <Position X="19.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAgACCQAAAAgAAAAAAAEAAIAAAAAIAAAAA=</HashCode>
+      <FileName>Reflection\Methods.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.UnknownMethod" Collapsed="true">
+    <Position X="21.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>iAAAACAAAAAgACCQAAAAgAAAAAAAEAAIAAAAAIgAAAA=</HashCode>
+      <FileName>Reflection\Methods.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.KnownProperty" Collapsed="true">
+    <Position X="27.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAoAQAAAAEAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Reflection\Properties.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.UnknownProperty" Collapsed="true">
+    <Position X="32.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>iAAAAAAAIAAAAAAAAAAAgIAAAgAAAAAIAAAAAAoAAAA=</HashCode>
+      <FileName>Reflection\Properties.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.GlobalType" Collapsed="true">
+    <Position X="37.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>oRAAAAAAAIACAAAAAABApAAQAAAAAAIAAABAQAAAAAA=</HashCode>
+      <FileName>Reflection\Types.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.PrimitiveType" Collapsed="true">
+    <Position X="39.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>oRAAAAAAIYAKCAQgQABApAAAAAAKAgAAAAAAQAAAAAg=</HashCode>
+      <FileName>Reflection\Types.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.GenericParameter" Collapsed="true">
+    <Position X="41.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>oZAABAAAEIACAAAAAABApAQAAAAAQIEBAIVAUAgJQEA=</HashCode>
+      <FileName>Reflection\Types.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.ClrType" Collapsed="true">
+    <Position X="44" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>qRAAAEAQAIQCEAAAIQBApAAAAQAIAAAIAAAAQAAAgAA=</HashCode>
+      <FileName>Reflection\Types.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.PhpType" Collapsed="true">
+    <Position X="46.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>+RBBIOAU5KWCEDABsAxgpI6QNQCIAFIgBIEAYBcAQQA=</HashCode>
+      <FileName>Reflection\Types.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PHP.Core.Reflection.GlobalConstant" Collapsed="true">
+    <Position X="5.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>oABBACAIQACAAAAgEAEIEIIICAAAAAIIAAoEAAAAQAA=</HashCode>
+      <FileName>Reflection\Constants.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PHP.Core.Reflection.ClassConstant" Collapsed="true">
+    <Position X="8" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAABAAAAAACAAQAgEAEAIIQAAAAEAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Reflection\Constants.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.PhpRoutine" Collapsed="true">
+    <Position X="11.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABgQAYAAAhCSCgEAkEBEgQAQQJEEEAAEAEARAAAgE=</HashCode>
+      <FileName>Reflection\Methods.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PHP.Core.Reflection.PhpLibraryFunction" Collapsed="true">
+    <Position X="14.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gUAAAAAAAAAgBCCAAAAAAAQAAAAEEAgIAAAAAIFAAAA=</HashCode>
+      <FileName>Reflection\Methods.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.ClrMethod" Collapsed="true">
+    <Position X="17" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gQAAAAgAAAAlACCQAAAAhAQgAAgEEAgIAAAAAIEAAAA=</HashCode>
+      <FileName>Reflection\Methods.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.PhpField" Collapsed="true">
+    <Position X="23.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAIFAQAAJRCRAQGgEgEBIIoAEggYQAAMAEABQAIAAQA=</HashCode>
+      <FileName>Reflection\Properties.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PHP.Core.Reflection.ClrPropertyBase" Collapsed="true">
+    <Position X="28.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Reflection\Properties.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.ClrProperty" Collapsed="true">
+    <Position X="26" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAQAAAIAABAAQAAIAAAIAAAgAAAARAAAAACAIAQAA=</HashCode>
+      <FileName>Reflection\Properties.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.ClrField" Collapsed="true">
+    <Position X="28.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAIAAIAAAAAAAAAAAAIAAAgAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Reflection\Properties.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.ClrEvent" Collapsed="true">
+    <Position X="30.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAoABAAAIAABAAABAAAABIAAAgAAAAAIACAACAIIAAE=</HashCode>
+      <FileName>Reflection\Properties.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.PhpFunction" Collapsed="true">
+    <Position X="10.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>oABBACAIQACgASAgEAEgAAcIEAAAAAAIAAAAAYAAQAA=</HashCode>
+      <FileName>Reflection\Methods.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PHP.Core.Reflection.PhpMethod" Collapsed="true">
+    <Position X="12.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAABAAAAAQCBASEgECEAIAQAEAgUAAAIACAAAYAAAAA=</HashCode>
+      <FileName>Reflection\Methods.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

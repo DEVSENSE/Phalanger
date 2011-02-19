@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="int" name="cal_days_in_month" description="Return the number of days in a month for a given year and calendar.">
+    <param type="int" name="calendar" />
+    <param type="int" name="month" />
+    <param type="int" name="year" />
+  </function>
+  <function returnType="array" name="cal_from_jd" description="Converts from Julian Day Count to a supported calendar.">
+    <param type="int" name="jd" />
+    <param type="int" name="calendar" />
+  </function>
+  <function returnType="array" name="cal_info" description="Returns information about a particular calendar.">
+    <param optional="true" type="int" name="calendar" />
+  </function>
+  <function returnType="int" name="cal_to_jd" description="Converts from a supported calendar to Julian Day Count.">
+    <param type="int" name="calendar" />
+    <param type="int" name="month" />
+    <param type="int" name="day" />
+    <param type="int" name="year" />
+  </function>
+  <function returnType="int" name="easter_date" description="Get Unix timestamp for midnight on Easter of a given year.">
+    <param optional="true" type="int" name="year" />
+  </function>
+  <function returnType="int" name="easter_days" description="Get number of days after March 21 on which Easter falls for a given year.">
+    <param optional="true" type="int" name="year" />
+    <param optional="true" type="int" name="method" />
+  </function>
+  <function returnType="int" name="FrenchToJD" description="Converts a date from the French Republican Calendar to a Julian Day Count.">
+    <param type="int" name="month" />
+    <param type="int" name="day" />
+    <param type="int" name="year" />
+  </function>
+  <function returnType="int" name="GregorianToJD" description="Converts a Gregorian date to Julian Day Count.">
+    <param type="int" name="month" />
+    <param type="int" name="day" />
+    <param type="int" name="year" />
+  </function>
+  <function returnType="mixed" name="JDDayOfWeek" description="Returns the day of the week.">
+    <param type="int" name="julianday" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="string" name="JDMonthName" description="Returns a month name.">
+    <param type="int" name="julianday" />
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="string" name="JDToFrench" description="Converts a Julian Day Count to the French Republican Calendar.">
+    <param type="int" name="juliandaycount" />
+  </function>
+  <function returnType="string" name="JDToGregorian" description="Converts Julian Day Count to Gregorian date.">
+    <param type="int" name="julianday" />
+  </function>
+  <function returnType="string" name="jdtojewish" description="Converts a Julian day count to a Jewish calendar date.">
+    <param type="int" name="juliandaycount" />
+    <param optional="true" type="bool" name="hebrew" />
+    <param optional="true" type="int" name="fl" />
+  </function>
+  <function returnType="string" name="JDToJulian" description="Converts a Julian Day Count to a Julian Calendar Date.">
+    <param type="int" name="julianday" />
+  </function>
+  <function returnType="int" name="jdtounix" description="Convert Julian Day to Unix timestamp.">
+    <param type="int" name="jday" />
+  </function>
+  <function returnType="int" name="JewishToJD" description="Converts a date in the Jewish Calendar to Julian Day Count.">
+    <param type="int" name="month" />
+    <param type="int" name="day" />
+    <param type="int" name="year" />
+  </function>
+  <function returnType="int" name="JulianToJD" description="Converts a Julian Calendar date to Julian Day Count.">
+    <param type="int" name="month" />
+    <param type="int" name="day" />
+    <param type="int" name="year" />
+  </function>
+  <function returnType="int" name="unixtojd" description="Convert Unix timestamp to Julian Day.">
+    <param optional="true" type="int" name="timestamp" />
+  </function>
+</module>

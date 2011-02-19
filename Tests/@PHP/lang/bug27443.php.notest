@@ -1,0 +1,5 @@
+[expect php]
+[file]
+<?
+echo gettype(defined('test'));
+?>

@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="int" name="dbmreplace" description="Replaces the value for a key in a dbm database.">
+    <param type="int" name="dbm_identifier" />
+    <param type="string" name="key" />
+    <param type="string" name="value" />
+  </function>
+  <function returnType="bool" name="dbmclose" description="Closes a dbm database.">
+    <param type="int" name="dbm_identifier" />
+  </function>
+  <function returnType="int" name="dbminsert" description="Inserts a value for a key in a dbm database.">
+    <param type="int" name="dbm_identifier" />
+    <param type="string" name="key" />
+    <param type="string" name="value" />
+  </function>
+  <function returnType="int" name="dbmdelete" description="Deletes the value for a key from a dbm database.">
+    <param type="int" name="dbm_identifier" />
+    <param type="string" name="key" />
+  </function>
+  <function returnType="string" name="dbmfirstkey" description="Retrieves the first key from a dbm database.">
+    <param type="int" name="dbm_identifier" />
+  </function>
+  <function returnType="string" name="dbmnextkey" description="Retrieves the next key from a dbm database.">
+    <param type="int" name="dbm_identifier" />
+    <param type="string" name="key" />
+  </function>
+  <function returnType="string" name="dbmfetch" description="Fetches a value for a key from a dbm database.">
+    <param type="int" name="dbm_identifier" />
+    <param type="string" name="key" />
+  </function>
+  <function returnType="int" name="dbmexists" description="Tells if a value exists for a key in a dbm database.">
+    <param type="int" name="dbm_identifier" />
+    <param type="string" name="key" />
+  </function>
+  <function returnType="string" name="dblist" description="Describes the dbm-compatible library being used." />
+  <function returnType="int" name="dbmopen" description="Opens a dbm database.">
+    <param type="string" name="filename" />
+    <param type="string" name="mode" />
+  </function>
+</module>

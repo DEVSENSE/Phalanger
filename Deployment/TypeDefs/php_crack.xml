@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="bool" name="crack_check" description="Performs an obscure check with the given password.">
+    <param type="resource" name="dictionary" />
+    <param type="string" name="password" />
+  </function>
+  <function returnType="bool" name="crack_check" description="Performs an obscure check with the given password.">
+    <param type="string" name="password" />
+  </function>
+  <function returnType="bool" name="crack_closedict" description="Closes an open CrackLib dictionary.">
+    <param optional="true" type="resource" name="dictionary" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="crack_opendict" description="Opens a new CrackLib dictionary.">
+    <param type="string" name="dictionary" />
+  </function>
+  <function returnType="string" name="crack_getlastmessage" description="Returns the message from the last obscure check." />
+</module>

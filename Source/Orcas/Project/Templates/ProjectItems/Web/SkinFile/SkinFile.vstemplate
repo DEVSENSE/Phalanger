@@ -1,0 +1,17 @@
+<VSTemplate Version="2.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name Package="{2AFF8E3C-1856-46a0-A41C-1E29B781CC95}" ID="3336"/>
+    <Description Package="{2AFF8E3C-1856-46a0-A41C-1E29B781CC95}" ID="3337"/>
+    <Icon Package="{2AFF8E3C-1856-46a0-A41C-1E29B781CC95}" ID="4725"/>
+    <TemplateID>SkinFile</TemplateID>
+    <TemplateGroupID>Web</TemplateGroupID>
+    <ProjectType>IronPython</ProjectType>
+    <ProjectSubType>Web</ProjectSubType>
+    <ShowByDefault>false</ShowByDefault>
+    <SortOrder>25</SortOrder>
+    <DefaultName>Skin.skin</DefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem>SkinFile.skin</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

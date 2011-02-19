@@ -1,0 +1,1 @@
+this is a file WITHOUT an "end-of-line"

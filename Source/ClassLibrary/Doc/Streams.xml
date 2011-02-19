@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<docs>
+
+<method name="Filter">
+  <summary>
+  Processes the <paramref name="input"/> (either of type
+  <see cref="string"/> or <see cref="PhpBytes"/>) data through this filter
+  and returns the filtered data in one of these formats or <c>null</c>.
+  </summary>
+  <remarks>
+  A filter may hold data in its own buffers when it's unable
+  to process whole the input. However, when closing is <c>true</c>,
+  it should pass as much data as possible because it is the last call
+  to Filter.
+  </remarks>
+  <param name="input">A <see cref="string"/> or <see cref="PhpBytes"/> containing 
+  the data to be filtered.</param>
+  <param name="closing"><c>true</c> if this is the last call to this filter.</param>
+  <returns>
+  A <see cref="string"/> or <see cref="PhpBytes"/> containing 
+  the filtered data or <c>null</c> if no output is available yet.
+  </returns>
+</method>
+
+<method name="Append">
+	<summary>
+	Appends a filter to the chain of stream-filters of the <paramref name="stream"/>.
+	</summary> 
+	<remarks>
+	The filter is attached to the read filter chain if the file was opened for reading 
+	(i.e. File Mode: <c>r</c>, and/or <c>+</c>); attached to the write filter chain if the file 
+	was opened for writing (i.e. File Mode: <c>w</c>, <c>a</c>, and/or <c>+</c>). 
+	</remarks>
+	<param name="filter">The name of the filter - either built-in or previously
+	defined using <see cref="PhpFilters.Register"/>.</param>
+	<param name="stream">The stream which filter-chain is to be extended with the <paramref name="filter"/>.</param>
+	<returns>True if successful.</returns>
+</method>
+
+<method name="Prepend">
+	<summary>
+	Prepends a filter to the chain of stream-filters of the <paramref name="stream"/>.
+	</summary> 
+	<remarks>
+	The filter is attached to the read filter chain if the file was opened for reading 
+	(i.e. File Mode: <c>r</c>, and/or <c>+</c>); attached to the write filter chain if the file 
+	was opened for writing (i.e. File Mode: <c>w</c>, <c>a</c>, and/or <c>+</c>). 
+	</remarks>
+	<param name="filter">The name of the filter - either built-in or previously
+	defined using <see cref="PhpFilters.Register"/>.</param>
+	<param name="stream">The stream which filter-chain is to be extended with the <paramref name="filter"/>.</param>
+	<returns>True if successful.</returns>
+</method>
+
+</docs>

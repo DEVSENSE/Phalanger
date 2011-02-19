@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="void" name="pdf_close_pdi_page" description="Close the page handle, and free all page-related resources.">
+    <param type="resource" name="pdf" />
+    <param type="int" name="page" />
+  </function>
+  <function returnType="void" name="pdf_close_pdi" description="Close all open page handles, and close the input PDF document.">
+    <param type="resource" name="pdf" />
+    <param type="int" name="doc" />
+  </function>
+  <function returnType="void" name="pdf_translate" description="Sets origin of coordinate system.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+  </function>
+  <function returnType="void" name="pdf_skew" description="Skew the coordinate system.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="xangle" />
+    <param type="float" name="yangle" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pdf_open_tiff" description="Opens a TIFF file and returns an image for placement in a PDF document.">
+    <param type="resource" name="pdf" />
+    <param type="string" name="tifffile" />
+  </function>
+  <function returnType="string" name="pdf_get_fontname" description="Gets the current font name.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_concat" description="Concatenates a matrix to the current transformation matrix for text and graphics.">
+    <param type="resource" name="pdf" />
+    <param type="float" name="a" />
+    <param type="float" name="b" />
+    <param type="float" name="c" />
+    <param type="float" name="d" />
+    <param type="float" name="e" />
+    <param type="float" name="f" />
+  </function>
+  <function returnType="int" name="pdf_show_boxed" description="Output text formated in a boxed.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="text" />
+    <param type="float" name="x_koor" />
+    <param type="float" name="y_koor" />
+    <param type="float" name="width" />
+    <param type="float" name="height" />
+    <param type="string" name="mode" />
+    <param optional="true" type="string" name="feature" />
+  </function>
+  <function returnType="bool" name="pdf_set_info_author" description="Fills the author field of the document.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="author" />
+  </function>
+  <function returnType="void" name="pdf_curveto" description="Draws a curve.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="x1" />
+    <param type="float" name="y1" />
+    <param type="float" name="x2" />
+    <param type="float" name="y2" />
+    <param type="float" name="x3" />
+    <param type="float" name="y3" />
+  </function>
+  <function returnType="void" name="pdf_set_text_rise" description="Sets the text rise.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pdf_open_gif" description="Opens a GIF file and returns an image for placement in a pdf object.">
+    <param type="resource" name="pdf" />
+    <param type="string" name="giffile" />
+  </function>
+  <function returnType="void" name="pdf_endpath" description="Ends current path.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="float" name="pdf_stringwidth" description="Returns width of text in current font.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="text" />
+    <param optional="true" type="int" name="font" />
+    <param optional="true" type="float" name="size" />
+  </function>
+  <function returnType="void" name="pdf_closepath_fill_stroke" description="Close, fill and stroke current path.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_add_pdflink" description="Adds link to PDF document.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="llx" />
+    <param type="float" name="lly" />
+    <param type="float" name="urx" />
+    <param type="float" name="ury" />
+    <param type="string" name="filename" />
+    <param type="int" name="page" />
+    <param type="string" name="dest" />
+  </function>
+  <function returnType="void" name="pdf_show_xy" description="Output text at position.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="text" />
+    <param type="float" name="x_koor" />
+    <param type="float" name="y_koor" />
+  </function>
+  <function returnType="void" name="pdf_setlinecap" description="Sets linecap parameter.">
+    <param type="resource" name="pdfdoc" />
+    <param type="int" name="value" />
+  </function>
+  <function returnType="void" name="pdf_setlinewidth" description="Sets line width.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="width" />
+  </function>
+  <function returnType="void" name="pdf_setfont" description="Sets the current font in the fiven fontsize.">
+    <param type="resource" name="pdfdoc" />
+    <param type="int" name="font" />
+    <param type="float" name="fontsize" />
+  </function>
+  <function returnType="void" name="pdf_attach_file" description="Adds a file attachment annotation at the rectangle specified by his lower left and upper right corners.">
+    <param type="resource" name="pdf" />
+    <param type="float" name="lly" />
+    <param type="float" name="lly" />
+    <param type="float" name="urx" />
+    <param type="float" name="ury" />
+    <param type="string" name="filename" />
+    <param type="string" name="description" />
+    <param type="string" name="author" />
+    <param type="string" name="mimetype" />
+    <param type="string" name="icon" />
+  </function>
+  <function returnType="void" name="pdf_set_border_style" description="Sets style of box surounding all kinds of annotations and link.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="style" />
+    <param type="float" name="width" />
+  </function>
+  <function returnType="string" name="pdf_get_parameter" description="Gets arbitrary parameters.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="key" />
+    <param type="mixed" name="modifier" />
+  </function>
+  <function returnType="void" name="pdf_setpolydash" description="Sets more complicated dash pattern.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="darray" />
+  </function>
+  <function returnType="void" name="pdf_add_weblink" description="Adds link to web resource.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="llx" />
+    <param type="float" name="lly" />
+    <param type="float" name="urx" />
+    <param type="float" name="ury" />
+    <param type="string" name="url" />
+  </function>
+  <function returnType="bool" name="pdf_set_info_subject" description="Fills the subject field of the document.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="subject" />
+  </function>
+  <function returnType="void" name="pdf_setrgbcolor_fill" description="Sets filling color to RGB color value.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="red" />
+    <param type="float" name="green" />
+    <param type="float" name="blue" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pdf_open_image_file" description="Opens an image file of the given type and returns an image for placement in a PDF document.">
+    <param type="resource" name="pdf" />
+    <param type="string" name="type" />
+    <param type="string" name="file" />
+    <param type="string" name="stringparam" />
+    <param type="int" name="intparam" />
+  </function>
+  <function returnType="void" name="pdf_fill_stroke" description="Fill and stroke current path.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_end_page" description="Ends page.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_add_launchlink" description="Adds link to web resource.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="llx" />
+    <param type="float" name="lly" />
+    <param type="float" name="urx" />
+    <param type="float" name="ury" />
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="void" name="pdf_setmiterlimit" description="Sets miter limit.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="float" name="pdf_get_value" description="Gets arbitrary value.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="key" />
+    <param type="float" name="modifier" />
+  </function>
+  <function returnType="void" name="pdf_show" description="Output text at current position.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="text" />
+  </function>
+  <function returnType="bool" name="pdf_set_info_keywords" description="Fills the keywords field of the document.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="keywords" />
+  </function>
+  <function returnType="void" name="pdf_set_transition" description="Sets transition between pages.">
+    <param type="resource" name="pdfdoc" />
+    <param type="int" name="transition" />
+  </function>
+  <function returnType="void" name="pdf_lineto" description="Draws a line.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+  </function>
+  <function returnType="void" name="pdf_circle" description="Draws a circle.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param type="float" name="radius" />
+  </function>
+  <function returnType="void" name="pdf_setdash" description="Sets dash pattern.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="black" />
+    <param type="float" name="white" />
+  </function>
+  <function returnType="void" name="pdf_add_thumbnail" description="Add an existing image as thumbnail for the current page.">
+    <param type="resource" name="pdf" />
+    <param type="int" name="image" />
+  </function>
+  <function returnType="bool" name="pdf_makespotcolor" description="Make a named spot color from the current color.">
+    <param type="resource" name="pdf" />
+    <param type="string" name="spotname" />
+  </function>
+  <function returnType="void" name="pdf_set_leading" description="Sets distance between text lines.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="distance" />
+  </function>
+  <function returnType="void" name="pdf_setlinejoin" description="Sets linejoin parameter.">
+    <param type="resource" name="pdfdoc" />
+    <param type="int" name="value" />
+  </function>
+  <function returnType="bool" name="pdf_open_pdi_page" description="Prepare a page for later use with PDF_place_image().">
+    <param type="resource" name="pdf" />
+    <param type="int" name="doc" />
+    <param type="int" name="page" />
+    <param type="string" name="label" />
+  </function>
+  <function returnType="void" name="pdf_set_border_dash" description="Sets the border dash style of all kinds of annotations and links.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="black" />
+    <param type="float" name="white" />
+  </function>
+  <function returnType="void" name="pdf_closepath_stroke" description="Close path and draw line along path.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="int" name="pdf_findfont" description="Prepares the font fontname for later use with pdf_setfont().">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="fontname" />
+    <param type="string" name="encoding" />
+    <param optional="true" type="int" name="embed" />
+  </function>
+  <function returnType="void" name="pdf_close" description="Closes the pdf document.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_setgray_fill" description="Sets filling color to gray value.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pdf_open_image" description="Opens an image of the given type and returns an image for placement in a PDF document.">
+    <param type="resource" name="pdf" />
+    <param type="string" name="type" />
+    <param type="string" name="source" />
+    <param type="string" name="data" />
+    <param type="int" name="length" />
+    <param type="int" name="width" />
+    <param type="int" name="height" />
+    <param type="int" name="components" />
+    <param type="int" name="bpc" />
+    <param type="string" name="params" />
+  </function>
+  <function returnType="int" name="pdf_add_outline" description="Adds bookmark for current page.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="text" />
+    <param optional="true" type="int" name="parent" />
+    <param optional="true" type="int" name="open" />
+  </function>
+  <function returnType="void" name="pdf_fill" description="Fill current path.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_moveto" description="Sets current point.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+  </function>
+  <function returnType="void" name="pdf_setrgbcolor" description="Sets drawing and filling color to RGB color value.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="red" />
+    <param type="float" name="green" />
+    <param type="float" name="blue" />
+  </function>
+  <function returnType="void" name="pdf_end_template" description="Finish the template definition.">
+    <param type="resource" name="pdf" />
+  </function>
+  <function returnType="void" name="pdf_closepath" description="Close path.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="bool" name="pdf_set_info_title" description="Fills the title field of the document.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="title" />
+  </function>
+  <function returnType="string" name="pdf_get_buffer" description="Fetches the full buffer containig the generated PDF data.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_begin_page" description="Starts page.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="width" />
+    <param type="float" name="height" />
+  </function>
+  <function returnType="void" name="pdf_clip" description="Clips to current path.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_set_text_rendering" description="Determines how text is rendered.">
+    <param type="resource" name="pdfdoc" />
+    <param type="int" name="mode" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pdf_open" description="Opens a new pdf document. If filedesc is NULL, document is created in memory. This is the old interface, only for compatibility use pdf_new + pdf_open_file instead.">
+    <param optional="true" type="int" name="filedesc" />
+  </function>
+  <function returnType="void" name="pdf_set_parameter" description="Sets arbitrary parameters.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="key" />
+    <param type="string" name="value" />
+  </function>
+  <function returnType="float" name="pdf_get_pdi_value" description="Get the contents of some PDI document parameter with numerical type.">
+    <param type="resource" name="pdf" />
+    <param type="string" name="key" />
+    <param type="int" name="doc" />
+    <param type="int" name="page" />
+    <param type="int" name="index" />
+  </function>
+  <function returnType="void" name="pdf_arcn" description="Draw a clockwise circular arc from alpha to beta degrees.">
+    <param type="resource" name="pdf" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param type="float" name="r" />
+    <param type="float" name="alpha" />
+    <param type="float" name="beta" />
+  </function>
+  <function returnType="void" name="pdf_setflat" description="Sets flatness.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="bool" name="pdf_delete" description="Deletes the PDF object.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="string" name="pdf_get_pdi_parameter" description="Get the contents of some PDI document parameter with string type.">
+    <param type="resource" name="pdf" />
+    <param type="string" name="key" />
+    <param type="int" name="doc" />
+    <param type="int" name="page" />
+    <param type="int" name="index" />
+  </function>
+  <function returnType="void" name="pdf_set_value" description="Sets arbitrary value.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="key" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="float" name="pdf_get_fontsize" description="Gets the current font size.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_setrgbcolor_stroke" description="Sets drawing color to RGB color value.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="red" />
+    <param type="float" name="green" />
+    <param type="float" name="blue" />
+  </function>
+  <function returnType="int" name="pdf_open_pdi" description="Open an existing PDF document and prepare it for later use.">
+    <param type="resource" name="pdf" />
+    <param type="string" name="filename" />
+    <param type="string" name="stringparam" />
+    <param type="int" name="intparam" />
+  </function>
+  <function returnType="void" name="pdf_initgraphics" description="Reset all implicit color and graphics state parameters to their defaults.">
+    <param type="resource" name="pdf" />
+  </function>
+  <function returnType="int" name="pdf_get_image_width" description="Returns the width of an image.">
+    <param type="resource" name="pdf" />
+    <param type="int" name="pdfimage" />
+  </function>
+  <function returnType="void" name="pdf_add_locallink" description="Adds link to web resource.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="llx" />
+    <param type="float" name="lly" />
+    <param type="float" name="urx" />
+    <param type="float" name="ury" />
+    <param type="int" name="page" />
+    <param type="string" name="dest" />
+  </function>
+  <function returnType="void" name="pdf_setgray" description="Sets drawing and filling color to gray value.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="int" name="pdf_begin_template" description="Start a new template definition.">
+    <param type="resource" name="pdf" />
+    <param type="float" name="width" />
+    <param type="float" name="height" />
+  </function>
+  <function returnType="void" name="pdf_set_border_color" description="Sets color of box surounded all kinds of annotations and links.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="red" />
+    <param type="float" name="green" />
+    <param type="float" name="blue" />
+  </function>
+  <function returnType="bool" name="pdf_set_info" description="Fills an info field of the document.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="fieldname" />
+    <param type="string" name="value" />
+  </function>
+  <function returnType="void" name="pdf_stroke" description="Draw line along path path.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_place_pdi_page" description="Place a PDF page with the lower left corner at (x, y), and scale it.">
+    <param type="resource" name="pdf" />
+    <param type="int" name="page" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param type="float" name="sx" />
+    <param type="float" name="sy" />
+  </function>
+  <function returnType="int" name="pdf_get_majorversion" description="Returns the major version number of the PDFlib." />
+  <function returnType="void" name="pdf_add_note" description="Sets annotation.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="llx" />
+    <param type="float" name="lly" />
+    <param type="float" name="urx" />
+    <param type="float" name="ury" />
+    <param type="string" name="contents" />
+    <param type="string" name="title" />
+    <param type="string" name="icon" />
+    <param type="int" name="open" />
+  </function>
+  <function returnType="int" name="pdf_open_file" description="Opens a new PDF document. If filename is NULL, document is created in memory. This is not yet fully supported.">
+    <param type="resource" name="pdfdoc" />
+    <param optional="true" type="string" name="filename" />
+  </function>
+  <function returnType="void" name="pdf_scale" description="Sets scaling.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="x_scale" />
+    <param type="float" name="y_scale" />
+  </function>
+  <function returnType="int" name="pdf_get_image_height" description="Returns the height of an image.">
+    <param type="resource" name="pdf" />
+    <param type="int" name="pdfimage" />
+  </function>
+  <function returnType="void" name="pdf_end_pattern" description="Finish the pattern definition.">
+    <param type="resource" name="pdf" />
+  </function>
+  <function returnType="void" name="pdf_add_annotation" description="Sets annotation (depreciated use pdf_add_note instead).">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="xll" />
+    <param type="float" name="yll" />
+    <param type="float" name="xur" />
+    <param type="float" name="xur" />
+    <param type="string" name="title" />
+    <param type="string" name="text" />
+  </function>
+  <function returnType="int" name="pdf_get_minorversion" description="Returns the minor version number of the PDFlib." />
+  <function returnType="bool" name="pdf_set_info_creator" description="Fills the creator field of the document.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="creator" />
+  </function>
+  <function returnType="int" name="pdf_begin_pattern" description="Start a new pattern definition.">
+    <param type="resource" name="pdf" />
+    <param type="float" name="width" />
+    <param type="float" name="height" />
+    <param type="float" name="xstep" />
+    <param type="float" name="ystep" />
+    <param type="int" name="painttype" />
+  </function>
+  <function returnType="void" name="pdf_rect" description="Draws a rectangle.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param type="float" name="width" />
+    <param type="float" name="height" />
+  </function>
+  <function returnType="void" name="pdf_close_image" description="Closes the PDF image.">
+    <param type="resource" name="pdf" />
+    <param type="int" name="pdfimage" />
+  </function>
+  <function returnType="void" name="pdf_set_horiz_scaling" description="Sets horizontal scaling of text.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="scale" />
+  </function>
+  <function returnType="int" name="pdf_open_jpeg" description="Opens a JPEG file and returns an image for placement in a PDF document.">
+    <param type="resource" name="pdf" />
+    <param type="string" name="jpegfile" />
+  </function>
+  <function returnType="void" name="pdf_arc" description="Draws an arc.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param type="float" name="radius" />
+    <param type="float" name="start" />
+    <param type="float" name="end" />
+  </function>
+  <function returnType="int" name="pdf_get_font" description="Gets the current font.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_set_char_spacing" description="Sets character spacing.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="space" />
+  </function>
+  <function returnType="void" name="pdf_set_word_spacing" description="Sets spacing between words.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="space" />
+  </function>
+  <function returnType="void" name="pdf_set_text_pos" description="Sets the position of text for the next pdf_show call.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+  </function>
+  <function returnType="void" name="pdf_setmatrix" description="Explicitly set the current transformation matrix.">
+    <param type="resource" name="pdf" />
+    <param type="float" name="a" />
+    <param type="float" name="b" />
+    <param type="float" name="c" />
+    <param type="float" name="d" />
+    <param type="float" name="e" />
+    <param type="float" name="f" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="pdf_new" description="Creates a new PDF object." />
+  <function returnType="void" name="pdf_setgray_stroke" description="Sets drawing color to gray value.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="int" name="pdf_open_ccitt" description="Opens an image file with raw CCITT G3 or G4 compresed bitmap data.">
+    <param type="resource" name="pdf" />
+    <param type="string" name="filename" />
+    <param type="int" name="width" />
+    <param type="int" name="height" />
+    <param type="int" name="bitreverse" />
+    <param type="int" name="k" />
+    <param type="int" name="blackls1" />
+  </function>
+  <function returnType="int" name="pdf_add_bookmark" description="Adds bookmark for current page.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="text" />
+    <param type="int" name="parent" />
+    <param type="int" name="open" />
+  </function>
+  <function returnType="void" name="pdf_set_font" description="Select the current font face, size and encoding.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="font" />
+    <param type="float" name="size" />
+    <param type="string" name="encoding" />
+    <param optional="true" type="int" name="embed" />
+  </function>
+  <function returnType="void" name="pdf_place_image" description="Places image in the PDF document.">
+    <param type="resource" name="pdf" />
+    <param type="int" name="pdfimage" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param type="float" name="scale" />
+  </function>
+  <function returnType="void" name="pdf_save" description="Saves current enviroment.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_set_duration" description="Sets duration between pages.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="duration" />
+  </function>
+  <function returnType="void" name="pdf_setcolor" description="Set the current color space and color.">
+    <param type="resource" name="pdf" />
+    <param type="string" name="type" />
+    <param type="string" name="colorspace" />
+    <param type="float" name="c1" />
+    <param optional="true" type="float" name="c2" />
+    <param optional="true" type="float" name="c3" />
+    <param optional="true" type="float" name="c4" />
+  </function>
+  <function returnType="void" name="pdf_restore" description="Restores formerly saved enviroment.">
+    <param type="resource" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="pdf_rotate" description="Sets rotation.">
+    <param type="resource" name="pdfdoc" />
+    <param type="float" name="angle" />
+  </function>
+  <function returnType="int" name="pdf_open_png" description="Opens a PNG file and returns an image for placement in a PDF document.">
+    <param type="resource" name="pdf" />
+    <param type="string" name="pngfile" />
+  </function>
+  <function returnType="void" name="pdf_continue_text" description="Output text in next line.">
+    <param type="resource" name="pdfdoc" />
+    <param type="string" name="text" />
+  </function>
+</module>

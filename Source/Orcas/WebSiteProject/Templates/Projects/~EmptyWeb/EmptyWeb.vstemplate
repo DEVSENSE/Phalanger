@@ -1,0 +1,21 @@
+<VSTemplate Version="2.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+    <TemplateData>
+        <Name>Empty Web Site</Name>
+        <Description>An empty Web site (.NET Framework 3.5)</Description>
+        <ProjectType>Web</ProjectType>
+        <ProjectSubType>IronPython</ProjectSubType>
+        <SortOrder>50</SortOrder>
+        <CreateNewFolder>true</CreateNewFolder>
+        <DefaultName>WebSite</DefaultName>
+        <ProvideDefaultName>true</ProvideDefaultName>
+        <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
+        <EnableEditOfLocationField>true</EnableEditOfLocationField>
+        <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+        <LocationField>Hidden</LocationField>
+        <Icon>__TemplateIcon.ico</Icon>
+    </TemplateData>
+    <TemplateContent>
+        <Project File="EmptyWeb.webproj" ReplaceParameters="false">
+        </Project>
+    </TemplateContent>
+</VSTemplate>

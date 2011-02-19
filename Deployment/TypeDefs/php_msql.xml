@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="int" name="msql_listtables" description="List tables in an mSQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="int" name="msql_affected_rows" description="Return number of affected rows.">
+    <param type="int" name="query" />
+  </function>
+  <function returnType="array" name="msql_fetch_row" description="Get a result row as an enumerated array.">
+    <param type="int" name="query" />
+  </function>
+  <function returnType="string" name="msql_fieldtype" description="Get the type of the specified field in a result.">
+    <param type="int" name="query" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="int" name="msql_num_fields" description="Get number of fields in a result.">
+    <param type="int" name="query" />
+  </function>
+  <function returnType="int" name="msql_listdbs" description="List databases available on an mSQL server.">
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="int" name="msql_free_result" description="Free result memory.">
+    <param type="int" name="query" />
+  </function>
+  <function returnType="int" name="msql_drop_db" description="Drop (delete) an mSQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="int" name="msql_list_fields" description="List mSQL result fields.">
+    <param type="string" name="database_name" />
+    <param type="string" name="table_name" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="int" name="msql_pconnect" description="Open a persistent connection to an mSQL Server.">
+    <param optional="true" type="string" name="hostname" />
+    <param optional="true" type="string" name="username" />
+    <param optional="true" type="string" name="password" />
+  </function>
+  <function returnType="int" name="msql_freeresult" description="Free result memory.">
+    <param type="int" name="query" />
+  </function>
+  <function returnType="array" name="msql_fetch_array" description="Fetch a result row as an associative array.">
+    <param type="int" name="query" />
+    <param optional="true" type="int" name="result_type" />
+  </function>
+  <function returnType="int" name="msql" description="Send an SQL query to mSQL.">
+    <param type="string" name="database_name" />
+    <param type="string" name="query" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="int" name="msql_listfields" description="List mSQL result fields.">
+    <param type="string" name="database_name" />
+    <param type="string" name="table_name" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="int" name="msql_field_len" description="Returns the length of the specified field.">
+    <param type="int" name="query" />
+    <param type="int" name="field_offet" />
+  </function>
+  <function returnType="object" name="msql_fetch_field" description="Get column information from a result and return as an object.">
+    <param type="int" name="query" />
+    <param optional="true" type="int" name="field_offset" />
+  </function>
+  <function returnType="int" name="msql_list_tables" description="List tables in an mSQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="string" name="msql_field_type" description="Get the type of the specified field in a result.">
+    <param type="int" name="query" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="string" name="msql_fieldflags" description="Get the flags associated with the specified field in a result.">
+    <param type="int" name="query" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="object" name="msql_fetch_object" description="Fetch a result row as an object.">
+    <param type="int" name="query" />
+    <param optional="true" type="int" name="result_type" />
+  </function>
+  <function returnType="int" name="msql_query" description="Send an SQL query to mSQL.">
+    <param type="string" name="query" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="string" name="msql_fieldname" description="Get the name of the specified field in a result.">
+    <param type="int" name="query" />
+    <param type="int" name="field_index" />
+  </function>
+  <function returnType="int" name="msql_db_query" description="Send an SQL query to mSQL.">
+    <param type="string" name="database_name" />
+    <param type="string" name="query" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="int" name="msql_connect" description="Open a connection to an mSQL Server.">
+    <param optional="true" type="string" name="hostname" />
+    <param optional="true" type="string" name="username" />
+    <param optional="true" type="string" name="password" />
+  </function>
+  <function returnType="int" name="msql_field_seek" description="Set result pointer to a specific field offset.">
+    <param type="int" name="query" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="int" name="msql_numfields" description="Get number of fields in a result.">
+    <param type="int" name="query" />
+  </function>
+  <function returnType="int" name="msql_num_rows" description="Get number of rows in a result.">
+    <param type="int" name="query" />
+  </function>
+  <function returnType="int" name="msql_close" description="Close an mSQL connection.">
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="string" name="msql_field_table" description="Get name of the table the specified field is in.">
+    <param type="int" name="query" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="string" name="msql_regcase" description="Make regular expression for case insensitive match.">
+    <param type="string" name="string" />
+  </function>
+  <function returnType="int" name="msql_select_db" description="Select an mSQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="int" name="msql_create_db" description="Create an mSQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="string" name="msql_field_flags" description="Get the flags associated with the specified field in a result.">
+    <param type="int" name="query" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="int" name="msql_result" description="Get result data.">
+    <param type="int" name="query" />
+    <param type="int" name="row" />
+    <param optional="true" type="mixed" name="field" />
+  </function>
+  <function returnType="int" name="msql_numrows" description="Get number of rows in a result.">
+    <param type="int" name="query" />
+  </function>
+  <function returnType="int" name="msql_data_seek" description="Move internal result pointer.">
+    <param type="int" name="query" />
+    <param type="int" name="row_number" />
+  </function>
+  <function returnType="int" name="msql_selectdb" description="Select an mSQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="string" name="msql_error" description="Returns the text of the error message from previous mSQL operation.">
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="int" name="msql_fieldlen" description="Returns the length of the specified field.">
+    <param type="int" name="query" />
+    <param type="int" name="field_offet" />
+  </function>
+  <function returnType="int" name="msql_dbname" description="Get result data.">
+    <param type="int" name="query" />
+    <param type="int" name="row" />
+    <param optional="true" type="mixed" name="field" />
+  </function>
+  <function returnType="int" name="msql_tablename" description="Get result data.">
+    <param type="int" name="query" />
+    <param type="int" name="row" />
+    <param optional="true" type="mixed" name="field" />
+  </function>
+  <function returnType="string" name="msql_fieldtable" description="Get name of the table the specified field is in.">
+    <param type="int" name="query" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="int" name="msql_list_dbs" description="List databases available on an mSQL server.">
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="int" name="msql_createdb" description="Create an mSQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+  <function returnType="string" name="msql_field_name" description="Get the name of the specified field in a result.">
+    <param type="int" name="query" />
+    <param type="int" name="field_index" />
+  </function>
+  <function returnType="int" name="msql_dropdb" description="Drop (delete) an mSQL database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="int" name="link_identifier" />
+  </function>
+</module>

@@ -1,0 +1,5 @@
+C:\Tomas\Projects\Phalanger\Source\Source\Orcas\WebSiteProject\IronPythonWebSiteCustomWizard\bin\debug\IronPythonWebSiteCustomWizard.dll
+C:\Tomas\Projects\Phalanger\Source\Source\Orcas\WebSiteProject\IronPythonWebSiteCustomWizard\bin\debug\IronPythonWebSiteCustomWizard.pdb
+C:\Tomas\Projects\Phalanger\Source\Source\Orcas\WebSiteProject\IronPythonWebSiteCustomWizard\obj\Debug\ResolveAssemblyReference.cache
+C:\Tomas\Projects\Phalanger\Source\Source\Orcas\WebSiteProject\IronPythonWebSiteCustomWizard\obj\Debug\IronPythonWebSiteCustomWizard.dll
+C:\Tomas\Projects\Phalanger\Source\Source\Orcas\WebSiteProject\IronPythonWebSiteCustomWizard\obj\Debug\IronPythonWebSiteCustomWizard.pdb

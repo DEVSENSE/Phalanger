@@ -1,0 +1,13 @@
+<VSTemplate Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Item">
+  <TemplateData>
+		<Name>Class</Name>
+		<Description>A PHP class.</Description>
+		<Icon>__TemplateIcon.ico</Icon>
+		<ProjectType>Phalanger</ProjectType>
+		<SortOrder>10</SortOrder>
+		<DefaultName>Class.php</DefaultName>
+  </TemplateData>
+  <TemplateContent>
+		<ProjectItem SubType="Code" TargetFileName="$fileinputname$.php" ReplaceParameters="true">PhpClass.php</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

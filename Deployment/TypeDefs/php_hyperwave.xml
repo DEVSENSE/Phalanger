@@ -1,0 +1,302 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="array" name="hw_getobjectbyqueryobj" description="Search for query and return maxhits object records.">
+    <param type="int" name="link" />
+    <param type="string" name="query" />
+    <param type="int" name="maxhits" />
+  </function>
+  <function returnType="void" name="hw_changeobject" description="Changes attributes of an object (obsolete).">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+    <param type="array" name="attributes" />
+  </function>
+  <function returnType="array" name="hw_childrenobj" description="Returns array of children object records.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="string" name="hw_dummy" description="Hyperwave dummy function.">
+    <param type="int" name="link" />
+    <param type="int" name="id" />
+    <param type="int" name="msgid" />
+  </function>
+  <function returnType="array" name="hw_getobjectbyquerycollobj" description="Search for query in collection and return maxhits object records.">
+    <param type="int" name="link" />
+    <param type="int" name="collid" />
+    <param type="string" name="query" />
+    <param type="int" name="maxhits" />
+  </function>
+  <function returnType="int" name="hw_error" description="Returns last error number.">
+    <param type="int" name="link" />
+  </function>
+  <function returnType="array" name="hw_objrec2array" description="Returns object array of object record.">
+    <param type="string" name="objrec" />
+    <param optional="true" type="array" name="format" />
+  </function>
+  <function returnType="string" name="hw_insertanchors" description="Inserts only anchors into text.">
+    <param type="int" name="hwdoc" />
+    <param type="array" name="anchorecs" />
+    <param type="array" name="dest" />
+    <param optional="true" type="array" name="urlprefixes" />
+  </function>
+  <function returnType="string" name="hw_document_bodytag" description="Return bodytag prefixed by prefix.">
+    <param type="int" name="doc" />
+    <param optional="true" type="string" name="prefix" />
+  </function>
+  <function returnType="void" name="hw_cp" description="Copies object.">
+    <param type="int" name="link" />
+    <param type="array" name="objrec" />
+    <param type="int" name="dest" />
+  </function>
+  <function returnType="string" name="hw_stat" description="Returns status string.">
+    <param type="int" name="link" />
+  </function>
+  <function returnType="array" name="hw_getchilddoccollobj" description="Returns all children object records which are documents.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="array" name="hw_getobjectbyquerycoll" description="Search for query in collection and return maxhits objids.">
+    <param type="int" name="link" />
+    <param type="int" name="collid" />
+    <param type="string" name="query" />
+    <param type="int" name="maxhits" />
+  </function>
+  <function returnType="void" name="hw_deleteobject" description="Deletes object.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="string" name="hw_document_attributes" description="Returns object record of document.">
+    <param type="int" name="doc" />
+  </function>
+  <function returnType="void" name="hw_free_document" description="Frees memory of document.">
+    <param type="int" name="doc" />
+  </function>
+  <function returnType="array" name="hw_getparents" description="Returns array of parent object ids.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="void" name="hw_setlinkroot" description="Set the id to which links are calculated.">
+    <param type="int" name="link" />
+    <param type="int" name="rootid" />
+  </function>
+  <function returnType="int" name="hw_getremote" description="Returns the content of a remote document.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="int" name="hw_docbyanchor" description="Returns objid of document belonging to anchorid.">
+    <param type="int" name="link" />
+    <param type="int" name="anchorid" />
+  </function>
+  <function returnType="string" name="hw_errormsg" description="Returns last error message.">
+    <param type="int" name="link" />
+  </function>
+  <function returnType="mixed" name="hw_getremotechildren" description="Returns the remote document or an array of object records.">
+    <param type="int" name="link" />
+    <param type="string" name="objrec" />
+  </function>
+  <function returnType="array" name="hw_getobjectbyftquerycollobj" description="Search for fulltext query in collection and return maxhits object records.">
+    <param type="int" name="link" />
+    <param type="int" name="collid" />
+    <param type="string" name="query" />
+    <param type="int" name="maxhits" />
+  </function>
+  <function returnType="array" name="hw_getobjectbyftqueryobj" description="Search for query as fulltext and return maxhits object records.">
+    <param type="int" name="link" />
+    <param type="string" name="query" />
+    <param type="int" name="maxhits" />
+  </function>
+  <function returnType="string" name="hw_array2objrec" description="Returns object record of object array.">
+    <param type="array" name="objarr" />
+  </function>
+  <function returnType="int" name="hw_pipecgi" description="Returns output of CGI script.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="array" name="hw_getchildcoll" description="Returns array of child collection object ids.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="void" name="hw_connection_info" description="Prints information about the connection to Hyperwave server.">
+    <param type="int" name="link" />
+  </function>
+  <function returnType="int" name="hw_new_document_from_file" description="Create a new document from a file.">
+    <param type="string" name="objrec" />
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="int" name="hw_connect" description="Connect to the Hyperwave server.">
+    <param type="string" name="host" />
+    <param type="int" name="port_" />
+    <param optional="true" type="string" name="password" />
+  </function>
+  <function returnType="void" name="hw_mv" description="Moves object.">
+    <param type="int" name="link" />
+    <param type="array" name="objrec" />
+    <param type="int" name="from" />
+    <param type="int" name="dest" />
+  </function>
+  <function returnType="int" name="hw_mapid" description="Returns virtual object id of document on remote Hyperwave server.">
+    <param type="int" name="link" />
+    <param type="int" name="serverid" />
+    <param type="int" name="destid" />
+  </function>
+  <function returnType="array" name="hw_getchilddoccoll" description="Returns all children ids which are documents.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="string" name="hw_getusername" description="Returns the current user name.">
+    <param type="int" name="link" />
+  </function>
+  <function returnType="array" name="hw_getanchors" description="Return all anchors of object.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="void" name="hw_identify" description="Identifies at Hyperwave server.">
+    <param type="int" name="link" />
+    <param type="string" name="username" />
+    <param type="string" name="password" />
+  </function>
+  <function returnType="array" name="hw_getchildcollobj" description="Returns array of child collection object records.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="void" name="hw_close" description="Close connection to Hyperwave server.">
+    <param type="int" name="link" />
+  </function>
+  <function returnType="array" name="hw_getobjectbyftquery" description="Search for query as fulltext and return maxhits objids.">
+    <param type="int" name="link" />
+    <param type="string" name="query" />
+    <param type="int" name="maxhits" />
+  </function>
+  <function returnType="string" name="hw_getobject" description="Returns object record.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+    <param optional="true" type="string" name="query" />
+  </function>
+  <function returnType="array" name="hw_children" description="Returns array of children object ids.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="array" name="hw_incollections" description="Returns object ids which are in collections.">
+    <param type="int" name="link" />
+    <param type="array" name="objids" />
+    <param type="array" name="collids" />
+    <param type="int" name="para" />
+  </function>
+  <function returnType="int" name="hw_pipedocument" description="Returns document.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="void" name="hw_inscoll" description="Inserts collection.">
+    <param type="int" name="link" />
+    <param type="int" name="parentid" />
+    <param type="array" name="objarr" />
+  </function>
+  <function returnType="void" name="hw_output_document" description="Prints document.">
+    <param type="int" name="doc" />
+  </function>
+  <function returnType="array" name="hw_getparentsobj" description="Returns array of parent object records.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="void" name="hw_edittext" description="Modifies text document.">
+    <param type="int" name="link" />
+    <param type="int" name="doc" />
+  </function>
+  <function returnType="array" name="hw_who" description="Returns names and info of users loged in.">
+    <param type="int" name="link" />
+  </function>
+  <function returnType="void" name="hw_insdoc" description="Inserts document.">
+    <param type="int" name="link" />
+    <param type="int" name="parentid" />
+    <param type="string" name="objrec" />
+    <param optional="true" type="string" name="text" />
+  </function>
+  <function returnType="int" name="hw_getcgi" description="Returns the output of a CGI script.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="int" name="hw_gettext" description="Returns text document. Links are relative to rootid if given.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+    <param optional="true" type="int" name="rootid" />
+  </function>
+  <function returnType="int" name="hw_getsrcbydestobj" description="Returns object id of source docuent by destination anchor.">
+    <param type="int" name="link" />
+    <param type="int" name="destid" />
+  </function>
+  <function returnType="int" name="hw_pconnect" description="Connect to the Hyperwave server persistent.">
+    <param type="string" name="host" />
+    <param type="int" name="port" />
+    <param optional="true" type="string" name="username" />
+    <param optional="true" type="string" name="password" />
+  </function>
+  <function returnType="array" name="hw_getobjectbyquery" description="Search for query and return maxhits objids.">
+    <param type="int" name="link" />
+    <param type="string" name="query" />
+    <param type="int" name="maxhits" />
+  </function>
+  <function returnType="string" name="hw_document_content" description="Returns content of document.">
+    <param type="int" name="doc" />
+  </function>
+  <function returnType="void" name="hw_insertdocument" description="Insert new document.">
+    <param type="int" name="link" />
+    <param type="int" name="parentid" />
+    <param type="int" name="doc" />
+  </function>
+  <function returnType="string" name="hw_getrellink" description="Get link from source to dest relative to rootid.">
+    <param type="int" name="link" />
+    <param type="int" name="rootid" />
+    <param type="int" name="sourceid" />
+    <param type="int" name="destid" />
+  </function>
+  <function returnType="void" name="hw_modifyobject" description="Modifies attributes of an object.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+    <param type="array" name="remattributes" />
+    <param type="array" name="addattributes" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="int" name="hw_insertobject" description="Inserts an object.">
+    <param type="int" name="link" />
+    <param type="string" name="objrec" />
+    <param type="string" name="parms" />
+  </function>
+  <function returnType="void" name="hw_unlock" description="Unlocks object.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="int" name="hw_new_document" description="Create a new document.">
+    <param type="string" name="objrec" />
+    <param type="string" name="data" />
+    <param type="int" name="size" />
+  </function>
+  <function returnType="int" name="hw_document_setcontent" description="Sets/replaces content of document.">
+    <param type="int" name="doc" />
+    <param type="string" name="content" />
+  </function>
+  <function returnType="int" name="hw_document_size" description="Returns size of document.">
+    <param type="int" name="doc" />
+  </function>
+  <function returnType="void" name="hw_info" description="Outputs info string.">
+    <param type="int" name="link" />
+  </function>
+  <function returnType="int" name="hw_root" description="Returns object id of root collection." />
+  <function returnType="string" name="hw_getandlock" description="Returns object record and locks object.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="array" name="hw_getobjectbyftquerycoll" description="Search for fulltext query in collection and return maxhits objids.">
+    <param type="int" name="link" />
+    <param type="int" name="collid" />
+    <param type="string" name="query" />
+    <param type="int" name="maxhits" />
+  </function>
+  <function returnType="array" name="hw_getanchorsobj" description="Return all object records of anchors of object.">
+    <param type="int" name="link" />
+    <param type="int" name="objid" />
+  </function>
+  <function returnType="array" name="hw_docbyanchorobj" description="Returns object record of document belonging to anchorid.">
+    <param type="int" name="link" />
+    <param type="int" name="anchorid" />
+  </function>
+</module>

@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PHP.Core.Emit.PhpAssemblyBuilderBase">
+    <Position X="4.75" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ACIAAAACAEAAAAAIEAAEAAAAgAgAAIBAAAFAAAMMCAA=</HashCode>
+      <FileName>Emit\AssemblyBuilders.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="assembly" />
+      <Field Name="globalTypeEmitter" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.21" />
+  </Class>
+  <Class Name="PHP.Core.Emit.TransientAssemblyBuilder">
+    <Position X="0.5" Y="6.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ACADAACAgFAAAAAMEAAEAAAIAAAAgAAAAAAAAAMsAAA=</HashCode>
+      <FileName>Emit\AssemblyBuilders.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Emit.PhpAssemblyBuilder">
+    <Position X="5.75" Y="6.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAiAJAIpEBQAKAIUAAEAAAABAQAkEEQAUAAAANMIAA=</HashCode>
+      <FileName>Emit\AssemblyBuilders.CLR.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Emit.PureAssemblyBuilder">
+    <Position X="2.75" Y="15.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ACACAAAIAAAAAAAAAAAAAAAABAIAgAEAAAAAAAAAAIA=</HashCode>
+      <FileName>Emit\AssemblyBuilders.CLR.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Emit.ScriptAssemblyBuilder">
+    <Position X="7.25" Y="15.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>gCAQAAAAAAFAAAAAQAAAAAAQBAAAkAEAAAAAAAAAAAA=</HashCode>
+      <FileName>Emit\AssemblyBuilders.CLR.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Emit.SingleScriptAssemblyBuilder">
+    <Position X="5.25" Y="20.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAIAAEAEAAAAAAAAAAAAAAAAAAAAAAAIAAAAAI=</HashCode>
+      <FileName>Emit\AssemblyBuilders.CLR.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Emit.MultiScriptAssemblyBuilder">
+    <Position X="8.5" Y="20.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AEACAAAIAAEAAAAAAAAAAAAAAAAAAAEAAAABAAAAAAA=</HashCode>
+      <FileName>Emit\AssemblyBuilders.CLR.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="entryPoint" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="PHP.Core.PhpSourceFile" Collapsed="true">
+    <Position X="12.75" Y="20.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAABAAAAAQACAEgAAgAEAAAABAAIAAAAAAAAgAAAA=</HashCode>
+      <FileName>PhpSourceFile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Emit.ILEmitter" Collapsed="true">
+    <Position X="8.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>xFkAgkWiACQoICMCAADpcJTAWLICgYIAFgSKMZAIQLA=</HashCode>
+      <FileName>Emit\ILEmitter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.PhpAssembly" Collapsed="true">
+    <Position X="12.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Reflection\Assemblies.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.DAssembly" Collapsed="true">
+    <Position X="12.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEEABAABAAAAJAAAACAAAAAAAAAAEAACAAAAAABAA=</HashCode>
+      <FileName>Reflection\Assemblies.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.CodeDom.CodeDomAssembly" Collapsed="true">
+    <Position X="10.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAg=</HashCode>
+      <FileName>CodeDom\CodeDomUnits.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.PureAssembly" Collapsed="true">
+    <Position X="12.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAABAAAAAAAAAAAAAAAICADAACAAAAAg=</HashCode>
+      <FileName>Reflection\Assemblies.CLR.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.ScriptAssembly" Collapsed="true">
+    <Position X="14" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAEAAABAAAAAAAEAAAgAEIAAAAAAAAAAAA=</HashCode>
+      <FileName>Reflection\Assemblies.CLR.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.TransientAssembly" Collapsed="true">
+    <Position X="15.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACACEAAAgIAAAAQAADAAgAABAABAAEAAAGAAAAAAAAA=</HashCode>
+      <FileName>Reflection\Assemblies.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.SingleScriptAssembly" Collapsed="true">
+    <Position X="13" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAAAAAAAAAAAEAAAgAAAAAAAACAAAAAg=</HashCode>
+      <FileName>Reflection\Assemblies.CLR.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PHP.Core.Reflection.MultiScriptAssembly" Collapsed="true">
+    <Position X="15.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAgAAAAAABIBAAAAAUAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Reflection\Assemblies.CLR.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="PHP.Core.Emit.AssemblyKinds">
+    <Position X="8" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAAAAAAAACAgAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>Emit\AssemblyBuilders.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

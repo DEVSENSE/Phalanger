@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="zip_entry_compressionmethod" description="Return a string containing the compression method used on a particular entry.">
+    <param type="resource" name="zip_entry" />
+  </function>
+  <function returnType="string" name="zip_entry_name" description="Return the name given a ZZip entry.">
+    <param type="resource" name="zip_entry" />
+  </function>
+  <function returnType="void" name="zip_close" description="Close a Zip archive.">
+    <param type="resource" name="zip" />
+  </function>
+  <function returnType="int" name="zip_entry_filesize" description="Return the actual filesize of a ZZip entry.">
+    <param type="resource" name="zip_entry" />
+  </function>
+  <function returnType="void" name="zip_entry_close" description="Close a zip entry.">
+    <param type="resource" name="zip_ent" />
+  </function>
+  <function returnType="string" name="zip_entry_read" description="Read X bytes from an opened zip entry.">
+    <param type="resource" name="zip_ent" />
+    <param optional="true" type="int" name="length" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="zip_open" description="Open a new zip archive for reading.">
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="bool" name="zip_entry_open" description="Open a Zip File, pointed by the resource entry.">
+    <param type="resource" name="zip_dp" />
+    <param type="resource" name="zip_entry" />
+    <param type="string" name="mode" />
+  </function>
+  <function returnType="int" name="zip_entry_compressedsize" description="Return the compressed size of a ZZip entry.">
+    <param type="resource" name="zip_entry" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="zip_read" description="Returns the next file in the archive.">
+    <param type="resource" name="zip" />
+  </function>
+</module>

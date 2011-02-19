@@ -1,0 +1,19 @@
+<VSTemplate Version="2.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name>PHP Windows Application</Name>
+    <Description>Creates a PHP-compatible Windows application</Description>
+    <Icon>__TemplateIcon.ico</Icon>
+    <ProjectType>Phalanger</ProjectType>
+    <SortOrder>60</SortOrder>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>WindowsApplication</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+      <PromptForSaveOnCreation>true</PromptForSaveOnCreation>
+  </TemplateData>
+  <TemplateContent>
+    <Project File="WindowsApp.phpproj" ReplaceParameters="true">
+			<ProjectItem ReplaceParameters="true" OpenInEditor="true">WindowsApp.php</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

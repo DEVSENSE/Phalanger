@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <!-- All functions and classes are provided by the php_pdo.dll extension,
+       which must be loaded prior to any specific PDO driver -->
+</module>

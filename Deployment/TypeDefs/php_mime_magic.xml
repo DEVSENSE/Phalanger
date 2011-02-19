@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="mime_content_type" description="Detect MIME Content-type for a file.">
+    <param type="string" name="filename" />
+  </function>
+</module>

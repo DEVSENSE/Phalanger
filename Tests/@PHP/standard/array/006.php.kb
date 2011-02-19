@@ -1,0 +1,34 @@
+[expect php]
+[file]
+<?php
+include('Phalanger.inc');
+
+array_pop($GLOBALS);
+
+$a = array("foo", "bar", "fubar");
+$b = array("3" => "foo", "4" => "bar", "5" => "fubar");
+$c = array("a" => "foo", "b" => "bar", "c" => "fubar");
+
+/* simple array */
+echo array_pop($a), "\n";
+array_push($a, "foobar");
+__var_dump($a);
+
+/* numerical assoc indices */
+echo array_pop($b), "\n";
+__var_dump($b);
+
+/* assoc indices */
+echo array_pop($c), "\n";
+__var_dump($c);
+
+
+// additional test by Phalanger:
+$a = array("a","b",100 => "x",200 => "c");
+array_pop($a);
+$a[] = "1";
+array_pop($a);
+$a[] = "2";
+__var_dump($a);
+
+?>

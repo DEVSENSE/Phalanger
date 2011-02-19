@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="void" name="com_addref" description="Increases the components reference counter [deprecated]." />
+  <function returnType="bool" name="com_event_sink" description="Connect events from a COM object to a PHP object.">
+    <param direction="inout" type="object" name="com_object" />
+    <param direction="inout" type="object" name="sink_object" />
+    <param optional="true" type="mixed" name="sink_interface" />
+  </function>
+  <function returnType="mixed" name="com_get" description="Gets the value of a COM Component's property [deprecated].">
+    <param type="object" name="com_object" />
+    <param type="string" name="property" />
+  </function>
+  <function returnType="mixed" name="com_invoke" description="Calls a COM component's method [deprecated].">
+    <param type="object" name="com_object" />
+    <param type="string" name="function_name" />
+    <param optional="vararg" type="mixed" name="function_parameters" />
+  </function>
+  <function returnType="mixed" name="com_invoke_ex">
+    <param type="int" name="module" />
+    <param type="int" name="invoke_flags" />
+    <param type="string" name="handler_name" />
+    <param optional="vararg" type="mixed" name="function_parameters" />
+  </function>
+  <function returnType="bool" name="com_isenum" description="Indicates if a COM object has an IEnumVariant interface for iteration [deprecated].">
+    <param type="object" name="com_module" />
+  </function>
+  <function returnType="object" name="com_load" description="Creates a new reference to a COM component [deprecated].">
+    <param type="string" name="module_name" />
+    <param optional="true" type="string" name="server_name" />
+    <param optional="true" type="int" name="codepage" />
+  </function>
+  <function returnType="bool" name="com_load_typelib" description="Loads a Typelib.">
+    <param type="string" name="typelib_name" />
+    <param optional="true" type="bool" name="case_insensitive" />
+  </function>
+  <function returnType="bool" name="com_message_pump" description="Process COM messages, sleeping for up to timeoutms milliseconds.">
+    <param optional="true" type="int" name="timeoutms" />
+  </function>
+  <function returnType="bool" name="com_print_typeinfo" description="Print out a PHP class definition for a dispatchable interface.">
+    <param type="object" name="com_object" />
+    <param type="string" name="disp_interface" />
+    <param type="bool" name="want_sink" />
+  </function>
+  <function returnType="mixed" name="com_propget" description="Gets the value of a COM Component's property [deprecated].">
+    <param type="object" name="com_object" />
+    <param type="string" name="property" />
+  </function>
+  <function returnType="void" name="com_propput" description="Assigns a value to a COM component's property.">
+    <param type="object" name="com_object" />
+    <param type="string" name="property" />
+    <param type="mixed" name="value" />
+  </function>
+  <function returnType="void" name="com_propset" description="Assigns a value to a COM component's property.">
+    <param type="object" name="com_object" />
+    <param type="string" name="property" />
+    <param type="mixed" name="value" />
+  </function>
+  <function returnType="void" name="com_release" description="Decreases the components reference counter [deprecated]." />
+  <function returnType="void" name="com_set" description="Assigns a value to a COM component's property.">
+    <param type="object" name="com_object" />
+    <param type="string" name="property" />
+    <param type="mixed" name="value" />
+  </function>
+
+  <class name="COM" arrayGetter="Item">
+    <function name="COM" description="COM class constructor.">
+      <param type="string" name="module_name" />
+      <param optional="true" type="mixed" name="server_name" />
+      <param optional="true" type="int" name="codepage" />
+      <param optional="true" type="string" name="typelib" />
+    </function>
+    <function returnType="mixed" name="__call" description="Invokes a method.">
+      <param type="string" name="method_name" />
+      <param type="array" name="args" />
+    </function>
+    <function returnType="mixed" name="__get" description="Gets a property value.">
+      <param type="string" name="property_name" />
+    </function>
+    <function returnType="void" name="__set" description="Sets a property value.">
+      <param type="string" name="property_name" />
+      <param type="mixed" name="value" />
+    </function>
+  </class>
+  <class name="VARIANT">
+    <function name="VARIANT" description="VARIANT class constructor.">
+      <param optional="true" type="mixed" name="value" />
+      <param optional="true" type="int" name="type" />
+      <param optional="true" type="int" name="codepage" />
+    </function>
+  </class>
+</module>

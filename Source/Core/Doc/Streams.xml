@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<docs>
+
+<method name="Stat">
+  <summary>
+  Gives detailed filesystem-relevant information about the stream such as 
+  size, creatiion and modification dates etc.
+  </summary>
+  <returns><see cref="PhpArray"/> with the <c>stat</c> results.</returns>
+  <exception cref="PhpException">When the stream does not support <c>stat()</c>.</exception>
+</method>
+
+<method name="SetParameter">
+  <summary>
+  Performs additional operations on the stream. Corresponds to <c>php_stream_ops.set_option()</c>
+  except of the format of the operation argument.
+  </summary>
+  <param name="option">The operation identifier. One of the <see cref="StreamParameterOptions"/>.</param>
+  <param name="value">The operation argument.</param>
+  <returns><c>true</c> if the operation is supported and was successful, <c>false</c> otherwise.</returns>
+</method>
+
+<method name="RawRead">
+  <summary>
+  Reads raw byte data from the underlying stream to the given <paramref name="buffer"/>.
+  </summary>
+  <param name="buffer">The buffer.</param>
+  <param name="offset">Starting index in the <paramref name="buffer"/>.</param>  
+  <param name="count">How many bytes to read.</param>
+  <returns>The number of bytes read or <c>0</c> in case of EOF or <c>-1</c> in case of an error.</returns>
+</method>
+
+<method name="RawWrite">
+  <summary>
+  Writes the binary data from the <paramref name="buffer"/>to the underlying stream.
+  </summary>
+  <param name="buffer">The buffer.</param>
+  <param name="offset">Starting index in the <paramref name="buffer"/>.</param>  
+  <param name="count">How many bytes to write.</param>
+  <returns>The number of bytes written or <c>-1</c> in case of an error.</returns>
+</method>
+
+<method name="RawFlush">
+  <summary>
+  Flushes the underlying stream.
+  </summary>
+  <returns><c>true</c> on success, <c>false</c> on error.</returns>
+</method>
+
+<property name="RawEof">
+  <summary>
+  <c>true</c> if the end of the stream was reached, <c>false</c> otherwise.
+  </summary>
+</property>
+
+<method name="RawTell">
+  <summary>
+  Retreives the position in the underlying stream in bytes from the beginning.
+  </summary>
+  <returns>The position or <c>-1</c> on error.</returns>
+  <exception cref="PhpException">When seeking is not supported.</exception>
+</method>
+
+<method name="RawSeek">
+	<summary>
+	Changes the offset in the underlying stream.
+	</summary>
+	<param name="offset">New position from the <paramref name="whence"/> position.</param>
+	<param name="whence">Where to count the <paramref name="offset"/> from. May be one
+	of the <see cref="SeekOrigin"/> options.</param>
+  <returns><c>true</c> on success, <c>false</c> on error.</returns>
+  <exception cref="PhpException">When seeking is not supported.</exception>
+</method>
+
+<property name="RawStream">
+  <summary>
+  Casts this instance as the <see cref="System.IO.Stream"/>
+  (gives direct acess to the unbuffered and unfiltered raw binary data).
+  </summary>
+</property>
+
+<property name="CanSeek">
+  <summary>
+  <c>true</c> if this stream implements seeking behavior (<c>Seek</c> and <c>Tell</c>).
+  </summary>
+</property> 
+
+<property name="CanCast">
+  <summary>
+  <c>true</c> if this stream supports conversion to <see cref="System.IO.Stream"/>.
+  </summary>
+</property> 
+
+</docs>

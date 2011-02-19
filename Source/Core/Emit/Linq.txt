@@ -1,0 +1,149 @@
+-------------------------
+Rule #1
+-------------------------
+
+A query that contains an into clause
+
+q1 into x q2
+
+is translated into
+
+from x in ( q1 ) q2     ...    add new Generator(q1, x) to q2
+
+-------------------------
+Rule #2
+-------------------------
+
+A from clause with multiple generators
+
+from g1 , g2 , … gn
+
+is translated into
+
+from g1 from g2 … from gn
+
+-------------------------
+Rule #3
+-------------------------
+
+A from clause immediately followed by a where clause
+
+from x in e where f
+
+is translated into
+
+from x in (( e ) . Where ( x => f ))
+
+-------------------------
+Rule #4 (multiple from clauses)
+-------------------------
+
+A query expression with multiple from clauses, an orderby clause, and a select clause
+
+from x1 in e1 from x2 in e2 … orderby k1 , k2 … select v
+
+is translated into
+
+( from x1 in e1 from x2 in e2 … select new { k1 = k1 , k2 = k2 … , v = v } )
+. OrderBy ( x => x . k1 ) . ThenBy ( x => x . k2 ) … . Select ( x => x . v )
+
+-------------------------
+Rule #5 (multiple from clauses)
+-------------------------
+
+A query expression with multiple from clauses, an orderby clause, and a group clause
+
+from x1 in e1 from x2 in e2 … orderby k1 , k2 … group v by g
+
+is translated into
+
+( from x1 in e1 from x2 in e2 … select new { k1 = k1 , k2 = k2 … , v = v , g = g } )
+. OrderBy ( x => x . k1 ) . ThenBy ( x => x . k2 ) … . GroupBy ( x => x . g , x => x . v )
+
+-------------------------
+Rule #6 (multiple from clauses)
+-------------------------
+
+A query expression with multiple from clauses and a select clause
+
+from x in e from x1 in e1 … select v
+
+is translated into 
+
+( e ) . SelectMany ( x => from x1 in e1 … select v )
+
+-------------------------
+Rule #7 (multiple from clauses)
+-------------------------
+
+A query expression with multiple from clauses and a group clause
+
+from x in e from x1 in e1 … group v by g
+
+is translated into 
+
+( e ) . SelectMany ( x => from x1 in e1 … group v by g )
+
+-------------------------
+Rule #8 (single from clause)
+-------------------------
+
+A query expression with a single from clause, no orderby clause, and a select clause
+
+from x in e select v
+
+is translated into
+
+( e ) . Select ( x => v )
+
+except when v is the identifier x, the translation is simply
+
+( e )
+
+-------------------------
+Rule #9 (single from clause)
+-------------------------
+
+A query expression with a single from clause, no orderby clause, and a group clause
+
+from x in e group v by g
+
+is translated into
+
+( e ) . GroupBy ( x => g , x => v )
+
+except when v is the identifier x, the translation is
+
+( e ) . GroupBy ( x => g )
+
+-------------------------
+Rule #10 (single from clause)
+-------------------------
+
+A query expression with a single from clause, an orderby clause, and a select clause
+
+from x in e orderby k1 , k2 … select v
+
+is translated into
+
+( e ) . OrderBy ( x => k1 ) . ThenBy ( x => k2 ) … . Select ( x => v )
+
+except when v is the identifier x, the translation is simply
+
+( e ) . OrderBy ( x => k1 ) . ThenBy ( x => k2 ) …
+
+-------------------------
+Rule #11 (single from clause)
+-------------------------
+
+A query expression with a single from clause, an orderby clause, and a group clause
+
+from x in e orderby k1 , k2 … group v by g
+
+is translated into
+
+( e ) . OrderBy ( x => k1 ) . ThenBy ( x => k2 ) … . GroupBy ( x => g , x => v )
+
+except when v is the identifier x, the translation is
+
+( e ) . OrderBy ( x => k1 ) . ThenBy ( x => k2 ) … . GroupBy ( x => g )

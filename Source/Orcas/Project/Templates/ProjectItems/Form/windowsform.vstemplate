@@ -1,0 +1,28 @@
+<VSTemplate Version="2.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+    <TemplateData>
+        <Name>Windows Form</Name>
+        <Description>A blank Windows Form</Description>
+        <Icon>UI_WinForm.ico</Icon>
+        <ProjectType>Phalanger</ProjectType>
+        <SortOrder>40</SortOrder>
+        <DefaultName>Form.php</DefaultName>
+        <ProvideDefaultName>true</ProvideDefaultName>
+        <ShowByDefault>true</ShowByDefault>
+    </TemplateData>
+    <TemplateContent>
+        <!--<References>
+            <Reference>
+                <Assembly>System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
+            </Reference>
+            <Reference>
+                <Assembly>System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</Assembly>
+            </Reference>
+            <Reference>
+                <Assembly>System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
+            </Reference>
+        </References>-->
+
+        <ProjectItem ReplaceParameters="true">Form.user.php</ProjectItem>
+        <ProjectItem ReplaceParameters="true" SubType="Form">Form.php</ProjectItem>
+    </TemplateContent>
+</VSTemplate>

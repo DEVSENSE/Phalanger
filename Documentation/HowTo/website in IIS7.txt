@@ -1,0 +1,36 @@
+to run PHP website using Phalanger on IIS (6, 7, 7.5)
+
+IIS configuration:
+
+0. IIS, ASP.NET must be installed (Windows Features)
+
+:: (Integrated Pipeline) (IIS 7)
+
+1. open IIS console
+2. add new application (or map an application to an existing directory)
+3. Manage the app, Advanced Settings - Set Default AppPool (or your own, Integrated mode)
+4. (if you need native extensions) within the Application Pools (top of the left tree), ensure your pool runs in 32bit
+   a. right click on the pool, Advanced Settings
+   b. Enable 32-Bit Applications = true
+5. in your web.config, add following into <configuration> section
+  <system.webServer>
+    <handlers>
+      <add name="Phalanger" path="*.php" verb="*" type="PHP.Core.RequestHandler, PhpNetCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71"/>
+    </handlers>
+  </system.webServer>
+6. go to your application, open Default Document, add "index.php", "default.php"
+
+:: (Classic .NET AppPool) (IIS 6)
+
+1. open IIS console
+2. add new application (or map an application to an existing directory)
+3. Manage the app, Advanced Settings - Set Classic .NET AppPool (or your own pool, must not be Integrated mode)
+4. (if you need native extensions) within the Application Pools (top of the left tree), ensure your pool (Classic .NET AppPool) runs in 32bit
+   a. right click on the pool, Advanced Settings
+   b. Enable 32-Bit Applications = true
+5. go to your application, open Handler Mappings
+   a. Add Script
+   b. Request Path = *.php
+   c. Executable = C:\Windows\Microsoft.NET\Framework\v2.0.50727\aspnet_isapi.dll
+   d. Name = (anything)
+6. go to your application, open Default Document, add "index.php", "default.php"

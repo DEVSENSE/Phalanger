@@ -1,0 +1,14 @@
+<VSTemplate Version="2.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name>Application config</Name>
+    <Description>An empty application configuration file.</Description>
+    <Icon>__TemplateIcon.ico</Icon>
+    <ProjectType>Phalanger</ProjectType>
+    <SortOrder>200</SortOrder>
+    <DefaultName>App.config</DefaultName>
+		<ProvideDefaultName>false</ProvideDefaultName>
+	</TemplateData>
+  <TemplateContent>
+    <ProjectItem>App.config</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

@@ -1,0 +1,29 @@
+[expect php]
+[file]
+<?
+include('Phalanger.inc');
+error_reporting(E_ALL & ~E_NOTICE);
+
+class TestClass
+{
+	function __construct()
+	{
+		self::Test1();
+		$this->Test1();
+	}
+
+	static function Test1()
+	{
+		__var_dump($this);
+	}
+
+	static function Test2($this)
+	{
+		__var_dump($this);
+	}
+}
+
+$obj = new TestClass;
+TestClass::Test2(new stdClass);
+
+?>

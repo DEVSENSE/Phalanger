@@ -1,0 +1,14 @@
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+      <Name>XSLT file</Name>
+      <Description>XSLT transformation stylesheet file</Description>
+      <Icon>XSLT.ico</Icon>
+    <ProjectType>Phalanger</ProjectType>
+    <SortOrder>100</SortOrder>
+    <DefaultName>XSLTFile.xslt</DefaultName>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp> 
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem ReplaceParameters="false">XSLTFile.xslt</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="_" description="Return the translation of msgid for the current domain, or msgid unaltered if a translation does not exist.">
+    <param type="string" name="msgid" />
+  </function>
+  <function returnType="string" name="bind_textdomain_codeset" description="Specify the character encoding in which the messages from the DOMAIN message catalog will be returned.">
+    <param type="string" name="domain" />
+    <param type="string" name="codeset" />
+  </function>
+  <function returnType="string" name="dcgettext" description="Return the translation of msgid for domain_name and category, or msgid unaltered if a translation does not exist.">
+    <param type="string" name="domain_name" />
+    <param type="string" name="msgid" />
+    <param type="int" name="category" />
+  </function>
+  <function returnType="string" name="textdomain" description="Set the textdomain to &quot;domain&quot;. Returns the current domain.">
+    <param type="string" name="domain" />
+  </function>
+  <function returnType="string" name="bindtextdomain" description="Bind to the text domain domain_name, looking for translations in dir. Returns the current domain.">
+    <param type="string" name="domain_name" />
+    <param type="string" name="dir" />
+  </function>
+  <function returnType="string" name="dgettext" description="Return the translation of msgid for domain_name, or msgid unaltered if a translation does not exist.">
+    <param type="string" name="domain_name" />
+    <param type="string" name="msgid" />
+  </function>
+  <function returnType="string" name="gettext" description="Return the translation of msgid for the current domain, or msgid unaltered if a translation does not exist.">
+    <param type="string" name="msgid" />
+  </function>
+  <function returnType="string" name="dngettext" description="Plural version of dgettext().">
+    <param type="string" name="domain" />
+    <param type="string" name="msgid1" />
+    <param type="string" name="msgid2" />
+    <param type="int" name="count" />
+  </function>
+  <function returnType="string" name="ngettext" description="Plural version of gettext().">
+    <param type="string" name="MSGID1" />
+    <param type="string" name="MSGID2" />
+    <param type="int" name="N" />
+  </function>
+</module>

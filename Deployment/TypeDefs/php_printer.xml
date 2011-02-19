@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="void" name="printer_abort" description="Deletes the printer's spool file.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="void" name="printer_close" description="Closes an open printer connection.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="printer_create_brush" description="Creates a new brush.">
+    <param type="int" name="style" />
+    <param type="string" name="color" />
+  </function>
+  <function returnType="void" name="printer_create_dc" description="Creates a new device context.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="printer_create_font" description="Creates a new font.">
+    <param type="string" name="face" />
+    <param type="int" name="height" />
+    <param type="int" name="width" />
+    <param type="int" name="font_weight" />
+    <param type="bool" name="italic" />
+	<param type="bool" name="underline" />
+	<param type="bool" name="strikeout" />
+    <param type="int" name="orientation" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="printer_create_brush" description="Creates a new pen.">
+    <param type="int" name="style" />
+    <param type="int" name="width" />
+    <param type="string" name="color" />
+  </function>
+  <function returnType="bool" name="printer_delete_brush" description="Deletes a brush.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="bool" name="printer_delete_dc" description="Deletes a device context.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="bool" name="printer_delete_font" description="Deletes a font.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="bool" name="printer_delete_pen" description="Deletes a pen.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="void" name="printer_draw_bmp" description="Draws a bmp.">
+    <param type="resource" name="handle" />
+    <param type="string" name="filename" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+  </function>
+  <function returnType="void" name="printer_draw_chord" description="Draws a chord.">
+    <param type="resource" name="handle" />
+    <param type="int" name="rec_x" />
+    <param type="int" name="rec_y" />
+    <param type="int" name="rec_x1" />
+    <param type="int" name="rec_y1" />
+    <param type="int" name="rad_x" />
+    <param type="int" name="rad_y" />
+    <param type="int" name="rad_x1" />
+    <param type="int" name="rad_y1" />
+  </function>
+  <function returnType="void" name="printer_draw_ellipse" description="Draws an ellipse.">
+    <param type="resource" name="handle" />
+    <param type="int" name="ul_x" />
+    <param type="int" name="ul_y" />
+    <param type="int" name="lr_x" />
+    <param type="int" name="lr_y" />
+  </function>
+  <function returnType="void" name="printer_draw_line" description="Draws a line.">
+    <param type="resource" name="handle" />
+    <param type="int" name="from_x" />
+    <param type="int" name="from_y" />
+    <param type="int" name="to_x" />
+    <param type="int" name="to_y" />
+  </function>
+  <function returnType="void" name="printer_draw_pie" description="Draws a pie.">
+    <param type="resource" name="handle" />
+    <param type="int" name="rec_x" />
+    <param type="int" name="rec_y" />
+    <param type="int" name="rec_x1" />
+    <param type="int" name="rec_y1" />
+    <param type="int" name="rad1_x" />
+    <param type="int" name="rad1_y" />
+    <param type="int" name="rad2_x" />
+    <param type="int" name="rad2_y" />
+  </function>
+  <function returnType="void" name="printer_draw_rectangle" description="Draws a rectangle.">
+    <param type="resource" name="handle" />
+    <param type="int" name="ul_x" />
+    <param type="int" name="ul_y" />
+    <param type="int" name="lr_x" />
+    <param type="int" name="lr_y" />
+  </function>
+  <function returnType="void" name="printer_draw_roundrect" description="Draws a rectangle.">
+    <param type="resource" name="handle" />
+    <param type="int" name="ul_x" />
+    <param type="int" name="ul_y" />
+    <param type="int" name="lr_x" />
+    <param type="int" name="lr_y" />
+    <param type="int" name="width" />
+    <param type="int" name="height" />
+  </function>
+  <function returnType="void" name="printer_draw_text" description="Draws a text.">
+    <param type="resource" name="handle" />
+    <param type="string" name="text" />
+    <param type="int" name="x" />
+    <param type="int" name="y" />
+  </function>
+  <function returnType="bool" name="printer_end_doc" description="Closes a document.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="bool" name="printer_end_page" description="Closes the active page.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="mixed" name="printer_get_option" description="Retrieves printer configuration data.">
+    <param type="resource" name="handle" />
+    <param type="string" name="option" />
+  </function>
+  <function returnType="array" name="printer_list" description="Returns an array of printers attached to the server.">
+    <param type="int" name="enumtype" />
+    <param optional="true" type="string" name="name" />
+    <param optional="true" type="int" name="level" />
+  </function>
+  <function returnType="int" name="printer_logical_fontheight" description="Gets logical font height.">
+    <param type="resource" name="handle" />
+    <param type="int" name="height" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="printer_open" description="Opens connection to a printer.">
+    <param optional="true" type="string" name="devicename" />
+  </function>
+  <function returnType="void" name="printer_select_brush" description="Selects a brush.">
+    <param type="resource" name="printer_handle" />
+    <param type="resource" name="brush_handle" />
+  </function>
+  <function returnType="void" name="printer_select_font" description="Selects a font.">
+    <param type="resource" name="printer_handle" />
+    <param type="resource" name="font_handle" />
+  </function>
+  <function returnType="void" name="printer_select_pen" description="Selects a pen.">
+    <param type="resource" name="printer_handle" />
+    <param type="resource" name="pen_handle" />
+  </function>
+  <function returnType="bool" name="printer_set_option" description="Configures the printer connection.">
+    <param type="resource" name="handle" />
+    <param type="int" name="option" />
+    <param type="mixed" name="value" />
+  </function>
+  <function returnType="bool" name="printer_start_doc" description="Starts a new document.">
+    <param type="resource" name="handle" />
+    <param optional="true" type="string" name="document" />
+  </function>
+  <function returnType="bool" name="printer_start_page" description="Starts a new page.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="bool" name="printer_write" description="Writes data to the printer.">
+    <param type="resource" name="handle" />
+    <param type="string" name="content" />
+  </function>
+
+
+</module>

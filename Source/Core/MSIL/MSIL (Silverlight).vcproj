@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9.00"
+	Name="Core.Language (Silverlight)"
+	ProjectGUID="{DAA5AC00-A25D-4680-959C-349E564742B3}"
+	RootNamespace="Core.MSIL"
+	SccProjectName="$/Phalanger/Source/Core/MSIL"
+	SccAuxPath="https://tfs01.codeplex.com"
+	SccLocalPath="."
+	SccProvider="{4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}"
+	Keyword="MakeFileProj"
+	TargetFrameworkVersion="131072"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="DebugSilverlight|Win32"
+			OutputDirectory="Debug"
+			IntermediateDirectory="Debug"
+			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			DeleteExtensionsOnClean=""
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="&quot;$(ProjectDir)build_sl.cmd&quot; &quot;$(TargetPath)&quot; DebugSilverlight"
+				ReBuildCommandLine="&quot;$(ProjectDir)build_sl.cmd&quot; &quot;$(TargetPath)&quot; DebugSilverlight"
+				CleanCommandLine="del /Q $(TargetDir)*"
+				Output="DebugSilverlight/PhpNetCore.IL.dll"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="ReleaseSilverlight|Win32"
+			OutputDirectory="ReleaseSilverlight"
+			IntermediateDirectory="ReleaseSilverlight"
+			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="&quot;$(ProjectDir)build_sl.cmd&quot; &quot;$(TargetPath)&quot; ReleaseSilverlight"
+				ReBuildCommandLine="&quot;$(ProjectDir)build_sl.cmd&quot; &quot;$(TargetPath)&quot; ReleaseSilverlight"
+				CleanCommandLine="del /Q $(TargetDir)*"
+				Output="ReleaseSilverlight/PhpNetCore.IL.dll"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="Doc"
+			>
+			<File
+				RelativePath=".\Doc\PhpNetCore.IL.xml"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath=".\Assembly_Silverlight.il"
+			>
+		</File>
+		<File
+			RelativePath=".\build_sl.cmd"
+			>
+		</File>
+		<File
+			RelativePath=".\PhpInterfaces.il"
+			>
+		</File>
+		<File
+			RelativePath=".\Utils.il"
+			>
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="array" castToFalse="true" name="sqlite_array_query" description="Execute a query against a given database and returns an array.">
+    <param type="resource" name="dbhandle" />
+    <param type="string" name="query" />
+    <param optional="true" type="int" name="result_type" />
+    <param optional="true" type="bool" name="decode_binary" />
+  </function>
+  <function returnType="void" name="sqlite_busy_timeout" description="Set busy timeout duration, or disable busy handlers.">
+    <param type="resource" name="dbhandle" />
+    <param type="int" name="milliseconds" />
+  </function>
+  <function returnType="int" name="sqlite_changes" description="Returns the number of rows that were changed by the most recent SQL statement.">
+    <param type="resource" name="dbhandle" />
+  </function>
+  <function returnType="void" name="sqlite_close" description="Closes an open SQLite database.">
+    <param type="resource" name="dbhandle" />
+  </function>
+  <function returnType="mixed" name="sqlite_column" description="Fetches a column from the current row of a result set.">
+    <param type="resource" name="result" />
+    <param type="mixed" name="index_or_name" />
+    <param optional="true" type="bool" name="decode_binary" />
+  </function>
+  <function returnType="void" name="sqlite_create_aggregate" description="Register an aggregating UDF for use in SQL statements.">
+    <param type="resource" name="dbhandle" />
+    <param type="string" name="function_name" />
+    <param type="string" name="step_func" />
+    <param type="string" name="finalize_func" />
+    <param optional="true" type="int" name="num_args" />
+  </function>
+  <function returnType="void" name="sqlite_create_function" description="Registers a &quot;regular&quot; User Defined Function for use in SQL statements.">
+    <param type="resource" name="dbhandle" />
+    <param type="string" name="function_name" />
+    <param type="string" name="string" />
+    <param optional="true" type="int" name="num_args" />
+  </function>
+  <function returnType="array" castToFalse="true" name="sqlite_current" description="Fetches the current row from a result set as an array.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="result_type" />
+    <param optional="true" type="bool" name="decode_binary" />
+  </function>
+  <function returnType="string" name="sqlite_error_string" description="Returns the textual description of an error code.">
+    <param type="int" name="error_code" />
+  </function>
+  <function returnType="string" name="sqlite_escape_string" description="Escapes a string for use as a query parameter.">
+    <param type="string" name="item" />
+  </function>
+  <function returnType="bool" name="sqlite_exec" description="Executes a result-less query against a given database.">
+    <param type="resource" name="dbhandle" />
+    <param type="string" name="query" />
+    <param direction="inout" optional="true" type="string" name="error_msg" />
+  </function>
+  <function returnType="object" name="sqlite_factory" description="Opens a SQLite database and returns a SQLiteDatabase object.">
+    <param type="string" name="filename" />
+    <param optional="true" type="int" name="mode" />
+    <param direction="inout" optional="true" type="string" name="error_message" />
+  </function>
+  <function returnType="array" name="sqlite_fetch_all" description="Fetches all rows from a result set as an array of arrays.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="result_type" />
+    <param optional="true" type="bool" name="decode_binary" />
+  </function>
+  <function returnType="array" castToFalse="true" name="sqlite_fetch_array" description="Fetches the next row from a result set as an array.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="result_type" />
+    <param optional="true" type="bool" name="decode_binary" />
+  </function>
+  <function returnType="array" castToFalse="true" name="sqlite_fetch_column_types" description="Return an array of column types from a particular table.">
+    <param type="string" name="table_name" />
+    <param type="resource" name="dbhandle" />
+    <param optional="true" type="int" name="result_type" />
+  </function>
+  <function returnType="object" name="sqlite_fetch_object" description="Fetches the next row from a result set as an object.">
+    <param type="resource" name="result" />
+    <param optional="true" type="string" name="class_name" />
+    <param optional="true" type="array" name="ctor_params" />
+    <param optional="true" type="bool" name="decode_binary" />
+  </function>
+  <function returnType="string" name="sqlite_fetch_single" description="Fetches the first column of a result set as a string.">
+    <param type="resource" name="result" />
+    <param optional="true" type="bool" name="decode_binary" />
+    <alias name="sqlite_fetch_string" />
+  </function>
+  <function returnType="string" name="sqlite_field_name" description="Returns the name of a particular field.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_index" />
+  </function>
+  <function returnType="bool" name="sqlite_has_more" description="Finds whether or not more rows are available.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="bool" name="sqlite_has_prev" description="Returns whether or not a previous row is available.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="sqlite_key" description="Returns the current row index.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="sqlite_last_error" description="Returns the error code of the last error for a database.">
+    <param type="resource" name="dbhandle" />
+  </function>
+  <function returnType="int" name="sqlite_last_insert_rowid" description="Returns the rowid of the most recently inserted row.">
+    <param type="resource" name="dbhandle" />
+  </function>
+  <function returnType="string" name="sqlite_libencoding" description="Returns the encoding of the linked SQLite library." />
+  <function returnType="string" name="sqlite_libversion" description="Returns the version of the linked SQLite library." />
+  <function returnType="bool" name="sqlite_next" description="Seek to the next row number.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="sqlite_num_fields" description="Returns the number of fields in a result set.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="sqlite_num_rows" description="Returns the number of rows in a buffered result set.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="sqlite_open" description="Opens a SQLite database and create the database if it does not exist.">
+    <param type="string" name="filename" />
+    <param optional="true" type="int" name="mode" />
+    <param direction="inout" optional="true" type="string" name="error_message" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="sqlite_popen" description="Opens a persistent handle to an SQLite database and create the database if it does not exist.">
+    <param type="string" name="filename" />
+    <param optional="true" type="int" name="mode" />
+    <param direction="inout" optional="true" type="string" name="error_message" />
+  </function>
+  <function returnType="bool" name="sqlite_prev" description="Seek to the previous row number of a result set.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="sqlite_query" description="Executes a query against a given database and returns a result handle.">
+    <param type="resource" name="dbhandle" />
+    <param type="string" name="query" />
+    <param optional="true" type="int" name="result_type" />
+    <param direction="inout" optional="true" type="string" name="error_msg" />
+  </function>
+  <function returnType="bool" name="sqlite_rewind" description="Seek to the first row number.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="bool" name="sqlite_seek" description="Seek to a particular row number of a buffered result set.">
+    <param type="resource" name="result" />
+    <param type="int" name="rownum" />
+  </function>
+  <function returnType="array" name="sqlite_single_query" description="Executes a query and returns either an array for one single column or the value of the first row.">
+    <param type="resource" name="db" />
+    <param type="string" name="query" />
+    <param optional="true" type="bool" name="first_row_only" />
+    <param optional="true" type="bool" name="decode_binary" />
+  </function>
+  <function returnType="string" name="sqlite_udf_decode_binary" description="Decode binary data passed as parameters to an UDF.">
+    <param type="string" name="data" />
+  </function>
+  <function returnType="string" name="sqlite_udf_encode_binary" description="Encode binary data before returning it from an UDF.">
+    <param type="string" name="data" />
+  </function>
+  <function returnType="resource" name="sqlite_unbuffered_query" description="Execute a query that does not prefetch and buffer all data.">
+    <param type="resource" name="dbhandle" />
+    <param type="string" name="query" />
+    <param optional="true" type="int" name="result_type" />
+    <param direction="inout" optional="true" type="string" name="error_msg" />
+  </function>
+  <function returnType="bool" name="sqlite_valid" description="Returns whether more rows are available.">
+    <param type="resource" name="result" />
+  </function>
+</module>

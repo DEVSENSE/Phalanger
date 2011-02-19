@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="&gt;&gt;lblLanguage.Name" xml:space="preserve">
+    <value>lblLanguage</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="tlpButtons.ColumnCount" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;tlpMain.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblCulture.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lblCulture.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="cmdCancel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>191, 3</value>
+  </data>
+  <data name="tlpMain.Size" type="System.Drawing.Size, System.Drawing">
+    <value>289, 185</value>
+  </data>
+  <data name="lblCulture.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="cmdCancel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>None</value>
+  </data>
+  <data name="&gt;&gt;cmdOK.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdOK.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <data name="&gt;&gt;lblWarning.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="tlpMain.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="tlpButtons.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 156</value>
+  </data>
+  <data name="&gt;&gt;lblWarning.Parent" xml:space="preserve">
+    <value>tlpMain</value>
+  </data>
+  <data name="cmdOK.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>None</value>
+  </data>
+  <data name="&gt;&gt;lblLanguage.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="cmdCancel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>50, 23</value>
+  </data>
+  <data name="lblCulture.Location" type="System.Drawing.Point, System.Drawing">
+    <value>144, 27</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>289, 185</value>
+  </data>
+  <data name="&gt;&gt;lblWarning.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="picWarning.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 48</value>
+  </data>
+  <data name="&gt;&gt;picWarning.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="lblLanguage.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="picWarning.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="lblCulture.Size" type="System.Drawing.Size, System.Drawing">
+    <value>0, 13</value>
+  </data>
+  <data name="&gt;&gt;cmdCancel.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="picWarning.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
+    <value>AutoSize</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Select language</value>
+  </data>
+  <data name="tlpButtons.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="&gt;&gt;tlpButtons.Name" xml:space="preserve">
+    <value>tlpButtons</value>
+  </data>
+  <data name="lblWarning.Size" type="System.Drawing.Size, System.Drawing">
+    <value>193, 26</value>
+  </data>
+  <data name="&gt;&gt;cmdOK.Name" xml:space="preserve">
+    <value>cmdOK</value>
+  </data>
+  <data name="cmdOK.Size" type="System.Drawing.Size, System.Drawing">
+    <value>32, 23</value>
+  </data>
+  <data name="&gt;&gt;cmdCancel.Name" xml:space="preserve">
+    <value>cmdCancel</value>
+  </data>
+  <data name="picWarning.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
+  <data name="&gt;&gt;tlpButtons.Parent" xml:space="preserve">
+    <value>tlpMain</value>
+  </data>
+  <data name="cmbLanguage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>64, 3</value>
+  </data>
+  <data name="cmdCancel.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;cmdCancel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="cmdCancel.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="cmdOK.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;tlpMain.Name" xml:space="preserve">
+    <value>tlpMain</value>
+  </data>
+  <data name="cmbLanguage.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="picWarning.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 43</value>
+  </data>
+  <data name="tlpMain.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="tlpButtons" Row="3" RowSpan="1" Column="0" ColumnSpan="2" /&gt;&lt;Control Name="lblLanguage" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="cmbLanguage" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="picWarning" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="lblWarning" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="lblCulture" Row="1" RowSpan="1" Column="0" ColumnSpan="2" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,Percent,100" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,Percent,100,AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="tlpButtons.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="cmdCancel.Text" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
+  <data name="&gt;&gt;cmdOK.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;lblLanguage.Parent" xml:space="preserve">
+    <value>tlpMain</value>
+  </data>
+  <data name="&gt;&gt;lblLanguage.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmdOK.Parent" xml:space="preserve">
+    <value>tlpButtons</value>
+  </data>
+  <data name="&gt;&gt;tlpMain.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;lblCulture.Name" xml:space="preserve">
+    <value>lblCulture</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>LanguageSelector</value>
+  </data>
+  <data name="&gt;&gt;picWarning.Parent" xml:space="preserve">
+    <value>tlpMain</value>
+  </data>
+  <data name="tlpMain.RowCount" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="tlpMain.ColumnCount" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="tlpButtons.Size" type="System.Drawing.Size, System.Drawing">
+    <value>289, 29</value>
+  </data>
+  <data name="&gt;&gt;cmbLanguage.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="tlpButtons.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="tlpMain.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="tlpButtons.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;tlpMain.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;tlpButtons.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="cmdOK.Location" type="System.Drawing.Point, System.Drawing">
+    <value>56, 3</value>
+  </data>
+  <data name="tlpMain.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="cmdOK.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="cmdOK.Text" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="tlpButtons.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="cmdOK" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="cmdCancel" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,50,Percent,50" /&gt;&lt;Rows Styles="AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="lblWarning.Text" xml:space="preserve">
+    <value>Warning: When change of language is confirmed application is restarted.</value>
+  </data>
+  <data name="picWarning.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+</value>
+  </data>
+  <data name="lblCulture.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <data name="&gt;&gt;cmdCancel.Parent" xml:space="preserve">
+    <value>tlpButtons</value>
+  </data>
+  <data name="tlpButtons.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <data name="&gt;&gt;cmbLanguage.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cmbLanguage.Parent" xml:space="preserve">
+    <value>tlpMain</value>
+  </data>
+  <data name="&gt;&gt;lblCulture.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="cmbLanguage.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Left, Right</value>
+  </data>
+  <data name="lblLanguage.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="lblCulture.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>None</value>
+  </data>
+  <data name="lblWarning.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 13</value>
+  </data>
+  <data name="lblLanguage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 7</value>
+  </data>
+  <data name="lblLanguage.Text" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="lblWarning.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="tlpButtons.RowCount" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="cmbLanguage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>222, 21</value>
+  </data>
+  <data name="lblLanguage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>55, 13</value>
+  </data>
+  <data name="&gt;&gt;picWarning.Name" xml:space="preserve">
+    <value>picWarning</value>
+  </data>
+  <data name="&gt;&gt;picWarning.Type" xml:space="preserve">
+    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="lblWarning.Location" type="System.Drawing.Point, System.Drawing">
+    <value>64, 40</value>
+  </data>
+  <data name="&gt;&gt;cmbLanguage.Name" xml:space="preserve">
+    <value>cmbLanguage</value>
+  </data>
+  <data name="cmdCancel.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <data name="&gt;&gt;tlpButtons.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblWarning.Name" xml:space="preserve">
+    <value>lblWarning</value>
+  </data>
+  <data name="lblLanguage.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;lblCulture.Parent" xml:space="preserve">
+    <value>tlpMain</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+</root>

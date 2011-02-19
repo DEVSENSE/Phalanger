@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="int" name="sybase_affected_rows" description="Gets number of affected rows in last query.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="sybase_close" description="Closes a Sybase connection.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="sybase_connect" description="Opens a Sybase server connection.">
+    <param optional="true" type="string" name="servername" />
+    <param optional="true" type="string" name="username" />
+    <param optional="true" type="string" name="password" />
+    <param optional="true" type="string" name="charset" />
+    <param optional="true" type="string" name="appname" />
+  </function>
+  <function returnType="bool" name="sybase_data_seek" description="Moves internal row pointer.">
+    <param type="resource" name="result_identifier" />
+    <param type="int" name="row_number" />
+  </function>
+  <function returnType="void" name="sybase_deadlock_retry_count" description="Sets the deadlock retry count.">
+    <param type="int" name="retry_count" />
+  </function>
+  <function returnType="array" name="sybase_fetch_array" description="Fetch row as array.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="array" name="sybase_fetch_assoc" description="Fetch a result row as an associative array.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="object" name="sybase_fetch_field" description="Get field information from a result.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="field_offset" />
+  </function>
+  <function returnType="object" name="sybase_fetch_object" description="Fetch a row as an object.">
+    <param type="resource" name="result" />
+    <param optional="true" type="mixed" name="object" />
+  </function>
+  <function returnType="array" name="sybase_fetch_row" description="Get a result row as an enumerated array.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="bool" name="sybase_field_seek" description="Sets field offset.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_offset" />
+  </function>
+  <function returnType="bool" name="sybase_free_result" description="Frees result memory.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="string" name="sybase_get_last_message" description="Returns the last message from the server." />
+  <function returnType="void" name="sybase_min_client_severity" description="Sets minimum client severity.">
+    <param type="int" name="severity" />
+  </function>
+  <function returnType="void" name="sybase_min_error_severity" description="Sets minimum error severity.">
+    <param type="int" name="severity" />
+  </function>
+  <function returnType="void" name="sybase_min_message_severity" description="Sets minimum message severity.">
+    <param type="int" name="severity" />
+  </function>
+  <function returnType="void" name="sybase_min_server_severity" description="Sets minimum server severity.">
+    <param type="int" name="severity" />
+  </function>
+  <function returnType="int" name="sybase_num_fields" description="Gets the number of fields in a result set.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="int" name="sybase_num_rows" description="Get number of rows in a result set.">
+    <param type="resource" name="result" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="sybase_pconnect" description="Open persistent Sybase connection.">
+    <param optional="true" type="string" name="servername" />
+    <param optional="true" type="string" name="username" />
+    <param optional="true" type="string" name="password" />
+    <param optional="true" type="string" name="charset" />
+    <param optional="true" type="string" name="appname" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="sybase_query" description="Sends a Sybase query.">
+    <param type="string" name="query" />
+    <param type="resource" name="link_identifier" />
+  </function>
+  <function returnType="string" name="sybase_result" description="Get result data.">
+    <param type="resource" name="result" />
+    <param type="int" name="row" />
+    <param type="mixed" name="field" />
+  </function>
+  <function returnType="bool" name="sybase_select_db" description="Selects a Sybase database.">
+    <param type="string" name="database_name" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="sybase_set_message_handler" description="Sets the handler called when a server message is raised.">
+    <param type="string" name="handler" />
+    <param optional="true" type="resource" name="connection" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="sybase_unbuffered_query" description="Send a Sybase query and do not block.">
+    <param type="string" name="query" />
+    <param type="resource" name="link_identifier" />
+    <param optional="true" type="bool" name="store_result" />
+  </function>
+</module>

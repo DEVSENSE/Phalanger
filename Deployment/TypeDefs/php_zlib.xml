@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="int" name="gzclose" description="Close an open gz-file pointer.">
+    <param type="resource" name="zp" />
+  </function>
+  <function returnType="string" name="gzcompress" description="Compress a string.">
+    <param type="string" name="data" />
+    <param optional="true" type="int" name="level" />
+  </function>
+  <function returnType="string" name="gzdeflate" description="Deflate a string.">
+    <param type="string" name="data" />
+    <param optional="true" type="int" name="level" />
+  </function>
+  <function returnType="string" name="gzencode" description="Create a gzip compressed string.">
+    <param type="string" name="data" />
+    <param optional="true" type="int" name="level" />
+    <param optional="true" type="int" name="encoding_mode" />
+  </function>
+  <function returnType="int" name="gzeof" description="Test for end-of-file on a gz-file pointer.">
+    <param type="resource" name="zp" />
+  </function>
+  <function returnType="array" name="gzfile" description="Read entire gz-file into an array.">
+    <param type="string" name="filename" />
+    <param optional="true" type="int" name="use_include_path" />
+  </function>
+  <function returnType="string" name="gzgetc" description="Get character from gz-file pointer.">
+    <param type="resource" name="zp" />
+  </function>
+  <function returnType="string" name="gzgets" description="Get line from file pointer.">
+    <param type="resource" name="zp" />
+    <param type="int" name="length" />
+  </function>
+  <function returnType="string" name="gzgetss" description="Get line from gz-file pointer and strip HTML tags.">
+    <param type="resource" name="zp" />
+    <param type="int" name="length" />
+    <param optional="true" type="string" name="allowable_tags" />
+  </function>
+  <function returnType="string" name="gzinflate" description="Inflate a deflated string.">
+    <param type="string" name="data" />
+    <param optional="true" type="int" name="length" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="gzopen" description="Open gz-file.">
+    <param type="string" name="filename" />
+    <param type="string" name="mode" />
+    <param optional="true" type="int" name="use_include_path" />
+  </function>
+  <function returnType="int" name="gzpassthru" description="Output all remaining data on a gz-file pointer.">
+    <param type="resource" name="zp" />
+  </function>
+  <function returnType="int" name="gzputs" description="Binary-safe gz-file write.">
+    <param type="resource" name="zp" />
+    <param type="string" name="string" />
+    <param optional="true" type="int" name="length" />
+  </function>
+  <function returnType="string" name="gzread" description="Binary-safe gz-file read.">
+    <param type="resource" name="zp" />
+    <param type="int" name="length" />
+  </function>
+  <function returnType="int" name="gzrewind" description="Rewind the position of a gz-file pointer.">
+    <param type="resource" name="zp" />
+  </function>
+  <function returnType="int" name="gzseek" description="Seek on a gz-file pointer.">
+    <param type="resource" name="zp" />
+    <param type="int" name="offset" />
+  </function>
+  <function returnType="int" name="gztell" description="Tell gz-file pointer read/write position.">
+    <param type="resource" name="zp" />
+  </function>
+  <function returnType="string" name="gzuncompress" description="Uncompress a deflated string.">
+    <param type="string" name="data" />
+    <param optional="true" type="int" name="length" />
+  </function>
+  <function returnType="int" name="gzwrite" description="Binary-safe gz-file write.">
+    <param type="resource" name="zp" />
+    <param type="string" name="string" />
+    <param optional="true" type="int" name="length" />
+  </function>
+  <function returnType="int" name="readgzfile" description="Output a gz-file.">
+    <param type="string" name="filename" />
+    <param optional="true" type="int" name="use_include_path" />
+  </function>
+  <function returnType="string" name="zlib_get_coding_type" description="Returns the coding type used for output compression." />
+</module>

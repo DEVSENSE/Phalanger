@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Welcome</title>
+    <style type="text/css">
+
+body {
+    font-family: verdana;
+    font-size:9pt;
+    line-height:16pt;
+    margin:50px;
+    }
+    
+h1 {
+    font-family: verdana;
+    font-size:16pt;
+    font-weight:bold;
+    }
+    
+h2 {
+    font-family: verdana;
+    font-size:12pt;
+    font-weight:bold;
+    color: #666;
+    }
+
+h3 {
+    font-family: verdana;
+    font-size:12pt;
+    font-weight:bold;
+    color: #999;
+    }
+
+</style>
+</head>
+<body>
+    <h1>Personal Web Site Starter Kit</h1>
+    <h2>Introduction</h2>
+    <p>
+        Congratulations! You have created your own Personal Web Site, which includes a home
+        page, resume, and photo album. You can press CTRL+F5 to run your site right now.</p>
+    <p>
+        You can use the site as-is with some small customizations, such as adding your own
+        content. In addition, you can add pages to the site. The following sections explain
+        how to use the Personal Web Site.</p>
+    <ul>
+        <li>Creating an Administrative User</li>
+        <li>Managing the Personal Web Site</li>
+        <li>Working with Photo Albums</li>
+        <li>Publishing Your Web Site</li>
+        <li>Further Resources</li>
+    </ul>
+    <h2>Creating an Administrative User</h2>
+    <p>
+        The first step you must take is to create an administrative user. The administrative
+        user has permission to upload photos and create albums.</p>
+    <p>
+        <b>To create an administrative user</b></p>
+    <ol>
+        <li>Run the site at least once before proceeding. This ensures the initialization of the Membership
+        and Roles databases.</li>
+        <li>In the <b>Website</b> menu, click <b>ASP.NET Configuration</b>.</li><li>Click the
+        <b>Security</b> tab.</li><li>Click <b>Create user</b>.</li><li>In the <b>Create User</b>
+        box, type a user name, password, and e-mail address for the administrator user. You
+        must also provide a security question and answer that is used to help you recover your
+        password, if necessary.</li><li>In the <b>Roles</b> box, select both the <b>Administrators</b>
+        and <b>Friends</b> check boxes to make the user into an administrator and a member of
+        the Friends role.</li><li>Click <b>Create User</b>.</li><li>Close the Web Site Administration
+        Tool window.</li>
+    </ol>
+    <h2>Managing the Personal Web Site</h2>
+    <p>
+        The following sections provide basic information about how to administer the site.</p>
+    <h3>Designating Guest Users as Friends</h3>
+    <p>
+        Visitors to your site can register themselves on your site. You can make registered
+        users into Friends, which gives them permission to view private photo albums.</p>
+    <p>
+        <b>To give users permission to view private photo albums</b></p>
+    <ol>
+        <li>In the <b>Website</b> menu, click <b>ASP.NET Configuration</b>.</li><li>Click the
+        <b>Security</b> tab.</li>
+        <li>Under <b>Users,</b> click <b>Manage users.</b> </li>
+        <li>In the user list, click <b>Edit roles</b> for the guest. (If you do not see the
+        user's name, use the search box.)</li>
+        <li>Under <b>Roles</b>, select <b>Friends</b>. </li>
+        <li>Close the Web Administration Tool window.</li>
+    </ol>
+    <h3>Working with Photo Albums</h3>
+    <p>
+        The photo album feature allows you to:</p>
+    <ul>
+        <li>Create albums that act as collections of photos.</li>
+        <li>Upload photos individually into an album.</li>
+        <li>Bulk upload a collection of photos into an album. This feature is useful for creating
+        an album from a collection of photos, such as your vacation pictures.</li>
+    </ul>
+    <p>
+        <b>To create an album and add photos</b></p>
+    <ol>
+        <li>Login to the site as an administrator.</li>
+        <li>In the menu, click <b>Manage</b>. </li>
+        <li>Under <b>Add New Album</b>, type a name.</li>
+        <li>If you want everyone to be able to see your photos, select <b>Make this album public</b>.
+        If you leave this check box unselected, only users who are registered as friends can
+        view the album.</li>
+        <li>Click <b>Add</b> to create the album.&nbsp;</li>
+        <li>Under <b>Your Albums</b>, click the blank photo for the new album.</li>
+        <li>Under <b>Add Photos</b>, type or select the photo file name, type a caption, and
+        click <b>Insert</b>. </li>
+        <li>Repeat Step 4 for each photo you want to add to the album.</li>
+    </ol>
+    <p>
+        <b>To bulk upload photos into an album</b></p>
+    <ol>
+        <li>Copy your photos to the Upload folder in the Web site.</li>
+        <li>In the menu, click <b>Manage</b>. </li>
+        <li>In the album list, click the photo of the album to use. (Create a new album first,
+        if necessary.)</li>
+        <li>Click <b>Import</b>. All the photos in the Upload folder are added to the album.</li>
+    </ol>
+    <h2>Publishing your Site</h2>
+    <p>
+        When you are ready to share your Web site with others, you can copy it to your Web
+        server. You need to know the File Transfer Protocol (FTP) address of your server,
+        and if required, the user name and password you use.</p>
+    <ol>
+        <li>In the <b>Website</b> menu, click <b>Copy Web Site</b>. The Copy Web Site tool displays
+        the files from your Web site under <b>Source Web Site</b>. </li>
+        <li>In the <b>Connect to</b> box, click <b>Connect to</b> ....</li>
+        <li>In the <b>Open Web Site</b> dialog box, click the <b>FTP Sites</b> tab.</li>
+        <li>Type the FTP address of your server, and if required, the user name and password
+        that your hosting site has provided. The FTP URL usually has a format like this:
+        <pre>ftp://ftp.servername/foldername</pre></li>
+        <li>Click <b>Open</b>. The files on the Web server are displayed under <b>Remote Web
+        Site</b>.<br />
+        <b>Note:</b> If you have trouble connecting to the server, contact the server administrator.</li>
+        <li>In the <b>Move Files</b> list, click <b>All source files to remote Web site</b>.
+        </li>
+        <li>Click the <b>Copy Web Site</b> button. The files from your Personal Web Site are
+        copied to the server.</li>
+    </ol>
+    <h2>Further Resources</h2>
+    <p>
+        The information in this page is only an overview of the Personal Web site. For more
+        information, see the topic <b>Personal Web Site Starter Kit</b> in the documentation.
+    </p>
+</body>
+</html>

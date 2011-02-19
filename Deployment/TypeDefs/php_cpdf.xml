@@ -1,0 +1,357 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="void" name="cpdf_setgray_stroke" description="Sets drawing color to gray value.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="void" name="cpdf_add_annotation" description="Sets annotation.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="xll" />
+    <param type="float" name="yll" />
+    <param type="float" name="xur" />
+    <param type="float" name="xur" />
+    <param type="string" name="title" />
+    <param type="string" name="text" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_continue_text" description="Outputs text in next line.">
+    <param type="int" name="pdfdoc" />
+    <param type="string" name="text" />
+  </function>
+  <function returnType="void" name="cpdf_set_font_directories" description="Sets directories to search when using external fonts.">
+    <param type="int" name="pdfdoc" />
+    <param type="string" name="pfmdir" />
+    <param type="string" name="pfbdir" />
+  </function>
+  <function returnType="void" name="cpdf_restore" description="Restores formerly saved enviroment.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="cpdf_page_init" description="Starts page.">
+    <param type="int" name="pdfdoc" />
+    <param type="int" name="pagenr" />
+    <param type="int" name="orientation" />
+    <param type="int" name="height" />
+    <param type="int" name="width" />
+    <param optional="true" type="float" name="unit" />
+  </function>
+  <function returnType="void" name="cpdf_setrgbcolor_fill" description="Sets filling color to rgb color value.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="red" />
+    <param type="float" name="green" />
+    <param type="float" name="blue" />
+  </function>
+  <function returnType="void" name="cpdf_setlinejoin" description="Sets linejoin parameter.">
+    <param type="int" name="pdfdoc" />
+    <param type="int" name="value" />
+  </function>
+  <function returnType="void" name="cpdf_rect" description="Draws a rectangle.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param type="float" name="width" />
+    <param type="float" name="height" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_begin_text" description="Starts text section.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="cpdf_set_leading" description="Sets distance between text lines.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="distance" />
+  </function>
+  <function returnType="float" name="cpdf_stringwidth" description="Returns width of text in current font.">
+    <param type="int" name="pdfdoc" />
+    <param type="string" name="text" />
+  </function>
+  <function returnType="void" name="cpdf_set_text_pos" description="Sets the position of text for the next cpdf_show call.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_fill" description="Fills current path.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="array" name="cpdf_finalize" description="Creates PDF doc in memory.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="bool" name="cpdf_set_keywords" description="Fills the keywords field of the info structure.">
+    <param type="int" name="pdfptr" />
+    <param type="string" name="keywords" />
+  </function>
+  <function returnType="array" name="cpdf_output_buffer" description="Returns the internal memory stream as string.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="cpdf_close" description="Closes the pdf document.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="cpdf_set_text_matrix" description="Sets the text matrix.">
+    <param type="int" name="pdfdoc" />
+    <param type="array" name="matrix" />
+  </function>
+  <function returnType="void" name="cpdf_fill_stroke" description="Fills and stroke current path.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="cpdf_scale" description="Sets scaling.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="x_scale" />
+    <param type="float" name="y_scale" />
+  </function>
+  <function returnType="void" name="cpdf_setdash" description="Sets dash pattern.">
+    <param type="int" name="pdfdoc" />
+    <param type="int" name="white" />
+    <param type="int" name="black" />
+  </function>
+  <function returnType="void" name="cpdf_arc" description="Draws an arc.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param type="float" name="radius" />
+    <param type="float" name="start" />
+    <param type="float" name="end" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_set_char_spacing" description="Sets character spacing.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="space" />
+  </function>
+  <function returnType="void" name="cpdf_lineto" description="Draws a line.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_text" description="Outputs text.">
+    <param type="int" name="pdfdoc" />
+    <param type="string" name="text" />
+    <param type="float" name="x_koor" />
+    <param type="float" name="y_koor" />
+    <param optional="true" type="int" name="mode" />
+    <param optional="true" type="float" name="orientation" />
+    <param optional="true" type="int" name="alignmode" />
+  </function>
+  <function returnType="void" name="cpdf_set_text_rise" description="Sets the text rise.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="int" name="cpdf_open" description="Opens a new pdf document.">
+    <param type="int" name="compression" />
+    <param optional="true" type="string" name="filename" />
+    <param optional="true" type="array" name="doc_limits" />
+  </function>
+  <function returnType="void" name="cpdf_newpath" description="Starts new path.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="cpdf_global_set_document_limits" description="Sets document settings for all documents.">
+    <param type="int" name="maxPages" />
+    <param type="int" name="maxFonts" />
+    <param type="int" name="maxImages" />
+    <param type="int" name="maxAnnots" />
+    <param type="int" name="maxObjects" />
+  </function>
+  <function returnType="void" name="cpdf_show" description="Output text at current position.">
+    <param type="int" name="pdfdoc" />
+    <param type="string" name="text" />
+  </function>
+  <function returnType="void" name="cpdf_stroke" description="Draws line along path path.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="bool" name="cpdf_set_title" description="Fills the title field of the info structure.">
+    <param type="int" name="pdfptr" />
+    <param type="string" name="title" />
+  </function>
+  <function returnType="void" name="cpdf_moveto" description="Sets current point.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_rotate_text" description="Sets text rotation angle.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="angle" />
+  </function>
+  <function returnType="void" name="cpdf_closepath_stroke" description="Close path and draw line along path.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="cpdf_set_word_spacing" description="Sets spacing between words.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="space" />
+  </function>
+  <function returnType="array" name="cpdf_save_to_file" description="Saves the internal memory stream to a file.">
+    <param type="int" name="pdfdoc" />
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="void" name="cpdf_save" description="Saves current enviroment.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="cpdf_circle" description="Draws a circle.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param type="float" name="radius" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_set_font" description="Selects the current font face, size and encoding.">
+    <param type="int" name="pdfdoc" />
+    <param type="string" name="font" />
+    <param type="float" name="size" />
+    <param type="string" name="encoding" />
+  </function>
+  <function returnType="void" name="cpdf_closepath_fill_stroke" description="Close, fill and stroke current path.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="cpdf_end_text" description="Ends text section.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="cpdf_set_horiz_scaling" description="Sets horizontal scaling of text.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="scale" />
+  </function>
+  <function returnType="void" name="cpdf_set_viewer_preferences" description="How to show the document in the viewer.">
+    <param type="int" name="pdfdoc" />
+    <param type="array" name="preferences" />
+  </function>
+  <function returnType="void" name="cpdf_set_text_rendering" description="Determines how text is rendered.">
+    <param type="int" name="pdfdoc" />
+    <param type="int" name="rendermode" />
+  </function>
+  <function returnType="void" name="cpdf_setgray" description="Sets drawing and filling color to gray value.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="bool" name="cpdf_set_creator" description="Sets the creator field.">
+    <param type="int" name="pdfdoc" />
+    <param type="string" name="creator" />
+  </function>
+  <function returnType="void" name="cpdf_setrgbcolor_stroke" description="Sets drawing color to RGB color value.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="red" />
+    <param type="float" name="green" />
+    <param type="float" name="blue" />
+  </function>
+  <function returnType="int" name="cpdf_add_outline" description="Adds outline.">
+    <param type="int" name="pdfdoc" />
+    <param type="int" name="lastoutline" />
+    <param type="int" name="sublevel" />
+    <param type="int" name="open" />
+    <param type="int" name="pagenr" />
+    <param type="string" name="title" />
+  </function>
+  <function returnType="void" name="cpdf_setgray_fill" description="Sets filling color to gray value.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="void" name="cpdf_rotate" description="Sets rotation.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="angle" />
+  </function>
+  <function returnType="void" name="cpdf_closepath" description="Close path.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="cpdf_clip" description="Clips to current path.">
+    <param type="int" name="pdfdoc" />
+  </function>
+  <function returnType="void" name="cpdf_import_jpeg" description="Includes JPEG image.">
+    <param type="int" name="pdfdoc" />
+    <param type="string" name="filename" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param type="float" name="angle" />
+    <param type="float" name="width" />
+    <param type="float" name="height" />
+    <param type="float" name="x_scale" />
+    <param type="float" name="y_scale" />
+    <param type="int" name="gsave" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_translate" description="Sets origin of coordinate system.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+  </function>
+  <function returnType="void" name="cpdf_setrgbcolor" description="Sets drawing and filling color to RGB color value.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="red" />
+    <param type="float" name="green" />
+    <param type="float" name="blue" />
+  </function>
+  <function returnType="void" name="cpdf_set_font_map_file" description="Sets fontname to filename translation map when using external fonts.">
+    <param type="int" name="pdfdoc" />
+    <param type="string" name="filename" />
+  </function>
+  <function returnType="bool" name="cpdf_set_subject" description="Fills the subject field of the info structure.">
+    <param type="int" name="pdfptr" />
+    <param type="string" name="subject" />
+  </function>
+  <function returnType="void" name="cpdf_setmiterlimit" description="Sets miter limit.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="void" name="cpdf_rmoveto" description="Sets current point.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_setlinecap" description="Sets linecap parameter.">
+    <param type="int" name="pdfdoc" />
+    <param type="int" name="value" />
+  </function>
+  <function returnType="void" name="cpdf_curveto" description="Draws a curve.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="x1" />
+    <param type="float" name="y1" />
+    <param type="float" name="x2" />
+    <param type="float" name="y2" />
+    <param type="float" name="x3" />
+    <param type="float" name="y3" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_show_xy" description="Output text at position.">
+    <param type="int" name="pdfdoc" />
+    <param type="string" name="text" />
+    <param type="float" name="x_koor" />
+    <param type="float" name="y_koor" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_rlineto" description="Draws a line relative to current point.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="x" />
+    <param type="float" name="y" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_set_action_url" description="Sets hyperlink.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="xll" />
+    <param type="float" name="yll" />
+    <param type="float" name="xur" />
+    <param type="float" name="xur" />
+    <param type="string" name="url" />
+    <param optional="true" type="int" name="mode" />
+  </function>
+  <function returnType="void" name="cpdf_setflat" description="Sets flatness.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="value" />
+  </function>
+  <function returnType="void" name="cpdf_set_page_animation" description="Sets transition between pages.">
+    <param type="int" name="pdfdoc" />
+    <param type="int" name="transition" />
+    <param type="float" name="duration" />
+    <param type="float" name="direction" />
+    <param type="int" name="orientation" />
+    <param type="int" name="inout" />
+  </function>
+  <function returnType="void" name="cpdf_finalize_page" description="Ends the page to save memory.">
+    <param type="int" name="pdfdoc" />
+    <param type="int" name="pagenr" />
+  </function>
+  <function returnType="void" name="cpdf_setlinewidth" description="Sets line width.">
+    <param type="int" name="pdfdoc" />
+    <param type="float" name="width" />
+  </function>
+  <function returnType="void" name="cpdf_set_current_page" description="Sets page for output.">
+    <param type="int" name="pdfdoc" />
+    <param type="int" name="pagenr" />
+  </function>
+</module>

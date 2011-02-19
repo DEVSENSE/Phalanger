@@ -1,0 +1,131 @@
+<html>
+<head>
+<title>PHP.NET Compiler test log</title>
+<style type="text/css">
+BODY { FONT-SIZE: 12px; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif }
+TABLE { border-collapse:collapse }
+TD { FONT-SIZE: 12px; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; border: 1px solid DimGray; }
+TR.status TD.succeeded { background-color: #CFC }
+TR.status TD.failed { background-color: #FCC }
+TD.succeeded { background-color: #EFE }
+TD.failed { background-color: #FEE }
+A.succeeded:link, A.succeeded:visited { color:green; text-decoration: none; }
+A.failed:link, A.failed:visited { color:red; text-decoration: none; }
+</style>
+</head>
+<body>
+<h1>PHP.NET Compiler test log</h1>
+(100%) 1 succeeded, 0 failed <br>
+<table width="100%" border="1" cellspacing="0" cellpadding="3">
+<tr>
+<td valign="top"><b>Test Result</b></td><td valign="top"><b>Compiler error output</b></td><td valign="top"><b>Expected test result</b></td><td valign="top"><b>Expected test output</b></td><td valign="top"><b>Real script output</b></td><tr>
+<tr class="status">
+<td class="succeeded" colspan="5"><a class="succeeded" href="file://C:\Project\PHP.NET\Source\Testing\PhpNetTester\Tests\Honza\new\stream_context_set_option.php">C:\Project\PHP.NET\Source\Testing\PhpNetTester\Tests\Honza\new\stream_context_set_option.php</a>: <font color="green"><b>SUCCEEDED</b></font></td>
+</tr>
+<tr>
+<td class="succeeded" valign="top" rowspan="1">Success</td><td class="succeeded" valign="top">No errors</td><td class="succeeded" valign="top">Success</td><td class="succeeded" valign="top"><pre><pre>[ARRAY
+  [STRING: "http"] => [ARRAY
+    [STRING: "method"] => [STRING: "GET"]
+    [STRING: "header"] => [STRING: "Accept-language: en
+Cookie: foo=bar
+"]
+    [STRING: "op1"] => [STRING: "DIRECT"]
+    [STRING: "op2"] => [STRING: "VIA STREAM"]
+  ]
+  [STRING: "other"] => [ARRAY
+    [STRING: "method"] => [STRING: "otherGET"]
+    [STRING: "header"] => [STRING: "otherAccept-language: en
+otherCookie: foo=bar
+"]
+  ]
+  [STRING: "file"] => [ARRAY
+    [STRING: "method"] => [STRING: "otherGET"]
+    [STRING: "header"] => [STRING: "otherAccept-language: en
+otherCookie: foo=bar
+"]
+  ]
+  [STRING: "wrap"] => [ARRAY
+    [STRING: "op1"] => [STRING: "DIRECT"]
+    [STRING: "op2"] => [STRING: "VIA STREAM"]
+  ]
+]</pre>
+<pre>[ARRAY
+  [STRING: "http"] => [ARRAY
+    [STRING: "method"] => [STRING: "GET"]
+    [STRING: "header"] => [STRING: "Accept-language: en
+Cookie: foo=bar
+"]
+    [STRING: "op1"] => [STRING: "DIRECT"]
+    [STRING: "op2"] => [STRING: "VIA STREAM"]
+  ]
+  [STRING: "other"] => [ARRAY
+    [STRING: "method"] => [STRING: "otherGET"]
+    [STRING: "header"] => [STRING: "otherAccept-language: en
+otherCookie: foo=bar
+"]
+  ]
+  [STRING: "file"] => [ARRAY
+    [STRING: "method"] => [STRING: "otherGET"]
+    [STRING: "header"] => [STRING: "otherAccept-language: en
+otherCookie: foo=bar
+"]
+  ]
+  [STRING: "wrap"] => [ARRAY
+    [STRING: "op1"] => [STRING: "DIRECT"]
+    [STRING: "op2"] => [STRING: "VIA STREAM"]
+  ]
+]</pre></pre></td><td class="succeeded" valign="top"><pre><pre>[ARRAY
+  [STRING: "http"] => [ARRAY
+    [STRING: "method"] => [STRING: "GET"]
+    [STRING: "header"] => [STRING: "Accept-language: en
+Cookie: foo=bar
+"]
+    [STRING: "op1"] => [STRING: "DIRECT"]
+    [STRING: "op2"] => [STRING: "VIA STREAM"]
+  ]
+  [STRING: "other"] => [ARRAY
+    [STRING: "method"] => [STRING: "otherGET"]
+    [STRING: "header"] => [STRING: "otherAccept-language: en
+otherCookie: foo=bar
+"]
+  ]
+  [STRING: "file"] => [ARRAY
+    [STRING: "method"] => [STRING: "otherGET"]
+    [STRING: "header"] => [STRING: "otherAccept-language: en
+otherCookie: foo=bar
+"]
+  ]
+  [STRING: "wrap"] => [ARRAY
+    [STRING: "op1"] => [STRING: "DIRECT"]
+    [STRING: "op2"] => [STRING: "VIA STREAM"]
+  ]
+]</pre>
+<pre>[ARRAY
+  [STRING: "http"] => [ARRAY
+    [STRING: "method"] => [STRING: "GET"]
+    [STRING: "header"] => [STRING: "Accept-language: en
+Cookie: foo=bar
+"]
+    [STRING: "op1"] => [STRING: "DIRECT"]
+    [STRING: "op2"] => [STRING: "VIA STREAM"]
+  ]
+  [STRING: "other"] => [ARRAY
+    [STRING: "method"] => [STRING: "otherGET"]
+    [STRING: "header"] => [STRING: "otherAccept-language: en
+otherCookie: foo=bar
+"]
+  ]
+  [STRING: "file"] => [ARRAY
+    [STRING: "method"] => [STRING: "otherGET"]
+    [STRING: "header"] => [STRING: "otherAccept-language: en
+otherCookie: foo=bar
+"]
+  ]
+  [STRING: "wrap"] => [ARRAY
+    [STRING: "op1"] => [STRING: "DIRECT"]
+    [STRING: "op2"] => [STRING: "VIA STREAM"]
+  ]
+]</pre></pre></td></tr>
+</table>
+</body>
+</html>

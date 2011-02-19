@@ -1,0 +1,143 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhalangerProject", "Project\PhalangerProject.csproj", "{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB} = {DA16C614-B1B9-42F1-8513-4C9E601041CB}
+		{68B54816-884B-48A1-949C-DBBDE2A5C412} = {68B54816-884B-48A1-949C-DBBDE2A5C412}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhalangerCompilerTask", "MSBuildTasks\PhalangerCompilerTask.csproj", "{68B54816-884B-48A1-949C-DBBDE2A5C412}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageService", "LanguageService\LanguageService.csproj", "{DA16C614-B1B9-42F1-8513-4C9E601041CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebSiteProject", "WebSiteProject", "{2D4F8C87-33A8-4045-9146-370B578AEF26}"
+	ProjectSection(SolutionItems) = preProject
+		WebSiteProject\WebSiteProject.proj = WebSiteProject\WebSiteProject.proj
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{F3A515CD-A33C-4B26-A4A7-1DB9F34E88B2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{B2FE42A7-CEF9-4513-A8DC-7779C3E73B95}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectItems", "ProjectItems", "{4B02BBBC-E7B8-4AD6-ADBA-25AA4D32EA9E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PHPScript", "PHPScript", "{16C8EB8D-2D56-47A9-8535-10DFE9D688BD}"
+	ProjectSection(SolutionItems) = preProject
+		WebSiteProject\Templates\ProjectItems\PHPScript\__TemplateIcon.ico = WebSiteProject\Templates\ProjectItems\PHPScript\__TemplateIcon.ico
+		WebSiteProject\Templates\ProjectItems\PHPScript\PHPScript.vstemplate = WebSiteProject\Templates\ProjectItems\PHPScript\PHPScript.vstemplate
+		WebSiteProject\Templates\ProjectItems\PHPScript\script.php = WebSiteProject\Templates\ProjectItems\PHPScript\script.php
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PHPWebSite", "PHPWebSite", "{FE5D5BF8-8F44-435D-89A8-0709DDD5D583}"
+	ProjectSection(SolutionItems) = preProject
+		WebSiteProject\Templates\Projects\PHPWebSite\__TemplateIcon.ico = WebSiteProject\Templates\Projects\PHPWebSite\__TemplateIcon.ico
+		WebSiteProject\Templates\Projects\PHPWebSite\default.php = WebSiteProject\Templates\Projects\PHPWebSite\default.php
+		WebSiteProject\Templates\Projects\PHPWebSite\PHPWebSite.webproj = WebSiteProject\Templates\Projects\PHPWebSite\PHPWebSite.webproj
+		WebSiteProject\Templates\Projects\PHPWebSite\web.config = WebSiteProject\Templates\Projects\PHPWebSite\web.config
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PHPClientWebSite", "PHPClientWebSite", "{D0685997-4EAB-4D75-8A8D-40BD7206415D}"
+	ProjectSection(SolutionItems) = preProject
+		WebSiteProject\Templates\Projects\PHPClientWebSite\__TemplateIcon.ico = WebSiteProject\Templates\Projects\PHPClientWebSite\__TemplateIcon.ico
+		WebSiteProject\Templates\Projects\PHPClientWebSite\default.html = WebSiteProject\Templates\Projects\PHPClientWebSite\default.html
+		WebSiteProject\Templates\Projects\PHPClientWebSite\PHPClientWebSite.vstemplate = WebSiteProject\Templates\Projects\PHPClientWebSite\PHPClientWebSite.vstemplate
+		WebSiteProject\Templates\Projects\PHPClientWebSite\PHPClientWebSite.webproj = WebSiteProject\Templates\Projects\PHPClientWebSite\PHPClientWebSite.webproj
+		WebSiteProject\Templates\Projects\PHPClientWebSite\Silverlight.js = WebSiteProject\Templates\Projects\PHPClientWebSite\Silverlight.js
+		WebSiteProject\Templates\Projects\PHPClientWebSite\slutils.phpx = WebSiteProject\Templates\Projects\PHPClientWebSite\slutils.phpx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PHPEmptyWebSite", "PHPEmptyWebSite", "{77527F55-02E1-4E0C-BCD2-7878B93DA6C6}"
+	ProjectSection(SolutionItems) = preProject
+		WebSiteProject\Templates\Projects\PHPEmptyWebSite\PHPEmptyWeb.vstemplate = WebSiteProject\Templates\Projects\PHPEmptyWebSite\PHPEmptyWeb.vstemplate
+		WebSiteProject\Templates\Projects\PHPEmptyWebSite\PHPEmptyWeb.webproj = WebSiteProject\Templates\Projects\PHPEmptyWebSite\PHPEmptyWeb.webproj
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PHPSilverlightControl", "PHPSilverlightControl", "{EC470DA6-F08C-4A78-8493-F4DEEBA43F3E}"
+	ProjectSection(SolutionItems) = preProject
+		WebSiteProject\Templates\ProjectItems\PHPSilverlightControl\Control.phpx = WebSiteProject\Templates\ProjectItems\PHPSilverlightControl\Control.phpx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Setup", "Setup", "{3C8035AA-C171-42AB-A204-3C76BA8F82FD}"
+	ProjectSection(SolutionItems) = preProject
+		Setup\Integration.wxs = Setup\Integration.wxs
+		Setup\Phalanger.LanguageService.wxi = Setup\Phalanger.LanguageService.wxi
+		Setup\PhalangerBinaries.wxs = Setup\PhalangerBinaries.wxs
+		Setup\PhalangerProject.wxi = Setup\PhalangerProject.wxi
+		Setup\Product.wxs = Setup\Product.wxs
+		Setup\Variables.wxi = Setup\Variables.wxi
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/TFS01
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Project\\PhalangerProject.csproj
+		SccProjectName1 = Project
+		SccLocalPath1 = Project
+		SccProjectUniqueName2 = MSBuildTasks\\PhalangerCompilerTask.csproj
+		SccProjectName2 = MSBuildTasks
+		SccLocalPath2 = MSBuildTasks
+		SccProjectUniqueName3 = LanguageService\\LanguageService.csproj
+		SccProjectName3 = LanguageService
+		SccLocalPath3 = LanguageService
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Release|Win32.ActiveCfg = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Win32.ActiveCfg = Release|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Release|Win32.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F3A515CD-A33C-4B26-A4A7-1DB9F34E88B2} = {2D4F8C87-33A8-4045-9146-370B578AEF26}
+		{B2FE42A7-CEF9-4513-A8DC-7779C3E73B95} = {F3A515CD-A33C-4B26-A4A7-1DB9F34E88B2}
+		{4B02BBBC-E7B8-4AD6-ADBA-25AA4D32EA9E} = {F3A515CD-A33C-4B26-A4A7-1DB9F34E88B2}
+		{FE5D5BF8-8F44-435D-89A8-0709DDD5D583} = {B2FE42A7-CEF9-4513-A8DC-7779C3E73B95}
+		{D0685997-4EAB-4D75-8A8D-40BD7206415D} = {B2FE42A7-CEF9-4513-A8DC-7779C3E73B95}
+		{77527F55-02E1-4E0C-BCD2-7878B93DA6C6} = {B2FE42A7-CEF9-4513-A8DC-7779C3E73B95}
+		{16C8EB8D-2D56-47A9-8535-10DFE9D688BD} = {4B02BBBC-E7B8-4AD6-ADBA-25AA4D32EA9E}
+		{EC470DA6-F08C-4A78-8493-F4DEEBA43F3E} = {4B02BBBC-E7B8-4AD6-ADBA-25AA4D32EA9E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+		DebugSamples90.Connect = 1;Configure Project for VSIP Experimental Environment;ConfigVSIPDebug
+	EndGlobalSection
+EndGlobal

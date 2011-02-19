@@ -1,0 +1,31 @@
+[expect php]
+[file]
+<?php
+include('Phalanger.inc');
+require('data.inc');
+
+error_reporting(0);
+
+function test_sort ($sort_function, $data) {
+    echo "\n -- Testing $sort_function() -- \n";
+	echo "No second argument:\n";
+    $sort_function ($data);
+    __var_dump ($data);
+	echo "Using SORT_REGULAR:\n";
+    $sort_function ($data, SORT_REGULAR);
+    __var_dump ($data);
+	echo "Using SORT_NUMERIC:\n";
+    $sort_function ($data, SORT_NUMERIC);
+    __var_dump ($data);
+	echo "Using SORT_STRING\n";
+    $sort_function ($data, SORT_STRING);
+    __var_dump ($data);
+}
+
+echo "Unsorted data:\n";
+__var_dump ($data);
+foreach (array ('arsort', 'asort', 'krsort', 'ksort', 'rsort', 'sort') as $test_function) {
+    test_sort ($test_function, $data);
+}
+
+?>

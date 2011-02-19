@@ -1,0 +1,765 @@
+Grammar
+
+    1 $accept: start EOF
+
+    2 start: compound_attribute element_block
+
+    3 element_block: element_block element whitespace_option
+    4              | /* empty */
+
+    5 element: T_ELEMENT_PARAM T_WHITESPACE type_attribute T_WHITESPACE identifier_attribute T_WHITESPACE compound_attribute
+    6        | T_ELEMENT_RETURN T_WHITESPACE type_attribute T_WHITESPACE compound_attribute
+    7        | T_ELEMENT_VAR T_WHITESPACE type_attribute T_WHITESPACE compound_attribute
+    8        | T_ELEMENT_ACCESS T_WHITESPACE access_modifier compound_attribute
+
+    9 whitespace_option: whitespace_option T_WHITESPACE
+   10                  | /* empty */
+
+   11 access_modifier: T_PUBLIC
+   12                | T_PRIVATE
+   13                | T_PROTECTED
+
+   14 identifier_attribute: variable
+
+   15 @1: /* empty */
+
+   16 @2: /* empty */
+
+   17 compound_attribute: @1 expression_list @2
+
+   18 expression_list: expression_list expression
+   19                | /* empty */
+
+   20 expression: T_COMPOUND
+
+   21 @3: /* empty */
+
+   22 @4: /* empty */
+
+   23 expression: T_INLINE_LINK @3 T_WHITESPACE T_IDENTIFIER @4 T_COMPOUND T_RCURLY
+
+   24 type_attribute: type_list
+
+   25 type_list: type_list T_BAR type
+   26          | type
+
+   27 type: T_IDENTIFIER
+   28     | T_ARRAY
+   29     | T_ARRAY T_LBRA T_RBRA
+   30     | T_ARRAY T_LBRA type T_RBRA
+   31     | T_ARRAY T_LBRA T_RBRA type
+   32     | T_ARRAY T_LBRA type T_RBRA type
+
+   33 variable: T_DOLLAR T_IDENTIFIER
+
+State 0
+
+    1 $accept: . start EOF 
+
+    T_COMPOUND     reduce using rule 15 (@1)
+    T_INLINE_LINK  reduce using rule 15 (@1)
+    T_ELEMENT_PARAM reduce using rule 15 (@1)
+    T_ELEMENT_RETURN reduce using rule 15 (@1)
+    T_ELEMENT_VAR  reduce using rule 15 (@1)
+    T_ELEMENT_ACCESS reduce using rule 15 (@1)
+    EOF            reduce using rule 15 (@1)
+
+    start          go to state 1
+    compound_attribute go to state 3
+    @1             go to state 15
+
+
+State 1
+
+    1 $accept: start . EOF 
+
+    EOF            shift, and go to state 2
+
+
+
+State 2
+
+    1 $accept: start EOF .		[]
+
+    ERROR          reduce using rule 1 ($accept)
+    EOF            reduce using rule 1 ($accept)
+    T_WHITESPACE   reduce using rule 1 ($accept)
+    T_NEWLINE      reduce using rule 1 ($accept)
+    T_LINE_BEGIN   reduce using rule 1 ($accept)
+    T_BEGIN        reduce using rule 1 ($accept)
+    T_END          reduce using rule 1 ($accept)
+    T_DOLLAR       reduce using rule 1 ($accept)
+    T_BAR          reduce using rule 1 ($accept)
+    T_LBRA         reduce using rule 1 ($accept)
+    T_RBRA         reduce using rule 1 ($accept)
+    T_RCURLY       reduce using rule 1 ($accept)
+    T_IDENTIFIER   reduce using rule 1 ($accept)
+    T_SYMBOL       reduce using rule 1 ($accept)
+    T_INTEGER      reduce using rule 1 ($accept)
+    T_COMPOUND     reduce using rule 1 ($accept)
+    T_ARRAY        reduce using rule 1 ($accept)
+    T_PRIVATE      reduce using rule 1 ($accept)
+    T_PROTECTED    reduce using rule 1 ($accept)
+    T_PUBLIC       reduce using rule 1 ($accept)
+    T_ELEMENT_PARAM reduce using rule 1 ($accept)
+    T_ELEMENT_RETURN reduce using rule 1 ($accept)
+    T_ELEMENT_VAR  reduce using rule 1 ($accept)
+    T_ELEMENT_ACCESS reduce using rule 1 ($accept)
+    T_INLINE_LINK  reduce using rule 1 ($accept)
+
+
+
+State 3
+
+    2 start: compound_attribute . element_block 
+
+    T_ELEMENT_PARAM reduce using rule 4 (element_block)
+    T_ELEMENT_RETURN reduce using rule 4 (element_block)
+    T_ELEMENT_VAR  reduce using rule 4 (element_block)
+    T_ELEMENT_ACCESS reduce using rule 4 (element_block)
+    EOF            reduce using rule 4 (element_block)
+
+    element_block  go to state 4
+
+
+State 4
+
+    2 start: compound_attribute element_block .		[EOF, ]
+    3 element_block: element_block . element whitespace_option 
+
+    T_ELEMENT_PARAM shift, and go to state 8
+    T_ELEMENT_RETURN shift, and go to state 42
+    T_ELEMENT_VAR  shift, and go to state 47
+    T_ELEMENT_ACCESS shift, and go to state 52
+    EOF            reduce using rule 2 (start)
+
+    element        go to state 5
+
+
+State 5
+
+    3 element_block: element_block element . whitespace_option 
+
+    T_WHITESPACE   reduce using rule 10 (whitespace_option)
+    T_ELEMENT_PARAM reduce using rule 10 (whitespace_option)
+    T_ELEMENT_RETURN reduce using rule 10 (whitespace_option)
+    T_ELEMENT_VAR  reduce using rule 10 (whitespace_option)
+    T_ELEMENT_ACCESS reduce using rule 10 (whitespace_option)
+    EOF            reduce using rule 10 (whitespace_option)
+
+    whitespace_option go to state 6
+
+
+State 6
+
+    3 element_block: element_block element whitespace_option .		[T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, ]
+    9 whitespace_option: whitespace_option . T_WHITESPACE 
+
+    T_WHITESPACE   shift, and go to state 7
+    T_ELEMENT_PARAM reduce using rule 3 (element_block)
+    T_ELEMENT_RETURN reduce using rule 3 (element_block)
+    T_ELEMENT_VAR  reduce using rule 3 (element_block)
+    T_ELEMENT_ACCESS reduce using rule 3 (element_block)
+    EOF            reduce using rule 3 (element_block)
+
+
+
+State 7
+
+    9 whitespace_option: whitespace_option T_WHITESPACE .		[T_WHITESPACE, T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, ]
+
+    T_WHITESPACE   reduce using rule 9 (whitespace_option)
+    T_ELEMENT_PARAM reduce using rule 9 (whitespace_option)
+    T_ELEMENT_RETURN reduce using rule 9 (whitespace_option)
+    T_ELEMENT_VAR  reduce using rule 9 (whitespace_option)
+    T_ELEMENT_ACCESS reduce using rule 9 (whitespace_option)
+    EOF            reduce using rule 9 (whitespace_option)
+
+
+
+State 8
+
+    5 element: T_ELEMENT_PARAM . T_WHITESPACE type_attribute T_WHITESPACE identifier_attribute T_WHITESPACE compound_attribute 
+
+    T_WHITESPACE   shift, and go to state 9
+
+
+
+State 9
+
+    5 element: T_ELEMENT_PARAM T_WHITESPACE . type_attribute T_WHITESPACE identifier_attribute T_WHITESPACE compound_attribute 
+
+    T_IDENTIFIER   shift, and go to state 33
+    T_ARRAY        shift, and go to state 34
+
+    type_attribute go to state 10
+    type_list      go to state 30
+    type           go to state 41
+
+
+State 10
+
+    5 element: T_ELEMENT_PARAM T_WHITESPACE type_attribute . T_WHITESPACE identifier_attribute T_WHITESPACE compound_attribute 
+
+    T_WHITESPACE   shift, and go to state 11
+
+
+
+State 11
+
+    5 element: T_ELEMENT_PARAM T_WHITESPACE type_attribute T_WHITESPACE . identifier_attribute T_WHITESPACE compound_attribute 
+
+    T_DOLLAR       shift, and go to state 28
+
+    identifier_attribute go to state 12
+    variable       go to state 27
+
+
+State 12
+
+    5 element: T_ELEMENT_PARAM T_WHITESPACE type_attribute T_WHITESPACE identifier_attribute . T_WHITESPACE compound_attribute 
+
+    T_WHITESPACE   shift, and go to state 13
+
+
+
+State 13
+
+    5 element: T_ELEMENT_PARAM T_WHITESPACE type_attribute T_WHITESPACE identifier_attribute T_WHITESPACE . compound_attribute 
+
+    T_COMPOUND     reduce using rule 15 (@1)
+    T_INLINE_LINK  reduce using rule 15 (@1)
+    T_WHITESPACE   reduce using rule 15 (@1)
+    T_ELEMENT_PARAM reduce using rule 15 (@1)
+    T_ELEMENT_RETURN reduce using rule 15 (@1)
+    T_ELEMENT_VAR  reduce using rule 15 (@1)
+    T_ELEMENT_ACCESS reduce using rule 15 (@1)
+    EOF            reduce using rule 15 (@1)
+
+    compound_attribute go to state 14
+    @1             go to state 15
+
+
+State 14
+
+    5 element: T_ELEMENT_PARAM T_WHITESPACE type_attribute T_WHITESPACE identifier_attribute T_WHITESPACE compound_attribute .		[T_WHITESPACE, T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, ]
+
+    T_WHITESPACE   reduce using rule 5 (element)
+    T_ELEMENT_PARAM reduce using rule 5 (element)
+    T_ELEMENT_RETURN reduce using rule 5 (element)
+    T_ELEMENT_VAR  reduce using rule 5 (element)
+    T_ELEMENT_ACCESS reduce using rule 5 (element)
+    EOF            reduce using rule 5 (element)
+
+
+
+State 15
+
+    17 compound_attribute: @1 . expression_list @2 
+
+    T_COMPOUND     reduce using rule 19 (expression_list)
+    T_INLINE_LINK  reduce using rule 19 (expression_list)
+    T_ELEMENT_PARAM reduce using rule 19 (expression_list)
+    T_ELEMENT_RETURN reduce using rule 19 (expression_list)
+    T_ELEMENT_VAR  reduce using rule 19 (expression_list)
+    T_ELEMENT_ACCESS reduce using rule 19 (expression_list)
+    EOF            reduce using rule 19 (expression_list)
+    T_WHITESPACE   reduce using rule 19 (expression_list)
+
+    expression_list go to state 16
+
+
+State 16
+
+    17 compound_attribute: @1 expression_list . @2 
+    18 expression_list: expression_list . expression 
+
+    T_COMPOUND     shift, and go to state 19
+    T_INLINE_LINK  shift, and go to state 20
+    T_ELEMENT_PARAM reduce using rule 16 (@2)
+    T_ELEMENT_RETURN reduce using rule 16 (@2)
+    T_ELEMENT_VAR  reduce using rule 16 (@2)
+    T_ELEMENT_ACCESS reduce using rule 16 (@2)
+    EOF            reduce using rule 16 (@2)
+    T_WHITESPACE   reduce using rule 16 (@2)
+
+    @2             go to state 17
+    expression     go to state 18
+
+
+State 17
+
+    17 compound_attribute: @1 expression_list @2 .		[T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, T_WHITESPACE, ]
+
+    T_ELEMENT_PARAM reduce using rule 17 (compound_attribute)
+    T_ELEMENT_RETURN reduce using rule 17 (compound_attribute)
+    T_ELEMENT_VAR  reduce using rule 17 (compound_attribute)
+    T_ELEMENT_ACCESS reduce using rule 17 (compound_attribute)
+    EOF            reduce using rule 17 (compound_attribute)
+    T_WHITESPACE   reduce using rule 17 (compound_attribute)
+
+
+
+State 18
+
+    18 expression_list: expression_list expression .		[T_COMPOUND, T_INLINE_LINK, T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, T_WHITESPACE, ]
+
+    T_COMPOUND     reduce using rule 18 (expression_list)
+    T_INLINE_LINK  reduce using rule 18 (expression_list)
+    T_ELEMENT_PARAM reduce using rule 18 (expression_list)
+    T_ELEMENT_RETURN reduce using rule 18 (expression_list)
+    T_ELEMENT_VAR  reduce using rule 18 (expression_list)
+    T_ELEMENT_ACCESS reduce using rule 18 (expression_list)
+    EOF            reduce using rule 18 (expression_list)
+    T_WHITESPACE   reduce using rule 18 (expression_list)
+
+
+
+State 19
+
+    20 expression: T_COMPOUND .		[T_COMPOUND, T_INLINE_LINK, T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, T_WHITESPACE, ]
+
+    T_COMPOUND     reduce using rule 20 (expression)
+    T_INLINE_LINK  reduce using rule 20 (expression)
+    T_ELEMENT_PARAM reduce using rule 20 (expression)
+    T_ELEMENT_RETURN reduce using rule 20 (expression)
+    T_ELEMENT_VAR  reduce using rule 20 (expression)
+    T_ELEMENT_ACCESS reduce using rule 20 (expression)
+    EOF            reduce using rule 20 (expression)
+    T_WHITESPACE   reduce using rule 20 (expression)
+
+
+
+State 20
+
+    23 expression: T_INLINE_LINK . @3 T_WHITESPACE T_IDENTIFIER @4 T_COMPOUND T_RCURLY 
+
+    T_WHITESPACE   reduce using rule 21 (@3)
+
+    @3             go to state 21
+
+
+State 21
+
+    23 expression: T_INLINE_LINK @3 . T_WHITESPACE T_IDENTIFIER @4 T_COMPOUND T_RCURLY 
+
+    T_WHITESPACE   shift, and go to state 22
+
+
+
+State 22
+
+    23 expression: T_INLINE_LINK @3 T_WHITESPACE . T_IDENTIFIER @4 T_COMPOUND T_RCURLY 
+
+    T_IDENTIFIER   shift, and go to state 23
+
+
+
+State 23
+
+    23 expression: T_INLINE_LINK @3 T_WHITESPACE T_IDENTIFIER . @4 T_COMPOUND T_RCURLY 
+
+    T_COMPOUND     reduce using rule 22 (@4)
+
+    @4             go to state 24
+
+
+State 24
+
+    23 expression: T_INLINE_LINK @3 T_WHITESPACE T_IDENTIFIER @4 . T_COMPOUND T_RCURLY 
+
+    T_COMPOUND     shift, and go to state 25
+
+
+
+State 25
+
+    23 expression: T_INLINE_LINK @3 T_WHITESPACE T_IDENTIFIER @4 T_COMPOUND . T_RCURLY 
+
+    T_RCURLY       shift, and go to state 26
+
+
+
+State 26
+
+    23 expression: T_INLINE_LINK @3 T_WHITESPACE T_IDENTIFIER @4 T_COMPOUND T_RCURLY .		[T_COMPOUND, T_INLINE_LINK, T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, T_WHITESPACE, ]
+
+    T_COMPOUND     reduce using rule 23 (expression)
+    T_INLINE_LINK  reduce using rule 23 (expression)
+    T_ELEMENT_PARAM reduce using rule 23 (expression)
+    T_ELEMENT_RETURN reduce using rule 23 (expression)
+    T_ELEMENT_VAR  reduce using rule 23 (expression)
+    T_ELEMENT_ACCESS reduce using rule 23 (expression)
+    EOF            reduce using rule 23 (expression)
+    T_WHITESPACE   reduce using rule 23 (expression)
+
+
+
+State 27
+
+    14 identifier_attribute: variable .		[T_WHITESPACE, ]
+
+    T_WHITESPACE   reduce using rule 14 (identifier_attribute)
+
+
+
+State 28
+
+    33 variable: T_DOLLAR . T_IDENTIFIER 
+
+    T_IDENTIFIER   shift, and go to state 29
+
+
+
+State 29
+
+    33 variable: T_DOLLAR T_IDENTIFIER .		[T_WHITESPACE, ]
+
+    T_WHITESPACE   reduce using rule 33 (variable)
+
+
+
+State 30
+
+    24 type_attribute: type_list .		[T_WHITESPACE, ]
+    25 type_list: type_list . T_BAR type 
+
+    T_BAR          shift, and go to state 31
+    T_WHITESPACE   reduce using rule 24 (type_attribute)
+
+
+
+State 31
+
+    25 type_list: type_list T_BAR . type 
+
+    T_IDENTIFIER   shift, and go to state 33
+    T_ARRAY        shift, and go to state 34
+
+    type           go to state 32
+
+
+State 32
+
+    25 type_list: type_list T_BAR type .		[T_BAR, T_WHITESPACE, ]
+
+    T_BAR          reduce using rule 25 (type_list)
+    T_WHITESPACE   reduce using rule 25 (type_list)
+
+
+
+State 33
+
+    27 type: T_IDENTIFIER .		[T_BAR, T_WHITESPACE, T_RBRA, ]
+
+    T_BAR          reduce using rule 27 (type)
+    T_WHITESPACE   reduce using rule 27 (type)
+    T_RBRA         reduce using rule 27 (type)
+
+
+
+State 34
+
+    28 type: T_ARRAY .		[T_BAR, T_WHITESPACE, T_RBRA, ]
+    29 type: T_ARRAY . T_LBRA T_RBRA 
+    30 type: T_ARRAY . T_LBRA type T_RBRA 
+    31 type: T_ARRAY . T_LBRA T_RBRA type 
+    32 type: T_ARRAY . T_LBRA type T_RBRA type 
+
+    T_LBRA         shift, and go to state 35
+    T_BAR          reduce using rule 28 (type)
+    T_WHITESPACE   reduce using rule 28 (type)
+    T_RBRA         reduce using rule 28 (type)
+
+
+
+State 35
+
+    29 type: T_ARRAY T_LBRA . T_RBRA 
+    30 type: T_ARRAY T_LBRA . type T_RBRA 
+    31 type: T_ARRAY T_LBRA . T_RBRA type 
+    32 type: T_ARRAY T_LBRA . type T_RBRA type 
+
+    T_RBRA         shift, and go to state 36
+    T_IDENTIFIER   shift, and go to state 33
+    T_ARRAY        shift, and go to state 34
+
+    type           go to state 38
+
+
+State 36
+
+    29 type: T_ARRAY T_LBRA T_RBRA .		[T_BAR, T_WHITESPACE, T_RBRA, ]
+    31 type: T_ARRAY T_LBRA T_RBRA . type 
+
+    T_IDENTIFIER   shift, and go to state 33
+    T_ARRAY        shift, and go to state 34
+    T_BAR          reduce using rule 29 (type)
+    T_WHITESPACE   reduce using rule 29 (type)
+    T_RBRA         reduce using rule 29 (type)
+
+    type           go to state 37
+
+
+State 37
+
+    31 type: T_ARRAY T_LBRA T_RBRA type .		[T_BAR, T_WHITESPACE, T_RBRA, ]
+
+    T_BAR          reduce using rule 31 (type)
+    T_WHITESPACE   reduce using rule 31 (type)
+    T_RBRA         reduce using rule 31 (type)
+
+
+
+State 38
+
+    30 type: T_ARRAY T_LBRA type . T_RBRA 
+    32 type: T_ARRAY T_LBRA type . T_RBRA type 
+
+    T_RBRA         shift, and go to state 39
+
+
+
+State 39
+
+    30 type: T_ARRAY T_LBRA type T_RBRA .		[T_BAR, T_WHITESPACE, T_RBRA, ]
+    32 type: T_ARRAY T_LBRA type T_RBRA . type 
+
+    T_IDENTIFIER   shift, and go to state 33
+    T_ARRAY        shift, and go to state 34
+    T_BAR          reduce using rule 30 (type)
+    T_WHITESPACE   reduce using rule 30 (type)
+    T_RBRA         reduce using rule 30 (type)
+
+    type           go to state 40
+
+
+State 40
+
+    32 type: T_ARRAY T_LBRA type T_RBRA type .		[T_BAR, T_WHITESPACE, T_RBRA, ]
+
+    T_BAR          reduce using rule 32 (type)
+    T_WHITESPACE   reduce using rule 32 (type)
+    T_RBRA         reduce using rule 32 (type)
+
+
+
+State 41
+
+    26 type_list: type .		[T_BAR, T_WHITESPACE, ]
+
+    T_BAR          reduce using rule 26 (type_list)
+    T_WHITESPACE   reduce using rule 26 (type_list)
+
+
+
+State 42
+
+    6 element: T_ELEMENT_RETURN . T_WHITESPACE type_attribute T_WHITESPACE compound_attribute 
+
+    T_WHITESPACE   shift, and go to state 43
+
+
+
+State 43
+
+    6 element: T_ELEMENT_RETURN T_WHITESPACE . type_attribute T_WHITESPACE compound_attribute 
+
+    T_IDENTIFIER   shift, and go to state 33
+    T_ARRAY        shift, and go to state 34
+
+    type_attribute go to state 44
+    type_list      go to state 30
+    type           go to state 41
+
+
+State 44
+
+    6 element: T_ELEMENT_RETURN T_WHITESPACE type_attribute . T_WHITESPACE compound_attribute 
+
+    T_WHITESPACE   shift, and go to state 45
+
+
+
+State 45
+
+    6 element: T_ELEMENT_RETURN T_WHITESPACE type_attribute T_WHITESPACE . compound_attribute 
+
+    T_COMPOUND     reduce using rule 15 (@1)
+    T_INLINE_LINK  reduce using rule 15 (@1)
+    T_WHITESPACE   reduce using rule 15 (@1)
+    T_ELEMENT_PARAM reduce using rule 15 (@1)
+    T_ELEMENT_RETURN reduce using rule 15 (@1)
+    T_ELEMENT_VAR  reduce using rule 15 (@1)
+    T_ELEMENT_ACCESS reduce using rule 15 (@1)
+    EOF            reduce using rule 15 (@1)
+
+    compound_attribute go to state 46
+    @1             go to state 15
+
+
+State 46
+
+    6 element: T_ELEMENT_RETURN T_WHITESPACE type_attribute T_WHITESPACE compound_attribute .		[T_WHITESPACE, T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, ]
+
+    T_WHITESPACE   reduce using rule 6 (element)
+    T_ELEMENT_PARAM reduce using rule 6 (element)
+    T_ELEMENT_RETURN reduce using rule 6 (element)
+    T_ELEMENT_VAR  reduce using rule 6 (element)
+    T_ELEMENT_ACCESS reduce using rule 6 (element)
+    EOF            reduce using rule 6 (element)
+
+
+
+State 47
+
+    7 element: T_ELEMENT_VAR . T_WHITESPACE type_attribute T_WHITESPACE compound_attribute 
+
+    T_WHITESPACE   shift, and go to state 48
+
+
+
+State 48
+
+    7 element: T_ELEMENT_VAR T_WHITESPACE . type_attribute T_WHITESPACE compound_attribute 
+
+    T_IDENTIFIER   shift, and go to state 33
+    T_ARRAY        shift, and go to state 34
+
+    type_attribute go to state 49
+    type_list      go to state 30
+    type           go to state 41
+
+
+State 49
+
+    7 element: T_ELEMENT_VAR T_WHITESPACE type_attribute . T_WHITESPACE compound_attribute 
+
+    T_WHITESPACE   shift, and go to state 50
+
+
+
+State 50
+
+    7 element: T_ELEMENT_VAR T_WHITESPACE type_attribute T_WHITESPACE . compound_attribute 
+
+    T_COMPOUND     reduce using rule 15 (@1)
+    T_INLINE_LINK  reduce using rule 15 (@1)
+    T_WHITESPACE   reduce using rule 15 (@1)
+    T_ELEMENT_PARAM reduce using rule 15 (@1)
+    T_ELEMENT_RETURN reduce using rule 15 (@1)
+    T_ELEMENT_VAR  reduce using rule 15 (@1)
+    T_ELEMENT_ACCESS reduce using rule 15 (@1)
+    EOF            reduce using rule 15 (@1)
+
+    compound_attribute go to state 51
+    @1             go to state 15
+
+
+State 51
+
+    7 element: T_ELEMENT_VAR T_WHITESPACE type_attribute T_WHITESPACE compound_attribute .		[T_WHITESPACE, T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, ]
+
+    T_WHITESPACE   reduce using rule 7 (element)
+    T_ELEMENT_PARAM reduce using rule 7 (element)
+    T_ELEMENT_RETURN reduce using rule 7 (element)
+    T_ELEMENT_VAR  reduce using rule 7 (element)
+    T_ELEMENT_ACCESS reduce using rule 7 (element)
+    EOF            reduce using rule 7 (element)
+
+
+
+State 52
+
+    8 element: T_ELEMENT_ACCESS . T_WHITESPACE access_modifier compound_attribute 
+
+    T_WHITESPACE   shift, and go to state 53
+
+
+
+State 53
+
+    8 element: T_ELEMENT_ACCESS T_WHITESPACE . access_modifier compound_attribute 
+
+    T_PUBLIC       shift, and go to state 56
+    T_PRIVATE      shift, and go to state 57
+    T_PROTECTED    shift, and go to state 58
+
+    access_modifier go to state 54
+
+
+State 54
+
+    8 element: T_ELEMENT_ACCESS T_WHITESPACE access_modifier . compound_attribute 
+
+    T_COMPOUND     reduce using rule 15 (@1)
+    T_INLINE_LINK  reduce using rule 15 (@1)
+    T_WHITESPACE   reduce using rule 15 (@1)
+    T_ELEMENT_PARAM reduce using rule 15 (@1)
+    T_ELEMENT_RETURN reduce using rule 15 (@1)
+    T_ELEMENT_VAR  reduce using rule 15 (@1)
+    T_ELEMENT_ACCESS reduce using rule 15 (@1)
+    EOF            reduce using rule 15 (@1)
+
+    compound_attribute go to state 55
+    @1             go to state 15
+
+
+State 55
+
+    8 element: T_ELEMENT_ACCESS T_WHITESPACE access_modifier compound_attribute .		[T_WHITESPACE, T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, ]
+
+    T_WHITESPACE   reduce using rule 8 (element)
+    T_ELEMENT_PARAM reduce using rule 8 (element)
+    T_ELEMENT_RETURN reduce using rule 8 (element)
+    T_ELEMENT_VAR  reduce using rule 8 (element)
+    T_ELEMENT_ACCESS reduce using rule 8 (element)
+    EOF            reduce using rule 8 (element)
+
+
+
+State 56
+
+    11 access_modifier: T_PUBLIC .		[T_COMPOUND, T_INLINE_LINK, T_WHITESPACE, T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, ]
+
+    T_COMPOUND     reduce using rule 11 (access_modifier)
+    T_INLINE_LINK  reduce using rule 11 (access_modifier)
+    T_WHITESPACE   reduce using rule 11 (access_modifier)
+    T_ELEMENT_PARAM reduce using rule 11 (access_modifier)
+    T_ELEMENT_RETURN reduce using rule 11 (access_modifier)
+    T_ELEMENT_VAR  reduce using rule 11 (access_modifier)
+    T_ELEMENT_ACCESS reduce using rule 11 (access_modifier)
+    EOF            reduce using rule 11 (access_modifier)
+
+
+
+State 57
+
+    12 access_modifier: T_PRIVATE .		[T_COMPOUND, T_INLINE_LINK, T_WHITESPACE, T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, ]
+
+    T_COMPOUND     reduce using rule 12 (access_modifier)
+    T_INLINE_LINK  reduce using rule 12 (access_modifier)
+    T_WHITESPACE   reduce using rule 12 (access_modifier)
+    T_ELEMENT_PARAM reduce using rule 12 (access_modifier)
+    T_ELEMENT_RETURN reduce using rule 12 (access_modifier)
+    T_ELEMENT_VAR  reduce using rule 12 (access_modifier)
+    T_ELEMENT_ACCESS reduce using rule 12 (access_modifier)
+    EOF            reduce using rule 12 (access_modifier)
+
+
+
+State 58
+
+    13 access_modifier: T_PROTECTED .		[T_COMPOUND, T_INLINE_LINK, T_WHITESPACE, T_ELEMENT_PARAM, T_ELEMENT_RETURN, T_ELEMENT_VAR, T_ELEMENT_ACCESS, EOF, ]
+
+    T_COMPOUND     reduce using rule 13 (access_modifier)
+    T_INLINE_LINK  reduce using rule 13 (access_modifier)
+    T_WHITESPACE   reduce using rule 13 (access_modifier)
+    T_ELEMENT_PARAM reduce using rule 13 (access_modifier)
+    T_ELEMENT_RETURN reduce using rule 13 (access_modifier)
+    T_ELEMENT_VAR  reduce using rule 13 (access_modifier)
+    T_ELEMENT_ACCESS reduce using rule 13 (access_modifier)
+    EOF            reduce using rule 13 (access_modifier)
+
+
+

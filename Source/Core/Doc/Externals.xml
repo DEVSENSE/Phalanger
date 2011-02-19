@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<doc>
+    <method name="InvokeFunction">
+		<param name="moduleName">The name of the extension where the function is defined (without trailing '.DLL').</param>
+		<param name="functionName">The name of the function.</param>
+		<param name="args">The parameters of the function.</param>
+		<param name="refInfo">Indexes into the <paramref name="args"/> marking parameters that should
+		be passed by reference, and optionally terminated with <c>-1</c> which means that from
+		the last marked parameter on, everything should be passed by reference.</param>
+		<returns>The return value of the function.</returns>
+    </method>
+    <method name="InvokeMethod">
+		<param name="moduleName">The name of the extension where the method is defined (without trailing '.DLL').</param>
+		<param name="className">The name of the declaring class.</param>
+		<param name="methodName">The name of the method.</param>
+		<param name="self">The instance on which the method is to be invoked.</param>
+		<param name="args">The parameters of the method.</param>
+		<param name="refInfo">Indexes into the <paramref name="args"/> marking parameters that should
+		be passed by reference, and optionally terminated with <c>-1</c> which means that from
+		the last marked parameter on, everything should be passed by reference.</param>
+		<returns>The return value of the method.</returns>
+    </method>
+    <method name="BindParameter">
+		<param name="paramIndex">The 0-based parameter index.</param>
+		<returns>
+			A <see cref="MarshalByRefObject"/> implementing the <see cref="IExternalVariable"/> interface,
+			or <B>null</B> if the proxy could not be created.
+		</returns>
+		<remarks>
+			The reason for returning <B>null</B> include:
+			<list type="bullet">
+				<item>no external function/method invocation has yet been performed by the <c>ExtManager</c></item>
+				<item>the <paramref name="paramIndex"/> is greater or equal to the number of parameters of the last
+				invocation</item>
+				<item>the external function/method did not increment the corresponding <c>zval</c>'s reference
+				counter, thus the <c>zval</c> has been released</item>
+			</list>
+		</remarks>
+    </method>
+    <method name="GetStreamWrapper">
+		<param name="scheme">The scheme portion of an URL that a wrapper is requested for.</param>
+		<returns>
+			A <see cref="MarshalByRefObject"/> implementing the <see cref="IExternalStreamWrapper"/> interface,
+			or <B>null</B> if there is no wrapper for the given <paramref name="scheme"/>.</returns>
+		<remarks>
+			Since PHP stream wrappers are stateless, the returned MBRO's lifetime should be limited only to the
+			lifetime of the corresponding <c>ExtManager</c> instance.
+		</remarks>
+    </method>
+    <method name="GetStreamWrapperSchemes">
+		<returns>The <see cref="ICollection"/> of schemes (for example { &quot;ftp&quot;, &quot;http&quot; }).</returns>
+    </method>
+    <method name="GetStartupErrors">
+		<returns>
+			An <see cref="ICollection"/> of strings - error messages of errors that occured during <c>ExtManager</c>(s)
+			startup.
+		</returns>
+    </method>
+    <method name="PhpInfo">
+		<returns>HTML formatted extension information.</returns>
+		<remarks>
+			Called as a part of the <c>php_info</c> function processing.
+			<seealso cref="M:PHP.Core.PhpNetInfo.Write(System.IO.TextWriter)"/>
+		</remarks>
+    </method>
+    <method name="GetModules">
+		<param name="internalNames">If <B>true</B>, internal extension names will be returned, if <B>false</B>,
+		file names (without the trailing <c>.DLL</c>) will be returned.</param>
+		<returns>An <see cref="ICollection"/> of extension names.</returns>
+    </method>
+    <method name="GetModuleVersion">
+		<param name="moduleName">The name of the extension.</param>
+		<param name="internalName">If <B>true</B>, <paramref name="moduleName"/> is an internal extension name,
+		if <B>false</B>, <paramref name="moduleName"/> is a file name (without the trailing <c>.DLL</c>).</param>
+		<param name="loaded"><B>true</B> if <paramref name="moduleName"/> is loaded, <B>false</B> otherwise.</param>
+		<returns>The version if <paramref name="moduleName"/> is loaded and its version is specified,
+		<B>null</B> otherwise.</returns>
+    </method>
+    <method name="GetFunctionsByModule">
+		<param name="moduleName">The name of the extension.</param>
+		<param name="internalName">If <B>true</B>, <paramref name="moduleName"/> is an internal extension name,
+		if <B>false</B>, <paramref name="moduleName"/> is a file name (without the trailing <c>.DLL</c>).</param>
+		<returns>An <see cref="ICollection"/> of function names or <B>null</B> if the extension was not found.</returns>
+        <remarks>
+			The extension must be loaded (there must be <c>load="true"</c> in the corresponding entry in
+			<c>ExtManager.exe.config</c> file) in order to discover its functions.
+        </remarks>
+    </method>
+    <method name="GetClassesByModule">
+		<param name="moduleName">The name of the extension.</param>
+		<param name="internalName">If <B>true</B>, <paramref name="moduleName"/> is an internal extension name,
+		if <B>false</B>, <paramref name="moduleName"/> is a file name (without the trailing <c>.DLL</c>).</param>
+		<returns>An <see cref="ICollection"/> of class names or <B>null</B> if the extension was not found.</returns>
+        <remarks>
+			The extension must be loaded (there must be <c>load="true"</c> in the corresponding entry in
+			<c>ExtManager.exe.config</c> file) in order to discover its classes.
+        </remarks>
+    </method>
+    <method name="GenerateManagedWrapper">
+		<param name="moduleName">The name of the extension.</param>
+		<returns>An error/notice message or <B>null</B> if there was no error or notice.</returns>
+		<remarks>
+			The extension does not need to be loaded.
+		</remarks>
+    </method>
+    <method name="LoadExtension">
+		<param name="descriptor">The library descriptor describing the extension (encapsulates file name, file path,
+    earlyInit).</param>
+    </method>
+    <method name="BeginRequest">
+		<remarks/>
+    </method>
+    <method name="EndRequest">
+		<remarks/>
+    </method>
+    <method name="GetInstanceUrl">
+		<param name="generalUrl">The well-known URL through which this method is called.</param>
+		<param name="appConfig">Application configuration.</param>
+		<param name="extConfig">Extension configuration (collection of <see cref="ExtensionLibraryDescriptor"/>s).</param>
+		<returns>The instance (private) URL.</returns>
+        <remarks>
+			Each <c>ExtManager</c> creates two channels. One of them is a channel with a well-known section name.
+			The other one has a generated unique section name. <c>RemoteDispatcher</c> can be called
+			through both of them. However, if you use the well-known one, you might be talking to different
+			instances of <c>ExtManager</c> every time you make a call. This is alright when there is no request
+			context. If you are operating in a request context, all calls must be served by the same instance
+			of <c>ExtManager</c>. Therefore, you should first call <see cref="M:PHP.Core.IExternals.GetInstanceUrl(System.String)"/>
+			to obtain a URL through which you then connect to <c>RemoteDispatcher</c> again. But with this connection,
+			you can be sure that as long as your request is active, "your" <c>ExtManager</c> doesn't terminate
+			(unless something terrible happens, of course). <c>ExtManager</c> can be gracefully terminated by
+			calling <see cref="M:PHP.Core.IExternals.GracefulShutdown"/>. Usually you will do this after you have changed
+			configuration.
+        </remarks>
+    </method>
+    <method name="GracefulShutdown">
+		<remarks/>
+    </method>
+    <method name="IniSet">
+		<param name="varName">The INI entry name.</param>
+		<param name="newValue">The new INI entry value.</param>
+		<param name="oldValue">Will receive the old INI entry value (valid only if the return value is <B>true</B>).</param>
+		<returns><B>true</B> if the entry specified by <paramref name="varName"/> exists, <B>false</B> otherwise.</returns>
+        <remarks>
+			Startup values of extension related INI entries can be configured in <c>ExtManager.exe.config</c>.
+        </remarks>
+    </method>
+    <method name="IniGet">
+		<param name="varName">The INI entry name.</param>
+		<param name="value">Will receive the INI entry value.</param>
+		<returns><B>true</B> if the entry specified by <paramref name="varName"/> exists, <B>false</B> otherwise.</returns>
+        <remarks>
+			Startup values of extension related INI entries can be configured in <c>ExtManager.exe.config</c>.
+        </remarks>
+    </method>
+    <method name="IniRestore">
+		<param name="varName">The INI entry name.</param>
+		<returns><B>true</B> if the entry specified by <paramref name="varName"/> exists, <B>false</B> otherwise.</returns>
+        <remarks>
+			Startup values of extension related INI entries can be configured in <c>ExtManager.exe.config</c>.
+        </remarks>
+    </method>
+    <method name="IniGetAll">
+		<param name="extension">Name of an extension (internal name, for example &quot;sockets&quot;!) or <B>null</B>.</param>
+		<returns>All registered configuration options. If <paramref name="extension"/> is not <B>null</B>,
+		only options specific for that extension are returned.</returns>
+        <remarks>
+	        Startup values of extension related INI entries can be configured in <c>ExtManager.exe.config</c>.
+        </remarks>
+    </method>
+    <method name="IniOptionExists">
+		<param name="moduleName">File name of an extension without '.DLL' (i.e. &quot;php_sockets&quot;).</param>
+		<param name="varName">The INI entry name.</param>
+		<returns><B>true</B> if the entry specified by <paramref name="varName"/> was registered by the
+		<paramref name="extension"/>, <B>false</B> otherwise.</returns>
+		<remarks>
+			The extension does not need to be loaded.
+		</remarks>
+    </method>
+</doc>

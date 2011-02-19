@@ -1,0 +1,274 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DeleteKey" xml:space="preserve">
+    <value>Želite li ista izbridati kluč {0}?</value>
+  </data>
+  <data name="DeleteKey_t" xml:space="preserve">
+    <value>Izbrisati ključ</value>
+  </data>
+  <data name="ExpandHKCR" xml:space="preserve">
+    <value>Želite li ista proširiti ključ HKEY_CLASSES_ROOT? Ova operacija može trajati dugo.</value>
+  </data>
+  <data name="ExpandHKCR_t" xml:space="preserve">
+    <value>Proširiti HKEY_CLASSES_ROOT</value>
+  </data>
+  <data name="e_UnknownRoot" xml:space="preserve">
+    <value>Ne poznat korijen registara</value>
+  </data>
+  <data name="UnknownValue" xml:space="preserve">
+    <value>&lt;???&gt;</value>
+  </data>
+  <data name="UnknownValueAlt" xml:space="preserve">
+    <value>Ne mogu protumačiti nepoznat oblik</value>
+  </data>
+  <data name="Binary_d" xml:space="preserve">
+    <value>Unosite binarnu vrihjednost kao heksadecimalna znamenka. Broj znamenka mora biti paran. Razmake su zanemarene.</value>
+  </data>
+  <data name="CreateKey_t" xml:space="preserve">
+    <value>Napraviti ključ</value>
+  </data>
+  <data name="DeleteValue" xml:space="preserve">
+    <value>Želite li za ista izbrisati vrijednost {0}?</value>
+  </data>
+  <data name="DeleteValues" xml:space="preserve">
+    <value>Želite li ista izbrisati odabrane vrijednosti?</value>
+  </data>
+  <data name="DeleteValues_t" xml:space="preserve">
+    <value>Izbrisati vrijednosti</value>
+  </data>
+  <data name="Error_t" xml:space="preserve">
+    <value>Greška</value>
+  </data>
+  <data name="e_3264" xml:space="preserve">
+    <value>Vrijednost svojstva {0} može biti samo 32 ili 64.</value>
+  </data>
+  <data name="e_BinaryNotEven" xml:space="preserve">
+    <value>Broj znamenka za reprezentiranje polje bytova mora biti paran.</value>
+  </data>
+  <data name="e_CopyValue" xml:space="preserve">
+    <value>Greška kopiranja vrijednosti "{0}" iz ključa {1} za {2}:</value>
+  </data>
+  <data name="e_CreateSubKey" xml:space="preserve">
+    <value>Greška napravljanja podključa {0}\{1}:</value>
+  </data>
+  <data name="e_DeleteDuplicated" xml:space="preserve">
+    <value>Greška izbrisanja dupliciranog ključa. Oba ključevi postaju.</value>
+  </data>
+  <data name="e_DeleteOriginalKey" xml:space="preserve">
+    <value>Ključ bio je dupliciran, ali dogodila se greška dlja izbrisanja izvornog ključa</value>
+  </data>
+  <data name="e_DeleteValue" xml:space="preserve">
+    <value>Neuspjeh izbrisanja vriejdnosti {0}:</value>
+  </data>
+  <data name="e_editUnknown" xml:space="preserve">
+    <value>Vrijednost nepoznatog oblika ne može biti promjenjena.</value>
+  </data>
+  <data name="e_EnlistSubKeys" xml:space="preserve">
+    <value>Greška postičanja lista podključeva {0}:</value>
+  </data>
+  <data name="e_EnlistValues" xml:space="preserve">
+    <value>Greška púostičanja lista vrijednosti u ključu {0}:</value>
+  </data>
+  <data name="e_InvalidName" xml:space="preserve">
+    <value>Naziv "{0}" nije valjan. Naziv ne može sadržati \.</value>
+  </data>
+  <data name="e_KeyExists" xml:space="preserve">
+    <value>Ključ još postoja{0}.</value>
+  </data>
+  <data name="e_ListViewItem" xml:space="preserve">
+    <value>Vriejdnost mora biti ListViewItem</value>
+  </data>
+  <data name="e_OpenSubKey" xml:space="preserve">
+    <value>Greška otvaranja podključa {0}\{1}:</value>
+  </data>
+  <data name="e_Rename" xml:space="preserve">
+    <value>Ne mogu peimenovati {0} za {1} jer {1} još postoja.</value>
+  </data>
+  <data name="e_Set" xml:space="preserve">
+    <value>Vrijednost svojstva {0} ne može biti unosena.</value>
+  </data>
+  <data name="e_SetResourceValue" xml:space="preserve">
+    <value>Ne mogu unositi vrijednost resursa</value>
+  </data>
+  <data name="e_Unset" xml:space="preserve">
+    <value>Ne mogu od-unositi svojstvo {0}.</value>
+  </data>
+  <data name="e_ValueExists" xml:space="preserve">
+    <value>Vrijednost sa imenom {0} još postoja.</value>
+  </data>
+  <data name="KeepBoth" xml:space="preserve">
+    <value>Želite li ostaviti oba ključeva?</value>
+  </data>
+  <data name="KeepBoth_note" xml:space="preserve">
+    <value>(U koliko izaberite Ne, izvoran ključ ostane.)</value>
+  </data>
+  <data name="Multistring_d" xml:space="preserve">
+    <value>Unosite nizne vrijednosti. Svaku za jed redak.</value>
+  </data>
+  <data name="NameOfNewKey" xml:space="preserve">
+    <value>Unosize naziv novog ključa</value>
+  </data>
+  <data name="Number_d" xml:space="preserve">
+    <value>Odaberize brojčanu vrijednost bez predznaka. Možete uporabiti decimalan ili heksadecimalan unos.</value>
+  </data>
+  <data name="RefreshHKCR" xml:space="preserve">
+    <value>Želite li ista ponoviti ključ HKEY_CLASSES_ROOT? To može trajati dugo.</value>
+  </data>
+  <data name="RefreshHKCR_t" xml:space="preserve">
+    <value>Ponovoti HKEY_CLASSES_ROOT</value>
+  </data>
+  <data name="String_d" xml:space="preserve">
+    <value>Unosite niz</value>
+  </data>
+  <data name="e_Restart" xml:space="preserve">
+    <value>Greška ponovopokrenutja aplikacije:</value>
+  </data>
+  <data name="DefaultLanguage" xml:space="preserve">
+    <value>(zadani)</value>
+  </data>
+  <data name="e_KeyDoesNotExist" xml:space="preserve">
+    <value>Ključ {0} ne postoje.</value>
+  </data>
+  <data name="JumpToKey" xml:space="preserve">
+    <value>Unosite cijelu cestu ključa</value>
+  </data>
+  <data name="JumpToKey_t" xml:space="preserve">
+    <value>Idi za ključ</value>
+  </data>
+  <data name="JumToSameKey" xml:space="preserve">
+    <value>&amp;Idi za isti ključ ispod {0}</value>
+  </data>
+  <data name="ExportKey_t" xml:space="preserve">
+    <value>Izvozi ključ</value>
+  </data>
+  <data name="ExportSuccessful" xml:space="preserve">
+    <value>Izvoz uspjel</value>
+  </data>
+  <data name="e_GetValue" xml:space="preserve">
+    <value>Neuspjeh postičanja vrijednosti {0} zljuča {1}:</value>
+  </data>
+  <data name="e_UnknownregistryFileType" xml:space="preserve">
+    <value>Nepoznatoblik datoteke registra</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="readme" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>readme.hr.rtf;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+  </data>
+</root>

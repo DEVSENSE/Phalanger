@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<docs>
+  <intrinsicEnumeration>
+    <remarks>
+      If the enumerator has been moved behind the last (or before the first) 
+      item of array it is blocked until <see cref="PhpArrays.Reset"/>
+      or <see cref="PhpArrays.End"/> is called or a new item is added to the array.
+    </remarks>
+  </intrinsicEnumeration>
+</docs>  

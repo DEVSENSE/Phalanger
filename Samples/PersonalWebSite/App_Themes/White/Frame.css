@@ -1,0 +1,194 @@
+﻿/* Photo Border for All Pages Except the Albums Page */
+
+.photo-frame .topx-- {
+	background-image: url(Images/frame-topx--.gif);
+	background-repeat: no-repeat;
+	width: auto;
+	height: 4px;
+	vertical-align: top;
+}
+.photo-frame .top-x- {
+	background-image: url(Images/frame-top-x-.gif);
+	background-repeat: repeat-x;
+	width: auto;
+	height: 4px;
+}
+.photo-frame .top--x {
+	background-image: url(Images/frame-top--x.gif);
+	background-repeat: no-repeat;
+	width: auto;
+	height: 4px;
+	vertical-align: top;
+}
+
+.photo-frame .midx-- {
+	background-image: url(Images/frame-midx--.gif);
+	background-repeat: repeat-y;
+	width: 4px;
+	height: auto;
+}
+.photo-frame .mid--x {
+	background-image: url(Images/frame-mid--x.gif);
+	background-repeat: repeat-y;
+	width: 4px;
+	height: auto;
+}
+
+.photo-frame .botx-- {
+	background-image: url(Images/frame-botx--.gif);
+	background-repeat: no-repeat;
+	width: 4px;
+	height: 4px;
+	vertical-align: top;
+}
+.photo-frame .bot-x- {
+	background-image: url(Images/frame-bot-x-.gif);
+	background-repeat: repeat-x;
+	width: auto;
+	height: 4px;
+}
+.photo-frame .bot--x {
+	background-image: url(Images/frame-bot--x.gif);
+	background-repeat: no-repeat;
+	width: 4px;
+	height: 4px;
+	vertical-align: bottom;
+}
+
+/* Photo Border for the Album Page */
+
+.album-frame .topx----,
+.album-frame .top----x,
+.album-frame .botx----,
+.album-frame .bot----x {
+	height: 14px;
+	width: 14px;
+}
+
+.album-frame .top-x--- {
+	background-image: url(images/album-tstretch.gif);
+	background-repeat: repeat-x;
+	text-align: left;
+	height: 14px;
+	width: auto;
+}
+.album-frame .top--x-- {
+	background-image: url(images/album-tstretch.gif);
+	background-repeat: repeat-x;
+	height: 14px;
+	width: auto;
+}
+.album-frame .top---x- {
+	background-image: url(images/album-tstretch.gif);
+	background-repeat: repeat-x;
+	text-align: right;
+	height: 14px;
+	width: auto;
+}
+
+.album-frame .mtpx---- {
+	background-image: url(images/album-lstretch.gif);
+	background-repeat: repeat-y;
+	vertical-align: top;
+	height: auto;
+	width: 14px;
+}
+.album-frame .mtp----x {
+	background-image: url(images/album-rstretch.gif);
+	background-repeat: repeat-y;
+	vertical-align: top;
+	height: auto;
+	width: 14px;
+}
+
+.album-frame .midx---- {
+	background-image: url(images/album-lstretch.gif);
+	background-repeat: repeat-y;
+	height: auto;
+	width: 14px;
+}
+.album-frame .mid----x {
+	background-image: url(images/album-rstretch.gif);
+	background-repeat: repeat-y;
+	height: auto;
+	width: 14px;
+}
+
+.album-frame .mbtx---- {
+	background-image: url(images/album-lstretch.gif);
+	background-repeat: repeat-y;
+	vertical-align: bottom;
+	height: auto;
+	width: 14px;
+}
+.album-frame .mbt----x {
+	background-image: url(images/album-rstretch.gif);
+	background-repeat: repeat-y;
+	vertical-align: bottom;
+	height: auto;
+	width: 14px;
+}
+
+.album-frame .bot-x--- {
+	background-image: url(images/album-bstretch.gif);
+	background-repeat: repeat-x;
+	text-align: right;
+	height: 14px;
+	width: auto;
+}
+.album-frame .bot--x-- {
+	background-image: url(images/album-bstretch.gif);
+	background-repeat: repeat-x;
+	height: 14px;
+	width: auto;
+}
+.album-frame .bot---x- {
+	background-image: url(images/album-bstretch.gif);
+	background-repeat: repeat-x;
+	text-align: left;
+	height: 14px;
+	width: auto;
+}
+
+/* Form Items */
+
+.textfield {
+	border: 1px solid #929292;
+	vertical-align: middle;
+	padding: 3px;
+	margin: 2px 0 5px 0;
+}
+
+/* Login View */
+
+.login .label {
+	display:block;
+}
+
+.login .textbox {
+	border: 1px solid #929292;
+	width: 140px;
+	vertical-align: middle;
+	padding: 3px;
+	margin: 2px 0 5px 0;
+}
+
+.login .button {
+	display:block;
+	margin-top:8px;
+	margin-bottom:8px;
+}
+
+/* LIST */
+
+ul {
+	list-style-type: none;
+	list-style-image: url(images/bullet-2.gif);
+	list-style-position: outside;
+	line-height: 2.1em;
+	vertical-align: middle;
+	margin-left: 1.25em;
+}
+.link {
+	list-style-image: url(images/bullet-1.gif);
+}

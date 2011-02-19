@@ -1,0 +1,14 @@
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+      <Name>XML file</Name>
+      <Description>An empty XML file</Description>
+    <Icon Package="__TemplateIcon.ico" ID="4539" />
+    <ProjectType>Phalanger</ProjectType>
+    <SortOrder>100</SortOrder>
+    <DefaultName>XMLFile.xml</DefaultName>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem ReplaceParameters="false">XMLFile.xml</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

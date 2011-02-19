@@ -1,0 +1,358 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="void" name="ming_setscale" description="Set scale (?).">
+    <param type="int" name="scale" />
+  </function>
+  <function returnType="void" name="ming_setcubicthreshold" description="Set cubic threshold (?).">
+    <param type="int" name="threshold" />
+  </function>
+  <function returnType="int" name="swfbutton_keypress" description="Returns the action flag for keyPress(char).">
+    <param type="string" name="str" />
+  </function>
+  <function returnType="void" name="ming_useswfversion" description="Use SWF version (?).">
+    <param type="int" name="version" />
+  </function>
+  <function returnType="int" name="ming_keypress" description="Returns the action flag for keyPress(char).">
+    <param type="string" name="str" />
+  </function>
+  <function returnType="void" name="ming_useconstants" description="Use constant pool (?).">
+    <param type="int" name="use" />
+  </function>
+
+  <class name="SWFAction">
+    <function name="SWFAction" description="Creates a new Action.">
+      <param type="string" name="script" />
+    </function>
+  </class>
+  
+  <class name="SWFShape">
+    <function name="SWFShape" description="Constructor." />
+    <function returnType="object" name="addFill" description="Adds a solid fill to the shape.">
+      <param type="int" name="red" />
+      <param type="int" name="green" />
+      <param type="int" name="blue" />
+      <param type="int" name="a" optional="true" />
+    </function>
+    <function returnType="object" name="addFill" description="Adds a solid fill to the shape.">
+      <param type="object" name="bitmap_or_gradient" />
+      <param type="int" name="flags" optional="true" />
+    </function>
+    <function returnType="void" name="drawCurve" description="Draws a curve (relative).">
+      <param type="int" name="controldx" />
+      <param type="int" name="controldy" />
+      <param type="int" name="anchordx" />
+      <param type="int" name="anchordy" />
+    </function>
+    <function returnType="void" name="drawCurveTo" description="Draws a curve.">
+      <param type="int" name="controlx" />
+      <param type="int" name="controly" />
+      <param type="int" name="anchorx" />
+      <param type="int" name="anchory" />
+    </function>
+    <function returnType="void" name="drawLine" description="Draws a line (relative).">
+      <param type="int" name="dx" />
+      <param type="int" name="dy" />
+    </function>
+    <function returnType="void" name="drawLineTo" description="Draws a line.">
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" name="movePen" description="Moves the shape's pen (relative).">
+      <param type="int" name="dx" />
+      <param type="int" name="dy" />
+    </function>
+    <function returnType="void" name="movePenTo" description="Moves the shape's pen.">
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" name="setLeftFill" description="Sets left rasterizing color.">
+	  <param type="object" name="fill" />
+    </function>
+    <function returnType="void" name="setLeftFill" description="Sets left rasterizing color.">
+      <param type="int" name="red" />
+      <param type="int" name="green" />
+      <param type="int" name="blue" />
+      <param type="int" name="a" optional="true" />
+    </function>
+    <function returnType="void" name="setLine" description="Sets the shape's line style.">
+      <param type="int" name="width" />
+      <param type="int" name="red" optional="true" />
+      <param type="int" name="green" optional="true" />
+      <param type="int" name="blue" optional="true" />
+      <param type="int" name="a" optional="true" />
+    </function>
+    <function returnType="void" name="setRightFill" description="Sets right rasterizing color.">
+	  <param type="object" name="fill" />
+    </function>
+    <function returnType="void" name="setRightFill" description="Sets right rasterizing color.">
+      <param type="int" name="red" />
+      <param type="int" name="green" />
+      <param type="int" name="blue" />
+      <param type="int" name="a" optional="true" />
+    </function>
+  </class>
+
+  <class name="SWFFill">
+    <function name="SWFFill" description="Constructor." />
+    <function returnType="void" name="moveTo" description="Moves fill origin.">
+      <param type="int" name="x" />
+      <param type="int" name="y" />      
+    </function>
+    <function returnType="void" name="rotateTo" description="Sets fill's rotation.">
+      <param type="float" name="degrees" />  
+    </function>
+    <function returnType="void" name="scaleTo" description="Sets fill's scale.">
+      <param type="int" name="x" />
+      <param type="int" name="y" />      
+    </function>
+    <function returnType="void" name="skewXTo" description="Sets fill x-skew.">
+      <param type="float" name="x" />  
+    </function>
+    <function returnType="void" name="skewYTo" description="Sets fill y-skew.">
+      <param type="float" name="y" />  
+    </function>
+  </class>
+
+  <class name="SWFGradient">
+    <function name="SWFGradient" description="Constructor." />
+    <function returnType="void" name="addEntry" description="Adds an entry to the gradient list.">
+      <param type="float" name="ratio" />
+      <param type="int" name="red" />
+      <param type="int" name="green" />
+      <param type="int" name="blue" />
+      <param type="int" name="a" optional="true" />
+    </function>
+  </class>
+
+  <class name="SWFBitmap">
+    <function name="SWFBitmap" description="Loads Bitmap object.">
+      <param type="string" name="filename" />
+      <param optional="true" type="string" name="alphafilename" />
+    </function>
+    <function returnType="int" name="getWidth" description="Returns the bitmap's width." />
+    <function returnType="int" name="getHeight" description="Returns the bitmap's width." />
+  </class>
+
+  <class name="SWFText">
+    <function name="SWFText" description="Constructor." />
+    <function returnType="void" name="addString" description="Draws a string.">
+      <param type="string" name="string" />
+    </function>
+    <function returnType="int" name="getWidth" description="Computes string's width.">
+      <param type="string" name="string" />
+    </function>
+    <function returnType="void" name="moveTo" description="Moves the pen.">
+      <param type="int" name="x" />
+      <param type="int" name="y" />      
+    </function>
+    <function returnType="void" name="setColor" description="Sets the current font color.">
+      <param type="int" name="red" />
+      <param type="int" name="green" />
+      <param type="int" name="blue" />
+      <param type="int" name="a" optional="true" />
+    </function>
+    <function returnType="void" name="setFont" description="Sets the current font.">
+      <param type="string" name="font" />
+    </function>
+    <function returnType="void" name="setHeight" description="Sets the current font height.">
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" name="setSpacing" description="Sets the current font spacing.">
+      <param type="float" name="spacing" />
+    </function>
+  </class>
+
+  <class name="SWFTextField">
+    <function name="SWFTextField" description="Creates a text field object.">
+      <param type="int" name="flags" optional="true" />
+    </function>
+    <function returnType="void" name="addString" description="Concatenates the given string to the text field.">
+      <param type="string" name="string" />
+    </function>
+    <function returnType="void" name="align" description="Sets the text field alignment.">
+      <param type="int" name="alignment" />
+    </function>
+    <function returnType="void" name="setBounds" description="Sets the text field width and height.">
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" name="setColor" description="Sets the color of the text field.">
+      <param type="int" name="red" />
+      <param type="int" name="green" />
+      <param type="int" name="blue" />
+      <param type="int" name="a" optional="true" />
+    </function>
+    <function returnType="void" name="setFont" description="Sets the text field font.">
+      <param type="string" name="font" />
+    </function>
+    <function returnType="void" name="setHeight" description="Sets the font height of this text field font.">
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" name="setIndentation" description="Sets the indentation of the first line.">
+      <param type="int" name="width" />
+    </function>
+    <function returnType="void" name="setLeftMargin" description="Sets the left margin width of the text field.">
+      <param type="int" name="width" />
+    </function>
+    <function returnType="void" name="setLineSpacing" description="Sets the line spacing of the text field.">
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" name="setMargins" description="Sets the margins width of the text field.">
+      <param type="int" name="left" />
+      <param type="int" name="right" />
+    </function>
+    <function returnType="void" name="setName" description="Sets the variable name.">
+      <param type="string" name="name" />
+    </function>
+    <function returnType="void" name="setRightMargin" description="Sets the right margin width of the text field.">
+      <param type="int" name="width" />
+    </function>
+  </class>
+
+  <class name="SWFFont">
+    <function name="SWFFont" description="Loads a font definition.">
+      <param type="string" name="filename" />
+    </function>
+    <function returnType="int" name="getWidth" description="Returns the string's width.">
+      <param type="string" name="string" />
+    </function>
+  </class>
+
+  <class name="SWFDisplayItem">
+    <function name="SWFDisplayItem" description="Creates a new displayitem object." />
+    <function returnType="void" name="addColor" description="Adds the given color to this item's color transform.">
+      <param type="int" name="red" optional="true" />
+      <param type="int" name="green" optional="true" />
+      <param type="int" name="blue" optional="true" />
+      <param type="int" name="a" optional="true" />
+    </function>
+    <function returnType="void" name="move" description="Moves object in relative coordinates.">
+      <param type="int" name="dx" />
+      <param type="int" name="dy" />
+    </function>
+    <function returnType="void" name="moveTo" description="Moves object in global coordinates.">
+      <param type="int" name="x" />
+      <param type="int" name="y" />
+    </function>
+    <function returnType="void" name="multColor" description="Multiplies the item's color transform.">
+      <param type="int" name="red" optional="true" />
+      <param type="int" name="green" optional="true" />
+      <param type="int" name="blue" optional="true" />
+      <param type="int" name="a" optional="true" />
+    </function>
+    <function returnType="void" name="remove" description="Removes the object from the movie." />
+    <function returnType="void" name="rotate" description="Rotates in relative coordinates.">
+      <param type="float" name="ddegrees" />  
+    </function>
+    <function returnType="void" name="rotateTo" description="Rotates the object in global coordinates.">
+      <param type="float" name="degrees" />  
+    </function>
+    <function returnType="void" name="scale" description="Scales the object in relative coordinates.">
+      <param type="int" name="dx" />
+      <param type="int" name="dy" />      
+    </function>
+    <function returnType="void" name="scaleTo" description="Scales the object in global coordinates.">
+      <param type="int" name="x" />
+      <param type="int" name="y" />      
+    </function>
+    <function returnType="void" name="setDepth" description="Sets z-order.">
+      <param type="float" name="depth" />  
+    </function>
+    <function returnType="int" name="setName" description="Sets the object's name.">
+      <param type="string" name="name" />
+    </function>
+    <function returnType="void" name="setRatio" description="Sets the object's ratio.">
+      <param type="float" name="ratio" />  
+    </function>
+    <function returnType="void" name="skewX" description="Sets the X-skew.">
+      <param type="float" name="ddegrees" />  
+    </function>
+    <function returnType="void" name="skewY" description="Sets the Y-skew.">
+      <param type="float" name="ddegrees" />  
+    </function>
+    <function returnType="void" name="skewXTo" description="Sets the X-skew.">
+      <param type="float" name="degrees" />  
+    </function>
+    <function returnType="void" name="skewYTo" description="Sets the Y-skew.">
+      <param type="float" name="degrees" />  
+    </function>
+  </class>
+
+  <class name="SWFMovie">
+    <function name="SWFMovie" description="Creates a new movie object, representing an SWF version 4 movie." />
+    <function returnType="object" name="add" description="Adds any type of data to a movie.">
+      <param type="object" name="instance" />
+    </function>
+    <function returnType="void" name="nextFrame" description="Moves to the next frame of the animation." />
+    <function returnType="void" name="output" description="Dumps your lovingly prepared movie out." />
+    <function returnType="void" name="save" description="Saves your movie in a file.">
+      <param type="string" name="filename" />
+    </function>
+    <function returnType="void" name="setBackground" description="Sets the background color.">
+      <param type="int" name="red" />
+      <param type="int" name="green" />
+      <param type="int" name="blue" />
+    </function>
+    <function returnType="void" name="setDimension" description="Sets the movie's width and height.">
+      <param type="int" name="width" />
+      <param type="int" name="height" />
+    </function>
+    <function returnType="void" name="setFrames" description="Sets the total number of frames in the animation.">
+      <param type="int" name="numberofframes" />
+    </function>
+    <function returnType="void" name="setRate" description="Sets the animation's frame rate.">
+      <param type="int" name="rate" />
+    </function>
+    <function returnType="void" name="streamMP3" description="Streams a MP3 file.">
+      <param type="string" name="mp3FileName" />
+    </function>
+  </class>
+
+  <class name="SWFButton">
+    <function name="SWFButton" description="Creates a new Button." />
+    <function returnType="void" name="addAction" description="Adds an action.">
+      <param type="object" name="action" />
+      <param type="int" name="flags" />
+    </function>
+    <function returnType="void" name="addShape" description="Adds a shape to a button.">
+      <param type="object" name="shape" />
+      <param type="int" name="flags" />
+    </function>
+    <function returnType="void" name="setAction" description="Sets the action.">
+      <param type="object" name="action" />
+    </function>
+    <function returnType="void" name="setDown" description="Alias for addShape(shape, SWFBUTTON_DOWN).">
+      <param type="object" name="shape" />
+    </function>
+    <function returnType="void" name="setHit" description="Alias for addShape(shape, SWFBUTTON_HIT).">
+      <param type="object" name="shape" />
+    </function>
+    <function returnType="void" name="setOver" description="Alias for addShape(shape, SWFBUTTON_OVER).">
+      <param type="object" name="shape" />
+    </function>
+    <function returnType="void" name="setUp" description="Alias for addShape(shape, SWFBUTTON_UP).">
+      <param type="object" name="shape" />
+    </function>
+  </class>
+
+  <class name="SWFMorph">
+    <function name="SWFMorph" description="Creates a new SWFMorph object." />
+    <function returnType="object" name="getShape1" description="Gets a handle to the starting shape." />
+    <function returnType="object" name="getShape2" description="Gets a handle to the ending shape." />
+  </class>
+
+  <class name="SWFSprite">
+    <function name="SWFSprite" description="Creates a movie clip (a sprite)." />
+    <function returnType="object" name="add" description="Adds an object to a sprite.">
+      <param type="object" name="object" />
+    </function>
+    <function returnType="void" name="nextFrame" description="Moves to the next frame of the animation." />
+    <function returnType="void" name="remove" description="Removes an object from a sprite.">
+      <param type="object" name="object" />
+    </function>
+    <function returnType="void" name="setFrames" description="Sets the total number of frames in the animation.">
+      <param type="int" name="numberofframes" />
+    </function>
+  </class>
+</module>

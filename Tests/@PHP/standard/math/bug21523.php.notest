@@ -1,0 +1,7 @@
+[expect php]
+[file]
+<?
+
+echo number_format(-2000, 2768);
+echo "OK";
+?>

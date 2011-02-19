@@ -1,0 +1,287 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Number_d" xml:space="preserve">
+    <value>Zvolte číselnou hodnotu bez znaménka. Můžete použít dekadický nebo šestnáctkový vstup.</value>
+  </data>
+  <data name="Multistring_d" xml:space="preserve">
+    <value>Zadejte řetězcové hodnoty. Na každý řádek jednu.</value>
+  </data>
+  <data name="e_ListViewItem" xml:space="preserve">
+    <value>Hiodnota musí být ListViewItem</value>
+  </data>
+  <data name="e_BinaryNotEven" xml:space="preserve">
+    <value>Počet číslic reprezentujících poly bytů musí být sudý.</value>
+  </data>
+  <data name="KeepBoth" xml:space="preserve">
+    <value>Chcete zachovat oba klíče?</value>
+  </data>
+  <data name="NameOfNewKey" xml:space="preserve">
+    <value>Zadejte název nového klíče.</value>
+  </data>
+  <data name="DeleteValue" xml:space="preserve">
+    <value>Opravdu chcete smazat hodnotu {0}?</value>
+  </data>
+  <data name="e_CreateSubKey" xml:space="preserve">
+    <value>Chyba při vytváření podklíče {0}\{1}:</value>
+  </data>
+  <data name="e_EnlistSubKeys" xml:space="preserve">
+    <value>Chyba při zjišťování podklíčů {0}:</value>
+  </data>
+  <data name="String_d" xml:space="preserve">
+    <value>Zadejte řetězec.</value>
+  </data>
+  <data name="RefreshHKCR_t" xml:space="preserve">
+    <value>Obnovit HKEY_CLASSES_ROOT</value>
+  </data>
+  <data name="e_DeleteDuplicated" xml:space="preserve">
+    <value>Chyba při mazání duplikovaného klíče. Oba klíče zůstaávají.</value>
+  </data>
+  <data name="DeleteValues_t" xml:space="preserve">
+    <value>Smazat hodnoty</value>
+  </data>
+  <data name="Error_t" xml:space="preserve">
+    <value>Chyba</value>
+  </data>
+  <data name="e_OpenSubKey" xml:space="preserve">
+    <value>Chyba při otvírání klíče {0}\{1}:</value>
+  </data>
+  <data name="e_3264" xml:space="preserve">
+    <value>Hodnota vlastnosti {0} může být jen 32 nebo 64.</value>
+  </data>
+  <data name="e_Restart" xml:space="preserve">
+    <value>Aplikaci se nepodařilo restartovat:</value>
+  </data>
+  <data name="UnknownValueAlt" xml:space="preserve">
+    <value>Nemohu interpretovat neznámý typ</value>
+  </data>
+  <data name="e_UnknownRoot" xml:space="preserve">
+    <value>Neznámý kořen registru</value>
+  </data>
+  <data name="e_Rename" xml:space="preserve">
+    <value>Nemohu přejmenovat {0} na {1} protože {1} již existuje.</value>
+  </data>
+  <data name="CreateKey_t" xml:space="preserve">
+    <value>Vytvořit klíč</value>
+  </data>
+  <data name="DeleteValues" xml:space="preserve">
+    <value>Opravdu chcete smazat vybrané hodnoty?</value>
+  </data>
+  <data name="ExpandHKCR" xml:space="preserve">
+    <value>Opravdu chcete rozbalit klíč HKEY_CLASSES_ROOT?. Tato operace může nějakou chvíli trvat.</value>
+  </data>
+  <data name="e_SetResourceValue" xml:space="preserve">
+    <value>Namohu nastavit hodnotu zdroje.</value>
+  </data>
+  <data name="RefreshHKCR" xml:space="preserve">
+    <value>Opravdu chcete obnovit klíč HKEY_CLASSES_ROOT? Může to chvíli trvat.</value>
+  </data>
+  <data name="UnknownValue" xml:space="preserve">
+    <value>&lt;???&gt;</value>
+  </data>
+  <data name="e_Set" xml:space="preserve">
+    <value>Hodnota vlastnosti {0} nemůže být nastavena.</value>
+  </data>
+  <data name="DeleteKey_t" xml:space="preserve">
+    <value>Odstranit klíč</value>
+  </data>
+  <data name="KeepBoth_note" xml:space="preserve">
+    <value>(Pokud vyberete Ne, zůstane původní klíč zachován.)</value>
+  </data>
+  <data name="Binary_d" xml:space="preserve">
+    <value>Zadejte binární hodnotu jako hexačíslice. Počet číslic musí být sudý. Mezery jsou ignorovány.</value>
+  </data>
+  <data name="ExpandHKCR_t" xml:space="preserve">
+    <value>Rozbalit HKEY_CLASSES_ROOT</value>
+  </data>
+  <data name="DeleteKey" xml:space="preserve">
+    <value>Opravdu chcete odstranit klíč {0}?</value>
+  </data>
+  <data name="e_editUnknown" xml:space="preserve">
+    <value>Hodnota neznámého typu nemůže být editována.</value>
+  </data>
+  <data name="e_Unset" xml:space="preserve">
+    <value>Nemohu odnastavit vlastnost {0}.</value>
+  </data>
+  <data name="e_DeleteValue" xml:space="preserve">
+    <value>Hodnoty {0} se nepodařilo smazat:</value>
+  </data>
+  <data name="e_KeyExists" xml:space="preserve">
+    <value>Klíč {0} již existuje.</value>
+  </data>
+  <data name="e_EnlistValues" xml:space="preserve">
+    <value>Chyba při zjišťování hodnot v klíči {0}:</value>
+  </data>
+  <data name="e_DeleteOriginalKey" xml:space="preserve">
+    <value>Klíč byl zduplikován, ale při mazaání původního klíče došlo k chybě.</value>
+  </data>
+  <data name="e_ValueExists" xml:space="preserve">
+    <value>Hodnota zvaná {0} již existuje.</value>
+  </data>
+  <data name="e_CopyValue" xml:space="preserve">
+    <value>Chyba při kopírování hodnoty "{0}" z klíče {1} do {2}:</value>
+  </data>
+  <data name="e_InvalidName" xml:space="preserve">
+    <value>Název "{0}" je neplatný. Název nesmí obsahovat \.</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="rename" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEwAA
+        CxMBAJqcGAAAATBJREFUOE9j/P//PwNFAGQAOgYaCDIVKAw2HM7GqhabIEwMZgheNVQzIDo6Otff33+X
+        t7f3THd3dwGY82EWWFhYlAPxfyguh7sSxPD19e338fF57OHhccrV1fW/tbX1I2QDgJrSQBqRDAMZ5AJW
+        AyKANtbDJIGGvLW0tIQHIEgcqPgMFgM64AaAGEFBQX1AfNXLy+sbTDEsEBMSEmBOh9NZWVkQS4CahEJD
+        Q/+HhITcA7IF7O3tb5mbm6O74C7U72BnI2OQ/ysCAgL+u7m5LXZ2duYHav5mZmaGbgAsAFcBDRIEYqXV
+        q1dD1ACdLGBjY/MfpAmIb5uYmLwzNjZGMQAaDh1Aje9AGGQhSizY2dkJAwPOFMN50NRIVkKCJWFCqREj
+        H6AEELkuoFpmwud3mBwAxyxA1dGzKyUAAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="DefaultLanguage" xml:space="preserve">
+    <value>(výchozí)</value>
+  </data>
+  <data name="e_KeyDoesNotExist" xml:space="preserve">
+    <value>Klíč {0} neexistuje.</value>
+  </data>
+  <data name="JumpToKey" xml:space="preserve">
+    <value>Zadejte celou cestu ke klíči</value>
+  </data>
+  <data name="JumpToKey_t" xml:space="preserve">
+    <value>Jít na klíč</value>
+  </data>
+  <data name="JumToSameKey" xml:space="preserve">
+    <value>Jít na &amp;stejný klíč pod {0}</value>
+  </data>
+  <data name="e_GetValue" xml:space="preserve">
+    <value>Z klíče {1} se nepodařilo přrčíst hodnotu {0}:</value>
+  </data>
+  <data name="ExportKey_t" xml:space="preserve">
+    <value>Exportovat klíč</value>
+  </data>
+  <data name="ExportSuccessful" xml:space="preserve">
+    <value>Export úspěšný</value>
+  </data>
+  <data name="e_UnknownregistryFileType" xml:space="preserve">
+    <value>Neznámý typ souboru registru</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="readme" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>readme.cs.rtf;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+</root>

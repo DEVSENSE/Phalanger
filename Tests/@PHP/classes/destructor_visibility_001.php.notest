@@ -1,0 +1,20 @@
+[expect php]
+[file]
+<?
+  error_reporting(0);
+
+class Base {
+	private function __destruct() {
+    	echo __METHOD__ . "\n";
+	}
+}
+
+class Derived extends Base {
+}
+
+$obj = new Derived;
+
+unset($obj);
+
+echo "NR";
+?>

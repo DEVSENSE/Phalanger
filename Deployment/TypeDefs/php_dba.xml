@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="bool" name="dba_exists" description="Checks, if the specified key exists.">
+    <param type="string" name="key" />
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="bool" name="dba_insert" description="Inserts value as key, returns false, if key exists already.">
+    <param type="string" name="key" />
+    <param type="string" name="value" />
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="string" name="dba_nextkey" description="Returns the next key.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="bool" name="dba_sync" description="Synchronizes database.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="void" name="dba_close" description="Closes database.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="string" name="dba_firstkey" description="Resets the internal key pointer and returns the first key.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="bool" name="dba_optimize" description="Optimizes (e.g. clean up, vacuum) database.">
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="dba_popen" description="Opens path using the specified handler in mode persistently.">
+    <param type="string" name="path" />
+    <param type="string" name="mode" />
+    <param type="string" name="handlername" />
+    <param optional="vararg" type="string" name="..." />
+  </function>
+  <function returnType="bool" name="dba_replace" description="Inserts value as key, replaces key, if key exists already.">
+    <param type="string" name="key" />
+    <param type="string" name="value" />
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="dba_open" description="Opens path using the specified handler in mode.">
+    <param type="string" name="path" />
+    <param type="string" name="mode" />
+    <param type="string" name="handlername" />
+    <param optional="vararg" type="string" name="..." />
+  </function>
+  <function returnType="bool" name="dba_delete" description="Deletes the entry associated with key.">
+    <param type="string" name="key" />
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="string" name="dba_fetch" description="Fetches the data associated with key.">
+    <param type="string" name="key" />
+    <param type="resource" name="handle" />
+  </function>
+  <function returnType="array" name="dba_handlers" description="List all the handlers available.">
+    <param optional="true" type="bool" name="full_info" />
+  </function>
+  <function returnType="mixed" name="dba_key_split" description="Splits a key in string representation into array representation.">
+    <param type="mixed" name="key" />
+  </function>
+  <function returnType="array" name="dba_list" description="List all open database files." />
+</module>

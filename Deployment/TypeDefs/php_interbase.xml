@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="bool" name="ibase_add_user" description="Add a user to a security database (only for IB6 or later).">
+    <param type="string" name="server" />
+    <param type="string" name="dba_user_name" />
+    <param type="string" name="dba_user_password" />
+    <param type="string" name="user_name" />
+    <param type="string" name="password" />
+    <param optional="true" type="string" name="first_name" />
+    <param optional="true" type="string" name="middle_name" />
+    <param optional="true" type="string" name="last_name" />
+  </function>
+  <function returnType="int" name="ibase_affected_rows" description="Return the number of rows that were affected by the previous query.">
+    <param type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="ibase_blob_add" description="Add data into a newly created blob.">
+    <param type="resource" name="blob_handle" />
+    <param type="string" name="data" />
+  </function>
+  <function returnType="bool" name="ibase_blob_cancel" description="Cancel creating blob.">
+    <param type="resource" name="blob_handle" />
+  </function>
+  <function returnType="mixed" name="ibase_blob_close" description="Close blob.">
+    <param type="resource" name="blob_handle" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ibase_blob_create" description="Create a new blob for adding data.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="ibase_blob_echo" description="Output blob contents to browser.">
+    <param type="string" name="blob_id" />
+  </function>
+  <function returnType="string" name="ibase_blob_get" description="Get len bytes data from open blob.">
+    <param type="resource" name="blob_handle" />
+    <param type="int" name="len" />
+  </function>
+  <function returnType="string" name="ibase_blob_import" description="Create blob, copy file in it, and close it.">
+    <param type="resource" name="link_identifier" />
+    <param type="resource" name="file_handle" />
+  </function>
+  <function returnType="array" name="ibase_blob_info" description="Return blob length and other useful info.">
+    <param type="string" name="blob_id" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ibase_blob_open" description="Open blob for retrieving data parts.">
+    <param type="string" name="blob_id" />
+  </function>
+  <function returnType="bool" name="ibase_close" description="Close a connection to an InterBase database.">
+    <param optional="true" type="resource" name="connection_id" />
+  </function>
+  <function returnType="bool" name="ibase_commit_ret" description="Commit a transaction without closing it.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="ibase_commit" description="Commit a transaction.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ibase_connect" description="Open a connection to an InterBase database.">
+    <param type="string" name="database" />
+    <param optional="true" type="string" name="username" />
+    <param optional="true" type="string" name="password" />
+    <param optional="true" type="string" name="charset" />
+    <param optional="true" type="int" name="buffers" />
+    <param optional="true" type="int" name="dialect" />
+    <param optional="true" type="string" name="role" />
+  </function>
+  <function returnType="bool" name="ibase_delete_user" description="Delete a user from a security database (only for IB6 or later).">
+    <param type="string" name="server" />
+    <param type="string" name="dba_user_name" />
+    <param type="string" name="dba_user_password" />
+    <param type="string" name="user_name" />
+  </function>
+  <function returnType="bool" name="ibase_drop_db" description="Drops a database.">
+    <param type="resource" name="connection" />
+  </function>
+  <function returnType="int" name="ibase_errcode" description="Return an error code." />
+  <function returnType="string" name="ibase_errmsg" description="Return error messages." />
+  <function returnType="resource" castToFalse="true" name="ibase_execute" description="Execute a previously prepared query.">
+    <param type="resource" name="query" />
+    <param optional="true" type="int" name="bind_args" />
+  </function>
+  <function returnType="array" name="ibase_fetch_assoc" description="Fetch a result row from a query as an associative array.">
+    <param type="resource" name="result" />
+    <param optional="true" type="int" name="fetch_flag" />
+  </function>
+  <function returnType="object" name="ibase_fetch_object" description="Get an object from a InterBase database.">
+    <param type="resource" name="result_id" />
+    <param optional="true" type="int" name="fetch_flag" />
+  </function>
+  <function returnType="array" name="ibase_fetch_row" description="Fetch a row from an InterBase database.">
+    <param type="resource" name="result_identifier" />
+    <param optional="true" type="int" name="fetch_flag" />
+  </function>
+  <function returnType="bool" name="ibase_free_event_handler" description="Cancels a registered event handler.">
+    <param type="resource" name="event" />
+  </function>
+  <function returnType="bool" name="ibase_free_query" description="Free memory allocated by a prepared query.">
+    <param type="resource" name="query" />
+  </function>
+  <function returnType="bool" name="ibase_free_result" description="Free a result set.">
+    <param type="resource" name="result_identifier" />
+  </function>
+  <function returnType="int" name="ibase_gen_id" description="Increments the named generator and returns its new value.">
+    <param optional="true" type="resource" name="link_identifier" />
+    <param optional="true" type="string" name="generator" />
+    <param optional="true" type="int" name="increment" />
+  </function>
+  <function returnType="bool" name="ibase_modify_user" description="Modify a user to a security database (only for IB6 or later).">
+    <param type="string" name="server" />
+    <param type="string" name="dba_user_name" />
+    <param type="string" name="dba_user_password" />
+    <param type="string" name="user_name" />
+    <param type="string" name="password" />
+    <param optional="true" type="string" name="first_name" />
+    <param optional="true" type="string" name="middle_name" />
+    <param optional="true" type="string" name="last_name" />
+  </function>
+  <function returnType="bool" name="ibase_name_result" description="Assigns a name to a result set.">
+    <param type="resource" name="result" />
+    <param type="string" name="name" />
+  </function>
+  <function returnType="int" name="ibase_num_fields" description="Get the number of fields in a result set.">
+    <param type="resource" name="result_id" />
+  </function>
+  <function returnType="array" name="ibase_param_info" description="Return information about a parameter in a prepared query.">
+    <param type="resource" name="query" />
+    <param type="int" name="param_number" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ibase_pconnect" description="Open a persistent connection to an InterBase database.">
+    <param type="string" name="database" />
+    <param optional="true" type="string" name="username" />
+    <param optional="true" type="string" name="password" />
+    <param optional="true" type="string" name="charset" />
+    <param optional="true" type="int" name="buffers" />
+    <param optional="true" type="int" name="dialect" />
+    <param optional="true" type="string" name="role" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ibase_prepare" description="Prepare a query for later binding of parameter placeholders and execution.">
+    <param optional="true" type="resource" name="link_identifier" />
+    <param optional="true" type="string" name="query" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ibase_query" description="Execute a query on an InterBase database.">
+    <param optional="true" type="resource" name="link_identifier" />
+    <param optional="true" type="string" name="query" />
+    <param optional="true" type="int" name="bind_args" />
+  </function>
+  <function returnType="bool" name="ibase_rollback_ret" description="Roll back a transaction without closing it.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="bool" name="ibase_rollback" description="Roll back a transaction.">
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ibase_set_event_handler" description="Register a callback function to be called when events are posted.">
+    <param optional="true" type="resource" name="connection" />
+    <param optional="true" type="string" name="event_handler" />
+    <param optional="true" type="string" name="event_name1" />
+    <param optional="true" type="string" name="event_name2" />
+    <param optional="vararg" type="string" name="..." />
+  </function>
+  <function returnType="int" name="ibase_timefmt" description="Sets the format of timestamp, date and time type columns returned from queries.">
+    <param type="string" name="format" />
+    <param optional="true" type="int" name="columntype" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="ibase_trans" description="Begin a transaction.">
+    <param optional="true" type="int" name="trans_args" />
+    <param optional="true" type="resource" name="link_identifier" />
+  </function>
+  <function returnType="string" name="ibase_wait_event" description="Wait for an event to be posted by the database.">
+    <param optional="true" type="resource" name="connection" />
+    <param optional="true" type="string" name="event_name1" />
+    <param optional="true" type="string" name="event_name2" />
+    <param optional="vararg" type="string" name="..." />
+  </function>
+  <function returnType="mixed" name="ibase_backup" description="Initiates a backup task in the service manager and returns immediately.">
+    <param type="resource" name="service_handle" />
+    <param type="string" name="source_db" />
+    <param type="string" name="dest_file" />
+    <param optional="true" type="int" name="options" />
+    <param optional="true" type="bool" name="verbose" />
+  </function>
+  <function returnType="string" name="ibase_db_info" description="Request statistics about a database.">
+    <param type="resource" name="service_handle" />
+    <param type="string" name="db" />
+    <param type="int" name="action" />
+    <param optional="true" type="int" name="argument" />
+  </function>
+  <function returnType="array" name="ibase_field_info" description="Get information about a field.">
+    <param type="resource" name="result" />
+    <param type="int" name="field_number" />
+  </function>
+  <function returnType="bool" name="ibase_maintain_db" description="Execute a maintenance command on the database server.">
+    <param type="resource" name="service_handle" />
+    <param type="string" name="db" />
+    <param type="int" name="action" />
+    <param optional="true" type="int" name="argument" />
+  </function>
+  <function returnType="int" name="ibase_num_params" description="Return the number of parameters in a prepared query.">
+    <param type="resource" name="query" />
+  </function>
+  <function returnType="mixed" name="ibase_restore" description="Initiates a restore task in the service manager and returns immediately.">
+    <param type="resource" name="service_handle" />
+    <param type="string" name="source_file" />
+    <param type="string" name="dest_db" />
+    <param optional="true" type="int" name="options" />
+    <param optional="true" type="bool" name="verbose" />
+  </function>
+  <function returnType="string" name="ibase_server_info" description="Request information about a database server.">
+    <param type="resource" name="service_handle" />
+    <param type="int" name="action" />
+  </function>
+  <function returnType="resource" name="ibase_service_attach" description="Connect to the service manager.">
+    <param type="string" name="host" />
+    <param type="string" name="dba_username" />
+    <param type="string" name="dba_password" />
+  </function>
+  <function returnType="bool" name="ibase_service_detach" description="Disconnect from the service manager.">
+    <param type="resource" name="service_handle" />
+  </function>
+</module>

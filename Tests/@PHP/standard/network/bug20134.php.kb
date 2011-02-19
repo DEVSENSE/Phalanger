@@ -1,0 +1,20 @@
+[expect php]
+[file]
+<?php
+
+$fp = fsockopen("udp://localhost", 65534, $errno, $errstr);
+if (!$fp) {
+	/* UDP will never cause a connection error, as it is
+	 * a connection-LESS protocol */
+    echo "ERROR: $errno - $errstr<br>\n";
+}
+else {
+	/* Likewise, writes will always appear to succeed */
+    $x = fwrite($fp,"\n");
+	echo $x,"\n";
+	/* But reads should always fail */
+    $content = fread($fp, 40);
+	echo($content),"\n";
+    fclose($fp);
+}
+?>

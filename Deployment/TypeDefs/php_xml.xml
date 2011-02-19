@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE module SYSTEM "module.dtd">
+<module>
+  <function returnType="string" name="utf8_decode" description="Converts a string with ISO-8859-1 characters encoded with UTF-8 to single-byte ISO-8859-1.">
+    <param type="string" name="data" />
+  </function>
+  <function returnType="string" name="utf8_encode" description="encodes an ISO-8859-1 string to UTF-8.">
+    <param type="string" name="data" />
+  </function>
+  <function returnType="string" name="xml_error_string" description="get XML parser error string.">
+    <param type="int" name="code" />
+  </function>
+  <function returnType="int" name="xml_get_current_byte_index" description="get current byte index for an XML parser.">
+    <param type="resource" name="parser" />
+  </function>
+  <function returnType="int" name="xml_get_current_column_number" description="Get current column number for an XML parser.">
+    <param type="resource" name="parser" />
+  </function>
+  <function returnType="int" name="xml_get_current_line_number" description="get current line number for an XML parser.">
+    <param type="resource" name="parser" />
+  </function>
+  <function returnType="int" name="xml_get_error_code" description="get XML parser error code.">
+    <param type="resource" name="parser" />
+  </function>
+  <function returnType="int" name="xml_parse_into_struct" description="Parse XML data into an array structure.">
+    <param type="resource" name="parser" />
+    <param type="string" name="data" />
+    <param direction="out" type="array" name="values" />
+    <param direction="out" optional="true" type="array" name="index" />
+  </function>
+  <function returnType="bool" name="xml_parse" description="start parsing an XML document.">
+    <param type="resource" name="parser" />
+    <param type="string" name="data" />
+    <param optional="true" type="bool" name="is_final" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="xml_parser_create_ns" description="Create an XML parser with namespace support.">
+    <param optional="true" type="string" name="encoding" />
+    <param optional="true" type="string" name="separator" />
+  </function>
+  <function returnType="resource" castToFalse="true" name="xml_parser_create" description="create an XML parser.">
+    <param optional="true" type="string" name="encoding" />
+  </function>
+  <function returnType="bool" name="xml_parser_free" description="Free an XML parser.">
+    <param type="resource" name="parser" />
+  </function>
+  <function returnType="mixed" name="xml_parser_get_option" description="get options from an XML parser.">
+    <param type="resource" name="parser" />
+    <param type="int" name="option" />
+  </function>
+  <function returnType="bool" name="xml_parser_set_option" description="set options in an XML parser.">
+    <param type="resource" name="parser" />
+    <param type="int" name="option" />
+    <param type="mixed" name="value" />
+  </function>
+  <function returnType="bool" name="xml_set_character_data_handler" description="set up character data handler.">
+    <param type="resource" name="parser" />
+    <param type="mixed" name="handler" />
+  </function>
+  <function returnType="bool" name="xml_set_default_handler" description="set up default handler.">
+    <param type="resource" name="parser" />
+    <param type="mixed" name="handler" />
+  </function>
+  <function returnType="bool" name="xml_set_element_handler" description="set up start and end element handlers.">
+    <param type="resource" name="parser" />
+    <param type="mixed" name="start_element_handler" />
+    <param type="mixed" name="end_element_handler" />
+  </function>
+  <function returnType="bool" name="xml_set_end_namespace_decl_handler" description="Set up character data handler.">
+    <param type="resource" name="pind" />
+    <param type="mixed" name="handler" />
+  </function>
+  <function returnType="bool" name="xml_set_external_entity_ref_handler" description="set up external entity reference handler.">
+    <param type="resource" name="parser" />
+    <param type="mixed" name="handler" />
+  </function>
+  <function returnType="bool" name="xml_set_notation_decl_handler" description="set up notation declaration handler.">
+    <param type="resource" name="parser" />
+    <param type="mixed" name="handler" />
+  </function>
+  <function returnType="void" name="xml_set_object" description="Use XML Parser within an object.">
+    <param type="resource" name="parser" />
+    <param direction="inout" bind="true" type="object" name="object" />
+  </function>
+  <function returnType="bool" name="xml_set_processing_instruction_handler" description="Set up processing instruction (PI) handler.">
+    <param type="resource" name="parser" />
+    <param type="mixed" name="handler" />
+  </function>
+  <function returnType="bool" name="xml_set_start_namespace_decl_handler" description="Set up character data handler.">
+    <param type="resource" name="pind" />
+    <param type="mixed" name="hdl" />
+  </function>
+  <function returnType="bool" name="xml_set_unparsed_entity_decl_handler" description="Set up unparsed entity declaration handler.">
+    <param type="resource" name="parser" />
+    <param type="mixed" name="handler" />
+  </function>
+</module>

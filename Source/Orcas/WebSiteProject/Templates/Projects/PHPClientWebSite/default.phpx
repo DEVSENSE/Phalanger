@@ -1,0 +1,23 @@
+﻿<?
+// Import useful .NET (Silverlight) namespaces, so we can use multimedia 
+// things (Color, SolidColorBrush) and input stuff (MouseEventHandler)
+import namespace System:::Windows:::Input;
+import namespace System:::Windows:::Media;
+
+// include utilities for PHP - defines $canvas (among other things)
+include("slutils.phpx");
+
+// function called by Silverlight when user clicks on the text
+function OnClick()
+{
+	global $canvas;
+	
+	$canvas->hello->Text = "Hello from PHP!";
+	$canvas->hello->Foreground = new SolidColorBrush(Color::FromRgb(64, 0, 160));
+}
+
+// attach the event handler for the 'MouseLeftButtonDown' event
+$canvas->hello->MouseLeftButtonDown->Add
+	(new MouseEventHandler("OnClick"));
+
+?>

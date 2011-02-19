@@ -1,0 +1,6 @@
+<?
+
+	echo "Hello World!";
+
+?>
+    

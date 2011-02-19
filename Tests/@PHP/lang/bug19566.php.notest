@@ -1,0 +1,8 @@
+[expect php]
+[file]
+<?php
+
+class foo {}
+$result = get_declared_classes();
+echo (array_search('foo', $result));
+?>

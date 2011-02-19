@@ -1,0 +1,5 @@
+<?
+
+require('../../Phalanger.inc');
+
+?>
