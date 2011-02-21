@@ -100,7 +100,8 @@ namespace PHP.Core
 		/// <summary>
 		/// Keeps the object living forever.
 		/// </summary>
-		public override object InitializeLifetimeService()
+        [System.Security.SecurityCritical]
+        public override object InitializeLifetimeService()
 		{
 			return null;
 		}

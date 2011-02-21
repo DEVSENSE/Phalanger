@@ -102,6 +102,7 @@ namespace PHP.Core.Reflection
             
         }
 
+        [System.Security.SecurityCritical]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);

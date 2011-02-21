@@ -756,7 +756,8 @@ namespace PHP.Core
 		[NonSerialized]
 		private object[] deserializedMembers;
 
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
+        [System.Security.SecurityCritical]
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			MemberInfo[] members = FormatterServices.GetSerializableMembers(GetType());
 			info.AddValue("_members", FormatterServices.GetObjectData(this, members));

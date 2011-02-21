@@ -139,7 +139,8 @@ namespace PHP.Core
 		/// <param name="obj">The object to serialize.</param>
 		/// <param name="info">The <see cref="SerializationInfo"/> to populate with data.</param>
 		/// <param name="context">The destination for this serialization.</param>
-		public void GetObjectData(object/*!*/ obj, SerializationInfo/*!*/ info, StreamingContext context)
+        [System.Security.SecurityCritical]
+        public void GetObjectData(object/*!*/ obj, SerializationInfo/*!*/ info, StreamingContext context)
 		{
 			DObject instance = (DObject)obj;
 
@@ -290,7 +291,8 @@ namespace PHP.Core
 		/// <param name="instance">The object to serialize.</param>
 		/// <param name="info">The <see cref="SerializationInfo"/> to populate with data.</param>
 		/// <param name="strctx">Streaming context (should contain <see cref="SerializationContext"/>).</param>
-		public static void GetObjectData(DObject/*!*/ instance, SerializationInfo/*!*/ info, StreamingContext strctx)
+        [System.Security.SecurityCritical]
+        public static void GetObjectData(DObject/*!*/ instance, SerializationInfo/*!*/ info, StreamingContext strctx)
 		{
 			info.SetType(typeof(Deserializer));
 
@@ -378,7 +380,8 @@ namespace PHP.Core
 		#region ISerializable Members
 
 		/// <include file='Doc/Common.xml' path='/docs/method[@name="GetObjectData"]/*'/>
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
+        [System.Security.SecurityCritical]
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			// should never be called
 			throw new InvalidOperationException();
@@ -539,7 +542,8 @@ namespace PHP.Core
 		/// <param name="instance">The object to serialize.</param>
 		/// <param name="info">The <see cref="SerializationInfo"/> to populate with data.</param>
 		/// <param name="strctx">Streaming context (should contain <see cref="SerializationContext"/>).</param>
-		new public static void GetObjectData(DObject/*!*/ instance, SerializationInfo/*!*/ info, StreamingContext strctx)
+        [System.Security.SecurityCritical]
+        new public static void GetObjectData(DObject/*!*/ instance, SerializationInfo/*!*/ info, StreamingContext strctx)
 		{
 			info.SetType(typeof(SPLDeserializer));
 

@@ -643,7 +643,8 @@ namespace PHP.Core
 
 
 		/// <include file='Doc/Common.xml' path='/docs/method[@name="GetObjectData"]/*'/>
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
+        [System.Security.SecurityCritical]
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue("className", className);
 			info.AddValue("targetName", targetName);

@@ -2717,7 +2717,8 @@ namespace PHP.Core.Reflection
 
 
 		/// <include file='Doc/Common.xml' path='/docs/method[@name="GetObjectData"]/*'/>
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
+        [System.Security.SecurityCritical]
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			SerializationSurrogate.Instance.GetObjectData(this, info, context);
 		}

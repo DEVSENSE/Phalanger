@@ -1256,7 +1256,8 @@ namespace PHP.Core
 		#region ISerializable (CLR only)
 #if !SILVERLIGHT
 
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
+        [System.Security.SecurityCritical]
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue("dict", dict);
 			info.AddValue("head", head);

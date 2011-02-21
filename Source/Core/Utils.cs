@@ -1126,7 +1126,8 @@ namespace PHP.Core
 #if !SILVERLIGHT
 
 		/// <include file='Doc/Common.xml' path='/docs/method[@name="GetObjectData"]/*'/>
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		[System.Security.SecurityCritical]
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.SetType(typeof(InvalidItemDeserializer));
 		}

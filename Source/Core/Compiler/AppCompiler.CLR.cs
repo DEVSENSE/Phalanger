@@ -1528,6 +1528,7 @@ namespace PHP.Core
 
         #region MarshalByRefObject
 
+        [System.Security.SecurityCritical]
         public override object InitializeLifetimeService()
 		{
 			return null;
