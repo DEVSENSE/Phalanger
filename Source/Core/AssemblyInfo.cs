@@ -26,7 +26,7 @@ using System;
 #if !SILVERLIGHT
 [assembly: AssemblyTitle("Phalanger Core")]
 [assembly: AssemblyDescription("Phalanger Core Functionality")]
-[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyVersion("2.1.0.0")]
 [assembly: AllowPartiallyTrustedCallers]
 #else
 [assembly: AssemblyTitle("Phalanger Core (Silverlight)")]

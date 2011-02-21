@@ -1,0 +1,462 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{d32f67fb-b3fe-4efb-a6db-c95a7c7a6aa5}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Zend API">
+      <UniqueIdentifier>{3a09118b-807f-41e7-9801-59bad87b5b6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Zend API\Streams">
+      <UniqueIdentifier>{9e883277-73df-45e9-9fe2-686e67a9727a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Zend API\Data Structures">
+      <UniqueIdentifier>{a9751f07-2884-4a4b-83f7-8802711fbf5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Zend API\File System">
+      <UniqueIdentifier>{0048001f-fa84-418c-a21f-10d6035b6cbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Zend API\Network">
+      <UniqueIdentifier>{38939ee2-4b8f-4774-8941-bd765979cfd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Zend API\Algorithms">
+      <UniqueIdentifier>{1de6f84a-5d29-4453-8dd0-45755a8831c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Zend API\XML">
+      <UniqueIdentifier>{8aa5a58a-d034-4919-9a81-caf9398bb2fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Zend API\Conversions">
+      <UniqueIdentifier>{1c968a3e-0beb-43ec-ab1e-69931ac1caf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d394a6f7-a4ce-4af1-b71c-fa955fba4f22}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Zend API">
+      <UniqueIdentifier>{847b1ce4-322b-4bd8-97de-cfbd0eccebae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Zend API\Streams">
+      <UniqueIdentifier>{109c8c5b-70cd-4632-86d9-5187049cf867}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Zend API\Data Structures">
+      <UniqueIdentifier>{9afae150-4ecc-4b6e-958e-4d55782d4f2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Zend API\File System">
+      <UniqueIdentifier>{877788ef-235c-4826-a3cf-fdd96fa4a6d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Zend API\Network">
+      <UniqueIdentifier>{f2838e91-47c4-4a45-aa85-6de87dfacb63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Zend API\Algorithms">
+      <UniqueIdentifier>{eb4ca8f4-906e-4cf3-b6ca-ba5798a7af0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Zend API\XML">
+      <UniqueIdentifier>{0748da13-b0bd-437b-8548-ddb58cfaec99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Zend API\Conversions">
+      <UniqueIdentifier>{ac345984-dd44-4f79-8af8-d95c690b4123}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{b461f4a1-958f-4c18-95a6-158ae9cc5a58}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AssemblyInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ExtSupport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Module.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PhpMarshaler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RemoteDispatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Request.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StreamProxy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\WrapperGen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\WrapperTypeDef.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Arrays.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Constants.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Errors.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Functions.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="GC.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Helpers.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Images.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="IniConfig.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectHandlers.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Output.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Parameters.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="PhpInfo.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMem.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Strings.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="TsrmLs.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Unsupported.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="Variables.cpp">
+      <Filter>Source Files\Zend API</Filter>
+    </ClCompile>
+    <ClCompile Include="StreamFopenWrappers.cpp">
+      <Filter>Source Files\Zend API\Streams</Filter>
+    </ClCompile>
+    <ClCompile Include="StreamMemory.cpp">
+      <Filter>Source Files\Zend API\Streams</Filter>
+    </ClCompile>
+    <ClCompile Include="Streams.cpp">
+      <Filter>Source Files\Zend API\Streams</Filter>
+    </ClCompile>
+    <ClCompile Include="Hash.cpp">
+      <Filter>Source Files\Zend API\Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="LinkedLists.cpp">
+      <Filter>Source Files\Zend API\Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="Stacks.cpp">
+      <Filter>Source Files\Zend API\Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadSafeHash.cpp">
+      <Filter>Source Files\Zend API\Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="glob.cpp">
+      <Filter>Source Files\Zend API\File System</Filter>
+    </ClCompile>
+    <ClCompile Include="InternalFileFunctions.cpp">
+      <Filter>Source Files\Zend API\File System</Filter>
+    </ClCompile>
+    <ClCompile Include="TemporaryFiles.cpp">
+      <Filter>Source Files\Zend API\File System</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualWorkingDir.cpp">
+      <Filter>Source Files\Zend API\File System</Filter>
+    </ClCompile>
+    <ClCompile Include="FtpWrapper.cpp">
+      <Filter>Source Files\Zend API\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="HttpWrapper.cpp">
+      <Filter>Source Files\Zend API\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network.cpp">
+      <Filter>Source Files\Zend API\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Urls.cpp">
+      <Filter>Source Files\Zend API\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Digest.cpp">
+      <Filter>Source Files\Zend API\Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="QSort.cpp">
+      <Filter>Source Files\Zend API\Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="RegExpressionEngine.cpp">
+      <Filter>Source Files\Zend API\Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="RegExpressions.cpp">
+      <Filter>Source Files\Zend API\Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="Expat\xmlparse.cpp">
+      <Filter>Source Files\Zend API\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="Expat\xmlrole.cpp">
+      <Filter>Source Files\Zend API\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="Expat\xmltok.cpp">
+      <Filter>Source Files\Zend API\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="Expat\xmltok_impl.cpp">
+      <Filter>Source Files\Zend API\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="Expat\xmltok_ns.cpp">
+      <Filter>Source Files\Zend API\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="Scanf.cpp">
+      <Filter>Source Files\Zend API\Conversions</Filter>
+    </ClCompile>
+    <ClCompile Include="Snprintf.cpp">
+      <Filter>Source Files\Zend API\Conversions</Filter>
+    </ClCompile>
+    <ClCompile Include="Spprintf.cpp">
+      <Filter>Source Files\Zend API\Conversions</Filter>
+    </ClCompile>
+    <ClCompile Include="Strtod.cpp">
+      <Filter>Source Files\Zend API\Conversions</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\AssemblyInternals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ExtSupport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PhpMarshaler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RemoteDispatcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Request.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StreamProxy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\WrapperGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\WrapperTypeDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Arrays.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Errors.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Functions.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Images.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="IniConfig.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Misc.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectHandlers.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Output.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Parameters.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="PhpInfo.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedMem.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Strings.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="TsrmLs.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Unsupported.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Variables.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="Zend.h">
+      <Filter>Header Files\Zend API</Filter>
+    </ClInclude>
+    <ClInclude Include="StreamFopenWrappers.h">
+      <Filter>Header Files\Zend API\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="StreamMemory.h">
+      <Filter>Header Files\Zend API\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="Streams.h">
+      <Filter>Header Files\Zend API\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="Hash.h">
+      <Filter>Header Files\Zend API\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="LinkedLists.h">
+      <Filter>Header Files\Zend API\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Stacks.h">
+      <Filter>Header Files\Zend API\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadSafeHash.h">
+      <Filter>Header Files\Zend API\Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="glob.h">
+      <Filter>Header Files\Zend API\File System</Filter>
+    </ClInclude>
+    <ClInclude Include="InternalFileFunctions.h">
+      <Filter>Header Files\Zend API\File System</Filter>
+    </ClInclude>
+    <ClInclude Include="TemporaryFiles.h">
+      <Filter>Header Files\Zend API\File System</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualWorkingDir.h">
+      <Filter>Header Files\Zend API\File System</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.h">
+      <Filter>Header Files\Zend API\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Urls.h">
+      <Filter>Header Files\Zend API\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Digest.h">
+      <Filter>Header Files\Zend API\Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="QSort.h">
+      <Filter>Header Files\Zend API\Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="RegExpressions.h">
+      <Filter>Header Files\Zend API\Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\ascii.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\asciitab.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\expat.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\iasciitab.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\internal.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\latin1tab.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\macconfig.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\nametab.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\utf8tab.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\winconfig.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\xmlrole.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\xmltok.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Expat\xmltok_impl.h">
+      <Filter>Header Files\Zend API\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="Scanf.h">
+      <Filter>Header Files\Zend API\Conversions</Filter>
+    </ClInclude>
+    <ClInclude Include="Snprintf.h">
+      <Filter>Header Files\Zend API\Conversions</Filter>
+    </ClInclude>
+    <ClInclude Include="Spprintf.h">
+      <Filter>Header Files\Zend API\Conversions</Filter>
+    </ClInclude>
+    <ClInclude Include="Strtod.h">
+      <Filter>Header Files\Zend API\Conversions</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ExtSupport4.snk">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\Strings.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ExtSupport4.rc" />
+  </ItemGroup>
+</Project>

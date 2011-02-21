@@ -22,7 +22,7 @@ using PHP.Core.AST;
 using PHP.Core.AST.Linq;
 using PHP.Core.Reflection;
 using PHP.Core.Parsers.GPPG;
-using Pair = PHP.Core.Tuple<object,object>;
+using Pair = System.Tuple<object,object>;
 
 
 namespace PHP.Core.Parsers

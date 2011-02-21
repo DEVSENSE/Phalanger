@@ -27,12 +27,12 @@ namespace PHP.Core.EmbeddedDoc
 			{
 				foreach (Tuple<DocElementType, DocElement> element in elements)
 				{
-					if (!dict.ContainsKey(element.First))
+                    if (!dict.ContainsKey(element.Item1))
 					{
-						dict.Add(element.First, new List<DocElement>());
+                        dict.Add(element.Item1, new List<DocElement>());
 					}
 
-					dict[element.First].Add(element.Second);
+                    dict[element.Item1].Add(element.Item2);
 				}
 			}
 

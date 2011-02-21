@@ -1,10 +1,14 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B1BA64DC-649F-4BC5-A6DA-6649A8029B1D}"
 	ProjectSection(SolutionItems) = preProject
 		..\Documentation\Developer\BaseAddresses.txt = ..\Documentation\Developer\BaseAddresses.txt
 		..\Deployment\Machine.config = ..\Deployment\Machine.config
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{BBF40DB7-2CCE-4E82-98C9-F506E356CC08}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{64A5B5CA-E0A5-4816-96EE-D574E4189E83}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core (Orcas)", "Core\Core (Orcas).csproj", "{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -26,8 +30,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary (Orcas)", "Cla
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShmChannel (Orcas)", "ShmChannel\ShmChannel (Orcas).csproj", "{0D5B7BFC-1236-4D9D-AC17-4A5C0964C1A2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MSIL (Orcas)", "Core\MSIL\MSIL (Orcas).vcproj", "{DAA5AC00-A25D-4680-959C-349E564742B3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "phpc (Orcas)", "PhpNetCompiler\phpc (Orcas).csproj", "{79B2B824-23B8-45C3-ADE4-5BC8D593FC3F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtUtil (Orcas)", "ExtUtil\ExtUtil (Orcas).csproj", "{6BD6294C-D292-41DE-A40C-13202E921E2F}"
@@ -36,9 +38,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtUtil (Orcas)", "ExtUtil\
 		{B22C626D-E80C-4A2E-A7DE-0E7CE6467E31} = {B22C626D-E80C-4A2E-A7DE-0E7CE6467E31}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExtManager", "ExtManager\ExtManager (Orcas).vcproj", "{4A580B61-EBE5-4620-A843-4148EA61A4C2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExtManager", "ExtManager\ExtManager (Orcas).vcxproj", "{4A580B61-EBE5-4620-A843-4148EA61A4C2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExtSupport.PHP4", "ExtSupport\PHP4\ExtSupport4 (Orcas).vcproj", "{B22C626D-E80C-4A2E-A7DE-0E7CE6467E31}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExtSupport.PHP4", "ExtSupport\PHP4\ExtSupport4 (Orcas).vcxproj", "{B22C626D-E80C-4A2E-A7DE-0E7CE6467E31}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.MsSql (Orcas)", "Extensions\MSSql\Extension.MsSql (Orcas).csproj", "{2153C1DA-B1C5-4B6F-B6D9-272D6099FFC6}"
 EndProject
@@ -54,19 +56,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhpConfig (Orcas)", "PhpCon
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.XmlDom (Orcas)", "Extensions\XmlDom\Extension.XmlDom (Orcas).csproj", "{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{BBF40DB7-2CCE-4E82-98C9-F506E356CC08}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.Memcached", "Extensions\Memcached\Extension.Memcached.csproj", "{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{64A5B5CA-E0A5-4816-96EE-D574E4189E83}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.mbstring", "Extensions\mbstring\Extension.mbstring.csproj", "{533EA853-45F3-483D-8C89-CF686249CC5E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core.IL", "Core\MSIL\Core.IL.vcxproj", "{7F13AC5E-1B8D-467E-83F1-912D12F44370}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 18
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/TFS01
+		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = Core\\Core\u0020(Orcas).csproj
 		SccProjectName1 = Core
@@ -77,59 +77,59 @@ Global
 		SccProjectUniqueName3 = ShmChannel\\ShmChannel\u0020(Orcas).csproj
 		SccProjectName3 = ShmChannel
 		SccLocalPath3 = ShmChannel
-		SccProjectUniqueName4 = Core\\MSIL\\MSIL\u0020(Orcas).vcproj
-		SccProjectName4 = Core/MSIL
-		SccLocalPath4 = Core\\MSIL
-		SccProjectUniqueName5 = PhpNetCompiler\\phpc\u0020(Orcas).csproj
+		SccProjectUniqueName4 = PhpNetCompiler\\phpc\u0020(Orcas).csproj
+		SccProjectTopLevelParentUniqueName4 = Phalanger\u0020(Orcas).sln
+		SccProjectName4 = PhpNetCompiler
+		SccLocalPath4 = PhpNetCompiler
+		SccProjectUniqueName5 = ExtUtil\\ExtUtil\u0020(Orcas).csproj
 		SccProjectTopLevelParentUniqueName5 = Phalanger\u0020(Orcas).sln
-		SccProjectName5 = PhpNetCompiler
-		SccLocalPath5 = PhpNetCompiler
-		SccProjectUniqueName6 = ExtUtil\\ExtUtil\u0020(Orcas).csproj
+		SccProjectName5 = ExtUtil
+		SccLocalPath5 = ExtUtil
+		SccProjectUniqueName6 = Extensions\\MSSql\\Extension.MsSql\u0020(Orcas).csproj
 		SccProjectTopLevelParentUniqueName6 = Phalanger\u0020(Orcas).sln
-		SccProjectName6 = ExtUtil
-		SccLocalPath6 = ExtUtil
-		SccProjectUniqueName7 = ExtManager\\ExtManager\u0020(Orcas).vcproj
+		SccProjectName6 = Extensions/MSSQL
+		SccLocalPath6 = Extensions\\MSSQL
+		SccProjectUniqueName7 = MkDynamic\\MkDynamic\u0020(Orcas).csproj
 		SccProjectTopLevelParentUniqueName7 = Phalanger\u0020(Orcas).sln
-		SccProjectName7 = ExtManager
-		SccLocalPath7 = ExtManager
-		SccProjectUniqueName8 = ExtSupport\\PHP4\\ExtSupport4\u0020(Orcas).vcproj
-		SccProjectName8 = ExtSupport/PHP4
-		SccLocalPath8 = ExtSupport\\PHP4
-		SccProjectUniqueName9 = Extensions\\MSSql\\Extension.MsSql\u0020(Orcas).csproj
+		SccProjectName7 = MkDynamic
+		SccLocalPath7 = MkDynamic
+		SccProjectUniqueName8 = Testing\\Unit\\Testers.Unit\u0020(Orcas).csproj
+		SccProjectName8 = Testing/Unit
+		SccLocalPath8 = Testing\\Unit
+		SccProjectUniqueName9 = PhpVerifier\\PhpVerifier\u0020(Orcas).csproj
 		SccProjectTopLevelParentUniqueName9 = Phalanger\u0020(Orcas).sln
-		SccProjectName9 = Extensions/MSSQL
-		SccLocalPath9 = Extensions\\MSSQL
-		SccProjectUniqueName10 = MkDynamic\\MkDynamic\u0020(Orcas).csproj
+		SccProjectName9 = PhpVerifier
+		SccLocalPath9 = PhpVerifier
+		SccProjectUniqueName10 = WebManager\\PhpWebManager\u0020(Orcas).csproj
 		SccProjectTopLevelParentUniqueName10 = Phalanger\u0020(Orcas).sln
-		SccProjectName10 = MkDynamic
-		SccLocalPath10 = MkDynamic
-		SccProjectUniqueName11 = Testing\\Unit\\Testers.Unit\u0020(Orcas).csproj
-		SccProjectName11 = Testing/Unit
-		SccLocalPath11 = Testing\\Unit
-		SccProjectUniqueName12 = PhpVerifier\\PhpVerifier\u0020(Orcas).csproj
+		SccProjectName10 = WebManager
+		SccLocalPath10 = WebManager
+		SccProjectUniqueName11 = PhpConfig\\PhpConfig\u0020(Orcas).csproj
+		SccProjectTopLevelParentUniqueName11 = Phalanger\u0020(Orcas).sln
+		SccProjectName11 = PhpConfig
+		SccLocalPath11 = PhpConfig
+		SccProjectUniqueName12 = Extensions\\XmlDom\\Extension.XmlDom\u0020(Orcas).csproj
 		SccProjectTopLevelParentUniqueName12 = Phalanger\u0020(Orcas).sln
-		SccProjectName12 = PhpVerifier
-		SccLocalPath12 = PhpVerifier
-		SccProjectUniqueName13 = WebManager\\PhpWebManager\u0020(Orcas).csproj
+		SccProjectName12 = Extensions/XmlDom
+		SccLocalPath12 = Extensions\\XmlDom
+		SccProjectUniqueName13 = Extensions\\Memcached\\Extension.Memcached.csproj
 		SccProjectTopLevelParentUniqueName13 = Phalanger\u0020(Orcas).sln
-		SccProjectName13 = WebManager
-		SccLocalPath13 = WebManager
-		SccProjectUniqueName14 = PhpConfig\\PhpConfig\u0020(Orcas).csproj
+		SccProjectName13 = Extensions/Memcached
+		SccLocalPath13 = Extensions\\Memcached
+		SccProjectUniqueName14 = Extensions\\mbstring\\Extension.mbstring.csproj
 		SccProjectTopLevelParentUniqueName14 = Phalanger\u0020(Orcas).sln
-		SccProjectName14 = PhpConfig
-		SccLocalPath14 = PhpConfig
-		SccProjectUniqueName15 = Extensions\\XmlDom\\Extension.XmlDom\u0020(Orcas).csproj
+		SccProjectName14 = Extensions/mbstring
+		SccLocalPath14 = Extensions\\mbstring
+		SccProjectUniqueName15 = ExtManager\\ExtManager\u0020(Orcas).vcxproj
 		SccProjectTopLevelParentUniqueName15 = Phalanger\u0020(Orcas).sln
-		SccProjectName15 = Extensions/XmlDom
-		SccLocalPath15 = Extensions\\XmlDom
-		SccProjectUniqueName16 = Extensions\\Memcached\\Extension.Memcached.csproj
-		SccProjectTopLevelParentUniqueName16 = Phalanger\u0020(Orcas).sln
-		SccProjectName16 = Extensions/Memcached
-		SccLocalPath16 = Extensions\\Memcached
-		SccProjectUniqueName17 = Extensions\\mbstring\\Extension.mbstring.csproj
-		SccProjectTopLevelParentUniqueName17 = Phalanger\u0020(Orcas).sln
-		SccProjectName17 = Extensions/mbstring
-		SccLocalPath17 = Extensions\\mbstring
+		SccProjectName15 = ExtManager
+		SccLocalPath15 = ExtManager
+		SccProjectUniqueName16 = ExtSupport\\PHP4\\ExtSupport4\u0020(Orcas).vcxproj
+		SccProjectName16 = ExtSupport/PHP4
+		SccLocalPath16 = ExtSupport\\PHP4
+		SccProjectUniqueName17 = Core\\MSIL\\Core.IL.vcxproj
+		SccProjectName17 = Core/MSIL
+		SccLocalPath17 = Core\\MSIL
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -184,20 +184,6 @@ Global
 		{0D5B7BFC-1236-4D9D-AC17-4A5C0964C1A2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{0D5B7BFC-1236-4D9D-AC17-4A5C0964C1A2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{0D5B7BFC-1236-4D9D-AC17-4A5C0964C1A2}.Release|Win32.ActiveCfg = Release|Any CPU
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.Debug|Win32.ActiveCfg = Debug|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.Debug|Win32.Build.0 = Debug|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.DebugNoGac|Any CPU.ActiveCfg = DebugNoGac|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.DebugNoGac|Mixed Platforms.ActiveCfg = DebugNoGac|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.DebugNoGac|Mixed Platforms.Build.0 = DebugNoGac|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.DebugNoGac|Win32.ActiveCfg = DebugNoGac|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.Release|Any CPU.ActiveCfg = Release|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.Release|Any CPU.Build.0 = Release|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.Release|Win32.ActiveCfg = Release|Win32
-		{DAA5AC00-A25D-4680-959C-349E564742B3}.Release|Win32.Build.0 = Release|Win32
 		{79B2B824-23B8-45C3-ADE4-5BC8D593FC3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{79B2B824-23B8-45C3-ADE4-5BC8D593FC3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79B2B824-23B8-45C3-ADE4-5BC8D593FC3F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -369,22 +355,37 @@ Global
 		{533EA853-45F3-483D-8C89-CF686249CC5E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{533EA853-45F3-483D-8C89-CF686249CC5E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{533EA853-45F3-483D-8C89-CF686249CC5E}.Release|Win32.ActiveCfg = Release|Any CPU
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Debug|Win32.Build.0 = Debug|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.DebugNoGac|Any CPU.ActiveCfg = Debug|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.DebugNoGac|Win32.ActiveCfg = Debug|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.DebugNoGac|Win32.Build.0 = Debug|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Any CPU.ActiveCfg = Release|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Win32.ActiveCfg = Release|Win32
+		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{2153C1DA-B1C5-4B6F-B6D9-272D6099FFC6} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
+		{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
+		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
+		{533EA853-45F3-483D-8C89-CF686249CC5E} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
+		{79B2B824-23B8-45C3-ADE4-5BC8D593FC3F} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
 		{6BD6294C-D292-41DE-A40C-13202E921E2F} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
 		{4A580B61-EBE5-4620-A843-4148EA61A4C2} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
 		{1FBEBAD2-F7C5-4F75-965C-45098F5A0A48} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
 		{A7C1B39D-698C-4F15-9AA5-B68D7947F806} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
 		{8044E02C-CA9F-4755-98DD-61B38B980A6A} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
 		{2F1B07CD-1430-4595-8773-5A24DF24E61D} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
-		{79B2B824-23B8-45C3-ADE4-5BC8D593FC3F} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
-		{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
-		{2153C1DA-B1C5-4B6F-B6D9-272D6099FFC6} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
-		{533EA853-45F3-483D-8C89-CF686249CC5E} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
 	EndGlobalSection
 	GlobalSection(SolutionNotes) = postSolution
 	EndGlobalSection

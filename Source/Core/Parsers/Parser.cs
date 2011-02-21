@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using PHP.Core.AST;
 using PHP.Core.Reflection;
-using Pair = PHP.Core.Tuple<object,object>;
+using Pair = System.Tuple<object,object>;
 
 namespace PHP.Core.Parsers
 {
@@ -406,7 +406,7 @@ namespace PHP.Core.Parsers
 				if (property is ItemUse)
 				{
 					property.IsMemberOf = variable;
-					property = new IndirectFcnCall(pos, property, (List<ActualParam>)parameters.Second, (List<TypeRef>)parameters.First);
+                    property = new IndirectFcnCall(pos, property, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
 				}
 				else
 				{
@@ -414,12 +414,12 @@ namespace PHP.Core.Parsers
 					if ((direct_use = property as DirectVarUse) != null)
 					{
 						QualifiedName method_name = new QualifiedName(new Name(direct_use.VarName.Value), Name.EmptyNames);
-						property = new DirectFcnCall(pos, method_name, (List<ActualParam>)parameters.Second, (List<TypeRef>)parameters.First);
+                        property = new DirectFcnCall(pos, method_name, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
 					}
 					else
 					{
 						IndirectVarUse indirect_use = (IndirectVarUse)property;
-						property = new IndirectFcnCall(pos, indirect_use.VarNameEx, (List<ActualParam>)parameters.Second, (List<TypeRef>)parameters.First);
+                        property = new IndirectFcnCall(pos, indirect_use.VarNameEx, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
 					}
 					property.IsMemberOf = variable;
 				}
@@ -457,13 +457,13 @@ namespace PHP.Core.Parsers
 				if ((direct_use = property as DirectVarUse) != null)
 				{
 					QualifiedName method_name = new QualifiedName(new Name(direct_use.VarName.Value), Name.EmptyNames);
-					return new DirectFcnCall(pos, method_name, (List<ActualParam>)parameters.Second, (List<TypeRef>)parameters.First);
+                    return new DirectFcnCall(pos, method_name, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
 				}
 
 				if ((indirect_use = property as IndirectVarUse) != null)
-					return new IndirectFcnCall(pos, indirect_use.VarNameEx, (List<ActualParam>)parameters.Second, (List<TypeRef>)parameters.First);
+                    return new IndirectFcnCall(pos, indirect_use.VarNameEx, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
 
-				return new IndirectFcnCall(pos, (ItemUse)property, (List<ActualParam>)parameters.Second, (List<TypeRef>)parameters.First);
+                return new IndirectFcnCall(pos, (ItemUse)property, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
 			}
 			else
 			{

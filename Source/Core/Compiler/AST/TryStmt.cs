@@ -129,10 +129,10 @@ namespace PHP.Core.AST
 			foreach (Tuple<bool, Type> exc in excTypes)
 			{
 				// Catch it
-				il.BeginCatchBlock(exc.Second);
+				il.BeginCatchBlock(exc.Item2);
 
 				LocalBuilder exception_local;
-				if (exc.First)
+				if (exc.Item1)
 				{
 					// PHP: SPL.Exception e  =  _e.InnerException;
 					exception_local = il.DeclareLocal(typeof(Library.SPL.Exception));

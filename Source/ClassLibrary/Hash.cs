@@ -830,7 +830,7 @@ namespace PHP.Library
                 public override bool Update(byte[] data)
                 {
                     foreach (var block in ProcessBlocked(data, 16))
-                        TransformBlock(block.First, block.Second);
+                        TransformBlock(block.Item1, block.Item2);
                     
                     return true;
                 }
@@ -1013,7 +1013,7 @@ namespace PHP.Library
                     count[1] += ((uint)data.Length >> 29);
 
                     foreach (var block in ProcessBlocked(data, 64))
-                        MD4Transform(block.First, block.Second);
+                        MD4Transform(block.Item1, block.Item2);
                     
                     return true;
                 }
@@ -1299,7 +1299,7 @@ namespace PHP.Library
 
                     // Transform blocks of 64 bytes
                     foreach (var block in ProcessBlocked(data, 64))
-                        MD5Transform(block.First, block.Second);
+                        MD5Transform(block.Item1, block.Item2);
 
                     return true;
                 }

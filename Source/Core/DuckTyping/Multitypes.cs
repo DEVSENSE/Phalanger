@@ -157,8 +157,8 @@ namespace PHP.Core
 
 			for(int i = 0; i < objects.Length; i++)
 			{
-				types.Add(objects[i].First);
-				values.Add(objects[i].First, objects[i].Second);
+				types.Add(objects[i].Item1);
+                values.Add(objects[i].Item1, objects[i].Item2);
 			}
 		}
 
