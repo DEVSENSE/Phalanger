@@ -26,6 +26,7 @@
 //
 
 #include "stdafx.h"
+#include <vector>
 
 #include "Module.h"
 #include "PhpMarshaler.h"
@@ -41,8 +42,6 @@
 #include "VirtualWorkingDir.h"
 #include "RemoteDispatcher.h"
 #include "Zend.h"
-
-#include <vector>
 
 #undef GetClassName
 

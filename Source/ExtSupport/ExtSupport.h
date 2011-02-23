@@ -44,7 +44,7 @@ using namespace PHP::Core;
 
 #define CRTX_FUNCTION_INIT_(module, function) \
 	crtx_##function = (function##_proto)::GetProcAddress(module, "_" #function)
-#elif defined(PHP5TS) && _MSC_VER == 1500
+#elif defined(PHP5TS) //&& _MSC_VER == 1500
 #define CRTX_FUNCTION_INIT(module, function) \
 	crtx_##function = function
 

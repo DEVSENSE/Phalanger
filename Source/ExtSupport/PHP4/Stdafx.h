@@ -6,7 +6,7 @@
 
 #define _CRT_SECURE_NO_DEPRECATE 1
 #define _USE_32BIT_TIME_T
-
+#include <cmath>
 #include <winsock2.h>
 #include <windows.h>
 #include <tchar.h>
