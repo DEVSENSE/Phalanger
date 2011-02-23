@@ -5,9 +5,19 @@ using PHP.Library.Memcached;
 
 namespace Enyim.Caching.Memcached
 {
+    /// <summary>
+    /// Result of get operation.
+    /// </summary>
     public class ResultObj
     {
+        /// <summary>
+        /// Value.
+        /// </summary>
         public object value;
+
+        /// <summary>
+        /// CAS flag.
+        /// </summary>
         public ulong cas;
     }
 

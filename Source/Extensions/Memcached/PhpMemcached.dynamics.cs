@@ -1489,74 +1489,324 @@ namespace PHP.Library.Memcached
 
         #region PHP class constants
 
+        /// <summary>
+        /// Enables or disables payload compression. When enabled, item values longer than a certain threshold (currently 100 bytes) will be compressed during storage and decompressed during retrieval transparently.
+        /// Type: boolean, default: TRUE.
+        /// </summary>
         public static readonly object OPT_COMPRESSION = (int)OptionsConstants.Compression;
+
+        /// <summary>
+        /// Specifies the serializer to use for serializing non-scalar values. The valid serializers are Memcached::SERIALIZER_PHP or Memcached::SERIALIZER_IGBINARY. The latter is supported only when memcached is configured with --enable-memcached-igbinary option and the igbinary extension is loaded.
+        /// Type: integer, default: Memcached::SERIALIZER_PHP.
+        /// </summary>
         public static readonly object OPT_SERIALIZER = (int)OptionsConstants.Serializer;
+
+        /// <summary>
+        /// his can be used to create a "domain" for your item keys. The value specified here will be prefixed to each of the keys. It cannot be longer than 128 characters and will reduce the maximum available key size. The prefix is applied only to the item keys, not to the server keys.
+        /// Type: string, default: "".
+        /// </summary>
         public static readonly object OPT_PREFIX_KEY = (int)OptionsConstants.PrefixKey;
+
+        /// <summary>
+        /// pecifies the hashing algorithm used for the item keys. The valid values are supplied via Memcached::HASH_* constants. Each hash algorithm has its advantages and its disadvantages. Go with the default if you don't know or don't care.
+        /// Type: integer, default: Memcached::HASH_DEFAULT
+        /// </summary>
         public static readonly object OPT_HASH = (int)OptionsConstants.Hash;
+
+        /// <summary>
+        /// Specifies the method of distributing item keys to the servers. Currently supported methods are modulo and consistent hashing. Consistent hashing delivers better distribution and allows servers to be added to the cluster with minimal cache losses.
+        /// Type: integer, default: Memcached::DISTRIBUTION_MODULA.
+        /// </summary>
         public static readonly object OPT_DISTRIBUTION = (int)OptionsConstants.Distribution;
+
+        /// <summary>
+        /// Enables or disables compatibility with libketama-like behavior. When enabled, the item key hashing algorithm is set to MD5 and distribution is set to be weighted consistent hashing distribution. This is useful because other libketama-based clients (Python, Ruby, etc.) with the same server configuration will be able to access the keys transparently.
+        /// Note:
+        /// It is highly recommended to enable this option if you want to use consistent hashing, and it may be enabled by default in future releases.
+        /// Type: boolean, default: FALSE.
+        /// </summary>
         public static readonly object OPT_LIBKETAMA_COMPATIBLE = (int)OptionsConstants.LibketamaCompatible;
+
+        /// <summary>
+        /// Enables or disables buffered I/O. Enabling buffered I/O causes storage commands to "buffer" instead of being sent. Any action that retrieves data causes this buffer to be sent to the remote connection. Quitting the connection or closing down the connection will also cause the buffered data to be pushed to the remote connection.
+        /// Type: boolean, default: FALSE.
+        /// </summary>
         public static readonly object OPT_BUFFER_WRITES = (int)OptionsConstants.BufferWrites;
+
+        /// <summary>
+        /// Enable the use of the binary protocol. Please note that you cannot toggle this option on an open connection.
+        /// Type: boolean, default: FALSE.
+        /// </summary>
         public static readonly object OPT_BINARY_PROTOCOL = (int)OptionsConstants.BinaryProtocol;
+
+        /// <summary>
+        /// Enables or disables asynchronous I/O. This is the fastest transport available for storage functions.
+        /// Type: boolean, default: FALSE.
+        /// </summary>
         public static readonly object OPT_NO_BLOCK = (int)OptionsConstants.NoBlock;
+
+        /// <summary>
+        /// Enables or disables the no-delay feature for connecting sockets (may be faster in some environments).
+        /// Type: boolean, default: FALSE.
+        /// </summary>
         public static readonly object OPT_TCP_NODELAY = (int)OptionsConstants.TcpNoDelay;
+
+        /// <summary>
+        /// The maximum socket send buffer in bytes.
+        /// Type: integer, default: varies by platform/kernel configuration.
+        /// </summary>
         public static readonly object OPT_SOCKET_SEND_SIZE = (int)OptionsConstants.SocketSendSize;
+
+        /// <summary>
+        /// The maximum socket receive buffer in bytes.
+        /// Type: integer, default: varies by platform/kernel configuration.
+        /// </summary>
         public static readonly object OPT_SOCKET_RECV_SIZE = (int)OptionsConstants.SocketRecvSize;
+
+        /// <summary>
+        /// In non-blocking mode this set the value of the timeout during socket connection, in milliseconds.
+        /// Type: integer, default: 1000.
+        /// </summary>
         public static readonly object OPT_CONNECT_TIMEOUT = (int)OptionsConstants.ConnectTimeout;
+
+        /// <summary>
+        /// The amount of time, in seconds, to wait until retrying a failed connection attempt.
+        /// Type: integer, default: 0.
+        /// </summary>
         public static readonly object OPT_RETRY_TIMEOUT = (int)OptionsConstants.RetryTimeout;
+
+        /// <summary>
+        /// Socket sending timeout, in microseconds. In cases where you cannot use non-blocking I/O this will allow you to still have timeouts on the sending of data.
+        /// Type: integer, default: 0.
+        /// </summary>
         public static readonly object OPT_SEND_TIMEOUT = (int)OptionsConstants.SendTimeout;
+
+        /// <summary>
+        /// Socket reading timeout, in microseconds. In cases where you cannot use non-blocking I/O this will allow you to still have timeouts on the reading of data.
+        /// Type: integer, default: 0.
+        /// </summary>
         public static readonly object OPT_RECV_TIMEOUT = (int)OptionsConstants.RecvTimeout;
+
+        /// <summary>
+        /// Timeout for connection polling, in milliseconds.
+        /// Type: integer, default: 1000.
+        /// </summary>
         public static readonly object OPT_POLL_TIMEOUT = (int)OptionsConstants.PollTimeout;
+
+        /// <summary>
+        /// Enables or disables caching of DNS lookups.
+        /// Type: boolean, default: FALSE.
+        /// </summary>
         public static readonly object OPT_CACHE_LOOKUPS = (int)OptionsConstants.CacheLookups;
+
+        /// <summary>
+        /// Specifies the failure limit for server connection attempts. The server will be removed after this many continuous connection failures.
+        /// Type: integer, default: 0.
+        /// </summary>
         public static readonly object OPT_SERVER_FAILURE_LIMIT = (int)OptionsConstants.ServerFailureLimit;
 
         // HaveConstants
-        public static readonly object HAVE_IGBINARY = (int)HaveConstants.IgBinary;
-        public static readonly object HAVE_JSON = (int)HaveConstants.JSON;
+
+        /// <summary>
+        /// Indicates whether igbinary serializer support is available.
+        /// Type: boolean.
+        /// </summary>
+        public static readonly object HAVE_IGBINARY = false;
+
+        /// <summary>
+        /// Indicates whether JSON serializer support is available.
+        /// Type: boolean.
+        /// </summary>
+        public static readonly object HAVE_JSON = true;
 
         // GetConstants
+
+        /// <summary>
+        /// A flag for Memcached::getMulti() and Memcached::getMultiByKey() to ensure that the keys are returned in the same order as they were requested in. Non-existing keys get a default value of NULL.
+        /// </summary>
         public static readonly object GET_PRESERVE_ORDER = (int)GetConstants.PreserveOrder;
 
         // DistributionConstants
+
+        /// <summary>
+        /// Modulo-based key distribution algorithm.
+        /// </summary>
         public static readonly object DISTRIBUTION_MODULA = (int)DistributionConstants.ModulA;
+
+        /// <summary>
+        /// Consistent hashing key distribution algorithm (based on libketama).
+        /// </summary>
         public static readonly object DISTRIBUTION_CONSISTENT = (int)DistributionConstants.Consistent;
 
         // SerializerConstants
+
+        /// <summary>
+        /// The default PHP serializer.
+        /// </summary>
         public static readonly object SERIALIZER_PHP = (int)SerializerConstants.Php;
+
+        /// <summary>
+        /// The » igbinary serializer. Instead of textual representation it stores PHP data structures in a compact binary form, resulting in space and time gains.
+        /// </summary>
         public static readonly object SERIALIZER_IGBINARY = (int)SerializerConstants.IgBinary;
+
+        /// <summary>
+        /// The JSON serializer. 
+        /// </summary>
         public static readonly object SERIALIZER_JSON = (int)SerializerConstants.JSON;
 
         // HashConstants
+
+        /// <summary>
+        /// The default (Jenkins one-at-a-time) item key hashing algorithm.
+        /// </summary>
         public static readonly object HASH_DEFAULT = (int)HashConstants.Default;
+        
+        /// <summary>
+        /// MD5 item key hashing algorithm.
+        /// </summary>
         public static readonly object HASH_MD5 = (int)HashConstants.MD5;
+
+        /// <summary>
+        /// CRC item key hashing algorithm.
+        /// </summary>
         public static readonly object HASH_CRC = (int)HashConstants.CRC;
+
+        /// <summary>
+        /// FNV1_64 item key hashing algorithm.
+        /// </summary>
         public static readonly object HASH_FNV1_64 = (int)HashConstants.FNV1_64;
+
+        /// <summary>
+        /// FNV1_64A item key hashing algorithm.
+        /// </summary>
         public static readonly object HASH_FNV1A_64 = (int)HashConstants.FNV1A_32;
+
+        /// <summary>
+        /// FNV1_32 item key hashing algorithm.
+        /// </summary>
         public static readonly object HASH_FNV1_32 = (int)HashConstants.FNV1_32;
+
+        /// <summary>
+        /// FNV1_32A item key hashing algorithm.
+        /// </summary>
         public static readonly object HASH_FNV1A_32 = (int)HashConstants.FNV1A_32;
+
+        /// <summary>
+        /// Hsieh item key hashing algorithm.
+        /// </summary>
         public static readonly object HASH_HSIEH = (int)HashConstants.HSIEH;
+
+        /// <summary>
+        /// Murmur item key hashing algorithm.
+        /// </summary>
         public static readonly object HASH_MURMUR = (int)HashConstants.MURMUR;
 
         // ResConstants
+
+        /// <summary>
+        /// The operation was successful.
+        /// </summary>
         public static readonly object RES_SUCCESS = (int)ResConstants.Success;
+
+        /// <summary>
+        /// The operation failed in some fashion.
+        /// </summary>
         public static readonly object RES_FAILURE = (int)ResConstants.Failure;
+
+        /// <summary>
+        /// DNS lookup failed.
+        /// </summary>
         public static readonly object RES_HOST_LOOKUP_FAILURE = (int)ResConstants.HostLookupFailure;
+
+        /// <summary>
+        /// Failed to read network data.
+        /// </summary>
         public static readonly object RES_UNKNOWN_READ_FAILURE = (int)ResConstants.UnknownReadFalure;
+
+        /// <summary>
+        /// Bad command in memcached protocol.
+        /// </summary>
         public static readonly object RES_PROTOCOL_ERROR = (int)ResConstants.ProtocolError;
+
+        /// <summary>
+        /// Error on the client side.
+        /// </summary>
         public static readonly object RES_CLIENT_ERROR = (int)ResConstants.ClientError;
+
+        /// <summary>
+        /// Error on the server side.
+        /// </summary>
         public static readonly object RES_SERVER_ERROR = (int)ResConstants.ServerError;
+
+        /// <summary>
+        /// Failed to write network data.
+        /// </summary>
         public static readonly object RES_WRITE_FAILURE = (int)ResConstants.WriteFailure;
+
+        /// <summary>
+        /// Failed to do compare-and-swap: item you are trying to store has been modified since you last fetched it.
+        /// </summary>
         public static readonly object RES_DATA_EXISTS = (int)ResConstants.DataExists;
+
+        /// <summary>
+        /// Item was not stored: but not because of an error. This normally means that either the condition for an "add" or a "replace" command wasn't met, or that the item is in a delete queue.
+        /// </summary>
         public static readonly object RES_NOTSTORED = (int)ResConstants.NotStored;
+
+        /// <summary>
+        /// Item with this key was not found (with "get" operation or "cas" operations).
+        /// </summary>
         public static readonly object RES_NOTFOUND = (int)ResConstants.NotFound;
+
+        /// <summary>
+        /// Partial network data read error.
+        /// </summary>
         public static readonly object RES_PARTIAL_READ = (int)ResConstants.PartialRead;
+
+        /// <summary>
+        /// Some errors occurred during multi-get.
+        /// </summary>
         public static readonly object RES_SOME_ERRORS = (int)ResConstants.SomeErrors;
+
+        /// <summary>
+        /// Server list is empty.
+        /// </summary>
         public static readonly object RES_NO_SERVERS = (int)ResConstants.NoServers;
+
+        /// <summary>
+        /// End of result set.
+        /// </summary>
         public static readonly object RES_END = (int)ResConstants.End;
+
+        /// <summary>
+        /// System error.
+        /// </summary>
         public static readonly object RES_ERRNO = (int)ResConstants.ErrNo;
+
+        /// <summary>
+        /// The operation was buffered.
+        /// </summary>
         public static readonly object RES_BUFFERED = (int)ResConstants.Buffered;
+
+        /// <summary>
+        /// The operation timed out.
+        /// </summary>
         public static readonly object RES_TIMEOUT = (int)ResConstants.Timeout;
+
+        /// <summary>
+        /// Bad key.
+        /// </summary>
         public static readonly object RES_BAD_KEY_PROVIDED = (int)ResConstants.BadKeyProvided;
+
+        /// <summary>
+        /// Failed to create network socket.
+        /// </summary>
         public static readonly object RES_CONNECTION_SOCKET_CREATE_FAILURE = (int)ResConstants.ConnectionSocketCreateFailure;
+
+        /// <summary>
+        /// Payload failure: could not compress/decompress or serialize/unserialize the value.
+        /// </summary>
         public static readonly object RES_PAYLOAD_FAILURE = (int)ResConstants.PayloadFailure;
 
         #endregion

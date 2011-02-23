@@ -25,6 +25,12 @@ namespace Enyim.Caching.Memcached
 		private InternalPoolImpl internalPoolImpl;
 		private IAuthenticator authenticator;
 
+        /// <summary>
+        /// Initialize new node.
+        /// </summary>
+        /// <param name="endpoint"></param>
+        /// <param name="socketPoolConfig"></param>
+        /// <param name="authenticator"></param>
         public MemcachedNode(NamedIPEndPoint endpoint, ISocketPoolConfiguration socketPoolConfig, IAuthenticator authenticator)
 		{
 			this.endPoint = endpoint;
@@ -109,7 +115,9 @@ namespace Enyim.Caching.Memcached
 			return this.internalPoolImpl.Acquire();
 		}
 
-
+        /// <summary>
+        /// Finalize the node.
+        /// </summary>
 		~MemcachedNode()
 		{
 			try { ((IDisposable)this).Dispose(); }

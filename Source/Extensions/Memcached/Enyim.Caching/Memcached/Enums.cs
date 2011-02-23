@@ -4,7 +4,21 @@ namespace Enyim.Caching.Memcached
 {
 	internal enum MutationMode { Increment, Decrement };
 	internal enum ConcatenationMode { Append, Prepend };
-	public enum MemcachedProtocol { Binary, Text }
+	/// <summary>
+	/// memcached protocols.
+	/// </summary>
+    public enum MemcachedProtocol
+    {
+        /// <summary>
+        /// Binary protocol.
+        /// </summary>
+        Binary,
+
+        /// <summary>
+        /// Text protocol.
+        /// </summary>
+        Text
+    }
 }
 
 #region [ License information          ]

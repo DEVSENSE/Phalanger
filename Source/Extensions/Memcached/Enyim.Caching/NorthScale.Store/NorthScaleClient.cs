@@ -6,7 +6,7 @@ using NorthScale.Store.Configuration;
 
 namespace NorthScale.Store
 {
-	public class NorthScaleClient : MemcachedClient
+	internal class NorthScaleClient : MemcachedClient
 	{
 		private static INorthScaleClientConfiguration DefaultConfig = (INorthScaleClientConfiguration)ConfigurationManager.GetSection("northscale");
 

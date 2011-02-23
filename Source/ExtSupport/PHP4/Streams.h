@@ -23,7 +23,7 @@
 
 #define CHUNK_SIZE	8192
 
-#define EWOULDBLOCK WSAEWOULDBLOCK
+//#define EWOULDBLOCK WSAEWOULDBLOCK
 
 #ifndef S_ISREG
 #define S_ISREG(mode)	(((mode)&S_IFMT) == S_IFREG)

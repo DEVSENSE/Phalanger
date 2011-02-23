@@ -324,6 +324,12 @@ namespace Enyim.Caching
         private const int MaxSeconds = 60 * 60 * 24 * 30;
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="validFor"></param>
+        /// <param name="expiresAt"></param>
+        /// <returns></returns>
         public static uint GetExpiration(TimeSpan? validFor, DateTime? expiresAt)
         {
             if (validFor != null && expiresAt != null)

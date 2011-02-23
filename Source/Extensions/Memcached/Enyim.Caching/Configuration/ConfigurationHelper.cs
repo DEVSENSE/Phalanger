@@ -2,8 +2,17 @@ using System;
 
 namespace Enyim.Caching.Configuration
 {
+    /// <summary>
+    /// Helper methods.
+    /// </summary>
 	public static class ConfigurationHelper
 	{
+        /// <summary>
+        /// Check if type is of given interface. Throws an exception if not.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="interfaceType"></param>
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">Type does not implement given interface.</exception>
 		public static void CheckForInterface(Type type, Type interfaceType)
 		{
 			if (Array.IndexOf<Type>(type.GetInterfaces(), interfaceType) == -1)

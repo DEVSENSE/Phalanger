@@ -9,6 +9,9 @@ using System.Threading;
 
 namespace Enyim.Caching.Memcached
 {
+    /// <summary>
+    /// Pooled socket.
+    /// </summary>
 	[DebuggerDisplay("[ Address: {endpoint}, IsAlive = {IsAlive} ]")]
 	public class PooledSocket : IDisposable
 	{
@@ -39,17 +42,26 @@ namespace Enyim.Caching.Memcached
 			this.inputStream = new BufferedStream(new BasicNetworkStream(this.socket));
 		}
 
+        /// <summary>
+        /// Owner node.
+        /// </summary>
 		public IMemcachedNode OwnerNode
 		{
 			get { return this.ownerNode; }
 			internal set { this.ownerNode = value; }
 		}
 
+        /// <summary>
+        /// Available bytes in socket.
+        /// </summary>
 		public int Available
 		{
 			get { return this.socket.Available; }
 		}
 
+        /// <summary>
+        /// Reset socket. (and read available data.)
+        /// </summary>
 		public void Reset()
 		{
 			//this.LockToThread();
@@ -81,6 +93,9 @@ namespace Enyim.Caching.Memcached
 		/// </summary>
 		public readonly Guid InstanceId = Guid.NewGuid();
 
+        /// <summary>
+        /// Determine if socket is alive.
+        /// </summary>
 		public bool IsAlive
 		{
 			get { return this.isAlive; }
@@ -95,12 +110,19 @@ namespace Enyim.Caching.Memcached
 			this.Dispose(true);
 		}
 
+        /// <summary>
+        /// Finalize the socket. (shutdown, dispose)
+        /// </summary>
 		~PooledSocket()
 		{
 			try { this.Dispose(true); }
 			catch { }
 		}
 
+        /// <summary>
+        /// Shutdown the socket and stream.
+        /// </summary>
+        /// <param name="disposing"></param>
 		protected void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -195,11 +217,21 @@ namespace Enyim.Caching.Memcached
 			}
 		}
 
+        /// <summary>
+        /// Write to socket.
+        /// </summary>
+        /// <param name="data"></param>
 		public void Write(ArraySegment<byte> data)
 		{
 			this.Write(data.Array, data.Offset, data.Count);
 		}
 
+        /// <summary>
+        /// Write to socket.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
 		public void Write(byte[] data, int offset, int length)
 		{
 			this.CheckDisposed();
@@ -216,6 +248,10 @@ namespace Enyim.Caching.Memcached
 			}
 		}
 
+        /// <summary>
+        /// Write to socket.
+        /// </summary>
+        /// <param name="buffers"></param>
 		public void Write(IList<ArraySegment<byte>> buffers)
 		{
 			this.CheckDisposed();

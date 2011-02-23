@@ -10,7 +10,7 @@ namespace NorthScale.Store.Configuration
 	/// <summary>
 	/// Configuration class
 	/// </summary>
-	public class NorthScaleClientConfiguration : INorthScaleClientConfiguration
+    internal class NorthScaleClientConfiguration : INorthScaleClientConfiguration
 	{
 		private List<Uri> urls;
 		private ISocketPoolConfiguration socketPool;

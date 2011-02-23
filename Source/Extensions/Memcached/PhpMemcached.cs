@@ -113,6 +113,10 @@ namespace PHP.Library.Memcached
 
         #region IDisposable
 
+        /// <summary>
+        /// Dispose memcached by disposing underlaying protocol.
+        /// </summary>
+        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)

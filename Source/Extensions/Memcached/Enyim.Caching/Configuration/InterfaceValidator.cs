@@ -3,10 +3,17 @@ using System.Configuration;
 
 namespace Enyim.Caching.Configuration
 {
+    /// <summary>
+    /// Configuration validator interface.
+    /// </summary>
 	public class InterfaceValidator : ConfigurationValidatorBase
 	{
 		private Type interfaceType;
 
+        /// <summary>
+        /// Throws if type is not an interface. Stores the type's interface.
+        /// </summary>
+        /// <param name="type"></param>
 		public InterfaceValidator(Type type)
 		{
 			if (!type.IsInterface)
@@ -15,11 +22,20 @@ namespace Enyim.Caching.Configuration
 			this.interfaceType = type;
 		}
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
 		public override bool CanValidate(Type type)
 		{
 			return (type == typeof(Type)) || base.CanValidate(type);
 		}
 
+        /// <summary>
+        /// Validate value.
+        /// </summary>
+        /// <param name="value"></param>
 		public override void Validate(object value)
 		{
 			if (value != null)
@@ -27,10 +43,17 @@ namespace Enyim.Caching.Configuration
 		}
 	}
 
+    /// <summary>
+    /// 
+    /// </summary>
 	public sealed class InterfaceValidatorAttribute : ConfigurationValidatorAttribute
 	{
 		private Type interfaceType;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
 		public InterfaceValidatorAttribute(Type type)
 		{
 			if (!type.IsInterface)
@@ -39,6 +62,9 @@ namespace Enyim.Caching.Configuration
 			this.interfaceType = type;
 		}
 
+        /// <summary>
+        /// 
+        /// </summary>
 		public override ConfigurationValidatorBase ValidatorInstance
 		{
 			get { return new InterfaceValidator(this.interfaceType); }

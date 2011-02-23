@@ -3,11 +3,31 @@ using System.Net;
 
 namespace Enyim.Caching.Memcached
 {
+    /// <summary>
+    /// Server node.
+    /// </summary>
 	public interface IMemcachedNode : IDisposable
 	{
+        /// <summary>
+        /// Address of server.
+        /// </summary>
         NamedIPEndPoint EndPoint { get; }
+
+        /// <summary>
+        /// Node is alive.
+        /// </summary>
 		bool IsAlive { get; }
+
+        /// <summary>
+        /// Ping the server.
+        /// </summary>
+        /// <returns></returns>
 		bool Ping();
+
+        /// <summary>
+        /// Acquire socket.
+        /// </summary>
+        /// <returns></returns>
 		PooledSocket Acquire();
 	}
 }

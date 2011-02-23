@@ -7,11 +7,29 @@ namespace Enyim.Caching.Memcached
 	/// </summary>
 	public interface ISaslAuthenticationProvider
 	{
+        /// <summary>
+        /// Type.
+        /// </summary>
 		string Type { get; }
+
+        /// <summary>
+        /// Init.
+        /// </summary>
+        /// <param name="parameters"></param>
 		void Initialize(Dictionary<string, object> parameters);
 
+        /// <summary>
+        /// Authenticate.
+        /// </summary>
+        /// <returns></returns>
 		byte[] Authenticate();
-		byte[] Continue(byte[] data);
+		
+        /// <summary>
+        /// Continue authentication.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        byte[] Continue(byte[] data);
 	}
 }
 

@@ -23,19 +23,50 @@ namespace Enyim.Caching.Memcached
         //
         // type mask
         //
+
+        /// <summary>
+        /// String.
+        /// </summary>
         TypeString = 0,
+
+        /// <summary>
+        /// Long.
+        /// </summary>
         TypeLong = 1,
+
+        /// <summary>
+        /// Double.
+        /// </summary>
         TypeDouble = 2,
+
+        /// <summary>
+        /// Bool.
+        /// </summary>
         TypeBool = 3,
+
+        /// <summary>
+        /// Serialized.
+        /// </summary>
         TypeSerialized = 4,
         //TypeIgBinary=5,
+
+        /// <summary>
+        /// JSON.
+        /// </summary>
         TypeJSON=6,
 
+        /// <summary>
+        /// Mask of all types.
+        /// </summary>
         TypeMask = 0xf,
 
         //
         // other masks
         //
+
+        /// <summary>
+        /// Compression flag.
+        /// </summary>
         Compression = 1 << 4,
     }
 

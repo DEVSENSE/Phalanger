@@ -57,6 +57,12 @@ namespace Enyim.Caching.Memcached
                 item.Flags |= (ushort)CacheItemFlags.Compression;
         }
 
+        /// <summary>
+        /// Serialize value.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="compressionFlagAllowed"></param>
+        /// <returns></returns>
         protected override CacheItem DoSerialize(object value, bool compressionFlagAllowed)
 		{
             // note: numbers must not be corrupted using PHP serialization (otherwise inc/decr will not work)
@@ -122,6 +128,11 @@ namespace Enyim.Caching.Memcached
             return encoding.GetString(item.Data.Array);
         }
 
+        /// <summary>
+        /// Deserialize value.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         protected override object DoDeserialize(CacheItem item)
         {
             try

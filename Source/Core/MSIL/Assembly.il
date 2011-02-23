@@ -15,8 +15,8 @@
 }
 .assembly extern PhpNetCore
 {
-  .publickeytoken = (0A 8E 8C 4C 76 72 8C 71) 
-  .ver 2:1:0:0
+  // .publickeytoken = (0A 8E 8C 4C 76 72 8C 71) 
+  // .ver 2:1:0:0
 }
 
 .imagebase 0x18E00000

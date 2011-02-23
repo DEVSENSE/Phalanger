@@ -3,7 +3,7 @@ using System.Configuration;
 
 namespace NorthScale.Store.Configuration
 {
-	public sealed class UriValidatorAttribute : ConfigurationValidatorAttribute
+	internal sealed class UriValidatorAttribute : ConfigurationValidatorAttribute
 	{
 		public UriValidatorAttribute() { }
 
@@ -39,7 +39,7 @@ namespace NorthScale.Store.Configuration
 		#endregion
 	}
 
-	public class UriConverter : ConfigurationConverterBase
+	internal class UriConverter : ConfigurationConverterBase
 	{
 		public override object ConvertFrom(System.ComponentModel.ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
 		{

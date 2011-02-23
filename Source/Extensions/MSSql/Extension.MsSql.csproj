@@ -4,21 +4,21 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{533EA853-45F3-483D-8C89-CF686249CC5E}</ProjectGuid>
+    <ProjectGuid>{2153C1DA-B1C5-4B6F-B6D9-272D6099FFC6}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>
     </ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
-    <AssemblyName>PhpNetMbstring</AssemblyName>
+    <AssemblyName>PhpNetMsSql</AssemblyName>
     <AssemblyOriginatorKeyFile>Extensions.snk</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
-    <RootNamespace>PHP.Library.Strings</RootNamespace>
+    <RootNamespace>PHP.Library.Data</RootNamespace>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <StartupObject>
     </StartupObject>
@@ -58,7 +58,7 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>Doc\mbstring.xml</DocumentationFile>
+    <DocumentationFile>Doc\MsSql.xml</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
@@ -80,7 +80,7 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>Doc\Mbstring.xml</DocumentationFile>
+    <DocumentationFile>Doc\PhpNetMsSql.xml</DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
@@ -128,7 +128,16 @@
     <Compile Include="LibraryDescriptor.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MbString.cs">
+    <Compile Include="MsSql.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PhpSqlDbConnection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PhpSqlDbProcedure.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PhpSqlDbResult.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -169,13 +178,13 @@ REM del "$(SolutionDir)..\Deployment\Bin\Temp\$(TargetName).dynamic.dll"
 REM move "$(SolutionDir)..\Deployment\Bin\Temp\$(TargetName).dll" "$(SolutionDir)..\Deployment\Bin"
 REM rmdir "$(SolutionDir)..\Deployment\Bin\Temp"
 
-"$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
+"$(SolutionDir)..\Tools\gacutil" -f -i "$(SolutionDir)..\Deployment\Bin\$(TargetName).dll" 1&gt;nul
 
 REM "$(SolutionDir)..\Deployment\Bin\PhpVerify" "$(TargetFileName)"
 )
 if $(ConfigurationName) == Debug (
 xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
-"$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
+"$(SolutionDir)..\Tools\gacutil" -f -i "$(SolutionDir)..\Deployment\Debug\$(TargetName).dll" 1&gt;nul
 )
 if $(ConfigurationName) == DebugNoGac (
 xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul

@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Enyim.Caching.Configuration
 {
+    /// <summary>
+    /// Socket pool configuration.
+    /// </summary>
 	public class SocketPoolConfiguration : ISocketPoolConfiguration
 	{
 		private int minPoolSize = 10;

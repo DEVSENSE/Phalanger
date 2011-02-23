@@ -7,7 +7,7 @@ namespace Enyim.Caching.Memcached
 	/// <summary>
 	/// A key transformer which converts the item keys into their SHA1 hash.
 	/// </summary>
-	public class SHA1KeyTransformer : KeyTransformerBase
+	internal class SHA1KeyTransformer : KeyTransformerBase
 	{
 		public override string  Transform(string key)
 		{

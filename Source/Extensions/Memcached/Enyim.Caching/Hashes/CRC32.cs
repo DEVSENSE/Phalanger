@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace Enyim.Hashes
 {
-    public class Hash_CRC32 : HashAlgorithm
+    internal class Hash_CRC32 : HashAlgorithm
     {
         private static uint[] crc32tab = {
   0x00000000, 0x77073096, 0xee0e612c, 0x990951ba,

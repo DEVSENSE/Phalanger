@@ -170,28 +170,6 @@ namespace PHP.Library.Memcached
     /// <summary>
     /// 
     /// </summary>
-    public enum HaveConstants
-    {
-        /// <summary>
-        /// Indicates whether igbinary serializer support is available.
-        /// Type: boolean.
-        /// </summary>
-        //[ImplementsConstant("HAVE_IGBINARY")]
-        IgBinary,
-
-
-        /// <summary>
-        /// Indicates whether JSON serializer support is available.
-        /// Type: boolean.
-        /// </summary>
-        //[ImplementsConstant("HAVE_JSON")]
-        JSON,
-
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
     [Flags]
     public enum GetConstants
     {

@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace Enyim.Hashes
 {
-    public class Hash_Murmur : HashAlgorithm
+    internal class Hash_Murmur : HashAlgorithm
     {
         /* 
             'm' and 'r' are mixing constants generated offline.  They're not

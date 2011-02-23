@@ -5,7 +5,7 @@ using Enyim.Caching.Configuration;
 
 namespace NorthScale.Store.Configuration
 {
-	public interface INorthScaleClientConfiguration
+    internal interface INorthScaleClientConfiguration
 	{
 		string Bucket { get; }
 

@@ -6,7 +6,7 @@ namespace Enyim.Caching.Memcached
 	/// <summary>
 	/// A key transformer which converts the item keys into Base64.
 	/// </summary>
-	public class Base64KeyTransformer : KeyTransformerBase
+	internal class Base64KeyTransformer : KeyTransformerBase
 	{
 		public override string Transform(string key)
 		{

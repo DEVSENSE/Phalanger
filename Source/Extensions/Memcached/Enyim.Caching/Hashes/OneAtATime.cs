@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace Enyim.Hashes
 {
-    public class Hash_OneAtATime : HashAlgorithm
+    internal class Hash_OneAtATime : HashAlgorithm
     {
         private uint currentHashValue;
 

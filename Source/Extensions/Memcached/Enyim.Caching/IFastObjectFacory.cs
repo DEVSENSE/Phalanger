@@ -1,13 +1,28 @@
 
 namespace Enyim.Reflection
 {
+    /// <summary>
+    /// Object factory interface.
+    /// </summary>
 	public interface IFastObjectFacory
 	{
+        /// <summary>
+        /// Create object instance.
+        /// </summary>
+        /// <returns></returns>
 		object CreateInstance();
 	}
 
+    /// <summary>
+    /// Object factory interface.
+    /// </summary>
 	public interface IFastMultiArgObjectFacory
 	{
+        /// <summary>
+        /// Create object instance.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
 		object CreateInstance(object[] args);
 	}
 }

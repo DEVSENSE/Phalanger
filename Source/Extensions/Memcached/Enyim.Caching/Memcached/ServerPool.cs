@@ -10,6 +10,9 @@ using PHP.Library.Memcached;
 
 namespace Enyim.Caching.Memcached
 {
+    /// <summary>
+    /// Server pool.
+    /// </summary>
 	public class DefaultServerPool : IDisposable, IServerPool
 	{
 		// holds all dead servers which will be periodically rechecked and put back into the working servers if found alive
@@ -67,6 +70,12 @@ namespace Enyim.Caching.Memcached
 
         #endregion
 
+        /// <summary>
+        /// Initializes the server pool.
+        /// </summary>
+        /// <param name="configuration">Configuration.</param>
+        /// <param name="keyTransformer">Key transformer.</param>
+        /// <param name="nodeLocatorType">Locator.</param>
         public DefaultServerPool(IMemcachedClientConfiguration configuration, IMemcachedKeyTransformer keyTransformer, /*TranscoderBase transcoder,*/ Type nodeLocatorType)
 		{
 			if (configuration == null)
@@ -266,6 +275,9 @@ namespace Enyim.Caching.Memcached
             }
         }
 
+        /// <summary>
+        /// Get locator.
+        /// </summary>
         public IMemcachedNodeLocator NodeLocator
         {
             get
@@ -294,6 +306,9 @@ namespace Enyim.Caching.Memcached
         }
         private IMemcachedNodeLocator _nodeLocator = null;
 
+        /// <summary>
+        /// Get/set locator type.
+        /// </summary>
         public Type NodeLocatorType
         {
             get { return _nodeLocatorType; }
@@ -351,6 +366,11 @@ namespace Enyim.Caching.Memcached
 			}
 		}
 
+        /// <summary>
+        /// Get item from pool.
+        /// </summary>
+        /// <param name="itemKey">Item key.</param>
+        /// <returns>Socket or <b>null</b> reference if server according to the key is not found.</returns>
 		public PooledSocket Acquire(string itemKey)
 		{
 			if (this.serverAccessLock == null)
@@ -364,6 +384,9 @@ namespace Enyim.Caching.Memcached
 			return server.Acquire();
 		}
 
+        /// <summary>
+        /// Get collection of nodes.
+        /// </summary>
 		public ReadOnlyCollection<IMemcachedNode> WorkingServers
 		{
 			get
@@ -389,6 +412,9 @@ namespace Enyim.Caching.Memcached
 			}
 		}
 
+        /// <summary>
+        /// Servers count.
+        /// </summary>
         public int ServersCount
         {
             get
@@ -408,6 +434,11 @@ namespace Enyim.Caching.Memcached
             }
         }
 
+        /// <summary>
+        /// Found nodes according to given keys.
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
 		public IDictionary<IMemcachedNode, IList<string>> SplitKeys(IEnumerable<string> keys)
 		{
 			Dictionary<IMemcachedNode, IList<string>> keysByNode = new Dictionary<IMemcachedNode, IList<string>>(MemcachedNode.Comparer.Instance);
@@ -431,6 +462,9 @@ namespace Enyim.Caching.Memcached
 			return keysByNode;
 		}
 
+        /// <summary>
+        /// Finalizes the pool.
+        /// </summary>
 		~DefaultServerPool()
 		{
 			try { ((IDisposable)this).Dispose(); }
@@ -516,6 +550,9 @@ namespace Enyim.Caching.Memcached
 
 		#endregion
 
+        /// <summary>
+        /// Authenticator.
+        /// </summary>
 		public IAuthenticator Authenticator { get; set; }
 	}
 }

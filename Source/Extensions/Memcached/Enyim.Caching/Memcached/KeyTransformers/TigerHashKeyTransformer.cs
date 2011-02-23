@@ -8,6 +8,11 @@ namespace Enyim.Caching.Memcached
 	/// </summary>
 	public class TigerHashKeyTransformer : KeyTransformerBase
 	{
+        /// <summary>
+        /// Transform the key.
+        /// </summary>
+        /// <param name="key">The key to transform.</param>
+        /// <returns>Transformed key.</returns>
 		public override string Transform(string key)
 		{
             Hashes.TigerHash th = new Hashes.TigerHash();

@@ -8,7 +8,7 @@ namespace Enyim.Caching.Configuration
 	/// <summary>
 	/// Configures the authentication settings for Memcached servers.
 	/// </summary>
-	public sealed class AuthenticationElement : ConfigurationElement, IAuthenticationConfiguration
+    internal sealed class AuthenticationElement : ConfigurationElement, IAuthenticationConfiguration
 	{
 		// TODO make this element play nice with the configuration system (allow saving, etc.)
 		private Dictionary<string, object> parameters = new Dictionary<string, object>();

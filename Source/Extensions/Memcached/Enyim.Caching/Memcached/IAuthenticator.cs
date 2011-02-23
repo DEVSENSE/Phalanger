@@ -2,8 +2,16 @@ using System;
 
 namespace Enyim.Caching.Memcached
 {
+    /// <summary>
+    /// Authenticator.
+    /// </summary>
 	public interface IAuthenticator
 	{
+        /// <summary>
+        /// Authenticate.
+        /// </summary>
+        /// <param name="socket"></param>
+        /// <returns></returns>
 		bool Authenticate(PooledSocket socket);
 	}
 }

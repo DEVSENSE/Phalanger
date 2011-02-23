@@ -227,10 +227,10 @@
     <PreBuildEvent>
     </PreBuildEvent>
     <PostBuildEvent>if $(ConfigurationName) == Release (
-xcopy /q /y "$(TargetPath)" "$(SolutionDir)..\Deployment\Bin"
+xcopy /q /y "$(TargetPath)" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
 )
 if $(ConfigurationName) == Debug (
-xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug"
+xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace Enyim.Hashes
 {
-    public class Hash_MD5 : HashAlgorithm
+    internal class Hash_MD5 : HashAlgorithm
     {
         private byte[] hashed = null;
 

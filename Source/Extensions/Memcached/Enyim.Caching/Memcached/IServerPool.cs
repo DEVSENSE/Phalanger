@@ -10,17 +10,52 @@ namespace Enyim.Caching.Memcached
 	/// </summary>
 	public interface IServerPool : IDisposable
 	{
+        /// <summary>
+        /// Transcoder.
+        /// </summary>
         TranscoderBase Transcoder { get; }
-		IMemcachedNodeLocator NodeLocator { get; }
+		
+        /// <summary>
+        /// Locator.
+        /// </summary>
+        IMemcachedNodeLocator NodeLocator { get; }
+
+        /// <summary>
+        /// Key transformer.
+        /// </summary>
 		IMemcachedKeyTransformer KeyTransformer { get; }
+
+        /// <summary>
+        /// Prefix key.
+        /// </summary>
         string PrefixKey { get; }
         
+        /// <summary>
+        /// Acquire socket from pool.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
 		PooledSocket Acquire(string key);
-		IEnumerable<IMemcachedNode> GetServers();
+		
+        /// <summary>
+        /// Get servers in pool.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<IMemcachedNode> GetServers();
+        
+        /// <summary>
+        /// Server count in the pool.
+        /// </summary>
         int ServersCount { get; }
 
+        /// <summary>
+        /// Authenticator.
+        /// </summary>
 		IAuthenticator Authenticator { get; set; }
 
+        /// <summary>
+        /// Start the pool.
+        /// </summary>
 		void Start();
 	}
 }

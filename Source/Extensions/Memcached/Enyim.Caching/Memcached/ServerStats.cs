@@ -25,6 +25,10 @@ namespace Enyim.Caching.Memcached
 		};
 		#endregion
 		#region [ readonly string[] StatKeys   ]
+
+        /// <summary>
+        /// Server stat keys.
+        /// </summary>
 		public static readonly string[] StatKeys = 
 		{
 			"uptime",

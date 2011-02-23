@@ -6,6 +6,9 @@ using Enyim.Caching.Memcached;
 
 namespace Enyim.Caching.Configuration
 {
+    /// <summary>
+    /// Authentication configuration.
+    /// </summary>
 	public class AuthenticationConfiguration : IAuthenticationConfiguration
 	{
 		private Type authenticator;

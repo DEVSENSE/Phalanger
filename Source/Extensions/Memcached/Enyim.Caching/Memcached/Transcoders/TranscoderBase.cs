@@ -102,7 +102,19 @@ namespace Enyim.Caching.Memcached
             return DoDeserialize(item);
         }
 
+        /// <summary>
+        /// Perform serialization.
+        /// </summary>
+        /// <param name="o">Object to serialize.</param>
+        /// <param name="compressionFlagAllowed">Allow compression.</param>
+        /// <returns></returns>
         protected abstract CacheItem DoSerialize(Object o, bool compressionFlagAllowed);
+
+        /// <summary>
+        /// Perform deserialization.
+        /// </summary>
+        /// <param name="item">Item to be deserialized.</param>
+        /// <returns>Deserialized object.</returns>
         protected abstract object DoDeserialize(CacheItem item);
     }
 }

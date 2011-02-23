@@ -13,6 +13,9 @@ namespace NorthScale.Store.Configuration
 	/// </summary>
 	public sealed class NorthScaleClientSection : ConfigurationSection, INorthScaleClientConfiguration
 	{
+        /// <summary>
+        /// Servers.
+        /// </summary>
 		[ConfigurationProperty("servers", IsRequired = true)]
 		public ServersSection Servers
 		{
