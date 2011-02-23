@@ -940,13 +940,6 @@ namespace PHP.Library
 		/// <returns>A <see cref="string"/> or <see cref="PhpBytes"/> containing the line of text or <c>false</c> in case of an error.</returns>
 		/// <remarks>
 		/// <para>
-		///   The <paramref name="length"/> parameter became optional in PHP 4.2.0, if omitted, it would
-		///   assume 1024 as the line length. As of PHP 4.3, omitting <paramref name="length"/> will keep
-		///   reading from the stream until it reaches the end of the line. 
-		///   If the majority of the lines in the file are all larger than 8KB, 
-		///   it is more resource efficient for your script to specify the maximum line length.
-		/// </para>
-		/// <para>
 		///   Result is affected by run-time quoting 
 		///   (<see cref="LocalConfiguration.VariablesSection.QuoteRuntimeVariables"/>).
 		/// </para>

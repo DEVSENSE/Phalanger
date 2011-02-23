@@ -57,7 +57,7 @@ namespace PHP.Core
 		public abstract object EnsureVariable(ref object var, ScriptContext context, DTypeDesc caller);
 
 		/// <summary>
-		/// Performs the ensure operation on this element to make it suitable for <paramref name="next"/> element
+        /// Performs the ensure operation on this element to make it suitable for <see cref="Next"/> element
 		/// application.
 		/// </summary>
 		/// <param name="var">The variable.</param>
@@ -134,7 +134,7 @@ namespace PHP.Core
 		}
 
 		/// <summary>
-		/// Performs the ensure operation on this field to make it suitable for <paramref name="next"/> element
+        /// Performs the ensure operation on this field to make it suitable for <see cref="RuntimeChainElement.Next"/> element
 		/// application.
 		/// </summary>
 		public override object Ensure(object var, ScriptContext context, DTypeDesc caller)
@@ -224,7 +224,7 @@ namespace PHP.Core
 		}
 
 		/// <summary>
-		/// Performs the ensure operation on this item to make it suitable for <paramref name="next"/> element
+        /// Performs the ensure operation on this item to make it suitable for <see cref="RuntimeChainElement.Next"/> element
 		/// application.
 		/// </summary>
 		public override object Ensure(object var, ScriptContext context, DTypeDesc caller)
@@ -291,7 +291,7 @@ namespace PHP.Core
 		}
 
 		/// <summary>
-		/// Performs the ensure operation on the new item to make it suitable for <paramref name="next"/> element
+        /// Performs the ensure operation on the new item to make it suitable for <see cref="RuntimeChainElement.Next"/> element
 		/// application.
 		/// </summary>
 		public override object Ensure(object var, ScriptContext context, DTypeDesc caller)

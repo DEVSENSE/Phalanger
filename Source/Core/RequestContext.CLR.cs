@@ -463,7 +463,6 @@ namespace PHP.Core
 		/// non-PHP code after the start of the session will not be visible to PHP code. The <c>$_SESSION</c> variable
 		/// has to be updated directly (see <c>ScriptContext.AutoGlobals</c>) to make these items visible to PHP.
 		/// </para>
-		/// <exception cref="ArgumentNullException"><paramref name="context"/> is a <B>null</B> reference.</exception>
 		/// <exception cref="SessionException">Session state not available.</exception>
 		public void StartSession()
 		{
@@ -505,7 +504,6 @@ namespace PHP.Core
 		/// Ends session, i.e. stores content of the $_SESSION array to the <c>HttpContext.Session</c> collection.
 		/// </summary>
 		/// <param name="abandon">Whether to abandon the session without persisting variables.</param>
-		/// <exception cref="ArgumentNullException"><paramref name="HttpContext"/> is a <B>null</B> reference.</exception>
 		/// <exception cref="SessionException">Session state not available.</exception>
 		public void EndSession(bool abandon)
 		{

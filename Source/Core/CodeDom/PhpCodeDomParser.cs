@@ -1908,7 +1908,7 @@ namespace PHP.Core.CodeDom {
             }
             /// <summary>Translates declaration of PHP class-level field to CodeDOM field</summary>
             /// <param name="Field">Field to be translated</param>
-            /// <param name="List">List in which <paramref name="Filed"/> is declared</param>
+            /// <param name="List">List in which <paramref name="Field"/> is declared</param>
             /// <param name="block">If field requires property, property is added to this block</param>
             /// <returns>CodeDOM representation of <paramref name="Field"/></returns>
             /// <exception cref="PhpToCodeDomNotSupportedException">Custom attribute initialization expression or variable initialization expression is not either supported or supported in current context (see <see cref="TranslateExpression"/>)</exception>
@@ -2402,7 +2402,7 @@ namespace PHP.Core.CodeDom {
              /// <paramref name="dfc"/> is invalid
              /// </exception>
              /// <remarks>
-             /// PHP adds/removes event listeners using syntax (target)->EventName->Add/Remove((listener)) this requires <paramref name="dfn"/> to:
+             /// PHP adds/removes event listeners using syntax (target)->EventName->Add/Remove((listener)) this requires <paramref name="dfc"/> to:
              /// <see cref="DirectFcnCall.QualifiedName">QualifiedName</see> is 'Add' or 'Remove',
             /// <see cref="FunctionCall.CallSignature">CallSignature</see>.<see cref="CallSignature.GenericParams">GenericParams</see> is empty,
             /// <see cref="FunctionCall.CallSignature">CallSignature</see>.<see cref="CallSignature.Parameters">Parameters</see> has one item - the evcent listener,
@@ -2630,7 +2630,7 @@ namespace PHP.Core.CodeDom {
                 /// <param name="Object"><see cref="CodeObject"/> to be added</param>
                 /// <returns><paramref name="Object"/></returns>
                 /// <param name="throwOn">Element to throw <see cref="PhpToCodeDomNotSupportedException"/> on</param>
-                /// <exception cref="PhpToCodeDomNotSupportedException">Object of type <paramref name="T"/> is not supported in this block</exception>
+                /// <exception cref="PhpToCodeDomNotSupportedException">Object of type <b>T</b> is not supported in this block</exception>
                 CodeObject AddObject(CodeObject Object,LangElement throwOn);
             }
             /// <summary>Interface represents block of code where statements can be added and inserted</summary>
@@ -3097,7 +3097,7 @@ namespace PHP.Core.CodeDom {
                 /// <param name="Object"><see cref="CodeObject"/> to be added</param>
                 /// <returns><paramref name="Object"/></returns>
                 /// <param name="throwOn">Element to throw <see cref="PhpToCodeDomNotSupportedException"/> on</param>
-                /// <exception cref="PhpToCodeDomNotSupportedException">Object of type <paramref name="T"/> is not supported in this block</exception>
+                /// <exception cref="PhpToCodeDomNotSupportedException">Object of type <b>T</b> is not supported in this block</exception>
                 /// <remarks>File-level supports only <see cref="CodeCommentStatement"/>, <see cref="CodeNamespace"/> and <see cref="CodeTypeDeclaration"/> (including <see cref="CodeTypeDelegate"/>)</remarks>
                 public CodeObject AddObject(CodeObject Object,LangElement throwOn){
                     if(Object is CodeCommentStatement) context.Namespaces[0].Comments.Add((CodeCommentStatement)Object);

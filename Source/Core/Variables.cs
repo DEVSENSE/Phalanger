@@ -599,8 +599,8 @@ namespace PHP.Core
 		/// Checks whether a specified object is of scalar type.
 		/// </summary>
 		/// <param name="obj">The variable.</param>
-		/// <returns>Whether <paramref name="variable"/> is either <see cref="int"/>, <see cref="double"/>,
-		/// <see cref="bool"/>, <see cref="string"/> or <see cref="IPhpVariable.IsScalar"/>.</returns>
+		/// <returns>Whether <paramref name="obj"/> is either <see cref="int"/>, <see cref="double"/>,
+        /// <see cref="bool"/>, <see cref="long"/>, <see cref="string"/> or <see cref="IPhpVariable.IsScalar"/>.</returns>
 		public static bool IsScalar(object obj)
 		{
 			if (obj is int || obj is double || obj is bool || obj is long || obj is string) // PhpString, PhpBytes handled further

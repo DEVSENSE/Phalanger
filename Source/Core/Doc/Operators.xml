@@ -52,19 +52,18 @@
         <item>
           <term><see cref="string" /> or <see cref="PhpBytes" /></term>
           <description>
-            The <paramref name="index"/> is converted to an integer by <see cref="Convert.ObjectToInteger"/>.
+            The <paramref name="key"/> is converted to an integer by <see cref="Convert.ObjectToInteger"/>.
             If the result of the conversion is negative or points beyond the last character/byte of the <paramref name="var"/>
             the <B>null</B> is returned (this is slightly different behavior from the PHP but more consistent
             paying attention to the "isset" PHP function implementation).
-            Otherwise, the <paramref name="index"/>-th character and byte is wrapped into a new string and <see cref="PhpBytes"/>
+            Otherwise, the <paramref name="key"/>-th character and byte is wrapped into a new string and <see cref="PhpBytes"/>
             instance, respectively, and returned.
           </description>
         </item>
         <item>
           <term><see cref="PhpArray" /></term>
           <description>
-            The <paramref name="index" /> is converted to array key by <see cref="Convert.ObjectToArrayKey"/>.
-            The result is used as a key in the array and the associated value is returned.
+            The value associated with <paramref name="key" /> is returned.
           </description>
         </item>
         <item>
@@ -85,8 +84,8 @@
   <operator name="SetStringItem">
     <remarks>
       <para>The <paramref name="index" /> is converted to an integer by <see cref="Convert.ObjectToInteger" />.
-      If the resulting index is greater than the length of the <paramref name="s" /> string then the 
-      empty space between the last character of the <paramref name="s" /> and such index is filled by spaces.</para>
+      If the resulting index is greater than the length of the <paramref name="str" /> string then the 
+      empty space between the last character of the <paramref name="str" /> and such index is filled by spaces.</para>
       <para><paramref name="value" /> is converted to a string by <see cref="Convert.ObjectToString" />.
       The <paramref name="index" />-th character is set to the first character of that conversion result
       or the '\0' character if the conversion leads to an empty string.</para>
@@ -94,13 +93,11 @@
   </operator>
   <operator name="SetBytesItem">
     <remarks>
-      <para>If the [] operator is applied on an empty array a new <see cref="PhpArray" /> containing
-      single entry (index converted to array key => value) is created and assigned to <paramref name="var" />.</para>
       <para><paramref name="value" /> is converted to a bytes array via the current <see cref="Encoding"/>.
       The new byte which is an item set to is the first byte of the result of that conversion
       or the 0 byte if the conversion leads to an empty array.</para>
       <para>The <paramref name="index" /> is converted to an integer by <see cref="Convert.ObjectToInteger" />.
-      If the resulting index is greater than the length of the <paramref name="s" /> string then the 
+      If the resulting index is greater than the length of the <paramref name="bytes" /> array then the 
       empty space between the last byte of the <paramref name="bytes" /> and such index is filled by 0x20 bytes.</para>
     </remarks>
   </operator>

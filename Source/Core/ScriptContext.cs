@@ -552,7 +552,6 @@ namespace PHP.Core
 		/// <param name="name">The constant name. Compiler converts constant name to string before passing it to this method.</param>
 		/// <param name="value">The constant value (should be either scalar or a <B>null</B> reference).</param>
 		/// <returns>Whether the constant has been defined. Returns <B>false</B> if the constant is already defined.</returns>
-		/// <exception cref="ArgumentNullException"><paramref name="context"/> is a <B>null</B> reference.</exception>
 		public bool DefineConstant(string name, object value)
 		{
 			return DefineConstant(name, value, false);
@@ -567,7 +566,6 @@ namespace PHP.Core
 		/// <returns>Whether the new constant has been defined.</returns>
 		/// <exception cref="PhpException">Constant has already been defined (Notice).</exception>
 		/// <exception cref="PhpException">Value is neither scalar not <B>null</B> (Warning).</exception>
-		/// <exception cref="ArgumentNullException"><paramref name="context"/> is a <B>null</B> reference.</exception>
 		public bool DefineConstant(string name, object value, bool ignoreCase)
 		{
 			if (!PhpVariable.IsScalar(value) && value != null)
@@ -666,7 +664,6 @@ namespace PHP.Core
 		/// Retrieves the number of all defined user and library constants.
 		/// </summary>
 		/// <returns>The number of constants.</returns>
-		/// <exception cref="ArgumentNullException"><paramref name="context"/> is a <B>null</B> reference.</exception>
 		public int GetDefinedConstantCount()
 		{
 			return applicationContext.Constants.Count + Constants.Count;
@@ -676,7 +673,6 @@ namespace PHP.Core
         /// Retrieves the number of user defined constants.
         /// </summary>
         /// <returns>The number of constants.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="context"/> is a <B>null</B> reference.</exception>
         public int GetDefinedUserConstantCount()
         {
             return Constants.Count - _coreConstants.Count;

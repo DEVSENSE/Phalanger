@@ -753,10 +753,7 @@ namespace PHP.Library
 		/// </summary>
 		/// <param name="array">The array which to choose from.</param>
 		/// <returns>The chosen key.</returns>
-		/// <exception cref="PhpException">Either <paramref name="source"/> or <paramref name="result"/> or 
-		/// <paramref name="generator"/> is a <B>null</B> reference (Warning)</exception>
-		/// <exception cref="PhpException"><paramref name="count"/> is not positive and less 
-		/// than the number of items in <paramref name="source"/>. (Warning)</exception>
+        /// <exception cref="System.NullReferenceException"><paramref name="array"/> is a <B>null</B> reference.</exception>
 		[ImplementsFunction("array_rand")]
 		[return: PhpDeepCopy]
 		public static object RandomKeys(PhpArray array)
@@ -774,10 +771,9 @@ namespace PHP.Library
 		/// Items are chosen uniformly in time <I>O(n)</I>, where <I>n</I> is the number of items in the 
 		/// <paramref name="array"/> using conveyor belt sampling. 
 		/// </remarks>
-		/// <exception cref="PhpException">Either <paramref name="source"/> or <paramref name="result"/> or 
-		/// <paramref name="generator"/> is a <B>null</B> reference (Warning)</exception>
+        /// <exception cref="NullReferenceException"><paramref name="array"/>  is a <B>null</B> reference.</exception>
 		/// <exception cref="PhpException"><paramref name="count"/> is not positive and less 
-		/// than the number of items in <paramref name="source"/>. (Warning)</exception>
+		/// than the number of items in <paramref name="array"/>. (Warning)</exception>
 		[ImplementsFunction("array_rand")]
 		[return: PhpDeepCopy]
 		public static object RandomKeys(PhpArray array, int count)
@@ -3198,7 +3194,7 @@ namespace PHP.Library
 		/// </param>
 		/// <param name="data">An additional parameter passed to <paramref name="callback"/> as its third parameter.</param>
 		/// <returns><B>true</B>.</returns>
-		/// <exception cref="PhpException"><paramref name="function"/> or <paramref name="array"/> are <B>null</B> references.</exception>
+		/// <exception cref="PhpException"><paramref name="callback"/> or <paramref name="array"/> are <B>null</B> references.</exception>
 		[ImplementsFunction("array_walk")]
 		public static bool Walk([PhpRw] PhpHashtable array, PhpCallback callback, object data)
 		{
@@ -3218,7 +3214,7 @@ namespace PHP.Library
 		/// </summary>
 		/// <returns><B>true</B>.</returns>
 		/// <remarks>See <see cref="Walk(PhpHashtable,PhpCallback,object)"/> for details.</remarks>
-		/// <exception cref="PhpException"><paramref name="function"/> or <paramref name="array"/> are <B>null</B> references.</exception>
+        /// <exception cref="PhpException"><paramref name="callback"/> or <paramref name="array"/> are <B>null</B> references.</exception>
 		[ImplementsFunction("array_walk_recursive")]
 		public static bool WalkRecursive([PhpRw] PhpHashtable array, PhpCallback callback)
 		{
@@ -3231,7 +3227,7 @@ namespace PHP.Library
 		/// <param name="array">The array to walk through.</param>
 		/// <param name="callback">The callback called for each element of <paramref name="array"/>.</param>
 		/// <param name="data">An additional parameter passed to <paramref name="callback"/> as its third parameter.</param>
-		/// <exception cref="PhpException"><paramref name="function"/> or <paramref name="array"/> are <B>null</B> references.</exception>
+        /// <exception cref="PhpException"><paramref name="callback"/> or <paramref name="array"/> are <B>null</B> references.</exception>
 		/// <remarks><seealso cref="Walk"/>.</remarks>
 		[ImplementsFunction("array_walk_recursive")]
 		public static bool WalkRecursive([PhpRw] PhpHashtable array, PhpCallback callback, object data)
@@ -3255,7 +3251,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Prepares a walk for <see cref="Walk"/> and <see cref="WalkRecursive"/> methods.
 		/// </summary>
-		/// <exception cref="PhpException"><paramref name="function"/> or <paramref name="array"/> are <B>null</B> references.</exception>
+        /// <exception cref="PhpException"><paramref name="callback"/> or <paramref name="array"/> are <B>null</B> references.</exception>
 		private static object[] PrepareWalk(IDictionary array, PhpCallback callback, object data)
 		{
 			if (callback == null) { PhpException.ArgumentNull("callback"); return null; }

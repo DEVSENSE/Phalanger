@@ -71,10 +71,10 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="sourceFile">Source file.</param>
 		/// <param name="ctx">A compilation context.</param>
-		/// <returns>The <see cref="ModuleInfo"/> or a <B>null</B> reference.</returns>
+		/// <returns>The <see cref="PhpModule"/> or a <B>null</B> reference.</returns>
 		/// <remarks>
-		/// Checks whether a module associated with a <paramref name="sourcePath"/> has already been compiled.
-		/// If so returns the respective <see cref="ModuleInfo"/>. Otherwise a <B>null</B> reference is returned.
+		/// Checks whether a module associated with a <paramref name="sourceFile"/> has already been compiled.
+		/// If so returns the respective <see cref="PhpModule"/>. Otherwise a <B>null</B> reference is returned.
 		/// Does no locking since application compiler is thread unsafe.
 		/// </remarks>
 		public PhpModule LockForCompiling(PhpSourceFile/*!*/ sourceFile, CompilationContext/*!*/ ctx)

@@ -1060,8 +1060,7 @@ namespace PHP.Core
 		/// <param name="quiet">Disables reporting of notices and warnings.</param>
 		/// <returns>The item.</returns>
 		/// <exception cref="PhpException"><paramref name="key"/> is not a legal key (Warning).</exception>
-		/// <exception cref="PhpException">The <paramref name="key"/> is not contained in <paramref name="array"/> (Notice).</exception>
-		/// <exception cref="ArgumentNullException"><paramref name="array"/> is a <B>null</B> reference.</exception>
+		/// <exception cref="PhpException">The <paramref name="key"/> is not contained in <see cref="PhpArray"/> (Notice).</exception>
 		[Emitted]
 		public virtual object GetArrayItem(object key, bool quiet)
 		{

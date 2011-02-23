@@ -133,7 +133,7 @@ namespace PHP.Library
 		private static CharMap _charmap;
 
 		/// <summary>
-		/// Creates or clears <paramref name="_charmap"/>.
+		/// Creates or clears <see cref="_charmap"/>.
 		/// </summary>
 		internal static CharMap InitializeCharMap()
 		{
@@ -744,7 +744,7 @@ namespace PHP.Library
 		public const int CryptBlowfish = 0;
 
 		/// <summary>
-		/// Specifies the length of the salt applicable to the <paramref name="Encrypt"/> method.
+		/// Specifies the length of the salt applicable to the <see cref="Encrypt"/> method.
 		/// </summary>
 		[ImplementsConstant("CRYPT_SALT_LENGTH")]
 		public const int CryptSaltLength = 9;
@@ -993,7 +993,7 @@ namespace PHP.Library
 		/// Reverses the given string.
 		/// </summary>
 		/// <param name="obj">The string to be reversed.</param>
-		/// <returns>The reversed string or empty string if <paramref name="str"/> is null.</returns>
+		/// <returns>The reversed string or empty string if <paramref name="obj"/> is null.</returns>
 		[ImplementsFunction("strrev")]
         [PureFunction]
         public static object Reverse(object obj)
@@ -1565,8 +1565,9 @@ namespace PHP.Library
 		/// <param name="str">The input string, can be both binary and unicode.</param>
 		/// <param name="count">The number of times <paramref name="str"/> should be repeated.</param>
 		/// <returns>The string where <paramref name="str"/> is repeated <paramref name="count"/> times.</returns>
-		/// <remarks>If <paramref name="multiplier"/> is set to 0, the function will return an empty string.</remarks>   
-		/// <exception cref="PhpException">Thrown if <paramref name="count"/> is negative.</exception>
+		/// <remarks>If <paramref name="str"/> is <b>null</b> reference, the function will return an empty string.</remarks>   
+        /// <remarks>If <paramref name="count"/> is set to 0, the function will return <b>null</b> reference.</remarks>   
+        /// <exception cref="PhpException">Thrown if <paramref name="count"/> is negative.</exception>
 		[ImplementsFunction("str_repeat")]
         [PureFunction]
         public static object Repeat(object str, int count)
@@ -1718,7 +1719,7 @@ namespace PHP.Library
 		/// <param name="needle">The substring.</param>
 		/// <param name="offset">The relativized offset of the first item of the slice. Zero if missing in overloads</param>
 		/// <param name="length">The relativized length of the slice. Infinity if missing in overloads.</param>
-		/// <returns>The number of <paramref name="substring"/> occurences in <paramref name="string"/>.</returns>
+		/// <returns>The number of <paramref name="needle"/> occurences in <paramref name="haystack"/>.</returns>
 		/// <example>"aba" has one occurence in "ababa".</example>
 		/// <remarks>
 		/// See <see cref="PhpMath.AbsolutizeRange"/> for details about <paramref name="offset"/> and <paramref name="length"/>.
@@ -1939,7 +1940,7 @@ namespace PHP.Library
 
 			/// <summary>
 			/// Replaces all substrings of <paramref name="subject"/> specified in constructor parameter <c>search</c> 
-			/// with <paramref name="replacement"/>. If <paramref name="replacementCount"/> is non-negative,
+			/// with <see cref="replacement"/>. If <paramref name="replacementCount"/> is non-negative,
 			/// advances it by the number of replacements. Retuns resulting string.
 			/// </summary>
 			public string Replace(string/*!*/ subject, ref int replacementCount)
@@ -2270,7 +2271,7 @@ namespace PHP.Library
 		/// The substring(s) to replace. Can be string or <see cref="IDictionary"/> of strings.
 		/// </param>
 		/// <param name="replacement">
-		/// The string(s) to replace <paramref name="search"/>. Can be string or <see cref="IDictionary"/> of strings.
+		/// The string(s) to replace <paramref name="searched"/>. Can be string or <see cref="IDictionary"/> of strings.
 		/// </param>
 		/// <param name="subject">
 		/// The string or <see cref="IDictionary"/> of strings to perform the search and replace with.
@@ -2280,8 +2281,8 @@ namespace PHP.Library
 		/// </param>
 		/// <returns>
 		/// A string or an <see cref="IDictionary"/> with all occurrences of 
-		/// <paramref name="search"/> in <paramref name="subject"/> replaced
-		/// with the given <paramref name="replace"/> value.
+		/// <paramref name="searched"/> in <paramref name="subject"/> replaced
+		/// with the given <paramref name="replacement"/> value.
 		/// </returns>
 		[ImplementsFunction("str_replace")]
 		[PureFunction]
@@ -2380,7 +2381,7 @@ namespace PHP.Library
 		/// Converts a string to an array.
 		/// </summary>
 		/// <param name="obj">The string to split.</param>
-		/// <param name="splitLength">Length of chunks <paramref name="str"/> should be split into.</param>
+		/// <param name="splitLength">Length of chunks <paramref name="obj"/> should be split into.</param>
 		/// <returns>An array with keys being chunk indeces and values being chunks of <paramref name="splitLength"/>
 		/// length.</returns>
 		/// <exception cref="PhpException">The <paramref name="splitLength"/> parameter is not positive (Warning).</exception>
@@ -2571,7 +2572,7 @@ namespace PHP.Library
 		}
 
 		/// <include file='Doc/Strings.xml' path='docs/method[@name="AddCSlashes"]/*'/>
-		/// <exception cref="PhpException">Thrown if <paramref name="characters"/> interval is invalid.</exception>
+		/// <exception cref="PhpException">Thrown if <paramref name="str"/> interval is invalid.</exception>
 		[ImplementsFunction("addcslashes_unicode")]
 		public static string AddCSlashes(string str, string mask)
 		{
@@ -2582,7 +2583,7 @@ namespace PHP.Library
 		}
 
 		/// <include file='Doc/Strings.xml' path='docs/method[@name="AddCSlashes"]/*'/>
-		/// <exception cref="PhpException">Thrown if <paramref name="characters"/> interval is invalid.</exception>
+		/// <exception cref="PhpException">Thrown if <paramref name="str"/> interval is invalid.</exception>
 		[ImplementsFunction("addcslashes")]
 		public static string AddCSlashesAscii(string str, string mask)
 		{
@@ -2602,8 +2603,8 @@ namespace PHP.Library
 		/// <param name="translatedStr">A sequence of chars or ints from which to take character codes.</param>
 		/// <param name="translatedMask">A mask containing codes.</param>
 		/// <param name="str">A string to be slashed.</param>
-		/// <exception cref="PhpException"><paramref name="characters"/> interval is invalid.</exception>
-		/// <exception cref="PhpException"><paramref name="data"/> contains Unicode characters greater than '\u0800'.</exception>
+        /// <exception cref="PhpException"><paramref name="translatedStr"/> interval is invalid.</exception>
+        /// <exception cref="PhpException"><paramref name="translatedStr"/> contains Unicode characters greater than '\u0800'.</exception>
 		internal static string AddCSlashesInternal(string str, string translatedStr, string translatedMask)
 		{
 			Debug.Assert(str != null && translatedMask != null && translatedStr != null && str.Length == translatedStr.Length);
@@ -2972,7 +2973,7 @@ namespace PHP.Library
 		/// <param name="str">The string to convert.</param>
 		/// <returns>The converted string.</returns>
 		/// <remarks>This method is identical to <see cref="HtmlSpecialChars"/> in all ways, except with
-		/// <see cref="HtmlEntities"/>, all characters that have HTML character entity equivalents are
+        /// <b>htmlentities</b> (<see cref="EncodeHtmlEntities"/>), all characters that have HTML character entity equivalents are
 		/// translated into these entities.</remarks>
 		[ImplementsFunction("htmlentities")]
 		public static string EncodeHtmlEntities(string str)
@@ -2986,10 +2987,10 @@ namespace PHP.Library
 		/// <param name="str">The string to convert.</param>
 		/// <param name="quoteStyle">Quote conversion.</param>
 		/// <returns>The converted string.</returns>
-		/// <remarks>This method is identical to <see cref="HtmlSpecialChars"/> in all ways, except with
-		/// <see cref="HtmlEntities"/>, all characters that have HTML character entity equivalents are
-		/// translated into these entities.</remarks>
-		[ImplementsFunction("htmlentities")]
+        /// <remarks>This method is identical to <see cref="HtmlSpecialChars"/> in all ways, except with
+        /// <b>htmlentities</b> (<see cref="EncodeHtmlEntities"/>), all characters that have HTML character entity equivalents are
+        /// translated into these entities.</remarks>
+        [ImplementsFunction("htmlentities")]
 		public static string EncodeHtmlEntities(string str, QuoteStyle quoteStyle)
 		{
 			return EncodeHtmlEntities(str, quoteStyle, "ISO-8859-1", true);
@@ -3002,10 +3003,10 @@ namespace PHP.Library
 		/// <param name="quoteStyle">Quote conversion.</param>
 		/// <param name="charSet">The character set used in conversion. This parameter is ignored.</param>
 		/// <returns>The converted string.</returns>
-		/// <remarks>This method is identical to <see cref="HtmlSpecialChars"/> in all ways, except with
-		/// <see cref="HtmlEntities"/>, all characters that have HTML character entity equivalents are
-		/// translated into these entities.</remarks>
-		[ImplementsFunction("htmlentities")]
+        /// <remarks>This method is identical to <see cref="HtmlSpecialChars"/> in all ways, except with
+        /// <b>htmlentities</b> (<see cref="EncodeHtmlEntities"/>), all characters that have HTML character entity equivalents are
+        /// translated into these entities.</remarks>
+        [ImplementsFunction("htmlentities")]
 		public static string EncodeHtmlEntities(string str, QuoteStyle quoteStyle, string charSet)
 		{
             return EncodeHtmlEntities(str, quoteStyle, "ISO-8859-1", true);
@@ -3020,7 +3021,7 @@ namespace PHP.Library
         /// <param name="doubleEncode">When it is turned off existing HTML entities will not be encoded. The default is to convert everything.</param>
         /// <returns>The converted string.</returns>
         /// <remarks>This method is identical to <see cref="HtmlSpecialChars"/> in all ways, except with
-        /// <see cref="HtmlEntities"/>, all characters that have HTML character entity equivalents are
+        /// <b>htmlentities</b> (<see cref="EncodeHtmlEntities"/>), all characters that have HTML character entity equivalents are
         /// translated into these entities.</remarks>
         [ImplementsFunction("htmlentities")]
         public static string EncodeHtmlEntities(string str, QuoteStyle quoteStyle, string charSet, bool doubleEncode)
@@ -3064,7 +3065,7 @@ namespace PHP.Library
         }
 
 		/// <summary>
-		/// Returns the translation table used by <see cref="HtmlSpecialChars"/> and <see cref="HtmlEntities"/>. 
+		/// Returns the translation table used by <see cref="HtmlSpecialChars"/> and <see cref="EncodeHtmlEntities"/>. 
 		/// </summary>
 		/// <param name="table">Type of the table that should be returned.</param>
 		/// <returns>The table.</returns>
@@ -3075,7 +3076,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Returns the translation table used by <see cref="HtmlSpecialChars"/> and <see cref="HtmlEntities"/>. 
+		/// Returns the translation table used by <see cref="HtmlSpecialChars"/> and <see cref="EncodeHtmlEntities"/>. 
 		/// </summary>
 		/// <param name="table">Type of the table that should be returned.</param>
 		/// <param name="quoteStyle">Quote conversion.</param>
@@ -4024,17 +4025,17 @@ namespace PHP.Library
 		private class TokenizerContext
 		{
 			/// <summary>
-			/// The <paramref name="str"/> parameter of last <paramref name="Tokenize"/> method call.
+			/// The <b>str</b> parameter of last <see cref="Tokenize"/> method call.
 			/// </summary>
 			public string String;
 
 			/// <summary>
-			/// Current position in <paramref name="strtokString"/>.
+            /// Current position in <see cref="TokenizerContext"/>.
 			/// </summary>
 			public int Position;
 
 			/// <summary>
-			/// The length of <paramref name="strtokString"/>.
+            /// The length of <see cref="TokenizerContext"/>.
 			/// </summary>
 			public int Length;
 
@@ -4159,7 +4160,7 @@ namespace PHP.Library
 		/// of characters, e.g. "\0x00..\0x1F".</param>
 		/// <returns>The trimmed string.</returns>
 		/// <exception cref="PhpException"><paramref name="whiteSpaceCharacters"/> is invalid char mask. Multiple errors may be printed out.</exception>
-		/// <exception cref="PhpException"><paramref name="data"/> contains Unicode characters greater than '\u0800'.</exception>
+		/// <exception cref="PhpException"><paramref name="str"/> contains Unicode characters greater than '\u0800'.</exception>
 		[ImplementsFunction("trim")]
 		public static string Trim(string str, string whiteSpaceCharacters)
 		{
@@ -5259,13 +5260,13 @@ namespace PHP.Library
 		/// <param name="decimals">The number of decimals within range 0 to 99.</param>
 		/// <param name="decimalPoint">The string to separate integer part and decimals.</param>
 		/// <param name="thousandsSeparator">The character to separate groups of thousands. Only the first character
-		/// of <paramref name="thousandsSeparatot"/> is used.</param>
+		/// of <paramref name="thousandsSeparator"/> is used.</param>
 		/// <returns>
 		/// String representation of the number with <paramref name="decimals"/> decimals with <paramref name="decimalPoint"/> in 
 		/// front, and with <paramref name="thousandsSeparator"/> between every group of thousands.
 		/// </returns>
 		/// <remarks>
-		/// The <paramref name="number_format"/> PHP function requires <paramref name="decimalPoint"/> and <paramref name="thousandsSeparator"/>
+        /// The <b>number_format</b> (<see cref="FormatNumber"/>) PHP function requires <paramref name="decimalPoint"/> and <paramref name="thousandsSeparator"/>
 		/// to be of length 1 otherwise it uses default values (dot and comma respectively). As this behavior does
 		/// not make much sense, this method has no such limitation except for <paramref name="thousandsSeparator"/> of which
 		/// only the first character is used (documented feature).
@@ -6046,7 +6047,6 @@ namespace PHP.Library
 		/// Retrieves the index of the last occurrence of the <paramref name="needle"/> in the <paramref name="haystack"/>.
 		/// </summary>
 		/// <remarks>See <see cref="Strrpos(string,object,int)"/> for details.</remarks>
-		/// <exception cref="PhpException">Thrown if <paramref name="offset"/> is out of bounds or <paramref name="needle"/> is empty string.</exception>
 		[ImplementsFunction("strrpos"), EditorBrowsable(EditorBrowsableState.Never)]
 		[return: CastToFalse]
 		public static int Strrpos(string haystack, object needle)
@@ -6081,7 +6081,6 @@ namespace PHP.Library
 		/// (case insensitive).
 		/// </summary>
 		/// <remarks>See <see cref="Strrpos(string,object,int)"/> for details.</remarks>
-		/// <exception cref="PhpException">Thrown if <paramref name="offset"/> is out of bounds or <paramref name="needle"/> is empty string.</exception>
 		[ImplementsFunction("strripos"), EditorBrowsable(EditorBrowsableState.Never)]
 		[return: CastToFalse]
 		public static int Strripos(string haystack, string needle)

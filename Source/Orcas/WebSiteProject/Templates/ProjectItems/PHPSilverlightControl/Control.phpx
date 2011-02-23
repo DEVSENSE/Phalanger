@@ -1,6 +1,0 @@
-﻿<?
-include("slutils.phpx");
-
-// ...
-$canvas->hello->Text = "Hello from PHP!";
-?>

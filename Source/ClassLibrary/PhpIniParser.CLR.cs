@@ -201,8 +201,6 @@ namespace PHP.Library
 		/// </summary>
 		/// <param name="stream">A stream referring to the file to parse. Should be open in binary mode.</param>
 		/// <param name="callbacks">Implementation of the parser callbacks invoked during parsing.</param>
-		/// <returns>An array of key-value pairs (<paramref name="processSections"/> is <B>false</B>) or an array
-		/// of arrays of key-value pairs (<paramref name="processSections"/> is <B>true</B>).</returns>
 		/// <exception cref="ParseException">Parse error.</exception>
 		/// <exception cref="ArgumentNullException"><paramref name="stream"/> or <paramref name="callbacks"/> is a <B>null</B> reference.</exception>
 		/// <exception cref="ArgumentException">Stream is was not opened as binary.</exception>

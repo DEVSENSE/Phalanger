@@ -96,7 +96,7 @@ namespace PHP.Library
 		/// </summary>
 		/// <param name="path">A <see cref="string"/> containing an URL or a local filesystem path.</param>
 		/// <returns>
-		/// The schema portion of the given <paramref name="url"/> or <c>"file"</c>
+		/// The schema portion of the given <paramref name="path"/> or <c>"file"</c>
 		/// for a local filesystem path.
 		/// </returns>
 		/// <exception cref="ArgumentException">Invalid path.</exception>
@@ -134,7 +134,7 @@ namespace PHP.Library
 		/// Returns the given filesystem url without the scheme.
 		/// </summary>
 		/// <param name="path">A path or url of a local filesystem file.</param>
-		/// <returns>The filesystem path or <b>null</b> if the <paramref name="url"/> is not a local file.</returns>
+		/// <returns>The filesystem path or <b>null</b> if the <paramref name="path"/> is not a local file.</returns>
 		/// <exception cref="ArgumentException">Invalid path.</exception>
 		internal static string GetFilename(string/*!*/ path)
 		{
@@ -388,7 +388,7 @@ namespace PHP.Library
 		/// <param name="dir">The directory where the temporary file should be created.</param>
 		/// <param name="prefix">The prefix of the unique path.</param>
 		/// <returns>A unique path for a temporary file 
-		/// in the given <paramref name="directory"/>.</returns>
+		/// in the given <paramref name="dir"/>.</returns>
 		[ImplementsFunction("tempnam")]
 		public static string GetTemporaryFilename(string dir, string prefix)
 		{

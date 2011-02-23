@@ -47,7 +47,7 @@
     <remarks>
       <para>
         <paramref name="obj" /> is converted to <see cref="string" /> and <see cref="int" />
-        returned in <paramref name="skey" /> and <paramref name="ikey" />, respectively.
+        returned in <paramref name="key" />.
       </para>
       <list type="table">
         <listheader>

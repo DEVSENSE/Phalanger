@@ -180,72 +180,6 @@ namespace PHP.Core
 			string msg = String.Format("[{0:8}]\t{1}\t", source, DateTime.Now.ToString("T")) + message;
 			System.Diagnostics.Debug.WriteLine(msg);
 		}
-
-#if DEBUG
-
-		/// <summary>
-		/// Runs unit tests (methods marked with <see cref="TestAttribute"/>) included in the specified assembly.
-		/// </summary>
-		public static void UnitTest(Assembly/*!*/ assembly, TextWriter/*!*/ output)
-		{
-			ScriptContext.CurrentContext.DisableErrorReporting();
-
-			foreach (MethodInfo method in GetTestMethods(assembly))
-			{
-				output.Write("Testing {0}.{1} ... ", method.DeclaringType.Name, method.Name);
-
-				Debug.Assert(method.GetParameters().Length == 0 && method.ReturnType == Emit.Types.Void && method.IsStatic);
-
-				try
-				{
-					method.Invoke(null, ArrayUtils.EmptyStrings);
-					output.WriteLine("OK.");
-				}
-				catch (TargetInvocationException)
-				{
-					output.WriteLine("Failed.");
-				}
-			}
-			output.WriteLine("Done.");
-		}
-
-		private static ArrayList GetTestMethods(Assembly/*!*/ assembly)
-		{
-			ArrayList result = new ArrayList();
-
-			// scans assembly for test methods:
-			foreach (Type type in assembly.GetTypes())
-			{
-				foreach (MethodInfo method in type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static))
-				{
-					object[] attrs = method.GetCustomAttributes(typeof(TestAttribute), false);
-					if (attrs.Length == 1)
-					{
-						if (((TestAttribute)attrs[0]).One)
-						{
-							result = new ArrayList();
-							result.Add(method);
-							return result;
-						}
-						else
-						{
-							result.Add(method);
-						}
-					}
-				}
-			}
-
-			return result;
-		}
-
-		public static void UnitTestCore()
-		{
-			UnitTest(Assembly.GetExecutingAssembly(), Console.Out);
-		}
-
-#endif
-
-
 	}
 
 	#endregion
@@ -1148,12 +1082,12 @@ namespace PHP.Core
 	#region WeakCache
 
 	/// <summary>
-	/// Maps real objects to their associates (of type <paramref name="T"/>).
+	/// Maps real objects to their associates (of type <typeparamref name="T"/>).
 	/// </summary>
 	/// <typeparam name="T">The type of objects associated with real objects.</typeparam>
 	/// <remarks>
 	/// The cache should store only the real objects that are alive, i.e. reachable from GC roots.
-	/// It is assumed that there exists a (strong) reference from instances of <paramref name="T"/>
+    /// It is assumed that there exists a (strong) reference from instances of <typeparamref name="T"/>
 	/// to their associated real objects. Therefore holding the associates in this cache using strong
 	/// references only would not work and a more sophisticated pattern is employed.
 	/// </remarks>
@@ -2725,7 +2659,7 @@ namespace PHP.Core
 		private readonly sbyte level;
 
 		/// <summary>
-		/// Gets path relative with respect to the directory <paramref name="level"/> levels up from the 
+		/// Gets path relative with respect to the directory <see cref="level"/> levels up from the 
 		/// root specified in the constructor <see cref="RelativePath(FullPath,FullPath)"/>, 
 		/// full drive-rooted path if relativization failed,
 		/// or a <B>null</B> reference for empty path.

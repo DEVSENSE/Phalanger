@@ -486,7 +486,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Splits <paramref name="str"/> along boundaries matched by <paramref name="pattern"/> and returns
+		/// Splits <paramref name="data"/> along boundaries matched by <paramref name="pattern"/> and returns
 		/// an array containing substrings.
 		/// </summary>
 		/// <param name="pattern">Regular expression to match to boundaries.</param>
@@ -499,7 +499,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// <para>Splits <paramref name="str"/> along boundaries matched by <paramref name="pattern"/> and returns
+		/// <para>Splits <paramref name="data"/> along boundaries matched by <paramref name="pattern"/> and returns
 		/// an array containing substrings.</para>
 		/// <para><paramref name="limit"/> specifies the maximum number of strings returned in the resulting
 		/// array. If (limit-1) matches is found and there remain some characters to match whole remaining
@@ -516,7 +516,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// <para>Splits <paramref name="str"/> along boundaries matched by <paramref name="pattern"/> and returns
+		/// <para>Splits <paramref name="data"/> along boundaries matched by <paramref name="pattern"/> and returns
 		/// an array containing substrings.</para>
 		/// <para><paramref name="limit"/> specifies the maximum number of strings returned in the resulting
 		/// array. If (limit-1) matches is found and there remain some characters to match whole remaining
@@ -525,7 +525,7 @@ namespace PHP.Library
 		/// in the resulting array. <see cref="SplitFlags.DelimCapture"/> adds also substrings matching
 		/// the delimiter and <see cref="SplitFlags.OffsetCapture"/> returns instead substrings the arrays
 		/// containing appropriate substring at index 0 and the offset of this substring in original
-		/// <paramref name="str"/> at index 1.</para>
+		/// <paramref name="data"/> at index 1.</para>
 		/// </summary>
 		/// <param name="pattern">Regular expression to match to boundaries.</param>
 		/// <param name="data">String or string of bytes to split.</param>
@@ -826,9 +826,9 @@ namespace PHP.Library
 
 		/// <summary>
 		/// Takes a regular expression <paramref name="pattern"/> and one of <paramref name="replacement"/> or 
-		/// <paramref name="callback"/>. Performs replacing on <paramref name="subject"/>, which can be
+		/// <paramref name="callback"/>. Performs replacing on <paramref name="data"/>, which can be
 		/// <see cref="PhpArray"/>, in other cases it is converted to string.
-		/// If <paramref name="subject"/> is <see cref="PhpArray"/>, every value is converted to string and
+		/// If <paramref name="data"/> is <see cref="PhpArray"/>, every value is converted to string and
 		/// replacement is performed in place in this array.
 		/// Either <paramref name="replacement"/> or <paramref name="callback"/> should be null.
 		/// </summary>
@@ -874,9 +874,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Replaces <paramref name="limit"/> occurences of substrings that matches to <paramref name="reg"/>
-		/// either with replace expression taken from <paramref name="convert"/> or with strings returned
-		/// by <paramref name="callback"/> function call (If it is not <B>null</B>).
+		/// Replaces <paramref name="limit"/> occurences of substrings.
 		/// </summary>
 		/// <param name="converter">
 		/// Converter used for replacement if <paramref name="callback"/> is <B>null</B>.

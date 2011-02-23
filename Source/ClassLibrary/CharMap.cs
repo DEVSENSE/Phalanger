@@ -89,7 +89,7 @@ namespace PHP.Library
 		/// Adds all characters contained in a specified string.
 		/// </summary>
 		/// <param name="str">The string which characters to add. Can be a <B>null</B> reference.</param>
-		/// <exception cref="IndexOutOfRangeException"><paramref name="c"/> is not mapped by this instance.</exception>
+		/// <exception cref="IndexOutOfRangeException">Some character within <paramref name="str"/> is not mapped by this instance.</exception>
 		public void Add(string str)
 		{
 			if (str == null) return;
@@ -208,7 +208,6 @@ namespace PHP.Library
 		/// <para>If the mask is not valid as a whole its valid parts are processed.</para>
 		/// </remarks>
 		/// <example><c>"a..bA..Z0..9"</c> means alphanumeric characters, <c>"a.b..d"</c> means {'a', 'b', 'c', 'd', '.'} etc.</example>
-		/// <exception cref="ArgumentNullException"><paramref name="separator"/> is a <B>null</B></exception>
 		/// <exception cref="PhpException"><paramref name="mask"/> is not valid mask.</exception>
 		/// <exception cref="InvalidCastException">An item of <paramref name="mask"/> is not convertible to character.</exception>
 		/// <exception cref="IndexOutOfRangeException">Any character of <paramref name="mask"/> is not mapped by this instance.</exception>

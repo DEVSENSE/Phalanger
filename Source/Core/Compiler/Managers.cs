@@ -86,8 +86,8 @@ namespace PHP.Core
 		/// <param name="sourceFile">Source file.</param>
 		/// <param name="context">The current compilation context.</param>
 		/// <returns>
-		/// Either a loaded module which should be treated as a result of compilation of <paramref name="path"/>
-		/// source file or a <B>null</B> reference if no such assembly exists. 
+		/// Either a loaded module which should be treated as a result of compilation of <paramref name="sourceFile"/>
+		/// or a <B>null</B> reference if no such assembly exists. 
 		/// </returns>
 		/// <remarks>
 		/// Causes that the next calling LockForCompiling on this assembly 

@@ -155,8 +155,8 @@ namespace PHP.Core.AST
 		/// <param name="wantRef">If <B>false</B> the field value should be left on the evaluation stack,
 		/// if <B>true</B> the <see cref="PhpReference"/> should be left on the evaluation stack.</param>
 		/// <returns>
-		/// Nothing is expected on the evaluation stack. A <see cref="PhpReference"/> (if <paramref name="dereference"/>
-		/// is <B>false</B>) or the field value itself (if <paramref name="dereference"/> is <B>true</B>) is left on the
+		/// Nothing is expected on the evaluation stack. A <see cref="PhpReference"/> (if <paramref name="wantRef"/>
+		/// is <B>true</B>) or the field value itself (if <paramref name="wantRef"/> is <B>false</B>) is left on the
 		/// evaluation stack.
 		/// </returns>
 		internal virtual PhpTypeCode EmitReadField(CodeGenerator codeGenerator, bool wantRef)
@@ -351,7 +351,7 @@ namespace PHP.Core.AST
 		/// <returns>Delegate to a method that emits code to be executed when the actual value has been
 		/// loaded on the evaluation stack.</returns>
 		/// <remarks>
-		/// If the field could be resolved at compile time (because <paramref name="instance"/> is <c>$this</c> or a
+        /// If the field could be resolved at compile time (because <see cref="VarLikeConstructUse.isMemberOf"/> is <c>$this</c> or a
 		/// variable is proved to be of a certain type by type analysis), direct field writing code is emitted.
 		/// Otherwise, <see cref="Operators.SetProperty"/> or <see cref="Operators.SetObjectProperty"/> call is emitted.
 		/// </remarks>

@@ -701,7 +701,7 @@ namespace PHP.Core.Emit
 		/// </summary>
 		/// <param name="featureId">The feature ID passed earlier to <see cref="MarkFeature"/> (non-<B>null</B>).</param>
 		/// <returns><B>null</B> if current position surely uncoditionally follows the position identified by
-		/// <paramref name="featureIf"/>, <B>false</B> otherwise.</returns>
+		/// <paramref name="featureId"/>, <B>false</B> otherwise.</returns>
 		/// <remarks>
 		/// <para>
 		/// This method returns <B>null</B> if it is possible to prove that whenever IL execution reaches current position,

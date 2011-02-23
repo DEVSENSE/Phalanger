@@ -208,7 +208,7 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="obj">The value to convert.</param>
 		/// <returns>The converted value.</returns>
-		/// <exception cref="PhpException"><paramref name="str"/> doesn't consist of a single character. (Warning)</exception>
+		/// <exception cref="PhpException"><paramref name="obj"/> doesn't consist of a single character. (Warning)</exception>
 		[Emitted]
 		public static char ObjectToChar(object obj)
 		{
@@ -548,9 +548,9 @@ namespace PHP.Core
 		/// <param name="nameContext">Current naming context.</param>
         /// <param name="genericArgs">Array of function type params. Stored in pairs in a form of [(string)name1,(DTypeDescs)type1, .., ..]. Can be null.</param>
         /// <returns>The type desc or <B>null</B> on error.</returns>
-		/// <exception cref="PhpException">The <paramref name="var"/> is not a string. (Error)</exception>
+		/// <exception cref="PhpException">The <paramref name="var"/> is not a string or empty string or not <see cref="DObject"/>. (Error)</exception>
 		/// <exception cref="PhpException">The class with the given <paramref name="var"/> was not found
-		/// (only if <paramref name="autoload"/> is <B>true</B>). (Error)</exception>
+        /// (only if <paramref name="resolveFlags"/> has <see cref="ResolveTypeFlags.ThrowErrors"/>). (Error)</exception>
 		[Emitted]
 		public static DTypeDesc ObjectToTypeDesc(object var, ResolveTypeFlags resolveFlags, DTypeDesc caller, ScriptContext/*!*/ context, NamingContext nameContext, object[] genericArgs)
 		{

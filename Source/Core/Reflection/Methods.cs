@@ -2121,9 +2121,9 @@ namespace PHP.Core.Reflection
 		/// <returns>The resulting overload index (always valid).</returns>
 		/// <remarks>
 		/// If the last overload (when sorted by parameter counts) has <see cref="OverloadFlags"/> 
-		/// flag set and <paramref name="paramCount"/> is greater than this overload's parameter count
+		/// flag set and <paramref name="argumentCount"/> is greater than this overload's parameter count
 		/// then the last overload is returned. If there is no exactly matching overload returns first 
-		/// which has more arguments than specified by <paramref name="paramCount"/>.
+        /// which has more arguments than specified by <paramref name="argumentCount"/>.
 		/// </remarks>
 		private int ResolveOverload(int argumentCount, out bool exactMatch)
 		{

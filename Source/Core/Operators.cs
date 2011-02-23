@@ -1569,7 +1569,6 @@ namespace PHP.Core
 		/// <param name="x">The first argument of an arbitrary PHP.NET type.</param>
 		/// <param name="y">The second argument of an arbitrary PHP.NET type.</param>
 		/// <returns>The <paramref name="x"/> shifted by <paramref name="y"/> modulo 32 bits.</returns>
-		/// <exception cref="ArgumentException">If the type of <paramref name="obj"/> is not convertible to an integer.</exception>
 		[Emitted]
 		public static object ShiftLeft(object x, object y)
 		{
@@ -1591,7 +1590,6 @@ namespace PHP.Core
 		/// <param name="x">The first argument of an arbitrary PHP.NET type.</param>
 		/// <param name="y">The second argument of an arbitrary PHP.NET type.</param>
 		/// <returns>The <paramref name="x"/> shifted by <paramref name="y"/> modulo 32 bits.</returns>
-		/// <exception cref="ArgumentException">If the type of <paramref name="obj"/> is not convertible to an integer.</exception>
 		[Emitted]
 		public static object ShiftRight(object x, object y)
 		{
@@ -2196,10 +2194,10 @@ namespace PHP.Core
 		/// <param name="kind">The kind of operator.</param>
 		/// <returns>The item.</returns>
 		/// <remarks><para>Pattern: ... = var[index]</para></remarks>
-		/// <exception cref="PhpException"><paramref name="var"/> is a string and <paramref name="index"/> is negative (Warning).</exception>
-		/// <exception cref="PhpException"><paramref name="var"/> is an array and <paramref name="index"/> is an illegal key (Warning).</exception>
-		/// <exception cref="PhpException"><paramref name="var"/> is an array and <paramref name="index"/> is not contained in it (Notice).</exception>
-		/// <exception cref="PhpException"><paramref name="var"/> is a string and <paramref name="index"/> is greater or equal to its length (Notice).</exception>
+		/// <exception cref="PhpException"><paramref name="var"/> is a string and <paramref name="key"/> is negative integer (Warning).</exception>
+		/// <exception cref="PhpException"><paramref name="var"/> is an array and <paramref name="key"/> is an illegal (Warning).</exception>
+		/// <exception cref="PhpException"><paramref name="var"/> is an array and <paramref name="key"/> is not contained in it (Notice).</exception>
+		/// <exception cref="PhpException"><paramref name="var"/> is a string and <paramref name="key"/> is greater or equal to its length (Notice).</exception>
 		/// <exception cref="PhpException"><paramref name="var"/> is an <see cref="DObject"/> (Warning).</exception>
 		/// <exception cref="PhpException"><paramref name="var"/> is a scalar (Warning).</exception>
 		/// <exception cref="PhpException"><paramref name="var"/> is empty (Notice).</exception>
@@ -2949,9 +2947,9 @@ namespace PHP.Core
 		/// removed from the <paramref name="var"/> array.
 		/// </para>
 		/// </remarks>
-		/// <exception cref="PhpException"><paramref name="obj"/> is <see cref="PhpArray"/> and <paramref name="index"/> is an illegal array key (Warning).</exception>
-		/// <exception cref="PhpException"><paramref name="obj"/> is <see cref="string"/> or <see cref="DObject"/> (Error).</exception>
-		/// <exception cref="PhpException"><paramref name="obj"/> is neither <see cref="string"/> nor <see cref="DObject"/> nor <see cref="PhpArray"/> (Notice).</exception>
+		/// <exception cref="PhpException"><paramref name="var"/> is <see cref="PhpArray"/> and <paramref name="index"/> is an illegal array key (Warning).</exception>
+		/// <exception cref="PhpException"><paramref name="var"/> is <see cref="string"/> or <see cref="DObject"/> (Error).</exception>
+		/// <exception cref="PhpException"><paramref name="var"/> is neither <see cref="string"/> nor <see cref="DObject"/> nor <see cref="PhpArray"/> (Notice).</exception>
 		[Emitted]
 		public static void UnsetItem(object var, object index)
 		{
@@ -3471,7 +3469,6 @@ namespace PHP.Core
 		/// statement should not proceed.</returns>
 		/// <remarks>PHP also allows <B>false</B> to be converted to an empty <see cref="PhpArray"/> but we consider this behavior
 		/// to be inconsistent.</remarks>
-		/// <exception cref="PhpException">The class denoted by <paramref name="className"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The property denoted by <paramref name="propertyName"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The property is neither <see cref="PhpArray"/> nor empty (Error).</exception>
 		/// <exception cref="PhpException">The property is inaccessible due to its protected or private visibility level (Error).
@@ -3531,7 +3528,6 @@ namespace PHP.Core
 		/// statement should not proceed.</returns>
 		/// <remarks>PHP also allows <B>false</B> to be converted to an empty <see cref="stdClass"/> but we consider this
 		/// behavior to be inconsistent.</remarks>
-		/// <exception cref="PhpException">The class denoted by <paramref name="className"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The property denoted by <paramref name="propertyName"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The property is neither <see cref="DObject"/> nor empty (Error).</exception>
 		/// <exception cref="PhpException">The property is inaccessible due to its protected or private visibility level (Error).
@@ -3685,8 +3681,6 @@ namespace PHP.Core
 		/// <remarks>Assumes that <paramref name="obj"/> is not null.</remarks>
 		/// <exception cref="PhpException">The property is inaccessible due to its protected or private visibility level (Error).
 		/// </exception>
-		/// <exception cref="PhpException">The property is undefined and <c>__get</c> or <c>__set</c> exists in <paramref name="var"/>
-		/// (Error).</exception>
 		[Emitted]
 		public static PhpReference GetObjectPropertyRef(DObject/*!*/ obj, string name, DTypeDesc caller)
 		{
@@ -4001,7 +3995,6 @@ namespace PHP.Core
 		/// Note that this operator is used only when it is impossible to resolve the constant at
 		/// compile time. Otherwise, the appropriate direct access IL instructions are directly emitted.
 		/// </remarks>
-		/// <exception cref="PhpException">The class denoted by <paramref name="className"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The constant denoted by <paramref name="constantName"/> was not found. (Error)</exception>
 		[Emitted]
 		public static object GetClassConstant(DTypeDesc type, string constantName, DTypeDesc caller, ScriptContext context)
@@ -4046,7 +4039,6 @@ namespace PHP.Core
 		/// <param name="context">Current <see cref="ScriptContext"/>.</param>
 		/// <param name="quiet">If <B>true</B>, the &quot;property not found&quot; exception should not be thrown.</param>
 		/// <returns>The <see cref="DPropertyDesc"/> representing the static property or <B>null</B> if an error occurs.</returns>
-		/// <exception cref="PhpException">The class denoted by <paramref name="className"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The property denoted by <paramref name="propertyName"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The property is inaccessible due to its protected or private visibility level (Error).
 		/// </exception>
@@ -4111,7 +4103,6 @@ namespace PHP.Core
 		/// Note that this operator is used only when it is impossible to resolve the property or the calling type desc at
 		/// compile time. Otherwise, appropriate IL instructions that access the property directly are emitted.
 		/// </remarks>
-		/// <exception cref="PhpException">The class denoted by <paramref name="className"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The property denoted by <paramref name="propertyName"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The property is inaccessible due to its protected or private visibility level (Error).
 		/// </exception>
@@ -4137,7 +4128,6 @@ namespace PHP.Core
 		/// Note that this operator is used only when it is impossible to resolve the property or the calling type desc at
 		/// compile time. Otherwise, appropriate IL instructions that access the property directly are emitted.
 		/// </remarks>
-		/// <exception cref="PhpException">The class denoted by <paramref name="className"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The property denoted by <paramref name="propertyName"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The property is inaccessible due to its protected or private visibility level (Error).
 		/// </exception>
@@ -4175,7 +4165,6 @@ namespace PHP.Core
 		/// Note that this operator is used only when it is impossible to resolve the property or the calling type desc at
 		/// compile time. Otherwise, appropriate IL instructions that access the property directly are emitted.
 		/// </remarks>
-		/// <exception cref="PhpException">The class denoted by <paramref name="className"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The property denoted by <paramref name="propertyName"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The property is inaccessible due to its protected or private visibility level (Error).
 		/// </exception>
@@ -4332,7 +4321,6 @@ namespace PHP.Core
 		/// compile time. Otherwise, the <c>OpCodes.Call</c> IL instruction is directly emitted.
 		/// </remarks>
 		/// <exception cref="PhpException">The <paramref name="methodName"/> is not a string. (Error)</exception>
-		/// <exception cref="PhpException">The class denoted by <paramref name="className"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The method denoted by <paramref name="methodName"/> was not found. (Error)</exception>
 		/// <exception cref="PhpException">The method is inaccessible due to its protected or private visibility level (Error).
 		/// </exception>
@@ -4441,8 +4429,8 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="var">The variable to check.</param>
 		/// <param name="type"><see cref="DTypeDesc"/> representing the given type.</param>
-		/// <returns><B>true</B> if <paramref name="obj"/> is an instance of a class or interface given by
-		/// <paramref name="className"/>, <B>false</B> otherwise.</returns>
+		/// <returns><B>true</B> if <paramref name="var"/> is an instance of a class or interface given by
+		/// <paramref name="type"/>, <B>false</B> otherwise.</returns>
 		/// <remarks>
 		/// Note that this operator is used only when it is impossible to resolve the class at compile time. Otherwise,
 		/// the <c>OpCodes.Isinst</c> IL instruction is directly emitted.

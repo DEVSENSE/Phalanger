@@ -39,7 +39,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Generates output according to the specified formatting string.
 		/// </summary>
-		/// <param name="format">The formatting string. See also the <paramref name="sprintf"/> function.</param>
+        /// <param name="format">The formatting string. See also the <b>sprintf</b> function (<see cref="PhpStrings.Format"/>).</param>
 		/// <param name="args">Variables to format.</param>
         /// <returns>Returns the length of the outputted string. </returns>
 		[ImplementsFunction("printf")]

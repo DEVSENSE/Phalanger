@@ -363,7 +363,6 @@ namespace PHP.Core.Reflection
 		/// Loads a dynamic wrapper of a specified library assembly.
 		/// </summary>
 		/// <returns>The dynamic wrapper assembly.</returns>
-		/// <exception cref="ArgumentNullException"><paramref name="library"/> is a <B>null</B> reference.</exception>
 		/// <remarks>Thread safe.</remarks>
 		public void LoadDynamicWrapper()
 		{

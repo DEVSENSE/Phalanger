@@ -160,7 +160,7 @@ namespace PHP.Core
 		/// together with <c>open_basedir</c> check.
 		/// </para>
 		/// <para>
-		/// The <paramref name="path"/> may be one of the following:
+		/// The <paramref name="filename"/> may be one of the following:
 		/// <list type="bullet">
 		/// <item>A relative path. The path is resolved regarding the <c>include_path</c> too if required
 		/// and checking continues as in the next case.</item>

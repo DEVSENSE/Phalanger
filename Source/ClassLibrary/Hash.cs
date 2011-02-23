@@ -87,7 +87,7 @@ namespace PHP.Library
         /// <param name="bytes">The string of bytes to compute md5 of.</param>
         /// <param name="rawOutput">If true, returns raw binary hash, otherwise returns hash as 
         /// a sequence of hexadecimal numbers.</param>
-        /// <returns>md5 of <paramref name="str"/>.</returns>
+        /// <returns>md5 of <paramref name="bytes"/>.</returns>
         [ImplementsFunction("md5")]
         [PureFunction]
         public static object MD5(PhpBytes bytes, bool rawOutput)
@@ -99,7 +99,7 @@ namespace PHP.Library
         /// Calculates the md5 hash of a given file.
         /// </summary>
         /// <param name="fileName">The file name.</param>
-        /// <returns>MD5 of <paramref name="str"/> as a sequence of hexadecimal numbers.</returns>
+        /// <returns>MD5 of given <paramref name="fileName"/> content.</returns>
         [ImplementsFunction("md5_file")]
         public static string MD5FromFile(string fileName)
         {
@@ -112,7 +112,7 @@ namespace PHP.Library
         /// <param name="fileName">The file name.</param>
         /// <param name="rawOutput">If <B>true</B>, returns raw binary hash, otherwise returns hash as 
         /// a sequence of hexadecimal numbers.</param>
-        /// <returns>MD5 of <paramref name="str"/>.</returns>
+        /// <returns>MD5 of given <paramref name="fileName"/> content.</returns>
         [ImplementsFunction("md5_file")]
         public static object MD5FromFile(string fileName, bool rawOutput)
         {
@@ -137,7 +137,7 @@ namespace PHP.Library
         /// <param name="bytes">The string of bytes to compute SHA1 of.</param>
         /// <param name="rawOutput">If <B>true</B>, returns raw binary hash, otherwise returns hash as 
         /// a sequence of hexadecimal numbers.</param>
-        /// <returns>md5 of <paramref name="str"/>.</returns>
+        /// <returns>md5 of <paramref name="bytes"/>.</returns>
         [ImplementsFunction("sha1")]
         [PureFunction]
         public static object SHA1(PhpBytes bytes, bool rawOutput)
@@ -149,7 +149,7 @@ namespace PHP.Library
         /// Calculates the SHA1 hash of a given file.
         /// </summary>
         /// <param name="fileName">The file name.</param>
-        /// <returns>SHA1 of <paramref name="str"/> as a sequence of hexadecimal numbers.</returns>
+        /// <returns>SHA1 of given <paramref name="fileName"/> content.</returns>
         [ImplementsFunction("sha1_file")]
         public static string SHA1FromFile(string fileName)
         {
@@ -162,7 +162,7 @@ namespace PHP.Library
         /// <param name="fileName">The file name.</param>
         /// <param name="rawOutput">If <B>true</B>, returns raw binary hash, otherwise returns hash as 
         /// a sequence of hexadecimal numbers.</param>
-        /// <returns>SHA1 of <paramref name="str"/>.</returns>
+        /// <returns>SHA1 of <paramref name="fileName"/> content.</returns>
         [ImplementsFunction("sha1_file")]
         public static object SHA1FromFile(string fileName, bool rawOutput)
         {

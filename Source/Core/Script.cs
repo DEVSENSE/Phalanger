@@ -250,9 +250,6 @@ namespace PHP.Core
         /// <param name="fileExists">FileExistsDelegate deciding about file existence before it is checked by <see cref="File.Exists"/>.</param>
         /// <param name="errorMessage">Error message containing description of occured error. If no error occured, null value is returned.</param>
         /// <returns>Full path to a first existing file or an empty path.</returns>
-        /// <remarks>
-        /// If a path in <paramref name="paths"/> is also relative then it is treated as relative to the root directory.
-        /// </remarks>
         internal static FullPath SearchInSearchPaths(InclusionResolutionContext context, string relativePath, FileExistsDelegate fileExists, out string errorMessage)
         {
             // TODO: review this when script libraries are united with precompiled web

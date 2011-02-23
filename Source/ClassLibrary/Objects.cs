@@ -412,10 +412,6 @@ namespace PHP.Library
 		/// <param name="baseClassName">The name of the (base) class.</param>
 		/// <returns><B>true</B> if <paramref name="classNameOrObject"/> implements or extends <paramref name="baseClassName"/>,
 		/// <B>false</B> otherwise.</returns>
-		/// <remarks>
-		/// If <paramref name="classNameOrObject"/> is an instance of <paramref name="className"/>,
-		/// this method returns <B>false</B>.
-		/// </remarks>
 		[ImplementsFunction("is_subclass_of", FunctionImplOptions.NeedsClassContext)]
 		public static bool IsSubclassOf(DTypeDesc caller, object classNameOrObject, string baseClassName)
 		{
@@ -518,7 +514,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Returns the name of the class of which the object <paramref name="obj"/> is an instance.
+		/// Returns the name of the class of which the object <paramref name="var"/> is an instance.
 		/// </summary>
 		/// <param name="var">The object whose class is requested.</param>
 		/// <returns><paramref name="var"/>'s class name or <B>null</B> if <paramref name="var"/> is

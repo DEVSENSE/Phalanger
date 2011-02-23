@@ -122,13 +122,13 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\..\ClassLibrary\ClassLibrary %28Orcas%29.csproj">
-      <Name>ClassLibrary %28Orcas%29</Name>
+    <ProjectReference Include="..\..\ClassLibrary\ClassLibrary.csproj">
+      <Name>ClassLibrary</Name>
       <Project>{D515E8F4-357C-4CAF-87C1-97D64C5F865A}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Core %28Orcas%29.csproj">
-      <Name>Core %28Orcas%29</Name>
+    <ProjectReference Include="..\..\Core\Core.csproj">
+      <Name>Core</Name>
       <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>

@@ -404,7 +404,7 @@ namespace PHP.Library.Xml
 		/// Adds a new child before a reference node.
 		/// </summary>
 		/// <param name="newNode">The new node.</param>
-		/// <param name="refNode">The reference node. If not supplied, <paramref name="newnode"/> is appended
+		/// <param name="refNode">The reference node. If not supplied, <paramref name="newNode"/> is appended
 		/// to the children.</param>
 		/// <returns>The inserted node.</returns>
 		[PhpVisible]

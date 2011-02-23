@@ -677,7 +677,7 @@ namespace PHP.Library
 		/// <remarks>
 		/// Items in <paramref name="names"/> which are neither of type <see cref="string"/> nor <see cref="PhpArray"/> 
 		/// are ignored.</remarks>
-		/// <exception cref="PhpException"><paramref name="definedVariables"/> or <paramref name="names"/> is a <B>null</B> reference.</exception>
+		/// <exception cref="PhpException"><paramref name="names"/> is a <B>null</B> reference.</exception>
 		[ImplementsFunction("compact", FunctionImplOptions.NeedsVariables)]
 		public static PhpArray Compact(Dictionary<string, object> localVariables, params object[] names)
 		{
@@ -731,9 +731,6 @@ namespace PHP.Library
 		/// <param name="definedVariables">The table of defined variables.</param>
 		/// <param name="vars">The <see cref="PhpArray"/> containing names of variables and values to be assigned to them.</param>
 		/// <returns>The number of variables actually affected by the extraction.</returns>
-		/// <exception cref="PhpException"><paramref name="type"/> is invalid.</exception>
-		/// <exception cref="PhpException"><paramref name="type"/> compels presence of prefix 
-		/// (see <see cref="Extract(Dictionary{string,object},PhpArray,ExtractType,string)"/>).</exception>
 		/// <exception cref="PhpException"><paramref name="vars"/> or <paramref name="definedVariables"/> is a <B>null</B> reference.</exception>
 		/// <exception cref="InvalidCastException">Some key of <paramref name="definedVariables"/> is not type of <see cref="string"/>.</exception>
 		/// <remarks>The same as <see cref="Extract(Dictionary{string,object},PhpArray,ExtractType,string)"/> with empty prefix and 
@@ -786,8 +783,8 @@ namespace PHP.Library
 		/// <param name="prefix">The prefix (can be a <B>null</B> reference) of variables names.</param>
 		/// <returns>The number of variables actually affected by the extraction.</returns>
 		/// <exception cref="PhpException"><paramref name="type"/> is invalid.</exception>
-		/// <exception cref="PhpException"><paramref name="vars"/> or <paramref name="definedVariables"/> is a <B>null</B> reference.</exception>
-		/// <exception cref="InvalidCastException">Some key of <paramref name="definedVariables"/> is not type of <see cref="string"/>.</exception>
+		/// <exception cref="PhpException"><paramref name="vars"/> is a <B>null</B> reference.</exception>
+        /// <exception cref="InvalidCastException">Some key of <paramref name="localVariables"/> is not type of <see cref="string"/>.</exception>
 		/// <include file='Doc/Variables.xml' path='docs/method[@name="Extract"]/*'/>
 		[ImplementsFunction("extract", FunctionImplOptions.NeedsVariables)]
 		public static int Extract(Dictionary<string, object> localVariables, PhpArray/*!*/ vars, ExtractType type,

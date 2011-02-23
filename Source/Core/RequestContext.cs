@@ -117,7 +117,7 @@ namespace PHP.Core
 		/// </param>
 		/// <returns>The value returned by the global code of the target script.</returns>
 		/// <exception cref="InvalidOperationException">Request context has been disposed.</exception>
-		/// <exception cref="ArgumentNullException"><paramref name="relativeSourcePath"/> or <paramref name="type"/> are <B>null</B> references.</exception>
+		/// <exception cref="ArgumentNullException"><paramref name="relativeSourcePath"/> or <paramref name="script"/> are <B>null</B> references.</exception>
 		/// <exception cref="ArgumentException">Script type cannot be resolved.</exception>
 		/// <exception cref="InvalidScriptAssemblyException">The target assembly is not a valid Phalanger compiled assembly.</exception>
 		public object IncludeScript(string/*!*/ relativeSourcePath, ScriptInfo/*!*/ script)

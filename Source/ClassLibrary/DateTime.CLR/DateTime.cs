@@ -1424,7 +1424,7 @@ namespace PHP.Library
 		/// </summary>
 		/// <param name="returnDouble"><c>true</c> to return the double, <c>false</c> to return string.</param>
 		/// <returns><see cref="String"/> containing number of miliseconds, space and number of seconds
-		/// if <paramref name="returnFloat"/> is <c>false</c> and <see cref="double"/> 
+		/// if <paramref name="returnDouble"/> is <c>false</c> and <see cref="double"/> 
 		/// containing the fractional count of seconds otherwise.</returns>
 		[ImplementsFunction("microtime")]
 		public static object MicroTime(bool returnDouble)

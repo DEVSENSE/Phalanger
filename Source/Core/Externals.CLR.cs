@@ -1030,7 +1030,7 @@ namespace PHP.Core
 		/// <returns>Return value of the function.</returns>
 		/// <remarks>
 		/// <p>
-		/// Obsolete: The reason why <paramref name="self"/> is <c>ref</c> is that we need Remoting to
+		/// Obsolete: The reason why self is <c>ref</c> is that we need Remoting to
 		/// serialize and transfer the new state of the instance back to the caller.
 		/// </p>
 		/// <p>
@@ -2784,8 +2784,8 @@ namespace PHP.Core
 
             /// <summary>
             /// Invokes <see cref="PostCallObjectTransform"/> on each object implementing the
-            /// <see cref="IPhpObjectGraphNode"/> in object graphs rooted in <paramref name="self"/>,
-            /// in <paramref name="args"/> and in <paramref name="ret_value"/>.
+            /// <see cref="IPhpObjectGraphNode"/> in object graphs rooted in <paramref name="self"/>
+            /// and in <paramref name="args"/>.
             /// </summary>
             /// <param name="self">The &quot;this&quot; instance (object root).</param>
             /// <param name="context">Current <see cref="ScriptContext"/>.</param>

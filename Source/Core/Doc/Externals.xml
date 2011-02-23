@@ -171,7 +171,7 @@
 		<param name="moduleName">File name of an extension without '.DLL' (i.e. &quot;php_sockets&quot;).</param>
 		<param name="varName">The INI entry name.</param>
 		<returns><B>true</B> if the entry specified by <paramref name="varName"/> was registered by the
-		<paramref name="extension"/>, <B>false</B> otherwise.</returns>
+		<paramref name="moduleName"/>, <B>false</B> otherwise.</returns>
 		<remarks>
 			The extension does not need to be loaded.
 		</remarks>

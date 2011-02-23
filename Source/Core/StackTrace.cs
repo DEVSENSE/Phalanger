@@ -402,8 +402,7 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="context">A script context.</param>
 		/// <param name="clrTrace">CLR stack trace.</param>
-		/// <exception cref="ArgumentOutOfRangeException">The <paramref name="skipFrames"/> parameter is negative.</exception>
-		/// <exception cref="ArgumentNullException"><paramref name="context"/> is a <B>null</B> reference.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="context"/> or <paramref name="clrTrace"/> is a <B>null</B> reference.</exception>
 		public PhpStackTrace(ScriptContext/*!*/ context, StackTrace/*!*/ clrTrace)
 		{
 			if (context == null)

@@ -379,7 +379,7 @@ namespace PHP.Core
 		/// <param name="sectionName">Configuration section name or a <B>null</B> reference.</param>
 		/// <param name="node">XML node being parsed.</param>
 		/// <remarks>
-		/// Either <paramref name="assemblyName"/> or <paramref name="assemblyUri"/> is always non-null.
+		/// Either <paramref name="assemblyName"/> or <paramref name="assemblyUrl"/> is always non-null.
 		/// </remarks>
 		public delegate bool ParseLibraryAssemblyCallback(string assemblyName, Uri assemblyUrl, string sectionName, XmlNode/*!*/ node);
 
@@ -863,7 +863,7 @@ namespace PHP.Core
 		/// Retrieves service information corresponding to a port and protocol.
 		/// </summary>
 		/// <param name="port">The port number (network order).</param>
-		/// <param name="proto">The protocol name or <B>null</B> if only <paramref name="name"/> should be matched.
+		/// <param name="proto">The protocol name or <B>null</B> if only <paramref name="port"/> should be matched.
 		/// </param>
 		/// <returns>Service information or <B>null</B> if an error occurs.</returns>
 		[DllImport("ws2_32.dll", EntryPoint = "getservbyport")]
