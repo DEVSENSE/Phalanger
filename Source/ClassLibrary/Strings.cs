@@ -4069,7 +4069,7 @@ namespace PHP.Library
 			/// </summary>
 			static TokenizerContext()
 			{
-				RequestContext.RequestEnd += new Notification(Clear);
+                RequestContext.RequestEnd += new Action(Clear);
 			}
 		}
 

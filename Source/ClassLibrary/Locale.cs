@@ -100,7 +100,7 @@ namespace PHP.Library
 
 		static Locale()
 		{
-			RequestContext.RequestEnd += new Notification(Clear);
+            RequestContext.RequestEnd += new Action(Clear);
 		}
 
 		private static void Clear()

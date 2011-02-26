@@ -273,17 +273,17 @@ namespace PHP.Core
 		/// <summary>
 		/// A filter installed on the response. All data sent to the client go through this filter.
 		/// The filter checks whether the client is connected or not while flushing the data. 
-		/// If the state chenges from connected to disconnected then a callback specified in the ctor is invoked.
+		/// If the state changes from connected to disconnected then a callback specified in the ctor is invoked.
 		/// </summary>
 		private class ResponseFilter : Stream
 		{
-			private Notification clientDisconnected;
+            private Action clientDisconnected;
 			private HttpResponse response;
 
 			public Stream Sink { get { return sink; } }
 			private Stream sink;
 
-			public ResponseFilter(HttpResponse response, Notification clientDisconnected)
+            public ResponseFilter(HttpResponse response, Action clientDisconnected)
 			{
 				this.sink = response.Filter;
 				this.response = response;
@@ -373,7 +373,7 @@ namespace PHP.Core
 				if (value && !connectionAborted && httpContext.Response.Filter != null)
 				{
 					if (responseFilter == null)
-						responseFilter = new ResponseFilter(httpContext.Response, new Notification(ClientDisconnected));
+                        responseFilter = new ResponseFilter(httpContext.Response, new Action(ClientDisconnected));
 
 					httpContext.Response.Filter = responseFilter;
 				}

@@ -342,7 +342,7 @@ namespace PHP.Library
 			/// </summary>
 			static Handlers()
 			{
-				RequestContext.RequestEnd += new Notification(Clear);
+                RequestContext.RequestEnd += new Action(Clear);
 			}
 
 			/// <summary>

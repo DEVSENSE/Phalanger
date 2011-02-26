@@ -160,7 +160,7 @@ namespace PHP.Library
 		static PhpFile()
 		{
 #if !SILVERLIGHT
-			RequestContext.RequestEnd += new Notification(Clear);
+            RequestContext.RequestEnd += new Action(Clear);
 #endif
 			PhpFilter.AddSystemFilter(new StringFilterFactory());
 			PhpFilter.AddSystemFilter(new EncodingFilterFactory());

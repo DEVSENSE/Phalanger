@@ -100,7 +100,7 @@ xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug"
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
       <Message>Killing the ExtManager process, if running...</Message>
-      <Command>"$(SolutionDir)..\Tools\pskill.exe" ExtManager &gt;nul
+      <Command>"$(SolutionDir)..\Tools\pskill.exe" ExtManager &gt;nul || exit 0
 </Command>
     </PreBuildEvent>
     <ClCompile>

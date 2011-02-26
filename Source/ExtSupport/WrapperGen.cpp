@@ -71,7 +71,7 @@ namespace PHP
 				AssemblyBuilder ^assembly_builder = Thread::GetDomain()->DefineDynamicAssembly(
 					assembly_name, AssemblyBuilderAccess::Save, wrappers_path);
 
-				assembly_builder->DefineVersionInfoResource("Phalanger", "2.0.0.0", "The Phalanger Project Team",
+				assembly_builder->DefineVersionInfoResource("Phalanger", "2.1.0.0", "The Phalanger Project Team",
 					String::Empty, String::Empty);
 
 				// decorate the assembly with ExtensionDescriptorAttribute

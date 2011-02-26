@@ -909,7 +909,7 @@ namespace PHP.Library
 				if (OldUserErrorHandlers == null)
 				{
 					OldUserErrorHandlers = new Stack(5);
-					RequestContext.RequestEnd += new Notification(ClearOldUserHandlers);
+                    RequestContext.RequestEnd += new Action(ClearOldUserHandlers);
 				}
 				OldUserErrorHandlers.Push(new ErrorHandlerRecord(old_handler, old_errors));
 			}
@@ -970,7 +970,7 @@ namespace PHP.Library
 				if (OldUserExceptionHandlers == null)
 				{
 					OldUserExceptionHandlers = new Stack(5);
-					RequestContext.RequestEnd += new Notification(ClearOldUserHandlers);
+                    RequestContext.RequestEnd += new Action(ClearOldUserHandlers);
 				}
 				OldUserExceptionHandlers.Push(old_handler);
 			}

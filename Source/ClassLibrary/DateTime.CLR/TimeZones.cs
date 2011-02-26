@@ -31,11 +31,11 @@ namespace PHP.Library
 		private const string EnvVariableName = "TZ";
 
 		/// <summary>
-		/// Registeres <see cref="Clear"/> called on request end.
+		/// Registers <see cref="Clear"/> called on request end.
 		/// </summary>
 		static PhpTimeZone()
 		{
-			RequestContext.RequestEnd += new Notification(Clear);
+			RequestContext.RequestEnd += new Action(Clear);
 		}
 
 		/// <summary>

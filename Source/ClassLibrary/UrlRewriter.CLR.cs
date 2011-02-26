@@ -177,7 +177,7 @@ namespace PHP.Library
 		/// </summary>
 		static UrlRewriter()
 		{
-			RequestContext.RequestEnd += new Notification(Clear);
+            RequestContext.RequestEnd += new Action(Clear);
 		}
 
 		#endregion

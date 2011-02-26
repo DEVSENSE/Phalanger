@@ -72,7 +72,7 @@ namespace PHP.Library
 		/// </summary>
 		static PhpMath()
 		{
-			RequestContext.RequestEnd += new Notification(ClearGenerators);
+            RequestContext.RequestEnd += new Action(ClearGenerators);
 		}
 
 		/// <summary>

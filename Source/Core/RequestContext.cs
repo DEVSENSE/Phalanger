@@ -55,12 +55,12 @@ namespace PHP.Core
 		/// <summary>
 		/// An event fired on the very end of the request. 
 		/// </summary>
-		public static event Notification RequestEnd;
+        public static event Action RequestEnd;
 
 		/// <summary>
 		/// An event fired on the beginning of the request after the script context is initialized.
 		/// </summary>
-		public static event Notification RequestBegin;
+        public static event Action RequestBegin;
 
 		#endregion
 
