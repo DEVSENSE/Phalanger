@@ -4392,7 +4392,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_odbc.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_odbc.mng, Version=4.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_03EE80F99B3149C68ED9106412D4B600"
@@ -4443,7 +4443,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ftp.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ftp.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_04574405143A4B68A5FE75292D71144B"
@@ -4614,7 +4614,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_dbx.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_dbx.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_0A0D3AAF917C4B0396113ED7F0BFEE95"
@@ -4645,7 +4645,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_iconv.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_iconv.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_0B99003264F248349B06956473016557"
@@ -4676,7 +4676,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_fileinfo.php5.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_fileinfo.php5.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_0E371A6A995C427693ACA4C696CFCECD"
@@ -4727,7 +4727,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mssql.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mssql.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_0FC11C9E7B8548DD8E9F25C6B62E318E"
@@ -4758,7 +4758,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_gd2.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_gd2.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_120219D86EEB4B32BA867BC6C84C6F25"
@@ -4789,7 +4789,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_domxml.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_domxml.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1229F41DFF994C389633F1415C85E410"
@@ -4840,7 +4840,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_dba.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_dba.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1274E93E8FA8477FAD7FF26E0407AC05"
@@ -4911,7 +4911,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_pdf.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_pdf.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_169B26CC7038405B8664B77864E54B09"
@@ -5042,7 +5042,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_snmp.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_snmp.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1A429DE170D04E78AB341886BAF31E19"
@@ -5073,7 +5073,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_dba.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_dba.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1A97885D35C84DB0AE1FC9803316A241"
@@ -5104,7 +5104,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetCore, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1CC20FABAD884386A951A1AE76E8B081"
@@ -5135,7 +5135,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_bcmath.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_bcmath.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1CD612BDC0364D1CA4BAB6905072BADB"
@@ -5206,7 +5206,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ifx.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ifx.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1E553EF9EB43435385C0D366215CA314"
@@ -5257,7 +5257,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetCore.IL, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetCore.IL, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1F2EBF9DC24D42AD94BECCBC454022F1"
@@ -5308,7 +5308,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_oracle.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_oracle.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2127DDFDD32942BBA4ACEF484A5F5627"
@@ -5339,7 +5339,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_cpdf.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_cpdf.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_21785AECE83D49ABAC0F77E15F4D34D6"
@@ -5390,7 +5390,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_zlib.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_zlib.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_21D4A5D635724F089B01E184FBB94965"
@@ -5421,7 +5421,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:phpc, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:phpc, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_223C6DEBD8694154BDC226AE8B698140"
@@ -5452,7 +5452,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_pgsql.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_pgsql.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_23BB502142E64E3CABF5827859944FF2"
@@ -5483,7 +5483,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_db.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_db.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_249ABD1CB65D48E4BC7947E11E2C579A"
@@ -5514,7 +5514,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_calendar.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_calendar.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_24DEBA3FB3B24607A5E8939CE6600974"
@@ -5545,7 +5545,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetXmlDom, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetXmlDom, Version=2.1.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_258C35B9E6E14677A380161038CB9B99"
@@ -5576,7 +5576,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_hyperwave.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_hyperwave.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2607216F77304C20A204EB64840F611F"
@@ -5667,7 +5667,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_crack.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_crack.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2A5CA418790B42799FF05EFF425519BA"
@@ -5698,7 +5698,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_exif.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_exif.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2A7F061DC9674D248F1486C931CE323B"
@@ -5729,7 +5729,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_exif.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_exif.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2D2CA71EE072492CAC881FA0005F72E1"
@@ -5800,7 +5800,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_gd2.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_gd2.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2EB29A81AC7D4CB785E63DF107EE5089"
@@ -5851,7 +5851,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ming.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ming.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_339D9168B80D4C9E9770EC23267A722B"
@@ -5882,7 +5882,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_xslt.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_xslt.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_33A7F0273B314AAC88F211A57C4E529E"
@@ -5913,7 +5913,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_dbx.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_dbx.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_33B793F59A8542FBA7B25E90730BD743"
@@ -5984,7 +5984,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetCore, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_35BCCCDBFA564F0886C4D1EDF0E700C1"
@@ -6015,7 +6015,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_zip.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_zip.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_35F4EC15DF414A7FAAE9C8F2D46442D8"
@@ -6046,7 +6046,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_gettext.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_gettext.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_36A4DEEC7E4F41D3BDBFD036B9D43D82"
@@ -6077,7 +6077,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_msql.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_msql.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_3723BC5EF0B146E3905088FA6C0CDEE4"
@@ -6128,7 +6128,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_pgsql.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_pgsql.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_394CF50BA8084C9D9212FA2DF05F0C4A"
@@ -6199,7 +6199,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetMsSql, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetMsSql, Version=2.1.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_3A5D3338561445548D0AECA91BAE3BA9"
@@ -6230,7 +6230,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetXmlDom, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetXmlDom, Version=2.1.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_3A9B770849074A48B8158455053ECC51"
@@ -6261,7 +6261,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:phpc, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:phpc, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_3AB99B959000413AB44B40ACF57E455F"
@@ -6292,7 +6292,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:PhpNetClassLibrary, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetClassLibrary, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_3AF2365FB6F859CF82A051D70FC3766B"
@@ -6323,7 +6323,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_imap.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_imap.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_3C97E5A1E9F8479AB701991244CA957C"
@@ -6354,7 +6354,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mhash.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mhash.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_3CB2535E821F44C4811D785B6AB32BDE"
@@ -6385,7 +6385,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:extutil, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:extutil, Version=2.1.0.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_3DD815D342C54DFAAEBD0654411FFC96"
@@ -6496,7 +6496,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_pspell.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_pspell.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_3EF4266B92B44C10B5C1B3F27A30E60C"
@@ -6547,7 +6547,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_crack.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_crack.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4002F63460BA409CAAF0982D7E436A7A"
@@ -6598,7 +6598,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetMemcached, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetMemcached, Version=2.1.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_409C7DBB600A4085AD5EE62DCB15D9E0"
@@ -6689,7 +6689,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_filepro.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_filepro.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_41FFB0D745C143F78104B125C17894B6"
@@ -6740,7 +6740,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ldap.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ldap.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4457035993C24D8CB9ACF9230B87D4F0"
@@ -6791,7 +6791,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_shmop.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_shmop.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4569D91011BB48A8A3E10C81AED476BA"
@@ -6842,7 +6842,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_xslt.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_xslt.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_46FB03AD6A834B5094F7CA1E439C70EA"
@@ -6873,7 +6873,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_sybase_ct.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_sybase_ct.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_480DD1389F544A2FBF30AC07E109F6F5"
@@ -6904,7 +6904,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mysql.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mysql.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_48E3DB5F1BB4473EAC91990F53B7D6CC"
@@ -6975,7 +6975,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_hyperwave.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_hyperwave.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_497AB549E1DA4DD8B5D22083F9D6D908"
@@ -7026,7 +7026,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetClassLibrary, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetClassLibrary, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4A0320E3767940C7AE692B66F94817BD"
@@ -7057,7 +7057,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_domxml.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_domxml.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4B47B42D0ADA4C6984992DB6D646B839"
@@ -7108,7 +7108,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetMsSql, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetMsSql, Version=2.1.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4CBD162795834FE4ACCE8D5AA4BB9C2C"
@@ -7179,7 +7179,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_pspell.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_pspell.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4E889E417B704E7DA996F24570BF2103"
@@ -7470,7 +7470,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_openssl.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_openssl.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_5869114A6FDC47C1816F81FC5A26785C"
@@ -7521,7 +7521,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_dbase.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_dbase.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_58D7AF3CD04D479B88A58315D2A94450"
@@ -7572,7 +7572,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_zlib.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_zlib.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_593171E376EE42E3BC0CCA04797EC2F2"
@@ -7603,7 +7603,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_msql.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_msql.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_593E11F3119B42A4BCE5E99172A8DD58"
@@ -7634,7 +7634,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_zip.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_zip.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_59CCB3190FE64A14B56F40C401BE4BA9"
@@ -7745,7 +7745,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php4ts, Version=2.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:php4ts, Version=2.1.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_5EBCBF26166D4CDCAC45B752DAB89CC6"
@@ -7776,7 +7776,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_xml.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_xml.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_5F32629CCC444D2796D8B4D120166DBD"
@@ -7827,7 +7827,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_big_int.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_big_int.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_5FFFDF8DF13F4A90BF93BA22019FA258"
@@ -7878,7 +7878,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_oracle.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_oracle.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_60CBE414D8D1402BBD100BE51743791E"
@@ -8049,7 +8049,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mbstring.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mbstring.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_66E3428932C941B9A2140ABD11FB0A35"
@@ -8180,7 +8180,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_dbase.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_dbase.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_6AA8EAEFC15143B7AFAC75FCFE9EA869"
@@ -8211,7 +8211,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:MkDynamic, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:MkDynamic, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_6BF746569C54423FB578EF0481828215"
@@ -8282,7 +8282,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_image.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_image.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_6D762BBB874C489698C473BA81E4D409"
@@ -8333,7 +8333,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_openssl.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_openssl.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_6F8A822CCEEA4E8988E7C8C6D6EB9FF6"
@@ -8584,7 +8584,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_xmlrpc.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_xmlrpc.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_73F9791F7E954914AA90C9D04BE3F5C1"
@@ -8635,7 +8635,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mbstring.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mbstring.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_74536FC26826492AAAC0ACEEB063D302"
@@ -8666,7 +8666,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_xml.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_xml.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_746C615C8AAC454E99DCFBD115E7BBA0"
@@ -8697,7 +8697,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_shmop.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_shmop.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_74D66605155541049E4E2C892F07EE74"
@@ -8768,7 +8768,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_iconv.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_iconv.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_770B6544C9054E2483479D879D3BA540"
@@ -8879,7 +8879,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ShmChannel, Version=2.0.0.0, Culture=neutral, PublicKeyToken=dbfd763524e93ae1, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:ShmChannel, Version=2.1.0.0, Culture=neutral, PublicKeyToken=dbfd763524e93ae1, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_7B1FB7FB6DCB4D1C82D78A48DF8DF338"
@@ -8910,7 +8910,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mysql.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mysql.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_7B230D5B77EB40A8890C5713279BD9B3"
@@ -8961,7 +8961,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_xmlrpc.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_xmlrpc.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_7BC44C9BD35C4FD69D101EC6A5D5CC5A"
@@ -9092,7 +9092,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_curl.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_curl.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_7E44CFD999784353B426702DA190D875"
@@ -9123,7 +9123,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ShmChannel, Version=2.0.0.0, Culture=neutral, PublicKeyToken=dbfd763524e93ae1, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:ShmChannel, Version=2.1.0.0, Culture=neutral, PublicKeyToken=dbfd763524e93ae1, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_7E692A240ADD4552BF4CCB544741E7EF"
@@ -9174,7 +9174,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_snmp.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_snmp.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_809F4F712CCD45888DD5716043BCCB4B"
@@ -9225,7 +9225,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mssql.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mssql.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_81F5CBC4155E46CFBF21D35B1BE217E6"
@@ -9336,7 +9336,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_calendar.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_calendar.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_84BAF3AD3FCF4A5BB76B908B78D791B1"
@@ -9407,7 +9407,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_yaz.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_yaz.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_869D35AC332B41B29D10CB4C3D3008D4"
@@ -9458,7 +9458,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_cpdf.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_cpdf.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_87A15A1CE6DF4F6AB875987F66836503"
@@ -9489,7 +9489,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_bz2.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_bz2.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_880F5A5646B840479A2379B70DBE8AB5"
@@ -9560,7 +9560,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mcrypt.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mcrypt.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_8863042D1BC74A2F8F54422A6941DD89"
@@ -9591,7 +9591,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_image.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_image.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_886B76C0EF2947F6B24BF53F210EA873"
@@ -9642,7 +9642,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php5ts, Version=2.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:php5ts, Version=2.1.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_8A5141E5649D4FF59D5BB5493C9E494D"
@@ -9693,7 +9693,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_sockets.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_sockets.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_8ABAB2A779884D1EBC6E141795537EF0"
@@ -9795,7 +9795,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_printer.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_printer.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_8DED78A4047D4F0B8F9A4DD9520451DF"
@@ -9886,7 +9886,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:PhpNetCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetCore, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_91243EA58B4F8E1EF5F1821461FC7225"
@@ -9917,7 +9917,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetCore.IL, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetCore.IL, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_9139AED16F9C4353A25FA1A2F247E378"
@@ -10008,7 +10008,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:phpc, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:phpc, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_9777DE7302AC437E8BBFFE12371FA7E3"
@@ -10159,7 +10159,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_oci8.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_oci8.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_9A06E222A05A49DAA84CAA64E5D1CE71"
@@ -10230,7 +10230,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_java.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_java.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_9C0A038EC7E945A1870900393EEF152D"
@@ -10261,7 +10261,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_printer.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_printer.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_9C8EE9F0B6294C8AB75E0B979F1EBF85"
@@ -10352,7 +10352,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetMemcached, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetMemcached, Version=2.1.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_9F8F246058DC4ECEA422831880CDCAA3"
@@ -10443,7 +10443,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mime_magic.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mime_magic.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_A2CD9BEE1DEC4FA18CD0C86228B35A58"
@@ -10474,7 +10474,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_pdf.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_pdf.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_A3BA4878A9BE4A2F8781E97B38F233C7"
@@ -10545,7 +10545,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetClassLibrary, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetClassLibrary, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_A4B8EFA3AB0C45B98AEBE9774A7FC63D"
@@ -10576,7 +10576,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mcrypt.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mcrypt.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_A613D0FFC4D646AA941848BA6F447911"
@@ -10627,7 +10627,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:php4ts, Version=2.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:php4ts, Version=2.1.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_A8A397A0E53F5570E9415A74CEC3EF4D"
@@ -10678,7 +10678,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_fileinfo.php5.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_fileinfo.php5.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_A903B63106C8468FA0C97AC4349C4608"
@@ -10729,7 +10729,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_odbc.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_odbc.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_AAA3EA7417254EE495B277DF500F1CF5"
@@ -10980,7 +10980,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:PhpNetCore.IL, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:PhpNetCore.IL, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_B33DBB1A312C35ADECD1D914D456DAD6"
@@ -11111,7 +11111,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_com.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_com.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_B5285BCFC32C470EBC98D09727784DD5"
@@ -11162,7 +11162,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_yaz.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_yaz.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_B61B7EB772184C3DB20C8883DB4084B6"
@@ -11233,7 +11233,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mhash.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mhash.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_B727F787F65340878237949644B294D6"
@@ -11324,7 +11324,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php4ts, Version=2.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:php4ts, Version=2.1.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_BAB63D43B36443A5A6EFFAC710FBA2C0"
@@ -11415,7 +11415,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_sockets.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_sockets.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_BCB114BBFD894706AA4DB290832AEEA3"
@@ -11557,7 +11557,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_sybase_ct.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_sybase_ct.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_C13E2F5C49E04B1D865E07CDCA9D52DC"
@@ -11628,7 +11628,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_oci8.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_oci8.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_C397ED1669D14F548FB2C877578D440A"
@@ -11679,7 +11679,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:ShmChannel, Version=2.0.0.0, Culture=neutral, PublicKeyToken=dbfd763524e93ae1, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:ShmChannel, Version=2.1.0.0, Culture=neutral, PublicKeyToken=dbfd763524e93ae1, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_C561C1C2D9AFFB8AAB9FE28C8B36AF91"
@@ -11710,7 +11710,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_mime_magic.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_mime_magic.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_C5A35DACAE8E46D2BD791ACBC009124B"
@@ -11801,7 +11801,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_gettext.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_gettext.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_CA104FA2F2804AE989AA84C46A0B592A"
@@ -11912,7 +11912,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php5ts, Version=2.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:php5ts, Version=2.1.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_CC4F262A5BD54A45ACEC21BF1A50A104"
@@ -11983,7 +11983,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_com.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_com.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_CE84FDC26E5B436EB30E765B9038C735"
@@ -12114,7 +12114,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_zip.php5.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_zip.php5.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_D348C83CE67E4FB4B6E4D4EEA26FBE3D"
@@ -12165,7 +12165,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_big_int.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_big_int.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_D52883990AB3478FB103EAF91B2A4956"
@@ -12216,7 +12216,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_interbase.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_interbase.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_D67347563E3741AFBBEF44CDD6C4060B"
@@ -12267,7 +12267,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_curl.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_curl.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_D6F8404F30654B8EA5E4B1C7BBDD3F65"
@@ -12398,7 +12398,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_imap.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_imap.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_DEA98E59E94947E7A44F8E1FEFB26C74"
@@ -12609,7 +12609,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ifx.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ifx.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E1C41B59714944719C20D98E2CA5D431"
@@ -12680,7 +12680,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_filepro.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_filepro.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E387DFF9A71F4F3F980442A5375B6FB2"
@@ -12711,7 +12711,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_fdf.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_fdf.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E48218A848CF4406B0EC7F7370AC149F"
@@ -12762,7 +12762,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ftp.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ftp.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E58BB0AB97D546C6BED650C387334201"
@@ -12793,7 +12793,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_zip.php5.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_zip.php5.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E5A9891C54334176B1C71CF985FBCA1D"
@@ -12824,7 +12824,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_db.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_db.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E677E7B124534C658F6592D9DD315769"
@@ -12895,7 +12895,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ming.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ming.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E924A51544E74805B1E851F98FB32ABD"
@@ -13137,7 +13137,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ldap.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ldap.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_F358927D4B7840C69E4E57A642204644"
@@ -13248,7 +13248,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_interbase.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_interbase.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_F76C18CC6FF648A2980285E41B6799E6"
@@ -13319,7 +13319,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_bz2.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_bz2.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_F7C2146B7B3044D1BE8B18CA6965A755"
@@ -13410,7 +13410,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_fdf.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_fdf.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_FA3F9F9F24494E38BBC7E85DC776F7ED"
@@ -13501,7 +13501,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_java.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_java.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_FD85C243369B4EB6BDE45E89782F1B1C"
@@ -13552,7 +13552,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_bcmath.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_bcmath.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_FEE427F3BC7C4F71B34D8B7F5DA5CE6F"

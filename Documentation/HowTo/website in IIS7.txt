@@ -15,7 +15,7 @@ IIS configuration:
 5. in your web.config, add following into <configuration> section
   <system.webServer>
     <handlers>
-      <add name="Phalanger" path="*.php" verb="*" type="PHP.Core.RequestHandler, PhpNetCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71"/>
+      <add name="Phalanger" path="*.php" verb="*" type="PHP.Core.RequestHandler, PhpNetCore, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71"/>
     </handlers>
   </system.webServer>
 6. go to your application, open Default Document, add "index.php", "default.php"

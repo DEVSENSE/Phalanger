@@ -280,18 +280,12 @@ xcopy /q /y "$(TargetPath)" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
   <ItemGroup>
     <ProjectReference Include="..\..\ClassLibrary\ClassLibrary.csproj">
       <Project>{d515e8f4-357c-4caf-87c1-97d64c5f865a}</Project>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Core.csproj">
       <Project>{9a2867a2-981c-4b5a-a1c5-eaccc80b5148}</Project>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\ShmChannel\ShmChannel.csproj">
       <Project>{0d5b7bfc-1236-4d9d-ac17-4a5c0964c1a2}</Project>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -510,6 +504,10 @@ xcopy /q /y "$(TargetPath)" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
   <ItemGroup>
     <EmbeddedResource Include="..\Strings.resx">
       <SubType>Designer</SubType>
+      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug.PHP4|Win32'">ExtManager.Strings.resources</LogicalName>
+      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug.PHP5|Win32'">ExtManager.Strings.resources</LogicalName>
+      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release.PHP4|Win32'">ExtManager.Strings.resources</LogicalName>
+      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release.PHP5|Win32'">ExtManager.Strings.resources</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

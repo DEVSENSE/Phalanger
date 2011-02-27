@@ -14,7 +14,7 @@ using PHP.Core;
 [assembly: AssemblyCopyright("Copyright © Daniel Balas, Jakub Misek")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("2.1.*")]
+[assembly: AssemblyVersion("2.1.0.0")]
 [assembly: AssemblyKeyName("")]
 
 [assembly: PhpLibrary(typeof(PHP.Library.Memcached.MemcachedLibraryDescriptor), "Memcached", new string[] { "memcached" })]

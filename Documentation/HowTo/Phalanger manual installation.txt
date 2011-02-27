@@ -8,12 +8,12 @@
    (open %WinDir%\Microsoft.NET\Framework64\v2.0.50727\CONFIG\ for 64bit configurations too)
 2. edit web.config: (if you are using old IIS6)
 	within <HttpHandlers> add following line
-	<add path="*.php" verb="*" type="PHP.Core.PageFactory, PhpNetCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71" validate="false" />
+	<add path="*.php" verb="*" type="PHP.Core.PageFactory, PhpNetCore, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71" validate="false" />
 3. edit machine.config:
 	within <configuration> add (merge) following ( replace {phalanger path} with your path )
 	<system.codedom>
 		<compilers>
-			<compiler language="PHP" extension=".php" type="PHP.Core.CodeDom.PhpCodeProvider, PhpNetCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71" compilerOptions="" warningLevel="1"/>
+			<compiler language="PHP" extension=".php" type="PHP.Core.CodeDom.PhpCodeProvider, PhpNetCore, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71" compilerOptions="" warningLevel="1"/>
 		</compilers>
 	</system.codedom>
 
@@ -28,9 +28,9 @@
 		</paths>
 		<classLibrary>
 			<!-- if you want to use .NET objects from mscorlib in PHP; it slows startup a little: --> <add assembly="mscorlib"/>
-			<!-- if you want to use .NET objects from System in PHP; it slows startup a little: --> <add assembly="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
-			<add assembly="PhpNetClassLibrary, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb" section="bcl"/>
-			<add assembly="PhpNetXmlDom, Version=2.0.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03" section="dom"/>
-			<!--<add assembly="php_mysql.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3" section="mysql" />-->
+			<!-- if you want to use .NET objects from System in PHP; it slows startup a little: --> <add assembly="System, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"/>
+			<add assembly="PhpNetClassLibrary, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb" section="bcl"/>
+			<add assembly="PhpNetXmlDom, Version=2.1.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03" section="dom"/>
+			<!--<add assembly="php_mysql.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3" section="mysql" />-->
 		</classLibrary>
 	</phpNet>"

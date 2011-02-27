@@ -111,7 +111,7 @@ namespace PHP.Library.Data
 
 		static MsSql()
 		{
-			RequestContext.RequestEnd += new Notification(Clear);
+			RequestContext.RequestEnd += new Action(Clear);
 		}
 
 		private static void UpdateConnectErrorInfo(PhpSqlDbConnection connection)
