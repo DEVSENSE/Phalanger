@@ -1,31 +1,31 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "Installation\Installer (x86).vdproj", "{C2650CE5-413E-43EE-B271-2B8EDF62355E}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "..\Source\Installation\Installer (x86).vdproj", "{C2650CE5-413E-43EE-B271-2B8EDF62355E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Installer.Bootstrapper", "Installation\Bootstrapper\Installer.Bootstrapper.vcproj", "{E13E051A-63A8-4E61-85B0-967621435C0C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Installer.Bootstrapper", "..\Source\Installation\Bootstrapper\Installer.Bootstrapper.vcxproj", "{E13E051A-63A8-4E61-85B0-967621435C0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer.MachineConfig", "Installation\MachineConfig\Installer.MachineConfig.csproj", "{91D47194-D12A-4F4B-8630-396ABDFB8C56}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer.MachineConfig", "..\Source\Installation\MachineConfig\Installer.MachineConfig.csproj", "{91D47194-D12A-4F4B-8630-396ABDFB8C56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer.Permissions", "Installation\Installer.Permissions\Installer.Permissions.csproj", "{5AF5DBCC-1519-4E3D-A682-E5A4A34DB52A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer.Permissions", "..\Source\Installation\Installer.Permissions\Installer.Permissions.csproj", "{5AF5DBCC-1519-4E3D-A682-E5A4A34DB52A}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs01.codeplex.com/
+		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = Installation\\Bootstrapper\\Installer.Bootstrapper.vcproj
-		SccProjectName1 = Installation/Bootstrapper
-		SccLocalPath1 = Installation\\Bootstrapper
-		SccProjectUniqueName2 = Installation\\Installer\u0020(x86).vdproj
-		SccProjectName2 = Installation
-		SccLocalPath2 = Installation
-		SccProjectUniqueName3 = Installation\\MachineConfig\\Installer.MachineConfig.csproj
-		SccProjectName3 = Installation/MachineConfig
-		SccLocalPath3 = Installation\\MachineConfig
-		SccProjectUniqueName4 = Installation\\Installer.Permissions\\Installer.Permissions.csproj
-		SccProjectName4 = Installation/Installer.Permissions
-		SccLocalPath4 = Installation\\Installer.Permissions
+		SccProjectUniqueName1 = ..\\Source\\Installation\\Installer\u0020(x86).vdproj
+		SccProjectName1 = ../Source/Installation
+		SccLocalPath1 = ..\\Source\\Installation
+		SccProjectUniqueName2 = ..\\Source\\Installation\\Bootstrapper\\Installer.Bootstrapper.vcxproj
+		SccProjectName2 = ../Source/Installation/Bootstrapper
+		SccLocalPath2 = ..\\Source\\Installation\\Bootstrapper
+		SccProjectUniqueName3 = ..\\Source\\Installation\\MachineConfig\\Installer.MachineConfig.csproj
+		SccProjectName3 = ../Source/Installation/MachineConfig
+		SccLocalPath3 = ..\\Source\\Installation\\MachineConfig
+		SccProjectUniqueName4 = ..\\Source\\Installation\\Installer.Permissions\\Installer.Permissions.csproj
+		SccProjectName4 = ../Source/Installation/Installer.Permissions
+		SccLocalPath4 = ..\\Source\\Installation\\Installer.Permissions
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

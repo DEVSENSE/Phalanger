@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Czech resources
+// Czech (Czech Republic) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CSY)
-#ifdef _WIN32
 LANGUAGE LANG_CZECH, SUBLANG_DEFAULT
 #pragma code_page(1250)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -85,7 +83,7 @@ IDB_BITMAP4b            BITMAP                  "res\\4b.bmp"
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_IMG1A               "<img src=""res:/#2/#131"" alt="""" />"
     IDS_IMG1B               "<img src=""res:/#2/#132"" alt="""" />"
@@ -95,37 +93,35 @@ BEGIN
     IDS_IMG3B               "<img src=""res:/#2/#136"" alt="""" />"
     IDS_IMG4A               "<img src=""res:/#2/#137"" alt="""" />"
     IDS_IMG4B               "<img src=""res:/#2/#138"" alt="""" />"
-    IDS_TEXT1A              "<a href="""" id=""InstallFw"">Microsoft .NET Framework 2.0</a><br>Install .NET Framework which is a fundamental prerequisite of Phalanger."
-    IDS_TEXT1B              "<b>Microsoft .NET Framework 2.0</b><br/>Already installed."
+    IDS_TEXT1A              "<a href="""" id=""InstallFw"">Microsoft .NET Framework 4.0</a><br>Install .NET Framework which is a fundamental prerequisite of Phalanger."
+    IDS_TEXT1B              "<b>Microsoft .NET Framework 4.0</b><br/>Already installed."
     IDS_TEXT2A              "<a href="""" id=""InstallCore"">Phalanger and IIS integration</a><br>Install the Phalanger core, compiler, class library and tools, and optionally integrate Phalanger with IIS."
     IDS_TEXT2B              "<a href="""" id=""InstallCore"">Phalanger and IIS integration</a><br>Already installed. Click to repair or remove."
     IDS_TEXT2C              "<span class=""inactive""><b>Phalanger and IIS integration</b><br>Install the Phalanger core, compiler, class library and tools, and optionally integrate Phalanger with IIS.</span>"
-    IDS_TEXT3A              "<a href="""" id=""InstallVsip"">Visual Studio Integration Partner Package</a><br>Install VSIP which is a prerequisite of Visual Studio .NET integration."
-    IDS_TEXT3B              "<b>Visual Studio Integration Partner Package</b><br>Already installed."
+    IDS_TEXT3A              "<a href="""" id=""InstallVsip"">Visual Studio 2010 Phalanger Integration</a><br>Install Phalanger integration for Visual Studio 2010."
+    IDS_TEXT3B              "<b>Visual Studio 2010 Phalanger Integration</b><br>Already installed."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
-    IDS_TEXT3C              "<span class=""inactive""><b>Visual Studio Integration Partner Package</b><br>Install VSIP which is a prerequisite of Visual Studio .NET integration.</span>"
-    IDS_TEXT3D              "<span class=""inactive""><b>Visual Studio Integration Partner Package</b><br>This component requires Visual Studio .NET 2005!</span>"
+    IDS_TEXT3C              "<span class=""inactive""><b>Visual Studio 2010 Phalanger Integration</b><br>Install <b>Phalanger.VS2010</b> which integrates your Visual Studio 2010 with Phalanger 2.1.</span>"
+    IDS_TEXT3D              "<span class=""inactive""><b>Visual Studio 2010 Phalanger Integration</b><br>This component requires Visual Studio 2010!</span>"
     IDS_TEXT4A              "<a href="""" id=""InstallIntegration"">Visual Studio .NET 2005 integration</a><br>Install components that integrate Phalanger into Microsoft Visual Studio .NET 2005."
     IDS_TEXT4B              "<a href="""" id=""InstallIntegration"">Visual Studio .NET 2005 integration</a><br>Already installed. Click to repair or remove."
     IDS_TEXT4C              "<span class=""inactive""><b>Visual Studio .NET 2005 integration</b><br>Install components that integrate Phalanger into Microsoft Visual Studio .NET 2005.</span>"
     IDS_TEXT4D              "<span class=""inactive""><b>Visual Studio .NET 2005 integration</b><br>This component requires Visual Studio .NET 2005!</span>"
 END
 
-#endif    // Czech resources
+#endif    // Czech (Czech Republic) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -142,7 +138,7 @@ IDR_HTML_DIALOG         HTML                    "Installer.Bootstrapper.htm"
 IDD_INSTALLERBOOTSTRAPPER_DIALOG DIALOGEX 0, 0, 320, 247
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
-CAPTION "Phalanger 2.0 Setup"
+CAPTION "Phalanger 2.1 Setup"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
 END
@@ -154,8 +150,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,1,0,1
+ PRODUCTVERSION 2,1,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -172,12 +168,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "The Phalanger Project Team"
             VALUE "FileDescription", "Phalanger Installation Bootstrapper"
-            VALUE "FileVersion", "1.0.0.1"
+            VALUE "FileVersion", "1.1.0.1"
             VALUE "InternalName", "Installer.Bootstrapper.exe"
-            VALUE "LegalCopyright", "(c) Jan Benda, Martin Maly, Tomas Matousek, Pavel Novak, Vaclav Novak, Ladislav Prosek.  All rights reserved."
+            VALUE "LegalCopyright", "(c) Jan Benda, Martin Maly, Tomas Matousek, Pavel Novak, Vaclav Novak, Ladislav Prosek, Jakub Misek, Daniel Balas, Miloslav Beno.  All rights reserved."
             VALUE "OriginalFilename", "Installer.Bootstrapper.exe"
             VALUE "ProductName", "Phalanger"
-            VALUE "ProductVersion", "1.0.0.1"
+            VALUE "ProductVersion", "2.1.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -186,7 +182,7 @@ BEGIN
     END
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

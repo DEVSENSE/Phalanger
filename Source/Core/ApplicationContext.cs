@@ -165,60 +165,42 @@ namespace PHP.Core
 
 		#region Initialization
 
-		private void PopulateTables()
-		{
-			Type t;
+        private void PopulateTables()
+        {
+            // primitive types (prefixed by '@' to prevent ambiguities with identifiers, e.g. i'Array'):
+            types.Add("@" + QualifiedName.Integer.Name.Value, DTypeDesc.IntegerTypeDesc);
+            types.Add("@" + QualifiedName.Boolean.Name.Value, DTypeDesc.BooleanTypeDesc);
+            types.Add("@" + QualifiedName.LongInteger.Name.Value, DTypeDesc.LongIntegerTypeDesc);
+            types.Add("@" + QualifiedName.Double.Name.Value, DTypeDesc.DoubleTypeDesc);
+            types.Add("@" + QualifiedName.String.Name.Value, DTypeDesc.StringTypeDesc);
+            types.Add("@" + QualifiedName.Resource.Name.Value, DTypeDesc.ResourceTypeDesc);
+            types.Add("@" + QualifiedName.Array.Name.Value, DTypeDesc.ArrayTypeDesc);
+            types.Add("@" + QualifiedName.Object.Name.Value, DTypeDesc.ObjectTypeDesc);
 
-			// primitive types (prefixed by '@' to prevent ambiguities with identifiers, e.g. i'Array'):
-			types.Add("@" + QualifiedName.Integer.Name.Value, DTypeDesc.IntegerTypeDesc);
-			types.Add("@" + QualifiedName.Boolean.Name.Value, DTypeDesc.BooleanTypeDesc);
-			types.Add("@" + QualifiedName.LongInteger.Name.Value, DTypeDesc.LongIntegerTypeDesc);
-			types.Add("@" + QualifiedName.Double.Name.Value, DTypeDesc.DoubleTypeDesc);
-			types.Add("@" + QualifiedName.String.Name.Value, DTypeDesc.StringTypeDesc);
-			types.Add("@" + QualifiedName.Resource.Name.Value, DTypeDesc.ResourceTypeDesc);
-			types.Add("@" + QualifiedName.Array.Name.Value, DTypeDesc.ArrayTypeDesc);
-			types.Add("@" + QualifiedName.Object.Name.Value, DTypeDesc.ObjectTypeDesc);
+            // types implemented in Core
+            Action<Type> addType = (x) => { types.Add(x.Name, DTypeDesc.Create(x)); };
 
-			// types implemented in Core
-			t = typeof(Library.stdClass);
-			types.Add(t.Name, DTypeDesc.Create(t));
+            addType(typeof(Library.stdClass));
+            addType(typeof(Library.__PHP_Incomplete_Class));
+            addType(typeof(Library.EventClass<>));
+            addType(typeof(Library.SPL.ArrayAccess));
+            addType(typeof(Library.SPL.Exception));
+            addType(typeof(Library.SPL.Traversable));
+            addType(typeof(Library.SPL.Iterator));
+            addType(typeof(Library.SPL.IteratorAggregate));
+            addType(typeof(Library.SPL.Serializable));
+            addType(typeof(Library.SPL.Countable));
+            addType(typeof(Library.SPL.Reflector));
 
-			t = typeof(Library.__PHP_Incomplete_Class);
-			types.Add(t.Name, DTypeDesc.Create(t));
+            // primitive constants
+            constants.Add("TRUE", GlobalConstant.True.ConstantDesc, true);
+            constants.Add("FALSE", GlobalConstant.False.ConstantDesc, true);
+            constants.Add("NULL", GlobalConstant.Null.ConstantDesc, true);
 
-			t = typeof(Library.EventClass<>);
-			types.Add(t.Name, DTypeDesc.Create(t));
-
-			t = typeof(Library.SPL.ArrayAccess);
-			types.Add(t.Name, DTypeDesc.Create(t));
-
-			t = typeof(Library.SPL.Exception);
-			types.Add(t.Name, DTypeDesc.Create(t));
-
-			t = typeof(Library.SPL.Traversable);
-			types.Add(t.Name, DTypeDesc.Create(t));
-
-			t = typeof(Library.SPL.Iterator);
-			types.Add(t.Name, DTypeDesc.Create(t));
-
-			t = typeof(Library.SPL.IteratorAggregate);
-			types.Add(t.Name, DTypeDesc.Create(t));
-
-			t = typeof(Library.SPL.Serializable);
-			types.Add(t.Name, DTypeDesc.Create(t));
-
-            t = typeof(Library.SPL.Countable);
-            types.Add(t.Name, DTypeDesc.Create(t));
-
-			constants.Add("TRUE", GlobalConstant.True.ConstantDesc, true);
-			constants.Add("FALSE", GlobalConstant.False.ConstantDesc, true);
-			constants.Add("NULL", GlobalConstant.Null.ConstantDesc, true);
-
-			// TODO: why this was commented ?
-			//// the constants are same for all platforms (Phalanger use Int32 for integers in PHP):
+            // the constants are same for all platforms (Phalanger use Int32 for integers in PHP):
             constants.Add("PHP_INT_SIZE", GlobalConstant.PhpIntSize.ConstantDesc, false);
             constants.Add("PHP_INT_MAX", GlobalConstant.PhpIntMax.ConstantDesc, false);
-		}
+        }
 
 		internal void LoadModuleEntries(DModule/*!*/ module)
 		{

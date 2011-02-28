@@ -30,7 +30,7 @@ BEGIN_DHTML_EVENT_MAP(CBootstrapperDlg)
 	DHTML_EVENT_ONCLICK(_T("InstallFw"), OnLinkFw)
 	DHTML_EVENT_ONCLICK(_T("InstallCore"), OnLinkCore)
 	DHTML_EVENT_ONCLICK(_T("InstallVsip"), OnLinkVsip)
-	DHTML_EVENT_ONCLICK(_T("InstallIntegration"), OnLinkIntegration)
+	//DHTML_EVENT_ONCLICK(_T("InstallIntegration"), OnLinkIntegration)
 END_DHTML_EVENT_MAP()
 
 
@@ -85,7 +85,7 @@ HRESULT CBootstrapperDlg::OnLinkExit(IHTMLElement* pElement)
 
 HRESULT CBootstrapperDlg::OnLinkFw(IHTMLElement* pElement)
 {
-	Launch("Framework.exe");
+	Launch("dotNetFx40_Full_setup.exe");
 	return -1;
 }
 
@@ -97,13 +97,7 @@ HRESULT CBootstrapperDlg::OnLinkCore(IHTMLElement* pElement)
 
 HRESULT CBootstrapperDlg::OnLinkVsip(IHTMLElement* pElement)
 {
-	Launch("VSIP2003.exe");
-	return -1;
-}
-
-HRESULT CBootstrapperDlg::OnLinkIntegration(IHTMLElement* pElement)
-{
-	Launch("VSIntegration.msi");
+	Launch("Phalanger.VS2010.msi");
 	return -1;
 }
 
@@ -161,13 +155,13 @@ void CBootstrapperDlg::Launch(CString fileName)
 bool CBootstrapperDlg::FwInstalled()
 {
 	CRegKey key;
-	return (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\.NETFramework\\policy\\v2.0", KEY_QUERY_VALUE) == ERROR_SUCCESS);
+	return (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\.NETFramework\\policy\\v4.0", KEY_QUERY_VALUE) == ERROR_SUCCESS);
 }
 
 bool CBootstrapperDlg::CoreInstalled()
 {
 	CRegKey key;
-	if (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Phalanger\\v2.0", KEY_QUERY_VALUE) != ERROR_SUCCESS) return false;
+	if (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Phalanger\\v2.1", KEY_QUERY_VALUE) != ERROR_SUCCESS) return false;
 
 	char buf[1024];
 	ULONG count = sizeof(buf);
@@ -183,13 +177,13 @@ bool CBootstrapperDlg::VsipInstalled()
 bool CBootstrapperDlg::VsNetInstalled()
 {
 	CRegKey key;
-	return (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\VisualStudio\\8.0", KEY_QUERY_VALUE) == ERROR_SUCCESS);
+	return (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\VisualStudio\\10.0", KEY_QUERY_VALUE) == ERROR_SUCCESS);
 }
 
 bool CBootstrapperDlg::IntegrationInstalled()
 {
 	CRegKey key;
-	if (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Phalanger\\v2.0", KEY_QUERY_VALUE) != ERROR_SUCCESS) return false;
+	if (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Phalanger\\v2.1", KEY_QUERY_VALUE) != ERROR_SUCCESS) return false;
 	
 	DWORD value;
 	return (key.QueryDWORDValue("IntegrationInstalled", value) == ERROR_SUCCESS && value != 0);
@@ -213,11 +207,11 @@ void CBootstrapperDlg::SetVsip(UINT img, UINT text)
 	SetElementHtml("Text3", GetResourceAsBSTR(text));
 }
 
-void CBootstrapperDlg::SetIntegration(UINT img, UINT text)
-{
-	SetElementHtml("Img4", GetResourceAsBSTR(img));
-	SetElementHtml("Text4", GetResourceAsBSTR(text));
-}
+//void CBootstrapperDlg::SetIntegration(UINT img, UINT text)
+//{
+//	SetElementHtml("Img4", GetResourceAsBSTR(img));
+//	SetElementHtml("Text4", GetResourceAsBSTR(text));
+//}
 
 // Not thread-safe!
 BSTR CBootstrapperDlg::GetResourceAsBSTR(UINT resourceId)
@@ -262,7 +256,7 @@ void CBootstrapperDlg::UpdateState()
 		SetFw(IDS_IMG1A, IDS_TEXT1A);
 		SetCore(IDS_IMG2B, IDS_TEXT2C);
 		SetVsip(IDS_IMG3B, IDS_TEXT3C);
-		SetIntegration(IDS_IMG4B, IDS_TEXT4C);
+		//SetIntegration(IDS_IMG4B, IDS_TEXT4C);
 		return;
 	}
 
@@ -272,7 +266,7 @@ void CBootstrapperDlg::UpdateState()
 	{
 		SetCore(IDS_IMG2A, IDS_TEXT2A);
 		SetVsip(IDS_IMG3B, IDS_TEXT3C);
-		SetIntegration(IDS_IMG4B, IDS_TEXT4C);
+		//SetIntegration(IDS_IMG4B, IDS_TEXT4C);
 		return;
 	}
 
@@ -284,8 +278,8 @@ void CBootstrapperDlg::UpdateState()
 		else SetVsip(IDS_IMG3A, IDS_TEXT3A);
 
 		// Integration
-		if (integration_installed) SetIntegration(IDS_IMG4A, IDS_TEXT4B);
-		else SetIntegration(IDS_IMG4A, IDS_TEXT4A);
+		//if (integration_installed) SetIntegration(IDS_IMG4A, IDS_TEXT4B);
+		//else SetIntegration(IDS_IMG4A, IDS_TEXT4A);
 	}
 	else
 	{
@@ -294,8 +288,8 @@ void CBootstrapperDlg::UpdateState()
 		else SetVsip(IDS_IMG3B, IDS_TEXT3D);
 		
 		// Integration
-		if (integration_installed) SetIntegration(IDS_IMG4A, IDS_TEXT4B);
-		else SetIntegration(IDS_IMG4B, IDS_TEXT4D);
+		//if (integration_installed) SetIntegration(IDS_IMG4A, IDS_TEXT4B);
+		//else SetIntegration(IDS_IMG4B, IDS_TEXT4D);
 	}
 }
 

@@ -201,6 +201,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_1AB716A6AF9D422083DF5ABBA54D350B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_1CC20FABAD884386A951A1AE76E8B081"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -274,12 +280,6 @@
         "Entry"
         {
         "MsmKey" = "8:_21D4A5D635724F089B01E184FBB94965"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_223C6DEBD8694154BDC226AE8B698140"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -472,12 +472,6 @@
         "Entry"
         {
         "MsmKey" = "8:_3A9B770849074A48B8158455053ECC51"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_3AB99B959000413AB44B40ACF57E455F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1305,6 +1299,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_83B6C4038E774976B57638FBD0F7682D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_84165012EE134206A1CC08B7C7CD0275"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1462,6 +1462,18 @@
         "Entry"
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
+        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
+        "OwnerKey" = "8:_83B6C4038E774976B57638FBD0F7682D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_A8A397A0E53F5570E9415A74CEC3EF4D"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1546,12 +1558,6 @@
         "Entry"
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_3AB99B959000413AB44B40ACF57E455F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_A4B8EFA3AB0C45B98AEBE9774A7FC63D"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1565,12 +1571,6 @@
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_9139AED16F9C4353A25FA1A2F247E378"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1618,12 +1618,6 @@
         "Entry"
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_223C6DEBD8694154BDC226AE8B698140"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_1F2EBF9DC24D42AD94BECCBC454022F1"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1649,12 +1643,6 @@
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_FD85C243369B4EB6BDE45E89782F1B1C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_FA3F9F9F24494E38BBC7E85DC776F7ED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1696,19 +1684,7 @@
         "Entry"
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_E48218A848CF4406B0EC7F7370AC149F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_E387DFF9A71F4F3F980442A5375B6FB2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_E1C41B59714944719C20D98E2CA5D431"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1745,18 +1721,6 @@
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_C5A35DACAE8E46D2BD791ACBC009124B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_C397ED1669D14F548FB2C877578D440A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_C13E2F5C49E04B1D865E07CDCA9D52DC"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1817,12 +1781,6 @@
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_9C0A038EC7E945A1870900393EEF152D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_9A06E222A05A49DAA84CAA64E5D1CE71"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1960,12 +1918,6 @@
         "Entry"
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_60CBE414D8D1402BBD100BE51743791E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_5F32629CCC444D2796D8B4D120166DBD"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2002,12 +1954,6 @@
         "Entry"
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_4E889E417B704E7DA996F24570BF2103"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_4B47B42D0ADA4C6984992DB6D646B839"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2021,12 +1967,6 @@
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_48E3DB5F1BB4473EAC91990F53B7D6CC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_480DD1389F544A2FBF30AC07E109F6F5"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2057,12 +1997,6 @@
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_4002F63460BA409CAAF0982D7E436A7A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_3EF4266B92B44C10B5C1B3F27A30E60C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2177,18 +2111,6 @@
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_21785AECE83D49ABAC0F77E15F4D34D6"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_2127DDFDD32942BBA4ACEF484A5F5627"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_1E553EF9EB43435385C0D366215CA314"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2734,6 +2656,12 @@
         "Entry"
         {
         "MsmKey" = "8:_C561C1C2D9AFFB8AAB9FE28C8B36AF91"
+        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C561C1C2D9AFFB8AAB9FE28C8B36AF91"
         "OwnerKey" = "8:_A8A397A0E53F5570E9415A74CEC3EF4D"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2771,12 +2699,6 @@
         {
         "MsmKey" = "8:_C561C1C2D9AFFB8AAB9FE28C8B36AF91"
         "OwnerKey" = "8:_8A5141E5649D4FF59D5BB5493C9E494D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C561C1C2D9AFFB8AAB9FE28C8B36AF91"
-        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3015,12 +2937,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_E100C3A7DD504423BC43DCCAA54FFB3C"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_E10D4E0E1CE04AFC8766969F159715C6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3135,13 +3051,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_EFE3DEA31F4F4C9F9506CD9BB2DEA54B"
+        "MsmKey" = "8:_EEC9C1C15EA24DA2B571D8ABB0D0224D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_F050B6E0A3534A9F8F639F270D107A41"
+        "MsmKey" = "8:_EFE3DEA31F4F4C9F9506CD9BB2DEA54B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3640,6 +3556,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_83B6C4038E774976B57638FBD0F7682D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_81F5CBC4155E46CFBF21D35B1BE217E6"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3904,12 +3826,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_3AB99B959000413AB44B40ACF57E455F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_3A9B770849074A48B8158455053ECC51"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4019,12 +3935,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_23BB502142E64E3CABF5827859944FF2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_223C6DEBD8694154BDC226AE8B698140"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -4186,10 +4096,10 @@
             "ComponentsUrl" = "8:"
                 "Items"
                 {
-                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.3.5"
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0"
                     {
-                    "Name" = "8:.NET Framework 3.5"
-                    "ProductCode" = "8:Microsoft.Net.Framework.3.5"
+                    "Name" = "8:Microsoft .NET Framework 4 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.0"
                     }
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Visual.C++.8.0.x64"
                     {
@@ -4200,6 +4110,11 @@
                     {
                     "Name" = "8:Visual C++ Runtime Libraries (x86)"
                     "ProductCode" = "8:Microsoft.Visual.C++.8.0.x86"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
                     }
                 }
             }
@@ -4228,15 +4143,20 @@
             "ComponentsUrl" = "8:"
                 "Items"
                 {
-                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.3.5"
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0"
                     {
-                    "Name" = "8:.NET Framework 3.5"
-                    "ProductCode" = "8:Microsoft.Net.Framework.3.5"
+                    "Name" = "8:Microsoft .NET Framework 4 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.0"
                     }
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Visual.C++.8.0.x86"
                     {
                     "Name" = "8:Visual C++ Runtime Libraries (x86)"
                     "ProductCode" = "8:Microsoft.Visual.C++.8.0.x86"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
                     }
                 }
             }
@@ -4259,6 +4179,20 @@
             "Identifier" = "8:_2F38CAF4_ED79_479C_AA80_60F083A1647C"
             "InstallerClass" = "11:FALSE"
             "CustomActionData" = "8:delete|"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_24ECAA142AAE42ED9B1B71D3F54FFA66"
+            {
+            "Name" = "8:Create IIS6 applications"
+            "Condition" = "8:IIS6WEB"
+            "Object" = "8:_1AB716A6AF9D422083DF5ABBA54D350B"
+            "FileType" = "3:4"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:3"
+            "Identifier" = "8:_03E0DC6B_0AB7_49B6_95D6_273D3DD2AA69"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:create|[TARGETDIR]|[WindowsFolder]|"
             }
             "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_3A1DC1E212454C22B54E486D947C50F0"
             {
@@ -4302,19 +4236,19 @@
             "InstallerClass" = "11:TRUE"
             "CustomActionData" = "8:/InstallDir=\"[TARGETDIR]\\\""
             }
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_8B5C2C67FD524FC78B115640482361D4"
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_710CFE8962D7499F9A77FC34254076CB"
             {
-            "Name" = "8:Create IIS6 virtual web directories"
+            "Name" = "8:Delete IIS6 applications"
             "Condition" = "8:IIS6WEB"
-            "Object" = "8:_E100C3A7DD504423BC43DCCAA54FFB3C"
+            "Object" = "8:_1AB716A6AF9D422083DF5ABBA54D350B"
             "FileType" = "3:4"
-            "InstallAction" = "3:1"
+            "InstallAction" = "3:4"
             "Arguments" = "8:"
             "EntryPoint" = "8:"
-            "Sequence" = "3:3"
-            "Identifier" = "8:_FA1151D9_98AB_4339_9F36_1588FED02B85"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_BFB6837E_46DF_48A0_B0F9_8AB3B6343D88"
             "InstallerClass" = "11:FALSE"
-            "CustomActionData" = "8:create|[TARGETDIR]|[WindowsFolder]|"
+            "CustomActionData" = "8:delete|"
             }
             "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_A16895C266C14AE38CBA7B3BC2C3DF86"
             {
@@ -4330,20 +4264,6 @@
             "InstallerClass" = "11:FALSE"
             "CustomActionData" = "8:create|[TARGETDIR]"
             }
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_CDA431D35E18451E9D3365FF376EA811"
-            {
-            "Name" = "8:Delete IIS6 virtual web directories"
-            "Condition" = "8:IIS6WEB"
-            "Object" = "8:_E100C3A7DD504423BC43DCCAA54FFB3C"
-            "FileType" = "3:4"
-            "InstallAction" = "3:4"
-            "Arguments" = "8:"
-            "EntryPoint" = "8:"
-            "Sequence" = "3:1"
-            "Identifier" = "8:_FE86DCF2_9FB2_4CE3_8CAA_A917DCD40E00"
-            "InstallerClass" = "11:FALSE"
-            "CustomActionData" = "8:delete|"
-            }
         }
         "DefaultFeature"
         {
@@ -4357,9 +4277,9 @@
             {
                 "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_40E3D6C62BD74898AB596A51B4551FE7"
                 {
-                "Name" = "8:.NET Framework"
+                "Name" = "8:.NET Framework 4.0"
                 "Message" = "8:[VSDNETMSG]"
-                "Version" = "8:2.0.50727"
+                "FrameworkVersion" = "8:.NETFramework,Version=v4.0"
                 "AllowLaterVersions" = "11:FALSE"
                 "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=9832"
                 "SupportedRuntimes" = "8:1.1.4322"
@@ -4392,7 +4312,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_odbc.mng, Version=4.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_odbc.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_03EE80F99B3149C68ED9106412D4B600"
@@ -5100,6 +5020,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1AB716A6AF9D422083DF5ABBA54D350B"
+            {
+            "SourcePath" = "8:..\\..\\Deployment\\iis6_web.vbs"
+            "TargetName" = "8:iis6_web.vbs"
+            "Tag" = "8:"
+            "Folder" = "8:_3BBAE0E758544DD2B174BFA8E5DE6261"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1CC20FABAD884386A951A1AE76E8B081"
             {
             "AssemblyRegister" = "3:1"
@@ -5206,7 +5146,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ifx.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ifx.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_1E553EF9EB43435385C0D366215CA314"
@@ -5308,7 +5248,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_oracle.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_oracle.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_2127DDFDD32942BBA4ACEF484A5F5627"
@@ -5403,37 +5343,6 @@
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7972C95AAB7E4B7DBCC785EA02AB2756"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_223C6DEBD8694154BDC226AE8B698140"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:phpc, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_223C6DEBD8694154BDC226AE8B698140"
-                    {
-                    "Name" = "8:phpc.exe"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:..\\..\\Deployment\\Bin\\phpc.exe"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_868ED7DC25AC4E29ABC8EEC0E1108777"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -6257,37 +6166,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_3AB99B959000413AB44B40ACF57E455F"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:phpc, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_3AB99B959000413AB44B40ACF57E455F"
-                    {
-                    "Name" = "8:phpc.exe"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:..\\..\\Deployment\\Bin\\phpc.exe"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_459C9B64F5C942D4ADE30EB729BA64A7"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_3AF2365FB6F859CF82A051D70FC3766B"
             {
             "AssemblyRegister" = "3:1"
@@ -6496,7 +6374,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_pspell.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_pspell.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_3EF4266B92B44C10B5C1B3F27A30E60C"
@@ -6873,7 +6751,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_sybase_ct.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_sybase_ct.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_480DD1389F544A2FBF30AC07E109F6F5"
@@ -7179,7 +7057,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_pspell.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_pspell.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_4E889E417B704E7DA996F24570BF2103"
@@ -7878,7 +7756,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_oracle.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_oracle.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_60CBE414D8D1402BBD100BE51743791E"
@@ -9292,6 +9170,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_83B6C4038E774976B57638FBD0F7682D"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:phpc, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_83B6C4038E774976B57638FBD0F7682D"
+                    {
+                    "Name" = "8:phpc.exe"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\..\\Deployment\\Bin\\phpc.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_3A4CBD92DFFD40BD91AB2942E32AA670"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_84165012EE134206A1CC08B7C7CD0275"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Extensions\\php_imap.dll"
@@ -9724,7 +9633,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:ExtManager, Version=2.0.4037.37668, Culture=neutral, processorArchitecture=x86"
+            "AssemblyAsmDisplayName" = "8:ExtManager, Version=2.1.0.0, Culture=neutral, processorArchitecture=x86"
                 "ScatterAssemblies"
                 {
                     "_8C18E601E62A42F795506CB9CC1CE1A2"
@@ -10159,7 +10068,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_oci8.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_oci8.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_9A06E222A05A49DAA84CAA64E5D1CE71"
@@ -10650,7 +10559,7 @@
             "SharedLegacy" = "11:FALSE"
             "PackageAs" = "3:1"
             "Register" = "3:1"
-            "Exclude" = "11:FALSE"
+            "Exclude" = "11:TRUE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -11557,7 +11466,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_sybase_ct.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_sybase_ct.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_C13E2F5C49E04B1D865E07CDCA9D52DC"
@@ -11628,7 +11537,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_oci8.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_oci8.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_C397ED1669D14F548FB2C877578D440A"
@@ -12545,26 +12454,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E100C3A7DD504423BC43DCCAA54FFB3C"
-            {
-            "SourcePath" = "8:..\\..\\Deployment\\iis6_web.vbs"
-            "TargetName" = "8:iis6_web.vbs"
-            "Tag" = "8:"
-            "Folder" = "8:_3BBAE0E758544DD2B174BFA8E5DE6261"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E10D4E0E1CE04AFC8766969F159715C6"
             {
             "SourcePath" = "8:..\\..\\Deployment\\WebSamples\\Tests\\Functions\\indirect.php"
@@ -12609,7 +12498,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_ifx.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_ifx.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E1C41B59714944719C20D98E2CA5D431"
@@ -12711,7 +12600,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_fdf.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_fdf.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_E48218A848CF4406B0EC7F7370AC149F"
@@ -13033,12 +12922,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EFE3DEA31F4F4C9F9506CD9BB2DEA54B"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EEC9C1C15EA24DA2B571D8ABB0D0224D"
             {
-            "SourcePath" = "8:..\\..\\Deployment\\Extensions\\php_zip.php5.dll"
-            "TargetName" = "8:php_zip.php5.dll"
+            "SourcePath" = "8:..\\..\\Tools\\gacutil.exe.config"
+            "TargetName" = "8:gacutil.exe.config"
             "Tag" = "8:"
-            "Folder" = "8:_A6C9620ACDFD41E585FD490BCBE4062D"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13053,12 +12942,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F050B6E0A3534A9F8F639F270D107A41"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EFE3DEA31F4F4C9F9506CD9BB2DEA54B"
             {
-            "SourcePath" = "8:..\\..\\Documentation\\HowTo\\website in IIS7.txt"
-            "TargetName" = "8:website in IIS7.txt"
+            "SourcePath" = "8:..\\..\\Deployment\\Extensions\\php_zip.php5.dll"
+            "TargetName" = "8:php_zip.php5.dll"
             "Tag" = "8:"
-            "Folder" = "8:_B89927F5FEDB403F8CF3C4F0745F6815"
+            "Folder" = "8:_A6C9620ACDFD41E585FD490BCBE4062D"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13410,7 +13299,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php_fdf.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:php_fdf.mng, Version=2.0.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_FA3F9F9F24494E38BBC7E85DC776F7ED"
@@ -13605,9 +13494,20 @@
         }
         "Folder"
         {
+            "{1525181F-901A-416C-8A58-119130FE478E}:_3A4CBD92DFFD40BD91AB2942E32AA670"
+            {
+            "Name" = "8:#1914"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:SystemFolder"
+                "Folders"
+                {
+                }
+            }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_3BBAE0E758544DD2B174BFA8E5DE6261"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder]\\Phalanger 2.0"
+            "DefaultLocation" = "8:[ProgramFilesFolder]\\Phalanger 2.1"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:TRUE"
             "Condition" = "8:"
@@ -13980,7 +13880,7 @@
                 {
                     "{9EF0B969-E518-4E46-987F-47570745A589}:_5AAB9D8175DF48C39AC6F73CAFBFEBA5"
                     {
-                    "Name" = "8:Phalanger 2.0"
+                    "Name" = "8:Phalanger 2.1"
                     "AlwaysCreate" = "11:TRUE"
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
@@ -14022,17 +13922,6 @@
             "Property" = "8:WindowsFolder"
                 "Folders"
                 {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_459C9B64F5C942D4ADE30EB729BA64A7"
-                    {
-                    "Name" = "8:System32"
-                    "AlwaysCreate" = "11:FALSE"
-                    "Condition" = "8:"
-                    "Transitive" = "11:FALSE"
-                    "Property" = "8:_E97CBC59D1CA49A5A87541284673ECF0"
-                        "Folders"
-                        {
-                        }
-                    }
                     "{9EF0B969-E518-4E46-987F-47570745A589}:_ADD38923933441918259A85122969C2A"
                     {
                     "Name" = "8:Microsoft.NET"
@@ -14051,17 +13940,6 @@
                             "Property" = "8:_3D0E483449FA48BC80F2BBC3CD7745A8"
                                 "Folders"
                                 {
-                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_868ED7DC25AC4E29ABC8EEC0E1108777"
-                                    {
-                                    "Name" = "8:v2.0.50727"
-                                    "AlwaysCreate" = "11:FALSE"
-                                    "Condition" = "8:"
-                                    "Transitive" = "11:FALSE"
-                                    "Property" = "8:_67C283517D714089AFDD02B5DCEB7BFD"
-                                        "Folders"
-                                        {
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -14092,9 +13970,9 @@
             }
             "{CF66B7F7-B7DA-4B08-A67A-233430638C9C}:_8E7E6364E36649F4B92B3F30B35FD3D1"
             {
-            "Name" = "8:Search for VS 2005 installation"
+            "Name" = "8:Search for VS 2010 installation"
             "Root" = "2:1"
-            "RegKey" = "8:SOFTWARE\\Microsoft\\VisualStudio\\8.0\\Setup\\VS"
+            "RegKey" = "8:SOFTWARE\\Microsoft\\VisualStudio\\10.0\\Setup\\VS"
             "Value" = "8:ProductDir"
             "Property" = "8:VSINSTALLDIR"
             }
@@ -14107,19 +13985,20 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Phalanger 2.0 (January 2011)"
-        "ProductCode" = "8:{24A0F2A6-4DAF-4FE4-9A64-4DAE0D9287B1}"
-        "PackageCode" = "8:{D96403F3-0887-420D-B7BA-8A3313F62613}"
+        "ProductName" = "8:Phalanger 2.1"
+        "ProductCode" = "8:{E61E97F1-B2AA-4F9A-817D-C11F9BAABB19}"
+        "PackageCode" = "8:{6B901675-D1AC-4F07-B688-869420584BFD}"
         "UpgradeCode" = "8:{726B5E48-4B58-4579-9157-D125E1E99B29}"
+        "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:2.0"
+        "ProductVersion" = "8:2.1"
         "Manufacturer" = "8:The Phalanger Team"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://phalanger.codeplex.com/discussions"
-        "Title" = "8:Phalanger 2.0 (January 2011)"
+        "Title" = "8:Phalanger 2.1"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Tomas Matousek, Ladislav Prosek, Vaclav Novak, Pavel Novak, Jan Benda, Martin Maly, Miloslav Beno, Daniel Balas, Jakub Misek"
         "Keywords" = "8:Phalanger, PHP, .NET, compiler"
@@ -14160,7 +14039,7 @@
                                 {
                                     "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_1B9387DA3BEF4C728EF56F8243D185F7"
                                     {
-                                    "Name" = "8:v2.0"
+                                    "Name" = "8:v2.1"
                                     "Condition" = "8:"
                                     "AlwaysCreate" = "11:TRUE"
                                     "DeleteAtUninstall" = "11:FALSE"
@@ -14222,7 +14101,7 @@
                                                 {
                                                     "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_D92BD14B2175434CA77603F244879BA7"
                                                     {
-                                                    "Name" = "8:Phalanger_2.0_wrappers"
+                                                    "Name" = "8:Phalanger_2.1_wrappers"
                                                     "Condition" = "8:"
                                                     "AlwaysCreate" = "11:FALSE"
                                                     "DeleteAtUninstall" = "11:FALSE"
@@ -14244,7 +14123,7 @@
                                                     }
                                                     "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_DC6F4625DBD64F41B90EBB34A193C50C"
                                                     {
-                                                    "Name" = "8:Phalanger_2.0"
+                                                    "Name" = "8:Phalanger_2.1"
                                                     "Condition" = "8:"
                                                     "AlwaysCreate" = "11:FALSE"
                                                     "DeleteAtUninstall" = "11:FALSE"
@@ -15088,7 +14967,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3AC83D074AD544EEB6A803F0EDA74F07"
             {
-            "SourcePath" = "8:Installer.Permissions\\obj\\Debug\\Installer.Permissions.dll"
+            "SourcePath" = "8:Installer.Permissions\\obj\\Release\\Installer.Permissions.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
@@ -15116,7 +14995,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F892513EE29B40499B323C4D46FA2D7A"
             {
-            "SourcePath" = "8:MachineConfig\\obj\\Debug\\Installer.MachineConfig.dll"
+            "SourcePath" = "8:MachineConfig\\obj\\Release\\Installer.MachineConfig.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
