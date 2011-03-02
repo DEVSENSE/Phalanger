@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Installer.Permissions")]
+[assembly: AssemblyTitle("Installer.IISSamples")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("DEVSENSE")]
-[assembly: AssemblyProduct("Installer.Permissions")]
+[assembly: AssemblyProduct("Installer.IISSamples")]
 [assembly: AssemblyCopyright("Copyright © DEVSENSE 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("2effe02c-8459-4c1e-8070-5c41f7a84667")]
+[assembly: Guid("7289a9b6-786b-43e8-b312-eb65bfe93ac2")]
 
 // Version information for an assembly consists of the following four values:
 //

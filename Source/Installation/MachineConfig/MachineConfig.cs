@@ -63,6 +63,29 @@ namespace MachineConfig
 		#region Helpers
 
         /// <summary>
+        /// Get full directory path of existing directory that starts with given string.
+        /// </summary>
+        /// <param name="startsWith"></param>
+        /// <returns></returns>
+        private static string FindDir(string startsWith)
+        {
+            DirectoryInfo di = new DirectoryInfo(startsWith);
+
+            startsWith = startsWith.ToLower();
+
+            if (di.Exists) return di.FullName;
+            if (!di.Parent.Exists) return null;
+
+            foreach (var dir in di.Parent.GetDirectories())
+            {
+                if (dir.FullName.ToLower().StartsWith(startsWith))
+                    return dir.FullName;
+            }
+
+            return null;
+        }
+
+        /// <summary>
 		/// Shows a message box informing the user about a problem.
 		/// </summary>
 		/// <param name="format">A message containing zero or more format items.</param>
@@ -349,9 +372,9 @@ namespace MachineConfig
                     string systemRoot = Environment.GetEnvironmentVariable("SystemRoot") + "\\";
                     List<string> dirs = new List<string>(2);
 
-                    dirs.Add( systemRoot + "Microsoft.NET\\Framework\\v2.0.50727\\CONFIG\\");
-                    dirs.Add( systemRoot + "Microsoft.NET\\Framework64\\v2.0.50727\\CONFIG\\");
-                    
+                    dirs.Add(FindDir(systemRoot + @"Microsoft.NET\Framework\v4.0") + @"\Config\");
+                    dirs.Add(FindDir(systemRoot + @"Microsoft.NET\Framework64\v4.0") + @"\Config\");
+
                     _ConfigDirectories = dirs.ToArray();
                 }
 

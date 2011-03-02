@@ -135,6 +135,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_13DFEA250E354E8F9D9A87ABE2D82A9A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_15C73034F99D48CF8E3F6E0A0E64A26A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -196,12 +202,6 @@
         "Entry"
         {
         "MsmKey" = "8:_1A97885D35C84DB0AE1FC9803316A241"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_1AB716A6AF9D422083DF5ABBA54D350B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -597,12 +597,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_3FB7D33293DC4036B2D885D296A631C2"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_4002F63460BA409CAAF0982D7E436A7A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -795,6 +789,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_518A5155C5324C62933D0FF95E2A2551"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_51BB3290433346EC8B33A5ABA1F8806D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -927,12 +927,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_60277C6BA3F441FBAEC38CF57818EE7E"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_60CBE414D8D1402BBD100BE51743791E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1000,12 +994,6 @@
         "Entry"
         {
         "MsmKey" = "8:_685CCB0C46544FDEBA5B7C46C4FC1E96"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_68AEEA50E2CA4114AFE7821BC14DA01D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1312,6 +1300,12 @@
         "Entry"
         {
         "MsmKey" = "8:_847A687F86934A39906CFD08C674774B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_84816E7CF0724DC6940EA0FE6DDF35BA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2397,12 +2391,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_AB81BB663D34473BA347175C75305028"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_ABB24252C8644CA38513F5C44B7B1583"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2421,7 +2409,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_AEDEAC1308A5495E9600B4BA60E6DC07"
+        "MsmKey" = "8:_AD4BF8769F27489CA06AEA605AB26642"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3009,6 +2997,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_E83489DBA500EC7BB8D2DD4B016A034A"
+        "OwnerKey" = "8:_518A5155C5324C62933D0FF95E2A2551"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E8FB8B0E04E44AAFB2227A524EAF12A2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3058,12 +3052,6 @@
         "Entry"
         {
         "MsmKey" = "8:_EFE3DEA31F4F4C9F9506CD9BB2DEA54B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F0736F4BA2FD497892DDEECC27AF2AF7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3209,6 +3197,18 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_F892513EE29B40499B323C4D46FA2D7A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_E83489DBA500EC7BB8D2DD4B016A034A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_518A5155C5324C62933D0FF95E2A2551"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -4060,13 +4060,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -4166,33 +4166,19 @@
     {
         "CustomAction"
         {
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_1B529D7ED547460B993613AEC1CE7D83"
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_36549C1C80DE4912AED464D41F4D0E48"
             {
-            "Name" = "8:Delete IIS7 applications"
+            "Name" = "8:Configure IIS7 samples"
             "Condition" = "8:IIS7WEB"
-            "Object" = "8:_F0736F4BA2FD497892DDEECC27AF2AF7"
-            "FileType" = "3:4"
-            "InstallAction" = "3:4"
-            "Arguments" = "8:"
-            "EntryPoint" = "8:"
-            "Sequence" = "3:2"
-            "Identifier" = "8:_2F38CAF4_ED79_479C_AA80_60F083A1647C"
-            "InstallerClass" = "11:FALSE"
-            "CustomActionData" = "8:delete|"
-            }
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_24ECAA142AAE42ED9B1B71D3F54FFA66"
-            {
-            "Name" = "8:Create IIS6 applications"
-            "Condition" = "8:IIS6WEB"
-            "Object" = "8:_1AB716A6AF9D422083DF5ABBA54D350B"
-            "FileType" = "3:4"
+            "Object" = "8:_518A5155C5324C62933D0FF95E2A2551"
+            "FileType" = "3:1"
             "InstallAction" = "3:1"
             "Arguments" = "8:"
             "EntryPoint" = "8:"
             "Sequence" = "3:3"
-            "Identifier" = "8:_03E0DC6B_0AB7_49B6_95D6_273D3DD2AA69"
-            "InstallerClass" = "11:FALSE"
-            "CustomActionData" = "8:create|[TARGETDIR]|[WindowsFolder]|"
+            "Identifier" = "8:_82A8769E_008F_4BB7_B005_9FA16FB33430"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:/InstallDir=\"[TARGETDIR]\\\""
             }
             "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_3A1DC1E212454C22B54E486D947C50F0"
             {
@@ -4203,7 +4189,7 @@
             "InstallAction" = "3:4"
             "Arguments" = "8:"
             "EntryPoint" = "8:"
-            "Sequence" = "3:3"
+            "Sequence" = "3:1"
             "Identifier" = "8:_4DD9DBE3_5C2F_43B1_A4F2_93E9C195CBBC"
             "InstallerClass" = "11:TRUE"
             "CustomActionData" = "8:/Platform=\"x86\""
@@ -4236,33 +4222,19 @@
             "InstallerClass" = "11:TRUE"
             "CustomActionData" = "8:/InstallDir=\"[TARGETDIR]\\\""
             }
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_710CFE8962D7499F9A77FC34254076CB"
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_C43FDFBE32284259A90FE46D9B7F2E43"
             {
-            "Name" = "8:Delete IIS6 applications"
-            "Condition" = "8:IIS6WEB"
-            "Object" = "8:_1AB716A6AF9D422083DF5ABBA54D350B"
-            "FileType" = "3:4"
+            "Name" = "8:Unconfigure IIS7 samples"
+            "Condition" = "8:"
+            "Object" = "8:_518A5155C5324C62933D0FF95E2A2551"
+            "FileType" = "3:1"
             "InstallAction" = "3:4"
             "Arguments" = "8:"
             "EntryPoint" = "8:"
-            "Sequence" = "3:1"
-            "Identifier" = "8:_BFB6837E_46DF_48A0_B0F9_8AB3B6343D88"
-            "InstallerClass" = "11:FALSE"
-            "CustomActionData" = "8:delete|"
-            }
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_A16895C266C14AE38CBA7B3BC2C3DF86"
-            {
-            "Name" = "8:Create IIS7 applications"
-            "Condition" = "8:IIS7WEB"
-            "Object" = "8:_F0736F4BA2FD497892DDEECC27AF2AF7"
-            "FileType" = "3:4"
-            "InstallAction" = "3:1"
-            "Arguments" = "8:"
-            "EntryPoint" = "8:"
-            "Sequence" = "3:4"
-            "Identifier" = "8:_5287723E_CE3E_48AC_A874_5AE3C270652A"
-            "InstallerClass" = "11:FALSE"
-            "CustomActionData" = "8:create|[TARGETDIR]"
+            "Sequence" = "3:2"
+            "Identifier" = "8:_F3D4FBB5_806F_4ACE_8A61_9AC95CABD61C"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
             }
         }
         "DefaultFeature"
@@ -4787,6 +4759,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_13DFEA250E354E8F9D9A87ABE2D82A9A"
+            {
+            "SourcePath" = "8:..\\..\\Deployment\\Sample Phalanger ASP.NET web.url"
+            "TargetName" = "8:Sample Phalanger ASP.NET web.url"
+            "Tag" = "8:"
+            "Folder" = "8:_C6256C38689C45F5BC2F7EF4377A797D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_15C73034F99D48CF8E3F6E0A0E64A26A"
             {
             "SourcePath" = "8:..\\..\\Deployment\\msvcrt.dll"
@@ -5017,26 +5009,6 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1AB716A6AF9D422083DF5ABBA54D350B"
-            {
-            "SourcePath" = "8:..\\..\\Deployment\\iis6_web.vbs"
-            "TargetName" = "8:iis6_web.vbs"
-            "Tag" = "8:"
-            "Folder" = "8:_3BBAE0E758544DD2B174BFA8E5DE6261"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
@@ -6401,26 +6373,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3FB7D33293DC4036B2D885D296A631C2"
-            {
-            "SourcePath" = "8:..\\..\\Deployment\\Sample Phalanger Web Tests.url"
-            "TargetName" = "8:Tests [IIS7].url"
-            "Tag" = "8:"
-            "Folder" = "8:_C6256C38689C45F5BC2F7EF4377A797D"
-            "Condition" = "8:IIS7WEB"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_4002F63460BA409CAAF0982D7E436A7A"
             {
             "AssemblyRegister" = "3:1"
@@ -7732,26 +7684,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_60277C6BA3F441FBAEC38CF57818EE7E"
-            {
-            "SourcePath" = "8:..\\..\\Deployment\\Tests Web Application.url"
-            "TargetName" = "8:Tests Web Application [IIS6].url"
-            "Tag" = "8:"
-            "Folder" = "8:_C6256C38689C45F5BC2F7EF4377A797D"
-            "Condition" = "8:IIS6WEB"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_60CBE414D8D1402BBD100BE51743791E"
             {
             "AssemblyRegister" = "3:1"
@@ -8001,26 +7933,6 @@
             "Tag" = "8:"
             "Folder" = "8:_E8D13052B93644EE956229950D54A7AD"
             "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_68AEEA50E2CA4114AFE7821BC14DA01D"
-            {
-            "SourcePath" = "8:..\\..\\Deployment\\Extensions Web Application.url"
-            "TargetName" = "8:Extensions Web Application [IIS6].url"
-            "Tag" = "8:"
-            "Folder" = "8:_C6256C38689C45F5BC2F7EF4377A797D"
-            "Condition" = "8:IIS6WEB"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -9227,6 +9139,26 @@
             "TargetName" = "8:PhpNetClassLibrary.xml"
             "Tag" = "8:"
             "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_84816E7CF0724DC6940EA0FE6DDF35BA"
+            {
+            "SourcePath" = "8:..\\..\\Deployment\\Sample Phalanger Tests.url"
+            "TargetName" = "8:Sample Phalanger Tests.url"
+            "Tag" = "8:"
+            "Folder" = "8:_C6256C38689C45F5BC2F7EF4377A797D"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10685,26 +10617,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AB81BB663D34473BA347175C75305028"
-            {
-            "SourcePath" = "8:..\\..\\Deployment\\Sample Phalanger Web Forms.url"
-            "TargetName" = "8:Web Forms [IIS7].url"
-            "Tag" = "8:"
-            "Folder" = "8:_C6256C38689C45F5BC2F7EF4377A797D"
-            "Condition" = "8:IIS7WEB"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ABB24252C8644CA38513F5C44B7B1583"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Extensions\\php_ifx.dll"
@@ -10765,13 +10677,13 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AEDEAC1308A5495E9600B4BA60E6DC07"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AD4BF8769F27489CA06AEA605AB26642"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Simple Scripts Web Application.url"
-            "TargetName" = "8:Simple Scripts Web Application [IIS6].url"
+            "TargetName" = "8:Simple PHP Scripts.url"
             "Tag" = "8:"
             "Folder" = "8:_C6256C38689C45F5BC2F7EF4377A797D"
-            "Condition" = "8:IIS6WEB"
+            "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -12760,6 +12672,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E83489DBA500EC7BB8D2DD4B016A034A"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_E83489DBA500EC7BB8D2DD4B016A034A"
+                    {
+                    "Name" = "8:Microsoft.Web.Administration.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Microsoft.Web.Administration.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E8FB8B0E04E44AAFB2227A524EAF12A2"
             {
             "SourcePath" = "8:..\\..\\Deployment\\WebSamples\\Tests\\web.config"
@@ -12959,26 +12902,6 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F0736F4BA2FD497892DDEECC27AF2AF7"
-            {
-            "SourcePath" = "8:..\\..\\Deployment\\iis7_web.vbs"
-            "TargetName" = "8:iis7_web.vbs"
-            "Tag" = "8:"
-            "Folder" = "8:_3BBAE0E758544DD2B174BFA8E5DE6261"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
@@ -13739,7 +13662,7 @@
                     {
                     "Name" = "8:WebRoot"
                     "AlwaysCreate" = "11:FALSE"
-                    "Condition" = "8:"
+                    "Condition" = "8:IIS7WEB"
                     "Transitive" = "11:FALSE"
                     "Property" = "8:_9F51951AAEA64B0895B3E10ACE9B692F"
                         "Folders"
@@ -13747,7 +13670,7 @@
                             "{9EF0B969-E518-4E46-987F-47570745A589}:_02628D7487874FBFB18B50EFE9B98780"
                             {
                             "Name" = "8:Samples"
-                            "AlwaysCreate" = "11:TRUE"
+                            "AlwaysCreate" = "11:FALSE"
                             "Condition" = "8:"
                             "Transitive" = "11:FALSE"
                             "Property" = "8:_A622637327A04207B2C6D4F9F2D69108"
@@ -13987,7 +13910,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Phalanger 2.1"
         "ProductCode" = "8:{E61E97F1-B2AA-4F9A-817D-C11F9BAABB19}"
-        "PackageCode" = "8:{6B901675-D1AC-4F07-B688-869420584BFD}"
+        "PackageCode" = "8:{1597CD98-909A-4A7A-904D-A00382C10940}"
         "UpgradeCode" = "8:{726B5E48-4B58-4579-9157-D125E1E99B29}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -14682,7 +14605,7 @@
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
                             "Setting" = "3:2"
-                            "Value" = "8:Please select additional installation options. Creation of sample web sites may require administrator rights. You can let the installer to create and configure following:"
+                            "Value" = "8:Please select additional installation options."
                             "DefaultValue" = "8:#1215"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -14695,7 +14618,7 @@
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
                             "Setting" = "3:2"
-                            "Value" = "8:(IIS6) Sample web site using \"Classic .NET AppPool\"."
+                            "Value" = "8:Create IIS 7 web samples on your IIS 7 if installed."
                             "DefaultValue" = "8:#1234"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -14708,7 +14631,7 @@
                             "ContextData" = "8:Public"
                             "Attributes" = "3:2"
                             "Setting" = "3:2"
-                            "Value" = "8:IIS6WEB"
+                            "Value" = "8:IIS7WEB"
                             "DefaultValue" = "8:CHECKBOXA1"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -14747,7 +14670,7 @@
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
                             "Setting" = "3:2"
-                            "Value" = "8:(IIS7) Sample web app under \"Default Web Site\" (\"Integrated Pipeline\" by default)."
+                            "Value" = "8:Checkbox2"
                             "DefaultValue" = "8:#1235"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -14760,7 +14683,7 @@
                             "ContextData" = "8:Public"
                             "Attributes" = "3:2"
                             "Setting" = "3:2"
-                            "Value" = "8:IIS7WEB"
+                            "Value" = "8:CHECKBOX2"
                             "DefaultValue" = "8:CHECKBOXA2"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -14786,7 +14709,7 @@
                             "ContextData" = "8:1;True=1;False=0"
                             "Attributes" = "3:0"
                             "Setting" = "3:0"
-                            "Value" = "3:1"
+                            "Value" = "3:0"
                             "DefaultValue" = "3:1"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -14988,6 +14911,34 @@
             "OutputConfiguration" = "8:"
             "OutputGroupCanonicalName" = "8:Built"
             "OutputProjectGuid" = "8:{5AF5DBCC-1519-4E3D-A682-E5A4A34DB52A}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_518A5155C5324C62933D0FF95E2A2551"
+            {
+            "SourcePath" = "8:Installer.IISSamples\\obj\\Release\\Installer.IISSamples.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{E66B4117-6D1D-4A0E-99CB-4AFF3BB62594}"
             "ShowKeyOutput" = "11:TRUE"
                 "ExcludeFilters"
                 {
