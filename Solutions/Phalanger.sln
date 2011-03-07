@@ -60,9 +60,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.mbstring", "..\So
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MSIL", "..\Source\Core\MSIL\Core.IL.vcxproj", "{7F13AC5E-1B8D-467E-83F1-912D12F44370}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phalanger.CompilerTask", "..\Source\Phalanger.CompilerTask\Phalanger.CompilerTask.csproj", "{68B54816-884B-48A1-949C-DBBDE2A5C412}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 17
+		SccNumberOfProjects = 18
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
@@ -125,6 +127,9 @@ Global
 		SccProjectUniqueName16 = ..\\Source\\Core\\MSIL\\Core.IL.vcxproj
 		SccProjectName16 = ../Source/Core/MSIL
 		SccLocalPath16 = ..\\Source\\Core\\MSIL
+		SccProjectUniqueName17 = ..\\Source\\Phalanger.CompilerTask\\Phalanger.CompilerTask.csproj
+		SccProjectName17 = ../Source/Phalanger.CompilerTask
+		SccLocalPath17 = ..\\Source\\Phalanger.CompilerTask
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -285,6 +290,16 @@ Global
 		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Win32.ActiveCfg = Release|Win32
 		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Win32.Build.0 = Release|Win32
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

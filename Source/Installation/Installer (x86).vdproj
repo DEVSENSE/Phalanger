@@ -1185,6 +1185,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_7AEBB8B86F0F48B7B8BD1E39327E5050"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7B1FB7FB6DCB4D1C82D78A48DF8DF338"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1407,6 +1413,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_8C0F2BD5E23F423FA84FE361368DC03D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1451,6 +1463,12 @@
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_03EE80F99B3149C68ED9106412D4B600"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
+        "OwnerKey" = "8:_8C0F2BD5E23F423FA84FE361368DC03D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3202,13 +3220,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E83489DBA500EC7BB8D2DD4B016A034A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_518A5155C5324C62933D0FF95E2A2551"
+        "OwnerKey" = "8:_8C0F2BD5E23F423FA84FE361368DC03D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3257,6 +3269,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_E924A51544E74805B1E851F98FB32ABD"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_E83489DBA500EC7BB8D2DD4B016A034A"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -4054,19 +4072,25 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_518A5155C5324C62933D0FF95E2A2551"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_3AC83D074AD544EEB6A803F0EDA74F07"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -8665,6 +8689,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7AEBB8B86F0F48B7B8BD1E39327E5050"
+            {
+            "SourcePath" = "8:..\\Phalanger.CompilerTask\\Phalanger.targets"
+            "TargetName" = "8:Phalanger.targets"
+            "Tag" = "8:"
+            "Folder" = "8:_3DFEC60986F842BBBE05711F2259CAB9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7B1FB7FB6DCB4D1C82D78A48DF8DF338"
             {
             "AssemblyRegister" = "3:1"
@@ -9547,6 +9591,37 @@
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_7972C95AAB7E4B7DBCC785EA02AB2756"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8C0F2BD5E23F423FA84FE361368DC03D"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:PHP.VisualStudio.PhalangerTasks, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_8C0F2BD5E23F423FA84FE361368DC03D"
+                    {
+                    "Name" = "8:PHP.VisualStudio.PhalangerTasks.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\Phalanger.CompilerTask\\bin\\Release\\PHP.VisualStudio.PhalangerTasks.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_3DFEC60986F842BBBE05711F2259CAB9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13863,6 +13938,50 @@
                             "Property" = "8:_3D0E483449FA48BC80F2BBC3CD7745A8"
                                 "Folders"
                                 {
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            "{1525181F-901A-416C-8A58-119130FE478E}:_E859B56CC6B94395982A1AA6E3942F4A"
+            {
+            "Name" = "8:#1912"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:ProgramFilesFolder"
+                "Folders"
+                {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_9946567AA71D4294AC1AB9641E9FDD8E"
+                    {
+                    "Name" = "8:MSBuild"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_E0340A2F78F64F90A78C4127AFBD7E7B"
+                        "Folders"
+                        {
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_16544C95756E453DA3857827F9445ADB"
+                            {
+                            "Name" = "8:Phalanger"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_A72E1C58A3664282950B0D543EBFA415"
+                                "Folders"
+                                {
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_3DFEC60986F842BBBE05711F2259CAB9"
+                                    {
+                                    "Name" = "8:2.1"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_9D05460ED96F4F6993341710F5ED3146"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
                                 }
                             }
                         }
