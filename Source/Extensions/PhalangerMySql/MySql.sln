@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3ADF68D2-D345-4EBC-8AA6-000572C018C5}"
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
@@ -14,7 +14,7 @@ Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 3
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/TFS01
+		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = Extension\\Extension.MySql.csproj
 		SccProjectName1 = Extension

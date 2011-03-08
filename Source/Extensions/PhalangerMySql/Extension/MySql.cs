@@ -121,7 +121,7 @@ namespace PHP.Library.Data
 
     static MySql()
     {
-      RequestContext.RequestEnd += new Notification(Clear);
+      RequestContext.RequestEnd += new Action(Clear);
     }
 		
     private static void UpdateConnectErrorInfo(PhpMyDbConnection connection)

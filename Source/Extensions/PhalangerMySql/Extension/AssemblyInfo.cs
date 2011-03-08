@@ -20,10 +20,10 @@ using PHP.Core;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("The Phalanger Project Team")]
 [assembly: AssemblyProduct("Phalanger")]
-[assembly: AssemblyCopyright("Copyright (c) 2005-2006 Tomas Matousek")]
+[assembly: AssemblyCopyright("Copyright (c) 2005-2011 Tomas Matousek, Jakub Misek")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]		
-[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyCulture("")]
+[assembly: AssemblyVersion("2.1.0.0")]
 [assembly: AssemblyDelaySign(false)]
 
 //#if DEBUG
