@@ -1,0 +1,510 @@
+﻿<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>local</ProjectType>
+    <ProjectVersion>7.10.3077</ProjectVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C4BBA055-D216-4146-8E37-9F7FAE3392A2}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <AssemblyName>MySql.Data</AssemblyName>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>0.0</OldToolsVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Extensions.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <NoStdLib>false</NoStdLib>
+    <Optimize>false</Optimize>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>false</DebugSymbols>
+    <NoStdLib>false</NoStdLib>
+    <Optimize>true</Optimize>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Configuration.Install">
+      <Name>System.Configuration.Install</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Transactions">
+      <Name>System.Transactions</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.Xml</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Global.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MyNetworkStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\Cache!2.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\ContextString.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\DBVersion.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\LowResolutionStopwatch.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\NamedPipeStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\NativeMethods.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\Platform.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\QueryNormalizer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\SHA1Hash.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\SharedMemory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\SharedMemoryStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\StreamCreator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\Token.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Common\TokenType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\CharacterSet.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\CharSetMap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\ClientFlags.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\ColumnFlags.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\CommandTimer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\CompressedStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\Crypt.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\CustomInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\DBCmd.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\Driver.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\DriverTransactionManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\Field_Type.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\IDriver.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\ISSchemaProvider.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlBulkLoader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlBulkLoaderConflictOption.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlBulkLoaderPriority.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlCertificateStoreLocation.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlClientFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlCommandBuilder.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlConnection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlConnectionProtocol.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlConnectionStringBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlDataAdapter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlDataReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlDbType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlDriverType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlError.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlErrorCode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlField.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlInfoMessageEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlInfoMessageEventHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlPacket.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlParameter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlParameterCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlParameterConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlPool.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlPoolManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlPromotableTransaction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlRowUpdatedEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlRowUpdatedEventHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlRowUpdatingEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlRowUpdatingEventHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlScript.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlScriptErrorEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlScriptErrorEventHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlScriptEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlSslMode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlStatementExecutedEventHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlTokenizer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlTrace.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlTraceEventType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlTransaction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\MySqlTransactionScope.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\NativeDriver.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\PerformanceMonitor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\PreparableStatement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\ProcedureCache.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\Properties\Resources.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\PropertyDefaultValue.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\ResultSet.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\SchemaProvider.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\ScriptStatement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\ServerStatusFlags.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\Statement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\StoredProcedure.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\TimedStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\TracingDriver.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\UsageAdvisorWarningFlags.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\MySqlClient\ValidKeywordsAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\IMySqlValue.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MetaData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlBinary.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlBit.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlByte.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlConversionException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlDateTime.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlDecimal.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlDouble.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlGuid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlInt16.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlInt32.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlInt64.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlSingle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlString.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlTimeSpan.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlUByte.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlUInt16.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlUInt32.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MySql\Data\Types\MySqlUInt64.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\Adler32.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\Deflate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\InfBlocks.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\InfCodes.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\Inflate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\InfTree.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\StaticTree.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\SupportClass.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\Tree.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\ZInputStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\zlibConst.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\ZOutputStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\ZStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="zlib\ZStreamException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="MySql.Data.MySqlClient.Properties.ReservedWords.txt" />
+    <EmbeddedResource Include="MySql.Data.MySqlClient.Properties.Resources.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CHANGES" />
+    <None Include="COPYING" />
+    <None Include="Extensions.snk" />
+    <None Include="README" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>"$(SolutionDir)..\..\..\Tools\gacutil" -f -i "$(TargetPath)"
+
+if $(ConfigurationName) == Release (
+xcopy /q /y "$(TargetPath)" "$(SolutionDir)..\..\..\Deployment\Bin"
+)
+
+if $(ConfigurationName) == Debug (
+xcopy /q /y "$(TargetPath)" "$(SolutionDir)..\..\..\Deployment\Debug"
+)</PostBuildEvent>
+  </PropertyGroup>
+</Project>

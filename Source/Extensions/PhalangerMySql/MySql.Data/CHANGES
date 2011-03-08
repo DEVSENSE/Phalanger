@@ -1,0 +1,106 @@
+- Fix installer bug related to .NET FW 4.0 (bug #56580)
+- Added MySqlHelper.ExecuteReader that takes an external connection and array of paramters (bug #56755)
+- fixed database methods in EF4 provider services to use the database name from the connection string (bug #56589)
+- fixed problem with using bit parameters as output (bug #56756)
+- Handle MySqlCommand.CommandTimeout = 0 properly (Bug #57265)
+- Do not call AcceptChanged on tables in MySqlDataAdapter.Update(),
+  but on individual rows (Bug #57092)
+- fixed MySqlCommand.Clone so that the default command timeoout functionality is not disabled when
+  you clone a command (bug #56806)
+
+Version 6.3.4
+- Fix authorization popup after modifying stored procedure in VS (Bug #44715)
+- Dispose EventLog after use in MySql.Web.dll provider classes, to avoid wasting resources
+  (Bug #55793)
+- Fix calculation of lockAge in SessionProvider (Bug #55701)
+- Handle cases where server returns unparsable (out-of-range) double values
+  (Bug#55644)
+- Fix DataAdapter.Update() slowdown due to many superfluous DataTable.AcceptChanges() calls (Bug #55609)
+- fixed visual studio plugin so that stored procedure editing works on older versions of MySQL (bug #55170)
+- Improve performance of write operaitons (e.g insert) if compression is enabled (Bug #48243)
+- Changed timestamp columns in entity framework models to be DateTime objects instead of DateTimeOffset (bug #52550)
+
+Version 6.3.3 (beta 2)
+- fix "There is already an open DataReader..." after exceptions in DataReader.Close()
+ (bug#55558)
+- Improve performance of MySqlHelper.EscapeString()
+- Improve performance of write operations (e.g insert) if compression is enabled
+  (Bug #48243)
+- Improve performance of MySqlHelper.EscapeString()
+- Fix membership provider creation failure, when default database character set is different from latin1 (Bug #53174)
+- Fix "Connection must be valid and open" exception When UpdateBatchSize > 1 
+  and MySqlDataAdapter is not using an open connection (Bug #38411)
+- Make sure MySqlDataAdapter.Update() works for custom stored procedure driven update commands 
+  that make use of UpdateRowSource.FirstReturnedRecord (Bug#54895)
+- Fix null reference exception when TransactionScope is used by multiple threads
+ (bug#54681, fix contributed by Erskine Thompson)
+- Ensure exceptions are not silently eaten inside MySqlDataReader.Read()  (Bug#53439)
+- Cancel query in ThreadAbortException handler (Bug#54012)
+- Call DataTable.AcceptChanges() for affected tables at the end of MySqlAdapter.Update, 
+  to match the documented IDataAdater behavior (bug#54863)
+- Fix race condition (concurrent reading/modification of the same DataSet) in StoredProcedure.GetParameters()
+  (bug#49118)
+- Fix problems with MySqlDataAdapter insert command, when batch size is > 1, and 
+  INSERT statement has expression with parentheses (e.g arithmetical expressions) (bug #54386)
+- fix crashes on long queries, when logging is turned on (bug #53865, bug #54152)
+- try to avoid exception if Connection is garbage-collected (bug #53457)
+- when command is killed, e.g as result of timeout, error code returned from server 
+  is not necessarily 1317 (QueryInterrupted). It might as well be 1028 (FileSortAborted).
+  Fix timeout handling to handle both error codes in the same fashion (bug #53357)
+- changed installer code to skip over config folders that do not contain a machine.config (bug #52352)
+- added public MySqlHelper.ExecuteDataReader method that takes an external connection (bug #54570)
+- applied patch from 5.x series that reset the connection to the base encoding when doing a 
+  connection reset (bug #47153)
+- fixed bug that caused the web site config wizard to not appear when working with web applications
+  as opposed to websites (bug #54571)
+- changed DbCommandBuilder and added a MySqlDataObjectIdentifierConverter so we don't output
+  the databasename in our typed datasets.  This allows users to move the dataset to a new
+  database/server with no trouble (bug #33870)
+- fixed recognition of char(36) columns to be guids when used in views with entity models (bug #52085)
+- fixed a couple of installer problems (bug #53975)
+- fixed installer so that it will work if .NET 4.0 is installed by itself
+
+Version 6.3.2 (beta 1)
+- added feature where sql queries that are longer than 300 chars are normalized and a new
+  query normalized log line is issues right after query opened to give the query normalized text
+- fixed bug in sql generation when using a negated binary fragment in EF (bug #49850)
+- fixed bug in tokenization where a nonterminated string in sql will cause a CLR exception
+  rather than throwing a syntax exception (bug #51788)
+- added two requested features -- MySqlDataReader.GetFieldType(string columnname) &
+  MySqlDataReader.GetOrdinal() includes the name of the column in the exception when not found
+  (bug #47467)
+- Replaced check for Settings.Logging when logging information in the 
+  procedure cache.  This is already in 6.1 and 6.0 but got "misplaced" in 6.2
+  (bug #52475)
+- Added trace message in exception blog in MySqlConnection.Abort() method (bug #52769)
+- changed how we respond when the user selects 'functions return string=true'.  Now we no longer force the type to var string but just let the underlying type come through but we strip the binary flag (bug #52187)
+- changed mapping of latin1 from latin1 to windows-1252 (bug #51927)
+- flushed out many more entires in error code enum (bug #51988)
+- SessionProvider : Avoid SQLNullValueException if lockId returned by select is 
+  NULL (bug#52175)
+- changed how we respond when the user selects 'functions return string=true'.  Now we no longer force the type to var string but just let the underlying type come through but we strip the binary flag (bug #52187)
+- improved our procedure caching so that if you drop and recreate a proc with a different number of parameters
+  it will find the new proc as long as your are actually using the right number of parameters (bug #52562)
+
+Version 6.3.1 (alpha 2)
+- fixed bug where giving a connection string option like (option=) and then trying to read
+  the option back via the property would fail (bug #51209)
+- fixed bug where a connection could not be reused in the IDE in some circumstances (bug #41629)
+- small performance fix (bug #51149)
+- fixed issue with script execution & multi-char delimiters (bug #46429)
+- fixed bug in table editor where clicking back on the last row added can sometimes
+  cause a ArgumentOutOfRange exception
+- fixed bug where a commands batchable command text was not getting reset when the 
+  command text was reset (bug #50444)
+- fixed bug where using a currently non-batchable command in a batch would throw an exception
+  (bug #50123)
+- fixed retrieve data command in server explorer so that it works in VS2010
+- added sql server mode to allow for [] style symbols in VS wizards
+- fixed bug where binary or blob columns would prevent columns after that from appearing in the
+  query builder (bug #50171)
+- ScriptCompleted event handler now uses EventArgs.Empty instead of null
+- fixed parsing bug that was caused by special characters being jammed up beside a quoted identifier (bug #51610)
+
+version 6.3.0 (alpha 1)
+- Added the ability to enable query analysis at runtime
+- added VS2010 compatibility
