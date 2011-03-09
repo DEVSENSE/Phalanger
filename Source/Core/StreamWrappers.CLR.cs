@@ -244,10 +244,18 @@ namespace PHP.Core
         /// </summary>
         public static FileModeFlags GetFileMode(FileInfo info)
         {
-            // Get the collection of authorization rules that apply to the given directory
-            System.Security.AccessControl.AuthorizationRuleCollection acl = info.GetAccessControl().GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
+            try
+            {
+                // Get the collection of authorization rules that apply to the given directory
+                System.Security.AccessControl.AuthorizationRuleCollection acl = info.GetAccessControl().GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
 
-            return GetFileMode(acl);
+                return GetFileMode(acl);
+            }
+            catch
+            {
+                //do nothing, we just don't want to throw any exception from getting access list
+            }
+            return 0;
         }
 
         /// <summary>
@@ -255,10 +263,17 @@ namespace PHP.Core
         /// </summary>
         public static FileModeFlags GetFileMode(DirectoryInfo info)
         {
-            // Get the collection of authorization rules that apply to the given directory
-            System.Security.AccessControl.AuthorizationRuleCollection acl = info.GetAccessControl().GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
-
-            return GetFileMode(acl);
+            try
+            {
+                // Get the collection of authorization rules that apply to the given directory
+                System.Security.AccessControl.AuthorizationRuleCollection acl = info.GetAccessControl().GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
+                return GetFileMode(acl);
+            }
+            catch
+            {
+                //do nothing, we just don't want to throw any exception from getting access list
+            }
+            return 0;
         }
 
         /// <summary>
