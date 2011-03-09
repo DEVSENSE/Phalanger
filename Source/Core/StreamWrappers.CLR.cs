@@ -244,18 +244,20 @@ namespace PHP.Core
         /// </summary>
         public static FileModeFlags GetFileMode(FileInfo info)
         {
+            System.Security.AccessControl.AuthorizationRuleCollection acl;
+
             try
             {
                 // Get the collection of authorization rules that apply to the given directory
-                System.Security.AccessControl.AuthorizationRuleCollection acl = info.GetAccessControl().GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
-
-                return GetFileMode(acl);
+                acl = info.GetAccessControl().GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
             }
-            catch
+            catch (UnauthorizedAccessException e)
             {
-                //do nothing, we just don't want to throw any exception from getting access list
+                //we don't want to throw this exception from getting access list
+                return 0;
             }
-            return 0;
+
+            return GetFileMode(acl);
         }
 
         /// <summary>
@@ -263,17 +265,21 @@ namespace PHP.Core
         /// </summary>
         public static FileModeFlags GetFileMode(DirectoryInfo info)
         {
+            System.Security.AccessControl.AuthorizationRuleCollection acl;
+
             try
             {
                 // Get the collection of authorization rules that apply to the given directory
-                System.Security.AccessControl.AuthorizationRuleCollection acl = info.GetAccessControl().GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
-                return GetFileMode(acl);
+                acl = info.GetAccessControl().GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
             }
-            catch
+            catch(UnauthorizedAccessException e)
             {
-                //do nothing, we just don't want to throw any exception from getting access list
+                //we don't want to throw this exception from getting access list
+                return 0;
             }
-            return 0;
+
+            return GetFileMode(acl);
+
         }
 
         /// <summary>
