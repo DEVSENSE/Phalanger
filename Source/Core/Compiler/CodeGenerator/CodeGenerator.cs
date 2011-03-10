@@ -2386,7 +2386,9 @@ namespace PHP.Core
 			ClrMethod clr_template = template.Member as ClrMethod;
 			if (clr_template == null)
 			{
-				EmitOverrideStubsForPhpTemplate(stubs, target, targetType, declaringType, template, newSlot);
+                if (!target.IsStatic)
+				    EmitOverrideStubsForPhpTemplate(stubs, target, targetType, declaringType, template, newSlot);
+
 				return;
 			}
 
@@ -2496,7 +2498,7 @@ namespace PHP.Core
 			PhpMethod/*!*/ target, DType/*!*/ targetType, PhpType/*!*/ declaringType, DMemberRef/*!*/ template,
 			bool newSlot)
 		{
-			PhpMethod php_template = (PhpMethod)template.Member;
+            PhpMethod php_template = (PhpMethod)template.Member;
 
             // Emit method stub if needed here ... (resolve .NET incompatibility of base method and overriding method)
             // 
@@ -2543,7 +2545,7 @@ namespace PHP.Core
                         attrs = MethodAttributes.PrivateScope | MethodAttributes.Virtual;
                     }
 
-					if (newSlot) attrs |= MethodAttributes.NewSlot;
+                    if (newSlot) attrs |= MethodAttributes.NewSlot; 
 					else attrs &= ~MethodAttributes.NewSlot;
 
 					// determine stub return and parameters type
