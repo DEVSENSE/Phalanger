@@ -251,7 +251,7 @@ namespace PHP.Core
                 // Get the collection of authorization rules that apply to the given directory
                 acl = info.GetAccessControl().GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
             }
-            catch (UnauthorizedAccessException e)
+            catch (UnauthorizedAccessException)
             {
                 //we don't want to throw this exception from getting access list
                 return 0;
@@ -272,7 +272,7 @@ namespace PHP.Core
                 // Get the collection of authorization rules that apply to the given directory
                 acl = info.GetAccessControl().GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier));
             }
-            catch(UnauthorizedAccessException e)
+            catch(UnauthorizedAccessException)
             {
                 //we don't want to throw this exception from getting access list
                 return 0;

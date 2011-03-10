@@ -577,13 +577,14 @@ namespace PHP.Core
         /// </param>
         public DAssembly LoadScriptLibrary(Assembly/*!*/ realAssembly, string libraryRoot)
         {
-            ScriptAssembly scriptAssembly = ScriptAssembly.LoadFromAssembly(applicationContext, realAssembly);
+            ScriptAssembly scriptAssembly;
 
             lock (this)
             {
                 if (loadedAssemblies.ContainsKey(realAssembly))
                     return loadedAssemblies[realAssembly];
 
+                scriptAssembly = ScriptAssembly.LoadFromAssembly(applicationContext, realAssembly);
                 loadedAssemblies.Add(realAssembly, scriptAssembly);
             }
 

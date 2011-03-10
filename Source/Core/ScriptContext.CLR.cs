@@ -242,6 +242,7 @@ namespace PHP.Core
 			else
 			{
 				main_script = mainRoutine.Method.DeclaringType;
+                app_context.AssemblyLoader.LoadScriptLibrary(System.Reflection.Assembly.GetEntryAssembly(), ".");
 			}
 
 			ScriptContext context = InitApplication(app_context, main_script, relativeSourcePath, sourceRoot);
