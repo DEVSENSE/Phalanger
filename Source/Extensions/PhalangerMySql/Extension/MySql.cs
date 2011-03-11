@@ -428,7 +428,7 @@ namespace PHP.Library.Data
         string connection_string = PhpMyDbConnection.BuildConnectionString(
           server, user, password,
 
-          String.Format("allowzerodatetime=true;connect timeout={0};Port={1};SSL Mode={2};Use Compression={3}{4}{5}",
+          String.Format("allowzerodatetime=true;allow user variables=true;connect timeout={0};Port={1};SSL Mode={2};Use Compression={3}{4}{5}",
             (local.ConnectTimeout > 0) ? local.ConnectTimeout : Int32.MaxValue,
             port,
             (flags & ConnectFlags.SSL) != 0 ? "Preferred" : "None",     // (since Connector 6.2.1.) ssl mode={None|Preferred|Required|VerifyCA|VerifyFull}   // (Jakub) use ssl={true|false} has been deprecated
