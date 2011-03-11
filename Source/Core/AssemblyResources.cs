@@ -21,18 +21,16 @@ namespace PHP.Core
 	/// </summary>
 	public class CoreResources
 	{
-		/// <summary>
-		/// Resource manager of strings.
-		/// </summary>
-		static ResourceManager strings;
-
-		/// <summary>
-		/// Initializes the resource manager.
-		/// </summary>
-		static CoreResources()
-		{
-            strings = new ResourceManager("PHP.Core.Strings", Assembly.GetExecutingAssembly());
-		}
+        /// <summary>
+        /// Resource manager of strings.
+        /// </summary>
+        static ResourceManager strings
+        {
+            get
+            {
+                return PHP.Core.Localizations.Strings.ResourceManager;
+            }
+        }
 
 		/// <summary>
 		/// Retrieves a string resource.

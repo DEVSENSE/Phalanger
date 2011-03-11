@@ -699,7 +699,7 @@ namespace PHP.Core
 
 		public static readonly ErrorInfo ConstructCannotBeStatic = new ErrorInfo(1024, "construct_cannot_be_static", ErrorSeverity.Error);
 		public static readonly ErrorInfo OverrideFinalMethod = new ErrorInfo(1025, "override_final_method", ErrorSeverity.Error);
-		public static readonly ErrorInfo MakeStaticMethodNonStatic = new ErrorInfo(1026, "make_static_method_non-static", ErrorSeverity.Error);
+		public static readonly ErrorInfo MakeStaticMethodNonStatic = new ErrorInfo(1026, "make_static_method_non_static", ErrorSeverity.Error);
 		public static readonly ErrorInfo MakeNonStaticMethodStatic = new ErrorInfo(1027, "make_nonstatic_method_static", ErrorSeverity.Error);
 		public static readonly ErrorInfo OverridingNonAbstractMethodByAbstract = new ErrorInfo(1028, "nonabstract_method_overridden_with_abstract", ErrorSeverity.Error);
 		public static readonly ErrorInfo OverridingMethodRestrictsVisibility = new ErrorInfo(1029, "overriding_method_restrict_visibility", ErrorSeverity.Error);
