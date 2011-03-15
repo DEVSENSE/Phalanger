@@ -104,6 +104,10 @@
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Debug.PHP5|Win32'">false</EmbedManifest>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release.PHP4|Win32'">false</EmbedManifest>
     <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release.PHP5|Win32'">false</EmbedManifest>
+    <LinkKeyFile Condition="'$(Configuration)|$(Platform)'=='Debug.PHP4|Win32'">ExtSupport4.snk</LinkKeyFile>
+    <LinkKeyFile Condition="'$(Configuration)|$(Platform)'=='Debug.PHP5|Win32'">ExtSupport4.snk</LinkKeyFile>
+    <LinkKeyFile Condition="'$(Configuration)|$(Platform)'=='Release.PHP4|Win32'">ExtSupport4.snk</LinkKeyFile>
+    <LinkKeyFile Condition="'$(Configuration)|$(Platform)'=='Release.PHP5|Win32'">ExtSupport4.snk</LinkKeyFile>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug.PHP5|Win32'">
     <PreBuildEvent>

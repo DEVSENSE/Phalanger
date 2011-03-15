@@ -67,9 +67,6 @@
     <None Include="res\Installer.Bootstrapper.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="res\Installer.Bootstrapper.rc2">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Installer.Bootstrapper.htm" />
   </ItemGroup>
   <ItemGroup>

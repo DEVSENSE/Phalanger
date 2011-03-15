@@ -126,7 +126,6 @@
     <None Include="res\4a.bmp" />
     <None Include="res\4b.bmp" />
     <None Include="res\Installer.Bootstrapper.ico" />
-    <None Include="res\Installer.Bootstrapper.rc2" />
     <None Include="Installer.Bootstrapper.htm">
       <DeploymentContent>true</DeploymentContent>
     </None>

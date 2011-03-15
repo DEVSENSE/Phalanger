@@ -87,12 +87,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_0B469E44D511362778B26F18355237D9"
-        "OwnerKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_0B99003264F248349B06956473016557"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -496,7 +490,7 @@
         "Entry"
         {
         "MsmKey" = "8:_3AF2365FB6F859CF82A051D70FC3766B"
-        "OwnerKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
+        "OwnerKey" = "8:_AC71D47C85CCCF4CB572797B1A4CA5B1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1474,7 +1468,7 @@
         "Entry"
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
+        "OwnerKey" = "8:_AC71D47C85CCCF4CB572797B1A4CA5B1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2229,12 +2223,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
-        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_98A67CA9148C4E608AB25DC1C4B617F3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2379,12 +2367,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A62A281D74DD5E75592999AC62EDCA72"
-        "OwnerKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_A84484868CAC4BC4AE19DFBEA71B56FF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2423,6 +2405,12 @@
         {
         "MsmKey" = "8:_ABB24252C8644CA38513F5C44B7B1583"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_AC71D47C85CCCF4CB572797B1A4CA5B1"
+        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2674,7 +2662,7 @@
         "Entry"
         {
         "MsmKey" = "8:_C561C1C2D9AFFB8AAB9FE28C8B36AF91"
-        "OwnerKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
+        "OwnerKey" = "8:_AC71D47C85CCCF4CB572797B1A4CA5B1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2951,78 +2939,6 @@
         {
         "MsmKey" = "8:_E03CD8E06FA24297A75EEE480FE1253E"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "OwnerKey" = "8:_1E553EF9EB43435385C0D366215CA314"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "OwnerKey" = "8:_FA3F9F9F24494E38BBC7E85DC776F7ED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "OwnerKey" = "8:_E48218A848CF4406B0EC7F7370AC149F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "OwnerKey" = "8:_E1C41B59714944719C20D98E2CA5D431"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "OwnerKey" = "8:_C397ED1669D14F548FB2C877578D440A"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "OwnerKey" = "8:_C13E2F5C49E04B1D865E07CDCA9D52DC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "OwnerKey" = "8:_9A06E222A05A49DAA84CAA64E5D1CE71"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "OwnerKey" = "8:_60CBE414D8D1402BBD100BE51743791E"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "OwnerKey" = "8:_4E889E417B704E7DA996F24570BF2103"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "OwnerKey" = "8:_480DD1389F544A2FBF30AC07E109F6F5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "OwnerKey" = "8:_3EF4266B92B44C10B5C1B3F27A30E60C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "OwnerKey" = "8:_2127DDFDD32942BBA4ACEF484A5F5627"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3598,7 +3514,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
+        "OwnerKey" = "8:_AC71D47C85CCCF4CB572797B1A4CA5B1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -4072,24 +3988,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E075D60541B9908F5791F26743F270EC"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A62A281D74DD5E75592999AC62EDCA72"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_0B469E44D511362778B26F18355237D9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_1CD612BDC0364D1CA4BAB6905072BADB"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4186,13 +4084,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -4652,37 +4550,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0B469E44D511362778B26F18355237D9"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:PhpNetCore.IL, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_0B469E44D511362778B26F18355237D9"
-                    {
-                    "Name" = "8:PhpNetCore.IL.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:PhpNetCore.IL.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0B99003264F248349B06956473016557"
@@ -10079,37 +9946,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9889BDB3C0925616DD997E6E396BFE08"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:php4ts, Version=2.1.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
-                "ScatterAssemblies"
-                {
-                    "_9889BDB3C0925616DD997E6E396BFE08"
-                    {
-                    "Name" = "8:php4ts.DLL"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:php4ts.DLL"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_98A67CA9148C4E608AB25DC1C4B617F3"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Extensions\\zlib1.dll"
@@ -10678,37 +10514,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A62A281D74DD5E75592999AC62EDCA72"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:ShmChannel, Version=2.0.0.0, Culture=neutral, PublicKeyToken=dbfd763524e93ae1, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_A62A281D74DD5E75592999AC62EDCA72"
-                    {
-                    "Name" = "8:ShmChannel.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:ShmChannel.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A84484868CAC4BC4AE19DFBEA71B56FF"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Extensions\\php_sockets.dll"
@@ -10869,6 +10674,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_AC71D47C85CCCF4CB572797B1A4CA5B1"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:php4ts, Version=2.1.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
+                "ScatterAssemblies"
+                {
+                    "_AC71D47C85CCCF4CB572797B1A4CA5B1"
+                    {
+                    "Name" = "8:php4ts.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:php4ts.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_ACFA387F548E482581AA8073BE7A4A1E"
@@ -12600,37 +12436,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E075D60541B9908F5791F26743F270EC"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:PhpNetCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_E075D60541B9908F5791F26743F270EC"
-                    {
-                    "Name" = "8:PhpNetCore.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:PhpNetCore.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E10D4E0E1CE04AFC8766969F159715C6"
             {
             "SourcePath" = "8:..\\..\\Deployment\\WebSamples\\Tests\\Functions\\indirect.php"
@@ -14219,7 +14024,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Phalanger 2.1 (March 2011) .NET 4.0"
         "ProductCode" = "8:{8FF57A10-C638-4B85-BC8E-5382F308D607}"
-        "PackageCode" = "8:{D36D83F3-77F7-43AB-B73F-F19E698C04A1}"
+        "PackageCode" = "8:{86341D00-25EF-44E5-AA9A-A6375327D8FC}"
         "UpgradeCode" = "8:{1D57DEEC-585D-4D7D-A4DF-F6DB535051BA}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

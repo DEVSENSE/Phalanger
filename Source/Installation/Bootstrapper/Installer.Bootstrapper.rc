@@ -98,7 +98,7 @@ BEGIN
     IDS_TEXT2A              "<a href="""" id=""InstallCore"">Phalanger and IIS integration</a><br>Install the Phalanger core, compiler, class library and tools, and optionally integrate Phalanger with IIS."
     IDS_TEXT2B              "<a href="""" id=""InstallCore"">Phalanger and IIS integration</a><br>Already installed. Click to repair or remove."
     IDS_TEXT2C              "<span class=""inactive""><b>Phalanger and IIS integration</b><br>Install the Phalanger core, compiler, class library and tools, and optionally integrate Phalanger with IIS.</span>"
-    IDS_TEXT3A              "<a href="""" id=""InstallVsip"">Visual Studio 2010 Phalanger Integration</a><br>Install Phalanger integration for Visual Studio 2010."
+    IDS_TEXT3A              "<a href="""" id=""InstallIntegration"">Visual Studio 2010 Phalanger Integration</a><br>Install Phalanger integration for Visual Studio 2010."
     IDS_TEXT3B              "<b>Visual Studio 2010 Phalanger Integration</b><br>Already installed."
 END
 
