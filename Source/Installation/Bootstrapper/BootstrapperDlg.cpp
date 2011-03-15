@@ -29,8 +29,8 @@ BEGIN_DHTML_EVENT_MAP(CBootstrapperDlg)
 	DHTML_EVENT_ONCLICK(_T("Exit"), OnLinkExit)
 	DHTML_EVENT_ONCLICK(_T("InstallFw"), OnLinkFw)
 	DHTML_EVENT_ONCLICK(_T("InstallCore"), OnLinkCore)
-	DHTML_EVENT_ONCLICK(_T("InstallVsip"), OnLinkVsip)
-	//DHTML_EVENT_ONCLICK(_T("InstallIntegration"), OnLinkIntegration)
+	//DHTML_EVENT_ONCLICK(_T("InstallVsip"), OnLinkVsip)
+	DHTML_EVENT_ONCLICK(_T("InstallIntegration"), OnLinkIntegration)
 END_DHTML_EVENT_MAP()
 
 
@@ -85,19 +85,19 @@ HRESULT CBootstrapperDlg::OnLinkExit(IHTMLElement* pElement)
 
 HRESULT CBootstrapperDlg::OnLinkFw(IHTMLElement* pElement)
 {
-	Launch("dotNetFx40_Full_setup.exe");
+	Launch("Setup\\dotNetFx40_Full_setup.exe");
 	return -1;
 }
 
 HRESULT CBootstrapperDlg::OnLinkCore(IHTMLElement* pElement)
 {
-	Launch("Phalanger.msi");
+	Launch("Setup\\Phalanger.msi");
 	return -1;
 }
 
-HRESULT CBootstrapperDlg::OnLinkVsip(IHTMLElement* pElement)
+HRESULT CBootstrapperDlg::OnLinkIntegration(IHTMLElement* pElement)
 {
-	Launch("Phalanger.VS2010.msi");
+	Launch("Setup\\Phalanger.VS2010.vsix");
 	return -1;
 }
 
@@ -201,17 +201,17 @@ void CBootstrapperDlg::SetCore(UINT img, UINT text)
 	SetElementHtml("Text2", GetResourceAsBSTR(text));
 }
 
-void CBootstrapperDlg::SetVsip(UINT img, UINT text)
+//void CBootstrapperDlg::SetVsip(UINT img, UINT text)
+//{
+//	SetElementHtml("Img3", GetResourceAsBSTR(img));
+//	SetElementHtml("Text3", GetResourceAsBSTR(text));
+//}
+
+void CBootstrapperDlg::SetIntegration(UINT img, UINT text)
 {
 	SetElementHtml("Img3", GetResourceAsBSTR(img));
 	SetElementHtml("Text3", GetResourceAsBSTR(text));
 }
-
-//void CBootstrapperDlg::SetIntegration(UINT img, UINT text)
-//{
-//	SetElementHtml("Img4", GetResourceAsBSTR(img));
-//	SetElementHtml("Text4", GetResourceAsBSTR(text));
-//}
 
 // Not thread-safe!
 BSTR CBootstrapperDlg::GetResourceAsBSTR(UINT resourceId)
@@ -229,23 +229,23 @@ BSTR CBootstrapperDlg::GetResourceAsBSTR(UINT resourceId)
 void CBootstrapperDlg::UpdateState()
 {
 	static bool _first_time = true;
-	static bool _fw_installed, _core_installed, _vsip_installed, _vsnet_installed, _integration_installed;
-	bool fw_installed, core_installed, vsip_installed, vsnet_installed, integration_installed;
+	static bool _fw_installed, _core_installed, /*_vsip_installed,*/ _vsnet_installed, _integration_installed;
+	bool fw_installed, core_installed, /*vsip_installed,*/ vsnet_installed, integration_installed;
 
 	fw_installed = FwInstalled();
 	core_installed = CoreInstalled();
-	vsip_installed = VsipInstalled();
+	//vsip_installed = VsipInstalled();
 	vsnet_installed = VsNetInstalled();
 	integration_installed = IntegrationInstalled();
 
 	if (!_first_time && fw_installed == _fw_installed && core_installed == _core_installed &&
-		vsip_installed == _vsip_installed && vsnet_installed == _vsnet_installed &&
+		/*vsip_installed == _vsip_installed &&*/ vsnet_installed == _vsnet_installed &&
 		integration_installed == _integration_installed) return;
 
 	_first_time = false;
 	_fw_installed = fw_installed;
 	_core_installed = core_installed;
-	_vsip_installed = vsip_installed;
+	//_vsip_installed = vsip_installed;
 	_vsnet_installed = vsnet_installed;
 	_integration_installed = integration_installed;
 
@@ -255,8 +255,8 @@ void CBootstrapperDlg::UpdateState()
 	{
 		SetFw(IDS_IMG1A, IDS_TEXT1A);
 		SetCore(IDS_IMG2B, IDS_TEXT2C);
-		SetVsip(IDS_IMG3B, IDS_TEXT3C);
-		//SetIntegration(IDS_IMG4B, IDS_TEXT4C);
+		//SetVsip(IDS_IMG3B, IDS_TEXT3C);
+		SetIntegration(IDS_IMG3B, IDS_TEXT3C);
 		return;
 	}
 
@@ -265,8 +265,8 @@ void CBootstrapperDlg::UpdateState()
 	else
 	{
 		SetCore(IDS_IMG2A, IDS_TEXT2A);
-		SetVsip(IDS_IMG3B, IDS_TEXT3C);
-		//SetIntegration(IDS_IMG4B, IDS_TEXT4C);
+		//SetVsip(IDS_IMG3B, IDS_TEXT3C);
+		SetIntegration(IDS_IMG3B, IDS_TEXT3C);
 		return;
 	}
 
@@ -274,22 +274,22 @@ void CBootstrapperDlg::UpdateState()
 	if (vsnet_installed)
 	{
 		// VSIP
-		if (vsip_installed) SetVsip(IDS_IMG3A, IDS_TEXT3B);
-		else SetVsip(IDS_IMG3A, IDS_TEXT3A);
+		//if (vsip_installed) SetVsip(IDS_IMG3A, IDS_TEXT3B);
+		//else SetVsip(IDS_IMG3A, IDS_TEXT3A);
 
 		// Integration
-		//if (integration_installed) SetIntegration(IDS_IMG4A, IDS_TEXT4B);
-		//else SetIntegration(IDS_IMG4A, IDS_TEXT4A);
+		if (integration_installed) SetIntegration(IDS_IMG3A, IDS_TEXT3B);
+		else SetIntegration(IDS_IMG3A, IDS_TEXT3A);
 	}
 	else
 	{
 		// VSIP
-		if (vsip_installed) SetVsip(IDS_IMG3A, IDS_TEXT3B);
-		else SetVsip(IDS_IMG3B, IDS_TEXT3D);
+		//if (vsip_installed) SetVsip(IDS_IMG3A, IDS_TEXT3B);
+		//else SetVsip(IDS_IMG3B, IDS_TEXT3D);
 		
 		// Integration
-		//if (integration_installed) SetIntegration(IDS_IMG4A, IDS_TEXT4B);
-		//else SetIntegration(IDS_IMG4B, IDS_TEXT4D);
+		if (integration_installed) SetIntegration(IDS_IMG3A, IDS_TEXT3B);
+		else SetIntegration(IDS_IMG3B, IDS_TEXT3D);
 	}
 }
 

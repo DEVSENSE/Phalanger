@@ -87,6 +87,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0B469E44D511362778B26F18355237D9"
+        "OwnerKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_0B99003264F248349B06956473016557"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -490,7 +496,7 @@
         "Entry"
         {
         "MsmKey" = "8:_3AF2365FB6F859CF82A051D70FC3766B"
-        "OwnerKey" = "8:_A8A397A0E53F5570E9415A74CEC3EF4D"
+        "OwnerKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -1468,6 +1474,12 @@
         "Entry"
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
+        "OwnerKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_8C0F2BD5E23F423FA84FE361368DC03D"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1481,12 +1493,6 @@
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_83B6C4038E774976B57638FBD0F7682D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_A8A397A0E53F5570E9415A74CEC3EF4D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2223,6 +2229,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
+        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_98A67CA9148C4E608AB25DC1C4B617F3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2367,14 +2379,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A84484868CAC4BC4AE19DFBEA71B56FF"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_A62A281D74DD5E75592999AC62EDCA72"
+        "OwnerKey" = "8:_E075D60541B9908F5791F26743F270EC"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_A8A397A0E53F5570E9415A74CEC3EF4D"
-        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
+        "MsmKey" = "8:_A84484868CAC4BC4AE19DFBEA71B56FF"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2662,13 +2674,13 @@
         "Entry"
         {
         "MsmKey" = "8:_C561C1C2D9AFFB8AAB9FE28C8B36AF91"
-        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
+        "OwnerKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_C561C1C2D9AFFB8AAB9FE28C8B36AF91"
-        "OwnerKey" = "8:_A8A397A0E53F5570E9415A74CEC3EF4D"
+        "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2939,6 +2951,78 @@
         {
         "MsmKey" = "8:_E03CD8E06FA24297A75EEE480FE1253E"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "OwnerKey" = "8:_1E553EF9EB43435385C0D366215CA314"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "OwnerKey" = "8:_FA3F9F9F24494E38BBC7E85DC776F7ED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "OwnerKey" = "8:_E48218A848CF4406B0EC7F7370AC149F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "OwnerKey" = "8:_E1C41B59714944719C20D98E2CA5D431"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "OwnerKey" = "8:_C397ED1669D14F548FB2C877578D440A"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "OwnerKey" = "8:_C13E2F5C49E04B1D865E07CDCA9D52DC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "OwnerKey" = "8:_9A06E222A05A49DAA84CAA64E5D1CE71"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "OwnerKey" = "8:_60CBE414D8D1402BBD100BE51743791E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "OwnerKey" = "8:_4E889E417B704E7DA996F24570BF2103"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "OwnerKey" = "8:_480DD1389F544A2FBF30AC07E109F6F5"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "OwnerKey" = "8:_3EF4266B92B44C10B5C1B3F27A30E60C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "OwnerKey" = "8:_2127DDFDD32942BBA4ACEF484A5F5627"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3436,12 +3520,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A8A397A0E53F5570E9415A74CEC3EF4D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_A613D0FFC4D646AA941848BA6F447911"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3515,6 +3593,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_9889BDB3C0925616DD997E6E396BFE08"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3988,6 +4072,24 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_E075D60541B9908F5791F26743F270EC"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_A62A281D74DD5E75592999AC62EDCA72"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_0B469E44D511362778B26F18355237D9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_1CD612BDC0364D1CA4BAB6905072BADB"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4084,13 +4186,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -4101,7 +4203,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:..\\..\\Deployment\\Debug\\Package\\Phalanger.msi"
+        "OutputFilename" = "8:..\\..\\Deployment\\Debug\\Package\\Setup\\Phalanger.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -4143,7 +4245,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:..\\..\\Deployment\\Bin\\Package\\Phalanger.msi"
+        "OutputFilename" = "8:..\\..\\Deployment\\Bin\\Package\\Setup\\Phalanger.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -4550,6 +4652,37 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0B469E44D511362778B26F18355237D9"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:PhpNetCore.IL, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_0B469E44D511362778B26F18355237D9"
+                    {
+                    "Name" = "8:PhpNetCore.IL.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:PhpNetCore.IL.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0B99003264F248349B06956473016557"
@@ -9946,6 +10079,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9889BDB3C0925616DD997E6E396BFE08"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:php4ts, Version=2.1.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
+                "ScatterAssemblies"
+                {
+                    "_9889BDB3C0925616DD997E6E396BFE08"
+                    {
+                    "Name" = "8:php4ts.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:php4ts.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_98A67CA9148C4E608AB25DC1C4B617F3"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Extensions\\zlib1.dll"
@@ -10514,6 +10678,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A62A281D74DD5E75592999AC62EDCA72"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:ShmChannel, Version=2.0.0.0, Culture=neutral, PublicKeyToken=dbfd763524e93ae1, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_A62A281D74DD5E75592999AC62EDCA72"
+                    {
+                    "Name" = "8:ShmChannel.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:ShmChannel.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A84484868CAC4BC4AE19DFBEA71B56FF"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Extensions\\php_sockets.dll"
@@ -10532,37 +10727,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_A8A397A0E53F5570E9415A74CEC3EF4D"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:TRUE"
-            "AssemblyAsmDisplayName" = "8:php4ts, Version=2.1.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0, processorArchitecture=x86"
-                "ScatterAssemblies"
-                {
-                    "_A8A397A0E53F5570E9415A74CEC3EF4D"
-                    {
-                    "Name" = "8:php4ts.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:php4ts.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A8D4CADE7B4D4C768E3A4577FD44F147"
@@ -12436,6 +12600,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E075D60541B9908F5791F26743F270EC"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:TRUE"
+            "AssemblyAsmDisplayName" = "8:PhpNetCore, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_E075D60541B9908F5791F26743F270EC"
+                    {
+                    "Name" = "8:PhpNetCore.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:PhpNetCore.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E10D4E0E1CE04AFC8766969F159715C6"
             {
             "SourcePath" = "8:..\\..\\Deployment\\WebSamples\\Tests\\Functions\\indirect.php"
@@ -14022,10 +14217,10 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Phalanger 2.1"
-        "ProductCode" = "8:{E61E97F1-B2AA-4F9A-817D-C11F9BAABB19}"
-        "PackageCode" = "8:{94E9FDDD-F441-4039-818B-BE990CD2ECAC}"
-        "UpgradeCode" = "8:{726B5E48-4B58-4579-9157-D125E1E99B29}"
+        "ProductName" = "8:Phalanger 2.1 (March 2011) .NET 4.0"
+        "ProductCode" = "8:{8FF57A10-C638-4B85-BC8E-5382F308D607}"
+        "PackageCode" = "8:{D36D83F3-77F7-43AB-B73F-F19E698C04A1}"
+        "UpgradeCode" = "8:{1D57DEEC-585D-4D7D-A4DF-F6DB535051BA}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
@@ -14035,7 +14230,7 @@
         "Manufacturer" = "8:The Phalanger Team"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://phalanger.codeplex.com/discussions"
-        "Title" = "8:Phalanger 2.1"
+        "Title" = "8:Phalanger 2.1 (March 2011) .NET 4.0"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Tomas Matousek, Ladislav Prosek, Vaclav Novak, Pavel Novak, Jan Benda, Martin Maly, Miloslav Beno, Daniel Balas, Jakub Misek"
         "Keywords" = "8:Phalanger, PHP, .NET, compiler"
@@ -14047,7 +14242,7 @@
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:0"
         "PreBuildEvent" = "8:"
-        "PostBuildEvent" = "8:move /Y \"$(BuiltOuputPath)\\..\\setup.exe\" Phalanger.exe\r\ncscript /nologo \"$(ProjectDir)Installer-postbuild.vbs\" \"$(BuiltOuputPath)\""
+        "PostBuildEvent" = "8:cscript /nologo \"$(ProjectDir)Installer-postbuild.vbs\" \"$(BuiltOuputPath)\""
         "RunPostBuildEvent" = "3:0"
         }
         "Registry"

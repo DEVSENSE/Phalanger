@@ -53,8 +53,8 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)$(Configuration)\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)$(Configuration)\</OutDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">autorun</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">autorun</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Setup</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Setup</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -87,7 +87,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(TargetPath)" "$(ProjectDir)..\..\..\Deployment\Debug\Package\" /E /Y 1&gt;nul</Command>
+      <Command>xcopy "$(TargetPath)" "$(SolutionDir)..\Deployment\Debug\Package\" /E /Y 1&gt;nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -100,7 +100,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(TargetPath)" "$(ProjectDir)..\..\..\Deployment\Bin\Package\" /E /Y 1&gt;nul</Command>
+      <Command>xcopy "$(TargetPath)" "$(SolutionDir)..\Deployment\Bin\Package\" /E /Y 1&gt;nul</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
