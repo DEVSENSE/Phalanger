@@ -1421,7 +1421,7 @@ namespace PHP.Core
 			{
 				// LOAD Operators.InvokeMethod(<target>, <method name>, <type desc>, <context>);
 
-				// start a new operators chain (as the rest of chain is read)
+                // start a new operators chain (as the rest of chain is read)
 				this.ChainBuilder.Create();
 				this.ChainBuilder.Begin();
 				this.ChainBuilder.Lengthen(); // for hop over ->

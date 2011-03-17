@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Name>Phalanger_greeting</Name>
@@ -35,5 +35,5 @@
   <ItemGroup>
     <Compile Include="Program.php" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.0\Phalanger.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.1\Phalanger.targets" />
 </Project>

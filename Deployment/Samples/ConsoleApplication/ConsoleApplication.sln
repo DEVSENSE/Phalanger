@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{F0CD5B9D-43B4-49B3-95FA-7F4F8FAFA5C0}") = "disks", "disks\disks.phpproj", "{862F0609-B853-4314-A783-26F1579F3035}"
 EndProject
 Project("{F0CD5B9D-43B4-49B3-95FA-7F4F8FAFA5C0}") = "netmodules", "netmodules\netmodules.phpproj", "{CFDCE4DB-7273-4D4E-879C-4B4ED2EAB558}"

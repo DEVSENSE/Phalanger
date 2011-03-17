@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{F0CD5B9D-43B4-49B3-95FA-7F4F8FAFA5C0}") = "LinqAndGenerics", "LinqAndGenerics.phpproj", "{DCACB7EA-DAFC-47A3-BA17-869831FC66E5}"
 EndProject
 Global
