@@ -3,9 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "..\Source\Installation\Installer (x86).vdproj", "{C2650CE5-413E-43EE-B271-2B8EDF62355E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Installer.Bootstrapper", "..\Source\Installation\Bootstrapper\Installer.Bootstrapper.vcxproj", "{E13E051A-63A8-4E61-85B0-967621435C0C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C2650CE5-413E-43EE-B271-2B8EDF62355E} = {C2650CE5-413E-43EE-B271-2B8EDF62355E}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer.MachineConfig", "..\Source\Installation\MachineConfig\Installer.MachineConfig.csproj", "{91D47194-D12A-4F4B-8630-396ABDFB8C56}"
 EndProject
