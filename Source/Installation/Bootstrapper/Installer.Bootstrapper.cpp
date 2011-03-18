@@ -158,9 +158,28 @@ BOOL IsAdmin(void)
 	return bReturn;
 }
 
+bool IsVC2010()
+{
+	CRegKey key;
+	if (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\VisualStudio\\10.0\\VC\\VCRedist\\x86", KEY_QUERY_VALUE) != ERROR_SUCCESS)
+		return false;
+
+	DWORD installed = 0;
+	return (key.QueryDWORDValue("Installed", installed) == ERROR_SUCCESS && installed != 0);
+}
+
 // CBootstrapperApp initialization
 BOOL CBootstrapperApp::InitInstance()
 {
+	// check VC++ 2010
+	/*if (!IsVC2010())
+	{
+	::MessageBox(NULL, "This application requires 'Visual C++ 2010 Redistributable (x86)' to be installed first.\n"
+	"Please install the prerequisite from the 'Setup' folder and run this setup again."
+	, "Phalanger Setup", MB_OK | MB_ICONSTOP);
+	return FALSE;
+	}*/
+
 	if (!IsAdmin())
 	{
 		::MessageBox(NULL, "This application must be run under local administrator account.\n"
