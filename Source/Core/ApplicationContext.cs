@@ -799,9 +799,20 @@ namespace PHP.Core
         #region Fields and Properties
 
         /// <summary>
-        /// Database of the library scripts.
+        /// Database of the library scripts. Cannot be null.
         /// </summary>
-        private readonly Dictionary<FullPath, Entry> entries;
+        private readonly Dictionary<FullPath, Entry>/*!*/entries = new Dictionary<FullPath, Entry>();
+
+        /// <summary>
+        /// Amount of scripts in the database.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return entries.Count;
+            }
+        }
 
         /// <summary>
         /// Owning application context.
@@ -818,7 +829,6 @@ namespace PHP.Core
         /// <param name="context">Owning application context.</param>
         public ScriptLibraryDatabase(ApplicationContext context)
         {
-            entries = new Dictionary<FullPath, Entry>();
             applicationContext = context;
         }
 
@@ -854,11 +864,10 @@ namespace PHP.Core
         {
             EnsureLibrariesReflected();
 
-            if (entries.ContainsKey(path))
-            {
-                return entries[path].ScriptModule;
-            }
-
+            Entry entry;
+            if (entries.TryGetValue(path, out entry) && entry != null)
+                return entry.ScriptModule;
+            
             return null;
         }
 

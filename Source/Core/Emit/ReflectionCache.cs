@@ -846,6 +846,13 @@ namespace PHP.Core.Emit
             public static MethodInfo GetDirectoryName { get { return _GetDirectoryName ?? (_GetDirectoryName = typeof(System.IO.Path).GetMethod("GetDirectoryName", Types.String)); } }
         }
 
+        public struct Assembly
+        {
+            static MethodInfo _GetEntryAssembly;
+
+            public static MethodInfo GetEntryAssembly { get { return _GetEntryAssembly ?? (_GetEntryAssembly = typeof(System.Reflection.Assembly).GetMethod("GetEntryAssembly", Type.EmptyTypes)); } }
+        }
+
         #endregion
 	}
 
@@ -1225,7 +1232,7 @@ namespace PHP.Core.Emit
 	{
 		static PropertyInfo _ImplementsConstantCase, _PhpReference_IsSet, _PhpReference_IsAliased,
 		  _IDictionaryEnumerator_Key, _IDictionaryEnumerator_Value, _Type_TypeHandle, _DObject_RealObject,
-		  _ClrTypeDesc_Constructor, _ScriptContext_CurrentContext;
+		  _ClrTypeDesc_Constructor, _ScriptContext_CurrentContext, _Assembly_Location;
 
 		public static PropertyInfo ImplementsConstantCase { get { if (_ImplementsConstantCase == null) _ImplementsConstantCase = typeof(ImplementsConstantAttribute).GetProperty("CaseInsensitive"); return _ImplementsConstantCase; } }
 		public static PropertyInfo PhpReference_IsSet { get { if (_PhpReference_IsSet == null) _PhpReference_IsSet = typeof(PhpReference).GetProperty("IsSet"); return _PhpReference_IsSet; } }
@@ -1240,6 +1247,8 @@ namespace PHP.Core.Emit
 		public static PropertyInfo ClrTypeDesc_Constructor { get { if (_ClrTypeDesc_Constructor == null) _ClrTypeDesc_Constructor = typeof(ClrTypeDesc).GetProperty("Constructor"); return _ClrTypeDesc_Constructor; } }
 
 		public static PropertyInfo ScriptContext_CurrentContext { get { if (_ScriptContext_CurrentContext == null) _ScriptContext_CurrentContext = typeof(ScriptContext).GetProperty("CurrentContext"); return _ScriptContext_CurrentContext; } }
+
+        public static PropertyInfo Assembly_Location { get { return _Assembly_Location ?? (_Assembly_Location = typeof(System.Reflection.Assembly).GetProperty("Location")); } }
 	}
 
 	/// <exclude/>

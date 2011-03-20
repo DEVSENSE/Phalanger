@@ -4084,13 +4084,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -14024,7 +14024,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Phalanger 2.1 (March 2011) .NET 4.0"
         "ProductCode" = "8:{8FF57A10-C638-4B85-BC8E-5382F308D607}"
-        "PackageCode" = "8:{6DFB1B64-DB03-4A85-8DF4-CABFE315EE89}"
+        "PackageCode" = "8:{5DD53746-F190-4426-A621-DF7A2E8850E2}"
         "UpgradeCode" = "8:{1D57DEEC-585D-4D7D-A4DF-F6DB535051BA}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

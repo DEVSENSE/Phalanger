@@ -77,6 +77,155 @@ namespace PHP.Core
 			return result;
 		}
 
+        /// <summary>
+        /// Creates a new script context and runs the application in it. For internal use only.
+        /// </summary>
+        /// <param name="mainRoutine">The script's main helper routine.</param>
+        /// <param name="relativeSourcePath">A path to the main script source file.</param>
+        /// <param name="sourceRoot">A source root within which an application has been compiler.</param>
+        [Emitted, EditorBrowsable(EditorBrowsableState.Never)]
+        public static void RunApplication(Delegate/*!*/ mainRoutine, string relativeSourcePath, string sourceRoot)
+        {
+            bool is_pure = mainRoutine is RoutineDelegate;
+
+            ApplicationContext app_context = ApplicationContext.Default;
+
+            // default culture:
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
+            // try to preload configuration (to prevent exceptions during InitApplication:
+            try
+            {
+                Configuration.Load(app_context);
+            }
+            catch (ConfigurationErrorsException e)
+            {
+                Console.WriteLine(e.Message);
+                return;
+            }
+
+            ApplicationConfiguration app_config = Configuration.Application;
+
+            if (is_pure && !app_config.Compiler.LanguageFeaturesSet)
+                app_config.Compiler.LanguageFeatures = LanguageFeatures.PureModeDefault;
+
+            // environment settings; modifies the PATH variable to fix LoadLibrary called by native extensions:
+            if (EnvironmentUtils.IsDotNetFramework)
+            {
+                string path = Environment.GetEnvironmentVariable("PATH");
+                path = String.Concat(path, Path.PathSeparator, app_config.Paths.ExtNatives);
+
+                Environment.SetEnvironmentVariable("PATH", path);
+            }
+
+            Type main_script;
+            if (is_pure)
+            {
+                // loads the calling assembly:
+                app_context.AssemblyLoader.Load(mainRoutine.Method.Module.Assembly, null);
+                main_script = null;
+            }
+            else
+            {
+                main_script = mainRoutine.Method.DeclaringType;
+                app_context.AssemblyLoader.LoadScriptLibrary(System.Reflection.Assembly.GetEntryAssembly(), ".");
+            }
+
+            ScriptContext context = InitApplication(app_context, main_script, relativeSourcePath, sourceRoot);
+
+            try
+            {
+                context.GuardedCall<object, object>(context.GuardedMain, mainRoutine, true);
+                context.GuardedCall<object, object>(context.FinalizeBufferedOutput, null, false);
+                context.GuardedCall<object, object>(context.ProcessShutdownCallbacks, null, false);
+                context.GuardedCall<object, object>(context.FinalizePhpObjects, null, false);
+            }
+            finally
+            {
+                Externals.EndRequest();
+            }
+        }
+
+        /// <summary>
+        /// Initializes the script context for a PHP console application.
+        /// </summary>
+        /// <param name="appContext">Application context.</param>
+        /// <param name="mainScript">The main script's type or a <B>null</B> reference for a pure application.</param>
+        /// <param name="relativeSourcePath">A path to the main script source file.</param>
+        /// <param name="sourceRoot">A source root within which an application has been compiler.</param>
+        /// <returns>
+        /// A new instance of <see cref="ScriptContext"/> with its own copy of local configuration 
+        /// to be used by the application.
+        /// </returns>
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">
+        /// Web configuration is invalid. The context is not initialized then.
+        /// </exception>
+        /// <remarks>
+        /// Use this method if you want to initialize application in the same way the PHP console/Windows 
+        /// application is initialized. The returned script context is initialized as follows:
+        /// <list type="bullet">
+        ///   <term>The application's source root is set.</term>
+        ///   <term>The main script of the application is defined.</term>
+        ///   <term>Output and input streams are set to standard output and input, respectively.</term>
+        ///   <term>Current culture it set to <see cref="CultureInfo.InvariantCulture"/>.</term>
+        ///   <term>Auto-global variables ($_GET, $_SET, etc.) are initialized.</term>
+        ///   <term>Working directory is set tothe current working directory.</term>
+        /// </list>
+        /// </remarks>
+        public static ScriptContext/*!*/ InitApplication(ApplicationContext/*!*/ appContext, Type mainScript,
+            string relativeSourcePath, string sourceRoot)
+        {
+            // loads configuration into the given application context 
+            // (applies only if the config has not been loaded yet by the current thread):
+            Configuration.Load(appContext);
+
+            ApplicationConfiguration app_config = Configuration.Application;
+
+            if (mainScript != null)
+            {
+                if (relativeSourcePath == null)
+                    throw new ArgumentNullException("relativeSourcePath");
+
+                if (sourceRoot == null)
+                    throw new ArgumentNullException("sourceRoot");
+
+                // overrides source root configuration if not explicitly specified in config file:
+                if (!app_config.Compiler.SourceRootSet)
+                    app_config.Compiler.SourceRoot = new FullPath(sourceRoot);
+            }
+
+            // takes a writable copy of a global configuration:
+            LocalConfiguration config = (LocalConfiguration)Configuration.DefaultLocal.DeepCopy();
+
+            // sets invariant culture as a default one:
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
+            ScriptContext result = new ScriptContext(appContext, config, Console.Out, Console.OpenStandardOutput());
+
+            result.IsOutputBuffered = result.config.OutputControl.OutputBuffering;
+            result.AutoGlobals.Initialize(config, null);
+            result.WorkingDirectory = Directory.GetCurrentDirectory();
+            result.ThrowExceptionOnError = true;
+            result.config.ErrorControl.HtmlMessages = false;
+
+            if (mainScript != null)
+            {
+                // converts relative path of the script source to full canonical path using source root from the configuration:
+                PhpSourceFile main_source_file = new PhpSourceFile(
+                    app_config.Compiler.SourceRoot,
+                    new FullPath(relativeSourcePath, app_config.Compiler.SourceRoot)
+                );
+
+                result.DefineMainScript(new ScriptInfo(mainScript), main_source_file);
+            }
+
+            ScriptContext.CurrentContext = result;
+
+            Externals.BeginRequest();
+
+            return result;
+        }
+
 		#endregion
 
 		#region Constants
@@ -189,159 +338,6 @@ namespace PHP.Core
 
 		#endregion
 
-		#region Initialization of requests and applications
-
-        /// <summary>
-        /// Creates a new script context and runs the application in it. For internal use only.
-        /// </summary>
-        /// <param name="mainRoutine">The script's main helper routine.</param>
-        /// <param name="relativeSourcePath">A path to the main script source file.</param>
-        /// <param name="sourceRoot">A source root within which an application has been compiler.</param>
-        [Emitted, EditorBrowsable(EditorBrowsableState.Never)]
-        public static void RunApplication(Delegate/*!*/ mainRoutine, string relativeSourcePath, string sourceRoot)
-        {
-			bool is_pure = mainRoutine is RoutineDelegate;
-
-			ApplicationContext app_context = ApplicationContext.Default;
-
-			// default culture:
-			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-
-			// try to preload configuration (to prevent exceptions during InitApplication:
-			try
-			{
-				Configuration.Load(app_context);
-			}
-			catch (ConfigurationErrorsException e)
-			{
-				Console.WriteLine(e.Message);
-				return;
-			}
-
-			ApplicationConfiguration app_config = Configuration.Application;
-
-			if (is_pure && !app_config.Compiler.LanguageFeaturesSet)
-				app_config.Compiler.LanguageFeatures = LanguageFeatures.PureModeDefault;
-
-			// environment settings; modifies the PATH variable to fix LoadLibrary called by native extensions:
-			if (EnvironmentUtils.IsDotNetFramework)
-			{
-				string path = Environment.GetEnvironmentVariable("PATH");
-				path = String.Concat(path, Path.PathSeparator, app_config.Paths.ExtNatives);
-
-				Environment.SetEnvironmentVariable("PATH", path);
-			}
-
-			Type main_script;
-			if (is_pure)
-			{
-				// loads the calling assembly:
-				app_context.AssemblyLoader.Load(mainRoutine.Method.Module.Assembly, null);
-				main_script = null;
-			}
-			else
-			{
-				main_script = mainRoutine.Method.DeclaringType;
-                app_context.AssemblyLoader.LoadScriptLibrary(System.Reflection.Assembly.GetEntryAssembly(), ".");
-			}
-
-			ScriptContext context = InitApplication(app_context, main_script, relativeSourcePath, sourceRoot);
-
-			try
-			{
-				context.GuardedCall<object, object>(context.GuardedMain, mainRoutine, true);
-                context.GuardedCall<object, object>(context.FinalizeBufferedOutput, null, false);
-                context.GuardedCall<object, object>(context.ProcessShutdownCallbacks, null, false);
-                context.GuardedCall<object, object>(context.FinalizePhpObjects, null, false);
-			}
-			finally
-			{
-				Externals.EndRequest();
-			}
-		}
-
-		/// <summary>
-		/// Initializes the script context for a PHP console application.
-		/// </summary>
-		/// <param name="appContext">Application context.</param>
-		/// <param name="mainScript">The main script's type or a <B>null</B> reference for a pure application.</param>
-		/// <param name="relativeSourcePath">A path to the main script source file.</param>
-        /// <param name="sourceRoot">A source root within which an application has been compiler.</param>
-        /// <returns>
-		/// A new instance of <see cref="ScriptContext"/> with its own copy of local configuration 
-		/// to be used by the application.
-		/// </returns>
-		/// <exception cref="System.Configuration.ConfigurationErrorsException">
-		/// Web configuration is invalid. The context is not initialized then.
-		/// </exception>
-		/// <remarks>
-		/// Use this method if you want to initialize application in the same way the PHP console/Windows 
-		/// application is initialized. The returned script context is initialized as follows:
-		/// <list type="bullet">
-		///   <term>The application's source root is set.</term>
-		///   <term>The main script of the application is defined.</term>
-		///   <term>Output and input streams are set to standard output and input, respectively.</term>
-		///   <term>Current culture it set to <see cref="CultureInfo.InvariantCulture"/>.</term>
-		///   <term>Auto-global variables ($_GET, $_SET, etc.) are initialized.</term>
-		///   <term>Working directory is set tothe current working directory.</term>
-		/// </list>
-		/// </remarks>
-		public static ScriptContext/*!*/ InitApplication(ApplicationContext/*!*/ appContext, Type mainScript,
-            string relativeSourcePath, string sourceRoot)
-		{
-			// loads configuration into the given application context 
-			// (applies only if the config has not been loaded yet by the current thread):
-			Configuration.Load(appContext);
-
-			ApplicationConfiguration app_config = Configuration.Application;
-
-			if (mainScript != null)
-			{
-				if (relativeSourcePath == null)
-					throw new ArgumentNullException("relativeSourcePath");
-
-				if (sourceRoot == null)
-					throw new ArgumentNullException("sourceRoot");
-
-				// overrides source root configuration if not explicitly specified in config file:
-				if (!app_config.Compiler.SourceRootSet)
-					app_config.Compiler.SourceRoot = new FullPath(sourceRoot);
-			}
-
-			// takes a writable copy of a global configuration:
-			LocalConfiguration config = (LocalConfiguration)Configuration.DefaultLocal.DeepCopy();
-
-			// sets invariant culture as a default one:
-			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-
-            ScriptContext result = new ScriptContext(appContext, config, Console.Out, Console.OpenStandardOutput());
-
-			result.IsOutputBuffered = result.config.OutputControl.OutputBuffering;
-			result.AutoGlobals.Initialize(config, null);
-			result.WorkingDirectory = Directory.GetCurrentDirectory();
-			result.ThrowExceptionOnError = true;
-			result.config.ErrorControl.HtmlMessages = false;
-
-			if (mainScript != null)
-			{
-				// converts relative path of the script source to full canonical path using source root from the configuration:
-				PhpSourceFile main_source_file = new PhpSourceFile(
-					app_config.Compiler.SourceRoot,
-					new FullPath(relativeSourcePath, app_config.Compiler.SourceRoot)
-				);
-
-				result.DefineMainScript(new ScriptInfo(mainScript), main_source_file);
-			}
-
-			ScriptContext.CurrentContext = result;
-
-			Externals.BeginRequest();
-
-			return result;
-		}
-
-		#endregion
-
 		#region Inclusions
 
         /// <summary>
@@ -441,14 +437,7 @@ namespace PHP.Core
 				new FullPath(source_root),
 				new FullPath(Path.Combine(source_root, relativeSourcePath)));
 
-            //Type script = ResolveScriptType(applicationContext, source_file, type);
-            //if (script == null)
-            //{
-            //    throw new ArgumentException(CoreResources.GetString("unable_to_resolve_script_type",
-            //        source_file.FullPath, type));
-            //}
-
-			// the first script becomes the main one:
+            // the first script becomes the main one:
 			if (MainScriptFile == null)
 				DefineMainScript(script, source_file);
 
@@ -583,34 +572,25 @@ namespace PHP.Core
 			
 			RequestContext context = RequestContext.CurrentContext;
 
-			FileExistsDelegate file_exists;
+			FileExistsDelegate file_exists = null;
 
-            // get the precompiled assembly
-            MultiScriptAssembly msa;
-
-			if (context != null)
+            if (context != null)
 			{
-				msa = context.GetPrecompiledAssembly();
+				var msa = context.GetPrecompiledAssembly();
+                if (msa != null)
+                    file_exists = msa.ScriptExists;
 			}
 			else
 			{
-                //// main script assembly:
-                //Assembly assembly = scripts[MainScriptFile].Script.Assembly;
-                //msa = ((MultiScriptAssembly)ScriptAssembly.LoadFromAssembly(applicationContext, assembly));
-                msa = null; // script libraries must be defined in <ScriptLibrary> configuration section.
+                // following code is not needed, this is performed in   PhpScript.IsPathValidForInclusion
+                // file_exist delegate not needed
+
+                //var database = applicationContext.ScriptLibraryDatabase;
+                //if (database != null && database.Count > 0)
+                //    file_exists = database.ContainsScript;
 			}
 
-            // script library check is done automatically by FindInclusionTargetPath
-            if (msa != null)
-            {
-                file_exists = msa.ScriptExists;
-            }
-            else
-            {
-                file_exists = null;
-            }
-
-			// searches for file in the following order: 
+            // searches for file in the following order: 
 			// - incomplete absolute path => combines with RootOf(WorkingDirectory)
 			// - relative path => searches in FileSystem.IncludePaths then in the includer source directory
 			result = PhpScript.FindInclusionTargetPath(

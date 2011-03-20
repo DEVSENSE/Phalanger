@@ -554,31 +554,37 @@ namespace PHP.Core.Emit
 
 		protected abstract ScriptBuilder GetEntryScriptBuilder();
 
-		protected override void EmitEntryPoint(MethodBuilder/*!*/ methodBuilder)
-		{
-			ScriptBuilder script_builder = GetEntryScriptBuilder();
-			Debug.Assert(script_builder.CompilationUnit is ScriptCompilationUnit);
+        protected override void EmitEntryPoint(MethodBuilder/*!*/ methodBuilder)
+        {
+            ScriptBuilder script_builder = GetEntryScriptBuilder();
+            Debug.Assert(script_builder.CompilationUnit is ScriptCompilationUnit);
 
-			if (script_builder == null)
-				throw new InvalidOperationException(CoreResources.GetString("entrypoint_not_specified"));
+            if (script_builder == null)
+                throw new InvalidOperationException(CoreResources.GetString("entrypoint_not_specified"));
 
-			PhpSourceFile entry_file = ((ScriptCompilationUnit)script_builder.CompilationUnit).SourceUnit.SourceFile;
+            PhpSourceFile entry_file = ((ScriptCompilationUnit)script_builder.CompilationUnit).SourceUnit.SourceFile;
 
-			ILEmitter il = new ILEmitter(methodBuilder);
+            ILEmitter il = new ILEmitter(methodBuilder);
 
-			// LOAD new PhpScript.MainHelperDelegate(Default.Main);
-			il.Emit(OpCodes.Ldnull);
-			il.Emit(OpCodes.Ldftn, script_builder.MainHelper);
-			il.Emit(OpCodes.Newobj, Constructors.MainHelperDelegate);
+            // LOAD new PhpScript.MainHelperDelegate(Default.Main);
+            il.Emit(OpCodes.Ldnull);
+            il.Emit(OpCodes.Ldftn, script_builder.MainHelper);
+            il.Emit(OpCodes.Newobj, Constructors.MainHelperDelegate);
 
-			// ScriptContext.RunApplication(<main helper delegate>, <source name>, <compiled source root>);
-			il.Emit(OpCodes.Ldstr, entry_file.RelativePath.ToString());
-			il.Emit(OpCodes.Ldstr, entry_file.Root.ToString());
-			il.Emit(OpCodes.Call, Methods.ScriptContext.RunApplication);
+            // LOAD <source name>
+            il.Emit(OpCodes.Ldstr, entry_file.RelativePath.ToString());
 
-			// RETURN;
-			il.Emit(OpCodes.Ret);
-		}
+            // LOAD Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location)
+            il.Emit(OpCodes.Call, Methods.Assembly.GetEntryAssembly);
+            il.Emit(OpCodes.Callvirt, Properties.Assembly_Location.GetGetMethod());
+            il.Emit(OpCodes.Call, Methods.Path.GetDirectoryName);
+
+            // ScriptContext.RunApplication(<main helper delegate>, <source name>, <entry assembly directory> );
+            il.Emit(OpCodes.Call, Methods.ScriptContext.RunApplication);
+
+            // RETURN;
+            il.Emit(OpCodes.Ret);
+        }
 
         protected override MethodInfo GetUserEntryPointMethod()
         {
