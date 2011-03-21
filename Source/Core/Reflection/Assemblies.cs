@@ -288,7 +288,7 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Protects both <see cref="cache"/> and <see cref="modules"/>.
 		/// </summary>
-		private ReaderWriterLock rwLock = new ReaderWriterLock();
+		private readonly ReaderWriterLockSlim/*!*/rwLock = new ReaderWriterLockSlim();
 
 		/// <summary>
 		/// Maps transient source code to its compiled form - an instance of <see cref="ScriptModule"/> class.
@@ -322,15 +322,15 @@ namespace PHP.Core.Reflection
 			Key key = new Key(code, descriptor);
 			Value value;
 
-			try
-			{
-				rwLock.AcquireReaderLock(-1);
+            rwLock.EnterReadLock();
 
+            try
+			{
 				if (!cache.TryGetValue(key, out value)) return null;
 			}
 			finally
 			{
-				rwLock.ReleaseReaderLock();
+                rwLock.ExitReadLock();
 			}
 
 			if (TypesProvider.IsSubset(value.TypeDependencies, context))
@@ -392,17 +392,17 @@ namespace PHP.Core.Reflection
 
 			int new_id;
 
-			try
-			{
-				rwLock.AcquireWriterLock(-1);
+            rwLock.EnterWriteLock();
 
+            try
+			{
 				// reserve slot in the module list:
 				new_id = modules.Count;
 				modules.Add(null);
 			}
 			finally
 			{
-				rwLock.ReleaseWriterLock();
+                rwLock.ExitWriteLock();
 			}
 
 			return new TransientModuleBuilder(new_id, kind, compilationUnit, assemblyBuilder, container);
@@ -415,11 +415,11 @@ namespace PHP.Core.Reflection
 			Value value = new Value(module, dependentTypes);
 
 			// adds item to the cache and the list if it is not there:
-			try
+            
+            rwLock.EnterWriteLock();
+            try
 			{
-				rwLock.AcquireWriterLock(-1);
-
-				Value existing;
+                Value existing;
 				if (!cache.TryGetValue(key, out existing))
 				{
 					cache.Add(key, value);
@@ -434,7 +434,7 @@ namespace PHP.Core.Reflection
 			}
 			finally
 			{
-				rwLock.ReleaseWriterLock();
+                rwLock.ExitWriteLock();
 			}
 
 			return module;
@@ -473,11 +473,11 @@ namespace PHP.Core.Reflection
 		[Conditional("DEBUG")]
 		internal void Dump(TextWriter o)
 		{
-			try
-			{
-				rwLock.AcquireReaderLock(-1);
+            rwLock.EnterReadLock();
 
-				foreach (KeyValuePair<Key, Value> entry in cache)
+            try
+			{
+                foreach (KeyValuePair<Key, Value> entry in cache)
 				{
 					entry.Key.Dump(o);
 					if (entry.Value.TypeDependencies != null)
@@ -492,7 +492,7 @@ namespace PHP.Core.Reflection
 			}
 			finally
 			{
-				rwLock.ReleaseReaderLock();
+                rwLock.ExitReadLock();
 			}
 		}
 

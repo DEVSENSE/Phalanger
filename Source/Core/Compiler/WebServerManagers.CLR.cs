@@ -195,7 +195,7 @@ namespace PHP.Core
 		/// </summary>
 		private Dictionary<string, CacheEntry> cache;
 		
-		private ReaderWriterLock cacheLock;
+		private readonly ReaderWriterLockSlim/*!*/cacheLock = new ReaderWriterLockSlim();
 		
 		/// <summary> Source files watcher. </summary>
 		private FileSystemWatcher watcher;
@@ -223,8 +223,6 @@ namespace PHP.Core
             // On Windows it's case-insensitive, because same file can be accessed with various cases
             cache = new Dictionary<string, CacheEntry>(100,	
                 EnvironmentUtils.IsDotNetFramework ? StringComparer.CurrentCultureIgnoreCase : StringComparer.CurrentCulture);
-
-			cacheLock = new ReaderWriterLock();
 
 			watcher = new FileSystemWatcher();
 
@@ -571,14 +569,14 @@ namespace PHP.Core
 		/// </summary>
 		private bool TryGetCachedEntry(string/*!*/ ns, out CacheEntry entry)
 		{
-			cacheLock.AcquireReaderLock(-1);
+            cacheLock.EnterReadLock();
 			try
 			{
 				return cache.TryGetValue(ns, out entry);
 			}
 			finally
 			{
-				cacheLock.ReleaseReaderLock();
+                cacheLock.ExitReadLock();
 			}
 		}
 
@@ -592,14 +590,14 @@ namespace PHP.Core
 		/// <param name="setIncluders">Set this file as includer for every included script</param>
 		private void SetCacheEntry(string/*!*/ ns, CacheEntry entry, bool setIncludees, bool setIncluders)
 		{
-			cacheLock.AcquireWriterLock(-1);
+            cacheLock.EnterWriteLock();
 			try
 			{
 				SetCacheEntryNoLock(ns, entry, setIncludees, setIncluders);
 			}
 			finally
 			{
-				cacheLock.ReleaseWriterLock();
+                cacheLock.ExitWriteLock();
 			}
 		}
 
@@ -629,15 +627,17 @@ namespace PHP.Core
 		private List<ScriptAssembly>/*!*/ RemoveCachedEntry(string/*!*/ ns, CacheEntry entry)
 		{
 			List<ScriptAssembly> removed_assemblies = new List<ScriptAssembly>();
-			cacheLock.AcquireWriterLock(-1);
+
+            cacheLock.EnterWriteLock();
 			try
 			{
 				RemoveCachedEntryNoLock(ns, entry, removed_assemblies);
 			}
 			finally
 			{
-				cacheLock.ReleaseWriterLock();
+                cacheLock.ExitWriteLock();
 			}
+
 			return removed_assemblies;
 		}
 
@@ -687,15 +687,15 @@ namespace PHP.Core
 		private bool CheckEntryFileTime(string/*!*/ ns, CacheEntry entry)
 		{
 			if (entry.FileTimeChecked) return true;
-			
-			cacheLock.AcquireWriterLock(-1);
+
+            cacheLock.EnterWriteLock();
 			try
 			{
 				return CheckEntryFileTimeNoLock(ns, entry);
 			}
 			finally
 			{
-				cacheLock.ReleaseWriterLock();
+                cacheLock.ExitWriteLock();
 			}
 		}
 

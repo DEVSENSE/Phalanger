@@ -21,8 +21,10 @@ namespace Enyim.Caching.Memcached
 		private List<IMemcachedNode> workingServers = new List<IMemcachedNode>();
 		private ReadOnlyCollection<IMemcachedNode> publicWorkingServers;
 
-		// used to synchronize read/write accesses on the server lists
-		private ReaderWriterLock serverAccessLock = new ReaderWriterLock();
+        /// <summary>
+        /// Used to synchronize read/write accesses on the server lists.
+        /// </summary>
+		private ReaderWriterLock/*!*/serverAccessLock = new ReaderWriterLock();
 
 		private Timer isAliveTimer;
 		private IMemcachedClientConfiguration configuration;

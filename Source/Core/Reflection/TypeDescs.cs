@@ -55,8 +55,15 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		private delegate Dictionary<N, T> GetMemberDictionary<N, T>(DTypeDesc typeDesc);
 
-		private readonly static Dictionary<RuntimeTypeHandle, DTypeDesc>/*!*/ cache;
-		private readonly static ReaderWriterLock/*!*/ cacheLock = new ReaderWriterLock();
+        /// <summary>
+        /// Cache of <see cref="RuntimeTypeHandle"/> mapping into <see cref="DTypeDesc"/>.
+        /// </summary>
+		private readonly static Dictionary<RuntimeTypeHandle, DTypeDesc>/*!*/ cache = new Dictionary<RuntimeTypeHandle, DTypeDesc>();
+
+        /// <summary>
+        /// RW lock protecting <see cref="cache"/>.
+        /// </summary>
+		private readonly static ReaderWriterLockSlim/*!*/cacheLock = new ReaderWriterLockSlim();
 
 		public static readonly DTypeDesc/*!*/ SystemObjectTypeDesc;
 		public static readonly DTypeDesc/*!*/ DelegateTypeDesc;
@@ -80,8 +87,6 @@ namespace PHP.Core.Reflection
 
 		static DTypeDesc()
 		{
-			cache = new Dictionary<RuntimeTypeHandle, DTypeDesc>();
-
 			getConstantDictionary = (GetMemberDictionary<VariableName, DConstantDesc>)
 				Delegate.CreateDelegate(typeof(GetMemberDictionary<VariableName, DConstantDesc>), null,
 				typeof(DTypeDesc).GetProperty("Constants", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true));
@@ -436,18 +441,18 @@ namespace PHP.Core.Reflection
 		[Emitted]
 		public static DTypeDesc/*!*/ Create(RuntimeTypeHandle realTypeHandle)
 		{
-			try
-			{
-				cacheLock.AcquireReaderLock(-1);
+            cacheLock.EnterReadLock();
 
-				DTypeDesc result;
+            try
+			{
+                DTypeDesc result;
 
 				if (cache.TryGetValue(realTypeHandle, out result))
 					return result;
 			}
 			finally
 			{
-				cacheLock.ReleaseReaderLock();
+                cacheLock.ExitReadLock();
 			}
 
 			return CreateWithoutCacheLookup(realTypeHandle);
@@ -485,16 +490,15 @@ namespace PHP.Core.Reflection
 			else if (real_type.IsGenericType)
 				result.WriteUpGenericDefinition(Create(real_type.GetGenericTypeDefinition().TypeHandle).GenericDefinition);
 
-			try
+            cacheLock.EnterWriteLock();
+            try
 			{
-				cacheLock.AcquireWriterLock(-1);
-
 				// rewrite item in the cache (there may be some, which we want to replace):
 				cache[realTypeHandle] = result;
 			}
 			finally
 			{
-				cacheLock.ReleaseWriterLock();
+                cacheLock.ExitWriteLock();
 			}
 
 			return result;
