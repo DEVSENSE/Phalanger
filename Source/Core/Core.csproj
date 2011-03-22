@@ -103,7 +103,7 @@
     </ProjectReference>
     <ProjectReference Include="MSIL\Core.IL.vcxproj">
       <Project>{7F13AC5E-1B8D-467E-83F1-912D12F44370}</Project>
-      <Name>Core.IL</Name>
+      <Name>MSIL</Name>
     </ProjectReference>
     <Reference Include="System">
       <Name>System</Name>
