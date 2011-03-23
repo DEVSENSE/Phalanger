@@ -185,10 +185,10 @@ struct _zend_unserialize_data;
 
 typedef struct _zend_serialize_data zend_serialize_data;
 typedef struct _zend_unserialize_data zend_unserialize_data;
+
 #endif
 
-typedef struct _zend_fcall_info
-{
+typedef struct _zend_fcall_info {
 	size_t size;
 	HashTable *function_table;
 	zval *function_name;
@@ -196,19 +196,40 @@ typedef struct _zend_fcall_info
 	zval **retval_ptr_ptr;
 	zend_uint param_count;
 	zval ***params;
-	zval **object_pp;
+	zval *object_ptr;
 	zend_bool no_separation;
-}
-zend_fcall_info;
+} zend_fcall_info;
 
-typedef struct _zend_fcall_info_cache
-{
+typedef struct _zend_fcall_info_cache {
 	zend_bool initialized;
 	zend_function *function_handler;
-	struct _zend_class_entry *calling_scope;
-	zval **object_pp;
-}
-zend_fcall_info_cache;
+	zend_class_entry *calling_scope;
+	zend_class_entry *called_scope;
+	zval *object_ptr;
+} zend_fcall_info_cache;
+
+//typedef struct _zend_fcall_info
+//{
+//	size_t size;
+//	HashTable *function_table;
+//	zval *function_name;
+//	HashTable *symbol_table;
+//	zval **retval_ptr_ptr;
+//	zend_uint param_count;
+//	zval ***params;
+//	zval **object_pp;
+//	zend_bool no_separation;
+//}
+//zend_fcall_info;
+//
+//typedef struct _zend_fcall_info_cache
+//{
+//	zend_bool initialized;
+//	zend_function *function_handler;
+//	struct _zend_class_entry *calling_scope;
+//	zval **object_pp;
+//}
+//zend_fcall_info_cache;
 
 typedef struct _zend_function_state
 {
@@ -228,6 +249,10 @@ ZEND_API void destroy_zend_function(zend_function *function TSRMLS_DC);
 
 #ifdef PHP5TS
 ZEND_API int zend_fcall_info_init(zval *callable, zend_fcall_info *fci, zend_fcall_info_cache *fcc TSRMLS_DC);
+
+ZEND_API extern const zend_fcall_info empty_fcall_info;
+ZEND_API extern const zend_fcall_info_cache empty_fcall_info_cache;
+
 #endif
 
 END_EXTERN_C()

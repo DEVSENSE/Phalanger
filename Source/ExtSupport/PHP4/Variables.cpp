@@ -3565,4 +3565,10 @@ ZEND_API zend_bool instanceof_function(zend_class_entry *instance_ce, zend_class
 {
 	return instanceof_function_ex(instance_ce, ce, 0 TSRMLS_CC);
 }
+
+// copied from zend_execute_api.c
+ZEND_API void zend_rebuild_symbol_table(TSRMLS_D)
+{
+}
+
 #endif

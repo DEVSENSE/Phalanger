@@ -17,6 +17,10 @@
 using namespace PHP::ExtManager;
 
 #ifdef PHP5TS
+
+ZEND_API const zend_fcall_info empty_fcall_info = { 0, NULL, NULL, NULL, NULL, 0, NULL, NULL, 0 };
+ZEND_API const zend_fcall_info_cache empty_fcall_info_cache = { 0, NULL, NULL, NULL, NULL };
+
 // Copied from zend_api.c
 ZEND_API int zend_fcall_info_init(zval *callable, zend_fcall_info *fci, zend_fcall_info_cache *fcc TSRMLS_DC)
 {
@@ -30,7 +34,7 @@ ZEND_API int zend_fcall_info_init(zval *callable, zend_fcall_info *fci, zend_fca
 
 	fci->size = sizeof(*fci);
 	fci->function_table = ce ? &ce->function_table : EG(function_table);
-	fci->object_pp = obj;
+	fci->object_ptr = *obj;
 	fci->function_name = callable;
 	fci->retval_ptr_ptr = NULL;
 	fci->param_count = 0;
@@ -42,12 +46,13 @@ ZEND_API int zend_fcall_info_init(zval *callable, zend_fcall_info *fci, zend_fca
 		fcc->initialized = 0;
 		fcc->function_handler = NULL;
 		fcc->calling_scope = NULL;
-		fcc->object_pp = NULL;
+		fcc->called_scope = NULL;
+		fcc->object_ptr = NULL;
 	} else {
 		fcc->initialized = 1;
 		fcc->function_handler = func;
 		fcc->calling_scope = ce;
-		fcc->object_pp = obj;
+		fcc->object_ptr = *obj;
 	}
 
 	return SUCCESS;
@@ -86,12 +91,12 @@ ZEND_API int call_user_function_ex(HashTable *function_table, zval **object_pp, 
 
 	fci.size = sizeof(fci);
 	fci.function_table = function_table;
-	fci.object_pp = object_pp;
+	fci.object_ptr = object_pp ? *object_pp : NULL;
 	fci.function_name = function_name;
 	fci.retval_ptr_ptr = retval_ptr_ptr;
 	fci.param_count = param_count;
 	fci.params = params;
-	fci.no_separation = (zend_bool)no_separation;
+	fci.no_separation = (zend_bool) no_separation;
 	fci.symbol_table = symbol_table;
 
 	return zend_call_function(&fci, NULL TSRMLS_CC);
@@ -116,16 +121,16 @@ ZEND_API int zend_call_function(zend_fcall_info *fci, zend_fcall_info_cache *fci
 
 		fci->function_name = *tmp_real_function_name;
 		SEPARATE_ZVAL_IF_NOT_REF(tmp_object_ptr);
-		fci->object_pp = tmp_object_ptr;
-		(*fci->object_pp)->is_ref = 1;
+		fci->object_ptr = *tmp_object_ptr;
+		fci->object_ptr->is_ref = 1;
 	}
-	if (fci->object_pp && !*fci->object_pp) fci->object_pp = NULL;
+	//if (fci->object_pp && !*fci->object_pp) fci->object_pp = NULL;
 
 	Request ^request = Request::GetCurrentRequest();
 	PhpMarshaler ^marshaler = PhpMarshaler::GetInstance(request->CurrentInvocationContext.Module);
 
 	// marshal function name and create PhpCallback
-	Object ^target_obj = (fci->object_pp == NULL ? nullptr : marshaler->MarshalNativeToManaged(IntPtr(*(fci->object_pp))));
+	Object ^target_obj = (fci->object_ptr == NULL ? nullptr : marshaler->MarshalNativeToManaged(IntPtr(fci->object_ptr)));
 	Object ^func_name = marshaler->MarshalNativeToManaged(IntPtr(fci->function_name));
 
 	PhpCallback ^callback;

@@ -204,6 +204,9 @@ ZEND_API zend_bool zend_is_callable_ex(zval *callable, uint check_flags, char **
 
 ZEND_API zend_bool instanceof_function_ex(zend_class_entry *instance_ce, zend_class_entry *ce, zend_bool interfaces_only TSRMLS_DC);
 ZEND_API zend_bool instanceof_function(zend_class_entry *instance_ce, zend_class_entry *ce TSRMLS_DC);
+
+ZEND_API void zend_rebuild_symbol_table(TSRMLS_D);
+
 #endif
 
 END_EXTERN_C()
