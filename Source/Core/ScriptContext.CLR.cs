@@ -273,7 +273,8 @@ namespace PHP.Core
 		/// a new one is created, added to call context and returned. 
 		/// The slot allocated by some instance is freed
 		/// by setting this property to a <B>null</B> reference.
-		/// </remarks>                                                  
+		/// </remarks>
+        [DebuggerNonUserCode]
 		public static ScriptContext CurrentContext
 		{
 			[Emitted]
