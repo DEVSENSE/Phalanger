@@ -65,9 +65,16 @@ BOOL CBootstrapperDlg::OnInitDialog()
 	SetHostFlags(DOCHOSTUIFLAG_DIALOG | DOCHOSTUIFLAG_SCROLL_NO);
 
 	m_Timer = SetTimer(1, 2000, NULL);
-	PostMessage(WM_TIMER);
+	//PostMessage(WM_TIMER);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
+}
+
+void CBootstrapperDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
+{
+	CDHtmlDialog::OnDocumentComplete(pDisp, szUrl);
+
+	PostMessage(WM_TIMER);	
 }
 
 // The system calls this function to obtain the cursor to display while the user drags
@@ -155,7 +162,7 @@ void CBootstrapperDlg::Launch(CString fileName)
 bool CBootstrapperDlg::FwInstalled()
 {
 	CRegKey key;
-	return (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\.NETFramework\\policy\\v4.0", KEY_QUERY_VALUE) == ERROR_SUCCESS);
+	return (key.Open(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\NET Framework Setup\\NDP\\v4\\Full", KEY_QUERY_VALUE) == ERROR_SUCCESS);
 }
 
 bool CBootstrapperDlg::CoreInstalled()
