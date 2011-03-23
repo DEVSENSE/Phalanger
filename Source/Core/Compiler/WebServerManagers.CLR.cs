@@ -739,96 +739,99 @@ namespace PHP.Core
 		#region Temporary files
 
 
-		
-		/// <summary>
-		/// Tries to load script from ASP.NET Temporary files - this is useful when 
-		/// web is not precompiled (so it is compiled into SSAs) and appdomain is reloaded
-		/// (which means that we loose the cache)
-		/// </summary>
+
+        /// <summary>
+        /// Tries to load script from ASP.NET Temporary files - this is useful when 
+        /// web is not precompiled (so it is compiled into SSAs) and appdomain is reloaded
+        /// (which means that we loose the cache)
+        /// </summary>
         private bool TryLoadTemporaryCompiledNoLock(string ns, PhpSourceFile/*!*/ sourceFile, out CacheEntry cache_entry)
-		{
-			CompilerConfiguration config = new CompilerConfiguration(Configuration.Application);
-			string name = WebCompilationContext.GetAssemblyCodedName(sourceFile, config);
+        {
+            CompilerConfiguration config = new CompilerConfiguration(Configuration.Application);
+            string name = WebCompilationContext.GetAssemblyCodedName(sourceFile, config);
 
-			DateTime sourceTime = File.GetLastWriteTime(sourceFile.FullPath.ToString());
-			long sourceStamp = sourceTime.Ticks;
+            DateTime sourceTime = File.GetLastWriteTime(sourceFile.FullPath.ToString());
+            long sourceStamp = sourceTime.Ticks;
 
-			// Find specified file in temporary files
-			foreach (string file in Directory.GetFiles(outDir, name + "*.dll"))
-			{
-				Match match = reFileStamp.Match(file);
-				if (!match.Success) continue;
+            // Find specified file in temporary files
+            foreach (string file in Directory.GetFiles(outDir, name + "*.dll"))
+            {
+                Match match = reFileStamp.Match(file);
+                if (!match.Success) continue;
 
-				long fileStamp;
-				if (!Int64.TryParse((string)match.Groups["Stamp"].Value, NumberStyles.AllowHexSpecifier,
-					CultureInfo.InvariantCulture, out fileStamp)) continue;
+                long fileStamp;
+                if (!Int64.TryParse((string)match.Groups["Stamp"].Value, NumberStyles.AllowHexSpecifier,
+                    CultureInfo.InvariantCulture, out fileStamp)) continue;
 
-				// File is up-to-date
-				if (sourceStamp < fileStamp)
-				{
-					Debug.WriteLine("WSSM", "Loading from ASP.NET Temporary files.");
+                // File is up-to-date
+                if (sourceStamp < fileStamp)
+                {
+                    Debug.WriteLine("WSSM", "Loading from ASP.NET Temporary files.");
 
-					// load assembly (ssa)
-					Assembly assembly = Assembly.LoadFrom(file);
-					SingleScriptAssembly ssa = (SingleScriptAssembly)ScriptAssembly.LoadFromAssembly(applicationContext, assembly);
+                    // load assembly (ssa)
+                    Assembly assembly = Assembly.LoadFrom(file);
+                    SingleScriptAssembly ssa = (SingleScriptAssembly)ScriptAssembly.LoadFromAssembly(applicationContext, assembly);
 
-					// find type <Script>
-					Type[] types = ssa.RealModule.FindTypes(delegate(Type type, object _)
-						{
-							return (type.Name == ScriptModule.ScriptTypeName);
-						}, null);
-					if (types.Length != 1) continue;
+                    // find type <Script>
+                    Type[] types = ssa.RealModule.FindTypes(delegate(Type type, object _)
+                    {
+                        return (type.Name == ScriptModule.ScriptTypeName);
+                    }, null);
+                    if (types.Length != 1) continue;
 
-					// recursively check (and load) included assemblies
-					// (includees and includers are set for all loaded CacheEntries except the 
-					// inclusion to the currently loaded script - this is set later)
-					Dictionary<string, CacheEntry> temporaryCache = new Dictionary<string, CacheEntry>();
-					if (LoadIncludeesRecursive(ns, types[0], ssa.RealModule, false, null, temporaryCache))
-					{
-						cache_entry = temporaryCache[ns];
-						foreach (KeyValuePair<string, CacheEntry> entryTmp in temporaryCache)
-							SetCacheEntry(entryTmp.Key, entryTmp.Value, false, false);
-						return true;
-					}
-				}
-			}
-			cache_entry = default(CacheEntry);
-			return false;
-		}
+                    // recursively check (and load) included assemblies
+                    // (includees and includers are set for all loaded CacheEntries except the 
+                    // inclusion to the currently loaded script - this is set later)
+                    Dictionary<string, CacheEntry> temporaryCache = new Dictionary<string, CacheEntry>();
+                    if (LoadIncludeesRecursive(ns, types[0], ssa.RealModule, false, null, temporaryCache))
+                    {
+                        cache_entry = temporaryCache[ns];   // cached SSA is OK, reuse it
+
+                        foreach (KeyValuePair<string, CacheEntry> entryTmp in temporaryCache)
+                            if (entryTmp.Value != null)
+                                SetCacheEntry(entryTmp.Key, entryTmp.Value, false, false);
+
+                        return true;
+                    }
+                }
+            }
+            cache_entry = default(CacheEntry);
+            return false;
+        }
 
 
-		/// <summary>
-		/// Recursive function that loads (SSA) assembly and all included assemblies
-		/// (included assemblies are required because we need to check whether included files are up-to-date)
-		/// </summary>
-		/// <param name="ns">Namespace of the script to be loaded (namespace is encoded file name)</param>
-		/// <param name="type">Type of the &lt;Script&gt; class</param>
-		/// <param name="module">Module of the type - used for token resolving </param>
-		/// <param name="checkStamp">Should we check timestamp?</param>
-		/// <param name="includer">Namespace of the includer (can be null)</param>
-		/// <param name="tempCache">Temporary cache - used only while loading</param>
+        /// <summary>
+        /// Recursive function that loads (SSA) assembly and all included assemblies
+        /// (included assemblies are required because we need to check whether included files are up-to-date)
+        /// </summary>
+        /// <param name="ns">Namespace of the script to be loaded (namespace is encoded file name)</param>
+        /// <param name="type">Type of the &lt;Script&gt; class</param>
+        /// <param name="module">Module of the type - used for token resolving </param>
+        /// <param name="checkStamp">Should we check timestamp?</param>
+        /// <param name="includer">Namespace of the includer (can be null)</param>
+        /// <param name="tempCache">Temporary cache - used only while loading</param>
         /// <returns>Success?</returns>
-		private bool LoadIncludeesRecursive(string/*!*/ ns, Type type/*!*/, Module/*!*/ module,
-			bool checkStamp, string includer, Dictionary<string, CacheEntry>/*!*/ tempCache)
-		{
-			//File already processed?
-			if (tempCache.ContainsKey(ns))
-				return true;
+        private bool LoadIncludeesRecursive(string/*!*/ ns, Type type/*!*/, Module/*!*/ module,
+            bool checkStamp, string includer, Dictionary<string, CacheEntry>/*!*/ tempCache)
+        {
+            //File already processed?
+            if (tempCache.ContainsKey(ns))
+                return true;
 
             tempCache[ns] = null;   // just recursion prevention
 
-			// find [Script] attribute
-			ScriptAttribute script_attr = ScriptAttribute.Reflect(type);
-			if (script_attr == null) return false;
+            // find [Script] attribute
+            ScriptAttribute script_attr = ScriptAttribute.Reflect(type);
+            if (script_attr == null) return false;
 
-			// check source file timestamp
-			if (checkStamp)
-			{
-				string path = ScriptModule.GetPathFromSubnamespace(ns).
-					ToFullPath(Configuration.Application.Compiler.SourceRoot).ToString();
-				DateTime writeStamp = File.GetLastWriteTime(path);
-				if (writeStamp > script_attr.SourceTimestamp) return false;
-			}
+            // check source file timestamp
+            if (checkStamp)
+            {
+                string path = ScriptModule.GetPathFromSubnamespace(ns).
+                    ToFullPath(Configuration.Application.Compiler.SourceRoot).ToString();
+                DateTime writeStamp = File.GetLastWriteTime(path);  // note: it does not fail if the file does not exists, in such case it returns 12:00 midnight, January 1, 1601 A.D.
+                if (writeStamp > script_attr.SourceTimestamp) return false;
+            }
 
             // find [ScriptIncludees] attribute
             ScriptIncludeesAttribute script_includees = ScriptIncludeesAttribute.Reflect(type);
@@ -836,7 +839,7 @@ namespace PHP.Core
             if (script_includees != null)
             {
                 Type[] inclusionScripts;
-                
+
                 inclusionNames = new string[script_includees.Inclusions.Length];
                 inclusionScripts = new Type[script_includees.Inclusions.Length];
 
@@ -867,15 +870,24 @@ namespace PHP.Core
                 inclusionNames = ArrayUtils.EmptyStrings;
             }
 
-			// Load SSA assembly
-			SingleScriptAssembly ssa = (SingleScriptAssembly)ScriptAssembly.LoadFromAssembly(applicationContext, type.Assembly);
+            // Load SSA assembly
+            SingleScriptAssembly ssa = ScriptAssembly.LoadFromAssembly(applicationContext, type.Assembly) as SingleScriptAssembly;
 
-			// Save only to temp cache (other calls to LoadIncludeesRecursive may fail!)
-			string[] includers = includer == null ? (ArrayUtils.EmptyStrings) : (new string[] { includer });
-			CacheEntry entry = new CacheEntry(type, ssa, script_attr.SourceTimestamp, includers, inclusionNames, true);
-			tempCache[ns] = entry;
-			return true;
-		}
+            if (ssa != null)
+            {
+                // Save only to temp cache (other calls to LoadIncludeesRecursive may fail!)
+                string[] includers = includer == null ? (ArrayUtils.EmptyStrings) : (new string[] { includer });
+                CacheEntry entry = new CacheEntry(type, ssa, script_attr.SourceTimestamp, includers, inclusionNames, true);
+                tempCache[ns] = entry;
+            }
+            else
+            {
+                // script in MSA was included from SSA, MSA scripts should not be in cache[]
+                // leave null in tempCache[ns] (as recursion prevention), it will not process into cache[]
+            }
+
+            return true;
+        }
 
 
 		#endregion
