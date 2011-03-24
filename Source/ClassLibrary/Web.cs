@@ -120,7 +120,7 @@ namespace PHP.Library
                 {
                     return
                         (_parseUrlRegEx) ??
-                        (_parseUrlRegEx = new Regex(@"^((?<scheme>[^:]+):(?<scheme_separator>/{0,2}))?((?<user>[^:@]*)(:(?<pass>[^@]*))?@)?(?<host>([^/:?#\[\]]+)|(\[[^\[\]]+\]))?(:(?<port>[0-9]*))?(?<path>(/?[^/\?#]+)*/?)(\?(?<query>[^#]+))?(#(?<fragment>.*))?$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase));
+                        (_parseUrlRegEx = new Regex(@"^((?<scheme>[^:]+):(?<scheme_separator>/{0,2}))?((?<user>[^:@/?#\[\]]*)(:(?<pass>[^@/?#\[\]]*))?@)?(?<host>([^/:?#\[\]]+)|(\[[^\[\]]+\]))?(:(?<port>[0-9]*))?(?<path>(/?[^/\?#]+)*/?)(\?(?<query>[^#]+))?(#(?<fragment>.*))?$", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase));
                 }
             }
             private static Regex _parseUrlRegEx = null;
