@@ -126,6 +126,7 @@ void CBootstrapperDlg::Launch(CString fileName)
 
 	// call ShellExecute
 	SHELLEXECUTEINFO info;
+	ZeroMemory(&info, sizeof(SHELLEXECUTEINFO));
 	info.cbSize = sizeof(SHELLEXECUTEINFO);
 	info.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
 	info.lpVerb = "open";
@@ -133,13 +134,15 @@ void CBootstrapperDlg::Launch(CString fileName)
 	info.lpParameters = NULL;
 	info.lpDirectory = NULL;
 	info.nShow = SW_SHOW;
-
+	
 	if (ShellExecuteEx(&info) == FALSE)
 	{
 		int count = sprintf_s(buf, sizeof(buf), "Could not launch '%s'.\n", fileName);
 
+		DWORD err = GetLastError();
+
 		if (!FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+			NULL, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 			buf + count, sizeof(buf) - count, NULL)) return;
 
 		MessageBox(buf, "Could not launch the installer", MB_OK | MB_ICONSTOP);
