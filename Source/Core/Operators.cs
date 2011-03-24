@@ -4322,10 +4322,13 @@ namespace PHP.Core
 
                 // !! self can be null !!
 
-                if (!quiet && !context.Config.Variables.ZendEngineV1Compatible)
+                if (self == null)
                 {
-                    PhpException.Throw(PhpError.Strict, CoreResources.GetString("nonstatic_method_called_statically",
-                        method.DeclaringType.MakeFullName(), method.MakeFullName()));
+                    if (!quiet && !context.Config.Variables.ZendEngineV1Compatible)
+                    {
+                        PhpException.Throw(PhpError.Strict, CoreResources.GetString("nonstatic_method_called_statically",
+                            method.DeclaringType.MakeFullName(), method.MakeFullName()));
+                    }
                 }
 
             }
