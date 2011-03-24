@@ -4389,7 +4389,7 @@ namespace PHP.Core
             }
             catch (NullReferenceException)
             {
-                if (self == null)
+                if (self == null && !method.IsStatic)
                 {   // $this was null, it is probably caused by accessing $this
 #if DEBUG
                     throw;
