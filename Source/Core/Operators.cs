@@ -4264,12 +4264,18 @@ namespace PHP.Core
 				return null;
 			}
 
-			if (!method.IsStatic)
-			{
-				// check whether self is of acceptable type
-				if (self != null && !method.DeclaringType.RealType.IsInstanceOfType(self.RealObject)) self = null;
+            if (method.IsStatic)
+            {
+                self = null;
+            }
+            else
+            {
+                // check whether self is of acceptable type
+                if (self != null && !method.DeclaringType.RealType.IsInstanceOfType(self.RealObject)) self = null;
 
-				// PHP allows for static invocations of instance method
+
+                /*
+                // PHP allows for static invocations of instance method
 				if (self == null &&
 					(requestedType.IsAbstract || !(requestedType is PhpTypeDesc)) &&
 					(method.DeclaringType.IsAbstract || !(method.DeclaringType is PhpTypeDesc)))
@@ -4298,11 +4304,26 @@ namespace PHP.Core
 					DTypeDesc dummy_type =
 						(!requestedType.IsAbstract && requestedType is PhpTypeDesc) ? requestedType : method.DeclaringType;
 
-					self = PhpFunctionUtils.InvokeConstructor(dummy_type, /*Emit.Types.ScriptContext_Bool,*/ context, false);
-				}
-			}
-			else self = null;
+					self = PhpFunctionUtils.InvokeConstructor(
+                        dummy_type,
+                        //Emit.Types.ScriptContext_Bool,
+                        context, false);
+				}*/
 
+
+                //
+                // The code above was commented and replaced with following.
+                //
+                // We can call instance method, and pass null as 'this', and expect
+                // it can fail with NullReferenceException (even if the method does not touch $this).
+                // 
+                // Note this solution has no side effect as above - invoking constructor of dummy instance.
+                //
+
+                // !! self can be null !!
+
+            }
+            
 			return method;
 		}
 
@@ -4351,7 +4372,28 @@ namespace PHP.Core
 			if (method == null) return new PhpReference();
 
 			// invoke the method
-			object result = method.Invoke(self, context.Stack, caller);
+
+            object result;
+            try
+            {
+                result = method.Invoke(self, context.Stack, caller);
+            }
+            catch (NullReferenceException)
+            {
+                if (self == null)
+                {   // $this was null, it is probably caused by accessing $this
+#if DEBUG
+                    throw;
+#else
+                    PhpException.ThisUsedOutOfObjectContext();
+                    result = null;
+#endif
+                }
+                else
+                {
+                    throw;  // $this was not null, this should not be handled here
+                }
+            }
 
 			return PhpVariable.MakeReference(PhpVariable.Copy(result, CopyReason.ReturnedByCopy));
 		}
