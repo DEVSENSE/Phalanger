@@ -1479,6 +1479,9 @@ namespace PHP.Core
 			int length = heads.Length;
 			int last = length - 1;
 
+            // nothing to do:
+            if (count == 0) return;
+
 			// interconnects all lists into a grid, heads are unchanged:
 			InterconnectGrid(count, heads);
 
