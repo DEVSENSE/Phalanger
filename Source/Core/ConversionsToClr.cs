@@ -439,7 +439,7 @@ namespace PHP.Core
 			if (obj == null) { strictness = ConversionStrictness.ImplDomainChange; return null; }
 
 			T result = null;
-			if ((result = PhpVariable.Unwrap(obj) as T) != null && (!(result is IPhpVariable) || result is PhpObject))
+			if ((result = PhpVariable.Unwrap(obj) as T) != null && (!(result is IPhpVariable) || result is PhpObject || result is PhpArray))
 			{
 				strictness = ConversionStrictness.ImplExactMatch; 
 				return result;

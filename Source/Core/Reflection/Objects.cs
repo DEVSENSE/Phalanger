@@ -2907,29 +2907,39 @@ namespace PHP.Core.Reflection
 			}
 		}
 
-		// performs "dynamic" type check and wraps only if the type is not primitive
+		/// <summary>
+        /// Performs "dynamic" type check and wraps only if the type is not primitive
+        /// </summary>
+        /// <param name="instance">Object to be converted to PHP world.</param>
+        /// <returns>PHP type variable.</returns>
+        [Emitted]
+        public static object WrapDynamic(object instance)
+        {
+            // keep PHP literals
+            if (PhpVariable.HasPrimitiveType(instance)) return instance;
+
+            // keep DObject
+            if (instance is DObject) return instance;
+
+            // convert byte[] into PhpBytes
+            byte[] bytes;
+            if ((bytes = instance as byte[]) != null) return new PhpBytes(bytes);
+
+            // create ClrObject from instance
+            return WrapRealObject(instance);
+        }
+
+        [Emitted]
+        public static DObject Wrap(object instance)
+        {
+            DObject obj;
+            if ((obj = instance as DObject) != null) return obj;
+
+            return WrapRealObject(instance);
+        }
+
 		[Emitted]
-		public static object WrapDynamic(object instance)
-		{
-			if (PhpVariable.HasPrimitiveType(instance)) return instance;
-
-			DObject obj = instance as DObject;
-			if (obj != null) return obj;
-
-			return WrapRealObject(instance);
-		}
-
-		[Emitted]
-		public static DObject Wrap(object instance)
-		{
-			DObject obj = instance as DObject;
-			if (obj != null) return obj;
-
-			return WrapRealObject(instance);
-		}
-
-		[Emitted]
-		public static DObject/*!*/ WrapRealObject(object instance)
+		public static DObject WrapRealObject(object instance)
 		{
 			if (instance == null) return null;
 
