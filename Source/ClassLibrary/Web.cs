@@ -422,7 +422,7 @@ namespace PHP.Library
 #if SILVERLIGHT
 			return HttpUtility.UrlEncode(str).Replace("+", "%20");
 #else
-			return HttpUtility.UrlEncode(str, Configuration.Application.Globalization.PageEncoding).Replace("+", "%20");
+			return PhpHttpUtility.UrlEncode(str, Configuration.Application.Globalization.PageEncoding).Replace("+", "%20");
 #endif
 		}
 
@@ -448,7 +448,7 @@ namespace PHP.Library
 #if SILVERLIGHT
 			return HttpUtility.UrlEncode(str);
 #else
-			return HttpUtility.UrlEncode(str, Configuration.Application.Globalization.PageEncoding);
+			return PhpHttpUtility.UrlEncode(str, Configuration.Application.Globalization.PageEncoding);
 #endif
 		}
 
@@ -459,7 +459,7 @@ namespace PHP.Library
 		[ImplementsFunction("urlencode_unicode")]
 		public static string UrlEncodeUnicode(string str)
 		{
-			return HttpUtility.UrlEncodeUnicode(str);
+			return HttpUtility.UrlEncodeUnicode(str);//TODO: implement this in PhpHttpUtility
 		}
 #endif
 

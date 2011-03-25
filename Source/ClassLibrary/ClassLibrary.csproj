@@ -142,6 +142,7 @@
     </Compile>
     <Compile Include="Generated\jsonLexer.cs" />
     <Compile Include="Generated\jsonParser.cs" />
+    <Compile Include="PhpHttpUtility.cs" />
     <Compile Include="PhpJson.cs" />
     <Compile Include="CRC.cs">
       <SubType>Code</SubType>
