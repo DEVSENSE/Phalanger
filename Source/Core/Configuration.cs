@@ -706,14 +706,16 @@ namespace PHP.Core
 	/// The confguration can be defined only in Machine.config and 
 	/// some can be changed also in Web.config files in the appliciation root directory or above.
 	/// </summary>
-	public sealed partial class ApplicationConfiguration
+    [DebuggerNonUserCode]
+    public sealed partial class ApplicationConfiguration
 	{
 		#region Compiler
 
 		/// <summary>
 		/// Compiler options.
 		/// </summary>
-		public sealed partial class CompilerSection : IPhpConfigurationSection
+        [DebuggerNonUserCode]
+        public sealed partial class CompilerSection : IPhpConfigurationSection
 		{
 			#region Debug
 

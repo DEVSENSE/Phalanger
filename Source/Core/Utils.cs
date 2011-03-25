@@ -2078,6 +2078,28 @@ namespace PHP.Core
 
             return true;
         }
+
+        /// <summary>
+        /// Read all the bytes from input stream to byte array.
+        /// </summary>
+        /// <param name="input">Input stream.</param>
+        /// <returns>Array of bytes read from the input stream.</returns>
+        public static byte[] ReadAllBytes(Stream input)
+        {
+            if (input == null)
+                return null;
+
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
     }
 
     public struct SubArray<T> : IEnumerable<T>
@@ -2356,6 +2378,7 @@ namespace PHP.Core
     /// Represents a full canonical path.
     /// </summary>
     [Serializable]
+    [DebuggerNonUserCode]
     public struct FullPath : IEquatable<FullPath>
     {
         #region Equality Comparer
@@ -2628,6 +2651,7 @@ namespace PHP.Core
     /// Represents a relative canonical path without a root binding.
     /// </summary>
     [Serializable]
+    [DebuggerNonUserCode]
     public struct RelativePath : IComparable
     {
         /// <summary>
@@ -3094,6 +3118,7 @@ namespace PHP.Core
     /// <summary>
     /// File system utilities.
     /// </summary>
+    [DebuggerNonUserCode]
     public static partial class FileSystemUtils
     {
         /// <summary>

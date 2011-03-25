@@ -154,6 +154,7 @@ namespace PHP.Core
                     // following values must be set as a string,
                     // it cannot be converted to proper Encoding
                     case "gzip":
+                    case "deflate":
                         response.AppendHeader("content-encoding", encodingAsString);
                         break;
                     

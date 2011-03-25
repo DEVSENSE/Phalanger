@@ -110,7 +110,8 @@ namespace PHP.Core.Reflection
 		Include, IncludeOnce, Require, RequireOnce, Prepended, Appended, RunSilverlight
 	}
 
-	public static partial class InclusionTypesEnum
+    [DebuggerNonUserCode]
+    public static partial class InclusionTypesEnum
 	{
 		/// <summary>
 		/// Returns whether a specified inclusion is "once-inclusion".
