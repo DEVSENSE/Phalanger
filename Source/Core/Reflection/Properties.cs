@@ -359,7 +359,8 @@ namespace PHP.Core.Reflection
 
 	#region DPhpFieldDesc
 
-	public sealed class DPhpFieldDesc : DPropertyDesc
+    [DebuggerNonUserCode]
+    public sealed class DPhpFieldDesc : DPropertyDesc
 	{
 		#region Construction
 

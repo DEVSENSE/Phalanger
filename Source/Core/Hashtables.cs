@@ -283,7 +283,8 @@ namespace PHP.Core
 		/// An element stored in the table.
 		/// </summary>
 		[Serializable]
-		public class Element
+        [DebuggerNonUserCode]
+        public class Element
 		{
 			internal OrderedHashtable<K> Table;
 			internal Element Next;
@@ -1932,10 +1933,12 @@ namespace PHP.Core
 	#region IntStringKey
 
 	[Serializable]
-	public struct IntStringKey : IEquatable<IntStringKey>, IComparable<IntStringKey>
+    [DebuggerNonUserCode]
+    public struct IntStringKey : IEquatable<IntStringKey>, IComparable<IntStringKey>
 	{
         [Serializable]
-		public class EqualityComparer : IEqualityComparer<IntStringKey>
+        [DebuggerNonUserCode]
+        public class EqualityComparer : IEqualityComparer<IntStringKey>
 		{
 			public static readonly EqualityComparer/*!*/ Default = new EqualityComparer();
 			
@@ -2104,7 +2107,8 @@ namespace PHP.Core
 	/// The hashtable storing entries with <see cref="string"/> and <see cref="int"/> keys in a manner of PHP.
 	/// </summary>
 	[Serializable]
-	public class PhpHashtable : IDictionary<IntStringKey, object>, IList, IDictionary, ICloneable
+    [DebuggerNonUserCode]
+    public class PhpHashtable : IDictionary<IntStringKey, object>, IList, IDictionary, ICloneable
 	{
 		#region Fields and Properties
 
