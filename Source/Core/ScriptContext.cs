@@ -38,7 +38,8 @@ namespace PHP.Core
 	/// <summary>
 	/// Holds information about an included script. Caches the MainHelper and allows to call the Main of the Script.
 	/// </summary>
-	public class ScriptInfo
+    [DebuggerNonUserCode]
+    public class ScriptInfo
 	{
         /// <summary>
 		/// The script type.

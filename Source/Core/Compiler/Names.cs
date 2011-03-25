@@ -282,7 +282,8 @@ namespace PHP.Core
 	/// Case-insensitive culture-sensitive (TODO ???) qualified name in Unicode C normal form.
 	/// </summary>
 	[Serializable]
-	public struct QualifiedName : IEquatable<QualifiedName>
+    [DebuggerNonUserCode]
+    public struct QualifiedName : IEquatable<QualifiedName>
 	{
 		internal static readonly QualifiedName Error = new QualifiedName(new Name("<error>"), Name.EmptyNames);
 		internal static readonly QualifiedName Global = new QualifiedName(new Name("<Global>"), Name.EmptyNames);

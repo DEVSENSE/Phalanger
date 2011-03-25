@@ -19,6 +19,7 @@ using System.Reflection;
 using System.Threading;
 using PHP.Core.Emit;
 using System.Reflection.Emit;
+using System.Diagnostics;
 
 namespace PHP.Core.Reflection
 {
@@ -120,7 +121,8 @@ namespace PHP.Core.Reflection
 	/// <summary>
 	/// Represents a script virtual module.
 	/// </summary>
-	public class TransientModule : PhpModule
+    [DebuggerNonUserCode]
+    public class TransientModule : PhpModule
 	{
 		#region Members
 

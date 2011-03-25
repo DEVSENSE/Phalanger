@@ -12,6 +12,7 @@
 using System;
 using System.Threading;
 using System.Text;
+using System.Diagnostics;
 
 namespace PHP.Core
 {
@@ -118,7 +119,8 @@ namespace PHP.Core
 #if !SILVERLIGHT
 	[Serializable]
 #endif
-	internal sealed class LibraryConfigurationsSection
+    [DebuggerNonUserCode]
+    internal sealed class LibraryConfigurationsSection
 	{
 		public bool IsConfigurationLoaded { get { return _configurations != null; } }
 
@@ -177,7 +179,8 @@ namespace PHP.Core
 	/// <summary>
 	/// The configuration record containing the configuration applicable by user code (PhpPages,ClassLibrary).
 	/// </summary>  
-	public sealed partial class LocalConfiguration : IPhpConfiguration
+    [DebuggerNonUserCode]
+    public sealed partial class LocalConfiguration : IPhpConfiguration
 	{
 		#region Output Control
 
@@ -217,7 +220,8 @@ namespace PHP.Core
 		/// <summary>
 		/// Error control options.
 		/// </summary>
-		public sealed partial class ErrorControlSection : IPhpConfigurationSection
+        [DebuggerNonUserCode]
+        public sealed partial class ErrorControlSection : IPhpConfigurationSection
 		{
 			/// <summary>
 			/// Whether to display errors as a part of the output.

@@ -2171,7 +2171,8 @@ namespace PHP.Core.Reflection
 
 	#region PrimitiveTypeDesc
 
-	public sealed class PrimitiveTypeDesc : DTypeDesc
+	[DebuggerNonUserCode]
+    public sealed class PrimitiveTypeDesc : DTypeDesc
 	{
 		public override bool IsUnknown { get { return false; } }
 

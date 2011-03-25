@@ -13,13 +13,15 @@
 using System;
 using System.Resources;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace PHP.Core
 {
 	/// <summary>
 	/// Manages resources of the Core.
 	/// </summary>
-	public class CoreResources
+    [DebuggerNonUserCode]
+    public class CoreResources
 	{
         /// <summary>
         /// Resource manager of strings.

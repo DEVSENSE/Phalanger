@@ -36,7 +36,8 @@ namespace PHP.Core
 	/// <summary>
 	/// Represents a PHP stack frame.
 	/// </summary>
-	public sealed class PhpStackFrame
+    [DebuggerNonUserCode]
+    public sealed class PhpStackFrame
 	{
 		#region Fields and Properties
 
@@ -223,7 +224,8 @@ namespace PHP.Core
 	/// <summary>
 	/// Represents a stack trace containing only those frames visible from PHP.
 	/// </summary>
-	public sealed class PhpStackTrace
+    [DebuggerNonUserCode]
+    public sealed class PhpStackTrace
 	{
 		private readonly List<PhpStackFrame>/*!*/ frames;
 

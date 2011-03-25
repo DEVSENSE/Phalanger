@@ -203,7 +203,8 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Compiled code depends on its source code, source file, and position.
 		/// </summary>
-		private struct Key : IEquatable<Key>
+        [DebuggerNonUserCode]
+        private struct Key : IEquatable<Key>
 		{
 			private readonly string/*!*/ code;
 			private readonly SourceCodeDescriptor descriptor;
@@ -255,7 +256,8 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Values stored in the cache.
 		/// </summary>
-		private struct Value
+        [DebuggerNonUserCode]
+        private struct Value
 		{
 			public readonly TransientModule/*!*/ Module;
 			public readonly List<ProvidedType>/*!*/ TypeDependencies;
