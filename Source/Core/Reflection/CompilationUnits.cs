@@ -320,7 +320,11 @@ namespace PHP.Core.Reflection
 			this.module = module_builder;
 			this.evalKind = kind;
 
-			sourceUnit.Parse(context.Errors, this, Position.Initial, context.Config.Compiler.LanguageFeatures);
+			sourceUnit.Parse(
+                context.Errors, this,
+                new Position(descriptor.Line, descriptor.Column, 0, descriptor.Line, descriptor.Column, 0),
+                context.Config.Compiler.LanguageFeatures);
+
 			if (context.Errors.AnyFatalError) return false;
 
 			// any declaration implies non-dynamicity:
