@@ -425,13 +425,12 @@ namespace PHP.Library
 		/// <param name="mode">Compression mode.</param>
 		/// <returns>Compressed data.</returns>
         /// <remarks>The function does not support subsequent calls to compress more chunks of data subsequentally.</remarks>
-		[ImplementsFunction("ob_gzhandler")]
+        [ImplementsFunction("ob_gzhandler")]
         [return: CastToFalse]
-		public static PhpBytes GzipHandler(object data, int mode)
-		{
+        public static PhpBytes GzipHandler(object data, int mode)
+        {
             // TODO: mode is not passed by Core properly. Therefore it is not possible to make subsequent calls to this handler.
             // Otherwise headers of ZIP stream will be mishmashed.
-
 
             // check input data
             if (data == null) return null;
@@ -447,10 +446,10 @@ namespace PHP.Library
                 return DoGzipHandler(data, httpcontext, "gzip");
 
             if (acceptEncoding.Contains("*") || acceptEncoding.Contains("deflate"))
-                    return DoGzipHandler(data, httpcontext, "deflate");
+                return DoGzipHandler(data, httpcontext, "deflate");
 
             return null;
-            
+
             /*
             ScriptContext context = ScriptContext.CurrentContext;
 
@@ -458,13 +457,13 @@ namespace PHP.Library
             bool do_end = (((BufferedOutput.ChunkPosition)mode) & BufferedOutput.ChunkPosition.Last) != 0;
 
             // redirects output to the sink to allow error reporting:
-			context.IsOutputBuffered = false;
-			PhpException.FunctionNotSupported(PhpError.Notice);
-			context.IsOutputBuffered = true;
+            context.IsOutputBuffered = false;
+            PhpException.FunctionNotSupported(PhpError.Notice);
+            context.IsOutputBuffered = true;
 
-			if (data == null) return null;
-			return new PhpBytes(Configuration.Application.Globalization.PageEncoding.GetBytes(data));*/
-		}
+            if (data == null) return null;
+            return new PhpBytes(Configuration.Application.Globalization.PageEncoding.GetBytes(data));*/
+        }
 
         /// <summary>
         /// Compress given data using compressor named in contentEncoding. Set the response header accordingly.
@@ -483,7 +482,6 @@ namespace PHP.Library
 
             using (var outputStream = new System.IO.MemoryStream())
             {
-
                 System.IO.Stream compressionStream;
                 if (contentEncoding == "gzip")
                     compressionStream = new System.IO.Compression.GZipStream(outputStream, System.IO.Compression.CompressionMode.Compress);
@@ -492,18 +490,14 @@ namespace PHP.Library
                 else
                     throw new ArgumentException("Not recognized content encoding to be compressed to.", "contentEncoding");
 
-                try
+                using (compressionStream)
                 {
                     compressionStream.Write(inputbytes, 0, inputbytes.Length);
                 }
-                catch
-                {
-                    return null;
-                }
-                finally
-                {
-                    compressionStream.Dispose();
-                }
+
+                //Debug.Assert(
+                //    ScriptContext.CurrentContext.Headers["content-encoding"] != contentEncoding,
+                //    "The content encoding was already set to '" + contentEncoding + "'. The ob_gzhandler() was called subsequently probably.");
 
                 ScriptContext.CurrentContext.Headers["content-encoding"] = contentEncoding;
 

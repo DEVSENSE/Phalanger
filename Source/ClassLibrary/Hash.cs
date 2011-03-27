@@ -64,7 +64,7 @@ namespace PHP.Library
         [PureFunction]
         public static int CRC32(PhpBytes bytes)
         {
-            return BitConverter.ToInt32(new CRC32().ComputeHash(bytes.Data), 0);
+            return BitConverter.ToInt32(new HashPhpResource.CRC32().ComputeHash(bytes.Data), 0);
         }
 
 #if !SILVERLIGHT
@@ -445,6 +445,51 @@ namespace PHP.Library
 
             #endregion
 
+            #region Conversion
+
+            protected static void DWORDToBigEndian(byte[] block, uint[] x, int digits)
+            {
+                int index = 0;
+                for (int i = 0; index < digits; i += 4)
+                {
+                    block[i] = (byte)((x[index] >> 0x18) & 0xff);
+                    block[i + 1] = (byte)((x[index] >> 0x10) & 0xff);
+                    block[i + 2] = (byte)((x[index] >> 8) & 0xff);
+                    block[i + 3] = (byte)(x[index] & 0xff);
+                    index++;
+                }
+            }
+
+            protected static void DWORDFromBigEndian(uint[] x, int digits, byte[] block)
+            {
+                int index = 0;
+                for (int i = 0; index < digits; i += 4)
+                {
+                    x[index] = ((((uint)block[i] << 0x18) | (uint)(block[i + 1] << 0x10)) | (uint)(block[i + 2] << 8)) | (uint)block[i + 3];
+                    index++;
+                }
+            }
+
+
+            #endregion
+
+            /// <summary>
+            /// Simply compute hash on existing HashPhpResource instance.
+            /// No HMAC.
+            /// The algorithm is reinitialized.
+            /// </summary>
+            /// <param name="data"></param>
+            /// <returns></returns>
+            public byte[] ComputeHash(byte[] data)
+            {
+                this.Init();
+
+                if (!this.Update(data))
+                    return null;
+
+                return this.Final();
+            }
+
             #endregion
 
             #region hash algorithms implementation
@@ -487,7 +532,7 @@ namespace PHP.Library
                         
                         algs["adler32"] = () => new ADLER32();
                         
-                        //algs["sha1"] = () => new SHA1();
+                        algs["sha1"] = () => new SHA1();
                         //algs["sha256"] = () => new SHA256();
                         //algs["sha224"] = () => new SHA224();
                         //algs["sha512"] = () => new SHA512();
@@ -1339,7 +1384,236 @@ namespace PHP.Library
 
                 #endregion
             }
+            public class SHA1 : HashPhpResource
+            {
+                #region state
 
+                private byte[]/*!*/_buffer = new byte[0x40];
+                private long _count;
+                private uint[]/*!*/_expandedBuffer = new uint[80];
+                private uint[]/*!*/_stateSHA1 = new uint[5];
+
+                #endregion
+
+                #region SHA1 hashing internals (based on System.Security.Cryptography.SHA1Managed & PHP implementation)
+
+                public SHA1()
+                {
+                    this.InitializeState();
+                }
+
+                private void InitializeState()
+                {
+                    this._count = 0L;
+                    this._stateSHA1[0] = 0x67452301;
+                    this._stateSHA1[1] = 0xefcdab89;
+                    this._stateSHA1[2] = 0x98badcfe;
+                    this._stateSHA1[3] = 0x10325476;
+                    this._stateSHA1[4] = 0xc3d2e1f0;
+                }
+
+                /// <summary>
+                /// Finalize the hash.
+                /// </summary>
+                /// <returns>Hashed bytes.</returns>
+                private byte[] _EndHash()
+                {
+                    byte[] block = new byte[20];
+                    int num = 0x40 - ((int)(this._count & 0x3fL));
+                    if (num <= 8)
+                        num += 0x40;
+
+                    byte[] partIn = new byte[num];
+                    partIn[0] = 0x80;
+                    long num2 = this._count * 8L;
+                    partIn[num - 8] = (byte)((num2 >> 0x38) & 0xffL);
+                    partIn[num - 7] = (byte)((num2 >> 0x30) & 0xffL);
+                    partIn[num - 6] = (byte)((num2 >> 40) & 0xffL);
+                    partIn[num - 5] = (byte)((num2 >> 0x20) & 0xffL);
+                    partIn[num - 4] = (byte)((num2 >> 0x18) & 0xffL);
+                    partIn[num - 3] = (byte)((num2 >> 0x10) & 0xffL);
+                    partIn[num - 2] = (byte)((num2 >> 8) & 0xffL);
+                    partIn[num - 1] = (byte)(num2 & 0xffL);
+                    this._HashData(partIn, 0, partIn.Length);
+                    DWORDToBigEndian(block, this._stateSHA1, 5);
+                    //base.HashValue = block;
+                    return block;
+                }
+
+                private bool _HashData(byte[] partIn, int ibStart, int cbSize)
+                {
+                    unchecked
+                    {
+                        int byteCount = cbSize;
+                        int srcOffsetBytes = ibStart;
+                        int dstOffsetBytes = (int)(this._count & 0x3fL);
+                        this._count += byteCount;
+
+                        if ((dstOffsetBytes > 0) && ((dstOffsetBytes + byteCount) >= 0x40))
+                        {
+                            Buffer.BlockCopy(partIn, srcOffsetBytes, this._buffer, dstOffsetBytes, 0x40 - dstOffsetBytes);
+                            srcOffsetBytes += 0x40 - dstOffsetBytes;
+                            byteCount -= 0x40 - dstOffsetBytes;
+                            SHATransform(_expandedBuffer, _stateSHA1, _buffer);
+                            dstOffsetBytes = 0;
+                        }
+                        while (byteCount >= 0x40)
+                        {
+                            Buffer.BlockCopy(partIn, srcOffsetBytes, this._buffer, 0, 0x40);
+                            srcOffsetBytes += 0x40;
+                            byteCount -= 0x40;
+                            SHATransform(_expandedBuffer, _stateSHA1, _buffer);
+                        }
+                        if (byteCount > 0)
+                        {
+                            Buffer.BlockCopy(partIn, srcOffsetBytes, this._buffer, dstOffsetBytes, byteCount);
+                        }
+                    }
+
+                    return true;
+                }
+
+                private static void SHAExpand(uint[] x)
+                {
+                    unchecked
+                    {
+                        for (int i = 0x10; i < 80; i++)
+                        {
+                            uint num2 = ((x[i - 3] ^ x[i - 8]) ^ x[i - 14]) ^ x[i - 0x10];
+                            x[i] = (num2 << 1) | (num2 >> 0x1f);
+                        }
+                    }
+                }
+
+                private static void SHATransform(uint[] expandedBuffer, uint[] state, byte[] block)
+                {
+                    uint num = state[0];
+                    uint num2 = state[1];
+                    uint num3 = state[2];
+                    uint num4 = state[3];
+                    uint num5 = state[4];
+                    DWORDFromBigEndian(expandedBuffer, 0x10, block);
+                    SHAExpand(expandedBuffer);
+                    int index = 0;
+
+                    unchecked
+                    {
+
+                        while (index < 20)
+                        {
+                            num5 += ((((num << 5) | (num >> 0x1b)) + (num4 ^ (num2 & (num3 ^ num4)))) + expandedBuffer[index]) + 0x5a827999;
+                            num2 = (num2 << 30) | (num2 >> 2);
+                            num4 += ((((num5 << 5) | (num5 >> 0x1b)) + (num3 ^ (num & (num2 ^ num3)))) + expandedBuffer[index + 1]) + 0x5a827999;
+                            num = (num << 30) | (num >> 2);
+                            num3 += ((((num4 << 5) | (num4 >> 0x1b)) + (num2 ^ (num5 & (num ^ num2)))) + expandedBuffer[index + 2]) + 0x5a827999;
+                            num5 = (num5 << 30) | (num5 >> 2);
+                            num2 += ((((num3 << 5) | (num3 >> 0x1b)) + (num ^ (num4 & (num5 ^ num)))) + expandedBuffer[index + 3]) + 0x5a827999;
+                            num4 = (num4 << 30) | (num4 >> 2);
+                            num += ((((num2 << 5) | (num2 >> 0x1b)) + (num5 ^ (num3 & (num4 ^ num5)))) + expandedBuffer[index + 4]) + 0x5a827999;
+                            num3 = (num3 << 30) | (num3 >> 2);
+                            index += 5;
+                        }
+                        while (index < 40)
+                        {
+                            num5 += ((((num << 5) | (num >> 0x1b)) + ((num2 ^ num3) ^ num4)) + expandedBuffer[index]) + 0x6ed9eba1;
+                            num2 = (num2 << 30) | (num2 >> 2);
+                            num4 += ((((num5 << 5) | (num5 >> 0x1b)) + ((num ^ num2) ^ num3)) + expandedBuffer[index + 1]) + 0x6ed9eba1;
+                            num = (num << 30) | (num >> 2);
+                            num3 += ((((num4 << 5) | (num4 >> 0x1b)) + ((num5 ^ num) ^ num2)) + expandedBuffer[index + 2]) + 0x6ed9eba1;
+                            num5 = (num5 << 30) | (num5 >> 2);
+                            num2 += ((((num3 << 5) | (num3 >> 0x1b)) + ((num4 ^ num5) ^ num)) + expandedBuffer[index + 3]) + 0x6ed9eba1;
+                            num4 = (num4 << 30) | (num4 >> 2);
+                            num += ((((num2 << 5) | (num2 >> 0x1b)) + ((num3 ^ num4) ^ num5)) + expandedBuffer[index + 4]) + 0x6ed9eba1;
+                            num3 = (num3 << 30) | (num3 >> 2);
+                            index += 5;
+                        }
+                        while (index < 60)
+                        {
+                            num5 += ((((num << 5) | (num >> 0x1b)) + ((num2 & num3) | (num4 & (num2 | num3)))) + expandedBuffer[index]) + 0x8f1bbcdc;
+                            num2 = (num2 << 30) | (num2 >> 2);
+                            num4 += ((((num5 << 5) | (num5 >> 0x1b)) + ((num & num2) | (num3 & (num | num2)))) + expandedBuffer[index + 1]) + 0x8f1bbcdc;
+                            num = (num << 30) | (num >> 2);
+                            num3 += ((((num4 << 5) | (num4 >> 0x1b)) + ((num5 & num) | (num2 & (num5 | num)))) + expandedBuffer[index + 2]) + 0x8f1bbcdc;
+                            num5 = (num5 << 30) | (num5 >> 2);
+                            num2 += ((((num3 << 5) | (num3 >> 0x1b)) + ((num4 & num5) | (num & (num4 | num5)))) + expandedBuffer[index + 3]) + 0x8f1bbcdc;
+                            num4 = (num4 << 30) | (num4 >> 2);
+                            num += ((((num2 << 5) | (num2 >> 0x1b)) + ((num3 & num4) | (num5 & (num3 | num4)))) + expandedBuffer[index + 4]) + 0x8f1bbcdc;
+                            num3 = (num3 << 30) | (num3 >> 2);
+                            index += 5;
+                        }
+                        while (index < 80)
+                        {
+                            num5 += ((((num << 5) | (num >> 0x1b)) + ((num2 ^ num3) ^ num4)) + expandedBuffer[index]) + 0xca62c1d6;
+                            num2 = (num2 << 30) | (num2 >> 2);
+                            num4 += ((((num5 << 5) | (num5 >> 0x1b)) + ((num ^ num2) ^ num3)) + expandedBuffer[index + 1]) + 0xca62c1d6;
+                            num = (num << 30) | (num >> 2);
+                            num3 += ((((num4 << 5) | (num4 >> 0x1b)) + ((num5 ^ num) ^ num2)) + expandedBuffer[index + 2]) + 0xca62c1d6;
+                            num5 = (num5 << 30) | (num5 >> 2);
+                            num2 += ((((num3 << 5) | (num3 >> 0x1b)) + ((num4 ^ num5) ^ num)) + expandedBuffer[index + 3]) + 0xca62c1d6;
+                            num4 = (num4 << 30) | (num4 >> 2);
+                            num += ((((num2 << 5) | (num2 >> 0x1b)) + ((num3 ^ num4) ^ num5)) + expandedBuffer[index + 4]) + 0xca62c1d6;
+                            num3 = (num3 << 30) | (num3 >> 2);
+                            index += 5;
+                        }
+                        state[0] += num;
+                        state[1] += num2;
+                        state[2] += num3;
+                        state[3] += num4;
+                        state[4] += num5;
+
+                    }
+                }
+
+                #endregion
+
+                #region HashPhpResource
+
+                public override void Init()
+                {
+                    this.InitializeState();
+                    Array.Clear(this._buffer, 0, this._buffer.Length);
+                    Array.Clear(this._expandedBuffer, 0, this._expandedBuffer.Length);
+                }
+
+                public override HashPhpResource Clone()
+                {
+                    var clone = new SHA1() { _count = this._count };
+                    this.CloneHashState(clone);
+
+                    this._buffer.CopyTo(clone._buffer, 0);
+                    this._expandedBuffer.CopyTo(clone._expandedBuffer, 0);
+                    this._stateSHA1.CopyTo(clone._stateSHA1, 0);
+
+                    return clone;
+                }
+
+                public override bool Update(byte[]/*!*/data)
+                {
+                    Debug.Assert(data != null);
+
+                    return _HashData(data, 0, data.Length);
+                }
+
+                public override byte[] Final()
+                {
+                    try
+                    {
+                        return _EndHash();
+                    }
+                    finally
+                    {
+                        InitializeState();  // clear the state
+                    }
+                }
+
+                public override int BlockSize
+                {
+                    get { return 64; }
+                }
+
+                #endregion
+            }
+ 
             #endregion
         }
 
