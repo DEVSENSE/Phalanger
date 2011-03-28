@@ -115,8 +115,8 @@ namespace PHP.Core
         /// </summary>
         protected class StringEncoding
         {
-            private Encoding encoding;
-            private string encodingAsString;
+            protected Encoding encoding;
+            protected string encodingAsString;
 
             public Encoding Encoding
             {
@@ -147,22 +147,25 @@ namespace PHP.Core
             /// Set the encoding into the HttpResponse object.
             /// </summary>
             /// <param name="response"></param>
-            public void SetEncoding(HttpResponse/*!*/response)
+            public virtual void SetEncoding(HttpResponse/*!*/response)
             {
-                switch (encodingAsString)
-                {
+                if (IsSpecial(encodingAsString))
+                    response.AppendHeader("content-encoding", encodingAsString);
+                // by default, set the Encoding properly
+                else
+                    response.ContentEncoding = this.Encoding;
+            }
+
+            /// <summary>
+            /// Special encodings, that should be added as header (not via ContentEncoding property, since it is not real encoding).
+            /// </summary>
+            /// <param name="encodingAsString">Encoding as string.</param>
+            /// <returns>Tru if encoding should be set via headers.</returns>
+            protected static bool IsSpecial(string encodingAsString)
+            {
                     // following values must be set as a string,
                     // it cannot be converted to proper Encoding
-                    case "gzip":
-                    case "deflate":
-                        response.AppendHeader("content-encoding", encodingAsString);
-                        break;
-                    
-                    // by default, set the Encoding properly
-                    default:
-                        response.ContentEncoding = this.Encoding;
-                        break;
-                }
+                return encodingAsString == "gzip" || encodingAsString == "deflate";
             }
         }
 
@@ -171,10 +174,19 @@ namespace PHP.Core
         /// </summary>
         protected StringEncoding contentEncoding
         {
-            get { return _contentEncoding ?? (_contentEncoding = new StringEncoding()); }
-            set { _contentEncoding = null; }
+            get { return _contentEncoding ?? (_contentEncoding = CreateStringEncoding()); }
+            set { _contentEncoding = value; }
         }
         private StringEncoding _contentEncoding;
+
+        /// <summary>
+        /// Create StringEncoding object according to the current implementation of Headers.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual StringEncoding CreateStringEncoding()
+        {
+            return new StringEncoding();
+        }
 
         /// <summary>
         /// Current location header if set.
@@ -416,6 +428,26 @@ namespace PHP.Core
 
             #endregion
 
+            #region StringEncoding (for Integrated pipeline)
+
+            private class IntegratedPipelineStringEncoding : StringEncoding
+            {
+                public override void SetEncoding(HttpResponse response)
+                {
+                    if (IsSpecial(encodingAsString))
+                        response.Headers["content-encoding"] = encodingAsString;
+                    // by default, set the Encoding properly
+                    else
+                        base.SetEncoding(response);
+                }
+            }
+            protected override StringEncoding CreateStringEncoding()
+            {
+                return new IntegratedPipelineStringEncoding();
+            }
+
+            #endregion
+
             #region HttpHeaders
 
             public override string this[string header]
@@ -442,7 +474,7 @@ namespace PHP.Core
                             response.ContentEncoding = contentEncoding.Encoding;
                             break;
                         case "content-encoding":
-                            if (_contentEncoding != null) _contentEncoding.SetEncoding(response);
+                            if (_contentEncoding != null) _contentEncoding.SetEncoding(response);// on IntegratedPipeline, set immediately to Headers
                             else response.ContentEncoding = RequestContext.CurrentContext.DefaultResponseEncoding;
                             break;
                         default:
@@ -459,7 +491,7 @@ namespace PHP.Core
             public override void Flush(HttpContext ctx)
             {
                 flushed = true;
-                // do not flush here
+                // do not flush on Integrated Pipeline
             }
 
             public override void Clear()
