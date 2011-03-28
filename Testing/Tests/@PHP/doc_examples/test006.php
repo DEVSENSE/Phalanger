@@ -1,5 +1,4 @@
-[expect exact] boolstring16
-
+[expect php]
 [file]
 <?php
 $bool = TRUE;   // a bool

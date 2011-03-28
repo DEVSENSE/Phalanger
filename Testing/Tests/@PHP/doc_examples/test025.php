@@ -1,23 +1,4 @@
-[expect exact]
-array
-(
-  [0] => 1
-  [1] => 2
-  [2] => 3
-  [3] => 4
-  [4] => 5
-)
-array [empty]
-array
-(
-  [5] => 6
-)
-array
-(
-  [0] => 6
-  [1] => 7
-)
-
+[expect php]
 [file]
 <?php
 // Create a simple array.

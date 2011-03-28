@@ -1,20 +1,4 @@
-[expect exact]
-boolbool(false)
-
-boolbool(true)
-
-boolbool(true)
-
-boolbool(true)
-
-boolbool(true)
-
-boolbool(true)
-
-boolbool(false)
-
-boolbool(true)
-
+[expect php]
 [file]
 <?php
 echo gettype((bool) "");        // bool(false)

@@ -1,9 +1,4 @@
-[expect exact]
-NULL
-object(stdClass)(0)
-{
-}
-
+[expect php]
 [file]
 <?php
 function test_global_ref() {

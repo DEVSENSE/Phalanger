@@ -1,16 +1,4 @@
-[expect exact]
-array
-(
-  [0] => BLUE
-  [1] => RED
-)
-
-array
-(
-  [0] => BLUE
-  [1] => RED
-)
-
+[expect php]
 [file]
 <?php
 $colors = array("blue", "red");

@@ -1,28 +1,4 @@
-[expect exact]
-array
-(
-  [color] => red
-  [taste] => sweet
-  [shape] => round
-  [name] => apple
-  [0] => 4
-)
-array
-(
-  [color] => red
-  [taste] => sweet
-  [shape] => round
-  [name] => apple
-  [0] => 4
-  [1] => 4
-)
-array
-(
-  [0] => a
-  [1] => b
-  [2] => c
-)
-
+[expect php]
 [file]
 <?php
 // this

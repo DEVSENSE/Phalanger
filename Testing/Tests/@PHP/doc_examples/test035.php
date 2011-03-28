@@ -1,11 +1,4 @@
-[expect exact]
-array
-(
-  [1] => January
-  [2] => February
-  [3] => March
-)
-
+[expect php]
 [file]
 <?php
 $firstquarter  = array(1 => 'January', 'February', 'March');

@@ -1,10 +1,4 @@
-[expect exact]
-string(1) "0"
-integer(2)
-double(3.3)
-integer(15)
-integer(15)
-
+[expect php]
 [file]
 <?php
 $foo = "0";  // $foo is string (ASCII 48)

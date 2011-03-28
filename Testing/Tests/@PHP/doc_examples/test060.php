@@ -1,13 +1,4 @@
-[expect] Static object: NULL
-[expect] Static object: NULL
-[expect] Static object: NULL
-
-[expect]
-Static object: object(stdClass)(1)
-{
-  ["property"] => integer(1)
-}
-
+[expect php]
 [file]
 <?php
 function &get_instance_ref() {

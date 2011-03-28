@@ -1,31 +1,4 @@
-[expect exact]
-array
-(
-  [version] => 4
-  [OS] => Linux
-  [lang] => english
-  [short_tags] => 1
-)
-array
-(
-  [0] => 7
-  [1] => 8
-  [2] => 0
-  [3] => 156
-  [4] => -10
-)
-array
-(
-  [0] => 12
-  [5] => 6
-  [3] => 7
-  [a] => 4
-  [6] => 11
-  [8] => 2
-  [02] => 77
-)
-array [empty]
-
+[expect php]
 [file]
 <?php
 // array as (property-)map

@@ -1,13 +1,4 @@
-[expect]
-double(11.5)
-double(-1299)
-integer(1)
-integer(1)
-integer(11)
-double(14.2)
-double(11)
-double(11)
-
+[expect php]
 [file]
 <?php
 $foo = 1 + "10.5";                // $foo is float (11.5)
