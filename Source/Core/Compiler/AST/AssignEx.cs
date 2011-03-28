@@ -220,9 +220,14 @@ namespace PHP.Core.AST
 				lvalue.Emit(codeGenerator);
 				codeGenerator.AccessSelector = AccessType.None;
 
-				// LOAD a,b
-				EmitDestVarRead(codeGenerator);
+				// LOAD b,a (rvalue must be processed first, than +-*/ with lvalue, since lvalu can be changed by rvalue expression)
+                //must be the second operand// EmitDestVarRead(codeGenerator);
 				PhpTypeCode right_type = EmitSourceValRead(codeGenerator);
+                var rvalue_tmp = codeGenerator.IL.GetTemporaryLocal(PhpTypeCodeEnum.ToType(right_type), false);
+                codeGenerator.IL.Emit(OpCodes.Stloc, rvalue_tmp);
+                EmitDestVarRead(codeGenerator);
+                codeGenerator.IL.Emit(OpCodes.Ldloc, rvalue_tmp);
+                codeGenerator.IL.ReturnTemporaryLocal(rvalue_tmp);
 
 				switch (operation)
 				{
