@@ -2,6 +2,7 @@
 
 IF [%1]==[] GOTO NOARG
 
+MD %0\..\tests
 CD %0\..\tests
 
 xcopy "%1\tests" "tests\" /S /Y

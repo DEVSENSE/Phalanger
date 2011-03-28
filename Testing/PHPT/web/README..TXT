@@ -1,0 +1,2 @@
+- Add this directory as an application into your IIS
+- Allow IIS worker process read/write permissions
