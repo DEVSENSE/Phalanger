@@ -435,7 +435,7 @@ namespace PHP.Core
 		internal object InvokeInternal(params object[] args)
 		{
 			Debug.Assert(IsBound, "Callback must be bound.");
-			Debug.Assert(routineDesc != null && (routineDesc.IsStatic || instance != null));
+			Debug.Assert(routineDesc != null);// Since it's possible to call non static method statically we can't use this condition in the assert && (routineDesc.IsStatic || instance != null));
 
 			// push args to PHP stack and invoke the desc
 			PhpStack stack = (context != null ? context.Stack : ScriptContext.CurrentContext.Stack);
