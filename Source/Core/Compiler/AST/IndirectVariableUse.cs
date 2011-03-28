@@ -516,7 +516,7 @@ namespace PHP.Core.AST
 			ILEmitter il = codeGenerator.IL;
 			if (codeGenerator.OptimizedLocals)
 			{
-				EmitSwitch(codeGenerator, new SwitchMethod(StoreLocalPrepare));
+				// /*copypaste bug*/EmitSwitch(codeGenerator, new SwitchMethod(StoreLocalPrepare));
 				EmitSwitch(codeGenerator, new SwitchMethod(UnsetLocal));
 			}
 			else
@@ -682,7 +682,7 @@ namespace PHP.Core.AST
 			if (codeGenerator.OptimizedLocals)
 			{
 				// Switch over all variables
-				EmitSwitch(codeGenerator, new SwitchMethod(StoreLocalPrepare));
+                // /*historical reason, not needed now*/EmitSwitch(codeGenerator, new SwitchMethod(StoreLocalPrepare));
 			}
 			else
 			{
@@ -718,7 +718,7 @@ namespace PHP.Core.AST
 			if (codeGenerator.OptimizedLocals)
 			{
 				// Switch over all variables
-				EmitSwitch(codeGenerator, new SwitchMethod(StoreLocalPrepare));
+                // /*copypaste bug*/EmitSwitch(codeGenerator, new SwitchMethod(StoreLocalPrepare));
 			}
 			else
 			{
@@ -742,8 +742,7 @@ namespace PHP.Core.AST
 			}
 			else
 			{
-				//		call instance IDictionary.set_Item(object, object)
-				// OBSOLETE: il.Emit(OpCodes.Callvirt, Methods.IDictionary_SetItem);
+                // Operators.SetVariable( <FROM EmitStoreRefPrepare> )
 				il.Emit(OpCodes.Call, Methods.Operators.SetVariableRef);
 			}
 		}
@@ -901,13 +900,13 @@ namespace PHP.Core.AST
 			}
 		}
 
-		/// <summary>
-		/// Prepares local variable for a store operation.
-		/// </summary>
-		internal void StoreLocalPrepare(CodeGenerator codeGenerator, VariablesTable.Entry variable, LocalBuilder variableName)
-		{
-			Debug.Assert(variable == null ^ variableName == null);
-		}
+        ///// <summary>
+        ///// Prepares local variable for a store operation.
+        ///// </summary>
+        //internal void StoreLocalPrepare(CodeGenerator codeGenerator, VariablesTable.Entry variable, LocalBuilder variableName)
+        //{
+        //    Debug.Assert(variable == null ^ variableName == null);
+        //}
 
         /// <summary>
         /// Unsets a specified variable.

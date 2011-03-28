@@ -41,6 +41,7 @@ test_hash('crc32b', 345678);
 test_hash('md2', 45678);
 test_hash('md4', 5678);
 test_hash('md5', 678);
+test_hash('sha1', 111222);
 // add more tests as other hashing algorithms will be implemented
 
 ?>

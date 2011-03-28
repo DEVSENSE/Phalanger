@@ -1,4 +1,6 @@
-<?php
+[expect php]
+[file]
+<?
 
 	$tagValues = array();
 	$tagSortOrders = array();
