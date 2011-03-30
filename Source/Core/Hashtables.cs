@@ -2061,7 +2061,7 @@ namespace PHP.Core
 		{
 			get
 			{
-				return skey == null;
+                return skey == null;
 			}
 		}
 
@@ -2818,7 +2818,7 @@ namespace PHP.Core
 		public void Add(IntStringKey key, object value)
 		{
 			table.Add(key, value);
-			KeyAdded(key);
+			KeyAdded(ref key);
 		}
 
 		public bool ContainsKey(IntStringKey key)
@@ -2876,17 +2876,25 @@ namespace PHP.Core
 
 		#region Specific Members: Add, Prepend, this[], GetElement, Remove, RemoveLast, RemoveFirst, AddRange
 
-		private void KeyAdded(IntStringKey key)
+        /// <summary>
+        /// Simple wrapper to allow call KeyAdded without ref.
+        /// </summary>
+        /// <param name="key"></param>
+        private void KeyAdded(IntStringKey key)
+        {
+            KeyAdded(ref key);
+        }
+
+        /// <summary>
+        /// Called when new item is added into the collection. It just updates the <see cref="stringCount"/> or <see cref=" intCount"/> and <see cref=" maxInt"/>.
+        /// </summary>
+        /// <param name="key"></param>
+		private void KeyAdded(ref IntStringKey key)
 		{
 			if (key.IsInteger)
-			{
-				if (key.Integer > maxInt) maxInt = key.Integer;
-				intCount++;
-			}
+			    KeyAdded(key.Integer);
 			else
-			{
-				stringCount++;
-			}
+                KeyAdded(key.String);
 		}
 
 		private void KeyAdded(int key)
@@ -2990,7 +2998,7 @@ namespace PHP.Core
 		public virtual void Prepend(IntStringKey key, object value)
 		{
 			table.Prepend(key, value);
-			KeyAdded(key);
+			KeyAdded(ref key);
 		}
 
 		/// <summary>
@@ -3004,7 +3012,7 @@ namespace PHP.Core
 		{
 			IntStringKey iskey = new IntStringKey(key);
 			table.Prepend(iskey, value);
-			KeyAdded(iskey);
+			KeyAdded(ref iskey);
 		}
 
 		#endregion
@@ -3110,7 +3118,7 @@ namespace PHP.Core
 			set
 			{
 				table[key] = value;
-				KeyAdded(key);
+				KeyAdded(ref key);
 			}
 		}
 
