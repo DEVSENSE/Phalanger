@@ -89,6 +89,13 @@
         <title>PHPT Phalanger Tester</title>
         <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.1.js"></script>
         <script type="text/javascript" src="tests.js"></script>
+        <style>
+            .state{display:none;}
+            .error{color:#f0f;}
+            .pass{color:#0f0;}
+            .fail{color:#f00;}
+            .skip{color:#888;}
+        </style>
     </head><body>
     <?
         run_all_tests();
@@ -222,6 +229,8 @@ function try_skip($file, $www, &$section_text)
 {
     if (array_key_exists('SKIPIF', $section_text)) {
 
+        $skiphtml = "<span class='skip'>SKIP</span>";
+
         $info = '';
 	    $warn = false;
 
@@ -235,9 +244,9 @@ function try_skip($file, $www, &$section_text)
             if (!strncasecmp('skip', ltrim($output), 4)) {
 
 				if (preg_match('/^\s*skip\s*(.+)\s*/i', $output, $m)) {
-					show_result('SKIP', $file, "reason: $m[1]");
+					show_result($skiphtml, $file, "reason: $m[1]");
 				} else {
-					show_result('SKIP', $file, '');
+					show_result($skiphtml, $file, '');
 				}
 			}
 
@@ -280,6 +289,19 @@ function try_clean($file, $www, &$section_text)
 	}
 }
 
+function get_ini_code($ini_settings)
+{
+    if (count($ini_settings) == 0) return '';
+
+    $code = '';
+    foreach ($ini_settings as $key => $value)
+    {
+        $code .= "ini_set('$key', '$value');";
+    }
+
+    return "<?php $code ?>";
+}
+
 function replace_extension($filename, $new_extension) {
     return preg_replace('/\..+$/', '.' . $new_extension, $filename);
 }
@@ -290,7 +312,8 @@ function run_test($file,$www)
     $section_text = parse_file($file);
 
     // setup environment
-    if (EndsWith( $www, '.php')) $www = dirname($www) . '/';
+    if (EndsWith( $www, '.php')) $www = dirname($www);
+    if (!EndsWith( $www, '/')) $www .= '/';
     $phpfile = replace_extension($file,'php');
     $tested = trim($section_text['TEST']);
 
@@ -322,6 +345,9 @@ function run_test($file,$www)
 		settings2array(preg_split( "/[\n\r]+/", $section_text['INI']), $ini_settings);
 	}
 
+    // prepend custom ini settings
+    if (count($ini_settings) > 0)  $section_text['FILE'] = get_ini_code($ini_settings) .  $section_text['FILE'];
+
     // skip this test ?
     try_skip($file, $www, $section_text);
     
@@ -341,6 +367,7 @@ function run_test($file,$www)
 	if (array_key_exists('COOKIE', $section_text)) {
 		$env['HTTP_COOKIE'] = trim($section_text['COOKIE']);
 		$opts["http"]["header"] .= "Cookie: " . $env['HTTP_COOKIE'] . "\r\n";
+
 	} else {
 		$env['HTTP_COOKIE'] = '';
 	}
@@ -412,13 +439,13 @@ function run_test($file,$www)
 	}
 
     $context = stream_context_create($opts);
-	$out = @file_get_contents($www . $phpfile,false,$context);
+	$out = file_get_contents($www . $phpfile,false,$context);
 	
 	if ($out === FALSE)
-	    error("Probably IIS crash occured while processing '$file'");
+	    error("Exception while processing '$file'");
 	
     if ((StartsWith($out,"\r\nCompileError") || StartsWith($out,"\r\nCompileWarning")))
-        show_result('SKIP', $file, "CompileError/Warning ...");
+        show_result("<span class='skip'>SKIP</span>", $file, ", Script generates <b>CompileError</b> or <b>CompileWarning</b>, so it cannot be compared with PHP. <a href='$phpfile' target='_blank'>Try the script</a><pre>$out</pre>");
     
     // perform clean
     try_clean($file, $www, $section_text);
@@ -545,7 +572,7 @@ function run_test($file,$www)
 		if (preg_match(b"/^$wanted_re\$/s", $output)) {
 			@unlink($phpfile);
 
-            show_result("PASS", "$file", '');
+            show_result("<span class='pass'>PASS</span>", "$file", '');
 		}
 
 	} else {
@@ -557,7 +584,7 @@ function run_test($file,$www)
 		if (!strcmp($output, $wanted)) {
 			@unlink($phpfile);
 			
-            show_result("PASS", $file, '');
+            show_result("<span class='pass'>PASS</span>", $file, '');
 		}
 
 		$wanted_re = null;
@@ -609,7 +636,7 @@ function run_test($file,$www)
 			error("Cannot create test diff - '$file.diff'");
 		}
 
-        show_result("<span style='color:#f00;'>FAIL</span>", $file, "<a href='$phpfile' target='_blank'>$phpfile</a><br/><table border='1'><tr><td><b>Output</b><br/><pre style='background:#fee;font-size:8px;'>$output</pre></td><td><b>Expected</b><br/><pre  style='background:#efe;font-size:8px;'>$wanted</pre></td></tr></table>");
+        show_result("<span class='fail'>FAIL</span>", $file, ", <a href='$phpfile' target='_blank'>Try the script</a><br/><table border='1'><tr><td><b>Output</b><br/><pre style='background:#fee;font-size:8px;'>$output</pre></td><td><b>Expected</b><br/><pre  style='background:#efe;font-size:8px;'>$wanted</pre></td></tr></table>");
 		// write .sh
 		//if (strpos($log_format, 'S') !== false && file_put_contents($sh_filename, b"#!/bin/sh{$cmd}", FILE_BINARY) === false) {
 			//error("Cannot create test shell script - $sh_filename");
@@ -770,12 +797,12 @@ function generate_diff($wanted, $wanted_re, $output)
 
 function error($message)
 {
-	die("<li><b style='color:#f0f;'>ERROR:</b> {$message}</li>");
+	die("<b class='error'>ERROR:</b> {$message} in <a href='?test=".$_GET['test']."&location=".$_GET['location']."' target='_blank'>".$_GET['test']."</a>");
 }
 
 function show_result($state, $file, $text)
 {
-    echo "<li><b>$state:</b> <a href='$file' target='_blank'>$file</a>".(empty($text)?'':'</br>')."$text</li>";
+    echo "<div class='state'>$state</div><b>$state:</b> <a href='?test=".$_GET['test']."&location=".$_GET['location']."' target='_blank'>".$_GET['test']."</a>$text";
     exit(1);
 }
 
