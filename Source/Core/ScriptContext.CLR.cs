@@ -471,18 +471,19 @@ namespace PHP.Core
 		/// <summary>
 		/// Called in place where a script is statically included. For internal purposes only.
 		/// </summary>
-		/// <param name="relativeSourcePath">A path to the included script's source file relative to source root.</param>
+        /// <param name="level">RelativePath.level; <paramref name="relativeSourcePath"/>.</param>
+		/// <param name="relativeSourcePath">RelativePath.path; A path to the included script's source file relative to source root.</param>
 		/// <param name="includee">A type handle of the included script.</param>
 		/// <param name="inclusionType">A type of an inclusion.</param>
 		/// <returns>Whether to process inclusion. If <B>false</B>, inclusion should be ignored.</returns>
 		[Emitted, EditorBrowsable(EditorBrowsableState.Never)]
-		public bool StaticInclude(string relativeSourcePath, RuntimeTypeHandle includee, InclusionTypes inclusionType)
+		public bool StaticInclude(int level, string relativeSourcePath, RuntimeTypeHandle includee, InclusionTypes inclusionType)
 		{
 			ApplicationConfiguration app_config = Configuration.Application;
 
 			PhpSourceFile source_file = new PhpSourceFile(
 				app_config.Compiler.SourceRoot,
-				new FullPath(relativeSourcePath, app_config.Compiler.SourceRoot)
+				new FullPath(app_config.Compiler.SourceRoot, new RelativePath((sbyte)level, relativeSourcePath))
 			);
 
 			if (scripts.ContainsKey(source_file))

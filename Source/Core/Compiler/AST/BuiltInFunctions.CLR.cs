@@ -105,9 +105,12 @@ namespace PHP.Core.AST
 			}
 			else
 			{
+                RelativePath relativePath = new RelativePath(inclusion.Includee.RelativeSourcePath);    // normalize the relative path
+
 				// CALL context.StaticInclude(<relative included script source path>,<this script type>,<inclusion type>);
 				codeGenerator.EmitLoadScriptContext();
-				il.Emit(OpCodes.Ldstr, inclusion.Includee.RelativeSourcePath);
+                il.Emit(OpCodes.Ldc_I4, (int)relativePath.Level);
+                il.Emit(OpCodes.Ldstr, relativePath.Path);
 				il.Emit(OpCodes.Ldtoken, inclusion.Includee.ScriptClassType);
 				il.LoadLiteral(inclusionType);
 				il.Emit(OpCodes.Call, Methods.ScriptContext.StaticInclude);

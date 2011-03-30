@@ -388,7 +388,7 @@ namespace PHP.Core.Emit
             public static MethodInfo GetWorkingDirectory { get { if (_GetWorkingDirectory == null) _GetWorkingDirectory = _this.GetMethod("get_WorkingDirectory"); return _GetWorkingDirectory; } }
             public static MethodInfo Die { get { if (_Die == null) _Die = _this.GetMethod("Die"); return _Die; } }
 
-			public static MethodInfo StaticInclude { get { if (_StaticInclude == null) _StaticInclude = _this.GetMethod("StaticInclude"); return _StaticInclude; } }
+			public static MethodInfo StaticInclude { get { return _StaticInclude ?? (_StaticInclude = _this.GetMethod("StaticInclude")); } }
 			public static MethodInfo DynamicInclude { get { if (_DynamicInclude == null) _DynamicInclude = _this.GetMethod("DynamicInclude"); return _DynamicInclude; } }
 
 			public static MethodInfo DisableErrorReporting { get { if (_DisableErrorReporting == null) _DisableErrorReporting = _this.GetMethod("DisableErrorReporting"); return _DisableErrorReporting; } }

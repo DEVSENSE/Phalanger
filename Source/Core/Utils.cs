@@ -2587,6 +2587,61 @@ namespace PHP.Core
             }
         }
 
+        /// <summary>
+        /// Initialize the <see cref="path"/> using existing <see cref="FullPath"/> and valid <see cref="RelativePath"/>.
+        /// </summary>
+        /// <param name="root">The root path. Must not be empty.</param>
+        /// <param name="relativePath">Canonized relative path to be added to the <paramref name="root"/>.
+        /// The path must be normalized already. If its level is non-negative, the path must not start with \ or drive letter.</param>
+        /// <exception cref="ArgumentException">The exception is thrown when <paramref name="root"/> is empty or
+        /// <paramref name="relativePath"/> level is out of the root level.</exception>
+        internal FullPath(FullPath root, RelativePath relativePath)
+        {
+            if (relativePath.Level < 0)
+            {
+                // relative path is absolute
+                path = relativePath.Path;
+                return;
+            }
+
+            // empty root
+            if (string.IsNullOrEmpty(root.path))
+            {
+                throw new ArgumentException("Root cannot be empty.", "root");
+            }
+
+            //
+            // relativePath does not start with / or a drive letter
+            //
+
+            Debug.Assert(relativePath.Path == null || relativePath.Path.Length == 0 || (relativePath.Path[0] != Path.DirectorySeparatorChar));
+
+            // root and last root character to be used
+            string rootpath = root.path;
+            int rootend = rootpath.Length;
+
+            //Debug.Assert(rootend > 0);  // rootpath is not empty string
+
+            // cut ending \ from the root
+            if (rootpath[rootend - 1] == Path.DirectorySeparatorChar)
+                rootend--;
+
+            // go <level>s up // typically 0
+            for (int level = relativePath.Level; level > 0; --level)
+            {
+                rootend = (rootend > 0) ?
+                    rootpath.LastIndexOf(Path.DirectorySeparatorChar, rootend - 1, rootend) :  // start search from <rootend-1>, search for <rootend> chars to the left
+                    -1;
+                if (rootend < 0)
+                    throw new ArgumentException("Too many up-directories.", "relativePath");
+            }
+
+            // build the absolute path string
+            path = ((rootend == rootpath.Length) ? rootpath : rootpath.Substring(0, rootend))
+                + Path.DirectorySeparatorChar
+                + relativePath.Path;
+        }
+
         #endregion
 
         #region Methods
@@ -2862,7 +2917,7 @@ namespace PHP.Core
 
             if (path.Length > 0 && path[0] == separator)
             {
-                //Unix-style absolute path - we remove separator in the beginning (absolute path information is kept in the leve -1)
+                //Unix-style absolute path - we remove separator in the beginning (absolute path information is kept in the level -1)
                 this.level = -1;
                 this.path = path.Substring(1);
                 return;
@@ -2914,7 +2969,7 @@ namespace PHP.Core
             }
 
             this.level = level;
-            this.path = path;
+            this.path = sb.ToString();
         }
 
         /// <summary>
