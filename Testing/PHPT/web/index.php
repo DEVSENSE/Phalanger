@@ -296,7 +296,7 @@ function get_ini_code($ini_settings)
     $code = '';
     foreach ($ini_settings as $key => $value)
     {
-        $code .= "ini_set('$key', '$value');";
+        $code .= "@ini_set('$key', '$value');";
     }
 
     return "<?php $code ?>";
