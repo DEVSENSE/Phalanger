@@ -935,9 +935,6 @@ namespace PHP.Core
                         case "user-agent":
                             request.UserAgent = value;
                             break;
-                        case "cookie":
-                            PhpException.Throw(PhpError.Warning, name + " not supported header yet.");
-                            break;
                         default:
                             request.Headers[name] = value;
                             break;
