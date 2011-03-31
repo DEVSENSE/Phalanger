@@ -1260,15 +1260,15 @@ namespace PHP.Core
 		{
 			Debug.Assert(!(x is PhpReference));
 
-			if (x is int)
-			{
-				int i = (int)x;
-				if (i == int.MaxValue)
-					return unchecked((long)i + 1);
-				else
-					return unchecked(i + 1);
-			}
-			return IncrementNonInt(x);
+            if (x is int)
+            {
+                int i;
+                return unchecked(((i = (int)x) == int.MaxValue) ? (object)((long)int.MaxValue + 1) : (object)(i + 1));
+            }
+            else
+            {
+                return IncrementNonInt(x);
+            }
 		}
 
 		/// <summary>
@@ -1279,11 +1279,8 @@ namespace PHP.Core
 			string s;
 			if (x is long)
 			{
-				long i = (long)x;
-				if (i == long.MaxValue)
-					return (double)i + 1.0;
-				else
-					return unchecked(i + 1);
+				long i;
+                return ((i = (long)x) == long.MaxValue) ? (object)((double)long.MaxValue + 1.0) : (object)unchecked(i + 1);
 			}
 
 			if (x is double)
