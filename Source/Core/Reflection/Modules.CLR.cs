@@ -417,16 +417,15 @@ namespace PHP.Core.Reflection
             {
                 Type type = module.ResolveType(typeToken);
 
-                if (PhpType.IsPhpRealType(type))           // reflect PHP class
+                // reflect PHP class, skip PHP types that were declared conditionally
+                if (PhpType.IsPhpRealType(type) && !PhpType.IsRealConditionalDefinition(type))
                 {
-                    // skip PHP types that were declared conditionally:
-                    if (PhpType.IsRealConditionalDefinition(type))
-                        return;
-
                     // converts CLR namespaces and nested types to PHP namespaces:
                     string full_name = QualifiedName.FromClrNotation(type.FullName, true).ToString();
 
-                    PhpTypeDesc phpType = (PhpTypeDesc)DTypeDesc.CreateWithoutCacheLookup(type.TypeHandle, true);
+                    // Creating PhpTypeDesc without cache lookup since this type is surely not in the cache yet:
+                    // Also force PHP type, because we already checked PhpType.IsPhpRealType(type)
+                    PhpTypeDesc phpType = (PhpTypeDesc)DTypeDesc.Recreate(type.TypeHandle, true);
 
                     DTypeDesc existing;
                     if (types.TryGetValue(full_name, out existing))

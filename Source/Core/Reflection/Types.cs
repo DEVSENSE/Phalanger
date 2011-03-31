@@ -3222,7 +3222,7 @@ namespace PHP.Core.Reflection
 			// PhpTypeDesc is thrown away and a plain new is added - a subsequent access reflects it.
 			// Note that every type referring this type in its tables (via PhpType or PhpTypeDesc)
 			// have to be baked as well, so there are no references that needs to be rewritten.
-			builder.BakedTypeDesc = (PhpTypeDesc)DTypeDesc.CreateWithoutCacheLookup(baked_type.TypeHandle);
+			builder.BakedTypeDesc = (PhpTypeDesc)DTypeDesc.Recreate(baked_type.TypeHandle, true);
 			
 			return builder.BakedTypeDesc;
 		}

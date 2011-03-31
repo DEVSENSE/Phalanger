@@ -53,7 +53,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <NMakeBuildCommandLine>"$(ProjectDir)build.cmd" "$(OutDir)PhpNetCore.IL.dll" $(Configuration)</NMakeBuildCommandLine>
     <NMakeOutput>bin/debug/PhpNetCore.IL.dll</NMakeOutput>
-    <NMakeCleanCommandLine>del /Q "$(OutputPath)PhpNetCore.IL.dll"</NMakeCleanCommandLine>
+    <NMakeCleanCommandLine>del /Q "$(OutDir)PhpNetCore.IL.dll"</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>"$(ProjectDir)build.cmd" "$(OutDir)PhpNetCore.IL.dll" $(Configuration)</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <IncludePath />
@@ -62,7 +62,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeBuildCommandLine>"$(ProjectDir)build.cmd" "$(OutDir)PhpNetCore.IL.dll" $(Configuration)</NMakeBuildCommandLine>
     <NMakeOutput>bin/release/PhpNetCore.IL.dll</NMakeOutput>
-    <NMakeCleanCommandLine>del /Q "$(OutputPath)PhpNetCore.IL.dll"</NMakeCleanCommandLine>
+    <NMakeCleanCommandLine>del /Q "$(OutDir)PhpNetCore.IL.dll"</NMakeCleanCommandLine>
     <NMakeReBuildCommandLine>"$(ProjectDir)build.cmd" "$(OutDir)PhpNetCore.IL.dll" $(Configuration)</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <IncludePath />

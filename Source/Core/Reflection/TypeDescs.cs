@@ -58,12 +58,8 @@ namespace PHP.Core.Reflection
         /// <summary>
         /// Cache of <see cref="RuntimeTypeHandle"/> mapping into <see cref="DTypeDesc"/>.
         /// </summary>
-		private readonly static Dictionary<RuntimeTypeHandle, DTypeDesc>/*!*/ cache = new Dictionary<RuntimeTypeHandle, DTypeDesc>();
-
-        /// <summary>
-        /// RW lock protecting <see cref="cache"/>.
-        /// </summary>
-		private readonly static ReaderWriterLockSlim/*!*/cacheLock = new ReaderWriterLockSlim();
+        private readonly static SynchronizedCache<RuntimeTypeHandle, DTypeDesc>/*!*/cache
+            = new SynchronizedCache<RuntimeTypeHandle, DTypeDesc>(CreateNoLockInternal);
 
 		public static readonly DTypeDesc/*!*/ SystemObjectTypeDesc;
 		public static readonly DTypeDesc/*!*/ DelegateTypeDesc;
@@ -102,11 +98,11 @@ namespace PHP.Core.Reflection
 			if (UnknownModule.RuntimeModule == null)
 				UnknownModule.RuntimeModule = new UnknownModule();
 
-			SystemObjectTypeDesc = Create(typeof(System.Object));
-			DelegateTypeDesc = Create(typeof(System.Delegate));
-			AttributeTypeDesc = Create(typeof(System.Attribute));
-			AttributeUsageAttributeTypeDesc = Create(typeof(System.AttributeUsageAttribute));
-			InterlockedTypeDesc = Create(typeof(System.Threading.Interlocked));
+            SystemObjectTypeDesc = Create(typeof(System.Object));
+            DelegateTypeDesc = Create(typeof(System.Delegate));
+            AttributeTypeDesc = Create(typeof(System.Attribute));
+            AttributeUsageAttributeTypeDesc = Create(typeof(System.AttributeUsageAttribute));
+            InterlockedTypeDesc = Create(typeof(System.Threading.Interlocked));
 
 			BooleanTypeDesc = new PrimitiveTypeDesc(typeof(bool), PhpTypeCode.Boolean);
 			IntegerTypeDesc = new PrimitiveTypeDesc(typeof(int), PhpTypeCode.Integer);
@@ -427,43 +423,50 @@ namespace PHP.Core.Reflection
 			this.constants = null;            // to be filled later
 		}
 
-		/// <summary>
+        #region Create proper DTypeDesc
+
+        /// <summary>
 		/// To be used at run-time for getting <see cref="DTypeDesc"/> from <see cref="Type"/>.
 		/// </summary>
-		public static DTypeDesc Create(Type realType)
+        public static DTypeDesc Create(Type realType)
 		{
 			return (realType != null) ? Create(realType.TypeHandle) : null;
 		}
 
-		/// <summary>
+        /// <summary>
 		/// To be used at run-time for getting <see cref="DTypeDesc"/> from <see cref="RuntimeTypeHandle"/>.
 		/// </summary>
 		[Emitted]
 		public static DTypeDesc/*!*/ Create(RuntimeTypeHandle realTypeHandle)
 		{
-            cacheLock.EnterReadLock();
-
-            try
-			{
-                DTypeDesc result;
-
-				if (cache.TryGetValue(realTypeHandle, out result))
-					return result;
-			}
-			finally
-			{
-                cacheLock.ExitReadLock();
-			}
-
-			return CreateWithoutCacheLookup(realTypeHandle);
+            return cache.Get(realTypeHandle);
 		}
 
-		internal static DTypeDesc/*!*/ CreateWithoutCacheLookup(RuntimeTypeHandle realTypeHandle)
-		{
-			return CreateWithoutCacheLookup(realTypeHandle, false);
-		}
+        /// <summary>
+        /// Create the new <see cref="DTypeDesc"/> of given type.
+        /// </summary>
+        /// <param name="realTypeHandle">The type handle.</param>
+        /// <param name="forcePhptype">True to force create <see cref="PhpTypeDesc"/>.</param>
+        /// <returns>New <see cref="DTypeDesc"/>.</returns>
+        /// <remarks>The newly created <see cref="DTypeDesc"/> is added into the cache.</remarks>
+        internal static DTypeDesc/*!*/ Recreate(RuntimeTypeHandle realTypeHandle, bool forcePhptype)
+        {
+            return cache.Update(realTypeHandle, (key) => { return CreateNoLockInternal(key, forcePhptype); });
+        }
 
-		internal static DTypeDesc/*!*/ CreateWithoutCacheLookup(RuntimeTypeHandle realTypeHandle, bool forcePhpType)
+        private static DTypeDesc/*!*/ CreateNoLockInternal(RuntimeTypeHandle realTypeHandle)
+        {
+            return CreateNoLockInternal(realTypeHandle, false);
+        }
+
+        /// <summary>
+        /// Create <see cref="DTypeDesc"/> of given type.
+        /// </summary>
+        /// <param name="realTypeHandle">Runtime type handle of the type.</param>
+        /// <param name="forcePhpType">True to force to create <see cref="PhpTypeDesc"/>.</param>
+        /// <returns>New <see cref="DTypeDesc"/> wrapping the given <paramref name="realTypeHandle"/>.</returns>
+        /// <remarks>The method is not thread safe and it does not lock or cache anything.</remarks>
+        private static DTypeDesc/*!*/ CreateNoLockInternal(RuntimeTypeHandle realTypeHandle, bool forcePhpType)
 		{
 			DTypeDesc result;
 			Type real_type = System.Type.GetTypeFromHandle(realTypeHandle);
@@ -490,25 +493,16 @@ namespace PHP.Core.Reflection
 			else if (real_type.IsGenericType)
 				result.WriteUpGenericDefinition(Create(real_type.GetGenericTypeDefinition().TypeHandle).GenericDefinition);
 
-            cacheLock.EnterWriteLock();
-            try
-			{
-				// rewrite item in the cache (there may be some, which we want to replace):
-				cache[realTypeHandle] = result;
-			}
-			finally
-			{
-                cacheLock.ExitWriteLock();
-			}
-
-			return result;
+            return result;
 		}
 
-		#endregion
+        #endregion
 
-		#region Utility
+        #endregion
 
-		public string/*!*/ MakeSimpleName()
+        #region Utility
+
+        public string/*!*/ MakeSimpleName()
 		{
 			return QualifiedName.SubstringWithoutBackquoteAndHash(RealType.Name, 0, RealType.Name.Length);
 		}

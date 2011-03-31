@@ -3520,6 +3520,144 @@ namespace PHP.Core
 
     #endregion
 
+    #region Threading
+
+    /// <summary>
+    /// Implements cache mechanism to be used in multi-threaded environment.
+    /// </summary>
+    /// <typeparam name="K">The cache key type.</typeparam>
+    /// <typeparam name="T">The cache value type.</typeparam>
+    public class SynchronizedCache<K, T>
+    {
+        /// <summary>
+        /// The lock used to access the cache synchronously. Cannot be null.
+        /// </summary>
+        private readonly ReaderWriterLockSlim/*!*/cacheLock = new ReaderWriterLockSlim();
+
+        /// <summary>
+        /// Cached values. Cannot be null.
+        /// </summary>
+        private readonly Dictionary<K, T>/*!*/innerCache = new Dictionary<K, T>();
+
+        /// <summary>
+        /// The update function used when cache miss.
+        /// </summary>
+        private readonly Func<K, T>/*!*/updateFunction;
+
+        /// <summary>
+        /// Initialize the new instance of SynchronizedCache object.
+        /// </summary>
+        /// <param name="updateFunction">The update function used when cache miss.
+        /// Note the function is called within the write lock exclusively.</param>
+        public SynchronizedCache(Func<K, T>/*!*/updateFunction)
+        {
+            if (updateFunction == null)
+                throw new ArgumentNullException("updateFunction");
+
+            //
+            this.updateFunction = updateFunction;
+        }
+
+        /// <summary>
+        /// Try to get an item from the cache. If the given <paramref name="key"/> is not found,
+        /// the <see cref="updateFunction"/> is used to create new item.
+        /// </summary>
+        /// <param name="key">The key of the item.</param>
+        /// the cache does not contain given <paramref name="key"/> yet.
+        /// <returns>The item according to the given <paramref name="key"/>.</returns>
+        public T Get(K key)
+        {
+            T result;
+
+            // if called recursivelly, do not lock again
+            if (cacheLock.IsWriteLockHeld)
+                return GetNoLock(key);
+
+            // try to find the value in the cache first
+            cacheLock.EnterUpgradeableReadLock();
+            try
+            {
+                if (innerCache.TryGetValue(key, out result))
+                    return result;
+
+                // upgrade to write lock and add new value into the cache
+                cacheLock.EnterWriteLock();
+                try
+                {
+                    // double check the lock, the item could be added while the thread was waiting for the writer lock
+                    if (innerCache.TryGetValue(key, out result))
+                        return result;
+
+                    // add the value into the cache
+                    // create new value synchronously here
+                    innerCache.Add(key, (result = updateFunction(key)));
+
+                    //
+                    return result;
+                }
+                finally
+                {
+                    cacheLock.ExitWriteLock();
+                }
+            }
+            finally
+            {
+                cacheLock.ExitUpgradeableReadLock();
+            }
+        }
+
+        /// <summary>
+        /// Similar to <see cref="Get"/>, but no locks are used.
+        /// </summary>
+        /// <param name="key">The key of the item to get/set.</param>
+        /// <returns>The value of item with specified <paramref name="key"/>.</returns>
+        private T GetNoLock(K key)
+        {
+            T result;
+
+            if (innerCache.TryGetValue(key, out result))
+                return result;
+            else
+                return innerCache[key] = updateFunction(key);
+        }
+
+        /// <summary>
+        /// Update the value with the given <paramref name="key"/> using specified <paramref name="updateFunction"/>.
+        /// </summary>
+        /// <param name="key">Key of the value to be updated or added.</param>
+        /// <param name="updateFunction">The update function used to get the value of the item. The parameter cannot be null.</param>
+        /// <returns>The value of the item with given <paramref name="key"/>.</returns>
+        public T Update(K key, Func<K, T>/*!*/updateFunction)
+        {
+            Debug.Assert(updateFunction != null);
+
+            cacheLock.EnterWriteLock();
+            try
+            {
+                // update the value in the cache
+                // create new value synchronously here
+                return innerCache[key] = updateFunction(key);
+            }
+            finally
+            {
+                cacheLock.ExitWriteLock();
+            }
+        }
+
+        /// <summary>
+        /// Update the value with the given <paramref name="key"/> using default <see cref="updateFunction"/>.
+        /// </summary>
+        /// <param name="key">Key of the value to be updated or added.</param>
+        /// <returns>The value of the item with given <paramref name="key"/>.</returns>
+        public T Update(K key)
+        {
+            return Update(key, updateFunction);
+        }
+    }
+
+
+    #endregion
+
     public enum DfsStates
     {
         Initial,
