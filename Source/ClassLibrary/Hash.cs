@@ -64,7 +64,7 @@ namespace PHP.Library
         [PureFunction]
         public static int CRC32(PhpBytes bytes)
         {
-            return BitConverter.ToInt32(new HashPhpResource.CRC32().ComputeHash(bytes.Data), 0);
+            return BitConverter.ToInt32(new CRC32().ComputeHash(bytes.Data), 0);
         }
 
 #if !SILVERLIGHT
