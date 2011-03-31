@@ -362,14 +362,94 @@ namespace PHP.Core
                 throw new ArgumentException();
         }
         
-		/// <summary>
-		/// Compares two objects in a manner of the PHP regular comparison.
-		/// </summary>
-		/// <include file='Doc/Common.xml' path='docs/method[@name="Compare(x,y)"]/*'/>
-		public int Compare(object x, object y)
-		{
+		public static int CompareOp(int x, int y)
+        {
+            return (x < y ? -1 : (x > y ? 1 : 0));
+        }
+
+        public static int CompareOp(object x, int y, bool throws)
+        {
+            // copied from CompareOp(object,object,bool)
+
+            string sx;
+
+            if (x is int)
+            {
+                return ((int)x < (int)y ? -1 : ((int)x > (int)y ? 1 : 0));                
+            }
+            else if (x is long)
+            {
+                return ((long)x < (int)y ? -1 : ((long)x > (int)y ? 1 : 0));
+            }
+            else if (x is double)
+            {
+                return CompareDouble((double)x, (int)y);
+            }
+            else if ((sx = x as string) != null)
+            {
+                return CompareString(sx, (int)y);
+            }
+            else if (x is bool)
+            {
+                return ((bool)x ? 2 : 1) - (Convert.ObjectToBoolean(y) ? 2 : 1);
+            }
+            else if (x == null)
+            {
+                return ((int)y == 0) ? 0 : -1;     // obsolete: -Math.Sign((int)y);                 // x == 0
+            }
+
+            try
+            {
+                return CompareOp_Nonliterals(x, y);
+            }
+            catch (ArgumentException)
+            {
+                if (throws)
+                    throw;
+
+                PhpException.Throw(PhpError.Warning, CoreResources.GetString("incomparable_objects_compared"));
+                return 0;
+            }
+        }
+
+        public static int CompareOp(int x, object y, bool throws)
+        {
+            // copied from CompareOp(object,object,bool)
+
+            string sy;
+
+            //if (x is int)
+            {
+                if (y is int) return ((int)x < (int)y ? -1 : ((int)x > (int)y ? 1 : 0));
+                if (y is long) return ((int)x < (long)y ? -1 : ((int)x > (long)y ? 1 : 0));
+                if (y is double) return CompareDouble((int)x, (double)y);
+                if ((sy = y as string) != null) return -CompareString(sy, (int)x);
+                if (y is bool) return ((int)x != 0 ? 2 : 1) - ((bool)y ? 2 : 1);
+                if (y == null) return ((int)x == 0) ? 0 : 1; // obsolete: Math.Sign((int)x); // y == 0
+            }
+            
+            try
+            {
+                return CompareOp_Nonliterals(x, y);
+            }
+            catch (ArgumentException)
+            {
+                if (throws)
+                    throw;
+
+                PhpException.Throw(PhpError.Warning, CoreResources.GetString("incomparable_objects_compared"));
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Compares two objects in a manner of the PHP regular comparison.
+        /// </summary>
+        /// <include file='Doc/Common.xml' path='docs/method[@name="Compare(x,y)"]/*'/>
+        public int Compare(object x, object y)
+        {
             return CompareOp(x, y, true);
-		}
+        }
 
         #endregion
 

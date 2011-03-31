@@ -572,21 +572,69 @@ namespace PHP.Core.AST
 		/// <returns>A type code of the result.</returns>
 		private PhpTypeCode EmitComparison(CodeGenerator codeGenerator, bool equality)
 		{
+            PhpTypeCode x, y;
 			// PhpComparer.Default.<CompareEq | Compare>(box left, box right <|, false>);
 			/*changed to static method*/ //codeGenerator.IL.Emit(OpCodes.Ldsfld, Fields.PhpComparer_Default);
-			codeGenerator.EmitBoxing(leftExpr.Emit(codeGenerator));     // x = leftExpr
-			codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));    // y = rightExpr
-
+			
 			if (equality)
 			{
+                codeGenerator.EmitBoxing(leftExpr.Emit(codeGenerator));     // x = leftExpr
+                codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));    // y = rightExpr
 				codeGenerator.IL.Emit(OpCodes.Call, Methods.CompareEq);
 				return PhpTypeCode.Boolean;
 			}
 			else
 			{
-                codeGenerator.IL.LdcI4(0);  // throws = false
-                codeGenerator.IL.Emit(OpCodes.Call, Methods.CompareOp);
-				return PhpTypeCode.Integer;
+                x = leftExpr.Emit(codeGenerator);
+
+                if (x == PhpTypeCode.Integer)
+                {
+                    y = rightExpr.Emit(codeGenerator);
+
+                    // int, ?
+
+                    if (y == PhpTypeCode.Integer)
+                    {
+                        // int, int
+                        codeGenerator.IL.Emit(OpCodes.Call, Methods.CompareOp_int_int);
+                        return PhpTypeCode.Integer;
+                    }
+                    else
+                    {
+                        codeGenerator.EmitBoxing(y);
+
+                        // int, object
+                        codeGenerator.IL.LdcI4(0);  // throws = false
+                        codeGenerator.IL.Emit(OpCodes.Call, Methods.CompareOp_int_object_bool);
+                        return PhpTypeCode.Integer;
+                    }
+
+                }
+                else
+                {
+                    codeGenerator.EmitBoxing(x);
+
+                    y = rightExpr.Emit(codeGenerator);
+
+                    // object, ?
+
+                    if (y == PhpTypeCode.Integer)
+                    {
+                        // object, int
+                        codeGenerator.IL.LdcI4(0);  // throws = false
+                        codeGenerator.IL.Emit(OpCodes.Call, Methods.CompareOp_object_int_bool);
+                        return PhpTypeCode.Integer;
+                    }
+                    else
+                    {
+                        codeGenerator.EmitBoxing(y);
+
+                        // object, object
+                        codeGenerator.IL.LdcI4(0);  // throws = false
+                        codeGenerator.IL.Emit(OpCodes.Call, Methods.CompareOp_object_object_bool);
+                        return PhpTypeCode.Integer;
+                    }
+                }
 			}
 		}
 
