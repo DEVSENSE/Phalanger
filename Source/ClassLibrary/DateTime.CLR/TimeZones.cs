@@ -39,28 +39,30 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Gets or sets the current time zone for PHP date-time library functions. Associated with the current thread.
+		/// Gets the current time zone for PHP date-time library functions. Associated with the current thread.
 		/// </summary>
+        /// <remarks>It returns the time zone set by date_default_timezone_set PHP function.
+        /// If no time zone was set, the time zone is determined in following order:
+        /// 1. the time zone set in configuration
+        /// 2. the time zone of the current system
+        /// 3. default UTC time zone</remarks>
 		public static TimeZone CurrentTimeZone
 		{
 			get
 			{
+                // timezone is set by date_default_timezone_set(), return this one
 				if (_default != null)
 					return _default;
 
-#if SILVERLIGHT
-				bool changed = true;
-#else
-				bool changed = _current == null || String.Compare(_current.StandardName, Environment.GetEnvironmentVariable(EnvVariableName), true) != 0;
+                // default timezone was not set, use & cache the current timezone
+                return (_current ?? (_current = new CurrentTimeZoneCache())).TimeZone;
+			}
+#if DEBUG   // for unit tests only
+            internal set
+            {
+                _current = new CurrentTimeZoneCache(value);
+            }
 #endif
-				if (_current == null || changed)
-					_current = DetermineTimeZone();
-				return _current;
-			}
-			set
-			{
-				_current = value;
-			}
 		}
 
 		/// <summary>
@@ -77,51 +79,106 @@ namespace PHP.Library
 #if !SILVERLIGHT
 		[ThreadStatic]
 #endif
-		private static TimeZone _current;
+        private static CurrentTimeZoneCache _current;
 
-		/// <summary>
+        #region CurrentTimeZoneCache
+
+        /// <summary>
+        /// Cache of current TimeZone with auto-update ability.
+        /// </summary>
+        private class CurrentTimeZoneCache
+        {
+            public CurrentTimeZoneCache()
+            {
+            }
+#if DEBUG
+            internal CurrentTimeZoneCache(TimeZone timezone)
+            {
+                this._timeZone = timezone;
+                this._changedFunc = (_) => false;
+            }
+#endif
+
+            /// <summary>
+            /// Get the TimeZone set by the current process. Depends on environment variable, or local configuration, or system time zone.
+            /// </summary>
+            public TimeZone TimeZone
+            {
+                get
+                {
+                    if (_timeZone == null || _changedFunc == null || _changedFunc(_timeZone) == true)
+                        _timeZone = DetermineTimeZone(out _changedFunc);    // get the current timezone, update the function that determines, if the timezone has to be rechecked.
+
+                    return _timeZone;
+                }
+            }
+
+            private TimeZone _timeZone;
+
+            /// <summary>
+            /// Function that determines if the current timezone should be rechecked.
+            /// </summary>
+            private Func<TimeZone/*!*/, bool> _changedFunc;
+
+            /// <summary>
+            /// Finds out the time zone in the way how PHP does.
+            /// </summary>
+            private static TimeZone DetermineTimeZone(out Func<TimeZone, bool> changedFunc)
+            {
+                TimeZone result;
+
+                // check environment variable:
+#if !SILVERLIGHT
+                string env_tz = Environment.GetEnvironmentVariable(EnvVariableName);
+                if (!String.IsNullOrEmpty(env_tz))
+                {
+                    result = GetTimeZone(env_tz);
+                    if (result != null)
+                    {
+                        // recheck the timezone only if the environment variable changes
+                        changedFunc = (timezone) => String.Compare(timezone.StandardName, Environment.GetEnvironmentVariable(EnvVariableName), true) != 0;
+                        // return the timezone set in environment
+                        return result;
+                    }
+
+                    PhpException.Throw(PhpError.Notice, LibResources.GetString("unknown_timezone_env", env_tz));
+                }
+#endif
+
+                // check configuration:
+                LibraryConfiguration config = LibraryConfiguration.Local;
+                if (config.Date.TimeZone != null)
+                {
+                    // recheck the timezone only if the local configuration changes, ignore the environment variable from this point at all
+                    changedFunc = (timezone) => config.Date.TimeZone != timezone;
+                    return config.Date.TimeZone;
+                }
+
+                // convert current system time zone to PHP zone:
+                result = SystemToPhpTimeZone(TimeZone.CurrentTimeZone);
+
+                // UTC:
+                if (result == null)
+                    result = GetTimeZone("UTC");
+
+                PhpException.Throw(PhpError.Strict, LibResources.GetString("using_implicit_timezone", result.StandardName));
+
+                // recheck the timezone when the TimeZone in local configuration is set
+                changedFunc = (timezone) => config.Date.TimeZone != null;
+                return result;
+            }
+                        
+        }
+
+        #endregion
+
+        /// <summary>
 		/// Clears thread static field. Called on request end.
 		/// </summary>
 		private static void Clear()
 		{
 			_current = null;
 			_default = null;
-		}
-
-		/// <summary>
-		/// Finds out the time zone in the way how PHP does.
-		/// </summary>
-		private static TimeZone DetermineTimeZone()
-		{
-			TimeZone result;
-
-			// check environment variable:
-#if !SILVERLIGHT
-			string env_tz = Environment.GetEnvironmentVariable(EnvVariableName);
-			if (!String.IsNullOrEmpty(env_tz))
-			{
-				result = GetTimeZone(env_tz);
-				if (result != null) return result;
-
-				PhpException.Throw(PhpError.Notice, LibResources.GetString("unknown_timezone_env", env_tz));
-			}
-#endif
-
-			// check configuration:
-			LibraryConfiguration config = LibraryConfiguration.Local;
-			if (config.Date.TimeZone != null)
-				return config.Date.TimeZone;
-
-			// convert current system time zone to PHP zone:
-			result = SystemToPhpTimeZone(TimeZone.CurrentTimeZone);
-
-			// UTC:
-			if (result == null)
-				result = GetTimeZone("UTC");
-
-			PhpException.Throw(PhpError.Strict, LibResources.GetString("using_implicit_timezone", result.StandardName));
-
-			return result;
 		}
 
 #if !SILVERLIGHT
@@ -369,9 +426,9 @@ namespace PHP.Library
 		[ImplementsFunction("date_default_timezone_get")]
 		public static string GetCurrentTimeZone()
 		{
-			if (_default != null) return _default.StandardName;
+            var timezone = CurrentTimeZone;
 
-			return DetermineTimeZone().StandardName;
+            return (timezone != null) ? timezone.StandardName : null;
 		}
 
 		#endregion

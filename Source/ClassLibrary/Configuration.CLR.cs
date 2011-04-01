@@ -293,7 +293,7 @@ namespace PHP.Library
 						break;
 
 					case "TimeZone":
-						if (value != "")
+						if (!string.IsNullOrEmpty(value))
 						{
 							TimeZone = PhpTimeZone.GetTimeZone(value);
 							if (TimeZone == null)
