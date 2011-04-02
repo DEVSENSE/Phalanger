@@ -3532,15 +3532,16 @@ namespace PHP.Core
         /// <summary>
         /// The lock used to access the cache synchronously. Cannot be null.
         /// </summary>
-        private readonly ReaderWriterLockSlim/*!*/cacheLock = new ReaderWriterLockSlim();
+        private readonly ReaderWriterLockSlim/*!*/cacheLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
         /// <summary>
         /// Cached values. Cannot be null.
         /// </summary>
         private readonly Dictionary<K, T>/*!*/innerCache = new Dictionary<K, T>();
 
+
         /// <summary>
-        /// The update function used when cache miss.
+        /// The update function used when cache miss. Cannot be null.
         /// </summary>
         private readonly Func<K, T>/*!*/updateFunction;
 
@@ -3569,10 +3570,6 @@ namespace PHP.Core
         {
             T result;
 
-            // if called recursivelly, do not lock again
-            if (cacheLock.IsWriteLockHeld)
-                return GetNoLock(key);
-
             // try to find the value in the cache first
             cacheLock.EnterUpgradeableReadLock();
             try
@@ -3587,6 +3584,8 @@ namespace PHP.Core
                     // double check the lock, the item could be added while the thread was waiting for the writer lock
                     if (innerCache.TryGetValue(key, out result))
                         return result;
+
+                    // only here, the Get method can be called recursively
 
                     // add the value into the cache
                     // create new value synchronously here
@@ -3604,21 +3603,6 @@ namespace PHP.Core
             {
                 cacheLock.ExitUpgradeableReadLock();
             }
-        }
-
-        /// <summary>
-        /// Similar to <see cref="Get"/>, but no locks are used.
-        /// </summary>
-        /// <param name="key">The key of the item to get/set.</param>
-        /// <returns>The value of item with specified <paramref name="key"/>.</returns>
-        private T GetNoLock(K key)
-        {
-            T result;
-
-            if (innerCache.TryGetValue(key, out result))
-                return result;
-            else
-                return innerCache[key] = updateFunction(key);
         }
 
         /// <summary>
