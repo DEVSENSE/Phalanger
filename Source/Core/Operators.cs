@@ -2314,12 +2314,12 @@ namespace PHP.Core
 			{
 				case Operators.GetItemKinds.Isset:
 					// pass isset() ""/null to say true/false depending on the value returned from "offsetExists":
-					return Core.Convert.ObjectToBoolean(arrayAccess.Contains(key)) ? "" : null;
+                    return arrayAccess.Contains(key) ? "" : null;
 
 				case Operators.GetItemKinds.Empty:
 					// if "offsetExists" returns false, the empty()/isset() returns false (pass null to say true/false): 
 					// otherwise, "offsetGet" is called to retrieve the value, which is passed to isset():
-					if (!Core.Convert.ObjectToBoolean(arrayAccess.Contains(key)))
+					if (!arrayAccess.Contains(key))
 						return null;
 					else
 						goto default;
@@ -2330,6 +2330,32 @@ namespace PHP.Core
 			}
 			
 		}
+
+        //Similar to ArrayAccess.GetUserArrayItem, but getting access to a C# IDictionary
+        internal static object GetListItem(IList arrayAccess, object key, Operators.GetItemKinds kind)
+        {
+            int index = Convert.ObjectToInteger(key);   // index used as key in IList
+
+            switch (kind)
+            {
+                case Operators.GetItemKinds.Isset:
+                    // pass isset() ""/null to say true/false depending on the value returned from "offsetExists":
+                    return (index >= 0 && index < arrayAccess.Count) ? "" : null;
+
+                case Operators.GetItemKinds.Empty:
+                    // if "offsetExists" returns false, the empty()/isset() returns false (pass null to say true/false): 
+                    // otherwise, "offsetGet" is called to retrieve the value, which is passed to isset():
+                    if (index < 0 || index >= arrayAccess.Count)
+                        return null;
+                    else
+                        goto default;
+
+                default:
+                    // regular getter:
+                    return PhpVariable.Dereference(arrayAccess[index]);
+            }
+
+        }
 
 		private static object GetItemEpilogue(object var, object key, GetItemKinds kind)
 		{
@@ -2347,10 +2373,16 @@ namespace PHP.Core
 			DObject dobj = var as DObject;
 			if (dobj != null)
 			{
-				if (dobj.RealObject is Library.SPL.ArrayAccess)
+                var realObject = dobj.RealObject;
+
+				if (realObject is Library.SPL.ArrayAccess)
 					return Library.SPL.PhpArrayObject.GetUserArrayItem(dobj, key, kind);
-				else if (dobj.RealObject is IDictionary)
-					return GetDictionaryItem((IDictionary)dobj.RealObject, key, kind);
+				
+                if (realObject is IList)
+                    return GetListItem((IList)realObject, key, kind);
+
+                if (realObject is IDictionary)
+					return GetDictionaryItem((IDictionary)realObject, key, kind);
 			}
 
 			// warnings (DObject, scalar type):
