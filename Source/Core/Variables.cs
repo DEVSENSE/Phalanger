@@ -87,6 +87,7 @@ namespace PHP.Core
 			{
 				case PhpTypeCode.String: return Types.String[0];
 				case PhpTypeCode.Integer: return Types.Int[0];
+                case PhpTypeCode.LongInteger: return Types.LongInt[0];
 				case PhpTypeCode.Boolean: return Types.Bool[0];
 				case PhpTypeCode.Double: return Types.Double[0];
 				case PhpTypeCode.Object: return Types.Object[0];

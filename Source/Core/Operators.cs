@@ -3621,16 +3621,18 @@ namespace PHP.Core
 			if ((obj = var as DObject) != null)
 				return GetObjectProperty(obj, name, caller, quiet);
 
-			// empty:
-			if (PhpVariable.IsEmpty(var))
-			{
-				if (!quiet)
-					PhpException.Throw(PhpError.Notice, CoreResources.GetString("empty_used_as_object"));
-				return null;
-			}
+			// warnings:
+            if (!quiet) // not in isset() operator only
+            {
+                if (PhpVariable.IsEmpty(var))
+                    // empty:
+                    PhpException.Throw(PhpError.Notice, CoreResources.GetString("empty_used_as_object"));
+                else
+                    // PhpArray, string, scalar type:
+                    PhpException.VariableMisusedAsObject(var, false);
+            }
 
-			// warnings - PhpArray, scalar type, string:
-			PhpException.VariableMisusedAsObject(var, false);
+			// property does not exist
 			return null;
 		}
 
