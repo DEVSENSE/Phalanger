@@ -113,6 +113,7 @@ namespace PHP.Core
 			if (type == Types.Object[0]) return PhpTypeCode.Object;
 			if (type == Types.Double[0]) return PhpTypeCode.Double;
 			if (type == Types.Int[0]) return PhpTypeCode.Integer;
+            if (type == Types.LongInt[0]) return PhpTypeCode.LongInteger;
 			if (type == Types.String[0]) return PhpTypeCode.String;
 			if (type == Types.Bool[0]) return PhpTypeCode.Boolean;
 			if (type == Types.Void) return PhpTypeCode.Void;
