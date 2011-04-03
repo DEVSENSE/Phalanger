@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.Runtime.Serialization;
 
 namespace PHP.CoreCLR
 {
@@ -117,10 +118,6 @@ namespace PHP.CoreCLR
 	public interface SerializationInfo
 	{
 		void AddValue(string key, object value);
-	}
-
-	public interface StreamingContext
-	{
 	}
 
 	public interface ISerializable

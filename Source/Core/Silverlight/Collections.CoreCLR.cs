@@ -22,31 +22,21 @@ namespace PHP.CoreCLR
         }
     }
 
-    public static class ArrayFunctions
+    public class SortedList<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
     {
-        public static bool TrueForAll<T>(T[] arr, Predicate<T> cond)
-        {
-            foreach (var t in arr)
-                if (!cond(t)) return false;
-            return true;
-        }
-    }
-
-    public class SortedList 
-    {
-        private List<KeyValuePair<object, object>> list;
-        System.Collections.IComparer comparer;
+        private List<KeyValuePair<TKey, TValue>> list;
+        IComparer<TKey> comparer;
         bool sorted = false;
 
-        public SortedList(System.Collections.IComparer comparer, int count)
+        public SortedList(int capacity, IComparer<TKey> comparer)
         {
             this.comparer = comparer;
-            list = new List<KeyValuePair<object, object>>(count);
+            list = new List<KeyValuePair<TKey, TValue>>(capacity);
         }
 
-        public void Add(object key, object value)
+        public void Add(TKey key, TValue value)
         {
-            list.Add(new KeyValuePair<object, object>(key, value));
+            list.Add(new KeyValuePair<TKey, TValue>(key, value));
             sorted = false;
         }
 
@@ -60,7 +50,8 @@ namespace PHP.CoreCLR
         {
             if (!sorted)
             {
-                list.Sort(delegate(KeyValuePair<object, object> a, KeyValuePair<object, object>  b) { 
+                list.Sort(delegate(KeyValuePair<TKey, TValue> a, KeyValuePair<TKey, TValue> b)
+                { 
                     return comparer.Compare(a.Key, b.Key); 
                 });
                 sorted = true;
@@ -77,5 +68,16 @@ namespace PHP.CoreCLR
         {
             get { return list.Count; }
         }
+
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            return list.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return list.GetEnumerator();
+        }
+
     }
 }

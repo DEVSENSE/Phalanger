@@ -6,28 +6,26 @@ using System.Threading;
 
 namespace PHP.CoreCLR
 {
-	class ReaderWriterLock
+	class ReaderWriterLockSlim
 	{
 		private readonly object objLock = new object();
 		
-		public void AcquireReaderLock(int timeout)
+		public void EnterReadLock()
 		{
-			Debug.Assert(timeout == -1, "Emulated ReaderWriterLock doesn't support timeout");
 			Monitor.Enter(objLock);	
 		}
 
-		public void ReleaseReaderLock()
+		public void ExitReadLock()
 		{
 			Monitor.Exit(objLock);
 		}
 
-		public void AcquireWriterLock(int timeout)
+		public void EnterWriteLock()
 		{
-			Debug.Assert(timeout == -1, "Emulated ReaderWriterLock doesn't support timeout");
 			Monitor.Enter(objLock);
 		}
 
-		public void ReleaseWriterLock()
+		public void ExitWriteLock()
 		{
 			Monitor.Exit(objLock);
 		}

@@ -23,8 +23,10 @@ using PHP.Core.Reflection;
 
 #if SILVERLIGHT
 using MathEx = PHP.CoreCLR.MathEx;
+using ArrayEx = PHP.CoreCLR.ArrayEx;
 #else
 using MathEx = System.Math;
+using ArrayEx = System.Array;
 #endif
 
 namespace PHP.Core
@@ -1701,10 +1703,10 @@ namespace PHP.Core
             if (startIndex >= count) return null;
 
             // if some element is PhpBytes:
-            if (Array.Exists(args, (obj) => obj is PhpBytes))
+            if (ArrayEx.Exists(args, (obj) => obj is PhpBytes))
             {
                 // converts all items to PhpBytes (or nulls) and concatenate:
-                return PhpBytes.Concat(Array.ConvertAll<object, PhpBytes>(args, x =>
+                return PhpBytes.Concat(ArrayEx.ConvertAll<object, PhpBytes>(args, x =>
                 {
                     return (x != null) ? Convert.ObjectToPhpBytes(x) : null;
                 }), startIndex, count - startIndex);
@@ -1713,7 +1715,7 @@ namespace PHP.Core
             // none of the elements is PhpBytes,
             // convert all items to string and sum their total length:
             int length = 0;
-            string[] args_string = Array.ConvertAll<object, string>(args, x =>
+            string[] args_string = ArrayEx.ConvertAll<object, string>(args, x =>
             {
                 if (x != null)
                 {

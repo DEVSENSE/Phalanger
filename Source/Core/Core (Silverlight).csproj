@@ -1,4 +1,8 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup Condition="'$(MSBuildToolsVersion)' == '3.5'">
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
@@ -24,15 +28,19 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <SignAssembly>true</SignAssembly>
-    <SccProjectName>%24/Phalanger/Source/Core</SccProjectName>
+    <SccProjectName>%24/Phalanger/Main/Source/Core</SccProjectName>
     <SccLocalPath>.</SccLocalPath>
-    <SccAuxPath>https://tfs01.codeplex.com</SccAuxPath>
+    <SccAuxPath>https://team.corp.devsense.com:8443/tfs/projects</SccAuxPath>
     <SccProvider>{4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}</SccProvider>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -45,7 +53,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -69,6 +76,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseSilverlight|AnyCPU' ">
     <OutputPath>bin\ReleaseSilverlight\</OutputPath>
@@ -90,9 +98,11 @@
     <WarningLevel>4</WarningLevel>
     <DebugType>none</DebugType>
     <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ApplicationContext.cs" />
+    <Compile Include="Silverlight\Array.CoreCLR.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -263,6 +273,7 @@
     <Compile Include="Silverlight\DayLightTime.CoreCLR.cs" />
     <Compile Include="Silverlight\IO.CoreCLR.cs" />
     <Compile Include="Silverlight\Math.CoreCLR.cs" />
+    <Compile Include="Silverlight\Reflection.CoreCLR.cs" />
     <Compile Include="Silverlight\Synchronization.CoreCLR.cs" />
     <Compile Include="Silverlight\ThreadStatic.CoreCLR.cs" />
     <Compile Include="DynamicCode.cs">
@@ -411,6 +422,7 @@
     <Compile Include="SPL\ArrayAccess.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SPL\Countable.cs" />
     <Compile Include="SPL\Exception.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -439,7 +451,7 @@
     <Compile Include="StreamWrappers.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Tuple.cs" />
+    <Compile Include="Strings.Designer.cs" />
     <Compile Include="Utils.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -466,6 +478,9 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
+    <Reference Include="PhpNetCore.IL, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="system" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
@@ -476,7 +491,7 @@
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
-      <ProductName>.NET Framework Client Profile</ProductName>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
@@ -505,7 +520,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\v3.0\Microsoft.Silverlight.CSharp.targets" Condition="" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

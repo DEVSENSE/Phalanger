@@ -1017,6 +1017,8 @@ namespace PHP.Core
 
         #region Serializable
 
+#if !SILVERLIGHT
+
         public ScriptDiedException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
@@ -1037,9 +1039,11 @@ namespace PHP.Core
                 info.AddValue("Status", Status);
             }
         }
+#endif
 
         #endregion
-	}
+
+    }
 
 	/// <summary>
 	/// Thrown when user attempts to create two types with same name in one assembly.

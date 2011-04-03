@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
+using System.Security;
 
 namespace PHP.CoreCLR
 {
@@ -26,4 +28,22 @@ namespace PHP.CoreCLR
 		/// </summary>
 		public InvalidDataException(string message, Exception innerException) : base(message, innerException) { }
 	}
+
+    public class DirectoryEx
+    {
+
+        public static string[] GetDirectories(string path)
+        {
+            List<string> list = new List<string>(Directory.EnumerateDirectories(path));
+            return list.ToArray();
+        }
+
+
+        public static string[] GetFiles(string path)
+        {
+            List<string> list = new List<string>(Directory.EnumerateFiles(path));
+            return list.ToArray();
+        }
+
+    }
 }

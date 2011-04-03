@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace PHP.CoreCLR
 {
@@ -30,7 +31,6 @@ namespace PHP.CoreCLR
         {
             //SetErrorCode(__HResults.COR_E_APPLICATION);
         }
-
 
     }
 }

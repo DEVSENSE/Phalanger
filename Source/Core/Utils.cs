@@ -23,9 +23,11 @@ using System.Reflection.Emit;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
+using DirectoryEx = PHP.CoreCLR.DirectoryEx;
 #else
 using System.Collections.Specialized; // case-insensitive hashtable
 using System.Runtime.Serialization;
+using DirectoryEx = System.IO.Directory;
 #endif
 
 namespace PHP.Core
@@ -2693,13 +2695,13 @@ namespace PHP.Core
         public FullPath[]/*!*/ GetFiles()
         {
             EnsureNonEmpty();
-            return GetFullPaths(Directory.GetFiles(this.path), false);
+            return GetFullPaths(DirectoryEx.GetFiles(this.path), false);
         }
 
         public FullPath[]/*!*/ GetDirectories()
         {
             EnsureNonEmpty();
-            return GetFullPaths(Directory.GetDirectories(this.path), false);
+            return GetFullPaths(DirectoryEx.GetDirectories(this.path), false);
         }
 
         public static FullPath[]/*!*/ GetFullPaths(string[]/*!*/ paths)
@@ -3521,6 +3523,8 @@ namespace PHP.Core
     #endregion
 
     #region Threading
+    //TODO: do something with this #if
+#if !SILVERLIGHT
 
     /// <summary>
     /// Implements cache mechanism to be used in multi-threaded environment.
@@ -3639,6 +3643,99 @@ namespace PHP.Core
         }
     }
 
+#else
+
+    /// <summary>
+    /// Implements cache mechanism to be used in multi-threaded environment.
+    /// </summary>
+    /// <typeparam name="K">The cache key type.</typeparam>
+    /// <typeparam name="T">The cache value type.</typeparam>
+    public class SynchronizedCache<K, T>
+    {
+        /// <summary>
+        /// The lock used to access the cache synchronously. Cannot be null.
+        /// </summary>
+        private readonly object/*!*/cacheLock = new object();
+
+        /// <summary>
+        /// Cached values. Cannot be null.
+        /// </summary>
+        private readonly Dictionary<K, T>/*!*/innerCache = new Dictionary<K, T>();
+
+        /// <summary>
+        /// The update function used when cache miss. Cannot be null.
+        /// </summary>
+        private readonly Func<K, T>/*!*/updateFunction;
+
+        /// <summary>
+        /// Initialize the new instance of SynchronizedCache object.
+        /// </summary>
+        /// <param name="updateFunction">The update function used when cache miss.
+        /// Note the function is called within the lock.</param>
+        public SynchronizedCache(Func<K, T>/*!*/updateFunction)
+        {
+            if (updateFunction == null)
+                throw new ArgumentNullException("updateFunction");
+
+            //
+            this.updateFunction = updateFunction;
+        }
+
+        /// <summary>
+        /// Try to get an item from the cache. If the given <paramref name="key"/> is not found,
+        /// the <see cref="updateFunction"/> is used to create new item.
+        /// </summary>
+        /// <param name="key">The key of the item.</param>
+        /// the cache does not contain given <paramref name="key"/> yet.
+        /// <returns>The item according to the given <paramref name="key"/>.</returns>
+        public T Get(K key)
+        {
+            T result;
+
+            // try to find the value in the cache first
+            lock(cacheLock)
+            {
+                if (innerCache.TryGetValue(key, out result))
+                    return result;
+
+                // add the value into the cache
+                // create new value synchronously here
+                innerCache.Add(key, (result = updateFunction(key)));
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Update the value with the given <paramref name="key"/> using specified <paramref name="updateFunction"/>.
+        /// </summary>
+        /// <param name="key">Key of the value to be updated or added.</param>
+        /// <param name="updateFunction">The update function used to get the value of the item. The parameter cannot be null.</param>
+        /// <returns>The value of the item with given <paramref name="key"/>.</returns>
+        public T Update(K key, Func<K, T>/*!*/updateFunction)
+        {
+            Debug.Assert(updateFunction != null);
+
+            lock(cacheLock)
+            {
+                // update the value in the cache
+                // create new value synchronously here
+                return innerCache[key] = updateFunction(key);
+            }
+        }
+
+        /// <summary>
+        /// Update the value with the given <paramref name="key"/> using default <see cref="updateFunction"/>.
+        /// </summary>
+        /// <param name="key">Key of the value to be updated or added.</param>
+        /// <returns>The value of the item with given <paramref name="key"/>.</returns>
+        public T Update(K key)
+        {
+            return Update(key, updateFunction);
+        }
+    }
+
+
+#endif
 
     #endregion
 

@@ -23,6 +23,12 @@ using PHP.Core;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
+#if SILVERLIGHT
+using DirectoryEx = PHP.CoreCLR.DirectoryEx;
+#else
+using DirectoryEx = System.IO.Directory;
+#endif
+
 namespace PHP.Library
 {
 	/// <summary>
@@ -637,10 +643,10 @@ namespace PHP.Library
 
 		private static void GlobReadDirectoryContent(string/*!*/ currentDir, GlobOptions flags, out string[] items, out bool[] isDir)
 		{
-			string[] directories = System.IO.Directory.GetDirectories(currentDir);
+			string[] directories = DirectoryEx.GetDirectories(currentDir);
 			string[] files;
 			if ((flags & GlobOptions.OnlyDir) == 0)
-				files = System.IO.Directory.GetFiles(currentDir);
+				files = DirectoryEx.GetFiles(currentDir);
 			else
 				files = ArrayUtils.EmptyStrings;
 

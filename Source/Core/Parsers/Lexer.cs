@@ -63,7 +63,8 @@ namespace PHP.Core.Parsers
                 {
                     if (_binaryBuilder != null && _binaryBuilder.Count > 0)
                     {
-                        _unicodeBuilder = new StringBuilder(encoding.GetString(_binaryBuilder.ToArray()));
+                        byte[] bytes = _binaryBuilder.ToArray();
+                        _unicodeBuilder = new StringBuilder(encoding.GetString(bytes,0,bytes.Length ));
                     }
                     else
                     {

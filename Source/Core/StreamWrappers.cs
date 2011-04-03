@@ -862,14 +862,15 @@ namespace PHP.Core
         {
             LocalConfiguration config = ScriptContext.CurrentContext.Config;
 
+#if !SILVERLIGHT
+
             //
             // timeout.
             //
-#if !SILVERLIGHT
             object timeout = context.GetOption(scheme, "timeout");
             double dtimeout = (timeout != null) ? Convert.ObjectToDouble(timeout) : (double)config.FileSystem.DefaultSocketTimeout;
             request.ReadWriteTimeout = (int)(dtimeout * 1000);
-#endif
+
             //
             // max_redirects
             //
@@ -886,7 +887,7 @@ namespace PHP.Core
             object protocol_version = context.GetOption(scheme, "protocol_version");
             double dprotocol_version = (protocol_version != null) ? Convert.ObjectToDouble(protocol_version) : 1.0;// default: 1.0
             request.ProtocolVersion = new Version(dprotocol_version.ToString("F01"));
-            
+#endif
             //
             // method - GET, POST, or any other HTTP method supported by the remote server.
             //
@@ -984,8 +985,12 @@ namespace PHP.Core
                 return null;
 
             PhpArray array = new PhpArray();
-
+#if !SILVERLIGHT
             array.Add("HTTP/" + response.ProtocolVersion.ToString() + " " + (int)response.StatusCode + " " + response.StatusDescription);
+#else
+            array.Add("HTTP/1.0 " + (int)response.StatusCode + " " + response.StatusDescription); // We don't have ProtocolVersion available, just return HTTP/1.0
+            //TODO: return real protocol version when we know how
+#endif
 
             foreach (string key in response.Headers.AllKeys)
             {

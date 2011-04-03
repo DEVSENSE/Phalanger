@@ -24,9 +24,10 @@ using System.Threading;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
+using ArrayEx = PHP.CoreCLR.ArrayEx;
 #else
 using System.Runtime.Serialization;
-using ArrayFunctions = System.Array;
+using ArrayEx = System.Array;
 #endif
 
 namespace PHP.Core.Reflection
@@ -2728,7 +2729,7 @@ namespace PHP.Core.Reflection
 #endif
 				};
 
-            Debug.Assert(ifaces.Length == expected.Length && ArrayFunctions.TrueForAll(ifaces, delegate(System.Type iface)
+            Debug.Assert(ifaces.Length == expected.Length && ArrayEx.TrueForAll(ifaces, delegate(System.Type iface)
 			{
 				return Array.IndexOf(expected, iface) != -1;
 			}), "ReflectInterfaces must be updated if PhpObject implements different interfaces than listed");

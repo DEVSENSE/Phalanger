@@ -15,8 +15,11 @@ using System.IO;
 using System.Text;
 using System.Collections;
 using System.Diagnostics;
-using System.Web.Configuration;
 using System.Security;
+
+#if !SILVERLIGHT
+using System.Web.Configuration;
+#endif
 
 namespace PHP.Core
 {

@@ -25,6 +25,7 @@ using PHP.Core.Reflection;
 
 #if SILVERLIGHT
 using MathEx = PHP.CoreCLR.MathEx;
+using PHP.CoreCLR;
 #else
 using MathEx = System.Math;
 #endif
@@ -238,7 +239,11 @@ namespace PHP.Core.AST
                         Type paramType = paramInfo.ParameterType;
 
                         // only In parameters are allowed
+#if !SILVERLIGHT
                         Debug.Assert(!paramInfo.IsOut && !paramInfo.IsRetval);
+#else
+                        Debug.Assert(!paramInfo.IsOut && !ParameterInfoEx.IsRetVal(paramInfo));
+#endif
 
                         // perform parameter conversion:
                         Action<Converter<object, object>> PassArgument = (converter) =>
