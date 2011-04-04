@@ -26,7 +26,7 @@
 			self::$LastTime = TimingFunction::GetTicks() - self::$start;
 			
 			$descr = self::$descr;
-			$time = self::$LastTime;
+			$time = str_replace('.', ',', self::$LastTime); // numbers with comma instead of dot - can be read as excel CSV
 			
 			echo "$descr; $time \n";
 		}
@@ -98,6 +98,7 @@
 					Timing::Stop();
 				}
 				
+				self::UnoptimalizedLoop();
 				self::StaticFields();
 				self::InstanceFields();
 				
@@ -114,7 +115,15 @@
 				self::Instantiation();
 			}
 		}
-		
+
+		static function UnoptimalizedLoop()
+		{
+			Timing::Start("Empty unoptimalized loop");
+			$i = 'i2';
+			for(${$i} = 0; ${$i} < self::LOOP_COUNT; ${$i} ++){}
+			Timing::Stop();
+		}
+
 		static function StaticFields()
 		{
 			Timing::Start("Static field direct read");

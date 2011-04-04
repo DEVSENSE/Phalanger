@@ -66,6 +66,11 @@ namespace PHP.Core.Emit
 		public AssemblyBuilder/*!*/ RealAssemblyBuilder { get { return (AssemblyBuilder)assembly.RealAssembly; } }
 		public ModuleBuilder/*!*/ RealModuleBuilder { get { return (ModuleBuilder)assembly.RealModule; } }
 
+        /// <summary>
+        /// Prevent calling of ReflectionUtils.CreateGlobalType(RealModuleBuilder) more than once.
+        /// </summary>
+        private bool globalTypeCreated = false;
+
 		public PhpAssembly/*!*/ Assembly { get { return assembly; } }
 		protected readonly PhpAssembly/*!*/ assembly;
 
@@ -118,21 +123,26 @@ namespace PHP.Core.Emit
 			// bake type:
 			globalTypeEmitter.TypeBuilder.CreateType();
 
+            // bake global functions and <Global Fields> type, only once:
+            if (!globalTypeCreated)
+            {
 #if !SILVERLIGHT
-			// bake global CLR type:
+                // bake global CLR type:
 
-            // Note: only needed for CLR (/pure+)
-            // 
-            // Can crash if called twice, BUT it can never happen in CLR, because
-            // more global functions cannot be created dynamically using eval(), because
-            // eval() is global code that is not allowed in CLR.
-            
-            try
-            { ReflectionUtils.CreateGlobalType(RealModuleBuilder); }    // TODO: throws No Debug Module if the globals have been already created
-            catch(Exception){}
+                // Note: only needed for CLR (/pure+)
+                // 
+                // Can crash if called twice, BUT it can never happen in CLR, because
+                // more global functions cannot be created dynamically using eval(), because
+                // eval() is global code that is not allowed in CLR.
+
+                try
+                { ReflectionUtils.CreateGlobalType(RealModuleBuilder); }    // TODO: throws No Debug Module if the globals have been already created
+                catch (Exception) { }
 #else
-			// TODO: .. this is some hack.. 
+			    // TODO: .. this is some hack.. 
 #endif
+                globalTypeCreated = true;
+            }
 		}
 
 		#region Attributes
