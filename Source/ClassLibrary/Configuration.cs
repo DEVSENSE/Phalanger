@@ -107,13 +107,35 @@ namespace PHP.Library
 
 		#region Construction, Copying
 
-		public HighlightingSection Highlighting = new HighlightingSection();
-		public DateSection Date = new DateSection();
+        public readonly HighlightingSection Highlighting;
+        public readonly DateSection Date;
 #if !SILVERLIGHT
-		public MailerSection Mailer = new MailerSection();
-		public SessionSection Session = new SessionSection();
-        public SerializationSection Serialization = new SerializationSection();
+        public readonly MailerSection Mailer;
+        public readonly SessionSection Session;
+        public readonly SerializationSection Serialization;
 #endif
+
+        public LibraryConfiguration()
+        {
+            this.Highlighting = new HighlightingSection();
+            this.Date = new DateSection();
+#if !SILVERLIGHT
+            this.Mailer = new MailerSection();
+            this.Session = new SessionSection();
+            this.Serialization = new SerializationSection();
+#endif
+        }
+
+        private LibraryConfiguration(LibraryConfiguration source)
+        {
+            this.Highlighting = source.Highlighting.DeepCopy();
+            this.Date = source.Date.DeepCopy();
+#if !SILVERLIGHT
+            this.Mailer = source.Mailer.DeepCopy();
+            this.Session = source.Session.DeepCopy();
+            this.Serialization = source.Serialization.DeepCopy();
+#endif
+        }
 
 		/// <summary>
 		/// Creates a deep copy of the configuration record.
@@ -121,17 +143,7 @@ namespace PHP.Library
 		/// <returns>The copy.</returns>
 		public IPhpConfiguration DeepCopy()
 		{
-			LibraryConfiguration result = new LibraryConfiguration();
-
-			result.Highlighting = this.Highlighting.DeepCopy();
-			result.Date = this.Date.DeepCopy()	;
-#if !SILVERLIGHT
-			result.Mailer = this.Mailer.DeepCopy();
-			result.Session = this.Session.DeepCopy();
-            result.Serialization = this.Serialization.DeepCopy();
-#endif
-
-			return result;
+			return new LibraryConfiguration(this);
 		}
 
 		#endregion
