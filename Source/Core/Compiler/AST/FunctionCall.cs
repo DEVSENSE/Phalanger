@@ -266,7 +266,7 @@ namespace PHP.Core.AST
                         }
                         else if (paramType == typeof(TryEvaluateInfo))
                         {
-                            Debug.Assert(tryEvaluateInfo == null);
+                            Debug.Assert(tryEvaluateInfo == null, "Only one argument of this type is allowed.");
                             invokeParameters[i] = (tryEvaluateInfo = new TryEvaluateInfo());
                         }
                         else if (   // ... , params object[] // last parameter
@@ -332,6 +332,20 @@ namespace PHP.Core.AST
                                 value = false;
                         }
 
+                        // parse some results of the evaluation
+                        if (tryEvaluateInfo != null)
+                        {
+                            if (tryEvaluateInfo.emitDeclareLamdaFunction && tryEvaluateInfo.newRoutine != null)
+                            {
+                                this.routine = tryEvaluateInfo.newRoutine;
+                                this.inlined = InlinedFunction.CreateFunction;
+                                return false;   // 
+                            }
+
+                            return false;
+                        }
+
+                        // pass the value
                         return true;
                     }
                     catch
@@ -342,16 +356,6 @@ namespace PHP.Core.AST
                     finally
                     {
                         PhpException.ThrowCallbackOverride = oldErrorOverride;
-                    }
-
-                    // parse some results of the evaluation
-                    if (tryEvaluateInfo != null)
-                    {
-                        if (tryEvaluateInfo.emitDeclareLamdaFunction && tryEvaluateInfo.newRoutine != null)
-                        {
-                            this.routine = tryEvaluateInfo.newRoutine;
-                            this.inlined = InlinedFunction.CreateFunction;
-                        }
                     }
                 }
             }

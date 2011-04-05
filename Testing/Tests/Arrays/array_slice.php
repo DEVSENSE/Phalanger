@@ -1,30 +1,4 @@
-[expect exact]
-array
-(
-  [0] => c
-  [Y] => d
-  [1] => e
-)
-array
-(
-  [Y] => d
-)
-array
-(
-  [0] => a
-  [X] => b
-  [1] => c
-)
-array
-(
-  [0] => c
-  [Y] => d
-)
-array
-(
-  [2] => c
-  [Y] => d
-)
+[expect php]
 [file]
 <?
 $input = array(1 => "a", "X" => "b", 2 => "c", "Y" => "d", 3 => "e");

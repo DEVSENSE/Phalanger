@@ -1,21 +1,4 @@
-[expect]
-array
-(
-  [a] => 1
-  [b] => 2
-  [c] => 3
-  [d] => 4
-  [e] => 5
-)
-array
-(
-  [0] => 1
-  [1] => 2
-  [2] => 3
-  [3] => 4
-  [4] => 5
-)
-array [empty]
+[expect php]
 [file]
 <?
 function &t(&$a, &$b)

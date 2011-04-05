@@ -99,7 +99,7 @@ namespace PHP.Library
             string args, string body)
         {
             if (analyzer.IsInsideIncompleteClass())
-                throw new ArgumentException();  // in this case, the DirectFnCall will not be Emitted. Therefore the lambda routine will not be declared and compilation will fail when emitting not fully declared lambda FunctionDecl.
+                return null;  // in this case, the DirectFnCall will not be Emitted. Therefore the lambda routine will not be declared and compilation will fail when emitting not fully declared lambda FunctionDecl.
 
             // has to be a valid identifier:
             // actually this name is never used then
@@ -141,7 +141,7 @@ namespace PHP.Library
             evalInfo.emitDeclareLamdaFunction = true; //.inlined = InlinedFunction.CreateFunction;
             
             // we cannot replace the expression with literal (emission of lambda declaration is needed):
-            throw new ArgumentException();// it will not evaluate the value, it just creates the new routine
+            return null;// it will not evaluate the value, it just creates the new routine
         }
 
         /// <summary>
