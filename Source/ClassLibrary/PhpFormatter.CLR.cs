@@ -756,6 +756,7 @@ namespace PHP.Library
 			/// Consumes the look ahead character and moves to the next character in the input stream.
 			/// </summary>
 			/// <returns>The old (consumed) look ahead character.</returns>
+            /// <remarks>The consumed value is 8-bit, always in range 0x00 - 0xff.</remarks>
 			private char Consume()
 			{
                 if (unicodeMode)
@@ -909,9 +910,34 @@ namespace PHP.Library
 
 			#endregion
 
-			#region Parser
+            #region Utils
 
-			/// <summary>
+            /// <summary>
+            /// Quickly check if the look ahead byte is digit. Assumes the value is in range 0x00 - 0xff.
+            /// </summary>
+            /// <param name="lookAhead">The lookAhead byte value.</param>
+            /// <returns>True if value is in range '0'-'9'.</returns>
+            private static bool IsDigit(char lookAhead)
+            {
+                return Digit(lookAhead) != -1;
+            }
+
+            /// <summary>
+            /// Quickly determine the numeric value of given lookAhead byte.
+            /// </summary>
+            /// <param name="lookAhead">The lookAhead byte value.</param>
+            /// <returns></returns>
+            private static int Digit(char lookAhead)
+            {
+                int num = unchecked((int)lookAhead - (int)'0');
+                return (num >= 0 && num <= 9) ? num : -1;
+            }
+
+            #endregion
+
+            #region Parser
+
+            /// <summary>
 			/// The top-level parser method. 
 			/// </summary>
 			/// <remarks>Just a switch over the look ahead characters that delegates the work to one of
@@ -946,24 +972,23 @@ namespace PHP.Library
 				// pattern:
 				// [+-]?[0-9]+
 
-				bool minus = false;
-				long number = 0;
+                long number = 0;
+                
+                bool minus = (lookAhead == '-');
+                if (minus || (lookAhead == '+'))
+                    Consume();
 
-				if (lookAhead == '+') Consume();
-				else if (lookAhead == '-')
-				{
-					minus = true;
-					Consume();
-				}
+                int digit;  // == Digit(lookAhead)
+                if ((digit = Digit(lookAhead)) == -1)
+                    ThrowUnexpected();
 
-				if (!Char.IsDigit(lookAhead)) ThrowUnexpected();
-				do
-				{
-					// let it overflow just as PHP does
-					number = unchecked((10 * number) + (int)Char.GetNumericValue(lookAhead));
-					Consume();
-				}
-				while (Char.IsDigit(lookAhead));
+                do
+                {
+                    // let it overflow just as PHP does
+                    number = unchecked((10 * number) + digit);
+                    Consume();
+
+                } while ((digit = Digit(lookAhead)) != -1);
 
 				return (minus ? unchecked(-number) : number);
 			}
