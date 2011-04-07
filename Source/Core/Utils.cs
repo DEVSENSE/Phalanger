@@ -587,26 +587,36 @@ namespace PHP.Core
         public static int FirstDifferent(string str1, string str2, bool ignoreCase)
         {
             // GENERICS: replace where used for StartsWith
+            return ignoreCase ? FirstDifferentIgnoreCase(str1, str2) : FirstDifferentCaseSensitive(str1, str2);
+        }
+
+        private static int FirstDifferentIgnoreCase(string str1, string str2)
+        {
+            CultureInfo currentCulture = null;
 
             int length = Math.Min(str1.Length, str2.Length);
-            if (ignoreCase)
+            char c1, c2;
+            for (int i = 0; i < length; i++)
             {
-                for (int i = 0; i < length; i++)
+                // check the characters case insensitively first, ToLower() is expensive
+                // initialize the currentCulture lazily, CultureInfo.CurrentCulture is expensive too
+
+                if ((c1 = str1[i]) != (c2 = str2[i]) &&
+                    (Char.ToLower(c1, currentCulture ?? (currentCulture = CultureInfo.CurrentCulture)) != Char.ToLower(c2, currentCulture)))
                 {
-                    if (Char.ToLower(str1[i]) != Char.ToLower(str2[i]))
-                    {
-                        return i;
-                    }
+                    return i;
                 }
             }
-            else
+            return length;
+        }
+        private static int FirstDifferentCaseSensitive(string str1, string str2)
+        {
+            int length = Math.Min(str1.Length, str2.Length);
+            for (int i = 0; i < length; i++)
             {
-                for (int i = 0; i < length; i++)
+                if (str1[i] != str2[i])
                 {
-                    if (str1[i] != str2[i])
-                    {
-                        return i;
-                    }
+                    return i;
                 }
             }
             return length;
