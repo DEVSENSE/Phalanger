@@ -427,12 +427,17 @@ namespace PHP.Core.Reflection
 			return GetQualifiedScriptTypeName(ScriptModule.GetSubnamespace(sourceFile.RelativePath, true));
 		}
 
+        /// <summary>
+        /// Determine if script specified by <paramref name="fullPath"/> is loaded in script library.
+        /// </summary>
+        /// <param name="fullPath">The script path.</param>
+        /// <returns>True if given script is loaded.</returns>
 		internal bool ScriptExists(FullPath fullPath)
 		{
             EnsureLibraryReflected();
 
 			PhpSourceFile source_file = new PhpSourceFile(Configuration.Application.Compiler.SourceRoot, fullPath);
-			return GetScriptInfo(source_file) != null;
+            return modules.ContainsKey(source_file);
 		}
 
         /// <summary>
