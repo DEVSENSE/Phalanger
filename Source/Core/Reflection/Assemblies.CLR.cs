@@ -363,13 +363,11 @@ namespace PHP.Core.Reflection
                 {
                     //customary . is required
                     string subnamespace = type.Namespace + ".";
-                    string scriptPath;
-
+                    
                     //get script's arbitrary path
+                    string scriptPath = ScriptModule.GetPathFromSubnamespace(subnamespace).ToString();
                     if (libraryRoot != null)
-                        scriptPath = System.IO.Path.Combine(libraryRoot, ScriptModule.GetPathFromSubnamespace(subnamespace).ToString());
-                    else
-                        scriptPath = ScriptModule.GetPathFromSubnamespace(subnamespace).ToString();
+                        scriptPath = System.IO.Path.Combine(libraryRoot, scriptPath);
 
                     modules.Add(new PhpSourceFile(Configuration.Application.Compiler.SourceRoot, new RelativePath(scriptPath)), new ScriptModule(scriptPath, type, this, subnamespace));
                 }

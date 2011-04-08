@@ -122,6 +122,66 @@ namespace PHP.Library
 			return result;
 		}
 
+        /// <summary>
+        /// Check StatInternal input parameters.
+        /// </summary>
+        /// <param name="path">The path passed to stat().</param>
+        /// <param name="quiet">Wheter to suppress warning message if argument is empty.</param>
+        /// <param name="wrapper">If passed, it will contain valid StremWrapper to the given <paramref name="path"/>.</param>
+        /// <returns>True if check passed.</returns>
+        private static bool StatInternalCheck(ref string path, bool quiet, out StreamWrapper wrapper)
+        {
+            wrapper = null;
+            
+            if (String.IsNullOrEmpty(path))
+            {
+                PhpException.Throw(PhpError.Warning, LibResources.GetString("arg:empty", "path"));
+                return false;
+            }
+
+            CheckAccessOptions options = CheckAccessOptions.Empty;
+            if (quiet) options |= CheckAccessOptions.Quiet;
+            if (!PhpStream.ResolvePath(ref path, out wrapper, CheckAccessMode.FileOrDirectory, options))
+                return false;
+            
+            // check passed
+            return true;
+        }
+
+        /// <summary>
+        /// Check the cache for given <paramref name="path"/>.
+        /// </summary>
+        /// <param name="path">Path to lookup in the cache.</param>
+        /// <param name="url">Url of <paramref name="path"/>.</param>
+        /// <returns>True if given <paramref name="path"/> is in the cache currently.</returns>
+        private static bool StatInternalTryCache(string path, out string url)
+        {
+            // Try to hit the cache first
+            url = PhpPath.GetUrl(path);
+            return (url == statCacheUrl);
+        }
+
+        /// <summary>
+        /// Stat the path coming from ResolvePath (file:// wrapper expects path w/o the scheme).
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="url"></param>
+        /// <param name="wrapper"></param>
+        /// <param name="quiet"></param>
+        /// <returns>True if stat was successfuly added into cache.</returns>
+        private static bool StatInternalStat(string path, string url, StreamWrapper wrapper, bool quiet)
+        {
+            StatStruct stat = wrapper.Stat(path, quiet ? StreamStatOptions.Quiet : StreamStatOptions.Empty, StreamContext.Default);
+            if (stat.st_size >= 0)
+            {
+                statCacheUrl = url;
+                statCache = stat;
+                return true;
+            }
+            else
+                return false;
+        }
+
 		/// <summary>
 		/// Stat the given file or directory using stream-wrappers and return the stat structure
 		/// using the stat-cache for repetitive calls.
@@ -132,31 +192,17 @@ namespace PHP.Library
 		/// stat structure for the given URL, <c>false</c> on an error.</returns>
 		internal static bool StatInternal(string path, bool quiet)
 		{
-            if (String.IsNullOrEmpty(path))
-			{
-				PhpException.Throw(PhpError.Warning, LibResources.GetString("arg:empty", "path"));
-				return false;
-			}
+            StreamWrapper wrapper;
+            
+            if (StatInternalCheck(ref path, quiet, out wrapper))
+            {
+                string url;
+                if (StatInternalTryCache(path, out url))
+                    return true;
 
+                return StatInternalStat(path, url, wrapper, quiet);
+            }
 
-			StreamWrapper wrapper;
-			CheckAccessOptions options = CheckAccessOptions.Empty;
-			if (quiet) options |= CheckAccessOptions.Quiet;
-			if (!PhpStream.ResolvePath(ref path, out wrapper, CheckAccessMode.FileOrDirectory, options))
-				return false;
-
-			// Try to hit the cache first
-			string url = PhpPath.GetUrl(path);
-			if (url == statCacheUrl) return true;
-
-			// Stat the path coming from ResolvePath (file:// wrapper expects path w/o the scheme).
-			StatStruct stat = wrapper.Stat(path, quiet ? StreamStatOptions.Quiet : StreamStatOptions.Empty, StreamContext.Default);
-			if (stat.st_size >= 0)
-			{
-				statCacheUrl = url;
-				statCache = stat;
-				return true;
-			}
 			return false;
 		}
 
@@ -254,7 +300,40 @@ namespace PHP.Library
 		public static bool Exists(string path)
 		{
 			if (String.IsNullOrEmpty(path)) return false;
-			return StatInternal(path, true);
+
+            StreamWrapper wrapper;
+            if (StatInternalCheck(ref path, true, out wrapper))
+            {
+                string url;
+                if (StatInternalTryCache(path, out url))
+                    return true;
+
+                // we can't just call {Directory|File}.Exists since we have to throw warnings
+                // also we are not calling full stat(), it is slow
+                try
+                {
+                    return
+                        new DirectoryInfo(path).Exists ||
+                        new FileInfo(path).Exists;
+                }
+                catch (ArgumentException)
+                {
+                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_stat_invalid_path",
+                        FileSystemUtils.StripPassword(path)));
+                }
+                catch (PathTooLongException)
+                {
+                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_stat_invalid_path",
+                        FileSystemUtils.StripPassword(path)));
+                }
+                catch (Exception e)
+                {
+                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_error",
+                        FileSystemUtils.StripPassword(path), e.Message));
+                }
+            }
+
+            return false;
 		}
 
 		/// <summary>
@@ -610,16 +689,45 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Tells whether the path is a regular file.
+		/// Tells whether the path is a regular file and if it exists.
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
 		[ImplementsFunction("is_file")]
 		public static bool IsFile(string path)
 		{
-			bool ok = StatInternal(path, false);
-			if (!ok) return false;
-			return ((FileModeFlags)statCache.st_mode & FileModeFlags.File) > 0;
+            StreamWrapper wrapper;
+
+            if (StatInternalCheck(ref path, false, out wrapper))
+            {
+                string url;
+                if (StatInternalTryCache(path, out url))
+                    return ((FileModeFlags)statCache.st_mode & FileModeFlags.File) != 0;
+
+                // we can't just call File.Exists since we have to throw warnings
+                // also we are not calling full stat(), it is slow
+                try
+                {
+                    return new FileInfo(path).Exists;   
+                }
+                catch (ArgumentException)
+                {
+                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_stat_invalid_path",
+                        FileSystemUtils.StripPassword(path)));
+                }
+                catch (PathTooLongException)
+                {
+                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_stat_invalid_path",
+                        FileSystemUtils.StripPassword(path)));
+                }
+                catch (Exception e)
+                {
+                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_error",
+                        FileSystemUtils.StripPassword(path), e.Message));
+                }
+            }
+
+            return false;
 		}
 
 		/// <summary>
