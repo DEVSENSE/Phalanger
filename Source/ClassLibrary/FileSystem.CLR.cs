@@ -662,7 +662,7 @@ namespace PHP.Library
                     return statCache.st_size;
 
                 // we are not calling full stat(), it is slow
-                FileStreamWrapper.HandleNewFileSystemInfo(-1, path, () => unchecked((int)new FileInfo(path).Length));
+                return FileStreamWrapper.HandleNewFileSystemInfo(-1, path, () => unchecked((int)new FileInfo(path).Length));
             }
 
             return -1;
@@ -693,7 +693,7 @@ namespace PHP.Library
 
                 // we can't just call Directory.Exists since we have to throw warnings
                 // also we are not calling full stat(), it is slow
-                FileStreamWrapper.HandleNewFileSystemInfo(false, path, () => new DirectoryInfo(path).Exists);
+                return FileStreamWrapper.HandleNewFileSystemInfo(false, path, () => new DirectoryInfo(path).Exists);
             }
 
             return false;
@@ -735,7 +735,7 @@ namespace PHP.Library
 
                 // we can't just call File.Exists since we have to throw warnings
                 // also we are not calling full stat(), it is slow
-                FileStreamWrapper.HandleNewFileSystemInfo(false, path, () => new FileInfo(path).Exists);
+                return FileStreamWrapper.HandleNewFileSystemInfo(false, path, () => new FileInfo(path).Exists);
             }
 
             return false;
