@@ -400,21 +400,21 @@ namespace PHP.Core
             Debug.Assert(path != null);
 
             // Note: path is already absolute w/o the scheme, the permissions have already been checked.
-            return HandleNewFileSystemInfo(invalid, path, () =>
+            return HandleNewFileSystemInfo(invalid, path, (p) =>
                 {
                     FileSystemInfo info = null;
 
-                    info = new DirectoryInfo(path);
+                    info = new DirectoryInfo(p);
                     if (!info.Exists)
                     {
-                        info = new FileInfo(path);
+                        info = new FileInfo(p);
                         if (!info.Exists)
                         {
                             return invalid;
                         }
                     }
 
-                    return BuildStatStruct(info, File.GetAttributes(path), path);
+                    return BuildStatStruct(info, File.GetAttributes(p), p);
                 });
         }
 
@@ -423,14 +423,14 @@ namespace PHP.Core
         /// </summary>
         /// <typeparam name="T">The return value type.</typeparam>
         /// <param name="invalid">Invalid value.</param>
-        /// <param name="path">Path to the resource used for error control.</param>
-        /// <param name="action">Action to try.</param>
+        /// <param name="path">Path to the resource passed to the <paramref name="action"/>. Also used for error control.</param>
+        /// <param name="action">Action to try. The first argument is the path.</param>
         /// <returns>The value of <paramref name="action"/>() or <paramref name="invalid"/>.</returns>
-        public static T HandleNewFileSystemInfo<T>(T invalid, string path, Func<T>/*!*/action)
+        public static T HandleNewFileSystemInfo<T>(T invalid, string path, Func<string,T>/*!*/action)
         {
             try
             {
-                return action();
+                return action(path);
             }
             catch (ArgumentException)
             {
