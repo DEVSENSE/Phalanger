@@ -310,27 +310,8 @@ namespace PHP.Library
 
                 // we can't just call {Directory|File}.Exists since we have to throw warnings
                 // also we are not calling full stat(), it is slow
-                try
-                {
-                    return
-                        new DirectoryInfo(path).Exists ||
-                        new FileInfo(path).Exists;
-                }
-                catch (ArgumentException)
-                {
-                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_stat_invalid_path",
-                        FileSystemUtils.StripPassword(path)));
-                }
-                catch (PathTooLongException)
-                {
-                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_stat_invalid_path",
-                        FileSystemUtils.StripPassword(path)));
-                }
-                catch (Exception e)
-                {
-                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_error",
-                        FileSystemUtils.StripPassword(path), e.Message));
-                }
+                return FileStreamWrapper.HandleNewFileSystemInfo(false, path, () =>
+                    new FileInfo(path).Exists || new DirectoryInfo(path).Exists);
             }
 
             return false;
