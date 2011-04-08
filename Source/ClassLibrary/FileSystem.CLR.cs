@@ -418,7 +418,7 @@ namespace PHP.Library
 			return false;
 		}
 
-		#endregion
+        #endregion
 
 		#region Disk Stats (disk_free_space/diskfreespace, disk_total_space)
 
@@ -653,9 +653,23 @@ namespace PHP.Library
 		[return: CastToFalse]
 		public static int GetSize(string path)
 		{
-			bool ok = StatInternal(path, false);
-			if (!ok) return -1;
-			return statCache.st_size;
+            StreamWrapper wrapper;
+
+            if (StatInternalCheck(ref path, false, out wrapper))
+            {
+                string url;
+                if (StatInternalTryCache(path, out url))
+                    return statCache.st_size;
+
+                // we are not calling full stat(), it is slow
+                FileStreamWrapper.HandleNewFileSystemInfo(-1, path, () => unchecked((int)new FileInfo(path).Length));
+            }
+
+            return -1;
+            
+            //bool ok = StatInternal(path, false);
+            //if (!ok) return -1;
+            //return statCache.st_size;
 		}
 
 		#endregion
@@ -669,10 +683,25 @@ namespace PHP.Library
 		[ImplementsFunction("is_dir")]
 		public static bool IsDirectory(string path)
 		{
-			bool ok = !string.IsNullOrEmpty(path) && StatInternal(path, false); // do not throw warning if path is null or empty
-			if (!ok) return false;
+            StreamWrapper wrapper;
 
-			return ((FileModeFlags)statCache.st_mode & FileModeFlags.Directory) > 0;
+            if (!string.IsNullOrEmpty(path) && StatInternalCheck(ref path, false, out wrapper)) // do not throw warning if path is null or empty
+            {
+                string url;
+                if (StatInternalTryCache(path, out url))
+                    return ((FileModeFlags)statCache.st_mode & FileModeFlags.Directory) != 0;
+
+                // we can't just call Directory.Exists since we have to throw warnings
+                // also we are not calling full stat(), it is slow
+                FileStreamWrapper.HandleNewFileSystemInfo(false, path, () => new DirectoryInfo(path).Exists);
+            }
+
+            return false;
+
+            //bool ok = !string.IsNullOrEmpty(path) && StatInternal(path, false); // do not throw warning if path is null or empty
+            //if (!ok) return false;
+
+            //return ((FileModeFlags)statCache.st_mode & FileModeFlags.Directory) > 0;
 		}
 
 		/// <summary>
@@ -706,25 +735,7 @@ namespace PHP.Library
 
                 // we can't just call File.Exists since we have to throw warnings
                 // also we are not calling full stat(), it is slow
-                try
-                {
-                    return new FileInfo(path).Exists;   
-                }
-                catch (ArgumentException)
-                {
-                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_stat_invalid_path",
-                        FileSystemUtils.StripPassword(path)));
-                }
-                catch (PathTooLongException)
-                {
-                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_stat_invalid_path",
-                        FileSystemUtils.StripPassword(path)));
-                }
-                catch (Exception e)
-                {
-                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_error",
-                        FileSystemUtils.StripPassword(path), e.Message));
-                }
+                FileStreamWrapper.HandleNewFileSystemInfo(false, path, () => new FileInfo(path).Exists);
             }
 
             return false;

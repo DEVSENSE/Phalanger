@@ -393,46 +393,63 @@ namespace PHP.Core
 		}
 
 		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="Stat"]/*'/>
-		public override StatStruct Stat(string path, StreamStatOptions options, StreamContext context)
-		{
-			StatStruct invalid = new StatStruct();
-			invalid.st_size = -1;
-			Debug.Assert(path != null);
+        public override StatStruct Stat(string path, StreamStatOptions options, StreamContext context)
+        {
+            StatStruct invalid = new StatStruct();
+            invalid.st_size = -1;
+            Debug.Assert(path != null);
 
-			// Note: path is already absolute w/o the scheme, the permissions have already been checked.
-			try
-			{
-				FileSystemInfo info = null;
+            // Note: path is already absolute w/o the scheme, the permissions have already been checked.
+            return HandleNewFileSystemInfo(invalid, path, () =>
+                {
+                    FileSystemInfo info = null;
 
-				info = new DirectoryInfo(path);
-				if (!info.Exists)
-				{
-					info = new FileInfo(path);
-					if (!info.Exists)
-					{
-						return invalid;
-					}
-				}
+                    info = new DirectoryInfo(path);
+                    if (!info.Exists)
+                    {
+                        info = new FileInfo(path);
+                        if (!info.Exists)
+                        {
+                            return invalid;
+                        }
+                    }
 
-				return BuildStatStruct(info, File.GetAttributes(path), path);
-			}
-			catch (ArgumentException)
-			{
-				PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_stat_invalid_path",
-					FileSystemUtils.StripPassword(path)));
-			}
-			catch (PathTooLongException)
-			{
-				PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_stat_invalid_path",
-					FileSystemUtils.StripPassword(path)));
-			}
-			catch (Exception e)
-			{
-				PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_error",
-					FileSystemUtils.StripPassword(path), e.Message));
-			}
-			return invalid;
-		}
+                    return BuildStatStruct(info, File.GetAttributes(path), path);
+                });
+        }
+
+        /// <summary>
+        /// Try the new FileSystemInfo based operation and hamdle exceptions properly.
+        /// </summary>
+        /// <typeparam name="T">The return value type.</typeparam>
+        /// <param name="invalid">Invalid value.</param>
+        /// <param name="path">Path to the resource used for error control.</param>
+        /// <param name="action">Action to try.</param>
+        /// <returns>The value of <paramref name="action"/>() or <paramref name="invalid"/>.</returns>
+        public static T HandleNewFileSystemInfo<T>(T invalid, string path, Func<T>/*!*/action)
+        {
+            try
+            {
+                return action();
+            }
+            catch (ArgumentException)
+            {
+                PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_stat_invalid_path",
+                    FileSystemUtils.StripPassword(path)));
+            }
+            catch (PathTooLongException)
+            {
+                PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_stat_invalid_path",
+                    FileSystemUtils.StripPassword(path)));
+            }
+            catch (Exception e)
+            {
+                PhpException.Throw(PhpError.Warning, CoreResources.GetString("stream_error",
+                    FileSystemUtils.StripPassword(path), e.Message));
+            }
+
+            return invalid;
+        }
 
 		#endregion
 
