@@ -1417,14 +1417,15 @@ namespace PHP.Library
 			{
 				object atom = atoms[atomCounter++];
 
-				if (atom != null && Type.GetTypeCode(atom.GetType()) == TypeCode.Object)
-				{
+				if (atom != null /*&& Type.GetTypeCode(atom.GetType()) == TypeCode.Object*//* note (Jakub): useless check, in result much slower than a few .isinst */)
+                {
 					// back reference (either r or R)
 					BackReference back_ref = atom as BackReference;
-					PhpReference reference;
 					if (back_ref != null)
 					{
-						object ref_val = atoms[back_ref.Index];
+                        PhpReference reference;
+                        
+                        object ref_val = atoms[back_ref.Index];
 
 						if (back_ref.IsProper) return ref_val;
 
