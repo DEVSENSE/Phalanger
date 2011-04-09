@@ -992,7 +992,7 @@ namespace PHP.Library
 		/// </summary>
 		/// <param name="newLimiter">
 		/// A new value - should be one of "private", "private_no_expire", "public", "nocache", or "no-cache".
-		/// Letter case is ignored.
+		/// Letter case is ignored. In PHP the value can contain other colon-separated values.
 		/// </param>
 		/// <returns>An old value ("private", "public", or "no-cache").</returns>
 		/// <exception cref="PhpException"><paramref name="newLimiter"/> has invalid value. (Notice)</exception>
@@ -1002,23 +1002,53 @@ namespace PHP.Library
 			HttpContext http_context;
 			if (!Web.EnsureHttpContext(out http_context)) return null;
 
-			string result = http_context.Response.CacheControl;
+            string result = http_context.Response.CacheControl;
 
-			if (String.Compare(newLimiter, "private", true) == 0)
-				http_context.Response.CacheControl = "private";
-			else if (String.Compare(newLimiter, "public", true) == 0)
-				http_context.Response.CacheControl = "public";
-			else if (String.Compare(newLimiter, "no-cache", true) == 0)
-				http_context.Response.CacheControl = "no-cache";
-			else if (String.Compare(newLimiter, "private_no_expire", true) == 0)
-				http_context.Response.CacheControl = "private";
-			else if (String.Compare(newLimiter, "nocache", true) == 0)
-				http_context.Response.CacheControl = "no-cache";
-			else
-				PhpException.Throw(PhpError.Notice, LibResources.GetString("invalid_cache_limiter", newLimiter));
+            if (string.IsNullOrEmpty(newLimiter))
+                return result;
+
+            if (newLimiter.IndexOf(',') < 0)
+            {
+                CacheLimiterInternal(http_context, newLimiter);
+            }
+            else
+            {
+                foreach (var singleLimiter in newLimiter.Split(','))
+                    CacheLimiterInternal(http_context, singleLimiter);
+            }
 
 			return result;
 		}
+
+        /// <summary>
+        /// Updates the cache control of the given HttpContext.
+        /// </summary>
+        /// <param name="http_context">Current HttpContext instance.</param>
+        /// <param name="singleLimiter">Cache limiter passed to the session_cache_limiter() PHP function.</param>
+        private static void CacheLimiterInternal(HttpContext http_context, string/*!*/singleLimiter)
+        {
+            Debug.Assert(singleLimiter != null);
+
+            singleLimiter = singleLimiter.Trim();
+
+            if (singleLimiter.Length == 0)
+                return;
+
+            else if (String.Compare(singleLimiter, "private", true) == 0)
+                http_context.Response.CacheControl = "private";
+            else if (String.Compare(singleLimiter, "public", true) == 0)
+                http_context.Response.CacheControl = "public";
+            else if (String.Compare(singleLimiter, "no-cache", true) == 0)
+                http_context.Response.CacheControl = "no-cache";
+            else if (String.Compare(singleLimiter, "private_no_expire", true) == 0)
+                http_context.Response.CacheControl = "private";
+            else if (String.Compare(singleLimiter, "nocache", true) == 0)
+                http_context.Response.CacheControl = "no-cache";
+            else if (String.Compare(singleLimiter, "must-revalidate", true) == 0)
+                http_context.Response.Cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
+            else
+                PhpException.Throw(PhpError.Notice, LibResources.GetString("invalid_cache_limiter", singleLimiter));
+        }
 
 		#endregion
 
