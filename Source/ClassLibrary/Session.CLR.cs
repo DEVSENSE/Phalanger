@@ -20,6 +20,7 @@ using System.Web.SessionState;
 using System.Collections;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using System.Globalization;
 
 using PHP.Core;
 using PHP.Core.Reflection;
@@ -1034,17 +1035,19 @@ namespace PHP.Library
             if (singleLimiter.Length == 0)
                 return;
 
-            else if (String.Compare(singleLimiter, "private", true) == 0)
+            var compareInfo = CultureInfo.CurrentCulture.CompareInfo;
+
+            if (compareInfo.Compare(singleLimiter, "private", CompareOptions.IgnoreCase) == 0)
                 http_context.Response.CacheControl = "private";
-            else if (String.Compare(singleLimiter, "public", true) == 0)
+            else if (compareInfo.Compare(singleLimiter, "public", CompareOptions.IgnoreCase) == 0)
                 http_context.Response.CacheControl = "public";
-            else if (String.Compare(singleLimiter, "no-cache", true) == 0)
+            else if (compareInfo.Compare(singleLimiter, "no-cache", CompareOptions.IgnoreCase) == 0)
                 http_context.Response.CacheControl = "no-cache";
-            else if (String.Compare(singleLimiter, "private_no_expire", true) == 0)
+            else if (compareInfo.Compare(singleLimiter, "private_no_expire", CompareOptions.IgnoreCase) == 0)
                 http_context.Response.CacheControl = "private";
-            else if (String.Compare(singleLimiter, "nocache", true) == 0)
+            else if (compareInfo.Compare(singleLimiter, "nocache", CompareOptions.IgnoreCase) == 0)
                 http_context.Response.CacheControl = "no-cache";
-            else if (String.Compare(singleLimiter, "must-revalidate", true) == 0)
+            else if (compareInfo.Compare(singleLimiter, "must-revalidate", CompareOptions.IgnoreCase) == 0)
                 http_context.Response.Cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
             else
                 PhpException.Throw(PhpError.Notice, LibResources.GetString("invalid_cache_limiter", singleLimiter));
