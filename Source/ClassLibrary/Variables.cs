@@ -554,13 +554,13 @@ namespace PHP.Library
 		/// method) is also verified.</param>
 		/// <returns><B>true</B> if <paramref name="variable"/> denotes a function, <B>false</B>
 		/// otherwise.</returns>
-		[ImplementsFunction("is_callable")]
-		public static bool IsCallable(object variable, bool syntaxOnly)
+		[ImplementsFunction("is_callable", FunctionImplOptions.NeedsClassContext)]
+		public static bool IsCallable(PHP.Core.Reflection.DTypeDesc caller, object variable, bool syntaxOnly)
 		{
 			PhpCallback callback = PHP.Core.Convert.ObjectToCallback(variable, true);
 			if (callback == null || callback.IsInvalid) return false;
 
-			return (syntaxOnly ? true : callback.Bind(true));
+            return (syntaxOnly ? true : callback.Bind(true, caller, null));
 		}
 
 		/// <summary>
@@ -574,8 +574,8 @@ namespace PHP.Library
 		/// <c>SomeClass::SomeMethod</c>).</param>
 		/// <returns><B>true</B> if <paramref name="variable"/> denotes a function, <B>false</B>
 		/// otherwise.</returns>
-		[ImplementsFunction("is_callable")]
-		public static bool IsCallable(object variable, bool syntaxOnly, out string callableName)
+        [ImplementsFunction("is_callable", FunctionImplOptions.NeedsClassContext)]
+		public static bool IsCallable(PHP.Core.Reflection.DTypeDesc caller, object variable, bool syntaxOnly, out string callableName)
 		{
 			PhpCallback callback = PHP.Core.Convert.ObjectToCallback(variable, true);
 			if (callback == null || callback.IsInvalid)
@@ -585,7 +585,7 @@ namespace PHP.Library
 			}
 
 			callableName = ((IPhpConvertible)callback).ToString();
-			return (syntaxOnly ? true : callback.Bind(true));
+			return (syntaxOnly ? true : callback.Bind(true, caller, null));
 		}
 
 		/// <summary>
