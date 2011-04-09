@@ -701,8 +701,17 @@ namespace PHP.Core
 		/// </summary>
 		public void Invoke()
 		{
-			callback.Invoke(parameters);
+            Invoke(UnknownTypeDesc.Singleton);
 		}
+
+        /// <summary>
+        /// Invokes the callback with the parameters.
+        /// </summary>
+        /// <param name="caller">Current class context.</param>
+        public void Invoke(DTypeDesc caller)
+        {
+            callback.Invoke(caller, parameters);
+        }
 	}
 
 	#endregion

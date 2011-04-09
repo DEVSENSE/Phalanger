@@ -3163,17 +3163,18 @@ namespace PHP.Library
 		/// Applies a user function or method on each element of a specified array or dictionary.
 		/// </summary>
 		/// <returns><B>true</B>.</returns>
-		/// <remarks>See <see cref="Walk(PhpHashtable,PhpCallback,object)"/> for details.</remarks>
+        /// <remarks>See <see cref="Walk(PHP.Core.Reflection.DTypeDesc,PhpHashtable,PhpCallback,object)"/> for details.</remarks>
 		/// <exception cref="PhpException"><paramref name="function"/> or <paramref name="array"/> are <B>null</B> references.</exception>
-		[ImplementsFunction("array_walk")]
-		public static bool Walk([PhpRw] PhpHashtable array, PhpCallback function)
+		[ImplementsFunction("array_walk", FunctionImplOptions.NeedsClassContext)]
+        public static bool Walk(PHP.Core.Reflection.DTypeDesc caller, [PhpRw] PhpHashtable array, PhpCallback function)
 		{
-			return Walk(array, function, null);
+			return Walk(caller, array, function, null);
 		}
 
 		/// <summary>
 		/// Applies a user function or method on each element (value) of a specified dictionary.
 		/// </summary>
+        /// <param name="caller">Current class context.</param>
 		/// <param name="array">The array (or generic dictionary) to walk through.</param>
 		/// <param name="callback">
 		/// The callback called for each element of <paramref name="array"/>.
@@ -3195,15 +3196,15 @@ namespace PHP.Library
 		/// <param name="data">An additional parameter passed to <paramref name="callback"/> as its third parameter.</param>
 		/// <returns><B>true</B>.</returns>
 		/// <exception cref="PhpException"><paramref name="callback"/> or <paramref name="array"/> are <B>null</B> references.</exception>
-		[ImplementsFunction("array_walk")]
-		public static bool Walk([PhpRw] PhpHashtable array, PhpCallback callback, object data)
+		[ImplementsFunction("array_walk", FunctionImplOptions.NeedsClassContext)]
+        public static bool Walk(PHP.Core.Reflection.DTypeDesc caller, [PhpRw] PhpHashtable array, PhpCallback callback, object data)
 		{
 			object[] args = PrepareWalk(array, callback, data);
 			if (args == null) return false;
 
 			foreach (KeyValuePair<IntStringKey, object> entry in array)
 			{
-				VisitEntryOnWalk(entry, array, callback, args);
+				VisitEntryOnWalk(caller, entry, array, callback, args);
 			}
 
 			return true;
@@ -3213,24 +3214,25 @@ namespace PHP.Library
 		/// Applies a user function or method on each element of a specified array recursively.
 		/// </summary>
 		/// <returns><B>true</B>.</returns>
-		/// <remarks>See <see cref="Walk(PhpHashtable,PhpCallback,object)"/> for details.</remarks>
+        /// <remarks>See <see cref="Walk(PHP.Core.Reflection.DTypeDesc,PhpHashtable,PhpCallback,object)"/> for details.</remarks>
         /// <exception cref="PhpException"><paramref name="callback"/> or <paramref name="array"/> are <B>null</B> references.</exception>
-		[ImplementsFunction("array_walk_recursive")]
-		public static bool WalkRecursive([PhpRw] PhpHashtable array, PhpCallback callback)
+        [ImplementsFunction("array_walk_recursive", FunctionImplOptions.NeedsClassContext)]
+		public static bool WalkRecursive(PHP.Core.Reflection.DTypeDesc caller, [PhpRw] PhpHashtable array, PhpCallback callback)
 		{
-			return WalkRecursive(array, callback, null);
+			return WalkRecursive(caller, array, callback, null);
 		}
 
 		/// <summary>
 		/// Applies a user function or method on each element (value) of a specified dictionary recursively.
 		/// </summary>
+        /// <param name="caller">Current class context.</param>
 		/// <param name="array">The array to walk through.</param>
 		/// <param name="callback">The callback called for each element of <paramref name="array"/>.</param>
 		/// <param name="data">An additional parameter passed to <paramref name="callback"/> as its third parameter.</param>
         /// <exception cref="PhpException"><paramref name="callback"/> or <paramref name="array"/> are <B>null</B> references.</exception>
 		/// <remarks><seealso cref="Walk"/>.</remarks>
-		[ImplementsFunction("array_walk_recursive")]
-		public static bool WalkRecursive([PhpRw] PhpHashtable array, PhpCallback callback, object data)
+		[ImplementsFunction("array_walk_recursive", FunctionImplOptions.NeedsClassContext)]
+		public static bool WalkRecursive(PHP.Core.Reflection.DTypeDesc caller, [PhpRw] PhpHashtable array, PhpCallback callback, object data)
 		{
 			object[] args = PrepareWalk(array, callback, data);
 			if (args == null) return false;
@@ -3242,7 +3244,7 @@ namespace PHP.Library
 					// visits the item unless it is an array or a reference to an array:
 					PhpReference ref_value = iterator.Current.Value as PhpReference;
 					if (!(iterator.Current.Value is PhpHashtable || (ref_value != null && ref_value.Value is PhpHashtable)))
-						VisitEntryOnWalk(iterator.Current, iterator.CurrentTable, callback, args);
+						VisitEntryOnWalk(caller, iterator.Current, iterator.CurrentTable, callback, args);
 				}
 			}
 			return true;
@@ -3267,7 +3269,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Visits an entyr of array which <see cref="Walk"/> or <see cref="WalkRecursive"/> is walking through.
 		/// </summary>
-		private static void VisitEntryOnWalk(KeyValuePair<IntStringKey, object> entry, IDictionary<IntStringKey, object> array,
+		private static void VisitEntryOnWalk(PHP.Core.Reflection.DTypeDesc caller, KeyValuePair<IntStringKey, object> entry, IDictionary<IntStringKey, object> array,
 			PhpCallback callback, object[] args)
 		{
 			PhpReference ref_item = entry.Value as PhpReference;
@@ -3277,7 +3279,7 @@ namespace PHP.Library
 			args[1] = entry.Key.Object;
 
 			// invoke callback:
-			Core.Convert.ObjectToBoolean(callback.Invoke(args));
+            Core.Convert.ObjectToBoolean(callback.Invoke(caller, args));
 
 			// loads a new value from a reference:
 			if (ref_item != null)
@@ -3299,9 +3301,10 @@ namespace PHP.Library
 		/// Retuns the specified array.
         /// see http://php.net/manual/en/function.array-filter.php
 		/// </summary>
-		[ImplementsFunction("array_filter")]
+        /// <remarks>The caller argument is here just because of the second Filter() method. Phalanger shares the function properties over the overloads.</remarks>
+        [ImplementsFunction("array_filter", FunctionImplOptions.NeedsClassContext)]
 		[return: PhpDeepCopy]
-		public static PhpArray Filter(PhpArray array)
+		public static PhpArray Filter(PHP.Core.Reflection.DTypeDesc _, PhpArray array)
 		{
 			var _result = new PhpArray();
 			
@@ -3319,6 +3322,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Filters an array using a specified callback.
 		/// </summary>
+        /// <param name="caller">Current class context.</param>
 		/// <param name="array">The array to be filtered.</param>
 		/// <param name="callback">
 		/// The callback called on each value in the <paramref name="array"/>. 
@@ -3326,9 +3330,9 @@ namespace PHP.Library
 		/// Otherwise, it is ignored.
 		/// </param>
 		/// <returns>An array of unfiltered items.</returns>
-		[ImplementsFunction("array_filter")]
+		[ImplementsFunction("array_filter", FunctionImplOptions.NeedsClassContext)]
 		[return: PhpDeepCopy]
-		public static PhpArray Filter(PhpArray array, PhpCallback callback)
+		public static PhpArray Filter(PHP.Core.Reflection.DTypeDesc caller, PhpArray array, PhpCallback callback)
 		{
 			if (callback == null) { PhpException.ArgumentNull("callback"); return null; }
 			if (array == null) { PhpException.ArgumentNull("array"); return null; }
@@ -3342,7 +3346,7 @@ namespace PHP.Library
 				args[0] = entry.Value;
 
 				// adds entry to the resulting array if callback returns true:
-				if (Core.Convert.ObjectToBoolean(callback.Invoke(args)))
+                if (Core.Convert.ObjectToBoolean(callback.Invoke(caller, args)))
 				{
 					result.Add(entry.Key, entry.Value);
 				}

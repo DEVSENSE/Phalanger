@@ -2011,7 +2011,7 @@ namespace PHP.Core
 			{
 				while (shutdownCallbacks.Count > 0)
 				{
-					((PhpCallbackParameterized)shutdownCallbacks.Dequeue()).Invoke();
+					((PhpCallbackParameterized)shutdownCallbacks.Dequeue()).Invoke(null/*class context is null*/);
 				}
 			}
 			return null;
