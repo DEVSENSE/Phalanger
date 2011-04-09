@@ -536,19 +536,21 @@ namespace PHP.Library
 		/// <summary>
 		/// Verifies that the contents of a variable can be called as a function.
 		/// </summary>
+        /// <param name="caller">Current class context.</param>
 		/// <param name="variable">The variable.</param>
 		/// <returns><B>true</B> if <paramref name="variable"/> denotes a function, <B>false</B>
 		/// otherwise.</returns>
-		[ImplementsFunction("is_callable")]
-		public static bool IsCallable(object variable)
+		[ImplementsFunction("is_callable", FunctionImplOptions.NeedsClassContext)]
+		public static bool IsCallable(PHP.Core.Reflection.DTypeDesc caller, object variable)
 		{
-			return IsCallable(variable, false);
+			return IsCallable(caller, variable, false);
 		}
 
 		/// <summary>
 		/// Verifies that the contents of a variable can be called as a function.
 		/// </summary>
-		/// <param name="variable">The variable.</param>
+        /// <param name="caller">Current class context.</param>
+        /// <param name="variable">The variable.</param>
 		/// <param name="syntaxOnly">If <B>true</B>, it is only checked that has <pararef name="variable"/>
 		/// a valid structure to be used as a callback. if <B>false</B>, the existence of the function (or
 		/// method) is also verified.</param>
@@ -566,7 +568,8 @@ namespace PHP.Library
 		/// <summary>
 		/// Verifies that the contents of a variable can be called as a function.
 		/// </summary>
-		/// <param name="variable">The variable.</param>
+        /// <param name="caller">Current class context.</param>
+        /// <param name="variable">The variable.</param>
 		/// <param name="syntaxOnly">If <B>true</B>, it is only checked that has <pararef name="variable"/>
 		/// a valid structure to be used as a callback. if <B>false</B>, the existence of the function (or
 		/// method) is also verified.</param>
