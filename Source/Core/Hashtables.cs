@@ -1957,46 +1957,28 @@ namespace PHP.Core
         /// Computes the hash code of the given string. The function returns the same result on all platforms.
         /// Resulting value is different using different string keys as it is in case of string.GetHashCode().
         /// </summary>
-        /// <param name="str">The string key to be used to compute the hash.</param>
+        /// <param name="s">The string key to be used to compute the hash.</param>
         /// <returns>The unique integer value corresponsing to the given string key.</returns>
-        /// <remarks>Safe x86 implementation of String.GetHashCode(). The function is slower than the .NET implementation, but returns the same results on all platforms.
+        /// <remarks>Unsafe x64 implementation of String.GetHashCode(). But it returns the same results on all platforms.
         /// Phalanger needs the same results in case of compiling on one platform (and .NET version) and running on another platform.
         /// Phalanger computes the hashes during compilation time to speedup the runtime.</remarks>
-        public static int StringKeyToArrayIndex(string/*!*/str)
+        public static unsafe int StringKeyToArrayIndex(string s)
         {
-            Debug.Assert(str != null);
-
-            int num = 0x15051505;       // hash of even chars
-            int num2 = num;             // hash of odd chars
-            int len = str.Length;       // string length (characters count)
-            int ending = (len & 0x3);   // 0,1,2,3
-            int len4 = len - ending;    // len = 4*x
-            int c = 0;                  // character index
-
-            unchecked
+            fixed (char* str = s)
             {
-                for (; c < len4; c += 4)
+                int* numPtr = (int*)str;
+                int num = 0x15051505;
+                int num2 = num;
+                for (int i = s.Length; i > 0; i -= 4)
                 {
-                    num = (((num << 5) + num) + (num >> 0x1b)) ^ (((int)str[c + 1] << 16) | str[c]);
-                    num2 = (((num2 << 5) + num2) + (num2 >> 0x1b)) ^ (((int)str[c + 3] << 16) | str[c + 2]);
+                    num = (((num << 5) + num) + (num >> 0x1b)) ^ numPtr[0];
+                    if (i <= 2)
+                    {
+                        break;
+                    }
+                    num2 = (((num2 << 5) + num2) + (num2 >> 0x1b)) ^ numPtr[1];
+                    numPtr += 2;
                 }
-
-                switch (ending)
-                {
-                    case 0:
-                        break;
-                    case 1:
-                        num = (((num << 5) + num) + (num >> 0x1b)) ^ (str[c]);
-                        break;
-                    case 2:
-                        num = (((num << 5) + num) + (num >> 0x1b)) ^ (((int)str[c + 1] << 16) | str[c]);
-                        break;
-                    case 3:
-                        num = (((num << 5) + num) + (num >> 0x1b)) ^ (((int)str[c + 1] << 16) | str[c]);
-                        num2 = (((num2 << 5) + num2) + (num2 >> 0x1b)) ^ (str[c + 2]);
-                        break;
-                }
-
                 return (num + (num2 * 0x5d588b65));
             }
         }
@@ -2015,11 +1997,10 @@ namespace PHP.Core
 		public string String { get { return skey; } }
 		private string skey;
 
-		public IntStringKey(object key)
-		{
-			skey = key as string;
-            ikey = (skey == null) ? (int)key : StringKeyToArrayIndex(skey);// skey.GetHashCode();
-		}
+        public IntStringKey(object key)
+        {
+            ikey = ((skey = key as string) == null) ? (int)key : StringKeyToArrayIndex(skey);
+        }
 
 		public IntStringKey(int key)
 		{
@@ -2030,9 +2011,8 @@ namespace PHP.Core
 		public IntStringKey(string/*!*/ key)
 		{
 			Debug.Assert(key != null);
-			
-			skey = key;
-            ikey = StringKeyToArrayIndex(skey);// key.GetHashCode();
+
+            ikey = StringKeyToArrayIndex((skey = key));// key.GetHashCode();
 		}
 		
         /// <summary>
