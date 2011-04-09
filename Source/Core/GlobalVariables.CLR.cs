@@ -398,94 +398,92 @@ namespace PHP.Core
 		/// </summary>
 		private void InitializeServerVariables(LocalConfiguration/*!*/ config, HttpContext context)
 		{
-			Debug.Assert(config != null);
+            if (context == null)
+            {
+                Server.Value = new PhpArray();
+                return;
+            }
+
+            Debug.Assert(config != null);            
 
 			PhpArray array, argv;
 
-			if (context != null)
+            var request = context.Request;
+            var serverVariables = request.ServerVariables;
+
+            Server.Value = array = new PhpArray(0, /*serverVariables.Count*/64);
+
+			// adds variables defined by ASP.NET and IIS:
+            LoadFromCollection(array, serverVariables, false, config);
+
+			// adds argv, argc variables:
+			if (Configuration.Global.GlobalVariables.RegisterArgcArgv)
 			{
-				array = new PhpArray(0, context.Request.ServerVariables.Count);
+                array["argv"] = argv = new PhpArray(1) { request.QueryString };
+                array["argc"] = 0;
+			}
 
-				// adds variables defined by ASP.NET and IIS:
-				LoadFromCollection(array, context.Request.ServerVariables, false, config);
+			// additional variables defined in PHP manual:
+            array["PHP_SELF"] = request.Path;
 
-				// adds argv, argc variables:
-				if (Configuration.Global.GlobalVariables.RegisterArgcArgv)
+			try
+			{
+                array["DOCUMENT_ROOT"] = request.MapPath("/"); // throws exception under mod_aspdotnet
+			}
+			catch
+			{
+				array["DOCUMENT_ROOT"] = null;
+			}
+
+            array["SERVER_ADDR"] = serverVariables["LOCAL_ADDR"];
+            array["REQUEST_URI"] = request.RawUrl;
+			array["REQUEST_TIME"] = DateTimeUtils.UtcToUnixTimeStamp(context.Timestamp.ToUniversalTime());
+            array["SCRIPT_FILENAME"] = request.PhysicalPath;
+
+			//IPv6 is the default in IIS7, convert to an IPv4 address (store the IPv6 as well)
+            if (request.UserHostAddress.Contains(":"))
+			{
+                array["REMOTE_ADDR_IPV6"] = request.UserHostAddress;
+
+                if (request.UserHostAddress == "::1")
+					array["REMOTE_ADDR"] = "127.0.0.1";
+                else foreach (IPAddress IPA in Dns.GetHostAddresses(request.UserHostAddress))
 				{
-					array["argv"] = argv = new PhpArray();
-					argv.Add(context.Request.QueryString);
-					array["argc"] = 0;
-				}
-
-				// additional variables defined in PHP manual:
-				array["PHP_SELF"] = context.Request.Path;
-
-				try
-				{
-					array["DOCUMENT_ROOT"] = context.Request.MapPath("/"); // throws exception under mod_aspdotnet
-				}
-				catch (Exception)
-				{
-					array["DOCUMENT_ROOT"] = null;
-				}
-
-				array["SERVER_ADDR"] = context.Request.ServerVariables["LOCAL_ADDR"];
-				array["REQUEST_URI"] = context.Request.RawUrl;
-				array["REQUEST_TIME"] = DateTimeUtils.UtcToUnixTimeStamp(context.Timestamp.ToUniversalTime());
-				array["SCRIPT_FILENAME"] = context.Request.PhysicalPath;
-
-				//IPv6 is the default in IIS7, convert to an IPv4 address (store the IPv6 as well)
-				if (context.Request.UserHostAddress.Contains(":"))
-				{
-					array["REMOTE_ADDR_IPV6"] = context.Request.UserHostAddress;
-
-					if (context.Request.UserHostAddress == "::1")
-						array["REMOTE_ADDR"] = "127.0.0.1";
-					else foreach (IPAddress IPA in Dns.GetHostAddresses(context.Request.UserHostAddress))
+					if (IPA.AddressFamily.ToString() == "InterNetwork")
 					{
-						if (IPA.AddressFamily.ToString() == "InterNetwork")
-						{
-							array["REMOTE_ADDR"] = IPA.ToString();
-							break;
-						}
+						array["REMOTE_ADDR"] = IPA.ToString();
+						break;
 					}
 				}
-
-                // PATH_INFO
-                // should contain partial path information only
-                // note: IIS has AllowPathInfoForScriptMappings property that do the thing ... but ISAPI does not work then
-                // hence it must be done here manually
-
-                if (array.ContainsKey("PATH_INFO"))
-                {
-                    string path_info = (string)array["PATH_INFO"];
-                    string script_name = (string)array["SCRIPT_NAME"];
-                    
-                    // 'ORIG_PATH_INFO'
-                    // Original version of 'PATH_INFO' before processed by PHP. 
-                    array["ORIG_PATH_INFO"] = path_info;
-                    
-                    // 'PHP_INFO'
-                    // Contains any client-provided pathname information trailing the actual script filename
-                    // but preceding the query string, if available. For instance, if the current script was
-                    // accessed via the URL http://www.example.com/php/path_info.php/some/stuff?foo=bar,
-                    // then $_SERVER['PATH_INFO'] would contain /some/stuff. 
-                    
-                    // php-5.3.2\sapi\isapi\php5isapi.c:
-                    // 
-                    // strncpy(path_info_buf, static_variable_buf + scriptname_len - 1, sizeof(path_info_buf) - 1);    // PATH_INFO = PATH_INFO.SubString(SCRIPT_NAME.Length);
-
-
-                    array["PATH_INFO"] = (script_name.Length <= path_info.Length) ? path_info.Substring(script_name.Length) : string.Empty;
-                }
-
-			}
-			else
-			{
-				array = new PhpArray(0, 0);
 			}
 
-			Server.Value = array;
+            // PATH_INFO
+            // should contain partial path information only
+            // note: IIS has AllowPathInfoForScriptMappings property that do the thing ... but ISAPI does not work then
+            // hence it must be done here manually
+
+            if (array.ContainsKey("PATH_INFO"))
+            {
+                string path_info = (string)array["PATH_INFO"];
+                string script_name = (string)array["SCRIPT_NAME"];
+                    
+                // 'ORIG_PATH_INFO'
+                // Original version of 'PATH_INFO' before processed by PHP. 
+                array["ORIG_PATH_INFO"] = path_info;
+                    
+                // 'PHP_INFO'
+                // Contains any client-provided pathname information trailing the actual script filename
+                // but preceding the query string, if available. For instance, if the current script was
+                // accessed via the URL http://www.example.com/php/path_info.php/some/stuff?foo=bar,
+                // then $_SERVER['PATH_INFO'] would contain /some/stuff. 
+                    
+                // php-5.3.2\sapi\isapi\php5isapi.c:
+                // 
+                // strncpy(path_info_buf, static_variable_buf + scriptname_len - 1, sizeof(path_info_buf) - 1);    // PATH_INFO = PATH_INFO.SubString(SCRIPT_NAME.Length);
+
+
+                array["PATH_INFO"] = (script_name.Length <= path_info.Length) ? path_info.Substring(script_name.Length) : string.Empty;
+            }
 		}
 
 

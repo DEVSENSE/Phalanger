@@ -1964,22 +1964,25 @@ namespace PHP.Core
         /// Phalanger computes the hashes during compilation time to speedup the runtime.</remarks>
         public static unsafe int StringKeyToArrayIndex(string s)
         {
-            fixed (char* str = s)
+            unchecked
             {
-                int* numPtr = (int*)str;
-                int num = 0x15051505;
-                int num2 = num;
-                for (int i = s.Length; i > 0; i -= 4)
+                fixed (char* str = s)
                 {
-                    num = (((num << 5) + num) + (num >> 0x1b)) ^ numPtr[0];
-                    if (i <= 2)
+                    int* numPtr = (int*)str;
+                    int num = 0x15051505;
+                    int num2 = num;
+                    for (int i = s.Length; i > 0; i -= 4)
                     {
-                        break;
+                        num = (((num << 5) + num) + (num >> 0x1b)) ^ numPtr[0];
+                        if (i <= 2)
+                        {
+                            break;
+                        }
+                        num2 = (((num2 << 5) + num2) + (num2 >> 0x1b)) ^ numPtr[1];
+                        numPtr += 2;
                     }
-                    num2 = (((num2 << 5) + num2) + (num2 >> 0x1b)) ^ numPtr[1];
-                    numPtr += 2;
+                    return (num + (num2 * 0x5d588b65));
                 }
-                return (num + (num2 * 0x5d588b65));
             }
         }
 
