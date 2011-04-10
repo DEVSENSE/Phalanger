@@ -628,6 +628,11 @@ namespace PHP.Core
 			return scriptContext.ApplicationContext.GetWebServerCompilerManager(this).GetPrecompiledAssembly();
 		}
 
+        /// <summary>
+        /// Get the precompiled script from several locations - script library database, precompiled SSA, precompiled MSA (WebPages.dll).
+        /// </summary>
+        /// <param name="sourceFile">The source file of the script to retrieve.</param>
+        /// <returns>The <see cref="ScriptInfo"/> of required script or null if such script cannot be obtained.</returns>
 		internal ScriptInfo GetCompiledScript(PhpSourceFile/*!*/ sourceFile)
 		{
 			return scriptContext.ApplicationContext.GetWebServerCompilerManager(this).GetCompiledScript(sourceFile, this);

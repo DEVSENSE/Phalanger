@@ -626,17 +626,9 @@ namespace PHP.Core
 		/// <param name="sourceFile">Script's source file.</param>
 		private ScriptInfo LoadDynamicScriptType(PhpSourceFile/*!*/ sourceFile)
 		{
-            //TODO: review this code after script libraries are united with precompiled web assembly
-			RequestContext context = RequestContext.CurrentContext;
+            RequestContext context = RequestContext.CurrentContext;
 
-            // if the script is in the script library, we will return it and skip the others
-            ScriptModule scriptLibraryModule = applicationContext.ScriptLibraryDatabase.GetScriptModule(sourceFile.FullPath);
-            if (scriptLibraryModule != null)
-            {
-                return scriptLibraryModule.ScriptInfo;
-            }
-
-			if (context != null)
+            if (context != null)
 			{
 				Debug.WriteLine("SC", "LoadDynamicScriptType: '{0}'", sourceFile);
 
@@ -645,21 +637,16 @@ namespace PHP.Core
 			}
 			else
 			{
-                //// main script assembly:
-                //Assembly assembly = scripts[MainScriptFile].Script.Assembly;
-                //MultiScriptAssembly msa = ((MultiScriptAssembly)ScriptAssembly.LoadFromAssembly(applicationContext, assembly));
-
-                //// gets a script type:
-                //ScriptInfo script = msa.GetScriptInfo(sourceFile);
-
-                //if (script == null)
-				{
-					PhpException.Throw(PhpError.Error, CoreResources.GetString("assembly_script_inclusion_failed",
-						sourceFile.ToString()/*, msa.GetQualifiedScriptTypeName(sourceFile)*/ ));
-				}
-
-				//return script;
-                return null;    // script libraries must be defined in <ScriptLibrary> configuration section to enable inclusions.
+                // the script can be only found in the script library
+                var scriptLibraryModule = applicationContext.ScriptLibraryDatabase.GetScriptModule(sourceFile.FullPath);
+                if (scriptLibraryModule != null)
+                    return scriptLibraryModule.ScriptInfo;
+                
+                // no such script could be found
+                PhpException.Throw(PhpError.Error, CoreResources.GetString("assembly_script_inclusion_failed",
+				    sourceFile.ToString()/*, msa.GetQualifiedScriptTypeName(sourceFile)*/ ));
+				
+				return null;
 			}
 		}
 

@@ -980,17 +980,24 @@ namespace PHP.Core
 
 		/// <summary>
 		/// Retrives a compiled script.
+        /// 
+        /// The method check scripts in following order:
+        /// 1. Script Library database.
+        /// 2. Modified source file on the file system.
+        /// 3. Unmodified source file in precompiled WebPages.dll.
 		/// </summary>
 		/// <param name="sourceFile">Script source file.</param>
 		/// <param name="requestContext">The current HTTP context.</param>
 		/// <returns>The script type or a <B>null</B> reference on failure.</returns>
+        /// <remarks>The method do check the script library database.</remarks>
         public ScriptInfo GetCompiledScript(PhpSourceFile/*!*/ sourceFile, RequestContext/*!*/ requestContext)
         {
             Debug.Assert(requestContext != null && sourceFile != null);
 
-            // TODO: review this code when script libraries will be united with precompiled web site functionality
-            if (applicationContext.ScriptLibraryDatabase.ContainsScript(sourceFile.FullPath))
-                return applicationContext.ScriptLibraryDatabase.GetScriptModule(sourceFile.FullPath).ScriptInfo;
+            // try to get the script from precompiled script library first
+            var scriptLibraryModule = applicationContext.ScriptLibraryDatabase.GetScriptModule(sourceFile.FullPath);
+            if (scriptLibraryModule != null)
+                return scriptLibraryModule.ScriptInfo;
 
             // loads precompiled assembly if exists and not loaded yet:
             GetPrecompiledAssembly();
