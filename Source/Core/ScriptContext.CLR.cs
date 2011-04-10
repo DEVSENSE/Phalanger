@@ -556,6 +556,41 @@ namespace PHP.Core
 			return info.Main(this, variables, self, includer, false);
 		}
 
+        /// <summary>
+        /// Build the delegate checking if the given script specified by its FullPath exists on available locations.
+        /// </summary>
+        /// <returns>Function determinig the given script existance or null if no script can be included with current configuration.</returns>
+        private Predicate<FullPath> BuildFileExistsDelegate()
+        {
+            RequestContext context = RequestContext.CurrentContext;
+
+            Predicate<FullPath> file_exists = null;
+
+            // 1. ScriptLibrary database
+            var database = applicationContext.ScriptLibraryDatabase;
+            if (database != null && database.Count > 0)
+                file_exists = file_exists.OrElse((path) => database.ContainsScript(path)); // file_exists can really be null
+
+            if (context != null)
+            {
+                // on web, check following locations too:
+
+                // 2. bin/WebPages.dll
+                var msa = context.GetPrecompiledAssembly();
+                if (msa != null)
+                    file_exists = file_exists.OrElse((path) => msa.ScriptExists(path));
+
+                // 3. file system
+                file_exists = file_exists.OrElse((path) => path.FileExists);
+            }
+            else
+            {
+                // on non-web application, only script library should be checked
+            }
+
+            return file_exists;
+        }
+
 		/// <summary>
 		/// Searches for a file in the script library, current directory, included paths, and web application root respectively.
 		/// </summary>
@@ -565,46 +600,43 @@ namespace PHP.Core
 		/// <returns>Full path to the file or <B>null</B> path if not found.</returns>
 		private FullPath SearchForIncludedFile(PhpError errorSeverity, string includedPath, FullPath includerFullPath)
 		{
-            //TODO: review this code after script libraries are united with pre-compiled web apps
-			FullPath result;
+            FullPath result;
 
 			string message;
-            string working_directory = ScriptContext.CurrentContext.WorkingDirectory;
-            string includer_directory = includerFullPath.IsEmpty ? working_directory : Path.GetDirectoryName(includerFullPath);
-			
-			RequestContext context = RequestContext.CurrentContext;
+            
+            //
+            // construct the delegate checking the script existance
+            //
 
-			FileExistsDelegate file_exists = null;
+            var file_exists = BuildFileExistsDelegate();            
 
-            if (context != null)
-			{
-				var msa = context.GetPrecompiledAssembly();
-                if (msa != null)
-                    file_exists = msa.ScriptExists;
-			}
-			else
-			{
-                // following code is not needed, this is performed in   PhpScript.IsPathValidForInclusion
-                // file_exist delegate not needed
+            //
+            // try to find the script
+            //
 
-                //var database = applicationContext.ScriptLibraryDatabase;
-                //if (database != null && database.Count > 0)
-                //    file_exists = database.ContainsScript;
-			}
-
-            // searches for file in the following order: 
-			// - incomplete absolute path => combines with RootOf(WorkingDirectory)
-			// - relative path => searches in FileSystem.IncludePaths then in the includer source directory
-			result = PhpScript.FindInclusionTargetPath(
-                new InclusionResolutionContext(
-                    applicationContext,
-				    includer_directory,
-				    working_directory,
-				    config.FileSystem.IncludePaths
-                    ),
-				includedPath,
-				file_exists,
-				out message);
+            if (file_exists != null)
+            {
+                string includer_directory = includerFullPath.IsEmpty ? WorkingDirectory : Path.GetDirectoryName(includerFullPath);
+                
+                // searches for file in the following order: 
+                // - incomplete absolute path => combines with RootOf(WorkingDirectory)
+                // - relative path => searches in FileSystem.IncludePaths then in the includer source directory
+                result = PhpScript.FindInclusionTargetPath(
+                    new InclusionResolutionContext(
+                        applicationContext,
+                        includer_directory,
+                        WorkingDirectory,
+                        config.FileSystem.IncludePaths
+                        ),
+                    includedPath,
+                    file_exists,
+                    out message);
+            }
+            else
+            {
+                message = "Script cannot be included with current configuration.";   // there is no precompiled MSA available on non-web application
+                result = FullPath.Empty;
+            }
 
 			// failure:
 			if (result.IsEmpty)

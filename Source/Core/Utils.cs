@@ -3240,11 +3240,6 @@ namespace PHP.Core
     #endregion
 
     /// <summary>
-    /// Delegate deciding whether a specified full path exists.
-    /// </summary>
-    public delegate bool FileExistsDelegate(FullPath path);
-
-    /// <summary>
     /// File system utilities.
     /// </summary>
     [DebuggerNonUserCode]
@@ -3746,6 +3741,57 @@ namespace PHP.Core
 
 
 #endif
+
+    #endregion
+
+    #region Delegates
+
+    public static class DelegateExtensions
+    {
+        /// <summary>
+        /// Combine with another predicate function. Both functions must return true.
+        /// </summary>
+        /// <typeparam name="T">The type of predicate functions argument.</typeparam>
+        /// <param name="predicate1">This predicate. Can be null.</param>
+        /// <param name="predicate2">Another predicate. Can be null.</param>
+        /// <returns>Combination of two given predicates or null if both arguments are null.</returns>
+        public static Predicate<T> AndAlso<T>(this Predicate<T> predicate1, Predicate<T> predicate2)
+        {
+            if (predicate1 == null && predicate2 == null)
+                return null;
+
+            if (predicate1 == null)
+                return predicate2;
+
+            if (predicate2 == null)
+                return predicate1;
+
+            // else combine
+            return (arg) => predicate1(arg) && predicate2(arg);
+        }
+
+        /// <summary>
+        /// Combine with another predicate function. Predicates will be processed sequentially until one pass.
+        /// </summary>
+        /// <typeparam name="T">The type of predicate functions argument.</typeparam>
+        /// <param name="predicate1">This predicate. Can be null.</param>
+        /// <param name="predicate2">Another predicate. Can be null.</param>
+        /// <returns>Combination of two given predicates or null if both arguments are null.</returns>
+        public static Predicate<T> OrElse<T>(this Predicate<T> predicate1, Predicate<T> predicate2)
+        {
+            if (predicate1 == null && predicate2 == null)
+                return null;
+
+            if (predicate1 == null)
+                return predicate2;
+
+            if (predicate2 == null)
+                return predicate1;
+
+            // else combine
+            return (arg) => predicate1(arg) || predicate2(arg);
+        }
+    }
 
     #endregion
 

@@ -1375,6 +1375,15 @@ namespace PHP.Core.Reflection
 			// - incomplete absolute path => combines with RootOf(SourceRoot)
 			// - relative path => searches in SourceRoot then in the script source directory
 			string warning;
+
+            // create file existance checking predicate,
+            // while searching for the script existance, check the script library and file system:
+            Predicate<FullPath> fileExists = null;
+            if (context.ApplicationContext.ScriptLibraryDatabase != null && context.ApplicationContext.ScriptLibraryDatabase.Count > 0)
+                fileExists = fileExists.OrElse(path => context.ApplicationContext.ScriptLibraryDatabase.ContainsScript(path));
+            fileExists = fileExists.OrElse(path => path.FileExists);
+
+            // try to find the inclusion target:
 			FullPath full_path = PhpScript.FindInclusionTargetPath(
                 new InclusionResolutionContext(
                     context.ApplicationContext,
@@ -1383,8 +1392,8 @@ namespace PHP.Core.Reflection
 				    context.Config.Compiler.StaticIncludePaths
                     ),
 				translatedPath,
-				null,
-				out warning);
+                fileExists,
+                out warning);
 
 			Debug.Assert(full_path.IsEmpty == (warning != null));   // full_path can be empty iff warning string was set
 

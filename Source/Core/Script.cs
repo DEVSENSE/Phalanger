@@ -213,33 +213,27 @@ namespace PHP.Core
 		#region FindInclusionTargetPath, IsXxxInclusion
 
 #if !SILVERLIGHT
-        /// <summary>
-        /// Tests whether path can be used for script inclusion.
-        /// </summary>
-        /// <param name="context">Inclusion context containing information about include which is being evaluated.</param>
-        /// <param name="path">Path string.</param>
-        /// <param name="fullPath">FullPath value.</param>
-        /// <param name="fileExists">FileExistsDelegate deciding about file existence before it is checked by <see cref="File.Exists"/>.</param>
-        /// <param name="errorMessage">Error message containing description of occured error. If no error occured, null value is returned.</param>
-        /// <returns>True is path is valid for inclusion, otherwise false.</returns>
-        internal static bool IsPathValidForInclusion(InclusionResolutionContext context, string path, FullPath fullPath, FileExistsDelegate fileExists, out string errorMessage)
-        {
-            // TODO: review this and alternatively move it into Script.cs
-            bool existsScriptLibrary = (context.ApplicationContext.ScriptLibraryDatabase != null ? context.ApplicationContext.ScriptLibraryDatabase.ContainsScript(fullPath) : false);
+        ///// <summary>
+        ///// Tests whether path can be used for script inclusion.
+        ///// </summary>
+        ///// <param name="context">Inclusion context containing information about include which is being evaluated.</param>
+        ///// <param name="fullPath">FullPath value.</param>
+        ///// <param name="pathIsValid">Function deciding about file existence.</param>
+        ///// <param name="errorMessage">Error message containing description of occured error. If no error occured, null value is returned.</param>
+        ///// <returns>True is path is valid for inclusion, otherwise false.</returns>
+        //internal static bool IsPathValidForInclusion(InclusionResolutionContext context, FullPath fullPath, Predicate<FullPath>/*!*/pathIsValid, out string errorMessage)
+        //{
+        //    errorMessage = null;
 
-            errorMessage = null;
+        //    //return
+        //    //    (context.ApplicationContext.ScriptLibraryDatabase != null && context.ApplicationContext.ScriptLibraryDatabase.ContainsScript(fullPath)) ||
+        //    //    (fileExists != null && fileExists(fullPath)) ||
+        //    //    (fullPath.FileExists);
 
-            if (context.ApplicationContext.ScriptLibraryDatabase != null && context.ApplicationContext.ScriptLibraryDatabase.ContainsScript(fullPath))
-                return true;
+        //    Debug.Assert(pathIsValid != null);
 
-            if (fileExists != null && fileExists(fullPath))
-                return true;
-
-            if (File.Exists(path))
-                return true;
-
-            return false;
-        }
+        //    return pathIsValid(fullPath);
+        //}
 
         /// <summary>
         /// Searches for an existing file among files which names are combinations of a relative path and one of the 
@@ -247,17 +241,15 @@ namespace PHP.Core
         /// </summary>
         /// <param name="context">Inclusion context containing information about include which is being evaluated.</param>
         /// <param name="relativePath">The relative path.</param>
-        /// <param name="fileExists">FileExistsDelegate deciding about file existence before it is checked by <see cref="File.Exists"/>.</param>
-        /// <param name="errorMessage">Error message containing description of occured error. If no error occured, null value is returned.</param>
+        /// <param name="pathIsValid">Function deciding file existence.</param>
         /// <returns>Full path to a first existing file or an empty path.</returns>
-        internal static FullPath SearchInSearchPaths(InclusionResolutionContext context, string relativePath, FileExistsDelegate fileExists, out string errorMessage)
+        private static FullPath SearchInSearchPaths(InclusionResolutionContext context, string relativePath, Predicate<FullPath>/*!*/pathIsValid)
         {
             // TODO: review this when script libraries are united with precompiled web
             if (context.SearchPaths == String.Empty)
-            {
-                errorMessage = null;
                 return FullPath.Empty;
-            }
+            
+            Debug.Assert(pathIsValid != null);
 
             string path;
 
@@ -295,14 +287,14 @@ namespace PHP.Core
                 }
 
                 // this function might throw an exception in case of ambiguity
-                if (IsPathValidForInclusion(context, path, result, fileExists, out errorMessage))
+                if (pathIsValid(result)/*IsPathValidForInclusion(context, result, pathIsValid, out errorMessage)*/)
                     return result;
-
-                if (errorMessage != null)
-                    return FullPath.Empty;
+                
+                //if (errorMessage != null)
+                //    return FullPath.Empty;
             }
 
-            errorMessage = null;
+            //errorMessage = null;
             return FullPath.Empty;
         }
 
@@ -311,14 +303,15 @@ namespace PHP.Core
 		/// </summary>
         /// <param name="context">Inclustion resolution context.</param>
         /// <param name="path">Path to the file to search.</param>
-        /// <param name="fileExists">GetUserEntryPoint deciding about file existence before it is checked by <see cref="File.Exists"/>.</param>
-        /// <param name="errorMessage">Warning which should be reported by the compiler or a <B>null</B> reference.</param>
+        /// <param name="pathIsValid">Function deciding about file existence. Only path that passes this function is returned.</param>
+        /// <param name="errorMessage">Warning which should be reported by the compiler or a <B>null</B> reference. The error message can be set iff the returned path is empty.</param>
 		/// <returns>
 		/// A canonical path to the target file or a <B>null</B> reference if the file path is not valid or the file not exists.
 		/// </returns>
-		internal static FullPath FindInclusionTargetPath(InclusionResolutionContext context, string path, FileExistsDelegate fileExists, out string errorMessage)
+		internal static FullPath FindInclusionTargetPath(InclusionResolutionContext context, string path, Predicate<FullPath>/*!*/pathIsValid, out string errorMessage)
 		{
             Debug.Assert(context != null && path != null);
+            Debug.Assert(pathIsValid != null);
 
             try
             {
@@ -336,17 +329,18 @@ namespace PHP.Core
                     // relative path //
 
                     // search in search paths at first (accepts empty path list as well):
-                    FullPath result = SearchInSearchPaths(context, path, fileExists, out errorMessage);
+                    FullPath result = SearchInSearchPaths(context, path, pathIsValid/*, out errorMessage*/);
 
                     // if an error message occurred, immediately return
-                    if (errorMessage != null)
-                    {
-                        return FullPath.Empty;
-                    }
-
+                    //if (errorMessage != null)
+                    //    return FullPath.Empty;
+                    
                     // if the file is found then it exists so we can return immediately:
                     if (!result.IsEmpty)
+                    {
+                        errorMessage = null;
                         return result;
+                    }
 
                     // not found => the path is combined with the directory where the script being compiled is stored:
                     path = Path.Combine(context.ScriptDirectory, path);
@@ -358,21 +352,19 @@ namespace PHP.Core
             catch (SystemException e)
             {
                 errorMessage = e.Message + "\n" + e.StackTrace;
-                return new FullPath();
+                return FullPath.Empty;
             }
 
 			FullPath full_path = new FullPath(path, false);
 
 			// file does not exists:
-            if (!IsPathValidForInclusion(context, path, full_path, fileExists, out errorMessage))
+            if (!pathIsValid(full_path)/*IsPathValidForInclusion(context, full_path, pathIsValid, out errorMessage)*/)
             {
-                if (errorMessage == null)
-                {
-                    errorMessage = "Script cannot be included with current configuration.";
-                }
-                return new FullPath();
+                errorMessage = "Script cannot be included with current configuration.";
+                return FullPath.Empty;
             }
 
+            errorMessage = null;
             return full_path;
 		}
 #endif
@@ -418,7 +410,7 @@ namespace PHP.Core
 			Console.WriteLine("{0}; {1}; {2}; {3}\n", "source script", "included script", "working dir", "include_path");
 			for (int i = 0; i < s.GetLength(0); i++)
 			{
-				result = FindInclusionTargetPath(new InclusionResolutionContext(ApplicationContext.Default, s[i, 0], s[i, 2], s[i, 3]), s[i, 1], null, out message);
+                result = FindInclusionTargetPath(new InclusionResolutionContext(ApplicationContext.Default, s[i, 0], s[i, 2], s[i, 3]), s[i, 1], (path) => path.FileExists, out message);
 				Console.WriteLine("'{0}'; '{1}'; '{2}'; '{3}'\npath='{4}' message=\"{5}\"\n", s[i, 0], s[i, 1], s[i, 2], s[i, 3], result, message);
 			}
 		}

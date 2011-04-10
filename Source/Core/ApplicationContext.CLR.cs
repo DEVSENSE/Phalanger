@@ -415,6 +415,7 @@ namespace PHP.Core
         {
             get
             {
+                EnsureLibrariesReflected();
                 return entries.Count;
             }
         }
@@ -481,10 +482,9 @@ namespace PHP.Core
         /// </summary>
         /// <param name="path">Application config-dependent path of the script.</param>
         /// <returns>True if the script is contained within the script library. Otherwise false.</returns>
-        public Boolean ContainsScript(FullPath path)
+        public bool ContainsScript(FullPath path)
         {
             EnsureLibrariesReflected();
-
             return entries.ContainsKey(path);
         }
 
