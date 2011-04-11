@@ -4262,31 +4262,38 @@ namespace PHP.Core
 			Debug.Assert(requestedType != null);
 
 			DRoutineDesc method;
-			switch (requestedType.GetMethod(new Name(methodName), caller, out method))
-			{
-				case GetMemberResult.NotFound:
-					{
-						// there is no such method in the class
-						if (removeFrame) context.Stack.RemoveFrame();
-						if (!quiet) PhpException.UndefinedMethodCalled(requestedType.MakeFullName(), methodName);
+            GetMemberResult result = requestedType.GetMethod(new Name(methodName), caller, out method);
 
-						return null;
-					}
+            if (result == GetMemberResult.NotFound)
+            {
+                // if not found, perform __callStatic 'magic' method lookup
+                if ((result = requestedType.GetMethod(DObject.SpecialMethodNames.CallStatic, caller, out method)) != GetMemberResult.NotFound)
+                {
+                    throw new NotImplementedException(DObject.SpecialMethodNames.CallStatic.Value);
+                }
+                else
+                {
+                    // there is no such method in the class
+                    if (removeFrame) context.Stack.RemoveFrame();
+                    if (!quiet) PhpException.UndefinedMethodCalled(requestedType.MakeFullName(), methodName);
 
-				case GetMemberResult.BadVisibility:
-					{
-						if (removeFrame) context.Stack.RemoveFrame();
-						if (!quiet)
-						{
-							PhpException.MethodNotAccessible(
-								method.DeclaringType.MakeFullName(),
-								method.MakeFullName(),
-								(caller == null ? String.Empty : caller.MakeFullName()),
-								method.IsProtected);
-						}
-						return null;
-					}
-			}
+                    return null;
+                }
+            }
+
+            if (result == GetMemberResult.BadVisibility)
+            {
+                if (removeFrame) context.Stack.RemoveFrame();
+                if (!quiet)
+                {
+                    PhpException.MethodNotAccessible(
+                        method.DeclaringType.MakeFullName(),
+                        method.MakeFullName(),
+                        (caller == null ? String.Empty : caller.MakeFullName()),
+                        method.IsProtected);
+                }
+                return null;
+            }
 
 			// check whether the method is abstract
 			if (method.IsAbstract)
@@ -4413,6 +4420,8 @@ namespace PHP.Core
 
 			if (method == null) return new PhpReference();
 
+            // TODO: check if __callStatic was found instead
+            
 			// invoke the method
 
             object result;

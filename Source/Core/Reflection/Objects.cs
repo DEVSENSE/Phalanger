@@ -107,6 +107,9 @@ namespace PHP.Core.Reflection
 			/// <summary>Invoked when an unknown method is called.</summary>
 			public static readonly Name Call = new Name("__call");
 
+            /// <summary>Invoked when an unknown method is called statically.</summary>
+            public static readonly Name CallStatic = new Name("__callStatic");
+
 			/// <summary>Invoked when an unknown field is unset.</summary>
 			public static readonly Name Unset = new Name("__unset");
 

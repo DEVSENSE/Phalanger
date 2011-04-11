@@ -1148,13 +1148,21 @@ namespace PHP.Core
 
 				member_result = type.GetMethod(methodName, referringType, out routine);
 
+                //// TODO: look for __call or __callStatic magic methods if no method was found:
+                //if (member_result == GetMemberResult.NotFound)
+                //{
+                //    member_result = type.GetMethod(
+                //        calledStatically ? DObject.SpecialMethodNames.CallStatic : DObject.SpecialMethodNames.Call,
+                //        referringType, out routine);
+                //}
+
 				switch (member_result)
 				{
 					case GetMemberResult.OK:
 						return routine;
 
 					case GetMemberResult.NotFound:
-						ErrorSink.Add(Errors.UnknownMethodCalled, SourceUnit, position, type.FullName, methodName);
+                        ErrorSink.Add(Errors.UnknownMethodCalled, SourceUnit, position, type.FullName, methodName);
 						return new UnknownMethod(type, methodName.Value);
 
 					case GetMemberResult.BadVisibility:
