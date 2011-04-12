@@ -54,7 +54,7 @@ class Z extends Y
 
     public function zoo()
     {
-        return $this->bar() . $this->zoo2() /*. X::nonexisting1(3)*/; // TODO: this does not work since X is not resolved in compile time // FunctionCall.cs : 864, last param must be true to lookup script context, but dependency caching must be implemented first
+        return $this->bar() . $this->zoo2() . X::nonexisting1(3);
     }
 }
 
