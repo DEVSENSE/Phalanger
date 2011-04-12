@@ -1173,7 +1173,7 @@ namespace PHP.Core
 
 					case GetMemberResult.BadVisibility:
 						{
-                            if (!staticCall)
+                            if (!staticCall)    // instance method will check the routine dynamically, there can be some override later
                                 return new UnknownMethod(type, methodName.Value);
 
 							if (referringType == null && referringRoutine == null)

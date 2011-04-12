@@ -214,9 +214,11 @@ namespace PHP.Core.Reflection
         /// <param name="constructedType"></param>
         /// <param name="position">POsition of the call expression.</param>
         /// <param name="ignoringReturnValue">True if caller does not need return value. In such case additional operations (like CastToFalse) should not be emitted.</param>
+        /// <param name="callVirt">True to call the instance method virtually, using <c>.callvirt</c> instruction. This is used when current routine is non-static routine called on instance, not statically.</param>
         /// <returns>PhpTypeCode of the resulting value that is on the top of the evaluation stack after the DRoutine call. Value types are not boxed.</returns>
 		internal abstract PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, CallSignature callSignature,
-			IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position, bool ignoringReturnValue);
+			IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position,
+            bool ignoringReturnValue, bool callVirt);
 
 		/// <summary>
 		/// Finds most suitable overload. Returns <see cref="InvalidOverloadIndex"/> and 
@@ -337,7 +339,8 @@ namespace PHP.Core.Reflection
 		}
 
 		internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position, bool ignoringReturnValue)
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position,
+            bool ignoringReturnValue, bool callVirt)
 		{
 			return codeGenerator.EmitRoutineOperatorCall(null, null, FullName, null, callSignature);
 
@@ -412,7 +415,8 @@ namespace PHP.Core.Reflection
 		}
 
 		internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position, bool ignoringReturnValue)
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position,
+            bool ignoringReturnValue, bool callVirt)
 		{
             Debug.Assert(instance == null || instance is ExpressionPlace);
 
@@ -1199,15 +1203,17 @@ namespace PHP.Core.Reflection
 		#region Call
 
 		internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position, bool ignoringReturnValue)
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position,
+            bool ignoringReturnValue, bool callVirt)
 		{
-            if (!IsStatic && instance == null || runtimeVisibilityCheck || IsStatic != (instance == null))
+            if (IsStatic != (instance == null) || runtimeVisibilityCheck)
 			{
                 Expression targetExpression = null;
                 if (instance != null)
                 {
-                    targetExpression = ExpressionPlace.GetExpression(instance);
-                    Debug.Assert(targetExpression != null);
+                    targetExpression = ExpressionPlace.GetExpression(instance); // the instance expression, $this would be determined in runtime
+                    Debug.Assert(targetExpression != null || instance == IndexedPlace.ThisArg,
+                        "Unexpected instance IPlace type" + this.Name.Value);
                 }
 
 				// call the operator if we could not provide an appropriate instance or the visibility has to be checked:
@@ -1215,6 +1221,8 @@ namespace PHP.Core.Reflection
 			}
 
             Debug.Assert(IsStatic == (instance == null));
+
+            if (IsStatic) callVirt = false; // never call static method virtually
 
 			ILEmitter il = codeGenerator.IL;
 			bool args_aware = (Properties & RoutineProperties.IsArgsAware) != 0;
@@ -1227,6 +1235,7 @@ namespace PHP.Core.Reflection
 			if (args_aware || ArgFullInfo == null)
 			{
 				// args-aware routines //
+                Debug.Assert(callVirt == false, "Cannot call ArgLess stub virtually!");
 
 				// all arg-less stubs have the 'instance' parameter
 				if (instance == null) il.Emit(OpCodes.Ldnull);
@@ -1237,7 +1246,7 @@ namespace PHP.Core.Reflection
 				// CALL <routine>(context.Stack)
 				codeGenerator.EmitLoadScriptContext();
 				il.Emit(OpCodes.Ldfld, Fields.ScriptContext_Stack);
-				il.Emit(OpCodes.Call, DType.MakeConstructed(ArgLessInfo, constructedType));
+                il.Emit(OpCodes.Call, DType.MakeConstructed(ArgLessInfo, constructedType));
 
 				// arg-less overload's return value has to be type-cast to a reference if it returns one:
 				if (signature == null || signature.AliasReturn)
@@ -1250,7 +1259,7 @@ namespace PHP.Core.Reflection
 				// CALL <routine>(context, <argumens>)
 				codeGenerator.EmitLoadScriptContext();
 				callSignature.EmitLoadOnEvalStack(codeGenerator, this);
-				il.Emit(OpCodes.Call, DType.MakeConstructed(ArgFullInfo, constructedType));
+                il.Emit(callVirt ? OpCodes.Callvirt : OpCodes.Call, DType.MakeConstructed(ArgFullInfo, constructedType));
 			}
 
 			// marks transient sequence point just after the call:
@@ -1487,9 +1496,11 @@ namespace PHP.Core.Reflection
 		}
 
 		internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position, bool ignoringReturnValue)
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position,
+            bool ignoringReturnValue, bool callVirt)
 		{
 			Debug.Assert(instance == null && !runtimeVisibilityCheck);
+            Debug.Assert(callVirt == false);
 
 			if (!IsDefinite)
 			{
@@ -1497,7 +1508,7 @@ namespace PHP.Core.Reflection
 			}
 			else
 			{
-				return base.EmitCall(codeGenerator, callSignature, null, false, overloadIndex, null, position, ignoringReturnValue);
+				return base.EmitCall(codeGenerator, callSignature, null, false, overloadIndex, null, position, ignoringReturnValue, callVirt);
 			}
 		}
 
@@ -1831,6 +1842,14 @@ namespace PHP.Core.Reflection
 		{
 			base.DefineBuilders();
 		}
+
+        internal override PhpTypeCode EmitCall(CodeGenerator codeGenerator, CallSignature callSignature, IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position, bool ignoringReturnValue, bool callVirt)
+        {
+            if ((Properties & RoutineProperties.IsArgsAware) != 0 || ArgFullInfo == null)
+                runtimeVisibilityCheck = true;  // force dynamic call when the method routine cannot be called virtually
+
+            return base.EmitCall(codeGenerator, callSignature, instance, runtimeVisibilityCheck, overloadIndex, constructedType, position, ignoringReturnValue, callVirt);
+        }
 
         #endregion
 	}
@@ -2176,7 +2195,8 @@ namespace PHP.Core.Reflection
 		#region Emission
 
 		internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position, bool ignoringReturnValue)
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position,
+            bool ignoringReturnValue, bool callVirt)
 		{
 			Overload overload = overloads[overloadIndex];
 			Statistics.AST.AddLibraryFunctionCall(FullName, overload.ParamCount);
@@ -2753,7 +2773,8 @@ namespace PHP.Core.Reflection
 		#region Emission
 
 		internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position, bool ignoringReturnValue)
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position,
+            bool ignoringReturnValue, bool callVirt)
 		{
 #if DEBUG_DYNAMIC_STUBS
 			
@@ -2767,7 +2788,7 @@ namespace PHP.Core.Reflection
 			EmitArglessStub(il, stack, instance2);
 			
 #endif
-            Debug.Assert(instance is ExpressionPlace);
+            Debug.Assert(instance is ExpressionPlace || instance == IndexedPlace.ThisArg);
 			return codeGenerator.EmitRoutineOperatorCall(DeclaringType, ExpressionPlace.GetExpression(instance), this.FullName, null, callSignature);
 		}
 

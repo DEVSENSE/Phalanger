@@ -192,7 +192,7 @@ namespace PHP.Core.AST
 
             // TODO: determine the type of isMemberOf through CFG
 
-            // TODO: DISABLED SINCE RESOLVED METHOD CAN BE OVERRIDEN in inherited class ?
+            // TODO: uncomment and test:
             /*DirectVarUse memberDirectVarUse = isMemberOf as DirectVarUse;
             if (memberDirectVarUse != null && memberDirectVarUse.IsMemberOf == null &&  // isMemberOf is single variable
                 memberDirectVarUse.VarName.IsThisVariableName &&                        // isMemberOf if $this
@@ -701,12 +701,12 @@ namespace PHP.Core.AST
                         result = routine.EmitCall(
                             codeGenerator, callSignature,
                             new ExpressionPlace(codeGenerator, isMemberOf), false, overloadIndex,
-                            null/*TODO when CFG*/, position, access == AccessType.None);
+                            null/*TODO when CFG*/, position, access == AccessType.None, true);
                 }
                 else
                 {
                     // the node represents a function call:
-                    result = routine.EmitCall(codeGenerator, callSignature, null, false, overloadIndex, null, position, access == AccessType.None);
+                    result = routine.EmitCall(codeGenerator, callSignature, null, false, overloadIndex, null, position, access == AccessType.None, false);
                 }
 			}
 
@@ -937,7 +937,7 @@ namespace PHP.Core.AST
 			}
 
             // check __callStatic
-            if (isCallMethod && staticCall) // TODO: disabled for __call since it can be overriden in inherited class
+            if (isCallMethod)
             {
                 // TODO: generic args
 
@@ -989,7 +989,7 @@ namespace PHP.Core.AST
 
 			// class context is unknown or the class is m-decl or completely unknown at compile-time -> call the operator			
 			PhpTypeCode result = method.EmitCall(codeGenerator, callSignature, instance, runtimeVisibilityCheck,
-				overloadIndex, type as ConstructedType, position, access == AccessType.None);
+				overloadIndex, type as ConstructedType, position, access == AccessType.None, false/* TODO: __call must be called virtually */);
 
 			// handles return value:
 			codeGenerator.EmitReturnValueHandling(this, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);
