@@ -4269,8 +4269,11 @@ namespace PHP.Core
 
             if (result == GetMemberResult.NotFound)
             {
-                // if not found, perform __callStatic 'magic' method lookup
-                if ((result = requestedType.GetMethod(DObject.SpecialMethodNames.CallStatic, caller, out method)) != GetMemberResult.NotFound)
+                // if not found, perform __callStatic or __call 'magic' method lookup
+                Name callMethod = (self != null && requestedType.IsAssignableFrom(self.TypeDesc)) ?
+                    DObject.SpecialMethodNames.Call : DObject.SpecialMethodNames.CallStatic;
+
+                if ((result = requestedType.GetMethod(callMethod, caller, out method)) != GetMemberResult.NotFound)
                 {
                     isCallerMethod = true;
                 }
