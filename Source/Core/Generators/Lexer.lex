@@ -226,6 +226,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"__get"        		{ return Tokens.T_GET; }
 <ST_IN_SCRIPTING>"__set"        		{ return Tokens.T_SET; }
 <ST_IN_SCRIPTING>"__call"       		{ return Tokens.T_CALL; }
+<ST_IN_SCRIPTING>"__callStatic"       	{ return Tokens.T_CALLSTATIC; }
 <ST_IN_SCRIPTING>"__tostring"   		{ return Tokens.T_TOSTRING; }
 <ST_IN_SCRIPTING>"__construct"  		{ return Tokens.T_CONSTRUCT; }
 <ST_IN_SCRIPTING>"__destruct"   		{ return Tokens.T_DESTRUCT; }

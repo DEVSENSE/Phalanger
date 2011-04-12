@@ -391,6 +391,7 @@ namespace PHP.Core.Parsers
 					case Tokens.T_GET:
 					case Tokens.T_SET:
 					case Tokens.T_CALL:
+                    case Tokens.T_CALLSTATIC:
 					case Tokens.T_WAKEUP:
 					case Tokens.T_SLEEP:
 					case Tokens.T_TOSTRING:

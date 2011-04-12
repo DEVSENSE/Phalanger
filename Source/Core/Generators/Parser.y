@@ -13,7 +13,7 @@ using PHP.Core.AST;
 using PHP.Core.AST.Linq;
 using PHP.Core.Reflection;
 using PHP.Core.Parsers.GPPG;
-using Pair = PHP.Core.Tuple<object,object>;
+using Pair = System.Tuple<object,object>;
 
 %%
 
@@ -244,6 +244,7 @@ using Pair = PHP.Core.Tuple<object,object>;
 %token T_GET  
 %token T_SET  
 %token T_CALL  
+%token T_CALLSTATIC
 %token T_TOSTRING
 %token T_CONSTRUCT
 %token T_DESTRUCT

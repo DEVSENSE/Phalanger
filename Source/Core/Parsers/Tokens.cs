@@ -63,6 +63,7 @@ namespace PHP.Core.Parsers
 		T_GET = Toks.T_GET,
 		T_SET = Toks.T_SET,
 		T_CALL = Toks.T_CALL,
+        T_CALLSTATIC = Toks.T_CALLSTATIC,
 		T_TOSTRING = Toks.T_TOSTRING,
 		T_CONSTRUCT = Toks.T_CONSTRUCT,
 		T_DESTRUCT = Toks.T_DESTRUCT,
