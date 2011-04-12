@@ -279,6 +279,24 @@ namespace PHP.Core.AST
 		public PhpTypeCode TypeCode { get { return typeCode; } }
 		private PhpTypeCode typeCode;
 
+        /// <summary>
+        /// Expression used by this IPLace.
+        /// </summary>
+        public Expression/*!*/Expression { get { return expression; } }
+
+        /// <summary>
+        /// Get the expression if given place represents ExpressionPlace.
+        /// </summary>
+        /// <param name="place"></param>
+        /// <returns></returns>
+        public static Expression GetExpression(IPlace place)
+        {
+            if (place is ExpressionPlace)
+                return (place as ExpressionPlace).Expression;
+            else
+                return null;
+        }
+
 		public ExpressionPlace(CodeGenerator/*!*/ codeGenerator, Expression/*!*/ expression)
 		{
 			this.codeGenerator = codeGenerator;

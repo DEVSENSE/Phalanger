@@ -4255,11 +4255,14 @@ namespace PHP.Core
 		/// <param name="quiet">If <B>true</B>, no exceptions will be thrown if an error occurs.</param>
 		/// <param name="removeFrame">If <B>true</B>, <see cref="PhpStack.RemoveFrame"/> will be called
 		/// before throwing an exception.</param>
+        /// <param name="isCallerMethod">Will be set to true, if required method was not found but __callStatic was.</param>
 		/// <returns>The <see cref="DRoutineDesc"/> or <B>null</B> on error.</returns>
 		internal static DRoutineDesc GetStaticMethodDesc(DTypeDesc requestedType, string methodName, ref DObject self,
-			DTypeDesc caller, ScriptContext context, bool quiet, bool removeFrame)
+			DTypeDesc caller, ScriptContext context, bool quiet, bool removeFrame, out bool isCallerMethod)
 		{
 			Debug.Assert(requestedType != null);
+
+            isCallerMethod = false;
 
 			DRoutineDesc method;
             GetMemberResult result = requestedType.GetMethod(new Name(methodName), caller, out method);
@@ -4269,7 +4272,7 @@ namespace PHP.Core
                 // if not found, perform __callStatic 'magic' method lookup
                 if ((result = requestedType.GetMethod(DObject.SpecialMethodNames.CallStatic, caller, out method)) != GetMemberResult.NotFound)
                 {
-                    throw new NotImplementedException(DObject.SpecialMethodNames.CallStatic.Value);
+                    isCallerMethod = true;
                 }
                 else
                 {
@@ -4416,33 +4419,45 @@ namespace PHP.Core
 			}
 
 			// find the method desc
-            DRoutineDesc method = GetStaticMethodDesc(type, name, ref self, caller, context, false, true);
+            bool isCallStaticMethod;
+            DRoutineDesc method = GetStaticMethodDesc(type, name, ref self, caller, context, false, true, out isCallStaticMethod);
 
 			if (method == null) return new PhpReference();
 
-            // TODO: check if __callStatic was found instead
-            
-			// invoke the method
-
+            // invoke the method
             object result;
-            try
+
+            if (isCallStaticMethod)
             {
-                result = method.Invoke(self, context.Stack, caller);
+                // __callStatic was found instead, not {methodName}
+                var stack = context.Stack;
+                PhpArray args = stack.CollectFrame();   // get array with args, remove the previous stack
+
+                // original parameters are passed to __callStatic in an array as the second parameter
+                stack.AddFrame(methodName, args);
+                result = method.Invoke(self, stack, caller);
             }
-            catch (NullReferenceException)
+            else
             {
-                if (self == null && !method.IsStatic)
-                {   // $this was null, it is probably caused by accessing $this
+                try
+                {
+                    result = method.Invoke(self, context.Stack, caller);
+                }
+                catch (NullReferenceException)
+                {
+                    if (self == null && !method.IsStatic)
+                    {   // $this was null, it is probably caused by accessing $this
 #if DEBUG
-                    throw;
+                        throw;
 #else
                     PhpException.ThisUsedOutOfObjectContext();
                     result = null;
 #endif
-                }
-                else
-                {
-                    throw;  // $this was not null, this should not be handled here
+                    }
+                    else
+                    {
+                        throw;  // $this was not null, this should not be handled here
+                    }
                 }
             }
 

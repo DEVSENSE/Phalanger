@@ -412,6 +412,24 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The magic method __call() must have public visibility and cannot be static.
+        /// </summary>
+        internal static string call_must_be_public_nonstatic {
+            get {
+                return ResourceManager.GetString("call_must_be_public_nonstatic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The magic method __callStatic() must have public visibility and be static.
+        /// </summary>
+        internal static string callstat_must_be_public_static {
+            get {
+                return ResourceManager.GetString("callstat_must_be_public_static", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not change the section of loaded library. The library &apos;{0}&apos; has already been bound to configuration section &apos;{1}&apos;..
         /// </summary>
         internal static string cannot_change_library_section {
@@ -3402,6 +3420,15 @@ namespace PHP.Core.Localizations {
         internal static string method_called_on_non_object {
             get {
                 return ResourceManager.GetString("method_called_on_non_object", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method {0}::{1}() must take exactly {2} arguments.
+        /// </summary>
+        internal static string method_must_take_exact_args_count {
+            get {
+                return ResourceManager.GetString("method_must_take_exact_args_count", resourceCulture);
             }
         }
         

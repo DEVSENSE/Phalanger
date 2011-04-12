@@ -414,7 +414,9 @@ namespace PHP.Core.Reflection
 		internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, CallSignature callSignature,
             IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position, bool ignoringReturnValue)
 		{
-			return codeGenerator.EmitRoutineOperatorCall(declaringType, null, FullName, null, callSignature);
+            Debug.Assert(instance == null || instance is ExpressionPlace);
+
+            return codeGenerator.EmitRoutineOperatorCall(declaringType, ExpressionPlace.GetExpression(instance), FullName, null, callSignature);
 
 			// TODO: check operators: should deep-copy return value if PhpRoutine is called
 		}
@@ -1199,13 +1201,20 @@ namespace PHP.Core.Reflection
 		internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, CallSignature callSignature,
             IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position, bool ignoringReturnValue)
 		{
-			if (!IsStatic && instance == null || runtimeVisibilityCheck)
+            if (!IsStatic && instance == null || runtimeVisibilityCheck || IsStatic != (instance == null))
 			{
+                Expression targetExpression = null;
+                if (instance != null)
+                {
+                    targetExpression = ExpressionPlace.GetExpression(instance);
+                    Debug.Assert(targetExpression != null);
+                }
+
 				// call the operator if we could not provide an appropriate instance or the visibility has to be checked:
-				return codeGenerator.EmitRoutineOperatorCall(DeclaringType, null, this.FullName, null, callSignature);
+                return codeGenerator.EmitRoutineOperatorCall(DeclaringType, targetExpression, this.FullName, null, callSignature);
 			}
 
-			Debug.Assert(IsStatic == (instance == null));
+            Debug.Assert(IsStatic == (instance == null));
 
 			ILEmitter il = codeGenerator.IL;
 			bool args_aware = (Properties & RoutineProperties.IsArgsAware) != 0;
@@ -1705,6 +1714,21 @@ namespace PHP.Core.Reflection
 					MemberDesc.MemberAttributes &= ~PhpMemberAttributes.Static;
 				}
 			}
+            else if (this.Name.IsCallName || this.Name.IsCallStaticName)
+            {
+                // check visibility & staticness
+                if (this.Name.IsCallName && (this.IsStatic || !this.IsPublic))
+                    errors.Add(Warnings.CallMustBePublicNonStatic, sourceUnit, position);
+
+                if (this.Name.IsCallStaticName && (!this.IsStatic || !this.IsPublic))
+                    errors.Add(Warnings.CallStatMustBePublicStatic, sourceUnit, position);
+
+                // check args count
+                if (signature != null && signature.ParamCount != 2)
+                {
+                    errors.Add(FatalErrors.MethodMustTakeExacArgsCount, sourceUnit, position, this.DeclaringType.FullName, this.Name.Value, 2);
+                }
+            }
 
 			// no final abstract member:
 			if (IsAbstract && IsFinal)
@@ -1808,7 +1832,7 @@ namespace PHP.Core.Reflection
 			base.DefineBuilders();
 		}
 
-		#endregion
+        #endregion
 	}
 
 	#endregion
@@ -2743,8 +2767,8 @@ namespace PHP.Core.Reflection
 			EmitArglessStub(il, stack, instance2);
 			
 #endif
-
-			return codeGenerator.EmitRoutineOperatorCall(DeclaringType, null, this.FullName, null, callSignature);
+            Debug.Assert(instance is ExpressionPlace);
+			return codeGenerator.EmitRoutineOperatorCall(DeclaringType, ExpressionPlace.GetExpression(instance), this.FullName, null, callSignature);
 		}
 
 		/// <summary>

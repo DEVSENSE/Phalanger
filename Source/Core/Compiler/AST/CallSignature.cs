@@ -180,13 +180,59 @@ namespace PHP.Core.AST
 		public List<TypeRef>/*!*/ GenericParams { get { return genericParams; } }
 		private readonly List<TypeRef>/*!*/ genericParams;
 
-		public CallSignature(List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+        /// <summary>
+        /// True if all the parameters are known at compile time.
+        /// </summary>
+        public bool AllParamsHaveValue
+        {
+            get
+            {
+                foreach (var p in Parameters)
+                    if (!p.Expression.HasValue)
+                        return false;
+
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Initialize new instance of <see cref="CallSignature"/>.
+        /// </summary>
+        /// <param name="parameters">List of parameters.</param>
+        /// <param name="genericParams">List of type parameters for generics.</param>
+        public CallSignature(List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
 		{
 			Debug.Assert(parameters != null && genericParams != null);
 
 			this.parameters = parameters;
 			this.genericParams = genericParams;
 		}
+
+        /// <summary>
+        /// Builds <see cref="Expression"/> that creates <see cref="PhpArray"/> with call signature parameters.
+        /// </summary>
+        /// <returns></returns>
+        public ArrayEx/*!*/BuildPhpArray()
+        {
+            Debug.Assert(this.genericParams == null || this.genericParams.Count == 0);
+
+            List<Item> arrayItems = new List<Item>(this.parameters.Count);
+            Position pos = Position.Invalid;
+
+            foreach (var p in this.parameters)
+            {
+                arrayItems.Add(new ValueItem(null, p.Expression));
+                if (pos.IsValid) pos = p.Position;
+                else
+                {
+                    pos.LastColumn = p.Position.LastColumn;
+                    pos.LastLine = p.Position.LastLine;
+                    pos.LastOffset = p.Position.LastOffset;
+                }
+            }
+
+            return new ArrayEx(pos, arrayItems);
+        }
 
 		internal void Analyze(Analyzer/*!*/ analyzer, RoutineSignature/*!*/ signature, ExInfoFromParent info,
 			bool isBaseCtorCallConstrained)
@@ -209,19 +255,7 @@ namespace PHP.Core.AST
         /// <summary>
         /// Gets true if all the Parameters (after the analysis) have the value and could be evaluated during the compilation time.
         /// </summary>
-        public bool AllParamsHaveValue
-        {
-            get
-            {
-                foreach (var p in Parameters)
-                    if (!p.Expression.HasValue)
-                        return false;
-
-                return true;
-            }
-        }
-
-		#region Emission
+        #region Emission
 
 		/// <summary>
 		/// Emits IL instructions that load actual parameters and optionally add a new stack frame to

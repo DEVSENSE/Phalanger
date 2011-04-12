@@ -1130,9 +1130,11 @@ namespace PHP.Core
 		/// Resolves type name and a name of its method.
 		/// </summary>
 		public DRoutine/*!*/ ResolveMethod(DType/*!*/ type, Name methodName, Position position,
-			PhpType referringType, PhpRoutine referringRoutine, out bool checkVisibilityAtRuntime)
+			PhpType referringType, PhpRoutine referringRoutine, bool staticCall,
+            out bool checkVisibilityAtRuntime, out bool isCallMethod)
 		{
 			checkVisibilityAtRuntime = false;
+            isCallMethod = false;
 
 			// we cannot resolve a method unless we know the inherited members:
 			if (type.IsDefinite)
@@ -1148,13 +1150,16 @@ namespace PHP.Core
 
 				member_result = type.GetMethod(methodName, referringType, out routine);
 
-                //// TODO: look for __call or __callStatic magic methods if no method was found:
-                //if (member_result == GetMemberResult.NotFound)
-                //{
-                //    member_result = type.GetMethod(
-                //        calledStatically ? DObject.SpecialMethodNames.CallStatic : DObject.SpecialMethodNames.Call,
-                //        referringType, out routine);
-                //}
+                // TODO: look for __call or __callStatic magic methods if no method was found:
+                if (member_result == GetMemberResult.NotFound)
+                {
+                    member_result = type.GetMethod(
+                        staticCall ? DObject.SpecialMethodNames.CallStatic : DObject.SpecialMethodNames.Call,
+                        referringType, out routine);
+
+                    if (member_result != GetMemberResult.NotFound)
+                        isCallMethod = true;
+                }
 
 				switch (member_result)
 				{
@@ -1162,11 +1167,15 @@ namespace PHP.Core
 						return routine;
 
 					case GetMemberResult.NotFound:
-                        ErrorSink.Add(Errors.UnknownMethodCalled, SourceUnit, position, type.FullName, methodName);
+                        if (staticCall) // throw an error only in we are looking for static method, instance method can be defined in some future inherited class
+                            ErrorSink.Add(Errors.UnknownMethodCalled, SourceUnit, position, type.FullName, methodName);
 						return new UnknownMethod(type, methodName.Value);
 
 					case GetMemberResult.BadVisibility:
 						{
+                            if (!staticCall)
+                                return new UnknownMethod(type, methodName.Value);
+
 							if (referringType == null && referringRoutine == null)
 							{
 								// visibility must be checked at run-time:

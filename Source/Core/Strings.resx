@@ -2014,4 +2014,13 @@ non-infringement.
   <data name="phpc_arg_skip" xml:space="preserve">
     <value>File or directory which will be skipped during compilation. This also prevents a file(s) to be included statically if /static+ option is specified.</value>
   </data>
+  <data name="method_must_take_exact_args_count" xml:space="preserve">
+    <value>Method {0}::{1}() must take exactly {2} arguments</value>
+  </data>
+  <data name="callstat_must_be_public_static" xml:space="preserve">
+    <value>The magic method __callStatic() must have public visibility and be static</value>
+  </data>
+  <data name="call_must_be_public_nonstatic" xml:space="preserve">
+    <value>The magic method __call() must have public visibility and cannot be static</value>
+  </data>
 </root>

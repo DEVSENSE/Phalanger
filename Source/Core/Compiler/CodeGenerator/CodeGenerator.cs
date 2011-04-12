@@ -1404,20 +1404,7 @@ namespace PHP.Core
 
 			MethodInfo operator_method;
 
-			if (type != null)
-			{
-				// LOAD Operators.InvokeStaticMethod(<type desc>, <method name>, <self>, <type desc>, context);
-				type.EmitLoadTypeDesc(this, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
-
-				this.EmitName(routineFullName, routineNameExpr, true);
-
-				this.EmitLoadSelf();
-				this.EmitLoadClassContext();
-				this.EmitLoadScriptContext();
-
-				operator_method = Methods.Operators.InvokeStaticMethod;
-			}
-			else if (targetExpr != null)
+			if (targetExpr != null)
 			{
 				// LOAD Operators.InvokeMethod(<target>, <method name>, <type desc>, <context>);
 
@@ -1438,6 +1425,19 @@ namespace PHP.Core
 					operator_method = Methods.Operators.InvokeMethodStr;
 				else
 					operator_method = Methods.Operators.InvokeMethodObj;
+			}
+			else if (type != null)
+			{
+				// LOAD Operators.InvokeStaticMethod(<type desc>, <method name>, <self>, <type desc>, context);
+				type.EmitLoadTypeDesc(this, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
+
+				this.EmitName(routineFullName, routineNameExpr, true);
+
+				this.EmitLoadSelf();
+				this.EmitLoadClassContext();
+				this.EmitLoadScriptContext();
+
+				operator_method = Methods.Operators.InvokeStaticMethod;
 			}
 			else
 			{

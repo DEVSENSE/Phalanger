@@ -137,10 +137,7 @@ namespace PHP.Core.AST
             {
 				// method call //
 
-				routine = null;
-				callSignature.Analyze(analyzer, UnknownSignature.Default, info, false);
-
-                return new Evaluation(this);
+                return AnalyzeMethodCall(analyzer, ref info);
 			}
 		}
 
@@ -181,6 +178,78 @@ namespace PHP.Core.AST
             return TryEvaluate(analyzer, out value) ?
                 new Evaluation(this, value) :
                 new Evaluation(this);
+        }
+
+        /// <summary>
+        /// Analyze the method call (isMemberOf != null).
+        /// </summary>
+        /// <param name="analyzer"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        private Evaluation AnalyzeMethodCall(Analyzer/*!*/ analyzer, ref ExInfoFromParent info)
+        {
+            Debug.Assert(isMemberOf != null);
+
+            // TODO: determine the type of isMemberOf through CFG
+
+            // TODO: DISABLED SINCE RESOLVED METHOD CAN BE OVERRIDEN in inherited class ?
+            /*DirectVarUse memberDirectVarUse = isMemberOf as DirectVarUse;
+            if (memberDirectVarUse != null && memberDirectVarUse.IsMemberOf == null &&  // isMemberOf is single variable
+                memberDirectVarUse.VarName.IsThisVariableName &&                        // isMemberOf if $this
+                analyzer.CurrentType != null)                                           // called in class context of known type
+            {
+                // $this->{qualifiedName}(callSignature)
+
+                bool runtimeVisibilityCheck, isCallMethod;
+
+                routine = analyzer.ResolveMethod(
+                    analyzer.CurrentType,//typeof(this)
+                    qualifiedName.Name,//.Namespace?
+                    Position,
+                    analyzer.CurrentType, analyzer.CurrentRoutine, false,
+                    out runtimeVisibilityCheck, out isCallMethod);
+
+                Debug.Assert(runtimeVisibilityCheck == false);  // can only be set to true if CurrentType or CurrentRoutine are null
+
+                if (!routine.IsUnknown)
+                {
+                    // check __call
+                    if (isCallMethod)
+                    {
+                        // TODO: generic args
+
+                        var arg1 = new StringLiteral(this.Position, qualifiedName.Name.Value);
+                        var arg2 = this.callSignature.BuildPhpArray();
+
+                        this.callSignature = new CallSignature(
+                            new List<ActualParam>(2) {
+                                new ActualParam(arg1.Position, arg1, false),
+                                new ActualParam(arg2.Position, arg2, false)
+                            },
+                            new List<TypeRef>());
+                    }
+                    
+                    // resolve overload if applicable:
+                    RoutineSignature signature;
+                    overloadIndex = routine.ResolveOverload(analyzer, callSignature, position, out signature);
+
+                    Debug.Assert(overloadIndex != DRoutine.InvalidOverloadIndex, "A function should have at least one overload");
+
+                    // analyze parameters:
+                    callSignature.Analyze(analyzer, signature, info, false);
+
+                    // get properties:
+                    analyzer.AddCurrentRoutineProperty(routine.GetCallerRequirements());
+
+                    return new Evaluation(this);
+                }
+            }*/
+
+            // by default, fall back to dynamic method invocation
+            routine = null;
+            callSignature.Analyze(analyzer, UnknownSignature.Default, info, false);
+
+            return new Evaluation(this);
         }
 
 		#region Evaluation
@@ -624,16 +693,21 @@ namespace PHP.Core.AST
 			else
 			{
 				// this node actually represents a method call:
-				if (isMemberOf != null)
-				{
-					result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, qualifiedName.ToString(),
-						null, callSignature);
-				}
-				else
-				{
-					// the node represents a function call:
-					result = routine.EmitCall(codeGenerator, callSignature, null, false, overloadIndex, null, position, access == AccessType.None);
-				}
+                if (isMemberOf != null)
+                {
+                    if (routine == null)
+                        result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, qualifiedName.ToString(), null, callSignature);
+                    else
+                        result = routine.EmitCall(
+                            codeGenerator, callSignature,
+                            new ExpressionPlace(codeGenerator, isMemberOf), false, overloadIndex,
+                            null/*TODO when CFG*/, position, access == AccessType.None);
+                }
+                else
+                {
+                    // the node represents a function call:
+                    result = routine.EmitCall(codeGenerator, callSignature, null, false, overloadIndex, null, position, access == AccessType.None);
+                }
 			}
 
 			// handles return value:
@@ -790,7 +864,7 @@ namespace PHP.Core.AST
 		{
 			base.Analyze(analyzer, info);
 
-			type = analyzer.ResolveTypeName(className, analyzer.CurrentType, analyzer.CurrentRoutine, position, false);
+            type = analyzer.ResolveTypeName(className, analyzer.CurrentType, analyzer.CurrentRoutine, position, false);
 
 			// analyze constructed type (new constructed type cane be used here):
 			analyzer.AnalyzeConstructedType(type);
@@ -835,7 +909,21 @@ namespace PHP.Core.AST
 		{
 			base.Analyze(analyzer, info);
 
-			method = analyzer.ResolveMethod(type, methodName, position, analyzer.CurrentType, analyzer.CurrentRoutine, out runtimeVisibilityCheck);
+            // in PHP, it is possible to call instance methods statically if we are in instance method context.
+            // In such case we have to look for __call instead of __callStatic:
+            bool staticCall = true;
+            if (analyzer.CurrentRoutine != null && analyzer.CurrentType != null &&
+                !analyzer.CurrentRoutine.IsStatic &&
+                type.TypeDesc.IsAssignableFrom(analyzer.CurrentType.TypeDesc)) // {CurrentType} is inherited from or equal {type}
+            {
+                staticCall = false; // Note: $this instance is determined in Emit
+            }
+
+            // look for the method:
+            bool isCallMethod;
+            method = analyzer.ResolveMethod(
+                type, methodName, position, analyzer.CurrentType, analyzer.CurrentRoutine,
+                staticCall, out runtimeVisibilityCheck, out isCallMethod);
 
 			if (!method.IsUnknown)
 			{
@@ -848,11 +936,30 @@ namespace PHP.Core.AST
 				}
 			}
 
+            // check __callStatic
+            if (isCallMethod && staticCall) // TODO: disabled for __call since it can be overriden in inherited class
+            {
+                // TODO: generic args
+
+                // create new CallSignature({function name},{args})
+                var arg1 = new StringLiteral(this.Position, methodName.Value);
+                var arg2 = this.callSignature.BuildPhpArray();
+
+                this.callSignature = new CallSignature(
+                    new List<ActualParam>(2) {
+                                new ActualParam(arg1.Position, arg1, false),
+                                new ActualParam(arg2.Position, arg2, false)
+                            },
+                    new List<TypeRef>());
+            }
+
+            // analyze the method
 			RoutineSignature signature;
 			overloadIndex = method.ResolveOverload(analyzer, callSignature, position, out signature);
 
 			Debug.Assert(overloadIndex != DRoutine.InvalidOverloadIndex, "Each method should have at least one overload");
 
+            // analyze arguments
 			callSignature.Analyze(analyzer, signature, info, false);
 
 			return new Evaluation(this);

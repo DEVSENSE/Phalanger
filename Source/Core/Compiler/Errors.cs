@@ -654,6 +654,10 @@ namespace PHP.Core
 
         public static readonly ErrorInfo BodyOfDllImportedFunctionIgnored = new ErrorInfo(170, "dll_import_body_ignored", ErrorSeverity.Warning);
 
+        //
+        public static readonly ErrorInfo CallMustBePublicNonStatic = new ErrorInfo(171, "call_must_be_public_nonstatic", ErrorSeverity.Warning);
+        public static readonly ErrorInfo CallStatMustBePublicStatic = new ErrorInfo(172, "callstat_must_be_public_static", ErrorSeverity.Warning);
+
         // strict standards
 
         public static readonly ErrorInfo DeclarationShouldBeCompatible = new ErrorInfo(180, "declaration_should_be_compatible", ErrorSeverity.Warning);
@@ -876,6 +880,7 @@ namespace PHP.Core
 
 		public static readonly ErrorInfo CircularBaseClassDependency = new ErrorInfo(2030, "circular_base_class_dependency", ErrorSeverity.FatalError);
 		public static readonly ErrorInfo CircularBaseInterfaceDependency = new ErrorInfo(2031, "circular_base_interface_dependency", ErrorSeverity.FatalError);
+        public static readonly ErrorInfo MethodMustTakeExacArgsCount = new ErrorInfo(2032, "method_must_take_exact_args_count", ErrorSeverity.FatalError);
 
 	}
 

@@ -99,6 +99,16 @@ namespace PHP.Core
 			get { return this.Equals(DObject.SpecialMethodNames.Destruct); }
 		}
 
+        public bool IsCallName
+        {
+            get { return this.Equals(DObject.SpecialMethodNames.Call); }
+        }
+
+        public bool IsCallStaticName
+        {
+            get { return this.Equals(DObject.SpecialMethodNames.CallStatic); }
+        }
+
 		#endregion
 
 		/// <summary>

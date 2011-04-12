@@ -124,7 +124,7 @@ namespace PHP.Core
 		}
 
 		/// <summary>
-		/// Returns <B>true</B> if this callback is bound to a <c>__call</c> method, <B>false</B> otherwise.
+        /// Returns <B>true</B> if this callback is bound to a <c>__call</c> or <c>__callStatic</c> method, <B>false</B> otherwise.
 		/// </summary>
 		public bool IsBoundToCaller
 		{
@@ -364,13 +364,14 @@ namespace PHP.Core
 						if (type == null) return false;
 
 						// find the method
+                        bool is_caller_method;
 						routineDesc = Operators.GetStaticMethodDesc(type, targetName,
-							ref instance, callingContext, context, quiet, false);
+                            ref instance, callingContext, context, quiet, false, out is_caller_method);
 
 						if (routineDesc == null) return false;
 
 						if (instance != null) dummyInstance = true;
-						state = State.Bound;
+                        state = is_caller_method ? State.BoundToCaller : State.Bound;
 						return true;
 					}
 
