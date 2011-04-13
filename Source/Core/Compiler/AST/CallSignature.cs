@@ -181,7 +181,7 @@ namespace PHP.Core.AST
 		private readonly List<TypeRef>/*!*/ genericParams;
 
         /// <summary>
-        /// True if all the parameters are known at compile time.
+        /// Gets true if all the Parameters (after the analysis) have the value and could be evaluated during the compilation time.
         /// </summary>
         public bool AllParamsHaveValue
         {
@@ -252,9 +252,6 @@ namespace PHP.Core.AST
 			analyzer.LeaveActualParams();
 		}
 
-        /// <summary>
-        /// Gets true if all the Parameters (after the analysis) have the value and could be evaluated during the compilation time.
-        /// </summary>
         #region Emission
 
 		/// <summary>

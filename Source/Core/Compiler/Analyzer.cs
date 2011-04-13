@@ -1126,11 +1126,23 @@ namespace PHP.Core
 		}
 
 
-		/// <summary>
-		/// Resolves type name and a name of its method.
-		/// </summary>
+        /// <summary>
+        /// Resolves a method of given <see cref="DType"/> by its name.
+        /// </summary>
+        /// <param name="type">The type of routine being resolved.</param>
+        /// <param name="methodName">The name of routine to be resolved.</param>
+        /// <param name="position">Position of method call used for error reporting.</param>
+        /// <param name="referringType">The type where the seached routine is being called. Can be <c>null</c>.</param>
+        /// <param name="referringRoutine">The routine where the searched routine is being called. Can be <c>null</c>.</param>
+        /// <param name="calledStatically">True if the searched routine is called statically - if it uses static method call syntax.
+        /// This affects the __call or __callStatic method lookup.
+        /// It affects also the error reporting, where for instance method calls, the bad visibility error is
+        /// ignored and falls back to return <see cref="UnknownMethod"/>.</param>
+        /// <param name="checkVisibilityAtRuntime">Will determine if the routine call must be checked for visibility at runtime.</param>
+        /// <param name="isCallMethod">Will determine if __call or __callStatic magic methods were found instead.</param>
+        /// <returns>The resolved routine. Cannot return <c>null</c>.</returns>
 		public DRoutine/*!*/ ResolveMethod(DType/*!*/ type, Name methodName, Position position,
-			PhpType referringType, PhpRoutine referringRoutine, bool staticCall,
+			PhpType referringType, PhpRoutine referringRoutine, bool calledStatically,
             out bool checkVisibilityAtRuntime, out bool isCallMethod)
 		{
 			checkVisibilityAtRuntime = false;
@@ -1150,12 +1162,23 @@ namespace PHP.Core
 
 				member_result = type.GetMethod(methodName, referringType, out routine);
 
-                // TODO: look for __call or __callStatic magic methods if no method was found:
-                if (member_result == GetMemberResult.NotFound)
+                // Look for __call or __callStatic magic methods if no method was found:
+                // Note: __call when looking for instance method is disabled, since there can be the searched method in some future override.
+                if (member_result == GetMemberResult.NotFound && calledStatically)
                 {
-                    member_result = type.GetMethod(
-                        staticCall ? DObject.SpecialMethodNames.CallStatic : DObject.SpecialMethodNames.Call,
-                        referringType, out routine);
+                    // in PHP, it is possible to call instance methods statically if we are in instance method context.
+                    // In such case we have to look for __call instead of __callStatic:
+                    
+                    // determine the proper call method:
+                    // use __call for instance method invocation, including static method invocation within the current type (e.g. A::foo(), parent::foo(), ...)
+                    // use __callStatic for static method invocation
+                    Name callMethodName =
+                        (!calledStatically ||   // just to have complete condition here, always false
+                        (referringRoutine != null && referringType != null && !referringRoutine.IsStatic &&  // in non-static method
+                        type.TypeDesc.IsAssignableFrom(referringType.TypeDesc)) // {CurrentType} is inherited from or equal {type}
+                        ) ? DObject.SpecialMethodNames.Call : DObject.SpecialMethodNames.CallStatic;
+
+                    member_result = type.GetMethod(callMethodName, referringType, out routine);
 
                     if (member_result != GetMemberResult.NotFound)
                         isCallMethod = true;
@@ -1167,13 +1190,13 @@ namespace PHP.Core
 						return routine;
 
 					case GetMemberResult.NotFound:
-                        if (staticCall) // throw an error only in we are looking for static method, instance method can be defined in some future inherited class
+                        if (calledStatically) // throw an error only in we are looking for static method, instance method can be defined in some future inherited class
                             ErrorSink.Add(Errors.UnknownMethodCalled, SourceUnit, position, type.FullName, methodName);
 						return new UnknownMethod(type, methodName.Value);
 
 					case GetMemberResult.BadVisibility:
 						{
-                            if (!staticCall)    // instance method will check the routine dynamically, there can be some override later
+                            if (!calledStatically)    // instance method will check the routine dynamically, there can be some override later
                                 return new UnknownMethod(type, methodName.Value);
 
 							if (referringType == null && referringRoutine == null)

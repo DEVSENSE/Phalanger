@@ -909,21 +909,11 @@ namespace PHP.Core.AST
 		{
 			base.Analyze(analyzer, info);
 
-            // in PHP, it is possible to call instance methods statically if we are in instance method context.
-            // In such case we have to look for __call instead of __callStatic:
-            bool staticCall = true;
-            if (analyzer.CurrentRoutine != null && analyzer.CurrentType != null &&
-                !analyzer.CurrentRoutine.IsStatic &&
-                type.TypeDesc.IsAssignableFrom(analyzer.CurrentType.TypeDesc)) // {CurrentType} is inherited from or equal {type}
-            {
-                staticCall = false; // Note: $this instance is determined in Emit
-            }
-
             // look for the method:
             bool isCallMethod;
             method = analyzer.ResolveMethod(
                 type, methodName, position, analyzer.CurrentType, analyzer.CurrentRoutine,
-                staticCall, out runtimeVisibilityCheck, out isCallMethod);
+                true, out runtimeVisibilityCheck, out isCallMethod);
 
 			if (!method.IsUnknown)
 			{
