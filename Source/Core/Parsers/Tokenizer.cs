@@ -239,7 +239,8 @@ namespace PHP.Core.Parsers
 							return token;
 						}
 
-					case Tokens.T_TRY:
+                    case Tokens.T_GOTO:
+                    case Tokens.T_TRY:
 					case Tokens.T_CATCH:
 					case Tokens.T_THROW:
 					case Tokens.T_INTERFACE:
@@ -282,7 +283,6 @@ namespace PHP.Core.Parsers
 							return token;
 						}
 
-					case Tokens.T_GOTO:
 					case Tokens.T_IMPORT:
 					case Tokens.T_NAMESPACE:
 					case Tokens.T_NAMESPACE_C:
@@ -349,6 +349,7 @@ namespace PHP.Core.Parsers
 					case Tokens.T_FUNC_C:               // __FUNCTION__
 					case Tokens.T_FILE:                 // __FILE__
 					case Tokens.T_LINE:                 // __LINE__
+                    case Tokens.T_DIR:                  // __DIR__
 						tokenCategory = TokenCategory.Keyword;
 						return token;
 
