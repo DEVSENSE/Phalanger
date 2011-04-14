@@ -265,6 +265,10 @@ namespace PHP.Library
 			T_DOUBLE_COLON = CoreTokens.T_DOUBLE_COLON,
 			[ImplementsConstant("T_PAAMAYIM_NEKUDOTAYIM")]
 			T_PAAMAYIM_NEKUDOTAYIM = CoreTokens.T_DOUBLE_COLON,  // Duplicate
+            [ImplementsConstant("T_DIR")]
+            T_DIR = CoreTokens.T_DIR,
+            [ImplementsConstant("T_GOTO")]
+            T_GOTO = CoreTokens.T_GOTO,
 		}
 
 		#endregion

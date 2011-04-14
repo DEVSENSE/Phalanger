@@ -101,6 +101,9 @@ using Pair = System.Tuple<object,object>;
 
 /* operators, starting from the least precedence */
 
+
+/* PHP operators start from 258 */
+
 %left T_INCLUDE T_INCLUDE_ONCE T_EVAL T_REQUIRE T_REQUIRE_ONCE
 %left ','
 
@@ -210,6 +213,7 @@ using Pair = System.Tuple<object,object>;
 
 /* PHP5 */
 
+%token T_GOTO
 %token T_TRY
 %token T_CATCH
 %token T_THROW
@@ -225,7 +229,6 @@ using Pair = System.Tuple<object,object>;
 
 /* PHP6 */
 
-%token T_GOTO                   
 %token T_BINARY_DOUBLE
 %token T_BINARY_HEREDOC
 %token T_IMPORT

@@ -415,7 +415,8 @@ namespace PHP.Core.Parsers
 					case Tokens.T_PUBLIC:
 					case Tokens.T_INSTANCEOF:
 					case Tokens.T_INTERFACE:
-						{
+                    case Tokens.T_GOTO:
+                        {
 							if ((features & LanguageFeatures.V5Keywords) == 0)
 							{
 								token = Tokens.T_STRING;
@@ -447,7 +448,6 @@ namespace PHP.Core.Parsers
 							goto default;
 						}
 
-					case Tokens.T_GOTO:
 					case Tokens.T_IMPORT:
 					case Tokens.T_NAMESPACE:
 					case Tokens.T_NAMESPACE_C:
