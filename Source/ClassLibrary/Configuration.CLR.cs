@@ -131,7 +131,40 @@ namespace PHP.Library
 		[Serializable]
 		public sealed class SessionSection : IPhpConfigurationSection
 		{
-			/// <summary>
+            static SessionSection()
+            {
+                // load configuration into the context every request
+                RequestContext.RequestBegin += () =>
+                {
+                    var config = LibraryConfiguration.Local;
+                    if (config == null) return;
+
+                    RequestContext context = RequestContext.CurrentContext;
+                    Debug.Assert(context != null);
+                    HttpCookie cookie = AspNetSessionHandler.GetCookie(context.HttpContext);
+
+                    if (config.Session.CacheExpire >= 0)
+                        context.HttpContext.Session.Timeout = config.Session.CacheExpire;
+
+                    PhpSession.CacheLimiter(config.Session.CacheLimiter);
+
+                    if (cookie != null)
+                    {
+                        if (config.Session.CookieLifetime >= 0)
+                            context.SessionCookieLifetime = config.Session.CookieLifetime;
+
+                        if (config.Session.CookiePath != null)
+                            cookie.Path = config.Session.CookiePath;
+
+                        if (config.Session.CookieDomain != null)
+                            cookie.Domain = config.Session.CookieDomain;
+
+                        cookie.Secure = config.Session.CookieSecure;
+                    }
+                };
+            }
+         
+            /// <summary>
 			/// A serializer used for serializing session data. Can't contain a <B>null</B> reference.
 			/// Setting <B>null</B> to the propety will set the default PHP serializer.
 			/// </summary>
@@ -169,6 +202,36 @@ namespace PHP.Library
 			/// </summary>
 			public string SavePath = Path.GetTempPath();
 
+            /// <summary>
+            /// HttpContext.Session.Timeout.
+            /// </summary>
+            public int CacheExpire = -1;
+
+            /// <summary>
+            /// CacheLimiter.
+            /// </summary>
+            public string CacheLimiter = "no-cache";
+
+            /// <summary>
+            /// HttpContext.SessionCookieLifetime.
+            /// </summary>
+            public int CookieLifetime = -1;
+
+            /// <summary>
+            /// cookie.Path.
+            /// </summary>
+            public string CookiePath = null;
+
+            /// <summary>
+            /// cookie.Domain.
+            /// </summary>
+            public string CookieDomain = null;
+
+            /// <summary>
+            /// cookie.Secure.
+            /// </summary>
+            public bool CookieSecure = false;
+
 			/// <summary>
 			/// Copies values to the target structure.
 			/// </summary>
@@ -179,10 +242,6 @@ namespace PHP.Library
 
 			public bool Parse(string name, string value, XmlNode node)
 			{
-				RequestContext context = RequestContext.CurrentContext;
-				Debug.Assert(context != null);
-				HttpCookie cookie = AspNetSessionHandler.GetCookie(context.HttpContext);
-
 				switch (name)
 				{
 					case "Serializer":
@@ -214,38 +273,27 @@ namespace PHP.Library
 						break;
 
 					case "CacheExpire":
-						context.HttpContext.Session.Timeout = ConfigUtils.ParseInteger(value, 0, Int32.MaxValue, node);
+						CacheExpire = ConfigUtils.ParseInteger(value, 0, Int32.MaxValue, node);
 						break;
 
 					case "CacheLimiter":
-						try
-						{
-							context.HttpContext.Response.CacheControl = value;
-						}
-						catch (ArgumentException e)
-						{
-							throw new ConfigurationErrorsException(e.Message, node);
-						}
-						break;
+                        CacheLimiter = value;
+                        break;
 
 					case "CookieLifetime":
-						if (cookie != null)
-							context.SessionCookieLifetime = ConfigUtils.ParseInteger(value, 0, Int32.MaxValue, node);
+						CookieLifetime = ConfigUtils.ParseInteger(value, 0, Int32.MaxValue, node);
 						break;
 
 					case "CookiePath":
-						if (cookie != null)
-							cookie.Path = value;
+                        CookiePath = value;
 						break;
 
 					case "CookieDomain":
-						if (cookie != null)
-							cookie.Domain = value;
+                        CookieDomain = value;
 						break;
 
 					case "CookieSecure":
-						if (cookie != null)
-							cookie.Secure = value == "true";
+                        CookieSecure = value == "true";
 						break;
 
 					default:
