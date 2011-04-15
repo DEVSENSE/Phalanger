@@ -127,17 +127,14 @@ namespace PHP.Core.Emit
             if (!globalTypeCreated)
             {
 #if !SILVERLIGHT
-                // bake global CLR type:
+                // Bake global CLR type:
 
-                // Note: only needed for CLR (/pure+)
-                // 
-                // Can crash if called twice, BUT it can never happen in CLR, because
-                // more global functions cannot be created dynamically using eval(), because
-                // eval() is global code that is not allowed in CLR.
+                // Throws No Debug Module if the globals have been already created
+                // This is checked in the condition above, the try/catch block is actually not needed.
 
                 try
-                { ReflectionUtils.CreateGlobalType(RealModuleBuilder); }    // TODO: throws No Debug Module if the globals have been already created
-                catch (Exception) { }
+                { ReflectionUtils.CreateGlobalType(RealModuleBuilder); }
+                catch (Exception) { Debug.Fail(); }
 #else
 			    // TODO: .. this is some hack.. 
 #endif

@@ -977,8 +977,8 @@ namespace PHP.Core
 				il.Ldarg(setter.IsStatic ? 0 : 1);
 				PhpTypeCode type_code = ClrOverloadBuilder.EmitConvertToPhp(
 					il,
-					property.PropertyType,
-					ScriptContextPlace);
+					property.PropertyType/*,
+					ScriptContextPlace*/);
 
 				EmitBoxing(type_code);
 
@@ -2901,20 +2901,30 @@ namespace PHP.Core
 			{
 				if (chain != null) chain.Create();
 				
-				// Emit index and box the result
-				switch (result = key.Emit(this))
-				{
-					case PhpTypeCode.Integer:
-						break;
-					
-					case PhpTypeCode.String:
-						break;
+                // convert the key into integer if necessary and possible in compile time
+                IntStringKey array_key;
+                if (key.HasValue && Convert.ObjectToArrayKey(key.Value, out array_key) && array_key.IsInteger)
+                {
+                    il.LdcI4(array_key.Integer);
+                    result = PhpTypeCode.Integer;
+                }
+                else
+                {
+                    // Emit index and box the result
+                    switch (result = key.Emit(this))
+                    {
+                        case PhpTypeCode.Integer:
+                            break;
 
-					default:
-						EmitBoxing(result);
-						result = PhpTypeCode.Object;
-						break;
-				}
+                        case PhpTypeCode.String:
+                            break;
+
+                        default:
+                            EmitBoxing(result);
+                            result = PhpTypeCode.Object;
+                            break;
+                    }
+                }
 				
 				if (chain != null) chain.End();
 			}

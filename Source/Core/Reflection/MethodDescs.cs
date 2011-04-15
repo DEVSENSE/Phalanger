@@ -133,7 +133,7 @@ namespace PHP.Core.Reflection
 		[Emitted]
 		public object Invoke(DObject instance, PhpStack stack)
 		{
-			return ArglessStub(instance == null ? null : instance.RealObject, stack);
+			return ArglessStub(instance == null ? null : instance.InstanceObject, stack);
 		}
 
 		public object Invoke(DObject instance, PhpStack stack, DTypeDesc caller)

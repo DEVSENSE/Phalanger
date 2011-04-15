@@ -42,26 +42,19 @@
    		
    		ob_end_clean();
    		
-   		$EXPECTED = "object(LibX)(0)
-{
+   		$EXPECTED = "object(LibX)(0) {
 }
-object(Q)(0)
-{
+object(Q)(0) {
 }
-object(P)(0)
-{
+object(P)(0) {
 }
-object(A)(0)
-{
+object(A)(0) {
 }
-object(D)(0)
-{
+object(D)(0) {
 }
-object(E)(0)
-{
+object(E)(0) {
 }
-object(F)(0)
-{
+object(F)(0) {
 }
 ";	
    		echo $out == $EXPECTED ? "OK" : "ERROR", "\n";

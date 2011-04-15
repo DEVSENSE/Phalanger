@@ -118,8 +118,8 @@ namespace PHP.Core.Emit
 				// convert the parameter to PHP type
 				PhpTypeCode type_code = ClrOverloadBuilder.EmitConvertToPhp(
 					il,
-					param_type,
-					scriptContextPlace);
+					param_type/*,
+					scriptContextPlace*/);
 
 				il.EmitBoxing(type_code);
 			}

@@ -488,6 +488,11 @@ namespace PHP.Core
 		/// </summary>
 		public override object/*!*/ RealObject { get { return this; } }
 
+        /// <summary>
+        /// <see cref="PhpObject"/> is passed to its method and property invokes.
+        /// </summary>
+        public override object InstanceObject { get { return this; } }
+
 		#endregion
 
 		#region Construction and initialization

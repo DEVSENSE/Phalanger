@@ -141,6 +141,8 @@ namespace PHP.Core.Reflection
 
 			if ((clr_event = Member as ClrEvent) != null)
 			{
+                Debug.Assert(!declaringType.RealType.IsValueType, "Value type with ClrEvent not handled! TODO: arg(0) is ClrValue<T>.");
+
 				LocalBuilder temp = il.DeclareLocal(declaringType.RealType);
 
 				il.Ldarg(0);
@@ -159,14 +161,15 @@ namespace PHP.Core.Reflection
 
 					if (!clr_property.Getter.IsStatic)
 					{
-						il.Emit(OpCodes.Ldarg_0);
+                        ClrOverloadBuilder.EmitLoadInstance(il, IndexedPlace.ThisArg, declaringType.RealType);
+//                        il.Emit(OpCodes.Ldarg_0);
 						
-						if (declaringType.RealType.IsValueType) 
-                            il.Emit(OpCodes.Unbox, declaringType.RealType);
-#if EMIT_VERIFIABLE_STUBS
-                        else
-                            il.Emit(OpCodes.Castclass, this.declaringType.RealType);
-#endif
+//                        if (declaringType.RealType.IsValueType) 
+//                            il.Emit(OpCodes.Unbox, declaringType.RealType);
+//#if EMIT_VERIFIABLE_STUBS
+//                        else
+//                            il.Emit(OpCodes.Castclass, this.declaringType.RealType);
+//#endif
 					}
 
 					il.Emit(OpCodes.Call, clr_property.Getter);
@@ -179,10 +182,11 @@ namespace PHP.Core.Reflection
 
 					if (!clr_field.FieldInfo.IsStatic)
 					{
-						il.Emit(OpCodes.Ldarg_0);
-						//il.Emit(OpCodes.Castclass, this.declaringType.RealType);
+                        ClrOverloadBuilder.EmitLoadInstance(il, IndexedPlace.ThisArg, declaringType.RealType);
+                        //il.Emit(OpCodes.Ldarg_0);
+                        ////il.Emit(OpCodes.Castclass, this.declaringType.RealType);
 
-						if (declaringType.RealType.IsValueType) il.Emit(OpCodes.Unbox, declaringType.RealType);
+                        //if (declaringType.RealType.IsValueType) il.Emit(OpCodes.Unbox, declaringType.RealType);
 						il.Emit(OpCodes.Ldfld, clr_field.FieldInfo);
 					}
 					else
@@ -193,7 +197,7 @@ namespace PHP.Core.Reflection
 					result_type = clr_field.FieldInfo.FieldType;
 				}
 
-				il.EmitBoxing(ClrOverloadBuilder.EmitConvertToPhp(il, result_type, null));
+				il.EmitBoxing(ClrOverloadBuilder.EmitConvertToPhp(il, result_type/*, null*/));
 			}
 
 			il.Emit(OpCodes.Ret);
@@ -263,14 +267,15 @@ namespace PHP.Core.Reflection
 
 				if (!clr_property.Setter.IsStatic)
 				{
-					il.Emit(OpCodes.Ldarg_0);
+                    ClrOverloadBuilder.EmitLoadInstance(il, IndexedPlace.ThisArg, declaringType.RealType);
+//                    il.Emit(OpCodes.Ldarg_0);
 
-					if (declaringType.RealType.IsValueType) 
-                        il.Emit(OpCodes.Unbox, declaringType.RealType);
-#if EMIT_VERIFIABLE_STUBS
-                    else
-                        il.Emit(OpCodes.Castclass, declaringType.RealType);
-#endif
+//                    if (declaringType.RealType.IsValueType) 
+//                        il.Emit(OpCodes.Unbox, declaringType.RealType);
+//#if EMIT_VERIFIABLE_STUBS
+//                    else
+//                        il.Emit(OpCodes.Castclass, declaringType.RealType);
+//#endif
 
 				}
 
@@ -290,10 +295,11 @@ namespace PHP.Core.Reflection
 
 				if (!clr_field.FieldInfo.IsStatic)
 				{
-					il.Emit(OpCodes.Ldarg_0);
-					//il.Emit(OpCodes.Castclass, this.declaringType.RealType);
+                    ClrOverloadBuilder.EmitLoadInstance(il, IndexedPlace.ThisArg, declaringType.RealType);
+                    //il.Emit(OpCodes.Ldarg_0);
+                    ////il.Emit(OpCodes.Castclass, this.declaringType.RealType);
 
-					if (declaringType.RealType.IsValueType) il.Emit(OpCodes.Unbox, declaringType.RealType);
+                    //if (declaringType.RealType.IsValueType) il.Emit(OpCodes.Unbox, declaringType.RealType);
 				}
 
 				il.Emit(OpCodes.Ldarg_1);
@@ -315,7 +321,7 @@ namespace PHP.Core.Reflection
 
 		public virtual object Get(DObject instance)
 		{
-			return GetterStub((instance == null ? null : instance.RealObject));
+            return GetterStub((instance == null ? null : instance.InstanceObject));
 		}
 
 		/// <summary>
@@ -324,7 +330,7 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		public virtual PhpReference Set(DObject instance, object value)
 		{
-			SetterStub((instance == null ? null : instance.RealObject), value);
+            SetterStub((instance == null ? null : instance.InstanceObject), value);
 			return null;
 		}
 
@@ -1285,7 +1291,7 @@ namespace PHP.Core.Reflection
 
 			il.Emit(getter.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, getter);
 
-			PhpTypeCode result = ClrOverloadBuilder.EmitConvertToPhp(il, getter.ReturnType, codeGenerator.ScriptContextPlace);
+			PhpTypeCode result = ClrOverloadBuilder.EmitConvertToPhp(il, getter.ReturnType/*, codeGenerator.ScriptContextPlace*/);
 
 			codeGenerator.EmitReferenceDereference(ref result, wantRef);
 			return result;
@@ -1393,7 +1399,7 @@ namespace PHP.Core.Reflection
 				il.Emit(OpCodes.Ldfld, fieldInfo);
 			}
 
-			PhpTypeCode result = ClrOverloadBuilder.EmitConvertToPhp(il, fieldInfo.FieldType, codeGenerator.ScriptContextPlace);
+			PhpTypeCode result = ClrOverloadBuilder.EmitConvertToPhp(il, fieldInfo.FieldType/*, codeGenerator.ScriptContextPlace*/);
 
 			codeGenerator.EmitReferenceDereference(ref result, wantRef);
 			return result;

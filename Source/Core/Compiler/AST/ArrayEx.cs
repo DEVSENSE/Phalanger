@@ -89,11 +89,8 @@ namespace PHP.Core.AST
 				// CALL array.SetArrayItem(x, PhpVariable.Copy(y, CopyReason.Assigned));
 				// CALL array.SetArrayItem(PhpVariable.Copy(x, CopyReason.Assigned))
 
-				// TODO(nice): more optimization is possible as we know that array_local is definitely of type PhpArray,
-				// string key conversions can take place here;
-
 				il.Ldloc(array_local);
-				PhpTypeCode index_type_code = (item.HasKey) ? item.EmitIndex(codeGenerator) : PhpTypeCode.Invalid;
+				PhpTypeCode index_type_code = item.EmitIndex(codeGenerator);
 				item.EmitValue(codeGenerator);
 				codeGenerator.EmitSetArrayItem(index_type_code, item.Index, item is RefItem);
 			}

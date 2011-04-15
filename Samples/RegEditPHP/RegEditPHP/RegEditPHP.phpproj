@@ -9,7 +9,7 @@
     <AssemblyName>RegEditPHP</AssemblyName>
     <RootNamespace>RegEditPHP</RootNamespace>
     <ApplicationIcon>Resources\Regedit.ico</ApplicationIcon>
-    <TargetPlatform>v2</TargetPlatform>
+    <TargetPlatform>v4</TargetPlatform>
     <SccProjectName>SAK</SccProjectName>
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>

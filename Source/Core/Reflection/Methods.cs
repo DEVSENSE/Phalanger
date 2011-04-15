@@ -2585,6 +2585,10 @@ namespace PHP.Core.Reflection
 						visible_count++;
 				}
 
+                if (declaringType.RealType.IsValueType) // add an empty .ctor
+                    visible_count++;
+
+
 				if (visible_count > 0)
 				{
 					result = new ClrMethod(Name.ClrCtorName, declaringType, attrs, visible_count, false);
@@ -2597,6 +2601,12 @@ namespace PHP.Core.Reflection
 							result.AddOverload(real_overload, out overload);
 						}
 					}
+
+                    if (declaringType.RealType.IsValueType) // add an empty .ctor
+                    {
+                        Overload overload;
+                        result.AddOverload(BuildDefaultValueCtor(declaringType.RealType), out overload);
+                    }
 				}
 				else
 				{
@@ -2788,7 +2798,7 @@ namespace PHP.Core.Reflection
 			EmitArglessStub(il, stack, instance2);
 			
 #endif
-            Debug.Assert(instance is ExpressionPlace || instance == IndexedPlace.ThisArg);
+            Debug.Assert(instance == null || instance is ExpressionPlace || instance == IndexedPlace.ThisArg);
 			return codeGenerator.EmitRoutineOperatorCall(DeclaringType, ExpressionPlace.GetExpression(instance), this.FullName, null, callSignature);
 		}
 
@@ -2803,6 +2813,40 @@ namespace PHP.Core.Reflection
 
 			builder.EmitResolutionByNumber();
 		}
+
+        /// <summary>
+        /// Emit static method that creates an instance of given value type using default ctor.
+        /// </summary>
+        /// <param name="valueType">Value type to be instantiated by resulting method.</param>
+        /// <returns>The method that returns value boxed into new instance of <see cref="ClrValue&lt;T&gt;"/>.</returns>
+        private static MethodBase BuildDefaultValueCtor(Type/*!*/valueType)
+        {
+            Debug.Assert(valueType != null && valueType.IsValueType, "Argument 'valueType' must not be null and must represent a value type!");
+
+            DynamicMethod method = new DynamicMethod(valueType.Name + "..ctor", Types.Object[0], Type.EmptyTypes);
+            Emit.ILEmitter il = new PHP.Core.Emit.ILEmitter(method);
+
+            // local 0
+            // ldloca.s 0
+            // initobj <valueType>
+            
+            var loc = il.DeclareLocal(valueType);
+
+            il.Emit(OpCodes.Ldloca_S, loc);
+            il.Emit(OpCodes.Initobj, valueType);
+            
+            // LOAD <loc>
+            // box ConvertToPhp <valueType>
+
+            il.Emit(OpCodes.Ldloc, loc);
+            il.EmitBoxing(ClrOverloadBuilder.EmitConvertToPhp(il, valueType));
+
+            // return
+            il.Emit(OpCodes.Ret);
+
+            // done
+            return method;
+        }
 
 		#endregion
 	}

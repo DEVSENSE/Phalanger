@@ -237,6 +237,40 @@ namespace PHP.Core.Emit
 			il.Stloc(local);
 		}
 
+        /// <summary>
+        /// Emit LOAD <paramref name="instance"/>.
+        /// </summary>
+        /// <param name="il"><see cref="ILEmiter"/> object instanbce.</param>
+        /// <param name="instance">The place where to load the instance from.</param>
+        /// <param name="declaringType">The type of resulting instance.</param>
+        /// <remarks>Instance of value types are wrapped in <see cref="ClrValue&lt;T&gt;"/> object instance.</remarks>
+        internal static void EmitLoadInstance(ILEmitter/*!*/il, IPlace/*!*/instance, Type/*!*/declaringType)
+        {
+            Debug.Assert(il != null && instance != null && declaringType != null, "ClrOverloadBuilder.EmitLoadInstance() null argument!");
+
+            // LOAD <instance>
+            instance.EmitLoad(il);
+
+            if (declaringType.IsValueType)
+            {
+                var clrValueType = ClrObject.valueTypesCache.Get(declaringType).Item1;
+                Debug.Assert(clrValueType != null, "Specific ClrValue<T> not found!");
+
+                // CAST (ClrValue<T>)
+                il.Emit(OpCodes.Castclass, clrValueType);
+
+                // LOAD .realValue
+                var realValueField = clrValueType.GetField("realValue");
+                Debug.Assert(realValueField != null, "ClrValue<T>.realValue field not found!");
+                il.Emit(OpCodes.Ldflda, clrValueType.GetField("realValue"));
+            }
+            else
+            {
+                // CAST (T)
+                il.Emit(OpCodes.Castclass, declaringType);
+            }
+        }
+
 		/// <summary>
 		/// Emits overload call
 		/// </summary>
@@ -255,33 +289,21 @@ namespace PHP.Core.Emit
 				il.Emit(OpCodes.Brfalse, failLabel);
 			}*/
 
-			if (emitParentCtorCall)
-			{
-				// LOAD <instance>
-				instance.EmitLoad(il);
-#if EMIT_VERIFIABLE_STUBS
-	        il.Emit(OpCodes.Castclass, overload_base.DeclaringType);
-#endif
-			}
-			else if (!overload_base.IsStatic && !overload_base.IsConstructor)
-			{
-				/* CHECK IS DONE IN EmitConversion
-				// IF (<instance> == null) THEN GOTO next-overload-or-error;
-				instance.EmitLoad(il);
-				il.Emit(OpCodes.Brfalse, failLabel);*/
+            //
+            // LOAD <instance>
+            //
 
-				// LOAD (<type>)<instance>
-				instance.EmitLoad(il);
-#if EMIT_VERIFIABLE_STUBS
-	        il.Emit(OpCodes.Castclass, overload_base.DeclaringType);
-#endif
-
-				// HACK: we need to adjust the this pointer as the structure is boxed (first 4 bytes are VM ptr):
-				if (overload_base.DeclaringType.IsValueType)
-				{
-					il.Emit(OpCodes.Unbox, overload_base.DeclaringType);
-				}
+            if ((emitParentCtorCall) // calling .ctor on parent
+                ||(!overload_base.IsStatic && !overload_base.IsConstructor)// calling method on non-static object
+                //||(overload_base.IsConstructor && overload_base.DeclaringType.IsValueType)// calling .ctor on structure (which initializes fields on existing value) (but the ClrValue does not exist yet :-))
+                )
+			{
+                EmitLoadInstance(il, instance, overload_base.DeclaringType);
 			}
+
+            //
+            // LOAD {<args>}
+            //
 
 			for (int i = 0; i < overload.Parameters.Length; i++)
 			{
@@ -289,9 +311,14 @@ namespace PHP.Core.Emit
 				else il.Ldloc(formals[i]);
 			}
 
-			if (!overload_base.IsConstructor)
+            //
+            // CALL <method> or 
+            //
+
+            if (!overload_base.IsConstructor)
 			{
-				MethodInfo info = DType.MakeConstructed((MethodInfo)overload_base, constructedType);
+                // method
+                MethodInfo info = DType.MakeConstructed((MethodInfo)overload_base, constructedType);
 
 				// CALL <method>(args);
 				// TODO: il.Emit(info.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, info);
@@ -302,17 +329,18 @@ namespace PHP.Core.Emit
 #endif
 
 				// return value conversions:
-				if (info.ReturnParameter.ParameterType != Types.Void)
+				if (info.ReturnType != Types.Void)
 				{
-					il.EmitBoxing(EmitConvertToPhp(il, info.ReturnType, scriptContext));
+					il.EmitBoxing(EmitConvertToPhp(il, info.ReturnType/* scriptContext*/));
 					il.Stloc(returnValue);
 				}
 			}
 			else
 			{
+                // .ctor
 				ConstructorInfo ctor = DType.MakeConstructed((ConstructorInfo)overload_base, constructedType);
 
-				if (emitParentCtorCall)
+                if (emitParentCtorCall)
 				{
 					// CALL <ctor>(args);
 					il.Emit(OpCodes.Call, ctor);
@@ -322,7 +350,8 @@ namespace PHP.Core.Emit
 					// NEW <ctor>(args);
 					il.Emit(OpCodes.Newobj, ctor);
 
-					if (ctor.DeclaringType.IsValueType)
+                    il.EmitBoxing(EmitConvertToPhp(il, ctor.DeclaringType));    // convert any newly created object to valid PHP object
+					/*if (ctor.DeclaringType.IsValueType)
 					{
 						// box value type:
 						il.Emit(OpCodes.Box, ctor.DeclaringType);
@@ -332,7 +361,7 @@ namespace PHP.Core.Emit
 					{
 						// convert to ClrObject if not DObject:
 						il.Emit(OpCodes.Call, Methods.ClrObject_Wrap);
-					}
+					}*/
 
 					il.Stloc(returnValue);
 				}
@@ -350,8 +379,8 @@ namespace PHP.Core.Emit
 
                     PhpTypeCode php_type_code = EmitConvertToPhp(
 						il,
-						param_type.GetElementType(),
-						scriptContext);
+						param_type.GetElementType()/*,
+						scriptContext*/);
 
 					il.EmitBoxing(php_type_code);
 
@@ -1408,7 +1437,7 @@ namespace PHP.Core.Emit
 		/// <summary>
 		/// Converts a value of the given CLR type to PHP value.
 		/// </summary>
-		internal static PhpTypeCode EmitConvertToPhp(ILEmitter/*!*/ il, Type/*!*/ type, IPlace/*!*/ scriptContext)
+		internal static PhpTypeCode EmitConvertToPhp(ILEmitter/*!*/ il, Type/*!*/ type)
 		{
 			// box generic parameter
 			if (type.IsGenericParameter)
@@ -1440,7 +1469,10 @@ namespace PHP.Core.Emit
 				case TypeCode.UInt64: EmitConstrainedCoercion(il, typeof(int), typeof(long), Int32.MaxValue); return PhpTypeCode.Object;
 
 				case TypeCode.Single: il.Emit(OpCodes.Conv_R8); return PhpTypeCode.Double;
-				case TypeCode.Char: il.Emit(OpCodes.Newobj, Methods.Object_ToString); return PhpTypeCode.String;
+                case TypeCode.Char:
+                    il.Emit(OpCodes.Box, type);
+                    il.Emit(OpCodes.Callvirt, Methods.Object_ToString);
+                    return PhpTypeCode.String;
 
 				case TypeCode.DBNull:
 					{

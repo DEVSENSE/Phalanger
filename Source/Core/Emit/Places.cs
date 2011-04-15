@@ -389,7 +389,8 @@ namespace PHP.Core.Emit
 		/// <param name="il">The <see cref="ILEmitter"/> to emit the code to.</param>
 		public void EmitLoadAddress(ILEmitter il)
 		{
-			il.LoadAddress((holder != null) ? holder : source);
+            if (holder != null) il.Load(holder);
+			il.LoadAddress(source);
 		}
 
 		/// <summary>
@@ -399,7 +400,7 @@ namespace PHP.Core.Emit
 		{
 			get
 			{
-				return ILEmitter.HasAddress((holder != null) ? holder : source);
+				return ILEmitter.HasAddress(source);
 			}
 		}
 

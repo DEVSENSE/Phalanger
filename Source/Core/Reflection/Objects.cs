@@ -354,7 +354,15 @@ namespace PHP.Core.Reflection
 		[NonSerialized]
 		protected DTypeDesc typeDesc;
 
+        /// <summary>
+        /// The real CLR object contained by the DObject.
+        /// </summary>
 		public abstract object/*!*/ RealObject { get; }
+
+        /// <summary>
+        /// The instance passed to method and property invocation.
+        /// </summary>
+        public abstract object/*!*/ InstanceObject { get; }
 
 		public string TypeName
 		{
@@ -1934,6 +1942,8 @@ namespace PHP.Core.Reflection
 		{
 			ScriptContext context = ScriptContext.CurrentContext;
 
+            // TODO: always copy CLR value types ?
+
 			if (context.Config.Variables.ZendEngineV1Compatible) return CloneObject(null, context, true);
 			else return this;
 		}
@@ -2817,100 +2827,110 @@ namespace PHP.Core.Reflection
 
 	}
 
+    #region ClrObject
+
 	/// <summary>
 	/// Represents a non-PHP object at runtime.
 	/// </summary>
 	/// <remarks>
-	/// TODO: Should override conversion routines and delegate to real object's ToString, ICOnvertible, ...
+	/// TODO: Should override conversion routines and delegate to real object's ToString, IConvertible, ...
 	/// </remarks>
-	[Serializable]
-	[DebuggerNonUserCode]
-	[DebuggerDisplay("CLR object", Type = "{realObject.GetType(),nq}")]
+    [Serializable]
+    [DebuggerNonUserCode]
+    [DebuggerDisplay("CLR object", Type = "{realObject.GetType(),nq}")]
 #if !SILVERLIGHT
-	[DebuggerTypeProxy(typeof(ClrObject.DebugView))]
+    [DebuggerTypeProxy(typeof(ClrObject.DebugView))]
 #endif
-	public sealed class ClrObject : DObject
-	{
-		#region Debug View
+    public sealed class ClrObject : DObject
+    {
+        #region Debug View
 
-		private sealed class DebugView
-		{
-			[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-			public object RealObject { get { return obj.RealObject; } }
+        private sealed class DebugView
+        {
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public object RealObject { get { return obj.RealObject; } }
 
-			[DebuggerBrowsable(DebuggerBrowsableState.Never)]
-			private readonly ClrObject/*!*/ obj;
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+            private readonly ClrObject/*!*/ obj;
 
-			public DebugView(ClrObject/*!*/ obj)
-			{
-				if (obj == null)
-					throw new ArgumentNullException("obj");
+            public DebugView(ClrObject/*!*/ obj)
+            {
+                if (obj == null)
+                    throw new ArgumentNullException("obj");
 
-				this.obj = obj;
-			}
-		}
+                this.obj = obj;
+            }
+        }
 
-		#endregion
+        #endregion
 
-		#region Fields and Properties
+        #region Fields and Properties
 
-		private static readonly WeakCache<ClrObject>/*!*/ cache = new WeakCache<ClrObject>();
+        private static readonly WeakCache<ClrObject>/*!*/ cache = new WeakCache<ClrObject>();
 
-		public override object/*!*/ RealObject { get { return realObject; } }
-		private object/*!*/ realObject;
+        /// <summary>
+        /// The real object contained by this ClrObject wrapper.
+        /// </summary>
+        public override object/*!*/ RealObject { get { return realObject; } }
+        private object/*!*/ realObject;
 
-		/// <summary>
-		/// To be used by serialization only.
-		/// </summary>
-		internal void SetRealObject(object obj)
-		{
-			Debug.Assert(obj != null && typeDesc == null);
-			this.realObject = obj;
-		}
+        /// <summary>
+        /// The reference passed to the methods and properties.
+        /// </summary>
+        public override object InstanceObject { get { return realObject; } }
 
-		protected override bool ReadyForDisposal
-		{
-			get
-			{
-				lock (cache)
-				{
-					return !cache.ContainsKey(realObject);
-				}
-			}
-		}
+        /// <summary>
+        /// To be used by serialization only.
+        /// </summary>
+        internal void SetRealObject(object obj)
+        {
+            Debug.Assert(obj != null && typeDesc == null);
+            this.realObject = obj;
+        }
 
-		#endregion
+        protected override bool ReadyForDisposal
+        {
+            get
+            {
+                lock (cache)
+                {
+                    return !cache.ContainsKey(realObject);
+                }
+            }
+        }
 
-		#region Construction and Finalization
+        #endregion
 
-		private ClrObject(object/*!*/ realObject)
-			: base()
-		{
-			Debug.Assert(realObject != null);
-			this.realObject = realObject;
-		}
+        #region Construction and Finalization
 
-		private ClrObject(object/*!*/ realObject, DTypeDesc/*!*/ typeDesc)
-			: base(typeDesc)
-		{
-			Debug.Assert(realObject != null);
-			this.realObject = realObject;
-		}
+        private ClrObject(object/*!*/ realObject)
+            : base()
+        {
+            Debug.Assert(realObject != null);
+            this.realObject = realObject;
+        }
 
-		~ClrObject()
-		{
-			// if the real object is still held in the cache, resurrect this instance
-			lock (cache)
-			{
-				if (cache.ContainsKey(realObject))
-				{
-					cache.Resurrect(realObject, this);
-					GC.ReRegisterForFinalize(this);
-				}
-			}
-		}
+        private ClrObject(object/*!*/ realObject, DTypeDesc/*!*/ typeDesc)
+            : base(typeDesc)
+        {
+            Debug.Assert(realObject != null);
+            this.realObject = realObject;
+        }
 
-		/// <summary>
+        ~ClrObject()
+        {
+            // if the real object is still held in the cache, resurrect this instance
+            lock (cache)
+            {
+                if (cache.ContainsKey(realObject))
+                {
+                    cache.Resurrect(realObject, this);
+                    GC.ReRegisterForFinalize(this);
+                }
+            }
+        }
+
+        /// <summary>
         /// Performs "dynamic" type check and wraps only if the type is not primitive
         /// </summary>
         /// <param name="instance">Object to be converted to PHP world.</param>
@@ -2941,72 +2961,188 @@ namespace PHP.Core.Reflection
             return WrapRealObject(instance);
         }
 
-		[Emitted]
-		public static DObject WrapRealObject(object instance)
-		{
-			if (instance == null) return null;
+        [Emitted]
+        public static DObject WrapRealObject(object instance)
+        {
+            if (instance == null) return null;
 
-			ClrObject result;
+            ClrObject result;
 
-			lock (cache)
-			{
-				if (!cache.TryGetValue(instance, out result))
-				{
-					result = new ClrObject(instance);
-					cache.Add(instance, result);
-				}
-			}
-			return result;
-		}
+            lock (cache)
+            {
+                if (!cache.TryGetValue(instance, out result))
+                {
+                    return Create(instance);
+                }
+            }
+            return result;
+        }
 
-		/// <summary>
-		/// Called by compiled code when a new real object is being constructed.
-		/// </summary>
-		[Emitted]
-		public static ClrObject/*!*/ Create(object/*!*/ realObject)
-		{
-			ClrObject result = new ClrObject(realObject);
+        /// <summary>
+        /// Called by compiled code when a new real object is being constructed.
+        /// </summary>
+        [Emitted]
+        public static DObject/*!*/ Create(object/*!*/ realObject)
+        {
+            var type = realObject.GetType();
+            if (type.IsValueType) // wrapped boxed value types are not cached
+                return (DObject)valueTypesCache.Get(type).Item2.DynamicInvoke(realObject);
+            
+            ClrObject result = new ClrObject(realObject);
 
-			lock (cache)
-			{
-				// realObject is a fresh new object which is surely not in the cache
-				cache.Add(realObject, result);
-			}
-			return result;
-		}
+            lock (cache)
+            {
+                // realObject is a fresh new object which is surely not in the cache
+                cache.Add(realObject, result);
+            }
+            return result;
+        }
 
-		#endregion
+        #endregion
 
-		#region Misc
+        #region ClrValue<> creation
 
-		public override string GetTypeName()
-		{
-			return realObject.GetType().Name;
-		}
+        /// <summary>
+        /// Cache of <see cref="ClrValue&lt;T&gt;"/> and its <see cref="ClrValue&lt;T&gt;.Create"/> method associated with specific value type.
+        /// </summary>
+        internal static readonly SynchronizedCache<Type, Tuple<Type, Delegate>>/*!*/valueTypesCache =
+            new SynchronizedCache<Type, Tuple<Type, Delegate>>(type =>
+            {
+                Debug.Assert(type != null, "type must not be null!");
+                Debug.Assert(type.IsValueType, "type must be a value type!");
 
-		public override string ToString()
-		{
-			return realObject.ToString();
-		}
+                var generictype = typeof(ClrValue<>).MakeGenericType(new Type[] { type });
+                var create = Delegate.CreateDelegate(
+                    System.Linq.Expressions.Expression.GetFuncType(new Type[] { type, generictype }),
+                    generictype.GetMethod("Create"));
+
+                return new Tuple<Type, Delegate>(generictype, create);
+            });
+
+        #endregion
+
+        #region Misc
+
+        public override string GetTypeName()
+        {
+            return realObject.GetType().Name;
+        }
+
+        public override string ToString()
+        {
+            return realObject.ToString();
+        }
 
 #if DEBUG
-		public static int GetCacheSize()
-		{
-			return cache.Count;
-		}
+        public static int GetCacheSize()
+        {
+            return cache.Count;
+        }
 #endif
 
-		#endregion
+        #endregion
 
-		#region Serialization (CLR only)
+        #region Serialization (CLR only)
 #if !SILVERLIGHT
 
-		/// <include file='Doc/Common.xml' path='/docs/method[@name="serialization.ctor"]/*'/>
-		private ClrObject(SerializationInfo/*!*/ info, StreamingContext context)
-			: base(info, context)
-		{ }
+        /// <include file='Doc/Common.xml' path='/docs/method[@name="serialization.ctor"]/*'/>
+        private ClrObject(SerializationInfo/*!*/ info, StreamingContext context)
+            : base(info, context)
+        { }
 
 #endif
-		#endregion
-	}
+        #endregion
+    }
+
+    #endregion
+
+    #region ClrValue<T>
+
+    /// <summary>
+    /// Represents non-PHP value typed object at runtime.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    internal sealed class ClrValue<T> : DObject where T : struct
+    {
+        #region Fields and properties
+
+        /// <summary>
+        /// The CLR value represented by this <see cref="ClrValue&lt;T&gt;"/> instance.
+        /// </summary>
+        public T realValue;
+
+        /// <summary>
+        /// The CLR value represented by this <see cref="ClrValue&lt;T&gt;"/> instance. The returned value is boxed.
+        /// </summary>
+        public override object RealObject { get { return (object)realValue; } } // box the realValue
+
+        /// <summary>
+        /// The object passed as an instance to called methods and properties of this value type.
+        /// The whole <see cref="ClrValue&lt;T&gt;"/> is returned too not box the wrapped value. Therefore the value
+        /// can be modified in-place by the called method or property.
+        /// </summary>
+        public override object InstanceObject { get { return this; } }  // pass the whole ClrValue into the method/property stub
+        
+        #endregion
+
+        #region Construction and Finalization
+
+        private ClrValue(T/*!*/ realValue)
+			: base()
+		{
+            Debug.Assert(realValue.GetType().IsValueType);
+            this.realValue = realValue;
+		}
+
+        private ClrValue(T/*!*/ realValue, DTypeDesc/*!*/ typeDesc)
+			: base(typeDesc)
+		{
+            Debug.Assert(realValue.GetType().IsValueType);
+            this.realValue = realValue;
+		}
+
+        /// <summary>
+        /// Create the instance of <see cref="ClrValue&lt;T&gt;"/>.
+        /// </summary>
+        /// <param name="value">The value to be wrapped into <see cref="ClrValue&lt;T&gt;"/>.</param>
+        /// <returns>New instance of <see cref="ClrValue&lt;T&gt;"/> containing <paramref name="value"/> as its <see cref="RealObject"/>.</returns>
+        public static ClrValue<T> Create(T value)
+        {
+            return new ClrValue<T>(value);
+        }
+
+        #endregion
+
+        #region Misc
+
+        public override string GetTypeName()
+        {
+            return realValue.GetType().Name;
+        }
+
+        public override string ToString()
+        {
+            return realValue.ToString();
+        }
+        
+        #endregion
+
+        #region Clone
+
+        /// <summary>
+        /// Clone the value typed object and create new <see cref="ClrValue&lt;T&gt;"/> instance containing copy of <see cref="realValue"/>.
+        /// </summary>
+        /// <param name="caller">Current class contetext. Ignored.</param>
+        /// <param name="context">Current <see cref="ScriptContext"/>. Ignored.</param>
+        /// <param name="deepCopyFields"></param>
+        /// <returns>New instance of <see cref="ClrValue&lt;T&gt;"/>.</returns>
+        protected override DObject CloneObjectInternal(DTypeDesc caller, ScriptContext context, bool deepCopyFields)
+        {
+            return Create(realValue);
+        }
+
+        #endregion
+    }
+
+    #endregion
 }

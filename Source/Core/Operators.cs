@@ -4521,7 +4521,7 @@ namespace PHP.Core
 		/// <param name="context">Current <see cref="ScriptContext"/>.</param>
 		/// <returns>The new instance or <B>null</B> if an error occurs.</returns>
 		[Emitted]
-		public static DObject NewClr(DTypeDesc clrType, ScriptContext context)
+		public static object NewClr(DTypeDesc clrType, ScriptContext context)
 		{
 			PhpStack stack = context.Stack;
 			if (clrType == null)
@@ -4532,7 +4532,7 @@ namespace PHP.Core
 
 			// invoke constructor argless stub, which will instantiate the type
 			stack.AllowProtectedCall = true;
-			return (DObject)((ClrTypeDesc)clrType).Constructor.Invoke(null, stack);
+			return /*(DObject)*/((ClrTypeDesc)clrType).Constructor.Invoke(null, stack);
 		}
 
 		/// <summary>
