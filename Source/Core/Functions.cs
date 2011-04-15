@@ -183,6 +183,16 @@ namespace PHP.Core
 			return PhpVariable.IsValidName(name);
 		}
 
+        /// <summary>
+        /// Checks whether function name is conditionally defined.
+        /// </summary>
+        /// <param name="realName">Internal name of the function.</param>
+        /// <returns>True if the function name represents conditionally defined function, otherwise false.</returns>
+        public static bool IsRealConditionalDefinition(string/*!*/ realName)
+        {
+            return realName.IndexOf('#') > 0;
+        }
+
 		/// <summary>
 		/// Determines whether a specified method is an arg-less stub.
 		/// </summary>

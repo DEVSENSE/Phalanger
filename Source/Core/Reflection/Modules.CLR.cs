@@ -482,20 +482,23 @@ namespace PHP.Core.Reflection
                     throw new NotImplementedException("Generating argless stubs for imported PHP types is not yet implemented");
                 }
 
-                Name name = new Name(info.Name);
-                DRoutineDesc func_desc;
-                PhpMemberAttributes attrs = Enums.GetMemberAttributes(info);
-
-                // this method has not been populated -> create a new PhpRoutineDesc
-                func_desc = new PhpRoutineDesc(attrs, (RoutineDelegate)Delegate.CreateDelegate(Types.RoutineDelegate, argless_info));
-                functions.Add(info.Name, func_desc);
-
-                //
-                if (func_desc.Member == null)
+                if (!PhpFunctionUtils.IsRealConditionalDefinition(info.Name))
                 {
-                    PhpFunction func = new PhpFunction(new QualifiedName(name), (PhpRoutineDesc)func_desc, info, argless_info);
-                    func.WriteUp(PhpRoutineSignature.FromArgfullInfo(func, info));
-                    func_desc.Member = func;
+                    Name name = new Name(info.Name);
+                    DRoutineDesc func_desc;
+                    PhpMemberAttributes attrs = Enums.GetMemberAttributes(info);
+
+                    // this method has not been populated -> create a new PhpRoutineDesc
+                    func_desc = new PhpRoutineDesc(attrs, (RoutineDelegate)Delegate.CreateDelegate(Types.RoutineDelegate, argless_info));
+                    functions.Add(info.Name, func_desc);
+
+                    //
+                    if (func_desc.Member == null)
+                    {
+                        PhpFunction func = new PhpFunction(new QualifiedName(name), (PhpRoutineDesc)func_desc, info, argless_info);
+                        func.WriteUp(PhpRoutineSignature.FromArgfullInfo(func, info));
+                        func_desc.Member = func;
+                    }
                 }
             }
 		}
