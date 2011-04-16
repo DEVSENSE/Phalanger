@@ -239,8 +239,8 @@ namespace PHP.Core.Emit
 
         /// <summary>
         /// Emit LOAD <paramref name="instance"/>.
-        /// </summary>
-        /// <param name="il"><see cref="ILEmiter"/> object instanbce.</param>
+        /// </summary>ILEmiter
+        /// <param name="il"><see cref="ILEmitter"/> object instance.</param>
         /// <param name="instance">The place where to load the instance from.</param>
         /// <param name="declaringType">The type of resulting instance.</param>
         /// <remarks>Instance of value types are wrapped in <see cref="ClrValue&lt;T&gt;"/> object instance.</remarks>

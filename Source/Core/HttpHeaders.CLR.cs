@@ -485,8 +485,7 @@ namespace PHP.Core
                             else response.ContentEncoding = RequestContext.CurrentContext.DefaultResponseEncoding;
                             break;
                         case "expires":
-                            if (value != null) response.ExpiresAbsolute = DateTime.Parse(value);
-                            else response.Expires = 0;
+                            SetExpires(response,value);
                             break;
                         case "cache-control":
                             CacheLimiter(response, value, null);// ignore invalid cache limiter?
@@ -554,7 +553,7 @@ namespace PHP.Core
         #region Cache-Control
 
         /// <summary>
-        /// Parse given cache-control header value and set it properly into the <see cref="HttpContext.Response.Cache"/> object.
+        /// Parse given cache-control header value and set it properly into the HttpContext.Response.Cache object.
         /// </summary>
         /// <param name="response">Current <see cref="HttpContext.Response"/>.</param>
         /// <param name="newLimiter">String value of response cache-header.</param>
@@ -591,6 +590,7 @@ namespace PHP.Core
         /// <param name="response">Current HttpResponse instance.</param>
         /// <param name="singleLimiter">Cache limiter passed to the session_cache_limiter() PHP function.</param>
         /// <param name="compareInfo">The current compare info used internally.</param>
+        /// <param name="invalidCacheLimiterCallback">Function called when invalid limiter is found.</param>
         private static void CacheLimiterInternal(HttpResponse response, string/*!*/singleLimiter, Action<string> invalidCacheLimiterCallback, CompareInfo/*!*/compareInfo)
         {
             Debug.Assert(singleLimiter != null);
@@ -644,6 +644,53 @@ namespace PHP.Core
                 // not valid cache-control header
                 if (invalidCacheLimiterCallback != null)
                     invalidCacheLimiterCallback(singleLimiter);
+            }
+        }
+
+        #endregion
+
+        #region Expires
+
+        /// <summary>
+        /// Set the Expires HTTP header properly. Parse the given string.
+        /// </summary>
+        /// <param name="response">HttpResponse to set the Expires header to.</param>
+        /// <param name="value">The raw value of Expires header.</param>
+        private static void SetExpires(HttpResponse/*!*/response, string value)
+        {
+            if (value != null)
+            {
+                int intvalue;
+                if (int.TryParse(value, out intvalue))
+                {
+                    response.Expires = intvalue;
+                }
+                else
+                {
+                    DateTime date;
+                    if (!DateTime.TryParse(value, out date))
+                    {
+                        Func<string, string[], string> remover = (/*!*/str, /*!*/prefixes) =>
+                            {
+                                foreach (var prefix in prefixes)
+                                    if (str.StartsWith(prefix))
+                                        return str.Substring(prefix.Length);
+                                return str;
+                            };
+                        // remove(ignore) the day of week
+                        value = remover(value, new string[] { "Mon,", "Tue,", "Wed,", "Thu,", "Fri,", "Sat,", "Sun," });
+                        if (!DateTime.TryParse(value, out date))
+                        {
+                            throw new ArgumentException("Not a valid DateTime!", "value");
+                        }
+                    }
+
+                    response.ExpiresAbsolute = date;
+                }
+            }
+            else
+            {
+                response.Expires = -1;
             }
         }
 
