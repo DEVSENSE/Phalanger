@@ -146,7 +146,8 @@ namespace PHP.Library
                     if (config.Session.CacheExpire >= 0)
                         context.HttpContext.Session.Timeout = config.Session.CacheExpire;
 
-                    PhpSession.CacheLimiter(config.Session.CacheLimiter);
+                    if (config.Session.CacheLimiter != null)
+                        PhpSession.CacheLimiter(config.Session.CacheLimiter);
 
                     if (cookie != null)
                     {
@@ -203,27 +204,27 @@ namespace PHP.Library
 			public string SavePath = Path.GetTempPath();
 
             /// <summary>
-            /// HttpContext.Session.Timeout.
+            /// HttpContext.Session.Timeout if not -1.
             /// </summary>
             public int CacheExpire = -1;
 
             /// <summary>
-            /// CacheLimiter.
+            /// CacheLimiter if not null.
             /// </summary>
-            public string CacheLimiter = "no-cache";
+            public string CacheLimiter = null;
 
             /// <summary>
-            /// HttpContext.SessionCookieLifetime.
+            /// HttpContext.SessionCookieLifetime if not -1.
             /// </summary>
             public int CookieLifetime = -1;
 
             /// <summary>
-            /// cookie.Path.
+            /// cookie.Path if not null.
             /// </summary>
             public string CookiePath = null;
 
             /// <summary>
-            /// cookie.Domain.
+            /// cookie.Domain if not null.
             /// </summary>
             public string CookieDomain = null;
 

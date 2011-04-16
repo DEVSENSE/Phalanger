@@ -11,6 +11,7 @@
 */
 
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
@@ -201,7 +202,7 @@ namespace PHP.Core
         /// <summary>
         /// All the other headers that was set by PHP application.
         /// </summary>
-        protected readonly Dictionary<string, string> headers = new Dictionary<string, string>();
+        internal readonly Dictionary<string, string> headers = new Dictionary<string, string>();
 
         #endregion
 
@@ -450,6 +451,12 @@ namespace PHP.Core
 
             #region HttpHeaders
 
+            /// <summary>
+            /// Set/remove the header in integrated pipeline mode.
+            /// </summary>
+            /// <param name="header">The header name. Case insensitive.</param>
+            /// <returns>The header value.</returns>
+            /// <exception cref="System.FormatException">Given expires header has invalid format.</exception>
             public override string this[string header]
             {
                 get
@@ -477,12 +484,16 @@ namespace PHP.Core
                             if (_contentEncoding != null) _contentEncoding.SetEncoding(response);// on IntegratedPipeline, set immediately to Headers
                             else response.ContentEncoding = RequestContext.CurrentContext.DefaultResponseEncoding;
                             break;
+                        case "expires":
+                            if (value != null) response.ExpiresAbsolute = DateTime.Parse(value);
+                            else response.Expires = 0;
+                            break;
+                        case "cache-control":
+                            CacheLimiter(response, value, null);// ignore invalid cache limiter?
+                            break;
                         default:
-                            if (value != null)
-                                response.Headers[header] = value;
-                            else
-                                response.Headers.Remove(header);
-
+                            if (value != null) response.Headers[header] = value;
+                            else response.Headers.Remove(header);
                             break;
                     }
                 }
@@ -540,6 +551,102 @@ namespace PHP.Core
 
         #endregion
 
+        #region Cache-Control
 
+        /// <summary>
+        /// Parse given cache-control header value and set it properly into the <see cref="HttpContext.Response.Cache"/> object.
+        /// </summary>
+        /// <param name="response">Current <see cref="HttpContext.Response"/>.</param>
+        /// <param name="newLimiter">String value of response cache-header.</param>
+        /// <param name="invalidCacheLimiterCallback">Callback function called when invalid cache-limiter value is found. Can be null to take no action.</param>
+        public static void CacheLimiter(HttpResponse/*!*/response, string newLimiter, Action<string> invalidCacheLimiterCallback)
+        {
+            if (string.IsNullOrEmpty(newLimiter))
+                return;
+
+            Debug.Assert(response != null);
+
+            // store the header into HttpHeaders.headers dictionary (because of classic pipeline and to allow reading of the CacheLimiter value later)
+            var context = ScriptContext.CurrentContext;
+            if (context != null && context.Headers != null)
+                context.Headers.headers["cache-control"] = newLimiter;
+            
+            //
+            var compareInfo = CultureInfo.CurrentCulture.CompareInfo;
+
+            if (newLimiter.IndexOf(',') < 0)
+            {
+                CacheLimiterInternal(response, newLimiter, invalidCacheLimiterCallback, compareInfo);
+            }
+            else
+            {
+                foreach (var singleLimiter in newLimiter.Split(','))
+                    CacheLimiterInternal(response, singleLimiter, invalidCacheLimiterCallback, compareInfo);
+            }
+        }
+
+        /// <summary>
+        /// Updates the cache control of the given HttpContext.
+        /// </summary>
+        /// <param name="response">Current HttpResponse instance.</param>
+        /// <param name="singleLimiter">Cache limiter passed to the session_cache_limiter() PHP function.</param>
+        /// <param name="compareInfo">The current compare info used internally.</param>
+        private static void CacheLimiterInternal(HttpResponse response, string/*!*/singleLimiter, Action<string> invalidCacheLimiterCallback, CompareInfo/*!*/compareInfo)
+        {
+            Debug.Assert(singleLimiter != null);
+
+            singleLimiter = singleLimiter.Trim();
+
+            if (singleLimiter.Length == 0)
+                return;
+
+            if (compareInfo.Compare(singleLimiter, "private", CompareOptions.IgnoreCase) == 0)
+                response.Cache.SetCacheability(HttpCacheability.Private);
+            else if (compareInfo.Compare(singleLimiter, "public", CompareOptions.IgnoreCase) == 0)
+                response.Cache.SetCacheability(HttpCacheability.Public);
+            else if (compareInfo.Compare(singleLimiter, "no-cache", CompareOptions.IgnoreCase) == 0)
+                response.Cache.SetCacheability(HttpCacheability.NoCache);
+            else if (compareInfo.Compare(singleLimiter, "private_no_expire", CompareOptions.IgnoreCase) == 0)
+                response.Cache.SetCacheability(HttpCacheability.Private);
+            else if (compareInfo.Compare(singleLimiter, "nocache", CompareOptions.IgnoreCase) == 0)
+                response.Cache.SetCacheability(HttpCacheability.NoCache);
+            else if (compareInfo.Compare(singleLimiter, "must-revalidate", CompareOptions.IgnoreCase) == 0)
+                response.Cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
+            else if (compareInfo.Compare(singleLimiter, "no-store", CompareOptions.IgnoreCase) == 0)
+                response.Cache.SetNoStore();
+            else if (compareInfo.Compare(singleLimiter, "no-transform", CompareOptions.IgnoreCase) == 0)
+                response.Cache.SetNoTransforms();
+            else if (compareInfo.Compare(singleLimiter, "proxy-revalidate", CompareOptions.IgnoreCase) == 0)
+                response.Cache.SetRevalidation(HttpCacheRevalidation.ProxyCaches);
+            else
+            {
+                // <key = value> pairs
+                int eqindex = 0;
+                if ((eqindex = singleLimiter.IndexOf('=')) > 0 && eqindex < singleLimiter.Length - 1)// does not allow '=' at start or end
+                {
+                    string key = singleLimiter.Substring(0, eqindex).TrimEnd();
+                    string value = singleLimiter.Substring(eqindex + 1).TrimStart();
+
+                    int intvalue;
+
+                    if (compareInfo.Compare(key, "max-age", CompareOptions.IgnoreCase) == 0 && int.TryParse(value, out intvalue))
+                    {
+                        response.Cache.SetMaxAge(new TimeSpan(0, 0, intvalue));// "max-age=seconds"
+                        return;
+                    }
+                    else if (compareInfo.Compare(key, "s-maxage", CompareOptions.IgnoreCase) == 0 && int.TryParse(value, out intvalue))
+                    {
+                        response.Cache.SetProxyMaxAge(new TimeSpan(0, 0, intvalue));// "s-maxage=seconds"
+                        return;
+                    }
+                }
+
+                // not valid cache-control header
+                if (invalidCacheLimiterCallback != null)
+                    invalidCacheLimiterCallback(singleLimiter);
+            }
+        }
+
+        #endregion
     }
 }
