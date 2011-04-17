@@ -480,6 +480,8 @@ namespace PHP.Core
                             response.ContentType = contentType;
                             response.ContentEncoding = contentEncoding.Encoding;
                             break;
+                        case "content-length":
+                            break;  // ignore content-length header, it is set correctly by IIS. If set by the app, mostly it is not correct value (strlen() issue).
                         case "content-encoding":
                             if (_contentEncoding != null) _contentEncoding.SetEncoding(response);// on IntegratedPipeline, set immediately to Headers
                             else response.ContentEncoding = RequestContext.CurrentContext.DefaultResponseEncoding;
