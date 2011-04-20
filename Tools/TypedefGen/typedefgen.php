@@ -62,12 +62,29 @@ function function_add_type($num, $type)
   return(1);
 }
 
+function function_add_casttofalse($num, $castToFalse)
+{
+  global $funclist, $num_funcs;
+  $funclist[$num]["castToFalse"]=$castToFalse;
+  return(1);
+}
+
 function function_add_purpose($num, $purpose)
 {
   global $funclist, $num_funcs;
   $funclist[$num]["purpose"]=$purpose;
   return(1);
 }
+
+function function_add_alias($num, $alias)
+{
+  global $funclist;
+
+  $funclist[$num]["alias"][]=$alias;
+
+  return(1);
+}
+
 
 function function_add_arg($num, $type, $argname, $isopt)
 {
@@ -88,12 +105,12 @@ function function_add_arg($num, $type, $argname, $isopt)
 
 function write_functions_xml()
 {
-  global $funclist, $num_funcs, $extension_name, $phpversion, $warning;
+  global $funclist, $num_funcs, $extension_name, $phpversion, $warning, $aliases;
 
   $rename = false;
   $fp=0;
 
-  $filename= (is_array($warning) && count($warning) > 0 ? "!!!" : "" )."php_" . $extension_name. ".xml";
+  $filename= /*(is_array($warning) && count($warning) > 0 ? "!!!" : "" ).*/"php_" . $extension_name. ".xml";
   $fp=fopen($filename, "wb");
   if (!$fp) {
       echo "Failed writing: $filename\r\n";
@@ -112,6 +129,25 @@ function write_functions_xml()
 			fwrite($fp,"<!-- ". $warning[$i]. " -->\r\n");
 		}
 	}
+
+    foreach ($aliases as $a_func_name => $a_alias) {
+       fwrite($fp,"<!-- ". $a_func_name . " aliased by: ");
+       
+       if (is_array($a_alias))       
+       {
+            foreach ($a_alias as $alias) {
+                fwrite($fp, $alias . " , ");
+            }
+        }
+
+        fwrite($fp," wasn't found.-->\r\n");
+    }
+
+    //sort by name of the function
+    $tmp = Array(); 
+    foreach($funclist as &$ma) 
+        $tmp[] = &$ma["function_name"]; 
+    array_multisort($tmp, $funclist); 
 			   
   
   for ($i=0; $i<$num_funcs; $i++) {
@@ -120,9 +156,10 @@ function write_functions_xml()
     $funcname = trim($funclist[$i]["function_name"]);
     $purpose  = trim($funclist[$i]["purpose"]);
     $functype = trim($funclist[$i]["function_type"]);
+    $isCastToFalse = $funclist[$i]["castToFalse"];
 
 	//  <function returnType="" name="" description="">
-    fwrite($fp, "  <function returnType=\"$functype\" name=\"$funcname\" description=\"$purpose\">\r\n");
+    fwrite($fp, "  <function ".($isCastToFalse ? 'CastToFalse="true" ' : '') ."returnType=\"$functype\" name=\"$funcname\" description=\"$purpose\">\r\n");
 
     $argnames = array();
     for ($j=0; $j<$funclist[$i]["num_args"]; $j++) {
@@ -143,6 +180,14 @@ function write_functions_xml()
       $argnames[] = $argname;
 
     }
+
+    if (isset($funclist[$i]["alias"]))
+    {
+        foreach ($funclist[$i]["alias"] as $alias) {
+            fwrite($fp, "    <alias name=\"$alias\"/>\r\n");
+        }
+    }
+
     // if ($funclist[$i]["num_args"] == 0){
       // fwrite($fp, "   <void/>\r\n");
     // }
@@ -160,9 +205,9 @@ function write_functions_xml()
 		return 1;
 		
 		
-	if ($rename)
-		rename($filename,"!!!".$filename);
-  
+	//if ($rename)
+		//rename($filename,"!!!".$filename);
+  //
   return(1);
 }
 
@@ -177,20 +222,20 @@ function read_file($filename)
 
 function parse_desc($func_num, $data)
 {
- global $warning;
+ global $warning, $func_name;
   // require at least 5 chars for the description (to skip empty or '*' lines)
   if (!preg_match('/(.{5,})/', $data, $match)) {
-    echo "Not a proper description definition: $data\r\n";
-	$warning[] = "Not a proper description definition: $data\r\n";
+    echo "$func_name : Not a proper description definition: $data\r\n";
+	$warning[] = "$func_name : Not a proper description definition: $data\r\n";
     return;
   }
-  $data = trim($match[1], "* \t\n");
+  $data = htmlentities(trim($match[1], "* \t\n"),ENT_QUOTES);
   function_add_purpose($func_num, $data);
 }
 
-function parse_proto($proto)
+function parse_proto($proto, $source)
 {
-	global $warning;
+  global $warning, $func_name, $aliases;
 
   if (!preg_match('/proto\s+(?:(?:static|final|protected)\s+)?([a-zA-Z]+)\s+([a-zA-Z0-9:_-]+)\s*\((.*)\)\s+([\000-\377]+)/', $proto, $match)) {
     echo "Not a proper proto definition: $proto\r\n";
@@ -198,26 +243,79 @@ function parse_proto($proto)
     return;
   }
 
+  $func_name = $match[2];
+
   $func_number = new_function();
   function_add_type($func_number, $match[1]);
   function_add_name($func_number, $match[2]);
+
+  function_add_casttofalse($func_number, is_castToFalse($match[1],$source));
   parse_desc($func_number, $match[4]);
 
   // now parse the arguments
-  preg_match_all('/(?:(\[),\s*)?([a-zA-Z]+)\s+(&?[a-zA-Z0-9:_-]+)/', $match[3], $match, PREG_SET_ORDER);
+  // original: /(?:(\[),\s*)?([a-zA-Z]+)\s+(&?[a-zA-Z0-9:_-]+)/
+  preg_match_all('/(?:(\[)\s*,\s*)?(?:,?\s*(\[)\s*)?([a-zA-Z]+)\s+(&?[a-zA-Z0-9:_-]+)|(?:,\s*(\[)\s*)?([a-zA-Z]+)\s+(&?[a-zA-Z0-9:_-]+)/', $match[3], $match, PREG_SET_ORDER);
 
   foreach ($match as $arg) {
-    function_add_arg($func_number, $arg[2], $arg[3], $arg[1]);
+    function_add_arg($func_number, $arg[3], $arg[4], $arg[1] || $arg[2]);
   }
+
+  if (!isset($aliases[$func_name]))
+    return;
+
+  //add functions that aliasing this function
+  foreach ($aliases[$func_name] as $alias) {
+   function_add_alias($func_number, $alias);
+//   echo "alias $alias";
+  }
+  unset($aliases[$func_name]);
+
 }
 
 function parse_file($buffer)
 {
+  add_aliases($buffer);
+
   preg_match_all('@/\*\s*{{{\s*(proto.+)\*/@sU', $buffer, $match);
 
+  $split = preg_split('@/\*\s*{{{\s*(proto.+)\*/@sU', $buffer);
+  $i = 1;
+
   foreach($match[1] as $proto) {
-    parse_proto(trim($proto));
+    parse_proto(trim($proto),$split[$i++]);
+
   }
+}
+
+function add_aliases($buffer)
+{
+   global $aliases;
+
+   preg_match_all('/PHP_FALIAS\(([^,]*),([^,]*),/',$buffer,$match, PREG_SET_ORDER );
+
+   if($match ==null)
+    return;
+
+   foreach($match as $alias) {
+        $aliases[trim($alias[2])][] = trim($alias[1]);
+  }
+
+ var_dump($aliases);
+
+}
+
+function is_castToFalse($returnType,$source,$debug=false)
+{
+    if($returnType == "bool" || $returnType == "mixed")
+        return false;
+
+    $split = preg_split('/\*\s*}}}/m',$source);
+    if ($debug) var_dump($split);
+
+    if (preg_match("/RETURN_FALSE/",$split[0]))
+        return true;
+
+    return false;
 }
 
 
@@ -254,7 +352,7 @@ function minimum_version($vercheck) {
 
 function process_extension($name,$path)
 {
-  global $extension_name, $source_files, $funclist, $num_funcs, $warning;
+  global $extension_name, $source_files, $funclist, $num_funcs, $warning, $aliases;
   
      echo "Processing ".$name. " extension \r\n".$path. "\r\n";
   
@@ -262,7 +360,7 @@ function process_extension($name,$path)
 	 $funclist=array();
 	 $num_funcs=0;
 	 $warning = array();
-	 
+	 $aliases = array();
 	 
 	 $extension_name = $name;
      $temp_source_files=glob($path);
