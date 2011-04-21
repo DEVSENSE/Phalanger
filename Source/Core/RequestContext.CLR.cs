@@ -425,7 +425,7 @@ namespace PHP.Core
 			HttpContext httpContext = HttpContext.Current;
             if (httpContext.Session.IsNewSession && httpContext.Session.Count == 0)
             {
-                //httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
+                httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
 
                 // Ensure the internal method SessionStateModule.DelayedGetSessionId() is called now,
                 // not after the request is processed if no one uses SessionId during the request.
