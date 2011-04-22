@@ -1264,6 +1264,319 @@ namespace PHP.Library
 		#endregion
 	}
 
+    #region PerlRegExpCache
+    /// <summary>
+    /// Provides request-independent caching mechanism for PerlRegExp.
+    /// </summary>
+    internal static class PerlRegExpCache
+    {
+        #region Types
+        /// <summary>
+        /// Unified regex cache key, which handles both strings and PhpBytes. Will be removed after PhpString implementation.
+        /// </summary>
+        public class RegexCacheKey : IEquatable<RegexCacheKey>
+        {
+            private int _hash;
+            private PhpBytes _binaryValue;
+            private string _stringValue;
+
+            public bool IsBinary { get { return _binaryValue != null; } }
+            public bool IsString { get { return _stringValue != null; } }
+
+            public RegexCacheKey(PhpBytes binaryValue)
+            {
+                _binaryValue = binaryValue;
+                _hash = binaryValue.GetHashCode();
+            }
+
+            public RegexCacheKey(string stringValue)
+            {
+                _stringValue = stringValue;
+                _hash = stringValue.GetHashCode();
+            }
+
+            public override bool Equals(object other)
+            {
+                RegexCacheKey otherCacheKey =  other as RegexCacheKey;
+                if (otherCacheKey != null)
+                    return Equals(otherCacheKey);
+                return false;
+            }
+
+            public bool Equals(RegexCacheKey other)
+            {
+                if (IsBinary)
+                {
+                    if (other.IsBinary)
+                        return _binaryValue.Equals(other._binaryValue);
+                    else
+                        return false;
+
+                }
+                else
+                {
+                    if (other.IsString)
+                        return String.CompareOrdinal(_stringValue, other._stringValue) == 0;
+                    else
+                        return false;
+                }
+            }
+
+            public override int GetHashCode()
+            {
+                return _hash;
+            }
+        }
+
+        /// <summary>
+		/// Contains all things that is necessary to remember along with Regex in regex cache.
+		/// </summary>
+		private sealed class RegexCacheEntry
+		{
+            public string RegexExpr;
+            public RegexOptions RegexOpt;
+            public PerlRegexOptions PerlOpt;
+			public Regex Regex;
+            public int Hits;
+
+            /// <summary>
+            /// Request id we have used this entry first time.
+            /// </summary>
+            public int FirstRequestID;
+
+            /// <summary>
+            /// Request id we have used this entry last time.
+            /// </summary>
+            public int LastRequestID;
+
+            public RegexCacheEntry(string regexExpr, RegexOptions regexOpt, Regex regex, PerlRegexOptions perlOpt)
+			{
+                RegexExpr = regexExpr;
+                RegexOpt = regexOpt;
+                Regex = regex;
+                PerlOpt = perlOpt;
+                Hits = 1;
+                FirstRequestID = _currentRequestID;
+                LastRequestID = _currentRequestID;
+			}
+		}
+
+        #endregion
+
+        #region Initialization
+        /// <summary>
+        /// Initializes static stuff.
+        /// </summary>
+        static PerlRegExpCache()
+        {
+            _cacheLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+            _regexFirstGen = new Dictionary<RegexCacheKey, RegexCacheEntry>();
+            _regexSecondGen = new Dictionary<RegexCacheKey, RegexCacheEntry>();
+            RequestContext.RequestBegin += RequestInit;
+            RequestContext.RequestEnd += RequestCleanup;
+        }
+        #endregion
+
+        #region Fields & Properties
+        /// <summary>
+        /// Maximum time between cache cleanups (in seconds).
+        /// </summary>
+        private const int CacheCleanUpTimeInterval = 60;
+
+        /// <summary>
+        /// Minimal number of requests between cache cleanup.
+        /// </summary>
+        private const int CacheCleanUpRequestDelay = 8;
+
+        /// <summary>
+        /// Internal id of newest request.
+        /// </summary>
+        [ThreadStatic]
+        private static int _currentRequestID;
+
+        /// <summary>
+        /// Internal id of finished request.
+        /// </summary>
+        private static int _requestCounter;
+
+
+        #if !SILVERLIGHT
+        /// <summary>
+        /// Cache lock.
+        /// </summary>
+        private static ReaderWriterLockSlim _cacheLock;
+        #endif
+
+        /// <summary>
+        /// Mapping of strings to first generation of already prepared regular expressions.
+        /// </summary>
+		private static Dictionary<RegexCacheKey, RegexCacheEntry> _regexFirstGen;
+
+        /// <summary>
+        /// Mapping of strings to already prepared regular expressions.
+        /// </summary>
+        private static Dictionary<RegexCacheKey, RegexCacheEntry> _regexSecondGen;
+
+        /// <summary>
+        /// Last clean up time.
+        /// </summary>
+        private static DateTime lastCleanupTime;
+
+        /// <summary>
+        /// Last clean up request.
+        /// </summary>
+        private static int lastCleanupRequest;
+
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// Is called on request start. Inits local request id counter and updates current request id.
+        /// </summary>
+        private static void RequestInit()
+        {
+            // increments internal request id
+            _currentRequestID = Interlocked.Increment(ref _requestCounter);
+        }
+
+        /// <summary>
+        /// Is called on request end. If needed, cleans up the first gen cache.
+        /// </summary>
+        private static void RequestCleanup()
+        {
+            if ((DateTime.Now - lastCleanupTime).TotalSeconds < (double)CacheCleanUpTimeInterval
+                && _currentRequestID < lastCleanupRequest + CacheCleanUpRequestDelay)
+            {
+                // cleanup not needed
+                return;
+            }
+
+            lastCleanupTime = DateTime.Now;
+            lastCleanupRequest = _currentRequestID;
+
+#if !SILVERLIGHT
+            _cacheLock.EnterWriteLock();
+#endif
+
+            try
+            {
+                // do cleanup
+                _regexFirstGen = new Dictionary<RegexCacheKey, RegexCacheEntry>();
+            }
+            finally
+            {
+#if !SILVERLIGHT
+                _cacheLock.ExitWriteLock();
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Gets cached regex for specified key.
+        /// </summary>
+        /// <param name="key">Key.</param>
+        /// <returns>Tuple of regex and perl regex options.</returns>
+        public static Tuple<Regex, PerlRegexOptions> GetCachedRegex(RegexCacheKey key)
+        {
+#if !SILVERLIGHT
+            _cacheLock.EnterUpgradeableReadLock();
+#endif
+
+            try
+            {
+                RegexCacheEntry entry;
+
+                // first look into second gen
+                if (_regexSecondGen.TryGetValue(key, out entry))
+                {
+                    return new Tuple<Regex, PerlRegexOptions>(entry.Regex, entry.PerlOpt);
+                }
+                //then into first gen
+                else if (_regexFirstGen.TryGetValue(key, out entry))
+                {
+                    TryUpgradeEntry(key, entry);
+                    return new Tuple<Regex, PerlRegexOptions>(entry.Regex, entry.PerlOpt);
+                }
+                else
+                    return null;
+            }
+            finally
+            {
+#if !SILVERLIGHT
+                _cacheLock.ExitUpgradeableReadLock();
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Adds regex into the cache.
+        /// </summary>
+        /// <param name="key">Cache key.</param>
+        /// <param name="pattern">Pattern used for Regex creation.</param>
+        /// <param name="regexOpt">Options user for Regex creation.</param>
+        /// <param name="regex">Regex object.</param>
+        /// <param name="perlOpt">Perl regex options.</param>
+        public static void AddRegex(RegexCacheKey key, string pattern, RegexOptions regexOpt, Regex regex, PerlRegexOptions perlOpt)
+        {
+#if !SILVERLIGHT
+            _cacheLock.EnterWriteLock();
+#endif
+
+            try
+            {
+                Debug.Assert(!_regexFirstGen.ContainsKey(key));
+                _regexFirstGen.Add(key, new RegexCacheEntry(pattern, regexOpt, regex, perlOpt));
+            }
+            finally
+            {
+#if !SILVERLIGHT
+                _cacheLock.ExitWriteLock();
+#endif
+            }
+        }
+
+        private static void TryUpgradeEntry(RegexCacheKey key, RegexCacheEntry entry)
+        {
+            lock (entry)
+            {
+                // update hit count
+                entry.Hits++;
+                // update last request id (use finished request id, which is always lower than started request id)
+                // we increase it by one because we are in fact in that request
+                entry.LastRequestID = _currentRequestID;
+
+                // check rule (if the cache item was seen for 2 requests, upgrade it to second gen)
+                if (entry.LastRequestID > entry.FirstRequestID)
+                {
+                    // prepare new compiled regex
+                    Regex newRegex = new Regex(entry.RegexExpr, entry.RegexOpt | RegexOptions.Compiled);
+
+                    // swap the regexes
+                    entry.Regex = newRegex;
+
+#if !SILVERLIGHT
+                    _cacheLock.EnterWriteLock();
+#endif
+
+                    try
+                    {
+                        // remove from first gen not needed
+                        // key should not be in second gen
+                        _regexSecondGen.Add(key, entry);
+                    }
+                    finally
+                    {
+#if !SILVERLIGHT
+                        _cacheLock.ExitWriteLock();
+#endif
+                    }
+                }
+            }
+        }
+        #endregion
+    }
+    #endregion
+
 	#region PerlRegExpConverter
 
 	/// <summary>
@@ -1271,82 +1584,6 @@ namespace PHP.Library
 	/// </summary>
 	internal sealed class PerlRegExpConverter
 	{
-		#region Cache
-        #if !SILVERLIGHT
-        /// <summary>
-        /// String cache lock.
-        /// </summary>
-        private static ReaderWriterLockSlim StringCacheLock
-        {
-            get
-            {
-                if (_stringCacheLock == null)
-                    _stringCacheLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-                return _stringCacheLock;
-            }
-        }
-        private static ReaderWriterLockSlim _stringCacheLock;
-
-        /// <summary>
-        /// Binary string cache lock.
-        /// </summary>
-        private static ReaderWriterLockSlim BinaryCacheLock
-        {
-            get
-            {
-                if (_binaryCacheLock == null)
-                    _binaryCacheLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-                return _binaryCacheLock;
-            }
-        }
-        private static ReaderWriterLockSlim _binaryCacheLock;
-        #endif
-
-        /// <summary>
-        /// Mapping of .NET strings to already prepared regular expressions.
-        /// </summary>
-		private static Dictionary<string, RegexCacheEntry> RegexStringCache
-		{
-			get
-			{
-				if (_regexStringCache == null)
-					_regexStringCache = new Dictionary<string, RegexCacheEntry>();
-				return _regexStringCache;
-			}
-		}
-		private static Dictionary<string, RegexCacheEntry> _regexStringCache;
-
-        /// <summary>
-        /// Mapping of binary strings to already prepared regular expressions.
-        /// </summary>
-		private static Dictionary<PhpBytes, RegexCacheEntry> RegexBinaryCache
-		{
-			get
-			{
-				if (_regexBinaryCache == null)
-					_regexBinaryCache = new Dictionary<PhpBytes, RegexCacheEntry>();
-				return _regexBinaryCache;
-			}
-		}
-		private static Dictionary<PhpBytes, RegexCacheEntry> _regexBinaryCache;
-
-		/// <summary>
-		/// Contains all things that is necessary to remember along with Regex in regex cache.
-		/// </summary>
-		private sealed class RegexCacheEntry
-		{
-			public PerlRegexOptions options;
-			public Regex regex;
-
-			public RegexCacheEntry(Regex r, PerlRegexOptions o)
-			{
-				regex = r;
-				options = o;
-			}
-		}
-
-		#endregion
-
 		#region Properties
 
 		/// <summary>
@@ -1430,40 +1667,27 @@ namespace PHP.Library
 
 			ConvertPattern(pattern);
 
-			if (replacement != null)
-				dotNetReplaceExpression = ConvertReplacement(replacement);
+            if (replacement != null)
+                dotNetReplaceExpression = ConvertReplacement(replacement);
 		}
 
 		private void ConvertPattern(object pattern)
 		{
 			PhpBytes bytes_pattern;
 			string string_pattern = null;
+            PerlRegExpCache.RegexCacheKey cache_key;
 
 			if ((bytes_pattern = pattern as PhpBytes) != null)
 			{
-#if !SILVERLIGHT
-                BinaryCacheLock.EnterReadLock();
-#else
-                Monitor.Enter(RegexBinaryCache);
-#endif
+                Tuple<Regex, PerlRegexOptions> cache_entry;
 
-                try
+                cache_key = new PerlRegExpCache.RegexCacheKey(bytes_pattern);
+
+                if (null != (cache_entry = PerlRegExpCache.GetCachedRegex(cache_key)))
                 {
-                    RegexCacheEntry cache_entry;
-                    if (RegexBinaryCache.TryGetValue(bytes_pattern, out cache_entry))
-                    {
-                        regex = cache_entry.regex;
-                        perlOptions = cache_entry.options;
-                        return;
-                    }
-                }
-                finally
-                {
-#if !SILVERLIGHT
-                    BinaryCacheLock.ExitReadLock();
-#else
-                    Monitor.Exit(RegexBinaryCache);
-#endif
+                    regex = cache_entry.Item1;
+                    perlOptions = cache_entry.Item2;
+                    return;
                 }
 
 				LoadPerlRegex(bytes_pattern.Data);
@@ -1472,29 +1696,15 @@ namespace PHP.Library
 			{
 				string_pattern = Core.Convert.ObjectToString(pattern);
 
-#if !SILVERLIGHT
-                StringCacheLock.EnterReadLock();
-#else
-                Monitor.Enter(RegexStringCache);
-#endif
+                Tuple<Regex, PerlRegexOptions> cache_entry;
 
-                try
+                cache_key = new PerlRegExpCache.RegexCacheKey(string_pattern);
+
+                if (null != (cache_entry = PerlRegExpCache.GetCachedRegex(cache_key)))
                 {
-                    RegexCacheEntry cache_entry;
-                    if (RegexStringCache.TryGetValue(string_pattern, out cache_entry))
-                    {
-                        regex = cache_entry.regex;
-                        perlOptions = cache_entry.options;
-                        return;
-                    }
-                }
-                finally
-                {
-#if !SILVERLIGHT
-                    StringCacheLock.ExitReadLock();
-#else
-                    Monitor.Exit(RegexStringCache);
-#endif
+                    regex = cache_entry.Item1;
+                    perlOptions = cache_entry.Item2;
+                    return;
                 }
 
 				LoadPerlRegex(string_pattern);
@@ -1513,43 +1723,11 @@ namespace PHP.Library
 
             if (bytes_pattern != null)
             {
-#if !SILVERLIGHT
-                BinaryCacheLock.EnterWriteLock();
-#else
-                Monitor.Enter(RegexBinaryCache);
-#endif
-                try
-                {
-                    RegexBinaryCache[bytes_pattern] = new RegexCacheEntry(regex, perlOptions);
-                }
-                finally
-                {
-#if !SILVERLIGHT
-                    BinaryCacheLock.ExitWriteLock();
-#else
-                    Monitor.Exit(RegexBinaryCache);
-#endif
-                }
+                PerlRegExpCache.AddRegex(cache_key, dotNetMatchExpression, dotNetOptions, regex, perlOptions);
             }
             else
             {
-#if !SILVERLIGHT
-                StringCacheLock.EnterWriteLock();
-#else
-                Monitor.Enter(RegexStringCache);
-#endif
-                try
-                {
-                    RegexStringCache[string_pattern] = new RegexCacheEntry(regex, perlOptions);
-                }
-                finally
-                {
-#if !SILVERLIGHT
-                    StringCacheLock.ExitWriteLock();
-#else
-                    Monitor.Exit(RegexStringCache);
-#endif
-                }
+                PerlRegExpCache.AddRegex(cache_key, dotNetMatchExpression, dotNetOptions, regex, perlOptions);
             }
 		}
 
@@ -1673,7 +1851,7 @@ namespace PHP.Library
 		private static void ParseRegexOptions(StringUtils.UniformWrapper pattern, int start,
 		  out RegexOptions dotNetOptions, out PerlRegexOptions extraOptions)
 		{
-			dotNetOptions = RegexOptions.Compiled;
+			dotNetOptions = RegexOptions.None;
 			extraOptions = PerlRegexOptions.None;
 
 			for (int i = start; i < pattern.Length; i++)
