@@ -22,6 +22,7 @@ using System.Text.RegularExpressions;
 
 using PHP.Core;
 using PHP.Core.Reflection;
+using System.Threading;
 
 namespace PHP.Library
 {
@@ -1271,7 +1272,39 @@ namespace PHP.Library
 	internal sealed class PerlRegExpConverter
 	{
 		#region Cache
+        #if !SILVERLIGHT
+        /// <summary>
+        /// String cache lock.
+        /// </summary>
+        private static ReaderWriterLockSlim StringCacheLock
+        {
+            get
+            {
+                if (_stringCacheLock == null)
+                    _stringCacheLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+                return _stringCacheLock;
+            }
+        }
+        private static ReaderWriterLockSlim _stringCacheLock;
 
+        /// <summary>
+        /// Binary string cache lock.
+        /// </summary>
+        private static ReaderWriterLockSlim BinaryCacheLock
+        {
+            get
+            {
+                if (_binaryCacheLock == null)
+                    _binaryCacheLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+                return _binaryCacheLock;
+            }
+        }
+        private static ReaderWriterLockSlim _binaryCacheLock;
+        #endif
+
+        /// <summary>
+        /// Mapping of .NET strings to already prepared regular expressions.
+        /// </summary>
 		private static Dictionary<string, RegexCacheEntry> RegexStringCache
 		{
 			get
@@ -1281,12 +1314,11 @@ namespace PHP.Library
 				return _regexStringCache;
 			}
 		}
-
-#if !SILVERLIGHT
-		[ThreadStatic]
-#endif
 		private static Dictionary<string, RegexCacheEntry> _regexStringCache;
 
+        /// <summary>
+        /// Mapping of binary strings to already prepared regular expressions.
+        /// </summary>
 		private static Dictionary<PhpBytes, RegexCacheEntry> RegexBinaryCache
 		{
 			get
@@ -1296,10 +1328,6 @@ namespace PHP.Library
 				return _regexBinaryCache;
 			}
 		}
-
-#if !SILVERLIGHT
-		[ThreadStatic]
-#endif
 		private static Dictionary<PhpBytes, RegexCacheEntry> _regexBinaryCache;
 
 		/// <summary>
@@ -1413,13 +1441,30 @@ namespace PHP.Library
 
 			if ((bytes_pattern = pattern as PhpBytes) != null)
 			{
-				RegexCacheEntry cache_entry;
-				if (RegexBinaryCache.TryGetValue(bytes_pattern, out cache_entry))
-				{
-					regex = cache_entry.regex;
-					perlOptions = cache_entry.options;
-					return;
-				}
+#if !SILVERLIGHT
+                BinaryCacheLock.EnterReadLock();
+#else
+                Monitor.Enter(RegexBinaryCache);
+#endif
+
+                try
+                {
+                    RegexCacheEntry cache_entry;
+                    if (RegexBinaryCache.TryGetValue(bytes_pattern, out cache_entry))
+                    {
+                        regex = cache_entry.regex;
+                        perlOptions = cache_entry.options;
+                        return;
+                    }
+                }
+                finally
+                {
+#if !SILVERLIGHT
+                    BinaryCacheLock.ExitReadLock();
+#else
+                    Monitor.Exit(RegexBinaryCache);
+#endif
+                }
 
 				LoadPerlRegex(bytes_pattern.Data);
 			}
@@ -1427,13 +1472,30 @@ namespace PHP.Library
 			{
 				string_pattern = Core.Convert.ObjectToString(pattern);
 
-				RegexCacheEntry cache_entry;
-				if (RegexStringCache.TryGetValue(string_pattern, out cache_entry))
-				{
-					regex = cache_entry.regex;
-					perlOptions = cache_entry.options;
-					return;
-				}
+#if !SILVERLIGHT
+                StringCacheLock.EnterReadLock();
+#else
+                Monitor.Enter(RegexStringCache);
+#endif
+
+                try
+                {
+                    RegexCacheEntry cache_entry;
+                    if (RegexStringCache.TryGetValue(string_pattern, out cache_entry))
+                    {
+                        regex = cache_entry.regex;
+                        perlOptions = cache_entry.options;
+                        return;
+                    }
+                }
+                finally
+                {
+#if !SILVERLIGHT
+                    StringCacheLock.ExitReadLock();
+#else
+                    Monitor.Exit(RegexStringCache);
+#endif
+                }
 
 				LoadPerlRegex(string_pattern);
 			}
@@ -1449,10 +1511,46 @@ namespace PHP.Library
 				throw new ArgumentException(ExtractExceptionalMessage(e.Message));
 			}
 
-			if (bytes_pattern != null)
-				RegexBinaryCache[bytes_pattern] = new RegexCacheEntry(regex, perlOptions);
-			else
-				RegexStringCache[string_pattern] = new RegexCacheEntry(regex, perlOptions);
+            if (bytes_pattern != null)
+            {
+#if !SILVERLIGHT
+                BinaryCacheLock.EnterWriteLock();
+#else
+                Monitor.Enter(RegexBinaryCache);
+#endif
+                try
+                {
+                    RegexBinaryCache[bytes_pattern] = new RegexCacheEntry(regex, perlOptions);
+                }
+                finally
+                {
+#if !SILVERLIGHT
+                    BinaryCacheLock.ExitWriteLock();
+#else
+                    Monitor.Exit(RegexBinaryCache);
+#endif
+                }
+            }
+            else
+            {
+#if !SILVERLIGHT
+                StringCacheLock.EnterWriteLock();
+#else
+                Monitor.Enter(RegexStringCache);
+#endif
+                try
+                {
+                    RegexStringCache[string_pattern] = new RegexCacheEntry(regex, perlOptions);
+                }
+                finally
+                {
+#if !SILVERLIGHT
+                    StringCacheLock.ExitWriteLock();
+#else
+                    Monitor.Exit(RegexStringCache);
+#endif
+                }
+            }
 		}
 
 		/// <summary>
@@ -1575,7 +1673,7 @@ namespace PHP.Library
 		private static void ParseRegexOptions(StringUtils.UniformWrapper pattern, int start,
 		  out RegexOptions dotNetOptions, out PerlRegexOptions extraOptions)
 		{
-			dotNetOptions = RegexOptions.None;
+			dotNetOptions = RegexOptions.Compiled;
 			extraOptions = PerlRegexOptions.None;
 
 			for (int i = start; i < pattern.Length; i++)
