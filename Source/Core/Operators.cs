@@ -1450,19 +1450,19 @@ namespace PHP.Core
 			else
 			{
 				byte[] result;
-				int length = (op == BitOp.Or) ? Math.Max(bx.Data.Length, by.Data.Length) : Math.Min(bx.Data.Length, by.Data.Length);
+				int length = (op == BitOp.Or) ? Math.Max(bx.Length, by.Length) : Math.Min(bx.Length, by.Length);
 
 				// chooses the resulting array allocating a new one only if necessary;
 				// if x or y has been converted from string to bytes and has the max. length it can be used for
 				// storing a resulting array:
-				if (!ReferenceEquals(bx, x) && bx.Data.Length == length)
-					result = bx.Data;
+				if (!ReferenceEquals(bx, x) && bx.Length == length)
+					result = bx.Data;// bx is temporary PhpBytes instance, its internal data can be reused
 				else if (!ReferenceEquals(by, y) && by.Data.Length == length)
-					result = by.Data;
+                    result = by.Data;// by is temporary PhpBytes instance, its internal data can be reused
 				else
 					result = new byte[length];
 
-				return new PhpBytes(BitOperation(result, bx.Data, by.Data, op));
+                return new PhpBytes(BitOperation(result, bx.ReadonlyData, by.ReadonlyData, op));
 			}
 		}
 
@@ -1547,10 +1547,10 @@ namespace PHP.Core
 			if ((bx = PhpVariable.AsBytes(x)) != null)
 			{
 				// allocates an array for result if it is needed:
-				PhpBytes result = (ReferenceEquals(x, bx)) ? new PhpBytes(new byte[bx.Data.Length]) : bx;
+				PhpBytes result = (ReferenceEquals(x, bx)) ? new PhpBytes(new byte[bx.Length]) : bx;
 
-				for (int i = 0; i < result.Data.Length; i++)
-					result.Data[i] = unchecked((byte)~bx.Data[i]);
+				for (int i = 0; i < result.Length; i++)
+                    result.Data[i] = unchecked((byte)~bx.ReadonlyData[i]);
 
 				return result;
 			}
@@ -2138,7 +2138,7 @@ namespace PHP.Core
 				var as string == String.Empty ||
 				var is bool && (bool)var == false ||
 				(phps = var as PhpString) != null && phps.Length == 0 ||
-				(b = var as PhpBytes) != null && b.Data.Length == 0 ||
+				(b = var as PhpBytes) != null && b.Length == 0 ||
 				var is int && (int)var == 0 ||
 				var is double && (double)var == 0.0 ||
 				var is long && (long)var == 0;
@@ -2227,7 +2227,7 @@ namespace PHP.Core
 
 			// a byte of a string of bytes:
 			if ((bytes = var as PhpBytes) != null)
-				return (CheckStringIndexRange(index = Convert.ObjectToInteger(key), bytes.Data.Length, quiet)) ? new PhpBytes(new byte[] { bytes.Data[index] }) : null;
+				return (CheckStringIndexRange(index = Convert.ObjectToInteger(key), bytes.Length, quiet)) ? new PhpBytes(new byte[] { bytes[index] }) : null;
 
 			return GetItemEpilogue(var, key, kind);
 		}
@@ -2257,7 +2257,7 @@ namespace PHP.Core
 
 			// a byte of a string of bytes:
 			if ((bytes = var as PhpBytes) != null)
-				return (CheckStringIndexRange(key, bytes.Data.Length, quiet)) ? new PhpBytes(new byte[] { bytes.Data[key] }) : null;
+				return (CheckStringIndexRange(key, bytes.Length, quiet)) ? new PhpBytes(new byte[] { bytes[key] }) : null;
 
 			return GetItemEpilogue(var, key, kind);
 		}
@@ -2304,7 +2304,7 @@ namespace PHP.Core
 
 			// a byte of a string of bytes:
 			if ((bytes = var as PhpBytes) != null)
-				return (CheckStringIndexRange(index = Convert.StringToInteger(key), bytes.Data.Length, quiet)) ? new PhpBytes(new byte[] { bytes.Data[index] }) : null;
+				return (CheckStringIndexRange(index = Convert.StringToInteger(key), bytes.Length, quiet)) ? new PhpBytes(new byte[] { bytes[index] }) : null;
 
 			return GetItemEpilogue(var, key, kind);
 		}
@@ -2630,7 +2630,7 @@ namespace PHP.Core
 			}
 
 			// PhpBytes:
-			if ((bytes = var as PhpBytes) != null && bytes.Data.Length != 0)
+			if ((bytes = var as PhpBytes) != null && bytes.Length != 0)
 			{
 				if (CheckStringIndexRange(index = Convert.ObjectToInteger(key), Int32.MaxValue, false))
 					SetBytesItem(bytes, index, value);
@@ -2675,7 +2675,7 @@ namespace PHP.Core
 			}
 
 			// PhpBytes:
-			if ((bytes = var as PhpBytes) != null && bytes.Data.Length != 0)
+			if ((bytes = var as PhpBytes) != null && bytes.Length != 0)
 			{
 				if (CheckStringIndexRange(key, Int32.MaxValue, false))
 					SetBytesItem(bytes, key, value);
@@ -2735,7 +2735,7 @@ namespace PHP.Core
 			}
 
 			// PhpBytes:
-			if ((bytes = var as PhpBytes) != null && bytes.Data.Length != 0)
+			if ((bytes = var as PhpBytes) != null && bytes.Length != 0)
 			{
 				if (CheckStringIndexRange(index = Convert.StringToInteger(key), Int32.MaxValue, false))
 					SetBytesItem(bytes, index, value);
@@ -2817,17 +2817,18 @@ namespace PHP.Core
 		{
 			Debug.Assert(bytes != null && bytes.Length > 0);
 
-			// the new byte will be the first byte of the value converted to byte[] or zero byte
+            // the new byte will be the first byte of the value converted to byte[] or zero byte
 			// if the length of the converted value is zero; dereferencing is also done:
-			byte[] bval = Convert.ObjectToPhpBytes(value).Data;
+            byte[] bval = Convert.ObjectToPhpBytes(value).ReadonlyData;
 			byte b = (bval.Length == 0) ? (byte)0 : bval[0];
 
 			// if index is greater than the data length the array is padded by space bytes (0x20):
 			if (index >= bytes.Length)
 			{
-				byte[] new_bytes = new byte[index + 1];
+                // TODO (J): optimize by using elastic array (some future implementation PhpString)
+                byte[] new_bytes = new byte[index + 1];
 
-				Buffer.BlockCopy(bytes.Data, 0, new_bytes, 0, bytes.Length);
+                Buffer.BlockCopy(bytes.ReadonlyData, 0, new_bytes, 0, bytes.Length);
 				ArrayUtils.Fill(new_bytes, 0x20, bytes.Length, index - bytes.Length);
 				new_bytes[index] = b;
 

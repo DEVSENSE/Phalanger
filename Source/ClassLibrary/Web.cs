@@ -100,7 +100,7 @@ namespace PHP.Library
 		public static string EncodeBase64(PhpBytes data_to_encode)
 		{
 			if (data_to_encode == null) return null;
-			return System.Convert.ToBase64String(data_to_encode.Data);
+            return System.Convert.ToBase64String(data_to_encode.ReadonlyData);
 		}
 
 		#endregion

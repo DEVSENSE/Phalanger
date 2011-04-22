@@ -206,7 +206,7 @@ namespace PHP.Library
 		[ImplementsFunction("convert_uuencode")]
 		public static string Encode(PhpBytes bytes)
 		{
-			byte[] data = (bytes != null) ? bytes.Data : ArrayUtils.EmptyBytes;
+            byte[] data = (bytes != null) ? bytes.ReadonlyData : ArrayUtils.EmptyBytes;
 			StringBuilder result = new StringBuilder((int)(data.Length * 1.38 + data.Length + 1));
 
 			Encode(data, new StringWriter(result));
@@ -298,7 +298,7 @@ A96YC;V1E9""!O;B!E86-H(&QI;F4@<VAA;&P@8F4@-#4N
 					Debug.Fail();
 				}
 
-				byte[] bytes = Decode(encoded).Data;
+                byte[] bytes = Decode(encoded).ReadonlyData;
 				string decoded = Encoding.Default.GetString(bytes, 0, bytes.Length);
 				if (decoded != cases[i, 0])
 					Debug.Fail();

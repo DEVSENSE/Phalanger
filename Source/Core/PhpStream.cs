@@ -598,7 +598,7 @@ namespace PHP.Core
 
 				int read = 0;
 				if (str != null) read = str.Length;
-				else if (bin != null) read = bin.Data.Length;
+				else if (bin != null) read = bin.Length;
 				else Debug.Assert(false);
 
 				if ((nlpos == -1) && (total <= readPosition) && (total + read > readPosition))
@@ -808,17 +808,17 @@ namespace PHP.Core
 			if (length == 0) return PhpBytes.Empty;
 
 			PhpBytes peek = (PhpBytes)readBuffers.Peek();
-			Debug.Assert(peek.Data.Length >= readPosition);
+			Debug.Assert(peek.Length >= readPosition);
 
-			if (peek.Data.Length - readPosition >= length)
+			if (peek.Length - readPosition >= length)
 			{
 				// Great! We can just take a sub-data.
 				byte[] data = new byte[length];
-				Array.Copy(peek.Data, readPosition, data, 0, length);
+                Array.Copy(peek.ReadonlyData, readPosition, data, 0, length);
 				PhpBytes res = new PhpBytes(data);
 				readPosition += length;
 
-				if (peek.Data.Length == readPosition)
+				if (peek.Length == readPosition)
 				{
 					// We just consumed the entire string. Dequeue it.
 					DropReadBuffer();
@@ -831,8 +831,8 @@ namespace PHP.Core
 				int buffered = this.ReadBufferLength;
 				if (buffered < length) length = buffered;
 				byte[] data = new byte[length];
-				int copied = peek.Data.Length - readPosition;
-				Array.Copy(peek.Data, readPosition, data, 0, copied); readPosition += copied;
+				int copied = peek.Length - readPosition;
+                Array.Copy(peek.ReadonlyData, readPosition, data, 0, copied); readPosition += copied;
 				length -= copied;
 
 				// We just consumed the entire data. Dequeue it.
@@ -841,10 +841,10 @@ namespace PHP.Core
 				while (length > 0)
 				{
 					peek = readBuffers.Peek() as PhpBytes;
-					if (peek.Data.Length > length)
+					if (peek.Length > length)
 					{
 						// This data is long enough. It is the last one.
-						Array.Copy(peek.Data, 0, data, copied, length);
+                        Array.Copy(peek.ReadonlyData, 0, data, copied, length);
 						readPosition = length;
 						length = 0;
 						break;
@@ -852,9 +852,9 @@ namespace PHP.Core
 					else
 					{
 						// Append just another whole buffer to the array.
-						Array.Copy(peek.Data, 0, data, copied, peek.Data.Length);
-						length -= peek.Data.Length;
-						copied += peek.Data.Length;
+                        Array.Copy(peek.ReadonlyData, 0, data, copied, peek.Length);
+						length -= peek.Length;
+						copied += peek.Length;
 						DropReadBuffer();
 
 						// When this is the last buffer (it's probably an EOF), return.
@@ -886,11 +886,11 @@ namespace PHP.Core
 		/// </returns>
 		public static int GetDataLength(object data)
 		{
-			string str = data as string;
-			PhpBytes bin = data as PhpBytes;
+			string str;
+			PhpBytes bin;
 
-			if (str != null) return str.Length;
-			else if (bin != null) return bin.Data.Length;
+            if ((str = data as string) != null) return str.Length;
+            else if ((bin = data as PhpBytes) != null) return bin.Length;
 
 			// Must be either 
 			Debug.Assert(false);
@@ -934,9 +934,9 @@ namespace PHP.Core
 
 			// All other types treat as one case.
 			PhpBytes bin = Core.Convert.ObjectToPhpBytes(input);
-			if (count >= bin.Data.Length) return bin;
+			if (count >= bin.Length) return bin;
 			byte[] sub2 = new byte[count];
-			Array.Copy(bin.Data, 0, sub2, 0, count);
+			Array.Copy(bin.ReadonlyData, 0, sub2, 0, count);
 			return new PhpBytes(sub2);
 		}
 
@@ -966,8 +966,8 @@ namespace PHP.Core
 			PhpBytes bin = input as PhpBytes;
 			if (bin != null)
 			{
-				if (count > bin.Data.Length) count = bin.Data.Length;
-				return Configuration.Application.Globalization.PageEncoding.GetString(bin.Data, 0, count);
+				if (count > bin.Length) count = bin.Length;
+                return Configuration.Application.Globalization.PageEncoding.GetString(bin.ReadonlyData, 0, count);
 			}
 
 			string str = Core.Convert.ObjectToString(input);
@@ -1175,7 +1175,7 @@ namespace PHP.Core
 			{
 				PhpBytes bin = data as PhpBytes;
 				Debug.Assert(bin != null);
-				return ArrayUtils.IndexOf(bin.Data, (byte)'\n', from);
+                return ArrayUtils.IndexOf(bin.ReadonlyData, (byte)'\n', from);
 				/*
 				for (int i = from; i < bin.Data.Length; i++)
 				{
@@ -1216,11 +1216,11 @@ namespace PHP.Core
 			{
 				PhpBytes bin = data as PhpBytes;
 				Debug.Assert(bin != null);
-				if (upto < bin.Data.Length - 1)
+				if (upto < bin.Length - 1)
 				{
-					byte[] l = new byte[upto + 1], r = new byte[bin.Data.Length - upto - 1];
-					Array.Copy(bin.Data, 0, l, 0, upto + 1);
-					Array.Copy(bin.Data, upto + 1, r, 0, bin.Data.Length - upto - 1);
+					byte[] l = new byte[upto + 1], r = new byte[bin.Length - upto - 1];
+                    Array.Copy(bin.ReadonlyData, 0, l, 0, upto + 1);
+                    Array.Copy(bin.ReadonlyData, upto + 1, r, 0, bin.Length - upto - 1);
 					left = new PhpBytes(l);
 					right = new PhpBytes(r);
 				}
@@ -1365,8 +1365,8 @@ namespace PHP.Core
 				{
 					PhpBytes data = ReadBytes(maxLength);
 					if (data == null && data.Length > 0) break; // EOF or error.
-					maxLength -= data.Data.Length;
-					result.Write(data.Data, 0, data.Data.Length);
+					maxLength -= data.Length;
+                    result.Write(data.ReadonlyData, 0, data.Length);
 				}
 			}
 			else
@@ -1375,7 +1375,7 @@ namespace PHP.Core
 				{
 					PhpBytes data = ReadMaximumBytes();
 					if (data == null) break; // EOF or error.
-					result.Write(data.Data, 0, data.Data.Length);
+                    result.Write(data.ReadonlyData, 0, data.Length);
 				}
 			}
 			return new PhpBytes(result.ToArray());
@@ -1633,7 +1633,7 @@ namespace PHP.Core
 			}
 
 			// From now on, the data is treated just as binary
-			byte[] bin = AsBinary(data).Data;
+            byte[] bin = AsBinary(data).ReadonlyData;
 			if (bin.Length == 0)
 				return consumed;
 

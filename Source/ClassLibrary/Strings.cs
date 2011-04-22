@@ -163,7 +163,7 @@ namespace PHP.Library
         [PureFunction]
         public static int Ord(PhpBytes bytes)
 		{
-			return (bytes == null || bytes.Data.Length == 0) ? 0 : (int)bytes.Data[0];
+			return (bytes == null || bytes.Length == 0) ? 0 : (int)bytes[0];
 		}
 
 		/// <summary>
@@ -215,7 +215,7 @@ namespace PHP.Library
         [PureFunction]
         public static string BinToHex(PhpBytes bytes)
 		{
-			return (bytes == null) ? String.Empty : StringUtils.BinToHex(bytes.Data, null);
+            return (bytes == null) ? String.Empty : StringUtils.BinToHex(bytes.ReadonlyData, null);
 		}
 
 		/// <summary>
@@ -474,6 +474,7 @@ namespace PHP.Library
 		public static PhpBytes ConvertCyrillic(PhpBytes bytes, string srcCharset, string dstCharset)
 		{
 			if (bytes == null) return null;
+            if (bytes.Length == 0) return PhpBytes.Empty;
 
 			// checks srcCharset argument:
 			if (srcCharset == null || srcCharset == String.Empty)
@@ -505,7 +506,7 @@ namespace PHP.Library
 				return PhpBytes.Empty;
 			}
 
-			byte[] data = bytes.Data;
+            byte[] data = bytes.ReadonlyData;
 			byte[] result = new byte[data.Length];
 
 			// perform conversion:
@@ -582,7 +583,7 @@ namespace PHP.Library
 		[ImplementsFunction("count_chars")]
 		public static PhpArray CountChars(PhpBytes bytes)
 		{
-			return (bytes == null) ? new PhpArray() : new PhpArray(CountBytes(bytes.Data), 0, 256);
+            return (bytes == null) ? new PhpArray() : new PhpArray(CountBytes(bytes.ReadonlyData), 0, 256);
 		}
 
 		/// <summary>
@@ -608,9 +609,9 @@ namespace PHP.Library
 			{
 				switch (mode)
 				{
-					case 0: return new PhpArray(CountBytes(Core.Convert.ObjectToPhpBytes(data).Data), 0, 256);
-					case 1: return new PhpArray(CountBytes(Core.Convert.ObjectToPhpBytes(data).Data), 0, 256, 0, true);
-					case 2: return new PhpArray(CountBytes(Core.Convert.ObjectToPhpBytes(data).Data), 0, 256, 0, false);
+                    case 0: return new PhpArray(CountBytes(Core.Convert.ObjectToPhpBytes(data).ReadonlyData), 0, 256);
+                    case 1: return new PhpArray(CountBytes(Core.Convert.ObjectToPhpBytes(data).ReadonlyData), 0, 256, 0, true);
+                    case 2: return new PhpArray(CountBytes(Core.Convert.ObjectToPhpBytes(data).ReadonlyData), 0, 256, 0, false);
 					case 3: return GetBytesContained(Core.Convert.ObjectToPhpBytes(data), 0, 255);
 					case 4: return GetBytesNotContained(Core.Convert.ObjectToPhpBytes(data), 0, 255);
 					default: PhpException.InvalidArgument("mode"); return null;
@@ -668,9 +669,9 @@ namespace PHP.Library
 			count = 0;
 			for (int i = 0; i < bytes.Length; i++)
 			{
-				if (!map[bytes.Data[i]])
+				if (!map[bytes[i]])
 				{
-					map[bytes.Data[i]] = true;
+					map[bytes[i]] = true;
 					count++;
 				}
 			}
@@ -825,15 +826,15 @@ namespace PHP.Library
 			
 			ctx.Initialize();
 			/* The password first, since that is what is most unknown */
-			ctx.TransformBlock(password.Data, 0, password.Length, null, 0);
+            ctx.TransformBlock(password.ReadonlyData, 0, password.Length, null, 0);
 			ctx.TransformBlock(MD5MagicString, 0, MD5MagicString.Length, null, 0);
 			ctx.TransformBlock(key, startOffset, keyLength, null, 0);
 
 			ctx1.Initialize();
 			/* Then just as many characters of the MD5(pw,salt,pw) */
-			ctx1.TransformBlock(password.Data, 0, password.Length, null, 0);
+            ctx1.TransformBlock(password.ReadonlyData, 0, password.Length, null, 0);
 			ctx1.TransformBlock(key, startOffset, keyLength, null, 0);
-			ctx1.TransformFinalBlock(password.Data, 0, password.Length);
+            ctx1.TransformFinalBlock(password.ReadonlyData, 0, password.Length);
 			Array.Copy(ctx1.Hash, final, final.Length);
 
 			for (int pl = password.Length; pl > 0; pl -= 16)
@@ -850,7 +851,7 @@ namespace PHP.Library
 				if ((i & 1) != 0)
 					ctx.TransformBlock(zeroByte, 0, 1, null, 0);
 				else
-					ctx.TransformBlock(password.Data, 0, 1, null, 0);
+                    ctx.TransformBlock(password.ReadonlyData, 0, 1, null, 0);
 			}
 
 			ctx.TransformFinalBlock(ArrayUtils.EmptyBytes, 0, 0);
@@ -866,7 +867,7 @@ namespace PHP.Library
 				ctx1.Initialize();
 
 				if ((i & 1) != 0)
-					ctx1.TransformBlock(password.Data, 0, password.Length, null, 0);
+                    ctx1.TransformBlock(password.ReadonlyData, 0, password.Length, null, 0);
 				else
 					ctx1.TransformBlock(final, 0, final.Length, null, 0);
 
@@ -874,12 +875,12 @@ namespace PHP.Library
 					ctx1.TransformBlock(key, startOffset, keyLength, null, 0);
 
 				if ((i % 7) != 0)
-					ctx1.TransformBlock(password.Data, 0, password.Length, null, 0);
+                    ctx1.TransformBlock(password.ReadonlyData, 0, password.Length, null, 0);
 
 				if ((i & 1) != 0)
 					ctx1.TransformFinalBlock(final, 0, final.Length);
 				else
-					ctx1.TransformFinalBlock(password.Data, 0, password.Length);
+                    ctx1.TransformFinalBlock(password.ReadonlyData, 0, password.Length);
 
 				Array.Copy(ctx1.Hash, final, final.Length);
 			}
@@ -905,9 +906,9 @@ namespace PHP.Library
 		{
 			if (str == null) str = PhpBytes.Empty;
 
-			Stream stream = new System.IO.MemoryStream(str.Data);
+            Stream stream = new System.IO.MemoryStream(str.ReadonlyData);
 
-			bool usemd5 = (salt == null) || (salt.Length == 0) || ByteArrayEquals(salt.Data, MD5MagicString, MD5MagicString.Length);
+            bool usemd5 = (salt == null) || (salt.Length == 0) || ByteArrayEquals(salt.ReadonlyData, MD5MagicString, MD5MagicString.Length);
 			int requiredKeyLength = usemd5 ? MaxMD5Key : MaxDESKey;
 
 			byte[] key = new byte[requiredKeyLength];
@@ -922,7 +923,7 @@ namespace PHP.Library
 				Array.Copy(System.Text.Encoding.ASCII.GetBytes(new String('$', requiredKeyLength)), key, requiredKeyLength);
 				
 				saltLength = System.Math.Min(requiredKeyLength, salt.Length);
-				Array.Copy(salt.Data, key, saltLength);
+                Array.Copy(salt.ReadonlyData, key, saltLength);
 			}
 			else
 				Array.Copy(des.Key, key, InternalMD5Key);	//Random 8-byte sequence
@@ -1011,15 +1012,15 @@ namespace PHP.Library
 
         internal static PhpBytes Reverse(PhpBytes bytes)
         {
-            if (bytes.Length == 0)
+            int length;
+            if ((length = bytes.Length) == 0)
                 return PhpBytes.Empty;
 
-            int length = bytes.Length;
             byte[] reversed = new byte[length];
-            byte[] data = bytes.Data;
-
+            byte[] data = bytes.ReadonlyData;
+            
             for (int i = 0, j = length - 1; j >= 0; j--, i++)
-                reversed[i] = bytes.Data[j];
+                reversed[i] = data[j];
 
             return new PhpBytes(reversed);
         }
@@ -1536,7 +1537,7 @@ namespace PHP.Library
 
                 byte[] substring = new byte[length];
 
-                Buffer.BlockCopy(binstr.Data, offset, substring, 0, length);
+                Buffer.BlockCopy(binstr.ReadonlyData, offset, substring, 0, length);
 
                 return new PhpBytes(substring);
             }
@@ -1586,7 +1587,7 @@ namespace PHP.Library
             {
                 byte[] result = new byte[binstr.Length * count];
 
-                for(int i = 0; i < count; i++) Buffer.BlockCopy(binstr.Data, 0, result, binstr.Length * i, binstr.Length);
+                for (int i = 0; i < count; i++) Buffer.BlockCopy(binstr.ReadonlyData, 0, result, binstr.Length * i, binstr.Length);
 
                 return new PhpBytes(result);
             }
@@ -2408,7 +2409,7 @@ namespace PHP.Library
                 for (i = 0; i < (length - splitLength + 1); i += splitLength)
                 {
                     byte[] chunk = new byte[splitLength];
-                    Array.Copy(bytes.Data, i, chunk, 0, chunk.Length);
+                    Array.Copy(bytes.ReadonlyData, i, chunk, 0, chunk.Length);
                     result.Add(new PhpBytes(chunk));
                 }
 
@@ -2416,7 +2417,7 @@ namespace PHP.Library
                 if (i < length)
                 {
                     byte[] chunk = new byte[length - i];
-                    Array.Copy(bytes.Data, i, chunk, 0, chunk.Length);
+                    Array.Copy(bytes.ReadonlyData, i, chunk, 0, chunk.Length);
                     result.Add(new PhpBytes(chunk));
                 }
 
@@ -5670,31 +5671,31 @@ namespace PHP.Library
                 // pad left
                 while (padLeft > padStrLength)
                 {
-                    Buffer.BlockCopy(binPaddingString.Data, 0, result, position, padStrLength);
+                    Buffer.BlockCopy(binPaddingString.ReadonlyData, 0, result, position, padStrLength);
                     padLeft -= padStrLength;
                     position += padStrLength;
                 }
 
                 if (padLeft > 0)
                 {
-                    Buffer.BlockCopy(binPaddingString.Data, 0, result, position, padLeft);
+                    Buffer.BlockCopy(binPaddingString.ReadonlyData, 0, result, position, padLeft);
                     position += padLeft;
                 }
 
-                Buffer.BlockCopy(binstr.Data, 0, result, position, binstr.Length);
+                Buffer.BlockCopy(binstr.ReadonlyData, 0, result, position, binstr.Length);
                 position += binstr.Length;
 
                 // pad right
                 while (padRight > padStrLength)
                 {
-                    Buffer.BlockCopy(binPaddingString.Data, 0, result, position, padStrLength);
+                    Buffer.BlockCopy(binPaddingString.ReadonlyData, 0, result, position, padStrLength);
                     padRight -= padStrLength;
                     position += padStrLength;
                 }
 
                 if (padRight > 0)
                 {
-                    Buffer.BlockCopy(binPaddingString.Data, 0, result, position, padRight);
+                    Buffer.BlockCopy(binPaddingString.ReadonlyData, 0, result, position, padRight);
                     position += padRight;
                 }
 
@@ -6407,7 +6408,7 @@ namespace PHP.Library
 			if (str != null) return str.Length;
 
 			PhpBytes bytes = x as PhpBytes;
-			if (bytes != null) return bytes.Data.Length;
+			if (bytes != null) return bytes.Length;
 
 			PhpString phpstr = x as PhpString;
 			if (phpstr != null) return phpstr.Length;

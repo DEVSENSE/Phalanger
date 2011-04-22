@@ -385,7 +385,7 @@ namespace PHP.Library
                             PhpBytes bytes;
                             if ((bytes = graph as PhpBytes) != null)
                             {
-                                WriteBinaryData(bytes.Data);
+                                WriteBinaryData(bytes.ReadonlyData);
                                 break;
                             }
 

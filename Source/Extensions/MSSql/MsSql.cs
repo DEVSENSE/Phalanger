@@ -1185,9 +1185,9 @@ namespace PHP.Library.Data
 			}
 
 			if (shortFormat)
-				return new Guid(binary.Data).ToString("D").ToUpper();
+                return new Guid(binary.ReadonlyData).ToString("D").ToUpper();
 			else
-				return PHP.Core.StringUtils.BinToHex(binary.Data, null).ToUpper();
+                return PHP.Core.StringUtils.BinToHex(binary.ReadonlyData, null).ToUpper();
 		}
 
 		#endregion

@@ -502,7 +502,7 @@ namespace PHP.Library
             double fnum = 0;
             for (int i = 0; i < number.Length; i++)
             {
-                int digit = Core.Convert.AlphaNumericToDigit((char)number.Data[i]);
+                int digit = Core.Convert.AlphaNumericToDigit((char)number.ReadonlyData[i]);
                 if (digit < fromBase)
                     fnum = fnum * fromBase + digit;
             }

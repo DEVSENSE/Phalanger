@@ -474,7 +474,26 @@ namespace PHP.Library
 
 namespace PHP.Core
 {
-	/// <summary>
+    #region IPhpDestructable
+
+    /// <summary>
+    /// Interface specifying PHP object with __destruct function defined. Used when PHP class is being emitted.
+    /// </summary>
+    public interface IPhpDestructable
+    {
+        /// <summary>
+        /// PHP class destructor.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        object __destruct(ScriptContext context);
+    }
+
+    #endregion
+
+    #region PhpObject
+
+    /// <summary>
 	/// Serves as a base for user defined PHP classes.
 	/// </summary>
 	[Serializable]
@@ -578,4 +597,6 @@ namespace PHP.Core
 #endif
 		#endregion
 	}
+
+    #endregion
 }

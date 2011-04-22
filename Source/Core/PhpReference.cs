@@ -443,11 +443,7 @@ namespace PHP.Core
 		/// </remarks>
 		public override object DeepCopy()
 		{
-			if (!IsAliased)
-			{
-				return new PhpSmartReference(PhpVariable.DeepCopy(value));
-			}
-			return this;
+            return IsAliased ? this : new PhpSmartReference(PhpVariable.DeepCopy(value));
 		}
 
 		/// <summary>
@@ -461,17 +457,7 @@ namespace PHP.Core
 		/// </remarks>
 		public override object Copy(CopyReason reason)
 		{
-			if (!IsAliased)
-			{
-				PhpSmartReference result = new PhpSmartReference();
-
-				IPhpCloneable cloneable = value as IPhpCloneable;
-				if (cloneable != null) result.value = cloneable.Copy(reason);
-				else result.value = value;
-
-				return result;
-			}
-			return this;
+            return IsAliased ? this : new PhpSmartReference(PhpVariable.Copy(value, reason));
 		}
 
 		#endregion

@@ -3262,7 +3262,7 @@ namespace PHP.Core
 		/// <param name="dst">Destination table.</param>
 		/// <param name="deepCopy">Whether to make deep copies of added items.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="dst"/> is a <B>null</B> reference.</exception>
-		public void AddTo(PhpHashtable dst, bool deepCopy)
+		public void AddTo(PhpHashtable/*!*/dst, bool deepCopy)
 		{
 			if (dst == null)
 				throw new ArgumentNullException("dst");
@@ -3607,73 +3607,63 @@ namespace PHP.Core
 
 		public static bool TryGetValue(PhpHashtable hashtable, Dictionary<string, object> dictionary, string key, out object value)
 		{
-			if (hashtable == null && dictionary == null)
-				throw new ArgumentNullException("hashtable");
-
 			if (hashtable != null)
 				return hashtable.TryGetValue(key, out value);
-			else
+			else if (dictionary != null)
 				return dictionary.TryGetValue(key, out value);
+            else
+                throw new ArgumentNullException("hashtable");
 		}
 
 		public static bool ContainsKey(PhpHashtable hashtable, Dictionary<string, object> dictionary, string key)
 		{
-			if (hashtable == null && dictionary == null)
-				throw new ArgumentNullException("hashtable");
-
 			if (hashtable != null)
 				return hashtable.ContainsKey(key);
-			else
+			else if (dictionary != null)
 				return dictionary.ContainsKey(key);
+            else
+                throw new ArgumentNullException("hashtable");
 		}
 
 		public static void Add(PhpHashtable hashtable, Dictionary<string, object> dictionary, string key, object value)
 		{
-			if (hashtable == null && dictionary == null)
-				throw new ArgumentNullException("hashtable");
-
 			if (hashtable != null)
 				hashtable.Add(key, value);
-			else
+            else if (dictionary != null)
 				dictionary.Add(key, value);
+            else
+                throw new ArgumentNullException("hashtable");
 		}
 
 		public static void Set(PhpHashtable hashtable, Dictionary<string, object> dictionary, string key, object value)
 		{
-			if (hashtable == null && dictionary == null)
-				throw new ArgumentNullException("hashtable");
-
 			if (hashtable != null)
 				hashtable[key] = value;
-			else
+			else if (dictionary != null)
 				dictionary[key] = value;
+            else
+                throw new ArgumentNullException("hashtable");
 		}
 
 		public static void Remove(PhpHashtable hashtable, Dictionary<string, object> dictionary, string key)
 		{
-			if (hashtable == null && dictionary == null)
-				throw new ArgumentNullException("hashtable");
-
 			if (hashtable != null)
 				hashtable.Remove(key);
-			else
+			else if (dictionary != null)
 				dictionary.Remove(key);
+            else
+                throw new ArgumentNullException("hashtable");
 		}
 
 		public static IEnumerable<KeyValuePair<string, object>>/*!*/ GetEnumerator(PhpArray hashtable,
 			Dictionary<string, object> dictionary)
 		{
-			if (hashtable == null && dictionary == null)
-				throw new ArgumentNullException("hashtable");
-
 			if (hashtable != null)
-			{
 				return hashtable.GetStringKeyEnumerable();
-			}
-			else
-			{
+			else if (dictionary != null)
 				return (IEnumerable<KeyValuePair<string, object>>)dictionary;
-			}
+			else
+                throw new ArgumentNullException("hashtable");
 		}
 
 		private IEnumerable<KeyValuePair<string, object>>/*!*/ GetStringKeyEnumerable()

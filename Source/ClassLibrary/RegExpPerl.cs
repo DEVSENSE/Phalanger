@@ -15,6 +15,7 @@
 
 using System;
 using System.Text;
+using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -22,7 +23,6 @@ using System.Text.RegularExpressions;
 
 using PHP.Core;
 using PHP.Core.Reflection;
-using System.Threading;
 
 namespace PHP.Library
 {
@@ -1072,7 +1072,7 @@ namespace PHP.Library
 
 			if ((bytes = data as PhpBytes) != null)
 			{
-				return converter.ConvertBytes(bytes.Data, 0, bytes.Data.Length);
+                return converter.ConvertBytes(bytes.ReadonlyData, 0, bytes.Length);
 			}
 			else
 			{
@@ -1690,7 +1690,7 @@ namespace PHP.Library
                     return;
                 }
 
-				LoadPerlRegex(bytes_pattern.Data);
+				LoadPerlRegex(bytes_pattern.ReadonlyData);
 			}
 			else
 			{

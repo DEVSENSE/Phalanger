@@ -504,7 +504,7 @@ namespace PHP.Library
 		public static PhpArray Unpack(string format, PhpBytes data)
 		{
 			if (format == null) return null;
-			byte[] buffer = (data != null) ? data.Data : ArrayUtils.EmptyBytes;
+			byte[] buffer = (data != null) ? data.ReadonlyData : ArrayUtils.EmptyBytes;
 
 			Encoding encoding = Configuration.Application.Globalization.PageEncoding;
 			byte[] reversed = new byte[4]; // used for reversing the order of bytes in buffer

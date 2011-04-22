@@ -193,13 +193,22 @@ namespace PHP
 				}
 				break;
 
-				//// Int64
-				//case TypeCode::Int64:
-				//{
-				//	var->type = IS_LONG;
-				//	var->value.lval = *(static_cast<Int64 ^>(ManagedObj));
-				//}
-				//break;
+				// Int64
+				case TypeCode::Int64:
+				{
+					Int64 l64 = *(static_cast<Int64 ^>(ManagedObj));
+					if (sizeof(long) == sizeof(Int64))
+					{	// long is int64
+						var->type = IS_LONG;
+						var->value.lval = (long)l64;
+					}
+					else
+					{	// long is int32 only
+						var->type = IS_DOUBLE;
+						var->value.dval = (double)l64;
+					}
+				}
+				break;
 
 				// Double
 				case TypeCode::Double:
@@ -227,7 +236,7 @@ namespace PHP
 					// PhpBytes
 					if ((phpbytes = dynamic_cast<PHP::Core::PhpBytes^>(ManagedObj)) != nullptr)
 					{
-						MarshalManagedBytesToNativeString(var,phpbytes->Data);
+						MarshalManagedBytesToNativeString(var,phpbytes->ReadonlyData);
 					}
 
 					// PhpArray

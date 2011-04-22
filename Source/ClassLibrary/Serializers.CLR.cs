@@ -187,7 +187,7 @@ namespace PHP.Library
 		/// <exception cref="PhpException">Deserialization failed (Notice).</exception>
         public PhpReference Deserialize(PhpBytes bytes, DTypeDesc caller)
 		{
-			MemoryStream stream = new MemoryStream(bytes.Data);
+            MemoryStream stream = new MemoryStream(bytes.ReadonlyData);
 			object result = null;
 
 			try

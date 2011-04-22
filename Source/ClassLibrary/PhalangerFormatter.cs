@@ -2056,7 +2056,7 @@ namespace PHP.Library
                             }
 
                             EncodeSize(bytes.Length, buffer, ref bufferPosition);
-                            Buffer.BlockCopy(bytes.Data, 0, buffer, bufferPosition, bytes.Length);
+                            Buffer.BlockCopy(bytes.ReadonlyData, 0, buffer, bufferPosition, bytes.Length);
                             bufferPosition += bytes.Length;
 
                             return;

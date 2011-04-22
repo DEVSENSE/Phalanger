@@ -1942,9 +1942,7 @@ namespace PHP.Core.Reflection
 		{
 			ScriptContext context = ScriptContext.CurrentContext;
 
-            // TODO: always copy CLR value types ?
-
-			if (context.Config.Variables.ZendEngineV1Compatible) return CloneObject(null, context, true);
+            if (context.Config.Variables.ZendEngineV1Compatible) return CloneObject(null, context, true);
 			else return this;
 		}
 
@@ -3059,10 +3057,15 @@ namespace PHP.Core.Reflection
     #region ClrValue<T>
 
     /// <summary>
+    /// An interface identifying ClrValue&lt;T&gt; instance object.
+    /// </summary>
+    internal interface IClrValue { }
+
+    /// <summary>
     /// Represents non-PHP value typed object at runtime.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal sealed class ClrValue<T> : DObject where T : struct
+    internal sealed class ClrValue<T> : DObject, IClrValue where T : struct
     {
         #region Fields and properties
 

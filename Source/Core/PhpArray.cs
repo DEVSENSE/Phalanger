@@ -504,7 +504,7 @@ namespace PHP.Core
 			}
 			else
 			{
-				return DeepCopyTo(new PhpArray(IntegerCount, StringCount));
+				return DeepCopy();
 			}
 		}
 

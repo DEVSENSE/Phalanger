@@ -142,7 +142,7 @@ namespace PHP.Library
 								PhpBytes bytes = graph as PhpBytes;
 								if (bytes != null)
 								{
-									WriteBinaryData(bytes.Data);
+                                    WriteBinaryData(bytes.ReadonlyData);
 									break;
 								}
 
@@ -403,7 +403,7 @@ namespace PHP.Library
                         }
                         else if (res is PhpBytes)
                         {
-                            resdata = ((PhpBytes)res).Data;
+                            resdata = ((PhpBytes)res).ReadonlyData;
                         }
 
                         if (resdata == null)
@@ -1089,8 +1089,8 @@ namespace PHP.Library
 			/// Reads a string with a given length surrounded by quotes from the <see cref="stream"/>.
 			/// </summary>
 			/// <param name="length">The expected length of the string.</param>
-			/// <returns>PhpBytes or null if string appears to be unicode (old functionality of serialize).</returns>
-			private PhpBytes ReadString(int length)
+			/// <returns>Byte array or null if string appears to be unicode (old functionality of serialize).</returns>
+			private byte[]/*!*/ReadString(int length)
 			{
                 //ASCII character - we can expect if will be always there (UTF16 is not supported).
 				Consume(Tokens.Quote);
@@ -1116,7 +1116,7 @@ namespace PHP.Library
                     bool success = TryConsume(Tokens.Quote);
 
                     if (success)                        
-                        return new PhpBytes(buffer);
+                        return buffer;
                     else
                     {
                         return null;
@@ -1124,22 +1124,22 @@ namespace PHP.Library
                 }
                 else
                 {
-                    return PhpBytes.Empty;
+                    return ArrayUtils.EmptyBytes;
                 }
 			}
 
             /// <summary>
-            /// LEGACY functionality, will be removed in future.
+            /// Reads a string with a given length surrounded by quotes from the <see cref="stream"/>.
             /// </summary>
-            /// <param name="length"></param>
-            /// <returns></returns>
+            /// <param name="length">The expected length of the string.</param>
+            /// <returns>The string or null.</returns>
             private string ReadStringUnicode(int length)
             {
-                PhpBytes bytes = ReadString(length);
+                var bytes = ReadString(length);
 
                 if (bytes == null) return null;
 
-                return encoding.GetString(bytes.Data);
+                return encoding.GetString(bytes);
             }
 
             /// <summary>
@@ -1217,11 +1217,11 @@ namespace PHP.Library
 
                 long position = stream.Position;
                 Consume(Tokens.Colon);
-				PhpBytes str = ReadString(length);
+				var str = ReadString(length);
 
                 if (str != null && TryConsume(Tokens.Semicolon))
                 {
-                    AddAtom(encoding.GetString(str.Data));
+                    AddAtom(new PhpBytes(str));
                 }
                 else
                 {
@@ -1250,10 +1250,11 @@ namespace PHP.Library
 
 					Parse();
 
-                    if (atoms[atoms.Count - 1] is PhpBytes)
-                    {
-                        atoms[atoms.Count - 1] = encoding.GetString(((PhpBytes)atoms[atoms.Count - 1]).Data);
-                    }
+                    // J: do not encode byte[] to string
+                    //if (atoms[atoms.Count - 1] is PhpBytes)
+                    //{
+                    //    atoms[atoms.Count - 1] = encoding.GetString(((PhpBytes)atoms[atoms.Count - 1]).ReadonlyData);
+                    //}
 
 					Parse();
 				}
@@ -1347,11 +1348,9 @@ namespace PHP.Library
 						// verify that the name is either string or int
 						object name = atoms[atoms.Count - 1];
 
-                        if (name is PhpBytes)
-                        {
-                            name = atoms[atoms.Count - 1] = encoding.GetString(((PhpBytes)name).Data);
-                        }
-
+                        if (name is PhpBytes)   // property name needs to be string
+                            name = atoms[atoms.Count - 1] = encoding.GetString(((PhpBytes)name).ReadonlyData);
+                        
 						if (!(name is string))
 						{
 							if (!(name is int)) ThrowInvalidDataType();
@@ -1446,7 +1445,13 @@ namespace PHP.Library
 					{
 						while (atoms[atomCounter] != delimiter)
 						{
-							array.Add(BuildObjectGraph(), BuildObjectGraph());
+                            object arraykey = BuildObjectGraph();
+                            object arrayvalue = BuildObjectGraph();
+
+                            if (arraykey is PhpBytes)// IntStringKey does not allow PhpBytes yet
+                                arraykey = encoding.GetString(((PhpBytes)arraykey).ReadonlyData);
+
+                            array.Add(arraykey, arrayvalue);
 						}
 						atomCounter++; // for the delimiter
 						return atom;

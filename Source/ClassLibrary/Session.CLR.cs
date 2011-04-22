@@ -75,7 +75,7 @@ namespace PHP.Library
 
 			// deserialization:
 			PhpArray result = null;
-			if (bytes != null && bytes.Data.Length != 0)
+			if (bytes != null && bytes.Length != 0)
 			{
                 PhpReference php_ref = PhpVariables.Unserialize(null/*Load method is not called from any class context*/, bytes);
 				result = (php_ref != null) ? php_ref.Value as PhpArray : null;
@@ -401,7 +401,7 @@ namespace PHP.Library
 				result = Core.Convert.ObjectToPhpBytes(handlers.Read.Invoke(sid));
 
 				// error (empty string of bytes):
-				if (result != null && result.Data.Length == 0)
+				if (result != null && result.Length == 0)
 				{
 					ReportError("read", savePath, sid);
 					return null;

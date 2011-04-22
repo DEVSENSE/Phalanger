@@ -441,14 +441,15 @@ namespace PHP.Library
 
 				if (access == StreamAccessOptions.Read)
 				{
-					pipe.buffer = new PhpBytes(new byte[BufferSize]);
-					stream.BeginRead(pipe.buffer.Data, 0, pipe.buffer.Data.Length, pipe.callback, null);
+                    var buffer = new byte[BufferSize];
+                    stream.BeginRead(buffer, 0, buffer.Length, pipe.callback, null);
+                    pipe.buffer = new PhpBytes(buffer);
 				}
 				else
 				{
 					pipe.buffer = phpStream.ReadBytes(BufferSize);
 					if (pipe.buffer != null)
-						stream.BeginWrite(pipe.buffer.Data, 0, pipe.buffer.Data.Length, pipe.callback, null);
+						stream.BeginWrite(pipe.buffer.ReadonlyData, 0, pipe.buffer.Length, pipe.callback, null);
 					else
 						stream.Close();
 				}
@@ -463,19 +464,19 @@ namespace PHP.Library
 					int count = stream.EndRead(ar);
 					if (count > 0)
 					{
-						if (count != buffer.Data.Length)
+						if (count != buffer.Length)
 						{
 							// TODO: improve streams
-							PhpBytes buf = new PhpBytes(new byte[count]);
-							Buffer.BlockCopy(buffer.Data, 0, buf.Data, 0, count);
-							phpStream.WriteBytes(buf);
+							var buf = new byte[count];
+							Buffer.BlockCopy(buffer.ReadonlyData, 0, buf, 0, count);
+							phpStream.WriteBytes(new PhpBytes(buf));
 						}
 						else
 						{
 							phpStream.WriteBytes(buffer);
 						}
 
-						stream.BeginRead(buffer.Data, 0, buffer.Data.Length, callback, ar.AsyncState);
+						stream.BeginRead(buffer.Data, 0, buffer.Length, callback, ar.AsyncState);
 					}
 					else
 					{
@@ -487,7 +488,7 @@ namespace PHP.Library
 					buffer = phpStream.ReadBytes(BufferSize);
 					if (buffer != null)
 					{
-						stream.BeginWrite(buffer.Data, 0, buffer.Data.Length, callback, ar.AsyncState);
+                        stream.BeginWrite(buffer.ReadonlyData, 0, buffer.Length, callback, ar.AsyncState);
 					}
 					else
 					{

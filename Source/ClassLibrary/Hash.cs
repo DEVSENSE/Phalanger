@@ -64,7 +64,7 @@ namespace PHP.Library
         [PureFunction]
         public static int CRC32(PhpBytes bytes)
         {
-            return BitConverter.ToInt32(new CRC32().ComputeHash(bytes.Data), 0);
+            return BitConverter.ToInt32(new CRC32().ComputeHash(bytes.ReadonlyData), 0);
         }
 
 #if !SILVERLIGHT
@@ -228,7 +228,7 @@ namespace PHP.Library
         {
             if (bytes == null) return null;
 
-            byte[] hash = algorithm.ComputeHash(bytes.Data);
+            byte[] hash = algorithm.ComputeHash(bytes.ReadonlyData);
 
             if (rawOutput)
                 return new PhpBytes(hash);
@@ -259,7 +259,7 @@ namespace PHP.Library
                     if (bytes == null)
                         return null;
 
-                    hash = algorithm.ComputeHash(bytes.Data);
+                    hash = algorithm.ComputeHash(bytes.ReadonlyData);
                 }
             }
             catch (SystemException)
@@ -1720,7 +1720,7 @@ namespace PHP.Library
                 // Take the given key and hash it in the context of newly created hashing context.
 
                 Debug.Assert(h.BlockSize > 0);
-                byte[] K = key.Data;
+                byte[] K = key.ReadonlyData;
 
                 if (K.Length > h.BlockSize)
                 {
@@ -1763,7 +1763,7 @@ namespace PHP.Library
                 return false;
             }
 
-            h.Update(data.Data);
+            h.Update(data.ReadonlyData);
 
             return true;
         }
@@ -1902,7 +1902,7 @@ namespace PHP.Library
                     break;
 
                 // update the incremental hash
-                context.Update(bytes.Data);
+                context.Update(bytes.ReadonlyData);
 
                 n += bytes.Length;
                 done = (bytes.Length < buffsize);

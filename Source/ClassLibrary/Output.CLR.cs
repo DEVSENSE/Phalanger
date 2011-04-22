@@ -477,7 +477,7 @@ namespace PHP.Library
             PhpBytes phpbytes = data as PhpBytes;
 
             var inputbytes = (phpbytes != null) ?
-                phpbytes.Data :
+                phpbytes.ReadonlyData :
                 Configuration.Application.Globalization.PageEncoding.GetBytes(PHP.Core.Convert.ObjectToString(data));
 
             using (var outputStream = new System.IO.MemoryStream())

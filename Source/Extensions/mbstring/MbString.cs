@@ -217,7 +217,7 @@ namespace PHP.Library.Strings
                 if (encoding == null)
                     return null;
 
-                return encoding.GetString(bytes.Data, 0, bytes.Length);
+                return encoding.GetString(bytes.ReadonlyData, 0, bytes.Length);
             }
             else
             {
@@ -1193,7 +1193,7 @@ namespace PHP.Library.Strings
                         return null;
 
                     PhpBytes bytes = (PhpBytes)needle;
-                    uneedle = encoding.GetString(bytes.Data, 0, bytes.Length);
+                    uneedle = encoding.GetString(bytes.ReadonlyData, 0, bytes.Length);
                 }
                 else
                 {   // needle as a character number

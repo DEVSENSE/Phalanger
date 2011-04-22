@@ -186,19 +186,6 @@ namespace PHP.Core
 	}
 
     /// <summary>
-    /// Interface specifying PHP object with __destruct function defined.
-    /// </summary>
-    public interface IPhpDestructable
-    {
-        /// <summary>
-        /// PHP class destructor.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        object __destruct(ScriptContext context);
-    }
-
-	/// <summary>
 	/// Supports cloning, which creates a deep copy of an existing instance.
 	/// </summary>
 	public interface IPhpCloneable
@@ -522,9 +509,9 @@ namespace PHP.Core
 		public static object DeepCopy(object obj)
 		{
 			// cloneable types:
-			IPhpCloneable php_cloneable = obj as IPhpCloneable;
-			if (php_cloneable != null)
-				return php_cloneable.DeepCopy();
+            IPhpCloneable php_cloneable;
+            if ((php_cloneable = obj as IPhpCloneable) != null)
+                return php_cloneable.DeepCopy();
 
 			// string, bool, int, double, null:
 			return obj;
@@ -538,8 +525,8 @@ namespace PHP.Core
 		public static object Copy(object obj, CopyReason reason)
 		{
 			// cloneable types:
-			IPhpCloneable php_cloneable = obj as IPhpCloneable;
-			if (php_cloneable != null)
+			IPhpCloneable php_cloneable;
+			if ((php_cloneable = obj as IPhpCloneable) != null)
 				return php_cloneable.Copy(reason);
 
 			// string, bool, int, double, null:

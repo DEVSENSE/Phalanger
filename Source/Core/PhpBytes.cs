@@ -31,28 +31,148 @@ namespace PHP.Core
 	{
 		public const string PhpTypeName = PhpVariable.TypeNameString;
 
-		/// <summary>
-		/// Empty bytes. Not a single instance with zero length.
-		/// </summary>
-		public static readonly PhpBytes Empty = new PhpBytes(ArrayUtils.EmptyBytes);
+        #region DataContainer
 
-		#region Properties
+        /// <summary>
+        /// Internal data structure holds the byte array.
+        /// The data can be marked as read only. This tells the runtime if the internal data structure can be reused to avoid of copying.
+        /// </summary>
+        private class DataContainer
+        {
+            #region Fields
 
-		/// <summary>
-		/// Data contained in this instance. Can be modified since there shouldn't be two PHP variables
-		/// sharing the same data.
+            /// <summary>
+            /// True iff the internal data structure is shared and should not be ever modified.
+            /// </summary>
+            public bool IsReadOnly
+            {
+                get { return _isReadOnly; }
+                set
+                {
+                    Debug.Assert(!_isReadOnly || value);   // once readonly is set, it cannot be unset
+                    _isReadOnly = value;
+                }
+            }
+            private bool _isReadOnly;
+
+            /// <summary>
+            /// Internal byte array representing the data.
+            /// </summary>
+            public byte[]/*!*/Data { get { return _data; } }
+            private readonly byte[]/*!*/_data;
+
+            /// <summary>
+            /// The length of internal byte array.
+            /// </summary>
+            public int Length { get { return _data.Length; } }
+
+            #endregion
+
+            #region Constructors
+
+            /// <summary>
+            /// Initialize the instance of <see cref="Data"/> with byte array. The data are not marked as <see cref="IsReadOnly"/>.
+            /// </summary>
+            /// <param name="data">The byte array reference used internally.</param>
+            public DataContainer(params byte[]/*!*/ data)
+                : this(false, data)
+            {
+            }
+
+            /// <summary>
+            /// Initialize the instance of <see cref="Data"/> with byte array.
+            /// </summary>
+            /// <param name="isReadOnly">Wheter the data are shared.</param>
+            /// <param name="data">The byte array reference used internally.</param>
+            public DataContainer(bool isReadOnly, params byte[]/*!*/ data)
+            {
+                Debug.Assert(data != null);
+                this._data = data;
+                this.IsReadOnly = isReadOnly;
+            }
+
+            #endregion
+
+            #region Share
+
+            /// <summary>
+            /// Marks this instance as shared (<see cref="IsReadOnly"/>) and returns itself.
+            /// </summary>
+            /// <returns></returns>
+            public DataContainer/*!*/Share()
+            {
+                this.IsReadOnly = true;
+                return this;
+            }
+
+            #endregion
+
+            #region this[]
+
+            /// <summary>
+            /// Get byte on specified index.
+            /// </summary>
+            /// <param name="i"></param>
+            /// <returns></returns>
+            public byte this[int i]
+            {
+                get
+                {
+                    return _data[i];
+                }
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Fields & Properties
+
+        /// <summary>
+        /// Empty bytes. Not a single instance with zero length.
+        /// </summary>
+        public static readonly PhpBytes Empty = new PhpBytes(ArrayUtils.EmptyBytes);
+
+        /// <summary>
+        /// Get the internal byte array for read only purposes.
+        /// The returned array must not be modified! It is modifiable only because of the performance.
+        /// </summary>
+        public byte[]/*!*/ReadonlyData { get { return _data.Data; } }
+
+        /// <summary>
+		/// Data contained in this instance. If internal byte array is shared with other <see cref="PhpBytes"/> objects,
+        /// internal byte array is cloned.
 		/// </summary>
         public byte[]/*!*/ Data
 		{
-			get { return data; }
-			set { if (value == null) throw new ArgumentNullException("value"); data = value; }
+			get
+            {
+                if (_data.IsReadOnly)
+                {   // performs clone of internal byte array
+                    _data = new DataContainer(false, (byte[])_data.Data.Clone());
+                }
+                return _data.Data;
+            }
+			set
+            {
+                if (value == null) throw new ArgumentNullException("value");
+                _data = new DataContainer(false, value);
+            }
 		}
-		private byte[]/*!*/ data;
+        private DataContainer/*!*/_data;
 
 		/// <summary>
 		/// Gets data length.
 		/// </summary>
-		public int Length { get { return data.Length; } }
+		public int Length { get { return _data.Length; } }
+
+        /// <summary>
+        /// The i-th byte from the internal byte array;
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public byte this[int i] { get { return _data[i]; } }
 
 		#endregion
 
@@ -67,7 +187,7 @@ namespace PHP.Core
 		public PhpBytes(params byte[]/*!*/ data)
 		{
 			if (data == null) throw new ArgumentNullException("data");
-			this.data = data;
+            this._data = new DataContainer(false, data);
 		}
 
 		/// <summary>
@@ -79,8 +199,19 @@ namespace PHP.Core
 		public PhpBytes(string/*!*/ str)
 		{
 			if (str == null) throw new ArgumentNullException("str");
-			data = Configuration.Application.Globalization.PageEncoding.GetBytes(str);
+            this._data = new DataContainer(Configuration.Application.Globalization.PageEncoding.GetBytes(str));
 		}
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="PhpBytes"/> class that shares internal byte array
+        /// with another <see cref="PhpBytes"/> instance.
+        /// </summary>
+        /// <param name="data">The original bytes array.</param>
+        public PhpBytes(PhpBytes/*!*/data)
+        {
+            if (data == null) throw new ArgumentNullException("data");
+            this._data = data._data.Share();
+        }
 
 		#endregion
 
@@ -154,7 +285,7 @@ namespace PHP.Core
 		/// <returns>True iff this instance contains nothing or one zero byte.</returns>
 		public bool ToBoolean()
 		{
-			return !(data.Length == 0 || (data.Length == 1 && data[0] == (byte)'0'));
+            return !(_data.Length == 0 || (_data.Length == 1 && _data[0] == (byte)'0'));
 		}
 
 		/// <summary>
@@ -180,7 +311,7 @@ namespace PHP.Core
 
         string IPhpConvertible.ToString()
         {
-            return Configuration.Application.Globalization.PageEncoding.GetString(data, 0, data.Length);
+            return Configuration.Application.Globalization.PageEncoding.GetString(this.ReadonlyData, 0, this.Length);
         }
 
         string IPhpConvertible.ToString(PHP.Core.Reflection.DTypeDesc caller)
@@ -216,7 +347,7 @@ namespace PHP.Core
             char[] patch = new char[4]{'\\', 'x', '0', '0'};
             
             output.Write("\"");
-            foreach (byte b in data)
+            foreach (byte b in ReadonlyData)
             {
                 // printable characters are outputted normally
                 if (b >= 0x20 && b <= 0x7e)
@@ -240,7 +371,7 @@ namespace PHP.Core
 		/// <param name="output">The output text stream.</param>
 		public void Dump(System.IO.TextWriter output)
 		{
-            output.Write(PhpTypeName + "[binary]({0}) ", data.Length);
+            output.Write(PhpTypeName + "[binary]({0}) ", this.Length);
             this.Print(output);
             //if (data.Length > 0)
             //    output.WriteLine(PhpTypeName + "[binary]({0}) \"\\x{1}\"", data.Length, StringUtils.BinToHex(data, "\\x"));
@@ -254,7 +385,7 @@ namespace PHP.Core
 		/// <param name="output">The output text stream.</param>
 		public void Export(System.IO.TextWriter output)
 		{
-			output.Write("\"\\x{0}\"", StringUtils.BinToHex(data, "\\x"));
+			output.Write("\"\\x{0}\"", StringUtils.BinToHex(this.ReadonlyData, "\\x"));
 
 			if (PhpVariable.PrintIndentationLevel == 0)
 				output.WriteLine();
@@ -265,19 +396,18 @@ namespace PHP.Core
 		#region IPhpCloneable Members
 
 		/// <summary>
-		/// Creates a deep copy of this instance.
+		/// Creates a lazy deep copy of this instance.
 		/// </summary>
-		/// <returns>A deep copy (the same as the shallow one in this case).</returns>
+		/// <returns>A copy that shares the internal byte array with another <see cref="PhpBytes"/>.</returns>
 		public object DeepCopy()
 		{
-			// duplicates data, sets the same encoding:
-			return new PhpBytes((byte[])data.Clone());
+			// duplicates data lazily:
+			return new PhpBytes(this);
 		}
 
 		public object Copy(CopyReason reason)
 		{
-			// duplicates data, sets the same encoding:
-			return new PhpBytes((byte[])data.Clone());
+			return DeepCopy();
 		}
 
 		#endregion
@@ -301,8 +431,17 @@ namespace PHP.Core
 		{
 			Debug.Assert(comparer != null);
 
+            // try to compare two PhpBytes instances
+            PhpBytes other;
+            if ((other = obj as PhpBytes) != null)
+            {
+                if (this._data == other._data) return 0;    // if both PhpByte instances share the same internal byte array
+                return comparer.Compare(((IPhpConvertible)this).ToString(), ((IPhpConvertible)other).ToString());
+            }
+
+            // compare this as string with obj
             return comparer.Compare(((IPhpConvertible)this).ToString(), obj);
-		}
+        }
 
 		#endregion
 
@@ -314,7 +453,7 @@ namespace PHP.Core
 		/// <returns>A shallow copy.</returns>
 		public object Clone()
 		{
-			return new PhpBytes((byte[])data.Clone());
+			return new PhpBytes((byte[])ReadonlyData.Clone());
 		}
 
 		#endregion
@@ -327,8 +466,8 @@ namespace PHP.Core
 		/// <returns>Whether the inscance contains empty byte array or byte array containing the single zero byte.</returns>
 		public bool IsEmpty()
 		{
-			int length = data.Length;
-			return length == 0 || (length == 1 && data[0] == (byte)'0');
+			int length = this.Length;
+			return length == 0 || (length == 1 && _data[0] == (byte)'0');
 		}
 
 		/// <summary>
@@ -356,28 +495,28 @@ namespace PHP.Core
 		/// <summary>
 		/// Concats two strings of bytes.
 		/// </summary>
-		/// <param name="x">The first string of bytes to be concatenated.</param>
-		/// <param name="y">The second string of bytes to be concatenated.</param>
+		/// <param name="x">The first string of bytes to be concatenated. Cannot be <c>null</c>.</param>
+        /// <param name="y">The second string of bytes to be concatenated. Cannot be <c>null</c>.</param>
 		/// <returns>The concatenation of <paramref name="x"/> and <paramref name="y"/>.</returns>
 		/// <remarks>
 		/// Bytes are not encoded nor decoded from their respective encodings. 
 		/// Instead, data are copied without any changes made and the result's encoding is set to the encoding 
 		/// of the <paramref name="x"/>.</remarks>
         [Emitted]
-		public static PhpBytes Concat(PhpBytes x, PhpBytes y)
+		public static PhpBytes Concat(PhpBytes/*!*/x, PhpBytes/*!*/y)
 		{
 			if (x == null) throw new ArgumentNullException("x");
 			if (y == null) throw new ArgumentNullException("y");
 
-			int lx = x.data.Length;
-			int ly = y.data.Length;
+			int lx = x.Length;
+			int ly = y.Length;
 
-			PhpBytes result = new PhpBytes(new byte[lx + ly]);
+            byte[] result = new byte[lx + ly];
+			
+			Buffer.BlockCopy(x.ReadonlyData, 0, result, 0, lx);
+            Buffer.BlockCopy(y.ReadonlyData, 0, result, lx, ly);
 
-			Buffer.BlockCopy(x.data, 0, result.data, 0, lx);
-			Buffer.BlockCopy(y.data, 0, result.data, lx, ly);
-
-			return result;
+			return new PhpBytes(result);
 		}
 
         /// <summary>
@@ -447,19 +586,19 @@ namespace PHP.Core
             if (length == 0)
                 return PhpBytes.Empty;
 
-            PhpBytes result = new PhpBytes(new byte[length]);
+            var result = new byte[length];
 
             // copies data to the result array:
             int pos = 0;
             for (int i = startIndex; i < num; ++i)
                 if (args[i] != null)
                 {
-                    byte[] bytes = args[i].data;
-                    Buffer.BlockCopy(bytes, 0, result.data, pos, bytes.Length);
+                    byte[] bytes = args[i].ReadonlyData;
+                    Buffer.BlockCopy(bytes, 0, result, pos, bytes.Length);
                     pos += bytes.Length;
                 }
 
-            return result;
+            return new PhpBytes(result);
         }
 
 		#endregion
@@ -502,19 +641,24 @@ namespace PHP.Core
 		{
 			int result = -218974311;
 
-			for (int i = 0; i < data.Length; i++)
-				result = unchecked((result << 1) ^ data[i]);
+			for (int i = 0; i < this.Length; i++)
+				result = unchecked((result << 1) ^ this._data[i]);
 
 			return result;
 		}
 
 		public override bool Equals(object obj)
 		{
-			if (ReferenceEquals(obj, this)) return true;
-			PhpBytes other = obj as PhpBytes;
-			if (other == null) return false;
+            if (ReferenceEquals(obj, this))
+                return true;
 
-			return ArrayUtils.Compare(data, other.data) == 0;
+            PhpBytes other;
+            if ((other = obj as PhpBytes) == null)
+                return false;
+
+			return
+                this._data == other._data ||    // compare internal data structures if they are shared first
+                ArrayUtils.Compare(this.ReadonlyData, other.ReadonlyData) == 0; // compare byte by byte
 		}
 
 		#endregion

@@ -466,7 +466,7 @@ namespace PHP.Core
 					// checks whether the filtered data are binary at first; if not so, converts them to a string:
 					PhpBytes bin = data as PhpBytes;
 					if (bin != null)
-						stream.Write(bin.Data, 0, bin.Data.Length);
+						stream.Write(bin.ReadonlyData, 0, bin.Length);
 					else
 						this.Write(PHP.Core.Convert.ObjectToString(data));
 
@@ -482,7 +482,7 @@ namespace PHP.Core
 					PhpBytes bin = data as PhpBytes;
 					if (bin != null)
 					{
-						if (bin.Data.Length > 0) byteSink.Write(bin.Data, 0, bin.Data.Length);
+                        if (bin.Length > 0) byteSink.Write(bin.ReadonlyData, 0, bin.Length);
 					}
 					else
 						charSink.Write(PHP.Core.Convert.ObjectToString(data));
@@ -580,15 +580,15 @@ namespace PHP.Core
 				// contains bytes only:
 				if (!level.containsCharData)
 				{
-					PhpBytes result = new PhpBytes(new byte[level.size]);
+					var result = new byte[level.size];
 
 					for (int i = 0, k = 0; i < level.buffers.Count; i++)
 					{
 						BufferElement element = (BufferElement)level.buffers[i];
-						Array.Copy(element.data, 0, result.Data, k, element.size);
+						Array.Copy(element.data, 0, result, k, element.size);
 						k += element.size;
 					}
-					return result;
+					return new PhpBytes(result);
 
 				}
 				else

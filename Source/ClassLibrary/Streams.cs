@@ -593,7 +593,7 @@ namespace PHP.Library
 			switch (operation)
 			{
 				case ConversionFilterOptions.Base64:
-					return System.Convert.ToBase64String(bin.Data);
+                    return System.Convert.ToBase64String(bin.ReadonlyData);
 				// EX: PHP5 supports this function with additional parameters.
 				case ConversionFilterOptions.QuotedPrintable:
 					PhpException.FunctionNotSupported();

@@ -87,9 +87,8 @@ namespace PHP.Core.AST
 					return !Convert.ObjectToBoolean(value);
 
 				case Operations.BitNegation:
-					object result = Operators.BitNot(value);
-					return (result is PhpBytes) ? ((PhpBytes)result).Data.ToString() : result;
-
+					return Operators.BitNot(value); // allows to return PhpBytes
+					
 				case Operations.FloatCast:
 				case Operations.DoubleCast:
 					return Convert.ObjectToDouble(value);

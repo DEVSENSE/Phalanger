@@ -1585,7 +1585,7 @@ namespace PHP.Core
             if ((bytes = value as PhpBytes) != null)
             {
                 if (bytes.Length > 0)
-                    scriptcontext.binaryOutput.Write(bytes.Data, 0, bytes.Length);
+                    scriptcontext.binaryOutput.Write(bytes.ReadonlyData, 0, bytes.Length);
             }
             else
             {
@@ -1616,8 +1616,9 @@ namespace PHP.Core
         [Emitted]
         public static void Echo(PhpBytes value, ScriptContext/*!*/scriptcontext)
         {
-            if (value != null && value.Length > 0)
-                scriptcontext.binaryOutput.Write(value.Data, 0, value.Length);
+            int length;
+            if (value != null && (length = value.Length) > 0)
+                scriptcontext.binaryOutput.Write(value.ReadonlyData, 0, length);
         }
 
 		/// <summary>

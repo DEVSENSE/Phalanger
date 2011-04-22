@@ -1192,7 +1192,7 @@ namespace PHP.Core.Emit
             {
                 FieldBuilder datafld = TypeBuilder.DefineInitializedData(
                     "<PhpBytes>" + System.Guid.NewGuid().ToString("B"),
-                    value.Data,
+                    value.ReadonlyData,
                     FieldAttributes.Assembly | FieldAttributes.Static);
 
                 Emit(OpCodes.Dup);
