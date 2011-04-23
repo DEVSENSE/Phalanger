@@ -1280,21 +1280,46 @@ namespace PHP.Library
             private PhpBytes _binaryValue;
             private string _stringValue;
 
-            public bool IsBinary { get { return _binaryValue != null; } }
-            public bool IsString { get { return _stringValue != null; } }
+            private bool IsBinary { get { return _binaryValue != null; } }
+            private bool IsString { get { return _stringValue != null; } }
 
+            /// <summary>
+            /// Initizalizes binary string instance of the key.
+            /// </summary>
+            /// <param name="binaryValue">Key value.</param>
             public RegexCacheKey(PhpBytes binaryValue)
             {
                 _binaryValue = binaryValue;
                 _hash = binaryValue.GetHashCode();
             }
 
+            /// <summary>
+            /// Initialized string instance of the key.
+            /// </summary>
+            /// <param name="stringValue">Key value.</param>
             public RegexCacheKey(string stringValue)
             {
                 _stringValue = stringValue;
                 _hash = stringValue.GetHashCode();
             }
 
+            /// <summary>
+            /// Makes the key persistent. In case of binary keys this needs to be done
+            /// because PhpBytes is not immutable. This is fast, because copy is done lazily.
+            /// </summary>
+            public void MakePersistent()
+            {
+                if (_binaryValue != null)
+                {
+                    _binaryValue = (PhpBytes)_binaryValue.DeepCopy();
+                }
+            }
+
+            /// <summary>
+            /// Gets boolean indicating whether the RegexCacheKey is equal to another object.
+            /// </summary>
+            /// <param name="other">Other object.</param>
+            /// <returns>True if objects are identical. Otherwise false.</returns>
             public override bool Equals(object other)
             {
                 RegexCacheKey otherCacheKey =  other as RegexCacheKey;
@@ -1303,8 +1328,15 @@ namespace PHP.Library
                 return false;
             }
 
+            /// <summary>
+            /// Gets boolean indicating whether the RegexCacheKey is equal to another RegexCacheKey.
+            /// </summary>
+            /// <param name="other">Other RegexCacheKey.</param>
+            /// <returns>True if RegexCacheKeys are identical. Otherwise false.</returns>
             public bool Equals(RegexCacheKey other)
             {
+                if (_hash != other._hash) return false;
+
                 if (IsBinary)
                 {
                     if (other.IsBinary)
@@ -1322,6 +1354,10 @@ namespace PHP.Library
                 }
             }
 
+            /// <summary>
+            /// Gets cached hash code.
+            /// </summary>
+            /// <returns>Hash code.</returns>
             public override int GetHashCode()
             {
                 return _hash;
@@ -1333,10 +1369,29 @@ namespace PHP.Library
 		/// </summary>
 		private sealed class RegexCacheEntry
 		{
-            public string RegexExpr;
+            /// <summary>
+            /// Regex expression, used for creation of compiled Regex.
+            /// </summary>
+            public string/*!*/ RegexExpr;
+
+            /// <summary>
+            /// Regex options, used for creation of compiled Regex.
+            /// </summary>
             public RegexOptions RegexOpt;
+
+            /// <summary>
+            /// Original Regex.
+            /// </summary>
             public PerlRegexOptions PerlOpt;
-			public Regex Regex;
+
+            /// <summary>
+            /// Perl regular expression options.
+            /// </summary>
+            public Regex/*!*/ Regex;
+
+            /// <summary>
+            /// Hit count.
+            /// </summary>
             public int Hits;
 
             /// <summary>
@@ -1349,7 +1404,14 @@ namespace PHP.Library
             /// </summary>
             public int LastRequestID;
 
-            public RegexCacheEntry(string regexExpr, RegexOptions regexOpt, Regex regex, PerlRegexOptions perlOpt)
+            /// <summary>
+            /// Initializes new cache entry.
+            /// </summary>
+            /// <param name="regexExpr">Regex expression, used for creation of compiled Regex.</param>
+            /// <param name="regexOpt">Regex options, used for creation of compiled Regex.</param>
+            /// <param name="regex">Original Regex.</param>
+            /// <param name="perlOpt">Perl regular expression options.</param>
+            public RegexCacheEntry(string/*!*/ regexExpr, RegexOptions regexOpt, Regex/*!*/ regex, PerlRegexOptions perlOpt)
 			{
                 RegexExpr = regexExpr;
                 RegexOpt = regexOpt;
@@ -1404,18 +1466,18 @@ namespace PHP.Library
         /// <summary>
         /// Cache lock.
         /// </summary>
-        private static ReaderWriterLockSlim _cacheLock;
+        private static ReaderWriterLockSlim/*!*/ _cacheLock;
         #endif
 
         /// <summary>
         /// Mapping of strings to first generation of already prepared regular expressions.
         /// </summary>
-		private static Dictionary<RegexCacheKey, RegexCacheEntry> _regexFirstGen;
+        private static Dictionary<RegexCacheKey, RegexCacheEntry>/*!*/ _regexFirstGen;
 
         /// <summary>
         /// Mapping of strings to already prepared regular expressions.
         /// </summary>
-        private static Dictionary<RegexCacheKey, RegexCacheEntry> _regexSecondGen;
+        private static Dictionary<RegexCacheKey, RegexCacheEntry>/*!*/ _regexSecondGen;
 
         /// <summary>
         /// Last clean up time.
@@ -1476,7 +1538,7 @@ namespace PHP.Library
         /// </summary>
         /// <param name="key">Key.</param>
         /// <returns>Tuple of regex and perl regex options.</returns>
-        public static Tuple<Regex, PerlRegexOptions> GetCachedRegex(RegexCacheKey key)
+        public static Tuple<Regex, PerlRegexOptions> GetCachedRegex(RegexCacheKey/*!*/ key)
         {
 #if !SILVERLIGHT
             _cacheLock.EnterUpgradeableReadLock();
@@ -1516,11 +1578,14 @@ namespace PHP.Library
         /// <param name="regexOpt">Options user for Regex creation.</param>
         /// <param name="regex">Regex object.</param>
         /// <param name="perlOpt">Perl regex options.</param>
-        public static void AddRegex(RegexCacheKey key, string pattern, RegexOptions regexOpt, Regex regex, PerlRegexOptions perlOpt)
+        public static void AddRegex(RegexCacheKey/*!*/ key, string/*!*/ pattern, RegexOptions regexOpt, Regex/*!*/ regex, PerlRegexOptions perlOpt)
         {
 #if !SILVERLIGHT
             _cacheLock.EnterWriteLock();
 #endif
+
+            //makes the key persistent
+            key.MakePersistent();
 
             try
             {
@@ -1535,12 +1600,18 @@ namespace PHP.Library
             }
         }
 
-        private static void TryUpgradeEntry(RegexCacheKey key, RegexCacheEntry entry)
+        /// <summary>
+        /// Tries to upgrade the cache entry if possible.
+        /// </summary>
+        /// <param name="key">Key.</param>
+        /// <param name="entry">Entry.</param>
+        private static void TryUpgradeEntry(RegexCacheKey/*!*/ key, RegexCacheEntry/*!*/ entry)
         {
             lock (entry)
             {
                 // update hit count
                 entry.Hits++;
+
                 // update last request id (use finished request id, which is always lower than started request id)
                 // we increase it by one because we are in fact in that request
                 entry.LastRequestID = _currentRequestID;
