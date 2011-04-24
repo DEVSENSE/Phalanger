@@ -19,71 +19,150 @@ using PHP.Core.Reflection;
 namespace PHP.Core
 {
 	/// <summary>
-	/// Summary description for PhpString.
+	/// String representation that uses <see cref="StringBuilder"/> internally to improve
+    /// performance of modifications such as Append, Prepend and singe character change.
 	/// </summary>
 	public sealed class PhpString : IPhpVariable, IPhpObjectGraphNode
 	{
+        /// <summary>
+        /// PhpStrings PHP type name (string).
+        /// </summary>
 		public const string PhpTypeName = PhpVariable.TypeNameString;
 
 		/// <summary>
 		/// Copy-on-write aware string builder.
 		/// </summary>
-		private CowStringBuilder cow;
+		private CowStringBuilder/*!*/cow;
 
 		#region Nested Class: CowStringBuilder
 
+        /// <summary>
+        /// StringBuilder that can be marked both as read only (shared, immutable) or writable.
+        /// </summary>
 		private class CowStringBuilder
-		{
-			public StringBuilder Builder;
-			public int RefCount = 1;
+        {
+            #region Fields & Properties
 
+            /// <summary>
+            /// <see cref="StringBuilder"/> containing the string (Unicode) data.
+            /// </summary>
+            public StringBuilder/*!*/Builder { get { return _builder; } }
+			private readonly StringBuilder/*!*/_builder;
+
+            /// <summary>
+            /// True iff the internal data structure is shared and should not be modified.
+            /// </summary>
+            public bool IsShared
+            {
+                get
+                {
+                    return _refCount > 1;
+                }
+            }
+
+            /// <summary>
+            /// Keep track of "reference count". Only increased when copied, and decreased when shared instance is modified.
+            /// Sometimes it really avoids copying.
+            /// </summary>
+            private int _refCount = 1;
+
+            #endregion
+
+            #region Contstruction
+
+            /// <summary>
+            /// Initialize the instance with string value.
+            /// </summary>
+            /// <param name="str">String value.</param>
 			public CowStringBuilder(string str)
 			{
-				Builder = new StringBuilder(str);
+                _builder = new StringBuilder(str);
 			}
 
+            /// <summary>
+            /// Initialize the instance with string and expected capacity.
+            /// </summary>
+            /// <param name="str">String value.</param>
+            /// <param name="capacity">Expected capacity.</param>
 			public CowStringBuilder(string str, int capacity)
 			{
-				Builder = new StringBuilder(str, capacity);
+                _builder = new StringBuilder(str, capacity);
 			}
 
+            /// <summary>
+            /// Initialize the instance with twi string values that will be concatenated.
+            /// </summary>
+            /// <param name="str1"></param>
+            /// <param name="str2"></param>
 			public CowStringBuilder(string str1, string str2)
 			{
 				if (str1 == null)
 				{
-					Builder = new StringBuilder(str2);
+                    _builder = new StringBuilder(str2);
 				}
 				else if (str2 == null)
 				{
-					Builder = new StringBuilder(str1);
+                    _builder = new StringBuilder(str1);
 				}
 				else
 				{
-					Builder = new StringBuilder(str1, str1.Length + str2.Length);
-					Builder.Append(str2);
+                    _builder = new StringBuilder(str1, str1.Length + str2.Length);
+                    _builder.Append(str2);
 				}
-			}
-		}
+            }
+
+            #endregion
+
+            #region Share, Unshare
+
+            /// <summary>
+            /// Mark this instance as shared (read only, immutable).
+            /// </summary>
+            /// <returns></returns>
+            public CowStringBuilder/*!*/Share()
+            {
+                ++_refCount;
+                return this;
+            }
+
+            /// <summary>
+            /// Get back shared instance of <see cref="CowStringBuilder"/>.
+            /// </summary>
+            public void Unshare()
+            {
+                --_refCount;
+            }
+
+            #endregion
+        }
 
 		#endregion
 
 		#region Construction
 
 		/// <summary>
-		/// Copy constructor.
+		/// Lazy copy construction.
 		/// </summary>
 		/// <param name="phps"></param>
 		private PhpString(PhpString phps)
 		{
-			this.cow = phps.cow;
-			this.cow.RefCount++;
+			this.cow = phps.cow.Share();
 		}
 
+        /// <summary>
+        /// Initialize PhpString with string value.
+        /// </summary>
+        /// <param name="str">String value.</param>
 		public PhpString(string str)
 		{
 			this.cow = new CowStringBuilder(str);
 		}
 
+        /// <summary>
+        /// Initialize PhpString with two string values that will be concatenated.
+        /// </summary>
+        /// <param name="str1">First string value.</param>
+        /// <param name="str2">Second string value.</param>
 		public PhpString(string str1, string str2)
 		{
 			this.cow = new CowStringBuilder(str1, str2);
@@ -95,7 +174,8 @@ namespace PHP.Core
 
 		public bool IsEmpty()
 		{
-			return cow.Builder.Length == 0 || (cow.Builder.Length == 1 && cow.Builder[0] == '0');
+            int length = this.Length;
+            return length == 0 || (length == 1 && cow.Builder[0] == '0');
 		}
 
 		public bool IsScalar()
@@ -134,7 +214,7 @@ namespace PHP.Core
 
 		public bool ToBoolean()
 		{
-			int length = cow.Builder.Length;
+            int length = this.Length;
 			return length != 0 && (length != 1 || cow.Builder[0] != 0);
 		}
 
@@ -252,10 +332,10 @@ namespace PHP.Core
 
 		public PhpString/*!*/ Append(string str)
 		{
-			if (cow.RefCount > 1)
-			{
-				cow.RefCount--;
-				cow = new CowStringBuilder(cow.Builder.ToString(), str);
+            if (cow.IsShared)
+            {
+                cow.Unshare();
+            	cow = new CowStringBuilder(cow.Builder.ToString(), str);
 			}
 			else
 			{
@@ -267,9 +347,9 @@ namespace PHP.Core
 
 		public PhpString/*!*/ Append(char c)
 		{
-			if (cow.RefCount > 1)
-			{
-				cow.RefCount--;
+            if (cow.IsShared)
+            {
+                cow.Unshare();
 				cow = new CowStringBuilder(cow.Builder.ToString(), cow.Builder.Length + 1);
 			}
 
@@ -283,22 +363,25 @@ namespace PHP.Core
 			if (count < 0)
 				throw new ArgumentOutOfRangeException("count");
 
-			if (cow.RefCount > 1)
-			{
-				cow.RefCount--;
-				cow = new CowStringBuilder(cow.Builder.ToString(), cow.Builder.Length + count);
-			}
+            if (count > 0)
+            {
+                if (cow.IsShared)
+                {
+                    cow.Unshare();
+                    cow = new CowStringBuilder(cow.Builder.ToString(), cow.Builder.Length + count);
+                }
 
-			cow.Builder.Append(c, count);
+                cow.Builder.Append(c, count);
+            }
 
 			return this;
 		}
 
 		public PhpString/*!*/ Prepend(string str)
 		{
-			if (cow.RefCount > 1)
-			{
-				cow.RefCount--;
+            if (cow.IsShared)
+            {
+                cow.Unshare();
 				cow = new CowStringBuilder(str, cow.Builder.ToString());
 			}
 			else
@@ -311,11 +394,11 @@ namespace PHP.Core
 
 		internal void SetCharUnchecked(int index, char value)
 		{
-			Debug.Assert(index >= 0 && index < cow.Builder.Length);
+            Debug.Assert(index >= 0 && index < this.Length);
 
-			if (cow.RefCount > 1)
-			{
-				cow.RefCount--;
+            if (cow.IsShared)
+            {
+                cow.Unshare();
 				cow = new CowStringBuilder(cow.Builder.ToString());
 			}
 
