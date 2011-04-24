@@ -141,8 +141,8 @@ namespace PHP.Core
 			if (dictionary == null)
 				throw new ArgumentNullException("dictionary");
 
-			this.primary = new Dictionary<K, V>(dictionary.primary);
-			this.secondary = new Dictionary<K, V>(dictionary.secondary);
+			this.primary = new Dictionary<K, V>(dictionary.primary, dictionary.primary.Comparer);
+			this.secondary = new Dictionary<K, V>(dictionary.secondary, dictionary.secondary.Comparer);
 		}
 
 		public DualDictionary(IEqualityComparer<K> primaryComparer, IEqualityComparer<K> secondaryComparer)
