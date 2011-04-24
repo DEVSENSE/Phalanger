@@ -42,18 +42,13 @@ namespace PHP.Core
             #region Fields
 
             /// <summary>
-            /// True iff the internal data structure is shared and should not be ever modified.
+            /// True iff the internal data structure is shared and should not be modified.
             /// </summary>
-            public bool IsReadOnly
+            public bool IsShared
             {
-                get { return _isReadOnly; }
-                set
-                {
-                    Debug.Assert(!_isReadOnly || value);   // once readonly is set, it cannot be unset
-                    _isReadOnly = value;
-                }
+                get { return _refCount > 1; }
             }
-            private bool _isReadOnly;
+            private int _refCount;
 
             /// <summary>
             /// Internal byte array representing the data.
@@ -71,11 +66,11 @@ namespace PHP.Core
             #region Constructors
 
             /// <summary>
-            /// Initialize the instance of <see cref="Data"/> with byte array. The data are not marked as <see cref="IsReadOnly"/>.
+            /// Initialize the instance of <see cref="Data"/> with byte array. The data are not marked as <see cref="IsShared"/>.
             /// </summary>
             /// <param name="data">The byte array reference used internally.</param>
             public DataContainer(params byte[]/*!*/ data)
-                : this(false, data)
+                : this(1, data)
             {
             }
 
@@ -84,25 +79,33 @@ namespace PHP.Core
             /// </summary>
             /// <param name="isReadOnly">Wheter the data are shared.</param>
             /// <param name="data">The byte array reference used internally.</param>
-            public DataContainer(bool isReadOnly, params byte[]/*!*/ data)
+            public DataContainer(int refCount, params byte[]/*!*/ data)
             {
                 Debug.Assert(data != null);
+                this._refCount = refCount;
                 this._data = data;
-                this.IsReadOnly = isReadOnly;
             }
 
             #endregion
 
-            #region Share
+            #region Share, Unshare
 
             /// <summary>
-            /// Marks this instance as shared (<see cref="IsReadOnly"/>) and returns itself.
+            /// Marks this instance as shared (<see cref="IsShared"/>) and returns itself.
             /// </summary>
             /// <returns></returns>
             public DataContainer/*!*/Share()
             {
-                this.IsReadOnly = true;
+                ++_refCount;
                 return this;
+            }
+
+            /// <summary>
+            /// Get back shared instance of internal <see cref="byte"/> array.
+            /// </summary>
+            public void Unshare()
+            {
+                --_refCount;
             }
 
             #endregion
@@ -148,16 +151,22 @@ namespace PHP.Core
 		{
 			get
             {
-                if (_data.IsReadOnly)
+                if (_data.IsShared)
                 {   // performs clone of internal byte array
-                    _data = new DataContainer(false, (byte[])_data.Data.Clone());
+                    _data.Unshare();
+                    _data = new DataContainer((byte[])_data.Data.Clone());
                 }
+
                 return _data.Data;
             }
 			set
             {
                 if (value == null) throw new ArgumentNullException("value");
-                _data = new DataContainer(false, value);
+
+                if (_data.IsShared)
+                    _data.Unshare();
+                
+                _data = new DataContainer(value);
             }
 		}
         private DataContainer/*!*/_data;
@@ -187,7 +196,7 @@ namespace PHP.Core
 		public PhpBytes(params byte[]/*!*/ data)
 		{
 			if (data == null) throw new ArgumentNullException("data");
-            this._data = new DataContainer(false, data);
+            this._data = new DataContainer(data);
 		}
 
 		/// <summary>
