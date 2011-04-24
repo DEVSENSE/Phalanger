@@ -2209,7 +2209,7 @@ namespace PHP.Core
         #region CheckWritable
 
         /// <summary>
-        /// Ensures the internal <see cref="OrderedHashtable"/> will be writable (not shared).
+        /// Ensures the internal <see cref="OrderedHashtable&lt;T&gt;"/> will be writable (not shared).
         /// </summary>
         protected void CheckWritable()
         {

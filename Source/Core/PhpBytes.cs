@@ -77,7 +77,7 @@ namespace PHP.Core
             /// <summary>
             /// Initialize the instance of <see cref="Data"/> with byte array.
             /// </summary>
-            /// <param name="isReadOnly">Wheter the data are shared.</param>
+            /// <param name="refCount">Number of references to this class. By default 1.</param>
             /// <param name="data">The byte array reference used internally.</param>
             public DataContainer(int refCount, params byte[]/*!*/ data)
             {
