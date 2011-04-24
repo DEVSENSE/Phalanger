@@ -544,6 +544,7 @@ namespace PHP.Core
 
 			if ((array = obj as PhpArray) != null)
 			{
+                // compare elements:
 				bool incomparable;
 				int result = CompareArrays(this, array, comparer, out incomparable);
 				if (incomparable)
@@ -571,6 +572,11 @@ namespace PHP.Core
 
 			incomparable = false;
 
+            // if both operands point to the same internal dictionary:
+            if (object.ReferenceEquals(x.table, y.table))
+                return 0;
+
+            //
 			object child_x, child_y;
 			PhpArray array_x, array_y;
 			PhpArray sorted_x, sorted_y;
@@ -672,7 +678,7 @@ namespace PHP.Core
 		{
 			bool incomparable, result;
 
-			result = StrictCompareArrays(this, array, out incomparable);
+            result = StrictCompareArrays(this, array, out incomparable);
 			if (incomparable)
 			{
 				PhpException.Throw(PhpError.Warning, CoreResources.GetString("incomparable_arrays_compared"));
@@ -694,6 +700,11 @@ namespace PHP.Core
 
 			incomparable = false;
 
+            // if both operands point to the same internal dictionary:
+            if (object.ReferenceEquals(x.table, y.table))
+                return true;
+
+            //
 			object child_x, child_y;
 			PhpArray array_x, array_y;
 			PhpReference r;
@@ -1185,6 +1196,12 @@ namespace PHP.Core
 			OrderedHashtable<IntStringKey>.Element element;
 			if (this.table.dict.TryGetValue(key, out element))
 			{
+                if (this.table.IsShared && !(element.Value is PhpReference)) // we are going to change the value of element
+                {
+                    throw new NotImplementedException("TBD: lazy copy");
+                    //element = this.table.dict[key]; // get the item again
+                }
+
 				// item exists => convert it to a reference if not yet:
 				result = element.MakeValueReference();
 			}
@@ -1253,16 +1270,26 @@ namespace PHP.Core
 		private void SetArrayItem(IntStringKey key, object value)
 		{
 			// gets an item from the array to check whether it is a reference or not:
-			
+
+            this.CheckWritable(); // TODO: avoid of copying, see below when element is found and it is PhpReference
+
 			OrderedHashtable<IntStringKey>.Element element;
 			if (this.table.dict.TryGetValue(key, out element))
 			{
 				// assigns value to a reference or changes the array item itself:
-				PhpReference reference = element.Value as PhpReference;
-				if (reference != null)
-					reference.Value = value;
-				else
-					element.Value = value;
+				PhpReference reference;
+                if ((reference = element.Value as PhpReference) != null)
+                    reference.Value = value;
+                else
+                {
+                    //if (this.table.IsShared)
+                    //{
+                    //    throw new NotImplementedException("TBD: lazy copy");
+                    //    //element = this.table.dict[key]; // get the item again
+                    //    //Debug.Assert(!(element.Value is PhpReference));
+                    //}
+                    element.Value = value;
+                }
 			}
 			else
 			{
@@ -1285,7 +1312,9 @@ namespace PHP.Core
 			{
 				PhpException.IllegalOffsetType();
 				return;
-			}	
+			}
+
+            this.CheckWritable();
 
 			this[array_key] = value;
 		}
@@ -1293,6 +1322,8 @@ namespace PHP.Core
 		[Emitted]
 		public virtual void SetArrayItemRef(int key, PhpReference value)
 		{
+            this.CheckWritable();
+
 			this[key] = value;
 		}
 
@@ -1300,7 +1331,9 @@ namespace PHP.Core
 		public virtual void SetArrayItemRef(string/*!*/ key, PhpReference value)
 		{
 			Debug.Assert(key != null);
-			 
+
+            this.CheckWritable();
+
 			// the key cannot be converted by compiler using StringToArrayKey as the compiler doesn't know
 			// whether the array is not actually ArrayAccess unless it performs som type analysis
 			this[Convert.StringToArrayKey(key)] = value;
@@ -1348,6 +1381,8 @@ namespace PHP.Core
 				PhpException.IllegalOffsetType();
 				return null;
 			}
+
+            this.CheckWritable();
 
 			OrderedHashtable<IntStringKey>.Element element = GetElement(array_key);
 			
@@ -1418,6 +1453,8 @@ namespace PHP.Core
 				PhpException.IllegalOffsetType();
 				return null;
 			}
+
+            this.CheckWritable();
 
 			OrderedHashtable<IntStringKey>.Element element = GetElement(array_key);
 			object item = (element != null) ? element.Value : null;

@@ -248,10 +248,20 @@ namespace PHP.Core
 		/// <summary>
 		/// Expose the dictionary to item getters on <see cref="PhpArray"/> to make them a little bit faster.
 		/// </summary>
-		internal readonly Dictionary<K, Element>/*!*/ dict;
+        internal readonly Dictionary<K, Element>/*!*/dict;
 
 		/// <summary>The head of the cyclic list.</summary>
-		internal Element head;
+        internal readonly Element/*!*/head;
+
+        /// <summary>
+        /// True iff the data structure is shared by more PhpHashtable instances and must not be modified.
+        /// </summary>
+        public bool IsShared { get { return _refCount > 1; } }
+
+        /// <summary>
+        /// Keep track of "reference count". Increased when copied, decreased when modified. Sometimes it can avoid of copying.
+        /// </summary>
+        private int _refCount = 1;
 
 		#endregion
 
@@ -277,9 +287,39 @@ namespace PHP.Core
 
 		#endregion
 
-		#region Inner class: Element
+        #region Share, Unshare, CheckNotShared
 
-		/// <summary>
+        /// <summary>
+        /// Marks this instance as shared (<see cref="IsShared"/>) and returns itself.
+        /// </summary>
+        /// <returns></returns>
+        public OrderedHashtable<K>/*!*/Share()
+        {
+            ++_refCount;
+            return this;
+        }
+
+        /// <summary>
+        /// Get back shared instance of internal data.
+        /// </summary>
+        public void Unshare()
+        {
+            --_refCount;
+        }
+
+        //[Conditional("DEBUG")]
+        internal void CheckNotShared()
+        {
+            //Debug.Assert(!this.IsShared, "Cannot modify shared OrderedHashtable.");
+            if (this.IsShared)
+                throw new AccessViolationException("Cannot modify shared OrderedHashtable.");
+        }
+
+        #endregion
+
+        #region Inner class: Element
+
+        /// <summary>
 		/// An element stored in the table.
 		/// </summary>
 		[Serializable]
@@ -303,7 +343,18 @@ namespace PHP.Core
 			/// <summary>
 			/// Value associated with the element.
 			/// </summary>
-			public object Value { get { return this._value; } set { this._value = value; } }
+			public object Value
+            {
+                get
+                {
+                    return this._value;
+                }
+                set
+                {
+                    Table.CheckNotShared();
+                    this._value = value;
+                }
+            }
 			private object _value;
 
 			public KeyValuePair<K, object> Entry { get { return new KeyValuePair<K, object>(_key, _value); } }
@@ -347,6 +398,8 @@ namespace PHP.Core
 				PhpReference result = _value as PhpReference;
 				if (result == null)
 				{
+                    Table.CheckNotShared();
+
 					// it is correct to box the Value without making a deep copy since there was a single pointer on Value
 					// before this operation (by invariant) and there will be a single one after the operation as well:
 					result = new PhpReference(_value);
@@ -596,7 +649,6 @@ namespace PHP.Core
 
 		#endregion
 
-
 		#region List operations: LinkNextsByPrevs, LinkPrevsByNexts, ReversePrevLinks, ReverseNextLinks
 
 		/// <summary>
@@ -641,7 +693,7 @@ namespace PHP.Core
 		/// <param name="head">The head of the list.</param>
 		internal void ReversePrevLinks(Element head)
 		{
-			Element iterator_next = head;
+            Element iterator_next = head;
 			Element iterator = head.Prev;
 			Element prev;
 
@@ -683,7 +735,7 @@ namespace PHP.Core
 		/// <param name="value">The value.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="key"/> is a null reference.</exception>
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
-		internal void AddAfter(Element element, K key, object value)
+		private void AddAfter(Element element, K key, object value)
 		{
 			Element new_element = new Element(this, key, value, element.Next, element);
 			dict.Add(key, new_element);
@@ -714,6 +766,7 @@ namespace PHP.Core
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
 		public virtual void Prepend(K key, object value)
 		{
+            this.CheckNotShared();
 			AddAfter(head, key, value);
 		}
 
@@ -747,6 +800,8 @@ namespace PHP.Core
 			if (this.Count == 0)
 				throw new InvalidOperationException(CoreResources.GetString("item_removed_from_empty_array"));
 
+            this.CheckNotShared();
+
 			KeyValuePair<K, object> last_entry = head.Prev.Entry;
 			Remove(last_entry.Key);
 			return last_entry;
@@ -761,6 +816,8 @@ namespace PHP.Core
 		{
 			if (this.Count == 0)
 				throw new InvalidOperationException(CoreResources.GetString("item_removed_from_empty_array"));
+
+            this.CheckNotShared();
 
 			KeyValuePair<K, object> first_entry = head.Next.Entry;
 			Remove(first_entry.Key);
@@ -848,6 +905,8 @@ namespace PHP.Core
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
 		public void Add(K key, object value)
 		{
+            this.CheckNotShared();
+
 			AddBefore(head, key, value);
 		}
 
@@ -862,6 +921,8 @@ namespace PHP.Core
 			Element element;
 			if (dict.TryGetValue(key, out element))
 			{
+                this.CheckNotShared();
+
 				// removes from hashtable:
 				dict.Remove(key);
 
@@ -1111,7 +1172,7 @@ namespace PHP.Core
 
 		public bool IsReadOnly
 		{
-			get { return false; }
+			get { return IsShared; }
 		}
 
 		bool ICollection<KeyValuePair<K, object>>.Remove(KeyValuePair<K, object> item)
@@ -1152,6 +1213,8 @@ namespace PHP.Core
 		/// </summary>
 		public void Clear()
 		{
+            this.CheckNotShared();
+
 			dict.Clear();
 			head.Next = head;
 			head.Prev = head;
@@ -1527,6 +1590,8 @@ namespace PHP.Core
 			int count = this.Count;
 			if (count <= 1) return;
 
+            this.CheckNotShared();
+
 			// sort whole list of elements:
 			Element next;
 			head.Next = MergeSortRecursive(comparer, head, count, head.Next, out next);
@@ -1786,6 +1851,8 @@ namespace PHP.Core
 		/// </remarks>
 		public void Reverse()
 		{
+            this.CheckNotShared();
+
 			Element iterator, next;
 
 			// exchanges prev and next references in head:
@@ -1819,11 +1886,13 @@ namespace PHP.Core
 			if (generator == null)
 				throw new ArgumentNullException("generator");
 
-			// total number of elements (interconnected table has to be taken into consideration): 
+            // total number of elements (interconnected table has to be taken into consideration): 
 			int count = this.Count;
 			if (count <= 1) return;
 
-			int i, p, n;
+            this.CheckNotShared(); 
+            
+            int i, p, n;
 			Element element;
 			Element[] elements = new Element[count + 2];
 
@@ -1896,7 +1965,7 @@ namespace PHP.Core
 			for (Element element = head.Next; element != head; element = element.Next)
 			{
 				// skips deleted items and items belonging to the other table:
-				dict[element.Key] = element;
+				RehashElement(element);
 			}
 		}
 
@@ -2137,9 +2206,26 @@ namespace PHP.Core
 
 		#endregion
 
-		#region Constructors
+        #region CheckWritable
 
-		/// <summary>
+        /// <summary>
+        /// Ensures the internal <see cref="OrderedHashtable"/> will be writable (not shared).
+        /// </summary>
+        protected void CheckWritable()
+        {
+            if (table.IsShared)
+            {
+                table.Unshare();
+                //table = new OrderedHashtable<IntStringKey>(this);
+                throw new NotImplementedException("TBD: lazy copy");
+            }
+        }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
 		/// Initializes a new instance of the <c>PhpHashtable</c> class.
 		/// </summary>
 		public PhpHashtable() : this(0) { }
@@ -2608,8 +2694,8 @@ namespace PHP.Core
 		/// <summary>This property is always false.</summary>
 		public virtual bool IsFixedSize { get { return false; } }
 
-		/// <summary>This property is always false.</summary>
-		public virtual bool IsReadOnly { get { return false; } }
+		/// <summary>This property is true iff the internal table is shared.</summary>
+		public virtual bool IsReadOnly { get { return table.IsShared; } }
 
 		/// <summary>
 		/// Returns an enumerator which iterates through values in this instance in order as they were added in it.
@@ -2633,6 +2719,8 @@ namespace PHP.Core
 		/// </summary>
 		public virtual void Clear()
 		{
+            this.CheckWritable();
+
 			table.Clear();
 		}
 
@@ -2772,6 +2860,8 @@ namespace PHP.Core
 		{
 			if (maxInt < int.MaxValue)
 			{
+                this.CheckWritable();
+
 				table.Add(new IntStringKey(++maxInt), value);
 				intCount++;
 				return 1;
@@ -2800,6 +2890,8 @@ namespace PHP.Core
 
 		public void Add(IntStringKey key, object value)
 		{
+            this.CheckWritable();
+
 			table.Add(key, value);
 			KeyAdded(ref key);
 		}
@@ -2811,6 +2903,8 @@ namespace PHP.Core
 
 		public bool Remove(IntStringKey key)
 		{
+            this.CheckWritable();
+
 			return table.Remove(key);
 		}
 
@@ -2835,6 +2929,8 @@ namespace PHP.Core
 
 		public void Add(KeyValuePair<IntStringKey, object> item)
 		{
+            this.CheckWritable();
+
 			table.Add(item.Key, item.Value);
 			KeyAdded(item.Key);
 		}
@@ -2847,11 +2943,13 @@ namespace PHP.Core
 		public void CopyTo(KeyValuePair<IntStringKey, object>[] array, int arrayIndex)
 		{
 			// TODO:
-			throw new Exception("The method or operation is not implemented.");
+			throw new NotImplementedException();
 		}
 
 		public bool Remove(KeyValuePair<IntStringKey, object> item)
 		{
+            this.CheckWritable();
+
 			return ((ICollection<KeyValuePair<IntStringKey, object>>)table).Remove(item);
 		}
 
@@ -2927,6 +3025,8 @@ namespace PHP.Core
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
 		public void Add(int key, object value)
 		{
+            this.CheckWritable();
+
 			table.Add(new IntStringKey(key), value);
 			KeyAdded(key);
 		}
@@ -2940,6 +3040,8 @@ namespace PHP.Core
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
 		public void Add(string key, object value)
 		{
+            this.CheckWritable();
+
 			table.Add(new IntStringKey(key), value);
 			KeyAdded(key);
 		}
@@ -2956,6 +3058,8 @@ namespace PHP.Core
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
 		public virtual void Prepend(string key, object value)
 		{
+            this.CheckWritable();
+
 			table.Prepend(new IntStringKey(key), value);
 			KeyAdded(key);
 		}
@@ -2968,6 +3072,8 @@ namespace PHP.Core
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
 		public virtual void Prepend(int key, object value)
 		{
+            this.CheckWritable();
+
 			table.Prepend(new IntStringKey(key), value);
 			KeyAdded(key);
 		}
@@ -2980,6 +3086,8 @@ namespace PHP.Core
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
 		public virtual void Prepend(IntStringKey key, object value)
 		{
+            this.CheckWritable();
+
 			table.Prepend(key, value);
 			KeyAdded(ref key);
 		}
@@ -2993,6 +3101,8 @@ namespace PHP.Core
 		/// <exception cref="InvalidCastException">The <paramref name="key"/> is neither <see cref="int"/> nor <see cref="string"/>.</exception>
 		public virtual void Prepend(object key, object value)
 		{
+            this.CheckWritable();
+
 			IntStringKey iskey = new IntStringKey(key);
 			table.Prepend(iskey, value);
 			KeyAdded(ref iskey);
@@ -3013,6 +3123,8 @@ namespace PHP.Core
 		/// <param name="key">The key.</param>
 		public virtual void Remove(int key)
 		{
+            this.CheckWritable();
+
 			table.Remove(new IntStringKey(key));
 		}
 
@@ -3023,6 +3135,8 @@ namespace PHP.Core
 		/// <exception cref="ArgumentNullException"><paramref name="key"/> is a null reference.</exception>
 		public virtual void Remove(string key)
 		{
+            this.CheckWritable();
+
 			table.Remove(new IntStringKey(key));
 		}
 
@@ -3033,6 +3147,8 @@ namespace PHP.Core
 		/// <exception cref="InvalidOperationException">The table is empty.</exception>
 		public virtual KeyValuePair<IntStringKey, object> RemoveLast()
 		{
+            this.CheckWritable();
+
 			return table.RemoveLast();
 		}
 
@@ -3043,6 +3159,8 @@ namespace PHP.Core
 		/// <exception cref="InvalidOperationException">The table is empty.</exception>
 		public virtual KeyValuePair<IntStringKey, object> RemoveFirst()
 		{
+            this.CheckWritable();
+
 			return table.RemoveFirst();
 		}
 
@@ -3064,6 +3182,8 @@ namespace PHP.Core
 			}
 			set
 			{
+                this.CheckWritable();
+
 				table[new IntStringKey(key)] = value;
 				KeyAdded(key);
 			}
@@ -3082,6 +3202,8 @@ namespace PHP.Core
 			}
 			set
 			{
+                this.CheckWritable();
+
 				table[new IntStringKey(key)] = value;
 				KeyAdded(key);
 			}
@@ -3100,6 +3222,8 @@ namespace PHP.Core
 			}
 			set
 			{
+                this.CheckWritable();
+
 				table[key] = value;
 				KeyAdded(ref key);
 			}
@@ -3199,7 +3323,7 @@ namespace PHP.Core
 
 			Debug.Assert(dst.Count == 0);
 
-			foreach (KeyValuePair<IntStringKey, object> entry in this)
+            foreach (KeyValuePair<IntStringKey, object> entry in this)
 			{
 				dst.Add(entry);
 			}
@@ -3291,6 +3415,8 @@ namespace PHP.Core
 			if (comparer == null)
 				throw new ArgumentNullException("comparer");
 
+            this.CheckWritable();
+
 			table.Sort(comparer);
 		}
 
@@ -3337,6 +3463,8 @@ namespace PHP.Core
 					throw new ArgumentException(CoreResources.GetString("lengths_are_different", "hashtables[0]",
 						String.Format("hashtables[{0}]", i)), "hashtables");
 
+                hashtable.Current.CheckWritable();
+
 				heads[i] = hashtable.Current.table.head;
 				hashtable.MoveNext();
 			}
@@ -3375,6 +3503,8 @@ namespace PHP.Core
 
 			if (hashtables.Count == 0) return;
 
+            this.CheckWritable();
+
 			table.SetOperation(op, EnumerateHeads(hashtables), comparer, result);
 		}
 
@@ -3389,6 +3519,8 @@ namespace PHP.Core
 		/// </summary>
 		public void Reverse()
 		{
+            this.CheckWritable();
+
 			table.Reverse();
 		}
 
@@ -3398,6 +3530,8 @@ namespace PHP.Core
 		/// <exception cref="ArgumentNullException"><paramref name="generator"/> is a <b>null</b> reference.</exception>
 		public void Shuffle(Random generator)
 		{
+            this.CheckWritable();
+
 			table.Shuffle(generator);
 		}
 
@@ -3446,6 +3580,8 @@ namespace PHP.Core
 		/// </summary>
 		public void ReindexAll()
 		{
+            this.CheckWritable();
+
 			// clears hashtables:
 			table.BaseClear();
 
@@ -3476,6 +3612,8 @@ namespace PHP.Core
 		/// <remarks>If indexing overflows a capacity of integer type it continues with <see cref="int.MinValue"/>.</remarks>
 		public void ReindexIntegers(int startIndex)
 		{
+            this.CheckWritable();
+
 			// clears integers-holding hashtable; doesn't cut the list off:
 			table.BaseClear();
 
@@ -3538,6 +3676,8 @@ namespace PHP.Core
 				throw new ArgumentOutOfRangeException("length");
 			if (replaced == null)
 				throw new ArgumentNullException("replaced");
+
+            this.CheckWritable();
 
 			OrderedHashtable<IntStringKey>.Element element, next;
 			int ikey = 0;

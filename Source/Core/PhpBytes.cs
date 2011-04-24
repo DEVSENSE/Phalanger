@@ -444,7 +444,10 @@ namespace PHP.Core
             PhpBytes other;
             if ((other = obj as PhpBytes) != null)
             {
-                if (this._data == other._data) return 0;    // if both PhpByte instances share the same internal byte array
+                // if both PhpByte instances share the same internal byte array:
+                if (this._data == other._data) return 0;
+
+                // as we know the second operand is PhpBytes, compare as strings directly:
                 return comparer.Compare(((IPhpConvertible)this).ToString(), ((IPhpConvertible)other).ToString());
             }
 

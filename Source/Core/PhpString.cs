@@ -305,6 +305,19 @@ namespace PHP.Core
 		public int CompareTo(object obj, IComparer/*!*/ comparer)
 		{
 			Debug.Assert(comparer != null);
+
+            // compare internal structures if possible
+            PhpString phps;
+            if ((phps = obj as PhpString) != null)
+            {
+                if (object.ReferenceEquals(this.cow, phps.cow))
+                    return 0;
+
+                // as we know the second operand is PhpString, compare as strings directly
+                return comparer.Compare(this.cow.Builder.ToString(), phps.cow.Builder.ToString());
+            }
+
+            // compare as strings
             return comparer.Compare(cow.Builder.ToString(), obj);
 		}
 
