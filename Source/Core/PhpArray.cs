@@ -41,11 +41,8 @@ namespace PHP.Core
 	[DebuggerTypeProxy(typeof(PhpArrayDebugView))]
 #endif
 	public class PhpArray : PhpHashtable, ICloneable, IPhpVariable, IPhpEnumerable, IPhpObjectGraphNode
-	{
-		/// <summary>
-		/// Intrinsic enumerator associated with the array. Initialized lazily.
-		/// </summary>
-		private IPhpEnumerator intrinsicEnumerator;
+    {
+        #region Fields, Properties, Constants
 
         /// <summary>
         /// Used in all PHP functions determining the type name. (var_dump, ...)
@@ -69,9 +66,16 @@ namespace PHP.Core
 		public bool InplaceCopyOnReturn { get { return inplaceCopyOnReturn; } set { inplaceCopyOnReturn = value; } }
 		private bool inplaceCopyOnReturn = false;
 
-		#region Constructors
-
 		/// <summary>
+		/// Intrinsic enumerator associated with the array. Initialized lazily.
+		/// </summary>
+		protected OrderedHashtable<IntStringKey>.Enumerator intrinsicEnumerator;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
 		/// Creates a new instance of <see cref="PhpArray"/> with specified capacities for integer and string keys respectively.
 		/// </summary>
 		public PhpArray() : base() { }
@@ -908,7 +912,7 @@ namespace PHP.Core
 			{
 				Debug.Assert(array != null);
 
-				this.array = array;
+                this.array = array;
 				this.currentIndex = -1;
 				this.length = array.Count;
 
@@ -998,7 +1002,6 @@ namespace PHP.Core
                     return ++currentIndex < length;
                 else
                 {
-                    // TBD: Dispose the enumerator
                     return false;
                 }
 			}

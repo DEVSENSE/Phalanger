@@ -253,10 +253,10 @@ namespace PHP.Core
 		/// <summary>The head of the cyclic list.</summary>
         internal readonly Element/*!*/head;
 
-        /// <summary>
-        /// The next ID used for new Element added into this instance.
-        /// </summary>
-        internal ulong elementsId = 0;
+        ///// <summary>
+        ///// The next ID used for new Element added into this instance.
+        ///// </summary>
+        //internal ulong elementsId = 0;
 
         /// <summary>
         /// The <see cref="PhpHashtable"/> owning this instance. Used when copying lazily to determine cyclic references. Can be null if we don't care.
@@ -273,7 +273,7 @@ namespace PHP.Core
         /// </summary>
         private int _refCount = 1;
 
-		#endregion
+        #endregion
 
 		#region Constructors
 
@@ -353,10 +353,10 @@ namespace PHP.Core
 			internal Element Next;
 			internal Element Prev;
 
-            /// <summary>
-            /// The unique ID of Element within the <see cref="Table"/>.
-            /// </summary>
-            internal ulong ID;
+            ///// <summary>
+            ///// The unique ID of Element within the <see cref="Table"/>.
+            ///// </summary>
+            //internal ulong ID;
 
 			/// <summary>
 			/// Key associated with the element. <see cref="InvalidItem"/> in head.
@@ -393,7 +393,7 @@ namespace PHP.Core
 
 				Next = this;
 				Prev = this;
-                ID = table.elementsId ++;
+                //ID = table.elementsId ++;
 
 				this._value = InvalidItem.Default;                
 			}
@@ -409,7 +409,7 @@ namespace PHP.Core
 
                 Table = table;
 
-                ID = table.elementsId++;
+                //ID = table.elementsId++;
             }
 
 			/// <summary>
@@ -471,7 +471,7 @@ namespace PHP.Core
 		/// </para>
 		/// </remarks>
 		[Serializable]
-		public class Enumerator : IEnumerator<KeyValuePair<K, object>>, IDictionaryEnumerator, IPhpEnumerator
+		public class Enumerator : IEnumerator<KeyValuePair<K, object>>, IDictionaryEnumerator, IPhpEnumerator, IDisposable
 		{
 			#region Fields
 
@@ -485,12 +485,12 @@ namespace PHP.Core
 			/// <summary>
 			/// Reference to head of the list.
 			/// </summary>
-			private Element/*!*/ head;
+			internal Element/*!*/ head;
 
 			/// <summary>
 			/// Reference to the current element in the list.
 			/// </summary>
-			private Element/*!*/ current;
+			internal Element/*!*/ current;
 
 			/// <summary>
 			/// Whether the enumertor is starting a new enumeration of the list.
@@ -516,7 +516,7 @@ namespace PHP.Core
 			{
 				Debug.Assert(hashtable != null, "hashtable cannot be null!");
 
-				this.head = hashtable.head;
+                this.head = hashtable.head;
 				this.current = head;
 				this.starting = true;
 				this.isGeneric = isGeneric;
@@ -533,7 +533,9 @@ namespace PHP.Core
             internal Enumerator(PhpHashtable/*!*/hashtable, bool isGeneric)
                 : this(hashtable.table as OrderedHashtable<K>, isGeneric)
             {
-                this.hashtable = hashtable; // store the table container to allow internal table update
+                this.hashtable = hashtable; // store the table container to allow internal table update check
+
+                hashtable.RegisterEnumerator(this as OrderedHashtable<IntStringKey>.Enumerator);
             }
 
 			#endregion
@@ -544,7 +546,7 @@ namespace PHP.Core
             /// Move <see cref="current"/> iterator over the deleted element (follows Next reference).
             /// </summary>
             /// <returns>The <see cref="current"/> iterator.</returns>
-            private Element SkipDeletedForward()
+            internal Element SkipDeletedForward()
             {
                 while (current.IsDeleted) current = current.Next;
                 return current;
@@ -570,6 +572,10 @@ namespace PHP.Core
                 {
                     // internal table of enumerated hashtable has been changed (due to lazy copy)
                     // update the links to head and current accordingly:
+
+                    Debug.Fail("Underlaying table changed! Check the enumerator does not point to shared table when created.");
+
+                    /*
 
                     var newtable = this.hashtable.table as OrderedHashtable<K>;
                     var ID = this.current.ID;
@@ -605,7 +611,7 @@ namespace PHP.Core
                         //
                         this.current = newcurrent;
                         this.head = newtablehead;
-                    }
+                    }*/
 
                     // changed
                     return true;
@@ -707,6 +713,9 @@ namespace PHP.Core
 			public void Dispose()
 			{
 				// nop
+
+                if (hashtable != null)
+                    hashtable.UnregisterEnumerator(this as OrderedHashtable<IntStringKey>.Enumerator);
 			}
 
 			#endregion
@@ -917,11 +926,11 @@ namespace PHP.Core
 		/// <param name="element">The element to be deleted.</param>
 		internal void Delete(Element element)
 		{
-            //// disconnects (unilaterally):
-            //element.Prev.Next = element.Next;
-            //element.Next.Prev = element.Prev;
+            // disconnects (unilaterally):
+            element.Prev.Next = element.Next;
+            element.Next.Prev = element.Prev;
 
-            //drop the value:
+            // drop the value:
             element.Value = null;
 
 			// marks item as deleted:
@@ -2389,7 +2398,26 @@ namespace PHP.Core
 		public int StringCount { get { return stringCount; } }
 		private int stringCount = 0;
 
-		#endregion
+        #region active enumerators
+
+        internal void RegisterEnumerator(OrderedHashtable<IntStringKey>.Enumerator/*!*/enumerator)
+        {
+            if (activeEnumerators == null) activeEnumerators = new LinkedList<OrderedHashtable<IntStringKey>.Enumerator>();
+
+            Debug.Assert(!activeEnumerators.Contains(enumerator), "Enumerator registered more than once!");
+
+            activeEnumerators.AddFirst(enumerator);
+        }
+        internal void UnregisterEnumerator(OrderedHashtable<IntStringKey>.Enumerator/*!*/enumerator)
+        {
+            if (activeEnumerators != null && activeEnumerators.Remove(enumerator) && activeEnumerators.Count == 0)
+                activeEnumerators = null;
+        }
+        private LinkedList<OrderedHashtable<IntStringKey>.Enumerator> activeEnumerators;
+
+        #endregion
+
+        #endregion
 
         #region EnsureWritable
 
@@ -2401,9 +2429,7 @@ namespace PHP.Core
             if (table.IsShared)
             {
                 table.Unshare();
-                table = DeepCopyTo(
-                    new OrderedHashtable<IntStringKey>(this, table.Count, IntStringKey.EqualityComparer.Default),
-                    true);
+                table = DeepCopyTo(new OrderedHashtable<IntStringKey>(this, table.Count, IntStringKey.EqualityComparer.Default));
             }
         }
 
@@ -2829,16 +2855,16 @@ namespace PHP.Core
             return new RecursiveEnumerator(this, followReferences, readOnly);
 		}
 
-		/// <summary>
-		/// Retrieves a recursive enumerator of this instance.
-		/// </summary>
-		/// <returns>The <see cref="RecursiveEnumerator"/> not following PHP references.</returns>
-		public RecursiveEnumerator/*!*/ GetRecursiveEnumerator()
-		{
-			return new RecursiveEnumerator(this, false, false);
-		}
+        ///// <summary>
+        ///// Retrieves a recursive enumerator of this instance.
+        ///// </summary>
+        ///// <returns>The <see cref="RecursiveEnumerator"/> not following PHP references.</returns>
+        //public RecursiveEnumerator/*!*/ GetRecursiveEnumerator()
+        //{
+        //    return new RecursiveEnumerator(this, false, false);
+        //}
 
-		public IPhpEnumerator/*!*/ GetPhpEnumerator()
+        public OrderedHashtable<IntStringKey>.Enumerator/*!*/ GetPhpEnumerator()
 		{
             return new OrderedHashtable<IntStringKey>.Enumerator(this, true); //(IPhpEnumerator)table.GetEnumerator();
 		}
@@ -3545,7 +3571,7 @@ namespace PHP.Core
 			Performance.Increment(Performance.ArrayDCs);
 #endif
             // copy values into dst array, skips internal checks by calling table.Add directly
-            DeepCopyTo(dst.table, false);
+            DeepCopyTo(dst.table);
 
             // copy additional information about the array
 			dst.maxInt = this.maxInt;
@@ -3560,24 +3586,34 @@ namespace PHP.Core
         /// Deeply copies all the entries into the given <paramref name="dst"/> table.
         /// </summary>
         /// <param name="dst">The empty table to deep copy values to.</param>
-        /// <param name="preserveDeletedElements">True to copy deleted elements and preserve their IDs.</param>
         /// <returns>Returns <paramref name="dst"/> parameter.</returns>
-        private OrderedHashtable<IntStringKey>/*!*/DeepCopyTo(OrderedHashtable<IntStringKey>/*!*/dst, bool preserveDeletedElements)
+        private OrderedHashtable<IntStringKey>/*!*/DeepCopyTo(OrderedHashtable<IntStringKey>/*!*/dst)
         {
             Debug.Assert(dst != null, "Argument cannot be null.");
             Debug.Assert(dst.Count == 0, "Argument must be an empty PhpHashtable.");
             Debug.Assert(!dst.IsShared, "Argument must not be shared.");
 
+            if (activeEnumerators != null)
+                for(var enumerator = activeEnumerators.First; enumerator != null; enumerator = enumerator.Next)
+                {
+                    enumerator.Value.SkipDeletedForward();
+                    enumerator.Value.head = dst.head;
+
+                    if (enumerator.Value.current.IsHead)
+                        enumerator.Value.current = dst.head;
+                }
+            
             for (var p = table.head.Next; p != table.head; p = p.Next )
             {
+                //
                 if (p.IsDeleted)
                 {
-                    if (!preserveDeletedElements)
-                        continue;   // skip deleted elements
+                    //if (!preserveDeletedElements)
+                    //    continue;   // skip deleted elements
 
-                    // add copied value into the table
-                    var element = dst.AddDeletedBefore(dst.head, p.Key);
-                    element.ID = p.ID;
+                    //// add copied value into the table
+                    //var element = dst.AddDeletedBefore(dst.head, p.Key);
+                    //element.ID = p.ID;
                 }
                 else
                 {
@@ -3592,14 +3628,19 @@ namespace PHP.Core
                     // add copied value into the table
                     var element = dst.AddBefore(dst.head, p.Key, value);
 
-                    if (preserveDeletedElements)
-                        element.ID = p.ID;
+                    //if (preserveDeletedElements)
+                    //    element.ID = p.ID;
+
+                    if (activeEnumerators != null)
+                        for (var enumerator = activeEnumerators.First; enumerator != null; enumerator = enumerator.Next)
+                            if (enumerator.Value.current == p)
+                                enumerator.Value.current = element;
                 }
             }
 
-            // update table.elementsId
-            if (preserveDeletedElements)
-                dst.elementsId = this.table.elementsId;
+            //// update table.elementsId
+            //if (preserveDeletedElements)
+            //    dst.elementsId = this.table.elementsId;
             
             //
             return dst;
