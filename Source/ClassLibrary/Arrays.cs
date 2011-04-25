@@ -1603,15 +1603,16 @@ namespace PHP.Library
 		/// <summary>
 		/// Sorts an array using user comparison callback for comparing values.
 		/// </summary>
-		/// <param name="array">The array to be sorted.</param>
+        /// <param name="caller">The class context used to bind the callback.</param>
+        /// <param name="array">The array to be sorted.</param>
 		/// <param name="compare">The user callback to be used for comparison of values.</param>
 		/// <remarks>Resets <paramref name="array"/>'s intrinsic enumerator.</remarks>
         /// <returns>True on success, False on failure.</returns>
-		[ImplementsFunction("usort")]
-		public static bool UserSort([PhpRw] PhpArray array, PhpCallback compare)
+		[ImplementsFunction("usort", FunctionImplOptions.NeedsClassContext)]
+		public static bool UserSort(PHP.Core.Reflection.DTypeDesc caller, [PhpRw] PhpArray array, PhpCallback compare)
 		{
 			if (array == null) { PhpException.ReferenceNull("array"); return false; }
-			if (!PhpArgument.CheckCallback(compare, "compare", 0, false)) return false;
+			if (!PhpArgument.CheckCallback(compare, caller, "compare", 0, false)) return false;
 
 			// sorts array using callback for comparisons:
 			array.Sort(new ValueComparer(new PhpUserComparer(compare), false));
@@ -1625,15 +1626,16 @@ namespace PHP.Library
 		/// <summary>
 		/// Sorts an array user comparison callback method for comparing values preserving key-value associations.
 		/// </summary>
-		/// <param name="array">The array to be sorted.</param>
+        /// <param name="caller">The class context used to bind the callback.</param>
+        /// <param name="array">The array to be sorted.</param>
 		/// <param name="compare">The user callback to be used for comparison of values.</param>
 		/// <remarks>Resets <paramref name="array"/>'s intrinsic enumerator.</remarks>
         /// <returns>True on success, False on failure.</returns>
-		[ImplementsFunction("uasort")]
-		public static bool UserAssocSort([PhpRw] PhpArray array, PhpCallback compare)
+        [ImplementsFunction("uasort", FunctionImplOptions.NeedsClassContext)]
+        public static bool UserAssocSort(PHP.Core.Reflection.DTypeDesc caller, [PhpRw] PhpArray array, PhpCallback compare)
 		{
 			if (array == null) { PhpException.ReferenceNull("array"); return false; }
-			if (!PhpArgument.CheckCallback(compare, "compare", 0, false)) return false;
+			if (!PhpArgument.CheckCallback(compare, caller, "compare", 0, false)) return false;
 
 			// sorts array using callback for comparisons:
 			array.Sort(new ValueComparer(new PhpUserComparer(compare), false));
@@ -1644,15 +1646,16 @@ namespace PHP.Library
 		/// <summary>
 		/// Sorts an array using user comparison callback for comparing keys.
 		/// </summary>
-		/// <param name="array">The array to be sorted.</param>
+        /// <param name="caller">The class context used to bind the callback.</param>
+        /// <param name="array">The array to be sorted.</param>
 		/// <param name="compare">The user callback to be used for comparison of values.</param>
 		/// <remarks>Resets <paramref name="array"/>'s intrinsic enumerator.</remarks>
         /// <returns>True on success, False on failure.</returns>
-		[ImplementsFunction("uksort")]
-		public static bool UserKeySort([PhpRw] PhpArray array, PhpCallback compare)
+        [ImplementsFunction("uksort", FunctionImplOptions.NeedsClassContext)]
+        public static bool UserKeySort(PHP.Core.Reflection.DTypeDesc caller, [PhpRw] PhpArray array, PhpCallback compare)
 		{
 			if (array == null) { PhpException.ReferenceNull("array"); return false; }
-			if (!PhpArgument.CheckCallback(compare, "compare", 0, false)) return false;
+            if (!PhpArgument.CheckCallback(compare, caller, "compare", 0, false)) return false;
 
 			array.Sort(new KeyComparer(new PhpUserComparer(compare), false));
 
@@ -1913,14 +1916,14 @@ namespace PHP.Library
 
 			// the first callback:
 			cmp1 = Core.Convert.ObjectToCallback(vars[vars.Length - comparerCount]);
-			if (!PhpArgument.CheckCallback(cmp1, null, vars.Length - comparerCount + 3, false))
+            if (!PhpArgument.CheckCallback(cmp1, PHP.Core.Reflection.UnknownTypeDesc.Singleton/*(J): TBD pass caller from library func when this will be performance issue*/, null, vars.Length - comparerCount + 3, false))
 				return false;
 
 			// the second callback:
 			if (comparerCount > 1)
 			{
 				cmp2 = Core.Convert.ObjectToCallback(vars[vars.Length - 1]);
-				if (!PhpArgument.CheckCallback(cmp2, null, vars.Length - comparerCount + 3, false))
+                if (!PhpArgument.CheckCallback(cmp2, PHP.Core.Reflection.UnknownTypeDesc.Singleton/*(J): TBD pass caller from library func when this will be performance issue*/, null, vars.Length - comparerCount + 3, false))
 					return false;
 			}
 
@@ -3109,17 +3112,17 @@ namespace PHP.Library
 			return (int)lresult;
 		}
 
-		[ImplementsFunction("array_reduce")]
-		public static object Reduce([PhpRw] PhpArray array, PhpCallback function)
+		[ImplementsFunction("array_reduce", FunctionImplOptions.NeedsClassContext)]
+        public static object Reduce(PHP.Core.Reflection.DTypeDesc caller, [PhpRw] PhpArray array, PhpCallback function)
 		{
-			return Reduce(array, function, null);
+			return Reduce(caller, array, function, null);
 		}
 
-		[ImplementsFunction("array_reduce")]
-		public static object Reduce([PhpRw] PhpArray array, PhpCallback function, [PhpDeepCopy] object initialValue)
+		[ImplementsFunction("array_reduce", FunctionImplOptions.NeedsClassContext)]
+        public static object Reduce(PHP.Core.Reflection.DTypeDesc caller, [PhpRw] PhpArray array, PhpCallback function, [PhpDeepCopy] object initialValue)
 		{
 			if (array == null) { PhpException.ReferenceNull("array"); return null; }
-			if (!PhpArgument.CheckCallback(function, "function", 0, false)) return null;
+			if (!PhpArgument.CheckCallback(function, caller, "function", 0, false)) return null;
 			if (array.Count == 0) return initialValue;
 
 			object[] args = new object[] { initialValue, null };
@@ -3406,10 +3409,10 @@ namespace PHP.Library
 		/// to the array.
 		/// </para>
 		/// </remarks>
-		[ImplementsFunction("array_map")]
-		public static PhpArray Map(PhpCallback map, [PhpRw] params PhpArray[] arrays)
+		[ImplementsFunction("array_map", FunctionImplOptions.NeedsClassContext)]
+        public static PhpArray Map(PHP.Core.Reflection.DTypeDesc caller, PhpCallback map, [PhpRw] params PhpArray[] arrays)
 		{
-			if (!PhpArgument.CheckCallback(map, "map", 0, true)) return null;
+			if (!PhpArgument.CheckCallback(map, caller, "map", 0, true)) return null;
 			if (arrays == null || arrays.Length == 0)
 			{
 				PhpException.InvalidArgument("arrays", LibResources.GetString("arg:null_or_emtpy"));

@@ -959,12 +959,13 @@ namespace PHP.Core
 		/// Checks whether a target of callback argument can be invoked.
 		/// </summary>
 		/// <param name="callback">The callback to check.</param>
+        /// <param name="caller">The class context used to bind the callback function.</param>
 		/// <param name="argIndex">The index of argument starting from 1 or 0 if not applicable.</param>
 		/// <param name="argName">A name of the argument or <B>null</B> reference if not applicable.</param>
 		/// <param name="emptyAllowed">Whether an empty callback is allowed.</param>
 		/// <returns>Whether the callback can be bound to its target or it is empty and that is allowed.</returns>
 		/// <remarks>The callback is bound if it can be.</remarks>
-		public static bool CheckCallback(PhpCallback callback, string argName, int argIndex, bool emptyAllowed)
+		public static bool CheckCallback(PhpCallback callback, DTypeDesc caller, string argName, int argIndex, bool emptyAllowed)
 		{
 			// error has already been reported by Convert.ObjectToCallback:
 			if (callback == PhpCallback.Invalid)
@@ -975,8 +976,8 @@ namespace PHP.Core
 				return emptyAllowed;
 
 			// callback is bindable:
-			if (callback.Bind(true))
-				return true;
+            if (callback.Bind(true, caller, null))
+                return true;
 
 			if (argName != null)
 				argName = String.Concat('\'', argName, '\'');

@@ -1360,8 +1360,9 @@ namespace PHP.Library
 		/// </remarks>
 		/// <returns>Whether all non-null callbacks were successfully set.</returns>
 		/// <exception cref="PhpException">Web server is not available (Warning).</exception>
-		[ImplementsFunction("session_set_save_handler")]
+		[ImplementsFunction("session_set_save_handler", FunctionImplOptions.NeedsClassContext)]
 		public static bool SetHandlers(
+            PHP.Core.Reflection.DTypeDesc caller, 
 			PhpCallback open,
 			PhpCallback close,
 			PhpCallback read,
@@ -1372,12 +1373,12 @@ namespace PHP.Library
 			if (!Web.EnsureHttpContext()) return false;
 
 			// binds all non-null callbacks (reports all errors due to bitwise or):
-			if (!PhpArgument.CheckCallback(open, "open", 0, true) |
-			  !PhpArgument.CheckCallback(close, "close", 0, true) |
-			  !PhpArgument.CheckCallback(read, "read", 0, true) |
-			  !PhpArgument.CheckCallback(write, "write", 0, true) |
-			  !PhpArgument.CheckCallback(destroy, "destroy", 0, true) |
-			  !PhpArgument.CheckCallback(gc, "gc", 0, true))
+			if (!PhpArgument.CheckCallback(open, caller, "open", 0, true) |
+			  !PhpArgument.CheckCallback(close, caller, "close", 0, true) |
+			  !PhpArgument.CheckCallback(read, caller, "read", 0, true) |
+			  !PhpArgument.CheckCallback(write, caller, "write", 0, true) |
+			  !PhpArgument.CheckCallback(destroy, caller, "destroy", 0, true) |
+			  !PhpArgument.CheckCallback(gc, caller, "gc", 0, true))
 			{
 				return false;
 			}

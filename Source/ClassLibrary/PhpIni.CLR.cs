@@ -867,6 +867,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Sets user defined handler to handle errors.
 		/// </summary>
+        /// <param name="caller">The class context used to bind the callback.</param>
 		/// <param name="newHandler">The user callback called to handle an error.</param>
 		/// <returns>
 		/// The PHP representation of previous user handler, <B>null</B> if there is no user one, or 
@@ -876,16 +877,17 @@ namespace PHP.Library
 		/// Stores old user handlers on the stack so that it is possible to 
 		/// go back to arbitrary previous user handler.
 		/// </remarks>
-		[ImplementsFunction("set_error_handler")]
-		public static object SetErrorHandler(PhpCallback newHandler)
+		[ImplementsFunction("set_error_handler", FunctionImplOptions.NeedsClassContext)]
+        public static object SetErrorHandler(PHP.Core.Reflection.DTypeDesc caller, PhpCallback newHandler)
 		{
-			return SetErrorHandler(newHandler, (int)PhpErrorSet.Handleable);
+			return SetErrorHandler(caller, newHandler, (int)PhpErrorSet.Handleable);
 		}
 
 		/// <summary>
 		/// Sets user defined handler to handle errors.
 		/// </summary>
-		/// <param name="newHandler">The user callback called to handle an error.</param>
+        /// <param name="caller">The class context used to bind the callback.</param>
+        /// <param name="newHandler">The user callback called to handle an error.</param>
 		/// <param name="errorTypes">Error types to be handled by the handler.</param>
 		/// <returns>
 		/// The PHP representation of previous user handler, <B>null</B> if there is no user one, or 
@@ -895,10 +897,10 @@ namespace PHP.Library
 		/// Stores old user handlers on the stack so that it is possible to 
 		/// go back to arbitrary previous user handler.
 		/// </remarks>
-		[ImplementsFunction("set_error_handler")]
-		public static object SetErrorHandler(PhpCallback newHandler, int errorTypes)
+		[ImplementsFunction("set_error_handler", FunctionImplOptions.NeedsClassContext)]
+        public static object SetErrorHandler(PHP.Core.Reflection.DTypeDesc caller, PhpCallback newHandler, int errorTypes)
 		{
-			if (!PhpArgument.CheckCallback(newHandler, "newHandler", 0, false)) return null;
+			if (!PhpArgument.CheckCallback(newHandler, caller, "newHandler", 0, false)) return null;
 
 			PhpCallback old_handler = Configuration.Local.ErrorControl.UserHandler;
 			PhpError old_errors = Configuration.Local.ErrorControl.UserHandlerErrors;
@@ -948,7 +950,8 @@ namespace PHP.Library
 		/// <summary>
 		/// Sets user defined handler to handle exceptions.
 		/// </summary>
-		/// <param name="newHandler">The user callback called to handle an exceptions.</param>
+        /// <param name="caller">The class context used to bind the callback.</param>
+        /// <param name="newHandler">The user callback called to handle an exceptions.</param>
 		/// <returns>
 		/// The PHP representation of previous user handler, <B>null</B> if there is no user one, or 
 		/// <B>false</B> if <paramref name="newHandler"/> is invalid or empty.
@@ -957,10 +960,10 @@ namespace PHP.Library
 		/// Stores old user handlers on the stack so that it is possible to 
 		/// go back to arbitrary previous user handler.
 		/// </remarks>
-		[ImplementsFunction("set_exception_handler")]
-		public static object SetExceptionHandler(PhpCallback newHandler)
+		[ImplementsFunction("set_exception_handler", FunctionImplOptions.NeedsClassContext)]
+        public static object SetExceptionHandler(PHP.Core.Reflection.DTypeDesc caller, PhpCallback newHandler)
 		{
-			if (!PhpArgument.CheckCallback(newHandler, "newHandler", 0, false)) return null;
+			if (!PhpArgument.CheckCallback(newHandler, caller, "newHandler", 0, false)) return null;
 
 			PhpCallback old_handler = Configuration.Local.ErrorControl.UserExceptionHandler;
 
