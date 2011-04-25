@@ -37,7 +37,7 @@ namespace PHP.Core
         /// Internal data structure holds the byte array.
         /// The data can be marked as read only. This tells the runtime if the internal data structure can be reused to avoid of copying.
         /// </summary>
-        private class DataContainer
+        private sealed class DataContainer
         {
             #region Fields
 
@@ -94,7 +94,7 @@ namespace PHP.Core
             /// Marks this instance as shared (<see cref="IsShared"/>) and returns itself.
             /// </summary>
             /// <returns></returns>
-            public DataContainer/*!*/Share()
+            internal DataContainer/*!*/Share()
             {
                 ++_refCount;
                 return this;
@@ -103,7 +103,7 @@ namespace PHP.Core
             /// <summary>
             /// Get back shared instance of internal <see cref="byte"/> array.
             /// </summary>
-            public void Unshare()
+            internal void Unshare()
             {
                 --_refCount;
             }

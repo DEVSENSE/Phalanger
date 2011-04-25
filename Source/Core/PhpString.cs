@@ -39,7 +39,7 @@ namespace PHP.Core
         /// <summary>
         /// StringBuilder that can be marked both as read only (shared, immutable) or writable.
         /// </summary>
-		private class CowStringBuilder
+		private sealed class CowStringBuilder
         {
             #region Fields & Properties
 
@@ -119,7 +119,7 @@ namespace PHP.Core
             /// Mark this instance as shared (read only, immutable).
             /// </summary>
             /// <returns></returns>
-            public CowStringBuilder/*!*/Share()
+            internal CowStringBuilder/*!*/Share()
             {
                 ++_refCount;
                 return this;
@@ -128,7 +128,7 @@ namespace PHP.Core
             /// <summary>
             /// Get back shared instance of <see cref="CowStringBuilder"/>.
             /// </summary>
-            public void Unshare()
+            internal void Unshare()
             {
                 --_refCount;
             }

@@ -186,7 +186,7 @@ namespace PHP.Library
 
                 // recursive count:
                 int result = 0;
-                using (PhpHashtable.RecursiveEnumerator iterator = ht.GetRecursiveEnumerator(true))
+                using (PhpHashtable.RecursiveEnumerator iterator = ht.GetRecursiveEnumerator(true,true))
                 {
                     while (iterator.MoveNext())
                         result++;
@@ -709,7 +709,7 @@ namespace PHP.Library
 				else if ((array = names[i] as PhpArray) != null)
 				{
 					// recursively searches for string variable names:
-					using (PhpHashtable.RecursiveEnumerator iterator = array.GetRecursiveEnumerator())
+					using (PhpHashtable.RecursiveEnumerator iterator = array.GetRecursiveEnumerator(false,true))
 					{
 						while (iterator.MoveNext())
 						{

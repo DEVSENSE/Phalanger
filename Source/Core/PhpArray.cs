@@ -129,6 +129,16 @@ namespace PHP.Core
 			}
 		}
 
+        /// <summary>
+        /// Copy constructor. Creates <see cref="PhpArray"/> that shares internal data table with another <see cref="PhpArray"/>.
+        /// </summary>
+        /// <param name="array">Table to be shared.</param>
+        public PhpArray(PhpArray/*!*/array)
+            :base(array)
+        {
+
+        }
+
 		/// <summary>
 		/// Creates an instance of <see cref="PhpArray"/> filled by given values.
 		/// </summary>
@@ -491,20 +501,22 @@ namespace PHP.Core
 		/// <returns>The copy.</returns>
 		public object DeepCopy()
 		{
-			return DeepCopyTo(new PhpArray(IntegerCount, StringCount));
+            return DeepCopyTo(new PhpArray(IntegerCount, StringCount));
 		}
 
 		public object Copy(CopyReason reason)
 		{
 			if (reason == CopyReason.ReturnedByCopy && inplaceCopyOnReturn)
 			{
+                Debug.Assert(!this.table.IsShared, "Inplace copied arrays should not be shared, check it!");
+
 				inplaceCopyOnReturn = false;
 				this.InplaceDeepCopy();
 				return this;
 			}
 			else
 			{
-				return DeepCopy();
+                return new PhpArray(this);  // create lazy copied PhpArray
 			}
 		}
 
@@ -864,7 +876,7 @@ namespace PHP.Core
 		/// <remarks>Used for internal purposes only!</remarks>
 		public IDictionaryEnumerator GetForeachEnumerator(bool keyed, bool aliasedValues, Reflection.DTypeDesc caller)
 		{
-			return new ForeachEnumerator(this, keyed, aliasedValues);
+            return new ForeachEnumerator(this, keyed, aliasedValues);
 		}
 
 		#endregion
@@ -876,11 +888,11 @@ namespace PHP.Core
 		/// </summary>
 		private class ForeachEnumerator : IDictionaryEnumerator
 		{
-			private PhpArray/*!*/ array;
+            private readonly PhpArray/*!*/ array;
 			private int currentIndex;
-			private int length;
-			private IntStringKey[] keys;
-			private object[] values;
+			private readonly int length;
+            private readonly IntStringKey[] keys;
+            private readonly object[] values;
 
 			//^invariant keys!=null && values!=null ==> keys.Length == values.length && currentIndex <= keys.Length
 			//^invariant currentIndex >= -1 && length >= 0
@@ -912,8 +924,9 @@ namespace PHP.Core
 				{
 					values = new object[length];
 					int i = 0;
-					foreach (object value in array.Values)
-						values[i++] = PhpVariable.Copy(value, CopyReason.Assigned);
+                    for (var p = array.table.head.Next; p != array.table.head; p = p.Next)
+                        if (!p.IsDeleted)
+                            values[i++] = PhpVariable.Copy(p.Value, CopyReason.Assigned);
 				}
 			}
 
@@ -946,27 +959,11 @@ namespace PHP.Core
 					if (values != null)
 					{
 						// a deep copy of value stored in the original array should be returned:
-						return PhpVariable.Copy(PhpVariable.Dereference(values[currentIndex]), CopyReason.Assigned);
+                        return PhpVariable.Copy(PhpVariable.Dereference(values[currentIndex]), CopyReason.Assigned);// TBD: return values[currentIndex];
 					}
 					else
 					{
-						PhpReference result;
-
-						// a reference on the current array's item should be returned:
-						OrderedHashtable<IntStringKey>.Element element = array.GetElement(keys[currentIndex]);
-
-						// an item is still there:
-						if (element != null)
-						{
-							result = element.MakeValueReference();
-						}
-						else
-						{
-							// adds a new empty reference to the table:
-							result = new PhpReference();
-							array.Add(keys[currentIndex], result);
-						}
-						return result;
+                        return array.GetArrayItemRef(keys[currentIndex]);
 					}
 				}
 			}
@@ -997,10 +994,13 @@ namespace PHP.Core
 			/// <returns>Whether we can continue.</returns>
 			public bool MoveNext()
 			{
-				if (currentIndex < length)
-					return ++currentIndex < length;
-				else
-					return false;
+                if (currentIndex < length)
+                    return ++currentIndex < length;
+                else
+                {
+                    // TBD: Dispose the enumerator
+                    return false;
+                }
 			}
 
 			/// <summary>
@@ -1196,10 +1196,17 @@ namespace PHP.Core
 			OrderedHashtable<IntStringKey>.Element element;
 			if (this.table.dict.TryGetValue(key, out element))
 			{
-                if (this.table.IsShared && !(element.Value is PhpReference)) // we are going to change the value of element
+                if (this.table.IsShared &&  // we have to lazily copy the array only if it is shared and:
+                    (
+                        !(element.Value is PhpReference) || // value must be changed to reference or 
+                        table.owner != this && (((PhpReference)element.Value).Value == table.owner)) // reference must be updated
+                    )
                 {
-                    throw new NotImplementedException("TBD: lazy copy");
-                    //element = this.table.dict[key]; // get the item again
+                    // we are going to change the value of element:
+                    EnsureWritable();
+                    Debug.Assert(!table.IsShared, "Array not set as writable!");
+                    element = this.table.dict[key]; // get the item again
+                    Debug.Assert(element != null, "Element could not be found in lazily copied array! Check the new PhpArray was lazily copied with all the deleted elements and IDs preserved.");
                 }
 
 				// item exists => convert it to a reference if not yet:
@@ -1207,7 +1214,7 @@ namespace PHP.Core
 			}
 			else
 			{
-				// item doesn't exist => adds a new empty reference:
+				// item doesn't exist => adds a new empty reference (causes EnsureWritable()):
 				Add(key, result = new PhpReference());
 			}
 			return result;
@@ -1271,7 +1278,7 @@ namespace PHP.Core
 		{
 			// gets an item from the array to check whether it is a reference or not:
 
-            this.CheckWritable(); // TODO: avoid of copying, see below when element is found and it is PhpReference
+            this.EnsureWritable(); // TODO: avoid of copying, see below when element is found and it is PhpReference
 
 			OrderedHashtable<IntStringKey>.Element element;
 			if (this.table.dict.TryGetValue(key, out element))
@@ -1314,17 +1321,13 @@ namespace PHP.Core
 				return;
 			}
 
-            this.CheckWritable();
-
-			this[array_key] = value;
+            this[array_key] = value;
 		}
 
 		[Emitted]
 		public virtual void SetArrayItemRef(int key, PhpReference value)
 		{
-            this.CheckWritable();
-
-			this[key] = value;
+            this[key] = value;
 		}
 
 		[Emitted]
@@ -1332,9 +1335,7 @@ namespace PHP.Core
 		{
 			Debug.Assert(key != null);
 
-            this.CheckWritable();
-
-			// the key cannot be converted by compiler using StringToArrayKey as the compiler doesn't know
+            // the key cannot be converted by compiler using StringToArrayKey as the compiler doesn't know
 			// whether the array is not actually ArrayAccess unless it performs som type analysis
 			this[Convert.StringToArrayKey(key)] = value;
 		}
@@ -1382,7 +1383,8 @@ namespace PHP.Core
 				return null;
 			}
 
-            this.CheckWritable();
+            // TODO: set writable only if item is not reference
+            this.EnsureWritable();   // if we are not writing here, we can in some child array, MUST be set as writable now
 
 			OrderedHashtable<IntStringKey>.Element element = GetElement(array_key);
 			
@@ -1454,7 +1456,8 @@ namespace PHP.Core
 				return null;
 			}
 
-            this.CheckWritable();
+            // TODO: set writable only if item is not reference
+            this.EnsureWritable();   // if we are not writing here, we can in some child array, MUST be set as writable now
 
 			OrderedHashtable<IntStringKey>.Element element = GetElement(array_key);
 			object item = (element != null) ? element.Value : null;
@@ -1566,3 +1569,4 @@ namespace PHP.Core
 
 	#endregion
 }
+

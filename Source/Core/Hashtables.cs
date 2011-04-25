@@ -254,6 +254,16 @@ namespace PHP.Core
         internal readonly Element/*!*/head;
 
         /// <summary>
+        /// The next ID used for new Element added into this instance.
+        /// </summary>
+        internal ulong elementsId = 0;
+
+        /// <summary>
+        /// The <see cref="PhpHashtable"/> owning this instance. Used when copying lazily to determine cyclic references. Can be null if we don't care.
+        /// </summary>
+        internal PhpHashtable owner;
+
+        /// <summary>
         /// True iff the data structure is shared by more PhpHashtable instances and must not be modified.
         /// </summary>
         public bool IsShared { get { return _refCount > 1; } }
@@ -267,22 +277,33 @@ namespace PHP.Core
 
 		#region Constructors
 
-		public OrderedHashtable()
+        public OrderedHashtable()
+            : this(null, 0)
+        {
+        }
+
+        public OrderedHashtable(int capacity)
+            :this(null, capacity)
+        {
+        }
+
+        public OrderedHashtable(PhpHashtable owner)
+            :this(owner,0)
 		{
-			dict = new Dictionary<K, Element>();
-			head = new Element(this);
 		}
 
-		public OrderedHashtable(int capacity)
+		public OrderedHashtable(PhpHashtable owner, int capacity)
 		{
-			dict = new Dictionary<K, Element>(capacity);
-			head = new Element(this);
+			this.dict = new Dictionary<K, Element>(capacity);
+			this.head = new Element(this);
+            this.owner = owner;
 		}
 
-		public OrderedHashtable(int capacity, IEqualityComparer<K> comparer)
+		public OrderedHashtable(PhpHashtable owner, int capacity, IEqualityComparer<K> comparer)
 		{
-			dict = new Dictionary<K, Element>(capacity, comparer);
-			head = new Element(this);
+			this.dict = new Dictionary<K, Element>(capacity, comparer);
+			this.head = new Element(this);
+            this.owner = owner;
 		}
 
 		#endregion
@@ -305,6 +326,8 @@ namespace PHP.Core
         public void Unshare()
         {
             --_refCount;
+
+            Debug.Assert(_refCount >= 1, "Too much Unshare()!");
         }
 
         //[Conditional("DEBUG")]
@@ -329,6 +352,11 @@ namespace PHP.Core
 			internal OrderedHashtable<K> Table;
 			internal Element Next;
 			internal Element Prev;
+
+            /// <summary>
+            /// The unique ID of Element within the <see cref="Table"/>.
+            /// </summary>
+            internal ulong ID;
 
 			/// <summary>
 			/// Key associated with the element. <see cref="InvalidItem"/> in head.
@@ -362,32 +390,38 @@ namespace PHP.Core
 			internal Element(OrderedHashtable<K> table)
 			{
 				Table = table;
+
 				Next = this;
 				Prev = this;
+                ID = table.elementsId ++;
 
-				this._value = InvalidItem.Default;
+				this._value = InvalidItem.Default;                
 			}
 
-			internal Element(OrderedHashtable<K> table, K key, object value, Element next, Element prev)
-			{
-				Table = table;
-				Next = next;
-				Prev = prev;
+            internal Element(OrderedHashtable<K> table, K key, object value, Element next, Element prev)
+            {
+                // reverse order of arguments so they are served on top of the stack ?
+                Prev = prev;
+                Next = next;
 
-				this._key = key;
-				this._value = value;
-			}
+                this._value = value;
+                this._key = key;
+
+                Table = table;
+
+                ID = table.elementsId++;
+            }
 
 			/// <summary>
 			/// Gets whether the element is a head of the list.
 			/// </summary>
-			internal bool IsHead
-			{
-				get
-				{
-					return Table.head == this;
-				}
-			}
+            /// <exception cref="NullReferenceException">When called on a deleted element.</exception>
+            internal bool IsHead { get { return this.Table.head == this; } }
+
+            /// <summary>
+            /// Gets whether the element was deleted from the array.
+            /// </summary>
+            internal bool IsDeleted { get { return this.Table == null; } }
 
 			/// <summary>
 			/// Boxes the value to a reference if it is not already a reference.
@@ -441,7 +475,12 @@ namespace PHP.Core
 		{
 			#region Fields
 
-			internal const object DeletedItem = null;
+            /// <summary>
+            /// Reference to the hashtable that owns this enumerator. Can be null.
+            /// If <see cref="OrderedHashtable&lt;K&gt;"/> is changed (due to lazy copy),
+            /// the <see cref="Enumerator"/> can relink <see cref="head"/> and <see cref="current"/> accordingly.
+            /// </summary>
+            private readonly PhpHashtable hashtable;
 
 			/// <summary>
 			/// Reference to head of the list.
@@ -467,7 +506,7 @@ namespace PHP.Core
 			/// Whether the enumerator should return <c>KeyValuePair{K, object}</c> when used as <see cref="IEnumerator"/>.
 			/// If <B>false</B> it will return <see cref="DictionaryEntry"/>.
 			/// </summary>
-			private bool isGeneric;
+			private readonly bool isGeneric;
 
 			#endregion
 
@@ -475,29 +514,122 @@ namespace PHP.Core
 
 			internal Enumerator(OrderedHashtable<K>/*!*/ hashtable, bool isGeneric)
 			{
-				Debug.Assert(hashtable != null);
+				Debug.Assert(hashtable != null, "hashtable cannot be null!");
 
 				this.head = hashtable.head;
 				this.current = head;
 				this.starting = true;
 				this.isGeneric = isGeneric;
 
-				Debug.Assert(head.Value == InvalidItem.Default && head.Table != DeletedItem);
+				Debug.Assert(head.Value == InvalidItem.Default && !head.IsDeleted, "Unexpected head state!");
 			}
+
+            /// <summary>
+            /// Create the enumerator aware of PhpHashtable container. Enumerator checks if the internal table
+            /// has been lazily copied and then updates links to the new one if necessary.
+            /// </summary>
+            /// <param name="hashtable">The <see cref="PhpHashtable"/> container. Cannot be null.</param>
+            /// <param name="isGeneric">True iff <see cref="IEnumerator"/> if being used. False in case of <see cref="IDictionaryEnumerator"/>.</param>
+            internal Enumerator(PhpHashtable/*!*/hashtable, bool isGeneric)
+                : this(hashtable.table as OrderedHashtable<K>, isGeneric)
+            {
+                this.hashtable = hashtable; // store the table container to allow internal table update
+            }
 
 			#endregion
 
-			#region IPhpEnumerator Members
+            #region Misc: SkipDeletedForward, SkipDeletedBackward, EnsureCurrentTable
 
-			/// <summary>
+            /// <summary>
+            /// Move <see cref="current"/> iterator over the deleted element (follows Next reference).
+            /// </summary>
+            /// <returns>The <see cref="current"/> iterator.</returns>
+            private Element SkipDeletedForward()
+            {
+                while (current.IsDeleted) current = current.Next;
+                return current;
+            }
+
+            /// <summary>
+            /// Move <see cref="current"/> iterator over the deleted element backwards (follows Prev reference).
+            /// </summary>
+            /// <returns>The <see cref="current"/> iterator.</returns>
+            private Element SkipDeletedBackward()
+            {
+                while (current.IsDeleted) current = current.Prev;
+                return current;
+            }
+
+            /// <summary>
+            /// Ensure the hastable did not change its internal dictionary. This can occur when shared instance of OrderedHashtable is lazily copied.
+            /// </summary>
+            /// <returns>True if tables were changed.</returns>
+            private bool EnsureCurrentTable()
+            {
+                if (this.hashtable != null && !object.ReferenceEquals(hashtable.table.head, this.head))
+                {
+                    // internal table of enumerated hashtable has been changed (due to lazy copy)
+                    // update the links to head and current accordingly:
+
+                    var newtable = this.hashtable.table as OrderedHashtable<K>;
+                    var ID = this.current.ID;
+
+                    // find the current in the new table
+                    Element newcurrent;
+
+                    if (this.current.IsHead)
+                    {
+                        this.current = this.head = newtable.head;
+                    }
+                    else if (!(newtable.dict as Dictionary<K, Element>).TryGetValue(this.current.Key, out newcurrent) || newcurrent.ID != ID)
+                    {
+                        newcurrent = null;
+
+                        var newtablehead = newtable.head;
+
+                        // the element was deleted, we have to find it through the linked list
+
+                        //if (ID < newtable.elementsId/2) // TBD: otherwise search backward if ID is closer to the end, only if this causes performance issues
+                        for (var p = newtablehead.Next; p != newtablehead; p = p.Next)
+                            if (p.ID == ID)
+                            {
+                                newcurrent = p;
+                                break;
+                            }
+
+                        Debug.Assert(newcurrent != null, "While updating Enumerator current element could not be found! Check the new PhpArray was lazily copied with all the deleted elements and IDs preserved.");
+                        //Debug.Assert(IntStringKey.EqualityComparer.Default.Equals(newcurrent.Key, this.current.Key), "While updating Enumerator, new current matches the ID but has different Key!");
+                        if (newcurrent == null)
+                            newcurrent = newtablehead;
+
+                        //
+                        this.current = newcurrent;
+                        this.head = newtablehead;
+                    }
+
+                    // changed
+                    return true;
+                }
+
+                // no change
+                return false;
+            }
+
+            #endregion
+
+            #region IPhpEnumerator Members
+
+            /// <summary>
 			/// Moves enumerator to the last element in the list if exists. 
 			/// </summary>
 			/// <returns>Whether there is any item in the list.</returns>
 			public bool MoveLast()
 			{
-				current = head.Prev;
-				while (current.Table == DeletedItem) current = current.Prev;
-				return current != head;
+                // ensures the table (no need to skip deleted):
+                EnsureCurrentTable();
+
+                current = head.Prev;
+				return SkipDeletedBackward() != head;
 			}
 
 			/// <summary>
@@ -506,9 +638,11 @@ namespace PHP.Core
 			/// <returns>Whether there is any item in the list.</returns>
 			public bool MoveFirst()
 			{
-				current = head.Next;
-				while (current.Table == DeletedItem) current = current.Next;
-				return current != head;
+                // ensures the table (no need to skip deleted):
+                EnsureCurrentTable();
+
+                current = head.Next;
+				return SkipDeletedForward() != head;
 			}
 
 			/// <summary>
@@ -520,12 +654,17 @@ namespace PHP.Core
 			/// </return>       
 			public bool MovePrevious()
 			{
-				// we are at the end of the list and not ready to start iteration:
+                // ensures the table first and skips deleted items:
+                EnsureCurrentTable();
+                SkipDeletedForward();   // note: forward really
+                
+                // we are at the end of the list and not ready to start iteration:
 				if (current == head && !starting) return false;
 				starting = false;
 
-				do { current = current.Prev; } while (current.Table == DeletedItem);
-				return current != head;
+                // move prev, and skips deleted elements backward:
+                current = current.Prev;
+                return SkipDeletedBackward() != head;
 			}
 
 			public bool AtEnd
@@ -535,10 +674,10 @@ namespace PHP.Core
 					// if the enumerator is in starting state, it's not considered to be at the end:
 					if (starting) return false;
 
-					// iterate while pointing to a deleted element:
-					while (current.Table == DeletedItem) current = current.Next;
-
-					return current == head;
+                    EnsureCurrentTable();
+                    
+                    // iterate while pointing to a deleted element:
+					return SkipDeletedForward() == head;
 				}
 			}
 
@@ -553,8 +692,11 @@ namespace PHP.Core
 			{
 				get
 				{
-					while (current.Table == DeletedItem) current = current.Next;
-					return current.Entry;
+                    // ensures the table:
+                    EnsureCurrentTable();
+                    
+                    // skip deleted elements (forward) and return current:
+					return SkipDeletedForward().Entry;
 				}
 			}
 
@@ -578,10 +720,7 @@ namespace PHP.Core
 			{
 				get
 				{
-					if (isGeneric)
-						return Current;
-					else
-						return ((IDictionaryEnumerator)this).Entry;
+                    return isGeneric ? Current : (object)((IDictionaryEnumerator)this).Entry;
 				}
 			}
 
@@ -598,10 +737,13 @@ namespace PHP.Core
 				if (current == head && !starting) return false;
 				starting = false;
 
+                // ensures the table and skips deleted items: (need not to be called first, head is head)
+                EnsureCurrentTable();
+                SkipDeletedForward();
+                
+                current = current.Next;
 				// iterates while the "current" refereces a deleted element:
-				do { current = current.Next; } while (current.Table == DeletedItem);
-
-				return current != head;
+                return SkipDeletedForward() != head;
 			}
 
 			/// <summary>
@@ -609,6 +751,8 @@ namespace PHP.Core
 			/// </summary>
 			public void Reset()
 			{
+                // no need to ensure the table, head is head
+
 				current = head;
 				starting = true;
 			}
@@ -630,8 +774,9 @@ namespace PHP.Core
 			{
 				get
 				{
-					while (current.Table == DeletedItem) current = current.Next;
-					return current.Key;
+                    EnsureCurrentTable();
+
+					return SkipDeletedForward().Key;
 				}
 			}
 
@@ -639,8 +784,9 @@ namespace PHP.Core
 			{
 				get
 				{
-					while (current.Table == DeletedItem) current = current.Next;
-					return current.Value;
+                    EnsureCurrentTable();
+                    
+                    return SkipDeletedForward().Value;
 				}
 			}
 
@@ -719,15 +865,33 @@ namespace PHP.Core
 		/// <param name="value">The value.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="key"/> is a null reference.</exception>
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
-		internal void AddBefore(Element element, K key, object value)
+		internal Element/*!*/AddBefore(Element element, K key, object value)
 		{
-			Element new_element = new Element(this, key, value, element, element.Prev);
-			dict.Add(key, new_element);
-			new_element.Prev.Next = new_element;
-			new_element.Next.Prev = new_element;
+            var new_element = new Element(this, key, value, element, element.Prev);
+            dict.Add(key, new_element);
+            new_element.Prev.Next = new_element;
+            new_element.Next.Prev = new_element;
+
+            return new_element;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Adds deleted entry into the linked list only. There is no value and the element is marked as deleted immediately.
+        /// </summary>
+        /// <param name="element">Element to add before.</param>
+        /// <param name="key">The key to be added.</param>
+        /// <returns>Added element.</returns>
+        internal Element/*!*/AddDeletedBefore(Element element, K key)
+        {
+            var new_element = new Element(this, key, null, element, element.Prev);
+            new_element.Table = null;
+            new_element.Prev.Next = new_element;
+            new_element.Next.Prev = new_element;
+            
+            return new_element;
+        }
+
+        /// <summary>
 		/// Adds an entry pair into the table after a specified element. 
 		/// </summary>
 		/// <param name="element">The element before which to add new entry.</param>
@@ -749,9 +913,12 @@ namespace PHP.Core
 		/// <param name="element">The element to be deleted.</param>
 		internal void Delete(Element element)
 		{
-			// disconnects (unilaterally):
-			element.Prev.Next = element.Next;
-			element.Next.Prev = element.Prev;
+            //// disconnects (unilaterally):
+            //element.Prev.Next = element.Next;
+            //element.Next.Prev = element.Prev;
+
+            //drop the value:
+            element.Value = null;
 
 			// marks item as deleted:
 			element.Table = null;
@@ -802,8 +969,12 @@ namespace PHP.Core
 
             this.CheckNotShared();
 
-			KeyValuePair<K, object> last_entry = head.Prev.Entry;
-			Remove(last_entry.Key);
+            // skip deleted
+            var entry = head.Prev;
+            while (entry.IsDeleted) entry = entry.Prev;
+
+            KeyValuePair<K, object> last_entry = entry.Entry;
+            Remove(entry.Key);
 			return last_entry;
 		}
 
@@ -819,8 +990,13 @@ namespace PHP.Core
 
             this.CheckNotShared();
 
-			KeyValuePair<K, object> first_entry = head.Next.Entry;
-			Remove(first_entry.Key);
+            // skip deleted
+            var entry = head.Next;
+            while (entry.IsDeleted) entry = entry.Next;
+
+            //
+			KeyValuePair<K, object> first_entry = entry.Entry;
+			Remove(entry.Key);
 			return first_entry;
 		}
 
@@ -836,13 +1012,16 @@ namespace PHP.Core
 		/// <exception cref="InvalidOperationException">This table is interconnected with the other.</exception>
 		public object Clone()
 		{
-			OrderedHashtable<K> result = new OrderedHashtable<K>(this.Count);
+			OrderedHashtable<K> result = new OrderedHashtable<K>(this.owner, this.Count);
 
 			Element iterator = head.Next;
 			while (iterator != head)
 			{
-				result.Add(iterator.Key, iterator.Value);
-				iterator = iterator.Next;
+                if (!iterator.IsDeleted)
+                {
+                    result.Add(iterator.Key, iterator.Value);
+                    iterator = iterator.Next;
+                }
 			}
 
 			return result;
@@ -944,8 +1123,7 @@ namespace PHP.Core
 		{
 			get
 			{
-				if (_keys == null) _keys = new KeyCollection(this);
-				return _keys;
+                return _keys ?? (_keys = new KeyCollection(this));
 			}
 		}
 		[NonSerialized]
@@ -958,8 +1136,7 @@ namespace PHP.Core
 		{
 			get
 			{
-				if (_values == null) _values = new ValueCollection(this);
-				return _values;
+				return _values ?? (_values = new ValueCollection(this));
 			}
 		}
 		[NonSerialized]
@@ -988,8 +1165,10 @@ namespace PHP.Core
 			{
 				ArrayUtils.CheckCopyTo(array, index, hashtable.Count);
 
-				foreach (KeyValuePair<K, object> entry in hashtable)
-					array[index++] = entry.Key;
+				//foreach (KeyValuePair<K, object> entry in hashtable)
+                for (var p = hashtable.head.Next; p != hashtable.head; p = p.Next)
+                    if (!p.IsDeleted)
+					    array[index++] = p.Key;
 			}
 
 			public bool IsReadOnly { get { return true; } }
@@ -1019,13 +1198,10 @@ namespace PHP.Core
 
 			public object SyncRoot { get { return this; } }
 
-			void ICollection.CopyTo(Array/*!*/ array, int index)
-			{
-				ArrayUtils.CheckCopyTo(array, index, hashtable.Count);
-
-				foreach (KeyValuePair<K, object> entry in hashtable)
-					array.SetValue(entry.Key, index++);
-			}
+            void ICollection.CopyTo(Array/*!*/ array, int index)
+            {
+                CopyTo((K[])array, index);
+            }
 
 			#endregion
 
@@ -1033,8 +1209,10 @@ namespace PHP.Core
 
 			public IEnumerator<K> GetEnumerator()
 			{
-				foreach (KeyValuePair<K, object> pair in hashtable)
-					yield return pair.Key;
+				//foreach (KeyValuePair<K, object> pair in hashtable)
+                for (var p = hashtable.head.Next; p != hashtable.head; p = p.Next)
+                    if (!p.IsDeleted)
+					    yield return p.Key;
 			}
 
 			#endregion
@@ -1070,20 +1248,21 @@ namespace PHP.Core
 
 			public bool Contains(object item)
 			{
-				return hashtable.ContainsKey((K)item);
+                for (var p = hashtable.head.Next; p != hashtable.head; p = p.Next)
+                    if (!p.IsDeleted)
+                        if (p.Value == item)
+                            return true;
+
+                return false;
 			}
 
 			public void CopyTo(object[]/*!*/ array, int index)
 			{
 				ArrayUtils.CheckCopyTo(array, index, hashtable.Count);
 
-				Element iterator = hashtable.head.Next;
-				while (iterator != hashtable.head)
-				{
-					array[index] = iterator.Value;
-					iterator = iterator.Next;
-					index++;
-				}
+				for (var p = hashtable.head.Next; p != hashtable.head; p = p.Next)
+                    if (!p.IsDeleted)
+                        array[index++] = p.Value;
 			}
 
 			public bool IsReadOnly { get { return true; } }
@@ -1124,8 +1303,10 @@ namespace PHP.Core
 
 			public IEnumerator<object> GetEnumerator()
 			{
-				foreach (KeyValuePair<K, object> pair in hashtable)
-					yield return pair.Value;
+                //foreach (KeyValuePair<K, object> pair in hashtable)
+				for (var p = hashtable.head.Next; p != hashtable.head; p = p.Next)
+                    if (!p.IsDeleted)
+                        yield return p.Value;
 			}
 
 			#endregion
@@ -2206,18 +2387,19 @@ namespace PHP.Core
 
 		#endregion
 
-        #region CheckWritable
+        #region EnsureWritable
 
         /// <summary>
         /// Ensures the internal <see cref="OrderedHashtable&lt;T&gt;"/> will be writable (not shared).
         /// </summary>
-        protected void CheckWritable()
+        protected void EnsureWritable()
         {
             if (table.IsShared)
             {
                 table.Unshare();
-                //table = new OrderedHashtable<IntStringKey>(this);
-                throw new NotImplementedException("TBD: lazy copy");
+                table = DeepCopyTo(
+                    new OrderedHashtable<IntStringKey>(this, table.Count, IntStringKey.EqualityComparer.Default),
+                    true);
             }
         }
 
@@ -2236,7 +2418,7 @@ namespace PHP.Core
 		/// <param name="capacity">Initial capacity.</param>
 		public PhpHashtable(int capacity)
 		{
-			table = new OrderedHashtable<IntStringKey>(capacity, IntStringKey.EqualityComparer.Default);
+			table = new OrderedHashtable<IntStringKey>(this, capacity, IntStringKey.EqualityComparer.Default);
 		}
 
 		/// <summary>
@@ -2295,6 +2477,18 @@ namespace PHP.Core
 				for (int i = start; i < end; i++) if (values[i] == value) Add(i, value);
 			}
 		}
+
+        /// <summary>
+        /// Creates PhpHashtable that shares internal <see cref="table"/> with another array.
+        /// </summary>
+        /// <param name="array">The table to be shared.</param>
+        public PhpHashtable(PhpHashtable/*!*/array)
+        {
+            this.table = array.table.Share();
+            this.maxInt = array.maxInt;
+            this.intCount = array.intCount;
+            this.stringCount = array.stringCount;
+        }
 
 		#endregion
 
@@ -2406,9 +2600,12 @@ namespace PHP.Core
 			/// <summary>
 			/// Creates an instance of <see cref="RecursiveEnumerator"/>.
 			/// </summary>
-			internal RecursiveEnumerator(PhpHashtable/*!*/ array, bool followReferences)
+            internal RecursiveEnumerator(PhpHashtable/*!*/ array, bool followReferences, bool readOnly)
 			{
 				Debug.Assert(array != null);
+
+                if (!readOnly)
+                    array.EnsureWritable(); // lazy copy, the array will be accessed internally, subarrays should be copied too (DeepCopy)
 
 				this.stack = new Stack<PhpHashtable>();
 				this.followReferences = followReferences;
@@ -2563,7 +2760,7 @@ namespace PHP.Core
 						stack.Push(currentTable);
 
 						// next level of recursion:
-						currentTable = array;
+                        currentTable = array;
 
 						// creates a new enumerator (visited = true):
 						current = currentTable.GetEnumerator();
@@ -2621,10 +2818,11 @@ namespace PHP.Core
 		/// Retrieves a recursive enumerator of this instance.
 		/// </summary>
 		/// <param name="followReferences">Whether <see cref="PhpReference"/>s are followed by recursion.</param>
+        /// <param name="readOnly">True if the array items will be read only. Lazy copy is not necessary.</param>
 		/// <returns>The <see cref="RecursiveEnumerator"/>.</returns>
-		public RecursiveEnumerator/*!*/ GetRecursiveEnumerator(bool followReferences)
+		public RecursiveEnumerator/*!*/ GetRecursiveEnumerator(bool followReferences, bool readOnly)
 		{
-			return new RecursiveEnumerator(this, followReferences);
+            return new RecursiveEnumerator(this, followReferences, readOnly);
 		}
 
 		/// <summary>
@@ -2633,17 +2831,17 @@ namespace PHP.Core
 		/// <returns>The <see cref="RecursiveEnumerator"/> not following PHP references.</returns>
 		public RecursiveEnumerator/*!*/ GetRecursiveEnumerator()
 		{
-			return new RecursiveEnumerator(this, false);
+			return new RecursiveEnumerator(this, false, false);
 		}
 
 		public IPhpEnumerator/*!*/ GetPhpEnumerator()
 		{
-			return (IPhpEnumerator)table.GetEnumerator();
+            return new OrderedHashtable<IntStringKey>.Enumerator(this, true); //(IPhpEnumerator)table.GetEnumerator();
 		}
 
 		public OrderedHashtable<IntStringKey>.Enumerator/*!*/ GetBaseEnumerator()
 		{
-			return table.GetEnumerator();
+            return new OrderedHashtable<IntStringKey>.Enumerator(this, true); //table.GetEnumerator();
 		}
 
 		#endregion
@@ -2652,7 +2850,7 @@ namespace PHP.Core
 
 		public IEnumerator<KeyValuePair<IntStringKey, object>>/*!*/ GetEnumerator()
 		{
-			return table.GetEnumerator();
+            return new OrderedHashtable<IntStringKey>.Enumerator(this, true); //table.GetEnumerator();
 		}
 
 		#endregion
@@ -2661,7 +2859,7 @@ namespace PHP.Core
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return (IEnumerator)table.GetEnumerator();
+            return new OrderedHashtable<IntStringKey>.Enumerator(this, true); //(IEnumerator)table.GetEnumerator();
 		}
 
 		#endregion
@@ -2719,7 +2917,7 @@ namespace PHP.Core
 		/// </summary>
 		public virtual void Clear()
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Clear();
 		}
@@ -2836,8 +3034,7 @@ namespace PHP.Core
 		}
 
 		#endregion
-
-
+        
 		#endregion
 
 		#region IList Members
@@ -2860,7 +3057,7 @@ namespace PHP.Core
 		{
 			if (maxInt < int.MaxValue)
 			{
-                this.CheckWritable();
+                this.EnsureWritable();
 
 				table.Add(new IntStringKey(++maxInt), value);
 				intCount++;
@@ -2890,7 +3087,7 @@ namespace PHP.Core
 
 		public void Add(IntStringKey key, object value)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Add(key, value);
 			KeyAdded(ref key);
@@ -2903,7 +3100,7 @@ namespace PHP.Core
 
 		public bool Remove(IntStringKey key)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			return table.Remove(key);
 		}
@@ -2929,7 +3126,7 @@ namespace PHP.Core
 
 		public void Add(KeyValuePair<IntStringKey, object> item)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Add(item.Key, item.Value);
 			KeyAdded(item.Key);
@@ -2948,7 +3145,7 @@ namespace PHP.Core
 
 		public bool Remove(KeyValuePair<IntStringKey, object> item)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			return ((ICollection<KeyValuePair<IntStringKey, object>>)table).Remove(item);
 		}
@@ -3025,7 +3222,7 @@ namespace PHP.Core
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
 		public void Add(int key, object value)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Add(new IntStringKey(key), value);
 			KeyAdded(key);
@@ -3040,7 +3237,7 @@ namespace PHP.Core
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
 		public void Add(string key, object value)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Add(new IntStringKey(key), value);
 			KeyAdded(key);
@@ -3058,7 +3255,7 @@ namespace PHP.Core
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
 		public virtual void Prepend(string key, object value)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Prepend(new IntStringKey(key), value);
 			KeyAdded(key);
@@ -3072,7 +3269,7 @@ namespace PHP.Core
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
 		public virtual void Prepend(int key, object value)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Prepend(new IntStringKey(key), value);
 			KeyAdded(key);
@@ -3086,7 +3283,7 @@ namespace PHP.Core
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
 		public virtual void Prepend(IntStringKey key, object value)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Prepend(key, value);
 			KeyAdded(ref key);
@@ -3101,7 +3298,7 @@ namespace PHP.Core
 		/// <exception cref="InvalidCastException">The <paramref name="key"/> is neither <see cref="int"/> nor <see cref="string"/>.</exception>
 		public virtual void Prepend(object key, object value)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			IntStringKey iskey = new IntStringKey(key);
 			table.Prepend(iskey, value);
@@ -3123,7 +3320,7 @@ namespace PHP.Core
 		/// <param name="key">The key.</param>
 		public virtual void Remove(int key)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Remove(new IntStringKey(key));
 		}
@@ -3135,7 +3332,7 @@ namespace PHP.Core
 		/// <exception cref="ArgumentNullException"><paramref name="key"/> is a null reference.</exception>
 		public virtual void Remove(string key)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Remove(new IntStringKey(key));
 		}
@@ -3147,7 +3344,7 @@ namespace PHP.Core
 		/// <exception cref="InvalidOperationException">The table is empty.</exception>
 		public virtual KeyValuePair<IntStringKey, object> RemoveLast()
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			return table.RemoveLast();
 		}
@@ -3159,7 +3356,7 @@ namespace PHP.Core
 		/// <exception cref="InvalidOperationException">The table is empty.</exception>
 		public virtual KeyValuePair<IntStringKey, object> RemoveFirst()
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			return table.RemoveFirst();
 		}
@@ -3182,7 +3379,7 @@ namespace PHP.Core
 			}
 			set
 			{
-                this.CheckWritable();
+                this.EnsureWritable();
 
 				table[new IntStringKey(key)] = value;
 				KeyAdded(key);
@@ -3202,7 +3399,7 @@ namespace PHP.Core
 			}
 			set
 			{
-                this.CheckWritable();
+                this.EnsureWritable();
 
 				table[new IntStringKey(key)] = value;
 				KeyAdded(key);
@@ -3222,7 +3419,7 @@ namespace PHP.Core
 			}
 			set
 			{
-                this.CheckWritable();
+                this.EnsureWritable();
 
 				table[key] = value;
 				KeyAdded(ref key);
@@ -3318,17 +3515,14 @@ namespace PHP.Core
 		/// <exception cref="ArgumentNullException"><paramref name="dst"/> is a <B>null</B> reference.</exception>
 		protected PhpHashtable CopyTo(PhpHashtable/*!*/ dst)
 		{
-			if (dst == null)
-				throw new ArgumentNullException("dst");
-
-			Debug.Assert(dst.Count == 0);
+            Debug.Assert(dst != null, "Argument cannot be null.");
+			Debug.Assert(dst.Count == 0, "Argument must be an empty PhpHashtable.");
 
             foreach (KeyValuePair<IntStringKey, object> entry in this)
 			{
 				dst.Add(entry);
 			}
 
-			dst.maxInt = this.maxInt;
 			return dst;
 		}
 
@@ -3340,43 +3534,85 @@ namespace PHP.Core
 		/// <exception cref="ArgumentNullException"><paramref name="dst"/> is a <B>null</B> reference.</exception>
 		protected PhpHashtable DeepCopyTo(PhpHashtable/*!*/ dst)
 		{
-			if (dst == null)
-				throw new ArgumentNullException("dst");
-			Debug.Assert(dst.Count == 0);
+            Debug.Assert(dst != null, "Argument cannot be null.");
+            Debug.Assert(dst.Count == 0, "Argument must be an empty PhpHashtable.");
 
 #if !SILVERLIGHT
 			Performance.Increment(Performance.ArrayDCs);
 #endif
+            // copy values into dst array, skips internal checks by calling table.Add directly
+            DeepCopyTo(dst.table, false);
 
-			foreach (KeyValuePair<IntStringKey, object> entry in table)
-			{
-				// checks whether a value is a reference pointing to the instance itself:
-				PhpReference ref_value = entry.Value as PhpReference;
-				if (ref_value != null && ref_value.Value == this)
-				{
-					// copies the value so that it will self-reference the new instance (not the old one):
-					dst.Add(entry.Key, new PhpReference(dst));
-				}
-				else
-				{
-					dst.Add(entry.Key, PhpVariable.DeepCopy(entry.Value));
-				}
-			}
-
+            // copy additional information about the array
 			dst.maxInt = this.maxInt;
+            dst.stringCount = this.stringCount;
+            dst.intCount = this.intCount;
+
+            //
 			return dst;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Deeply copies all the entries into the given <paramref name="dst"/> table.
+        /// </summary>
+        /// <param name="dst">The empty table to deep copy values to.</param>
+        /// <param name="preserveDeletedElements">True to copy deleted elements and preserve their IDs.</param>
+        /// <returns>Returns <paramref name="dst"/> parameter.</returns>
+        private OrderedHashtable<IntStringKey>/*!*/DeepCopyTo(OrderedHashtable<IntStringKey>/*!*/dst, bool preserveDeletedElements)
+        {
+            Debug.Assert(dst != null, "Argument cannot be null.");
+            Debug.Assert(dst.Count == 0, "Argument must be an empty PhpHashtable.");
+            Debug.Assert(!dst.IsShared, "Argument must not be shared.");
+
+            for (var p = table.head.Next; p != table.head; p = p.Next )
+            {
+                if (p.IsDeleted)
+                {
+                    if (!preserveDeletedElements)
+                        continue;   // skip deleted elements
+
+                    // add copied value into the table
+                    var element = dst.AddDeletedBefore(dst.head, p.Key);
+                    element.ID = p.ID;
+                }
+                else
+                {
+                    PhpReference ref_value;
+                    object value = p.Value;
+                    // checks whether a value is a reference pointing to the instance itself:
+                    if ((ref_value = value as PhpReference) != null && ref_value.Value == table.owner)
+                        value = new PhpReference(dst.owner);    // copies the value so that it will self-reference the new instance (not the old one)
+                    else
+                        value = PhpVariable.DeepCopy(value);
+
+                    // add copied value into the table
+                    var element = dst.AddBefore(dst.head, p.Key, value);
+
+                    if (preserveDeletedElements)
+                        element.ID = p.ID;
+                }
+            }
+
+            // update table.elementsId
+            if (preserveDeletedElements)
+                dst.elementsId = this.table.elementsId;
+            
+            //
+            return dst;
+        }
+
+        /// <summary>
 		/// Replaces values in the table with their deep copies.
 		/// </summary>
 		public void InplaceDeepCopy()
 		{
-			OrderedHashtable<IntStringKey>.Element iterator = table.head.Next;
-			while (iterator != table.head)
+            for (var p = table.head.Next; p != table.head; p = p.Next)
 			{
-				iterator.Value = PhpVariable.DeepCopy(iterator.Value);
-				iterator = iterator.Next;
+                // no need to check if element was deleted, there should be no such elements
+
+                Debug.Assert(!p.IsDeleted, "If this occurs, the check should be added here to prevent copying of dead items.");
+
+				p.Value = PhpVariable.DeepCopy(p.Value);
 			}
 		}
 
@@ -3415,7 +3651,7 @@ namespace PHP.Core
 			if (comparer == null)
 				throw new ArgumentNullException("comparer");
 
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Sort(comparer);
 		}
@@ -3463,7 +3699,7 @@ namespace PHP.Core
 					throw new ArgumentException(CoreResources.GetString("lengths_are_different", "hashtables[0]",
 						String.Format("hashtables[{0}]", i)), "hashtables");
 
-                hashtable.Current.CheckWritable();
+                hashtable.Current.EnsureWritable();
 
 				heads[i] = hashtable.Current.table.head;
 				hashtable.MoveNext();
@@ -3503,7 +3739,7 @@ namespace PHP.Core
 
 			if (hashtables.Count == 0) return;
 
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.SetOperation(op, EnumerateHeads(hashtables), comparer, result);
 		}
@@ -3519,7 +3755,7 @@ namespace PHP.Core
 		/// </summary>
 		public void Reverse()
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Reverse();
 		}
@@ -3530,7 +3766,7 @@ namespace PHP.Core
 		/// <exception cref="ArgumentNullException"><paramref name="generator"/> is a <b>null</b> reference.</exception>
 		public void Shuffle(Random generator)
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			table.Shuffle(generator);
 		}
@@ -3580,7 +3816,7 @@ namespace PHP.Core
 		/// </summary>
 		public void ReindexAll()
 		{
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			// clears hashtables:
 			table.BaseClear();
@@ -3610,41 +3846,39 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="startIndex">An index from which to start indexing.</param>
 		/// <remarks>If indexing overflows a capacity of integer type it continues with <see cref="int.MinValue"/>.</remarks>
-		public void ReindexIntegers(int startIndex)
-		{
-            this.CheckWritable();
+        public void ReindexIntegers(int startIndex)
+        {
+            this.EnsureWritable();
 
-			// clears integers-holding hashtable; doesn't cut the list off:
-			table.BaseClear();
+            // clears integers-holding hashtable; doesn't cut the list off:
+            table.BaseClear();
 
-			// updates the list:
-			int i = startIndex;
-			maxInt = -1;
+            // updates the list:
+            int i = startIndex;
+            maxInt = -1;
 
-			OrderedHashtable<IntStringKey>.Element element = table.head.Next;
-			while (element != table.head)
-			{
-				if (element.Key.IsInteger)
-				{
-					// modifies:
-					element.Key = new IntStringKey(i);
+            for (var element = table.head.Next; element != table.head; element = element.Next)
+                if (!element.IsDeleted)
+                {
+                    if (element.Key.IsInteger)
+                    {
+                        // modifies:
+                        element.Key = new IntStringKey(i);
 
-					// rehashes:
-					table.RehashElement(element);
+                        // rehashes:
+                        table.RehashElement(element);
 
-					// updates max. integer:
-					if (maxInt < i) maxInt = i;
+                        // updates max. integer:
+                        if (maxInt < i) maxInt = i;
 
-					unchecked { i++; }
-				}
-				else
-				{
-					table.RehashElement(element);
-				}
-
-				element = element.Next;
-			}
-		}
+                        unchecked { i++; }
+                    }
+                    else
+                    {
+                        table.RehashElement(element);
+                    }
+                }
+        }
 
 		/// <summary>
 		/// Replaces a part of the hashtable with specified item(s) and reindexes all integer keys in result.
@@ -3677,7 +3911,7 @@ namespace PHP.Core
 			if (replaced == null)
 				throw new ArgumentNullException("replaced");
 
-            this.CheckWritable();
+            this.EnsureWritable();
 
 			OrderedHashtable<IntStringKey>.Element element, next;
 			int ikey = 0;
@@ -3687,14 +3921,20 @@ namespace PHP.Core
 
 			// reindexes integer keys of elements before the first replaced item:
 			element = table.head.Next;
-			for (int i = 0; i < offset; i++)
-			{
-				if (element.Key.IsInteger)
-					element.Key = new IntStringKey(ikey++);
+            for (int i = 0; i < offset; i++)
+            {
+                if (element.IsDeleted)
+                    i--;    // do not count this one
+                else
+                {
+                    if (element.Key.IsInteger)
+                        element.Key = new IntStringKey(ikey++);
 
-				table.RehashElement(element);
-				element = element.Next;
-			}
+                    table.RehashElement(element);
+                }
+
+                element = element.Next;
+            }
 
 			// removes items with ordinal number in interval [first,last]:
 			int jkey = 0;
@@ -3702,20 +3942,25 @@ namespace PHP.Core
 			{
 				next = element.Next;
 
-				if (element.Key.IsString)
-				{
-					replaced.Add(element.Key, element.Value);
+                if (element.IsDeleted)
+                    i--;    // do not count this one
+                else
+                {
+                    if (element.Key.IsString)
+                    {
+                        replaced.Add(element.Key, element.Value);
 
-					// removes item from hashtable and from list as well:
-					table.Remove(element.Key);
-				}
-				else
-				{
-					replaced.Add(jkey++, element.Value);
+                        // removes item from hashtable and from list as well:
+                        table.Remove(element.Key);
+                    }
+                    else
+                    {
+                        replaced.Add(jkey++, element.Value);
 
-					// removes element from list only:
-					table.Delete(element);
-				}
+                        // removes element from list only:
+                        table.Delete(element);
+                    }
+                }
 
 				element = next;
 			}
@@ -3728,14 +3973,14 @@ namespace PHP.Core
 			}
 
 			// reindexes integer keys of the rest elements:
-			while (element != table.head)
-			{
-				if (element.Key.IsInteger)
-					element.Key = new IntStringKey(ikey++);
+            for (; element != table.head; element = element.Next)
+                if (!element.IsDeleted)
+			    {
+				    if (element.Key.IsInteger)
+					    element.Key = new IntStringKey(ikey++);
 
-				table.RehashElement(element);
-				element = element.Next;
-			}
+				    table.RehashElement(element);
+			    }
 
 			// updates max integer value in table:
 			maxInt = ikey - 1;

@@ -3237,7 +3237,7 @@ namespace PHP.Library
 			object[] args = PrepareWalk(array, callback, data);
 			if (args == null) return false;
 
-			using (PhpHashtable.RecursiveEnumerator iterator = array.GetRecursiveEnumerator(true))
+			using (PhpHashtable.RecursiveEnumerator iterator = array.GetRecursiveEnumerator(true,false))
 			{
 				while (iterator.MoveNext())
 				{

@@ -882,7 +882,7 @@ namespace PHP.Library
 				if ((array = names[i] as PhpArray) != null)
 				{
 					// recursively searches for string variable names:
-					using (PhpHashtable.RecursiveEnumerator iterator = array.GetRecursiveEnumerator())
+					using (PhpHashtable.RecursiveEnumerator iterator = array.GetRecursiveEnumerator(false, true))
 					{
 						while (iterator.MoveNext())
 						{
