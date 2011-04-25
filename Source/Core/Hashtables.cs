@@ -739,11 +739,15 @@ namespace PHP.Core
 
                 // ensures the table and skips deleted items: (need not to be called first, head is head)
                 EnsureCurrentTable();
-                SkipDeletedForward();
-                
-                current = current.Next;
-				// iterates while the "current" refereces a deleted element:
-                return SkipDeletedForward() != head;
+
+                //SkipDeletedForward():
+                while (current.IsDeleted) current = current.Next;
+
+                // current ++, SkipDeletedForward();
+                do { current = current.Next; } while (current.IsDeleted);
+
+                // iterates while the "current" refereces a deleted element:
+                return current != head;
 			}
 
 			/// <summary>
@@ -3804,11 +3808,10 @@ namespace PHP.Core
 		{
 			maxInt = -1;
 
-			foreach (KeyValuePair<IntStringKey, object> entry in table)
-			{
-				if (entry.Key.IsInteger && entry.Key.Integer > maxInt)
-					maxInt = entry.Key.Integer;
-			}
+            // iterate backward, faster to find maxInt
+            for (var p = table.head.Prev; p != table.head; p = p.Prev)
+                if (p.Key.Integer > maxInt && p.Key.IsInteger && !p.IsDeleted)
+                    maxInt = p.Key.Integer;
 		}
 
 		/// <summary>
