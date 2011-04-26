@@ -3387,6 +3387,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Applies a callback function on specified tuples one by one storing its results to an array.
 		/// </summary>
+        /// <param name="caller">The class context used to resolve given callback.</param>
 		/// <param name="map">
 		/// A callback to be called on tuples. The number of arguments should be the same as
 		/// the number of arrays specified by <pramref name="arrays"/>.
