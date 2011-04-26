@@ -929,7 +929,7 @@ namespace PHP.Core
 					values = new object[length];
 					int i = 0;
                     for (var p = array.table.head.Next; p != array.table.head; p = p.Next)
-                        if (!p.IsDeleted)
+                        //if (!p.IsDeleted)
                             values[i++] = PhpVariable.Copy(p.Value, CopyReason.Assigned);
 				}
 			}

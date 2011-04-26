@@ -566,7 +566,8 @@ namespace PHP.Core
             /// Ensure the hastable did not change its internal dictionary. This can occur when shared instance of OrderedHashtable is lazily copied.
             /// </summary>
             /// <returns>True if tables were changed.</returns>
-            private bool EnsureCurrentTable()
+            //[Conditional("DEBUG")];
+            private void EnsureCurrentTable()
             {
                 if (this.hashtable != null && !object.ReferenceEquals(hashtable.table.head, this.head))
                 {
@@ -574,6 +575,7 @@ namespace PHP.Core
                     // update the links to head and current accordingly:
 
                     Debug.Fail("Underlaying table changed! Check the enumerator does not point to shared table when created.");
+                    throw new ArgumentException();
 
                     /*
 
@@ -613,12 +615,12 @@ namespace PHP.Core
                         this.head = newtablehead;
                     }*/
 
-                    // changed
-                    return true;
+                    //// changed
+                    //return false;
                 }
 
-                // no change
-                return false;
+                //// no change
+                //return true;
             }
 
             #endregion
@@ -662,7 +664,7 @@ namespace PHP.Core
 			{
                 // ensures the table first and skips deleted items:
                 EnsureCurrentTable();
-                SkipDeletedForward();   // note: forward really
+                SkipDeletedForward();   // note: forward really  // note (J): this really have to be called first
                 
                 // we are at the end of the list and not ready to start iteration:
 				if (current == head && !starting) return false;
@@ -712,8 +714,7 @@ namespace PHP.Core
 
 			public void Dispose()
 			{
-				// nop
-
+				// remove from the list of active enumerators:
                 if (hashtable != null)
                     hashtable.UnregisterEnumerator(this as OrderedHashtable<IntStringKey>.Enumerator);
 			}
@@ -746,12 +747,12 @@ namespace PHP.Core
 				if (current == head && !starting) return false;
 				starting = false;
 
-                // ensures the table and skips deleted items: (need not to be called first, head is head)
+                // ensures the table (need not to be called first, head is head):
                 EnsureCurrentTable();
 
-                //SkipDeletedForward():
-                while (current.IsDeleted) current = current.Next;
-
+                // skips deleted items:
+                SkipDeletedForward(); // note (J): this really have to be called first
+                
                 // current ++, SkipDeletedForward();
                 do { current = current.Next; } while (current.IsDeleted);
 
@@ -888,21 +889,21 @@ namespace PHP.Core
             return new_element;
 		}
 
-        /// <summary>
-        /// Adds deleted entry into the linked list only. There is no value and the element is marked as deleted immediately.
-        /// </summary>
-        /// <param name="element">Element to add before.</param>
-        /// <param name="key">The key to be added.</param>
-        /// <returns>Added element.</returns>
-        internal Element/*!*/AddDeletedBefore(Element element, K key)
-        {
-            var new_element = new Element(this, key, null, element, element.Prev);
-            new_element.Table = null;
-            new_element.Prev.Next = new_element;
-            new_element.Next.Prev = new_element;
+        ///// <summary>
+        ///// Adds deleted entry into the linked list only. There is no value and the element is marked as deleted immediately.
+        ///// </summary>
+        ///// <param name="element">Element to add before.</param>
+        ///// <param name="key">The key to be added.</param>
+        ///// <returns>Added element.</returns>
+        //internal Element/*!*/AddDeletedBefore(Element element, K key)
+        //{
+        //    var new_element = new Element(this, key, null, element, element.Prev);
+        //    new_element.Table = null;
+        //    new_element.Prev.Next = new_element;
+        //    new_element.Next.Prev = new_element;
             
-            return new_element;
-        }
+        //    return new_element;
+        //}
 
         /// <summary>
 		/// Adds an entry pair into the table after a specified element. 
@@ -982,9 +983,9 @@ namespace PHP.Core
 
             this.CheckNotShared();
 
-            // skip deleted
             var entry = head.Prev;
-            while (entry.IsDeleted) entry = entry.Prev;
+            //// skip deleted
+            //while (entry.IsDeleted) entry = entry.Prev;
 
             KeyValuePair<K, object> last_entry = entry.Entry;
             Remove(entry.Key);
@@ -1003,9 +1004,9 @@ namespace PHP.Core
 
             this.CheckNotShared();
 
-            // skip deleted
             var entry = head.Next;
-            while (entry.IsDeleted) entry = entry.Next;
+            //// skip deleted
+            //while (entry.IsDeleted) entry = entry.Next;
 
             //
 			KeyValuePair<K, object> first_entry = entry.Entry;
@@ -1027,16 +1028,13 @@ namespace PHP.Core
 		{
 			OrderedHashtable<K> result = new OrderedHashtable<K>(this.owner, this.Count);
 
-			Element iterator = head.Next;
-			while (iterator != head)
-			{
-                if (!iterator.IsDeleted)
-                {
-                    result.Add(iterator.Key, iterator.Value);
-                    iterator = iterator.Next;
-                }
-			}
+			for (var iterator = head.Next; iterator != head; iterator = iterator.Next)
+            //if (!iterator.IsDeleted)
+            {
+                result.Add(iterator.Key, iterator.Value);
 
+            }
+			
 			return result;
 		}
 
@@ -1180,7 +1178,7 @@ namespace PHP.Core
 
 				//foreach (KeyValuePair<K, object> entry in hashtable)
                 for (var p = hashtable.head.Next; p != hashtable.head; p = p.Next)
-                    if (!p.IsDeleted)
+                    //if (!p.IsDeleted)
 					    array[index++] = p.Key;
 			}
 
@@ -1224,7 +1222,7 @@ namespace PHP.Core
 			{
 				//foreach (KeyValuePair<K, object> pair in hashtable)
                 for (var p = hashtable.head.Next; p != hashtable.head; p = p.Next)
-                    if (!p.IsDeleted)
+                    //if (!p.IsDeleted)
 					    yield return p.Key;
 			}
 
@@ -1262,7 +1260,7 @@ namespace PHP.Core
 			public bool Contains(object item)
 			{
                 for (var p = hashtable.head.Next; p != hashtable.head; p = p.Next)
-                    if (!p.IsDeleted)
+                    //if (!p.IsDeleted)
                         if (p.Value == item)
                             return true;
 
@@ -1274,7 +1272,7 @@ namespace PHP.Core
 				ArrayUtils.CheckCopyTo(array, index, hashtable.Count);
 
 				for (var p = hashtable.head.Next; p != hashtable.head; p = p.Next)
-                    if (!p.IsDeleted)
+                    //if (!p.IsDeleted)
                         array[index++] = p.Value;
 			}
 
@@ -1318,7 +1316,7 @@ namespace PHP.Core
 			{
                 //foreach (KeyValuePair<K, object> pair in hashtable)
 				for (var p = hashtable.head.Next; p != hashtable.head; p = p.Next)
-                    if (!p.IsDeleted)
+                    //if (!p.IsDeleted)
                         yield return p.Value;
 			}
 
@@ -2383,8 +2381,22 @@ namespace PHP.Core
 		/// <summary>
 		/// Maximal non-negative integer ever added as a key in the hashtable.
 		/// </summary>
-		public int MaxIntegerKey { get { return maxInt; } }
+        public int MaxIntegerKey
+        {
+            get
+            {
+                if (maxInt == maxIntInvalid)
+                    RefreshMaxIntegerKeyInternal();
+
+                return maxInt;
+            }
+        }
 		private int maxInt = -1;
+
+        /// <summary>
+        /// The value representing the <see cref="maxInt"/> has to be lazily refreshed.
+        /// </summary>
+        private const int maxIntInvalid = -666;
 
 		/// <summary>
 		/// Retrieves the number of items with integer keys in this instance.
@@ -2400,6 +2412,10 @@ namespace PHP.Core
 
         #region active enumerators
 
+        /// <summary>
+        /// Registers an <see cref="OrderedHashtable&lt;IntStringKey&gt;.Enumerator"/> to be updated when internal <see cref="table"/> is copied.
+        /// </summary>
+        /// <param name="enumerator">The enumerator actively pointing inside the table.</param>
         internal void RegisterEnumerator(OrderedHashtable<IntStringKey>.Enumerator/*!*/enumerator)
         {
             if (activeEnumerators == null) activeEnumerators = new LinkedList<OrderedHashtable<IntStringKey>.Enumerator>();
@@ -2408,11 +2424,19 @@ namespace PHP.Core
 
             activeEnumerators.AddFirst(enumerator);
         }
+        /// <summary>
+        /// Unregisters the <see cref="OrderedHashtable&lt;IntStringKey&gt;.Enumerator"/>.
+        /// </summary>
+        /// <param name="enumerator">The enumerator not pointing inside the table.</param>
         internal void UnregisterEnumerator(OrderedHashtable<IntStringKey>.Enumerator/*!*/enumerator)
         {
             if (activeEnumerators != null && activeEnumerators.Remove(enumerator) && activeEnumerators.Count == 0)
                 activeEnumerators = null;
         }
+
+        /// <summary>
+        /// List of enumerators that points inside the array. These enumerators must be updated when internal <see cref="table"/> is copied.
+        /// </summary>
         private LinkedList<OrderedHashtable<IntStringKey>.Enumerator> activeEnumerators;
 
         #endregion
@@ -2515,9 +2539,9 @@ namespace PHP.Core
         public PhpHashtable(PhpHashtable/*!*/array)
         {
             this.table = array.table.Share();
-            this.maxInt = array.maxInt;
-            this.intCount = array.intCount;
-            this.stringCount = array.stringCount;
+            this.maxInt = array.MaxIntegerKey;
+            this.intCount = array.IntegerCount;
+            this.stringCount = array.StringCount;
         }
 
 		#endregion
@@ -2603,6 +2627,11 @@ namespace PHP.Core
 			public bool FollowReferences { get { return followReferences; } set { followReferences = value; } }
 			private bool followReferences = false;
 
+            /// <summary>
+            /// Wheter the enumerator is used to read the array items only.
+            /// </summary>
+            private readonly bool readsOnly;
+
 			/// <summary>
 			/// Whether the current value causes infinite recursion.
 			/// </summary>
@@ -2630,15 +2659,17 @@ namespace PHP.Core
 			/// <summary>
 			/// Creates an instance of <see cref="RecursiveEnumerator"/>.
 			/// </summary>
-            internal RecursiveEnumerator(PhpHashtable/*!*/ array, bool followReferences, bool readOnly)
+            internal RecursiveEnumerator(PhpHashtable/*!*/ array, bool followReferences, bool readsOnly)
 			{
 				Debug.Assert(array != null);
 
-                if (!readOnly)
-                    array.EnsureWritable(); // lazy copy, the array will be accessed internally, subarrays should be copied too (DeepCopy)
-
-				this.stack = new Stack<PhpHashtable>();
+                this.stack = new Stack<PhpHashtable>();
 				this.followReferences = followReferences;
+                this.readsOnly = readsOnly;
+
+                // the array may be accessed for writing, ensure its child items/arrays are ready:
+                if (!readsOnly)
+                    array.EnsureWritable();
 
 				// store the current array and the current enumerator:
 				this.currentTable = array;
@@ -2660,7 +2691,11 @@ namespace PHP.Core
 
 				while (stack.Count > targetLevel)
 				{
-					currentTable.recursiveEnumerator = null; ;
+                    // leave and Dispose the current array (visited = false):
+                    current.Dispose();
+					currentTable.recursiveEnumerator = null;
+
+                    // returns back:
 					currentTable = stack.Pop();
 					current = currentTable.recursiveEnumerator;
 				}
@@ -2674,8 +2709,9 @@ namespace PHP.Core
 			{
 				while (current.Current.Value == InvalidItem.Default)
 				{
-					// leave the current array (visited = false):
-					currentTable.recursiveEnumerator = null;
+					// leave and Dispose the current array (visited = false):
+                    current.Dispose();
+                    currentTable.recursiveEnumerator = null;
 
 					// the top list (real end):
 					if (stack.Count == 0) return false;
@@ -2779,6 +2815,10 @@ namespace PHP.Core
 
 				if ((array = value as PhpHashtable) != null)
 				{
+                    // the array may be accessed for writing, ensure its child items/arrays are ready:
+                    if (!readsOnly)
+                        array.EnsureWritable();
+
 					// mark the current table as visited and store there the current enumerator:
 					currentTable.recursiveEnumerator = current;
 
@@ -2817,9 +2857,15 @@ namespace PHP.Core
 				if (stack != null)
 				{
 					ReturnFromRecursion(0);
-					currentTable = null;
-					current = null;
-					stack = null;
+
+                    // cleanup the last enumerator:
+                    if (currentTable != null) currentTable.recursiveEnumerator = null;
+                    currentTable = null;
+
+                    if (current != null) current.Dispose();
+                    current = null;
+					
+                    stack = null;
 				}
 			}
 
@@ -3085,7 +3131,7 @@ namespace PHP.Core
 		[Emitted]
 		public int Add(object value)
 		{
-			if (maxInt < int.MaxValue)
+			if (MaxIntegerKey < int.MaxValue)
 			{
                 this.EnsureWritable();
 
@@ -3207,7 +3253,7 @@ namespace PHP.Core
 
 		private void KeyAdded(int key)
 		{
-			if (key > maxInt) maxInt = key;
+			if (key > MaxIntegerKey) maxInt = key;
 			intCount++;
 		}
 
@@ -3574,10 +3620,10 @@ namespace PHP.Core
             DeepCopyTo(dst.table);
 
             // copy additional information about the array
-			dst.maxInt = this.maxInt;
-            dst.stringCount = this.stringCount;
-            dst.intCount = this.intCount;
-
+			dst.maxInt = this.MaxIntegerKey;
+            dst.intCount = this.IntegerCount;
+            dst.stringCount = this.StringCount;
+            
             //
 			return dst;
 		}
@@ -3605,17 +3651,16 @@ namespace PHP.Core
             
             for (var p = table.head.Next; p != table.head; p = p.Next )
             {
-                //
-                if (p.IsDeleted)
-                {
-                    //if (!preserveDeletedElements)
-                    //    continue;   // skip deleted elements
+                //if (p.IsDeleted)
+                //{
+                //    if (!preserveDeletedElements)
+                //        continue;   // skip deleted elements
 
-                    //// add copied value into the table
-                    //var element = dst.AddDeletedBefore(dst.head, p.Key);
-                    //element.ID = p.ID;
-                }
-                else
+                //    // add copied value into the table
+                //    var element = dst.AddDeletedBefore(dst.head, p.Key);
+                //    element.ID = p.ID;
+                //}
+                //else
                 {
                     PhpReference ref_value;
                     object value = p.Value;
@@ -3842,18 +3887,26 @@ namespace PHP.Core
 
 		#region RefreshMaxIntegerKey, ReindexAll, ReindexIntegers, ReindexAndReplace
 
-		/// <summary>
-		/// Finds a maximal key among the integer keys and updates internal value of maximal key.
-		/// </summary>
+        /// <summary>
+        /// Ensure the internal maximal key value will be updated.
+        /// </summary>
 		public void RefreshMaxIntegerKey()
 		{
-			maxInt = -1;
+            maxInt = maxIntInvalid;
+		}
+
+        /// <summary>
+        /// Finds a maximal key among the integer keys and updates internal value of maximal key.
+        /// </summary>
+        private void RefreshMaxIntegerKeyInternal()
+        {
+            maxInt = -1;
 
             // iterate backward, faster to find maxInt
             for (var p = table.head.Prev; p != table.head; p = p.Prev)
-                if (p.Key.Integer > maxInt && p.Key.IsInteger && !p.IsDeleted)
+                if (p.Key.Integer > maxInt && p.Key.IsInteger)// && !p.IsDeleted)
                     maxInt = p.Key.Integer;
-		}
+        }
 
 		/// <summary>
 		/// Sets all keys to increasing integers according to their respective order in the list.
@@ -3902,26 +3955,26 @@ namespace PHP.Core
             maxInt = -1;
 
             for (var element = table.head.Next; element != table.head; element = element.Next)
-                if (!element.IsDeleted)
+            //if (!element.IsDeleted)
+            {
+                if (element.Key.IsInteger)
                 {
-                    if (element.Key.IsInteger)
-                    {
-                        // modifies:
-                        element.Key = new IntStringKey(i);
+                    // modifies:
+                    element.Key = new IntStringKey(i);
 
-                        // rehashes:
-                        table.RehashElement(element);
+                    // rehashes:
+                    table.RehashElement(element);
 
-                        // updates max. integer:
-                        if (maxInt < i) maxInt = i;
+                    // updates max. integer:
+                    if (maxInt < i) maxInt = i;
 
-                        unchecked { i++; }
-                    }
-                    else
-                    {
-                        table.RehashElement(element);
-                    }
+                    unchecked { i++; }
                 }
+                else
+                {
+                    table.RehashElement(element);
+                }
+            }
         }
 
 		/// <summary>
@@ -3967,9 +4020,9 @@ namespace PHP.Core
 			element = table.head.Next;
             for (int i = 0; i < offset; i++)
             {
-                if (element.IsDeleted)
-                    i--;    // do not count this one
-                else
+                //if (element.IsDeleted)
+                //    i--;    // do not count this one
+                //else
                 {
                     if (element.Key.IsInteger)
                         element.Key = new IntStringKey(ikey++);
@@ -3986,9 +4039,9 @@ namespace PHP.Core
 			{
 				next = element.Next;
 
-                if (element.IsDeleted)
-                    i--;    // do not count this one
-                else
+                //if (element.IsDeleted)
+                //    i--;    // do not count this one
+                //else
                 {
                     if (element.Key.IsString)
                     {
@@ -4018,13 +4071,13 @@ namespace PHP.Core
 
 			// reindexes integer keys of the rest elements:
             for (; element != table.head; element = element.Next)
-                if (!element.IsDeleted)
-			    {
-				    if (element.Key.IsInteger)
-					    element.Key = new IntStringKey(ikey++);
+            //if (!element.IsDeleted)
+            {
+                if (element.Key.IsInteger)
+                    element.Key = new IntStringKey(ikey++);
 
-				    table.RehashElement(element);
-			    }
+                table.RehashElement(element);
+            }
 
 			// updates max integer value in table:
 			maxInt = ikey - 1;
