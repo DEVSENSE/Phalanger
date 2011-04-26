@@ -2448,7 +2448,7 @@ namespace PHP.Core
         /// <summary>
         /// Ensures the internal <see cref="OrderedHashtable&lt;T&gt;"/> will be writable (not shared).
         /// </summary>
-        protected void EnsureWritable()
+        internal void EnsureWritable()
         {
             if (table.IsShared)
             {
@@ -2968,8 +2968,8 @@ namespace PHP.Core
 		/// <summary>This property is always false.</summary>
 		public virtual bool IsFixedSize { get { return false; } }
 
-		/// <summary>This property is true iff the internal table is shared.</summary>
-		public virtual bool IsReadOnly { get { return table.IsShared; } }
+        /// <summary>This property is always false.</summary>
+		public virtual bool IsReadOnly { get { return false; } }
 
 		/// <summary>
 		/// Returns an enumerator which iterates through values in this instance in order as they were added in it.

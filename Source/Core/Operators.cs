@@ -3140,17 +3140,26 @@ namespace PHP.Core
 
 			IntStringKey array_key = Core.Convert.StringToArrayKey(key);
 
-			element = array.GetElement(array_key);
+            element = array.GetElement(array_key);
 
 			// creates a new array if an item is not one:
 			array_item = (element != null) ? element.Value as PhpArray : null;
 			if (array_item == null)
 			{
 				array_item = new PhpArray();
-				if (element != null)
-					element.Value = array_item;
-				else
-					array.Add(array_key, array_item);
+                if (element != null)
+                {
+                    if (array.table.IsShared)
+                    {
+                        // we are going to change the internal array, it must be writable
+                        array.EnsureWritable();
+                        element = array.table.dict[array_key]; // get the item again
+                    }
+
+                    element.Value = array_item;
+                }
+                else
+                    array.Add(array_key, array_item);
 			}
 
 			return array_item;
