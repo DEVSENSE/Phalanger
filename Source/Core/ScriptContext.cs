@@ -1966,10 +1966,13 @@ namespace PHP.Core
 		[Emitted]
 		public void Die(object status)
 		{
-			// prints status:
-			string s = status as string;
-			if (s != null) output.Write(s);
-
+			// prints status (only if status is PHP string):
+            PhpBytes bytes;
+            if ((bytes = status as PhpBytes) != null)
+                ScriptContext.Echo(bytes, this);
+            else
+                ScriptContext.Echo(PhpVariable.AsString(status), this);
+            
 			// terminates script execution:
 			throw new ScriptDiedException(status);
 		}
