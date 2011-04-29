@@ -6128,16 +6128,16 @@ namespace PHP.Library
 				}
 
 				if (ignoreCase)
-					return haystack.ToLower().IndexOf(str_needle.ToLower(), offset);
+					return haystack.IndexOf(str_needle, offset, StringComparison.OrdinalIgnoreCase);
 				else
-					return haystack.IndexOf(str_needle, offset);
+					return haystack.IndexOf(str_needle, offset, StringComparison.Ordinal);
 			}
 			else
 			{
 				if (ignoreCase)
-					return haystack.ToLower().IndexOf(ChrUnicode(Core.Convert.ObjectToInteger(needle) % 256).ToLower(), offset);
+                    return haystack.IndexOf(ChrUnicode(Core.Convert.ObjectToInteger(needle) % 256), offset, StringComparison.OrdinalIgnoreCase);
 				else
-                    return haystack.IndexOf(ChrUnicode(Core.Convert.ObjectToInteger(needle) % 256), offset);
+                    return haystack.IndexOf(ChrUnicode(Core.Convert.ObjectToInteger(needle) % 256), offset, StringComparison.Ordinal);
 			}
 		}
 
@@ -6171,16 +6171,16 @@ namespace PHP.Library
                 }
 
                 if (ignoreCase)
-                    return haystack.ToLower().LastIndexOf(str_needle.ToLower(), end, end - offset + 1);
+                    return haystack.LastIndexOf(str_needle, end, end - offset + 1, StringComparison.OrdinalIgnoreCase);
                 else
-                    return haystack.LastIndexOf(str_needle, end, end - offset + 1);
+                    return haystack.LastIndexOf(str_needle, end, end - offset + 1, StringComparison.Ordinal);
             }
             else
             {
                 if (ignoreCase)
-                    return haystack.ToLower().LastIndexOf(ChrUnicode(Core.Convert.ObjectToInteger(needle) % 256).ToLower(), end, end - offset + 1);
+                    return haystack.LastIndexOf(ChrUnicode(Core.Convert.ObjectToInteger(needle) % 256), end, end - offset + 1, StringComparison.OrdinalIgnoreCase);
                 else
-                    return haystack.LastIndexOf(ChrUnicode(Core.Convert.ObjectToInteger(needle) % 256), end, end - offset + 1);
+                    return haystack.LastIndexOf(ChrUnicode(Core.Convert.ObjectToInteger(needle) % 256), end, end - offset + 1, StringComparison.Ordinal);
             }
         }
 
