@@ -878,60 +878,48 @@ namespace PHP.Core
 		/// <param name="caller">Type <see cref="Reflection.DTypeDesc"/> of the caller (ignored).</param>
 		/// <returns>The dictionary enumerator.</returns>
 		/// <remarks>Used for internal purposes only!</remarks>
-		public IDictionaryEnumerator GetForeachEnumerator(bool keyed, bool aliasedValues, Reflection.DTypeDesc caller)
-		{
-            return new ForeachEnumerator(this, keyed, aliasedValues);
-		}
+        public IDictionaryEnumerator GetForeachEnumerator(bool keyed, bool aliasedValues, Reflection.DTypeDesc caller)
+        {
+            if (aliasedValues)
+                return new ForeachEnumeratorAliased(this, keyed);
+            else
+                return new ForeachEnumeratorValues(this, keyed);
+        }
 
 		#endregion
 
-		#region Nested class: ForeachEnumerator
+        #region Nested class: ForeachEnumeratorValues
 
-		/// <summary>
+        /// <summary>
 		/// An enumerator used (only) for foreach statement.
 		/// </summary>
-		private class ForeachEnumerator : IDictionaryEnumerator
+		private class ForeachEnumeratorValues : IDictionaryEnumerator, IDisposable
 		{
-            private readonly PhpArray/*!*/ array;
-			private int currentIndex;
-			private readonly int length;
-            private readonly IntStringKey[] keys;
-            private readonly object[] values;
 
-			//^invariant keys!=null && values!=null ==> keys.Length == values.length && currentIndex <= keys.Length
-			//^invariant currentIndex >= -1 && length >= 0
-			//^invariant values==null ==> keys!=null
+            /// <summary>
+            /// The internal enumerator used to iterate through the read only copy of array.
+            /// </summary>
+            private readonly OrderedHashtable<IntStringKey>.Enumerator/*!*/enumerator;
 
+            /// <summary>
+            /// Wheter the internal enumerator was disposed.
+            /// </summary>
+            private bool disposed = false;
+ 
 			/// <summary>
 			/// Creates a new instance of the enumerator.
 			/// </summary>
 			/// <param name="array">The array to iterate over.</param>
 			/// <param name="keyed">Whether keys are interesting.</param>
-			/// <param name="aliasedValues">Whether the values returned by enumerator are assigned by reference.</param>
-			public ForeachEnumerator(PhpArray/*!*/ array, bool keyed, bool aliasedValues)
+			public ForeachEnumeratorValues(PhpArray/*!*/ array, bool keyed)
 			{
 				Debug.Assert(array != null);
 
-                this.array = array;
-				this.currentIndex = -1;
-				this.length = array.Count;
+                // share the table to iterate through readonly array,
+                // get the enumerator, have to be disposed at the end of enumeration, otherwise deep copy will be performed probably
 
-				// if keys are needed during the iteration:
-				if (keyed || aliasedValues)
-				{
-					keys = new IntStringKey[length];
-					array.Keys.CopyTo(keys, 0);
-				}
-
-				// if value copies are needed during the iteration:
-				if (!aliasedValues)
-				{
-					values = new object[length];
-					int i = 0;
-                    for (var p = array.table.head.Next; p != array.table.head; p = p.Next)
-                        //if (!p.IsDeleted)
-                            values[i++] = PhpVariable.Copy(p.Value, CopyReason.Assigned);
-				}
+                // note (J): this will not result in registering the enumerator in the PhpArray object, not needed, faster
+                this.enumerator = array.table.Share().GetEnumerator();
 			}
 
 			#region IDictionaryEnumerator Members
@@ -940,12 +928,12 @@ namespace PHP.Core
 			/// Gets a current key.
 			/// </summary>
 			public object Key
-			//^ requires keys!=null
 			{
 				get
 				{
-					// deep copy is not needed because a key is immutable:
-					return keys[currentIndex].Object;
+					// deep copy is not needed because a key is immutable,
+                    // we can access .current directly, the underlaying table is read only:
+                    return enumerator.current.Key.Object;
 				}
 			}
 
@@ -955,30 +943,16 @@ namespace PHP.Core
 			/// if there is not one.
 			/// </summary>
 			public object Value
-			//^ ensures (values==null) == (return is PhpReference)
 			{
 				get
 				{
-					// if not aliased:
-					if (values != null)
-					{
-						// a deep copy of value stored in the original array should be returned:
-                        return PhpVariable.Copy(PhpVariable.Dereference(values[currentIndex]), CopyReason.Assigned);// TBD: return values[currentIndex];
-					}
-					else
-					{
-                        return array.GetArrayItemRef(keys[currentIndex]);
-					}
+					// a deep copy of value stored in the original array should be returned,
+                    // we can access .current directly, the underlaying table is read only:
+                    return PhpVariable.Copy(PhpVariable.Dereference(enumerator.current.Value), CopyReason.Assigned);
 				}
 			}
 
-			public DictionaryEntry Entry
-			{
-				get
-				{
-					throw new NotSupportedException();
-				}
-			}
+            public DictionaryEntry Entry { get { throw new NotSupportedException(); } }
 
 			#endregion
 
@@ -998,12 +972,16 @@ namespace PHP.Core
 			/// <returns>Whether we can continue.</returns>
 			public bool MoveNext()
 			{
-                if (currentIndex < length)
-                    return ++currentIndex < length;
-                else
+                // move the internal enumerator forward
+                if (!enumerator.MoveNext())
                 {
+                    // dispose on the end of enumeration
+                    Dispose();
+
                     return false;
                 }
+
+                return true;
 			}
 
 			/// <summary>
@@ -1018,9 +996,141 @@ namespace PHP.Core
 			}
 
 			#endregion
-		}
+
+            #region IDisposable Members
+
+            /// <summary>
+            /// Unshare the underlaying table and dispose enumerator resources if any.
+            /// </summary>
+            /// <remarks>If this method is not called at least once, the underlaying table may be lazily copied later in some cases.</remarks>
+            public void Dispose()
+            {
+                if (!disposed)
+                {
+                    disposed = true;                    // do not disposes again
+                    enumerator.head.Table.Unshare();    // return back the table so it can be writable again in most cases
+                    enumerator.Dispose();               // disable the enumerator, free resources if any
+                }
+            }
+
+            #endregion
+        }
 
 		#endregion
+
+        #region Nested class: ForeachEnumeratorAliased
+
+        /// <summary>
+        /// An enumerator used (only) for aliased foreach statement.
+        /// </summary>
+        private class ForeachEnumeratorAliased : IDictionaryEnumerator, IDisposable
+        {
+            /// <summary>
+            /// Array to get values from.
+            /// </summary>
+            private readonly PhpArray/*!*/array;
+
+            private int currentIndex;
+            private readonly int length;
+            private readonly IntStringKey[] keys;
+            
+            /// <summary>
+            /// Creates a new instance of the enumerator.
+            /// </summary>
+            /// <param name="array">The array to iterate over.</param>
+            /// <param name="keyed">Whether keys are interesting.</param>
+            public ForeachEnumeratorAliased(PhpArray/*!*/ array, bool keyed)
+            {
+                Debug.Assert(array != null);
+
+                this.array = array;
+                this.currentIndex = -1;
+                this.length = array.Count;
+
+                // if keys are needed during the iteration:
+                keys = new IntStringKey[length];
+                array.Keys.CopyTo(keys, 0);
+            }
+
+            #region IDictionaryEnumerator Members
+
+            /// <summary>
+            /// Gets a current key.
+            /// </summary>
+            public object Key
+            {
+                get
+                {
+                    // deep copy is not needed because a key is immutable:
+                    return keys[currentIndex].Object;
+                }
+            }
+
+            /// <summary>
+            /// Gets a current value. Returns either a deep copy of a value if values are not aliased or 
+            /// a <see cref="PhpReference"/> otherwise. In the latter case, the reference item is added to the array
+            /// if there is not one.
+            /// </summary>
+            public object Value
+            {
+                get
+                {
+                    return array.GetArrayItemRef(keys[currentIndex]);
+                }
+            }
+
+            public DictionaryEntry Entry { get { throw new NotSupportedException(); } }
+
+            #endregion
+
+            #region IEnumerator Members
+
+            /// <summary>
+            /// Resets enumerator.
+            /// </summary>
+            public void Reset()
+            {
+                throw new NotSupportedException();
+            }
+
+            /// <summary>
+            /// Moves to the next entry.
+            /// </summary>
+            /// <returns>Whether we can continue.</returns>
+            public bool MoveNext()
+            {
+                if (currentIndex < length)
+                    return ++currentIndex < length;
+                else
+                {
+                    return false;
+                }
+            }
+
+            /// <summary>
+            /// Not supported.
+            /// </summary>
+            public object Current
+            {
+                get
+                {
+                    throw new NotSupportedException();
+                }
+            }
+
+            #endregion
+
+            #region IDisposable Members
+
+            public void Dispose()
+            {
+
+            }
+
+            #endregion
+        }
+
+        #endregion
 
 		#region IPhpObjectGraphNode Members
 

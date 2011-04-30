@@ -327,11 +327,11 @@ namespace PHP.Core
         {
             --_refCount;
 
-            Debug.Assert(_refCount >= 1, "Too much Unshare()!");
+            Debug.Assert(_refCount >= 0, "Too many Unshare() calls!");
         }
 
-        //[Conditional("DEBUG")]
-        internal void CheckNotShared()
+        [Conditional("DEBUG")]
+        private void CheckNotShared()
         {
             //Debug.Assert(!this.IsShared, "Cannot modify shared OrderedHashtable.");
             if (this.IsShared)
@@ -533,8 +533,10 @@ namespace PHP.Core
             internal Enumerator(PhpHashtable/*!*/hashtable, bool isGeneric)
                 : this(hashtable.table as OrderedHashtable<K>, isGeneric)
             {
-                this.hashtable = hashtable; // store the table container to allow internal table update check
+                // store the table container to allow internal table update check:
+                this.hashtable = hashtable;
 
+                // register the enumerator object:
                 hashtable.RegisterEnumerator(this as OrderedHashtable<IntStringKey>.Enumerator);
             }
 
@@ -547,6 +549,19 @@ namespace PHP.Core
             /// </summary>
             /// <returns>The <see cref="current"/> iterator.</returns>
             internal Element SkipDeletedForward()
+            {
+                if (current.Table != null)
+                    return current;
+
+                return SkipDeletedForwardInternal();
+            }
+
+            /// <summary>
+            /// Second part of <see cref="SkipDeletedForward"/>. The method is separated to enhance
+            /// the call to <see cref="SkipDeletedForward"/>, the code contained in this method is rarely called.
+            /// </summary>
+            /// <returns>The <see cref="current"/> iterator.</returns>
+            private Element SkipDeletedForwardInternal()
             {
                 while (current.IsDeleted) current = current.Next;
                 return current;
@@ -566,7 +581,7 @@ namespace PHP.Core
             /// Ensure the hastable did not change its internal dictionary. This can occur when shared instance of OrderedHashtable is lazily copied.
             /// </summary>
             /// <returns>True if tables were changed.</returns>
-            //[Conditional("DEBUG")];
+            [Conditional("DEBUG")]
             private void EnsureCurrentTable()
             {
                 if (this.hashtable != null && !object.ReferenceEquals(hashtable.table.head, this.head))
@@ -744,8 +759,15 @@ namespace PHP.Core
 			public bool MoveNext()
 			{
 				// we are at the end of the list and not ready to start iteration:
-				if (current == head && !starting) return false;
-				starting = false;
+                if (!starting)
+                {
+                    if (current == head)
+                        return false;
+                }
+                else
+                {
+                    starting = false;
+                }
 
                 // ensures the table (need not to be called first, head is head):
                 EnsureCurrentTable();
@@ -2247,7 +2269,7 @@ namespace PHP.Core
             }
         }
 
-		public object Object { get { return (skey != null) ? skey : (object)ikey; } }
+		public object Object { get { return skey ?? (object)ikey; } }
 
 		/// <summary>
 		/// Integer value iff <see cref="IsString"/> return <B>false</B>.
