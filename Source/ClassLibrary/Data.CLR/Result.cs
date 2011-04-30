@@ -15,6 +15,7 @@ using System.Runtime.Serialization;
 using System.Data;
 using System.Data.SqlClient;
 using System.Collections;
+using System.Collections.Generic;
 
 using PHP.Core;
 using PHP.Core.Reflection;
@@ -50,6 +51,11 @@ namespace PHP.Library.Data
 			/// Number of records affected by the query.
 			/// </summary>
 			public int RecordsAffected = -1;
+
+            /// <summary>
+            /// Custom data obtained from the row by <see cref="GetCustomData"/> callback function of specific PhpDbResult implementation.
+            /// </summary>
+            public object CustomData;
 		}
 
 		/// <summary>
@@ -59,7 +65,7 @@ namespace PHP.Library.Data
 		private IDataReader reader;
 
 		private PhpDbConnection connection;
-		private ArrayList resultSets;     // GENERICS: List<ResultSet>
+		private List<ResultSet> resultSets;
 
 		#region Fields and Properties
 
@@ -178,16 +184,18 @@ namespace PHP.Library.Data
 		/// <remarks>This method should be called before any other method.</remarks>
 		private void LoadData(bool convertTypes)
 		{
-			this.resultSets = new ArrayList(1);
+            this.resultSets = new List<ResultSet>(16);
 
 			do
 			{
-				ResultSet result_set = new ResultSet();
-
-				result_set.Rows = new ArrayList();
-				result_set.Names = GetNames();
-				result_set.DataTypes = GetDataTypes();
-				result_set.RecordsAffected = reader.RecordsAffected;
+                ResultSet result_set = new ResultSet()
+                {
+                    Rows = new ArrayList(),
+                    Names = GetNames(),
+                    DataTypes = GetDataTypes(),
+                    RecordsAffected = reader.RecordsAffected,
+                    CustomData = GetCustomData()
+                };
 
 				while (reader.Read())
 				{
@@ -246,6 +254,15 @@ namespace PHP.Library.Data
 
 			return names;
 		}
+
+        /// <summary>
+        /// Get custom data of current row of <see cref="Reader"/>. Used when loading data from database.
+        /// </summary>
+        /// <returns>Custom object associated with current row.</returns>
+        protected virtual object GetCustomData()
+        {
+            return null;
+        }
 
 		/// <summary>
 		/// Gets values of the current row from the reader.
@@ -337,8 +354,8 @@ namespace PHP.Library.Data
 			for (int i = 0; i < FieldCount; i++)
 			{
 				object quoted = Core.Convert.Quote(oa[i], context);
-				if (intKeys) row[i] = quoted;
-				if (stringKeys) row[CurrentSet.Names[i]] = quoted;
+				if (intKeys) row.Add(i, quoted);
+                if (stringKeys) row[CurrentSet.Names[i]] = quoted;
 			}
 
 			return row;
@@ -361,14 +378,17 @@ namespace PHP.Library.Data
 			Debug.Assert(currentRowIndex >= 0 && currentRowIndex < RowCount);
 
 			object[] oa = (object[])CurrentSet.Rows[currentRowIndex];
-			PhpObject php_object = new stdClass();
-
+			OrderedHashtable<string> runtimeFields = new OrderedHashtable<string>(FieldCount);
 			for (int i = 0; i < FieldCount; i++)
 			{
-				php_object.SetProperty(CurrentSet.Names[i], oa[i], null);
+                runtimeFields[CurrentSet.Names[i]] = oa[i];
+				//php_object.SetProperty(CurrentSet.Names[i], oa[i], null);
 			}
 
-			return php_object;
+            return new stdClass()
+            {
+                RuntimeFields = runtimeFields
+            };            
 		}
 
 		#endregion
@@ -525,6 +545,15 @@ namespace PHP.Library.Data
 			if (!CheckRowIndex(rowIndex) || !CheckFieldIndex(fieldIndex)) return null;
 			return ((object[])CurrentSet.Rows[rowIndex])[fieldIndex];
 		}
+
+        /// <summary>
+        /// Get custom data associated with current set.
+        /// </summary>
+        /// <returns></returns>
+        public object GetRowCustomData()
+        {
+            return CurrentSet.CustomData;
+        }
 
 		#endregion
 
