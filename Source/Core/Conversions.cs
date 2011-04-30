@@ -443,36 +443,26 @@ namespace PHP.Core
 		/// <param name="context">Current <see cref="ScriptContext"/>. Doesn't do a deep copy.</param>
 		/// <returns>The converted value.</returns>
 		[Emitted]
-		public static DObject ObjectToDObject(object var, ScriptContext/*!*/ context)
+		public static DObject/*!*/ObjectToDObject(object var, ScriptContext/*!*/ context)
 		{
 			PhpArray array;
 			DObject obj;
 
-			if ((array = var as PhpArray) != null)
-			{
-				// create a new stdClass
-				obj = new stdClass(context);
-				obj.RuntimeFields = new OrderedHashtable<string>(array.Count);
-				foreach (KeyValuePair<IntStringKey, object> pair in array)
-				{
-					obj.RuntimeFields[pair.Key.ToString()] = PhpVariable.Copy(pair.Value, CopyReason.Assigned);
-				}
-
-				return obj;
-			}
-
+            if ((array = var as PhpArray) != null)
+                return PhpArrayToDObject(array, context);
+			
 			if (var == null) return new stdClass(context);
 
 			if ((obj = var as DObject) != null) return obj;
 
 			// Integer, Double, Boolean, String, PhpBytes, PhpResource:
 			obj = new stdClass(context);
-			obj.RuntimeFields = new OrderedHashtable<string>();
+			obj.RuntimeFields = new OrderedHashtable<string>(null, 1);
 			obj.RuntimeFields.Add("scalar", var);
 			return obj;
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Converts value of an arbitrary PHP.NET type into <see cref="PhpCallback"/>. 
 		/// </summary>
 		/// <param name="var">The value to convert.</param>
@@ -2054,6 +2044,31 @@ namespace PHP.Core
 
 			return (int)result;
 		}
+
+        /// <summary>
+        /// Convert elements of given <see cref="PhpArray"/> into a new instance of <see cref="stdClass"/>.
+        /// </summary>
+        /// <param name="array"><see cref="PhpArray"/> to be read.</param>
+        /// <param name="context">Current <see cref="ScriptContext"/>.</param>
+        /// <returns>New instance of <see cref="DObject"/> containing fields from <paramref name="array"/>.</returns>
+        public static DObject PhpArrayToDObject(PhpArray/*!*/array, ScriptContext/*!*/ context)
+        {
+            Debug.Assert(array != null, "Argument 'array' cannot be null!");
+
+            var runtimeFields = new OrderedHashtable<string>(null, array.Count);
+            //foreach (KeyValuePair<IntStringKey, object> pair in array)
+            for (var p = array.table.head.Next; p != array.table.head; p = p.Next)
+            {
+                // add elements directly into the hashtable (no duplicity check, since array is already valid)
+                runtimeFields.Add(/*pair.Key*/p.Key.Object.ToString(), PhpVariable.Copy(/*pair*/p.Value, CopyReason.Assigned));
+            }
+
+            // create a new stdClass with runtime fields:
+            return new stdClass(context)
+            {
+                RuntimeFields = runtimeFields
+            };
+        }
 
 		#endregion
 

@@ -832,13 +832,6 @@ namespace PHP.Library
             if (browserCaps == null)
                 return null;
 
-            PhpArray caps = new PhpArray();
-
-            foreach (var x in browserCaps.Capabilities.Keys)
-            {
-                caps.Add(x, browserCaps.Capabilities[x]);
-            }
-
             // some special fields
             /*if (browserCaps.Browsers != null)
                 for (int ib = 0; ib < browserCaps.Browsers.Count; ++ib)
@@ -850,13 +843,27 @@ namespace PHP.Library
 
             if (return_array)
             {
+                // create an array of browser capabilities:
+                var caps = new PhpArray(browserCaps.Capabilities.Count);
+
+                foreach (var x in browserCaps.Capabilities.Keys)
+                    caps.Add(x, browserCaps.Capabilities[x]);
+                
                 return caps;
             }
             else
             {
-                stdClass obj = new stdClass();
-                foreach (var x in caps) obj.Add(x.Key.String, x.Value);
-                return obj;
+                // collect browser capabilities into the object runtime fields:
+                var caps = new OrderedHashtable<string>(browserCaps.Capabilities.Count);
+
+                foreach (var x in browserCaps.Capabilities.Keys)
+                    caps.Add(x.ToString(), browserCaps.Capabilities[x]);
+
+                // create an object of browser capabilities:
+                return new stdClass()
+                {
+                    RuntimeFields = caps
+                };
             }
         }
 
