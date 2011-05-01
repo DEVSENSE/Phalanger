@@ -3579,6 +3579,8 @@ namespace PHP.Core
         {
             T result;
 
+            // TODO (J): 2-gen cache, persistent readonly cache without locks
+
             // try to find the value in the cache first
             cacheLock.EnterUpgradeableReadLock();
             try

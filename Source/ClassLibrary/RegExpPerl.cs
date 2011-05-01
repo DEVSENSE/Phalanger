@@ -630,6 +630,7 @@ namespace PHP.Library
 		/// in the order the keys appear in the array. If only <paramref name="pattern"/> is an array, the
 		/// replacement string is used for every key in the <paramref name="pattern"/>.</para>
 		/// </summary>
+        /// <param name="context">Current <see cref="ScriptContext"/>. Passed by Phalanger runtime, cannot be null.</param>
         /// <param name="self">Instance of object that called the replace method (replace pattern may contain $this).</param>
         /// <param name="definedVariables"></param>
 		/// <param name="pattern">Regular expression to match.</param>
@@ -637,11 +638,11 @@ namespace PHP.Library
 		/// <param name="data">String to search for replacements.</param>
 		/// <returns>String or array containing strings with replacement performed.</returns>
 		[ImplementsFunction("preg_replace", FunctionImplOptions.CaptureEvalInfo | FunctionImplOptions.NeedsVariables | FunctionImplOptions.NeedsThisReference)]
-		public static object Replace(DObject self, Dictionary<string, object> definedVariables, 
+		public static object Replace(ScriptContext/*!*/context, DObject self, Dictionary<string, object> definedVariables, 
 			object pattern, object replacement, object data)
 		{
 			int count = Int32.MinValue; // disables counting
-			return Replace(self, definedVariables, pattern, replacement, null, data, -1, ref count);
+			return Replace(context, self, definedVariables, pattern, replacement, null, data, -1, ref count);
 		}
 
 		/// <summary>
@@ -654,6 +655,7 @@ namespace PHP.Library
 		/// in the order the keys appear in the array. If only <paramref name="pattern"/> is an array, the
 		/// replacement string is used for every key in the <paramref name="pattern"/>.</para>
 		/// </summary>
+        /// <param name="context">Current <see cref="ScriptContext"/>. Passed by Phalanger runtime, cannot be null.</param>
         /// <param name="self">Instance of object that called the replace method (replace pattern may contain $this)</param>
         /// <param name="definedVariables"></param>
 		/// <param name="pattern">Regular expression to match.</param>
@@ -662,11 +664,11 @@ namespace PHP.Library
 		/// <param name="limit">Maximum number of matches replaced. (-1 for no limit)</param>
 		/// <returns>String or array containing strings with replacement performed.</returns>
 		[ImplementsFunction("preg_replace", FunctionImplOptions.CaptureEvalInfo | FunctionImplOptions.NeedsVariables | FunctionImplOptions.NeedsThisReference)]
-		public static object Replace(DObject self, Dictionary<string, object> definedVariables, 
+        public static object Replace(ScriptContext/*!*/context, DObject self, Dictionary<string, object> definedVariables, 
 			object pattern, object replacement, object data, int limit)
 		{
 			int count = Int32.MinValue; // disables counting
-			return Replace(self, definedVariables, pattern, replacement, null, data, limit, ref count);
+			return Replace(context, self, definedVariables, pattern, replacement, null, data, limit, ref count);
 		}
 
 		/// <summary>
@@ -679,6 +681,7 @@ namespace PHP.Library
 		/// in the order the keys appear in the array. If only <paramref name="pattern"/> is an array, the
 		/// replacement string is used for every key in the <paramref name="pattern"/>.</para>
 		/// </summary>
+        /// <param name="context">Current <see cref="ScriptContext"/>. Passed by Phalanger runtime, cannot be null.</param>
         /// <param name="self">Instance of object that called the replace method (replace pattern may contain $this)</param>
         /// <param name="definedVariables"></param>
 		/// <param name="pattern">Regular expression to match.</param>
@@ -688,11 +691,11 @@ namespace PHP.Library
 		/// <param name="count">Number of replacements.</param>
 		/// <returns>String or array containing strings with replacement performed.</returns>
 		[ImplementsFunction("preg_replace", FunctionImplOptions.CaptureEvalInfo | FunctionImplOptions.NeedsVariables | FunctionImplOptions.NeedsThisReference)]
-		public static object Replace(DObject self, Dictionary<string, object> definedVariables, 
+        public static object Replace(ScriptContext/*!*/context, DObject self, Dictionary<string, object> definedVariables, 
 			object pattern, object replacement, object data, int limit, out int count)
 		{
 			count = 0;
-			return Replace(self, definedVariables, pattern, replacement, null, data, limit, ref count);
+			return Replace(context, self, definedVariables, pattern, replacement, null, data, limit, ref count);
 		}
 
 		/// <summary>
@@ -702,15 +705,16 @@ namespace PHP.Library
 		/// <para><paramref name="pattern"/> and <paramref name="data"/> parameters may be also unidimensional
 		/// arrays of strings. For the explanation <see cref="Replace"/>.</para>
 		/// </summary>
-		/// <param name="pattern">Regular expression to match.</param>
+        /// <param name="context">Current <see cref="ScriptContext"/>. Passed by Phalanger runtime, cannot be null.</param>
+        /// <param name="pattern">Regular expression to match.</param>
 		/// <param name="callback">Function called to find out the replacement string.</param>
 		/// <param name="data">String to search for replacements.</param>
 		/// <returns>String or array containing strings with replacement performed.</returns>
 		[ImplementsFunction("preg_replace_callback")]
-		public static object Replace(object pattern, PhpCallback callback, object data)
+        public static object Replace(ScriptContext/*!*/context, object pattern, PhpCallback callback, object data)
 		{
 			int count = Int32.MinValue; // disables counting;
-			return Replace(null, null, pattern, null, callback, data, -1, ref count);
+			return Replace(context, null, null, pattern, null, callback, data, -1, ref count);
 		}
 
 		/// <summary>
@@ -720,16 +724,17 @@ namespace PHP.Library
 		/// <para><paramref name="pattern"/> and <paramref name="data"/> parameters may be also unidimensional
 		/// arrays of strings. For the explanation <see cref="Replace"/>.</para>
 		/// </summary>
-		/// <param name="pattern">Regular expression to match.</param>
+        /// <param name="context">Current <see cref="ScriptContext"/>. Passed by Phalanger runtime, cannot be null.</param>
+        /// <param name="pattern">Regular expression to match.</param>
 		/// <param name="callback">Function called to find out the replacement string.</param>
 		/// <param name="data">String to search for replacements.</param>
 		/// <param name="limit">Maximum number of matches replaced. (-1 for no limit)</param>
 		/// <returns>String or array containing strings with replacement performed.</returns>
 		[ImplementsFunction("preg_replace_callback")]
-		public static object Replace(object pattern, PhpCallback callback, object data, int limit)
+        public static object Replace(ScriptContext/*!*/context, object pattern, PhpCallback callback, object data, int limit)
 		{
 			int count = Int32.MinValue; // disables counting
-			return Replace(null, null, pattern, null, callback, data, limit, ref count);
+			return Replace(context, null, null, pattern, null, callback, data, limit, ref count);
 		}
 
 		/// <summary>
@@ -739,32 +744,34 @@ namespace PHP.Library
 		/// <para><paramref name="pattern"/> and <paramref name="data"/> parameters may be also unidimensional
 		/// arrays of strings. For the explanation <see cref="Replace"/>.</para>
 		/// </summary>
-		/// <param name="pattern">Regular expression to match.</param>
+        /// <param name="context">Current <see cref="ScriptContext"/>. Passed by Phalanger runtime, cannot be null.</param>
+        /// <param name="pattern">Regular expression to match.</param>
 		/// <param name="callback">Function called to find out the replacement string.</param>
 		/// <param name="data">String to search for replacements.</param>
 		/// <param name="limit">Maximum number of matches replaced. (-1 for no limit)</param>
 		/// <param name="count">Number of replacements.</param>
 		/// <returns>String or array containing strings with replacement performed.</returns>
 		[ImplementsFunction("preg_replace_callback")]
-		public static object Replace(object pattern, PhpCallback callback, object data, int limit, out int count)
+        public static object Replace(ScriptContext/*!*/context, object pattern, PhpCallback callback, object data, int limit, out int count)
 		{
 			count = 0;
-			return Replace(null, null, pattern, null, callback, data, limit, ref count);
+			return Replace(context, null, null, pattern, null, callback, data, limit, ref count);
 		}
 
 		/// <summary>
-		/// Private mehtod implementing all replace methods. Just one of <paramref name="replacement"/> or
-		/// <param name="callback" /> should be used.
+		/// Private mehtod implementing all replace methods. Just one of <paramref name="replacement"/> or <paramref name="callback" /> should be used.
 		/// </summary>
+        /// <param name="context">Current <see cref="ScriptContext"/>. Must not be null.</param>
         /// <param name="self">Instance of object that called the replace method (replace pattern may contain $this)</param>
         /// <param name="definedVariables"></param>
         /// <param name="pattern"></param>
         /// <param name="replacement"></param>
+        /// <param name="callback"></param>
         /// <param name="data"></param>
         /// <param name="limit"></param>
         /// <param name="count"></param>
 		/// <returns>String or an array.</returns>
-		private static object Replace(DObject self, Dictionary<string, object> definedVariables, object pattern, object replacement, PhpCallback callback,
+		private static object Replace(ScriptContext/*!*/context, DObject self, Dictionary<string, object> definedVariables, object pattern, object replacement, PhpCallback callback,
 			object data, int limit, ref int count)
 		{
 			// if we have no replacement and no callback, matches are deleted (replaced by an empty string)
@@ -775,7 +782,7 @@ namespace PHP.Library
 			Debug.Assert(replacement != null ^ callback != null);
 
 			// get eval info if it has been captured - is needed even if we do not need them later
-			SourceCodeDescriptor descriptor = ScriptContext.CurrentContext.GetCapturedSourceCodeDescriptor();
+            SourceCodeDescriptor descriptor = /*ScriptContext.CurrentContext*/context.GetCapturedSourceCodeDescriptor();
 
 			// PHP's behaviour for undocumented limit range
 			if (limit < -1)
@@ -806,20 +813,31 @@ namespace PHP.Library
 			IEnumerator<object> pattern_enumerator = pattern_array.Values.GetEnumerator();
 			IEnumerator<object> replacement_enumerator = (replacement_array != null) ? replacement_array.Values.GetEnumerator() : null;
 
-			// call replacement on data for all pattern array items
-			while (pattern_enumerator.MoveNext())
-			{
-				if (replacement_array != null)
-				{
-					// replacements are in array, move to next item and take it if possible, in other case take empty string:
-					replacement_string = (replacement_enumerator.MoveNext())
-			  ? Core.Convert.ObjectToString(replacement_enumerator.Current)
-						  : String.Empty;
-				}
+            try
+            {
+                // call replacement on data for all pattern array items
+                while (pattern_enumerator.MoveNext())
+                {
+                    if (replacement_array != null)
+                    {
+                        // replacements are in array, move to next item and take it if possible, in other case take empty string:
+                        replacement_string = (replacement_enumerator.MoveNext())
+                                ? Core.Convert.ObjectToString(replacement_enumerator.Current)
+                                : String.Empty;
+                    }
 
-				data_copy = SimpleReplace(self, definedVariables, pattern_enumerator.Current, replacement_string,
-							callback, data_copy, limit, descriptor, ref count);
-			}
+                    data_copy = SimpleReplace(self, definedVariables, pattern_enumerator.Current, replacement_string,
+                                callback, data_copy, limit, descriptor, ref count);
+                }
+            }
+            finally
+            {
+                // dispose enumerators!
+                pattern_enumerator.Dispose();
+
+                if (replacement_enumerator != null)
+                    replacement_enumerator.Dispose();
+            }
 
 			// return resulting array or string assigned to data
 			return data_copy;
@@ -993,7 +1011,7 @@ namespace PHP.Library
 			}
 
 			/// <summary>
-			/// Expects replacement string produced by <see cref="PerlRegExpConverter.ConvertReplacement"/>, 
+            /// Expects replacement string produced by <see cref="PerlRegExpReplacementCache.ConvertReplacement"/>, 
 			/// i.e. only ${n} refer to valid groups.
 			/// </summary>
 			private string Substitute(string replacement, GroupCollection groups)
@@ -1052,10 +1070,6 @@ namespace PHP.Library
 			try
 			{
 				return new PerlRegExpConverter(pattern, replacement, encoding);
-			}
-			catch (Debug.AssertException)
-			{
-				throw;
 			}
 			catch (ArgumentException e)
 			{
@@ -1537,8 +1551,10 @@ namespace PHP.Library
         /// Gets cached regex for specified key.
         /// </summary>
         /// <param name="key">Key.</param>
-        /// <returns>Tuple of regex and perl regex options.</returns>
-        public static Tuple<Regex, PerlRegexOptions> GetCachedRegex(RegexCacheKey/*!*/ key)
+        /// <param name="regex">Found regex.</param>
+        /// <param name="options">Found Perl Options.</param>
+        /// <returns>True iff the regex was found in cache.</returns>
+        public static bool GetCachedRegex(RegexCacheKey/*!*/ key, out Regex regex, out PerlRegexOptions options)
         {
 #if !SILVERLIGHT
             _cacheLock.EnterUpgradeableReadLock();
@@ -1551,16 +1567,28 @@ namespace PHP.Library
                 // first look into second gen
                 if (_regexSecondGen.TryGetValue(key, out entry))
                 {
-                    return new Tuple<Regex, PerlRegexOptions>(entry.Regex, entry.PerlOpt);
+                    regex = entry.Regex;
+                    options = entry.PerlOpt;
+                    return true;
+                    //return new Tuple<Regex, PerlRegexOptions>(entry.Regex, entry.PerlOpt);
                 }
                 //then into first gen
                 else if (_regexFirstGen.TryGetValue(key, out entry))
                 {
                     TryUpgradeEntry(key, entry);
-                    return new Tuple<Regex, PerlRegexOptions>(entry.Regex, entry.PerlOpt);
+
+                    regex = entry.Regex;
+                    options = entry.PerlOpt;
+                    return true;
+                    //return new Tuple<Regex, PerlRegexOptions>(entry.Regex, entry.PerlOpt);
                 }
                 else
-                    return null;
+                {
+                    regex = null;
+                    options = PerlRegexOptions.None;
+                    return false;
+                    //return null;
+                }
             }
             finally
             {
@@ -1589,8 +1617,8 @@ namespace PHP.Library
 
             try
             {
-                Debug.Assert(!_regexFirstGen.ContainsKey(key));
-                _regexFirstGen.Add(key, new RegexCacheEntry(pattern, regexOpt, regex, perlOpt));
+                //Debug.Assert(!_regexFirstGen.ContainsKey(key)); // (J) between GetCachedKey and AddRegex is no lock ! Surely this can fail.
+                _regexFirstGen[key] = new RegexCacheEntry(pattern, regexOpt, regex, perlOpt);
             }
             finally
             {
@@ -1648,9 +1676,145 @@ namespace PHP.Library
     }
     #endregion
 
-	#region PerlRegExpConverter
+    #region PerlRegExpReplacementCache
 
-	/// <summary>
+    internal static class PerlRegExpReplacementCache
+    {
+        //private const char KeySeparator = '\n';
+
+        ///// <summary>
+        ///// Cache of converted replacements. The key is concatenation of maximum group number, '\n' and replacement string.
+        ///// </summary>
+        //private static readonly PHP.Core.SynchronizedCache<string, string>/*!*/cache =
+        //    new SynchronizedCache<string, string>(group_replacement =>
+        //    {
+        //        int n = group_replacement.IndexOf(KeySeparator);
+        //        Debug.Assert(n >= 0, "Invalid cache key '" + group_replacement + "'");
+                
+        //        return ConvertReplacement(int.Parse(group_replacement.Remove(n)), group_replacement.Substring(n + 1));
+        //    });
+
+        /// <summary>
+        /// Get the converted replacement from the cache or perform conversion and cache.
+        /// </summary>
+        /// <param name="regex"></param>
+        /// <param name="replacement"></param>
+        /// <returns></returns>
+        public static string Get(Regex/*!*/regex, string/*!*/replacement)
+        {
+            //return cache.Get(CreateReplacementKey(regex, replacement));   // cache is slower than the ConvertReplacement itself ?
+
+            int[] group_numbers = regex.GetGroupNumbers();
+            int max_number = (group_numbers.Length > 0) ? group_numbers[group_numbers.Length - 1] : 0;
+
+            return ConvertReplacement(max_number, replacement);
+        }
+
+        ///// <summary>
+        ///// Get the key representing the replacement.
+        ///// </summary>
+        ///// <param name="regex"></param>
+        ///// <param name="replacement"></param>
+        ///// <returns></returns>
+        //private static string CreateReplacementKey(Regex/*!*/regex, string/*!*/replacement)
+        //{
+        //    int[] group_numbers = regex.GetGroupNumbers();
+        //    int max_number = (group_numbers.Length > 0) ? group_numbers[group_numbers.Length - 1] : 0;
+
+        //    return max_number.ToString() + KeySeparator + replacement;
+        //}
+
+        /// <summary>
+        /// Converts substitutions of the form \\xx to $xx (perl to .NET format).
+        /// </summary>
+        /// <param name="max_number">Maximum group number for the current regullar expression.
+        /// <code>
+        ///     int[] group_numbers = regex.GetGroupNumbers();
+        ///     int max_number = (group_numbers.Length > 0) ? group_numbers[group_numbers.Length - 1] : 0;
+        /// </code>
+        /// </param>
+        /// <param name="replacement">String possibly containing \\xx substitutions.</param>
+        /// <returns>String with converted $xx substitution format.</returns>
+        private static string ConvertReplacement(int max_number, string replacement)
+        {
+            int length = replacement.Length;
+            StringBuilder result = new StringBuilder(length);
+
+            //int[] group_numbers = regex.GetGroupNumbers();
+            //int max_number = (group_numbers.Length > 0) ? group_numbers[group_numbers.Length - 1] : 0;
+
+            int i = 0;
+            while (i < length)
+            {
+                if (PerlRegExp.IsDigitGroupReference(replacement, i) ||
+                  PerlRegExp.IsParenthesizedGroupReference(replacement, i))
+                {
+                    int add = 0;
+                    i++;
+
+                    if (replacement[i] == '{') { i++; add = 1; }
+
+                    int number = replacement[i++] - '0';
+                    if (i < length && Char.IsDigit(replacement, i))
+                    {
+                        number = number * 10 + replacement[i];
+                        i++;
+                    }
+
+                    // insert only existing group references (others replaced with empty string):
+                    if (number <= max_number)
+                    {
+                        result.Append('$');
+                        result.Append('{');
+                        result.Append(number.ToString());
+                        result.Append('}');
+                    }
+
+                    i += add;
+                }
+                else if (replacement[i] == '$')
+                {
+                    // there is $ and it is not a substitution - duplicate it:
+                    result.Append("$$");
+                    i++;
+                }
+                else if (replacement[i] == '\\' && i + 1 < length)
+                {
+                    if (replacement[i + 1] == '\\')
+                    {
+                        // two backslashes, replace with one:
+                        result.Append('\\');
+                        i += 2;
+                    }
+                    else if (replacement[i + 1] == '$')
+                    {
+                        // "/$" -> '$$' because /$ doesn't escape $ in .NET
+                        result.Append("$$");
+                        i += 2;
+                    }
+                    else
+                    {
+                        // backslash + some character, skip two characters
+                        result.Append(replacement, i, 2);
+                        i += 2;
+                    }
+                }
+                else
+                {
+                    // no substitution, no backslash (or backslash at the end of string)
+                    result.Append(replacement, i++, 1);
+                }
+            }
+
+            return result.ToString();
+        }
+    }
+
+    #endregion
+
+    #region PerlRegExpConverter
+
+    /// <summary>
 	/// Used for converting PHP Perl like regular expressions to .NET regular expressions.
 	/// </summary>
 	internal sealed class PerlRegExpConverter
@@ -1723,7 +1887,7 @@ namespace PHP.Library
 
 		#endregion
 
-		/// <summary>
+        /// <summary>
 		/// Creates new <see cref="PerlRegExpConverter"/> and converts Perl regular expression to .NET.
 		/// </summary>
 		/// <param name="pattern">Perl regular expression to convert.</param>
@@ -1739,7 +1903,7 @@ namespace PHP.Library
 			ConvertPattern(pattern);
 
             if (replacement != null)
-                dotNetReplaceExpression = ConvertReplacement(replacement);
+                dotNetReplaceExpression = PerlRegExpReplacementCache.Get(regex, replacement);
 		}
 
 		private void ConvertPattern(object pattern)
@@ -1750,14 +1914,15 @@ namespace PHP.Library
 
 			if ((bytes_pattern = pattern as PhpBytes) != null)
 			{
-                Tuple<Regex, PerlRegexOptions> cache_entry;
+                //Tuple<Regex, PerlRegexOptions> cache_entry;
 
                 cache_key = new PerlRegExpCache.RegexCacheKey(bytes_pattern);
 
-                if (null != (cache_entry = PerlRegExpCache.GetCachedRegex(cache_key)))
+                //if (null != (cache_entry = PerlRegExpCache.GetCachedRegex(cache_key)))
+                if (PerlRegExpCache.GetCachedRegex(cache_key, out regex, out perlOptions))
                 {
-                    regex = cache_entry.Item1;
-                    perlOptions = cache_entry.Item2;
+                    //regex = cache_entry.Item1;
+                    //perlOptions = cache_entry.Item2;
                     return;
                 }
 
@@ -1767,14 +1932,15 @@ namespace PHP.Library
 			{
 				string_pattern = Core.Convert.ObjectToString(pattern);
 
-                Tuple<Regex, PerlRegexOptions> cache_entry;
+                //Tuple<Regex, PerlRegexOptions> cache_entry;
 
                 cache_key = new PerlRegExpCache.RegexCacheKey(string_pattern);
 
-                if (null != (cache_entry = PerlRegExpCache.GetCachedRegex(cache_key)))
+                //if (null != (cache_entry = PerlRegExpCache.GetCachedRegex(cache_key)))
+                if (PerlRegExpCache.GetCachedRegex(cache_key, out regex, out perlOptions))
                 {
-                    regex = cache_entry.Item1;
-                    perlOptions = cache_entry.Item2;
+                    //regex = cache_entry.Item1;
+                    //perlOptions = cache_entry.Item2;
                     return;
                 }
 
@@ -2552,83 +2718,6 @@ namespace PHP.Library
 			// => add ^ at the beginning if there is no one.
 			if (expr.Length == 0 || expr[0] != '^')
 				expr.Insert(0, "^");
-		}
-
-		/// <summary>
-		/// Converts substitutions of the form \\xx to $xx (perl to .NET format).
-		/// </summary>
-		/// <param name="replacement">String possibly containing \\xx substitutions.</param>
-		/// <returns>String with converted $xx substitution format.</returns>
-		private string ConvertReplacement(string replacement)
-		{
-			StringBuilder result = new StringBuilder();
-			int[] group_numbers = regex.GetGroupNumbers();
-			int max_number = (group_numbers.Length > 0) ? group_numbers[group_numbers.Length - 1] : 0;
-
-			int i = 0;
-			while (i < replacement.Length)
-			{
-				if (PerlRegExp.IsDigitGroupReference(replacement, i) ||
-				  PerlRegExp.IsParenthesizedGroupReference(replacement, i))
-				{
-					int add = 0;
-					i++;
-
-					if (replacement[i] == '{') { i++; add = 1; }
-
-					int number = replacement[i++] - '0';
-					if (i < replacement.Length && Char.IsDigit(replacement, i))
-					{
-						number = number * 10 + replacement[i];
-						i++;
-					}
-
-					// insert only existing group references (others replaced with empty string):
-					if (number <= max_number)
-					{
-						result.Append('$');
-						result.Append('{');
-						result.Append(number.ToString());
-						result.Append('}');
-					}
-
-					i += add;
-				}
-				else if (replacement[i] == '$')
-				{
-					// there is $ and it is not a substitution - duplicate it:
-					result.Append("$$");
-					i++;
-				}
-				else if (replacement[i] == '\\' && i + 1 < replacement.Length)
-				{
-					if (replacement[i + 1] == '\\')
-					{
-						// two backslashes, replace with one:
-						result.Append('\\');
-						i += 2;
-					}
-                    else if (replacement[i + 1] == '$')
-                    {
-                        // "/$" -> '$$' because /$ doesn't escape $ in .NET
-                        result.Append("$$");
-                        i += 2;
-                    }
-                    else
-					{
-						// backslash + some character, skip two characters
-						result.Append(replacement, i, 2);
-						i += 2;
-					}
-				}
-				else
-				{
-					// no substitution, no backslash (or backslash at the end of string)
-					result.Append(replacement, i++, 1);
-				}
-			}
-
-			return result.ToString();
 		}
 
 		#region Unit Test
