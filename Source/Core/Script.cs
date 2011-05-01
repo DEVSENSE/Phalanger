@@ -448,7 +448,7 @@ namespace PHP.Core
 			for (int i = 0; i < s.GetLength(0); i++)
 			{
 				mappings[0] = new InclusionMapping(s[i, 0], s[i, 1], null);
-				string result = InclusionMapping.TranslateExpression(mappings, s[i, 2]);
+				string result = InclusionMapping.TranslateExpression(mappings, s[i, 2], @"C:\inetpub\wwwroot");
 				Console.WriteLine("#{0}# '{1}' '{2}'\nresult='{3}'\n", s[i, 0], s[i, 1], s[i, 2], result);
 			}
 		}

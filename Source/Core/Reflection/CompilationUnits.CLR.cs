@@ -1334,7 +1334,7 @@ namespace PHP.Core.Reflection
 						// tries to match the pattern:
 						string source_code = sourceUnit.GetSourceCode(inclusionExpr.Target.Position);
 						string translated_path = InclusionMapping.TranslateExpression(context.Config.Compiler.InclusionMappings,
-							source_code);
+                            source_code, context.Config.Compiler.SourceRoot.FullFileName);
 
 						// succeeded:
 						if (translated_path != null)

@@ -59,6 +59,11 @@ namespace PHP.Core.Reflection
 		public Regex Pattern { get { return pattern; } }
 		private Regex/*!*/ pattern;
 
+        /// <summary>
+        /// Group name interpreted as the source root of application, <see cref="ApplicationConfiguration.CompilerSection.SourceRoot"/>.
+        /// </summary>
+        private const string SourceRootGroupName = "${SourceRoot}";
+
 		/// <summary>
 		/// Creates an inclusion mapping.
 		/// </summary>
@@ -82,7 +87,8 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		/// <param name="expression">The expression to be translated via regexp pattern.</param>
 		/// <param name="mappings">A list of mappings.</param>
-		internal static string TranslateExpression(IEnumerable<InclusionMapping>/*!*/ mappings, string/*!*/ expression) // GENERICS <>
+        /// <param name="sourceRoot">The <see cref="ApplicationConfiguration.CompilerSection.SourceRoot"/> used to patch <see cref="InclusionMapping.Replacement"/> string.</param>
+		internal static string TranslateExpression(IEnumerable<InclusionMapping>/*!*/ mappings, string/*!*/ expression, string sourceRoot)
 		{
 			Debug.Assert(mappings != null && expression != null);
 			string trimmed_expression = expression.Trim();
@@ -93,8 +99,8 @@ namespace PHP.Core.Reflection
 				Match m = mapping.Pattern.Match(trimmed_expression);
 
 				// regex matches:
-				if (m.Success)
-					return m.Result(mapping.Replacement);
+                if (m.Success)
+                    return m.Result(mapping.Replacement.Replace(SourceRootGroupName, sourceRoot));
 			}
 
 			// no regex does match:
