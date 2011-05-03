@@ -1261,6 +1261,7 @@ namespace PHP.Library
 			int count;
 			object r = Replace
 			(
+            ScriptContext.CurrentContext,
 				null,
 				null,
 			  new PhpBytes(Encoding.UTF8.GetBytes("/[øš]+/u")),
