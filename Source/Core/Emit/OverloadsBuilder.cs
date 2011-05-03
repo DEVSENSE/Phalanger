@@ -639,16 +639,17 @@ namespace PHP.Core.Emit
 			// updates arguments passed by reference:
 			EmitReferencesLoad();
 
+            // An argument loader can jump here if method call should be skipped.
+			// In such a case return_value local will have default value (since locals are initialized).
+			il.MarkLabel(overloadCallEndLabel);
+
+            // [CastToFalse] or [PhpDeepCopy]
             if (!ignoringReturnValue)
             {
                 // converts return value (deep copy, cast to false):
                 EmitReturnValueConversion(method, ref return_type);
             }
-
-			// An argument loader can jump here if method call should be skipped.
-			// In such a case return_value local will have default value (since locals are initialized).
-			il.MarkLabel(overloadCallEndLabel);
-
+            
             // free the skip emitter, to not be used incidentally again
             overloadCallSkipEmitter = null;
 
@@ -1034,6 +1035,7 @@ namespace PHP.Core.Emit
                 il.MarkLabel(endif_label);
 
                 // (obj) or (obj as dstType) is on the top of the evaluation stack
+                il.Emit(OpCodes.Castclass, dstType);
             }
 		}
 
