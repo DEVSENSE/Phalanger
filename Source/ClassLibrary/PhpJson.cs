@@ -385,7 +385,7 @@ namespace PHP.Library
                             PhpBytes bytes;
                             if ((bytes = graph as PhpBytes) != null)
                             {
-                                WriteBinaryData(bytes.ReadonlyData);
+                                WriteString(((IPhpConvertible)bytes).ToString());
                                 break;
                             }
 
@@ -551,15 +551,6 @@ namespace PHP.Library
                 strVal.Append(Tokens.Quote);
 
                 writer.Write(strVal.ToString());
-            }
-
-            /// <summary>
-            /// Serializes binary data.
-            /// </summary>
-            /// <param name="value">The data.</param>
-            private void WriteBinaryData(byte[] value)
-            {
-                WriteString(Encoding.ASCII.GetString(value));
             }
 
             #region formatting JSON objects / arrays
