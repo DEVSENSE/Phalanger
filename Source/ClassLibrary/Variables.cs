@@ -799,15 +799,94 @@ namespace PHP.Library
 				return 0;
 			}
 
-			// pick global variables if local are not available:
-			PhpArray globals = (localVariables != null) ? null : ScriptContext.CurrentContext.GlobalVariables;
+            // unfortunately, type contains flags are combined with enumeration: 
+            bool refs = (type & ExtractType.Refs) != 0;
+            type &= ExtractType.NonFlags;
 
-			// unfortunately, type contains flags are combined with enumeration: 
-			bool refs = (type & ExtractType.Refs) != 0;
-			type &= ExtractType.NonFlags;
+            //
+            // construct the action used to set the variable into the locals/globals
+            //
+            Action<string/*name*/, object/*value*/> updateVariableFn;    // function that writes the value to locals/globals
+            Predicate<string/*name*/> containsFn;       // function that checks if variable exists
+            PhpArray globals = (localVariables != null) ? null : ScriptContext.CurrentContext.GlobalVariables;
 
-			int extracted_count = 0;
-			foreach (KeyValuePair<IntStringKey, object> entry in vars)
+            #region select function that writes the variable
+
+            if (refs)
+            {
+                // makes a reference and writes it back (deep copy is not necessary, "no duplicate pointers" rule preserved):
+
+                if (localVariables != null)
+                {
+                    updateVariableFn = (name, value) =>
+                    {
+                        localVariables[name] = vars[name] = PhpVariable.MakeReference(value);
+                    };
+                }
+                else
+                {
+                    updateVariableFn = (name, value) =>
+                    {
+                        globals[name] = vars[name] = PhpVariable.MakeReference(value);
+                    };
+                }
+            }
+            else
+            {
+                if (localVariables != null)
+                {
+                    updateVariableFn = (name, value) =>
+                    {
+                        // deep copy the value
+                        value = PhpVariable.DeepCopy(PhpVariable.Dereference(value));
+
+                        // put into locals
+                        object item;
+                        PhpReference ref_item;
+                        if (localVariables.TryGetValue(name, out item) && (ref_item = item as PhpReference) != null)
+                            ref_item.Value = value;
+                        else
+                            localVariables[name] = value;
+                    };
+                }
+                else
+                {
+                    updateVariableFn = (name, value) =>
+                    {
+                        // deep copy the value
+                        value = PhpVariable.DeepCopy(PhpVariable.Dereference(value));
+
+                        // set the value to globals
+                        object item;
+                        PhpReference ref_item;
+                        if (globals.TryGetValue(name, out item) && (ref_item = item as PhpReference) != null)
+                            ref_item.Value = value;
+                        else
+                            globals[name] = value;
+                    };
+                }
+            }
+
+            #endregion
+
+            Debug.Assert(updateVariableFn != null);
+
+            #region select function that checks if variable exists
+
+            if (localVariables != null)
+                containsFn = (name) => localVariables.ContainsKey(name);
+            else
+                containsFn = (name) => globals.ContainsKey(name);
+
+            #endregion
+
+            Debug.Assert(containsFn != null);
+            
+            //
+            //
+            //
+            int extracted_count = 0;
+            foreach (KeyValuePair<IntStringKey, object> entry in vars)
 			{
 				string name = entry.Key.ToString();
 				if (String.IsNullOrEmpty(name)) continue;
@@ -823,14 +902,14 @@ namespace PHP.Library
 					case ExtractType.Skip:
 
 						// skips existing name:
-						if (PhpArray.ContainsKey(globals, localVariables, name)) continue;
+						if (containsFn(name)) continue;
 
 						break;
 
 					case ExtractType.IfExists:
 
 						// skips nonexistent name:
-						if (!PhpArray.ContainsKey(globals, localVariables, name)) continue;
+                        if (!containsFn(name)) continue;
 
 						break;
 
@@ -852,7 +931,7 @@ namespace PHP.Library
 					case ExtractType.PrefixSame:
 
 						// prefixes existing, others are overwritten:
-						if (PhpArray.ContainsKey(globals, localVariables, name))
+                        if (containsFn(name))
 							name = String.Concat(prefix, "_", name);
 
 						break;
@@ -860,7 +939,7 @@ namespace PHP.Library
 					case ExtractType.PrefixIfExists:
 
 						// prefixes existing, others are skipped:
-						if (PhpArray.ContainsKey(globals, localVariables, name))
+                        if (containsFn(name))
 							name = String.Concat(prefix, "_", name);
 						else
 							continue;
@@ -875,20 +954,9 @@ namespace PHP.Library
 				// invalid names are skipped:
 				if (PhpVariable.IsValidName(name))
 				{
-					// makes a deep copy and creates a new or updates an existing variable:
-					if (refs)
-					{
-						// makes a reference and writes it back (deep copy is not necessary, "no duplicate pointers" rule preserved):
-						PhpReference php_ref = PhpVariable.MakeReference(entry.Value);
-						vars[name] = php_ref;
-
-						PhpArray.Set(globals, localVariables, name, php_ref);
-					}
-					else
-					{
-						PhpArray.Set(globals, localVariables, name, PhpVariable.DeepCopy(PhpVariable.Dereference(entry.Value)));
-					}
-
+                    // write the value to locals or globals:
+                    updateVariableFn(name, entry.Value);
+					
 					extracted_count++;
 				}
 			}
