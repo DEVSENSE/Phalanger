@@ -893,7 +893,7 @@ namespace PHP.Core
         /// <summary>
 		/// An enumerator used (only) for foreach statement.
 		/// </summary>
-		private class ForeachEnumeratorValues : IDictionaryEnumerator, IDisposable
+		private sealed class ForeachEnumeratorValues : IDictionaryEnumerator, IDisposable
 		{
 
             /// <summary>
@@ -1023,7 +1023,7 @@ namespace PHP.Core
         /// <summary>
         /// An enumerator used (only) for aliased foreach statement.
         /// </summary>
-        private class ForeachEnumeratorAliased : IDictionaryEnumerator, IDisposable
+        private sealed class ForeachEnumeratorAliased : IDictionaryEnumerator, IDisposable
         {
             /// <summary>
             /// Array to get values from.

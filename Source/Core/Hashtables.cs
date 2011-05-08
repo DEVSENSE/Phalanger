@@ -241,7 +241,7 @@ namespace PHP.Core
 #if !SILVERLIGHT
 	[Serializable]
 #endif
-	public class OrderedHashtable<K> : IDictionary<K, object>, IDictionary, ICloneable, ISerializable
+	public sealed class OrderedHashtable<K> : IDictionary<K, object>, IDictionary, ICloneable, ISerializable
 	{
 		#region Fields & Specific Properties
 
@@ -347,7 +347,7 @@ namespace PHP.Core
 		/// </summary>
 		[Serializable]
         [DebuggerNonUserCode]
-        public class Element
+        public sealed class Element
 		{
 			internal OrderedHashtable<K> Table;
 			internal Element Next;
@@ -471,7 +471,7 @@ namespace PHP.Core
 		/// </para>
 		/// </remarks>
 		[Serializable]
-		public class Enumerator : IEnumerator<KeyValuePair<K, object>>, IDictionaryEnumerator, IPhpEnumerator, IDisposable
+		public sealed class Enumerator : IEnumerator<KeyValuePair<K, object>>, IDictionaryEnumerator, IPhpEnumerator, IDisposable
 		{
 			#region Fields
 
@@ -967,7 +967,7 @@ namespace PHP.Core
 		/// <param name="value">The value.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="key"/> is a null reference.</exception>
 		/// <exception cref="ArgumentException">An element with the same key already exists in this instance.</exception>
-		public virtual void Prepend(K key, object value)
+		public /*virtual*/ void Prepend(K key, object value)
 		{
             this.CheckNotShared();
 			AddAfter(head, key, value);
@@ -1160,7 +1160,7 @@ namespace PHP.Core
 			}
 		}
 		[NonSerialized]
-		protected KeyCollection _keys;
+		private KeyCollection _keys;
 
 		/// <summary>
 		/// Gets a collection of values. 
@@ -1178,7 +1178,7 @@ namespace PHP.Core
 		#region Inner class: KeyCollection
 
 		[Serializable]
-		public class KeyCollection : ICollection<K>, ICollection
+		public sealed class KeyCollection : ICollection<K>, ICollection
 		{
 			private readonly OrderedHashtable<K>/*!*/ hashtable;
 
@@ -1268,7 +1268,7 @@ namespace PHP.Core
 		/// Auxiliary collection used for manipulating keys or values of PhpHashtable.
 		/// </summary>
 		[Serializable]
-		public class ValueCollection : ICollection<object>, ICollection
+		public sealed class ValueCollection : ICollection<object>, ICollection
 		{
 			private readonly OrderedHashtable<K>/*!*/ hashtable;
 
@@ -1542,7 +1542,7 @@ namespace PHP.Core
 		}
 
 		/// <include file='Doc/Common.xml' path='/docs/method[@name="serialization.ctor"]/*'/>
-		protected OrderedHashtable(SerializationInfo info, StreamingContext context)
+		private OrderedHashtable(SerializationInfo info, StreamingContext context)
 		{
 			dict = (Dictionary<K, Element>)info.GetValue("dict", typeof(Dictionary<K, Element>));
 			head = (Element)info.GetValue("head", typeof(Element));
@@ -1798,7 +1798,7 @@ namespace PHP.Core
 		/// Entries are neither copied nor modified.
 		/// Affects interconnected table's items as well.
 		/// </remarks>
-		public virtual void Sort(IComparer<KeyValuePair<K, object>>/*!*/ comparer)
+		public /*virtual*/ void Sort(IComparer<KeyValuePair<K, object>>/*!*/ comparer)
 		{
 			// total number of elements (interconnected table has to be taken into consideration): 
 			int count = this.Count;
