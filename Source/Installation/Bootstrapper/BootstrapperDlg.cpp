@@ -74,6 +74,8 @@ void CBootstrapperDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 {
 	CDHtmlDialog::OnDocumentComplete(pDisp, szUrl);
 
+	SetElementHtml("Donate", GetResourceAsBSTR(IDS_IMGDONATE));
+
 	PostMessage(WM_TIMER);	
 }
 

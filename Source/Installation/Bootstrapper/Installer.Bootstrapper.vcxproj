@@ -135,6 +135,7 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\..\Desktop\donate.bmp" />
     <None Include="res\1a.bmp" />
     <None Include="res\1b.bmp" />
     <None Include="res\2a.bmp" />
@@ -143,6 +144,7 @@
     <None Include="res\3b.bmp" />
     <None Include="res\4a.bmp" />
     <None Include="res\4b.bmp" />
+    <None Include="res\donate.bmp" />
     <None Include="res\Installer.Bootstrapper.ico" />
     <None Include="Installer.Bootstrapper.htm">
       <DeploymentContent>true</DeploymentContent>

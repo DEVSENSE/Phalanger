@@ -109,9 +109,27 @@ BEGIN
     IDS_TEXT4B              "<a href="""" id=""InstallIntegration"">Visual Studio .NET 2005 integration</a><br>Already installed. Click to repair or remove."
     IDS_TEXT4C              "<span class=""inactive""><b>Visual Studio .NET 2005 integration</b><br>Install components that integrate Phalanger into Microsoft Visual Studio .NET 2005.</span>"
     IDS_TEXT4D              "<span class=""inactive""><b>Visual Studio .NET 2005 integration</b><br>This component requires Visual Studio .NET 2005!</span>"
+    IDS_IMGDONATE           "<img src=""res:/#2/#139"" alt=""Appriciate our work, buy us a beer :-)"" />"
 END
 
 #endif    // Czech (Czech Republic) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_DONATE              BITMAP                  "res\\donate.bmp"
+#endif    // English resources
 /////////////////////////////////////////////////////////////////////////////
 
 

@@ -68,6 +68,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Installer.Bootstrapper.htm" />
+    <None Include="res\donate.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\..\..\..\Desktop\donate.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Installer.Bootstrapper.rc">
