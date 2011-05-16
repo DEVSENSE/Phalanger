@@ -512,12 +512,65 @@ namespace PHP.Core.AST
 			}
 			else
 			{
+                // (J): cache the integer index of static local variable to access its value fast from within the array
+
+                // unique static local variable string ID
 				id = String.Format("{0}${1}${2}${3}", id, variable.VarName, position.FirstLine, position.FirstColumn);
+
+                // create static field for static local index: private static int <id>;
+                var type = codeGenerator.IL.TypeBuilder;
+                Debug.Assert(type != null, "The method does not have declaring type! (global code in pure mode?)");
+                var field_id = type.DefineField(id, Types.Int[0], System.Reflection.FieldAttributes.Private | System.Reflection.FieldAttributes.Static);
 
 				// we are in a function or method -> try to retrieve the local value from ScriptContext
 				variable.Emit(codeGenerator);
 
-				codeGenerator.EmitLoadScriptContext();
+                // <context>.GetStaticLocal( <field> )
+                codeGenerator.EmitLoadScriptContext();  // <context>
+                il.Emit(OpCodes.Ldsfld, field_id);         // <field>
+                il.Emit(OpCodes.Callvirt, Methods.ScriptContext.GetStaticLocal);    // GetStaticLocal
+                il.Emit(OpCodes.Dup);
+
+                // ?? <context>.AddStaticLocal( <field> != 0 ? <field> : ( <field> = ScriptContext.GetStaticLocalId(<id>) ), <initializer> )
+                if (true)
+                {
+                    // if (GetStaticLocal(<field>) == null)
+                    Label local_initialized = il.DefineLabel();
+                    il.Emit(OpCodes.Brtrue/*not .S, initializer can emit really long code*/, local_initialized);
+
+                    il.Emit(OpCodes.Pop);
+                    
+                    // <field> != 0 ? <field> : ( <field> = ScriptContext.GetStaticLocalId(<id>) )
+                    il.Emit(OpCodes.Ldsfld, field_id);         // <field>
+
+                    if (true)
+                    {
+                        // if (<field> == 0)
+                        Label id_initialized = il.DefineLabel();
+                        il.Emit(OpCodes.Brtrue_S, id_initialized);
+
+                        // <field> = GetStaticLocalId( <id> )
+                        il.Emit(OpCodes.Ldstr, id);
+                        il.Emit(OpCodes.Call, Methods.ScriptContext.GetStaticLocalId);
+                        il.Emit(OpCodes.Stsfld, field_id);
+
+                        il.MarkLabel(id_initialized);
+                    }
+
+                    // <context>.AddStaticLocal(<field>,<initialize>)
+                    codeGenerator.EmitLoadScriptContext();  // <context>
+                    il.Emit(OpCodes.Ldsfld, field_id);         // <field>
+                    if (initializer != null) codeGenerator.EmitBoxing(initializer.Emit(codeGenerator)); // <initializer>
+				    else il.Emit(OpCodes.Ldnull);
+                    il.Emit(OpCodes.Callvirt, Methods.ScriptContext.AddStaticLocal);    // AddStaticLocal
+
+                    // 
+                    il.MarkLabel(local_initialized);
+                }
+
+                // (J) Following code used Dictionary. It was replaced by the code above.
+                /*
+                codeGenerator.EmitLoadScriptContext();
 				il.Emit(OpCodes.Ldstr, id);
 				il.Emit(OpCodes.Call, Methods.ScriptContext.GetStaticLocal);
 
@@ -536,9 +589,11 @@ namespace PHP.Core.AST
 					il.Emit(OpCodes.Ldnull);
 
 				il.Emit(OpCodes.Call, Methods.ScriptContext.AddStaticLocal);
-
+                
 				// assign the resulting PhpReference into the variable
 				il.MarkLabel(reference_gotten, true);
+                */
+
 				variable.EmitAssign(codeGenerator);
 			}
 		}

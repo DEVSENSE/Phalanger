@@ -379,7 +379,7 @@ namespace PHP.Core.Emit
 
             static MethodInfo
                 _DisableErrorReporting, _EnableErrorReporting,
-                _GetCurrentContext, _Die, _StaticInclude, _DynamicInclude, _GetStaticLocal, _AddStaticLocal, _RunApplication,
+                _GetCurrentContext, _Die, _StaticInclude, _DynamicInclude, _GetStaticLocal, _GetStaticLocalId, _AddStaticLocal, _RunApplication,
                 _IsConstantDefined, _GetConstantValue, _RegisterDObjectForFinalization,
                 _DeclareFunction, _DeclareLambda, _Call, _DeclareType_TypeDesc, _DeclareType_Handle,
                 _GetWorkingDirectory;
@@ -396,8 +396,9 @@ namespace PHP.Core.Emit
             public static MethodInfo EnableErrorReporting { get { if (_EnableErrorReporting == null) _EnableErrorReporting = _this.GetMethod("EnableErrorReporting"); return _EnableErrorReporting; } }
 
             public static MethodInfo GetStaticLocal { get { if (_GetStaticLocal == null) _GetStaticLocal = _this.GetMethod("GetStaticLocal"); return _GetStaticLocal; } }
+            public static MethodInfo GetStaticLocalId { get { return _GetStaticLocalId ?? (_GetStaticLocalId = _this.GetMethod("GetStaticLocalId")); } }
             public static MethodInfo AddStaticLocal { get { if (_AddStaticLocal == null) _AddStaticLocal = _this.GetMethod("AddStaticLocal"); return _AddStaticLocal; } }
-
+            
             public static MethodInfo GetConstantValue { get { if (_GetConstantValue == null) _GetConstantValue = _this.GetMethod("GetConstantValue", new Type[] { typeof(string) }); return _GetConstantValue; } }
             public static MethodInfo IsConstantDefined { get { if (_IsConstantDefined == null) _IsConstantDefined = _this.GetMethod("IsConstantDefined", new Type[] { typeof(string) }); return _IsConstantDefined; } }
 

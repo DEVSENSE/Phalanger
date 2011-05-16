@@ -273,10 +273,17 @@ namespace PHP.Core
 		}
 		private Dictionary<string, DTypeDesc> _declaredTypes;
 
+        /// <summary>
+        /// Mapping of static local variables into their unique sequential ID. This allows efficient indexing into <see cref="staticLocals"/> array.
+        /// The index starts from 1.
+        /// The dictionary is used only when two or more static locals point to the same variable (e.g. when single eval() has different content sometimes).
+        /// </summary>
+        private static SynchronizedCache<string, int>/*!*/staticLocalsId = new SynchronizedCache<string, int>(id => staticLocalsId.Count + 1);
+
 		/// <summary>
-		/// User defined static locals.
+		/// User defined static locals for the current context.
 		/// </summary>
-		private Dictionary<string, PhpReference> staticLocals;
+		private List<PhpReference> staticLocals;
 
 		/// <summary>
 		/// The stack for performing indirect calls and calls to argument-aware functions.
@@ -2248,31 +2255,49 @@ namespace PHP.Core
 		/// <summary>
 		/// Gets a value of a static local. For internal use only.
 		/// </summary>
-		/// <param name="id">Compound name of a static local (in format {simple function name}${local name index}).</param>
+        /// <param name="id">The index of a static local. Index starts with 1.</param>
 		/// <returns>Value of the local or <B>null</B>.</returns>
 		[Emitted, EditorBrowsable(EditorBrowsableState.Never)]
-		public PhpReference GetStaticLocal(string/*!*/ id)
+		public PhpReference GetStaticLocal(int id)
 		{
-			if (staticLocals == null) staticLocals = new Dictionary<string, PhpReference>();
-			PhpReference result = null;
-			staticLocals.TryGetValue(id, out result);
-			return result;
+            return (staticLocals != null && id > 0 && id <= staticLocals.Count) ? staticLocals[id - 1] : null;
 		}
+
+        /// <summary>
+        /// Get the index of specified local variable.
+        /// </summary>
+        /// <param name="id">Compound name of a static local (in format {simple function name}${local name index}).</param>
+        /// <returns>The static local integer index.</returns>
+        [Emitted, EditorBrowsable(EditorBrowsableState.Never)]
+        public static int GetStaticLocalId(string/*!*/ id)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(id));
+            return staticLocalsId.Get(id);
+        }
 
 		/// <summary>
 		/// Adds a local into the static local table. For internal use only.
 		/// </summary>
-		/// <param name="id">Compound name of a static local (in format {simple function name}${local name index}).</param>
+		/// <param name="id">The index of a static local. Index starts with 1.</param>
 		/// <param name="value">A value of local (not a reference).</param>
 		/// <returns>A reference containing the <paramref name="value"/>.</returns>
 		[Emitted, EditorBrowsable(EditorBrowsableState.Never)]
-		public PhpReference/*!*/ AddStaticLocal(string/*!*/ id, object value)
+		public PhpReference/*!*/ AddStaticLocal(int id, object value)
 		{
-			Debug.Assert(staticLocals != null && !(value is PhpReference));
+            Debug.Assert(id > 0, "Uninitialized static local variable index!");
+			Debug.Assert(!(value is PhpReference));
+            Debug.Assert(id <= staticLocalsId.Count);
 
-			PhpReference result = new PhpReference(value);
-			staticLocals.Add(id, result);
-			return result;
+            // ensure the staticLocals
+            if (staticLocals == null)
+                staticLocals = new List<PhpReference>(staticLocalsId.Count);
+            
+            // ensure the Size
+            while (id > staticLocals.Count)
+                staticLocals.Add(null);
+            
+            // set the element on index id
+            return (staticLocals[id - 1] = new PhpReference(value));
 		}
 
 		#endregion

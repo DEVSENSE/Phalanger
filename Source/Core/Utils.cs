@@ -3548,6 +3548,16 @@ namespace PHP.Core
         /// </summary>
         private readonly Dictionary<K, T>/*!*/innerCache = new Dictionary<K, T>();
 
+        /// <summary>
+        /// Amount of items in the cache dictionary.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return innerCache.Count;
+            }
+        }
 
         /// <summary>
         /// The update function used when cache miss. Cannot be null.
@@ -3575,6 +3585,7 @@ namespace PHP.Core
         /// <param name="key">The key of the item.</param>
         /// the cache does not contain given <paramref name="key"/> yet.
         /// <returns>The item according to the given <paramref name="key"/>.</returns>
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public T Get(K key)
         {
             T result;
