@@ -54,16 +54,16 @@ namespace PHP.Core
 			set
 			{
 				this.value = value;
-				this.lowerCaseValue = value.ToLower();
+                this.lowerCaseValue = null; // lazily initialized // value.ToLower();
 			}
 		}
 		private string/*!*/ value;
 
 		public string/*!*/ LowercaseValue
 		{
-            get { return lowerCaseValue; }
+            get { return lowerCaseValue ?? (lowerCaseValue = value.ToLower()); }
 		}
-		private string/*!*/ lowerCaseValue;
+		private string lowerCaseValue;
 
 		public static readonly Name[] EmptyNames = new Name[0];
 		public static readonly Name EmptyBaseName = new Name("");
@@ -120,7 +120,7 @@ namespace PHP.Core
 			Debug.Assert(value != null);
 			// TODO (missing from Mono): this.value = value.Normalize();
 			this.value = value;
-			this.lowerCaseValue = value.ToLower();
+            this.lowerCaseValue = null;// lazily initialized // value.ToLower();
 		}
 
 		#region Basic Overrides
@@ -133,7 +133,7 @@ namespace PHP.Core
 
 		public override int GetHashCode()
 		{
-			return lowerCaseValue.GetHashCode();
+			return LowercaseValue.GetHashCode();
 		}
 
 		public override string ToString()
@@ -147,7 +147,11 @@ namespace PHP.Core
 
 		public bool Equals(Name other)
 		{
-			return this.lowerCaseValue.Equals(other.lowerCaseValue);
+            // use lowerCaseValue if initialized, otherwise compare values case-insensitively
+            if (this.lowerCaseValue != null && other.lowerCaseValue != null)
+                return this.lowerCaseValue.Equals(other.lowerCaseValue);
+            else
+                return this.Equals(other.value);
 		}
 
 		public static bool operator ==(Name name, Name other)
@@ -164,14 +168,14 @@ namespace PHP.Core
 
 		#region IEquatable<string> Members
 
-		public bool EqualsLowercase(string otherLowercase)
+		/*public bool EqualsLowercase(string otherLowercase)
 		{
-			return this.lowerCaseValue.Equals(otherLowercase);
-		}
+            return this.LowercaseValue.Equals(otherLowercase);
+		}*/
 
 		public bool Equals(string other)
 		{
-			return other != null && this.lowerCaseValue.Equals(other.ToLower());
+            return /*other != null &&*/ string.Compare(value, other, StringComparison.OrdinalIgnoreCase) == 0;// this.lowerCaseValue.Equals(other.ToLower());
 		}
 
 		#endregion

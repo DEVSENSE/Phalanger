@@ -1058,18 +1058,16 @@ namespace PHP.Core
 			if (fullName == null)
 				throw new ArgumentNullException("fullName");
 
-			string lowercase_full_name = fullName.ToLower();
-
 			DTypeDesc type_desc;
 
 			// self, parent:
-			type_desc = ResolveSpecialTypeNames(lowercase_full_name, caller, flags);
+            type_desc = ResolveSpecialTypeNames(/*lowercase_full_name*/fullName, caller, flags);
 			if (type_desc != null) return type_desc;
 
 			// type parameters (the requirement for exclamation mark prevents from misinterpreting 
 			// regular type name as a generic parameter name):
-			if (lowercase_full_name.Length > 0 && lowercase_full_name[0] == '!')
-                return ResolveGenericParameterType(lowercase_full_name.Substring(1), caller, genericArgs);
+            if (fullName.Length > 0 && fullName[0] == '!')
+                return ResolveGenericParameterType(fullName.Substring(1).ToLower(), caller, genericArgs);
 
 			// regular types:
 			type_desc = SearchForName(DeclaredTypes, applicationContext.Types, fullName, nameContext);
@@ -1085,7 +1083,7 @@ namespace PHP.Core
 			// try to invoke __autoload
 			if ((flags & ResolveTypeFlags.UseAutoload) != 0)
 			{
-                if ((type_desc = ResolveTypeByAutoload(fullName, lowercase_full_name, nameContext, caller, flags)) != null)
+                if ((type_desc = ResolveTypeByAutoload(fullName, nameContext, caller, flags)) != null)
                         return type_desc;
 			}
 
@@ -1108,9 +1106,11 @@ namespace PHP.Core
         /// <param name="caller">Current class context.</param>
         /// <param name="flags">Resolve type flags.</param>
         /// <returns>The <see cref="DTypeDesc"/> or <B>null</B> if the class was not autoloaded.</returns>
-        private DTypeDesc ResolveTypeByAutoload(string fullName, string fullNameLower, NamingContext nameContext, DTypeDesc caller, ResolveTypeFlags flags)
+        private DTypeDesc ResolveTypeByAutoload(string fullName, NamingContext nameContext, DTypeDesc caller, ResolveTypeFlags flags)
         {
             DTypeDesc resolved_type_desc = null;    // result of the autoload
+
+            string fullNameLower = fullName.ToLower();
 
             if (pendingAutoloads == null)
                 pendingAutoloads = new Stack<string>();
@@ -1215,18 +1215,18 @@ namespace PHP.Core
         /// <summary>
         /// Resolve <c>base</c> or <c>parent</c> class names in current class context.
         /// </summary>
-        /// <param name="lowercaseFullName">The name of class.</param>
+        /// <param name="fullName">The name of class.</param>
         /// <param name="caller">Class context.</param>
         /// <param name="flags">Resolve type flags.</param>
         /// <returns>The <see cref="DTypeDesc"/> or <B>null</B> if the class was not autoloaded.</returns>
-        /// <exception cref="PhpException">The <paramref name="lowercaseFullName"/> is <c>self</c> or <c>parent</c> but there is
+        /// <exception cref="PhpException">The <paramref name="fullName"/> is <c>self</c> or <c>parent</c> but there is
         /// no class context. (Error)</exception>
-        /// <exception cref="PhpException">The <paramref name="lowercaseFullName"/> is <c>parent</c> but the current class has no parent.
+        /// <exception cref="PhpException">The <paramref name="fullName"/> is <c>parent</c> but the current class has no parent.
         /// (Error)</exception>
-		private DTypeDesc ResolveSpecialTypeNames(string/*!*/ lowercaseFullName, DTypeDesc caller, ResolveTypeFlags flags)
+		private DTypeDesc ResolveSpecialTypeNames(string/*!*/ fullName, DTypeDesc caller, ResolveTypeFlags flags)
 		{
 			// check for 'self' reserved class name
-			if (Name.SelfClassName.EqualsLowercase(lowercaseFullName))
+            if (Name.SelfClassName.Equals(fullName))
 			{
                 if (caller != null && caller.IsUnknown) caller = PhpStackTrace.GetClassContext();   // determine the caller if it was not known in compile time
                 if (caller != null) return caller;
@@ -1241,7 +1241,7 @@ namespace PHP.Core
 			}
 
 			// check for 'parent' reserved class name
-			if (Name.ParentClassName.EqualsLowercase(lowercaseFullName))
+            if (Name.ParentClassName.Equals(fullName))
 			{
                 if (caller != null && caller.IsUnknown) caller = PhpStackTrace.GetClassContext();   // determine the caller if it was not known in compile time
                 if (caller != null)
