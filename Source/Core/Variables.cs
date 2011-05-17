@@ -931,7 +931,7 @@ namespace PHP.Core
 		/// </returns>
 		public static bool IsValidName(string name)
 		{
-			if (name == null || name == String.Empty) return false;
+			if (string.IsNullOrEmpty(name)) return false;
 
 			// first char:
 			if (!Char.IsLetter(name[0]) && name[0] != '_') return false;

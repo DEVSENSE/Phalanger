@@ -889,7 +889,7 @@ namespace PHP.Library
             foreach (KeyValuePair<IntStringKey, object> entry in vars)
 			{
 				string name = entry.Key.ToString();
-				if (String.IsNullOrEmpty(name)) continue;
+				if (String.IsNullOrEmpty(name) && type != ExtractType.PrefixInvalid) continue;
 
 				switch (type)
 				{
@@ -923,7 +923,7 @@ namespace PHP.Library
 					case ExtractType.PrefixInvalid:
 
 						// prefixes invalid, others are overwritten:
-						if (PhpVariable.IsValidName(name))
+						if (!PhpVariable.IsValidName(name))
 							name = String.Concat(prefix, "_", name);
 
 						break;
