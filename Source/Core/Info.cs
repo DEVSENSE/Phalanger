@@ -698,7 +698,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Currently supported PHP version.
 		/// </summary>
-		public static readonly string Current = "5.1.6";
+		public static readonly string Current = "5.2.6";
 
 		/// <summary>
 		/// Currently supported Zend Engine version.
