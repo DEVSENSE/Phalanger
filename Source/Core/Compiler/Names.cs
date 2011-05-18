@@ -54,16 +54,16 @@ namespace PHP.Core
 			set
 			{
 				this.value = value;
-                this.lowerCaseValue = null; // lazily initialized // value.ToLower();
+                this.lowerCaseValue = value.ToLower();
 			}
 		}
 		private string/*!*/ value;
 
 		public string/*!*/ LowercaseValue
 		{
-            get { return lowerCaseValue ?? (lowerCaseValue = value.ToLower()); }
+            get { return lowerCaseValue; }
 		}
-		private string lowerCaseValue;
+		private string/*!*/lowerCaseValue;
 
 		public static readonly Name[] EmptyNames = new Name[0];
 		public static readonly Name EmptyBaseName = new Name("");
@@ -120,7 +120,7 @@ namespace PHP.Core
 			Debug.Assert(value != null);
 			// TODO (missing from Mono): this.value = value.Normalize();
 			this.value = value;
-            this.lowerCaseValue = null;// lazily initialized // value.ToLower();
+            this.lowerCaseValue = value.ToLower();
 		}
 
 		#region Basic Overrides
@@ -133,7 +133,7 @@ namespace PHP.Core
 
 		public override int GetHashCode()
 		{
-			return LowercaseValue.GetHashCode();
+			return lowerCaseValue.GetHashCode();
 		}
 
 		public override string ToString()
@@ -148,10 +148,10 @@ namespace PHP.Core
 		public bool Equals(Name other)
 		{
             // use lowerCaseValue if initialized, otherwise compare values case-insensitively
-            if (this.lowerCaseValue != null && other.lowerCaseValue != null)
+            //if (this.lowerCaseValue != null && other.lowerCaseValue != null)
                 return this.lowerCaseValue.Equals(other.lowerCaseValue);
-            else
-                return this.Equals(other.value);
+            //else
+            //    return this.Equals(other.value);
 		}
 
 		public static bool operator ==(Name name, Name other)
