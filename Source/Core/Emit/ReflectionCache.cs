@@ -63,6 +63,8 @@ namespace PHP.Core.Emit
 		public static readonly Type[] RoutineProperties = new Type[] { typeof(PHP.Core.Reflection.RoutineProperties) };
 		public static readonly Type[] DTypeDesc = new Type[] { typeof(PHP.Core.Reflection.DTypeDesc) };
 		public static readonly Type[] PhpTypeDesc = new Type[] { typeof(PHP.Core.Reflection.PhpTypeDesc) };
+        public static readonly Type[] CallSiteBinder = new Type[] { typeof(CallSiteBinder) };
+        public static readonly Type[] CallSite = new Type[] { typeof(CallSite) };
 
 		// doublets:
 		public static readonly Type[] Int_Int = new Type[] { typeof(int), typeof(int) };

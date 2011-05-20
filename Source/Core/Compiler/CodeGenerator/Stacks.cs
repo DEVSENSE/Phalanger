@@ -297,6 +297,11 @@ namespace PHP.Core
 		{
 			public PhpType Type;
 			public IPlace TypeContextPlace;
+
+            /// <summary>
+            /// CallSite manager and emitter.
+            /// </summary>
+            public PHP.Core.Compiler.CodeGenerator.CallSitesBuilder CallSites;
 		}
 
 		/// <summary>
@@ -320,6 +325,11 @@ namespace PHP.Core
 		public sealed class FunctionDeclContext : ProcedureDeclContext
 		{
 			public QualifiedName Name;
+
+            /// <summary>
+            /// CallSite manager and emitter.
+            /// </summary>
+            public PHP.Core.Compiler.CodeGenerator.CallSitesBuilder CallSites;
 		}
 
 		#endregion

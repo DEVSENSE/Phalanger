@@ -197,9 +197,31 @@ namespace PHP.Core
 
 		#endregion
 
-		#region Constructors
+        #region CallSites
 
-		/// <summary>
+        /// <summary>
+        /// Current scope CallSites.
+        /// Will not be null within the GlobalCode and its sub-tree.
+        /// </summary>
+        private PHP.Core.Compiler.CodeGenerator.CallSitesBuilder callSites = null;
+
+        /// <summary>
+        /// Current scope CallSitesBuilder.
+        /// </summary>
+        public PHP.Core.Compiler.CodeGenerator.CallSitesBuilder CallSitesBuilder
+        {
+            get
+            {
+                Debug.Assert(callSites != null);    // only null outside of the global code
+                return callSites;
+            }
+        }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
 		/// Initializes a new instance of the <see cref="PHP.Core.CodeGenerator"/> class.
 		/// </summary>
 		public CodeGenerator(CompilationContext/*!*/ context)
@@ -427,6 +449,13 @@ namespace PHP.Core
 			gc_context.ReturnsPhpReference = this.ReturnsPhpReference;
 			this.ReturnsPhpReference = false;
 
+            // CallSites
+            Debug.Assert(this.callSites == null, "Unclosed CallSite!");
+            this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
+                sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
+                sourceUnit.SourceFile.RelativePath.ToString(),
+                null/*Unknown at compile time*/);
+
 			// set ILEmitter for global code
 			gc_context.IL = il;
 			il = CompilationUnit.ModuleBuilder.CreateGlobalCodeEmitter();
@@ -478,7 +507,11 @@ namespace PHP.Core
 			// clear (for convenience):
 			this.sourceUnit = null;
 
+            // close CallSites:
+            this.callSites.Bake();
+
 			// restore:
+            this.callSites = null;
 			this.il = gc_context.IL;
 			this.ScriptContextPlace = gc_context.ScriptContextPlace;
 			this.TypeContextPlace = gc_context.ClassContextPlace;
@@ -515,7 +548,14 @@ namespace PHP.Core
 			fd_context.ReturnsPhpReference = this.ReturnsPhpReference;
 			this.ReturnsPhpReference = function.Signature.AliasReturn;
 
-			// Set ILEmitter to function's body
+            // CallSites
+            fd_context.CallSites = callSites;
+            this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
+                sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
+                fd_context.Name.ToString(),
+                LiteralPlace.Null);
+            
+            // Set ILEmitter to function's body
 			fd_context.IL = this.il;
 			this.il = new ILEmitter(function.ArgFullInfo);
 
@@ -578,7 +618,11 @@ namespace PHP.Core
 			CompilerLocationStack.FunctionDeclContext fd_context = locationStack.PeekFunctionDecl();
 			locationStack.Pop();
 
+            // close CallSites:
+            this.callSites.Bake();
+
 			// restore:
+            this.callSites = fd_context.CallSites;
 			this.il = fd_context.IL;
 			this.ScriptContextPlace = fd_context.ScriptContextPlace;
 			this.TypeContextPlace = fd_context.ClassContextPlace;
@@ -607,7 +651,14 @@ namespace PHP.Core
 			fd_context.ReturnsPhpReference = this.ReturnsPhpReference;
 			this.ReturnsPhpReference = aliasReturn;
 
-			// Set ILEmitter to function's body
+            // CallSites
+            fd_context.CallSites = callSites;
+            this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
+                sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
+                fd_context.Name.ToString(),
+                null/*class_context = Unknown (at compile time)*/);
+            
+            // Set ILEmitter to function's body
 			fd_context.IL = this.il;
 			this.il = il;
 
@@ -665,7 +716,15 @@ namespace PHP.Core
 			cd_context.TypeContextPlace = TypeContextPlace;
 			TypeContextPlace = new Place(null, type.TypeDescFieldInfo);
 
-			locationStack.PushTypeDecl(cd_context);
+            // CallSites
+            cd_context.CallSites = callSites;
+            this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
+                sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
+                cd_context.Type.QualifiedName.ToString(),
+                TypeContextPlace/*class_context = TypeContextPlace, can be used in .cctor of call sites container*/);
+
+            //
+            locationStack.PushTypeDecl(cd_context);
 		}
 
 		/// <summary>
@@ -674,9 +733,14 @@ namespace PHP.Core
 		public void LeaveTypeDeclaration()
 		{
 			CompilerLocationStack.TypeDeclContext context = locationStack.PeekTypeDecl();
+            locationStack.Pop();
 
-			TypeContextPlace = context.TypeContextPlace;
-			locationStack.Pop();
+            // close CallSites:
+            this.callSites.Bake();
+
+            // restore:
+            this.callSites = context.CallSites;
+            this.TypeContextPlace = context.TypeContextPlace;			
 		}
 
 
@@ -710,7 +774,11 @@ namespace PHP.Core
 			md_context.ReturnsPhpReference = this.ReturnsPhpReference;
 			this.ReturnsPhpReference = method.Signature.AliasReturn;
 
-			// create new IL emitter for the method:
+            // CallSites (same as in TypeDecl, not changed):
+            //md_context.CallSites = callSites;
+            //this.callSites = new Compiler.CodeGenerator.CallSites(/*class_context = TypeContextPlace*/);
+
+            // create new IL emitter for the method:
             md_context.IL = il;
 			il = new ILEmitter(method.ArgFullInfo);
 
@@ -776,6 +844,7 @@ namespace PHP.Core
 			locationStack.Pop();
 
 			// restore:
+            //this.callSites = md_context.CallSite; // the same
 			this.il = md_context.IL;
 			this.ScriptContextPlace = md_context.ScriptContextPlace;
 			this.TypeContextPlace = md_context.ClassContextPlace;
@@ -1406,7 +1475,7 @@ namespace PHP.Core
 
 			if (targetExpr != null)
 			{
-				// LOAD Operators.InvokeMethod(<target>, <method name>, <type desc>, <context>);
+                // LOAD Operators.InvokeMethod(<target>, <method name>, <type desc>, <context>);
 
                 // start a new operators chain (as the rest of chain is read)
 				this.ChainBuilder.Create();

@@ -258,6 +258,7 @@
     <Compile Include="Compiler\AST\VariableUse.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Compiler\CodeGenerator\CallSitesBuilder.cs" />
     <Compile Include="Compiler\CodeGenerator\Chains.cs">
       <SubType>Code</SubType>
     </Compile>

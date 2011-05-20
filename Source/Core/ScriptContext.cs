@@ -1101,7 +1101,6 @@ namespace PHP.Core
         /// specified type is declared. Otherwise try to invoke __autoload function to declare specified type.
         /// </summary>
         /// <param name="fullName">Name of the class/interface to search for, without namespace prefix, any case.</param>
-        /// <param name="fullNameLower">Name of the class (<c>fullName</c>) in lower case used in recursion prevention.</param>
         /// <param name="nameContext">Current naming context.</param>
         /// <param name="caller">Current class context.</param>
         /// <param name="flags">Resolve type flags.</param>
