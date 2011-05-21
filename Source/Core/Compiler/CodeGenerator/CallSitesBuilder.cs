@@ -208,8 +208,12 @@ namespace PHP.Core.Compiler.CodeGenerator
             foreach (var p in callSignature.Parameters) { var param_type = p.Emit(cg); if (p.Expression.ValueTypeCode == PhpTypeCode.Unknown) cg.EmitBoxing(param_type); }  // load args on the stack, unknown types were passed as objects
             if (!classContextIsKnown) cg.EmitLoadClassContext();
             if (!methodNameIsKnown) cg.EmitName(methodFullName/*null*/, methodNameExpr, true);
+            
+            cg.MarkTransientSequencePoint();
             cg.IL.Emit(OpCodes.Callvirt, delegateType.GetMethod("Invoke"));
-
+            
+            cg.MarkTransientSequencePoint();
+            
             //
             return PhpTypeCode.PhpReference;
         }

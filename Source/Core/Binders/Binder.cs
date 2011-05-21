@@ -13,7 +13,7 @@ namespace PHP.Core.Binders
     /// <summary>
     /// Manages run time binders.
     /// </summary>
-    internal static class Binder
+    public static class Binder
     {
         #region BinderFlags
 

@@ -1473,7 +1473,11 @@ namespace PHP.Core
 
 			MethodInfo operator_method;
 
-			if (targetExpr != null)
+            // (J) use call sites to call the method:
+            //if (targetExpr != null || type != null)
+            //    return this.CallSitesBuilder.EmitMethodCall(this, targetExpr, type, routineFullName, routineNameExpr, callSignature);
+            //else
+            if (targetExpr != null)
 			{
                 // LOAD Operators.InvokeMethod(<target>, <method name>, <type desc>, <context>);
 
@@ -1508,16 +1512,16 @@ namespace PHP.Core
 
 				operator_method = Methods.Operators.InvokeStaticMethod;
 			}
-			else
-			{
-				// LOAD ScriptContext.Call(<local variables>, <naming context>, <function name>, context);
-				this.EmitLoadRTVariablesTable();
-				this.EmitLoadNamingContext();
-				this.EmitName(routineFullName, routineNameExpr, true);
-				this.EmitLoadScriptContext();
+            else
+            {
+                // LOAD ScriptContext.Call(<local variables>, <naming context>, <function name>, context);
+                this.EmitLoadRTVariablesTable();
+                this.EmitLoadNamingContext();
+                this.EmitName(routineFullName, routineNameExpr, true);
+                this.EmitLoadScriptContext();
 
-				operator_method = Methods.ScriptContext.Call;
-			}
+                operator_method = Methods.ScriptContext.Call;
+            }
 
 			// emits load of parameters to the PHP stack:
 			callSignature.EmitLoadOnPhpStack(this);
