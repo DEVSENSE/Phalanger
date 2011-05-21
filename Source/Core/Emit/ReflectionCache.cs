@@ -784,6 +784,20 @@ namespace PHP.Core.Emit
 
         #endregion
 
+        #region Binder
+
+        public struct Binder
+        {
+            static Type _this { get { return typeof(PHP.Core.Binders.Binder); } }
+
+            static MethodInfo _MethodCall, _StaticMethodCall;
+
+            public static MethodInfo MethodCall { get { return _MethodCall ?? (_MethodCall = _this.GetMethod("MethodCall")); } }
+            public static MethodInfo StaticMethodCall { get { return _StaticMethodCall ?? (_StaticMethodCall = _this.GetMethod("StaticMethodCall")); } }
+        }
+
+        #endregion
+
         #region Others
 
         static MethodInfo _GetTypeFromHandle, _Object_Equals, _SetStaticInit, _AddConstant, _AddProperty, _AddMethod,

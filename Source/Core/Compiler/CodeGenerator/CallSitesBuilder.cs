@@ -9,6 +9,7 @@ using System.Reflection.Emit;
 using PHP.Core;
 using PHP.Core.Emit;
 using PHP.Core.AST;
+using PHP.Core.Reflection;
 
 namespace PHP.Core.Compiler.CodeGenerator
 {
@@ -146,33 +147,62 @@ namespace PHP.Core.Compiler.CodeGenerator
 
         #region EmitMethodCall
 
+        /// <summary>
+        /// Emit call of the instance/static method. This defines the call site and call it using given parameters.
+        /// </summary>
+        /// <param name="cg">Current code <see cref="CodeGenerator"/>.</param>
+        /// <param name="targetExpr">The method call instance expression (the target) if it is an instance method call.</param>
+        /// <param name="targetType">The target type if it is a static method call.</param>
+        /// <param name="methodFullName">If known at compile time, the method name. Otherwise <c>null</c>.</param>
+        /// <param name="methodNameExpr">If the <paramref name="methodFullName"/> is null, this will be the expression giving the method name in run time.</param>
+        /// <param name="callSignature">The call signature of the method call.</param>
+        /// <returns>The resulting value type code. This value will be pushed onto the evaluation stack.</returns>
         public PhpTypeCode EmitMethodCall(
-            PHP.Core.CodeGenerator/*!*/cg, /* TODO: (J) resultWanted ? resultReferenceWanted ? */
-            Expression/*!*/targetExpr,
+            PHP.Core.CodeGenerator/*!*/cg, /* TODO: (J) resultWanted ? ResultAsPhpReferenceWanted ? */
+            Expression/*!*/targetExpr, DType/*!*/targetType,
             string methodFullName, Expression methodNameExpr, CallSignature callSignature)
         {
             Debug.Assert(methodFullName != null ^ methodNameExpr != null);
 
             //
+            bool staticCall = (targetExpr == null); // we are going to emit static method call
             bool methodNameIsKnown = (methodFullName != null);
             bool classContextIsKnown = (this.classContextPlace != null);
 
             //
-            var delegateType = System.Linq.Expressions.Expression.GetDelegateType(MethodCallDelegateTypeArgs(methodNameIsKnown, callSignature, Types.PhpReference[0]));
+            // define the call site:
+            //
 
             //
-            var field = DefineCallSite(string.Format("invoke<{0}>", methodFullName ?? "$"), delegateType, (il) =>
+            var delegateTypeArgs = MethodCallDelegateTypeArgs(
+                methodNameIsKnown,
+                callSignature,
+                staticCall ? Types.DTypeDesc[0] : Types.Object[0],
+                Types.PhpReference[0]);
+
+            var delegateType = System.Linq.Expressions.Expression.GetDelegateType(delegateTypeArgs);
+
+            //
+            var field = DefineCallSite(string.Format("call<{0}>", methodFullName ?? "$"), delegateType, (il) =>
             {
-                il.Emit(OpCodes.Ldnull);    // TODO: (J) <LOAD> Binder.MethodCall( methodFullName, classContext.EmitLoad(), resultReferenceWanted )
+                // <LOAD> Binder.{MethodCall|StaticMethodCall}( methodFullName, classContext, flags )
+                if (methodFullName != null) il.Emit(OpCodes.Ldstr, methodFullName); else il.Emit(OpCodes.Ldnull);
+                if (this.classContextPlace != null) this.classContextPlace.EmitLoad(il); else il.Emit(OpCodes.Ldsfld, Fields.UnknownTypeDesc.Singleton);
+                il.LdcI4((int)Binders.Binder.BinderFlags.ResultAsPhpReferenceWanted);
+
+                il.Emit(OpCodes.Call, staticCall ? Methods.Binder.StaticMethodCall : Methods.Binder.MethodCall);
             });
 
+            //
             // call the CallSite:
+            //
 
-            // <field>.Target( <field>, <targetExpr>, <scriptContext>, <callSignature.EmitLoadOnEvalStack>, (classContext)?, <methodNameExpr>? ):
+            // <field>.Target( <field>, <targetExpr|targetType>, <scriptContext>, <callSignature.EmitLoadOnEvalStack>, (classContext)?, <methodNameExpr>? ):
+
             cg.IL.Emit(OpCodes.Ldsfld, field);
             cg.IL.Emit(OpCodes.Ldfld, field.FieldType.GetField("Target"));
             cg.IL.Emit(OpCodes.Ldsfld, field);
-            EmitTargetExpr(cg, targetExpr);
+            if (staticCall) targetType.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors); else EmitTargetExpr(cg, targetExpr);
             cg.EmitLoadScriptContext();
             foreach (var t in callSignature.GenericParams) t.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors); // load DTypeDescs on the stack
             foreach (var p in callSignature.Parameters) { var param_type = p.Emit(cg); if (p.Expression.ValueTypeCode == PhpTypeCode.Unknown) cg.EmitBoxing(param_type); }  // load args on the stack, unknown types were passed as objects
@@ -188,6 +218,11 @@ namespace PHP.Core.Compiler.CodeGenerator
 
         #region Helper methods
 
+        /// <summary>
+        /// Emit the target of instance method invocation.
+        /// </summary>
+        /// <param name="cg"></param>
+        /// <param name="targetExpr"></param>
         private static void EmitTargetExpr(PHP.Core.CodeGenerator/*!*/cg, Expression/*!*/targetExpr)
         {
             // start a new operators chain (as the rest of chain is read)
@@ -201,23 +236,24 @@ namespace PHP.Core.Compiler.CodeGenerator
         }
 
         /// <summary>
-        /// Make an array containing types for CallSite generic type.
+        /// Make an array containing types for CallSite generic type used for method invocation.
         /// </summary>
         /// <param name="nameIsKnown">Iff name is known at compile time.</param>
         /// <param name="callSignature">The method call signature.</param>
+        /// <param name="targetType">The type of value passed as method target (object for instance method, DTypeDesc for static method).</param>
         /// <param name="returnType">The return value type.</param>
         /// <returns></returns>
-        private Type[]/*!*/MethodCallDelegateTypeArgs(bool nameIsKnown, CallSignature callSignature, Type/*!*/returnType)
+        private Type[]/*!*/MethodCallDelegateTypeArgs(bool nameIsKnown, CallSignature callSignature, Type/*!*/targetType, Type/*!*/returnType)
         {
             List<Type> typeArgs = new List<Type>(callSignature.Parameters.Count + callSignature.GenericParams.Count + 6);
 
-            // Type[]{CallSite, object, ScriptContext, {argsType}, (DTypeDesc)?, (object)?, <returnType>}:
+            // Type[]{CallSite, <targetType>, ScriptContext, {argsType}, (DTypeDesc)?, (object)?, <returnType>}:
 
             // CallSite:
             typeArgs.Add(Types.CallSite[0]);
 
-            // object instance:
-            typeArgs.Add(Types.Object[0]);
+            // object instance / target type:
+            typeArgs.Add(targetType);
 
             // ScriptContext:
             typeArgs.Add(Types.ScriptContext[0]);

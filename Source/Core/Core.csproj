@@ -138,6 +138,7 @@
     <Compile Include="Attributes.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Binders\Binder.cs" />
     <Compile Include="CodeDom\CodeProvider.CLR.cs">
       <SubType>Component</SubType>
     </Compile>
