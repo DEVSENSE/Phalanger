@@ -185,8 +185,10 @@ namespace PHP.Core.Compiler.CodeGenerator
             //
             var field = DefineCallSite(string.Format("call<{0}>", methodFullName ?? "$"), delegateType, (il) =>
             {
-                // <LOAD> Binder.{MethodCall|StaticMethodCall}( methodFullName, classContext, flags )
+                // <LOAD> Binder.{MethodCall|StaticMethodCall}( methodFullName, genericParamsCount, paramsCount, classContext, flags )
                 if (methodFullName != null) il.Emit(OpCodes.Ldstr, methodFullName); else il.Emit(OpCodes.Ldnull);
+                il.LdcI4(callSignature.GenericParams.Count);
+                il.LdcI4(callSignature.Parameters.Count);
                 if (this.classContextPlace != null) this.classContextPlace.EmitLoad(il); else il.Emit(OpCodes.Ldsfld, Fields.UnknownTypeDesc.Singleton);
                 il.LdcI4((int)Binders.Binder.BinderFlags.ResultAsPhpReferenceWanted);
 
@@ -205,7 +207,7 @@ namespace PHP.Core.Compiler.CodeGenerator
             if (staticCall) targetType.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors); else EmitTargetExpr(cg, targetExpr);
             cg.EmitLoadScriptContext();
             foreach (var t in callSignature.GenericParams) t.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors); // load DTypeDescs on the stack
-            foreach (var p in callSignature.Parameters) { var param_type = p.Emit(cg); if (p.Expression.ValueTypeCode == PhpTypeCode.Unknown) cg.EmitBoxing(param_type); }  // load args on the stack, unknown types were passed as objects
+            foreach (var p in callSignature.Parameters) { cg.EmitBoxing(p.Emit(cg)); }  // load boxed args on the stack
             if (!classContextIsKnown) cg.EmitLoadClassContext();
             if (!methodNameIsKnown) cg.EmitName(methodFullName/*null*/, methodNameExpr, true);
             
@@ -264,7 +266,7 @@ namespace PHP.Core.Compiler.CodeGenerator
 
             // parameters:
             foreach (var t in callSignature.GenericParams) typeArgs.Add(Types.DTypeDesc[0]);
-            foreach (var p in callSignature.Parameters) typeArgs.Add(PhpTypeCodeEnum.ToType(p.Expression.ValueTypeCode) ?? Types.Object[0]);
+            foreach (var p in callSignature.Parameters) typeArgs.Add(Types.Object[0]);
 
             // class context (if not known at compile time):
             if (this.classContextPlace == null) typeArgs.Add(Types.DTypeDesc[0]);
