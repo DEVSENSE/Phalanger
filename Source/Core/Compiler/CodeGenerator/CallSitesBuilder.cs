@@ -180,9 +180,9 @@ namespace PHP.Core.Compiler.CodeGenerator
             var binderflags = BinderFlags(access);
             Type returnType = Types.Void;
 
-            if ((binderflags & Binders.Binder.BinderFlags.ResultAsPhpReferenceWanted) != 0)
+            if ((binderflags & Binders.Binder.BinderFlags.ResultAsPhpReferenceWanted) == Binders.Binder.BinderFlags.ResultAsPhpReferenceWanted)
                 returnType = Types.PhpReference[0];
-            else if ((binderflags & Binders.Binder.BinderFlags.ResultWanted) != 0)
+            else if ((binderflags & Binders.Binder.BinderFlags.ResultWanted) == Binders.Binder.BinderFlags.ResultWanted)
                 returnType = Types.Object[0];
 
             //
