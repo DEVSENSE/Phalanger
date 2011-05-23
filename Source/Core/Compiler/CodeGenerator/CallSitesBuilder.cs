@@ -177,13 +177,13 @@ namespace PHP.Core.Compiler.CodeGenerator
             //
             // binder flags:
             //
-            var binderflags = BinderFlags(access);
             Type returnType = Types.Void;
-
-            if ((binderflags & Binders.Binder.BinderFlags.ResultAsPhpReferenceWanted) == Binders.Binder.BinderFlags.ResultAsPhpReferenceWanted)
-                returnType = Types.PhpReference[0];
-            else if ((binderflags & Binders.Binder.BinderFlags.ResultWanted) == Binders.Binder.BinderFlags.ResultWanted)
-                returnType = Types.Object[0];
+            switch (access)
+            {
+                case AccessType.Read: returnType = Types.Object[0]; break;
+                case AccessType.ReadRef:
+                case AccessType.ReadUnknown: returnType = Types.PhpReference[0]; break;
+            }
 
             //
             // define the call site:
@@ -201,13 +201,15 @@ namespace PHP.Core.Compiler.CodeGenerator
             //
             var field = DefineCallSite(string.Format("call<{0}>", methodFullName ?? "$"), delegateType, (il) =>
             {
-                // <LOAD> Binder.{MethodCall|StaticMethodCall}( methodFullName, genericParamsCount, paramsCount, classContext, flags )
+                // <LOAD> Binder.{MethodCall|StaticMethodCall}( methodFullName, genericParamsCount, paramsCount, classContext, <returnType> )
                 if (methodFullName != null) il.Emit(OpCodes.Ldstr, methodFullName); else il.Emit(OpCodes.Ldnull);
                 il.LdcI4(callSignature.GenericParams.Count);
                 il.LdcI4(callSignature.Parameters.Count);
                 if (this.classContextPlace != null) this.classContextPlace.EmitLoad(il); else il.Emit(OpCodes.Ldsfld, Fields.UnknownTypeDesc.Singleton);
-                il.LdcI4((int)binderflags);
 
+                il.Emit(OpCodes.Ldtoken, returnType);
+                il.Emit(OpCodes.Call, Methods.GetTypeFromHandle);
+                
                 il.Emit(OpCodes.Call, staticCall ? Methods.Binder.StaticMethodCall : Methods.Binder.MethodCall);
             });
 
@@ -239,28 +241,6 @@ namespace PHP.Core.Compiler.CodeGenerator
         #endregion
 
         #region Helper methods
-
-        /// <summary>
-        /// Determine binder flags matching the access type.
-        /// </summary>
-        /// <param name="access"></param>
-        /// <returns></returns>
-        private static Binders.Binder.BinderFlags BinderFlags(AccessType access)
-        {
-            switch (access)
-            {
-                case AccessType.None:
-                    return Binders.Binder.BinderFlags.None;
-                case AccessType.Read:
-                    return Binders.Binder.BinderFlags.ResultWanted;
-                case AccessType.ReadRef:
-                case AccessType.ReadUnknown:
-                    return Binders.Binder.BinderFlags.ResultAsPhpReferenceWanted;
-
-                default:
-                    return Binders.Binder.BinderFlags.None;
-            }
-        }
 
         /// <summary>
         /// Emit the target of instance method invocation.

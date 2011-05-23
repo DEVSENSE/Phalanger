@@ -49,10 +49,10 @@ namespace PHP.Core.Binders
         /// If the class context is not constant, its <see cref="DTypeDesc.IsUnknown"/> is <c>true</c>.</param>
         /// <param name="genericParamsCount">Type arguments count.</param>
         /// <param name="paramsCount">Parameters count.</param>
-        /// <param name="flags">The requested binder flags.</param>
+        /// <param name="returnType">CallSite return value type.</param>
         /// <returns>An instance of requested binder.</returns>
         [Emitted]
-        public static CallSiteBinder/*!*/MethodCall(string methodName, int genericParamsCount, int paramsCount, DTypeDesc classContext, BinderFlags flags)
+        public static CallSiteBinder/*!*/MethodCall(string methodName, int genericParamsCount, int paramsCount, DTypeDesc classContext, Type/*!*/returnType)
         {
             // CallSite< Func< CallSite, object /*target instance*/, ScriptContext, {args}*/*method call arguments*/, (DTypeDesc)?/*class context, iff <classContext>.IsUnknown*/, (object)?/*method name, iff <methodName>==null*/, <returnType> > >
 
@@ -67,10 +67,10 @@ namespace PHP.Core.Binders
         /// If the class context is not constant, its <see cref="DTypeDesc.IsUnknown"/> is <c>true</c>.</param>
         /// <param name="genericParamsCount">Type arguments count.</param>
         /// <param name="paramsCount">Parameters count.</param>
-        /// <param name="flags">The requested binder flags.</param>
+        /// <param name="returnType">CallSite return value type.</param>
         /// <returns>An instance of requested binder.</returns>
         [Emitted]
-        public static CallSiteBinder/*!*/StaticMethodCall(string methodName, int genericParamsCount, int paramsCount, DTypeDesc classContext, BinderFlags flags)
+        public static CallSiteBinder/*!*/StaticMethodCall(string methodName, int genericParamsCount, int paramsCount, DTypeDesc classContext, Type/*!*/returnType)
         {
             // CallSite< Func< CallSite, DTypeDesc /*target type*/, ScriptContext, {args}*/*method call arguments*/, (DTypeDesc)?/*class context, iff <classContext>.IsUnknown*/, (object)?/*method name, iff <methodName>==null*/, <returnType> > >
 
