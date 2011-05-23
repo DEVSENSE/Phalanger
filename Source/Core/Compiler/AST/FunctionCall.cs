@@ -696,17 +696,17 @@ namespace PHP.Core.AST
                 if (isMemberOf != null)
                 {
                     if (routine == null)
-                        result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, qualifiedName.ToString(), null, callSignature);
+                        result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, qualifiedName.ToString(), null, callSignature, access);
                     else
                         result = routine.EmitCall(
                             codeGenerator, callSignature,
                             new ExpressionPlace(codeGenerator, isMemberOf), false, overloadIndex,
-                            null/*TODO when CFG*/, position, access == AccessType.None, true);
+                            null/*TODO when CFG*/, position, access, true);
                 }
                 else
                 {
                     // the node represents a function call:
-                    result = routine.EmitCall(codeGenerator, callSignature, null, false, overloadIndex, null, position, access == AccessType.None, false);
+                    result = routine.EmitCall(codeGenerator, callSignature, null, false, overloadIndex, null, position, access, false);
                 }
 			}
 
@@ -811,7 +811,7 @@ namespace PHP.Core.AST
 			Statistics.AST.AddNode("FunctionCall.Indirect");
 
 			PhpTypeCode result;
-			result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, null, nameExpr, callSignature);
+			result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, null, nameExpr, callSignature, access);
 
 			codeGenerator.EmitReturnValueHandling(this, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);
 
@@ -979,7 +979,7 @@ namespace PHP.Core.AST
 
 			// class context is unknown or the class is m-decl or completely unknown at compile-time -> call the operator			
 			PhpTypeCode result = method.EmitCall(codeGenerator, callSignature, instance, runtimeVisibilityCheck,
-				overloadIndex, type as ConstructedType, position, access == AccessType.None, false/* TODO: __call must be called virtually */);
+				overloadIndex, type as ConstructedType, position, access, false/* TODO: __call must be called virtually */);
 
 			// handles return value:
 			codeGenerator.EmitReturnValueHandling(this, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);
@@ -1048,7 +1048,7 @@ namespace PHP.Core.AST
 		{
 			Statistics.AST.AddNode("StaticMethodCall.Indirect");
 
-			PhpTypeCode result = codeGenerator.EmitRoutineOperatorCall(type, null, null, methodNameVar, callSignature);
+			PhpTypeCode result = codeGenerator.EmitRoutineOperatorCall(type, null, null, methodNameVar, callSignature, access);
 
 			// handles return value:
 			codeGenerator.EmitReturnValueHandling(this, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);

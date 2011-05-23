@@ -1467,7 +1467,7 @@ namespace PHP.Core
 		/// Emits a call to a routine with specified name using an operator.
 		/// </summary>
 		internal PhpTypeCode EmitRoutineOperatorCall(DType type, Expression targetExpr,
-			string routineFullName, Expression routineNameExpr, CallSignature callSignature)
+			string routineFullName, Expression routineNameExpr, CallSignature callSignature, AccessType access)
 		{
 			Debug.Assert(routineFullName != null ^ routineNameExpr != null);
 
@@ -1475,7 +1475,7 @@ namespace PHP.Core
 
             // (J) use call sites to call the method:
             //if (targetExpr != null || type != null)
-            //    return this.CallSitesBuilder.EmitMethodCall(this, targetExpr, type, routineFullName, routineNameExpr, callSignature);
+            //    return this.CallSitesBuilder.EmitMethodCall(this, access, targetExpr, type, routineFullName, routineNameExpr, callSignature);
             //else
             if (targetExpr != null)
 			{

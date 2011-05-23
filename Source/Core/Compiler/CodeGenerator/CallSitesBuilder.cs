@@ -151,6 +151,7 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// Emit call of the instance/static method. This defines the call site and call it using given parameters.
         /// </summary>
         /// <param name="cg">Current code <see cref="CodeGenerator"/>.</param>
+        /// <param name="access">Current access of the method call.</param>
         /// <param name="targetExpr">The method call instance expression (the target) if it is an instance method call.</param>
         /// <param name="targetType">The target type if it is a static method call.</param>
         /// <param name="methodFullName">If known at compile time, the method name. Otherwise <c>null</c>.</param>
@@ -158,16 +159,31 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// <param name="callSignature">The call signature of the method call.</param>
         /// <returns>The resulting value type code. This value will be pushed onto the evaluation stack.</returns>
         public PhpTypeCode EmitMethodCall(
-            PHP.Core.CodeGenerator/*!*/cg, /* TODO: (J) resultWanted ? ResultAsPhpReferenceWanted ? */
+            PHP.Core.CodeGenerator/*!*/cg, AccessType access,
             Expression/*!*/targetExpr, DType/*!*/targetType,
             string methodFullName, Expression methodNameExpr, CallSignature callSignature)
         {
             Debug.Assert(methodFullName != null ^ methodNameExpr != null);
 
+            Debug.Assert(
+                access == AccessType.None || access == AccessType.Read || access == AccessType.ReadRef || access == AccessType.ReadUnknown,
+                "Unhandled access type.");
+
             //
             bool staticCall = (targetExpr == null); // we are going to emit static method call
             bool methodNameIsKnown = (methodFullName != null);
             bool classContextIsKnown = (this.classContextPlace != null);
+
+            //
+            // binder flags:
+            //
+            var binderflags = BinderFlags(access);
+            Type returnType = Types.Void;
+
+            if ((binderflags & Binders.Binder.BinderFlags.ResultAsPhpReferenceWanted) != 0)
+                returnType = Types.PhpReference[0];
+            else if ((binderflags & Binders.Binder.BinderFlags.ResultWanted) != 0)
+                returnType = Types.Object[0];
 
             //
             // define the call site:
@@ -178,7 +194,7 @@ namespace PHP.Core.Compiler.CodeGenerator
                 methodNameIsKnown,
                 callSignature,
                 staticCall ? Types.DTypeDesc[0] : Types.Object[0],
-                Types.PhpReference[0]);
+                returnType);
 
             var delegateType = System.Linq.Expressions.Expression.GetDelegateType(delegateTypeArgs);
 
@@ -190,7 +206,7 @@ namespace PHP.Core.Compiler.CodeGenerator
                 il.LdcI4(callSignature.GenericParams.Count);
                 il.LdcI4(callSignature.Parameters.Count);
                 if (this.classContextPlace != null) this.classContextPlace.EmitLoad(il); else il.Emit(OpCodes.Ldsfld, Fields.UnknownTypeDesc.Singleton);
-                il.LdcI4((int)Binders.Binder.BinderFlags.ResultAsPhpReferenceWanted);
+                il.LdcI4((int)binderflags);
 
                 il.Emit(OpCodes.Call, staticCall ? Methods.Binder.StaticMethodCall : Methods.Binder.MethodCall);
             });
@@ -217,12 +233,34 @@ namespace PHP.Core.Compiler.CodeGenerator
             cg.MarkTransientSequencePoint();
             
             //
-            return PhpTypeCode.PhpReference;
+            return PhpTypeCodeEnum.FromType(returnType);
         }
 
         #endregion
 
         #region Helper methods
+
+        /// <summary>
+        /// Determine binder flags matching the access type.
+        /// </summary>
+        /// <param name="access"></param>
+        /// <returns></returns>
+        private static Binders.Binder.BinderFlags BinderFlags(AccessType access)
+        {
+            switch (access)
+            {
+                case AccessType.None:
+                    return Binders.Binder.BinderFlags.None;
+                case AccessType.Read:
+                    return Binders.Binder.BinderFlags.ResultWanted;
+                case AccessType.ReadRef:
+                case AccessType.ReadUnknown:
+                    return Binders.Binder.BinderFlags.ResultAsPhpReferenceWanted;
+
+                default:
+                    return Binders.Binder.BinderFlags.None;
+            }
+        }
 
         /// <summary>
         /// Emit the target of instance method invocation.
