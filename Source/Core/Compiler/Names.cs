@@ -416,6 +416,17 @@ namespace PHP.Core
 		/// </summary>
 		public static QualifiedName FromClrNotation(string/*!*/ fullName, bool hasBaseName)
 		{
+            if (fullName[0] == '<')
+            {
+                // "<*>.PhpTypeName"
+                int lastGt = fullName.IndexOf('>');
+                if (lastGt > 0)
+                {
+                    Debug.Assert(fullName[lastGt + 1] == '.');
+                    fullName = fullName.Substring(lastGt + 2);
+                }
+            }
+
 			int component_count = 1;
 			for (int i = 0; i < fullName.Length; i++)
 			{
