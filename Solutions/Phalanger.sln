@@ -54,8 +54,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhpConfig", "..\Source\PhpC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.XmlDom", "..\Source\Extensions\XmlDom\Extension.XmlDom.csproj", "{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.Memcached", "..\Source\Extensions\Memcached\Extension.Memcached.csproj", "{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MSIL", "..\Source\Core\MSIL\Core.IL.vcxproj", "{7F13AC5E-1B8D-467E-83F1-912D12F44370}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phalanger.CompilerTask", "..\Source\Phalanger.CompilerTask\Phalanger.CompilerTask.csproj", "{68B54816-884B-48A1-949C-DBBDE2A5C412}"
@@ -64,7 +62,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testers.Unit", "..\Source\T
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 18
+		SccNumberOfProjects = 17
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
@@ -116,19 +114,15 @@ Global
 		SccProjectTopLevelParentUniqueName13 = Phalanger.sln
 		SccProjectName13 = ../Source/Extensions/XmlDom
 		SccLocalPath13 = ..\\Source\\Extensions\\XmlDom
-		SccProjectUniqueName14 = ..\\Source\\Extensions\\Memcached\\Extension.Memcached.csproj
-		SccProjectTopLevelParentUniqueName14 = Phalanger.sln
-		SccProjectName14 = ../Source/Extensions/Memcached
-		SccLocalPath14 = ..\\Source\\Extensions\\Memcached
-		SccProjectUniqueName15 = ..\\Source\\Core\\MSIL\\Core.IL.vcxproj
-		SccProjectName15 = ../Source/Core/MSIL
-		SccLocalPath15 = ..\\Source\\Core\\MSIL
-		SccProjectUniqueName16 = ..\\Source\\Phalanger.CompilerTask\\Phalanger.CompilerTask.csproj
-		SccProjectName16 = ../Source/Phalanger.CompilerTask
-		SccLocalPath16 = ..\\Source\\Phalanger.CompilerTask
-		SccProjectUniqueName17 = ..\\Source\\Testing\\Unit\\Testers.Unit.csproj
-		SccProjectName17 = ../Source/Testing/Unit
-		SccLocalPath17 = ..\\Source\\Testing\\Unit
+		SccProjectUniqueName14 = ..\\Source\\Core\\MSIL\\Core.IL.vcxproj
+		SccProjectName14 = ../Source/Core/MSIL
+		SccLocalPath14 = ..\\Source\\Core\\MSIL
+		SccProjectUniqueName15 = ..\\Source\\Phalanger.CompilerTask\\Phalanger.CompilerTask.csproj
+		SccProjectName15 = ../Source/Phalanger.CompilerTask
+		SccLocalPath15 = ..\\Source\\Phalanger.CompilerTask
+		SccProjectUniqueName16 = ..\\Source\\Testing\\Unit\\Testers.Unit.csproj
+		SccProjectName16 = ../Source/Testing/Unit
+		SccLocalPath16 = ..\\Source\\Testing\\Unit
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -327,21 +321,6 @@ Global
 		{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4}.Release|Win32.ActiveCfg = Release|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.DebugNoGac|Any CPU.ActiveCfg = Debug|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.DebugNoGac|Any CPU.Build.0 = Debug|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.DebugNoGac|Win32.ActiveCfg = Debug|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC}.Release|Win32.ActiveCfg = Release|Any CPU
 		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Debug|Win32.ActiveCfg = Debug|Win32
@@ -393,7 +372,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{2153C1DA-B1C5-4B6F-B6D9-272D6099FFC6} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
 		{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
-		{A630C6BD-B5EB-4FE7-ADC2-0561942D65EC} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
 		{79B2B824-23B8-45C3-ADE4-5BC8D593FC3F} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
 		{6BD6294C-D292-41DE-A40C-13202E921E2F} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
 		{4A580B61-EBE5-4620-A843-4148EA61A4C2} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
