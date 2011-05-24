@@ -72,7 +72,7 @@ namespace PHP.Core.Binders
         [Emitted]
         public static CallSiteBinder/*!*/StaticMethodCall(string methodName, int genericParamsCount, int paramsCount, DTypeDesc classContext, Type/*!*/returnType)
         {
-            // CallSite< Func< CallSite, DTypeDesc /*target type*/, ScriptContext, {args}*/*method call arguments*/, (DTypeDesc)?/*class context, iff <classContext>.IsUnknown*/, (object)?/*method name, iff <methodName>==null*/, <returnType> > >
+            // CallSite< Func< CallSite, DTypeDesc /*target type*/, ScriptContext, {args}*/*method call arguments*/, DObject/*type*/, (DTypeDesc)?/*class context, iff <classContext>.IsUnknown*/, (object)?/*method name, iff <methodName>==null*/, <returnType> > >
 
             throw new NotImplementedException();
         }

@@ -190,10 +190,15 @@ namespace PHP.Core.Compiler.CodeGenerator
             //
 
             //
+            List<Type> additionalArgs = new List<Type>();
+            if (staticCall) additionalArgs.Add(Types.DTypeDesc[0]);
+            if (!classContextIsKnown) additionalArgs.Add(Types.DTypeDesc[0]);
+            if (!methodNameIsKnown) additionalArgs.Add(Types.Object[0]);
+
             var delegateTypeArgs = MethodCallDelegateTypeArgs(
-                methodNameIsKnown,
                 callSignature,
-                staticCall ? Types.DTypeDesc[0] : Types.Object[0],
+                staticCall ? Types.DObject[0] : Types.Object[0],
+                additionalArgs.ToArray(),
                 returnType);
 
             var delegateType = System.Linq.Expressions.Expression.GetDelegateType(delegateTypeArgs);
@@ -217,15 +222,16 @@ namespace PHP.Core.Compiler.CodeGenerator
             // call the CallSite:
             //
 
-            // <field>.Target( <field>, <targetExpr|targetType>, <scriptContext>, <callSignature.EmitLoadOnEvalStack>, (classContext)?, <methodNameExpr>? ):
+            // <field>.Target( <field>, <targetExpr|targetType>, <scriptContext>, <callSignature.EmitLoadOnEvalStack>, <targetType>?, (classContext)?, <methodNameExpr>? ):
 
             cg.IL.Emit(OpCodes.Ldsfld, field);
             cg.IL.Emit(OpCodes.Ldfld, field.FieldType.GetField("Target"));
             cg.IL.Emit(OpCodes.Ldsfld, field);
-            if (staticCall) targetType.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors); else EmitTargetExpr(cg, targetExpr);
+            if (staticCall) cg.EmitLoadSelf(); else EmitTargetExpr(cg, targetExpr);
             cg.EmitLoadScriptContext();
             foreach (var t in callSignature.GenericParams) t.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors); // load DTypeDescs on the stack
             foreach (var p in callSignature.Parameters) { cg.EmitBoxing(p.Emit(cg)); }  // load boxed args on the stack
+            if (staticCall) targetType.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
             if (!classContextIsKnown) cg.EmitLoadClassContext();
             if (!methodNameIsKnown) cg.EmitName(methodFullName/*null*/, methodNameExpr, true);
             
@@ -267,11 +273,11 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// <param name="targetType">The type of value passed as method target (object for instance method, DTypeDesc for static method).</param>
         /// <param name="returnType">The return value type.</param>
         /// <returns></returns>
-        private Type[]/*!*/MethodCallDelegateTypeArgs(bool nameIsKnown, CallSignature callSignature, Type/*!*/targetType, Type/*!*/returnType)
+        private Type[]/*!*/MethodCallDelegateTypeArgs(CallSignature callSignature, Type/*!*/targetType, Type[] additionalArgs, Type/*!*/returnType)
         {
             List<Type> typeArgs = new List<Type>(callSignature.Parameters.Count + callSignature.GenericParams.Count + 6);
 
-            // Type[]{CallSite, <targetType>, ScriptContext, {argsType}, (DTypeDesc)?, (object)?, <returnType>}:
+            // Type[]{CallSite, <targetType>, ScriptContext, {argsType}, (DTypeDesc)?, (DTypeDesc)?, (object)?, <returnType>}:
 
             // CallSite:
             typeArgs.Add(Types.CallSite[0]);
@@ -286,12 +292,11 @@ namespace PHP.Core.Compiler.CodeGenerator
             foreach (var t in callSignature.GenericParams) typeArgs.Add(Types.DTypeDesc[0]);
             foreach (var p in callSignature.Parameters) typeArgs.Add(Types.Object[0]);
 
+            // DTypeDesc: (in case of static method call)
             // class context (if not known at compile time):
-            if (this.classContextPlace == null) typeArgs.Add(Types.DTypeDesc[0]);
-
             // method name (if now known at compile time):
-            if (!nameIsKnown) typeArgs.Add(Types.Object[0]);
-            
+            if (additionalArgs != null) typeArgs.AddRange(additionalArgs);
+
             // return type:
             typeArgs.Add(returnType);
 
