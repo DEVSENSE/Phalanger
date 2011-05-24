@@ -532,18 +532,6 @@
         "Entry"
         {
         "MsmKey" = "8:_3AF2365FB6F859CF82A051D70FC3766B"
-        "OwnerKey" = "8:_9F8F246058DC4ECEA422831880CDCAA3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_3AF2365FB6F859CF82A051D70FC3766B"
-        "OwnerKey" = "8:_409C7DBB600A4085AD5EE62DCB15D9E0"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_3AF2365FB6F859CF82A051D70FC3766B"
         "OwnerKey" = "8:_4CBD162795834FE4ACCE8D5AA4BB9C2C"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -562,12 +550,6 @@
         "Entry"
         {
         "MsmKey" = "8:_3DD815D342C54DFAAEBD0654411FFC96"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_3DF66730D09641C49EC7BDA151369E15"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -604,12 +586,6 @@
         "Entry"
         {
         "MsmKey" = "8:_408183DD4A51427FAB42B592CFFF38DB"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_409C7DBB600A4085AD5EE62DCB15D9E0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1474,12 +1450,6 @@
         "Entry"
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_8C0F2BD5E23F423FA84FE361368DC03D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1547,18 +1517,6 @@
         {
         "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
         "OwnerKey" = "8:_D348C83CE67E4FB4B6E4D4EEA26FBE3D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_9F8F246058DC4ECEA422831880CDCAA3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_91243EA58B4F8E1EF5F1821461FC7225"
-        "OwnerKey" = "8:_409C7DBB600A4085AD5EE62DCB15D9E0"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2302,12 +2260,6 @@
         "Entry"
         {
         "MsmKey" = "8:_9F0C78ED6F064F86BC148EC0EAF4FDD6"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9F8F246058DC4ECEA422831880CDCAA3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3466,12 +3418,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_9F8F246058DC4ECEA422831880CDCAA3"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_9C8EE9F0B6294C8AB75E0B979F1EBF85"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3515,12 +3461,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_8C18E601E62A42F795506CB9CC1CE1A2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_8C0F2BD5E23F423FA84FE361368DC03D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -3802,12 +3742,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_409C7DBB600A4085AD5EE62DCB15D9E0"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_4002F63460BA409CAAF0982D7E436A7A"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4084,13 +4018,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -6281,26 +6215,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3DF66730D09641C49EC7BDA151369E15"
-            {
-            "SourcePath" = "8:..\\Extensions\\Memcached\\Doc\\PhpNetMemcached.xml"
-            "TargetName" = "8:PhpNetMemcached.xml"
-            "Tag" = "8:"
-            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3E05BCF00EE44F979066BB373C16FC5E"
             {
             "SourcePath" = "8:..\\..\\Deployment\\Extensions\\php_odbc.dll"
@@ -6429,37 +6343,6 @@
             "TargetName" = "8:php_crack.xml"
             "Tag" = "8:"
             "Folder" = "8:_0AFED39B54BD4D9CA1D7FE8BAE64CFA2"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_409C7DBB600A4085AD5EE62DCB15D9E0"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetMemcached, Version=2.1.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_409C7DBB600A4085AD5EE62DCB15D9E0"
-                    {
-                    "Name" = "8:PhpNetMemcached.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetMemcached.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -9607,11 +9490,6 @@
             "AssemblyAsmDisplayName" = "8:PHP.VisualStudio.PhalangerTasks, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_8C0F2BD5E23F423FA84FE361368DC03D"
-                    {
-                    "Name" = "8:PHP.VisualStudio.PhalangerTasks.dll"
-                    "Attributes" = "3:512"
-                    }
                 }
             "SourcePath" = "8:..\\Phalanger.CompilerTask\\bin\\Release\\PHP.VisualStudio.PhalangerTasks.dll"
             "TargetName" = "8:"
@@ -10245,37 +10123,6 @@
             "TargetName" = "8:php_gettext.dll"
             "Tag" = "8:"
             "Folder" = "8:_A6C9620ACDFD41E585FD490BCBE4062D"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_9F8F246058DC4ECEA422831880CDCAA3"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:PhpNetMemcached, Version=2.1.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_9F8F246058DC4ECEA422831880CDCAA3"
-                    {
-                    "Name" = "8:PhpNetMemcached.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:..\\..\\Deployment\\Bin\\PhpNetMemcached.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_7DC670D7B6EE43D9AA24D1EE7B0BA96E"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
