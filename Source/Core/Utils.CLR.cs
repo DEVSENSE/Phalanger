@@ -297,6 +297,25 @@ namespace PHP.Core
 		}
 
         /// <summary>
+        /// Get the file name of given <see cref="XmlDocument"/>.
+        /// </summary>
+        /// <param name="document">Xml config file.</param>
+        /// <returns>File name of the xml document or null.</returns>
+        public static string GetConfigXmlPath(XmlDocument/*!*/document)
+        {
+            Debug.Assert(document != null);
+
+            var configXml = document as System.Configuration.ConfigXmlDocument;
+            
+            if (document.BaseURI != "")
+                return document.BaseURI;
+            else if (configXml != null)
+                return configXml.Filename;
+            else
+                return AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+        }
+
+        /// <summary>
         /// Get the full URI of the specified <c>url</c>. Uses path of the configuration file to resolve URI.
         /// If the path is not available, uses current directory.
         /// </summary>
@@ -306,18 +325,7 @@ namespace PHP.Core
         /// It filename cannot be resolved from the <c>node</c> it uses current configuration path.</returns>
         public static Uri GetUri(XmlNode node, string url)
         {
-            var document = node.OwnerDocument;
-            var configXml = document as System.Configuration.ConfigXmlDocument;
-            Uri rootPath = null;
-
-            if (document.BaseURI != "")
-                 rootPath = new Uri(document.BaseURI);
-            else if (configXml != null)
-                rootPath = new Uri(configXml.Filename);
-            else
-                rootPath = new Uri(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
-
-            return new Uri(rootPath, url);
+            return new Uri(new Uri(GetConfigXmlPath(node.OwnerDocument)), url);
         }
 
 		/// <summary>

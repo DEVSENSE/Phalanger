@@ -1108,6 +1108,9 @@ namespace PHP.Core
 				// checks path correctness:
 				try
 				{
+                    string root = ConfigUtils.GetConfigXmlPath(node.OwnerDocument);
+                    if (root != null) value = Path.Combine(Path.GetDirectoryName(root), value);
+
 					result = new FullPath(value);
 				}
 				catch (ArgumentException e)
