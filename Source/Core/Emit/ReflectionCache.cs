@@ -422,11 +422,13 @@ namespace PHP.Core.Emit
         public struct PhpVariable
         {
             static Type _this { get { return typeof(PHP.Core.PhpVariable); } }
-            static MethodInfo _Copy, _IsEmpty, _IsString;
+            static MethodInfo _Copy, _IsEmpty, _IsString, _MakeReference, _AsString;
 
             public static MethodInfo Copy { get { if (_Copy == null) _Copy = _this.GetMethod("Copy"); return _Copy; } }
             public static MethodInfo IsEmpty { get { if (_IsEmpty == null) _IsEmpty = _this.GetMethod("IsEmpty"); return _IsEmpty; } }
             public static MethodInfo IsString { get { if (_IsString == null) _IsString = _this.GetMethod("IsString"); return _IsString; } }
+            public static MethodInfo AsString { get { if (_AsString == null) _AsString = _this.GetMethod("AsString"); return _AsString; } }
+            public static MethodInfo MakeReference { get { if (_MakeReference == null) _MakeReference = _this.GetMethod("MakeReference"); return _MakeReference; } }
         }
 
         #endregion
@@ -666,7 +668,7 @@ namespace PHP.Core.Emit
             static MethodInfo _Throw, _MissingArgument, _MissingTypeArgument, _MissingArguments, _InvalidForeachArgument,
                       _InvalidImplicitCast, _InvalidBreakLevelCount,
                       _InvalidArgumentCount, _UndefinedVariable, _CannotReassignThis, _InvalidArgumentType, _ThisUsedOutOfObjectContext,
-                      _StaticPropertyUnset, _AbstractMethodCalled, _NoSuitableOverload, _PropertyTypeMismatch;
+                      _StaticPropertyUnset, _AbstractMethodCalled, _NoSuitableOverload, _PropertyTypeMismatch, _UndefinedMethodCalled;
 
             public static MethodInfo Throw { get { if (_Throw == null) _Throw = _this.GetMethod("Throw"); return _Throw; } }
             public static MethodInfo MissingArgument { get { if (_MissingArgument == null) _MissingArgument = _this.GetMethod("MissingArgument"); return _MissingArgument; } }
@@ -684,6 +686,7 @@ namespace PHP.Core.Emit
             public static MethodInfo StaticPropertyUnset { get { if (_StaticPropertyUnset == null) _StaticPropertyUnset = _this.GetMethod("StaticPropertyUnset"); return _StaticPropertyUnset; } }
             public static MethodInfo NoSuitableOverload { get { if (_NoSuitableOverload == null) _NoSuitableOverload = _this.GetMethod("NoSuitableOverload"); return _NoSuitableOverload; } }
             public static MethodInfo PropertyTypeMismatch { get { if (_PropertyTypeMismatch == null) _PropertyTypeMismatch = _this.GetMethod("PropertyTypeMismatch"); return _PropertyTypeMismatch; } }
+            public static MethodInfo UndefinedMethodCalled { get { if (_UndefinedMethodCalled == null) _UndefinedMethodCalled = _this.GetMethod("UndefinedMethodCalled"); return _UndefinedMethodCalled; } }
         }
 
         #endregion
@@ -734,6 +737,7 @@ namespace PHP.Core.Emit
 
                 _EnsureItemIsObject,
                 _EnsureItemIsObject_Object
+
             ;
 
             public static MethodInfo GetArrayItem_Object { get { if (_GetArrayItem_Object == null) _GetArrayItem_Object = _this.GetMethod("GetArrayItem", new Type[] { typeof(object), typeof(bool) }); return _GetArrayItem_Object; } }
@@ -761,6 +765,7 @@ namespace PHP.Core.Emit
 
             public static MethodInfo EnsureItemIsObject { get { if (_EnsureItemIsObject == null) _EnsureItemIsObject = _this.GetMethod("EnsureItemIsObject", Types.ScriptContext); return _EnsureItemIsObject; } }
             public static MethodInfo EnsureItemIsObject_Object { get { if (_EnsureItemIsObject_Object == null) _EnsureItemIsObject_Object = _this.GetMethod("EnsureItemIsObject", Types.Object_ScriptContext); return _EnsureItemIsObject_Object; } }
+
         }
 
         #endregion

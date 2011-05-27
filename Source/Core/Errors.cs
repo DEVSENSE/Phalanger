@@ -498,6 +498,7 @@ namespace PHP.Core
 			PhpException.Throw(PhpError.Error, CoreResources.GetString("static_property_unset", className, fieldName));
 		}
 
+        [Emitted]
 		public static void UndefinedMethodCalled(string className, string methodName)
 		{
 			PhpException.Throw(PhpError.Error, CoreResources.GetString("undefined_method_called", className, methodName));

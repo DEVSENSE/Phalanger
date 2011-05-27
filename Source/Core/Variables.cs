@@ -796,6 +796,7 @@ namespace PHP.Core
 		/// Types like <see cref="int"/>, <see cref="bool"/> are not converted.
 		/// </para>
 		/// </remarks>
+        [Emitted]
 		public static string AsString(object variable)
 		{
 			string s;

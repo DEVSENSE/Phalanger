@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using PHP.Core;
 using PHP.Core.Emit;
 using PHP.Core.Reflection;
+using System.Threading;
 
 namespace PHP.Core.Binders
 {
@@ -39,6 +40,12 @@ namespace PHP.Core.Binders
 
         #endregion
 
+        #region Fields
+
+        private static readonly Dictionary<string, PhpInvokeMemberBinder/*!*/> invokeMemberBinders = new Dictionary<string, PhpInvokeMemberBinder>();
+
+        #endregion
+
         #region MethodCall, StaticMethodCall (same signature)
 
         /// <summary>
@@ -56,7 +63,19 @@ namespace PHP.Core.Binders
         {
             // CallSite< Func< CallSite, object /*target instance*/, ScriptContext, {args}*/*method call arguments*/, (DTypeDesc)?/*class context, iff <classContext>.IsUnknown*/, (object)?/*method name, iff <methodName>==null*/, <returnType> > >
 
-            throw new NotImplementedException();
+            PhpInvokeBinderKey key = new PhpInvokeBinderKey(methodName, genericParamsCount, paramsCount, classContext, returnType);
+
+            lock (invokeMemberBinders)
+            {
+                PhpInvokeMemberBinder res;
+                if (!invokeMemberBinders.TryGetValue(key.ToString(), out res))
+                {
+                    invokeMemberBinders[key.ToString()] = res = PhpBaseInvokeMemberBinder.Create(methodName, genericParamsCount, paramsCount, classContext, returnType);
+                }
+
+                return res;
+            }
+
         }
 
         /// <summary>

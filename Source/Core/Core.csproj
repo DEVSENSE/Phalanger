@@ -139,6 +139,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Binders\Binder.cs" />
+    <Compile Include="Binders\BinderHelpers.cs" />
+    <Compile Include="Binders\PhpInvokeBinderKey.cs" />
+    <Compile Include="Binders\PhpInvokeMemberBinder.cs" />
     <Compile Include="CodeDom\CodeProvider.CLR.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -534,6 +537,7 @@
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       <CustomToolNamespace>PHP.Core.Localizations</CustomToolNamespace>
     </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Core.snk" />
     <None Include="EmbeddedDoc\Generated\Parser.log" />
     <None Include="EmbeddedDoc\Generators\Lexer.lex" />
