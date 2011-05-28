@@ -94,6 +94,9 @@ namespace PHP.VisualStudio.PhalangerTasks
 		public string DisabledWarnings { get { return disabledWarnings; } set { disabledWarnings = value; } }
 		private string disabledWarnings;
 
+        public string KeyFile { get { return keyFile; } set { keyFile = value; } }
+        private string keyFile;
+
 		public string SomeTestingProperty { get { return someTestingProperty; } set { someTestingProperty = value; } }
 		private string someTestingProperty;
 
@@ -296,10 +299,23 @@ namespace PHP.VisualStudio.PhalangerTasks
 				return false;
 			}
 
-			// strong name (TODO):
-			ps.Version = new Version(1, 0, 0, 0);
-			ps.Key = null;
-
+			// strong name, version (TODO):
+            try
+            {
+                ps.Version = new Version(1, 0, 0, 0);
+                ps.Key = null;
+                if (!string.IsNullOrEmpty(keyFile))
+                {
+                    using (FileStream file = new FileStream(new FullPath(keyFile, ps.SourceRoot), FileMode.Open))
+                        ps.Key = new StrongNameKeyPair(file);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.LogErrorFromException(e);
+                return false;
+            }
+            
             //Resources
             foreach(ITaskItem resource in this.ResourceFiles) {
                 bool publicVisibility = true;
@@ -348,6 +364,8 @@ namespace PHP.VisualStudio.PhalangerTasks
 			{
 				ps.DisableWarningNumbers = ArrayUtils.EmptyIntegers;
 			}
+
+            // compile
 
 			try
 			{

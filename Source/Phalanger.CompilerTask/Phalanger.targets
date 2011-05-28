@@ -44,6 +44,7 @@
         ApplicationIcon="$(ApplicationIcon)"
         LanguageFeatures="$(LanguageFeatures)"
         DisabledWarnings="$(DisabledWarnings)"
+        KeyFile="$(KeyFile)"
         ResourceFiles="@(ManifestResourceWithNoCulture);@(ManifestNonResxWithNoCultureOnDisk);@(CompiledLicenseFile)"
       />
   </Target>
