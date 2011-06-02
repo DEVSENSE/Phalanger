@@ -91,7 +91,7 @@ namespace PHP.Core.Binders
 
             // 
             ////Debug.Assert(!(var is PhpReference) && name != null);
-            Debug.Assert(target.HasValue && target.LimitType != Types.PhpReference[0]);
+            Debug.Assert(target.HasValue && target.LimitType != Types.PhpReference[0], "Target should not be PhpReference!");
 
             DObject obj;
             ////// a property of a DObject:
@@ -206,12 +206,12 @@ namespace PHP.Core.Binders
                                     Func<DObject, string, DTypeDesc, object> notsetOperation;
                                     if (_issetSemantics) notsetOperation = (self, name, caller) =>
                                         {
-                                            return self.GetRuntimeField(name, caller);
+                                            return PhpVariable.Dereference(self.GetRuntimeField(name, caller));
                                         };
                                     else notsetOperation = (self, name, caller) =>
                                         {
                                             bool handled;
-                                            return self.PropertyIssetHandler(name, caller, out handled);
+                                            return PhpVariable.Dereference(self.PropertyIssetHandler(name, caller, out handled));
                                         };
                                     var value =
                                         Expression.Block(this._returnType,
@@ -236,7 +236,7 @@ namespace PHP.Core.Binders
                                 else
                                 {
                                     return new DynamicMetaObject(
-                                        Expression.Convert(Expression.Field(Expression.Convert(target.Expression, realType), realField), Types.Object[0]),
+                                        Expression.Call(Methods.PhpVariable.Dereference, Expression.Convert(Expression.Field(Expression.Convert(target.Expression, realType), realField), Types.Object[0])),
                                         restrictions);
                                 }
                             }
@@ -357,16 +357,18 @@ namespace PHP.Core.Binders
                                 };
 
                                 return new DynamicMetaObject(
-                                    Expression.Call(null, notsetOperation.Method, Expression.Convert(target.Expression, Types.DObject[0]), Expression.Constant(fieldName), Expression.Constant(classContext, Types.DTypeDesc[0])),
+                                    Expression.Call(Methods.PhpVariable.Dereference,
+                                        Expression.Call(null, notsetOperation.Method, Expression.Convert(target.Expression, Types.DObject[0]), Expression.Constant(fieldName), Expression.Constant(classContext, Types.DTypeDesc[0]))),
                                     restrictions);
                             }
                             else
                             {
                                 return new DynamicMetaObject(
-                                    Expression.Call(null, Methods.PhpVariable.Dereference,
                                     Expression.Call(
-                                        Expression.Convert(target.Expression, Types.DObject[0]),
-                                        Methods.DObject_GetRuntimeField, Expression.Constant(fieldName), Expression.Constant(classContext, Types.DTypeDesc[0]))),
+                                        Methods.PhpVariable.Dereference,
+                                        Expression.Call(
+                                            Expression.Convert(target.Expression, Types.DObject[0]),
+                                            Methods.DObject_GetRuntimeField, Expression.Constant(fieldName), Expression.Constant(classContext, Types.DTypeDesc[0]))),
                                     restrictions);
                             };
                             
