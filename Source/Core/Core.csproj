@@ -116,6 +116,7 @@
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
     </Reference>
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Remoting">
       <Name>System.Runtime.Remoting</Name>
     </Reference>
@@ -139,7 +140,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Binders\Binder.cs" />
-    <Compile Include="Binders\BinderHelpers.cs" />
+    <Compile Include="Binders\BinderHelper.cs" />
+    <Compile Include="Binders\PhpGetMemberBinder.cs" />
     <Compile Include="Binders\PhpInvokeBinderKey.cs" />
     <Compile Include="Binders\PhpInvokeMemberBinder.cs" />
     <Compile Include="CodeDom\CodeProvider.CLR.cs">
@@ -537,7 +539,6 @@
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       <CustomToolNamespace>PHP.Core.Localizations</CustomToolNamespace>
     </EmbeddedResource>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Core.snk" />
     <None Include="EmbeddedDoc\Generated\Parser.log" />
     <None Include="EmbeddedDoc\Generators\Lexer.lex" />

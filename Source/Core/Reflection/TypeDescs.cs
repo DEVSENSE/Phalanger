@@ -2854,43 +2854,44 @@ namespace PHP.Core.Reflection
 		/// <returns><B>True</B> if this instance was successfully populated, <B>false</B> otherwise.</returns>
 		private bool AutoPopulateNoLock()
 		{
-            if (RealType == null || hasNoPopulateMethod) return false;
-            
-            if (methods == null)
-            {
-                MethodInfo populator = null;
-                try
-                {
-                    populator = RealType.GetMethod(
-                        PhpObjectBuilder.PopulateTypeDescMethodName,
-                        BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly,
-                        null,
-                        Types.PhpTypeDesc,
-                        null);
-                }
-                catch (AmbiguousMatchException)
-                { }
+            return false; // (JM) we really need to reflect it; to get MethodInfo or aglesses and argfulls (can be done through the metadata token, but it is the same)
+            //if (RealType == null || hasNoPopulateMethod) return false;
 
-                if (populator != null)
-                {
-                    methods = new Dictionary<Name, DRoutineDesc>();
-                    properties = new Dictionary<VariableName, DPropertyDesc>();
-                    constants = new Dictionary<VariableName, DConstantDesc>();
+            //if (methods == null)
+            //{
+            //    MethodInfo populator = null;
+            //    try
+            //    {
+            //        populator = RealType.GetMethod(
+            //            PhpObjectBuilder.PopulateTypeDescMethodName,
+            //            BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly,
+            //            null,
+            //            Types.PhpTypeDesc,
+            //            null);
+            //    }
+            //    catch (AmbiguousMatchException)
+            //    { }
 
-                    populator.Invoke(null, new object[] { this });
+            //    if (populator != null)
+            //    {
+            //        methods = new Dictionary<Name, DRoutineDesc>();
+            //        properties = new Dictionary<VariableName, DPropertyDesc>();
+            //        constants = new Dictionary<VariableName, DConstantDesc>();
 
-                    return true;
-                }
-                else
-                {
-                    hasNoPopulateMethod = true;
-                    return false;
-                }
-            }
-            else
-            {
-                return true;
-            }
+            //        populator.Invoke(null, new object[] { this });
+
+            //        return true;
+            //    }
+            //    else
+            //    {
+            //        hasNoPopulateMethod = true;
+            //        return false;
+            //    }
+            //}
+            //else
+            //{
+            //    return true;
+            //}
 		}
 
 		/// <summary>

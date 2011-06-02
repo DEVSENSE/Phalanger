@@ -168,24 +168,32 @@ namespace PHP.Core.AST
 			{
 				return EmitReadFieldOfThis(codeGenerator, wantRef);
 			}
-
-			// call GetProperty/GetObjectPropertyRef
-			codeGenerator.ChainBuilder.Lengthen();
-
-			// loads the variable which field is gotten:
-			PhpTypeCode var_type_code = isMemberOf.Emit(codeGenerator);
+            		
 
 			if (!wantRef)
 			{
-				Debug.Assert(var_type_code == PhpTypeCode.Object || var_type_code == PhpTypeCode.DObject);
+                //codeGenerator.ChainBuilder.Lengthen();
+                //PhpTypeCode var_type_code = isMemberOf.Emit(codeGenerator);
+                //Debug.Assert(var_type_code == PhpTypeCode.Object || var_type_code == PhpTypeCode.DObject);
 
-				// CALL Operators.GetProperty(STACK,<field name>,<type desc>,<quiet>);
-				EmitName(codeGenerator);
-				codeGenerator.EmitLoadClassContext();
-				il.LoadBool(codeGenerator.ChainBuilder.QuietRead);
-				il.Emit(OpCodes.Call, Methods.Operators.GetProperty);
-				return PhpTypeCode.Object;
+                //// CALL Operators.GetProperty(STACK,<field name>,<type desc>,<quiet>);
+                //EmitName(codeGenerator);
+                //codeGenerator.EmitLoadClassContext();
+                //il.LoadBool(codeGenerator.ChainBuilder.QuietRead);
+                //il.Emit(OpCodes.Call, Methods.Operators.GetProperty);
+                //return PhpTypeCode.Object;
+                
+                
+                string fieldName = (this is DirectVarUse) ? ((DirectVarUse)this).VarName.Value : null;
+                Expression fieldNameExpr = (this is IndirectVarUse) ? ((IndirectVarUse)this).VarNameEx : null;
+                bool quietRead = wantRef ? false : codeGenerator.ChainBuilder.QuietRead;
+                return codeGenerator.CallSitesBuilder.EmitGetProperty(codeGenerator, wantRef, isMemberOf, null, null, fieldName, fieldNameExpr, quietRead);
 			}
+
+            // call GetProperty/GetObjectPropertyRef
+			codeGenerator.ChainBuilder.Lengthen();
+            // loads the variable which field is gotten:
+            PhpTypeCode var_type_code = isMemberOf.Emit(codeGenerator);
 
 			if (codeGenerator.ChainBuilder.Exists)
 			{
@@ -303,23 +311,29 @@ namespace PHP.Core.AST
 		/// </summary>
 		private PhpTypeCode EmitGetFieldOfPlace(IPlace/*!*/ arg, CodeGenerator/*!*/ codeGenerator, bool wantRef)
 		{
-			ILEmitter il = codeGenerator.IL;
+            //ILEmitter il = codeGenerator.IL;
 
-			arg.EmitLoad(il);
-			EmitName(codeGenerator);
-			codeGenerator.EmitLoadClassContext();
+            //arg.EmitLoad(il);
+            //EmitName(codeGenerator);
+            //codeGenerator.EmitLoadClassContext();
 
-			if (wantRef)
-			{
-				il.Emit(OpCodes.Call, Methods.Operators.GetObjectPropertyRef);
-				return PhpTypeCode.PhpReference;
-			}
-			else
-			{
-				il.LoadBool(codeGenerator.ChainBuilder.QuietRead);
-				il.Emit(OpCodes.Call, Methods.Operators.GetObjectProperty);
-				return PhpTypeCode.Object;
-			}
+            //if (wantRef)
+            //{
+            //    il.Emit(OpCodes.Call, Methods.Operators.GetObjectPropertyRef);
+            //    return PhpTypeCode.PhpReference;
+            //}
+            //else
+            //{
+            //    il.LoadBool(codeGenerator.ChainBuilder.QuietRead);
+            //    il.Emit(OpCodes.Call, Methods.Operators.GetObjectProperty);
+            //    return PhpTypeCode.Object;
+            //}
+
+            string fieldName = (this is DirectVarUse) ? ((DirectVarUse)this).VarName.Value : null;
+            Expression fieldNameExpr = (this is IndirectVarUse) ? ((IndirectVarUse)this).VarNameEx : null;
+            bool quietRead = wantRef ? false : codeGenerator.ChainBuilder.QuietRead;
+
+            return codeGenerator.CallSitesBuilder.EmitGetProperty(codeGenerator, wantRef, null, arg, null, fieldName, fieldNameExpr, quietRead);
 		}
 
 		private static void EmitCallSetObjectField(CodeGenerator/*!*/ codeGenerator, PhpTypeCode stackTypeCode)

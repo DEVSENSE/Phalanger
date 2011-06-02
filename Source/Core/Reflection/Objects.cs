@@ -349,6 +349,11 @@ namespace PHP.Core.Reflection
 			}
 		}
 
+        /// <summary>
+        /// Real <see cref="Type"/> of the object.
+        /// </summary>
+        public Type/*!*/RealType { get { return TypeDesc.RealType; } }
+
 		/// <summary>
 		/// Caches the type desc describing this instance's type.
 		/// </summary>
@@ -726,7 +731,7 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Invoked when an unknown property is tested for being set.
 		/// </summary>
-		protected virtual object PropertyIssetHandler(string name, DTypeDesc caller, out bool handled)
+		public virtual object PropertyIssetHandler(string name, DTypeDesc caller, out bool handled)
 		{
 			return InvokeSpecialMethod(SpecialMethodNames.Isset, ObjectFlags.InsideIssetter, caller, out handled, name);
 		}
@@ -900,7 +905,7 @@ namespace PHP.Core.Reflection
 		/// <param name="caller">Class context of the code that requests the retrieval.</param>
 		/// <returns>The field value.</returns>
 		/// <remarks>This is merely a helper method called from <see cref="GetProperty"/>.</remarks>
-		internal object GetRuntimeField(string name, DTypeDesc caller)
+		public object GetRuntimeField(string name, DTypeDesc caller)
 		{
 			OrderedHashtable<string>.Element element;
 			if (RuntimeFields == null || (element = RuntimeFields.GetElement(name)) == null)

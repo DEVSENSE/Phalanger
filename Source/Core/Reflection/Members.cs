@@ -97,7 +97,7 @@ namespace PHP.Core.Reflection
 
 			// "finalness" and "abstractness" is stored as attributes, if the method is static, not in MethodInfo
 			// (static+abstract, static+final are not allowed in CLR)
-			Debug.Assert(!(info.IsStatic && (info.IsFinal || info.IsAbstract)), "User static method cannot have CLR final or abstract modifier.");
+			//Debug.Assert(!(info.IsStatic && (info.IsFinal || info.IsAbstract)), "User static method cannot have CLR final or abstract modifier.");
 
 			if (info.IsAbstract || info.IsDefined(typeof(PhpAbstractAttribute), false))
 				value |= PhpMemberAttributes.Abstract;

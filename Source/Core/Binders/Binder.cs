@@ -42,7 +42,17 @@ namespace PHP.Core.Binders
 
         #region Fields
 
+        /// <summary>
+        /// Binders cache. Alows to share binders for the same operations.
+        /// TODO: Slit different binders into different dictionaries.
+        /// </summary>
         private static readonly Dictionary<string, PhpInvokeMemberBinder/*!*/> invokeMemberBinders = new Dictionary<string, PhpInvokeMemberBinder>();
+
+        /// <summary>
+        /// Get*Property* binders.
+        /// TODO: Slit different binders into different dictionaries.
+        /// </summary>
+        private static readonly Dictionary<string, PhpGetMemberBinder/*!*/>/*!*/getMemberBinders = new Dictionary<string, PhpGetMemberBinder>();
 
         #endregion
 
@@ -97,5 +107,39 @@ namespace PHP.Core.Binders
         }
 
         #endregion
+
+        #region GetProperty, StaticGetProperty
+
+        [Emitted]
+        public static CallSiteBinder/*!*/GetProperty(string fieldName, DTypeDesc classContext, bool issetSemantics, Type/*!*/returnType)
+        {
+            // the binder cache key
+            string key = string.Format("{0}'{1}'{2}'{3}",
+                fieldName ?? "$",
+                (classContext != null) ? (classContext.GetHashCode().ToString()) : string.Empty,
+                issetSemantics ? "1" : "0",
+                returnType.FullName
+                );
+
+            lock (getMemberBinders)
+            {
+                PhpGetMemberBinder binder;
+                if (!getMemberBinders.TryGetValue(key, out binder))
+                    getMemberBinders[key] = binder = new PhpGetMemberBinder(fieldName, classContext, issetSemantics, returnType);
+                
+                return binder;
+            }
+            
+            throw new NotImplementedException();
+        }
+
+        [Emitted]
+        public static CallSiteBinder/*!*/StaticGetProperty(string fieldName, DTypeDesc classContext, bool issetSemantics, Type/*!*/returnType)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
     }
 }

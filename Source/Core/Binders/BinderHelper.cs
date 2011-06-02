@@ -12,6 +12,7 @@ namespace PHP.Core.Binders
 
     internal static class BinderHelper
     {
+        #region PhpException.Throw
 
         public static Expression/*!*/ ThrowError(string id)
         {
@@ -84,5 +85,58 @@ namespace PHP.Core.Binders
         //        typeof(object)
         //    );
         //}
+    
+        #endregion
+
+        #region (ClrObject, IClrValue)
+
+        /// <summary>
+        /// Builds <see cref="Expression"/> that properly wraps given expression to return valid PHP type.
+        /// It does not perform any conversion for PHP primitive types. Byte array is wrapped into <see cref="PhpBytes"/> and
+        /// anything else is wrapped using <see cref="ClrObject.Create"/> method.
+        /// </summary>
+        /// <param name="expression">Expression returning an object/value.</param>
+        /// <returns><see cref="Expression"/> returning valid PHP object.</returns>
+        public static Expression/*!*/ClrObjectWrapDynamic(Expression/*!*/expression)
+        {
+            Debug.Assert(expression != null);
+
+            // PHP types as they are:
+            if (PhpVariable.IsPrimitiveType(expression.Type) || Types.DObject[0].IsAssignableFrom(expression.Type))
+                return expression;
+
+            // byte[] -> PhpBytes( <expression> )
+            if (expression.Type == typeof(byte[]))
+                return Expression.New(Constructors.PhpBytes_ByteArray, expression);
+
+            // value type -> ClrValue<T>
+            // ref type -> ClrObject
+            return Expression.Call(null, Methods.ClrObject_Create, expression);
+        }
+
+        #endregion
+
+        #region PhpReference
+
+        /// <summary>
+        /// Ensures the expression returns <see cref="PhpReference"/>. If not the expression is wrapped to a new instance of <see cref="PhpReference"/>.
+        /// </summary>
+        /// <param name="expression">The <see cref="Expression"/> to be wrapped.</param>
+        /// <returns>Expression representing PhpReference.</returns>
+        public static Expression/*!*/MakePhpReference(Expression/*!*/expression)
+        {
+            // PhpReference already:
+            if (Types.PhpReference[0].IsAssignableFrom(expression.Type))
+                return expression;
+
+            // void -> new PhpReference():
+            if (expression.Type == Types.Void)
+                return Expression.New(Constructors.PhpReference_Void);
+
+            // object -> PhpReference(object):
+            return Expression.New(Constructors.PhpReference_Object, Expression.Convert(expression, Types.Object[0]));
+        }
+
+        #endregion
     }
 }

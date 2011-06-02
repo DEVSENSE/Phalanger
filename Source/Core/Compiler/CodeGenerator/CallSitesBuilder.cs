@@ -51,6 +51,11 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// </summary>
         private readonly IPlace classContextPlace;
 
+        /// <summary>
+        /// Amount of emitted call sites. Used to build unique call site field name.
+        /// </summary>
+        private int callSitesCount = 0;
+
         #endregion
 
         #region Constructors
@@ -122,6 +127,8 @@ namespace PHP.Core.Compiler.CodeGenerator
         public FieldInfo/*!*/DefineCallSite(string/*!*/userFriendlyName, Type/*!*/delegateType, Action<ILEmitter>/*!*/binderInstanceEmitter)
         {
             Debug.Assert(userFriendlyName != null && delegateType != null && binderInstanceEmitter != null);
+
+            userFriendlyName += ('#' + (callSitesCount++));
 
             // call sites container 
             var type = EnsureContainer();
@@ -222,12 +229,12 @@ namespace PHP.Core.Compiler.CodeGenerator
             // call the CallSite:
             //
 
-            // <field>.Target( <field>, <targetExpr|targetType>, <scriptContext>, <callSignature.EmitLoadOnEvalStack>, <targetType>?, (classContext)?, <methodNameExpr>? ):
+            // <field>.Target( <field>, <targetExpr|self>, <scriptContext>, <callSignature.EmitLoadOnEvalStack>, <targetType>?, (classContext)?, <methodNameExpr>? ):
 
             cg.IL.Emit(OpCodes.Ldsfld, field);
             cg.IL.Emit(OpCodes.Ldfld, field.FieldType.GetField("Target"));
             cg.IL.Emit(OpCodes.Ldsfld, field);
-            if (staticCall) cg.EmitLoadSelf(); else EmitTargetExpr(cg, targetExpr);
+            if (staticCall) cg.EmitLoadSelf(); else EmitMethodTargetExpr(cg, targetExpr);
             cg.EmitLoadScriptContext();
             foreach (var t in callSignature.GenericParams) t.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors); // load DTypeDescs on the stack
             foreach (var p in callSignature.Parameters) { cg.EmitBoxing(p.Emit(cg)); }  // load boxed args on the stack
@@ -253,7 +260,7 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// </summary>
         /// <param name="cg"></param>
         /// <param name="targetExpr"></param>
-        private static void EmitTargetExpr(PHP.Core.CodeGenerator/*!*/cg, Expression/*!*/targetExpr)
+        private static void EmitMethodTargetExpr(PHP.Core.CodeGenerator/*!*/cg, Expression/*!*/targetExpr)
         {
             // start a new operators chain (as the rest of chain is read)
             cg.ChainBuilder.Create();
@@ -268,9 +275,9 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// <summary>
         /// Make an array containing types for CallSite generic type used for method invocation.
         /// </summary>
-        /// <param name="nameIsKnown">Iff name is known at compile time.</param>
         /// <param name="callSignature">The method call signature.</param>
         /// <param name="targetType">The type of value passed as method target (object for instance method, DTypeDesc for static method).</param>
+        /// <param name="additionalArgs">Additional arguments added after the target expression.</param>
         /// <param name="returnType">The return value type.</param>
         /// <returns></returns>
         private Type[]/*!*/MethodCallDelegateTypeArgs(CallSignature callSignature, Type/*!*/targetType, Type[] additionalArgs, Type/*!*/returnType)
@@ -304,6 +311,125 @@ namespace PHP.Core.Compiler.CodeGenerator
             return typeArgs.ToArray();
         }
 
+        private Type[]/*!*/GetPropertyDelegateTypeArgs(Type/*!*/targetType, Type[] additionalArgs, Type/*!*/returnType)
+        {
+            List<Type> typeArgs = new List<Type>(6);
+
+            // Type[]{CallSite, <targetType|targetTypeDesc>, (DTypeDesc)?, (object)?, (bool)?, <returnType>}:
+
+            // CallSite:
+            typeArgs.Add(Types.CallSite[0]);
+
+            // target type (object instance / class type):
+            typeArgs.Add(targetType);
+
+            // DTypeDesc: (in case of static method call)
+            // class context (if not known at compile time):
+            // field name (if now known at compile time):
+            if (additionalArgs != null) typeArgs.AddRange(additionalArgs);
+
+            // return type:
+            typeArgs.Add(returnType);
+
+            //
+            return typeArgs.ToArray();
+        }
+        
         #endregion       
+
+        #region EmitGetProperty
+
+        /// <summary>
+        /// Create and call <see cref="CallSite"/> for getting property.
+        /// </summary>
+        /// <param name="cg"><see cref="CodeGenerator"/>.</param>
+        /// <param name="wantRef">Wheter <see cref="PhpReference"/> is expected as the result.</param>
+        /// <param name="targetExpr">The expression representing the target.</param>
+        /// <param name="targetObjectPlace">The place representing the target <see cref="DObject"/> iff <paramref name="targetExpr"/> is not provided.</param>
+        /// <param name="targetType">Type of target iff we are getting property statically.</param>
+        /// <param name="fieldName">The name of the field. Can be null if the name is not known at compile time (indirect).</param>
+        /// <param name="fieldNameExpr">The expression used to get field name in run time (iff <paramref name="fieldName"/> is <c>null</c>.</param>
+        /// <param name="issetSemantics">Wheter we are only checking if the property exists. If true, no warnings are thrown during run time.</param>
+        /// <returns>Type code of the value that is pushed onto the top of the evaluation stack.</returns>
+        public PhpTypeCode EmitGetProperty(
+            PHP.Core.CodeGenerator/*!*/cg, bool wantRef,
+            Expression targetExpr, IPlace targetObjectPlace, DType targetType,
+            string fieldName, Expression fieldNameExpr,
+            bool issetSemantics)
+        {
+            Debug.Assert(fieldName != null ^ fieldNameExpr != null);
+            Debug.Assert(targetExpr != null || targetObjectPlace != null || targetType != null);
+            
+            //
+            bool staticCall = (targetExpr == null && targetObjectPlace == null); // we are going to emit static method call
+            bool fieldNameIsKnown = (fieldName != null);
+            bool classContextIsKnown = (this.classContextPlace != null);
+
+            //
+            // binder flags:
+            //
+            Type returnType = wantRef ? Types.PhpReference[0] : Types.Object[0];
+            
+            //
+            // define the call site:
+            //
+
+            //
+            List<Type> additionalArgs = new List<Type>();
+            if (!classContextIsKnown) additionalArgs.Add(Types.DTypeDesc[0]);
+            if (!fieldNameIsKnown) additionalArgs.Add(Types.String[0]);
+
+            var delegateTypeArgs = GetPropertyDelegateTypeArgs(
+                staticCall ? Types.DTypeDesc[0] : ((targetObjectPlace != null) ? Types.DObject[0] : Types.Object[0]),   // 
+                additionalArgs.ToArray(),
+                returnType);
+
+            var delegateType = System.Linq.Expressions.Expression.GetDelegateType(delegateTypeArgs);
+
+            //
+            var field = DefineCallSite(string.Format("get<{0}>", fieldName ?? "$"), delegateType, (il) =>
+            {
+                // <LOAD> Binder.{GetProperty|GetStaticProperty}( fieldName, classContext, issetSemantics, <returnType> )
+                if (fieldName != null) il.Emit(OpCodes.Ldstr, fieldName); else il.Emit(OpCodes.Ldnull);
+                if (this.classContextPlace != null) this.classContextPlace.EmitLoad(il); else il.Emit(OpCodes.Ldsfld, Fields.UnknownTypeDesc.Singleton);
+                il.LoadBool(issetSemantics);
+
+                il.Emit(OpCodes.Ldtoken, returnType);
+                il.Emit(OpCodes.Call, Methods.GetTypeFromHandle);
+
+                il.Emit(OpCodes.Call, staticCall ? Methods.Binder.StaticGetProperty : Methods.Binder.GetProperty);
+            });
+
+            //
+            // call the CallSite:
+            //
+
+            // <field>.Target( <field>, <targetExpr|targetType>, (classContext)?, <methodNameExpr>? ):
+
+            cg.IL.Emit(OpCodes.Ldsfld, field);
+            cg.IL.Emit(OpCodes.Ldfld, field.FieldType.GetField("Target"));
+            cg.IL.Emit(OpCodes.Ldsfld, field);
+            if (staticCall) targetType.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
+            else if (targetExpr != null)
+            {
+                cg.ChainBuilder.Lengthen(); // for hop over ->
+                cg.EmitBoxing(targetExpr.Emit(cg)); // prepare for operator invocation
+            }
+            else if (targetObjectPlace != null) targetObjectPlace.EmitLoad(cg.IL);
+            else Debug.Fail();
+            if (!classContextIsKnown) cg.EmitLoadClassContext();
+            if (!fieldNameIsKnown) cg.EmitName(fieldName/*null*/, fieldNameExpr, true, PhpTypeCode.String);
+
+            cg.MarkTransientSequencePoint();
+            cg.IL.Emit(OpCodes.Callvirt, delegateType.GetMethod("Invoke"));
+
+            cg.MarkTransientSequencePoint();
+            
+            //
+            return PhpTypeCodeEnum.FromType(returnType);
+        }
+
+
+        #endregion
     }
 }

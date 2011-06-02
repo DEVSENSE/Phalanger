@@ -1449,19 +1449,24 @@ namespace PHP.Core
 		// warning: this EmitName does not emit conversion to string
 		internal void EmitName(string fullName, Expression nameExpr, bool createChain)
 		{
-			Debug.Assert(fullName != null ^ nameExpr != null);
-
-			if (fullName != null)
-			{
-				il.Emit(OpCodes.Ldstr, fullName);
-			}
-			else
-			{
-				if (createChain) ChainBuilder.Create();
-				EmitBoxing(nameExpr.Emit(this));
-				if (createChain) ChainBuilder.End();
-			}
+			EmitName(fullName, nameExpr, createChain, PhpTypeCode.Object);
 		}
+
+        internal void EmitName(string fullName, Expression nameExpr, bool createChain, PhpTypeCode dstType)
+        {
+            Debug.Assert(fullName != null ^ nameExpr != null);
+
+            if (fullName != null)
+            {
+                il.Emit(OpCodes.Ldstr, fullName);
+            }
+            else
+            {
+                if (createChain) ChainBuilder.Create();
+                EmitConversion(nameExpr, dstType);
+                if (createChain) ChainBuilder.End();
+            }
+        }
 
 		/// <summary>
 		/// Emits a call to a routine with specified name using an operator.

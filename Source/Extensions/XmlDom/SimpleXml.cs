@@ -887,7 +887,7 @@ namespace PHP.Library.Xml
 		/// <summary>
 		/// Property isset testing (i.e. child element existence test).
 		/// </summary>
-		protected override object PropertyIssetHandler(string name, DTypeDesc caller, out bool handled)
+		public override object PropertyIssetHandler(string name, DTypeDesc caller, out bool handled)
 		{
 			handled = true;
 

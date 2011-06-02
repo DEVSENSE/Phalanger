@@ -129,7 +129,7 @@ namespace PHP.Library.SPL
 		internal static void __PopulateTypeDesc(PhpTypeDesc typeDesc)
 		{
 			typeDesc.AddMethod("getModifierNames", PhpMemberAttributes.Public | PhpMemberAttributes.Static, getModifierNames);
-			typeDesc.AddMethod("export", PhpMemberAttributes.Public | PhpMemberAttributes.Static, getModifierNames);
+			typeDesc.AddMethod("export", PhpMemberAttributes.Public | PhpMemberAttributes.Static, export);
 		}
 
 		/// <summary>
@@ -168,7 +168,7 @@ namespace PHP.Library.SPL
 		/// 
 		/// </summary>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static object export(PhpStack stack)
+		public static object export(object instance, PhpStack stack)
 		{
 			stack.CalleeName = "export";
 			object arg1 = stack.PeekValue(1);
