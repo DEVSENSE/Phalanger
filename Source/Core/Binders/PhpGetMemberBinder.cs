@@ -185,8 +185,6 @@ namespace PHP.Core.Binders
                                                     Expression.Call(null, notsetOperation.Method, Expression.Convert(target.Expression, Types.DObject[0]), Expression.Constant(fieldName), Expression.Constant(classContext, Types.DTypeDesc[0]), reference))
                                             }),
                                             restrictions);
-
-                                    throw new NotImplementedException();
                                 }
                                 else
                                 {
@@ -407,8 +405,24 @@ namespace PHP.Core.Binders
                 ////    else
                 ////        // PhpArray, string, scalar type:
                 ////        PhpException.VariableMisusedAsObject(var, false);
+                
+                Action<object> error = (var) =>
+                {
+                    if (PhpVariable.IsEmpty(var))
+                        // empty:
+                        PhpException.Throw(PhpError.Notice, CoreResources.GetString("empty_used_as_object"));
+                    else
+                        // PhpArray, string, scalar type:
+                        PhpException.VariableMisusedAsObject(var, false);
+                };
 
-                throw new NotImplementedException("isset() of field of non-object.");                
+                return new DynamicMetaObject(
+                    Expression.Block(this._returnType,
+                        Expression.Call(error.Method, target.Expression),
+                        WantReference ? (Expression)Expression.New(Constructors.PhpReference_Void) : Expression.Constant(null)),
+                    (target.HasValue && target.Value == null) ?
+                        BindingRestrictions.GetInstanceRestriction(target.Expression, null) :
+                        BindingRestrictions.GetTypeRestriction(target.Expression, target.LimitType));
             }
             ////}
             
