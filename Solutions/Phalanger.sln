@@ -59,9 +59,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phalanger.CompilerTask", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testers.Unit", "..\Source\Testing\Unit\Testers.Unit.csproj", "{1F0323F9-DF73-4EE0-A9C1-C59464A96104}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.DynamicLight", "..\Source\Microsoft.DynamicLight\Microsoft.DynamicLight.csproj", "{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 17
+		SccNumberOfProjects = 18
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
@@ -122,6 +124,9 @@ Global
 		SccProjectUniqueName16 = ..\\Source\\Testing\\Unit\\Testers.Unit.csproj
 		SccProjectName16 = ../Source/Testing/Unit
 		SccLocalPath16 = ..\\Source\\Testing\\Unit
+		SccProjectUniqueName17 = ..\\Source\\Microsoft.DynamicLight\\Microsoft.DynamicLight.csproj
+		SccProjectName17 = ../Source/Microsoft.DynamicLight
+		SccLocalPath17 = ..\\Source\\Microsoft.DynamicLight
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -364,6 +369,21 @@ Global
 		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Win32.ActiveCfg = Release|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.DebugNoGac|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.DebugNoGac|Any CPU.Build.0 = Debug|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.DebugNoGac|Win32.ActiveCfg = Debug|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -51,6 +51,7 @@ namespace PHP.Core.Emit
 		public static readonly Type[] ObjectRef = new Type[] { typeof(object).MakeByRefType() };
 		public static readonly Type[] ScriptContext = new Type[] { typeof(PHP.Core.ScriptContext) };
 		public static readonly Type[] PhpReference = new Type[] { typeof(PHP.Core.PhpReference) };
+        public static readonly Type[] PhpSmartReference = new Type[] { typeof(PHP.Core.PhpSmartReference) };
 		public static readonly Type[] ObjectArray = new Type[] { typeof(object[]) };
 		public static readonly Type[] StringArray = new Type[] { typeof(string[]) };
 		public static readonly Type[] PhpReferenceArray = new Type[] { typeof(PhpReference[]) };
@@ -1267,7 +1268,7 @@ namespace PHP.Core.Emit
 	{
 		static PropertyInfo _ImplementsConstantCase, _PhpReference_IsSet, _PhpReference_IsAliased,
           _IDictionaryEnumerator_Key, _IDictionaryEnumerator_Value, _Type_TypeHandle, _DObject_RealObject, _DObject_RealType,
-		  _ClrTypeDesc_Constructor, _ScriptContext_CurrentContext, _Assembly_Location;
+		  _ClrTypeDesc_Constructor, _ScriptContext_CurrentContext, _Assembly_Location , _InsideCaller;
 
 		public static PropertyInfo ImplementsConstantCase { get { if (_ImplementsConstantCase == null) _ImplementsConstantCase = typeof(ImplementsConstantAttribute).GetProperty("CaseInsensitive"); return _ImplementsConstantCase; } }
 		public static PropertyInfo PhpReference_IsSet { get { if (_PhpReference_IsSet == null) _PhpReference_IsSet = typeof(PhpReference).GetProperty("IsSet"); return _PhpReference_IsSet; } }
@@ -1279,7 +1280,9 @@ namespace PHP.Core.Emit
 		public static PropertyInfo Type_TypeHandle { get { if (_Type_TypeHandle == null) _Type_TypeHandle = typeof(System.Type).GetProperty("TypeHandle"); return _Type_TypeHandle; } }
 
 		public static PropertyInfo DObject_RealObject { get { if (_DObject_RealObject == null) _DObject_RealObject = typeof(DObject).GetProperty("RealObject"); return _DObject_RealObject; } }
-        public static PropertyInfo DObject_RealType { get { return DObject_RealType ?? (_DObject_RealType = typeof(DObject).GetProperty("RealType")); } }
+        public static PropertyInfo DObject_RealType { get { return _DObject_RealType ?? (_DObject_RealType = typeof(DObject).GetProperty("RealType")); } }
+        public static PropertyInfo DObject_InsideCaller { get { if (_InsideCaller == null) _InsideCaller = typeof(DObject).GetProperty("insideCaller",BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance); return _InsideCaller; } }
+
         public static PropertyInfo ClrTypeDesc_Constructor { get { if (_ClrTypeDesc_Constructor == null) _ClrTypeDesc_Constructor = typeof(ClrTypeDesc).GetProperty("Constructor"); return _ClrTypeDesc_Constructor; } }
 
 		public static PropertyInfo ScriptContext_CurrentContext { get { if (_ScriptContext_CurrentContext == null) _ScriptContext_CurrentContext = typeof(ScriptContext).GetProperty("CurrentContext"); return _ScriptContext_CurrentContext; } }

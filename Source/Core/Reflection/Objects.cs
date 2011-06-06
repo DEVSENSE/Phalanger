@@ -424,7 +424,7 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// <B>True</B> means there is <c>__call</c> in current call stack (used to prevent caller recursion).
 		/// </summary>
-		internal bool insideCaller/*TODO:(MB) change back to private when IDynamicMetaObjectProvider implemented on DObject*/
+		public bool insideCaller/*TODO:(MB) change back to private when IDynamicMetaObjectProvider implemented on DObject*/
 		{
 			get { return (flags & ObjectFlags.InsideCaller) != 0; }
 			set { if (value) flags |= ObjectFlags.InsideCaller; else flags &= ~ObjectFlags.InsideCaller; }

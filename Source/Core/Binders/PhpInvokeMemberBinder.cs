@@ -8,6 +8,10 @@ using System.Linq.Expressions;
 
 namespace PHP.Core.Binders
 {
+    //TODO:
+    // - PhpStack.PeekReferenceUnchecked do the same, because as an argument I can receive PhpRefence and PhpRuntimeChain
+    // - implement IDynamicMetaObjectProvider for DObject, PhpObject, ClrObject, ClrValue
+
     using PHP.Core.Emit;
 
     /// <summary>
@@ -50,9 +54,18 @@ namespace PHP.Core.Binders
         /// <summary>
         /// Name of the method
         /// </summary>
-        public abstract string ActualMethodName
+        protected abstract string ActualMethodName
         {
             get;
+        }
+
+        public int RealMethodArgumentCount
+        {
+            get
+            {
+                //ScriptContext + generic parameters count + parameters count
+                return 1 + genericParamsCount + paramsCount;
+            }
         }
 
         #endregion
@@ -96,19 +109,22 @@ namespace PHP.Core.Binders
 
         #region Methods
 
-        // CallSite< Func< CallSite, 
-        //      object /*target instance*/,
-        //      ScriptContext, {args}*/*method call arguments*/,
-        //      (DTypeDesc)?/*class context,
-        //      iff <classContext>.IsUnknown*/,
-        //      (object)?/*method name,
-        //      iff <methodName>==null*/, <returnType> > >
-
         /// <summary>
         /// Php ivoke call site signature is non-standard for DLR. If the object implements IDynamicMetaObjectProvider
         /// a call has to be transleted to arguments that can understand. If it's object comming from Phalanger
         /// for now we just fallback to FallbackInvokeMember method.
         /// </summary>
+        /// <remarks>
+        /// 
+        /// CallSite< Func< CallSite, 
+        ///      object /*target instance*/,
+        ///      ScriptContext, {args}*/*method call arguments*/,
+        ///      (DTypeDesc)?/*class context,
+        ///      iff <classContext>.IsUnknown*/,
+        ///      (object)?/*method name,
+        ///      iff <methodName>==null*/, <returnType> > >
+        /// 
+        /// </remarks>
         public override DynamicMetaObject/*!*/ Bind(DynamicMetaObject/*!*/ target, DynamicMetaObject/*!*/[]/*!*/ args)
         {
             Debug.Assert(args.Length > 0);
@@ -120,11 +136,24 @@ namespace PHP.Core.Binders
                 //return target.BindInvokeMember(this,args);
             }
 
+            //target = target.ToPhpDynamicMetaObject();
+
             return FallbackInvokeMember(target, args);
         }
 
 
         protected abstract DynamicMetaObject/*!*/ FallbackInvokeMember(DynamicMetaObject target/*!*/, DynamicMetaObject/*!*/[]/*!*/ args);
+
+
+        protected static DynamicMetaObject[]/*!*/ GetArgumentsRange(DynamicMetaObject/*!*/[]/*!*/ args, int startIndex, int length)
+        {
+            int top = startIndex + length;
+            DynamicMetaObject[] arguments = new DynamicMetaObject[length];
+            for (int i = 0; i < length; ++i)
+                arguments[i] = args[i + startIndex];
+
+            return arguments;
+        }
 
 
         /// <summary>
@@ -144,6 +173,72 @@ namespace PHP.Core.Binders
             return arguments;
         }
 
+        protected static Expression[]/*!*/ PackToExpressions(DynamicMetaObject/*!*/[]/*!*/ args)
+        {
+            return PackToExpressions(args, 0, args.Length);
+        }
+
+
+
+        protected DynamicMetaObject GetRuntimeClassContext(DynamicMetaObject[] args)
+        {
+            if ( args.Length > this.genericParamsCount + this.paramsCount + 1)
+                return args[this.genericParamsCount + this.paramsCount + 1];
+
+            return null;
+        }
+
+        /// <summary>
+        /// Returns ClassContext that was supplied during creation of binder or if it wasn't available that time, it selects it from supplied arguments
+        /// </summary>
+        /// <param name="args">Arguments supplied during run time bind process</param>
+        /// <returns></returns>
+        protected DTypeDesc GetActualClassContext(DynamicMetaObject[] args)
+        {
+            if (this.callerClassContext == null)
+                return null;
+
+            if (!this.callerClassContext.IsUnknown)
+                return this.callerClassContext;
+
+            var dmoClassContext = GetRuntimeClassContext(args);
+            return dmoClassContext != null ? (DTypeDesc)dmoClassContext.Value : null;
+        }
+
+
+        /// <summary>
+        /// Boxes a copy of the result.
+        /// => return PhpVariable.MakeReference(PhpVariable.Copy(result, CopyReason.ReturnedByCopy));
+        /// </summary>
+        /// <param name="result">Result to be boxed</param>
+        protected Expression HandleResult(Expression result)
+        {
+            if (returnType != Types.Void)
+            {
+                result = Expression.Call(Methods.PhpVariable.Copy,
+                                        result,
+                                        Expression.Constant(CopyReason.ReturnedByCopy));
+
+                if (returnType == Types.PhpReference[0])
+                    result = Expression.Call(Methods.PhpVariable.MakeReference, result);
+            }
+            else
+            {
+                //TODO: do nothing or not for a void???
+            }
+            return result;
+        }
+
+
+
+        protected DynamicMetaObject DoAndReturnDefault(Expression rule, BindingRestrictions restrictions)
+        {
+            return new DynamicMetaObject(
+                    Expression.Block(
+                        rule,
+                        returnType == Types.PhpReference[0] ? (Expression)Expression.New(Constructors.PhpReference_Void) : Expression.Constant(null)),
+                    restrictions);
+        }
 
 
         #endregion
@@ -165,21 +260,10 @@ namespace PHP.Core.Binders
         /// <summary>
         /// Name of the method
         /// </summary>
-        public override string ActualMethodName
+        protected override string ActualMethodName
         {
             get { return this.methodName;  }
         }
-
-
-        public int RealMethodArgumentCount
-        {
-            get 
-            { 
-                //ScriptContext + generic parameters count + parameters count
-                return 1 + genericParamsCount + paramsCount; 
-            }
-        }
-
 
         #endregion
 
@@ -191,36 +275,58 @@ namespace PHP.Core.Binders
 
         }
 
+
         #endregion
 
         #region Methods
 
-        protected override DynamicMetaObject/*!*/ FallbackInvokeMember(DynamicMetaObject/*!*/ target, DynamicMetaObject/*!*/[]/*!*/ args)
+        protected override DynamicMetaObject/*!*/ FallbackInvokeMember(DynamicMetaObject target/*!*/, DynamicMetaObject/*!*/[]/*!*/ args)
         {
-            BindingRestrictions restrictions;
             Expression invokeMethodExpr;
 
             DObject obj = target.Value as DObject;// target.Value can be something else which isn't DObject ?
-            ScriptContext scriptContext = args[0].Value as ScriptContext;
-            Expression[] realMethodArgs = PackToExpressions(args, 0, RealMethodArgumentCount);
+
+            WrappedClrDynamicMetaObject wrappedTarget = null;
 
             bool invokeCallMethod = false;
 
+            // Restrictions
+            BindingRestrictions restrictions;
+            BindingRestrictions classContextRestrictions = BindingRestrictions.Empty;
+            BindingRestrictions defaultRestrictions = BindingRestrictions.GetTypeRestriction(target.Expression, target.LimitType);
+
+            DTypeDesc callerClassContext = GetActualClassContext(args);
+            DynamicMetaObject dmoRuntimeClassContext = GetRuntimeClassContext(args);
+
+            if (dmoRuntimeClassContext != null)//ClassContext wasn't supplied during creation of binder => put it into restriction
+            {
+                classContextRestrictions = BindingRestrictions.GetInstanceRestriction(dmoRuntimeClassContext.Expression, dmoRuntimeClassContext.Value);
+                defaultRestrictions.Merge(classContextRestrictions);
+            }
+
             if (obj == null)
             {
-                //TODO: I'll solve this later
-                //if (x != null && Configuration.Application.Compiler.ClrSemantics)
-                //{
-                //    // TODO: some normalizing conversions (PhpString, PhpBytes -> string):
-                //    obj = ClrObject.WrapRealObject(x);
-                //}
-                //else
-                //{
-                //    context.Stack.RemoveFrame();
-                //    PhpException.Throw(PhpError.Error, CoreResources.GetString("method_called_on_non_object", methodName));
-                //    return new PhpReference();
-                //}
+
+                if (target.Value != null && Configuration.Application.Compiler.ClrSemantics)
+                {
+                    // TODO: some normalizing conversions (PhpString, PhpBytes -> string):
+                    target = new WrappedClrDynamicMetaObject(target);
+                    obj = target.Value as DObject;
+
+                    wrappedTarget = target as WrappedClrDynamicMetaObject;
+
+                    Debug.Assert(obj != null);
+
+                }
+                else
+                {
+                    return DoAndReturnDefault(
+                                    BinderHelper.ThrowError("method_called_on_non_object", ActualMethodName),
+                                    defaultRestrictions);
+                }
             }
+
+
 
             // obtain the appropriate method table
             DTypeDesc type_desc = obj.TypeDesc;
@@ -237,9 +343,10 @@ namespace PHP.Core.Binders
 
                 if ((result = type_desc.GetMethod(DObject.SpecialMethodNames.Call, callerClassContext, out method)) == GetMemberResult.NotFound)
                 {
-                    //TODO: Generate Error
-                    Expression.Call(Methods.PhpException.UndefinedMethodCalled, Expression.Constant(obj.TypeName), Expression.Constant(ActualMethodName));
-                    
+                    return DoAndReturnDefault(
+                                    Expression.Call(Methods.PhpException.UndefinedMethodCalled, Expression.Constant(obj.TypeName), Expression.Constant(ActualMethodName)),
+                                    defaultRestrictions
+                                    );// TODO: alter restrictions
                 }
                 else
                 {
@@ -251,46 +358,136 @@ namespace PHP.Core.Binders
             // throw an error if the method was found but the caller is not allowed to call it due to its visibility
             if (result == GetMemberResult.BadVisibility)
             {
-                //stack.RemoveFrame();
-                //TODO: Generate ThrowMethodVisibilityError(method, caller);
-                return null;
+                return DoAndReturnDefault(
+                    BinderHelper.ThrowVisibilityError(method, callerClassContext),
+                    defaultRestrictions);
             }
 
             if (invokeCallMethod)
             {
                 InvokeCallMethod(target, args, obj, method, out restrictions, out invokeMethodExpr);
 
-                return new DynamicMetaObject(invokeMethodExpr, restrictions);
+                return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
 
             }
             else
             {
                 // we are invoking the method
-                
+
                 // PhpObject
-                if (typeof(PhpObject).IsAssignableFrom(target.LimitType))
+                if (Types.PhpObject[0].IsAssignableFrom(target.LimitType))
                 {
-                    InvokePhpMethod(target.Expression, realMethodArgs, (PhpObject)target.Value, method.PhpRoutine, out restrictions, out invokeMethodExpr);
-                    return new DynamicMetaObject(invokeMethodExpr, restrictions);
+                    InvokePhpMethod(target, args, (PhpObject)target.Value, method.PhpRoutine, out restrictions, out invokeMethodExpr);
+                    return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
                 }
                 else
                 //ClrObject
                 if (target.LimitType == typeof(ClrObject))
                 {
-                    //overload resolution
-                }
+                    InvokeClrMethod(new ClrDynamicMetaObject(target), args, method, out restrictions, out invokeMethodExpr);
+
+                    if (wrappedTarget != null)
+                    {
+                        return new DynamicMetaObject(Expression.Block(wrappedTarget.WrapIt(),
+                                                     invokeMethodExpr), wrappedTarget.Restrictions.Merge(classContextRestrictions));
+                    }
+
+                    return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
+                }else
                 //IClrValue
+                if (typeof(IClrValue).IsAssignableFrom(target.LimitType))
+                {
+                    InvokeClrMethod(new ClrValueDynamicMetaObject(target), args, method, out restrictions, out invokeMethodExpr);
+
+                    if (wrappedTarget != null)
+                    {
+                        return new DynamicMetaObject(Expression.Block(wrappedTarget.WrapIt(),
+                                                     invokeMethodExpr), wrappedTarget.Restrictions.Merge(classContextRestrictions));
+                    }
+
+                    return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
+                }
             }
 
             throw new NotImplementedException();
 
         }
 
-        private void InvokeCallMethod(DynamicMetaObject target, DynamicMetaObject/*!*/[] args, DObject/*!*/ obj, DRoutineDesc/*!*/ method, out BindingRestrictions restrictions, out Expression invokeMethodExpr)
+        private void InvokeClrMethod(DynamicMetaObject target, DynamicMetaObject/*!*/[] args, DRoutineDesc method, out BindingRestrictions restrictions, out Expression invokeMethodExpr)
+        {
+            DynamicMetaObject scriptContext = args[0];
+
+            //Select arguments without scriptContext
+            DynamicMetaObject[] realArgs = GetArgumentsRange(args, 1, RealMethodArgumentCount - 1);
+
+            // Convert arguments
+            DynamicMetaObject[] realArgsConverted = Array.ConvertAll<DynamicMetaObject, DynamicMetaObject>(realArgs, (x) =>
+            {
+                return x.ToPhpDynamicMetaObject();
+
+            });
+
+#if DLR_OVERLOAD_RESOLUTION
+
+            //DLR overload resolution
+            DynamicMetaObject res = PhpBinder.Instance.CallClrMethod(method.ClrMethod, target, realArgsConverted);
+            restriction = res.Restriction;
+            invokeMethodExpr = res.Rule;
+
+#else
+            // Old overload resolution
+            InvokeArgLess(target, scriptContext, method, realArgsConverted, out restrictions, out invokeMethodExpr);
+#endif
+        }
+
+
+        private void InvokeArgLess(DynamicMetaObject target, DynamicMetaObject scriptContext, DRoutineDesc method, DynamicMetaObject[] args, out BindingRestrictions restrictions, out Expression invokeMethodExpr)
+        {
+            int argsWithoutScriptContext = RealMethodArgumentCount - 1;
+
+            System.Reflection.MethodInfo miAddFrame = Methods.PhpStack.AddFrame.Overload(argsWithoutScriptContext);
+
+            Expression[] argsExpr = null;
+            if (miAddFrame == Methods.PhpStack.AddFrame.N)
+            {
+                //Create array of arguments
+                argsExpr = new Expression[1];
+                argsExpr[0] = Expression.NewArrayInit(Types.Object[0], PackToExpressions(args, 0, argsWithoutScriptContext));
+            }
+            else
+            {
+                //call overload with < N arguments
+                //argsExpr = new Expression[argsWithoutScriptContext];
+                argsExpr = PackToExpressions(args, 0, argsWithoutScriptContext);
+            }
+
+            var stack = Expression.Field(scriptContext.Expression,
+                                            Fields.ScriptContext_Stack);
+
+            // scriptContext.PhpStack
+            // PhpStack.Add( args )
+            // call argless stub
+            invokeMethodExpr = Expression.Block(returnType,
+                                    Expression.Call(
+                                        stack,
+                                        miAddFrame, argsExpr),
+                                    HandleResult(Expression.Call(Expression.Constant(method.ArglessStub, typeof(RoutineDelegate)), "Invoke", Type.EmptyTypes,
+                                        target.Expression,
+                                        stack)));
+
+            restrictions = target.Restrictions;
+        }
+
+        private void InvokeCallMethod(DynamicMetaObject target,
+            DynamicMetaObject/*!*/[] args,
+            DObject/*!*/ obj,
+            DRoutineDesc/*!*/ method,
+            out BindingRestrictions restrictions,
+            out Expression invokeMethodExpr)
         {
             var insideCaller = Expression.Property(
                                         Expression.Convert(target.Expression, Types.DObject[0]),
-                                         "insideCaller");
+                                         Properties.DObject_InsideCaller);
 
             if (argsArrayVariable == null)
                 argsArrayVariable = Expression.Parameter(Types.PhpArray[0], "args");
@@ -307,8 +504,11 @@ namespace PHP.Core.Binders
             var initArgsArray = Array.ConvertAll<Expression, Expression>(justParams, (x) => Expression.Call(argsArrayVariable, Methods.PhpHashtable_Add, x));
 
             // Argfull __call signature: (ScriptContext, object, object)->object
-            var callerMethodArgs = new Expression[3] { args[0].Expression, Expression.Constant(ActualMethodName), argsArrayVariable };
-            InvokePhpMethod(target.Expression, callerMethodArgs, (PhpObject)target.Value, method.PhpRoutine, out restrictions, out invokeMethodExpr);
+            var callerMethodArgs = new DynamicMetaObject[3] {   args[0], 
+                                                                new DynamicMetaObject(Expression.Constant(ActualMethodName),BindingRestrictions.Empty),
+                                                                new DynamicMetaObject(argsArrayVariable, BindingRestrictions.Empty) };
+            // what if method.PhpRoutine is null 
+            InvokePhpMethod(target, callerMethodArgs, (PhpObject)target.Value, method.PhpRoutine, out restrictions, out invokeMethodExpr);
 
 
             //Expression:
@@ -337,7 +537,7 @@ namespace PHP.Core.Binders
                 vars,//local variables
                 Expression.IfThen(Expression.Property(
                                         Expression.Convert(target.Expression, Types.DObject[0]),
-                                        "insideCaller"),
+                                        Properties.DObject_InsideCaller),
                                   Expression.Call(Methods.PhpException.UndefinedMethodCalled, Expression.Constant(obj.TypeName), Expression.Constant(ActualMethodName))),
 
                 Expression.Assign(
@@ -347,7 +547,6 @@ namespace PHP.Core.Binders
                                             Expression.Constant(0))),
                     
                                 ((initArgsArray.Length == 0) ?  (Expression)Expression.Empty() : Expression.Block(initArgsArray)),
-
 
                                 Expression.Assign(insideCaller,
                                                 Expression.Constant(true)),
@@ -361,6 +560,7 @@ namespace PHP.Core.Binders
                                 retValVariable);
         }
 
+
         /// <summary>
         /// This method binds rules for PhpMethod
         /// </summary>
@@ -369,54 +569,46 @@ namespace PHP.Core.Binders
         /// <param name="targetObj"></param>
         /// <param name="routine"></param>
         /// <returns></returns>
-        private void InvokePhpMethod(Expression/*!*/ target, Expression/*!*/[]/*!*/ args, PhpObject/*!*/ targetObj, PhpRoutine/*!*/ routine , out BindingRestrictions restrictions, out Expression result)
+        private void InvokePhpMethod(DynamicMetaObject/*!*/ target, DynamicMetaObject/*!*/[]/*!*/ args, PhpObject/*!*/ targetObj, PhpRoutine/*!*/ routine, out BindingRestrictions restrictions, out Expression invokeMethodExpr)
         {
-
             // Restriction: typeof(target) == |target.TypeDesc.RealType|
-            restrictions = BindingRestrictions.GetTypeRestriction(target, targetObj.TypeDesc.RealType);
+            restrictions = BindingRestrictions.GetTypeRestriction(target.Expression, targetObj.TypeDesc.RealType); //TODO: it's sufficient to use typeof(targetObj), but this is faster                                                                                                                                                                
+
+            if (routine.Name != PHP.Core.Reflection.DObject.SpecialMethodNames.Call)
+            {
+                args = GetArgumentsRange(args, 0, RealMethodArgumentCount);// This can't be done when _call method is invoked
+
+                //Check if method signature match calling signature or if method has ArgAware attribute
+                if (((1 + RealMethodArgumentCount) != routine.Signature.ParamCount ||
+                    (routine.Properties & RoutineProperties.IsArgsAware) != 0))
+                {
+                    DynamicMetaObject scriptContext = args[0];
+
+                    //Select arguments without scriptContext
+                    DynamicMetaObject[] realArgs = GetArgumentsRange(args, 1, RealMethodArgumentCount - 1);
+
+                    InvokeArgLess(target, scriptContext, routine.RoutineDesc, realArgs, out restrictions, out invokeMethodExpr);
+                    return;
+                }
+            }
 
             //((PhpObject)target))
-            var realObjEx = Expression.Convert(target, targetObj.TypeDesc.RealType);
+            var realObjEx = Expression.Convert(target.Expression, targetObj.TypeDesc.RealType);
 
             //ArgFull( ((PhpObject)target), ScriptContext, args, ... )
-            result = Expression.Call(realObjEx,
+            invokeMethodExpr = Expression.Call(realObjEx,
                                      routine.ArgFullInfo,
-                                     args);
+                                     PackToExpressions(args));
 
-            // boxes a copy of the result:
-            // return PhpVariable.MakeReference(PhpVariable.Copy(result, CopyReason.ReturnedByCopy));
-
-            if (returnType != Types.Void)
-            {
-                result = Expression.Call(Methods.PhpVariable.Copy,
-                                        result,
-                                        Expression.Constant(CopyReason.ReturnedByCopy));
-
-                if (returnType == Types.PhpReference[0])
-                    result = Expression.Call(Methods.PhpVariable.MakeReference, result);
-            }
-            else
-            {
-                //TODO: do nothing or not???
-            }
+            invokeMethodExpr = HandleResult(invokeMethodExpr);
 
         }
 
         #endregion
 
-
-        //DynamicMetaObject self = target.Restrict(target.GetLimitType());
-        //BindingRestrictions restrictions = self.Restrictions;
-        //foreach (DynamicMetaObject arg in args)
-        //    restrictions = restrictions.Merge(arg.Restrictions);
-
-        //// return DynamicMetaObject
-        //return new DynamicMetaObject(resultExpr, restrictions);
-
-
     }
 
-
+    #region PhpIndirectInvokeMemberBinder
 
     public sealed class PhpIndirectInvokeMemberBinder : PhpInvokeMemberBinder
     {
@@ -435,7 +627,7 @@ namespace PHP.Core.Binders
         /// <remarks>
         /// Can change in the begining of the each binding
         /// </remarks>
-        public override string ActualMethodName
+        protected override string ActualMethodName
         {
             get { return this.actualMethodName; }
         }
@@ -454,32 +646,42 @@ namespace PHP.Core.Binders
 
         #region Methods
 
-        protected override DynamicMetaObject/*!*/ FallbackInvokeMember(DynamicMetaObject target, DynamicMetaObject[] args)
+        /// <summary>
+        /// Returns methodName from Args
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        protected DynamicMetaObject GetRuntimeMethodName(DynamicMetaObject[] args)
         {
-            //args[0] ScriptContext
-            //args[1..genericParamsCount-1]  Type
-            //args[1 + genericParamsCount.. 1 + genericParamsCount + paramsCount -1]  object
-            //args[1 + genericParamsCount + paramsCount ] callContext?
-            //args[1|2 + genericParamsCount + paramsCount ] methodName
+            if (args.Length == this.genericParamsCount + this.paramsCount + 3) // args contains ClassContext 
+                return args[this.genericParamsCount + this.paramsCount + 2];
+            else if (args.Length == this.genericParamsCount + this.paramsCount + 2)
+                return args[this.genericParamsCount + this.paramsCount + 1];
+
+            throw new InvalidOperationException();
+        }
 
 
-            DynamicMetaObject dmoMethodName;
-
-            if (args.Length == genericParamsCount + paramsCount + 3) // args contains ClassContext 
-                dmoMethodName = args[genericParamsCount + paramsCount + 2];
-            else
-                dmoMethodName = args[genericParamsCount + paramsCount + 1];
+        protected override DynamicMetaObject/*!*/ FallbackInvokeMember(
+            DynamicMetaObject target, 
+            DynamicMetaObject[] args)
+        {
+            DynamicMetaObject dmoMethodName = GetRuntimeMethodName(args);
 
             string name = PhpVariable.AsString(dmoMethodName.Value);
             if (name == null)
             {
-                //TODO generate PhpException.Throw(PhpError.Error, CoreResources.GetString("invalid_method_name"));
-                //return new PhpReference();
+                //PhpException.Throw(PhpError.Error, CoreResources.GetString("invalid_method_name"));
+                //return new PhpReference() | null;
+
+                return DoAndReturnDefault(
+                                BinderHelper.ThrowError("invalid_method_name"),
+                                target.Restrictions);
 
                 throw new NotImplementedException();
             }
             else
-            {             
+            {
                 // Restriction: PhpVariable.AsString(methodName) == |methodName|
                 BindingRestrictions restrictions = BindingRestrictions.GetExpressionRestriction(
                                     Expression.Equal(
@@ -499,5 +701,7 @@ namespace PHP.Core.Binders
 
         #endregion
     }
+
+    #endregion
 
 }

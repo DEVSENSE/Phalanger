@@ -5,6 +5,7 @@ using System.Text;
 using PHP.Core.Reflection;
 using System.Linq.Expressions;
 using PHP.Core.Emit;
+using System.Dynamic;
 
 
 namespace PHP.Core.Binders
@@ -138,5 +139,14 @@ namespace PHP.Core.Binders
         }
 
         #endregion
+
+        public static BindingRestrictions ValueTypeRestriction( this DynamicMetaObject target)
+        {
+            return (target.HasValue && target.Value == null) ?
+                        BindingRestrictions.GetInstanceRestriction(target.Expression, null) :
+                        BindingRestrictions.GetTypeRestriction(target.Expression, target.LimitType);
+        }
+
+
     }
 }

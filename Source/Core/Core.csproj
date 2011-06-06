@@ -141,9 +141,12 @@
     </Compile>
     <Compile Include="Binders\Binder.cs" />
     <Compile Include="Binders\BinderHelper.cs" />
+    <Compile Include="Binders\PhpDynamicMetaObjects.cs" />
     <Compile Include="Binders\PhpGetMemberBinder.cs" />
+    <Compile Include="Binders\PhpBinder.cs" />
     <Compile Include="Binders\PhpInvokeBinderKey.cs" />
     <Compile Include="Binders\PhpInvokeMemberBinder.cs" />
+    <Compile Include="Binders\PhpOverloadResolver.cs" />
     <Compile Include="CodeDom\CodeProvider.CLR.cs">
       <SubType>Component</SubType>
     </Compile>
