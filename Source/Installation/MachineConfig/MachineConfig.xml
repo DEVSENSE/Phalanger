@@ -36,7 +36,6 @@
       <add assembly="PhpNetClassLibrary, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb" section="bcl" />
       
       <add assembly="PhpNetXmlDom, Version=2.1.0.0, Culture=neutral, PublicKeyToken=2771987119c16a03" section="dom" />
-      <add assembly="PhpNetMemcached, Version=2.1.0.0,Culture=Neutral,PublicKeyToken=2771987119c16a03" section="memcached" />
       
       <!--
       <add assembly="php_calendar.mng, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4ef6ed87c53048a3" section="calendar" />

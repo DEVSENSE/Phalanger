@@ -100,7 +100,7 @@ HRESULT CBootstrapperDlg::OnLinkFw(IHTMLElement* pElement)
 
 HRESULT CBootstrapperDlg::OnLinkCore(IHTMLElement* pElement)
 {
-	Launch("Setup\\Phalanger.msi");
+	Launch("Setup\\setup.exe");
 	return -1;
 }
 

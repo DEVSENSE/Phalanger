@@ -6,6 +6,5 @@ gacutil -f -i PhpNetCore.dll
 gacutil -f -i PhpNetClassLibrary.dll
 gacutil -f -i PhpNetMsSql.dll
 gacutil -f -i PhpNetXmlDom.dll
-REM gacutil -f -i PhpNetMbstring.dll
 gacutil -f -i php4ts.dll
 gacutil -f -i php5ts.dll
