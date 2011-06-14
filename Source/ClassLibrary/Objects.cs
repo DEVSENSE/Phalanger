@@ -544,6 +544,7 @@ namespace PHP.Library
 		/// </remarks>
 		[ImplementsFunction("get_parent_class", FunctionImplOptions.NeedsClassContext)]
 		[return: CastToFalse]
+        [PureFunction(typeof(PhpObjects), "GetParentClass_Analyze")]
 		public static string GetParentClass(DTypeDesc caller, object classNameOrObject)
 		{
 			ScriptContext context = ScriptContext.CurrentContext;
@@ -553,6 +554,30 @@ namespace PHP.Library
 			DTypeDesc parent_type = type.Base;
 			return (parent_type == null ? null : parent_type.MakeFullName());
 		}
+
+        #region analyzer of get_parent_class
+
+        public static string GetParentClass_Analyze(Analyzer analyzer, string name)
+        {
+            QualifiedName? alias;
+
+            DType type = analyzer.SourceUnit.ResolveTypeName(
+                new QualifiedName(new Name(name)),
+                analyzer.CurrentScope,
+                out alias,
+                null,
+                PHP.Core.Parsers.Position.Invalid,
+                false);
+
+            if (type == null || type.IsUnknown)
+                throw new ArgumentException();  // type is not known at the compilation time. However it can be defined at the runtime (dynamic include, script library, etc).
+
+            // type is definitely known the the compilation time
+            var parent_type = type.Base;
+            return (parent_type == null ? null : parent_type.FullName);
+        }
+
+        #endregion
 
 		/// <summary>
 		/// Tests whether <paramref name="obj"/>'s class is derived from a class given by <paramref name="className"/>.
