@@ -63,6 +63,8 @@ namespace PHP.Core.AST
 			Statistics.AST.AddNode("IncDecEx");
 			Debug.Assert(access == AccessType.Read || access == AccessType.None);
 
+            AccessType old_selector = codeGenerator.AccessSelector;
+
 			PhpTypeCode returned_typecode = PhpTypeCode.Void;
 
 			codeGenerator.AccessSelector = AccessType.Write;
@@ -120,7 +122,7 @@ namespace PHP.Core.AST
 			{
 				variable.EmitAssign(codeGenerator);
 			}
-			codeGenerator.AccessSelector = AccessType.None;
+            codeGenerator.AccessSelector = old_selector;
 
 			codeGenerator.ChainBuilder.End();
 
