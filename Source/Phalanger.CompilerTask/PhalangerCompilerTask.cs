@@ -151,6 +151,8 @@ namespace PHP.VisualStudio.PhalangerTasks
 					break;
 
 				case "webapp":
+                    ps.Target = ApplicationCompiler.Targets.Web;
+                    assembly_extension = ".dll";
 					// TODO: precompile option
 					return true;
 
@@ -364,6 +366,8 @@ namespace PHP.VisualStudio.PhalangerTasks
 			{
 				ps.DisableWarningNumbers = ArrayUtils.EmptyIntegers;
 			}
+
+            ps.EnableWarnings |= WarningGroups.DeferredToRuntime;   // enable deferred to runtime warnings
 
             // compile
 
