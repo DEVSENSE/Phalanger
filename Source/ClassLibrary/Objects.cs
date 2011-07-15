@@ -557,6 +557,7 @@ namespace PHP.Library
 
         #region analyzer of get_parent_class
 
+        [return: CastToFalse]
         public static string GetParentClass_Analyze(Analyzer analyzer, string name)
         {
             QualifiedName? alias;
