@@ -26,14 +26,14 @@ namespace PHP.Core.Compiler.CodeGenerator
         private readonly ModuleBuilder/*!*/moduleBuilder;
 
         /// <summary>
-        /// The name used to identify the call sites container. It consists of location identifier.
+        /// User-friendly call site container name.
         /// </summary>
-        private readonly string/*!*/containerClassName;
+        private readonly string/*!*/userFriendlyName;
 
         /// <summary>
         /// The unique id to name the container class.
         /// </summary>
-        private static int nextContainerId = 0;
+        private static long nextContainerId = 0;
 
         /// <summary>
         /// Lazily initialized class contained static instances of declared call sites.
@@ -54,7 +54,7 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// <summary>
         /// Amount of emitted call sites. Used to build unique call site field name.
         /// </summary>
-        private int callSitesCount = 0;
+        private long callSitesCount = 0;
 
         #endregion
 
@@ -70,8 +70,8 @@ namespace PHP.Core.Compiler.CodeGenerator
         {
             Debug.Assert(moduleBuilder != null && userFriendlyName != null);
 
+            this.userFriendlyName = userFriendlyName;
             this.moduleBuilder = moduleBuilder;
-            this.containerClassName = string.Format("<{0}>o_Sitescontainer#{1}", userFriendlyName.Replace('.','_'), System.Threading.Interlocked.Increment(ref nextContainerId));
             this.classContextPlace = classContextPlace;
         }
 
@@ -89,6 +89,7 @@ namespace PHP.Core.Compiler.CodeGenerator
             {
                 Debug.Assert(staticCtorEmitter == null);
 
+                var containerClassName = string.Format("<{0}>o_Sitescontainer'{1}", this.userFriendlyName.Replace('.', '_'), System.Threading.Interlocked.Increment(ref nextContainerId));
                 containerClass = moduleBuilder.DefineType(containerClassName, TypeAttributes.Sealed | TypeAttributes.Class | TypeAttributes.NotPublic | TypeAttributes.Abstract);
                 staticCtorEmitter = new ILEmitter(containerClass.DefineTypeInitializer());
             }
@@ -128,7 +129,7 @@ namespace PHP.Core.Compiler.CodeGenerator
         {
             Debug.Assert(userFriendlyName != null && delegateType != null && binderInstanceEmitter != null);
 
-            userFriendlyName += ('#' + (callSitesCount++));
+            userFriendlyName += ("'" + (callSitesCount++));
 
             // call sites container 
             var type = EnsureContainer();
@@ -211,7 +212,7 @@ namespace PHP.Core.Compiler.CodeGenerator
             var delegateType = System.Linq.Expressions.Expression.GetDelegateType(delegateTypeArgs);
 
             //
-            var field = DefineCallSite(string.Format("call<{0}>", methodFullName ?? "$"), delegateType, (il) =>
+            var field = DefineCallSite(string.Format("call_{0}", methodFullName ?? "$"), delegateType, (il) =>
             {
                 // <LOAD> Binder.{MethodCall|StaticMethodCall}( methodFullName, genericParamsCount, paramsCount, classContext, <returnType> )
                 if (methodFullName != null) il.Emit(OpCodes.Ldstr, methodFullName); else il.Emit(OpCodes.Ldnull);
@@ -387,7 +388,7 @@ namespace PHP.Core.Compiler.CodeGenerator
             var delegateType = System.Linq.Expressions.Expression.GetDelegateType(delegateTypeArgs);
 
             //
-            var field = DefineCallSite(string.Format("get<{0}>", fieldName ?? "$"), delegateType, (il) =>
+            var field = DefineCallSite(string.Format("get{0}_{1}", wantRef ? "ref" : string.Empty, fieldName ?? "$"), delegateType, (il) =>
             {
                 // <LOAD> Binder.{GetProperty|GetStaticProperty}( fieldName, classContext, issetSemantics, <returnType> )
                 if (fieldName != null) il.Emit(OpCodes.Ldstr, fieldName); else il.Emit(OpCodes.Ldnull);

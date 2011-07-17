@@ -133,7 +133,7 @@ namespace PHP.Core.Binders
                                 getter = Expression.Property(Expression.Convert(target.Expression, realType), realProperty);
 
 
-                            if (getter.Type == Types.PhpReference[0])
+                            if (Types.PhpReference[0].IsAssignableFrom(getter.Type))
                             {
                                 var reference = Expression.Variable(Types.PhpReference[0]);
                                 var assignment = Expression.Assign(reference, getter);

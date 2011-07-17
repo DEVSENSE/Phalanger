@@ -133,7 +133,7 @@ namespace PHP.Core.Binders
 
             if (obj is ClrObject)
             {
-                // (<realType>)((DObject)target).RealObject:
+                // (<realType>)((DObject)target).RealObject: // TODO: access ClrObject.realObject directly
                 return Expression.Convert(
                     Expression.Property(Expression.Convert(target.Expression, Types.DObject[0]), Properties.DObject_RealObject),
                     realType);
