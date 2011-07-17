@@ -5,6 +5,7 @@ using System.Text;
 using System.Dynamic;
 using PHP.Core.Reflection;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace PHP.Core.Binders
 {
@@ -116,15 +117,26 @@ namespace PHP.Core.Binders
                         ////object value = property.Get(this);
                         ////PhpReference reference = value as PhpReference;
 
-                        if (property.Property is PhpField)
+                        if (property.Member is PhpField || property.Member is PhpVisibleProperty)
                         {
                             var realType = property.DeclaringType.RealType;
-                            var realField = property.PhpField.RealField;
+                            FieldInfo realField = (property.Member is PhpField) ? property.PhpField.RealField : null;
+                            PropertyInfo realProperty = (property.Member is PhpVisibleProperty) ? ((PhpVisibleProperty)property.Member).RealProperty : null;
 
-                            if (realField.FieldType == Types.PhpReference[0])
+                            Debug.Assert(realField != null ^ realProperty != null);
+
+                            MemberExpression getter = null;
+
+                            if (realField != null)
+                                getter = Expression.Field(Expression.Convert(target.Expression, realType), realField);
+                            else if (realProperty != null)
+                                getter = Expression.Property(Expression.Convert(target.Expression, realType), realProperty);
+
+
+                            if (getter.Type == Types.PhpReference[0])
                             {
                                 var reference = Expression.Variable(Types.PhpReference[0]);
-                                var assignment = Expression.Assign(reference, Expression.Field(Expression.Convert(target.Expression, realType), realField));
+                                var assignment = Expression.Assign(reference, getter);
 
                                 if (WantReference)
                                 {
@@ -228,18 +240,18 @@ namespace PHP.Core.Binders
                                 if (WantReference)
                                 {
                                     return new DynamicMetaObject(
-                                        Expression.New(Constructors.PhpReference_Object, Expression.Convert(Expression.Field(Expression.Convert(target.Expression, realType), realField), Types.Object[0])),
+                                        Expression.New(Constructors.PhpReference_Object, Expression.Convert(getter, Types.Object[0])),
                                         restrictions);
                                 }
                                 else
                                 {
                                     return new DynamicMetaObject(
-                                        Expression.Call(Methods.PhpVariable.Dereference, Expression.Convert(Expression.Field(Expression.Convert(target.Expression, realType), realField), Types.Object[0])),
+                                        Expression.Call(Methods.PhpVariable.Dereference, Expression.Convert(getter, Types.Object[0])),
                                         restrictions);
                                 }
                             }
                         }
-                        else if (property.Property is ClrProperty)
+                        else if (property.Member is ClrProperty)
                         {
                             var realType = property.DeclaringType.RealType;
                             var realProperty = property.ClrProperty.RealProperty;
@@ -249,7 +261,7 @@ namespace PHP.Core.Binders
                                             BinderHelper.ClrObjectWrapDynamic(
                                                 Expression.Property(
                                                     Expression.Convert(
-                                                        Expression.Property(Expression.Convert(target.Expression, Types.DObject[0]), Properties.DObject_RealObject),
+                                                        Expression.Property(Expression.Convert(target.Expression, Types.DObject[0]), Properties.DObject_RealObject),// TODO: ClrValue<>.realValue
                                                         realType),
                                                     realProperty)),
                                             Types.Object[0]);
@@ -258,7 +270,7 @@ namespace PHP.Core.Binders
 
                             return new DynamicMetaObject(value, restrictions);
                         }
-                        else if (property.Property is ClrField)
+                        else if (property.Member is ClrField)
                         {
                             var realType = property.DeclaringType.RealType;
                             var realField = property.ClrField.FieldInfo;
@@ -268,7 +280,7 @@ namespace PHP.Core.Binders
                                             BinderHelper.ClrObjectWrapDynamic(
                                             Expression.Field(
                                                 Expression.Convert(
-                                                    Expression.Property(Expression.Convert(target.Expression, Types.DObject[0]), Properties.DObject_RealObject),
+                                                    Expression.Property(Expression.Convert(target.Expression, Types.DObject[0]), Properties.DObject_RealObject),// TODO: ClrValue<>.realValue
                                                     realType),
                                                 realField)),
                                             Types.Object[0]);

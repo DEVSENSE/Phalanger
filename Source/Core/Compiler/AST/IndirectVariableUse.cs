@@ -164,13 +164,13 @@ namespace PHP.Core.AST
 				codeGenerator.ChainBuilder.Create();
 				codeGenerator.ChainBuilder.Begin();
 
-                codeGenerator.ChainBuilder.Lengthen(); // for hop over ->
-                PhpTypeCode result = isMemberOf.Emit(codeGenerator);
-                codeGenerator.ChainBuilder.EmitGetProperty(this);
-                //var result = codeGenerator.CallSitesBuilder.EmitGetProperty(
-                //    codeGenerator, false,
-                //    isMemberOf, null, null, null, this.varNameEx,
-                //    codeGenerator.ChainBuilder.QuietRead);
+                //codeGenerator.ChainBuilder.Lengthen(); // for hop over ->
+                //PhpTypeCode result = isMemberOf.Emit(codeGenerator);
+                //codeGenerator.ChainBuilder.EmitGetProperty(this);
+                var result = codeGenerator.CallSitesBuilder.EmitGetProperty(
+                    codeGenerator, false,
+                    isMemberOf, null, null, null, this.varNameEx,
+                    codeGenerator.ChainBuilder.QuietRead);
                 
                 codeGenerator.ChainBuilder.End();
 				return result;

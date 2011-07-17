@@ -2538,18 +2538,42 @@ namespace PHP.Core.Reflection
                 // get all real properties (fields and constants are exported to properties)
                 Dictionary<string, PropertyInfo> real_properties = new Dictionary<string, PropertyInfo>();
 
+                int fields_created = 0, constants_created = 0;
+
                 // faster than GetProperties
                 RealType.FindMembers(
                     MemberTypes.Property,
                     MembersReflectionBindingFlags,
                     delegate(MemberInfo m, object _)
                     {
-                        real_properties[m.Name] = (PropertyInfo)m;
+                        var info = (PropertyInfo)m;
+
+                        if (PhpVisibleAttribute.Reflect(info) != null)
+                        {
+                            // currently reflected just because of XmlDom extension, properties are not static and public
+
+                            var name = new VariableName(info.Name.TrimEnd('#'));
+                            DPropertyDesc property_desc;
+                            if (properties.TryGetValue(name, out property_desc))
+                                return false;
+
+                            // create DPropertyDesc
+                            property_desc = new DPhpFieldDesc(this, PhpMemberAttributes.Public);
+                            properties.Add(name, property_desc);
+
+                            // remember PropertyInfo
+                            property_desc.Member = new PhpVisibleProperty(name, property_desc, info);
+
+                            fields_created++;
+                        }
+                        else
+                        {
+                            // checked later as an exported property
+                            real_properties[m.Name] = info;
+                        }
                         return false;
                     },
                     null);
-
-                int fields_created = 0, constants_created = 0;
 
                 // faster than GetFields
                 RealType.FindMembers(
@@ -2854,7 +2878,7 @@ namespace PHP.Core.Reflection
 		/// <returns><B>True</B> if this instance was successfully populated, <B>false</B> otherwise.</returns>
 		private bool AutoPopulateNoLock()
 		{
-            //return false; // (JM) we really need to reflect it; to get MethodInfo or aglesses and argfulls (can be done through the metadata token, but it is the same)
+            return false; // (JM) we really need to reflect it; to get MethodInfo or aglesses and argfulls (can be done through the metadata token, but it is the same)
             if (RealType == null || hasNoPopulateMethod) return false;
 
             if (methods == null)

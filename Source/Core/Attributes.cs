@@ -650,6 +650,12 @@ namespace PHP.Core
 		public PhpVisibleAttribute()
 		{
 		}
+
+        internal static PhpVisibleAttribute Reflect(MemberInfo/*!*/ info)
+        {
+            object[] attributes = info.GetCustomAttributes(typeof(PhpVisibleAttribute), false);
+            return (attributes.Length == 1) ? (PhpVisibleAttribute)attributes[0] : null;
+        }
 	}
 
 	/// <summary>

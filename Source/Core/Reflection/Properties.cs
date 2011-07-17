@@ -396,7 +396,7 @@ namespace PHP.Core.Reflection
 
 		#endregion
 
-		#region Emission
+		#region Emission (runtime getter/setter stubs)
 
 		protected override GetterDelegate GenerateGetterStub()
 		{
@@ -407,7 +407,14 @@ namespace PHP.Core.Reflection
 				Types.Object[0], Types.Object, this.declaringType.RealType, true);
 #endif
 
-			PhpFieldBuilder.EmitGetterStub(new ILEmitter(stub), PhpField.RealField, declaringType.RealType);
+            Debug.Assert(Member != null, "Populated field does not have a member!");
+
+            if (this.Member is PhpField)
+                PhpFieldBuilder.EmitGetterStub(new ILEmitter(stub), PhpField.RealField, declaringType.RealType);
+            else if (this.Member is PhpVisibleProperty)
+                PhpFieldBuilder.EmitGetterStub(new ILEmitter(stub), ((PhpVisibleProperty)Member).RealProperty, declaringType.RealType);
+            else
+                throw new NotImplementedException();
 
 			return (GetterDelegate)stub.CreateDelegate(typeof(GetterDelegate));
 		}
@@ -417,7 +424,14 @@ namespace PHP.Core.Reflection
 			DynamicMethod stub = new DynamicMethod("<^SetterStub>", PhpFunctionUtils.DynamicStubAttributes, CallingConventions.Standard,
 				Types.Void, Types.Object_Object, this.declaringType.RealType, true);
 
-			PhpFieldBuilder.EmitSetterStub(new ILEmitter(stub), PhpField.RealField, declaringType.RealType);
+            Debug.Assert(Member != null, "Populated field does not have a member!");
+
+            if (this.Member is PhpField)
+			    PhpFieldBuilder.EmitSetterStub(new ILEmitter(stub), PhpField.RealField, declaringType.RealType);
+            else if (this.Member is PhpVisibleProperty)
+                PhpFieldBuilder.EmitSetterStub(new ILEmitter(stub), ((PhpVisibleProperty)Member).RealProperty, declaringType.RealType);
+            else
+                throw new NotImplementedException();
 
 			return (SetterDelegate)stub.CreateDelegate(typeof(SetterDelegate));
 		}
@@ -649,7 +663,7 @@ namespace PHP.Core.Reflection
 
 	#endregion
 
-	#region PhpField, PhpFieldBuilder
+	#region PhpField, PhpFieldBuilder, PhpVisibleProperty
 
 	public sealed class PhpField : KnownProperty, IPhpMember
 	{
@@ -1192,7 +1206,227 @@ namespace PHP.Core.Reflection
 			}
 			il.Emit(OpCodes.Ret);
 		}
+
+        internal static void EmitGetterStub(ILEmitter/*!*/ il, PropertyInfo/*!*/ propertyInfo, Type/*!*/ declaringType)
+        {
+            var getter = propertyInfo.GetGetMethod(/*false*/);
+
+            if (getter == null)
+            {
+                il.Emit(OpCodes.Ldstr, declaringType.Name);
+                il.Emit(OpCodes.Ldstr, "get_" + propertyInfo.Name);
+                il.Emit(OpCodes.Call, Methods.PhpException.UndefinedMethodCalled);
+                il.Emit(OpCodes.Ldnull);
+
+                il.Emit(OpCodes.Ret);
+                return;
+            }
+
+            if (getter.IsStatic)
+            {
+                // [ return getter() ]
+                il.Emit(OpCodes.Call, getter);
+            }
+            else
+            {
+                // [ return ((self)<instance>).getter() ]
+                il.Ldarg(0);
+                il.Emit(OpCodes.Castclass, declaringType);
+                il.Emit(OpCodes.Call, getter);
+            }
+
+            // box
+            il.EmitBoxing(PhpTypeCodeEnum.FromType(getter.ReturnType));
+
+            //
+            il.Emit(OpCodes.Ret);
+        }
+
+        internal static void EmitSetterStub(ILEmitter/*!*/ il, PropertyInfo/*!*/ propertyInfo, Type/*!*/ declaringType)
+        {
+            var setter = propertyInfo.GetSetMethod(/*false*/);
+
+            if (setter == null)
+            {
+                il.Emit(OpCodes.Ldstr, declaringType.Name);
+                il.Emit(OpCodes.Ldstr, "set_" + propertyInfo.Name);
+                il.Emit(OpCodes.Call, Methods.PhpException.UndefinedMethodCalled);
+                
+                il.Emit(OpCodes.Ret);
+                return;
+            }
+
+            var parameters = setter.GetParameters();
+            Debug.Assert(parameters.Length == 1 /*&& parameters[0].ParameterType == Types.PhpReference[0]*/);
+
+            if (!setter.IsStatic)
+            {
+                // [ ((self)<instance>). ]
+                il.Ldarg(0);
+                il.Emit(OpCodes.Castclass, declaringType);
+            }
+            
+            // [ setter((object)value) ]
+            il.Ldarg(1);
+            il.Emit(OpCodes.Castclass, parameters[0].ParameterType);
+            il.Emit(OpCodes.Call, setter);
+            
+            //
+            il.Emit(OpCodes.Ret);
+        }
 	}
+
+    /// <summary>
+    /// Used by full reflection for class properties marked with [PhpVisible] attribute.
+    /// </summary>
+    public sealed class PhpVisibleProperty : KnownProperty
+    {
+        #region Fields and Properties
+
+        public override bool IsIdentityDefinite { get { return true; } }
+        public override MemberInfo RealMember { get { return realProperty; } }
+
+        public PropertyInfo/*!*/RealProperty { get { return realProperty; } }
+        private PropertyInfo/*!*/realProperty;
+
+        #endregion
+
+        #region Construction
+
+        /// <summary>
+        /// Used by full reflection.
+        /// </summary>
+        public PhpVisibleProperty(VariableName name, DPropertyDesc/*!*/ fieldDesc, PropertyInfo/*!*/ propertyInfo)
+            : base(fieldDesc, name)
+        {
+            Debug.Assert(fieldDesc is DPhpFieldDesc);
+            Debug.Assert(propertyInfo != null);
+
+            this.realProperty = propertyInfo;
+        }
+
+        #endregion
+
+        #region Emission (during compilation)
+
+        /// <summary>
+        /// Emit (stack_top dup).IsAliased = true;
+        /// </summary>
+        /// <param name="il"></param>
+        private void EmitIsAliased(ILEmitter/*!*/il)
+        {
+            // set IsAliased to true
+            il.Emit(OpCodes.Dup);
+            il.Emit(OpCodes.Ldc_I4_1);
+            il.EmitCall(OpCodes.Callvirt, Properties.PhpReference_IsAliased.GetSetMethod(), null);
+        }
+
+        internal override PhpTypeCode EmitGet(CodeGenerator/*!*/ codeGenerator, IPlace instance, bool wantRef,
+            ConstructedType constructedType, bool runtimeVisibilityCheck)
+        {
+            Debug.Assert(IsStatic == (instance == null));
+
+            ILEmitter il = codeGenerator.IL;
+            var getter = RealProperty.GetGetMethod();
+
+            if (getter == null)
+                throw new MissingMethodException(string.Format("'{0}.get_{1}' not implemented!", RealProperty.DeclaringType.Name, RealProperty.Name));
+
+            // <this>.
+            if (!IsStatic)
+                instance.EmitLoad(il);
+
+            // getter()
+            il.Emit(OpCodes.Call, getter);
+            
+            // handle references
+            if (wantRef)
+            {
+                // make reference
+                if (Types.PhpReference[0].IsAssignableFrom(getter.ReturnType))
+                {
+                    EmitIsAliased(il);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+                //
+                return PhpTypeCode.PhpReference;
+            }
+            else
+            {
+                // dereference
+                if (Types.PhpReference[0].IsAssignableFrom(getter.ReturnType))
+                {
+                    EmitIsAliased(il);
+                    il.Emit(OpCodes.Ldfld, Fields.PhpReference_Value);
+                }
+                else
+                {
+                    il.EmitBoxing(PhpTypeCodeEnum.FromType(getter.ReturnType));
+                }
+                //
+                return PhpTypeCode.Object;
+            }
+        }
+
+        internal override AssignmentCallback EmitSet(CodeGenerator/*!*/ codeGenerator, IPlace instance, bool isRef,
+            ConstructedType constructedType, bool runtimeVisibilityCheck)
+        {
+            ILEmitter il = codeGenerator.IL;
+            var setter = RealProperty.GetSetMethod();
+
+            if (setter == null)
+                throw new MissingMethodException(string.Format("'{0}.set_{1}' not implemented!", RealProperty.DeclaringType.Name, RealProperty.Name));
+
+            // <this>.
+            if (!IsStatic)
+                instance.EmitLoad(il);
+
+            // setter()
+            return delegate(CodeGenerator codeGen, PhpTypeCode stackTypeCode)
+            {
+                var parameters = setter.GetParameters();
+
+                if (isRef && parameters[0].ParameterType != Types.PhpReference[0])
+                {
+                    // .setter(<stack>.Value)
+                    codeGen.IL.Emit(OpCodes.Ldfld, Fields.PhpReference_Value);
+                    codeGen.IL.Emit(OpCodes.Call, setter);
+                }
+                else if (!isRef && parameters[0].ParameterType == Types.PhpReference[0])
+                {
+                    // .getter().Value = <stack>
+                    codeGen.IL.Emit(OpCodes.Call, RealProperty.GetGetMethod());
+                    codeGen.IL.Emit(OpCodes.Stfld, Fields.PhpReference_Value);
+                }
+                else
+                {
+                    // .setter(<stack>)
+                    codeGen.IL.Emit(OpCodes.Call, setter);
+                }
+            };
+        }
+
+        internal override void EmitUnset(CodeGenerator/*!*/ codeGenerator, IPlace/*!*/ instance, ConstructedType constructedType, bool runtimeVisibilityCheck)
+        {
+            ILEmitter il = codeGenerator.IL;
+
+            if (IsStatic)
+            {
+                // emit error (whether or not the property is visible):
+                il.Emit(OpCodes.Ldstr, DeclaringType.FullName);
+                il.Emit(OpCodes.Ldstr, this.FullName);
+                codeGenerator.EmitPhpException(Methods.PhpException.StaticPropertyUnset);
+                return;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        #endregion
+    }
 
 	#endregion
 

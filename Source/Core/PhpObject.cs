@@ -201,14 +201,10 @@ namespace PHP.Library
 		/// <param name="typeDesc">The type desc to populate.</param>
 		internal static void __PopulateTypeDesc(PhpTypeDesc typeDesc)
 		{
-			typeDesc.AddProperty(ClassNameFieldName, PhpMemberAttributes.Public, __get___PHP_Incomplete_Class_Name, __set___PHP_Incomplete_Class_Name);
+			typeDesc.AddProperty(ClassNameFieldName, PhpMemberAttributes.Public,
+                (instance) => ((__PHP_Incomplete_Class)instance).__PHP_Incomplete_Class_Name,
+                (instance, value) => ((__PHP_Incomplete_Class)instance).__PHP_Incomplete_Class_Name = (PhpReference)value);
 		}
-
-		private static object __get___PHP_Incomplete_Class_Name(object instance)
-		{ return ((__PHP_Incomplete_Class)instance).__PHP_Incomplete_Class_Name; }
-
-		private static void __set___PHP_Incomplete_Class_Name(object instance, object value)
-		{ ((__PHP_Incomplete_Class)instance).__PHP_Incomplete_Class_Name = (PhpReference)value; }
 
 		#endregion
 	}

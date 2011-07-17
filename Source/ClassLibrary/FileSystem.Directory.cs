@@ -170,8 +170,12 @@ namespace PHP.Library
 			typeDesc.AddMethod("rewind", PhpMemberAttributes.Public, rewind);
 			typeDesc.AddMethod("close", PhpMemberAttributes.Public, close);
 
-			typeDesc.AddProperty("handle", PhpMemberAttributes.Public, __get_handle, __set_handle);
-			typeDesc.AddProperty("path", PhpMemberAttributes.Public, __get_path, __set_path);
+            typeDesc.AddProperty("handle", PhpMemberAttributes.Public,
+                    (instance) => ((Directory)instance).handle,
+                    (instance, value) => ((Directory)instance).handle = (PhpReference)value);
+            typeDesc.AddProperty("path", PhpMemberAttributes.Public,
+                    (instance) => ((Directory)instance).path,
+                    (instance, value) => ((Directory)instance).path = (PhpReference)value);
 		}
 
 		/// <summary>Arg-less overload.</summary>
@@ -267,12 +271,6 @@ namespace PHP.Library
 			}
 			return null;
 		}
-
-		private static object __get_handle(object instance) { return ((Directory)instance).handle; }
-		private static void __set_handle(object instance, object value) { ((Directory)instance).handle = (PhpReference)value; }
-
-		private static object __get_path(object instance) { return ((Directory)instance).path; }
-		private static void __set_path(object instance, object value) { ((Directory)instance).path = (PhpReference)value; }
 
 		#endregion
 	}
