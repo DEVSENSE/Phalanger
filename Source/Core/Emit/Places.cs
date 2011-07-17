@@ -126,6 +126,15 @@ namespace PHP.Core.Emit
 			this.index = index;
 		}
 
+        /// <summary>
+        /// Creates a new <see cref="IndexedPlace"/> of given local variable.
+        /// </summary>
+        /// <param name="local">Local variable to be used.</param>
+        public IndexedPlace(LocalBuilder/*!*/local)
+            :this(PlaceHolder.Local, local.LocalIndex)
+        {
+        }
+
 		/// <summary>
 		/// Emits code that loads the value from this storage place.
 		/// </summary>

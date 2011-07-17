@@ -521,13 +521,33 @@ namespace PHP.Core
 		{
 			Debug.Assert(variable is DirectVarUse || variable is IndirectVarUse);
 
-			// CALL object Operators.GetProperty(<STACK:variable>,<field name>,<type desc>);
-			variable.EmitName(codeGenerator);
-			codeGenerator.EmitLoadClassContext();
-			codeGenerator.IL.LoadBool(QuietRead);
-			codeGenerator.IL.Emit(OpCodes.Call, Methods.Operators.GetProperty);
+            var il = codeGenerator.IL;
 
-			return PhpTypeCode.Object;
+            // we already have the instance value on top of the stack,
+            // it must be stored in local variable first so we can call
+            // call CallSite normally.
+            
+            // <memberOf> = <STACK:variable>:
+            var memberOf = il.GetTemporaryLocal(Types.Object[0], true);
+            il.Stloc(memberOf);
+
+            // create and call the CallSite:
+            string fieldName = (variable is DirectVarUse) ? ((DirectVarUse)variable).VarName.Value : null;
+            Expression fieldNameExpr = (variable is IndirectVarUse) ? ((IndirectVarUse)variable).VarNameEx : null;
+            
+            return codeGenerator.CallSitesBuilder.EmitGetProperty(codeGenerator, false,
+                null, null, new IndexedPlace(memberOf),
+                null,
+                fieldName, fieldNameExpr,
+                QuietRead);
+
+            //// CALL object Operators.GetProperty(<STACK:variable>,<field name>,<type desc>);
+            //variable.EmitName(codeGenerator);
+            //codeGenerator.EmitLoadClassContext();
+            //codeGenerator.IL.LoadBool(QuietRead);
+            //codeGenerator.IL.Emit(OpCodes.Call, Methods.Operators.GetProperty);
+
+			//return PhpTypeCode.Object;
 		}
 
 		/// <summary>

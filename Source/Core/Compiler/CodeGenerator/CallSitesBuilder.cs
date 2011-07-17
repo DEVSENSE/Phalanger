@@ -345,8 +345,9 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// </summary>
         /// <param name="cg"><see cref="CodeGenerator"/>.</param>
         /// <param name="wantRef">Wheter <see cref="PhpReference"/> is expected as the result.</param>
-        /// <param name="targetExpr">The expression representing the target.</param>
-        /// <param name="targetObjectPlace">The place representing the target <see cref="DObject"/> iff <paramref name="targetExpr"/> is not provided.</param>
+        /// <param name="targetExpr">The expression representing the target (object).</param>
+        /// <param name="targetObjectPlace">The place representing the target (<see cref="DObject"/>) iff <paramref name="targetExpr"/> is not provided.</param>
+        /// <param name="targetPlace">The place representing the target (object) iff <paramref name="targetExpr"/> and <paramref name="targetObjectPlace"/> are not provided.</param>
         /// <param name="targetType">Type of target iff we are getting property statically.</param>
         /// <param name="fieldName">The name of the field. Can be null if the name is not known at compile time (indirect).</param>
         /// <param name="fieldNameExpr">The expression used to get field name in run time (iff <paramref name="fieldName"/> is <c>null</c>.</param>
@@ -354,15 +355,15 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// <returns>Type code of the value that is pushed onto the top of the evaluation stack.</returns>
         public PhpTypeCode EmitGetProperty(
             PHP.Core.CodeGenerator/*!*/cg, bool wantRef,
-            Expression targetExpr, IPlace targetObjectPlace, DType targetType,
+            Expression targetExpr, IPlace targetObjectPlace, IPlace targetPlace, DType targetType,
             string fieldName, Expression fieldNameExpr,
             bool issetSemantics)
         {
             Debug.Assert(fieldName != null ^ fieldNameExpr != null);
-            Debug.Assert(targetExpr != null || targetObjectPlace != null || targetType != null);
+            Debug.Assert(targetExpr != null || targetObjectPlace != null || targetPlace != null || targetType != null);
             
             //
-            bool staticCall = (targetExpr == null && targetObjectPlace == null); // we are going to emit static method call
+            bool staticCall = (targetExpr == null && targetObjectPlace == null && targetPlace == null); // we are going to access static property
             bool fieldNameIsKnown = (fieldName != null);
             bool classContextIsKnown = (this.classContextPlace != null);
 
@@ -381,7 +382,7 @@ namespace PHP.Core.Compiler.CodeGenerator
             if (!fieldNameIsKnown) additionalArgs.Add(Types.String[0]);
 
             var delegateTypeArgs = GetPropertyDelegateTypeArgs(
-                staticCall ? Types.DTypeDesc[0] : ((targetObjectPlace != null) ? Types.DObject[0] : Types.Object[0]),   // 
+                staticCall ? Types.DTypeDesc[0] : ((targetObjectPlace != null) ? Types.DObject[0] : Types.Object[0]),   // DTypeDesc of static field's declaring type || DObject if field called on DObject known at compile time || otherwise object
                 additionalArgs.ToArray(),
                 returnType);
 
@@ -417,6 +418,7 @@ namespace PHP.Core.Compiler.CodeGenerator
                 cg.EmitBoxing(targetExpr.Emit(cg)); // prepare for operator invocation
             }
             else if (targetObjectPlace != null) targetObjectPlace.EmitLoad(cg.IL);
+            else if (targetPlace != null) targetPlace.EmitLoad(cg.IL);
             else Debug.Fail();
             if (!classContextIsKnown) cg.EmitLoadClassContext();
             if (!fieldNameIsKnown) cg.EmitName(fieldName/*null*/, fieldNameExpr, true, PhpTypeCode.String);

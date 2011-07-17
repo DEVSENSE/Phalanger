@@ -169,7 +169,9 @@ namespace PHP.Core.AST
                 //codeGenerator.ChainBuilder.EmitGetProperty(this);
                 var result = codeGenerator.CallSitesBuilder.EmitGetProperty(
                     codeGenerator, false,
-                    isMemberOf, null, null, null, this.varNameEx,
+                    isMemberOf, null, null,
+                    null,
+                    null, this.varNameEx,
                     codeGenerator.ChainBuilder.QuietRead);
                 
                 codeGenerator.ChainBuilder.End();

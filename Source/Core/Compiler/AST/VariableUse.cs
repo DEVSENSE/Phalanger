@@ -186,7 +186,12 @@ namespace PHP.Core.AST
                 string fieldName = (this is DirectVarUse) ? ((DirectVarUse)this).VarName.Value : null;
                 Expression fieldNameExpr = (this is IndirectVarUse) ? ((IndirectVarUse)this).VarNameEx : null;
                 bool quietRead = wantRef ? false : codeGenerator.ChainBuilder.QuietRead;
-                return codeGenerator.CallSitesBuilder.EmitGetProperty(codeGenerator, wantRef, isMemberOf, null, null, fieldName, fieldNameExpr, quietRead);
+                return codeGenerator.CallSitesBuilder.EmitGetProperty(
+                    codeGenerator, wantRef,
+                    isMemberOf, null, null,
+                    null,
+                    fieldName, fieldNameExpr,
+                    quietRead);
 			}
 
             // call GetProperty/GetObjectPropertyRef
@@ -332,7 +337,12 @@ namespace PHP.Core.AST
             Expression fieldNameExpr = (this is IndirectVarUse) ? ((IndirectVarUse)this).VarNameEx : null;
             bool quietRead = wantRef ? false : codeGenerator.ChainBuilder.QuietRead;
 
-            return codeGenerator.CallSitesBuilder.EmitGetProperty(codeGenerator, wantRef, null, arg, null, fieldName, fieldNameExpr, quietRead);
+            return codeGenerator.CallSitesBuilder.EmitGetProperty(
+                codeGenerator, wantRef,
+                null, arg, null,
+                null,
+                fieldName, fieldNameExpr,
+                quietRead);
 		}
 
 		private static void EmitCallSetObjectField(CodeGenerator/*!*/ codeGenerator, PhpTypeCode stackTypeCode)

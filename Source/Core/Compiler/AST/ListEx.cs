@@ -82,10 +82,14 @@ namespace PHP.Core.AST
 
             Debug.Assert(RValue != null);   // the root of the lists structure must have RValue assigned. list(whatever) = RValue
 
-            LocalBuilder o1 = codeGenerator.IL.DeclareLocal(Types.Object[0]);   // temporary variable for object to be copied
-
+            
             codeGenerator.EmitBoxing(RValue.Emit(codeGenerator));   // put object on the top of the stack
+
+            LocalBuilder o1 = codeGenerator.IL.GetTemporaryLocal(Types.Object[0]);   // temporary variable for object to be copied
             EmitAssignList(codeGenerator, LValues, o1);                 // assign particular elements of the list, using the array from the stack
+
+            // return temporary local
+            codeGenerator.IL.ReturnTemporaryLocal(o1);
 
             // the original top of the stack is replaced with the instance of array or null
             if (access == AccessType.Read)

@@ -748,19 +748,13 @@ namespace PHP.Core.Emit
 		public LocalBuilder/*!*/ GetTemporaryLocal(Type/*!*/ type, bool immediateReturn)
 		{
 			if (temporaryLocals != null)
-			{
-				LinkedListNode<LocalBuilder> node = temporaryLocals.First;
-				while (node != null)
-				{
+				for (LinkedListNode<LocalBuilder> node = temporaryLocals.First; node != null; node = node.Next)
 					if (node.Value.LocalType == type)
 					{
 						if (!immediateReturn) temporaryLocals.Remove(node);
 						return node.Value;
 					}
-					node = node.Next;
-				}
-			}
-
+			
 			LocalBuilder builder = DeclareLocal(type);
 			if (immediateReturn) ReturnTemporaryLocal(builder);
 
