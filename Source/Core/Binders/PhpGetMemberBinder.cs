@@ -98,7 +98,7 @@ namespace PHP.Core.Binders
             ////// a property of a DObject:
             if ((obj = target.Value as DObject) != null)
             {
-                if (obj is ClrObject || obj is IClrValue)
+                if (obj is ClrObject /*|| obj is IClrValue // IClrValue -> ClrValue<T> -> already in restriction */)
                 {
                     // ((DObject)target).RealType == <obj>.RealType
                     restrictions.Merge(
@@ -256,13 +256,11 @@ namespace PHP.Core.Binders
                             var realType = property.DeclaringType.RealType;
                             var realProperty = property.ClrProperty.RealProperty;
 
-                            // ((<realType>)((DObject)target).RealObject).<realProperty>
+                            // (target.{RealObject|realValue}).<realProperty>
                             Expression value = Expression.Convert(
                                             BinderHelper.ClrObjectWrapDynamic(
                                                 Expression.Property(
-                                                    Expression.Convert(
-                                                        Expression.Property(Expression.Convert(target.Expression, Types.DObject[0]), Properties.DObject_RealObject),// TODO: ClrValue<>.realValue
-                                                        realType),
+                                                    BinderHelper.ClrRealObject(target, realType),
                                                     realProperty)),
                                             Types.Object[0]);
 
@@ -275,19 +273,17 @@ namespace PHP.Core.Binders
                             var realType = property.DeclaringType.RealType;
                             var realField = property.ClrField.FieldInfo;
 
-                            // ((<realType>)((DObject)target).RealObject).<realField>
+                            // (target.{RealObject|realValue}).<realField>
                             Expression value = Expression.Convert(
                                             BinderHelper.ClrObjectWrapDynamic(
-                                            Expression.Field(
-                                                Expression.Convert(
-                                                    Expression.Property(Expression.Convert(target.Expression, Types.DObject[0]), Properties.DObject_RealObject),// TODO: ClrValue<>.realValue
-                                                    realType),
-                                                realField)),
+                                                Expression.Field(
+                                                    BinderHelper.ClrRealObject(target, realType),
+                                                    realField)),
                                             Types.Object[0]);
 
                             if (WantReference) value = BinderHelper.MakePhpReference(value);
 
-                            return new DynamicMetaObject(value,restrictions);
+                            return new DynamicMetaObject(value, restrictions);
                         }
                         else
                             throw new NotImplementedException();

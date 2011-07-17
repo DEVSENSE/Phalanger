@@ -115,6 +115,41 @@ namespace PHP.Core.Binders
             return Expression.Call(null, Methods.ClrObject_Create, expression);
         }
 
+        /// <summary>
+        /// Unwraps <see cref="DObject.RealObject"/> or <see cref="ClrValue&lt;T&gt;.realValue"/> from <see cref="ClrObject"/> or <see cref="ClrValue&lt;T&gt;"/>.
+        /// </summary>
+        /// <param name="target">Original <b>target</b> of binding operation.</param>
+        /// <param name="realType">Expected <see cref="Type"/> of the operation.</param>
+        /// <returns><see cref="Expression"/> getting the real object wrapped into given target.</returns>
+        public static Expression/*!*/ClrRealObject(DynamicMetaObject/*!*/target, Type/*!*/realType)
+        {
+            Debug.Assert(target != null);
+            Debug.Assert(realType != null);
+
+            var obj = target.Value as DObject;
+
+            Debug.Assert(obj != null, "Not DObject!");
+            Debug.Assert(realType.IsAssignableFrom(obj.RealType), "Not compatible types!");
+
+            if (obj is ClrObject)
+            {
+                // (<realType>)((DObject)target).RealObject:
+                return Expression.Convert(
+                    Expression.Property(Expression.Convert(target.Expression, Types.DObject[0]), Properties.DObject_RealObject),
+                    realType);
+            }
+            else if (obj is IClrValue) // => obj is ClrValue<T>
+            {
+                var ClrValue_Type = obj.GetType(); // ClrValue'1
+                var ClrValue_ValueField = ClrValue_Type.GetField("realValue"); // ClrValue'1.realValue
+
+                // (T)((ClrValue<T>)target).realValue:
+                return Expression.Field(Expression.Convert(target.Expression, ClrValue_Type), ClrValue_ValueField);
+            }
+            else
+                throw new NotImplementedException();
+        }
+
         #endregion
 
         #region PhpReference
