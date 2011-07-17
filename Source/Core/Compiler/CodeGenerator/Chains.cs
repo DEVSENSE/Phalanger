@@ -528,18 +528,24 @@ namespace PHP.Core
             // call CallSite normally.
             
             // <memberOf> = <STACK:variable>:
-            var memberOf = il.GetTemporaryLocal(Types.Object[0], true);
+            var memberOf = il.GetTemporaryLocal(Types.Object[0]);
             il.Stloc(memberOf);
 
             // create and call the CallSite:
             string fieldName = (variable is DirectVarUse) ? ((DirectVarUse)variable).VarName.Value : null;
             Expression fieldNameExpr = (variable is IndirectVarUse) ? ((IndirectVarUse)variable).VarNameEx : null;
             
-            return codeGenerator.CallSitesBuilder.EmitGetProperty(codeGenerator, false,
+            var result = codeGenerator.CallSitesBuilder.EmitGetProperty(codeGenerator, false,
                 null, null, new IndexedPlace(memberOf),
                 null,
                 fieldName, fieldNameExpr,
                 QuietRead);
+
+            // return temporary variable:
+            il.ReturnTemporaryLocal(memberOf);
+
+            //
+            return result;
 
             //// CALL object Operators.GetProperty(<STACK:variable>,<field name>,<type desc>);
             //variable.EmitName(codeGenerator);
