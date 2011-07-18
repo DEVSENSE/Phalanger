@@ -7,6 +7,10 @@ using System.Linq.Expressions;
 using PHP.Core.Emit;
 using System.Dynamic;
 
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+
 
 namespace PHP.Core.Binders
 {
@@ -182,6 +186,38 @@ namespace PHP.Core.Binders
                         BindingRestrictions.GetTypeRestriction(target.Expression, target.LimitType);
         }
 
+        /// <summary>
+        /// Create static <see cref="DynamicMethod"/> that wraps call of given <paramref name="mi"/>. The call is performed statically, method's overrides are not called.
+        /// </summary>
+        /// <param name="mi"><see cref="MethodInfo"/> to be called statically.</param>
+        /// <returns>New <see cref="MethodInfo"/> representing static method stub.</returns>
+        public static MethodInfo/*!*/WrapInstanceMethodCall(MethodInfo/*!*/mi)
+        {
+            Debug.Assert(mi != null);
+            Debug.Assert(!mi.IsStatic, "'mi' must not be static!");
 
+            var parameters = mi.GetParameters();
+
+            // array of parameters type
+            // Type[]{ <DeclaringType>, <arg1.Type>, ..., <argn.Type> }
+            var paramTypes = new Type[parameters.Length + 1]; // = new Type[]{ mi.DeclaringType }.Concat(parameters.Select<ParameterInfo, Type>(p => p.ParameterType)).ToArray();
+            paramTypes[0] = mi.DeclaringType;
+            for (int i = 0; i < parameters.Length; i++)
+                paramTypes[i + 1] = parameters[i].ParameterType;
+
+            // create static dynamic method that calls given MethodInfo statically
+            DynamicMethod stub = new DynamicMethod(mi.Name + "_", mi.ReturnType, paramTypes);
+            ILEmitter il = new ILEmitter(stub);
+
+            // return <mi>( instance, arg_1, arg_2, ..., arg_n ):
+            for (int i = 0; i <= parameters.Length; i++)
+                il.Ldarg(i);
+
+            il.Emit(OpCodes.Call, mi);
+            il.Emit(OpCodes.Ret);
+            
+            //
+            return stub;
+        }
     }
 }
