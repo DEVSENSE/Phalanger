@@ -577,6 +577,7 @@ namespace PHP.Testing
             script.StartInfo.ErrorDialog = false;
             script.StartInfo.CreateNoWindow = true;
             script.StartInfo.RedirectStandardError = true;
+            script.StartInfo.WorkingDirectory = Path.GetDirectoryName(scriptPath);
 
             script.EnableRaisingEvents = false;
            
@@ -637,6 +638,7 @@ namespace PHP.Testing
 			php.StartInfo.UseShellExecute = false;
 			php.StartInfo.RedirectStandardOutput = true;
             php.StartInfo.RedirectStandardError = true;
+            php.StartInfo.WorkingDirectory = Path.GetDirectoryName(script_path);
 
 			for (int i = 0; i < numberOfRuns; i++)
 			{
