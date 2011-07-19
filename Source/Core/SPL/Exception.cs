@@ -187,7 +187,7 @@ namespace PHP.Library.SPL
 		[ImplementsMethod]
 		public object getFile(ScriptContext context)
 		{
-			return file;
+			return file.Value;
 		}
 
 		/// <summary>
@@ -197,7 +197,7 @@ namespace PHP.Library.SPL
 		[ImplementsMethod]
 		public object getLine(ScriptContext context)
 		{
-			return line;
+			return line.Value;
 		}
 
 		/// <summary>
@@ -207,7 +207,7 @@ namespace PHP.Library.SPL
 		[ImplementsMethod]
 		public object getColumn(ScriptContext context)
 		{
-			return column;
+			return column.Value;
 		}
 
 		/// <summary>
@@ -217,7 +217,7 @@ namespace PHP.Library.SPL
 		[ImplementsMethod]
 		public object getCode(ScriptContext context)
 		{
-			return code;
+			return code.Value;
 		}
 
 		/// <summary>
@@ -227,7 +227,7 @@ namespace PHP.Library.SPL
 		[ImplementsMethod]
 		public object getMessage(ScriptContext context)
 		{
-			return message;
+			return message.Value;
 		}
 
 		/// <summary>
@@ -237,7 +237,7 @@ namespace PHP.Library.SPL
 		[ImplementsMethod]
 		public object getTrace(ScriptContext context)
 		{
-			return trace;
+			return trace.Value;
 		}
 
 		/// <summary>
