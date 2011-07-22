@@ -1591,6 +1591,10 @@ namespace PHP.Core.Reflection
 			this.name = name;
 			this.argfull = argfull;
 			this.argless = argless;
+
+            // if the function needs to be called via argless stub, update the properties
+            if (NeedsArglessAttribute.IsSet(argfull))
+                this.Properties |= RoutineProperties.UseVarArgs;    // the function calls some arg-aware class-library function so it has to be called with PhpStack
 		}
 
 		#endregion

@@ -141,6 +141,7 @@
     </Compile>
     <Compile Include="Binders\Binder.cs" />
     <Compile Include="Binders\BinderHelper.cs" />
+    <Compile Include="Binders\PhpRoutineExtensions.cs" />
     <Compile Include="Binders\PhpDynamicMetaObjects.cs" />
     <Compile Include="Binders\PhpGetMemberBinder.cs" />
     <Compile Include="Binders\PhpBinder.cs" />

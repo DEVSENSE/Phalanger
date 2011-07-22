@@ -1479,9 +1479,9 @@ namespace PHP.Core
 			MethodInfo operator_method;
 
             // (J) use call sites to call the method:
-            //if (targetExpr != null /*|| type != null*/)
-            //    return this.CallSitesBuilder.EmitMethodCall(this, access, targetExpr, type, routineFullName, routineNameExpr, callSignature);
-            //else
+            if (targetExpr != null /*|| type != null*/)
+                return this.CallSitesBuilder.EmitMethodCall(this, access, targetExpr, type, routineFullName, routineNameExpr, callSignature);
+            else
             if (targetExpr != null)
 			{
                 // LOAD Operators.InvokeMethod(<target>, <method name>, <type desc>, <context>);

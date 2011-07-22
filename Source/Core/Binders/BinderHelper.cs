@@ -47,6 +47,26 @@ namespace PHP.Core.Binders
                 Expression.Constant(CoreResources.GetString(id, arg1, arg2, arg3)));
         }
 
+        public static Expression/*!*/ ThrowWarning(string id)
+        {
+            return Expression.Call(Methods.PhpException.Throw,
+                Expression.Constant(PhpError.Warning),
+                Expression.Constant(CoreResources.GetString(id)));
+        }
+        public static Expression/*!*/ ThrowWarning(string id, object arg)
+        {
+            return Expression.Call(Methods.PhpException.Throw,
+                Expression.Constant(PhpError.Warning),
+                Expression.Constant(CoreResources.GetString(id, arg)));
+        }
+        public static Expression/*!*/ ThrowWarning(string id, object arg1, object arg2)
+        {
+            return Expression.Call(Methods.PhpException.Throw,
+                Expression.Constant(PhpError.Warning),
+                Expression.Constant(CoreResources.GetString(id, arg1, arg2)));
+        }
+
+
         /// <summary>
         /// Generates Expression that throws a 'Protected method called' or 'Private method called' <see cref="PhpException"/>.
         /// </summary>
@@ -77,19 +97,23 @@ namespace PHP.Core.Binders
             throw new NotImplementedException();
         }
 
-        //internal static Expression/*!*/ TypeErrorForProtectedMember(Type/*!*/ type, string/*!*/ name)
-        //{
-        //    Debug.Assert(!typeof(IPythonObject).IsAssignableFrom(type));
 
-        //    return Ast.Throw(
-        //        Ast.Call(
-        //            typeof(PythonOps).GetMethod("TypeErrorForProtectedMember"),
-        //            AstUtils.Constant(type),
-        //            AstUtils.Constant(name)
-        //        ),
-        //        typeof(object)
-        //    );
-        //}
+        public static Expression/*!*/ ThrowMissingArgument(int argIndex, string calleeName)
+        {
+            if (calleeName != null)
+                return ThrowWarning("missing_argument_for", argIndex, calleeName);
+            else
+                return ThrowWarning("missing_argument", argIndex);
+        }
+
+        public static Expression/*!*/ ThrowArgumentNotPassedByRef(int argIndex, string calleeName)
+        {
+            if (calleeName != null)
+                return ThrowWarning("argument_not_passed_byref_to", argIndex, calleeName);
+            else
+                return ThrowWarning("argument_not_passed_byref", argIndex);
+        }
+
     
         #endregion
 
@@ -179,6 +203,22 @@ namespace PHP.Core.Binders
 
         #endregion
 
+        public static Expression/*!*/ AssertNotPhpReference(Expression objEx)
+        {
+#if DEBUG
+            Func<object,object> isNotPhpReference = (obj) =>
+            {
+               Debug.Assert( !(obj is PhpReference) );
+               return obj;
+            };
+
+            return Expression.Call(null, isNotPhpReference.Method, objEx);
+#else
+            return objEx;
+#endif
+        }
+
+
         public static BindingRestrictions ValueTypeRestriction( this DynamicMetaObject target)
         {
             return (target.HasValue && target.Value == null) ?
@@ -206,7 +246,7 @@ namespace PHP.Core.Binders
                 paramTypes[i + 1] = parameters[i].ParameterType;
 
             // create static dynamic method that calls given MethodInfo statically
-            DynamicMethod stub = new DynamicMethod(mi.Name + "_", mi.ReturnType, paramTypes);
+            DynamicMethod stub = new DynamicMethod(mi.Name + "_", mi.ReturnType, paramTypes, mi.DeclaringType);
             ILEmitter il = new ILEmitter(stub);
 
             // return <mi>( instance, arg_1, arg_2, ..., arg_n ):

@@ -52,6 +52,7 @@ namespace PHP.Core.Emit
 		public static readonly Type[] ScriptContext = new Type[] { typeof(PHP.Core.ScriptContext) };
 		public static readonly Type[] PhpReference = new Type[] { typeof(PHP.Core.PhpReference) };
         public static readonly Type[] PhpSmartReference = new Type[] { typeof(PHP.Core.PhpSmartReference) };
+        public static readonly Type[] PhpRuntimeChain = new Type[] { typeof(PHP.Core.PhpRuntimeChain) };
 		public static readonly Type[] ObjectArray = new Type[] { typeof(object[]) };
 		public static readonly Type[] StringArray = new Type[] { typeof(string[]) };
 		public static readonly Type[] PhpReferenceArray = new Type[] { typeof(PhpReference[]) };
@@ -702,11 +703,14 @@ namespace PHP.Core.Emit
         public struct PhpRuntimeChain
         {
             static Type _this { get { return typeof(PHP.Core.PhpRuntimeChain); } }
-            static MethodInfo _AddField, _AddItem_Object, _AddItem_Void;
+            static MethodInfo _AddField, _AddItem_Object, _AddItem_Void, _GetValue, _GetReference;
 
             public static MethodInfo AddField { get { if (_AddField == null) _AddField = _this.GetMethod("AddField"); return _AddField; } }
             public static MethodInfo AddItem_Object { get { if (_AddItem_Object == null) _AddItem_Object = _this.GetMethod("AddItem", Types.Object); return _AddItem_Object; } }
             public static MethodInfo AddItem_Void { get { if (_AddItem_Void == null) _AddItem_Void = _this.GetMethod("AddItem", Type.EmptyTypes); return _AddItem_Void; } }
+
+            public static MethodInfo GetValue { get { if (_GetValue == null) _GetValue = _this.GetMethod("GetValue"); return _GetValue; } }
+            public static MethodInfo GetReference { get { if (_GetReference == null) _GetReference = _this.GetMethod("GetReference"); return _GetReference; } }
         }
 
         #endregion
