@@ -94,6 +94,26 @@ namespace PHP.Core.Binders
             ////Debug.Assert(!(var is PhpReference) && name != null);
             Debug.Assert(target.HasValue && target.LimitType != Types.PhpReference[0], "Target should not be PhpReference!");
 
+            ////if (ReferenceEquals(obj, ScriptContext.SetterChainSingletonObject))
+            ////{
+            ////    ScriptContext.CurrentContext.AbortSetterChain(false);
+            ////    return new PhpReference();
+            ////}
+            if (WantReference && ReferenceEquals(target.Value, ScriptContext.SetterChainSingletonObject))
+            {
+                // GetObjectPropertyRef:
+                Func<PhpReference> abortSetterChain = () =>
+                {
+                    ScriptContext.CurrentContext.AbortSetterChain(false);
+                    return new PhpReference();
+                };
+
+                return new DynamicMetaObject(
+                    Expression.Call(abortSetterChain.Method),
+                    BindingRestrictions.GetInstanceRestriction(target.Expression, ScriptContext.SetterChainSingletonObject)
+                    );
+            }
+
             DObject obj;
             ////// a property of a DObject:
             if ((obj = target.Value as DObject) != null)
