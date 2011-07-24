@@ -327,7 +327,7 @@ namespace Installer.IISSamples
                 }
 
             }
-            catch (Exception ex)
+            catch// (Exception ex)
             {
                 throw;
             }
@@ -413,7 +413,7 @@ namespace Installer.IISSamples
                         throw new Exception("Site: " + siteName + " does not exist.");
                 }
             }
-            catch (Exception ex)
+            catch// (Exception ex)
             {
                 throw;
             }
@@ -517,7 +517,7 @@ namespace Installer.IISSamples
                         throw new Exception("Site: " + siteName + " does not exist.");
                 }
             }
-            catch (Exception ex)
+            catch// (Exception ex)
             {
                 throw;
             }
@@ -565,7 +565,7 @@ namespace Installer.IISSamples
                         throw new Exception("Site: " + siteName + " does not exist.");
                 }
             }
-            catch (Exception ex)
+            catch// (Exception ex)
             {
                 throw;
             }
