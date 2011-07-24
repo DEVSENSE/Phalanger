@@ -658,7 +658,7 @@ namespace PHP.Core.Binders
                     return;
                 }
 
-                arguments = routine.PrepareArguments(args, out argumentsRestrictions);
+                arguments = routine.PrepareArguments(args, _genericParamsCount, _paramsCount, out argumentsRestrictions);
                 restrictions = restrictions.Merge(argumentsRestrictions);
             }
             else

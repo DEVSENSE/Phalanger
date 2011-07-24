@@ -105,6 +105,15 @@ namespace PHP.Core.Binders
                 return ThrowWarning("missing_argument", argIndex);
         }
 
+        public static Expression/*!*/ ThrowMissingTypeArgument(int argIndex, string calleeName)
+        {
+            if (calleeName != null)
+                return ThrowWarning("missing_type_argument_for", argIndex, calleeName);
+            else
+                return ThrowWarning("missing_type_argument", argIndex);
+        }
+
+
         public static Expression/*!*/ ThrowArgumentNotPassedByRef(int argIndex, string calleeName)
         {
             if (calleeName != null)

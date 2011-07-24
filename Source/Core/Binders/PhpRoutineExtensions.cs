@@ -23,44 +23,72 @@ namespace PHP.Core.Binders
         /// This is basically substitute for everything important that was done in argless overload (except it doesn't use PhpStack but evaluation stack).
         /// It adopts the arguments according to routine. e.g. dereference reference if value is needed, supplies default argument, etc.
         /// </remarks>
-        public static Expression[] PrepareArguments(this PhpRoutine routine, DynamicMetaObject[] arguments, out BindingRestrictions restrictions)
+        public static Expression[] PrepareArguments(this PhpRoutine routine, DynamicMetaObject[] arguments, int genericArguments, int regularArguments, out BindingRestrictions restrictions)
         {
             const int scriptContextIndex = 0;
             DynamicMetaObject arg;
-            int offset = 0;
-            Expression[] result = new Expression[1 + routine.Signature.ParamCount];//ScriptContext + all arguments
+            int result_offset = 0;
+            int argument_offset = 0;
+            Expression[] result = new Expression[1 + routine.Signature.GenericParamCount + routine.Signature.ParamCount];//ScriptContext + all arguments = actual arguments to be passed to argfull overload
             restrictions = BindingRestrictions.Empty;
 
             result[scriptContextIndex] = arguments[scriptContextIndex].Expression;
-            ++offset;
+            ++result_offset;
+            ++argument_offset;
 
-			//TODO: peek pseudo-generic arguments:
-            //for (int i = 0; i < routine.Signature.GenericParamCount; i++)
-            //    EmitPeekPseudoGenericArgument(il, i);
+			// peek pseudo-generic arguments:
+            for (int i = 0; i < routine.Signature.GenericParamCount; ++i)
+            {
+                if (i < genericArguments)
+                {
+                    arg = arguments[argument_offset + i];
+                }
+                else
+                {
+                    arg = null;
+                }
+
+                result[result_offset + i] = GeneratePeekPseudoGenericArgument(routine, arguments[scriptContextIndex], arg, i);
+            }
+
+            result_offset += routine.Signature.GenericParamCount;
+            argument_offset += genericArguments;
 
 			// peek regular arguments:
             // skip first one ScriptContext and generic parameters
-            for (int i = 0; i < routine.Signature.ParamCount; i++)
+            for (int i = 0; i < routine.Signature.ParamCount; ++i)
             {
-                if (offset + i < arguments.Length)
+                if (i < regularArguments)
                 {
-                    arg = arguments[offset + i];
+                    arg = arguments[argument_offset + i];
 
                     if (arg.RuntimeType != null)
-                        restrictions = restrictions.Merge(BindingRestrictions.GetTypeRestriction(arguments[offset + i].Expression, arguments[offset + i].LimitType));
+                        restrictions = restrictions.Merge(BindingRestrictions.GetTypeRestriction(arguments[argument_offset + i].Expression, arguments[argument_offset + i].LimitType));
                     else
-                        restrictions = restrictions.Merge(BindingRestrictions.GetInstanceRestriction(arguments[offset + i].Expression, null));//(MB) is it necessary?
+                        restrictions = restrictions.Merge(BindingRestrictions.GetInstanceRestriction(arguments[argument_offset + i].Expression, null));//(MB) is it necessary?
                 }
                 else
                 {
                     arg = null;
                 }
                 
-                result[offset + i] = GeneratePeekArgument(routine, arguments[scriptContextIndex], arg, i);
+                result[result_offset + i] = GeneratePeekArgument(routine, arguments[scriptContextIndex], arg, i);
 
             }
 
             return result;
+        }
+
+        private static Expression/*!*/ GeneratePeekPseudoGenericArgument(PhpRoutine routine, DynamicMetaObject scriptContext, DynamicMetaObject arg, int index)
+        {
+            bool optional = index >= routine.Signature.MandatoryGenericParamCount;
+            int indexTransformed = index + 1; // in PHP indexes of arguments starts from index 1
+
+            if (optional)
+                return PeekTypeOptional(routine, scriptContext, arg, indexTransformed);
+            else
+                return PeekType(routine, scriptContext, arg, indexTransformed);
+
         }
 
         /// <summary>
@@ -217,7 +245,7 @@ namespace PHP.Core.Binders
 
                     //Original code
                     //
-                    //(MB) I don't have to solve this now, PhpCallback is called by old means. So I can just throw exception always now.
+                    //(MB) I don't have to solve this now, PhpCallback is called in a old manner. So I can just throw exception always now.
                     //
                     // Reports an error in the case that we are not called by callback.
                     // Although, this error is fatal one can switch throwing exceptions off.
@@ -239,6 +267,38 @@ namespace PHP.Core.Binders
 
           
         }
+
+
+        private static Expression/*!*/ PeekType(PhpRoutine routine, DynamicMetaObject scriptContext, DynamicMetaObject arg, int argIndex)
+        {
+            if (arg != null)
+            {
+                // peeks the value:
+                return Expression.Convert(arg.Expression, arg.LimitType);
+            }
+            else
+            {
+                return Expression.Block(
+                    BinderHelper.ThrowMissingTypeArgument(argIndex, routine.FullName),
+                    Expression.Constant(DTypeDesc.ObjectTypeDesc, Types.DTypeDesc[0]));
+            }
+        }
+
+        private static Expression/*!*/ PeekTypeOptional(PhpRoutine routine, DynamicMetaObject scriptContext, DynamicMetaObject arg, int argIndex)
+        {
+            if (arg != null)
+            {
+                // peeks the value:
+                return Expression.Convert(arg.Expression, arg.LimitType);
+            }
+            else
+            {
+                // default value:
+                return Expression.Constant(Arg.DefaultType, Types.DTypeDesc[0]);
+            }
+
+        }
+
 
 
     }
