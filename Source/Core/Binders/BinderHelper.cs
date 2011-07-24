@@ -7,7 +7,6 @@ using System.Linq.Expressions;
 using PHP.Core.Emit;
 using System.Dynamic;
 
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 

@@ -2338,11 +2338,11 @@ namespace PHP.Core.Reflection
 	[DebuggerNonUserCode]
 	public sealed class PhpTypeDesc : DTypeDesc
 	{
-		/// <summary>
-		/// If <B>true</B>, the real type does not contain the <c>__PopulateTypeDesc</c> method and
-		/// further attempts to find it should be avoided.
-		/// </summary>
-		private bool hasNoPopulateMethod;
+        ///// <summary>
+        ///// If <B>true</B>, the real type does not contain the <c>__PopulateTypeDesc</c> method and
+        ///// further attempts to find it should be avoided.
+        ///// </summary>
+        //private bool hasNoPopulateMethod;
 
 		/// <summary>
 		/// <B>True</B> iff methods have been fully reflected (every <see cref="DRoutineDesc"/> in
@@ -2878,7 +2878,7 @@ namespace PHP.Core.Reflection
 		/// <returns><B>True</B> if this instance was successfully populated, <B>false</B> otherwise.</returns>
 		private bool AutoPopulateNoLock()
 		{
-            return false; // (JM) we really need to reflect it; to get MethodInfo or aglesses and argfulls (can be done through the metadata token, but it is the same)
+            return false;/* // (JM) we really need to reflect it; to get MethodInfo or aglesses and argfulls (can be done through the metadata token, but it is the same)
             if (RealType == null || hasNoPopulateMethod) return false;
 
             if (methods == null)
@@ -2915,7 +2915,7 @@ namespace PHP.Core.Reflection
             else
             {
                 return true;
-            }
+            }*/
 		}
 
 		/// <summary>

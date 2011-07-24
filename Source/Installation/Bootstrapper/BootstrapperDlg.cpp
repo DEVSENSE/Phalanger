@@ -104,9 +104,92 @@ HRESULT CBootstrapperDlg::OnLinkCore(IHTMLElement* pElement)
 	return -1;
 }
 
+#define PHALANGER_TOOLS_PATH TEXT("\\Microsoft\\VisualStudio\\10.0\\Extensions\\DEVSENSE\\Phalanger Tools Lite")
+#define PHALANGER_TOOLS_VERSION TEXT("1.0.1739") // CURRENT VERSION OF TOOLS // TODO: extract from .VSIX automatically
+
+// recursively delete directory
+bool DeleteDir(TCHAR*szPath)
+{
+	TCHAR szPathFilter[512];
+
+	_tcscpy(szPathFilter, szPath);
+	PathAppend(szPathFilter, TEXT("\\*"));
+		
+
+	WIN32_FIND_DATA ffd;
+	HANDLE hFind;
+	if ( (hFind = FindFirstFile(szPathFilter, &ffd)) != INVALID_HANDLE_VALUE)
+	{
+		do
+		{
+			TCHAR fullFileName[512];
+			_tcscpy(fullFileName, szPath);
+			PathAppend(fullFileName, ffd.cFileName);
+
+			if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			{
+				if (_tcscmp(ffd.cFileName,TEXT(".")) == 0 || 
+					_tcscmp(ffd.cFileName,TEXT("..")) == 0)
+				{
+					// nothing
+				}
+				else
+				{
+					if (!DeleteDir(fullFileName))
+						return false;
+				}
+			}
+			else
+			{
+				if (!DeleteFile(fullFileName))
+					return false;
+			}
+		}
+		while (FindNextFile(hFind, &ffd) != 0);
+
+		// close handle
+		FindClose(hFind);
+
+		// delete empty dir
+		if (!RemoveDirectory(szPath))
+			return false;
+	}
+
+	return true;
+}
+
 HRESULT CBootstrapperDlg::OnLinkIntegration(IHTMLElement* pElement)
 {
+	// remove any previously installed integration
+	TCHAR szPath[512];
+	if(SUCCEEDED(SHGetFolderPath(NULL, 
+					CSIDL_LOCAL_APPDATA, 
+					NULL, 
+					0, 
+					szPath))) 
+	{
+		PathAppend(szPath, PHALANGER_TOOLS_PATH);
+
+		// move to tmp location to check rights
+		TCHAR szTmpPath[512];
+		_tcscpy(szTmpPath, szPath);
+		do
+		{PathAddExtension(szTmpPath, TEXT(".tmp"));}
+		while (GetFileAttributes(szTmpPath) != INVALID_FILE_ATTRIBUTES);
+
+		// delete old phalanger tools
+		if (!MoveFile(szPath, szTmpPath) || !DeleteDir(szTmpPath))
+		{
+			TCHAR buf[1024];
+			sprintf_s(buf, sizeof(buf), "Could not remove previous installation of Phalanger Tools.\nPlease ensure you have closed all Visual Studio processes.");
+			MessageBox(buf, "Could not launch the installer", MB_OK | MB_ICONSTOP);
+			return -1;
+		}
+	}
+
+	// install
 	Launch("Setup\\Phalanger.VS2010.vsix");
+
 	return -1;
 }
 
@@ -194,11 +277,28 @@ bool CBootstrapperDlg::VsNetInstalled()
 
 bool CBootstrapperDlg::IntegrationInstalled()
 {
-	CRegKey key;
-	if (key.Open(HKEY_LOCAL_MACHINE, "SOFTWARE\\Phalanger\\v2.1", KEY_QUERY_VALUE) != ERROR_SUCCESS) return false;
-	
-	DWORD value;
-	return (key.QueryDWORDValue("IntegrationInstalled", value) == ERROR_SUCCESS && value != 0);
+	// true iff current version of Phalanger Tools is installed
+
+	TCHAR szPath[512];
+
+	if(SUCCEEDED(SHGetFolderPath(NULL, 
+					CSIDL_LOCAL_APPDATA, 
+					NULL, 
+					0, 
+					szPath))) 
+	{
+		PathAppend(szPath, PHALANGER_TOOLS_PATH);
+		PathAppend(szPath, PHALANGER_TOOLS_VERSION);
+		return (GetFileAttributes(szPath) != INVALID_FILE_ATTRIBUTES);
+		
+		/*WIN32_FIND_DATA FindFileData;
+		HANDLE hFind;
+		if ( (hFind = FindFirstFile(szPath, &FindFileData)) == INVALID_HANDLE_VALUE)
+			return 0;*/
+		
+	}
+
+	return false;
 }
 
 void CBootstrapperDlg::SetFw(UINT img, UINT text)

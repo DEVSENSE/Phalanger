@@ -14,7 +14,7 @@ namespace PHP.Core.Binders
     /// <summary>
     /// 
     /// </summary>
-    public sealed class PhpGetMemberBinder : DynamicMetaObjectBinder
+    public class PhpGetMemberBinder : DynamicMetaObjectBinder
     {
         #region Fields
 
