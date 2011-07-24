@@ -1,5 +1,6 @@
 [expect error]
 error PHP2031
+[file]
 <?
 	// ok:
 	interface J1<:T:> { }

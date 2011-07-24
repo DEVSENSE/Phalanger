@@ -1,5 +1,6 @@
 [expect error]
 error PHP2031
+[file]
 <?
 	// circular:
 	interface J1<:T:> extends J2, J3<:T:>, J4 { }

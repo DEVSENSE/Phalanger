@@ -15,6 +15,7 @@ error PHP1020
 error PHP1092
 error PHP1092
 error PHP1092
+[file]
 <?
 	interface I { }
 	interface J { }
