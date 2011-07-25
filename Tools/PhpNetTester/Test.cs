@@ -4,7 +4,9 @@ using System.Web;
 using System.Text;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 
 namespace PHP.Testing
@@ -19,7 +21,7 @@ namespace PHP.Testing
 	public enum Directive
 	{
 		None, Expect, ExpectCtError, ExpectCtWarning, ExpectPhp, ExpectExact, File, Config, Comment,
-		NumberOfRuns, AdditionalScripts
+		NumberOfRuns, AdditionalScripts, Pure, Clr
 	}
 
 
@@ -38,6 +40,8 @@ namespace PHP.Testing
 		private ArrayList expectCtError;
 		private ArrayList expectCtWarning;
 		private ArrayList additionalScripts;
+
+        private bool isPure = false, isClr = false;
 
 		public TestResult RealTestResult { get { return realTestResult; } }
 		private TestResult realTestResult;
@@ -156,6 +160,11 @@ namespace PHP.Testing
 				str = str.Substring("[expect ct-error]".Length);
 				return Directive.ExpectCtError;
 			}
+            if (str_lower.StartsWith("[expect errors]"))
+            {
+                str = str.Substring("[expect errors]".Length);
+                return Directive.ExpectCtError;
+            }
 
 			if (str_lower.StartsWith("--expect ct-warning--"))
 			{
@@ -256,6 +265,16 @@ namespace PHP.Testing
 				return Directive.AdditionalScripts;
 			}
 
+
+            if (str_lower == "[pure]")
+            {
+                return Directive.Pure;
+            }
+            if (str_lower == "[clr]")
+            {
+                return Directive.Clr;
+            }
+
 			return Directive.None;
 		}
 
@@ -264,65 +283,72 @@ namespace PHP.Testing
 			if (directive == Directive.None || directive == Directive.Comment)
 				return;
 
-			switch (directive)
-			{
-				case Directive.Expect:
-				this.expect.Add(block);
-				break;
+            switch (directive)
+            {
+                case Directive.Expect:
+                    this.expect.Add(block);
+                    break;
 
-				case Directive.ExpectCtError:
-				if (this.expectCtError != null)
-					throw new TestException(String.Format("{0}: [expect ct-error] redefinition", this.SourcePath));
-				this.expectedTestResult = TestResult.CtError;
-				this.expectCtError = block;
-				break;
+                case Directive.ExpectCtError:
+                    if (this.expectCtError != null)
+                        throw new TestException(String.Format("{0}: [expect ct-error] redefinition", this.SourcePath));
+                    this.expectedTestResult = TestResult.CtError;
+                    this.expectCtError = block;
+                    break;
 
-				case Directive.ExpectCtWarning:
-				this.expectCtWarning.Add(block);
-				break;
+                case Directive.ExpectCtWarning:
+                    this.expectCtWarning.Add(block);
+                    break;
 
-				case Directive.ExpectExact:
-				if (this.expectExact != null)
-					throw new TestException(String.Format("{0}: [expect exact] redefinition", this.SourcePath));
-				this.expectExact = block;
-				break;
+                case Directive.ExpectExact:
+                    if (this.expectExact != null)
+                        throw new TestException(String.Format("{0}: [expect exact] redefinition", this.SourcePath));
+                    this.expectExact = block;
+                    break;
 
-				case Directive.ExpectPhp:
-				if (expectPhp)
-					throw new TestException(String.Format("{0}: [expect php] specified twice", this.SourcePath));
-				expectPhp = true;
-				break;
+                case Directive.ExpectPhp:
+                    if (expectPhp)
+                        throw new TestException(String.Format("{0}: [expect php] specified twice", this.SourcePath));
+                    expectPhp = true;
+                    break;
 
-				case Directive.Config:
-				if (configuration != null)
-					throw new TestException(String.Format("{0}: [configuration] specified twice", this.SourcePath));
-				configuration = block;
-				break;
+                case Directive.Config:
+                    if (configuration != null)
+                        throw new TestException(String.Format("{0}: [configuration] specified twice", this.SourcePath));
+                    configuration = block;
+                    break;
 
-				case Directive.File:
-				if (this.script != null)
-					throw new TestException(String.Format("{0}: [script] redefinition", this.SourcePath));
-				this.script = block;
-				break;
+                case Directive.File:
+                    if (this.script != null)
+                        throw new TestException(String.Format("{0}: [script] redefinition", this.SourcePath));
+                    this.script = block;
+                    break;
 
-				case Directive.NumberOfRuns:
-				if (this.numberOfRuns > 0)
-					throw new TestException(String.Format("{0}: [runs] redefinition", this.SourcePath));
+                case Directive.NumberOfRuns:
+                    if (this.numberOfRuns > 0)
+                        throw new TestException(String.Format("{0}: [runs] redefinition", this.SourcePath));
 
-				try { this.numberOfRuns = Int32.Parse(Utils.ArrayListToString(block).Trim()); }
-				catch (FormatException)
-				{ throw new TestException(String.Format("{0}: [runs] invalid value", this.SourcePath)); }
-				catch (OverflowException)
-				{ throw new TestException(String.Format("{0}: [runs] invalid value", this.SourcePath)); }
+                    try { this.numberOfRuns = Int32.Parse(Utils.ArrayListToString(block).Trim()); }
+                    catch (FormatException)
+                    { throw new TestException(String.Format("{0}: [runs] invalid value", this.SourcePath)); }
+                    catch (OverflowException)
+                    { throw new TestException(String.Format("{0}: [runs] invalid value", this.SourcePath)); }
 
-				break;
+                    break;
 
-				case Directive.AdditionalScripts:
-				if (this.additionalScripts != null)
-					throw new TestException(String.Format("{0}: [additional scripts] redefinition", this.SourcePath));
-				this.additionalScripts = block;
-				break;
-			}
+                case Directive.AdditionalScripts:
+                    if (this.additionalScripts != null)
+                        throw new TestException(String.Format("{0}: [additional scripts] redefinition", this.SourcePath));
+                    this.additionalScripts = block;
+                    break;
+
+                case Directive.Pure:
+                    this.isPure = true;
+                    break;
+                case Directive.Clr:
+                    this.isClr = true;
+                    break;
+            }
 		}
 
 		/// <summary>
@@ -459,6 +485,10 @@ namespace PHP.Testing
 
 			string rootDir = Path.GetDirectoryName(SourcePath);
 			string arguments = String.Concat("/dw:CompilerStrict /static+ /target:exe /out:\"", output, "\" /root:\"", rootDir, "\" /entrypoint:\"", script_path, "\" \"", script_path, "\"");
+            if (isPure) arguments = "/pure+ " + arguments;
+            if (isClr) arguments = "/lang:clr " + arguments;
+            if (isPure || isClr) arguments = "/r:mscorlib " + arguments;
+
 			// put additional scripts to command line
 			if (additionalScripts != null)
 			{ // relative to /root: - we do not need to put whole path
@@ -510,12 +540,29 @@ namespace PHP.Testing
 				// do we expect error?
 				if (!isExpect && expectCtError != null)
 				{
-					string comp_output = compilerErrorOutput;
-					if (CompareOutputsSubstring("error", ref comp_output, true) && CompareOutputsSubstring(Utils.ArrayListToString(expectCtError), ref comp_output, true))
-					{
-						realTestResult = TestResult.CtError;
-						return false;
-					}
+                    var errors = compilerErrorOutput.Split(new char[]{'\n'}, StringSplitOptions.RemoveEmptyEntries);
+
+                    int found = 0;
+                    foreach (var errorline in errors)
+                    {
+                        foreach (string expectedstr in expectCtError)
+                            if (errorline.Contains(expectedstr))
+                            {
+                                found++;
+                                break;
+                            }
+                    }
+                    if (found == errors.Length || expectCtError.Count == 0/*just expecting some ct errors*/)
+                    {
+                        realTestResult = TestResult.CtError;
+                        return false;
+                    }
+                    
+                    //if (CompareOutputsSubstring("error", ref comp_output, true) && CompareOutputsSubstring(Utils.ArrayListToString(expectCtError), ref comp_output, true))
+                    //{
+                    //    realTestResult = TestResult.CtError;
+                    //    return false;
+                    //}
 				}
 
 				realTestResult = TestResult.PhpcMisbehaviourScript;

@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReflectionCacheGen", "ReflectionCacheGen\ReflectionCacheGen.csproj", "{5A9756D5-34E6-4249-BED3-DDB3D87D3776}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChainGen", "ChainGen\ChainGen.csproj", "{5C044685-AC6A-4A36-9C0B-BA205A0C6305}"
@@ -14,7 +14,7 @@ Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/TFS01
+		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
 		SccProjectUniqueName1 = ReflectionCacheGen\\ReflectionCacheGen.csproj
 		SccProjectName1 = ReflectionCacheGen

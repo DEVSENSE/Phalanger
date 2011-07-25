@@ -92,14 +92,16 @@ namespace PHP.Testing
 			return str;
 		}
 
-		public static bool CanBeEmptyDirective(Directive current_directive)
-		{
-			return
-				current_directive == Directive.Comment ||
-				current_directive == Directive.ExpectPhp ||
-				current_directive == Directive.ExpectCtError ||
-				current_directive == Directive.ExpectCtWarning;
-		}
+        public static bool CanBeEmptyDirective(Directive current_directive)
+        {
+            return
+                current_directive == Directive.Comment ||
+                current_directive == Directive.ExpectPhp ||
+                current_directive == Directive.ExpectCtError ||
+                current_directive == Directive.ExpectCtWarning ||
+                current_directive == Directive.Pure ||
+                current_directive == Directive.Clr;
+        }
 
 		public static string OutputWithoutCompiling(ArrayList al)
 		{
