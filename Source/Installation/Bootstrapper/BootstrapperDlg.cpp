@@ -112,7 +112,7 @@ bool DeleteDir(TCHAR*szPath)
 {
 	TCHAR szPathFilter[512];
 
-	_tcscpy(szPathFilter, szPath);
+	_tcscpy_s(szPathFilter, szPath);
 	PathAppend(szPathFilter, TEXT("\\*"));
 		
 
@@ -123,7 +123,7 @@ bool DeleteDir(TCHAR*szPath)
 		do
 		{
 			TCHAR fullFileName[512];
-			_tcscpy(fullFileName, szPath);
+			_tcscpy_s(fullFileName, szPath);
 			PathAppend(fullFileName, ffd.cFileName);
 
 			if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -170,20 +170,24 @@ HRESULT CBootstrapperDlg::OnLinkIntegration(IHTMLElement* pElement)
 	{
 		PathAppend(szPath, PHALANGER_TOOLS_PATH);
 
-		// move to tmp location to check rights
-		TCHAR szTmpPath[512];
-		_tcscpy(szTmpPath, szPath);
-		do
-		{PathAddExtension(szTmpPath, TEXT(".tmp"));}
-		while (GetFileAttributes(szTmpPath) != INVALID_FILE_ATTRIBUTES);
-
-		// delete old phalanger tools
-		if (!MoveFile(szPath, szTmpPath) || !DeleteDir(szTmpPath))
+		// if there is an old tools installed, try to remove it:
+		if (GetFileAttributes(szPath) != INVALID_FILE_ATTRIBUTES)
 		{
-			TCHAR buf[1024];
-			sprintf_s(buf, sizeof(buf), "Could not remove previous installation of Phalanger Tools.\nPlease ensure you have closed all Visual Studio processes.");
-			MessageBox(buf, "Could not launch the installer", MB_OK | MB_ICONSTOP);
-			return -1;
+			// move to tmp location to check rights
+			TCHAR szTmpPath[512];
+			_tcscpy_s(szTmpPath, szPath);
+			do
+			{_tcscat_s(szTmpPath, TEXT(".d"));}
+			while (GetFileAttributes(szTmpPath) != INVALID_FILE_ATTRIBUTES);
+
+			// delete old phalanger tools
+			if (!MoveFile(szPath, szTmpPath) || !DeleteDir(szTmpPath))
+			{
+				TCHAR buf[1024];
+				sprintf_s(buf, sizeof(buf), "Could not remove previous installation of Phalanger Tools.\nPlease ensure you have closed all Visual Studio processes.");
+				MessageBox(buf, "Could not launch the installer", MB_OK | MB_ICONSTOP);
+				return -1;
+			}
 		}
 	}
 
