@@ -9,7 +9,6 @@ using System.Linq.Expressions;
 namespace PHP.Core.Binders
 {
     //TODO:
-    // - PhpStack.PeekReferenceUnchecked do the same, because as an argument I can receive PhpRefence and PhpRuntimeChain
     // - implement IDynamicMetaObjectProvider for DObject, PhpObject, ClrObject, ClrValue
 
     using PHP.Core.Emit;
