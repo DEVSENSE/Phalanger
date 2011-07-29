@@ -482,9 +482,9 @@ namespace PHP.Testing
 			}
 
 			Process compiler = new Process();
-
+            
 			string rootDir = Path.GetDirectoryName(SourcePath);
-			string arguments = String.Concat("/dw:CompilerStrict /static+ /target:exe /out:\"", output, "\" /root:\"", rootDir, "\" /entrypoint:\"", script_path, "\" \"", script_path, "\"");
+            string arguments = String.Concat("/dw:CompilerStrict /static+ /target:exe /out:\"", output, "\" /root:. /entrypoint:\"", Path.GetFileName(script_path), "\" \"", Path.GetFileName(script_path), "\"");
             if (isPure) arguments = "/pure+ " + arguments;
             if (isClr) arguments = "/lang:clr " + arguments;
             if (isPure || isClr) arguments = "/r:mscorlib " + arguments;
@@ -506,6 +506,7 @@ namespace PHP.Testing
 				compiler.StartInfo = new ProcessStartInfo(compilerPath, arguments);
 
 			compiler.StartInfo.UseShellExecute = false;
+            compiler.StartInfo.WorkingDirectory = rootDir;
 			compiler.StartInfo.RedirectStandardError = true;
 			compiler.StartInfo.RedirectStandardOutput = true;
 			compiler.StartInfo.RedirectStandardInput = true;

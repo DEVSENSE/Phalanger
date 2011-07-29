@@ -1632,7 +1632,11 @@ namespace PHP.Core
 		/// <returns>Whether the configuration is specific to an application subdirectory.</returns>
 		public bool IsSubApplicationConfig()
 		{
-			return virtualPath != null && virtualPath.Length > HttpRuntime.AppDomainAppVirtualPath.Length;
+            string appdomainVirtualPath;
+
+            return
+                virtualPath != null && (appdomainVirtualPath = HttpRuntime.AppDomainAppVirtualPath) != null &&
+                virtualPath.Length > appdomainVirtualPath.Length;
 		}
 
 		/// <summary>
