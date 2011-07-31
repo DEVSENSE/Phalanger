@@ -109,7 +109,10 @@ namespace PHP.Core
 
 				// Replace all '/' with '\'.
 				// path = path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-				Debug.Assert(path.IndexOf(Path.AltDirectorySeparatorChar) == -1);
+                Debug.Assert(
+                    path.IndexOf(Path.AltDirectorySeparatorChar) == -1 ||
+                    (Path.AltDirectorySeparatorChar == Path.DirectorySeparatorChar),    // on Mono, so ignore it
+                    string.Format("'{0}' should not contain '{1}' char.", path, Path.AltDirectorySeparatorChar));
 
 				// The file wrapper expects an absolute path w/o the scheme, others expect the scheme://url.
 				if (scheme != "file")

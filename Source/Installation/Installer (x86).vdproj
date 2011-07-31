@@ -4030,13 +4030,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -13886,9 +13886,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Phalanger 2.1 (July 2011) for .NET 4.0"
-        "ProductCode" = "8:{8FF57A10-C638-4B85-BC8E-5382F308D607}"
-        "PackageCode" = "8:{24B33CF8-5A33-48A6-8E55-14E6A12A29D4}"
+        "ProductName" = "8:Phalanger 2.1 (August 2011) for .NET 4.0"
+        "ProductCode" = "8:{A0314BA4-2E9A-4A11-8541-6BB09C9C4499}"
+        "PackageCode" = "8:{E78C1E34-767A-41E8-AE6F-F4070F7A804C}"
         "UpgradeCode" = "8:{1D57DEEC-585D-4D7D-A4DF-F6DB535051BA}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -13899,7 +13899,7 @@
         "Manufacturer" = "8:The Phalanger Team"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://phalanger.codeplex.com/discussions"
-        "Title" = "8:Phalanger 2.1 (July 2011) for .NET 4.0"
+        "Title" = "8:Phalanger 2.1 (August 2011) for .NET 4.0"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Tomas Matousek, Ladislav Prosek, Vaclav Novak, Pavel Novak, Jan Benda, Martin Maly, Miloslav Beno, Daniel Balas, Jakub Misek"
         "Keywords" = "8:Phalanger, PHP, .NET, compiler"
@@ -14868,7 +14868,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3AC83D074AD544EEB6A803F0EDA74F07"
             {
-            "SourcePath" = "8:Installer.Permissions\\obj\\Release\\Installer.Permissions.dll"
+            "SourcePath" = "8:Installer.Permissions\\obj\\Debug\\Installer.Permissions.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
@@ -14896,7 +14896,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_518A5155C5324C62933D0FF95E2A2551"
             {
-            "SourcePath" = "8:Installer.IISSamples\\obj\\Release\\Installer.IISSamples.dll"
+            "SourcePath" = "8:Installer.IISSamples\\obj\\Debug\\Installer.IISSamples.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"
@@ -14924,7 +14924,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_F892513EE29B40499B323C4D46FA2D7A"
             {
-            "SourcePath" = "8:MachineConfig\\obj\\Release\\Installer.MachineConfig.dll"
+            "SourcePath" = "8:MachineConfig\\obj\\Debug\\Installer.MachineConfig.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_9474D96A23514E1899A50EFBE4482A0B"

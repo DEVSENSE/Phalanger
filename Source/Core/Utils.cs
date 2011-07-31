@@ -3585,7 +3585,7 @@ namespace PHP.Core
         /// <param name="key">The key of the item.</param>
         /// the cache does not contain given <paramref name="key"/> yet.
         /// <returns>The item according to the given <paramref name="key"/>.</returns>
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [DebuggerNonUserCode]
         public T Get(K key)
         {
             T result;
@@ -3633,6 +3633,7 @@ namespace PHP.Core
         /// <param name="key">Key of the value to be updated or added.</param>
         /// <param name="updateFunction">The update function used to get the value of the item. The parameter cannot be null.</param>
         /// <returns>The value of the item with given <paramref name="key"/>.</returns>
+        [DebuggerNonUserCode]
         public T Update(K key, Func<K, T>/*!*/updateFunction)
         {
             Debug.Assert(updateFunction != null);
@@ -3655,6 +3656,7 @@ namespace PHP.Core
         /// </summary>
         /// <param name="key">Key of the value to be updated or added.</param>
         /// <returns>The value of the item with given <paramref name="key"/>.</returns>
+        [DebuggerNonUserCode]
         public T Update(K key)
         {
             return Update(key, updateFunction);
