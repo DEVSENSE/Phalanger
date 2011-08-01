@@ -13888,7 +13888,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Phalanger 2.1 (August 2011) for .NET 4.0"
         "ProductCode" = "8:{A0314BA4-2E9A-4A11-8541-6BB09C9C4499}"
-        "PackageCode" = "8:{E78C1E34-767A-41E8-AE6F-F4070F7A804C}"
+        "PackageCode" = "8:{666FF5DB-60C2-46B3-B63D-3F0941942EA3}"
         "UpgradeCode" = "8:{1D57DEEC-585D-4D7D-A4DF-F6DB535051BA}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

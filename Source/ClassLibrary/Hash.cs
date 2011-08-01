@@ -533,10 +533,10 @@ namespace PHP.Library
                         algs["adler32"] = () => new ADLER32();
                         
                         algs["sha1"] = () => new SHA1();
-                        //algs["sha256"] = () => new SHA256();
                         //algs["sha224"] = () => new SHA224();
-                        //algs["sha512"] = () => new SHA512();
+                        algs["sha256"] = () => new SHA256();
                         //algs["sha384"] = () => new SHA384();
+                        //algs["sha512"] = () => new SHA512();
                         
                         //algs["whirlpool"] = () => new WHIRLPOOL();
                         
@@ -556,7 +556,7 @@ namespace PHP.Library
 
             #endregion
 
-            public class ADLER32 : HashPhpResource
+            public sealed class ADLER32 : HashPhpResource
             {
                 private uint state;
 
@@ -598,7 +598,7 @@ namespace PHP.Library
                 }
                 public override int BlockSize { get { return 4; } }
             }
-            public class CRC32 : HashPhpResource
+            public sealed class CRC32 : HashPhpResource
             {
                 private uint state;
 
@@ -688,7 +688,7 @@ namespace PHP.Library
                 }
                 public override int BlockSize { get { return 4; } }
             }
-            public class CRC32B : HashPhpResource
+            public sealed class CRC32B : HashPhpResource
             {
                 private uint state;
 
@@ -793,7 +793,7 @@ namespace PHP.Library
                 }
                 public override int BlockSize { get { return 4; } }
             }
-            public class MD2 : HashPhpResource
+            public sealed class MD2 : HashPhpResource
             {
                 private static byte[] MD2_S = {
 	 41,  46,  67, 201, 162, 216, 124,   1,  61,  54,  84, 161, 236, 240,   6,  19,
@@ -905,7 +905,7 @@ namespace PHP.Library
 
                 public override int BlockSize { get { return 16; } }
             }
-            public class MD4 : HashPhpResource
+            public sealed class MD4 : HashPhpResource
             {
                 #region state
 
@@ -1095,7 +1095,7 @@ namespace PHP.Library
 
                 #endregion
             }
-            public class MD5 : HashPhpResource
+            public sealed class MD5 : HashPhpResource
             {
                 #region state
 
@@ -1384,39 +1384,149 @@ namespace PHP.Library
 
                 #endregion
             }
-            public class SHA1 : HashPhpResource
+            /// <summary>
+            /// Base class for SHA based hashing algorithms.
+            /// </summary>
+            /// <typeparam name="T">Actual type of SHA class. Used to instantiate new one in <see cref="Clone"/> method.</typeparam>
+            public abstract class SHA<T> : HashPhpResource where T: SHA<T>, new()
             {
                 #region state
 
-                private byte[]/*!*/_buffer = new byte[0x40];
-                private long _count;
-                private uint[]/*!*/_expandedBuffer = new uint[80];
-                private uint[]/*!*/_stateSHA1 = new uint[5];
+                /// <summary>
+                /// Internal buffer holding SHA results.
+                /// </summary>
+                protected readonly byte[]/*!*/_buffer;
+                /// <summary>
+                /// Amount of chars encoded.
+                /// </summary>
+                protected long _count;
+                /// <summary>
+                /// Temporary buffer used internally by <see cref="_HashData"/> method.
+                /// </summary>
+                protected readonly uint[]/*!*/_tmp;
+                /// <summary>
+                /// Current hash state.
+                /// </summary>
+                protected readonly uint[]/*!*/_state;
 
                 #endregion
 
-                #region SHA1 hashing internals (based on System.Security.Cryptography.SHA1Managed & PHP implementation)
+                #region Constructor
 
-                public SHA1()
+                public SHA(int bufferSize, int tmpSize, int stateSize)
                 {
+                    Debug.Assert(bufferSize > 0);
+                    Debug.Assert(tmpSize > 0);
+                    Debug.Assert(stateSize > 0);
+
+                    this._buffer = new byte[bufferSize];
+                    this._tmp = new uint[tmpSize];
+                    this._state = new uint[stateSize];
+
+                    // initialize the state:
                     this.InitializeState();
                 }
 
-                private void InitializeState()
+                #endregion
+
+                #region SHA (to be implemented in derived class)
+
+                /// <summary>
+                /// Set <see cref="_count"/> and <see cref="_state"/> to their initial state.
+                /// </summary>
+                protected abstract void InitializeState();
+
+                /// <summary>
+                /// Finalize the hash.
+                /// </summary>
+                /// <returns>Resulting hash.</returns>
+                protected abstract byte[] _EndHash();
+
+                /// <summary>
+                /// Pump more data into the hashing algorithm.
+                /// </summary>
+                /// <param name="partIn">Array of data to be hashed.</param>
+                /// <param name="ibStart">Index where to start reading from <paramref name="partIn"/>.</param>
+                /// <param name="cbSize">Amount of bytes to read from <paramref name="partIn"/>.</param>
+                /// <returns><c>true</c> if hashing succeeded.</returns>
+                protected abstract bool _HashData(byte[] partIn, int ibStart, int cbSize);
+
+                #endregion
+
+                #region HashPhpResource
+
+                public override void Init()
+                {
+                    if (_state != null /*&& _buffer != null && _tmp != null*/) // iff we are initialized already (base .ctor which calls Init is called before this .ctor, so these arrays may not be initialized yet)
+                    {
+                        this.InitializeState();
+                        Array.Clear(this._buffer, 0, this._buffer.Length);
+                        Array.Clear(this._tmp, 0, this._tmp.Length);
+                    }
+                }
+
+                public override bool Update(byte[]/*!*/data)
+                {
+                    Debug.Assert(data != null);
+
+                    return _HashData(data, 0, data.Length);
+                }
+
+                public override byte[] Final()
+                {
+                    try
+                    {
+                        return _EndHash();
+                    }
+                    finally
+                    {
+                        InitializeState();  // clear the state
+                    }
+                }
+
+                public override HashPhpResource Clone()
+                {
+                    var clone = new T() { _count = this._count };
+                    this.CloneHashState(clone);
+
+                    this._buffer.CopyTo(clone._buffer, 0);
+                    this._tmp.CopyTo(clone._tmp, 0);
+                    this._state.CopyTo(clone._state, 0);
+
+                    return clone;
+                }
+
+                public override int BlockSize
+                {
+                    get { return _buffer.Length; }
+                }
+
+                #endregion
+            }
+            public sealed class SHA1 : SHA<SHA1>
+            {
+                #region SHA1 hashing internals (based on System.Security.Cryptography.SHA1Managed & PHP implementation)
+
+                public SHA1()
+                    :base(64,80,5)
+                {
+                }
+
+                protected override void InitializeState()
                 {
                     this._count = 0L;
-                    this._stateSHA1[0] = 0x67452301;
-                    this._stateSHA1[1] = 0xefcdab89;
-                    this._stateSHA1[2] = 0x98badcfe;
-                    this._stateSHA1[3] = 0x10325476;
-                    this._stateSHA1[4] = 0xc3d2e1f0;
+                    this._state[0] = 0x67452301;
+                    this._state[1] = 0xefcdab89;
+                    this._state[2] = 0x98badcfe;
+                    this._state[3] = 0x10325476;
+                    this._state[4] = 0xc3d2e1f0;
                 }
 
                 /// <summary>
                 /// Finalize the hash.
                 /// </summary>
                 /// <returns>Hashed bytes.</returns>
-                private byte[] _EndHash()
+                protected override byte[] _EndHash()
                 {
                     byte[] block = new byte[20];
                     int num = 0x40 - ((int)(this._count & 0x3fL));
@@ -1435,12 +1545,12 @@ namespace PHP.Library
                     partIn[num - 2] = (byte)((num2 >> 8) & 0xffL);
                     partIn[num - 1] = (byte)(num2 & 0xffL);
                     this._HashData(partIn, 0, partIn.Length);
-                    DWORDToBigEndian(block, this._stateSHA1, 5);
+                    DWORDToBigEndian(block, this._state, 5);
                     //base.HashValue = block;
                     return block;
                 }
 
-                private bool _HashData(byte[] partIn, int ibStart, int cbSize)
+                protected override bool _HashData(byte[] partIn, int ibStart, int cbSize)
                 {
                     unchecked
                     {
@@ -1454,7 +1564,7 @@ namespace PHP.Library
                             Buffer.BlockCopy(partIn, srcOffsetBytes, this._buffer, dstOffsetBytes, 0x40 - dstOffsetBytes);
                             srcOffsetBytes += 0x40 - dstOffsetBytes;
                             byteCount -= 0x40 - dstOffsetBytes;
-                            SHATransform(_expandedBuffer, _stateSHA1, _buffer);
+                            SHATransform(_tmp, _state, _buffer);
                             dstOffsetBytes = 0;
                         }
                         while (byteCount >= 0x40)
@@ -1462,7 +1572,7 @@ namespace PHP.Library
                             Buffer.BlockCopy(partIn, srcOffsetBytes, this._buffer, 0, 0x40);
                             srcOffsetBytes += 0x40;
                             byteCount -= 0x40;
-                            SHATransform(_expandedBuffer, _stateSHA1, _buffer);
+                            SHATransform(_tmp, _state, _buffer);
                         }
                         if (byteCount > 0)
                         {
@@ -1565,51 +1675,148 @@ namespace PHP.Library
                 }
 
                 #endregion
+            }
+            public sealed class SHA256 : SHA<SHA256>
+            {
+                #region SHA256 hashing internals (based on System.Security.Cryptography.SHA256Managed & PHP implementation)
 
-                #region HashPhpResource
-
-                public override void Init()
-                {
-                    this.InitializeState();
-                    Array.Clear(this._buffer, 0, this._buffer.Length);
-                    Array.Clear(this._expandedBuffer, 0, this._expandedBuffer.Length);
+                public SHA256()
+                    :base(64,64,8)
+                {                    
                 }
 
-                public override HashPhpResource Clone()
+                protected override void InitializeState()
                 {
-                    var clone = new SHA1() { _count = this._count };
-                    this.CloneHashState(clone);
+                    this._count = 0L;
 
-                    this._buffer.CopyTo(clone._buffer, 0);
-                    this._expandedBuffer.CopyTo(clone._expandedBuffer, 0);
-                    this._stateSHA1.CopyTo(clone._stateSHA1, 0);
-
-                    return clone;
+                    // initialize the state:
+                    this._state[0] = 0x6a09e667;
+                    this._state[1] = 0xbb67ae85;
+                    this._state[2] = 0x3c6ef372;
+                    this._state[3] = 0xa54ff53a;
+                    this._state[4] = 0x510e527f;
+                    this._state[5] = 0x9b05688c;
+                    this._state[6] = 0x1f83d9ab;
+                    this._state[7] = 0x5be0cd19;
                 }
 
-                public override bool Update(byte[]/*!*/data)
+                /// <summary>
+                /// Finalize the hash.
+                /// </summary>
+                /// <returns>Hashed bytes.</returns>
+                protected override byte[] _EndHash()
                 {
-                    Debug.Assert(data != null);
+                    byte[] block = new byte[32];
 
-                    return _HashData(data, 0, data.Length);
+                    int num = 0x40 - ((int)(this._count & 0x3fL));
+                    if (num <= 8)
+                        num += 0x40;
+
+                    byte[] partIn = new byte[num];
+                    partIn[0] = 0x80;
+                    long num2 = this._count * 8L;
+                    partIn[num - 8] = (byte)((num2 >> 0x38) & 0xffL);
+                    partIn[num - 7] = (byte)((num2 >> 0x30) & 0xffL);
+                    partIn[num - 6] = (byte)((num2 >> 40) & 0xffL);
+                    partIn[num - 5] = (byte)((num2 >> 0x20) & 0xffL);
+                    partIn[num - 4] = (byte)((num2 >> 0x18) & 0xffL);
+                    partIn[num - 3] = (byte)((num2 >> 0x10) & 0xffL);
+                    partIn[num - 2] = (byte)((num2 >> 8) & 0xffL);
+                    partIn[num - 1] = (byte)(num2 & 0xffL);
+                    this._HashData(partIn, 0, partIn.Length);
+                    DWORDToBigEndian(block, this._state, 8);
+                    //base.HashValue = block;
+                    return block;
                 }
 
-                public override byte[] Final()
+                protected override bool _HashData(byte[] partIn, int ibStart, int cbSize)
                 {
-                    try
+                    unchecked
                     {
-                        return _EndHash();
+                        int byteCount = cbSize;
+                        int srcOffsetBytes = ibStart;
+                        int dstOffsetBytes = (int)(this._count & 0x3fL);
+                        this._count += byteCount;
+
+                        if ((dstOffsetBytes > 0) && ((dstOffsetBytes + byteCount) >= 0x40))
+                        {
+                            Buffer.BlockCopy(partIn, srcOffsetBytes, this._buffer, dstOffsetBytes, 0x40 - dstOffsetBytes);
+                            srcOffsetBytes += 0x40 - dstOffsetBytes;
+                            byteCount -= 0x40 - dstOffsetBytes;
+                            SHATransform(_tmp, _state, _buffer);
+                            dstOffsetBytes = 0;
+                        }
+                        while (byteCount >= 0x40)
+                        {
+                            Buffer.BlockCopy(partIn, srcOffsetBytes, this._buffer, 0, 0x40);
+                            srcOffsetBytes += 0x40;
+                            byteCount -= 0x40;
+                            SHATransform(_tmp, _state, _buffer);
+                        }
+                        if (byteCount > 0)
+                        {
+                            Buffer.BlockCopy(partIn, srcOffsetBytes, this._buffer, dstOffsetBytes, byteCount);
+                        }
                     }
-                    finally
+
+                    return true;
+                }
+
+                #region SHA256 internals
+                private static uint ROTR32(int b, uint x) { return unchecked((x >> b) | (x << (32 - b))); }
+                private static uint ROTR64(int b, uint x) { return unchecked((x >> b) | (x << (64 - b))); }
+                private static uint SHR(int b, uint x) { return unchecked(x >> b); }
+
+                private static uint SHA256_F0(uint x, uint y, uint z) { return unchecked(((x) & (y)) ^ ((~(x)) & (z))); }
+                private static uint SHA256_F1(uint x, uint y, uint z) { return unchecked(((x) & (y)) ^ ((x) & (z)) ^ ((y) & (z))); }
+                private static uint SHA256_F2(uint x) { return unchecked(ROTR32(2, (x)) ^ ROTR32(13, (x)) ^ ROTR32(22, (x))); }
+                private static uint SHA256_F3(uint x) { return unchecked(ROTR32(6, (x)) ^ ROTR32(11, (x)) ^ ROTR32(25, (x))); }
+                private static uint SHA256_F4(uint x) { return unchecked(ROTR32(7, (x)) ^ ROTR32(18, (x)) ^ SHR(3, (x))); }
+                private static uint SHA256_F5(uint x) { return unchecked(ROTR32(17, (x)) ^ ROTR32(19, (x)) ^ SHR(10, (x))); }
+                static readonly uint[] SHA256_K = new uint[]{
+	                0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+	                0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+	                0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+	                0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+	                0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+	                0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+	                0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+	                0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+                };
+                #endregion
+
+                private static void SHATransform(uint[] tmp, uint[] state, byte[] block)
+                {
+                    Debug.Assert(tmp != null && tmp.Length == 64);
+
+                    unchecked
                     {
-                        InitializeState();  // clear the state
+                        uint a = state[0], b = state[1], c = state[2], d = state[3], e = state[4], f = state[5], g = state[6], h = state[7];
+
+                        DWORDFromBigEndian(tmp, 0x10, block);
+
+                        for (int i = 16; i < 64; i++)
+                            tmp[i] = SHA256_F5(tmp[i - 2]) + tmp[i - 7] + SHA256_F4(tmp[i - 15]) + tmp[i - 16];
+
+                        for (int i = 0; i < 64; i++)
+                        {
+                            uint T1 = h + SHA256_F3(e) + SHA256_F0(e, f, g) + SHA256_K[i] + tmp[i];
+                            uint T2 = SHA256_F2(a) + SHA256_F1(a, b, c);
+                            h = g; g = f; f = e; e = d + T1;
+                            d = c; c = b; b = a; a = T1 + T2;
+                        }
+
+                        state[0] += a;
+                        state[1] += b;
+                        state[2] += c;
+                        state[3] += d;
+                        state[4] += e;
+                        state[5] += f;
+                        state[6] += g;
+                        state[7] += h;
                     }
                 }
 
-                public override int BlockSize
-                {
-                    get { return 64; }
-                }
 
                 #endregion
             }
@@ -1628,9 +1835,10 @@ namespace PHP.Library
         [ImplementsFunction("hash_algos")]
         public static PhpArray GetHashAlgorithms()
         {
-            PhpArray result = new PhpArray();
+            var algos = HashPhpResource.HashAlgorithms;
+            var result = new PhpArray(algos.Count, 0);
 
-            foreach (var x in HashPhpResource.HashAlgorithms)
+            foreach (var x in algos)
                 result.Add(x.Key);
 
             return result;

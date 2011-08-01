@@ -6,10 +6,10 @@ function test_hash($algo, $init)
 {
 	echo "\n$algo, incremental: ";
 	$h = hash_init($algo);
-	for($i=0;$i<10;++$i) hash_update($h, '' . $init*2 + $i);
+	for($i=0;$i<10;++$i) hash_update($h, '' . $init*2 + $i*17);
 	echo '(copying state) ';
 	$h2 = hash_copy($h);
-	for($i=0;$i<10;++$i) hash_update($h, '' . $init*2 + $i);
+	for($i=0;$i<10;++$i) hash_update($h, '' . $init*2 + $i*19);
 	var_dump(hash_final($h));
 	
 	echo "\n$algo, from copied state: ";
@@ -17,10 +17,10 @@ function test_hash($algo, $init)
 	
 	echo "\n$algo, HMAC, incremental: ";
 	$h = hash_init($algo, HASH_HMAC, 'HMAC key. It can be very long, but in this case it will be rehashed to fit the block size of the hashing algorithm...'.$init*147);
-	for($i=0;$i<10;++$i) hash_update($h, '' . $init*4 + $i);
+	for($i=0;$i<10;++$i) hash_update($h, '' . $init*4 + $i*7);
 	//echo '(copying state) ';
 	//$h2 = hash_copy($h);// causes PHP crashes sometimes, reported as PHP Bug #52240
-	for($i=0;$i<10;++$i) hash_update($h, '' . $init*3 + $i);
+	for($i=0;$i<10;++$i) hash_update($h, '' . $init*3 + $i*11);
 	var_dump(hash_final($h));
 	
 	//echo "\n$algo, HMAC, from copied state: ";
@@ -42,6 +42,7 @@ test_hash('md2', 45678);
 test_hash('md4', 5678);
 test_hash('md5', 678);
 test_hash('sha1', 111222);
+test_hash('sha256', 64983042165);
 // add more tests as other hashing algorithms will be implemented
 
 ?>
