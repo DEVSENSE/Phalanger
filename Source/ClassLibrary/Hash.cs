@@ -288,7 +288,7 @@ namespace PHP.Library
             /// hash_init
             /// </summary>
             protected HashPhpResource()
-                : base("Hashing Context")
+                : base("Hash Context")
             {
                 Init();
             }
@@ -505,7 +505,7 @@ namespace PHP.Library
                 {
                     if (_HashAlgorithms == null)
                     {
-                        var algs = new Dictionary<string, HashAlgFactory>(25);
+                        var algs = new Dictionary<string, HashAlgFactory>(25, StringComparer.OrdinalIgnoreCase);
 
                         //
                         // note: use lower case as algorithms name
@@ -1908,7 +1908,7 @@ namespace PHP.Library
             }
 
             HashPhpResource.HashAlgFactory algFactory;
-            if (!HashPhpResource.HashAlgorithms.TryGetValue(algo.ToLower(), out algFactory))
+            if (!HashPhpResource.HashAlgorithms.TryGetValue(algo, out algFactory))
             {
                 PhpException.Throw(PhpError.Warning, "Unknown hashing algorithm: " + algo);   // TODO: to resources
                 return null;
