@@ -138,17 +138,60 @@ namespace PHP.Core.Binders
         {
             Debug.Assert(expression != null);
 
+            var type = expression.Type;
+
+            if (type.IsGenericParameter)
+                type = Types.Object[0];
+
             // PHP types as they are:
-            if (PhpVariable.IsPrimitiveType(expression.Type) || Types.DObject[0].IsAssignableFrom(expression.Type))
+            if (PhpVariable.IsPrimitiveType(type) || /*Types.DObject[0].IsAssignableFrom(type) || */typeof(IPhpVariable).IsAssignableFrom(type))
                 return expression;
 
-            // byte[] -> PhpBytes( <expression> )
-            if (expression.Type == typeof(byte[]))
-                return Expression.New(Constructors.PhpBytes_ByteArray, expression);
+            // (byte[])<expression> -> PhpBytes( <expression> )
+            // (byte[])null -> null
+            if (type == typeof(byte[]))
+            {
+                var value = Expression.Variable(typeof(byte[]));
+                return
+                    Expression.Block(Types.PhpBytes[0],
+                        new[] { value },
+                        Expression.Condition(
+                            Expression.Equal(Expression.Assign(value, expression),Expression.Constant(null)),
+                            Expression.Constant(null, Types.PhpBytes[0]),
+                            Expression.New(Constructors.PhpBytes_ByteArray, value)
+                    ));
+            }
+            
+            // from Emit/ClrOverloadBuilder.cs, ClrOverloadBuilder.EmitConvertToPhp:
+            switch (Type.GetTypeCode(type))
+            {
+                // coercion:
+                case TypeCode.SByte:
+                case TypeCode.Int16:
+                case TypeCode.Byte:
+                case TypeCode.UInt16:
+                    return Expression.Convert(expression, Types.Int[0]);
+
+                case TypeCode.UInt32:
+                    return Expression.Convert(expression, Types.LongInt[0]);
+                case TypeCode.UInt64:
+                case TypeCode.Single:
+                    return Expression.Convert(expression, Types.Double[0]);
+
+                case TypeCode.Char:
+                    return Expression.Call(Expression.Convert(expression, Types.Object[0]), Methods.Object_ToString);
+
+                case TypeCode.DBNull:
+                    return Expression.Constant(null, Types.Object[0]);
+            }
 
             // value type -> ClrValue<T>
             // ref type -> ClrObject
-            return Expression.Call(null, Methods.ClrObject_Create, expression);
+            return Expression.Call(null,
+                type == Types.Object[0] ?
+                    Methods.ClrObject_WrapDynamic :     // expression can represent anything, check type in run time and wrap dynamically
+                    Methods.ClrObject_WrapRealObject,   // expression is surely not PHP primitive type, DObject nor byte[], wrap into ClrObject or IClrValue
+                Expression.Convert(expression, Types.Object[0]));
         }
 
         /// <summary>
