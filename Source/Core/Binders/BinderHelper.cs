@@ -165,17 +165,23 @@ namespace PHP.Core.Binders
             // from Emit/ClrOverloadBuilder.cs, ClrOverloadBuilder.EmitConvertToPhp:
             switch (Type.GetTypeCode(type))
             {
+                case TypeCode.Boolean:
+                    return Expression.Convert(expression, Types.Bool[0]);
                 // coercion:
                 case TypeCode.SByte:
                 case TypeCode.Int16:
                 case TypeCode.Byte:
                 case TypeCode.UInt16:
+                case TypeCode.Int32:
                     return Expression.Convert(expression, Types.Int[0]);
 
+                case TypeCode.Int64:
                 case TypeCode.UInt32:
                     return Expression.Convert(expression, Types.LongInt[0]);
+
                 case TypeCode.UInt64:
                 case TypeCode.Single:
+                case TypeCode.Double:
                     return Expression.Convert(expression, Types.Double[0]);
 
                 case TypeCode.Char:
