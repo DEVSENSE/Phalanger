@@ -1505,7 +1505,7 @@ namespace PHP.Library
             }
             public sealed class SHA1 : SHA<SHA1>
             {
-                #region SHA1 hashing internals (based on System.Security.Cryptography.SHA1Managed & PHP implementation)
+                #region SHA1 hashing internals
 
                 public SHA1()
                     :base(64,80,5)
@@ -1595,15 +1595,17 @@ namespace PHP.Library
                     }
                 }
 
-                private static void SHATransform(uint[] expandedBuffer, uint[] state, byte[] block)
+                private static void SHATransform(uint[] tmp, uint[] state, byte[] block)
                 {
+                    Debug.Assert(tmp != null && tmp.Length == 80);
+
                     uint num = state[0];
                     uint num2 = state[1];
                     uint num3 = state[2];
                     uint num4 = state[3];
                     uint num5 = state[4];
-                    DWORDFromBigEndian(expandedBuffer, 0x10, block);
-                    SHAExpand(expandedBuffer);
+                    DWORDFromBigEndian(tmp, 0x10, block);
+                    SHAExpand(tmp);
                     int index = 0;
 
                     unchecked
@@ -1611,57 +1613,57 @@ namespace PHP.Library
 
                         while (index < 20)
                         {
-                            num5 += ((((num << 5) | (num >> 0x1b)) + (num4 ^ (num2 & (num3 ^ num4)))) + expandedBuffer[index]) + 0x5a827999;
+                            num5 += ((((num << 5) | (num >> 0x1b)) + (num4 ^ (num2 & (num3 ^ num4)))) + tmp[index]) + 0x5a827999;
                             num2 = (num2 << 30) | (num2 >> 2);
-                            num4 += ((((num5 << 5) | (num5 >> 0x1b)) + (num3 ^ (num & (num2 ^ num3)))) + expandedBuffer[index + 1]) + 0x5a827999;
+                            num4 += ((((num5 << 5) | (num5 >> 0x1b)) + (num3 ^ (num & (num2 ^ num3)))) + tmp[index + 1]) + 0x5a827999;
                             num = (num << 30) | (num >> 2);
-                            num3 += ((((num4 << 5) | (num4 >> 0x1b)) + (num2 ^ (num5 & (num ^ num2)))) + expandedBuffer[index + 2]) + 0x5a827999;
+                            num3 += ((((num4 << 5) | (num4 >> 0x1b)) + (num2 ^ (num5 & (num ^ num2)))) + tmp[index + 2]) + 0x5a827999;
                             num5 = (num5 << 30) | (num5 >> 2);
-                            num2 += ((((num3 << 5) | (num3 >> 0x1b)) + (num ^ (num4 & (num5 ^ num)))) + expandedBuffer[index + 3]) + 0x5a827999;
+                            num2 += ((((num3 << 5) | (num3 >> 0x1b)) + (num ^ (num4 & (num5 ^ num)))) + tmp[index + 3]) + 0x5a827999;
                             num4 = (num4 << 30) | (num4 >> 2);
-                            num += ((((num2 << 5) | (num2 >> 0x1b)) + (num5 ^ (num3 & (num4 ^ num5)))) + expandedBuffer[index + 4]) + 0x5a827999;
+                            num += ((((num2 << 5) | (num2 >> 0x1b)) + (num5 ^ (num3 & (num4 ^ num5)))) + tmp[index + 4]) + 0x5a827999;
                             num3 = (num3 << 30) | (num3 >> 2);
                             index += 5;
                         }
                         while (index < 40)
                         {
-                            num5 += ((((num << 5) | (num >> 0x1b)) + ((num2 ^ num3) ^ num4)) + expandedBuffer[index]) + 0x6ed9eba1;
+                            num5 += ((((num << 5) | (num >> 0x1b)) + ((num2 ^ num3) ^ num4)) + tmp[index]) + 0x6ed9eba1;
                             num2 = (num2 << 30) | (num2 >> 2);
-                            num4 += ((((num5 << 5) | (num5 >> 0x1b)) + ((num ^ num2) ^ num3)) + expandedBuffer[index + 1]) + 0x6ed9eba1;
+                            num4 += ((((num5 << 5) | (num5 >> 0x1b)) + ((num ^ num2) ^ num3)) + tmp[index + 1]) + 0x6ed9eba1;
                             num = (num << 30) | (num >> 2);
-                            num3 += ((((num4 << 5) | (num4 >> 0x1b)) + ((num5 ^ num) ^ num2)) + expandedBuffer[index + 2]) + 0x6ed9eba1;
+                            num3 += ((((num4 << 5) | (num4 >> 0x1b)) + ((num5 ^ num) ^ num2)) + tmp[index + 2]) + 0x6ed9eba1;
                             num5 = (num5 << 30) | (num5 >> 2);
-                            num2 += ((((num3 << 5) | (num3 >> 0x1b)) + ((num4 ^ num5) ^ num)) + expandedBuffer[index + 3]) + 0x6ed9eba1;
+                            num2 += ((((num3 << 5) | (num3 >> 0x1b)) + ((num4 ^ num5) ^ num)) + tmp[index + 3]) + 0x6ed9eba1;
                             num4 = (num4 << 30) | (num4 >> 2);
-                            num += ((((num2 << 5) | (num2 >> 0x1b)) + ((num3 ^ num4) ^ num5)) + expandedBuffer[index + 4]) + 0x6ed9eba1;
+                            num += ((((num2 << 5) | (num2 >> 0x1b)) + ((num3 ^ num4) ^ num5)) + tmp[index + 4]) + 0x6ed9eba1;
                             num3 = (num3 << 30) | (num3 >> 2);
                             index += 5;
                         }
                         while (index < 60)
                         {
-                            num5 += ((((num << 5) | (num >> 0x1b)) + ((num2 & num3) | (num4 & (num2 | num3)))) + expandedBuffer[index]) + 0x8f1bbcdc;
+                            num5 += ((((num << 5) | (num >> 0x1b)) + ((num2 & num3) | (num4 & (num2 | num3)))) + tmp[index]) + 0x8f1bbcdc;
                             num2 = (num2 << 30) | (num2 >> 2);
-                            num4 += ((((num5 << 5) | (num5 >> 0x1b)) + ((num & num2) | (num3 & (num | num2)))) + expandedBuffer[index + 1]) + 0x8f1bbcdc;
+                            num4 += ((((num5 << 5) | (num5 >> 0x1b)) + ((num & num2) | (num3 & (num | num2)))) + tmp[index + 1]) + 0x8f1bbcdc;
                             num = (num << 30) | (num >> 2);
-                            num3 += ((((num4 << 5) | (num4 >> 0x1b)) + ((num5 & num) | (num2 & (num5 | num)))) + expandedBuffer[index + 2]) + 0x8f1bbcdc;
+                            num3 += ((((num4 << 5) | (num4 >> 0x1b)) + ((num5 & num) | (num2 & (num5 | num)))) + tmp[index + 2]) + 0x8f1bbcdc;
                             num5 = (num5 << 30) | (num5 >> 2);
-                            num2 += ((((num3 << 5) | (num3 >> 0x1b)) + ((num4 & num5) | (num & (num4 | num5)))) + expandedBuffer[index + 3]) + 0x8f1bbcdc;
+                            num2 += ((((num3 << 5) | (num3 >> 0x1b)) + ((num4 & num5) | (num & (num4 | num5)))) + tmp[index + 3]) + 0x8f1bbcdc;
                             num4 = (num4 << 30) | (num4 >> 2);
-                            num += ((((num2 << 5) | (num2 >> 0x1b)) + ((num3 & num4) | (num5 & (num3 | num4)))) + expandedBuffer[index + 4]) + 0x8f1bbcdc;
+                            num += ((((num2 << 5) | (num2 >> 0x1b)) + ((num3 & num4) | (num5 & (num3 | num4)))) + tmp[index + 4]) + 0x8f1bbcdc;
                             num3 = (num3 << 30) | (num3 >> 2);
                             index += 5;
                         }
                         while (index < 80)
                         {
-                            num5 += ((((num << 5) | (num >> 0x1b)) + ((num2 ^ num3) ^ num4)) + expandedBuffer[index]) + 0xca62c1d6;
+                            num5 += ((((num << 5) | (num >> 0x1b)) + ((num2 ^ num3) ^ num4)) + tmp[index]) + 0xca62c1d6;
                             num2 = (num2 << 30) | (num2 >> 2);
-                            num4 += ((((num5 << 5) | (num5 >> 0x1b)) + ((num ^ num2) ^ num3)) + expandedBuffer[index + 1]) + 0xca62c1d6;
+                            num4 += ((((num5 << 5) | (num5 >> 0x1b)) + ((num ^ num2) ^ num3)) + tmp[index + 1]) + 0xca62c1d6;
                             num = (num << 30) | (num >> 2);
-                            num3 += ((((num4 << 5) | (num4 >> 0x1b)) + ((num5 ^ num) ^ num2)) + expandedBuffer[index + 2]) + 0xca62c1d6;
+                            num3 += ((((num4 << 5) | (num4 >> 0x1b)) + ((num5 ^ num) ^ num2)) + tmp[index + 2]) + 0xca62c1d6;
                             num5 = (num5 << 30) | (num5 >> 2);
-                            num2 += ((((num3 << 5) | (num3 >> 0x1b)) + ((num4 ^ num5) ^ num)) + expandedBuffer[index + 3]) + 0xca62c1d6;
+                            num2 += ((((num3 << 5) | (num3 >> 0x1b)) + ((num4 ^ num5) ^ num)) + tmp[index + 3]) + 0xca62c1d6;
                             num4 = (num4 << 30) | (num4 >> 2);
-                            num += ((((num2 << 5) | (num2 >> 0x1b)) + ((num3 ^ num4) ^ num5)) + expandedBuffer[index + 4]) + 0xca62c1d6;
+                            num += ((((num2 << 5) | (num2 >> 0x1b)) + ((num3 ^ num4) ^ num5)) + tmp[index + 4]) + 0xca62c1d6;
                             num3 = (num3 << 30) | (num3 >> 2);
                             index += 5;
                         }
@@ -1678,7 +1680,7 @@ namespace PHP.Library
             }
             public sealed class SHA256 : SHA<SHA256>
             {
-                #region SHA256 hashing internals (based on System.Security.Cryptography.SHA256Managed & PHP implementation)
+                #region SHA256 hashing internals
 
                 public SHA256()
                     :base(64,64,8)
@@ -1764,7 +1766,6 @@ namespace PHP.Library
 
                 #region SHA256 internals
                 private static uint ROTR32(int b, uint x) { return unchecked((x >> b) | (x << (32 - b))); }
-                private static uint ROTR64(int b, uint x) { return unchecked((x >> b) | (x << (64 - b))); }
                 private static uint SHR(int b, uint x) { return unchecked(x >> b); }
 
                 private static uint SHA256_F0(uint x, uint y, uint z) { return unchecked(((x) & (y)) ^ ((~(x)) & (z))); }
@@ -1802,8 +1803,15 @@ namespace PHP.Library
                         {
                             uint T1 = h + SHA256_F3(e) + SHA256_F0(e, f, g) + SHA256_K[i] + tmp[i];
                             uint T2 = SHA256_F2(a) + SHA256_F1(a, b, c);
-                            h = g; g = f; f = e; e = d + T1;
-                            d = c; c = b; b = a; a = T1 + T2;
+
+                            h = g;
+                            g = f;
+                            f = e;
+                            e = d + T1;
+                            d = c;
+                            c = b;
+                            b = a;
+                            a = T1 + T2;
                         }
 
                         state[0] += a;
