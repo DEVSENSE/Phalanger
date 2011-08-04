@@ -99,6 +99,7 @@ namespace PHP.Library
 		/// </summary>
 		/// <returns>Filename of a contained file (including . and ..).</returns>
 		[ImplementsMethod]
+        [return:CastToFalse]
 		public object read(ScriptContext context, [Optional]object handle)
 		{
 			PhpResource res = (handle == Arg.Default ? this.handle.Value : handle) as PhpResource;
@@ -182,13 +183,12 @@ namespace PHP.Library
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static object read(object instance, PhpStack stack)
 		{
-			object result;
 			switch (stack.ArgCount)
 			{
 				case 0:
 					{
 						stack.RemoveFrame();
-						return ((result = ((Directory)instance).read(stack.Context, Arg.Default)) == null ? false : result);
+                        return ((Directory)instance).read(stack.Context, Arg.Default) ?? false;
 					}
 
 				case 1:
@@ -196,7 +196,7 @@ namespace PHP.Library
 						stack.CalleeName = "read";
 						object arg = stack.PeekValue(1);
 						stack.RemoveFrame();
-						return ((result = ((Directory)instance).read(stack.Context, arg)) == null ? false : result);
+                        return ((Directory)instance).read(stack.Context, arg) ?? false;
 					}
 
 				default:

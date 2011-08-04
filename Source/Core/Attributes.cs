@@ -735,6 +735,12 @@ namespace PHP.Core
 		public CastToFalseAttribute()
 		{
 		}
+
+        internal static CastToFalseAttribute Reflect(MethodInfo/*!*/ method)
+        {
+            object[] attributes = method.GetCustomAttributes(typeof(CastToFalseAttribute), false);
+            return (attributes.Length == 1) ? (CastToFalseAttribute)attributes[0] : null;
+        }
 	}
 
 	/// <summary>
