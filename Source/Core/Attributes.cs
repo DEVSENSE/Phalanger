@@ -735,11 +735,15 @@ namespace PHP.Core
 		public CastToFalseAttribute()
 		{
 		}
-
-        internal static CastToFalseAttribute Reflect(MethodInfo/*!*/ method)
+        
+        /// <summary>
+        /// Determine wheter the attribute is defined for given <paramref name="method"/>.
+        /// </summary>
+        /// <param name="method"><see cref="MethodInfo"/> to check for the attribute.</param>
+        /// <returns>True iff given <paramref name="method"/> has <see cref="CastToFalseAttribute"/>.</returns>
+        internal static bool IsDefined(MethodInfo/*!*/ method)
         {
-            object[] attributes = method.GetCustomAttributes(typeof(CastToFalseAttribute), false);
-            return (attributes.Length == 1) ? (CastToFalseAttribute)attributes[0] : null;
+            return method.ReturnTypeCustomAttributes.IsDefined(typeof(CastToFalseAttribute), false);
         }
 	}
 

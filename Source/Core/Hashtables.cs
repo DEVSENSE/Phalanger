@@ -226,9 +226,9 @@ namespace PHP.Core
 
 	#endregion
 
-	#region OrderedHashtable<K>
+    #region OrderedHashtable<K>
 
-	/// <summary>The hash table with an additional memory of an order in which elements have been added.</summary>
+    /// <summary>The hash table with an additional memory of an order in which elements have been added.</summary>
 	/// <remarks>
 	/// <para>
 	/// The Enumerator enumerates through items in that order. 
@@ -248,7 +248,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Expose the dictionary to item getters on <see cref="PhpArray"/> to make them a little bit faster.
 		/// </summary>
-        internal readonly Dictionary<K, Element>/*!*/dict;
+        internal readonly IDictionary<K, Element>/*!*/dict;
 
 		/// <summary>The head of the cyclic list.</summary>
         internal readonly Element/*!*/head;
@@ -292,19 +292,17 @@ namespace PHP.Core
 		{
 		}
 
-		public OrderedHashtable(PhpHashtable owner, int capacity)
-		{
-			this.dict = new Dictionary<K, Element>(capacity);
-			this.head = new Element(this);
-            this.owner = owner;
-		}
+        public OrderedHashtable(PhpHashtable owner, int capacity)
+            : this(owner, capacity, (typeof(K) == typeof(IntStringKey)) ? (IEqualityComparer<K>)IntStringKey.EqualityComparer.Default : null)
+        {
+        }
 
-		public OrderedHashtable(PhpHashtable owner, int capacity, IEqualityComparer<K> comparer)
-		{
-			this.dict = new Dictionary<K, Element>(capacity, comparer);
-			this.head = new Element(this);
+        public OrderedHashtable(PhpHashtable owner, int capacity, IEqualityComparer<K> comparer)
+        {
+            this.dict = new Dictionary<K, Element>(capacity, comparer);
+            this.head = new Element(this);
             this.owner = owner;
-		}
+        }
 
 		#endregion
 
@@ -1436,7 +1434,7 @@ namespace PHP.Core
 
 		public bool IsFixedSize { get { return false; } }
 
-		ICollection IDictionary.Keys { get { return dict.Keys; } }
+		ICollection IDictionary.Keys { get { return (ICollection)dict.Keys; } }
 
 		ICollection IDictionary.Values { get { return (ICollection)this.Values; } }
 
@@ -2367,9 +2365,13 @@ namespace PHP.Core
 	
 	#endregion
 
-	#region PhpHashtable
+    #region IntStringKeyDictionary : IDictionary<IntStringKey>
 
-	/// <summary>
+    #endregion
+
+    #region PhpHashtable
+
+    /// <summary>
 	/// The hashtable storing entries with <see cref="string"/> and <see cref="int"/> keys in a manner of PHP.
 	/// </summary>
 	[Serializable]
