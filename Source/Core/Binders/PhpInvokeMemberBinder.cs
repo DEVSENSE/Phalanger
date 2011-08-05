@@ -10,7 +10,7 @@ namespace PHP.Core.Binders
 {
     //TODO:
     // - implement IDynamicMetaObjectProvider for DObject, PhpObject, ClrObject, ClrValue
-
+    // - if library function is called with wrong number of arguments throw PhpException.InvalidArgumentCount
     using PHP.Core.Emit;
 
     /// <summary>
@@ -671,6 +671,8 @@ namespace PHP.Core.Binders
             //ArgFull( ((PhpObject)target), ScriptContext, args, ... )
             invokeMethodExpr = Expression.Call(BinderHelper.WrapInstanceMethodCall(routine.ArgFullInfo),
                                      CombineArguments(realObjEx, arguments));
+
+            invokeMethodExpr = ReturnArgumentHelpers.ReturnValueConversion(routine.ArgFullInfo, invokeMethodExpr);
 
             invokeMethodExpr = HandleResult(invokeMethodExpr, routine.ArgFullInfo.ReturnType, false);
 

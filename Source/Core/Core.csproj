@@ -148,6 +148,7 @@
     <Compile Include="Binders\PhpInvokeBinderKey.cs" />
     <Compile Include="Binders\PhpInvokeMemberBinder.cs" />
     <Compile Include="Binders\PhpOverloadResolver.cs" />
+    <Compile Include="Binders\ReturnArgumentHelpers.cs" />
     <Compile Include="CodeDom\CodeProvider.CLR.cs">
       <SubType>Component</SubType>
     </Compile>

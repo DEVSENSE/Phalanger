@@ -49,6 +49,8 @@ namespace PHP.Core.Binders
                 }
 
                 result[result_offset + i] = GeneratePeekPseudoGenericArgument(routine, arguments[scriptContextIndex], arg, i);
+
+                // it isn't necessary to add restriction for type argument, it is always DTypeDesc
             }
 
             result_offset += routine.Signature.GenericParamCount;
