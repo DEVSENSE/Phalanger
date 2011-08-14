@@ -8,7 +8,7 @@ import namespace System:::Collections:::Generic;
 
 class P
 {
-	function CreateList<:T:>($vals)
+	static function CreateList<:T:>($vals)
 	{
 		$ret = new i'List'<:T:>;
 		foreach($vals as $v)
@@ -21,7 +21,8 @@ class P
 		$l = self::CreateList<:System:::Int32:>(array(1,2,3,4,5));
 
 		// This causes Common Langauge Runtime 
-		foreach($l as $key => $value) echo "$value, ";
+		// TODO: (J) keyed enumeration of non-keyed collection // foreach($l as $key => $value) echo "$value, ";
+		foreach($l as $value) echo "$value, ";
 
 		echo "OK";
 	}

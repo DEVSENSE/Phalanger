@@ -1,6 +1,6 @@
+[pure]
 [expect exact]
-object(T)(0)
-{
+object(T<:C:>)(0) {
 }
 [file]
 <?

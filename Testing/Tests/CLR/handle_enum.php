@@ -6,7 +6,7 @@ DONE
 <?
 	function foo()
 	{
-		$x = System:::DateTime::$UtcNow;
+		$x = new System:::DateTime(2011,8,16);
 		$y = $x->DayOfWeek;
 		var_dump($y);
 	}

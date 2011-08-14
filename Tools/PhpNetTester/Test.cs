@@ -487,7 +487,7 @@ namespace PHP.Testing
             string arguments = String.Concat("/dw:CompilerStrict /static+ /target:exe /out:\"", output, "\" /root:. /entrypoint:\"", Path.GetFileName(script_path), "\" \"", Path.GetFileName(script_path), "\"");
             if (isPure) arguments = "/pure+ " + arguments;
             if (isClr) arguments = "/lang:clr " + arguments;
-            if (isPure || isClr) arguments = "/r:mscorlib " + arguments;
+            if (isPure || isClr) arguments = "/r:mscorlib /r:\"System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089\" " + arguments;
 
 			// put additional scripts to command line
 			if (additionalScripts != null)
