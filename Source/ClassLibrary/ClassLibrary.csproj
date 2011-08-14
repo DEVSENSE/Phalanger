@@ -209,7 +209,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Output.CLR.cs" />
-    <Compile Include="PhalangerFormatter.cs" />
     <Compile Include="PhpFormatter.CLR.cs" />
     <Compile Include="PhpIni.CLR.cs">
       <SubType>Code</SubType>

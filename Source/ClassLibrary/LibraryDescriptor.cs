@@ -76,9 +76,7 @@ namespace PHP.Library
 
 			// registers serializers:
 			Serializers.RegisterSerializer(PhpSerializer.Default);
-
-            Serializers.RegisterSerializer(PhalangerSerializer.Default);
-
+            //Serializers.RegisterSerializer(PhalangerSerializer.Default);
 			Serializers.RegisterSerializer(new ContextualSerializer("dotnet", delegate(PHP.Core.Reflection.DTypeDesc caller/*ignored*/)
 			{
 				return new BinaryFormatter(

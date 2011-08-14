@@ -248,7 +248,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Expose the dictionary to item getters on <see cref="PhpArray"/> to make them a little bit faster.
 		/// </summary>
-        internal readonly IDictionary<K, Element>/*!*/dict;
+        internal readonly Dictionary<K, Element>/*!*/dict;  // TODO: (J) GENERIC: type of dict as generic argument so we can pass our custom IDictionary (and still call its methods statically with inlining)
 
 		/// <summary>The head of the cyclic list.</summary>
         internal readonly Element/*!*/head;
@@ -293,7 +293,7 @@ namespace PHP.Core
 		}
 
         public OrderedHashtable(PhpHashtable owner, int capacity)
-            : this(owner, capacity, (typeof(K) == typeof(IntStringKey)) ? (IEqualityComparer<K>)IntStringKey.EqualityComparer.Default : null)
+            : this(owner, capacity, /*(typeof(K) == typeof(IntStringKey)) ? (IEqualityComparer<K>)IntStringKey.EqualityComparer.Default :*/ null)
         {
         }
 

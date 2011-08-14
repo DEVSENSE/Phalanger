@@ -398,35 +398,35 @@ namespace PHP.Library
 
     #endregion
 
-    #region PhalangerSerializer
+    //#region PhalangerSerializer
 
-    public sealed class PhalangerSerializer : Serializer
-    {
-        private PhalangerSerializer() { }
+    //public sealed class PhalangerSerializer : Serializer
+    //{
+    //    private PhalangerSerializer() { }
 
-        /// <summary>
-        /// A singleton instance. 
-        /// </summary>
-        public static readonly PhalangerSerializer Default = new PhalangerSerializer();
+    //    /// <summary>
+    //    /// A singleton instance. 
+    //    /// </summary>
+    //    public static readonly PhalangerSerializer Default = new PhalangerSerializer();
 
-        /// <summary>
-        /// Returns the name.
-        /// </summary>
-        protected override string GetName()
-        {
-            return "phalanger";
-        }
+    //    /// <summary>
+    //    /// Returns the name.
+    //    /// </summary>
+    //    protected override string GetName()
+    //    {
+    //        return "phalanger";
+    //    }
 
-        /// <summary>
-        /// Returns the formatter using the current page encoding set in the global configuration.
-        /// </summary>
-        protected override IFormatter CreateFormatter(DTypeDesc caller)
-        {
-            return new PhalangerFormatter(Configuration.Application.Globalization.PageEncoding, caller);
-        }
-    }
+    //    /// <summary>
+    //    /// Returns the formatter using the current page encoding set in the global configuration.
+    //    /// </summary>
+    //    protected override IFormatter CreateFormatter(DTypeDesc caller)
+    //    {
+    //        return new PhalangerFormatter(Configuration.Application.Globalization.PageEncoding, caller);
+    //    }
+    //}
 
-    #endregion
+    //#endregion
 
 	#region Serializers
 
