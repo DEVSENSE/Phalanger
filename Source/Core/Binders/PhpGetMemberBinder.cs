@@ -305,6 +305,26 @@ namespace PHP.Core.Binders
 
                             return new DynamicMetaObject(value, restrictions);
                         }
+                        else if (property.Member is ClrEvent)
+                        {
+                            var clrEvent = (ClrEvent)property.Member;
+                            var realType = property.DeclaringType.RealType;
+
+                            // emit stub that Wraps event as [ ClrEventObject<handlerType>.Wrap(<SC>, <event name>, <addMethod>, <removeMethod>) ]
+                            var stub = new System.Reflection.Emit.DynamicMethod(
+                                string.Format("event<{0}>",fieldName),
+                                Types.DObject[0], new[] { realType }, realType);
+                            var il = new ILEmitter(stub);
+                            clrEvent.EmitGetEventObject(
+                                il,
+                                new Place(null, Properties.ScriptContext_CurrentContext),
+                                new IndexedPlace(PlaceHolder.Argument, 0),
+                                false);
+
+                            Expression value = Expression.Call(stub, BinderHelper.ClrRealObject(target, realType));
+                            if (WantReference) value = BinderHelper.MakePhpReference(value);
+                            return new DynamicMetaObject(value, restrictions);
+                        }
                         else
                             throw new NotImplementedException();
 
