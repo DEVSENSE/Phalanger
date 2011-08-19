@@ -422,6 +422,9 @@ namespace PHP.Core
 				context.Close();
 				context = null;
 			}
+
+            writeBuffer = null; // http://phalanger.codeplex.com/workitem/31272
+						
 			base.FreeManaged();
 		}
 
