@@ -10,6 +10,22 @@
 
 */
 
+/*
+ * TODO:
+ * 
+ * JSON_NUMERIC_CHECK (integer)
+ * Encodes numeric strings as numbers. Available since PHP 5.3.3.
+ * 
+ * JSON_BIGINT_AS_STRING (integer)
+ * Available since PHP 5.4.0.
+ * 
+ * JSON_PRETTY_PRINT (integer)
+ * Use whitespace in returned data to format it. Available since PHP 5.4.0.
+ * 
+ * JSON_UNESCAPED_SLASHES (integer)
+ * Don't escape /. Available since PHP 5.4.0.
+ * */
+
 using System;
 using System.IO;
 using System.Text;
@@ -35,13 +51,42 @@ namespace PHP.Library
     #region JSON PHP API
 
     /// <summary>
+    /// Classes implementing Countable can be used with the count() function.
+    /// </summary>
+    [ImplementsType]
+    public interface JsonSerializable
+    {
+        /// <summary>
+        /// Specify data which should be serialized to JSON.
+        /// </summary>
+        /// <param name="context">Current <see cref="ScriptContext"/> provided by Phalanger.</param>
+        /// <returns>Return data which should be serialized by <c>json_encode()</c>, see <see cref="PhpJson.Serialize"/>.</returns>
+        [ImplementsMethod]
+        [AllowReturnValueOverride]
+        object jsonSerialize(ScriptContext context);
+    }
+
+    /// <summary>
 	/// JSON encoding/decoding functions.
 	/// </summary>
 	/// <threadsafety static="true"/>
     [ImplementsExtension(LibraryDescriptor.ExtJson)]
 	public static class PhpJson
-	{
-		#region Constants
+    {
+        #region static ctor
+
+        static PhpJson()
+        {
+            // clear the last error variable every request
+            RequestContext.RequestBegin += () =>
+                {
+                    PhpJson.LastError = JsonLastError.JSON_ERROR_NONE;
+                };
+        }
+
+        #endregion
+
+        #region Constants
 
         /// <summary>
         /// Values returned by json_last_error function.
@@ -60,8 +105,11 @@ namespace PHP.Library
             [ImplementsConstant("JSON_ERROR_DEPTH")]
             JSON_ERROR_DEPTH = 1,
 
-            //[ImplementsConstant("PHP_JSON_ERROR_STATE_MISMATCH")]
-            //PHP_JSON_ERROR_STATE_MISMATCH = 2,
+            /// <summary>
+            /// Occurs with underflow or with the modes mismatch.
+            /// </summary>
+            [ImplementsConstant("PHP_JSON_ERROR_STATE_MISMATCH")]
+            PHP_JSON_ERROR_STATE_MISMATCH = 2,
 
             /// <summary>
             /// Control character error, possibly incorrectly encoded  	 
@@ -207,10 +255,7 @@ namespace PHP.Library
         [ImplementsFunction("json_last_error")]
         public static int GetLastError()
         {
-            PhpException.FunctionNotSupported();
-
-            //return (int)LastError;
-            return (int)JsonLastError.JSON_ERROR_NONE;
+            return (int)LastError;
         }
 
         [ThreadStatic]
@@ -369,6 +414,18 @@ namespace PHP.Library
                             }
 
                             DObject obj;
+                            JsonSerializable jsonserializeble;
+                            if ((jsonserializeble = graph as JsonSerializable) != null)
+                            {
+                                var retval = jsonserializeble.jsonSerialize(context);
+                                if ((obj = (retval as DObject)) != null)    // Handle the case where jsonSerialize() returns itself.
+                                    WriteDObject(obj);
+                                else
+                                    Serialize(retval);
+                                
+                                break;
+                            }
+
                             if ((obj = graph as DObject) != null)
                             {
                                 WriteDObject(obj);
