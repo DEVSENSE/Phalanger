@@ -5946,7 +5946,7 @@ namespace PHP.Library
 		{
             if (length < 0)
             {
-                PhpException.Throw(PhpError.Warning, LibResources.GetString("argument_less_than_zero", "Length"));
+                PhpException.Throw(PhpError.Warning, LibResources.GetString("must_be_positive", "Length"));
                 return false;
             }
 
@@ -5967,7 +5967,7 @@ namespace PHP.Library
 		{
             if (length < 0)
             {
-                PhpException.Throw(PhpError.Warning, LibResources.GetString("argument_less_than_zero", "Length"));
+                PhpException.Throw(PhpError.Warning, LibResources.GetString("must_be_positive", "Length"));
                 return false;
             }
 

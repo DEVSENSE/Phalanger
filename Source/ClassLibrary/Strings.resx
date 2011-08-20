@@ -591,4 +591,7 @@
   <data name="substr_count_offset_zero" xml:space="preserve">
     <value>Offset should be greater than or equal to 0</value>
   </data>
+  <data name="must_be_positive" xml:space="preserve">
+    <value>{0} must be greater than or equal to 0</value>
+  </data>
 </root>
