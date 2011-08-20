@@ -1,2 +1,3 @@
 - Add this directory as an application into your IIS
 - Allow IIS worker process read/write permissions
+- Disable rapid fail protection in advanced settings of App Pool

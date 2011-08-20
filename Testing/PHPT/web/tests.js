@@ -4,7 +4,7 @@ var files_requested = 0;
 var pending_requests = 0;
 var max_requests = 1;
 
-var timer = null;
+var paused = true;	// if true, no new tests are started
 
 function start_test() {
     while (do_next_tests());
@@ -14,6 +14,7 @@ function start_test() {
         setTimeout("start_test()", 5000);
     else {
         document.title = "PHPT: Done";
+		$('#list').after("<hr/><center><b>DONE</b></center>");
     }
 }
 
@@ -25,7 +26,7 @@ function decreasePending() {
 }
 
 function do_next_tests() {
-    if (pending_requests >= max_requests || files_requested >= files.length)
+    if (pending_requests >= max_requests || files_requested >= files.length || paused)
         return false;
 
     pending_requests++;

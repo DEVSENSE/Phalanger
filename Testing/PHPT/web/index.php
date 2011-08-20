@@ -67,12 +67,26 @@
 
         // generate HTML that requests .phpt tests asynchronously and in parallel
         ?>
-        <ul id='list'>
+        <center><a href='#' id='startbtn'>[start/stop]</a></center>
+		<ul id='list'>
         </ul>
         <script type="text/javascript">
-            files=<? emit_js_array( &$test_files ); ?>;
-            start_test();
-        </script>
+            files = <? emit_js_array( &$test_files ); ?>;
+			
+			$().ready(function(){
+				var startbtn = $('#startbtn');
+				startbtn.text("Click to start testing ... (" + files.length + " tests to go)");
+				startbtn.click(function(){ 
+					paused = !paused;
+					if (!files_requested)
+						start_test();
+					
+					startbtn.text(paused ? "Click to continue ..." : "Click to pause testing ...");
+					
+					return false;
+				});
+			});
+        </script>		
         <?
     }
 
@@ -87,7 +101,7 @@
     ?>
     <html><head>
         <title>PHPT Phalanger Tester</title>
-        <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.1.js"></script>
+        <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
         <script type="text/javascript" src="tests.js"></script>
         <style>
             .state{display:none;}
@@ -244,7 +258,7 @@ function try_skip($file, $www, &$section_text)
             if (!strncasecmp('skip', ltrim($output), 4)) {
 
 				if (preg_match('/^\s*skip\s*(.+)\s*/i', $output, $m)) {
-					show_result($skiphtml, $file, "reason: $m[1]");
+					show_result($skiphtml, $file, ", reason: $m[1]");
 				} else {
 					show_result($skiphtml, $file, '');
 				}
@@ -636,7 +650,9 @@ function run_test($file,$www)
 			error("Cannot create test diff - '$file.diff'");
 		}
 
-        show_result("<span class='fail'>FAIL</span>", $file, ", <a href='$phpfile' target='_blank'>Try the script</a><br/><table border='1'><tr><td><b>Output</b><br/><pre style='background:#fee;font-size:8px;'>$output</pre></td><td><b>Expected</b><br/><pre  style='background:#efe;font-size:8px;'>$wanted</pre></td></tr></table>");
+		$resultid = "result_" . strlen($phpfile) . '_' . crc32($phpfile);
+		
+        show_result("<span class='fail'>FAIL</span>", $file, ", <a href='$phpfile' target='_blank'>Try the script</a>, <a href='#' onclick='$(\"#$resultid\").slideToggle();return false;'>details</a><div id='$resultid' style='display:none;'><br/><table border='1'><tr><td><b>Output</b><br/><pre style='background:#fee;font-size:8px;'>$output</pre></td><td><b>Expected</b><br/><pre  style='background:#efe;font-size:8px;'>$wanted</pre></td></tr></table></div>");
 		// write .sh
 		//if (strpos($log_format, 'S') !== false && file_put_contents($sh_filename, b"#!/bin/sh{$cmd}", FILE_BINARY) === false) {
 			//error("Cannot create test shell script - $sh_filename");
@@ -802,7 +818,10 @@ function error($message)
 
 function show_result($state, $file, $text)
 {
-    echo "<div class='state'>$state</div><b>$state:</b> <a href='?test=".$_GET['test']."&location=".$_GET['location']."' target='_blank'>".$_GET['test']."</a>$text";
+	if (isset($_GET['displaystandalone']))
+		echo '<script type="text/javascript" src="jquery-1.6.2.min.js"></script>';
+		
+    echo "<div class='state'>$state</div><b>$state:</b> <a href='?test=".$_GET['test']."&location=".$_GET['location']."&displaystandalone=1' target='_blank'>".$_GET['test']."</a>$text";
     exit(1);
 }
 
