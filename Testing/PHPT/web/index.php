@@ -17,6 +17,7 @@
     function &list_test_files()
     {
         $test_files = array();
+        $filter = @$_GET['filter'];
 
         // build list of (relative) directories containing .phpt files
         $tests_dir = list_test_dirs();
@@ -32,7 +33,11 @@
             {
                 // We're only interested in *.phpt files.
 		        if (substr($name, -5) == '.phpt')
-			        $test_files[] = "{$dir}/{$name}";
+                {
+                    $fullpath = "{$dir}/{$name}";
+                    if (!$filter || strpos($fullpath, $filter) !== FALSE)
+			            $test_files[] = "{$dir}/{$name}";
+                }
 
                 // otherwise recursivelly process valid subdirs
                 else if ( !in_array($name, array('.', '..', 'CVS', '.svn')) && is_dir("{$dir}/{$name}"))
@@ -818,10 +823,12 @@ function error($message)
 
 function show_result($state, $file, $text)
 {
+    $testurl = "?test=".$_GET['test']."&location=".$_GET['location']."&displaystandalone=1";
+
 	if (isset($_GET['displaystandalone']))
-		echo '<script type="text/javascript" src="jquery-1.6.2.min.js"></script>';
-		
-    echo "<div class='state'>$state</div><b>$state:</b> <a href='?test=".$_GET['test']."&location=".$_GET['location']."&displaystandalone=1' target='_blank'>".$_GET['test']."</a>$text";
+    	echo '<script type="text/javascript" src="jquery-1.6.2.min.js"></script>';
+    	
+    echo "<div class='state'>$state</div><b>$state:</b> <a href='$testurl' target='_blank'>".$_GET['test']."</a>$text";
     exit(1);
 }
 

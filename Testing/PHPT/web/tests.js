@@ -14,7 +14,8 @@ function start_test() {
         setTimeout("start_test()", 5000);
     else {
         document.title = "PHPT: Done";
-		$('#list').after("<hr/><center><b>DONE</b></center>");
+        $('#list').after("<hr/><center><b>DONE</b></center>");
+        $('#startbtn').hide();
     }
 }
 
@@ -31,7 +32,9 @@ function do_next_tests() {
 
     pending_requests++;
 
-    var jqxhr = $.get(document.location + '?location=' + escape(document.location) + '&test=' + escape(files[files_requested++]))
+    var url = document.location.origin + document.location.pathname;
+
+    var jqxhr = $.get(url + '?location=' + escape(url) + '&test=' + escape(files[files_requested++]))
       .success(function (data, textStatus) {
           $('#list').append("<li>" + data + "</li>");
       })
