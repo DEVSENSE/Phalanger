@@ -2009,7 +2009,7 @@ non-infringement.
     <value>Call to undefined external function '{0}', extension '{1}' (extension not found)</value>
   </data>
   <data name="notsupported_function_called" xml:space="preserve">
-    <value>Not supported function '{0}' was called.</value>
+    <value>Function '{0}' is not supported.</value>
   </data>
   <data name="phpc_arg_skip" xml:space="preserve">
     <value>File or directory which will be skipped during compilation. This also prevents a file(s) to be included statically if /static+ option is specified.</value>
@@ -2022,5 +2022,8 @@ non-infringement.
   </data>
   <data name="call_must_be_public_nonstatic" xml:space="preserve">
     <value>The magic method __call() must have public visibility and cannot be static</value>
+  </data>
+  <data name="unoptimized_local_variables_function" xml:space="preserve">
+    <value>Function {0} requires access to local variables and prevents optimizing them. To improve performance, separate this function call into small function.</value>
   </data>
 </root>

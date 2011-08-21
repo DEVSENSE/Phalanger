@@ -980,7 +980,7 @@ namespace PHP.Library
 		{
 			PhpArray globals = (localVariables != null) ? null : ScriptContext.CurrentContext.GlobalVariables;
 
-			PhpArray result = new PhpArray();
+            PhpArray result = new PhpArray((localVariables != null) ? localVariables.Count : globals.Count);
 			foreach (KeyValuePair<string, object> entry in PhpArray.GetEnumerator(globals, localVariables))
 				result.Add(entry.Key, PhpVariable.DeepCopy(entry.Value));
 

@@ -602,6 +602,7 @@ namespace PHP.Core
 		public static readonly ErrorInfo TooBigIntegerConversion = new ErrorInfo(9, "too_big_int_conversion", WarningGroups.CompilerStrictOthers);
 		public static readonly ErrorInfo TooManyLocalVariablesInFunction = new ErrorInfo(10, "too_many_local_variables_function", WarningGroups.CompilerStrictOthers);
 		public static readonly ErrorInfo TooManyLocalVariablesInMethod = new ErrorInfo(11, "too_many_local_variables_method", WarningGroups.CompilerStrictOthers);
+        public static readonly ErrorInfo UnoptimizedLocalsInFunction = new ErrorInfo(12, "unoptimized_local_variables_function", WarningGroups.CompilerStrictOthers);
 
 		public static readonly ErrorInfo UnusedLabel = new ErrorInfo(15, "unused_label", WarningGroups.CompilerStrictOthers);
 
@@ -646,7 +647,7 @@ namespace PHP.Core
 
 		public static readonly ErrorInfo DivisionByZero = new ErrorInfo(150, "division_by_zero", ErrorSeverity.Warning);
         public static readonly ErrorInfo NotSupportedFunctionCalled = new ErrorInfo(151, "notsupported_function_called", ErrorSeverity.Warning);
-
+        
 		//
 
 		public static readonly ErrorInfo ClassBehaviorMayBeUnexpected = new ErrorInfo(160, "class_behavior_may_be_unexpected", ErrorSeverity.Warning);

@@ -72,25 +72,10 @@
 
         // generate HTML that requests .phpt tests asynchronously and in parallel
         ?>
-        <center><a href='#' id='startbtn'>[start/stop]</a></center>
-		<ul id='list'>
+        <ul id='list'>
         </ul>
         <script type="text/javascript">
             files = <? emit_js_array( &$test_files ); ?>;
-			
-			$().ready(function(){
-				var startbtn = $('#startbtn');
-				startbtn.text("Click to start testing ... (" + files.length + " tests to go)");
-				startbtn.click(function(){ 
-					paused = !paused;
-					if (!files_requested)
-						start_test();
-					
-					startbtn.text(paused ? "Click to continue ..." : "Click to pause testing ...");
-					
-					return false;
-				});
-			});
         </script>		
         <?
     }
@@ -227,7 +212,7 @@ function &parse_file($file)
 			$section_text['FILE_EXTERNAL'] = dirname($file) . '/' . trim(str_replace('..', '', $section_text['FILE_EXTERNAL']));
 
 			if (file_exists($section_text['FILE_EXTERNAL'])) {
-				$section_text['FILE'] = file_get_contents($section_text['FILE_EXTERNAL'], FILE_BINARY);
+				$section_text['FILE'] = _file_get_contents($section_text['FILE_EXTERNAL'], FILE_BINARY, null, &$dummyheaders);
 				unset($section_text['FILE_EXTERNAL']);
 			} else {
 				error("could not load --FILE_EXTERNAL-- " . dirname($file) . '/' . trim($section_text['FILE_EXTERNAL']) . " in test '$file'");
@@ -244,6 +229,14 @@ function &parse_file($file)
     return $section_text;
 }
 
+function _file_get_contents($path, $flags, $context, &$headers)
+{
+	$result = file_get_contents($path, $flags, $context);
+	$headers = @$http_response_header;
+	
+	return $result;
+}
+
 function try_skip($file, $www, &$section_text)
 {
     if (array_key_exists('SKIPIF', $section_text)) {
@@ -258,7 +251,7 @@ function try_skip($file, $www, &$section_text)
 			save_text($temp_skipif, $section_text['SKIPIF']);
 			
             // Create a stream
-            $output = file_get_contents( $www . $temp_skipif, false, $context );
+            $output = _file_get_contents( $www . $temp_skipif, false, null, &$dummyheaders );
 			
             if (!strncasecmp('skip', ltrim($output), 4)) {
 
@@ -301,7 +294,7 @@ function try_clean($file, $www, &$section_text)
 			save_text($cleanfile, trim($section_text['CLEAN']));
 
 			$clean_params = array();
-			file_get_contents($www . $cleanfile);
+			_file_get_contents($www . $cleanfile, false, null, &$dummyheaders);
 			
             @unlink($cleanfile);
 		}
@@ -458,10 +451,12 @@ function run_test($file,$www)
 	}
 
     $context = stream_context_create($opts);
-	$out = file_get_contents($www . $phpfile,false,$context);
+	$out = _file_get_contents($www . $phpfile, false, $context, &$headers);
 	
-	if ($out === FALSE)
-	    error("Exception while processing '$file'");
+	if ($out === FALSE) {
+		echo '<br/>';
+	    error("See <a target='_blank' href='$phpfile'>$phpfile</a>, exception ");
+	}	
 	
     if ((StartsWith($out,"\r\nCompileError") || StartsWith($out,"\r\nCompileWarning")))
         show_result("<span class='skip'>SKIP</span>", $file, ", Script generates <b>CompileError</b> or <b>CompileWarning</b>, so it cannot be compared with PHP. <a href='$phpfile' target='_blank'>Try the script</a><pre>$out</pre>");
@@ -473,7 +468,8 @@ function run_test($file,$www)
 
 	// Does the output match what is expected?
 	$output = preg_replace(b"/\r\n/", b"\n", trim($out));
-    /*
+    
+	$failed_headers = false;
 	if (isset($section_text['EXPECTHEADERS'])) {
 		$want = array();
 		$wanted_headers = array();
@@ -508,7 +504,7 @@ function run_test($file,$www)
 		ksort($output_headers);
 		$output_headers = join(b"\n", $output_headers);
 	}
-    */
+    
 	if (isset($section_text['EXPECTF']) || isset($section_text['EXPECTREGEX'])) {
 
 		if (isset($section_text['EXPECTF'])) {
@@ -610,7 +606,7 @@ function run_test($file,$www)
 	}
 
 	// Test failed so we need to report details.
-	/*if ($failed_headers) {
+	if ($failed_headers) {
 		$passed = false;
 		$wanted = (binary) $wanted_headers . b"\n--HEADERS--\n" . (binary) $wanted;
 		$output = (binary) $output_headers . b"\n--HEADERS--\n" . (binary) $output;
@@ -618,7 +614,7 @@ function run_test($file,$www)
 		if (isset($wanted_re)) {
 			$wanted_re = preg_quote($wanted_headers . "\n--HEADERS--\n", '/') . $wanted_re;
 		}
-	}*/
+	}
 
 	/*if ($leaked) {
 		$restype[] = 'LEAK';
@@ -656,8 +652,17 @@ function run_test($file,$www)
 		}
 
 		$resultid = "result_" . strlen($phpfile) . '_' . crc32($phpfile);
+		$sourceid = "source_" . strlen($phpfile) . '_' . crc32($phpfile);
 		
-        show_result("<span class='fail'>FAIL</span>", $file, ", <a href='$phpfile' target='_blank'>Try the script</a>, <a href='#' onclick='$(\"#$resultid\").slideToggle();return false;'>details</a><div id='$resultid' style='display:none;'><br/><table border='1'><tr><td><b>Output</b><br/><pre style='background:#fee;font-size:8px;'>$output</pre></td><td><b>Expected</b><br/><pre  style='background:#efe;font-size:8px;'>$wanted</pre></td></tr></table></div>");
+        show_result(
+			"<span class='fail'>FAIL</span>",
+			$file,
+			", <a href='$phpfile' target='_blank'>Try the script</a>" .
+			", <a href='#' onclick='$(\"#$sourceid\").slideToggle();return false;'>source</a>" .
+			", <a href='#' onclick='$(\"#$resultid\").slideToggle();return false;'>details</a>" .
+			"<div id='$sourceid' style='display:none;background:#eee;border:1px dashed #888;'><pre>".htmlspecialchars(trim(_file_get_contents($file,false,null,&$dummyheaders)))."</pre></div>" .
+			"<div id='$resultid' style='display:none;'><table border='1'><tr><td><b>Output</b><br/><pre style='background:#fee;font-size:8px;'>".htmlspecialchars($output)."</pre></td><td><b>Expected</b><br/><pre  style='background:#efe;font-size:8px;'>".htmlspecialchars($wanted)."</pre></td></tr></table></div>"
+			);
 		// write .sh
 		//if (strpos($log_format, 'S') !== false && file_put_contents($sh_filename, b"#!/bin/sh{$cmd}", FILE_BINARY) === false) {
 			//error("Cannot create test shell script - $sh_filename");

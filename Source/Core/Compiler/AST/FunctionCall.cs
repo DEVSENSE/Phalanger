@@ -163,9 +163,18 @@ namespace PHP.Core.AST
 
             Debug.Assert(overloadIndex != DRoutine.InvalidOverloadIndex, "A function should have at least one overload");
 
-            // warning if not supported function call is detected
-            if (routine is PhpLibraryFunction && (((PhpLibraryFunction)routine).Options & FunctionImplOptions.NotSupported) != 0)
-                analyzer.ErrorSink.Add(Warnings.NotSupportedFunctionCalled, analyzer.SourceUnit, Position, QualifiedName.ToString());
+            if (routine is PhpLibraryFunction)
+            {
+                var opts = ((PhpLibraryFunction)routine).Options;
+                // warning if not supported function call is detected
+                if ((opts & FunctionImplOptions.NotSupported) != 0)
+                    analyzer.ErrorSink.Add(Warnings.NotSupportedFunctionCalled, analyzer.SourceUnit, Position, QualifiedName.ToString());
+
+                // warning if function requiring locals is detected (performance critical)
+                if ((opts & FunctionImplOptions.NeedsVariables) != 0 && !analyzer.CurrentScope.IsGlobal)
+                    analyzer.ErrorSink.Add(Warnings.UnoptimizedLocalsInFunction, analyzer.SourceUnit, Position, QualifiedName.ToString());
+                
+            }
 
             // analyze parameters:
             callSignature.Analyze(analyzer, signature, info, false);

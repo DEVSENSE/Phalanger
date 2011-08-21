@@ -152,6 +152,11 @@ namespace PHP.Library
 	/// <threadsafety static="true"/>
 	public static partial class PhpFile
 	{
+        /// <summary>
+        /// Name of variable that is filled with response headers in case of file_get_contents and http protocol.
+        /// </summary>
+        internal const string HttpResponseHeaderName = "http_response_header";
+
 		#region Constructors 
 
 		/// <summary>
@@ -1132,42 +1137,42 @@ namespace PHP.Library
 		/// <summary>
 		/// Reads entire file into a string.
 		/// </summary>
-		[ImplementsFunction("file_get_contents")]
+        [ImplementsFunction("file_get_contents", FunctionImplOptions.NeedsVariables)]
 		[return: CastToFalse]
-		public static object ReadContents(string path)
+        public static object ReadContents(ScriptContext scriptcontext, System.Collections.Generic.Dictionary<string, object> definedVariables, string path)
 		{
-			return ReadContents(path, FileOpenOptions.Empty, StreamContext.Default, -1, -1);
+            return ReadContents(scriptcontext, definedVariables, path, FileOpenOptions.Empty, StreamContext.Default, -1, -1);
 		}
 
 		/// <summary>
 		/// Reads entire file into a string.
 		/// </summary>
-		[ImplementsFunction("file_get_contents")]
+        [ImplementsFunction("file_get_contents", FunctionImplOptions.NeedsVariables)]
 		[return: CastToFalse]
-		public static object ReadContents(string path, FileOpenOptions flags)
+        public static object ReadContents(ScriptContext scriptcontext, System.Collections.Generic.Dictionary<string, object> definedVariables, string path, FileOpenOptions flags)
 		{
-			return ReadContents(path, flags, StreamContext.Default, -1, -1);
+            return ReadContents(scriptcontext, definedVariables, path, flags, StreamContext.Default, -1, -1);
 		}
 
 		/// <summary>
 		/// Reads entire file into a string.
 		/// </summary>
-		[ImplementsFunction("file_get_contents")]
+        [ImplementsFunction("file_get_contents", FunctionImplOptions.NeedsVariables)]
 		[return: CastToFalse]
-		public static object ReadContents(string path, FileOpenOptions flags, PhpResource context)
+        public static object ReadContents(ScriptContext scriptcontext, System.Collections.Generic.Dictionary<string, object> definedVariables, string path, FileOpenOptions flags, PhpResource context)
 		{
-			return ReadContents(path, flags, context, -1, -1);
+            return ReadContents(scriptcontext, definedVariables, path, flags, context, -1, -1);
 		}
 
 		/// <summary>
 		/// Reads entire file into a string.
 		/// </summary>
-		[ImplementsFunction("file_get_contents")]
+        [ImplementsFunction("file_get_contents", FunctionImplOptions.NeedsVariables)]
 		[return: CastToFalse]
-		public static object ReadContents(string path, FileOpenOptions flags, PhpResource context,
+        public static object ReadContents(ScriptContext scriptcontext, System.Collections.Generic.Dictionary<string, object> definedVariables, string path, FileOpenOptions flags, PhpResource context,
 		  int offset)
 		{
-			return ReadContents(path, flags, context, offset, -1);
+            return ReadContents(scriptcontext, definedVariables, path, flags, context, offset, -1);
 		}
 
 		/// <summary>
@@ -1177,9 +1182,9 @@ namespace PHP.Library
 		/// Result is affected by run-time quoting 
 		/// (<see cref="LocalConfiguration.VariablesSection.QuoteRuntimeVariables"/>).
 		/// </remarks>
-		[ImplementsFunction("file_get_contents")]
+        [ImplementsFunction("file_get_contents", FunctionImplOptions.NeedsVariables)]
 		[return: CastToFalse]
-		public static object ReadContents(string path, FileOpenOptions flags, PhpResource context,
+		public static object ReadContents(ScriptContext scriptcontext, System.Collections.Generic.Dictionary<string, object> definedVariables, string path, FileOpenOptions flags, PhpResource context,
 		  int offset, int maxLength)
 		{
             StreamContext sc = StreamContext.GetValid(context, true);
@@ -1190,6 +1195,15 @@ namespace PHP.Library
 			{
 				if (stream == null) return null;
 
+                // when HTTP protocol requested, store responded headers into local variable $http_response_header:
+                // NOTE: (J) this should be applied by HTTP wrapper itself, not only by this function.
+                if (string.Compare(stream.Wrapper.Scheme, "http", StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    var headers = stream.WrapperSpecificData as PhpArray;
+                    Operators.SetVariable(scriptcontext, definedVariables, HttpResponseHeaderName, headers);                    
+                }
+
+                //
 				return Core.Convert.Quote(stream.ReadContents(maxLength, offset), ScriptContext.CurrentContext);
 			}
 		}

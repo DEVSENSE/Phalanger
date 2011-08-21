@@ -13,9 +13,9 @@ function start_test() {
     if (files_requested < files.length)
         setTimeout("start_test()", 5000);
     else {
-        document.title = "PHPT: Done";
+        $('#infotxt').text("PHPT: Done! " + files.length + ' files tested.');
         $('#list').after("<hr/><center><b>DONE</b></center>");
-        $('#startbtn').hide();
+        $('#startbtn').unbind('click').css('color','#333');
     }
 }
 
@@ -46,10 +46,56 @@ function do_next_tests() {
           do_next_tests();
       });    
 
-    document.title ="PHPT: " + files_requested + "/" + files.length;
+    $('#infotxt').text("Progress: " + files_requested + "/" + files.length);
 
     return true;
 }
 
-// time to time decrease pending requests, since they can timeout and not complete ?
-decreasePending();
+// get query param value
+function gup( name )
+{
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return "";
+  else
+    return results[1];
+}
+
+$().ready( function(){
+
+	// time to time decrease pending requests, since they can timeout and not complete ?
+	decreasePending();
+
+	// top bar with filters and buttons
+	var body = $('body');
+	body.css('margin-top',"34px");
+	body.prepend(
+	'<div style="padding:4px;position:fixed;top:0;left:0;display:block;width:100%;background:#ccc;border-bottom:2px solid #888;">' +
+		'<a href="#" id="startbtn" style="text-decoration:none;padding:0 8px 0 8px;">Start testing!</a> | ' +
+		'Filter tests: <input id="filterval" name="filter" value="" style="background:#eee;border:1px solid;" /> | ' +
+		'<span id="infotxt"></a> | ' +
+	'</div>');
+	
+	//
+	$('#infotxt').text(files.length + " tests to go");
+	$('#startbtn').click(function(){ 
+		paused = !paused;
+		if (!files_requested)
+			start_test();
+		
+		$(this).text(paused ? "Continue" : "Pause");		
+		return false;
+	});
+	
+	var filter = $('#filterval');
+	filter.val(gup('filter'));
+	filter.keyup(function(e) {
+		if(e.keyCode == 13) {
+			pause = true;
+			document.location = document.location.origin + document.location.pathname + '?filter=' + filter.val();
+		}
+	});
+} );
