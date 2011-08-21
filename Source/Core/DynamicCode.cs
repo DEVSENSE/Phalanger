@@ -120,27 +120,32 @@ namespace PHP.Core
 		}
 
 		/// <summary>
-		/// Determines whether a set of declarators is a subset of the declarators 
-		/// defined on the specified script context.
-		/// </summary>
+        /// Try to load all <paramref name="providedTypes"/>. This can invoke autoloading if necessary.
+        /// Check if they were not modified, so calling compilation unit has to be invalidated and recompiled.
+        /// </summary>
 		/// <param name="providedTypes">a list of provided type declarators. Can be a <B>null</B> reference.</param>
 		/// <param name="target">The script context to be checked.</param>
-		/// <returns><paramref name="providedTypes"/> contains a subset of <paramref name="target"/> declarators.</returns>
-		public static bool IsSubset(List<ProvidedType> providedTypes, ScriptContext/*!*/ target)
+        /// <param name="caller">Current class context.</param>
+		/// <returns><paramref name="providedTypes"/> are loadable and match in context of <paramref name="target"/>.</returns>
+        public static bool LoadAndMatch(List<ProvidedType> providedTypes, ScriptContext/*!*/ target, DTypeDesc caller)
 		{
 			Debug.Assert(target != null);
 
-			if (providedTypes != null)
+            if (providedTypes != null && providedTypes.Count > 0)
 			{
-				// there is less declarators than we require:
-				if (target.DeclaredTypes.Count < providedTypes.Count) return false;
+                //// there is less declarators than we require:
+                //if (target.DeclaredTypes.Count < providedTypes.Count) return false;
 
 				// looks up each provided declarator in the target context:
 				foreach (ProvidedType declarator in providedTypes)
 				{
-					DTypeDesc decl_type;
-					target.DeclaredTypes.TryGetValue(declarator.Key, out decl_type);
-					if (decl_type.RealType != declarator.Value.RealType)
+                    //DTypeDesc decl_type;
+                    //target.DeclaredTypes.TryGetValue(declarator.Key, out decl_type);
+
+                    // When class is compiled in runtime, autoload is invoked on base class (if isn't already declared). 
+                    // We have to call autoload on the base class also in transient assembly
+                    var decl_type = target.ResolveType(declarator.Key, null, caller, null, ResolveTypeFlags.UseAutoload);
+                    if (decl_type == null || decl_type.RealType != declarator.Value.RealType)
 						return false;
 				}
 			}
@@ -454,9 +459,9 @@ namespace PHP.Core
 			TransientAssemblyBuilder assembly_builder = scriptContext.ApplicationContext.TransientAssemblyBuilder;
 
 			// looks up the cache:
-			TransientModule module = assembly_builder.TransientAssembly.GetModule(scriptContext, code, descriptor);
+			TransientModule module = assembly_builder.TransientAssembly.GetModule(scriptContext, referringType, code, descriptor);
 
-			if (module == null)
+            if (module == null)
                 // double checked lock,
                 // if module != null, it is definitely completed
                 // since module is added into TransientAssembly at the end
@@ -464,7 +469,7 @@ namespace PHP.Core
                 lock (assembly_builder.TransientAssembly)
                 {
                     // lookup again, since it could be added into TransientAssembly while lock
-                    module = assembly_builder.TransientAssembly.GetModule(scriptContext, code, descriptor);
+                    module = assembly_builder.TransientAssembly.GetModule(scriptContext, referringType, code, descriptor);
 
                     if (module == null)
                     {
@@ -490,7 +495,7 @@ namespace PHP.Core
                 }
 			
 			// activates unconditionally declared types, functions and constants: 
-			module.TransientCompilationUnit.Declare(scriptContext);
+            module.TransientCompilationUnit.Declare(scriptContext);
 
 			return module.Main(scriptContext, localVariables, self, referringType, true);
 		}

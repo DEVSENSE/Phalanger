@@ -317,31 +317,46 @@ namespace PHP.Core.Reflection
 
 		#region Modules
 
-		internal TransientModule GetModule(ScriptContext/*!*/ context, string/*!*/ code, SourceCodeDescriptor descriptor)
+		internal TransientModule GetModule(ScriptContext/*!*/ context, DTypeDesc caller, string/*!*/ code, SourceCodeDescriptor descriptor)
 		{
 			Debug.Assert(context != null && code != null);
 
 			Key key = new Key(code, descriptor);
 			Value value;
 
-            rwLock.EnterReadLock();
+            rwLock.EnterUpgradeableReadLock();
 
             try
-			{
-				if (!cache.TryGetValue(key, out value)) return null;
-			}
-			finally
-			{
-                rwLock.ExitReadLock();
-			}
-
-			if (TypesProvider.IsSubset(value.TypeDependencies, context))
-			{
+            {
+                if (cache.TryGetValue(key, out value))
+                {
+                    if (TypesProvider.LoadAndMatch(value.TypeDependencies, context, caller))
+                    {
 #if !SILVERLIGHT
-				Performance.Increment(Performance.DynamicCacheHits);
+                        Performance.Increment(Performance.DynamicCacheHits);
 #endif
-				return value.Module;
-			}
+                        return value.Module;
+                    }
+                    else
+                    {
+                        // invalidate the cache entry, because type dependencies were changed:
+                        rwLock.EnterWriteLock();
+
+                        try
+                        {
+                            cache.Remove(key);
+                        }
+                        finally
+                        {
+                            rwLock.ExitWriteLock();
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                rwLock.ExitUpgradeableReadLock();
+            }            
 
 			return null;
 		}

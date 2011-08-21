@@ -392,14 +392,24 @@ namespace PHP.Core.Reflection
 			return true;
 		}
 
-		internal void PostCompile(SourceCodeDescriptor descriptor)
-		{
-			module_builder.Bake();
-			Bake();
+        internal void PostCompile(SourceCodeDescriptor descriptor)
+        {
+            module_builder.Bake();
+            Bake();
 
-			// TODO: analyzer.GetTypeDependencies();
-			module = assembly_builder.TransientAssembly.AddModule(module_builder, new List<KeyValuePair<string, DTypeDesc>>(), sourceUnit.Code, descriptor);
-		}
+            // TODO: analyzer.GetTypeDependencies();
+            var dependentTypes = new List<KeyValuePair<string, DTypeDesc>>(bakedTypes != null ? bakedTypes.Length : 0);
+            if (bakedTypes != null)
+                foreach (var type in bakedTypes)
+                {
+                    var parent = type.Value.Base;
+                    if (parent is PhpTypeDesc)
+                        dependentTypes.Add(new KeyValuePair<string, DTypeDesc>(parent.MakeFullName(), parent));
+                }
+
+            //
+            module = assembly_builder.TransientAssembly.AddModule(module_builder, dependentTypes, sourceUnit.Code, descriptor);
+        }
 
 		private void DefineBuilders()
 		{
@@ -501,13 +511,13 @@ namespace PHP.Core.Reflection
 			}
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Declares types unconditionally declared in this module on the given <see cref="ScriptContext"/>.
 		/// Although, we can emit the Declare helper, it is not necessary as we can do it here for types 
 		/// and functions. Only constants, which cannot be evaluated at compile time (they are dependent 
 		/// on other eval-time evaluated constants are emitted (TODO).
 		/// </summary>
-		public void Declare(ScriptContext/*!*/ context)
+        public void Declare(ScriptContext/*!*/ context)
 		{
 			if (bakedTypes != null)
 			{
@@ -523,10 +533,15 @@ namespace PHP.Core.Reflection
 					else
 						context.DeclareType(entry.Value, entry.Key);
 
-                    // When class is compiled in runtime, autoload is invoked on base class (if isn't already declared). 
-                    // We have to call autoload on the base class also in transient assembly
-                    if (entry.Value.Base is PhpTypeDesc)
-                        context.ResolveType(entry.Value.Base.MakeSimpleName(), null, UnknownTypeDesc.Singleton, null, ResolveTypeFlags.UseAutoload);
+                    // moved to TypesProvider.FindAndProvideType
+                    //
+                    //// When class is compiled in runtime, autoload is invoked on base class (if isn't already declared). 
+                    //// We have to call autoload on the base class also in transient assembly
+                    //if (entry.Value.Base is PhpTypeDesc)
+                    //{
+                    //    var baseDesc = context.ResolveType(entry.Value.Base.MakeSimpleName(), null, caller, null, ResolveTypeFlags.UseAutoload);
+                    //    // if (baseDesc != entry.Value.Base) we have to invalidate the cache
+                    //}
 				}
 			}
 			
