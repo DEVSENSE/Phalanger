@@ -433,9 +433,19 @@ namespace PHP.Library
 
 		#endregion
 
-		#region PHP Time Zone Tables
+        #region timezone_identifiers_list (NS)
 
-		/// <summary>
+        [ImplementsFunction("timezone_identifiers_list", FunctionImplOptions.NotSupported)]
+        public static PhpArray IdentifierList()
+        {
+            return null;
+        }
+
+        #endregion
+
+        #region PHP Time Zone Tables
+
+        /// <summary>
 		/// Sorted list of PHP zone names.
 		/// </summary>
 		private static string[] zones;
