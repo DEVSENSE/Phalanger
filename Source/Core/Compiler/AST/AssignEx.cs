@@ -211,7 +211,14 @@ namespace PHP.Core.AST
 				codeGenerator.EmitBoxing(src_type_code);
 
 				// makes a copy if necessary:
-				codeGenerator.EmitVariableCopy(CopyReason.Assigned, rvalue);
+                if (src_type_code != PhpTypeCode.Void &&
+                    src_type_code != PhpTypeCode.String &&
+                    src_type_code != PhpTypeCode.Boolean &&
+                    src_type_code != PhpTypeCode.Double &&
+                    src_type_code != PhpTypeCode.Integer &&
+                    src_type_code != PhpTypeCode.LongInteger &&
+                    src_type_code != PhpTypeCode.PhpResource)
+				    codeGenerator.EmitVariableCopy(CopyReason.Assigned, rvalue);
 			}
 			else
 			{

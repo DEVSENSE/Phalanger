@@ -468,6 +468,7 @@ function run_test($file,$www)
 
 	// Does the output match what is expected?
 	$output = preg_replace(b"/\r\n/", b"\n", trim($out));
+	$output = str_replace("string[binary](","string(",$output);
     
 	$failed_headers = false;
 	if (isset($section_text['EXPECTHEADERS'])) {

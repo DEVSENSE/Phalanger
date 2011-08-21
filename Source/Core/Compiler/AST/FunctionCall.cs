@@ -683,8 +683,23 @@ namespace PHP.Core.AST
 		internal override bool IsDeeplyCopied(CopyReason reason, int nestingLevel)
 		{
 			// emit copy only if the call itself don't do that:
-			return routine == null || !routine.ReturnValueDeepCopyEmitted;
+            return
+                routine == null ||
+                (!routine.ReturnValueDeepCopyEmitted &&
+                // do not Copy, if routine surely did not return something IPhpCloneable:
+                routineEmittedTypeCode != PhpTypeCode.Void &&
+                routineEmittedTypeCode != PhpTypeCode.String &&
+                routineEmittedTypeCode != PhpTypeCode.Boolean &&
+                routineEmittedTypeCode != PhpTypeCode.Double &&
+                routineEmittedTypeCode != PhpTypeCode.Integer &&
+                routineEmittedTypeCode != PhpTypeCode.LongInteger && 
+                routineEmittedTypeCode != PhpTypeCode.PhpResource);
 		}
+
+        /// <summary>
+        /// Routine emitted type code if known.
+        /// </summary>
+        private PhpTypeCode routineEmittedTypeCode = PhpTypeCode.Unknown;
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
 		internal override PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator)
@@ -718,6 +733,9 @@ namespace PHP.Core.AST
                     result = routine.EmitCall(codeGenerator, callSignature, null, false, overloadIndex, null, position, access, false);
                 }
 			}
+
+            // store the type code for IsDeeplyCopied (used later by AssignEx.Emit):
+            this.routineEmittedTypeCode = result;
 
 			// handles return value:
 			codeGenerator.EmitReturnValueHandling(this, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);
