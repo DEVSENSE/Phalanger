@@ -2926,10 +2926,17 @@ namespace PHP.Core.Reflection
             // if the real object is still held in the cache, resurrect this instance
             lock (cache)
             {
-                if (cache.ContainsKey(realObject))
+                try
                 {
-                    cache.Resurrect(realObject, this);
-                    GC.ReRegisterForFinalize(this);
+                    if (cache.ContainsKey(realObject))
+                    {
+                        cache.Resurrect(realObject, this);
+                        GC.ReRegisterForFinalize(this);
+                    }
+                }
+                catch (System.Runtime.Remoting.RemotingException)
+                {
+                    // do not ressurect dead remote objects
                 }
             }
         }
