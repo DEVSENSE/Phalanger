@@ -226,7 +226,19 @@ namespace PHP.Core
 			Throw(PhpError.Warning, CoreResources.GetString("function_not_supported"));
 		}
 
-		/// <summary>
+        /// <summary>
+		/// Called library function is not supported.
+		/// </summary>
+        /// <param name="function">Not supported function name.</param>
+        [Emitted]
+		public static void FunctionNotSupported(string/*!*/function)
+		{
+            Debug.Assert(!string.IsNullOrEmpty(function));
+
+            Throw(PhpError.Warning, CoreResources.GetString("notsupported_function_called", function));
+		}
+
+        /// <summary>
 		/// Calles library function is not supported.
 		/// </summary>
 		/// <param name="severity">A severity of the error.</param>

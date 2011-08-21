@@ -507,7 +507,7 @@ namespace PHP.Library
 		/// <param name="flags">Additional flags (undocumented in PHP).</param>
 		/// <returns><c>true</c> if the <paramref name="path"/> matches with the given 
 		/// wildcard <paramref name="pattern"/>.</returns>
-		[ImplementsFunction("fnmatch")]
+        [ImplementsFunction("fnmatch", FunctionImplOptions.NotSupported)]
 		public static bool Match(string pattern, string path, int flags)
 		{
 			PhpException.FunctionNotSupported();

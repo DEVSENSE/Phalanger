@@ -1293,7 +1293,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>Runs the equivalent of the select() system call on the given arrays of streams with a timeout specified by tv_sec and tv_usec </summary>   
-		[ImplementsFunction("stream_select")]
+        [ImplementsFunction("stream_select", FunctionImplOptions.NotSupported)]
 		public static bool Select(PhpArray read, PhpArray write, PhpArray except, int tv_sec, int tv_usec)
 		{
 			PhpException.FunctionNotSupported();

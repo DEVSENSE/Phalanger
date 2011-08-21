@@ -931,7 +931,7 @@ namespace PHP.Library.Data
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		[ImplementsFunction("mssql_fetch_batch")]
+        [ImplementsFunction("mssql_fetch_batch", FunctionImplOptions.NotSupported)]
 		public static PhpArray FetchBatch(PhpResource resultHandle)
 		{
 			PhpException.FunctionNotSupported();

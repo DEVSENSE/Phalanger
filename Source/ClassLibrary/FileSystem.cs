@@ -1331,7 +1331,7 @@ namespace PHP.Library
 		/// <param name="handle"></param>
 		/// <param name="size"></param>
 		/// <returns></returns>
-		[ImplementsFunction("ftruncate")]
+		[ImplementsFunction("ftruncate", FunctionImplOptions.NotSupported)]
 		public static bool Truncate(PhpResource handle, int size)
 		{
 			// EX: [ftruncate]
@@ -1470,7 +1470,7 @@ namespace PHP.Library
 		/// <param name="handle"></param>
 		/// <param name="operation"></param>
 		/// <returns></returns>
-		[ImplementsFunction("flock")]
+        [ImplementsFunction("flock", FunctionImplOptions.NotSupported)]
 		public static bool Lock(PhpResource handle, int operation)
 		{
 			int dummy = 0;
@@ -1484,7 +1484,7 @@ namespace PHP.Library
 		/// <param name="operation"></param>
 		/// <param name="wouldblock"></param>
 		/// <returns></returns>
-		[ImplementsFunction("flock")]
+        [ImplementsFunction("flock", FunctionImplOptions.NotSupported)]
 		public static bool Lock(PhpResource handle, int operation, ref int wouldblock)
 		{
 			PhpException.FunctionNotSupported();

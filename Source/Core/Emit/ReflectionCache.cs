@@ -675,7 +675,8 @@ namespace PHP.Core.Emit
             static MethodInfo _Throw, _MissingArgument, _MissingTypeArgument, _MissingArguments, _InvalidForeachArgument,
                       _InvalidImplicitCast, _InvalidBreakLevelCount,
                       _InvalidArgumentCount, _UndefinedVariable, _CannotReassignThis, _InvalidArgumentType, _ThisUsedOutOfObjectContext,
-                      _StaticPropertyUnset, _AbstractMethodCalled, _NoSuitableOverload, _PropertyTypeMismatch, _UndefinedMethodCalled;
+                      _StaticPropertyUnset, _AbstractMethodCalled, _NoSuitableOverload, _PropertyTypeMismatch, _UndefinedMethodCalled,
+                      _FunctionNotSupported_String;
 
             public static MethodInfo Throw { get { if (_Throw == null) _Throw = _this.GetMethod("Throw"); return _Throw; } }
             public static MethodInfo MissingArgument { get { if (_MissingArgument == null) _MissingArgument = _this.GetMethod("MissingArgument"); return _MissingArgument; } }
@@ -694,6 +695,7 @@ namespace PHP.Core.Emit
             public static MethodInfo NoSuitableOverload { get { if (_NoSuitableOverload == null) _NoSuitableOverload = _this.GetMethod("NoSuitableOverload"); return _NoSuitableOverload; } }
             public static MethodInfo PropertyTypeMismatch { get { if (_PropertyTypeMismatch == null) _PropertyTypeMismatch = _this.GetMethod("PropertyTypeMismatch"); return _PropertyTypeMismatch; } }
             public static MethodInfo UndefinedMethodCalled { get { if (_UndefinedMethodCalled == null) _UndefinedMethodCalled = _this.GetMethod("UndefinedMethodCalled"); return _UndefinedMethodCalled; } }
+            public static MethodInfo FunctionNotSupported_String { get { return _FunctionNotSupported_String ?? (_FunctionNotSupported_String = _this.GetMethod("FunctionNotSupported", Types.String)); } }
         }
 
         #endregion

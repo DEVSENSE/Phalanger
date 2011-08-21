@@ -3847,7 +3847,7 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Function &apos;{0}&apos; is not supported..
+        ///   Looks up a localized string similar to Function &apos;{0}&apos; is not supported.
         /// </summary>
         internal static string notsupported_function_called {
             get {

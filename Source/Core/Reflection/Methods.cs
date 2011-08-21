@@ -1904,6 +1904,11 @@ namespace PHP.Core.Reflection
             /// The overload has the ScriptContext as the first parameter. It will be passed automatically.
             /// </summary>
             NeedsScriptContext = 32,
+
+            /// <summary>
+            /// Function is not supported.
+            /// </summary>
+            NotSupported = 64,
 		}
 
 		public sealed class Overload : RoutineSignature
@@ -1995,6 +2000,11 @@ namespace PHP.Core.Reflection
                 {
                     param_count--;
                     flags |= OverloadFlags.NeedsClassContext;
+                }
+
+                if ((options & FunctionImplOptions.NotSupported) != 0)
+                {
+                    flags |= OverloadFlags.NotSupported;
                 }
 
 				return new Overload(realOverload, parameters, param_count, flags);
@@ -2207,6 +2217,16 @@ namespace PHP.Core.Reflection
 		{
 			Overload overload = overloads[overloadIndex];
 			Statistics.AST.AddLibraryFunctionCall(FullName, overload.ParamCount);
+
+            if ((overload.Flags & OverloadFlags.NotSupported) != 0)
+            {
+                codeGenerator.IL.Emit(OpCodes.Ldstr, FullName);
+                codeGenerator.IL.Emit(OpCodes.Call, Methods.PhpException.FunctionNotSupported_String);
+                if (codeGenerator.Context.Config.Compiler.Debug)
+                    codeGenerator.IL.Emit(OpCodes.Nop);
+
+                return OverloadsBuilder.EmitLoadDefault(codeGenerator.IL, overload.Method);
+            }
 
             //IPlace return_value;
             IPlace script_context = null;

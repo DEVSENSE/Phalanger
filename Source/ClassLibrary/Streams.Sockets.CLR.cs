@@ -114,7 +114,7 @@ namespace PHP.Library
 		#region TODO: stream_get_transports, stream_socket_get_name
 
 		/// <summary>Retrieve list of registered socket transports</summary>  
-		[ImplementsFunction("stream_get_transports")]
+        [ImplementsFunction("stream_get_transports", FunctionImplOptions.NotSupported)]
 		public static PhpArray GetTransports()
 		{
 			PhpException.FunctionNotSupported();
@@ -124,7 +124,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Retrieve the name of the local or remote sockets.
 		/// </summary>
-		[ImplementsFunction("stream_socket_get_name")]
+        [ImplementsFunction("stream_socket_get_name", FunctionImplOptions.NotSupported)]
 		public static string SocketGetName(PhpResource handle, bool wantPeer)
 		{
 			PhpException.FunctionNotSupported();
@@ -282,7 +282,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Accepts a connection on a server socket.
 		/// </summary>
-		[ImplementsFunction("stream_socket_accept")]
+        [ImplementsFunction("stream_socket_accept", FunctionImplOptions.NotSupported)]
 		public static bool Accept(PhpResource serverSocket)
 		{
 			string peerName;
@@ -292,7 +292,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Accepts a connection on a server socket.
 		/// </summary>
-		[ImplementsFunction("stream_socket_accept")]
+        [ImplementsFunction("stream_socket_accept", FunctionImplOptions.NotSupported)]
 		public static bool Accept(PhpResource serverSocket, int timeout)
 		{
 			string peerName;
@@ -302,7 +302,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Accepts a connection on a server socket.
 		/// </summary>
-		[ImplementsFunction("stream_socket_accept")]
+        [ImplementsFunction("stream_socket_accept", FunctionImplOptions.NotSupported)]
 		public static bool Accept(PhpResource serverSocket, int timeout, out string peerName)
 		{
 			peerName = "";
@@ -318,21 +318,21 @@ namespace PHP.Library
 
 		#region TODO: stream_socket_recvfrom
 
-		[ImplementsFunction("stream_socket_recvfrom")]
+        [ImplementsFunction("stream_socket_recvfrom", FunctionImplOptions.NotSupported)]
 		public static string ReceiveFrom(PhpResource socket, int length)
 		{
 			string address;
 			return ReceiveFrom(socket, length, SendReceiveOptions.None, out address);
 		}
 
-		[ImplementsFunction("stream_socket_recvfrom")]
+        [ImplementsFunction("stream_socket_recvfrom", FunctionImplOptions.NotSupported)]
 		public static string ReceiveFrom(PhpResource socket, int length, SendReceiveOptions flags)
 		{
 			string address;
 			return ReceiveFrom(socket, length, flags, out address);
 		}
 
-		[ImplementsFunction("stream_socket_recvfrom")]
+        [ImplementsFunction("stream_socket_recvfrom", FunctionImplOptions.NotSupported)]
 		public static string ReceiveFrom(PhpResource socket, int length, SendReceiveOptions flags,
 		  out string address)
 		{
@@ -349,19 +349,19 @@ namespace PHP.Library
 
 		#region TODO: stream_socket_sendto
 
-		[ImplementsFunction("stream_socket_sendto")]
+        [ImplementsFunction("stream_socket_sendto", FunctionImplOptions.NotSupported)]
 		public static int SendTo(PhpResource socket, string data)
 		{
 			return SendTo(socket, data, SendReceiveOptions.None, null);
 		}
 
-		[ImplementsFunction("stream_socket_sendto")]
+        [ImplementsFunction("stream_socket_sendto", FunctionImplOptions.NotSupported)]
 		public static int SendTo(PhpResource socket, string data, SendReceiveOptions flags)
 		{
 			return SendTo(socket, data, flags, null);
 		}
 
-		[ImplementsFunction("stream_socket_sendto")]
+        [ImplementsFunction("stream_socket_sendto", FunctionImplOptions.NotSupported)]
 		public static int SendTo(PhpResource socket, string data, SendReceiveOptions flags,
 		  string address)
 		{
@@ -376,6 +376,7 @@ namespace PHP.Library
 
 		#region TODO: stream_socket_pair
 
+        //[ImplementsFunction("stream_socket_pair", FunctionImplOptions.NotSupported)]
 		public static PhpArray CreatePair(ProtocolFamily protocolFamily, SocketType type, ProtocolType protocol)
 		{
 			PhpException.FunctionNotSupported();

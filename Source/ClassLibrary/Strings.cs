@@ -2537,7 +2537,7 @@ namespace PHP.Library
 			return result.ToString();
 		}
 
-        [ImplementsFunction("quoted_printable_encode")]
+        [ImplementsFunction("quoted_printable_encode"/*, FunctionImplOptions.NotSupported*//*at least, return the input string*/)]
         public static string QuotedPrintableEncode(string str)
         {
             PhpException.FunctionNotSupported();

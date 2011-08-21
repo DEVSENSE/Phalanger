@@ -380,21 +380,43 @@ namespace PHP.Core.Emit
 			int min = overloads[0].ParamCount;
 			int max = overloads[last].ParamCount;
 
-			bool is_vararg = (overloads[last].Flags & PhpLibraryFunction.OverloadFlags.IsVararg) != 0;
+            var flags = overloads[last].Flags;
 
-            if ((overloads[last].Flags & PhpLibraryFunction.OverloadFlags.NeedsScriptContext) == 0)
+            // if function is not supported, just throw the warning:
+            if ((flags & PhpLibraryFunction.OverloadFlags.NotSupported) != 0)
+            {
+                // stack.RemoveFrame();
+                if (stack != null)
+                {
+                    stack.EmitLoad(il);
+                    il.Emit(OpCodes.Call, Methods.PhpStack.RemoveFrame);
+                }
+
+                // PhpException.FunctionNotSupported( <FullName> );
+                il.Emit(OpCodes.Ldstr, FunctionName.Value);
+                il.Emit(OpCodes.Call, Methods.PhpException.FunctionNotSupported_String);
+                if (debug) il.Emit(OpCodes.Nop);
+
+                // load methods default value
+                il.EmitBoxing(OverloadsBuilder.EmitLoadDefault(il, overloads[last].Method));
+                return;
+            }
+
+            bool is_vararg = (flags & PhpLibraryFunction.OverloadFlags.IsVararg) != 0;
+
+            if ((flags & PhpLibraryFunction.OverloadFlags.NeedsScriptContext) == 0)
                 script_context = null;
 
-			if ((overloads[last].Flags & PhpLibraryFunction.OverloadFlags.NeedsThisReference) == 0)
+			if ((flags & PhpLibraryFunction.OverloadFlags.NeedsThisReference) == 0)
 				thisRef = null;
 
-			if ((overloads[last].Flags & PhpLibraryFunction.OverloadFlags.NeedsVariables) == 0)
+			if ((flags & PhpLibraryFunction.OverloadFlags.NeedsVariables) == 0)
 				rtVariables = null;
 
-			if ((overloads[last].Flags & PhpLibraryFunction.OverloadFlags.NeedsNamingContext) == 0)
+			if ((flags & PhpLibraryFunction.OverloadFlags.NeedsNamingContext) == 0)
 				namingContext = null;
 
-            if ((overloads[last].Flags & PhpLibraryFunction.OverloadFlags.NeedsClassContext) == 0)
+            if ((flags & PhpLibraryFunction.OverloadFlags.NeedsClassContext) == 0)
                 classContext = null;
 
 			Label end_label = il.DefineLabel();
@@ -1129,6 +1151,29 @@ namespace PHP.Core.Emit
 				il.Emit(OpCodes.Brtrue_S, noCastLabel);       // branch if not null
 			}
 		}
+
+        /// <summary>
+        /// Emits load of default value assuming given method fails.
+        /// </summary>
+        /// <param name="il">ILEmitter.</param>
+        /// <param name="method">Method which default return value have to be loaded.</param>
+        /// <returns></returns>
+        public static PhpTypeCode EmitLoadDefault(ILEmitter/*!*/il, MethodInfo/*!*/method)
+        {
+            if (method.ReturnType == Types.Bool[0] || method.ReturnTypeCustomAttributes.IsDefined(typeof(CastToFalseAttribute), false))
+            {
+                il.LoadBool(false);
+                return PhpTypeCode.Boolean;
+            }
+
+            if (method.ReturnType == Types.Int[0])
+            {
+                il.LdcI4(0);
+                return PhpTypeCode.Integer;
+            }
+
+            return PhpTypeCode.Void;
+        }
 
 		#endregion
 	}

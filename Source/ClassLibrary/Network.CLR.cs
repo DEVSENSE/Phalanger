@@ -249,7 +249,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		[ImplementsFunction("dns_check_record")]
+        [ImplementsFunction("dns_check_record", FunctionImplOptions.NotSupported)]
 		public static int CheckRecords(string host, string type)
 		{
 			PhpException.FunctionNotSupported();
@@ -273,7 +273,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		[ImplementsFunction("dns_get_record")]
+        [ImplementsFunction("dns_get_record", FunctionImplOptions.NotSupported)]
 		public static PhpArray GetRecord(string host, DnsRecordType type)
 		{
 			PhpException.FunctionNotSupported();
@@ -283,7 +283,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		[ImplementsFunction("dns_get_record")]
+        [ImplementsFunction("dns_get_record", FunctionImplOptions.NotSupported)]
 		public static PhpArray GetRecord(string host, DnsRecordType type, out PhpArray authNS, out PhpArray additional)
 		{
 			PhpException.FunctionNotSupported();
@@ -383,7 +383,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		[ImplementsFunction("dns_get_mx")]
+        [ImplementsFunction("dns_get_mx", FunctionImplOptions.NotSupported)]
 		public static bool GetMxRecord(string hostName, PhpArray mxHosts)
 		{
 			PhpException.FunctionNotSupported();
@@ -393,7 +393,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		[ImplementsFunction("dns_get_mx")]
+        [ImplementsFunction("dns_get_mx", FunctionImplOptions.NotSupported)]
 		public static bool GetMxRecord(string hostName, PhpArray mxHosts, PhpArray weight)
 		{
 			PhpException.FunctionNotSupported();

@@ -2009,7 +2009,7 @@ non-infringement.
     <value>Call to undefined external function '{0}', extension '{1}' (extension not found)</value>
   </data>
   <data name="notsupported_function_called" xml:space="preserve">
-    <value>Function '{0}' is not supported.</value>
+    <value>Function '{0}' is not supported</value>
   </data>
   <data name="phpc_arg_skip" xml:space="preserve">
     <value>File or directory which will be skipped during compilation. This also prevents a file(s) to be included statically if /static+ option is specified.</value>

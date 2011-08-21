@@ -381,7 +381,7 @@ namespace PHP.Library
 		/// Not supported.
 		/// </summary>
 		/// <returns>Zero.</returns>
-		[ImplementsFunction("getmyuid")]
+        [ImplementsFunction("getmyuid", FunctionImplOptions.NotSupported)]
 		public static int GetCurrentUserId()
 		{
 			PhpException.FunctionNotSupported();

@@ -997,7 +997,7 @@ namespace PHP.Library
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		[ImplementsFunction("readlink")]
+		[ImplementsFunction("readlink", FunctionImplOptions.NotSupported)]
 		public static string ReadLink(string path)
 		{
 			// Returns the target of a symbolic link.
