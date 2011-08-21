@@ -83,6 +83,31 @@ namespace PHP.Core.AST
 
 			ExInfoFromParent lvalue_info = new ExInfoFromParent(this);
 
+            // x[] = y
+            if (lvalue is ItemUse && ((ItemUse)lvalue).Index == null)
+                if (operation != Operations.AssignValue && operation != Operations.AssignRef)
+                {
+                    // x[] .= y -> x[] = null . y
+                    if (operation == Operations.AssignAppend)
+                        rvalue = new BinaryEx(Position, Operations.Concat, new NullLiteral(Position), rvalue);
+                    // x[] += y -> x[] = 0 + y
+                    else if (operation == Operations.AssignAdd)
+                        rvalue = new BinaryEx(Position, Operations.Add, new IntLiteral(Position, 0), rvalue);
+                    // x[] -= y -> x[] = 0 - y
+                    else if (operation == Operations.AssignSub)
+                        rvalue = new BinaryEx(Position, Operations.Sub, new IntLiteral(Position, 0), rvalue);
+                    // x[] *= y -> x[] = 0 * y
+                    else if (operation == Operations.AssignMul)
+                        rvalue = new BinaryEx(Position, Operations.Mul, new IntLiteral(Position, 0), rvalue);
+                    // x[] /= y -> x[] = 0 / y
+                    else if (operation == Operations.AssignDiv)
+                        rvalue = new BinaryEx(Position, Operations.Div, new IntLiteral(Position, 0), rvalue);
+                    else
+                        Debug.Fail("Unhandled operation " + operation.ToString() + " must be reduced!");
+
+                    operation = Operations.AssignValue;
+                }
+
 			// stop evaluation:
 			rvalue = rvalue.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
 
