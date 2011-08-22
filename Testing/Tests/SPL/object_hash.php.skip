@@ -1,0 +1,15 @@
+[expect php]
+[file]
+<?
+	//class X{}
+
+	var_dump( spl_object_hash( null ) );
+	var_dump( spl_object_hash( 0 ) );
+	var_dump( spl_object_hash( 123 ) );
+	var_dump( spl_object_hash( "hello" ) );
+	
+	// following cannot be compared with PHP: (use PHPT with regex as expected output)
+	//var_dump( spl_object_hash( new X ) );
+	//var_dump( spl_object_hash( new X ) );
+	//var_dump( spl_object_hash( new X ) );
+?>

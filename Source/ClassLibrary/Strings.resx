@@ -594,4 +594,7 @@
   <data name="must_be_positive" xml:space="preserve">
     <value>{0} must be greater than or equal to 0</value>
   </data>
+  <data name="unexpected_arg_given" xml:space="preserve">
+    <value>expects parameter {0} to be {1}, {2} given</value>
+  </data>
 </root>
