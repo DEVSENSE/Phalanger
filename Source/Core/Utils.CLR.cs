@@ -548,6 +548,54 @@ namespace PHP.Core
             }
         }
 
+        public static void ParseTypesList(XmlNode/*!*/ node,
+            Action<string>/*!*/ addCallback,
+            Action<string>/*!*/ removeCallback,
+            Action<object>/*!*/ clearCallback)
+        {
+            if (node == null)
+                throw new ArgumentNullException("node");
+            if (addCallback == null)
+                throw new ArgumentNullException("addCallback");
+            if (removeCallback == null)
+                throw new ArgumentNullException("removeCallback");
+            if (clearCallback == null)
+                throw new ArgumentNullException("clearCallback");
+
+            foreach (XmlNode child in node.ChildNodes)
+            {
+                if (child.Name == "add" || child.Name == "remove")
+                {
+                    if (!Configuration.IsValidInCurrentScope(child)) continue;
+
+                    string typeQualifiedName = ConfigUtils.MandatoryAttribute(child, "type");
+                    
+                    if (child.Name == "add")
+                        addCallback(typeQualifiedName);
+                    else
+                        removeCallback(typeQualifiedName);
+                }
+                else if (child.Name == "clear")
+                {
+                    clearCallback(null);
+                }
+                else if (child.NodeType == XmlNodeType.Element)
+                {
+                    throw new ConfigUtils.InvalidNodeException(child);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Load plugin from its full type name.
+        /// </summary>
+        /// <param name="typename">Full type name.</param>
+        public static void LoadPlugin(string/*!*/typename)
+        {
+            var type = Type.GetType(typename, true);
+            type.GetMethod("Initialize", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[] { });
+        }
+
 		/// <summary>
 		/// Parses an integer from a string.
 		/// </summary>

@@ -1751,6 +1751,10 @@ namespace PHP.Core
 			// initializes locals (from arguments or by empty value):
 			EmitArgfullArgsInitialization(routine);
 
+            // custom body prolog emittion:
+            if (PluginHandler.BeforeBodyEmitter != null)
+                PluginHandler.BeforeBodyEmitter(il, body);
+
 			// define user labels:
 			DefineLabels(routine.Builder.Labels);
 
@@ -2116,7 +2120,7 @@ namespace PHP.Core
 		/// </summary>
 		public void EmitRoutineEpilogue(GlobalCode globalCode, bool transient)
 		{
-			if (globalCode != null && globalCode.AppendedInclusion != null)
+            if (globalCode != null && globalCode.AppendedInclusion != null)
 			{
 				// marks the return label, however return value is ignored since it is 
 				// overriden by appended script's return value (TODO: HOW DOES PHP BEHAVE?):

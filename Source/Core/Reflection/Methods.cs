@@ -1054,22 +1054,26 @@ namespace PHP.Core.Reflection
 
 			// names the first argument of the static argfull overload - the context:
 			if (IsStatic)
-				builder.ParameterBuilders[0] = ReflectionUtils.DefineParameter(argfull, 1, ParameterAttributes.None, PhpRoutine.ContextParamName);
+                builder.ParameterBuilders[0] = ReflectionUtils.DefineParameter(argfull, 1, ParameterAttributes.None, PluginHandler.ConvertParameterName(PhpRoutine.ContextParamName));
 
 			// pseudo-generic parameters:
 			foreach (GenericParameter param in signature.GenericParams)
 				param.DefineBuildersWithinMethod();
 
 			// PHP parameters:
-			for (int i = 0, real_index = FirstPhpParameterIndex; i < signature.ParamCount; i++, real_index++)
-			{
-				ParameterBuilder param_builder;
+            for (int i = 0, real_index = FirstPhpParameterIndex; i < signature.ParamCount; i++, real_index++)
+            {
+                ParameterBuilder param_builder;
 
-				builder.ParameterBuilders[real_index] = param_builder = ReflectionUtils.DefineParameter(argfull,
-		  (IsStatic ? 1 : 0) + real_index,
-		  (i < signature.MandatoryParamCount) ? ParameterAttributes.None : ParameterAttributes.Optional,
-		  builder.Signature.FormalParams[i].Name.Value);
-			}
+                string argName = PluginHandler.ConvertParameterName(builder.Signature.FormalParams[i].Name.Value);
+
+
+                builder.ParameterBuilders[real_index] = param_builder = ReflectionUtils.DefineParameter(
+                    argfull,
+                    (IsStatic ? 1 : 0) + real_index,
+                    (i < signature.MandatoryParamCount) ? ParameterAttributes.None : ParameterAttributes.Optional,
+                    argName);
+            }
 		}
 
 		#endregion

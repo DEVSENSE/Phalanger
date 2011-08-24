@@ -162,6 +162,13 @@ namespace PHP.Core.Emit
 
 		public TypeBuilder TypeBuilder { get { return (TypeBuilder)method.DeclaringType; } }
 
+        /// <summary>
+        /// Gets the current offset, in bytes, in the Microsoft intermediate language (MSIL) stream
+        /// that is being emitted by the System.Reflection.Emit.ILGenerator.
+        /// Returns the offset in the MSIL stream at which the next instruction will be emitted.
+        /// </summary>
+        public int ILOffset { get { return il.ILOffset; } }
+
 		/// <summary>
 		/// The last <see cref="OpCode"/> emitted by this <see cref="ILEmitter"/>.
 		/// </summary>
@@ -1137,7 +1144,10 @@ namespace PHP.Core.Emit
 				case TypeCode.Boolean: LoadBool((bool)value); break;
 				case TypeCode.Double: Emit(OpCodes.Ldc_R8, (double)value); break;
 				case TypeCode.Single: Emit(OpCodes.Ldc_R4, (float)value); break;
-				case TypeCode.String: Emit(OpCodes.Ldstr, (string)value); break;
+				case TypeCode.String:
+                    if (PluginHandler.StringLiteralEmitter != null) PluginHandler.StringLiteralEmitter(this, (string)value);
+                    else Emit(OpCodes.Ldstr, (string)value);
+                    break;
 				case TypeCode.Object:
 					{
 						PhpBytes bytes = value as PhpBytes;

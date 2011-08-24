@@ -144,8 +144,11 @@ namespace PHP.Core.AST
 			// TODO: improve
 			codeGenerator.EnterGlobalCodeDeclaration(this.varTable, labels, sourceUnit);
 
-            
+            // custom body prolog emittion:
+            if (PluginHandler.BeforeBodyEmitter != null)
+                PluginHandler.BeforeBodyEmitter(codeGenerator.IL, statements);
 
+            //
 			if (codeGenerator.CompilationUnit.IsTransient)
 			{
 				codeGenerator.DefineLabels(labels);

@@ -529,6 +529,16 @@ namespace PHP.Core
                                 applicationContext.ScriptLibraryDatabase.ClearLibraries);
                             break;
 
+                        case ConfigurationSectionHandler.NodePlugin:
+                            {
+                                ConfigUtils.ParseTypesList(node,
+                                    (typename) => { ConfigUtils.LoadPlugin(typename); },
+                                    (typename) => { throw new NotImplementedException(); },
+                                    (_) => { throw new NotImplementedException(); }
+                                );
+                            }
+                            break;
+
 						case ConfigurationSectionHandler.NodeCompiler:
 							ConfigUtils.ParseNameValueList(node, null, Compiler);
 							break;
@@ -1722,6 +1732,7 @@ namespace PHP.Core
 		internal const string NodePaths = "paths";
 		internal const string NodeClassLibrary = "classLibrary";
         internal const string NodeScriptLibrary = "scriptLibrary";
+        internal const string NodePlugin = "plugin";
 		internal const string NodeCompiler = "compiler";
 		internal const string NodeGlobalization = "globalization";
 		internal const string NodeVariables = "variables";
@@ -1876,6 +1887,15 @@ namespace PHP.Core
 
                             node_ScriptLibrary = node;
 
+                            break;
+                        case NodePlugin:
+                            {
+                                ConfigUtils.ParseTypesList(node,
+                                    (typename) => { ConfigUtils.LoadPlugin(typename); },
+                                    (typename) => { throw new NotImplementedException(); },
+                                    (_) => { throw new NotImplementedException(); }
+                                );
+                            }
                             break;
 						case NodeCompiler:
 							// options can be specified only in application root:
