@@ -423,9 +423,9 @@ namespace PHP.Core.Reflection
                     // converts CLR namespaces and nested types to PHP namespaces:
                     string full_name = QualifiedName.FromClrNotation(type.FullName, true).ToString();
 
-                    // Creating PhpTypeDesc without cache lookup since this type is surely not in the cache yet:
+                    // Creating PhpTypeDesc with cache lookup since this type can be in the cache already:
                     // Also force PHP type, because we already checked PhpType.IsPhpRealType(type)
-                    PhpTypeDesc phpType = (PhpTypeDesc)DTypeDesc.Recreate(type.TypeHandle, true);
+                    PhpTypeDesc phpType = (PhpTypeDesc)DTypeDesc.Create(type.TypeHandle);
 
                     DTypeDesc existing;
                     if (types.TryGetValue(full_name, out existing))
