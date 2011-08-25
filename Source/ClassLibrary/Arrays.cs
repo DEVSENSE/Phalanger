@@ -3434,9 +3434,17 @@ namespace PHP.Library
 			int max_count = 0;
 			for (int i = 0; i < arrays.Length; i++)
 			{
+                var array = arrays[i];
+
+                if (array == null)
+                {
+                    PhpException.Throw(PhpError.Warning, LibResources.GetString("argument_not_array", i + 2));// +2 (first arg is callback) 
+                    return null;
+                }
+
 				args[i] = new PhpReference();
-				iterators[i] = arrays[i].GetEnumerator();
-				if (arrays[i].Count > max_count) max_count = arrays[i].Count;
+                iterators[i] = array.GetEnumerator();
+                if (array.Count > max_count) max_count = array.Count;
 			}
 
 			// keys are preserved in a case of a single array and re-indexed otherwise:
