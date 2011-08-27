@@ -609,35 +609,90 @@ namespace PHP.Core
 		[Emitted]
 		public object GetConstantValue(string name)
 		{
-			return GetConstantValue(name, false);
+			return GetConstantValue(name, false, true);
 		}
+
+        /// <summary>
+        /// Tries to parse the <paramref name="fullname"/> as "typename::constantname", resolve the typename and tries to get the constantname.
+        /// </summary>
+        /// <param name="fullname">Full class constant name, in a form of "typename::constantname".</param>
+        /// <param name="desc">Found constant if any. Otherwise will be null.</param>
+        /// <param name="quiet">True to throw undefined class constant PHP error if fullname represents class constant name and the constant was not found.</param>
+        /// <returns>True if given <paramref name="fullname"/> states for class constant name.</returns>
+        /// <exception cref="PhpException">Undefined class constant (Fatal Error).</exception>
+        /// <exception cref="PhpException">Class name could not be resolved (Fatal Error).</exception>
+        private bool GetClassConstant(string fullname, out DConstantDesc desc, bool quiet)
+        {
+            desc = null;
+
+            if (fullname.Contains("::"))
+            {
+                var typename = fullname.Substring(0, fullname.IndexOf("::"));
+                var constname = fullname.Substring(typename.Length + 2);
+
+                var flags = ResolveTypeFlags.UseAutoload;
+                if (!quiet) flags |= ResolveTypeFlags.ThrowErrors;
+
+                var type = ResolveType(typename, null, UnknownTypeDesc.Singleton, null, flags);
+
+                if (type != null)
+                {
+                    var result = type.GetConstant(new VariableName(constname), UnknownTypeDesc.Singleton, out desc);
+
+                    if (!quiet && desc == null)
+                        PhpException.Throw(PhpError.Error, CoreResources.GetString("undefined_class_constant", typename, constname));
+                }
+
+                return true;    // fullname is for class constant
+            }
+
+            return false; // gobal constant
+        }
 
 		/// <summary>
 		/// Retrieves a value of a constant (either user or library).
 		/// </summary>
 		/// <param name="name">The name of the constant.</param>
 		/// <param name="quiet">Whether to report a notice if the constant is not defined.</param>
-		/// <returns>Returns the value of the constant or its name it it is not defined.</returns>
+        /// <param name="returnNameIfUndefined">True to return the <paramref name="name"/> instead of <c>null</c> when constant is not defined.</param>
+        /// <returns>Returns the value of the constant. If constant is not defined, <c>null</c> or its name is returned.</returns>
 		/// <exception cref="PhpException">Constant is not defined (Notice).</exception>
-		public object GetConstantValue(string name, bool quiet)
+        /// <exception cref="PhpException">Constant is not defined (Warning).</exception>
+        /// <exception cref="PhpException">Undefined class constant (Fatal Error).</exception>
+		public object GetConstantValue(string name, bool quiet, bool returnNameIfUndefined)
 		{
 			if (name == null) name = String.Empty;
 
-			// gets user constant first:
-			object result;
-			if (Constants.TryGetValue(name, out result))
-				return result;
+            // global constant or class constant:
+            DConstantDesc desc;
+            if (GetClassConstant(name, out desc, quiet))
+            {
+                if (desc != null)
+                    return PhpVariable.Dereference(desc.LiteralValue);
+            }
+            else
+            {
+                // gets user constant first:
+                object result;
+                if (Constants.TryGetValue(name, out result))
+                    return result;
 
-			// gets system constant if user one is not defined:
-			DConstantDesc desc;
-			if (applicationContext.Constants.TryGetValue(name, out desc))
-				return desc.LiteralValue;
+                // gets system constant if user one is not defined:
+                if (applicationContext.Constants.TryGetValue(name, out desc))
+                    return desc.LiteralValue;
+            }
 
 			// constant is not defined:
-			if (!quiet)
-				PhpException.Throw(PhpError.Notice, CoreResources.GetString("undefined_constant", name));
+            if (!quiet)
+            {
+                if (returnNameIfUndefined)
+                    PhpException.Throw(PhpError.Notice, CoreResources.GetString("undefined_constant", name));
+                else
+                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("constant_not_found", name));
+            }
 
-			return name;
+            // default value, if constant is not defined
+            return returnNameIfUndefined ? name : null;
 		}
 
 		/// <summary>
@@ -649,7 +704,13 @@ namespace PHP.Core
 		public bool IsConstantDefined(string name)
 		{
 			if (name == null) name = String.Empty;
-			return Constants.ContainsKey(name) || applicationContext.Constants.ContainsKey(name);
+
+            // global constant or class constant:
+            DConstantDesc desc;
+            if (GetClassConstant(name, out desc, true))
+                return desc != null;
+            else
+			    return Constants.ContainsKey(name) || applicationContext.Constants.ContainsKey(name);
 		}
 
 		/// <summary>

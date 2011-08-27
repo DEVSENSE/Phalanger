@@ -153,7 +153,7 @@ namespace PHP
 
 			public object GetConstantValue(string name)
 			{
-				return ScriptContext.CurrentContext.GetConstantValue(name, true);
+				return ScriptContext.CurrentContext.GetConstantValue(name, true, true);
 			}
 
 			public void ProcessSection(object sectionName)

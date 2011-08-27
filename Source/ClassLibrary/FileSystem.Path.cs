@@ -602,7 +602,7 @@ namespace PHP.Library
 
 			Debug.Assert(!String.IsNullOrEmpty(pattern) && separator != null);
 
-			string[] items;
+            string[] items;
 			bool[] is_dir;
 
 			try
@@ -627,10 +627,13 @@ namespace PHP.Library
 				{
 					if (is_last_component || !is_dir[i])
 					{
-						if (is_dir[i])
-							result.Add(String.Concat(prefix, items[i], separator));
-						else
-							result.Add(String.Concat(prefix, items[i]));
+                        if (items[i] != "." && items[i] != "..")
+                        {
+                            if (is_dir[i])
+                                result.Add(String.Concat(prefix, items[i], separator));
+                            else
+                                result.Add(String.Concat(prefix, items[i]));
+                        }
 					}
 					else
 					{
@@ -650,16 +653,28 @@ namespace PHP.Library
 			else
 				files = ArrayUtils.EmptyStrings;
 
-			items = new string[directories.Length + files.Length];
+			items = new string[directories.Length + files.Length + 2];
 			isDir = new bool[items.Length];
 
-			for (int i = 0; i < items.Length; i++)
-			{
-				items[i] = Path.GetFileName((i < directories.Length) ? directories[i] : files[i - directories.Length]);
-				isDir[i] = i < directories.Length;
-			}
+            // directories
+            int index = 0;
+            items[index] = ".";
+            isDir[index ++] = true;
+            items[index] = "..";
+            isDir[index++] = true;
+            for (int i = 0; i < directories.Length; i++, index++)
+            {
+                isDir[index] = true;
+                items[index] = Path.GetFileName(directories[i]);     // Path.GetFileName should not be necessary in .NET 5 ... now, DirectoryEx.GetDirectories returns full paths if currentDir contains ".."
+            }
 
-			if ((flags & GlobOptions.NoSort) == 0)
+            for (int i = 0; i < files.Length; i++, index++)
+            {
+                isDir[index] = false;
+                items[index] = Path.GetFileName(files[i]);      // as above
+            }
+
+            if ((flags & GlobOptions.NoSort) == 0)
 				Array.Sort<string, bool>(items, isDir);
 		}
 

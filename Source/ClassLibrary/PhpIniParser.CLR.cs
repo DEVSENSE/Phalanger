@@ -359,7 +359,7 @@ namespace PHP.Library
 			/// </summary>
 			public object GetConstantValue(string name)
 			{
-				return scriptContext.GetConstantValue(name, true);
+				return scriptContext.GetConstantValue(name, true, false);
 			}
 
 			#endregion

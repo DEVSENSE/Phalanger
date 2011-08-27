@@ -1330,6 +1330,15 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Couldn&apos;t find constant {0}.
+        /// </summary>
+        internal static string constant_not_found {
+            get {
+                return ResourceManager.GetString("constant_not_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare constant {0}::{1}.
         /// </summary>
         internal static string constant_redeclared {
@@ -5396,7 +5405,7 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Undefined constant &apos;{0}&apos; - the default value &quot;{0}&quot; is used instead.
+        ///   Looks up a localized string similar to Use of undefined constant {0} - assumed &apos;{0}&apos;.
         /// </summary>
         internal static string undefined_constant {
             get {

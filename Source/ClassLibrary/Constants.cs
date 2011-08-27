@@ -81,7 +81,7 @@ namespace PHP.Library
 		[ImplementsFunction("constant")]
 		public static object Constant(string name)
 		{
-			return ScriptContext.CurrentContext.GetConstantValue(name);
+			return ScriptContext.CurrentContext.GetConstantValue(name, false, false);
 		}
 
 		/// <summary>

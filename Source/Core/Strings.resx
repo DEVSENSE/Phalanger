@@ -848,7 +848,7 @@ Stack trace:
     <value>Undefined variable: {0}</value>
   </data>
   <data name="undefined_constant" xml:space="preserve">
-    <value>Undefined constant '{0}' - the default value "{0}" is used instead</value>
+    <value>Use of undefined constant {0} - assumed '{0}'</value>
   </data>
   <data name="object_used_as_array" xml:space="preserve">
     <value>An object of type '{0}' used as an array</value>
@@ -2025,5 +2025,8 @@ non-infringement.
   </data>
   <data name="unoptimized_local_variables_function" xml:space="preserve">
     <value>Function {0} requires access to local variables and prevents optimizing them. To improve performance, separate this function call into small function.</value>
+  </data>
+  <data name="constant_not_found" xml:space="preserve">
+    <value>Couldn't find constant {0}</value>
   </data>
 </root>
