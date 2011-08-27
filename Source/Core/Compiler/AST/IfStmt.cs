@@ -120,7 +120,7 @@ namespace PHP.Core.AST
 
 					// analyze statement conditinally:
 					analyzer.EnterConditionalCode();
-					conditions[i].Statement.Analyze(analyzer);
+                    conditions[i].Statement = conditions[i].Statement.Analyze(analyzer);
 					analyzer.LeaveConditionalCode();
 
 					is_first = false;
