@@ -2343,7 +2343,8 @@ namespace PHP.Library
                     }
 
 					// some characters (like '_') don't need to be escaped in .net
-					if (ch == '_') escaped = false; else escaped = true;
+                    // and ignore escaping of unicode sequence of characters
+					if (ch == '_' || (int)ch > 0x7F) escaped = false; else escaped = true;
 				}
 
 				switch (state)
