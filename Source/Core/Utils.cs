@@ -1841,6 +1841,17 @@ namespace PHP.Core
             return x.Length - y.Length;
         }
 
+        unsafe public static int Compare(byte[]/*!*/x_bytes, byte[]/*!*/y_bytes, int length)
+        {
+            Debug.Assert(x_bytes != null && y_bytes != null);
+            Debug.Assert(length <= x_bytes.Length && length <= y_bytes.Length);
+
+            fixed (byte* x = x_bytes, y = y_bytes)
+            {
+                return ArrayUtils.Compare(x, y, length);
+            }
+        }
+
         unsafe public static int Compare(byte* x, byte* y, int length)
         {
             for (int i = 0; i < length; i++, x++, y++)

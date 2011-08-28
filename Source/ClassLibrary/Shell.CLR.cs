@@ -37,8 +37,17 @@ namespace PHP.Library
 		[return: CastToFalse]
 		public static string GetEnvironmentVariable(string name)
 		{
-			if (name == null) return null;
-			return Environment.GetEnvironmentVariable(name);
+			if (string.IsNullOrEmpty(name)) return null;
+
+            var servervar = ScriptContext.CurrentContext.AutoGlobals.Server.Value as PhpArray;
+            if (servervar != null)
+            {
+                object value;
+                if (servervar.TryGetValue(name, out value))
+                    return PHP.Core.Convert.ObjectToString(PhpVariable.Dereference(value));
+            }
+
+            return Environment.GetEnvironmentVariable(name);
 		}
 
 		/// <summary>

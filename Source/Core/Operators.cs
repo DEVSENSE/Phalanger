@@ -1213,7 +1213,7 @@ namespace PHP.Core
 		[Emitted]
 		public static object Remainder(object x, int y)
 		{
-			Debug.Assert(y != 0, "Compiler should check this.");
+			//Debug.Assert(y != 0, "Compiler should check this.");
 			Debug.Assert(!(x is PhpReference));
 
 			// filters unsupported types:
@@ -1226,6 +1226,12 @@ namespace PHP.Core
 			int ix;
 			long lx;
 			double dx;
+
+            if (y == 0)
+            {
+                PhpException.Throw(PhpError.Warning, CoreResources.GetString("division_by_zero"));
+                return false;
+            }
 
 			// prevents OverflowException:
 			if (y == -1) return 0;

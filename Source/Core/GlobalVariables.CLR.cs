@@ -446,15 +446,17 @@ namespace PHP.Core
                 array["REMOTE_ADDR_IPV6"] = request.UserHostAddress;
 
                 if (request.UserHostAddress == "::1")
-					array["REMOTE_ADDR"] = "127.0.0.1";
+                {
+                    array["REMOTE_ADDR"] = array["SERVER_ADDR"] = "127.0.0.1";
+                }
                 else foreach (IPAddress IPA in Dns.GetHostAddresses(request.UserHostAddress))
-				{
-					if (IPA.AddressFamily.ToString() == "InterNetwork")
-					{
-						array["REMOTE_ADDR"] = IPA.ToString();
-						break;
-					}
-				}
+                    {
+                        if (IPA.AddressFamily.ToString() == "InterNetwork")
+                        {
+                            array["REMOTE_ADDR"] = IPA.ToString();
+                            break;
+                        }
+                    }
 			}
 
             // PATH_INFO
