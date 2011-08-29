@@ -65,6 +65,20 @@ namespace PHP.Library.SPL
 		object current(ScriptContext context);
 	}
 
+    /// <summary>
+    /// The Seekable iterator.
+    /// </summary>
+    [ImplementsType]
+    public interface SeekableIterator : Iterator
+    {
+        /// <summary>
+        /// Seeks to a given position in the iterator.
+        /// </summary>
+        [ImplementsMethod]
+        [AllowReturnValueOverride]
+        object seek(ScriptContext context, object position);
+    }
+
 	/// <summary>
 	/// Interface to create an external iterator.
 	/// </summary>

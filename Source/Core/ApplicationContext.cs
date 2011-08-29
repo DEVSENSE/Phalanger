@@ -178,6 +178,7 @@ namespace PHP.Core
             addType(typeof(Library.SPL.Exception));
             addType(typeof(Library.SPL.Traversable));
             addType(typeof(Library.SPL.Iterator));
+            addType(typeof(Library.SPL.SeekableIterator));
             addType(typeof(Library.SPL.IteratorAggregate));
             addType(typeof(Library.SPL.Serializable));
             addType(typeof(Library.SPL.Countable));

@@ -491,6 +491,7 @@
     <Compile Include="SPL\Exception.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SPL\FileSystem.cs" />
     <Compile Include="SPL\Iterators.cs">
       <SubType>Code</SubType>
     </Compile>
