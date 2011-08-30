@@ -290,7 +290,7 @@ namespace PHP.Library.Data
 		public bool SeekRow(int rowIndex)
 		{
 			if (!CheckRowIndex(rowIndex)) return false;
-			currentRowIndex = rowIndex;
+			currentRowIndex = rowIndex - 1;
 			currentFieldIndex = 0;
 			return true;
 		}
