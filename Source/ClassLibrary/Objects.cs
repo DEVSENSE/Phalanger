@@ -459,13 +459,13 @@ namespace PHP.Library
 
         #region analyzer of class_exists
 
-        public static bool ClassExists_Analyze_2(Analyzer analyzer, string name, bool autoload)
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo ClassExists_Analyze_2(Analyzer analyzer, string name, bool autoload)
         {
             // ignore autoload at the compile time
             return ClassExists_Analyze_1(analyzer, name);
         }
 
-        public static bool ClassExists_Analyze_1(Analyzer analyzer, string name)
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo ClassExists_Analyze_1(Analyzer analyzer, string name)
         {
             QualifiedName? alias;
 
@@ -478,9 +478,12 @@ namespace PHP.Library
                 false);
 
             if (type == null || type.IsUnknown)
-                throw new ArgumentException();  // type is not known at the compilation time. However it can be defined at the runtime (dynamic include, script library, etc).
+                return null;  // type is not known at the compilation time. However it can be defined at the runtime (dynamic include, script library, etc).
 
-            return true;    // type is definitely known the the compilation time
+            return new PHP.Core.AST.DirectFcnCall.EvaluateInfo()
+            {
+                value = true    // type is definitely known the the compilation time
+            };
         }
 
         #endregion
@@ -558,7 +561,7 @@ namespace PHP.Library
         #region analyzer of get_parent_class
 
         [return: CastToFalse]
-        public static string GetParentClass_Analyze(Analyzer analyzer, string name)
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo GetParentClass_Analyze(Analyzer analyzer, string name)
         {
             QualifiedName? alias;
 
@@ -571,11 +574,14 @@ namespace PHP.Library
                 false);
 
             if (type == null || type.IsUnknown)
-                throw new ArgumentException();  // type is not known at the compilation time. However it can be defined at the runtime (dynamic include, script library, etc).
+                return null;  // type is not known at the compilation time. However it can be defined at the runtime (dynamic include, script library, etc).
 
             // type is definitely known the the compilation time
             var parent_type = type.Base;
-            return (parent_type == null ? null : parent_type.FullName);
+            return new PHP.Core.AST.DirectFcnCall.EvaluateInfo()
+            {
+                value = (parent_type == null ? null : parent_type.FullName)
+            };
         }
 
         #endregion

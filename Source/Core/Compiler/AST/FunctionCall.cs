@@ -266,10 +266,11 @@ namespace PHP.Core.AST
         /// <summary>
         /// Evaluation info used to get some info from evaluated functions.
         /// </summary>
-        public class TryEvaluateInfo
+        public class EvaluateInfo
         {
             public bool emitDeclareLamdaFunction;
-            public DRoutine newRoutine;            
+            public DRoutine newRoutine;
+            public object value;    // evaluated value
         }
 
         /// <summary>
@@ -309,8 +310,6 @@ namespace PHP.Core.AST
                     // convert/create proper parameters value:
                     int nextCallParamIndex = 0;
 
-                    TryEvaluateInfo tryEvaluateInfo = null;
-
                     for (int i = 0; i < parametersInfo.Length; ++i)
                     {
                         ParameterInfo paramInfo = parametersInfo[i];
@@ -341,11 +340,6 @@ namespace PHP.Core.AST
                         else if (paramType == typeof(CallSignature))
                         {
                             invokeParameters[i] = callSignature;
-                        }
-                        else if (paramType == typeof(TryEvaluateInfo))
-                        {
-                            Debug.Assert(tryEvaluateInfo == null, "Only one argument of this type is allowed.");
-                            invokeParameters[i] = (tryEvaluateInfo = new TryEvaluateInfo());
                         }
                         else if (   // ... , params object[] // last parameter
                             paramType == typeof(object[]) &&
@@ -402,6 +396,23 @@ namespace PHP.Core.AST
                     {
                         value = evaluableMethod.Invoke(null, invokeParameters);
 
+                        if (evaluableMethod.ReturnType == typeof(EvaluateInfo))
+                        {
+                            var info = value as EvaluateInfo;
+
+                            if (info != null && info.emitDeclareLamdaFunction && info.newRoutine != null)
+                            {
+                                this.routine = info.newRoutine;
+                                this.inlined = InlinedFunction.CreateFunction;
+                                return false;   // 
+                            }
+
+                            if (info == null)
+                                return false;
+
+                            value = info.value;
+                        }
+                        
                         // apply automatic cast to false if CastToFalse attribute is defined:
                         if (evaluableMethod.ReturnTypeCustomAttributes.IsDefined(typeof(CastToFalseAttribute), false))
                         {
@@ -409,27 +420,9 @@ namespace PHP.Core.AST
                                 (value is int && (int)value == -1))
                                 value = false;
                         }
-
-                        // parse some results of the evaluation
-                        if (tryEvaluateInfo != null)
-                        {
-                            if (tryEvaluateInfo.emitDeclareLamdaFunction && tryEvaluateInfo.newRoutine != null)
-                            {
-                                this.routine = tryEvaluateInfo.newRoutine;
-                                this.inlined = InlinedFunction.CreateFunction;
-                                return false;   // 
-                            }
-
-                            return false;
-                        }
-
+                        
                         // pass the value
                         return true;
-                    }
-                    catch
-                    {
-                        // function cannot be evaluated
-                        // continue with the default
                     }
                     finally
                     {

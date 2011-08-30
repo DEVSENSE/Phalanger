@@ -92,9 +92,8 @@ namespace PHP.Library
 
         #region analyzer of create_function
 
-        public static string CreateFunction_Analyze(
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo CreateFunction_Analyze(
             Analyzer analyzer,
-            PHP.Core.AST.DirectFcnCall.TryEvaluateInfo evalInfo,
             PHP.Core.AST.CallSignature callSignature,
             string args, string body)
         {
@@ -132,16 +131,18 @@ namespace PHP.Library
 
             var decl_node = (PHP.Core.AST.FunctionDecl)ast.Statements[0];
 
-            // modify declaration:
-            evalInfo.newRoutine = decl_node.ConvertToLambda(analyzer);
-
             // adds declaration to the end of the global code statement list:
             analyzer.AddLambdaFcnDeclaration(decl_node);
 
-            evalInfo.emitDeclareLamdaFunction = true; //.inlined = InlinedFunction.CreateFunction;
-            
-            // we cannot replace the expression with literal (emission of lambda declaration is needed):
-            return null;// it will not evaluate the value, it just creates the new routine
+            //
+            return new PHP.Core.AST.DirectFcnCall.EvaluateInfo()
+            {
+                //.inlined = InlinedFunction.CreateFunction;
+                emitDeclareLamdaFunction = true,
+
+                // modify declaration:
+                newRoutine = decl_node.ConvertToLambda(analyzer),
+            };
         }
 
         /// <summary>
@@ -289,7 +290,7 @@ namespace PHP.Library
 
         #region analyzer of function_exists
 
-        public static bool Exists_Analyze(Analyzer analyzer, string name)
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo Exists_Analyze(Analyzer analyzer, string name)
         {
             QualifiedName? alias;
 
@@ -302,9 +303,12 @@ namespace PHP.Library
                 false);
 
             if (routine == null || routine.IsUnknown)
-                throw new ArgumentException();  // function is not known at the compilation time. However it can be defined at the runtime (dynamic include, script library, etc).
+                return null;  // function is not known at the compilation time. However it can be defined at the runtime (dynamic include, script library, etc).
 
-            return true;    // function is definitely known the the compilation time
+            return new PHP.Core.AST.DirectFcnCall.EvaluateInfo()
+            {
+                value = true    // function is definitely known the the compilation time
+            };
         }
 
         #endregion
