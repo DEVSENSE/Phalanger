@@ -367,10 +367,12 @@
     <param type="resource" name="connection" />
     <param type="string" name="table_name" />
   </function>
+  <!-- http://phalanger.codeplex.com/workitem/21541
   <function returnType="string" castToFalse="true" name="pg_parameter_status" description="Looks up a current parameter setting of the server.">
     <param type="resource" name="connection" />
     <param type="string" name="param_name" />
   </function>
+  -->
   <function returnType="bool" name="pg_ping" description="Ping database connection.">
     <param optional="true" type="resource" name="connection" />
   </function>
