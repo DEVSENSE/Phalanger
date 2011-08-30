@@ -27,18 +27,18 @@ namespace PHP.Library
 		private class Worker
 		{
 			private ScriptContext context;
-			private PhpCallback/*!*/ callback;
 			private object[] args;
 
-			public Worker(ScriptContext/*!*/ context, PhpCallback/*!*/ callback, object[] args)
+			public Worker(ScriptContext/*!*/ context, object[] args)
 			{
 				this.context = context;
-				this.callback = callback;
 				this.args = args;
 			}
 
-			public void Run()
+			public void Run(object _)
 			{
+                var callback = _ as PhpCallback;
+
 				callback.SwitchContext(context.Fork());
 				callback.Invoke(args);
 			}
@@ -58,7 +58,7 @@ namespace PHP.Library
 			for (int i = 0; i < copies.Length; i++)
 				copies[i] = PhpVariable.DeepCopy(args[i]);
 
-			return ClrObject.WrapRealObject(new Thread(new Worker(ScriptContext.CurrentContext, callback, copies).Run));
+            return ClrObject.WrapRealObject(ThreadPool.QueueUserWorkItem(new Worker(ScriptContext.CurrentContext, copies).Run, callback));
 		}
 
 		#endregion
