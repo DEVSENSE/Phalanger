@@ -62,16 +62,41 @@ namespace PHP.Library
 
         public static PHP.Core.AST.DirectFcnCall.EvaluateInfo Defined_Analyze(Analyzer analyzer, string name)
         {
+            if (name == null)
+                name = string.Empty;
+
+            // try global constant:
             QualifiedName? alias;
             var constant = analyzer.SourceUnit.ResolveConstantName(new QualifiedName(new Name(name)), analyzer.CurrentScope, out alias, null, PHP.Core.Parsers.Position.Invalid, false);
 
-            if (constant == null || constant.IsUnknown)
-                return null; // do not evaluate in compile time
-
-            return new Core.AST.DirectFcnCall.EvaluateInfo()
+            if (constant != null)
+                return new Core.AST.DirectFcnCall.EvaluateInfo()
+                {
+                    value = true    // constant exists in compile time
+                };
+            
+            // try class constant:
+            if (name.Contains("::"))
             {
-                value = true    // constant exists in compile time
-            };
+                var typename = name.Substring(0, name.IndexOf("::"));
+                var constname = name.Substring(typename.Length + 2);
+
+                var type = analyzer.SourceUnit.ResolveTypeName(new QualifiedName(new Name(typename)), analyzer.CurrentScope, out alias, null, PHP.Core.Parsers.Position.Invalid, false);
+
+                if (type != null && !type.IsUnknown)
+                {
+                    Core.Reflection.ClassConstant classconst;
+                    type.GetConstant(new VariableName(constname), null /* class constants are global only */, out classconst);
+                    Debug.Assert(classconst == null || classconst.IsPublic, "Class constant are expected to be public only.");
+                    return new Core.AST.DirectFcnCall.EvaluateInfo()
+                    {
+                        value = classconst != null
+                    };
+                }
+            }
+
+            // do not evaluate in compile time
+            return null;
         }
 
         #endregion
