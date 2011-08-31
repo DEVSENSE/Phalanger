@@ -57,8 +57,14 @@ namespace PHP.Core
 		/// <summary>
 		/// Representation of "array" string in a form of bytes.
 		/// </summary>
-		private static readonly PhpBytes toBytes =
+		private static readonly PhpBytes/*!*/toBytes =
 			new PhpBytes(new byte[] { (byte)'a', (byte)'r', (byte)'r', (byte)'a', (byte)'y' });
+
+        /// <summary>
+        /// Creates a new instance of (assuming constant) empty array. Used as a return value of class library functions.
+        /// </summary>
+        public static PhpArray/*!*/NewEmptyArray { get { return new PhpArray(emptyArray); } }
+        private static readonly PhpArray/*!*/emptyArray = new PhpArray(0, 0);
 
 		/// <summary>
 		/// If this flag is <B>true</B> the array will be copied inplace by the immediate <see cref="Copy"/> call.
