@@ -335,6 +335,11 @@ namespace PHP.Library
             /// </summary>
             private Encoding encoding;
 
+            /// <summary>
+            /// Stack of objects being currently serialized. Used to avoid stack overflow and to properly outputs "recursion_detected" warning.
+            /// </summary>
+            private List<object> recursionStack = null;
+
             #endregion
 
             #region Construction
@@ -354,6 +359,49 @@ namespace PHP.Library
                 this.writer = writer;
                 this.encodeOptions = encodeOptions;
                 this.encoding = encoding;
+            }
+
+            #endregion
+
+            #region Recursion
+
+            /// <summary>
+            /// Push currently serialized array or object to the stack to prevent recursion.
+            /// </summary>
+            /// <param name="obj"></param>
+            /// <returns></returns>
+            private bool PushObject(object/*!*/obj)
+            {
+                Debug.Assert(obj != null);
+
+                if (recursionStack == null)
+                    recursionStack = new List<object>(8);
+                else
+                {
+                    // check recursion
+                    int hits = 0;
+                    for (int i = 0; i < recursionStack.Count; i++)
+                        if (recursionStack[i] == obj)
+                            hits++;
+
+                    if (hits >= 2)
+                    {
+                        PhpException.Throw(PhpError.Warning, LibResources.GetString("recursion_detected"));
+                        return false;
+                    }
+                }
+
+                recursionStack.Add(obj);
+                return true;
+            }
+
+            /// <summary>
+            /// Pop the serialized object from the stack.
+            /// </summary>
+            private void PopObject()
+            {
+                Debug.Assert(recursionStack != null);
+                recursionStack.RemoveAt(recursionStack.Count - 1);
             }
 
             #endregion
@@ -409,7 +457,14 @@ namespace PHP.Library
                             PhpArray array;
                             if ((array = graph as PhpArray) != null)
                             {
-                                WriteArray(array);
+                                if (PushObject(graph))
+                                {
+                                    WriteArray(array);
+                                    PopObject();
+                                }
+                                else
+                                    WriteNull();
+
                                 break;
                             }
 
@@ -428,7 +483,14 @@ namespace PHP.Library
 
                             if ((obj = graph as DObject) != null)
                             {
-                                WriteDObject(obj);
+                                if (PushObject(graph))
+                                {
+                                    WriteDObject(obj);
+                                    PopObject();
+                                }
+                                else
+                                    WriteNull();
+
                                 break;
                             }
 
