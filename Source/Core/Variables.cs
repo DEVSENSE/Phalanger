@@ -481,8 +481,8 @@ namespace PHP.Core
 			}
 
 			// prints an eoln if we are on the top level:
-			if (PrintIndentationLevel == 0)
-				output.WriteLine();
+			//if (PrintIndentationLevel == 0)
+			//	output.WriteLine();
 		}
 
 		/// <summary>

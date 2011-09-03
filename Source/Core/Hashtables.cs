@@ -248,7 +248,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Expose the dictionary to item getters on <see cref="PhpArray"/> to make them a little bit faster.
 		/// </summary>
-        internal readonly Dictionary<K, Element>/*!*/dict;  // TODO: (J) GENERIC: type of dict as generic argument so we can pass our custom IDictionary (and still call its methods statically with inlining)
+        internal readonly Dictionary<K, Element>/*!*/dict;
 
 		/// <summary>The head of the cyclic list.</summary>
         internal readonly Element/*!*/head;
@@ -2989,7 +2989,90 @@ namespace PHP.Core
 
 		#region IDictionary Members
 
-		/// <summary>This property is always false.</summary>
+        #region IDictionaryAdapter
+
+        [Serializable]
+        public class IDictionaryAdapter : IDictionaryEnumerator
+        {
+            #region Fields
+
+            /// <summary>
+            /// Currently pointed element.
+            /// </summary>
+            private OrderedHashtable<IntStringKey>.Element /*!*/ element;
+
+            #endregion
+
+            #region Construction
+
+            public IDictionaryAdapter(PhpHashtable/*!*/table)
+            {
+                Debug.Assert(table != null);
+                this.element = table.table.head;
+            }
+
+            #endregion
+
+            #region IDictionaryEnumerator Members
+
+            public DictionaryEntry Entry
+            {
+                get { return new DictionaryEntry(Key, Value); }
+            }
+
+            public object Key
+            {
+                get
+                {
+                    return element.Key.Object;
+                }
+            }
+
+            public object Value
+            {
+                get
+                {
+                    return element.Value;
+                }
+            }
+
+            #endregion
+
+            #region IEnumerator Members
+
+            public object Current
+            {
+                get { return this.Entry; }
+            }
+
+            public bool MoveNext()
+            {
+                element = element.Next;
+                while (element.IsDeleted)
+                    element = element.Next;
+
+                if (element.IsHead)
+                {   // do not cross the head
+                    element = element.Prev;
+                    return false;
+                }
+
+                return true;
+            }
+
+            public void Reset()
+            {
+                while (element.IsDeleted) element = element.Next;   // skip deleted, to access not null Table
+
+                element = element.Table.head;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        /// <summary>This property is always false.</summary>
 		public virtual bool IsFixedSize { get { return false; } }
 
         /// <summary>This property is always false.</summary>
@@ -3001,16 +3084,16 @@ namespace PHP.Core
 		/// <returns>The enumerator.</returns>
 		IDictionaryEnumerator/*!*/ IDictionary.GetEnumerator()
 		{
-			return new GenericDictionaryAdapter<object, object>(GetDictionaryEnumerator(), false);
+            return new IDictionaryAdapter(this);// new GenericDictionaryAdapter<object, object>(GetDictionaryEnumerator(), false);
 		}
 
-		private IEnumerator<KeyValuePair<object, object>>/*!*/ GetDictionaryEnumerator()
-		{
-			foreach (KeyValuePair<IntStringKey, object> entry in table)
-			{
-				yield return new KeyValuePair<object, object>(entry.Key.Object, entry.Value);
-			}
-		}
+        //private IEnumerator<KeyValuePair<object, object>>/*!*/ GetDictionaryEnumerator()
+        //{
+        //    foreach (KeyValuePair<IntStringKey, object> entry in table)
+        //    {
+        //        yield return new KeyValuePair<object, object>(entry.Key.Object, entry.Value);
+        //    }
+        //}
 
 		/// <summary>
 		/// Removes all elements from this instance.

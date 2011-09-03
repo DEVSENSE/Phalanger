@@ -2102,23 +2102,23 @@ namespace PHP.Library
             return result;
         }
 
-        /// <summary>
-        /// Returns first item from values of given collection converted to string or empty string.
-        /// </summary>
-        /// <param name="dict"></param>
-        /// <returns></returns>
-        internal static string FirstOrEmpty(IDictionary/*!*/dict)
-        {
-            if (dict.Count > 0)
-            {
-                var dict_enum = dict.Values.GetEnumerator();
+        ///// <summary>
+        ///// Returns first item from values of given collection converted to string or empty string.
+        ///// </summary>
+        ///// <param name="dict"></param>
+        ///// <returns></returns>
+        //internal static string FirstOrEmpty(IDictionary/*!*/dict)
+        //{
+        //    if (dict.Count > 0)
+        //    {
+        //        var dict_enum = dict.Values.GetEnumerator();
 
-                if (dict_enum.MoveNext())
-                    return Core.Convert.ObjectToString(dict_enum.Current);
-            }
+        //        if (dict_enum.MoveNext())
+        //            return Core.Convert.ObjectToString(dict_enum.Current);
+        //    }
 
-            return string.Empty;
-        }
+        //    return string.Empty;
+        //}
         
 
         /// <summary>
@@ -2150,11 +2150,12 @@ namespace PHP.Library
                     if (search_str == string.Empty)
                         return subject_str;
 
-                    //
-                    if (replacements == null)// str_replace({string},{string},{string},...);
-                        return ReplaceInternal(search_str, Core.Convert.ObjectToString(replace), subject_str, ignoreCase, ref count);
-                    else// str_replace({string},{array}[0],{string},...);
-                        return ReplaceInternal(search_str, FirstOrEmpty(replacements), subject_str, ignoreCase, ref count);
+                    ////
+                    //if (replacements == null)// str_replace({string},{string},{string},...);
+                    //    return ReplaceInternal(search_str, Core.Convert.ObjectToString(replace), subject_str, ignoreCase, ref count);
+                    //else// str_replace({string},{array}[0],{string},...);
+                    //    return ReplaceInternal(search_str, FirstOrEmpty(replacements), subject_str, ignoreCase, ref count);
+                    return ReplaceInternal(search_str, Core.Convert.ObjectToString(replace), subject_str, ignoreCase, ref count);
                 }
                 else
                 {
@@ -2166,7 +2167,7 @@ namespace PHP.Library
             }
             else
             {
-                // converts scalars to strings:
+                // converts scalars (and nulls) to strings:
                 var subjectEntries = new DictionaryEntry[subjects.Count];
                 int i = 0;
                 foreach (DictionaryEntry entry in subjects)
@@ -2175,6 +2176,8 @@ namespace PHP.Library
 
                     if (PhpVariable.IsScalar(entry.Value))
                         subjectEntries[i].Value = Core.Convert.ObjectToString(entry.Value);
+                    else if (entry.Value == null)
+                        subjectEntries[i].Value = string.Empty;
 
                     i++;
                 }
@@ -2185,12 +2188,13 @@ namespace PHP.Library
                     string search_str = Core.Convert.ObjectToString(search);
                     if (search_str == string.Empty)
                         return ToPhpArray(ref subjectEntries);
-                    
-                    //
-                    if (replacements == null)// str_replace({string},{string},{array},...);
-                        return ReplaceInternal(search_str, Core.Convert.ObjectToString(replace), ref subjectEntries, ignoreCase, ref count);
-                    else// str_replace({string},{array}[0],{array},...);
-                        return ReplaceInternal(search_str, FirstOrEmpty(replacements), ref subjectEntries, ignoreCase, ref count);
+
+                    ////
+                    //if (replacements == null)// str_replace({string},{string},{array},...);
+                    //    return ReplaceInternal(search_str, Core.Convert.ObjectToString(replace), ref subjectEntries, ignoreCase, ref count);
+                    //else// str_replace({string},{array}[0],{array},...);
+                    //    return ReplaceInternal(search_str, FirstOrEmpty(replacements), ref subjectEntries, ignoreCase, ref count);
+                    return ReplaceInternal(search_str, Core.Convert.ObjectToString(replace), ref subjectEntries, ignoreCase, ref count);
                 }
                 else
                 {

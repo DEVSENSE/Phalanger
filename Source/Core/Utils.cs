@@ -1497,7 +1497,7 @@ namespace PHP.Core
 
         public object Current
         {
-            get { return new DictionaryEntry(Key, Value); }
+            get { return this.Entry; }
         }
 
         public bool MoveNext()

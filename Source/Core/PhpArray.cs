@@ -337,9 +337,8 @@ namespace PHP.Core
 				}
 				else
 				{
-					output.WriteLine(PhpTypeName);
-					PhpVariable.PrintIndentation(output);
-					output.WriteLine('(');
+					output.Write(PhpTypeName);
+					output.WriteLine(" (");
 
 					PhpVariable.PrintIndentationLevel++;
 
@@ -349,7 +348,9 @@ namespace PHP.Core
 						PhpVariable.PrintIndentation(output);
 
 						// key:
-						output.Write("'{0}' => ", StringUtils.AddCSlashes(entry.Key.ToString(), true, false));
+                        if (entry.Key.IsInteger) output.Write(entry.Key.Integer);
+                        else output.Write("'{0}'", StringUtils.AddCSlashes(entry.Key.ToString(), true, false));
+                        output.Write(" => ");
 
 						// marks a reference by a comment:
 						if (entry.Value is PhpReference)
@@ -358,8 +359,8 @@ namespace PHP.Core
 						// dumps a value:
 						PhpVariable.Export(output, entry.Value);
 
-						// prints commas after each item which is not the last one:
-						if (--count > 0) output.Write(',');
+						// prints commas after each item // note: (J) including the last one:
+						/*if (--count > 0) */output.Write(',');
 						output.WriteLine();
 					}
 
@@ -374,8 +375,8 @@ namespace PHP.Core
 			}
 
 			// the top of the recursion:
-			if (PhpVariable.PrintIndentationLevel == 0)
-				output.WriteLine();
+			//if (PhpVariable.PrintIndentationLevel == 0)
+			//	output.WriteLine();
 		}
 
 		#endregion
