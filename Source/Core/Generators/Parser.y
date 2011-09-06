@@ -1550,6 +1550,7 @@ expr_without_chain:
 	|	T_TYPEOF type_ref               { $$ = new TypeOfEx(@$, (TypeRef)$2); } // not enclosed in parenthesis to prevent conflicts with casts. e.g clrtypeof(int)
 	|	'(' expr ')'                    { $$ = $2;}
 	|	expr '?' expr ':' expr          { $$ = new ConditionalEx(@$, (Expression)$1, (Expression)$3, (Expression)$5); }
+	|	expr '?' ':' expr			    { $$ = new ConditionalEx(@$, (Expression)$1, null, (Expression)$4); }
 	
 	| T_LIST '(' assignment_list ')' '=' expr { $$ = new ListEx(@$, (List<Expression>)$3, (Expression)$6); }
 	|	T_ARRAY '(' array_item_list_opt ')'     { $$ = new ArrayEx(@$, (List<Item>)$3); }

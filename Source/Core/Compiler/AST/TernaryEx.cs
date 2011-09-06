@@ -14,6 +14,7 @@ using System;
 using System.Reflection.Emit;
 using System.Diagnostics;
 using PHP.Core.Parsers;
+using PHP.Core.Emit;
 
 namespace PHP.Core.AST
 {
@@ -25,18 +26,22 @@ namespace PHP.Core.AST
 		internal override Operations Operation { get { return Operations.Conditional; } }
 
 		private Expression/*!*/ condExpr;
-		private Expression/*!*/ trueExpr;
+		private Expression trueExpr;
 		private Expression/*!*/ falseExpr;
         /// <summary>Contition</summary>
         public Expression/*!*/ CondExpr { get { return condExpr; } }
         /// <summary>Expression evaluated when <see cref="CondExpr"/> is true</summary>
-        public Expression/*!*/ TrueExpr { get { return trueExpr; } }
+        public Expression/*!*/ TrueExpr { get { return trueExpr ?? condExpr; } }
         /// <summary><summary>Expression evaluated when <see cref="CondExpr"/> is false</summary></summary>
         public Expression/*!*/ FalseExpr { get { return falseExpr; } }
 
-		public ConditionalEx(Position position, Expression/*!*/ condExpr, Expression/*!*/ trueExpr, Expression/*!*/ falseExpr)
+		public ConditionalEx(Position position, Expression/*!*/ condExpr, Expression trueExpr, Expression/*!*/ falseExpr)
 			: base(position)
 		{
+            Debug.Assert(condExpr != null);
+            // Debug.Assert(trueExpr != null); // allowed to enable ternary shortcut
+            Debug.Assert(falseExpr != null);
+
 			this.condExpr = condExpr;
 			this.trueExpr = trueExpr;
 			this.falseExpr = falseExpr;
@@ -57,16 +62,24 @@ namespace PHP.Core.AST
 
 			if (cond_eval.HasValue)
 			{
-				if (Convert.ObjectToBoolean(cond_eval.Value))
-					return trueExpr.Analyze(analyzer, ExInfoFromParent.DefaultExInfo);
-				else
-					return falseExpr.Analyze(analyzer, ExInfoFromParent.DefaultExInfo);
+                if (Convert.ObjectToBoolean(cond_eval.Value))
+                {
+                    if (trueExpr != null)
+                        return trueExpr.Analyze(analyzer, ExInfoFromParent.DefaultExInfo);
+                    else
+                        return cond_eval;   // condExpr ?: falseExpr    // ternary shortcut
+                }
+                else
+                    return falseExpr.Analyze(analyzer, ExInfoFromParent.DefaultExInfo);
 			}
 			else
 			{
-				analyzer.EnterConditionalCode();
-				trueExpr = trueExpr.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
-				analyzer.LeaveConditionalCode();
+                if (trueExpr != null)
+                {
+                    analyzer.EnterConditionalCode();
+                    trueExpr = trueExpr.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
+                    analyzer.LeaveConditionalCode();
+                }
 
 				analyzer.EnterConditionalCode();
 				falseExpr = falseExpr.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
@@ -96,7 +109,7 @@ namespace PHP.Core.AST
 
 		internal override bool IsDeeplyCopied(CopyReason reason, int nestingLevel)
 		{
-			return trueExpr.IsDeeplyCopied(reason, nestingLevel) || falseExpr.IsDeeplyCopied(reason, nestingLevel);
+			return (trueExpr ?? condExpr).IsDeeplyCopied(reason, nestingLevel) || falseExpr.IsDeeplyCopied(reason, nestingLevel);
 		}
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
@@ -106,20 +119,44 @@ namespace PHP.Core.AST
 			Debug.Assert(access == AccessType.Read || access == AccessType.None);
 
 			Label end_label = codeGenerator.IL.DefineLabel();
-			Label else_label = codeGenerator.IL.DefineLabel();
+			
+            if (trueExpr != null)   // standard ternary operator
+            {
+                Label else_label = codeGenerator.IL.DefineLabel();
+                
+                // IF (<(bool) condition>) THEN
+                codeGenerator.EmitConversion(condExpr, PhpTypeCode.Boolean);
+                codeGenerator.IL.Emit(OpCodes.Brfalse, else_label);
+                {
+                    codeGenerator.EmitBoxing(trueExpr.Emit(codeGenerator));
+                    codeGenerator.IL.Emit(OpCodes.Br, end_label);
+                }
+                // ELSE
+                codeGenerator.IL.MarkLabel(else_label, true);
+                {
+                    codeGenerator.EmitBoxing(falseExpr.Emit(codeGenerator));
+                }
+            }
+            else
+            {   // ternary shortcut:
+                var il = codeGenerator.IL;
 
-			// IF (<(bool) condition>) THEN
-			codeGenerator.EmitConversion(condExpr, PhpTypeCode.Boolean);
-			codeGenerator.IL.Emit(OpCodes.Brfalse, else_label);
-			{
-				codeGenerator.EmitBoxing(trueExpr.Emit(codeGenerator));
-				codeGenerator.IL.Emit(OpCodes.Br, end_label);
-			}
-			// ELSE
-			codeGenerator.IL.MarkLabel(else_label, true);
-			{
-				codeGenerator.EmitBoxing(falseExpr.Emit(codeGenerator));
-			}
+                // condExpr ?? rightExpr
+
+                il.EmitBoxing(condExpr.Emit(codeGenerator));
+                
+                // IF (<stack>):
+                il.Emit(OpCodes.Dup);
+                il.Emit(OpCodes.Call, Methods.Convert.ObjectToBoolean);
+
+                codeGenerator.IL.Emit(OpCodes.Brtrue, end_label);
+                // ELSE:
+                {
+                    il.Emit(OpCodes.Pop);
+                    il.EmitBoxing(falseExpr.Emit(codeGenerator));                    
+                }
+            }
+
 			// END IF;
 			codeGenerator.IL.MarkLabel(end_label, true);
 
