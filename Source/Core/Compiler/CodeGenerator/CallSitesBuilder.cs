@@ -153,6 +153,41 @@ namespace PHP.Core.Compiler.CodeGenerator
 
         #endregion
 
+        #region GetDelegateType
+
+        private static readonly Type[] DelegateCtorSignature = new Type[] { typeof(object), typeof(IntPtr) };
+
+        /// <summary>
+        /// Gets a System.Linq.Expressions.Expression.Type object that represents a generic
+        /// System.Func or System.Action delegate type that has specific type arguments.
+        /// 
+        /// For <paramref name="types"/> longer than 17 items, current module's <see cref="TypeBuilder"/> is used instead of Transient one.
+        /// This avoids of "Unable to make a reference to a transient module from a non-transient module." exception.
+        /// 
+        /// For less or equal than 17 items, <see cref="System.Linq.Expressions.Expression.GetDelegateType"/> is used.
+        /// </summary>
+        /// <param name="types">The type arguments of the delegate.</param>
+        /// <returns>The delegate type.</returns>
+        private Type/*!*/GetDelegateType(Type[]/*!*/types)
+        {
+            Debug.Assert(types != null);
+
+            if (types.Length <= 17 && !types.Any((Type t) => t.IsByRef))    // less or equal 17 items and none of them is by reference
+                return System.Linq.Expressions.Expression.GetDelegateType(types);
+
+            // else, Action or Func cannot be used, make the delegate:
+            TypeBuilder typeBuilder = moduleBuilder.DefineType("Delegate" + types.Length, TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.AutoClass, typeof(MulticastDelegate));
+
+            Type returnType = types[types.Length - 1];
+            Type[] parameterTypes = ArrayUtils.RemoveLast<Type>(types);
+
+            typeBuilder.DefineConstructor(MethodAttributes.FamANDAssem | MethodAttributes.Family | MethodAttributes.HideBySig | MethodAttributes.RTSpecialName, CallingConventions.Standard, DelegateCtorSignature).SetImplementationFlags(MethodImplAttributes.CodeTypeMask);
+            typeBuilder.DefineMethod("Invoke", MethodAttributes.FamANDAssem | MethodAttributes.Family | MethodAttributes.Virtual | MethodAttributes.HideBySig | MethodAttributes.VtableLayoutMask, returnType, parameterTypes).SetImplementationFlags(MethodImplAttributes.CodeTypeMask);
+            return typeBuilder.CreateType();
+        }
+
+        #endregion
+
         #region EmitMethodCall
 
         /// <summary>
@@ -209,7 +244,7 @@ namespace PHP.Core.Compiler.CodeGenerator
                 additionalArgs.ToArray(),
                 returnType);
 
-            var delegateType = System.Linq.Expressions.Expression.GetDelegateType(delegateTypeArgs);
+            var delegateType = /*System.Linq.Expressions.Expression.*/GetDelegateType(delegateTypeArgs);    // (J) do not create dynamic delegates in dynamic modules, so they can be referenced from non-transient assemblies
 
             //
             var field = DefineCallSite(string.Format("call_{0}", methodFullName ?? "$"), delegateType, (il) =>
@@ -386,7 +421,7 @@ namespace PHP.Core.Compiler.CodeGenerator
                 additionalArgs.ToArray(),
                 returnType);
 
-            var delegateType = System.Linq.Expressions.Expression.GetDelegateType(delegateTypeArgs);
+            var delegateType = /*System.Linq.Expressions.Expression.*/GetDelegateType(delegateTypeArgs);    // (J) do not create dynamic delegates in dynamic modules, so they can be referenced from non-transient assemblies
 
             //
             var field = DefineCallSite(string.Format("get{0}_{1}", wantRef ? "ref" : string.Empty, fieldName ?? "$"), delegateType, (il) =>

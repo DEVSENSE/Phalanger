@@ -1817,6 +1817,19 @@ namespace PHP.Core
         }
 
         /// <summary>
+        /// Create copy of given array without the last item.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        internal static T[] RemoveLast<T>(T[] array)
+        {
+            T[] array2 = new T[array.Length - 1];
+            Array.Copy(array, 0, array2, 0, array2.Length);
+            return array2;
+        }
+
+        /// <summary>
         /// Compare arrays lexicographically.
         /// </summary>
         /// <include file='Doc/Common.xml' path='docs/method[@name="Compare(x,y)"]/*'/>
