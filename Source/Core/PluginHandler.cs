@@ -13,6 +13,7 @@ namespace PHP.Core
         /// Called before emitting statements.
         /// </summary>
         public static Action<ILEmitter, List<PHP.Core.AST.Statement>> BeforeBodyEmitter;
+        public static void EmitBeforeBody(ILEmitter il, List<PHP.Core.AST.Statement> statements) { if (BeforeBodyEmitter != null) BeforeBodyEmitter(il, statements); }
         
         /// <summary>
         /// If not <c>null</c>, called instead of <b>Emit(OpCodes.Ldstr, value)</b>.

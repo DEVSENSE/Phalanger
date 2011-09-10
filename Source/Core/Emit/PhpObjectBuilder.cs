@@ -591,6 +591,10 @@ namespace PHP.Core.Emit
 		/// </summary>
 		internal static void EmitInitFieldHelpers(PhpType phpType)
 		{
+            //
+            // <InitializeInstanceFields>
+            //
+
 			// <InitializeInstanceFields> method - will contain instance field initialization
 			phpType.Builder.InstanceFieldInit = phpType.RealTypeBuilder.DefineMethod(
 				InstanceFieldInitMethodName,
@@ -604,11 +608,19 @@ namespace PHP.Core.Emit
 				Types.ScriptContext);
 			phpType.Builder.InstanceFieldInitEmitter = new ILEmitter(phpType.Builder.InstanceFieldInit);
 
+            // emit custom body prolog:
+            PluginHandler.EmitBeforeBody(phpType.Builder.InstanceFieldInitEmitter, null); 
+            
+
+            //
+            // <InitializeStaticFields>
+            //
+
 			// <InitializeStaticFields> method has already been defined during the analysis phase - will contain (thread)
 			// static field initialization
 			ILEmitter cil = new ILEmitter(phpType.StaticFieldInitMethodBuilder);
 
-			if (phpType.Builder.HasThreadStaticFields)
+            if (phpType.Builder.HasThreadStaticFields)
 			{
 				// __lastContext thread-static field - will contain the last SC that inited static fields for this thread
 				FieldBuilder last_context = phpType.RealTypeBuilder.DefineField(
@@ -620,8 +632,11 @@ namespace PHP.Core.Emit
 #if !SILVERLIGHT 
 				last_context.SetCustomAttribute(AttributeBuilders.ThreadStatic);
 #endif
+                // emit custom body prolog:
+                PluginHandler.EmitBeforeBody(cil, null); 
 
-				Label init_needed_label = cil.DefineLabel();
+                //
+                Label init_needed_label = cil.DefineLabel();
 				// [ if (arg0 == __lastContext) ret ]
 				cil.Emit(OpCodes.Ldarg_0);
 				cil.Emit(OpCodes.Ldsfld, last_context);

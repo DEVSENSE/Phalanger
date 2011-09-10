@@ -145,8 +145,7 @@ namespace PHP.Core.AST
 			codeGenerator.EnterGlobalCodeDeclaration(this.varTable, labels, sourceUnit);
 
             // custom body prolog emittion:
-            if (PluginHandler.BeforeBodyEmitter != null)
-                PluginHandler.BeforeBodyEmitter(codeGenerator.IL, statements);
+            PluginHandler.EmitBeforeBody(codeGenerator.IL, statements);
 
             //
 			if (codeGenerator.CompilationUnit.IsTransient)
