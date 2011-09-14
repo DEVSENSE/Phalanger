@@ -57,7 +57,7 @@ namespace PHP.Library
 		public const string FormatISO8601 = @"Y-m-d\TH:i:sO";
 
 		[ImplementsConstant("DATE_RFC822")]
-		public const string FormatRFC822 = @"D, d M Y H:i:s T";
+        public const string FormatRFC822 = @"D, d M y H:i:s O";
 
 		[ImplementsConstant("DATE_RFC850")]
 		public const string FormatRFC850 = @"l, d-M-y H:i:s T";
