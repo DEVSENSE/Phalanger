@@ -2060,7 +2060,7 @@ namespace PHP.Library
                 if (stream == null)
                     return false;
 
-                if (HashUpdateFromStream(h, stream) < 0)
+                if (HashUpdateFromStream(h, stream, -1) < 0)
                     return false;
             }
 
@@ -2092,7 +2092,7 @@ namespace PHP.Library
                 return -1;
 
             // read data from stream, return number of used bytes
-            return HashUpdateFromStream(h, stream);
+            return HashUpdateFromStream(h, stream, length);
         }
 
         /// <summary>
@@ -2101,7 +2101,7 @@ namespace PHP.Library
         /// <param name="context"></param>
         /// <param name="stream"></param>
         /// <returns></returns>
-        private static int HashUpdateFromStream(HashPhpResource/*!*/context, PhpStream/*!*/stream)
+        private static int HashUpdateFromStream(HashPhpResource/*!*/context, PhpStream/*!*/stream, int length/*=-1*/)
         {
             Debug.Assert(context != null);
             Debug.Assert(stream != null);
@@ -2113,7 +2113,12 @@ namespace PHP.Library
 
             do
             {
-                PhpBytes bytes = stream.ReadBytes(buffsize);    // read data from stream sub-sequentially to lower memory consumption
+                // read data from stream sub-sequentially to lower memory consumption
+                int bytestoread = (length < 0) ? buffsize : Math.Min(length - n, buffsize);   // read <buffsize> bytes, or up to <length> bytes
+                if (bytestoread == 0)
+                    break;
+
+                PhpBytes bytes = stream.ReadBytes(bytestoread);
                 if (bytes == null)
                     break;
 
@@ -2121,7 +2126,7 @@ namespace PHP.Library
                 context.Update(bytes.ReadonlyData);
 
                 n += bytes.Length;
-                done = (bytes.Length < buffsize);
+                done = (bytes.Length < bytestoread);
             } while (!done);
 
             return n;
