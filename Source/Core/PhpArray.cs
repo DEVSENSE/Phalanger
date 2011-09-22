@@ -143,8 +143,10 @@ namespace PHP.Core
         /// Copy constructor. Creates <see cref="PhpArray"/> that shares internal data table with another <see cref="PhpArray"/>.
         /// </summary>
         /// <param name="array">Table to be shared.</param>
-        public PhpArray(PhpArray/*!*/array)
-            :base(array)
+        /// <param name="preserveMaxInt">True to copy the <see cref="PhpHashtable.MaxIntegerKey"/> from <paramref name="array"/>.
+        /// Otherwise the value will be recomputed when needed. See http://phalanger.codeplex.com/workitem/31484 for more details.</param>
+        public PhpArray(PhpArray/*!*/array, bool preserveMaxInt)
+            : base(array, preserveMaxInt)
         {
 
         }
@@ -527,7 +529,9 @@ namespace PHP.Core
 			}
 			else
 			{
-                return new PhpArray(this);  // create lazy copied PhpArray
+                // create lazy copied PhpArray,
+                // preserve MaxIntegerKey if array was not passed as an argument or within assignment expression:
+                return new PhpArray(this, (reason != CopyReason.PassedByCopy && reason != CopyReason.Assigned));
 			}
 		}
 
