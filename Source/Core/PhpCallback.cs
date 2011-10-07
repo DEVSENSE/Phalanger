@@ -232,8 +232,18 @@ namespace PHP.Core
 		{
 			if (functionName == null) throw new ArgumentNullException("functionName");
 
-			this.targetName = functionName;
-			this.state = State.UnboundFunction;
+            //if (functionName.Contains("::"))
+            //{
+            //    int pos = functionName.IndexOf("::");
+            //    this.className = functionName.Substring(0, pos);
+            //    this.targetName = functionName.Substring(pos + 2);
+            //    this.state = State.UnboundStaticMethod;
+            //}
+            //else
+            {
+                this.targetName = functionName;
+                this.state = State.UnboundFunction;
+            }			
 		}
 
 		/// <summary>
@@ -242,13 +252,10 @@ namespace PHP.Core
 		/// <param name="functionName">The target PHP function name.</param>
 		/// <param name="context">The script context to call the function with.</param>
 		public PhpCallback(string functionName, ScriptContext context)
+            :this(functionName)
 		{
 			if (context == null) throw new ArgumentNullException("context");
-			if (functionName == null) throw new ArgumentNullException("functionName");
-
-			this.context = context;
-			this.targetName = functionName;
-			this.state = State.UnboundFunction;
+			this.context = context;			
 		}
 
 		/// <summary>

@@ -71,7 +71,7 @@ namespace PHP.Core.AST
 		/// </returns>
 		internal override bool IsDeeplyCopied(CopyReason reason, int nestingLevel)
 		{
-			return rvalue.IsDeeplyCopied(reason, nestingLevel + 1);
+            return true; // J: once assigned value must be copied again // rvalue.IsDeeplyCopied(reason, nestingLevel + 1);
 		}
 
 		#region Analysis
