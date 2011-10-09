@@ -320,6 +320,7 @@ namespace PHP.Core.Binders
                                 new Place(null, Properties.ScriptContext_CurrentContext),
                                 new IndexedPlace(PlaceHolder.Argument, 0),
                                 false);
+                            il.Emit(System.Reflection.Emit.OpCodes.Ret);
 
                             Expression value = Expression.Call(stub, BinderHelper.ClrRealObject(target, realType));
                             if (WantReference) value = BinderHelper.MakePhpReference(value);
