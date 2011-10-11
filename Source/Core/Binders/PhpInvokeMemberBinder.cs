@@ -534,7 +534,10 @@ namespace PHP.Core.Binders
                                     Expression.Call(
                                         stack,
                                         miAddFrame, argsExpr),
-                                    HandleResult(Expression.Call(Expression.Constant(method.ArglessStub, typeof(RoutineDelegate)), "Invoke", Type.EmptyTypes,
+                                    Expression.Assign(
+                                        Expression.Field(stack, Fields.PhpStack_AllowProtectedCall),
+                                        Expression.Constant(true, Types.Bool[0])),
+                                    HandleResult(Expression.Call(Expression.Constant(method.ArglessStub, typeof(RoutineDelegate)), "Invoke", null,
                                         target.Expression,
                                         stack), method.ArglessStub.Method.ReturnType));
 
