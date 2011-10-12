@@ -867,35 +867,61 @@ namespace PHP.Core
 		public static PhpReference/*!*/ Call(Dictionary<string, object> localVariables, NamingContext namingContext, object name,
 			ScriptContext/*!*/ context)
 		{
-			object result = null;
-
-			string function_name = Convert.ObjectToString(name);
-			if (String.IsNullOrEmpty(function_name))
-			{
-				context.Stack.RemoveFrame();
-				PhpException.Throw(PhpError.Error, CoreResources.GetString("invalid_function_name"));
-			}
-			else
-			{
-				DRoutineDesc desc = context.ResolveFunction(function_name, null, true);
-
-				if (desc != null)
-				{
-					// the callee may need table of local variables and/or naming context:
-					context.Stack.Variables = localVariables;
-					context.Stack.NamingContext = namingContext;
-
-					result = desc.Invoke(null, context.Stack);
-				}
-				else
-				{
-					context.Stack.RemoveFrame();
-					PhpException.Throw(PhpError.Error, CoreResources.GetString("undefined_function_called", name));
-				}
-			}
-
-			return PhpVariable.MakeReference(PhpVariable.Copy(result, CopyReason.PassedByCopy));
+            return PhpVariable.MakeReference(
+                    PhpVariable.Copy(
+                        CallInternal(localVariables, namingContext, name, context),
+                        CopyReason.ReturnedByCopy));
 		}
+
+        [Emitted]
+        public static void CallVoid(Dictionary<string, object> localVariables, NamingContext namingContext, object name,
+            ScriptContext/*!*/ context)
+        {
+            CallInternal(localVariables, namingContext, name, context);
+        }
+
+        [Emitted]
+        public static object CallValue(Dictionary<string, object> localVariables, NamingContext namingContext, object name,
+            ScriptContext/*!*/ context)
+        {
+            return PhpVariable.Dereference(
+                    PhpVariable.Copy(
+                        CallInternal(localVariables, namingContext, name, context),
+                        CopyReason.ReturnedByCopy));
+        }
+
+        /// <summary>
+        /// Calls a function which is unknown at compile time. Returns the value directly returned by <see cref="DRoutineDesc.Invoke"/>.
+        /// </summary>
+        private static object CallInternal(Dictionary<string, object> localVariables, NamingContext namingContext, object name, ScriptContext/*!*/ context)
+        {
+            string function_name = Convert.ObjectToString(name);
+            if (String.IsNullOrEmpty(function_name))
+            {
+                context.Stack.RemoveFrame();
+                PhpException.Throw(PhpError.Error, CoreResources.GetString("invalid_function_name"));
+            }
+            else
+            {
+                DRoutineDesc desc = context.ResolveFunction(function_name, null, true);
+
+                if (desc != null)
+                {
+                    // the callee may need table of local variables and/or naming context:
+                    context.Stack.Variables = localVariables;
+                    context.Stack.NamingContext = namingContext;
+
+                    return desc.Invoke(null, context.Stack);
+                }
+                else
+                {
+                    context.Stack.RemoveFrame();
+                    PhpException.Throw(PhpError.Error, CoreResources.GetString("undefined_function_called", name));
+                }
+            }
+
+            return null;
+        }
 
 		/// <summary>
 		/// Populates given list with names of user and library functions. 

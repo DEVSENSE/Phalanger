@@ -127,6 +127,23 @@ namespace PHP.Core
 			Debug.Fail("GetCodeFromType used on a method with a return type unknown for Phalanger");
 			return PhpTypeCode.Invalid;
 		}
+        
+        /// <summary>
+        /// <c>True</c> iff given <paramref name="code"/> represents value that can be copied (is IPhpCloneable and implements some logic in Copy method).
+        /// </summary>
+        /// <param name="code"><see cref="PhpTypeCode"/>.</param>
+        /// <returns>Wheter given <paramref name="code"/> represents value that can be copied.</returns>
+        internal static bool IsDeeplyCopied(PhpTypeCode code)
+        {
+            return
+                code != PhpTypeCode.Void &&
+                code != PhpTypeCode.String &&
+                code != PhpTypeCode.Boolean &&
+                code != PhpTypeCode.Double &&
+                code != PhpTypeCode.Integer &&
+                code != PhpTypeCode.LongInteger &&
+                code != PhpTypeCode.PhpResource;
+        }
 	}
 
 	/// <summary>

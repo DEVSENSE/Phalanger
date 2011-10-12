@@ -1478,6 +1478,7 @@ namespace PHP.Core
 			Debug.Assert(routineFullName != null ^ routineNameExpr != null);
 
 			MethodInfo operator_method;
+            PhpTypeCode return_type_code;
 
             // (J) use call sites to call the method:
             if (targetExpr != null /*|| type != null*/)
@@ -1504,6 +1505,8 @@ namespace PHP.Core
 					operator_method = Methods.Operators.InvokeMethodStr;
 				else
 					operator_method = Methods.Operators.InvokeMethodObj;
+
+                return_type_code = PhpTypeCode.PhpReference;
 			}
 			else if (type != null)
 			{
@@ -1517,16 +1520,32 @@ namespace PHP.Core
 				this.EmitLoadScriptContext();
 
 				operator_method = Methods.Operators.InvokeStaticMethod;
+                return_type_code = PhpTypeCode.PhpReference;
 			}
             else
             {
-                // LOAD ScriptContext.Call(<local variables>, <naming context>, <function name>, context);
+                // LOAD ScriptContext.Call{|Void|Value}(<local variables>, <naming context>, <function name>, context);
                 this.EmitLoadRTVariablesTable();
                 this.EmitLoadNamingContext();
                 this.EmitName(routineFullName, routineNameExpr, true);
                 this.EmitLoadScriptContext();
 
-                operator_method = Methods.ScriptContext.Call;
+                // (J) only necessary copying, dereferencing or reference making:
+                if (access == AccessType.None)
+                {
+                    operator_method = Methods.ScriptContext.CallVoid;
+                    return_type_code = PhpTypeCode.Void;
+                }
+                else if (access == AccessType.Read)
+                {
+                    operator_method = Methods.ScriptContext.CallValue;
+                    return_type_code = PhpTypeCode.Object;
+                }
+                else
+                {
+                    operator_method = Methods.ScriptContext.Call;
+                    return_type_code = PhpTypeCode.PhpReference;
+                }
             }
 
 			// emits load of parameters to the PHP stack:
@@ -1540,7 +1559,7 @@ namespace PHP.Core
 			// marks transient sequence point just after the call:
 			this.MarkTransientSequencePoint();
 
-			return PhpTypeCode.PhpReference;
+            return return_type_code;
 		}
 
 		private void EmitLoadTypeDesc(string typeFullName, TypeRef typeNameRef, DType type, ResolveTypeFlags flags)

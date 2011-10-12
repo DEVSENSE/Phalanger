@@ -12,9 +12,9 @@ string(2) "a1"
 string(2) "1b"
 string(2) "11"
 string(2) "ab"
-string(2) "aB"
-string(2) "Ab"
-string[binary](2) "\x41\x42"
+string[binary](2) "aB"
+string[binary](2) "Ab"
+string[binary](2) "AB"
 
 [file]
 <?

@@ -68,6 +68,32 @@ namespace PHP.Core.AST
 			return new Evaluation(this);
 		}
 
+        /// <include file='Doc/Nodes.xml' path='doc/method[@name="IsDeeplyCopied"]/*'/>
+        internal override bool IsDeeplyCopied(CopyReason reason, int nestingLevel)
+        {
+            // J: PhpVariable.Copy is always emitted in Emit method if needed (access == Read && resultTypeCode is copiable)
+            return false;
+        }
+
+        /// <summary>
+        /// Emit <see cref="PhpVariable.Copy"/> if needed. It means <see cref="access"/> has to be <see cref="AccessType.Read"/> and <paramref name="returnType"/> has to be copiable.
+        /// </summary>
+        /// <param name="returnType"><see cref="PhpTypeCode"/> of function call return value.</param>
+        protected void EmitReturnValueCopy(ILEmitter/*!*/il, PhpTypeCode returnType)
+        {
+            Debug.Assert(il != null);
+
+            // copy only if we are reading the return value &&
+            // only if return type is copiable:
+            if (access != AccessType.None &&   // reading, not literals:
+                PhpTypeCodeEnum.IsDeeplyCopied(returnType) &&
+                returnType != PhpTypeCode.PhpReference) // PhpSmartReference can be an issue if method returns an object field (but this is handled by binders)
+            {
+                il.LdcI4((int)CopyReason.ReturnedByCopy);
+                il.Emit(OpCodes.Call, Methods.PhpVariable.Copy);
+            }
+        }
+
 		internal void DumpArguments(AstVisitor/*!*/ visitor, TextWriter/*!*/ output)
 		{
 			output.Write('(');
@@ -672,29 +698,15 @@ namespace PHP.Core.AST
 
 		#endregion
 
-		/// <include file='Doc/Nodes.xml' path='doc/method[@name="IsDeeplyCopied"]/*'/>
-		internal override bool IsDeeplyCopied(CopyReason reason, int nestingLevel)
-		{
-			// emit copy only if the call itself don't do that:
-            return
-                routine == null ||
-                (!routine.ReturnValueDeepCopyEmitted &&
-                // do not Copy, if routine surely did not return something IPhpCloneable:
-                routineEmittedTypeCode != PhpTypeCode.Void &&
-                routineEmittedTypeCode != PhpTypeCode.String &&
-                routineEmittedTypeCode != PhpTypeCode.Boolean &&
-                routineEmittedTypeCode != PhpTypeCode.Double &&
-                routineEmittedTypeCode != PhpTypeCode.Integer &&
-                routineEmittedTypeCode != PhpTypeCode.LongInteger && 
-                routineEmittedTypeCode != PhpTypeCode.PhpResource);
-		}
+        ///// <include file='Doc/Nodes.xml' path='doc/method[@name="IsDeeplyCopied"]/*'/>
+        //internal override bool IsDeeplyCopied(CopyReason reason, int nestingLevel)
+        //{
+        //    // emit copy only if the call itself don't do that:
+        //    // J: PhpVariable.Copy is always emitted in Emit method if needed (access == Read && resultTypeCode is copiable)
+        //    return routine == null || !routine.ReturnValueDeepCopyEmitted;  // true if Copy has to be emitted by parent expression ($a = func())
+        //}
 
-        /// <summary>
-        /// Routine emitted type code if known.
-        /// </summary>
-        private PhpTypeCode routineEmittedTypeCode = PhpTypeCode.Unknown;
-
-		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
+        /// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
 		internal override PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator)
 		{
 			Debug.Assert(access == AccessType.Read || access == AccessType.ReadRef || access == AccessType.ReadUnknown
@@ -727,13 +739,17 @@ namespace PHP.Core.AST
                 }
 			}
 
-            // store the type code for IsDeeplyCopied (used later by AssignEx.Emit):
-            this.routineEmittedTypeCode = result;
-
-			// handles return value:
+            // (J) Emit Copy if necessary:
+            // routine == null => Copy emitted by EmitRoutineOperatorCall
+            // routine.ReturnValueDeepCopyEmitted => Copy emitted
+            // otherwise emit Copy if we are going to read it by value
+            if (routine != null && !routine.ReturnValueDeepCopyEmitted)
+                EmitReturnValueCopy(codeGenerator.IL, result);
+            
+            // handles return value:
 			codeGenerator.EmitReturnValueHandling(this, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);
 
-			return result;
+            return result;
 		}
 
 		/// <summary>
@@ -832,10 +848,11 @@ namespace PHP.Core.AST
 
 			PhpTypeCode result;
 			result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, null, nameExpr, callSignature, access);
+            //EmitReturnValueCopy(codeGenerator.IL, result); // (J) already emitted by EmitRoutineOperatorCall
+            
+            codeGenerator.EmitReturnValueHandling(this, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);
 
-			codeGenerator.EmitReturnValueHandling(this, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);
-
-			return result;
+            return result;
 		}
 
 		internal override void DumpTo(AstVisitor/*!*/ visitor, TextWriter/*!*/ output)
@@ -1001,6 +1018,9 @@ namespace PHP.Core.AST
 			PhpTypeCode result = method.EmitCall(codeGenerator, callSignature, instance, runtimeVisibilityCheck,
 				overloadIndex, type as ConstructedType, position, access, false/* TODO: __call must be called virtually */);
 
+            if (/*method == null || */!method.ReturnValueDeepCopyEmitted)   // (J) Emit Copy only if method is known (=> known PhpRoutine do not emit Copy on return value)
+                EmitReturnValueCopy(codeGenerator.IL, result);  // only if we are going to read the resulting value
+
 			// handles return value:
 			codeGenerator.EmitReturnValueHandling(this, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);
 
@@ -1069,6 +1089,7 @@ namespace PHP.Core.AST
 			Statistics.AST.AddNode("StaticMethodCall.Indirect");
 
 			PhpTypeCode result = codeGenerator.EmitRoutineOperatorCall(type, null, null, methodNameVar, callSignature, access);
+            //EmitReturnValueCopy(codeGenerator.IL, result); // (J) already emitted by EmitRoutineOperatorCall
 
 			// handles return value:
 			codeGenerator.EmitReturnValueHandling(this, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);

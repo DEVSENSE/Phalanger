@@ -389,7 +389,7 @@ namespace PHP.Core.Emit
                 _DisableErrorReporting, _EnableErrorReporting,
                 _GetCurrentContext, _Die, _StaticInclude, _DynamicInclude, _GetStaticLocal, _GetStaticLocalId, _AddStaticLocal, _RunApplication,
                 _IsConstantDefined, _GetConstantValue, _RegisterDObjectForFinalization,
-                _DeclareFunction, _DeclareLambda, _Call, _DeclareType_TypeDesc, _DeclareType_Handle,
+                _DeclareFunction, _DeclareLambda, _Call, _CallValue, _CallVoid, _DeclareType_TypeDesc, _DeclareType_Handle,
                 _GetWorkingDirectory;
 
             public static MethodInfo RunApplication { get { if (_RunApplication == null) _RunApplication = _this.GetMethod("RunApplication", new Type[] { typeof(Delegate), typeof(string), typeof(string) }); return _RunApplication; } }
@@ -414,7 +414,10 @@ namespace PHP.Core.Emit
 
             public static MethodInfo DeclareFunction { get { if (_DeclareFunction == null) _DeclareFunction = _this.GetMethod("DeclareFunction"); return _DeclareFunction; } }
             public static MethodInfo DeclareLambda { get { if (_DeclareLambda == null) _DeclareLambda = _this.GetMethod("DeclareLambda"); return _DeclareLambda; } }
+            
             public static MethodInfo Call { get { if (_Call == null) _Call = _this.GetMethod("Call", new Type[] { typeof(Dictionary<string, object>), typeof(NamingContext), typeof(object), typeof(PHP.Core.ScriptContext) }); return _Call; } }
+            public static MethodInfo CallValue { get { return _CallValue ?? (_CallValue = _this.GetMethod("CallValue", new Type[] { typeof(Dictionary<string, object>), typeof(NamingContext), typeof(object), typeof(PHP.Core.ScriptContext) })); } }
+            public static MethodInfo CallVoid { get { return _CallVoid ?? (_CallVoid = _this.GetMethod("CallVoid", new Type[] { typeof(Dictionary<string, object>), typeof(NamingContext), typeof(object), typeof(PHP.Core.ScriptContext) })); } }
 
             public static MethodInfo DeclareType_Handle { get { if (_DeclareType_Handle == null) _DeclareType_Handle = _this.GetMethod("DeclareType", new Type[] { typeof(RuntimeTypeHandle), Types.String[0] }); return _DeclareType_Handle; } }
             public static MethodInfo DeclareType_TypeDesc { get { if (_DeclareType_TypeDesc == null) _DeclareType_TypeDesc = _this.GetMethod("DeclareType", new Type[] { Types.PhpTypeDesc[0], Types.String[0] }); return _DeclareType_TypeDesc; } }
