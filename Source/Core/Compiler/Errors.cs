@@ -656,7 +656,7 @@ namespace PHP.Core
         public static readonly ErrorInfo BodyOfDllImportedFunctionIgnored = new ErrorInfo(170, "dll_import_body_ignored", ErrorSeverity.Warning);
 
         //
-        public static readonly ErrorInfo CallMustBePublicNonStatic = new ErrorInfo(171, "call_must_be_public_nonstatic", ErrorSeverity.Warning);
+        public static readonly ErrorInfo MagicMethodMustBePublicNonStatic = new ErrorInfo(171, "magic_method_must_be_public_nonstatic", ErrorSeverity.Warning);
         public static readonly ErrorInfo CallStatMustBePublicStatic = new ErrorInfo(172, "callstat_must_be_public_static", ErrorSeverity.Warning);
 
         // strict standards
@@ -725,6 +725,8 @@ namespace PHP.Core
 		public static readonly ErrorInfo KeyAlias = new ErrorInfo(1042, "key_alias", ErrorSeverity.Error);
 		public static readonly ErrorInfo MultipleVisibilityModifiers = new ErrorInfo(1043, "multiple_visibility_modifiers", ErrorSeverity.Error);
 		public static readonly ErrorInfo InvalidInterfaceModifier = new ErrorInfo(1044, "invalid_interface_modifier", ErrorSeverity.Error);
+
+        public static readonly ErrorInfo MethodCannotTakeArguments = new ErrorInfo(1045, "method_cannot_take_arguments", ErrorSeverity.Error);
 
 		//
 

@@ -1737,7 +1737,7 @@ namespace PHP.Core.Reflection
             {
                 // check visibility & staticness
                 if (this.Name.IsCallName && (this.IsStatic || !this.IsPublic))
-                    errors.Add(Warnings.CallMustBePublicNonStatic, sourceUnit, position);
+                    errors.Add(Warnings.MagicMethodMustBePublicNonStatic, sourceUnit, position, this.Name.Value);
 
                 if (this.Name.IsCallStaticName && (!this.IsStatic || !this.IsPublic))
                     errors.Add(Warnings.CallStatMustBePublicStatic, sourceUnit, position);
@@ -1747,6 +1747,14 @@ namespace PHP.Core.Reflection
                 {
                     errors.Add(FatalErrors.MethodMustTakeExacArgsCount, sourceUnit, position, this.DeclaringType.FullName, this.Name.Value, 2);
                 }
+            }
+            else if (this.Name.IsToStringName)
+            {
+                if (IsStatic || !IsPublic)
+                    errors.Add(Warnings.MagicMethodMustBePublicNonStatic, sourceUnit, position, this.Name.Value);
+
+                if (signature != null && signature.ParamCount != 0)
+                    errors.Add(Errors.MethodCannotTakeArguments, sourceUnit, position, this.DeclaringType.FullName, this.Name.Value);
             }
 
 			// no final abstract member:

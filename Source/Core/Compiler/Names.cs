@@ -109,6 +109,11 @@ namespace PHP.Core
             get { return this.Equals(DObject.SpecialMethodNames.CallStatic); }
         }
 
+        public bool IsToStringName
+        {
+            get { return this.Equals(DObject.SpecialMethodNames.Tostring); }
+        }
+
 		#endregion
 
 		/// <summary>
