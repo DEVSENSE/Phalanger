@@ -451,7 +451,7 @@ namespace PHP.Core.Emit
         public struct Convert
         {
             static Type _this { get { return typeof(PHP.Core.Convert); } }
-            static MethodInfo _ObjectToString, _ObjectToString_Object_DTypeDesc, _ObjectToChar, _ObjectToPhpBytes, _ObjectToBoolean, _ObjectToInteger, _ObjectToLongInteger,
+            static MethodInfo _ObjectToString, _ObjectToChar, _ObjectToPhpBytes, _ObjectToBoolean, _ObjectToInteger, _ObjectToLongInteger,
                 _ObjectToDouble, _ObjectToPhpArray, _ObjectToDObject, _ObjectToCallback, _ObjectToLinqSource, _ObjectToTypeDesc,
                 _TryObjectToBoolean, _TryObjectToInt8, _TryObjectToInt16, _TryObjectToInt32, _TryObjectToInt64, _TryObjectToUInt8,
                 _TryObjectToUInt16, _TryObjectToUInt32, _TryObjectToUInt64, _TryObjectToSingle, _TryObjectToDouble, _TryObjectToDecimal,
@@ -459,7 +459,6 @@ namespace PHP.Core.Emit
                 _TryObjectToDelegate, _TryObjectToArray, _TryObjectToType;
 
             public static MethodInfo ObjectToString { get { if (_ObjectToString == null) _ObjectToString = _this.GetMethod("ObjectToString", Types.Object); return _ObjectToString; } }
-            public static MethodInfo ObjectToString_Object_DTypeDesc { get { return _ObjectToString_Object_DTypeDesc ?? (_ObjectToString_Object_DTypeDesc = _this.GetMethod("ObjectToString", Types.Object_DTypeDesc)); } }
             public static MethodInfo ObjectToChar { get { if (_ObjectToChar == null) _ObjectToChar = _this.GetMethod("ObjectToChar"); return _ObjectToChar; } }
             public static MethodInfo ObjectToPhpBytes { get { if (_ObjectToPhpBytes == null) _ObjectToPhpBytes = _this.GetMethod("ObjectToPhpBytes"); return _ObjectToPhpBytes; } }
             public static MethodInfo ObjectToBoolean { get { if (_ObjectToBoolean == null) _ObjectToBoolean = _this.GetMethod("ObjectToBoolean"); return _ObjectToBoolean; } }

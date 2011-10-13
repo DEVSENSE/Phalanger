@@ -149,13 +149,7 @@ namespace PHP.Core
             return Convert.ObjectToString(value);
 		}
 
-        string IPhpConvertible.ToString(PHP.Core.Reflection.DTypeDesc caller)
-        {
-            return ((IPhpConvertible)this).ToString();
-        }
-
-
-		/// <summary>
+        /// <summary>
 		/// Converts instance to its string representation according to PHP conversion algorithm.
 		/// </summary>
 		/// <param name="success">Indicates whether conversion was successful.</param>

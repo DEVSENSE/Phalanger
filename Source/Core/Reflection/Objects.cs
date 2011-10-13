@@ -1681,74 +1681,37 @@ namespace PHP.Core.Reflection
 		/// If this object contains the <c>__toString</c> method, it is invoked and its result returned.
 		/// Otherwise, <see cref="Object.ToString"/> is invoked on the real object.
 		/// </remarks>
-		public PhpBytes ToPhpBytes()
+		public virtual PhpBytes ToPhpBytes()
 		{
-			return ToPhpBytes(PhpStackTrace.GetClassContext());
+            GetMemberResult lookup_result;
+            object result = InvokeToString(out lookup_result);
+
+            if (lookup_result != GetMemberResult.NotFound)
+            {
+                // ignoring __toString() visibility as it is in PHP:
+                var bytes = PhpVariable.AsBytes(result);
+                if (bytes != null)
+                    return bytes;
+
+                PhpException.Throw(PhpError.Error, CoreResources.GetString("tostring_must_return_string", TypeName));
+            }
+            
+            return null;
 		}
 
-		private object InvokeToString(DTypeDesc caller, out GetMemberResult lookupResult)
+		private object InvokeToString(out GetMemberResult lookupResult)
 		{
 			DRoutineDesc method;
-			lookupResult = TypeDesc.GetMethod(SpecialMethodNames.Tostring, caller, out method);
+            if ((lookupResult = TypeDesc.GetMethod(SpecialMethodNames.Tostring, null/*ignoring visibility*/, out method)) != GetMemberResult.NotFound)
+            {
+                // ignoring __toString() visibility as it is in PHP:
+                PhpStack stack = ScriptContext.CurrentContext.Stack;
 
-			switch (lookupResult)
-			{
-				case GetMemberResult.BadVisibility:
-				{
-					ThrowMethodVisibilityError(method, caller);
-					return null;
-				}
+                stack.AddFrame();
+                return method.Invoke(this, stack);
+            }
 
-				case GetMemberResult.OK:
-				{
-					PhpStack stack = ScriptContext.CurrentContext.Stack;
-
-					stack.AddFrame();
-					return method.Invoke(this, stack, caller);
-				}
-
-				// if not found, nothing happens
-			}
-
-			return null;
-		}
-
-		/// <summary>
-		/// Converts this instance to its <see cref="PhpBytes"/> representation.
-		/// </summary>
-		/// <param name="caller"><see cref="DTypeDesc"/> of the object that request the operation.</param>
-		/// <returns>The converted value.</returns>
-		/// <remarks>
-		/// If thi object contains the <c>__toString</c> method, it is invoked and its result returned.
-		/// Otherwise, <see cref="Object.ToString"/> is invoked on the real object.
-		/// </remarks>
-		public virtual PhpBytes ToPhpBytes(DTypeDesc caller)
-		{
-			GetMemberResult lookup_result;
-			object result = InvokeToString(caller, out lookup_result);
-
-			switch (lookup_result)
-			{
-				case GetMemberResult.BadVisibility: return null;
-
-				case GetMemberResult.NotFound:
-				{
-					PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_to_string_conversion", TypeName));
-					return new PhpBytes(RealObject.ToString());
-				}
-
-				case GetMemberResult.OK:
-				{
-					string str = result as string;
-					if (str != null) return new PhpBytes(str);
-
-					PhpBytes bytes = result as PhpBytes;
-					if (bytes != null) return bytes;
-
-					PhpException.Throw(PhpError.Error, CoreResources.GetString("tostring_must_return_string", TypeName));
-					return null;
-				}
-			}
+			// if not found, nothing happens
 			return null;
 		}
 
@@ -1777,25 +1740,11 @@ namespace PHP.Core.Reflection
 		/// </remarks>
 		string IPhpConvertible.ToString()
 		{
-			return ((IPhpConvertible)this).ToString(PhpStackTrace.GetClassContext());
+            bool b;
+            return ((IPhpConvertible)this).ToString(true, out b);
 		}
 
         /// <summary>
-        /// Converts this instance to its <see cref="string"/> representation according to PHP conversion algorithm.
-        /// </summary>
-        /// <returns>The converted value.</returns>
-        /// <remarks>
-        /// If this object contains the __toString method, it is invoked and its result returned.
-        /// Otherwise, &quot;Object&quot; is returned.
-        /// </remarks>
-        string IPhpConvertible.ToString(DTypeDesc caller)
-        {
-            bool b;
-            return ToString(caller, true, out b);
-        }
-
-
-		/// <summary>
 		/// Converts this instance to its <see cref="string"/> representation according to PHP conversion algorithm.
 		/// </summary>
 		/// <param name="throwOnError">
@@ -1807,58 +1756,23 @@ namespace PHP.Core.Reflection
 		/// If this object contains the __toString method, it is invoked and its result returned.
 		/// Otherwise, &quot;Object&quot; is returned.
 		/// </remarks>
-		string IPhpConvertible.ToString(bool throwOnError, out bool success)
+		public virtual string ToString(bool throwOnError, out bool success)
 		{
-			return ToString(PhpStackTrace.GetClassContext(), throwOnError, out success);
-		}
+            GetMemberResult lookup_result;
+            object result = InvokeToString(out lookup_result);
+            success = true;
 
+            if (lookup_result != GetMemberResult.NotFound)
+            {
+                // ignoring __toString() visibility as it is in PHP:
 
-		/// <summary>
-		/// Converts this instance to its <see cref="string"/> representation according to PHP conversion algorithm.
-		/// </summary>
-		/// <param name="caller"><see cref="System.Type"/> of the object that request the operation or <B>null</B>
-		/// if it should be determined lazily.
-		/// </param>
-		/// <param name="throwOnError">
-		/// Should the method throw 'object_to_string_conversion' notice when no conversion method is found?
-		/// </param>
-		/// <param name="success">Indicates whether conversion was successful.</param>
-		/// <returns>The converted value.</returns>
-		/// <remarks>
-		/// If this object contains the <c>__toString</c> method, it is invoked and its result returned.
-		/// Otherwise, &quot;Object&quot; is returned.
-		/// </remarks>
-		public virtual string ToString(DTypeDesc caller, bool throwOnError, out bool success)
-		{
-			GetMemberResult lookup_result;
-			object result = InvokeToString(caller, out lookup_result);
-			success = true;
+                string str = PhpVariable.AsString(result);
+                if (str != null)
+                    return str;
 
-			switch (lookup_result)
-			{
-				case GetMemberResult.BadVisibility: return null;
-
-				case GetMemberResult.NotFound:
-				{
-					success = false;
-					if (throwOnError)
-						PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_to_string_conversion", TypeName));
-					return RealObject.ToString();
-				}
-
-				case GetMemberResult.OK:
-				{
-					string str = result as string;
-					if (str != null) return str;
-
-					PhpBytes bytes = result as PhpBytes;
-					if (bytes != null) return bytes.ToString();
-
-					PhpException.Throw(PhpError.Error, CoreResources.GetString("tostring_must_return_string", TypeName));
-					return null;
-				}
-			}
-			return null;
+                PhpException.Throw(PhpError.Error, CoreResources.GetString("tostring_must_return_string", TypeName));
+            }
+            return null;
 		}
 
 		/// <summary>

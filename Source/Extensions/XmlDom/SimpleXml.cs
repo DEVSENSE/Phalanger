@@ -606,41 +606,32 @@ namespace PHP.Library.Xml
 		/// <summary>
 		/// Internal to-<see cref="PhpBytes"/> conversion.
 		/// </summary>
-		public override PhpBytes ToPhpBytes(DTypeDesc caller)
+		public override PhpBytes ToPhpBytes()
 		{
-			return new PhpBytes(ToString(caller));
+			return new PhpBytes(ToString());
 		}
 
 		/// <summary>
 		/// Internal to-<see cref="string"/> conversion.
 		/// </summary>
-		public override string ToString(DTypeDesc caller, bool throwOnError, out bool success)
+		public override string ToString(bool throwOnError, out bool success)
 		{
-			success = true;
-			return ToString(caller);
+            success = true;
+
+            if (XmlAttribute != null) return XmlAttribute.Value;
+
+            // concatenate text nodes that are immediate children of this element
+            StringBuilder sb = new StringBuilder();
+
+            foreach (XmlNode child in XmlElement.ChildNodes)
+            {
+                string text = GetNodeText(child);
+                if (text != null) sb.Append(text);
+            }
+
+            return sb.ToString();
 		}
 		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="caller"></param>
-		/// <returns></returns>
-		public /*override*/ string ToString(DTypeDesc caller)
-		{
-			if (XmlAttribute != null) return XmlAttribute.Value;
-
-			// concatenate text nodes that are immediate children of this element
-			StringBuilder sb = new StringBuilder();
-			
-			foreach (XmlNode child in XmlElement.ChildNodes)
-			{
-				string text = GetNodeText(child);
-				if (text != null) sb.Append(text);
-			}
-
-			return sb.ToString();
-		}
-
 		/// <summary>
 		/// Internal to-<see cref="bool"/> conversion.
 		/// </summary>

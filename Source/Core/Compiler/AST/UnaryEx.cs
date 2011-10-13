@@ -317,8 +317,8 @@ namespace PHP.Core.AST
                     if ((returned_typecode = expr.Emit(codeGenerator)) != PhpTypeCode.String)
                     {
                         codeGenerator.EmitBoxing(returned_typecode);
-                        codeGenerator.EmitLoadClassContext();
-                        il.Emit(OpCodes.Call, Methods.Convert.ObjectToString_Object_DTypeDesc);
+                        //codeGenerator.EmitLoadClassContext();
+                        il.Emit(OpCodes.Call, Methods.Convert.ObjectToString);
                         returned_typecode = PhpTypeCode.String;
                     }
 					break;

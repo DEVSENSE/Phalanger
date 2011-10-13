@@ -66,13 +66,6 @@ namespace PHP.Core
 		string ToString();
 
         /// <summary>
-        /// Converts instance to its string representation according to PHP conversion algorithm.
-        /// </summary>
-        /// <param name="caller">DTypeDesc of the caller's class context.</param>
-        /// <returns>The converted value.</returns>
-        string ToString(DTypeDesc caller);
-
-		/// <summary>
 		/// Converts instance to its string representation according to PHP conversion algorithm.
 		/// </summary>
 		/// <param name="success">Indicates whether conversion was successful.</param>
@@ -241,31 +234,6 @@ namespace PHP.Core
 			}
 			return result;
 		}
-
-        /// <summary>
-        /// Converts value of an arbitrary PHP/CLR type into string value using the same 
-        /// conversion algorithms as PHP.
-        /// </summary>
-        /// <param name="caller">The DTypeDesc of the caller's class context.</param>
-        /// <param name="obj">The value to convert.</param>
-        /// <returns>The converted value.</returns>
-        /// <remarks>If <paramref name="obj"/> is null then the <see cref="String.Empty"/> is returned. This method cannot return null.</remarks>
-        [Emitted]
-        public static string ObjectToString(object obj, DTypeDesc caller)
-        {
-            if (ReferenceEquals(obj, null)) return String.Empty;
-
-            bool success;
-            string result = TryObjectToString(obj, out success);
-
-            if (!success)
-            {
-                // PhpReference, PhpArray, PhpResource, DObject:
-                IPhpConvertible conv = obj as IPhpConvertible;
-                if (conv != null) return conv.ToString(caller);
-            }
-            return result;
-        }
 
 		/// <summary>
 		/// Converts value of an arbitrary PHP/CLR type into <see cref="PhpBytes"/> value using the same 

@@ -323,11 +323,6 @@ namespace PHP.Core
             return Configuration.Application.Globalization.PageEncoding.GetString(this.ReadonlyData, 0, this.Length);
         }
 
-        string IPhpConvertible.ToString(PHP.Core.Reflection.DTypeDesc caller)
-        {
-            return ((IPhpConvertible)this).ToString();
-        }
-
         /// <summary>
         /// Converts instance to its string representation according to PHP conversion algorithm.
         /// </summary>
