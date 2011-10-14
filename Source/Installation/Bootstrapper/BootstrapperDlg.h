@@ -56,6 +56,8 @@ protected:
 	HICON m_hIcon;
 	UINT_PTR m_Timer;
 
+	void LogVisit(wchar_t*tag);
+
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	virtual void OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl);

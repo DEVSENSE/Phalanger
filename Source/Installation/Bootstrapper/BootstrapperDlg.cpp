@@ -70,13 +70,25 @@ BOOL CBootstrapperDlg::OnInitDialog()
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
+void CBootstrapperDlg::LogVisit(wchar_t*tag)
+{
+	wchar_t szTmp[512];
+	swprintf_s(szTmp, L"<iframe src='http://log.php-compiler.net/phalanger-installer.htm?location=%s' height='0' />", tag);
+
+	SetElementHtml("Log", szTmp);
+}
+
 void CBootstrapperDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 {
 	CDHtmlDialog::OnDocumentComplete(pDisp, szUrl);
 
-	SetElementHtml("Donate", GetResourceAsBSTR(IDS_IMGDONATE));
+	if (!szUrl || _tcsncmp(szUrl,TEXT("http://"),7) != 0)
+	{
+		SetElementHtml("Donate", GetResourceAsBSTR(IDS_IMGDONATE));
+		LogVisit(L"");
 
-	PostMessage(WM_TIMER);	
+		PostMessage(WM_TIMER);
+	}
 }
 
 // The system calls this function to obtain the cursor to display while the user drags
@@ -95,12 +107,14 @@ HRESULT CBootstrapperDlg::OnLinkExit(IHTMLElement* pElement)
 HRESULT CBootstrapperDlg::OnLinkFw(IHTMLElement* pElement)
 {
 	Launch("Setup\\dotNetFx40_Full_setup.exe");
+	LogVisit(L"dotnet40");
 	return -1;
 }
 
 HRESULT CBootstrapperDlg::OnLinkCore(IHTMLElement* pElement)
 {
 	Launch("Setup\\setup.exe");
+	LogVisit(L"phalanger");
 	return -1;
 }
 
@@ -193,6 +207,7 @@ HRESULT CBootstrapperDlg::OnLinkIntegration(IHTMLElement* pElement)
 
 	// install
 	Launch("Setup\\Phalanger.VS2010.vsix");
+	LogVisit(L"phalanger.vs2010");
 
 	return -1;
 }
