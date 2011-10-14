@@ -1076,7 +1076,7 @@ namespace PHP.Library.Data
 			PhpSqlDbProcedure.ParameterType param_type = PhpSqlDbProcedure.VariableTypeToParamType(type);
 			if (param_type == PhpSqlDbProcedure.ParameterType.Invalid)
 			{
-				PhpException.ArgumentValueNotSupported("type");
+				PhpException.ArgumentValueNotSupported("type", (int)type);
 				return false;
 			}
 

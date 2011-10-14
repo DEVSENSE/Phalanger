@@ -119,9 +119,9 @@ namespace PHP.Library
 		public static bool Start(PhpCallback filter, int chunkSize, bool erase)
 		{
 			if (chunkSize != 0)
-				PhpException.ArgumentValueNotSupported("chunkSize");
+				PhpException.ArgumentValueNotSupported("chunkSize", "!= 0");
 			if (!erase)
-				PhpException.ArgumentValueNotSupported("erase");
+				PhpException.ArgumentValueNotSupported("erase", erase);
 
 			ScriptContext context = ScriptContext.CurrentContext;
 

@@ -276,9 +276,10 @@ namespace PHP.Core
 		/// The value of an argument is not invalid but unsupported.
 		/// </summary>
 		/// <param name="argument">The argument which value is unsupported.</param>
-		public static void ArgumentValueNotSupported(string argument)
+        /// <param name="value">The value which is unsupported.</param>
+		public static void ArgumentValueNotSupported(string argument, object value)
 		{
-			Throw(PhpError.Warning, CoreResources.GetString("argument_value_not_supported", argument));
+			Throw(PhpError.Warning, CoreResources.GetString("argument_value_not_supported", value, argument));
 		}
 
 		/// <summary>

@@ -2741,7 +2741,7 @@ namespace PHP.Library
                     comparer = ValueComparer.String; break;
                 case ArrayUniqueSortFlags.LocaleString:
                 default:
-                    PhpException.ArgumentValueNotSupported("sortFlags");
+                    PhpException.ArgumentValueNotSupported("sortFlags", (int)sortFlags);
                     return null;
             }
 

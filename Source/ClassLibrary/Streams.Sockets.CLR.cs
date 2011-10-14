@@ -411,7 +411,7 @@ namespace PHP.Library
 
 			// TODO:
 			if (flags != SocketOptions.None)
-				PhpException.ArgumentValueNotSupported("flags");
+				PhpException.ArgumentValueNotSupported("flags", (int)flags);
 
 			try
 			{

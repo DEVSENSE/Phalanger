@@ -82,7 +82,7 @@ namespace PHP.Library
         public static PhpArray ParseString(string ini, bool processSections, int scanner_mode)
         {
             if (scanner_mode != (int)ScannerMode.Normal)  // TODO: handle value 1
-                PhpException.ArgumentValueNotSupported("scanner_mode");
+                PhpException.ArgumentValueNotSupported("scanner_mode", scanner_mode);
 
             if (string.IsNullOrEmpty(ini))
                 return null;
@@ -171,7 +171,7 @@ namespace PHP.Library
         public static PhpArray ParseFile(string fileName, bool processSections, int scanner_mode)
 		{
             if (scanner_mode != (int)ScannerMode.Normal)  // TODO: handle value 1
-                PhpException.ArgumentValueNotSupported("scanner_mode");
+                PhpException.ArgumentValueNotSupported("scanner_mode", scanner_mode);
 
 			// we're using binary mode because CR/LF stuff should be preserved for multiline values
 			using (PhpStream stream = PhpStream.Open(fileName, "rb", StreamOpenOptions.ReportErrors,

@@ -1122,7 +1122,7 @@ namespace PHP.Library
                 else
                 {
                     // TODO: throw warning, unsupported using Asp Sessions
-                    PhpException.ArgumentValueNotSupported("session_id");
+                    PhpException.ArgumentValueNotSupported("id", id);
                 }
             }
 

@@ -4030,13 +4030,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -13886,20 +13886,20 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Phalanger 2.1 (August 2011) for .NET 4.0"
-        "ProductCode" = "8:{A0314BA4-2E9A-4A11-8541-6BB09C9C4499}"
-        "PackageCode" = "8:{04976810-364D-42A7-906C-4DA576C97BB4}"
+        "ProductName" = "8:Phalanger 2.1 (October 2011) for .NET 4.0"
+        "ProductCode" = "8:{7E00A9F0-BBCC-4CD2-9310-ECF29D116D01}"
+        "PackageCode" = "8:{6E797F4B-D83A-4567-8F14-E0E75CB7BF52}"
         "UpgradeCode" = "8:{1D57DEEC-585D-4D7D-A4DF-F6DB535051BA}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
-        "DetectNewerInstalledVersion" = "11:TRUE"
+        "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:TRUE"
         "ProductVersion" = "8:2.1"
         "Manufacturer" = "8:The Phalanger Team"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://phalanger.codeplex.com/discussions"
-        "Title" = "8:Phalanger 2.1 (August 2011) for .NET 4.0"
+        "Title" = "8:Phalanger 2.1 (October 2011) for .NET 4.0"
         "Subject" = "8:"
         "ARPCONTACT" = "8:Tomas Matousek, Ladislav Prosek, Vaclav Novak, Pavel Novak, Jan Benda, Martin Maly, Miloslav Beno, Daniel Balas, Jakub Misek"
         "Keywords" = "8:Phalanger, PHP, .NET, compiler"

@@ -192,7 +192,7 @@ namespace PHP.Library
 					return true;
 
 				case LogAction.ToDebuggingConnection:
-					PhpException.ArgumentValueNotSupported("action");
+					PhpException.ArgumentValueNotSupported("action", (int)action);
 					return false;
 
 				case LogAction.AppendToFile:
@@ -325,7 +325,7 @@ namespace PHP.Library
         public static PhpArray Backtrace(bool provideObject)
         {
             if (provideObject == true)
-                PhpException.ArgumentValueNotSupported("provideObject");
+                PhpException.ArgumentValueNotSupported("provideObject", provideObject);
             
             return Backtrace();
         }
@@ -349,7 +349,7 @@ namespace PHP.Library
         public static void PrintBacktrace(bool provideObject)
         {
             if (provideObject == true)
-                PhpException.ArgumentValueNotSupported("provideObject");
+                PhpException.ArgumentValueNotSupported("provideObject", provideObject);
 
             ScriptContext context = ScriptContext.CurrentContext;
             context.Output.Write(new PhpStackTrace(context, 1).FormatUserTrace());

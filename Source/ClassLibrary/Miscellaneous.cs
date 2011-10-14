@@ -493,7 +493,7 @@ namespace PHP.Library
 		{
             if (extension == "zend")    // since PHP 5.0
             {
-                PhpException.ArgumentValueNotSupported("extension"); // TODO: functions in the module zend (php functions in PhpNetCore ?)
+                PhpException.ArgumentValueNotSupported("extension", extension); // TODO: functions in the module zend (php functions in PhpNetCore ?)
                 // ...
             }
 
