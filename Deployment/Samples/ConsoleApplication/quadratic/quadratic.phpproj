@@ -27,7 +27,7 @@
       <Name>System</Name>
       <AssemblyName>System.dll</AssemblyName>
     </Reference>
-    <Reference Include="PhpNetClassLibrary, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb">
+    <Reference Include="PhpNetClassLibrary, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb">
       <Name>PhpNetClassLibrary</Name>
       <AssemblyName>PhpNetClassLibrary.dll</AssemblyName>
     </Reference>
@@ -35,5 +35,5 @@
   <ItemGroup>
     <Compile Include="Program.php" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.1\Phalanger.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.2\Phalanger.targets" />
 </Project>

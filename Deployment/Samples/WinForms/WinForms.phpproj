@@ -39,7 +39,7 @@
     <Reference Include="System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
       <Private>False</Private>
     </Reference>
-    <Reference Include="PhpNetClassLibrary, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb">
+    <Reference Include="PhpNetClassLibrary, Version=2.2.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb">
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -66,5 +66,5 @@
       <SubType>Content</SubType>
     </Content>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.1\Phalanger.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.2\Phalanger.targets" />
 </Project>

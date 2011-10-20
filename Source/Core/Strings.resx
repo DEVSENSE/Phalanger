@@ -1283,8 +1283,7 @@ Stack trace:
   <data name="info_license_text" xml:space="preserve">
     <value>
     &lt;p align='justify'&gt;
-      This program can be used and distributed only under the terms of the Apache License 
-      included in the distribution in the file License.txt and also published on
+      This program can be used and distributed only under the terms of the license included in the distribution in the file License.txt and also published on
       &lt;a href="http://phalanger.codeplex.com/license"&gt;http://phalanger.codeplex.com/license&lt;/a&gt;.
     &lt;/p&gt;
     &lt;p align='justify'&gt;

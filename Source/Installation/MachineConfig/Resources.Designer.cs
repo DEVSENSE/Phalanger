@@ -68,7 +68,7 @@ namespace MachineConfig {
         ///  &lt;configSections&gt;
         ///    &lt;section
         ///      name=&quot;phpNet&quot;
-        ///      type=&quot;PHP.Core.ConfigurationSectionHandler, PhpNetCore, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71&quot; /&gt;
+        ///      type=&quot;PHP.Core.ConfigurationSectionHandler, PhpNetCore, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71&quot; /&gt;
         ///  &lt;/configSections&gt;
         ///
         ///  &lt;!-- CodeDOM provider definition --&gt;
@@ -95,7 +95,7 @@ namespace MachineConfig {
         ///      &lt;add
         ///        path=&quot;*.php&quot;
         ///        verb=&quot;*&quot;
-        ///        type=&quot;PHP.Core.PageFactory, PhpNetCore, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71&quot;
+        ///        type=&quot;PHP.Core.PageFactory, PhpNetCore, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71&quot;
         ///        validate=&quot;false&quot; /&gt;
         ///    &lt;/httpHandlers&gt;
         ///  &lt;/system.web&gt;

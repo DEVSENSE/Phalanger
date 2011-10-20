@@ -190,7 +190,7 @@ BEGIN
             VALUE "LegalCopyright", "(c) Jan Benda, Martin Maly, Tomas Matousek, Pavel Novak, Vaclav Novak, Ladislav Prosek, Jakub Misek, Daniel Balas, Miloslav Beno.  All rights reserved."
             VALUE "OriginalFilename", "Installer.Bootstrapper.exe"
             VALUE "ProductName", "Phalanger"
-            VALUE "ProductVersion", "2.1.0.0"
+            VALUE "ProductVersion", "2.2.0.0"
         END
     END
     BLOCK "VarFileInfo"

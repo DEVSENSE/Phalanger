@@ -70,12 +70,12 @@ BEGIN
             VALUE "Comments", "Zend API v20110221 Extension Support"
             VALUE "CompanyName", "The Phalanger Project Team"
             VALUE "FileDescription", "Phalanger PHP4 ExtSupport"
-            VALUE "FileVersion", "2.1.0.0"
+            VALUE "FileVersion", "2.2.0.0"
             VALUE "InternalName", "ExtSupport4"
             VALUE "LegalCopyright", "Copyright (c) 2004-2006 Tomas Matousek, Ladislav Prosek, Vaclav Novak, Pavel Novak, Jan Benda, Martin Maly"
             VALUE "OriginalFilename", "php4ts.dll"
             VALUE "ProductName", "Phalanger"
-            VALUE "ProductVersion", "2.1.0.0"
+            VALUE "ProductVersion", "2.2.0.0"
         END
     END
     BLOCK "VarFileInfo"

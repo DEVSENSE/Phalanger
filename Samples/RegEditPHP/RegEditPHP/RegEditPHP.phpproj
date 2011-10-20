@@ -241,7 +241,7 @@
   <ItemGroup>
     <Folder Include="Resources" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.1\Phalanger.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.2\Phalanger.targets" />
   <PropertyGroup>
     <PostBuildEvent>mt.exe -nologo -manifest "$(ProjectDir)$(TargetName).exe.manifest" -outputresource:"$(TargetDir)$(TargetName).exe;#1"</PostBuildEvent>
   </PropertyGroup>

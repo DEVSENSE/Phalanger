@@ -478,7 +478,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-    <Reference Include="PhpNetCore.IL, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL">
+    <Reference Include="PhpNetCore.IL, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL">
       <Private>True</Private>
     </Reference>
     <Reference Include="system" />

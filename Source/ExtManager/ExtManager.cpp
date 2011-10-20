@@ -603,7 +603,7 @@ int WINAPI WinMain(
 	RemoteDispatcher::ExtSupportInit();
 	
 	Type ^class_type =
-		Type::GetType("PHP.ExtManager.RemoteDispatcher,php4ts,Version=2.1.0.0,Culture=neutral,PublicKeyToken=43b6773fb05dc4f0");
+		Type::GetType("PHP.ExtManager.RemoteDispatcher,php4ts,Version=2.2.0.0,Culture=neutral,PublicKeyToken=43b6773fb05dc4f0");
 			
 	// register our well-known type and tell the server to connect the type to the endpoint 
 	RemotingConfiguration::RegisterWellKnownServiceType(

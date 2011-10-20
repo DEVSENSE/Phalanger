@@ -703,7 +703,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Currently supported Zend Engine version.
 		/// </summary>
-		public static readonly string Zend = "2.1.0";
+		public static readonly string Zend = "2.0.0";
 
 		/// <summary>
 		/// Compares parts of varsions delimited by '.'.
