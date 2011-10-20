@@ -564,7 +564,7 @@ namespace PHP.Core.Reflection
 					int closing = realType.Namespace.IndexOf('>') + 2;
 					if (closing > 1 && closing < realType.Namespace.Length)
 					{
-						result.Append(realType.Namespace.Substring(closing + 2).Replace(".", QualifiedName.Separator));
+						result.Append(realType.Namespace.Substring(closing).Replace(".", QualifiedName.Separator));
 						result.Append(QualifiedName.Separator);
 					}
 				}
