@@ -320,7 +320,7 @@ namespace PHP.Core.CodeDom
 			SetupCompilerParameters(parameters, options);
 
 			// set up compiler results
-			CompilerResults results = new CompilerResults(options.TempFiles);
+            CompilerResults results = new CompilerResults(options.TempFiles);   // J: SecurityAction.LinkDemand, "FullTrust"
 			CodeDomErrorSink error_sink = new CodeDomErrorSink(results);
 
 			results.Output.Add("Phalanger - the PHP Language Compiler - commencing compilation in a separate appdomain");
@@ -337,15 +337,16 @@ namespace PHP.Core.CodeDom
 			results.PathToAssembly = parameters.OutPath.ToString();
 			results.NativeCompilerReturnValue = (results.Errors.HasErrors ? 1 : 0);
 
-			new SecurityPermission(SecurityPermissionFlag.ControlEvidence).Assert();
-			try
-			{
-				results.Evidence = options.Evidence;
-			}
-			finally
-			{
-				CodeAccessPermission.RevertAssert();
-			}
+            // J: obsolete, FullTrust demanded earlier
+            //new SecurityPermission(SecurityPermissionFlag.ControlEvidence).Assert();
+            //try
+            //{
+            //    results.Evidence = options.Evidence;   // J: SecurityAction.LinkDemand, "FullTrust" // same as CompilerResults above
+            //}
+            //finally
+            //{
+            //    CodeAccessPermission.RevertAssert();
+            //}
 
 			return results;
 		}

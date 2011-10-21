@@ -280,7 +280,14 @@ namespace PHP.Core
 		private static void WriteLogo(TextWriter output)
 		{
 			Version ver = Assembly.GetExecutingAssembly().GetName().Version;
-			output.Write("<h1>Phalanger {0}.{1}</h1>", ver.Major, ver.Minor);
+			output.Write("<h1>Phalanger {0}.{1}.{2}{3} {4}</h1>",
+                ver.Major, ver.Minor, ver.Build,
+#if DEBUG
+                ", DEBUG,",
+#else
+                null,
+#endif
+                (Environment.Is64BitProcess ? "x64" : "x86"));
 			output.Write("<h4>The PHP language compiler for .NET Framework</h4>");
 		}
 
@@ -323,7 +330,7 @@ namespace PHP.Core
             output.Write(HtmlRow(false, CoreResources.GetString("credits_configuration"), "Tomas Matousek"));
             output.Write(HtmlRow(false, CoreResources.GetString("credits_aspnet"), "Ladislav Prosek"));
             output.Write(HtmlRow(false, CoreResources.GetString("credits_automatic_tests"), "Pavel Novak"));
-            output.Write(HtmlRow(false, CoreResources.GetString("credits_interactive_tests"), "Jan Benda"));
+            output.Write(HtmlRow(false, CoreResources.GetString("credits_interactive_tests"), "Jan Benda, Jakub Misek"));
 
             output.Write(htmlTableEnd);
 
