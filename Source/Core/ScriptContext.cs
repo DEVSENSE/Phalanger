@@ -625,11 +625,9 @@ namespace PHP.Core
         {
             desc = null;
 
-            if (fullname.Contains("::"))
+            string typename, constname;
+            if (Name.IsClassMemberSyntax(fullname, out typename, out constname))
             {
-                var typename = fullname.Substring(0, fullname.IndexOf("::"));
-                var constname = fullname.Substring(typename.Length + 2);
-
                 var flags = ResolveTypeFlags.UseAutoload;
                 if (!quiet) flags |= ResolveTypeFlags.ThrowErrors;
 

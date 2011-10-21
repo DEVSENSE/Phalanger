@@ -228,23 +228,15 @@ namespace PHP.Core
 		/// Creates an unbound PHP function callback given a function name.
 		/// </summary>
 		/// <param name="functionName">The target PHP function name.</param>
-		public PhpCallback(string functionName)
-		{
-			if (functionName == null) throw new ArgumentNullException("functionName");
+        public PhpCallback(string functionName)
+        {
+            if (functionName == null) throw new ArgumentNullException("functionName");
 
-            //if (functionName.Contains("::"))
-            //{
-            //    int pos = functionName.IndexOf("::");
-            //    this.className = functionName.Substring(0, pos);
-            //    this.targetName = functionName.Substring(pos + 2);
-            //    this.state = State.UnboundStaticMethod;
-            //}
-            //else
-            {
-                this.targetName = functionName;
-                this.state = State.UnboundFunction;
-            }			
-		}
+            this.state =
+                (Name.IsClassMemberSyntax(functionName, out this.className, out this.targetName))
+                ? this.state = State.UnboundStaticMethod
+                : this.state = State.UnboundFunction;
+        }
 
 		/// <summary>
 		/// Creates an unbound PHP function callback given a function name and <see cref="ScriptContext"/>.
@@ -255,7 +247,7 @@ namespace PHP.Core
             :this(functionName)
 		{
 			if (context == null) throw new ArgumentNullException("context");
-			this.context = context;			
+			this.context = context;
 		}
 
 		/// <summary>
@@ -280,15 +272,10 @@ namespace PHP.Core
 		/// <param name="methodName">The target PHP method name.</param>
 		/// <param name="context">The script context to call the method with.</param>
 		public PhpCallback(string className, string methodName, ScriptContext context)
+            :this(className, methodName)
 		{
 			if (context == null) throw new ArgumentNullException("context");
-			if (className == null) throw new ArgumentNullException("className");
-			if (methodName == null) throw new ArgumentNullException("methodName");
-
 			this.context = context;
-			this.className = className;
-			this.targetName = methodName;
-			this.state = State.UnboundStaticMethod;
 		}
 
 		/// <summary>

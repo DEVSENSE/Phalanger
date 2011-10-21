@@ -561,7 +561,7 @@ namespace PHP.Core.Reflection
 
 		public override string ToString()
 		{
-			return ((DeclaringType != null) ? DeclaringType.FullName + "::" : "") + FullName;
+			return ((DeclaringType != null) ? DeclaringType.FullName + Name.ClassMemberSeparator : null) + FullName;
 		}
 
 #endif
