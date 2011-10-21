@@ -97,6 +97,9 @@ namespace PHP.Library.SPL
 		object getIterator(ScriptContext context);
 	}
 
+    /// <summary>
+    /// Classes implementing OuterIterator can be used to iterate over iterators.
+    /// </summary>
     [ImplementsType]
 	public interface OuterIterator : Iterator
     {
@@ -105,5 +108,24 @@ namespace PHP.Library.SPL
         /// </summary>
         /// <returns>The inner <see cref="Iterator"/> for the current entry.</returns>
         object getInnerIterator(ScriptContext context);
+    }
+
+    /// <summary>
+    /// Classes implementing RecursiveIterator can be used to iterate over iterators recursively.
+    /// </summary>
+    [ImplementsType]
+    public interface RecursiveIterator : Iterator
+    {
+        /// <summary>
+        /// Returns an iterator for the current iterator entry.
+        /// </summary>
+        /// <returns>An <see cref="RecursiveIterator"/> for the current entry.</returns>
+        object getChildren(ScriptContext context);
+
+        /// <summary>
+        /// Returns if an iterator can be created fot the current entry.
+        /// </summary>
+        /// <returns>Returns TRUE if the current entry can be iterated over, otherwise returns FALSE.</returns>
+        object hasChildren(ScriptContext context);
     }
 }
