@@ -48,6 +48,7 @@ namespace PHP.Library.SPL
 		/// <summary>
 		/// Checks if there is a current element after calls to <see cref="rewind"/> or <see cref="next"/>.
 		/// </summary>
+        /// <returns><c>bool</c>.</returns>
 		[ImplementsMethod]
 		object valid(ScriptContext context);
 
@@ -95,4 +96,14 @@ namespace PHP.Library.SPL
 		[ImplementsMethod]
 		object getIterator(ScriptContext context);
 	}
+
+    [ImplementsType]
+	public interface OuterIterator : Iterator
+    {
+        /// <summary>
+        /// Returns the inner iterator for the current iterator entry.
+        /// </summary>
+        /// <returns>The inner <see cref="Iterator"/> for the current entry.</returns>
+        object getInnerIterator(ScriptContext context);
+    }
 }
