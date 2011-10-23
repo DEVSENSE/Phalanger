@@ -17,6 +17,8 @@ namespace PHP.Core.Binders
         /// </summary>
         /// <param name="routine">Routine for which arguments should be prepared</param>
         /// <param name="arguments">Arguments to be prepared for the routine</param>
+        /// <param name="genericArguments">Amount of generic arguments provided by call site.</param>
+        /// <param name="regularArguments">Amount of value arguments provided by call site.</param>
         /// <param name="restrictions">Type restrictions for the arguments</param>
         /// <returns>Array of prepared arguments to be called with routine</returns>
         /// <remarks>

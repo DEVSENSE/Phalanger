@@ -517,7 +517,7 @@ namespace PHP.Library.Xml
 				XPathNavigator[] navs = new XPathNavigator[list.length];
 
 				int i = 0;
-				foreach (KeyValuePair<object, object> pair in list)
+                foreach (var pair in (IEnumerable<KeyValuePair<object, object>>)list)
 				{
 					navs[i++] = ((IXmlDomNode)pair.Value).UnderlyingObject.CreateNavigator();
 				}
