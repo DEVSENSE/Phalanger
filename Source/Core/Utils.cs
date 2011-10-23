@@ -3504,6 +3504,13 @@ namespace PHP.Core
 #endif
         }
 
+        /// <summary>
+        /// Determine maximum of three given <see cref="DateTime"/> values.
+        /// </summary>
+        public static DateTime Max(DateTime d1, DateTime d2, DateTime d3)
+        {
+            return (d1 < d2) ? ((d2 < d3) ? d3 : d2) : ((d1 < d3) ? d3 : d1);
+        }
 #if DEBUG
 
         static FieldInfo TimeZone_CurrentTimeZone = null;

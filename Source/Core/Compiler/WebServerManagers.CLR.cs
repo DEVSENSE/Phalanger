@@ -751,7 +751,9 @@ namespace PHP.Core
             string name = WebCompilationContext.GetAssemblyCodedName(sourceFile, config);
 
             DateTime sourceTime = File.GetLastWriteTime(sourceFile.FullPath.ToString());
-            long sourceStamp = sourceTime.Ticks;
+            DateTime configTime = Configuration.LastConfigurationModificationTime;
+
+            long sourceStamp = Math.Max(sourceTime.Ticks, configTime.Ticks);
 
             // Find specified file in temporary files
             foreach (string file in Directory.GetFiles(outDir, name + "*.dll"))
@@ -792,6 +794,19 @@ namespace PHP.Core
                                 SetCacheEntry(entryTmp.Key, entryTmp.Value, false, false);
 
                         return true;
+                    }
+                }
+                else
+                {
+                    // do "some" cleanup:
+                    try
+                    {
+                        File.Delete(file);
+                        File.Delete(Path.ChangeExtension(file, ".pdb"));
+                    }
+                    catch
+                    {
+                        // nop //
                     }
                 }
             }

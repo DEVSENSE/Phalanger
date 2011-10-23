@@ -594,6 +594,8 @@ namespace PHP.Core
 			Variables = new VariablesSection();
 			Session = new SessionSection();
 			Library = new LibraryConfigurationsSection();
+
+            LastConfigurationModificationTime = DateTime.MinValue;
 		}
 
 		/// <summary>
@@ -611,6 +613,8 @@ namespace PHP.Core
 			this.Variables = source.Variables.DeepCopy();
 			this.Session = source.Session.DeepCopy();
 			this.Library = source.Library.DeepCopy();
+
+            LastConfigurationModificationTime = source.LastConfigurationModificationTime;
 		}
 
 		/// <summary>
@@ -627,6 +631,16 @@ namespace PHP.Core
 		}
 
 		#endregion
+
+        #region Properties
+
+        /// <summary>
+        /// .config file (set of .config files) latest modification time.
+        /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
+        /// </summary>
+        public DateTime LastConfigurationModificationTime { get; internal set; }
+
+        #endregion
 	}
 
 	#endregion
@@ -889,12 +903,6 @@ namespace PHP.Core
 
 		#region Construction and Validation
 
-		public readonly CompilerSection Compiler;
-		public readonly GlobalizationSection Globalization;
-#if !SILVERLIGHT
-		public readonly PathsSection Paths;
-#endif
-
 		/// <summary>
 		/// Creates a new instance.
 		/// </summary>
@@ -935,7 +943,29 @@ namespace PHP.Core
 		private volatile bool isLoaded = false;
 
 		#endregion
-	}
+
+        #region Properties
+
+        public readonly CompilerSection Compiler;
+        public readonly GlobalizationSection Globalization;
+#if !SILVERLIGHT
+        public readonly PathsSection Paths;
+#endif
+
+        /// <summary>
+        /// .config file (set of .config files) latest modification time.
+        /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
+        /// </summary>
+        public DateTime LastConfigurationModificationTime
+        {
+            get
+            {
+                return Paths.LastConfigurationModificationTime;
+            }
+        }
+
+        #endregion
+    }
 
 	#endregion
 
@@ -1022,6 +1052,7 @@ namespace PHP.Core
 			PostedFiles = new PostedFilesSection();
 			SafeMode = new SafeModeSection();
 #endif
+            this.LastConfigurationModificationTime = DateTime.MinValue;
 		}
 
 		/// <summary>
@@ -1039,6 +1070,7 @@ namespace PHP.Core
 			this.PostedFiles = source.PostedFiles.DeepCopy();
 			this.SafeMode = source.SafeMode.DeepCopy();
 #endif
+            this.LastConfigurationModificationTime = source.LastConfigurationModificationTime;
 		}
 
 		/// <summary>
@@ -1060,7 +1092,17 @@ namespace PHP.Core
 		}
 
 		#endregion
-	}
+
+        #region Properties
+
+        /// <summary>
+        /// .config file (set of .config files) latest modification time.
+        /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
+        /// </summary>
+        public DateTime LastConfigurationModificationTime { get; internal set; }
+
+        #endregion
+    }
 
 	#endregion
 }
