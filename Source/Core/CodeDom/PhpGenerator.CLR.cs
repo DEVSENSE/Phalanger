@@ -235,7 +235,7 @@ namespace PHP.Core.CodeDom
 			// process the base type
 			for (int i = 0; i < base_type.Length; i++)
 			{
-				if (base_type[i] == '.') sb.Append(Tokens.TripleColon);
+				if (base_type[i] == '.') sb.Append(Tokens.NamespaceSeparator);
 				else sb.Append(base_type[i]);
 			}
 
@@ -1073,7 +1073,7 @@ namespace PHP.Core.CodeDom
 			}
 
 			Output.Write(Keywords.Import + WhiteSpace.Space + Keywords.Namespace + WhiteSpace.Space);
-			Output.Write(e.Namespace.Replace(".", Tokens.TripleColon));
+			Output.Write(e.Namespace.Replace(".", Tokens.NamespaceSeparator));  // TODO: use {e};
 
 			Output.WriteLine(Tokens.Semicolon);
 
@@ -1092,7 +1092,7 @@ namespace PHP.Core.CodeDom
 			if (!String.IsNullOrEmpty(e.Name))
 			{
 				Output.Write(Keywords.Namespace + WhiteSpace.Space);
-				Output.Write(e.Name.Replace(".", Tokens.TripleColon));
+				Output.Write(e.Name.Replace(".", Tokens.NamespaceSeparator));
 
 				if (Options.BracingStyle == "C")
 				{

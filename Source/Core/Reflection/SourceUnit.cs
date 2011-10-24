@@ -234,7 +234,7 @@ namespace PHP.Core.Reflection
 			if (namingContext == null) return;
 			foreach (string s in namingContext.Prefixes)
 			{
-				string nsn = s.EndsWith(":::") ? s.Substring(0, s.Length - 3) : s;
+                string nsn = s.EndsWith(QualifiedName.Separator.ToString()) ? s.Substring(0, s.Length - QualifiedName.Separator.ToString().Length) : s;
 				AddImportedNamespace(new QualifiedName(nsn, false));
 			}
 		}

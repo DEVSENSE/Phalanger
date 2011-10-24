@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Collections.Generic;
 
 using PHP.Core.AST;
@@ -704,23 +705,72 @@ namespace PHP.Core.Parsers
 
 		private static void ListAdd<T>(object list, object item)
 		{
-            ((List<T>)list).Add((T)item);
+            //if (item != null)
+            {
+                Debug.Assert(list is List<T>);
+                //Debug.Assert(item is T);
+
+                var tlist = (List<T>)list;
+
+                NamespaceDecl nsitem;
+
+                // little hack when appending statement after simple syntaxed namespace:
+
+                // namespace A;
+                // foo();   // <-- add this statement into namespace A
+
+                if (tlist.Count > 0 &&
+                    (nsitem = tlist[tlist.Count - 1] as NamespaceDecl) != null &&
+                    nsitem.IsSimpleSyntax &&
+                    !(item is NamespaceDecl))
+                {
+                    // adding a statement after simple namespace declaration => add the statement into the namespace:
+                    ListAdd<T>(nsitem.Statements, (T)item);
+                }
+                else
+                {
+                    tlist.Add((T)item);
+                }
+            }
 		}
 
-		private static List<T> NewList<T>(T item)
+        private static void ListPrepend<T>(object/*!*/list, object/*!*/item)
+        {
+            Debug.Assert(list != null);
+                
+            var tlist = (List<T>)list;
+
+            // little hack when prepending simple syntaxed namespace before some statements:
+            
+            // namespace A;  // == {item}
+            // stmt1; stmt2; // <-- add these stamenents into namespace A
+            // namespace B;
+
+            NamespaceDecl nsitem = item as NamespaceDecl;
+            if (nsitem != null && nsitem.IsSimpleSyntax)
+            {
+                // move statements into nsitem namespace:
+                int i = 0;  // find how many Statements from tlist move to nsitem.Statements
+                for (; i < tlist.Count && !(tlist[i] is NamespaceDecl); ++i) ;
+                if (i > 0)
+                {
+                    nsitem.Statements.AddRange((tlist as List<Statement>).Take(i));
+                    tlist.RemoveRange(0, i);
+                }
+            }
+                
+            // prepend the item:
+            tlist.Insert(0, (T)item);
+        }
+
+		private static List<T>/*!*/NewList<T>(T item)
 		{
-			List<T> list = new List<T>();
-			list.Add(item);
+			return new List<T>(){ item };
+        }
 
-			return list;
-		}
-
-		private static List<T> NewList<T>(object item)
+		private static List<T>/*!*/NewList<T>(object item)
 		{
-			List<T> list = new List<T>();
-			list.Add((T)item);
-
-			return list;
+            return NewList<T>((T)item);
 		}
 
         private ShortPosition GetHeadingEnd(Position lastNonBodySymbolPosition)

@@ -360,7 +360,7 @@ namespace PHP.Core.Parsers
 
 					#region Another Semantics
 
-					// (xxx:::)+xxx
+					// (xxx\)+xxx
 					case Tokens.T_NAMESPACE_NAME:
 						qualifiedNameBuffer.Clear(); // TODO: slightly inefficient (nulls the elements of the array)
 						GetTokenAsQualifiedName(0, qualifiedNameBuffer);
@@ -416,6 +416,8 @@ namespace PHP.Core.Parsers
 					case Tokens.T_INSTANCEOF:
 					case Tokens.T_INTERFACE:
                     case Tokens.T_GOTO:
+                    case Tokens.T_NAMESPACE:
+                    case Tokens.T_NAMESPACE_C:
                         {
 							if ((features & LanguageFeatures.V5Keywords) == 0)
 							{
@@ -449,9 +451,7 @@ namespace PHP.Core.Parsers
 						}
 
 					case Tokens.T_IMPORT:
-					case Tokens.T_NAMESPACE:
-					case Tokens.T_NAMESPACE_C:
-						{
+                    	{
 							if ((features & LanguageFeatures.V6Keywords) == 0)
 							{
 								token = Tokens.T_STRING;

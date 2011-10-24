@@ -145,7 +145,7 @@ namespace PHP.Core
         public static bool IsClassMemberSyntax(string/*!*/value, out string className, out string memberName)
         {
             Debug.Assert(value != null);
-            Debug.Assert(QualifiedName.Separator == ":::" && !value.Contains(QualifiedName.Separator)); // be aware of deprecated namespace syntax
+            //Debug.Assert(QualifiedName.Separator.ToString() == ":::" && !value.Contains(QualifiedName.Separator.ToString())); // be aware of deprecated namespace syntax
 
             int separator;
             if ((separator = value.IndexOf(ClassMemberSeparator)) >= 0)
@@ -367,7 +367,7 @@ namespace PHP.Core
 		internal static readonly QualifiedName SystemObject = new QualifiedName(new Name("Object"), new Name[] { new Name("System") });
 
 
-		public const string Separator = ":::";
+		public const char Separator = '\\';
 
 		/// <summary>
 		/// The outer most namespace is the first in the array.
@@ -600,13 +600,13 @@ namespace PHP.Core
 
 			QualifiedName result = new QualifiedName();
 
-			int colon_count = 0;
+            int slash_count = 0;
 			for (int i = startIndex; i < startIndex + length; i++)
-				if (buffer[i] == ':') colon_count++;
+				if (buffer[i] == Separator) slash_count++;
 
-			int separator_count = colon_count / Separator.Length;
+			int separator_count = slash_count;// / Separator.ToString().Length;
 
-			Debug.Assert(colon_count % Separator.Length == 0);
+			//Debug.Assert(slash_count % Separator.Length == 0);
 
 			if (separator_count == 0)
 			{
@@ -632,11 +632,11 @@ namespace PHP.Core
 				int i = 0;
 				do
 				{
-					while (buffer[next_separator] != ':')
+					while (buffer[next_separator] != Separator)
 						next_separator++;
 
 					result.namespaces[i++] = new Name(buffer.Substring(current_name, next_separator - current_name));
-					next_separator += Separator.Length;
+					next_separator += Separator.ToString().Length;
 					current_name = next_separator;
 				}
 				while (i < separator_count);
@@ -678,6 +678,24 @@ namespace PHP.Core
 				return result;
 			}
 		}
+
+        /// <summary>
+        /// Return the namespace PHP name in form "A\B\C", not ending with <see cref="Separator"/>.
+        /// </summary>
+        public string NamespacePhpName
+        {
+            get
+            {
+                StringBuilder result = new StringBuilder();
+                for (int i = 0; i < namespaces.Length; i++)
+                {
+                    if (i != 0) result.Append(Separator);
+                    result.Append(namespaces[i]);
+                }
+
+                return result.ToString();
+            }
+        }
 
 		public string ToString(Name? memberName, bool instance)
 		{

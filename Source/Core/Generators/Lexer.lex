@@ -55,7 +55,8 @@ TOKENS                  [;:,.\[\]()|^&+-/*=%!~$<>?@]
 ESCAPED_AND_WHITESPACE  [\n\t\r #'.:;,()|^&+-/*=%!~<>?@]+
 ANY_CHAR                (.|[\n\r])
 NEWLINE                 ("\r"|"\n"|"\r\n")
-NAMESPACE_NAME          ({LABEL}":::")+{LABEL}
+NAMESPACE_SEP			("\\")
+NAMESPACE_NAME          ({LABEL}{NAMESPACE_SEP})+{LABEL}
 
 SlashedOctalNumber      "\\"[0-7][0-7]?[0-7]?
 SlashedHexNumber        "\\"[x]{HexDigit}{HexDigit}?

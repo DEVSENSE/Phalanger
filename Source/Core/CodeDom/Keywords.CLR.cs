@@ -220,7 +220,8 @@ namespace PHP.Core.CodeDom
 		public const string Arrow                 = "->";
 		public const string DoubleArrow           = "=>";
 		public const string DoubleColon           = "::";
-		public const string TripleColon           = ":::";
+		//public const string TripleColon           = ":::";
+        public const string NamespaceSeparator    = "\\";
 
 		public const string Increment             = "++";
 		public const string Decrement             = "--";

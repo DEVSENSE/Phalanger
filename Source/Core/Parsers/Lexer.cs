@@ -557,13 +557,13 @@ namespace PHP.Core.Parsers
 
 			for (; ; )
 			{
-				while (next_separator < token_end && buffer[next_separator] != ':')
+				while (next_separator < token_end && buffer[next_separator] != '\\')
 					next_separator++;
 
 				if (next_separator == token_end) break;
 
 				result.Add(new String(buffer, current_name, next_separator - current_name));
-				next_separator += QualifiedName.Separator.Length;
+				next_separator += QualifiedName.Separator.ToString().Length;
 				current_name = next_separator;
 			}
 

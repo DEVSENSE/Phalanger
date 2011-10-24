@@ -226,15 +226,15 @@ using Pair = System.Tuple<object,object>;
 %token T_PUBLIC 
 %token T_CLONE
 %token T_INSTANCEOF
+%token T_NAMESPACE
+%token T_NAMESPACE_C
+%token<Object> T_NAMESPACE_NAME          // List<string>
 
 /* PHP6 */
 
 %token T_BINARY_DOUBLE
 %token T_BINARY_HEREDOC
 %token T_IMPORT
-%token T_NAMESPACE
-%token T_NAMESPACE_C
-%token<Object> T_NAMESPACE_NAME          // List<string>
 
 /* PHP/CLR */
 
@@ -473,14 +473,12 @@ start:
 		}
 	| colons_opt non_empty_top_statement 
 	  { 
-	    List<Statement> top_statements = new List<Statement>();
-	    top_statements.Insert(0, (Statement)$2);
-			astRoot = new GlobalCode(top_statements, sourceUnit);
+	    	astRoot = new GlobalCode(NewList<Statement>( $2 ), sourceUnit);
 		}
 	| colons_opt non_empty_top_statement top_statement_list 
 	  { 
-	    List<Statement> top_statements = (List<Statement>)$3;
-	    top_statements.Insert(0, (Statement)$2);
+			List<Statement> top_statements = (List<Statement>)$3;
+			ListPrepend<Statement>( top_statements, $2 );
 			astRoot = new GlobalCode(top_statements, sourceUnit);
 		}
 	| colons_opt
@@ -538,13 +536,13 @@ top_statement:
 
 non_empty_top_statement:
 		non_empty_statement             { $$ = CheckGlobalStatement((Statement)$1); }
+	|	namespace_declaration_statement { $$ = $1; } /* PHP 5.3 */
 	|	function_declaration_statement	{ $$ = $1; }
 	|	class_declaration_statement		  { $$ = $1; }
-	|	namespace_declaration_statement { $$ = $1; } /* PHP6 */
-	| global_constant_declaration_statement { $$ = $1; } /* PHP/CLR */
+	|	global_constant_declaration_statement { $$ = $1; } /* PHP/CLR */
 ;
 
-namespace_declaration_statement:   /* PHP6 */ 	 
+namespace_declaration_statement:   /* PHP 5.3 */ 	 
 		T_NAMESPACE 
 		{ 
 			currentNamespace = new NamespaceDecl(@$);
@@ -558,7 +556,7 @@ namespace_declaration_statement:   /* PHP6 */
 		
 	|	T_NAMESPACE T_NAMESPACE_NAME 
 		{ 
-			currentNamespace = new NamespaceDecl(@$, (List<string>)$2);
+			currentNamespace = new NamespaceDecl(@$, (List<string>)$2, false);
 		} 
 		'{' namespace_statement_list_opt '}' 
 		{
@@ -569,23 +567,34 @@ namespace_declaration_statement:   /* PHP6 */
 		
 	|	T_NAMESPACE identifier 
 		{ 
-			currentNamespace = new NamespaceDecl(@$, (string)$2);
+			currentNamespace = new NamespaceDecl(@$, (string)$2, false);
 		} 
 		'{' namespace_statement_list_opt '}' 
 		{
 			currentNamespace.Statements = (List<Statement>)$5;
 			$$ = currentNamespace;
 			currentNamespace = null;
+		}
+	|	T_NAMESPACE T_NAMESPACE_NAME ';'
+		{ 
+			$$ = currentNamespace = new NamespaceDecl(@$, (List<string>)$2, true);
+			currentNamespace.Statements = new List<Statement>();
 		}		
+	|	T_NAMESPACE identifier ';'
+		{ 
+			$$ = currentNamespace = new NamespaceDecl(@$, (string)$2, true);
+			currentNamespace.Statements = new List<Statement>();
+		}
 ;
 
-namespace_statement_list_opt: 	 /* PHP6 */
-		namespace_statement_list_opt namespace_statement  { $$ = $1; ListAdd<Statement>($1, $2); }	 
+namespace_statement_list_opt: 	 /* PHP 5.3 */
+		namespace_statement_list_opt namespace_statement  { $$ = $1; ListAdd<Statement>($1, $2); }
 	|	/* empty */                                       { $$ = new List<Statement>(); }
 ;
 
-namespace_statement:         /* PHP6 */
-		function_declaration_statement       { $$ = $1; }
+namespace_statement:         /* PHP 5.3 */
+		non_empty_statement					 { $$ = CheckGlobalStatement((Statement)$1); }
+	|	function_declaration_statement       { $$ = $1; }
 	|	class_declaration_statement          { $$ = $1; }
 	|	global_constant_declarator_list ';'  { $$ = $1; }
 ;

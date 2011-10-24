@@ -83,7 +83,7 @@ namespace PHP.Core.Reflection
 			int hash = realMethod.Name.IndexOf('#', name_start);
 			int name_end = (hash > 0) ? hash : realMethod.Name.Length;
 
-			result.Append(realMethod.Name.Substring(name_start, name_end - name_start).Replace(".", QualifiedName.Separator));
+			result.Append(realMethod.Name.Substring(name_start, name_end - name_start).Replace('.', QualifiedName.Separator));
 
 			return result;
 		}

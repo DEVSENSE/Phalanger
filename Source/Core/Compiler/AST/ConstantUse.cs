@@ -332,7 +332,7 @@ namespace PHP.Core.AST
 					return "";
 
 				case Types.Namespace:
-					return analyzer.CurrentNamespace.HasValue ? analyzer.CurrentNamespace.Value.ToString() : "";
+                    return analyzer.CurrentNamespace.HasValue ? analyzer.CurrentNamespace.Value.NamespacePhpName : string.Empty;
 
 				case Types.File:
                 case Types.Dir:
