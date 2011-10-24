@@ -98,6 +98,7 @@
     <Compile Include="Dynamic\SimpleXml.dynamic.cs" />
     <Compile Include="Dynamic\XsltProcessor.dynamic.cs" />
     <Compile Include="LibraryDescriptor.cs" />
+    <Compile Include="LibXml.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
