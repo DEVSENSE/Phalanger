@@ -29,6 +29,7 @@ namespace PHP.Core
     [DebuggerDisplay("{((IPhpConvertible)this).ToString()}", Type = "string({Length})")]
 	public class PhpBytes : IPhpVariable, IPhpObjectGraphNode, ICloneable         // GENERICS: IEquatable<PhpBytes>
 	{
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		public const string PhpTypeName = PhpVariable.TypeNameString;
 
         #region DataContainer
@@ -37,6 +38,7 @@ namespace PHP.Core
         /// Internal data structure holds the byte array.
         /// The data can be marked as read only. This tells the runtime if the internal data structure can be reused to avoid of copying.
         /// </summary>
+        [Serializable]
         private sealed class DataContainer
         {
             #region Fields
@@ -135,18 +137,21 @@ namespace PHP.Core
         /// <summary>
         /// Empty bytes. Not a single instance with zero length.
         /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public static readonly PhpBytes Empty = new PhpBytes(ArrayUtils.EmptyBytes);
 
         /// <summary>
         /// Get the internal byte array for read only purposes.
         /// The returned array must not be modified! It is modifiable only because of the performance.
         /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public byte[]/*!*/ReadonlyData { get { return _data.Data; } }
 
         /// <summary>
 		/// Data contained in this instance. If internal byte array is shared with other <see cref="PhpBytes"/> objects,
         /// internal byte array is cloned.
 		/// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public byte[]/*!*/ Data
 		{
 			get
@@ -169,11 +174,13 @@ namespace PHP.Core
                 _data = new DataContainer(value);
             }
 		}
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private DataContainer/*!*/_data;
 
 		/// <summary>
 		/// Gets data length.
 		/// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		public int Length { get { return _data.Length; } }
 
         /// <summary>
