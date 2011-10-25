@@ -26,7 +26,7 @@ using PHP.Core;
 [assembly: AssemblyKeyName("")]
 
 //#if DEBUG
-[assembly: PhpLibrary(typeof(PHP.Library.Xml.XmlDomLibraryDescriptor), "XmlDom", new string[] { "SimpleXML", "dom", "xsl"})]
+[assembly: PhpLibrary(typeof(PHP.Library.Xml.XmlDomLibraryDescriptor), "XmlDom", new string[] { "SimpleXML", "dom", "xsl", "libxml"})]
 //#else
 //[assembly: PhpLibrary(typeof(PHP.Library.Xml.XmlDomLibraryDescriptor), "XmlDom", false, true)]
 //#endif
