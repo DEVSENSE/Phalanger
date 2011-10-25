@@ -408,6 +408,13 @@ namespace PHP.Core
 						ClrObject.WrapRealObject(real_object),
 						context.ScriptContext);
 				}
+                else if (instance is IClrValue)
+                {
+                    Type type = instance.GetType(); // generic type ClrValue<T>
+                    FieldInfo field = type.GetField("realValue");
+                    Debug.Assert(field != null);
+                    field.SetValue(instance, real_object);
+                }
 				else
 				{
 					((ClrObject)instance).SetRealObject(real_object);
