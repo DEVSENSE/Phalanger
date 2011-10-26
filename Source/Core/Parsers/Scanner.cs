@@ -39,10 +39,10 @@ namespace PHP.Core.Parsers
 		public StringBuilder/*!*/ EncapsedStringBuffer { get { return encapsedStringBuffer; } }
 		private readonly StringBuilder/*!*/ encapsedStringBuffer = new StringBuilder(1000);
 
-		/// <summary>
-		/// Buffer used for qualified names parsing.
-		/// </summary>
-		private readonly List<string>/*!*/ qualifiedNameBuffer = new List<string>(10);
+        ///// <summary>
+        ///// Buffer used for qualified names parsing.
+        ///// </summary>
+        //private readonly List<string>/*!*/ qualifiedNameBuffer = new List<string>(10);
 
 		private SemanticValueType tokenSemantics;
 		private Parsers.Position tokenPosition;
@@ -360,12 +360,12 @@ namespace PHP.Core.Parsers
 
 					#region Another Semantics
 
-					// (xxx\)+xxx
-					case Tokens.T_NAMESPACE_NAME:
-						qualifiedNameBuffer.Clear(); // TODO: slightly inefficient (nulls the elements of the array)
-						GetTokenAsQualifiedName(0, qualifiedNameBuffer);
-						tokenSemantics.Object = qualifiedNameBuffer;
-						goto default;
+                    //// (xxx\)+xxx
+                    //case Tokens.T_NAMESPACE_NAME:
+                    //    qualifiedNameBuffer.Clear(); // TODO: slightly inefficient (nulls the elements of the array)
+                    //    GetTokenAsQualifiedName(0, qualifiedNameBuffer);
+                    //    tokenSemantics.Object = qualifiedNameBuffer;
+                    //    goto default;
 
 					// i'xxx'	
 					case Tokens.SingleQuotedIdentifier:
@@ -418,6 +418,8 @@ namespace PHP.Core.Parsers
                     case Tokens.T_GOTO:
                     case Tokens.T_NAMESPACE:
                     case Tokens.T_NAMESPACE_C:
+                    case Tokens.T_NS_SEPARATOR:
+                    case Tokens.T_USE:
                         {
 							if ((features & LanguageFeatures.V5Keywords) == 0)
 							{
@@ -450,16 +452,16 @@ namespace PHP.Core.Parsers
 							goto default;
 						}
 
-					case Tokens.T_IMPORT:
-                    	{
-							if ((features & LanguageFeatures.V6Keywords) == 0)
-							{
-								token = Tokens.T_STRING;
-								goto case Tokens.T_STRING;
-							}
+                    //case Tokens.T_IMPORT:
+                    //    {
+                    //        if ((features & LanguageFeatures.V6Keywords) == 0)
+                    //        {
+                    //            token = Tokens.T_STRING;
+                    //            goto case Tokens.T_STRING;
+                    //        }
 
-							goto default;
-						}
+                    //        goto default;
+                    //    }
 
 					case Tokens.T_BOOL_TYPE:
 					case Tokens.T_INT_TYPE:

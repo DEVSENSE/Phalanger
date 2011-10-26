@@ -252,7 +252,10 @@ namespace PHP.Core.Parsers
 					case Tokens.T_PROTECTED:
 					case Tokens.T_PUBLIC:
 					case Tokens.T_INSTANCEOF:
-						{
+                    case Tokens.T_NAMESPACE:
+                    case Tokens.T_NAMESPACE_C:
+                    case Tokens.T_USE:
+                        {
 							if ((features & Features.V5Keywords) == 0)
 							{
 								token = Tokens.T_STRING;
@@ -283,19 +286,17 @@ namespace PHP.Core.Parsers
 							return token;
 						}
 
-					case Tokens.T_IMPORT:
-					case Tokens.T_NAMESPACE:
-					case Tokens.T_NAMESPACE_C:
-						{
-							if ((features & Features.V6Keywords) == 0)
-							{
-								token = Tokens.T_STRING;
-								goto case Tokens.T_STRING;
-							}
+                    //case Tokens.T_IMPORT:
+                    //    {
+                    //        if ((features & Features.V6Keywords) == 0)
+                    //        {
+                    //            token = Tokens.T_STRING;
+                    //            goto case Tokens.T_STRING;
+                    //        }
 
-							tokenCategory = TokenCategory.Keyword;
-							return token;
-						}
+                    //        tokenCategory = TokenCategory.Keyword;
+                    //        return token;
+                    //    }
 
 					#endregion
 
@@ -426,7 +427,7 @@ namespace PHP.Core.Parsers
 						tokenCategory = TokenCategory.Delimiter;
 						return token;
 
-					case Tokens.T_NAMESPACE_NAME:               // namespace name
+					//case Tokens.T_NAMESPACE_NAME:               // namespace name
 					case Tokens.T_STRING_VARNAME:               // identifier following encapsulated "${"
 						tokenCategory = TokenCategory.Identifier;
 						return token;
@@ -448,7 +449,8 @@ namespace PHP.Core.Parsers
 					case Tokens.T_CONSTANT_ENCAPSED_STRING:     // quoted string not containing '$' 
 					case Tokens.T_BAD_CHARACTER:                // incorrectly slashed character in string
 					case Tokens.T_NUM_STRING:                   // number in string
-						tokenCategory = TokenCategory.String;
+                    case Tokens.T_NS_SEPARATOR:
+                        tokenCategory = TokenCategory.String;
 						return token;
 
 					case Tokens.T_CURLY_OPEN:                   // "{$" in string

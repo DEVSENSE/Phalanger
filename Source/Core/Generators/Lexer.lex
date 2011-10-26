@@ -55,8 +55,7 @@ TOKENS                  [;:,.\[\]()|^&+-/*=%!~$<>?@]
 ESCAPED_AND_WHITESPACE  [\n\t\r #'.:;,()|^&+-/*=%!~<>?@]+
 ANY_CHAR                (.|[\n\r])
 NEWLINE                 ("\r"|"\n"|"\r\n")
-NAMESPACE_SEP			("\\")
-NAMESPACE_NAME          ({LABEL}{NAMESPACE_SEP})+{LABEL}
+NS_SEPARATOR			("\\")
 
 SlashedOctalNumber      "\\"[0-7][0-7]?[0-7]?
 SlashedHexNumber        "\\"[x]{HexDigit}{HexDigit}?
@@ -126,7 +125,7 @@ NonVariableStart        [^a-zA-Z_{]
 	return Tokens.T_CLOSE_TAG; 
 }
 
-<ST_IN_SCRIPTING>("use"|"declare"|"enddeclare") {
+<ST_IN_SCRIPTING>("declare"|"enddeclare") {
   return Tokens.ErrorNotSupported; 
 }
 
@@ -196,7 +195,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_IN_SCRIPTING>"__NAMESPACE__"    { return Tokens.T_NAMESPACE_C; }
 <ST_IN_SCRIPTING>"namespace"        { return Tokens.T_NAMESPACE; }
-<ST_IN_SCRIPTING>"import"           { return Tokens.T_IMPORT; }
+<ST_IN_SCRIPTING>"use"				{ return Tokens.T_USE; }
 <ST_IN_SCRIPTING>"goto"             { return Tokens.T_GOTO; }
 
 <ST_IN_SCRIPTING>"bool"             { return Tokens.T_BOOL_TYPE; }
@@ -271,7 +270,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_IN_SCRIPTING>{TOKENS}          	{ return (Tokens)GetTokenChar(0); }
 <ST_IN_SCRIPTING>{LABEL}           	{ return Tokens.T_STRING; }
-<ST_IN_SCRIPTING>{NAMESPACE_NAME}   { return Tokens.T_NAMESPACE_NAME; }
+<ST_IN_SCRIPTING>{NS_SEPARATOR}		{ return Tokens.T_NS_SEPARATOR; }
 <ST_IN_SCRIPTING>{WHITESPACE}      	{ return Tokens.T_WHITESPACE; }
 <ST_IN_SCRIPTING>{LNUM}            	{ return Tokens.ParseDecimalNumber; }
 <ST_IN_SCRIPTING>{HNUM}            	{ return Tokens.ParseHexadecimalNumber; }

@@ -784,11 +784,6 @@ namespace PHP.Core
 											ps.LanguageFeatures = Core.LanguageFeatures.Php5;
 											break;
 
-										case "6":
-										case "PHP6":
-											ps.LanguageFeatures = Core.LanguageFeatures.Php6;
-											break;
-
 										case "PHP/CLR":
 										case "PHPCLR":
 										case "CLR":

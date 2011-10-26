@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
+using System.Linq;
 using PHP.Core.Reflection;
 using PHP.Core.Parsers;
 
@@ -349,8 +350,10 @@ namespace PHP.Core
 	[Serializable]
     [DebuggerNonUserCode]
     public struct QualifiedName : IEquatable<QualifiedName>
-	{
-		internal static readonly QualifiedName Error = new QualifiedName(new Name("<error>"), Name.EmptyNames);
+    {
+        #region Special names
+
+        internal static readonly QualifiedName Error = new QualifiedName(new Name("<error>"), Name.EmptyNames);
 		internal static readonly QualifiedName Global = new QualifiedName(new Name("<Global>"), Name.EmptyNames);
 		internal static readonly QualifiedName Lambda = new QualifiedName(new Name("Lambda"), Name.EmptyNames);
 		internal static readonly QualifiedName Null = new QualifiedName(new Name("null"), Name.EmptyNames);
@@ -366,10 +369,56 @@ namespace PHP.Core
 		internal static readonly QualifiedName Resource = new QualifiedName(new Name("resource"), Name.EmptyNames);
 		internal static readonly QualifiedName SystemObject = new QualifiedName(new Name("Object"), new Name[] { new Name("System") });
 
+        public bool IsSimpleName
+        {
+            get
+            {
+                return Namespaces.Length == 0;
+            }
+        }
 
-		public const char Separator = '\\';
+        public bool IsParentClassName
+        {
+            get { return IsSimpleName && name == Name.ParentClassName; }
+        }
 
-		/// <summary>
+        public bool IsSelfClassName
+        {
+            get { return IsSimpleName && name == Name.SelfClassName; }
+        }
+
+        public bool IsReservedClassName
+        {
+            get { return IsParentClassName || IsSelfClassName; }
+        }
+
+        public bool IsAutoloadName
+        {
+            get { return IsSimpleName && name == Name.AutoloadName; }
+        }
+
+        public bool IsAppStaticAttributeName
+        {
+            get { return IsSimpleName && (name == Name.AppStaticName || name == Name.AppStaticAttributeName); }
+        }
+
+        public bool IsExportAttributeName
+        {
+            get { return IsSimpleName && (name == Name.ExportName || name == Name.ExportAttributeName); }
+        }
+
+        public bool IsOutAttributeName
+        {
+            get { return IsSimpleName && (name == Name.OutName || name == Name.OutAttributeName); }
+        }
+
+        #endregion
+
+        public const char Separator = '\\';
+
+        #region Properties
+
+        /// <summary>
 		/// The outer most namespace is the first in the array.
 		/// </summary>
 		public Name[]/*!*/ Namespaces { get { return namespaces; } set { namespaces = value; } }
@@ -381,50 +430,17 @@ namespace PHP.Core
 		public Name Name { get { return name; } set { name = value; } }
 		private Name name;
 
-		public bool IsSimpleName
-		{
-			get
-			{
-				return Namespaces.Length == 0;
-			}
-		}
+        /// <summary>
+        /// <c>True</c> if this represents fully qualified name (absolute namespace).
+        /// </summary>
+        public bool IsFullyQualifiedName { get { return isFullyQualifiedName; } }
+        private bool isFullyQualifiedName;
 
-		public bool IsParentClassName
-		{
-			get { return IsSimpleName && name == Name.ParentClassName; }
-		}
+        #endregion
 
-		public bool IsSelfClassName
-		{
-			get { return IsSimpleName && name == Name.SelfClassName; }
-		}
+        #region CLR notation
 
-		public bool IsReservedClassName
-		{
-			get { return IsParentClassName || IsSelfClassName; }
-		}
-
-		public bool IsAutoloadName
-		{
-			get { return IsSimpleName && name == Name.AutoloadName; }
-		}
-
-		public bool IsAppStaticAttributeName
-		{
-			get { return IsSimpleName && (name == Name.AppStaticName || name == Name.AppStaticAttributeName); }
-		}
-
-		public bool IsExportAttributeName
-		{
-			get { return IsSimpleName && (name == Name.ExportName || name == Name.ExportAttributeName); }
-		}
-
-		public bool IsOutAttributeName
-		{
-			get { return IsSimpleName && (name == Name.OutName || name == Name.OutAttributeName); }
-		}
-
-		/// <summary>
+        /// <summary>
 		/// Makes full CLR name from this instance. 
 		/// </summary>
 		/// <param name="genericParamCount">Number of generic parameters.</param>
@@ -522,10 +538,11 @@ namespace PHP.Core
 			return fullName.Substring(start, length);
 		}
 
+        #endregion
 
-		#region Construction
+        #region Construction
 
-		/// <summary>
+        /// <summary>
 		/// Creates a qualified name with or w/o a base name. 
 		/// </summary>
 		internal QualifiedName(string/*!*/ qualifiedName, bool hasBaseName)
@@ -534,13 +551,15 @@ namespace PHP.Core
 			QualifiedName qn = Parse(qualifiedName, 0, qualifiedName.Length, hasBaseName);
 			this.name = qn.name;
 			this.namespaces = qn.namespaces;
+            this.isFullyQualifiedName = qn.IsFullyQualifiedName;
 		}
 
-		internal QualifiedName(List<string>/*!*/ names, bool hasBaseName)
+		internal QualifiedName(List<string>/*!*/ names, bool hasBaseName, bool fullyQualified)
 		{
 			Debug.Assert(names != null && names.Count > 0);
 
-			if (hasBaseName)
+            //
+            if (hasBaseName)
 			{
 				name = new Name(names[names.Count - 1]);
 				namespaces = new Name[names.Count - 1];
@@ -553,12 +572,16 @@ namespace PHP.Core
 
 			for (int i = 0; i < namespaces.Length; i++)
 				namespaces[i] = new Name(names[i]);
+
+            //
+            isFullyQualifiedName = fullyQualified;
 		}
 
 		public QualifiedName(Name name)
 		{
 			this.name = name;
 			this.namespaces = Name.EmptyNames;
+            this.isFullyQualifiedName = false;
 		}
 
 		public QualifiedName(Name name, Name[]/*!*/ namespaces)
@@ -568,6 +591,7 @@ namespace PHP.Core
 
 			this.name = name;
 			this.namespaces = namespaces;
+            this.isFullyQualifiedName = false;
 		}
 
 		internal QualifiedName(Name name, QualifiedName namespaceName)
@@ -576,22 +600,25 @@ namespace PHP.Core
 
 			this.name = name;
 			this.namespaces = namespaceName.Namespaces;
+            this.isFullyQualifiedName = namespaceName.IsFullyQualifiedName;
 		}
 
 		internal QualifiedName(QualifiedName name, QualifiedName namespaceName)
 		{
 			Debug.Assert(namespaceName.name.Value == "");
 
+            this.name = name.name;
+				
 			if (name.IsSimpleName)
 			{
-				this.name = name.name;
 				this.namespaces = namespaceName.Namespaces;
 			}
 			else // used for nested types
 			{
-				this.name = name.name;
 				this.namespaces = ArrayUtils.Concat(namespaceName.namespaces, name.namespaces);
 			}
+
+            this.isFullyQualifiedName = namespaceName.IsFullyQualifiedName;
 		}
 
 		internal static QualifiedName Parse(string/*!*/ buffer, int startIndex, int length, bool hasBaseName)
@@ -600,6 +627,15 @@ namespace PHP.Core
 
 			QualifiedName result = new QualifiedName();
 
+            // handle fully qualified namespace name:
+            if (length > 0 && buffer[startIndex] == Separator)
+            {
+                result.isFullyQualifiedName = true;
+                startIndex++;
+                length--;
+            }
+
+            // names separated by Separator:
             int slash_count = 0;
 			for (int i = startIndex; i < startIndex + length; i++)
 				if (buffer[i] == Separator) slash_count++;
@@ -656,6 +692,20 @@ namespace PHP.Core
 
 			return result;
 		}
+
+        /// <summary>
+        /// Convert namespaces + name into list of strings.
+        /// </summary>
+        /// <returns>String List of namespaces (additionaly with <see cref="Name"/> component if it is not empty).</returns>
+        internal List<string>/*!*/ToStringList()
+        {
+            List<string> list = new List<string>( this.Namespaces.Select( x => x.Value ) );
+
+            if (!string.IsNullOrEmpty(this.Name.Value))
+                list.Add(this.Name.Value);
+
+            return list;
+        }
 
 		#endregion
 
