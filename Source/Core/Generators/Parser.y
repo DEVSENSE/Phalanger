@@ -308,13 +308,14 @@ using Pair = System.Tuple<object,object>;
 %type<Object> non_empty_top_statement                 // Statement
 %type<Object> top_statement                           // Statement
 %type<Object> top_statement_list                      // List<Statement> 
-%type<Object> import_list                             // null
-%type<Object> import_statement                        // null
+%type<Object> use_statement_content_list              // null
+%type<Object> use_statement_content                   // null
+%type<Object> use_statement		                      // EmptyStmt
 %type<Object> statement                               // Statement
 %type<Object> empty_statement                         // EmptyStmt
 %type<Object> non_empty_statement                     // Statement
 %type<Object> expression_statement                    // ExpressionStmt
-%type<Object> namespace_statement_list_opt                // List<Statement>
+%type<Object> namespace_statement_list_opt            // List<Statement>
 %type<Object> namespace_statement                     // Statement
 %type<Object> function_declaration_statement          // FunctionDecl
 %type<Object> class_declaration_statement             // TypeDecl
@@ -322,7 +323,7 @@ using Pair = System.Tuple<object,object>;
 %type<Object> global_constant_declarator              // GlobalConstantDecl
 %type<Object> global_constant_declarator_list         // List<GlobalConstantDecl>
 %type<Object> global_constant_declaration_statement   // GlobalConstDeclList
-%type<Object> inner_statement_list_opt                    // List<Statement>
+%type<Object> inner_statement_list_opt                // List<Statement>
 %type<Object> inner_statement                         // Statement
 %type<Object> expr                                    // Expression
 %type<Object> concat_exprs							  // List<Expression>
@@ -351,8 +352,8 @@ using Pair = System.Tuple<object,object>;
 %type<Object> for_statement                           // Statement
 %type<Object> foreach_statement                       // Statement
 %type<Object> while_statement                         // Statement
-%type<Object> elseif_list_opt                             // List<ConditionalStmt>
-%type<Object> elseif_colon_list_opt                       // List<ConditionalStmt>
+%type<Object> elseif_list_opt                         // List<ConditionalStmt>
+%type<Object> elseif_colon_list_opt                   // List<ConditionalStmt>
 %type<Object> else_opt                                // Statement
 %type<Object> else_colon_opt                          // Statement
 
@@ -464,27 +465,19 @@ using Pair = System.Tuple<object,object>;
 %% /* Productions */
 
 start:
-//	  colons_opt import_list 
-//	  { 
-//			astRoot = new GlobalCode(emptyStatementList, sourceUnit);
-//		}
-//	| colons_opt import_list top_statement_list 
-//	  { 
-//			astRoot = new GlobalCode((List<Statement>)$3, sourceUnit);
-//		}
-	  colons_opt non_empty_top_statement 
-	  { 
-	    	astRoot = new GlobalCode(NewList<Statement>( $2 ), sourceUnit);
-		}
-	| colons_opt non_empty_top_statement top_statement_list 
-	  { 
-			List<Statement> top_statements = (List<Statement>)$3;
-			ListPrepend<Statement>( top_statements, $2 );
-			astRoot = new GlobalCode(top_statements, sourceUnit);
-		}
-	| colons_opt
-	  { 
+		colons_opt
+		{ 
 			astRoot = new GlobalCode(emptyStatementList, sourceUnit);
+		}
+	|	colons_opt non_empty_top_statement 
+		{ 
+			astRoot = new GlobalCode(NewList<Statement>($2), sourceUnit);
+		}
+	|	colons_opt non_empty_top_statement top_statement_list 
+		{ 
+			List<Statement> top_statements = (List<Statement>)$3;
+			ListPrepend<Statement>(top_statements, $2);
+			astRoot = new GlobalCode(top_statements, sourceUnit);
 		}
 ;
 
@@ -503,29 +496,18 @@ identifier:
 		T_STRING { $$ = $1.Object; }
 ;
 
-import_list:
-    import_list import_statement  { /* nop */ } 
-  | import_statement              { /* nop */ }
+use_statement: /* PHP 5.3 */
+		T_USE use_statement_content_list ';'	{ /* nop */ $$ = new EmptyStmt(@$); }
 ;
 
-import_statement: /* PHP-NS, PHP/CLR */
-// TODO: T_USE qualified_namespace_name;
-// TODO: T_USE qualified_namespace_name T_AS identifier;
-// TODO: T_USE multiple_use_opt;
-//		T_IMPORT T_CLASS T_NAMESPACE_NAME ';'                    { AddImport(@$, DeclarationKind.Type, (List<string>)$3, null); }            
-//	|	T_IMPORT T_CLASS T_NAMESPACE_NAME T_AS identifier ';'    { AddImport(@$, DeclarationKind.Type, (List<string>)$3, (string)$5); }      
-//	|	T_IMPORT T_INTERFACE T_NAMESPACE_NAME ';'                { AddImport(@$, DeclarationKind.Type, (List<string>)$3, null); }             /* PHP/CLR */
-//	|	T_IMPORT T_INTERFACE T_NAMESPACE_NAME T_AS identifier ';'{ AddImport(@$, DeclarationKind.Type, (List<string>)$3, (string)$5); }       /* PHP/CLR */
-//	|	T_IMPORT T_FUNCTION T_NAMESPACE_NAME ';'                 { AddImport(@$, DeclarationKind.Function, (List<string>)$3, null); }         
-//	|	T_IMPORT T_FUNCTION T_NAMESPACE_NAME T_AS identifier ';' { AddImport(@$, DeclarationKind.Function, (List<string>)$3, (string)$5); }   
-//	|	T_IMPORT T_CONST T_NAMESPACE_NAME ';'                    { AddImport(@$, DeclarationKind.Constant, (List<string>)$3, null); }         /* PHP/CLR */
-//	|	T_IMPORT T_CONST T_NAMESPACE_NAME T_AS identifier ';'    { AddImport(@$, DeclarationKind.Constant, (List<string>)$3, (string)$5); }   /* PHP/CLR */
-//	|	T_IMPORT T_NAMESPACE T_NAMESPACE_NAME ';'                { AddImport((List<string>)$3); }                                            
-//	|	T_IMPORT T_NAMESPACE identifier ';'                      { AddImport((string)$3); }
-	
-	// errors:
-//	|	T_IMPORT ERROR { errors.Add(Errors.MissingImportedEntity, SourceUnit, @2); yyerrok(); } T_NAMESPACE_NAME  ';' { AddImport((List<string>)$4); }
-//	|	T_IMPORT ERROR { errors.Add(Errors.MissingImportedEntity, SourceUnit, @2); yyerrok(); } identifier        ';' { AddImport((string)$4); }
+use_statement_content_list: /* PHP 5.3 */
+		use_statement_content_list ',' use_statement_content	{ /* nop */ }
+	|	use_statement_content									{ /* nop */ }
+;
+
+use_statement_content: /* PHP 5.3 */
+		qualified_namespace_name					{ AddAlias((QualifiedName)$1); }
+	|	qualified_namespace_name T_AS identifier	{ AddAlias((QualifiedName)$1, (string)$3); }
 ;
 
 top_statement_list:
@@ -540,6 +522,7 @@ top_statement:
 
 non_empty_top_statement:
 		non_empty_statement             { $$ = CheckGlobalStatement((Statement)$1); }
+	|	use_statement					{ /* nop */ }
 	|	namespace_declaration_statement { $$ = $1; } /* PHP 5.3 */
 	|	function_declaration_statement	{ $$ = $1; }
 	|	class_declaration_statement		  { $$ = $1; }
@@ -583,6 +566,7 @@ namespace_statement_list_opt: 	 /* PHP 5.3 */
 
 namespace_statement:         /* PHP 5.3 */
 		non_empty_statement					 { $$ = CheckGlobalStatement((Statement)$1); }
+	|	use_statement						 { /* nop */ }
 	|	function_declaration_statement       { $$ = $1; }
 	|	class_declaration_statement          { $$ = $1; }
 	|	global_constant_declarator_list ';'  { $$ = $1; }
