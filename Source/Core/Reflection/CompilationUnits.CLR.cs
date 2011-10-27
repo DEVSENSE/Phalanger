@@ -330,7 +330,7 @@ namespace PHP.Core.Reflection
 			// build local dictionaries
 			functions = new Dictionary<QualifiedName, DRoutine>();
 			types = new Dictionary<QualifiedName, DType>();
-			constants = new Dictionary<QualifiedName, DConstant>();
+            constants = new Dictionary<QualifiedName, DConstant>(ConstantQualifiedNameComparer.Singleton);
 
 			// get the <Script> class
 			scriptClassType = scriptModule.ScriptType;
@@ -775,7 +775,7 @@ namespace PHP.Core.Reflection
 		private readonly Dictionary<QualifiedName, ScopedDeclaration<DRoutine>>/*!*/ visibleFunctions =
 			new Dictionary<QualifiedName, ScopedDeclaration<DRoutine>>();
 		private readonly Dictionary<QualifiedName, ScopedDeclaration<DConstant>>/*!*/ visibleConstants =
-			new Dictionary<QualifiedName, ScopedDeclaration<DConstant>>();
+            new Dictionary<QualifiedName, ScopedDeclaration<DConstant>>(ConstantQualifiedNameComparer.Singleton);
 
 		private Scope currentScope = new Scope(0);
 

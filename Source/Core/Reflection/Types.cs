@@ -2835,7 +2835,7 @@ namespace PHP.Core.Reflection
 			// name uniqueness:
 			if (TypeDesc.Constants.TryGetValue(name, out existing))
 			{
-				errors.Add(Errors.ConstantRedeclared, sourceUnit, position, QualifiedName, name);
+				errors.Add(Errors.ConstantRedeclared, sourceUnit, position, QualifiedName.ToString(new Name(name.Value), false));
 				errors.Add(Errors.RelatedLocation, sourceUnit, existing.ClassConstant.Position);
 				return null;
 			}

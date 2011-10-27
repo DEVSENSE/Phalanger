@@ -365,9 +365,7 @@ namespace PHP.Core.AST
 
 		internal void Analyze(Analyzer/*!*/ analyzer)
 		{
-			Debug.Assert(Constant != null);
-
-			if (!this.analyzed)
+            if (!this.analyzed && Constant != null) // J: Constant can be null, if there was an error
 			{
 				Evaluation eval = initializer.Analyze(analyzer, ExInfoFromParent.DefaultExInfo);
 				if (eval.HasValue)
