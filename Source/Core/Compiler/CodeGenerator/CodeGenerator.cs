@@ -1472,62 +1472,72 @@ namespace PHP.Core
 		/// <summary>
 		/// Emits a call to a routine with specified name using an operator.
 		/// </summary>
-		internal PhpTypeCode EmitRoutineOperatorCall(DType type, Expression targetExpr,
-			string routineFullName, Expression routineNameExpr, CallSignature callSignature, AccessType access)
-		{
-			Debug.Assert(routineFullName != null ^ routineNameExpr != null);
+        internal PhpTypeCode EmitRoutineOperatorCall(DType type, Expression targetExpr,
+            string routineFullName, string fallbackRoutineFullname, Expression routineNameExpr, CallSignature callSignature, AccessType access)
+        {
+            Debug.Assert(routineFullName != null ^ routineNameExpr != null);
 
-			MethodInfo operator_method;
+            MethodInfo operator_method;
             PhpTypeCode return_type_code;
 
             // (J) use call sites to call the method:
             if (targetExpr != null /*|| type != null*/)
+            {
+                Debug.Assert(fallbackRoutineFullname == null);
+
                 return this.CallSitesBuilder.EmitMethodCall(this, access, targetExpr, type, routineFullName, routineNameExpr, callSignature);
-            else
-            if (targetExpr != null)
-			{
+            }
+            else if (targetExpr != null)
+            {
+                Debug.Assert(fallbackRoutineFullname == null);
+
                 // LOAD Operators.InvokeMethod(<target>, <method name>, <type desc>, <context>);
 
                 // start a new operators chain (as the rest of chain is read)
-				this.ChainBuilder.Create();
-				this.ChainBuilder.Begin();
-				this.ChainBuilder.Lengthen(); // for hop over ->
+                this.ChainBuilder.Create();
+                this.ChainBuilder.Begin();
+                this.ChainBuilder.Lengthen(); // for hop over ->
 
-				// prepare for operator invocation
-				this.EmitBoxing(targetExpr.Emit(this));
-				this.ChainBuilder.End();
+                // prepare for operator invocation
+                this.EmitBoxing(targetExpr.Emit(this));
+                this.ChainBuilder.End();
 
-				this.EmitName(routineFullName, routineNameExpr, true);
-				this.EmitLoadClassContext();
-				this.EmitLoadScriptContext();
+                this.EmitName(routineFullName, routineNameExpr, true);
+                this.EmitLoadClassContext();
+                this.EmitLoadScriptContext();
 
-				if (routineFullName != null)
-					operator_method = Methods.Operators.InvokeMethodStr;
-				else
-					operator_method = Methods.Operators.InvokeMethodObj;
+                if (routineFullName != null)
+                    operator_method = Methods.Operators.InvokeMethodStr;
+                else
+                    operator_method = Methods.Operators.InvokeMethodObj;
 
                 return_type_code = PhpTypeCode.PhpReference;
-			}
-			else if (type != null)
-			{
-				// LOAD Operators.InvokeStaticMethod(<type desc>, <method name>, <self>, <type desc>, context);
-				type.EmitLoadTypeDesc(this, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
+            }
+            else if (type != null)
+            {
+                Debug.Assert(fallbackRoutineFullname == null);
 
-				this.EmitName(routineFullName, routineNameExpr, true);
+                // LOAD Operators.InvokeStaticMethod(<type desc>, <method name>, <self>, <type desc>, context);
+                type.EmitLoadTypeDesc(this, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
 
-				this.EmitLoadSelf();
-				this.EmitLoadClassContext();
-				this.EmitLoadScriptContext();
+                this.EmitName(routineFullName, routineNameExpr, true);
 
-				operator_method = Methods.Operators.InvokeStaticMethod;
+                this.EmitLoadSelf();
+                this.EmitLoadClassContext();
+                this.EmitLoadScriptContext();
+
+                operator_method = Methods.Operators.InvokeStaticMethod;
                 return_type_code = PhpTypeCode.PhpReference;
-			}
+            }
             else
             {
+                Debug.Assert(routineNameExpr == null || fallbackRoutineFullname == null);   // (routineNameExpr != null) => (fallbackRoutineFullName == null)
+
                 // LOAD ScriptContext.Call{|Void|Value}(<local variables>, <naming context>, <function name>, context);
                 this.EmitLoadRTVariablesTable();
                 this.EmitLoadNamingContext();
                 this.EmitName(routineFullName, routineNameExpr, true);
+                if (fallbackRoutineFullname != null) il.Emit(OpCodes.Ldstr, fallbackRoutineFullname); else il.Emit(OpCodes.Ldnull); // fallback fcn name
                 this.EmitLoadScriptContext();
 
                 // (J) only necessary copying, dereferencing or reference making:
@@ -1548,19 +1558,19 @@ namespace PHP.Core
                 }
             }
 
-			// emits load of parameters to the PHP stack:
-			callSignature.EmitLoadOnPhpStack(this);
+            // emits load of parameters to the PHP stack:
+            callSignature.EmitLoadOnPhpStack(this);
 
-			// marks transient sequence point just before the call:
-			this.MarkTransientSequencePoint();
+            // marks transient sequence point just before the call:
+            this.MarkTransientSequencePoint();
 
-			il.Emit(OpCodes.Call, operator_method);
+            il.Emit(OpCodes.Call, operator_method);
 
-			// marks transient sequence point just after the call:
-			this.MarkTransientSequencePoint();
+            // marks transient sequence point just after the call:
+            this.MarkTransientSequencePoint();
 
             return return_type_code;
-		}
+        }
 
 		private void EmitLoadTypeDesc(string typeFullName, TypeRef typeNameRef, DType type, ResolveTypeFlags flags)
 		{

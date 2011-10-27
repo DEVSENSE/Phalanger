@@ -114,17 +114,15 @@ namespace PHP.Core.CodeDom {
                 string tn=GetTypeName(t,false);
                 Type type=null;
                 //try { type = Type.GetType(tn); }catch{}
-                string[] namespaces = new string[Imports.Count + 1];
-                Imports.CopyTo(0, namespaces, 1, Imports.Count);
-                namespaces[0] = "";
                 string[] assemblies = new string[owner.references.Count + 1];
                 owner.references.CopyTo(0,assemblies,1,owner.references.Count);
                 assemblies[0] = "";
                 //if(type == null)
                 foreach(string Assembly in assemblies){
-                    foreach(string Namespace in namespaces) {
+                    foreach(var alias in aliases) {
                         string TypeName = tn;
-                        if(Namespace != "") TypeName = Namespace + "." + tn;
+                        if (TypeName.StartsWith(alias.Key + ".")) TypeName = alias.Value + TypeName.Substring(alias.Key.Length);
+                        //if(Namespace != "") TypeName = Namespace + "." + tn;
                         if(Assembly != "") TypeName += "," + Assembly;
                         try { type = Type.GetType(TypeName); } catch { }
                         if(type != null) break;
@@ -502,22 +500,26 @@ namespace PHP.Core.CodeDom {
                     )
                 });
                 return ret;*/
-                imports.Clear();
+                aliases.Clear();//imports.Clear();
                 CodeCompileUnit ret = new CodeCompileUnit();
                 CodeNamespace DefaultNamespace = new CodeNamespace();
                 ret.Namespaces.Add(DefaultNamespace);
+                foreach (var pair in gc.SourceUnit.Aliases) aliases.Add(pair.Key, pair.Value.ToClrNotation(0, 0));
+                /*
                 if(gc.SourceUnit.ImportedNamespaces != null)
                     foreach(QualifiedName Namespace in gc.SourceUnit.ImportedNamespaces) {
                         DefaultNamespace.Imports.Add(new CodeNamespaceImport(getCLRName(Namespace)));
                         imports.Add(getCLRName(Namespace));
                     }
+                */
                 TranslateBlock(gc.Statements, new MethodContextBase(), new FileContext(ret));
                 return ret;
             }
-            /// <summary>Contains value of the <see cref="Imports"/> property</summary>
-            private readonly List<string> imports = new List<string>();
-            /// <summary>List of currently imported namespaces</summary>
-            protected List<string> Imports{get{return imports;}}
+            private Dictionary<string, string>/*!*/ aliases = new Dictionary<string, string>(StringComparer.Ordinal);
+            ///// <summary>Contains value of the <see cref="Imports"/> property</summary>
+            //private readonly List<string> imports = new List<string>();
+            ///// <summary>List of currently imported namespaces</summary>
+            //protected List<string> Imports{get{return imports;}}
             /// <summary>Translates sequence of PHP statements into sequence of CodeDOM objects</summary>
             /// <param name="statements">Statements to translate</param>
             /// <param name="method">GetUserEntryPoint context in which the statements are placed</param>

@@ -223,7 +223,7 @@ namespace PHP.Core
 			state = States.FullAnalysisStarted;
 
 			this.sourceUnit = sourceUnit;
-			this.currentNamespace = null;
+			this.currentNamespace = sourceUnit.CurrentNamespace;
 			this.currentScope = Scope.Global;
 
 			sourceUnit.Ast.Analyze(this);

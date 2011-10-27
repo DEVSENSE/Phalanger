@@ -53,20 +53,21 @@ namespace PHP.Core.Reflection
         /// <summary>
         /// Current namespace (in case we are compiling through eval from within namespace).
         /// </summary>
-        private QualifiedName currentNamespace = new QualifiedName(Name.EmptyBaseName);
+        public QualifiedName? CurrentNamespace { get { return currentNamespace; } }
+        private QualifiedName? currentNamespace = null;
 
 
-		public Dictionary<Name, QualifiedName> TypeAliases { get { return typeAliases; } }
-		private Dictionary<Name, QualifiedName> typeAliases = null;
+        //public Dictionary<Name, QualifiedName> TypeAliases { get { return typeAliases; } }
+        //private Dictionary<Name, QualifiedName> typeAliases = null;
 
-		public Dictionary<Name, QualifiedName> FunctionAliases { get { return functionAliases; } }
-		private Dictionary<Name, QualifiedName> functionAliases = null;
+        //public Dictionary<Name, QualifiedName> FunctionAliases { get { return functionAliases; } }
+        //private Dictionary<Name, QualifiedName> functionAliases = null;
 
-		public Dictionary<Name, QualifiedName> ConstantAliases { get { return constantAliases; } }
-		private Dictionary<Name, QualifiedName> constantAliases = null;
+        //public Dictionary<Name, QualifiedName> ConstantAliases { get { return constantAliases; } }
+        //private Dictionary<Name, QualifiedName> constantAliases = null;
 
-		public List<QualifiedName> ImportedNamespaces { get { return importedNamespaces; } }
-		private List<QualifiedName> importedNamespaces = null;
+        //public List<QualifiedName> ImportedNamespaces { get { return importedNamespaces; } }
+        //private List<QualifiedName> importedNamespaces = null;
 
 		/// <summary>
 		/// Place where this unit's <see cref="NamingContext"/> is stored (<B>null</B> if there are no imports).
@@ -290,6 +291,7 @@ namespace PHP.Core.Reflection
 			if (result != null)
 				return result;
 
+            /*
 			// try explicit aliases:
 			if (qualifiedName.IsSimpleName)
 			{
@@ -365,6 +367,7 @@ namespace PHP.Core.Reflection
 				if (result != null)
 					return result;
 			}
+            */
 
 			// unknown qualified name:
 			if (errors != null)
@@ -460,6 +463,7 @@ namespace PHP.Core.Reflection
 
 		private FieldBuilder EmitInitNamingContext()
 		{
+            /*
 			if (importedNamespaces != null && importedNamespaces.Count > 0)
 			{
 				ILEmitter il = ((PhpAssemblyBuilderBase)compilationUnit.ModuleBuilder.AssemblyBuilder).GlobalTypeEmitter;
@@ -471,19 +475,21 @@ namespace PHP.Core.Reflection
 					FieldAttributes.Assembly | FieldAttributes.Static | FieldAttributes.InitOnly);
 
 				// tmp = new string[<importedNamespaces.Count>] { ... };
-				/*LocalBuilder tmp = */il.EmitInitializedArray(Types.String[0], importedNamespaces.Count, (_il, i) =>
+				//LocalBuilder tmp = 
+                il.EmitInitializedArray(Types.String[0], importedNamespaces.Count, (_il, i) =>
 				{
 					_il.Emit(OpCodes.Ldstr, importedNamespaces[i].ToString());
 				});
 
 				// instantiate NamingContext
-				/*il.Ldloc(tmp);*/
+				//il.Ldloc(tmp);
 				il.Emit(OpCodes.Newobj, Constructors.NamingContext);
 				il.Emit(OpCodes.Stsfld, result);
 
 				return result;
 			}
 			else
+            */
 			{
 				return null;
 			}
