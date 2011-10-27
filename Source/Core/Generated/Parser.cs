@@ -942,12 +942,12 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
       new State(849, -30),
       new State(850, -32),
       new State(851, -33),
-      new State(852, new int[] {171,14,250,109,248,111}, new int[] {-8,853,-9,860,-146,857,-147,105,-3,108}),
+      new State(852, new int[] {171,14}, new int[] {-8,853,-9,860,-147,857,-3,108}),
       new State(853, new int[] {59,854,44,855}),
       new State(854, -10),
-      new State(855, new int[] {171,14,250,109,248,111}, new int[] {-9,856,-146,857,-147,105,-3,108}),
+      new State(855, new int[] {171,14}, new int[] {-9,856,-147,857,-3,108}),
       new State(856, -11),
-      new State(857, new int[] {193,858,59,-13,44,-13}),
+      new State(857, new int[] {250,106,193,858,59,-13,44,-13}),
       new State(858, new int[] {171,14}, new int[] {-3,859}),
       new State(859, -14),
       new State(860, -12),
@@ -991,8 +991,8 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
     rules[10]=new Rule(-10, new int[]{251,-8,59});
     rules[11]=new Rule(-8, new int[]{-8,44,-9});
     rules[12]=new Rule(-8, new int[]{-9});
-    rules[13]=new Rule(-9, new int[]{-146});
-    rules[14]=new Rule(-9, new int[]{-146,193,-3});
+    rules[13]=new Rule(-9, new int[]{-147});
+    rules[14]=new Rule(-9, new int[]{-147,193,-3});
     rules[15]=new Rule(-7, new int[]{-7,-6});
     rules[16]=new Rule(-7, new int[]{-6});
     rules[17]=new Rule(-6, new int[]{-12});
@@ -1545,11 +1545,11 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
       case 12: // use_statement_content_list -> use_statement_content 
 { /* nop */ }
         return;
-      case 13: // use_statement_content -> qualified_namespace_name 
-{ AddAlias((QualifiedName)value_stack.array[value_stack.top-1].yyval.Object); }
+      case 13: // use_statement_content -> namespace_name_list 
+{ AddAlias(new QualifiedName((List<string>)value_stack.array[value_stack.top-1].yyval.Object, true, true)); }
         return;
-      case 14: // use_statement_content -> qualified_namespace_name T_AS identifier 
-{ AddAlias((QualifiedName)value_stack.array[value_stack.top-3].yyval.Object, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+      case 14: // use_statement_content -> namespace_name_list T_AS identifier 
+{ AddAlias(new QualifiedName((List<string>)value_stack.array[value_stack.top-3].yyval.Object, true, true), (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 15: // top_statement_list -> top_statement_list top_statement 
 { yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; if (value_stack.array[value_stack.top-1].yyval.Object != null) ListAdd<Statement>(yyval.Object, value_stack.array[value_stack.top-1].yyval.Object); }
@@ -1863,22 +1863,22 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 84: // attribute -> qualified_namespace_name 
 { 
-			yyval.Object = new CustomAttribute(yypos, (QualifiedName)value_stack.array[value_stack.top-1].yyval.Object, emptyActualParamListIndex, emptyNamedActualParamListIndex);
+			yyval.Object = new CustomAttribute(yypos, TranslateAny((QualifiedName)value_stack.array[value_stack.top-1].yyval.Object), emptyActualParamListIndex, emptyNamedActualParamListIndex);
 		}
         return;
       case 85: // attribute -> qualified_namespace_name '(' attribute_arg_list ')' 
 { 
-			yyval.Object = new CustomAttribute(yypos, (QualifiedName)value_stack.array[value_stack.top-4].yyval.Object, (List<ActualParam>)value_stack.array[value_stack.top-2].yyval.Object, emptyNamedActualParamListIndex);
+			yyval.Object = new CustomAttribute(yypos, TranslateAny((QualifiedName)value_stack.array[value_stack.top-4].yyval.Object), (List<ActualParam>)value_stack.array[value_stack.top-2].yyval.Object, emptyNamedActualParamListIndex);
 		}
         return;
       case 86: // attribute -> qualified_namespace_name '(' attribute_named_arg_list ')' 
 { 
-			yyval.Object = new CustomAttribute(yypos, (QualifiedName)value_stack.array[value_stack.top-4].yyval.Object, emptyActualParamListIndex, (List<NamedActualParam>)value_stack.array[value_stack.top-2].yyval.Object);
+			yyval.Object = new CustomAttribute(yypos, TranslateAny((QualifiedName)value_stack.array[value_stack.top-4].yyval.Object), emptyActualParamListIndex, (List<NamedActualParam>)value_stack.array[value_stack.top-2].yyval.Object);
 		}
         return;
       case 87: // attribute -> qualified_namespace_name '(' attribute_arg_list ',' attribute_named_arg_list ')' 
 { 
-			yyval.Object = new CustomAttribute(yypos, (QualifiedName)value_stack.array[value_stack.top-6].yyval.Object, (List<ActualParam>)value_stack.array[value_stack.top-4].yyval.Object, (List<NamedActualParam>)value_stack.array[value_stack.top-2].yyval.Object);
+			yyval.Object = new CustomAttribute(yypos, TranslateAny((QualifiedName)value_stack.array[value_stack.top-6].yyval.Object), (List<ActualParam>)value_stack.array[value_stack.top-4].yyval.Object, (List<NamedActualParam>)value_stack.array[value_stack.top-2].yyval.Object);
 		}
         return;
       case 88: // attribute_arg_list -> attribute_arg_list ',' attribute_arg 
@@ -2894,7 +2894,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 348: // function_call -> qualified_namespace_name generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 { 
-		  yyval.Object = new DirectFcnCall(yypos, (QualifiedName)value_stack.array[value_stack.top-5].yyval.Object, (List<ActualParam>)value_stack.array[value_stack.top-2].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-4].yyval.Object); 
+		  yyval.Object = new DirectFcnCall(yypos, TranslateNamespace((QualifiedName)value_stack.array[value_stack.top-5].yyval.Object), (List<ActualParam>)value_stack.array[value_stack.top-2].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-4].yyval.Object); 
 		}
         return;
       case 349: // function_call -> class_constant generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
@@ -2915,12 +2915,12 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 352: // qualified_static_type_ref -> qualified_namespace_name generic_dynamic_args_opt 
 { 
-			yyval.Object = new GenericQualifiedName((QualifiedName)value_stack.array[value_stack.top-2].yyval.Object, TypeRef.ToStaticTypeRefs((List<TypeRef>)value_stack.array[value_stack.top-1].yyval.Object, errors, sourceUnit)); 
+			yyval.Object = new GenericQualifiedName(TranslateAny((QualifiedName)value_stack.array[value_stack.top-2].yyval.Object), TypeRef.ToStaticTypeRefs((List<TypeRef>)value_stack.array[value_stack.top-1].yyval.Object, errors, sourceUnit)); 
 		}
         return;
       case 353: // type_ref -> qualified_namespace_name generic_dynamic_args_opt 
 { 
-			yyval.Object = new DirectTypeRef(yypos, (QualifiedName)value_stack.array[value_stack.top-2].yyval.Object, (List<TypeRef>)value_stack.array[value_stack.top-1].yyval.Object);
+			yyval.Object = new DirectTypeRef(yypos, TranslateAny((QualifiedName)value_stack.array[value_stack.top-2].yyval.Object), (List<TypeRef>)value_stack.array[value_stack.top-1].yyval.Object);
 		}
         return;
       case 354: // type_ref -> indirect_type_ref generic_dynamic_args_opt 
@@ -3074,7 +3074,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 { yyval.Object = new PseudoConstUse(yypos, PseudoConstUse.Types.Namespace); }
         return;
       case 391: // global_constant -> qualified_namespace_name 
-{ yyval.Object = new GlobalConstUse(yypos, (QualifiedName)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new GlobalConstUse(yypos, TranslateNamespace((QualifiedName)value_stack.array[value_stack.top-1].yyval.Object)); }
         return;
       case 392: // class_constant -> qualified_static_type_ref T_DOUBLE_COLON identifier 
 { 

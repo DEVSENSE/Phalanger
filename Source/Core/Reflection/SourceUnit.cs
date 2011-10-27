@@ -44,6 +44,18 @@ namespace PHP.Core.Reflection
 		public AST.GlobalCode Ast { get { return ast; } }
 		protected AST.GlobalCode ast;
 
+        /// <summary>
+        /// Dictionary of PHP aliases.
+        /// </summary>
+        public Dictionary<string, QualifiedName>/*!*/ Aliases { get { return aliases; } }
+        private readonly Dictionary<string, QualifiedName>/*!*/ aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
+        
+        /// <summary>
+        /// Current namespace (in case we are compiling through eval from within namespace).
+        /// </summary>
+        private QualifiedName currentNamespace = new QualifiedName(Name.EmptyBaseName);
+
+
 		public Dictionary<Name, QualifiedName> TypeAliases { get { return typeAliases; } }
 		private Dictionary<Name, QualifiedName> typeAliases = null;
 

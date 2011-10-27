@@ -506,8 +506,8 @@ use_statement_content_list: /* PHP 5.3 */
 ;
 
 use_statement_content: /* PHP 5.3 */
-		qualified_namespace_name					{ AddAlias((QualifiedName)$1); }
-	|	qualified_namespace_name T_AS identifier	{ AddAlias((QualifiedName)$1, (string)$3); }
+		namespace_name_list					{ AddAlias(new QualifiedName((List<string>)$1, true, true)); }
+	|	namespace_name_list T_AS identifier	{ AddAlias(new QualifiedName((List<string>)$1, true, true), (string)$3); }
 ;
 
 top_statement_list:
@@ -797,19 +797,19 @@ attribute_list:
 attribute:
 		qualified_namespace_name 
 		{ 
-			$$ = new CustomAttribute(@$, (QualifiedName)$1, emptyActualParamListIndex, emptyNamedActualParamListIndex);
+			$$ = new CustomAttribute(@$, TranslateAny((QualifiedName)$1), emptyActualParamListIndex, emptyNamedActualParamListIndex);
 		}
 	|	qualified_namespace_name '(' attribute_arg_list ')' 
 		{ 
-			$$ = new CustomAttribute(@$, (QualifiedName)$1, (List<ActualParam>)$3, emptyNamedActualParamListIndex);
+			$$ = new CustomAttribute(@$, TranslateAny((QualifiedName)$1), (List<ActualParam>)$3, emptyNamedActualParamListIndex);
 		}
 	|	qualified_namespace_name '(' attribute_named_arg_list ')' 
 		{ 
-			$$ = new CustomAttribute(@$, (QualifiedName)$1, emptyActualParamListIndex, (List<NamedActualParam>)$3);
+			$$ = new CustomAttribute(@$, TranslateAny((QualifiedName)$1), emptyActualParamListIndex, (List<NamedActualParam>)$3);
 		}
 	|	qualified_namespace_name '(' attribute_arg_list ',' attribute_named_arg_list ')' 
 		{ 
-			$$ = new CustomAttribute(@$, (QualifiedName)$1, (List<ActualParam>)$3, (List<NamedActualParam>)$5);
+			$$ = new CustomAttribute(@$, TranslateAny((QualifiedName)$1), (List<ActualParam>)$3, (List<NamedActualParam>)$5);
 		}
 ;
 
@@ -1675,7 +1675,7 @@ linq_into_clause_opt:
 function_call:
 		qualified_namespace_name generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 		{ 
-		  $$ = new DirectFcnCall(@$, (QualifiedName)$1, (List<ActualParam>)$4, (List<TypeRef>)$2); 
+		  $$ = new DirectFcnCall(@$, TranslateNamespace((QualifiedName)$1), (List<ActualParam>)$4, (List<TypeRef>)$2); 
 		}
 
 	|	class_constant generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
@@ -1699,14 +1699,14 @@ function_call:
 qualified_static_type_ref:
 		qualified_namespace_name generic_dynamic_args_opt
 		{ 
-			$$ = new GenericQualifiedName((QualifiedName)$1, TypeRef.ToStaticTypeRefs((List<TypeRef>)$2, errors, sourceUnit)); 
+			$$ = new GenericQualifiedName(TranslateAny((QualifiedName)$1), TypeRef.ToStaticTypeRefs((List<TypeRef>)$2, errors, sourceUnit)); 
 		}
 ;
 
 type_ref:
 		qualified_namespace_name generic_dynamic_args_opt
 		{ 
-			$$ = new DirectTypeRef(@$, (QualifiedName)$1, (List<TypeRef>)$2);
+			$$ = new DirectTypeRef(@$, TranslateAny((QualifiedName)$1), (List<TypeRef>)$2);
 		}
 		
 	|	indirect_type_ref generic_dynamic_args_opt
@@ -1839,7 +1839,7 @@ pseudo_constant:
 ;
 
 global_constant:
-	qualified_namespace_name                { $$ = new GlobalConstUse(@$, (QualifiedName)$1); }
+	qualified_namespace_name                { $$ = new GlobalConstUse(@$, TranslateNamespace((QualifiedName)$1)); }
 ;
 
 class_constant:

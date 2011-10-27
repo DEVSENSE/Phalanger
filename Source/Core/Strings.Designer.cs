@@ -160,6 +160,15 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot use {1} as {2} because the name is already in use.
+        /// </summary>
+        internal static string alias_in_use {
+            get {
+                return ResourceManager.GetString("alias_in_use", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ambiguous constant name: &apos;{1}&apos; and &apos;{2}&apos; are both imported as &apos;{0}&apos;.
         /// </summary>
         internal static string ambiguous_constant_match {
