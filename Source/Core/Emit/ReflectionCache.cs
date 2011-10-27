@@ -388,7 +388,7 @@ namespace PHP.Core.Emit
             static MethodInfo
                 _DisableErrorReporting, _EnableErrorReporting,
                 _GetCurrentContext, _Die, _StaticInclude, _DynamicInclude, _GetStaticLocal, _GetStaticLocalId, _AddStaticLocal, _RunApplication,
-                _IsConstantDefined, _GetConstantValue, _RegisterDObjectForFinalization,
+                _IsConstantDefined, _GetConstantValue, _DeclareConstant, _RegisterDObjectForFinalization,
                 _DeclareFunction, _DeclareLambda, _Call, _CallValue, _CallVoid, _DeclareType_TypeDesc, _DeclareType_Handle,
                 _GetWorkingDirectory;
 
@@ -409,6 +409,7 @@ namespace PHP.Core.Emit
             
             public static MethodInfo GetConstantValue { get { if (_GetConstantValue == null) _GetConstantValue = _this.GetMethod("GetConstantValue", new Type[] { typeof(string), typeof(string) }); return _GetConstantValue; } }
             public static MethodInfo IsConstantDefined { get { if (_IsConstantDefined == null) _IsConstantDefined = _this.GetMethod("IsConstantDefined", new Type[] { typeof(string) }); return _IsConstantDefined; } }
+            public static MethodInfo DeclareConstant { get { return _DeclareConstant ?? (_DeclareConstant = _this.GetMethod("DeclareConstant", new Type[] { typeof(string), typeof(object) })); } }
 
             public static MethodInfo RegisterDObjectForFinalization { get { if (_RegisterDObjectForFinalization == null) _RegisterDObjectForFinalization = _this.GetMethod("RegisterDObjectForFinalization"); return _RegisterDObjectForFinalization; } }
 

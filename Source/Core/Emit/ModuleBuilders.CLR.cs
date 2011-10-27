@@ -315,18 +315,19 @@ namespace PHP.Core.Emit
 				}
 			}
 
-			//TODO:
-			//  foreach (GlobalConstant constant in unit.GetUnconditionals<GlobalConstant>(unit.Constants.Values))
-			//  {
-			//    if (constant.IsDefinite)
-			//    {
-			//      // CALL ApplicationContext.DeclareConstant(<name>, <value>);
-			//      il.Emit(OpCodes.Ldstr, constant.FullName);
-			//      il.Emit(OpCodes.Ldfld, constant.RealField); // TODO:
-			//      il.Emit(OpCodes.Box, constant.RealField.FieldType);
-			//      il.Emit(OpCodes.Call, Methods.ApplicationContext.DeclareConstant);
-			//    }
-			//  }
+            foreach (GlobalConstant constant in unit.GetDeclaredConstants())
+            {
+                if (constant.IsDefinite)
+                {
+                    //// CALL <context>.DeclareConstant(<name>, <value>);
+                    //script_context_place.EmitLoad(il);
+
+                    //il.Emit(OpCodes.Ldstr, constant.FullName);
+                    //il.Emit(OpCodes.Ldfld, constant.RealField);
+                    //if (constant.RealField.FieldType.IsValueType) il.Emit(OpCodes.Box, constant.RealField.FieldType);
+                    //il.Emit(OpCodes.Call, Methods.ScriptContext.DeclareConstant);
+                }
+            }
 
 			il.Emit(OpCodes.Ret);
 		}
