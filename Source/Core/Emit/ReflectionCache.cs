@@ -407,7 +407,7 @@ namespace PHP.Core.Emit
             public static MethodInfo GetStaticLocalId { get { return _GetStaticLocalId ?? (_GetStaticLocalId = _this.GetMethod("GetStaticLocalId")); } }
             public static MethodInfo AddStaticLocal { get { if (_AddStaticLocal == null) _AddStaticLocal = _this.GetMethod("AddStaticLocal"); return _AddStaticLocal; } }
             
-            public static MethodInfo GetConstantValue { get { if (_GetConstantValue == null) _GetConstantValue = _this.GetMethod("GetConstantValue", new Type[] { typeof(string) }); return _GetConstantValue; } }
+            public static MethodInfo GetConstantValue { get { if (_GetConstantValue == null) _GetConstantValue = _this.GetMethod("GetConstantValue", new Type[] { typeof(string), typeof(string) }); return _GetConstantValue; } }
             public static MethodInfo IsConstantDefined { get { if (_IsConstantDefined == null) _IsConstantDefined = _this.GetMethod("IsConstantDefined", new Type[] { typeof(string) }); return _IsConstantDefined; } }
 
             public static MethodInfo RegisterDObjectForFinalization { get { if (_RegisterDObjectForFinalization == null) _RegisterDObjectForFinalization = _this.GetMethod("RegisterDObjectForFinalization"); return _RegisterDObjectForFinalization; } }

@@ -132,7 +132,7 @@ namespace PHP.Core.Reflection
 		}
 
 		internal abstract PhpTypeCode EmitGet(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType,
-			bool runtimeVisibilityCheck);
+            bool runtimeVisibilityCheck, string fallbackName);
 	}
 
 	#endregion
@@ -161,9 +161,11 @@ namespace PHP.Core.Reflection
 		}
 
 		internal override PhpTypeCode EmitGet(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType,
-			bool runtimeVisibilityCheck)
+			bool runtimeVisibilityCheck, string fallbackName)
 		{
-			codeGenerator.EmitGetConstantValueOperator(declaringType, this.FullName);
+            Debug.Assert(fallbackName == null);
+
+            codeGenerator.EmitGetConstantValueOperator(declaringType, this.FullName, null);
 			return PhpTypeCode.Object;
 		}
 	}
@@ -186,9 +188,9 @@ namespace PHP.Core.Reflection
 		}
 
 		internal override PhpTypeCode EmitGet(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType,
-			bool runtimeVisibilityCheck)
+            bool runtimeVisibilityCheck, string fallbackName)
 		{
-			codeGenerator.EmitGetConstantValueOperator(null, this.FullName);
+			codeGenerator.EmitGetConstantValueOperator(null, this.FullName, fallbackName);
 			return PhpTypeCode.Object;
 		}
 	}
@@ -252,7 +254,7 @@ namespace PHP.Core.Reflection
 		#region Emission
 
 		internal override PhpTypeCode EmitGet(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType,
-			bool runtimeVisibilityCheck)
+            bool runtimeVisibilityCheck, string fallbackName)
 		{
 			ILEmitter il = codeGenerator.IL;
 

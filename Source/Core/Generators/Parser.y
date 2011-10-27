@@ -1839,7 +1839,7 @@ pseudo_constant:
 ;
 
 global_constant:
-	qualified_namespace_name                { $$ = new GlobalConstUse(@$, TranslateNamespace((QualifiedName)$1)); }
+	qualified_namespace_name                { $$ = CreateGlobalConstUse(@$, (QualifiedName)$1); }
 ;
 
 class_constant:
