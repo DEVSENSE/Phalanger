@@ -744,6 +744,9 @@ namespace PHP.Core.Parsers
             Debug.Assert(!string.IsNullOrEmpty(fullQualifiedName.Name.Value));
             Debug.Assert(!string.IsNullOrEmpty(alias));
             Debug.Assert(fullQualifiedName.IsFullyQualifiedName);
+
+            if (sourceUnit.CompilationUnit.IsTransient)
+                throw new NotImplementedException("Adding an alias from within eval is not supported.");
             
             // check if it aliases itself:
             QualifiedName qualifiedAlias = new QualifiedName(
@@ -776,11 +779,8 @@ namespace PHP.Core.Parsers
         {
             if (qname.IsFullyQualifiedName) return qname;
 
-            // get first part of the qualified name:
-            string first = qname.IsSimpleName ? qname.Name.Value : qname.Namespaces[0].Value;
-
             // return the alias if found:
-            return TranslateAlias(first, qname);
+            return TranslateAlias(qname);
         }
 
         /// <summary>
@@ -800,30 +800,25 @@ namespace PHP.Core.Parsers
             }
             else
             {
-                return TranslateAlias(qname.Namespaces[0].Value, qname);
+                return TranslateAlias(qname);
             }
         }
 
         /// <summary>
-        /// Translate given <paramref name="key"/> into aliased <see cref="QualifiedName"/>.
-        /// If no such alias is found, return <paramref name="default"/>.
+        /// Translate first part of given <paramref name="qname"/> into aliased <see cref="QualifiedName"/>.
+        /// If no such alias is found, return original <paramref name="qname"/>.
         /// </summary>
-        /// <param name="key">Alias to translate.</param>
-        /// <param name="default">Default <see cref="QualifiedName"/> if given alias is not found.</param>
+        /// <param name="qname">Name which first part has tobe translated.</param>
         /// <returns>Translated <see cref="QualifiedName"/>.</returns>
         /// <remarks>Always returns fully qualified name.</remarks>
-        private QualifiedName TranslateAlias(string key, QualifiedName @default)
+        private QualifiedName TranslateAlias(QualifiedName qname)
         {
-            Debug.Assert(!@default.IsFullyQualifiedName);
+            Debug.Assert(!qname.IsFullyQualifiedName);
 
-            // return the alias if found:
-            QualifiedName alias;
-            return CurrentScopeAliases.TryGetValue(key, out alias)
-                ? alias     // alias was found
-                : ((currentNamespace != null)
-                    ? new QualifiedName(@default, currentNamespace.QualifiedName)                           // join currentNamespace with @default
-                    : new QualifiedName(@default.Name, @default.Namespaces) { IsFullyQualifiedName = true } // make @default fully qualified name
-                  );
+            return QualifiedName.TranslateAlias(
+                qname,
+                CurrentScopeAliases,
+                (currentNamespace != null && currentNamespace.QualifiedName.Namespaces.Length > 0) ? currentNamespace.QualifiedName : (QualifiedName?)null);
         }
 
         #endregion

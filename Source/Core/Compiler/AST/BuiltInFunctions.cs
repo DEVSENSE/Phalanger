@@ -297,6 +297,18 @@ namespace PHP.Core.AST
         /// <summary>Contains the code string literal that has been inlined.</summary>
         public string InlinedCode { get { return inlinedCode; } }
 
+        /// <summary>
+        /// Aliases copied from current scope which were valid in place of this expression.
+        /// Used for deferred code compilation in run time, when creating transient compilation unit.
+        /// </summary>
+        private readonly Dictionary<string, QualifiedName> aliases;
+
+        /// <summary>
+        /// Current namespace.
+        /// Used for deferred code compilation in run time, when creating transient compilation unit.
+        /// </summary>
+        private readonly QualifiedName? currentNamespace;
+
 		/// <summary>
 		/// Says if this eval is real in source code, or if it was made during analyzis to
 		/// defer some compilation to run-time.
@@ -323,16 +335,21 @@ namespace PHP.Core.AST
 		/// </summary>
 		/// <param name="position">Position.</param>
 		/// <param name="code">Source code.</param>
+        /// <param name="currentNamespace">Current namespace to be passed into the transient compilation unit.</param>
+        /// <param name="aliases">Aliases to be passed into the transient compilation unit.</param>
 		/// <remarks>
 		/// Creates a node which actually doesn't exist in the source code but represents a piece of code 
 		/// which compilation has been deferred to the run-time. It is used for example when
 		/// a class is declared to be child of a unknown class or interface.
 		/// </remarks>
-		public EvalEx(Position position, string code)
+		public EvalEx(Position position, string code, QualifiedName? currentNamespace, Dictionary<string,QualifiedName> aliases)
 			: base(position)
 		{
 			this.kind = EvalKinds.SyntheticEval;
 			this.code = new StringLiteral(position, code);
+
+            this.currentNamespace = currentNamespace;
+            this.aliases = aliases;
 		}
 
 		#endregion
@@ -493,6 +510,7 @@ namespace PHP.Core.AST
 				codeGenerator.EmitLoadClassContext();
 				codeGenerator.EmitEvalInfoPass(position.FirstLine, position.FirstColumn);
 				codeGenerator.EmitLoadNamingContext();
+                // TODO: pass currentNamespace, aliases
 				il.Emit(OpCodes.Call, (kind == EvalKinds.Assert) ? Methods.DynamicCode.Assert : Methods.DynamicCode.Eval);
 			}
 
