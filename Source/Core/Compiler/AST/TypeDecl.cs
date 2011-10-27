@@ -404,9 +404,9 @@ namespace PHP.Core.AST
 			QualifiedName qn = (ns != null) ? new QualifiedName(name, ns.QualifiedName) : new QualifiedName(name);
 			type = new PhpType(qn, memberAttributes, isPartial, typeSignature, isConditional, scope, sourceUnit, position);
 
-			// add alias for private classes (if not added yet by partial declaration):
-			if (type.IsPrivate)
-				sourceUnit.AddTypeAlias(qn, this.name);
+            //// add alias for private classes (if not added yet by partial declaration):
+            //if (type.IsPrivate)
+            //    sourceUnit.AddTypeAlias(qn, this.name);
 
 			// member-analysis needs the node:
 			type.Declaration.Node = this;
