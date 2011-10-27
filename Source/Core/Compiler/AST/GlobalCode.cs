@@ -292,7 +292,8 @@ namespace PHP.Core.AST
 		{
 			foreach (Statement statement in statements)
 			{
-				statement.Emit(codeGenerator);
+                if (!(statement is EmptyStmt))
+				    statement.Emit(codeGenerator);
 			}
 		}
 
