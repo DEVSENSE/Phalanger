@@ -319,13 +319,16 @@ namespace PHP.Core.Emit
             {
                 if (constant.IsDefinite)
                 {
-                    //// CALL <context>.DeclareConstant(<name>, <value>);
-                    //script_context_place.EmitLoad(il);
+                    var field = constant.RealField;
+                    Debug.Assert(field != null);
+                    Debug.Assert(field.IsStatic);
 
-                    //il.Emit(OpCodes.Ldstr, constant.FullName);
-                    //il.Emit(OpCodes.Ldfld, constant.RealField);
-                    //if (constant.RealField.FieldType.IsValueType) il.Emit(OpCodes.Box, constant.RealField.FieldType);
-                    //il.Emit(OpCodes.Call, Methods.ScriptContext.DeclareConstant);
+                    // CALL <context>.DeclareConstant(<name>, <value>);
+                    script_context_place.EmitLoad(il);
+
+                    il.Emit(OpCodes.Ldstr, constant.FullName);
+                    il.LoadLiteralBox(constant.Value);  //il.Emit(OpCodes.Ldsfld, field);   // const field cannot be referenced in IL
+                    il.Emit(OpCodes.Call, Methods.ScriptContext.DeclareConstant);
                 }
             }
 

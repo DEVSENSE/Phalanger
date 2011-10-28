@@ -14,13 +14,18 @@ object(Directory)(2)
 		class Beth { } 
 	}
 	
-	class Program
+	namespace
 	{
-		public static function Main()
+		use System\Collections\Dictionary as Dictionary;
+		
+		class Program
 		{
-			var_dump(new N:::Beth instanceof Beth);
-			var_dump(new Dictionary:::KeyCollection(new Dictionary) instanceof Dictionary:::KeyCollection);
-			var_dump(new Directory);
+			public static function Main()
+			{
+				var_dump(new N\Beth instanceof Beth);
+				var_dump(new Dictionary\KeyCollection(new Dictionary) instanceof Dictionary\KeyCollection);
+				var_dump(new Directory);
+			}
 		}
-	}		
+	}	
 ?>

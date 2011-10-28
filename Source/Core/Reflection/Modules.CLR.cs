@@ -364,6 +364,7 @@ namespace PHP.Core.Reflection
 
                 ReflectScriptTypeFunctions(scriptType, functions);
                 ReflectScriptTypeClasses(scriptType, types);
+                ReflectScriptTypeConstants(scriptType, constants);
             }
 		}
 
@@ -502,6 +503,21 @@ namespace PHP.Core.Reflection
                 }
             }
 		}
+
+        /// <summary>
+        /// Reflect global constants in &lt;script&gt; class.
+        /// </summary>
+        /// <param name="scriptType">The type representing single script.</param>
+        /// <param name="constants">Dictionary for constants.</param>
+        private void ReflectScriptTypeConstants(Type scriptType, DualDictionary<string, DConstantDesc>/*!*/ constants)
+        {
+            foreach (var field in scriptType.GetFields(BindingFlags.Public | BindingFlags.Static))
+            {
+                GlobalConstant constant = new GlobalConstant(this, QualifiedName.FromClrNotation(field.Name, true), field);
+                constant.SetValue(Convert.ClrLiteralToPhpLiteral(field.GetValue(null)));
+                constants.Add(field.Name, constant.ConstantDesc, false);
+            }            
+        }
 
 		#endregion
 	}

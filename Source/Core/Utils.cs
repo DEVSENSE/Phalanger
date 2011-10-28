@@ -2314,9 +2314,9 @@ namespace PHP.Core
 
         internal static FieldBuilder/*!*/ DefineGlobalField(ModuleBuilder/*!*/ moduleBuilder, string/*!*/ name, Type/*!*/ type, FieldAttributes attributes)
         {
-            FieldBuilder result = TryDefineRealGlobalField(moduleBuilder, name, type, attributes);
-            if (result != null)
-                return result;
+            //FieldBuilder result = TryDefineRealGlobalField(moduleBuilder, name, type, attributes);
+            //if (result != null)
+            //    return result;
 
             TypeBuilder global_type = (TypeBuilder)moduleBuilder.GetType(GlobalFieldsType);
             if (global_type == null)
@@ -2330,58 +2330,58 @@ namespace PHP.Core
             return global_type.DefineField(name, type, attributes);
         }
 
-        private static FieldBuilder TryDefineRealGlobalField(ModuleBuilder/*!*/ moduleBuilder, string/*!*/ name, Type/*!*/ type, FieldAttributes attributes)
-        {
-            try
-            {
-                if (EnvironmentUtils.IsDotNetFramework)
-                {
-                    // .NET Framework:
+        //private static FieldBuilder TryDefineRealGlobalField(ModuleBuilder/*!*/ moduleBuilder, string/*!*/ name, Type/*!*/ type, FieldAttributes attributes)
+        //{
+        //    try
+        //    {
+        //        if (EnvironmentUtils.IsDotNetFramework)
+        //        {
+        //            // .NET Framework:
 
-                    FieldInfo fm_ModuleData = typeof(Module).GetField("m_moduleData", BindingFlags.Instance | BindingFlags.NonPublic);
-                    FieldInfo fm_globalTypeBuilder = fm_ModuleData.FieldType.GetField("m_globalTypeBuilder", BindingFlags.Instance | BindingFlags.NonPublic);
+        //            FieldInfo fm_ModuleData = typeof(Module).GetField("m_moduleData", BindingFlags.Instance | BindingFlags.NonPublic);
+        //            FieldInfo fm_globalTypeBuilder = fm_ModuleData.FieldType.GetField("m_globalTypeBuilder", BindingFlags.Instance | BindingFlags.NonPublic);
 
-                    object m_ModuleData = fm_ModuleData.GetValue(moduleBuilder);
-                    TypeBuilder m_globalTypeBuilder = (TypeBuilder)fm_globalTypeBuilder.GetValue(m_ModuleData);
+        //            object m_ModuleData = fm_ModuleData.GetValue(moduleBuilder);
+        //            TypeBuilder m_globalTypeBuilder = (TypeBuilder)fm_globalTypeBuilder.GetValue(m_ModuleData);
 
-                    return m_globalTypeBuilder.DefineField(name, type, attributes);
-                }
-                else
-                {
-                    // Mono:
+        //            return m_globalTypeBuilder.DefineField(name, type, attributes);
+        //        }
+        //        else
+        //        {
+        //            // Mono:
 
-                    FieldInfo f_global_fields = typeof(ModuleBuilder).GetField("global_fields", BindingFlags.Instance | BindingFlags.NonPublic);
-                    FieldBuilder[] global_fields = (FieldBuilder[])f_global_fields.GetValue(moduleBuilder);
+        //            FieldInfo f_global_fields = typeof(ModuleBuilder).GetField("global_fields", BindingFlags.Instance | BindingFlags.NonPublic);
+        //            FieldBuilder[] global_fields = (FieldBuilder[])f_global_fields.GetValue(moduleBuilder);
 
-                    FieldInfo f_global_type = typeof(ModuleBuilder).GetField("global_type", BindingFlags.Instance | BindingFlags.NonPublic);
-                    TypeBuilder global_type = (TypeBuilder)f_global_type.GetValue(moduleBuilder);
+        //            FieldInfo f_global_type = typeof(ModuleBuilder).GetField("global_type", BindingFlags.Instance | BindingFlags.NonPublic);
+        //            TypeBuilder global_type = (TypeBuilder)f_global_type.GetValue(moduleBuilder);
 
-                    FieldBuilder result = global_type.DefineField(name, type, attributes);
+        //            FieldBuilder result = global_type.DefineField(name, type, attributes);
 
-                    if (global_fields != null)
-                    {
-                        FieldBuilder[] new_global_fields = new FieldBuilder[global_fields.Length + 1];
-                        System.Array.Copy(global_fields, new_global_fields, global_fields.Length);
-                        new_global_fields[global_fields.Length] = result;
+        //            if (global_fields != null)
+        //            {
+        //                FieldBuilder[] new_global_fields = new FieldBuilder[global_fields.Length + 1];
+        //                System.Array.Copy(global_fields, new_global_fields, global_fields.Length);
+        //                new_global_fields[global_fields.Length] = result;
 
-                        f_global_fields.SetValue(moduleBuilder, new_global_fields);
-                    }
-                    else
-                    {
-                        global_fields = new FieldBuilder[1];
-                        global_fields[0] = result;
+        //                f_global_fields.SetValue(moduleBuilder, new_global_fields);
+        //            }
+        //            else
+        //            {
+        //                global_fields = new FieldBuilder[1];
+        //                global_fields[0] = result;
 
-                        f_global_fields.SetValue(moduleBuilder, global_fields);
-                    }
+        //                f_global_fields.SetValue(moduleBuilder, global_fields);
+        //            }
 
-                    return result;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
+        //            return result;
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return null;
+        //    }
+        //}
 
         internal static void CreateGlobalType(ModuleBuilder/*!*/ moduleBuilder)
         {

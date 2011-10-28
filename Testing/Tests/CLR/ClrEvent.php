@@ -15,15 +15,15 @@ class Handler
 
 function test()
 {
-    $bw = new System:::ComponentModel:::BackgroundWorker;
+    $bw = new \System\ComponentModel\BackgroundWorker;
     $handler = new Handler;
 
-    $bw->DoWork->Add( new System:::ComponentModel:::DoWorkEventHandler( array($handler, "DoWork") ) );
+    $bw->DoWork->Add( new \System\ComponentModel\DoWorkEventHandler( array($handler, "DoWork") ) );
     $bw->RunWorkerAsync();
 
     while ($bw->IsBusy)
     {
-        System:::Threading:::Thread::Sleep(100);
+        \System\Threading\Thread::Sleep(100);
     }
 }
 
