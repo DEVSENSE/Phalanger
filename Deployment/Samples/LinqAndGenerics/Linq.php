@@ -1,12 +1,11 @@
 <?
-	import namespace System;
-	import namespace System:::Collections:::Generic;
-	import namespace Phalanger;
-	
 	// This script demonstrates the LINQ support in Phalanger.
 
 	namespace Phalanger
 	{
+        use System\Collections\Generic as G;
+        use System as S;
+
 		class Product
 		{
 			public function Product($productID, $name, $category, $unitPrice, $unitsInStock)
@@ -53,7 +52,7 @@
 					if ($first) $first = false;
 					else echo ", ";
 					
-					print_r( $item );
+					\print_r( $item );
 				}
 				
 				echo "\n\n";
@@ -61,7 +60,7 @@
 		
 			static function Run()
 			{
-				$random = new Random;
+				$random = new S\Random;
 
 				for ($i = 0; $i < 20; $i++)
 				{
@@ -112,7 +111,7 @@
 			
 			private static function GetProductList()
 			{
-				$list = new i'List'<:Product:>;
+				$list = new i'G\List'<:Product:>;
 				
 				$list->Add(new Product(1, "Chai", "Beverages", 18.0, 39));
 				$list->Add(new Product(2, "Chang", "Beverages",	19.0, 17));
@@ -197,7 +196,7 @@
 			
 			private static function GetOrderList()
 			{
-				$list = new i'List'<:Order:>;
+				$list = new i'G\List'<:Order:>;
 			
 				$list->Add(new Order(1, 30, 3, "Jan Benda"));
 				$list->Add(new Order(2, 12, 4, "Martin Maly"));

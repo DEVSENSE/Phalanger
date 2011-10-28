@@ -1,23 +1,24 @@
 <?
-	import namespace System;
-	import namespace System:::Collections:::Generic;
-	import namespace Phalanger;
-	
 	// This script demonstrates the generics support in Phalanger.
 
 	namespace Phalanger
 	{
-		class Displayer<:T:>
+        use System\Collections\Generic\IComparer;
+
+        use System as S;
+        use System\Collections\Generic as G;
+
+        class Displayer<:T:>
 		{
 			private static function Action($element)
 			{
 				echo "element: $element\n";
 			}
 		
-			static function Display(i'List'<:T:> $list)
+			static function Display(i'G\List'<:T:> $list)
 			{
 				// creating an instance of a generic delegate
-				$action = new Action<:T:>(array("self", "Action"));
+				$action = new S\Action<:T:>(array("self", "Action"));
 				$list->ForEach($action);
 			}
 		}
@@ -55,10 +56,10 @@
 			// object GenericMethod(string arg1);
 			// object GenericMethod<T>(T arg1);
 		
-			[Export]
+			[\Export]
 			static function GenericMethod<:T = string:>(T $arg1)
 			{
-				$dict = new Dictionary<:string, T:>;
+				$dict = new G\Dictionary<:string, T:>;
 				$dict->Add("test", $arg1);
 				
 				return $dict;
@@ -69,7 +70,7 @@
 				echo "Creating an instance of a generic type instantiation:\n";
 				
 				// list is a keyword so we need to escape it using i''
-				$x = new i'List'<:int:>;
+				$x = new i'G\List'<:int:>;
 				echo $x->GetType()->FullName . "\n";
 				
 				$x->Add(2);
@@ -90,7 +91,7 @@
 				echo "\nCalling BCL generic method:\n";
 				
 				// no need to explicitly create the delegate, just pass the target designation
-				$all_primes = System:::Array::TrueForAll<:int:>($x->ToArray(), array("self", "IsPrime"));
+				$all_primes = i'S\Array'::TrueForAll<:int:>($x->ToArray(), array("self", "IsPrime"));
 				echo ($all_primes ? "All elements are primes" : "Nope");
 				echo "\n";
 				
@@ -105,7 +106,7 @@
 					array("@int", -10),
 					array("@bool", true),
 					array("@string", "xyz"),
-					array("System:::EventArgs", EventArgs::$Empty)
+					array("System\EventArgs", S\EventArgs::$Empty)
 				);
 				
 				foreach ($args as $arg)
@@ -115,7 +116,7 @@
 					
 					foreach ($dict as $element)
 					{
-						echo Convert::ToString($element) . "\n";
+						echo S\Convert::ToString($element) . "\n";
 					}
 				}
 				

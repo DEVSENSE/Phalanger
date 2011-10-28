@@ -574,7 +574,11 @@ namespace_statement:         /* PHP 5.3 */
 
 function_declaration_statement:
 		attributes_opt visibility_opt T_FUNCTION attributes_opt reference_opt identifier 
-		type_parameter_list_opt '(' formal_parameter_list_opt ')' 
+		type_parameter_list_opt
+		{
+			ReserveTypeNames((List<FormalTypeParam>)$7);
+		}
+		'(' formal_parameter_list_opt ')' 
 		{ 
 		  EnterConditionalCode(); 
 		}
@@ -582,11 +586,11 @@ function_declaration_statement:
 		{ 
 			CheckTypeParameterNames((List<FormalTypeParam>)$7, (string)$6);
 			
-			$$ = new FunctionDecl(sourceUnit, @6, @$, GetHeadingEnd(@10), GetBodyStart(@12), 
+			$$ = new FunctionDecl(sourceUnit, @6, @$, GetHeadingEnd(@11), GetBodyStart(@13), 
 				IsCurrentCodeOneLevelConditional, GetScope(), 
 				(PhpMemberAttributes)$2 | PhpMemberAttributes.Static,
 				(string)$6, currentNamespace, $5 != 0, 
-			  (List<FormalParam>)$9, (List<FormalTypeParam>)$7, (List<Statement>)$13, (List<CustomAttribute>)$1, 
+			  (List<FormalParam>)$10, (List<FormalTypeParam>)$7, (List<Statement>)$14, (List<CustomAttribute>)$1, 
 			  (List<CustomAttribute>)$4);
 			  
 			CommentSet cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, (string)$3)} );
@@ -595,52 +599,63 @@ function_declaration_statement:
 			
 			reductionsSink.FunctionDeclarationReduced(this,	(FunctionDecl)$$); 
 			  
-			LeaveConditionalCode();	
+			LeaveConditionalCode();
+			UnreserveTypeNames((List<FormalTypeParam>)$7);
 		} 
 ;
 
 class_declaration_statement:
 		attributes_opt visibility_opt modifier_opt partial_opt class
-		identifier type_parameter_list_opt extends_opt implements_opt 
+		identifier type_parameter_list_opt
+		{
+			ReserveTypeNames((List<FormalTypeParam>)$7);
+		}
+		extends_opt implements_opt 
 		'{' class_statement_list_opt '}' 
 		{ 
 		  Name class_name = new Name((string)$6);
 		  
-		  CheckReservedNamesAbsence((GenericQualifiedName?)$8, @8);
-		  CheckReservedNamesAbsence((List<GenericQualifiedName>)$9, @9);
+		  CheckReservedNamesAbsence((GenericQualifiedName?)$9, @9);
+		  CheckReservedNamesAbsence((List<GenericQualifiedName>)$10, @10);
 		  CheckReservedNameAbsence(class_name, @6);
 			CheckTypeParameterNames((List<FormalTypeParam>)$7, (string)$6);
 		  
-		  $$ = new TypeDecl(sourceUnit, CombinePositions(@5, @6), @$, GetHeadingEnd(GetLeftValidPosition(9)), GetBodyStart(@10), 
+		  $$ = new TypeDecl(sourceUnit, CombinePositions(@5, @6), @$, GetHeadingEnd(GetLeftValidPosition(10)), GetBodyStart(@11), 
 				IsCurrentCodeConditional, GetScope(), 
 				(PhpMemberAttributes)($2 | $3), $4 != 0, class_name, currentNamespace, 
-				(List<FormalTypeParam>)$7, (GenericQualifiedName?)$8, (List<GenericQualifiedName>)$9, 
-		    (List<TypeMemberDecl>)$11, (List<CustomAttribute>)$1);
+				(List<FormalTypeParam>)$7, (GenericQualifiedName?)$9, (List<GenericQualifiedName>)$10, 
+		    (List<TypeMemberDecl>)$12, (List<CustomAttribute>)$1);
 		    
 		  CommentSet cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, PopDocComment())} );
 			  
 		  ($$ as LangElement).Annotations.Set<CommentSet>(cs);
 				
 		  reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
+
+		  UnreserveTypeNames((List<FormalTypeParam>)$7);
 		}
 			
 	|	attributes_opt visibility_opt modifier_opt partial_opt interface 
-	  identifier type_parameter_list_opt interface_extends_opt 
+	    identifier type_parameter_list_opt
+		{
+			ReserveTypeNames((List<FormalTypeParam>)$7);
+		}
+		interface_extends_opt 
 		'{' class_statement_list_opt '}' 
 	  { 
 		  Name class_name = new Name((string)$6);
 		  
-		  CheckReservedNamesAbsence((List<GenericQualifiedName>)$8, @8);
+		  CheckReservedNamesAbsence((List<GenericQualifiedName>)$9, @9);
 		  CheckReservedNameAbsence(class_name, @6);
 		  CheckTypeParameterNames((List<FormalTypeParam>)$7, (string)$6);
 		  
 			if ((PhpMemberAttributes)$3 != PhpMemberAttributes.None)
 				errors.Add(Errors.InvalidInterfaceModifier, SourceUnit, @3);
 				
-		  $$ = new TypeDecl(sourceUnit, CombinePositions(@5, @6), @$, GetHeadingEnd(GetLeftValidPosition(8)), GetBodyStart(@9),
+		  $$ = new TypeDecl(sourceUnit, CombinePositions(@5, @6), @$, GetHeadingEnd(GetLeftValidPosition(9)), GetBodyStart(@10),
 				IsCurrentCodeConditional, GetScope(), 
 				(PhpMemberAttributes)$2 | PhpMemberAttributes.Abstract | PhpMemberAttributes.Interface, 
-				$4 != 0, class_name, currentNamespace, (List<FormalTypeParam>)$7, null, (List<GenericQualifiedName>)$8, (List<TypeMemberDecl>)$10, 
+				$4 != 0, class_name, currentNamespace, (List<FormalTypeParam>)$7, null, (List<GenericQualifiedName>)$9, (List<TypeMemberDecl>)$11, 
 				(List<CustomAttribute>)$1); 
 				
 		  CommentSet cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, PopDocComment())} );
@@ -648,6 +663,8 @@ class_declaration_statement:
 		  ($$ as LangElement).Annotations.Set<CommentSet>(cs);
 			
 			reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
+
+			UnreserveTypeNames((List<FormalTypeParam>)$7);
 	  }
 ;
 
@@ -1274,7 +1291,11 @@ class_statement:
 		}
 		
 	|	attributes_opt member_modifiers_opt T_FUNCTION attributes_opt reference_opt class_method_identifier 
-	  type_parameter_list_opt '(' formal_parameter_list_opt ')' 
+	  type_parameter_list_opt
+	  {
+			ReserveTypeNames((List<FormalTypeParam>)$7);
+	  }
+	  '(' formal_parameter_list_opt ')' 
 		base_ctor_call_opt
 		{
 			EnterConditionalCode();
@@ -1283,8 +1304,8 @@ class_statement:
 		{ 
 			CheckTypeParameterNames((List<FormalTypeParam>)$7, null);
 		  
-			$$ = new MethodDecl(@6, @$, GetHeadingEnd(GetLeftValidPosition(11)),GetBodyStart(@13), (string)$6, $5 != 0, (List<FormalParam>)$9, (List<FormalTypeParam>)$7,
-				(List<Statement>)$13, (PhpMemberAttributes)$2, (List<ActualParam>)$11, (List<CustomAttribute>)$1,
+			$$ = new MethodDecl(@6, @$, GetHeadingEnd(GetLeftValidPosition(12)),GetBodyStart(@14), (string)$6, $5 != 0, (List<FormalParam>)$10, (List<FormalTypeParam>)$7,
+				(List<Statement>)$14, (PhpMemberAttributes)$2, (List<ActualParam>)$12, (List<CustomAttribute>)$1,
 				(List<CustomAttribute>)$4); 
 				
 			CommentSet cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, (string)$3)} );
@@ -1292,6 +1313,7 @@ class_statement:
 			($$ as LangElement).Annotations.Set<CommentSet>(cs);
 			
 			LeaveConditionalCode();
+			UnreserveTypeNames((List<FormalTypeParam>)$7);
 		} 
 ;
 
@@ -1781,7 +1803,7 @@ qualified_namespace_name:
 ;
 
 namespace_name_list:
-		identifier										{ $$ = NewList<string>($1); }
+		identifier										{ $$ = new List<string>( ((string)$1).Split('\\') ); if (((List<string>)$$)[0]==""){ Debug.Fail("TODO: fully qualified namespace name!"); } }
 	|	namespace_name_list T_NS_SEPARATOR identifier	{ $$ = $1; ListAdd<string>($$, $3 ); }
 ;
 

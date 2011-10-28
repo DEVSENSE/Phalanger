@@ -185,6 +185,19 @@ namespace PHP.Core.Parsers
 
         private NamespaceDecl currentNamespace;
 
+        /// <summary>
+        /// Special names not namespaced. These names will not be translated using aliases and current namespace.
+        /// The list is dynamically extended during parsing with generic arguments.
+        /// </summary>
+        private readonly List<string>/*!*/reservedTypeNames = new List<string>()
+        {
+            Name.SelfClassName.Value,
+            Name.ParentClassName.Value,
+            GlobalConstant.False.FullName,
+            GlobalConstant.True.FullName,
+            GlobalConstant.Null.FullName,
+        };
+
 		// stack of string buffers; used when processing encaps strings
         private readonly Stack<PhpStringBuilder> strBufStack = new Stack<PhpStringBuilder>(100);
 
@@ -540,7 +553,8 @@ namespace PHP.Core.Parsers
             qname = TranslateNamespace(qname);
 
             if (!qname.IsFullyQualifiedName && qname.IsSimpleName &&
-                currentNamespace != null && currentNamespace.QualifiedName.Namespaces.Length > 0)
+                currentNamespace != null && currentNamespace.QualifiedName.Namespaces.Length > 0 &&
+                !reservedTypeNames.Contains(qname.Name.Value, StringComparer.OrdinalIgnoreCase))
             {
                 // "\foo"
                 fallbackQName = new QualifiedName(qname.Name) { IsFullyQualifiedName = true };
@@ -806,6 +820,19 @@ namespace PHP.Core.Parsers
                 errors.Add(FatalErrors.AliasAlreadyInUse, this.sourceUnit, this.yypos, fullQualifiedName.NamespacePhpName, alias);
         }
 
+        private void ReserveTypeNames(List<FormalTypeParam> typeParams)
+        {
+            if (typeParams == null) return;
+            foreach (var param in typeParams)
+                reservedTypeNames.Add(param.Name.Value);
+        }
+        private void UnreserveTypeNames(List<FormalTypeParam> typeParams)
+        {
+            if (typeParams == null) return;
+            foreach (var param in typeParams)
+                reservedTypeNames.Remove(param.Name.Value);
+        }
+
         /// <summary>
         /// Translate the name using defined aliases. Any first part of the <see cref="QualifiedName"/> will be translated.
         /// </summary>
@@ -819,12 +846,25 @@ namespace PHP.Core.Parsers
             // skip special names:
             if (qname.IsSimpleName)
             {
-                if (qname.Name == Name.ParentClassName ||
-                    qname.Name == Name.SelfClassName)
+
+                //if (qname.Name == Name.ParentClassName ||
+                //    qname.Name == Name.SelfClassName)
                 {
-                    qname.IsFullyQualifiedName = true;
-                    return qname;
+                    if (reservedTypeNames.Contains(qname.Name.Value, StringComparer.OrdinalIgnoreCase))
+                        return qname;
                 }
+
+                //if ((features & LanguageFeatures.ClrSemantics) != 0)
+                //{
+                //    if (qname == QualifiedName.Array ||
+                //        qname == QualifiedName.Boolean ||
+                //        qname == QualifiedName.Double ||
+                //        qname == QualifiedName.Integer ||
+                //        qname == QualifiedName.LongInteger ||
+                //        qname == QualifiedName.Object ||
+                //        qname == QualifiedName.String)
+                //        return qname;
+                //}
             }
 
             // return the alias if found:

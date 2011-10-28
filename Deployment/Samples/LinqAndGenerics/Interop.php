@@ -1,16 +1,15 @@
 <?
-	import namespace System;
-	import namespace System:::Reflection;
-	import namespace Phalanger;
-
 	// This script demonstrates interoperating with other .NET languages.
 	// PHP is now a fully-fledged extender, producer, and consumer.
 
 	namespace Phalanger
 	{
+
+        use System as S;
+
 		// the class is decorated with a custom attribute
-		[System:::Runtime:::InteropServices:::ComVisible(false)]
-		class MyComparer implements System:::Collections:::IEqualityComparer
+		[\System\Runtime\InteropServices\ComVisible(false)]
+		class MyComparer implements \System\Collections\IEqualityComparer
 		{
 			// The two methods in this class implement the IEqualityComparer interface. Overloads that match
 			// the interface signatures are automatically generated. If there were more overloads of e.g. the
@@ -37,8 +36,8 @@
 			// object f(object a, ref object b, int c, ref string d, out double e);
 			// object f(object a, ref object b, int c, ref string d, out double e, ICollection f);
 			
-			[Export]
-			function f($a, &$b, int $c, string &$d, [Out]double &$e, System:::Collections:::ICollection $f = NULL)
+			[\Export]
+			function f($a, &$b, int $c, string &$d, [\Out]double &$e, \System\Collections\ICollection $f = NULL)
 			{
 				echo "f invoked with arguments:";
 				echo "$a, $b, $c, $d, $e, $f";
@@ -54,7 +53,7 @@
 			// The following field is also exported. It will be exposed as a property of the respective name.
 			// The generated accessors will do all the necessary conversions from CLR to PHP and vice versa.
 		
-			[Export]
+			[\Export]
 			public $x;
 		
 			static function Run()
@@ -64,25 +63,25 @@
 				$x = 0;
 
 				echo "before: x = $x\n";
-				Int32::TryParse("1", $x);
+				S\Int32::TryParse("1", $x);
 				echo "after: x = $x\n";
 				
 				echo "\n";
 				echo "Calling a BCL method with 'params' variable number of arguments:\n";
 				
-				echo System:::String::Format("{0} {1} {2} {3} {4} {5} {6}\n\n",
+				echo i'S\String'::Format("{0} {1} {2} {3} {4} {5} {6}\n\n",
 					1,
 					1.1,
 					false,
 					"test",
-					DateTime::$Now,
-					Environment::$TickCount,
-					AppDomain::$CurrentDomain->FriendlyName);
+					S\DateTime::$Now,
+					S\Environment::$TickCount,
+					S\AppDomain::$CurrentDomain->FriendlyName);
 			
 				echo "Calling an exported field accessor:\n";
 			
 				// let's find and invoke the exported field accessor via Reflection
-				$property = Assembly::GetEntryAssembly()->GetType("Phalanger.Interop")->GetProperty("x");
+				$property = S\Reflection\Assembly::GetEntryAssembly()->GetType("Phalanger.Interop")->GetProperty("x");
 
 				$a = new Interop();
 				$a->x = 123;

@@ -351,7 +351,7 @@ namespace PHP.Core
 		public static Char TryObjectToChar(object obj, out ConversionStrictness strictness)
 		{
 			string result = TryObjectToString(obj, out strictness);
-			if (result.Length == 1) { strictness = ConversionStrictness.ImplExactMatch; return result[0]; }
+            if (result != null && result.Length == 1) { strictness = ConversionStrictness.ImplExactMatch; return result[0]; }
 
 			strictness = ConversionStrictness.Failed;
 			return '\0';

@@ -1,7 +1,4 @@
 <?
-	import namespace System;
-	import namespace Phalanger;
-
 	namespace Phalanger
 	{
 		class Demo
@@ -23,7 +20,7 @@
 					echo "\n";
 					echo "Enter your choice: ";
 					
-					$line = Console::ReadLine();
+					$line = \System\Console::ReadLine();
 					echo "\n";
 					
 					switch ($line)

@@ -378,6 +378,7 @@ namespace PHP.Core.Reflection
             : base(new DConstantDesc(declaringModule, PhpMemberAttributes.None, null))
         {
             this.realField = info;
+            this.qualifiedName = qualifiedName;
         }
 
 
@@ -388,6 +389,7 @@ namespace PHP.Core.Reflection
 			: base(new DConstantDesc(UnknownModule.RuntimeModule, PhpMemberAttributes.None, null))
 		{
 			this.realField = info;
+            this.qualifiedName = qualifiedName;
 		}
 
 		/// <summary>
