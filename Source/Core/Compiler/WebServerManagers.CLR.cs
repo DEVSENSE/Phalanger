@@ -232,8 +232,9 @@ namespace PHP.Core
 			watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite;
 			watcher.IncludeSubdirectories = true;
 
-			watcher.Changed += new FileSystemEventHandler(OnFileChanged);
-			watcher.Renamed += new RenamedEventHandler(OnFileRenamed);
+			watcher.Changed += OnFileChanged;
+			watcher.Renamed += OnFileRenamed;
+            watcher.Deleted += OnFileChanged;
 
 			watcher.EnableRaisingEvents = false;
 		}
@@ -750,7 +751,9 @@ namespace PHP.Core
             CompilerConfiguration config = new CompilerConfiguration(Configuration.Application);
             string name = WebCompilationContext.GetAssemblyCodedName(sourceFile, config);
 
-            DateTime sourceTime = File.GetLastWriteTime(sourceFile.FullPath.ToString());
+            string sourcePath = sourceFile.FullPath.ToString();
+            bool sourceExists = File.Exists(sourcePath);
+            DateTime sourceTime = sourceExists ? File.GetLastWriteTime(sourcePath) : DateTime.UtcNow.AddYears(1);   // If file does not exist, fake the sourceTime to NOT load any SSA DLL. Delete them instead.
             DateTime configTime = Configuration.LastConfigurationModificationTime;
 
             long sourceStamp = Math.Max(sourceTime.Ticks, configTime.Ticks);

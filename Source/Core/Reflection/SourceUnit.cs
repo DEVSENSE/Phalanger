@@ -244,8 +244,9 @@ namespace PHP.Core.Reflection
         /// <param name="namingContext">Naming context of the caller</param>
         public void AddImportedNamespaces(NamingContext namingContext)
         {
+            if (namingContext == null) return;
+
             throw new NotImplementedException();
-            //if (namingContext == null) return;
             //foreach (string s in namingContext.Prefixes)
             //{
             //    string nsn = s.EndsWith(QualifiedName.Separator.ToString()) ? s.Substring(0, s.Length - QualifiedName.Separator.ToString().Length) : s;
