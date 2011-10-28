@@ -441,6 +441,20 @@ namespace PHP.Core.AST
 			constant.RealFieldBuilder.SetCustomAttribute(builder);
 		}
 
+        internal override void Analyze(Analyzer analyzer)
+        {
+            if (!this.analyzed)
+            {
+                base.Analyze(analyzer);
+
+                // check some special constants (ignoring namespace)
+                if (this.Name.Value == GlobalConstant.Null.FullName ||
+                    this.Name.Value == GlobalConstant.False.FullName ||
+                    this.Name.Value == GlobalConstant.True.FullName)
+                    analyzer.ErrorSink.Add(FatalErrors.ConstantRedeclared, analyzer.SourceUnit, Position, this.Name.Value);
+            }
+        }
+
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>

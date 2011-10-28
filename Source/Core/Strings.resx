@@ -749,7 +749,7 @@ Stack trace:
     <value>Cannot redeclare function '{0}'</value>
   </data>
   <data name="constant_redeclared" xml:space="preserve">
-    <value>Cannot redeclare constant {0}</value>
+    <value>Cannot redeclare constant '{0}'</value>
   </data>
   <data name="class_not_found" xml:space="preserve">
     <value>Class '{0}' not found</value>

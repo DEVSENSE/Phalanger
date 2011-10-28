@@ -1339,7 +1339,7 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot redeclare constant {0}.
+        ///   Looks up a localized string similar to Cannot redeclare constant &apos;{0}&apos;.
         /// </summary>
         internal static string constant_redeclared {
             get {
