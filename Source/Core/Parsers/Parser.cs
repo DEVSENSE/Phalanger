@@ -183,7 +183,7 @@ namespace PHP.Core.Parsers
 
 		private const int strBufSize = 100;
 
-		private NamespaceDecl currentNamespace;
+        private NamespaceDecl currentNamespace;
 
 		// stack of string buffers; used when processing encaps strings
         private readonly Stack<PhpStringBuilder> strBufStack = new Stack<PhpStringBuilder>(100);
@@ -204,15 +204,15 @@ namespace PHP.Core.Parsers
 			Debug.Assert(reader != null && errors != null);
 
 			// initialization:
-			InitializeFields();
+            this.sourceUnit = sourceUnit;
+            this.errors = errors;
+            this.features = features;
+            this.reader = reader;
+            this.reductionsSink = reductionsSink;
+            InitializeFields();
 
 			this.scanner = new Scanner(initialPosition, reader, sourceUnit, errors, features);
 			this.scanner.CurrentLexicalState = initialLexicalState;
-			this.reductionsSink = reductionsSink;
-			this.errors = errors;
-			this.features = features;
-			this.sourceUnit = sourceUnit;
-			this.reader = reader;
 			this.currentScope = new Scope(1); // starts assigning scopes from 2 (1 is reserved for prepended inclusion)
 
 			this.unicodeSemantics = (features & LanguageFeatures.UnicodeSemantics) != 0;
@@ -234,7 +234,22 @@ namespace PHP.Core.Parsers
 			strBufStack.Clear();
 			docCommentStack.Clear();
 			condLevel = 0;
-			currentNamespace = null;
+
+            Debug.Assert(sourceUnit != null);
+
+            if (sourceUnit.CurrentNamespace.HasValue && sourceUnit.CurrentNamespace.Value.Namespaces.Length > 0)
+            {   // J: inject current namespace from sourceUnit:
+                this.currentNamespace = new AST.NamespaceDecl(Position.Initial, sourceUnit.CurrentNamespace.Value.ToStringList(), true);
+
+                // add aliases into the namespace:
+                if (sourceUnit.Aliases.Count > 0)
+                    foreach (var alias in sourceUnit.Aliases)
+                        this.currentNamespace.Aliases.Add(alias.Key, alias.Value);
+            }
+            else
+            {
+                this.currentNamespace = null;
+            }
 		}
 
 		private void ClearFields()
