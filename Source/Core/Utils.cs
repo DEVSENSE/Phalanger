@@ -447,7 +447,7 @@ namespace PHP.Core
                     i++;
                 }
             }
-            if (i < str.Length)
+            if (i < str.Length && str[i] != '\\')
                 result.Append(str[i]);
 
             return result.ToString();
