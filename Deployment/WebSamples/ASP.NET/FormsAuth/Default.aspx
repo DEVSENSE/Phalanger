@@ -12,7 +12,7 @@
             <table border="0" cellpadding="0" cellspacing="5">
                 <tr>
                     <td style="text-align: center">
-                	    You are currently logged in as <b><%= HttpContext::$Current->User->Identity->Name %></b>.
+                	    You are currently logged in as <b><%= \System\Web\HttpContext::$Current->User->Identity->Name %></b>.
                     </td>
                 </tr>
                 <tr>
