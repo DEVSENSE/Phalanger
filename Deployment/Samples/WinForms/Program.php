@@ -1,6 +1,6 @@
 <?
 import namespace System;
-import namespace System:::Windows:::Forms;
+import namespace System\Windows\Forms;
 
 import namespace WinForms;
 

@@ -1,13 +1,13 @@
 <?
 import namespace System;
-import namespace System:::Drawing;
-import namespace System:::Drawing:::Imaging;
-import namespace System:::Windows:::Forms;
+import namespace System\Drawing;
+import namespace System\Drawing\Imaging;
+import namespace System\Windows\Forms;
 
 import namespace Phalanger;
 
 namespace WinForms{
-	partial class Form1 extends System:::Windows:::Forms:::Form
+	partial class Form1 extends System\Windows\Forms\Form
 	{
         private $bitmap;
 		private $mandelbrot;
@@ -33,7 +33,7 @@ namespace WinForms{
 			$this->resolution = 8;
 		}
 		
-		private function Form1_Load(System:::Object $sender, System:::EventArgs $e)
+		private function Form1_Load(System\Object $sender, System\EventArgs $e)
 		{
             $this->mandelbrot = new MandelbrotSet($this->ClientSize->Width, $this->ClientSize->Height);
             
@@ -52,7 +52,7 @@ namespace WinForms{
 			$this->mandelbrot->SetSize($this->ClientSize->Width, $this->ClientSize->Height);
         }
         
-        private function Form1_Resize(System:::Object $sender, System:::EventArgs $e)
+        private function Form1_Resize(System\Object $sender, System\EventArgs $e)
         {
             if ($this->WindowState != FormWindowState::Minimized)
 			{
@@ -60,7 +60,7 @@ namespace WinForms{
 			}
         }
         
-        private function Form1_Move(System:::Object $sender, System:::EventArgs $e)
+        private function Form1_Move(System\Object $sender, System\EventArgs $e)
         {
             static $last_x, $last_y;
 				
@@ -76,7 +76,7 @@ namespace WinForms{
 			$last_y = $this->Location->Y;
         }
         
-         private function Form1_Click(System:::Object $sender, System:::EventArgs $e)
+         private function Form1_Click(System\Object $sender, System\EventArgs $e)
          {
         	// set a new center point of the Mandelbrot set and zoom in/out
 			$this->mandelbrot->SetCenter($e->X, $e->Y);
@@ -87,7 +87,7 @@ namespace WinForms{
 			$this->CreateBitmap();
          }
          
-         private function timer_Tick(System:::Object $sender, System:::EventArgs $e)
+         private function timer_Tick(System\Object $sender, System\EventArgs $e)
          {
             $bitmap = $this->BackgroundImage;
 			

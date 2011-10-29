@@ -1,7 +1,7 @@
 <?
 	import namespace System;
-	import namespace System:::Drawing;
-	import namespace System:::Windows:::Forms;
+	import namespace System\Drawing;
+	import namespace System\Windows\Forms;
 
 	import namespace Phalanger;
 

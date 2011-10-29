@@ -1,6 +1,6 @@
 <?
 	import namespace System;
-	import namespace System:::Drawing;
+	import namespace System\Drawing;
 
 	namespace Phalanger
 	{
