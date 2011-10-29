@@ -2037,4 +2037,10 @@ non-infringement.
   <data name="alias_in_use" xml:space="preserve">
     <value>Cannot use {0} as {1} because the name is already in use</value>
   </data>
+  <data name="class_in_use" xml:space="preserve">
+    <value>Cannot declare class {0} because the name is already in use</value>
+  </data>
+  <data name="generic_in_use" xml:space="preserve">
+    <value>Cannot declare generic type parameter {0} because the name is already in use</value>
+  </data>
 </root>

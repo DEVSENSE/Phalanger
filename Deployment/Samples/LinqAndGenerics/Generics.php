@@ -24,7 +24,7 @@
 		}
 		
 		// Generic class with two generic parameters:
-		class C1<:T, S:>
+		class C1<:T, U:>
 		{ }
 		
 		// Generic class with one generic parameter:

@@ -184,6 +184,8 @@ namespace PHP.Core.Parsers
 		private const int strBufSize = 100;
 
         private NamespaceDecl currentNamespace;
+        private bool IsInGlobalNamespace { get { return currentNamespace == null || currentNamespace.QualifiedName.Namespaces.Length == 0; } }
+        private string CurrentNamespaceName { get { return IsInGlobalNamespace ? string.Empty : currentNamespace.QualifiedName.ToString(); } }
 
         /// <summary>
         /// Special names not namespaced. These names will not be translated using aliases and current namespace.
@@ -553,7 +555,7 @@ namespace PHP.Core.Parsers
             qname = TranslateNamespace(qname);
 
             if (!qname.IsFullyQualifiedName && qname.IsSimpleName &&
-                currentNamespace != null && currentNamespace.QualifiedName.Namespaces.Length > 0 &&
+                !IsInGlobalNamespace &&
                 !reservedTypeNames.Contains(qname.Name.Value, StringComparer.OrdinalIgnoreCase))
             {
                 // "\foo"
@@ -661,13 +663,31 @@ namespace PHP.Core.Parsers
 			}
 		}
 
-		private void CheckReservedNameAbsence(Name typeName, Position position)
+		private bool CheckReservedNameAbsence(Name typeName, Position position)
 		{
-			if (Name.ParentClassName.Equals(typeName) || Name.SelfClassName.Equals(typeName))
-				errors.Add(Errors.CannotUseReservedName, SourceUnit, position, typeName);
+            if (Name.ParentClassName.Equals(typeName) || Name.SelfClassName.Equals(typeName))
+            {
+                errors.Add(Errors.CannotUseReservedName, SourceUnit, position, typeName);
+                return false;
+            }
+
+            return true;
 		}
 
-		private void CheckTypeParameterNames(List<FormalTypeParam> typeParams, string declarerName)
+        private void CheckTypeNameInUse(Name typeName, Position position)
+        {
+            if (CurrentScopeAliases.ContainsKey(typeName.Value) ||
+                reservedTypeNames.Contains(typeName.Value, StringComparer.OrdinalIgnoreCase))
+                errors.Add(FatalErrors.ClassAlreadyInUse, SourceUnit, position,
+                     CurrentNamespaceName + typeName.Value);
+        }
+
+        /// <summary>
+        /// Check is given <paramref name="declarerName"/> and its <paramref name="typeParams"/> are without duplicity.
+        /// </summary>
+        /// <param name="typeParams">Generic type parameters.</param>
+        /// <param name="declarerName">Type name.</param>
+		private void CheckTypeParameterNames(List<FormalTypeParam> typeParams, string/*!*/declarerName)
 		{
 			if (typeParams == null) return;
 
@@ -677,14 +697,18 @@ namespace PHP.Core.Parsers
 				{
 					ErrorSink.Add(Errors.GenericParameterCollidesWithDeclarer, SourceUnit, typeParams[i].Position, declarerName);
 				}
-				else
-				{
-					for (int j = 0; j < i; j++)
-					{
-						if (typeParams[j].Name.Equals(typeParams[i].Name))
-							errors.Add(Errors.DuplicateGenericParameter, SourceUnit, typeParams[i].Position);
-					}
-				}
+                else if (CurrentScopeAliases.ContainsKey(typeParams[i].Name.Value))
+                {
+                    ErrorSink.Add(Errors.GenericAlreadyInUse, SourceUnit, typeParams[i].Position, typeParams[i].Name.Value);
+                }
+                else
+                {
+                    for (int j = 0; j < i; j++)
+                    {
+                        if (typeParams[j].Name.Equals(typeParams[i].Name))
+                            errors.Add(Errors.DuplicateGenericParameter, SourceUnit, typeParams[i].Position);
+                    }
+                }
 			}
 		}
 
@@ -809,9 +833,9 @@ namespace PHP.Core.Parsers
             // add the alias:
             
             // check for alias duplicity:
-            if (!CurrentScopeAliases.ContainsKey(alias))
+            if (!CurrentScopeAliases.ContainsKey(alias) && !reservedTypeNames.Contains(alias, StringComparer.OrdinalIgnoreCase))
             {
-                // TODO: check if there is no conflict with some class delcaration
+                // TODO: check if there is no conflict with some class declaration (this should be in runtime ... but this overriding looks like useful features)
 
                 // add alias into the scope
                 CurrentScopeAliases.Add(alias, fullQualifiedName);
@@ -906,7 +930,7 @@ namespace PHP.Core.Parsers
             return QualifiedName.TranslateAlias(
                 qname,
                 CurrentScopeAliases,
-                (currentNamespace != null && currentNamespace.QualifiedName.Namespaces.Length > 0) ? currentNamespace.QualifiedName : (QualifiedName?)null);
+                IsInGlobalNamespace ? (QualifiedName?)null : currentNamespace.QualifiedName);
         }
 
         #endregion

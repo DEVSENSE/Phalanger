@@ -1673,6 +1673,11 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 40: // @5 -> 
 {
+			Name class_name = new Name((string)value_stack.array[value_stack.top-2].yyval.Object);
+
+			if (CheckReservedNameAbsence(class_name, value_stack.array[value_stack.top-2].yypos)) CheckTypeNameInUse(class_name, value_stack.array[value_stack.top-2].yypos);
+			CheckTypeParameterNames((List<FormalTypeParam>)value_stack.array[value_stack.top-1].yyval.Object, (string)value_stack.array[value_stack.top-2].yyval.Object);
+
 			ReserveTypeNames((List<FormalTypeParam>)value_stack.array[value_stack.top-1].yyval.Object);
 		}
         return;
@@ -1682,8 +1687,6 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 		  
 		  CheckReservedNamesAbsence((GenericQualifiedName?)value_stack.array[value_stack.top-5].yyval.Object, value_stack.array[value_stack.top-5].yypos);
 		  CheckReservedNamesAbsence((List<GenericQualifiedName>)value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-4].yypos);
-		  CheckReservedNameAbsence(class_name, value_stack.array[value_stack.top-8].yypos);
-			CheckTypeParameterNames((List<FormalTypeParam>)value_stack.array[value_stack.top-7].yyval.Object, (string)value_stack.array[value_stack.top-8].yyval.Object);
 		  
 		  yyval.Object = new TypeDecl(sourceUnit, CombinePositions(value_stack.array[value_stack.top-9].yypos, value_stack.array[value_stack.top-8].yypos), yypos, GetHeadingEnd(GetLeftValidPosition(10)), GetBodyStart(value_stack.array[value_stack.top-3].yypos), 
 				IsCurrentCodeConditional, GetScope(), 
@@ -1702,6 +1705,11 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 42: // @6 -> 
 {
+			Name class_name = new Name((string)value_stack.array[value_stack.top-2].yyval.Object);
+
+			if (CheckReservedNameAbsence(class_name, value_stack.array[value_stack.top-2].yypos)) CheckTypeNameInUse(class_name, value_stack.array[value_stack.top-2].yypos);
+			CheckTypeParameterNames((List<FormalTypeParam>)value_stack.array[value_stack.top-1].yyval.Object, (string)value_stack.array[value_stack.top-2].yyval.Object);
+		  
 			ReserveTypeNames((List<FormalTypeParam>)value_stack.array[value_stack.top-1].yyval.Object);
 		}
         return;
@@ -1710,8 +1718,6 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 		  Name class_name = new Name((string)value_stack.array[value_stack.top-7].yyval.Object);
 		  
 		  CheckReservedNamesAbsence((List<GenericQualifiedName>)value_stack.array[value_stack.top-4].yyval.Object, value_stack.array[value_stack.top-4].yypos);
-		  CheckReservedNameAbsence(class_name, value_stack.array[value_stack.top-7].yypos);
-		  CheckTypeParameterNames((List<FormalTypeParam>)value_stack.array[value_stack.top-6].yyval.Object, (string)value_stack.array[value_stack.top-7].yyval.Object);
 		  
 			if ((PhpMemberAttributes)value_stack.array[value_stack.top-10].yyval.Integer != PhpMemberAttributes.None)
 				errors.Add(Errors.InvalidInterfaceModifier, SourceUnit, value_stack.array[value_stack.top-10].yypos);

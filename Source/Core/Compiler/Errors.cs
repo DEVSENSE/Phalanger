@@ -815,7 +815,8 @@ namespace PHP.Core
 		public static readonly ErrorInfo CannotDeriveFromTypeParameter = new ErrorInfo(1173, "cannot_derive_from_type_parameter", ErrorSeverity.Error);
 		public static readonly ErrorInfo GenericCallToLibraryFunction = new ErrorInfo(1074, "generic_call_to_library_function", ErrorSeverity.Error);
 		public static readonly ErrorInfo ConstructorWithGenericParameters = new ErrorInfo(1075, "generic_parameters_disallowed_on_ctor", ErrorSeverity.Error);
-
+        public static readonly ErrorInfo GenericAlreadyInUse = new ErrorInfo(1076, "generic_in_use", ErrorSeverity.Error);
+        
 		public static readonly ErrorInfo TooManyTypeArgumentsInTypeUse = new ErrorInfo(1080, "too_many_type_arguments_in_type_use", ErrorSeverity.Error);
 		public static readonly ErrorInfo NonGenericTypeUsedWithTypeArgs = new ErrorInfo(1081, "non_generic_type_used_with_type_arguments", ErrorSeverity.Error);
 		public static readonly ErrorInfo MissingTypeArgumentInTypeUse = new ErrorInfo(1082, "missing_type_argument_in_type_use", ErrorSeverity.Error);
@@ -888,7 +889,8 @@ namespace PHP.Core
         public static readonly ErrorInfo MethodMustTakeExacArgsCount = new ErrorInfo(2032, "method_must_take_exact_args_count", ErrorSeverity.FatalError);
 
         public static readonly ErrorInfo AliasAlreadyInUse = new ErrorInfo(2040, "alias_in_use", ErrorSeverity.FatalError);
-	}
+        public static readonly ErrorInfo ClassAlreadyInUse = new ErrorInfo(2041, "class_in_use", ErrorSeverity.FatalError);
+    }
 
 	#endregion
 }
