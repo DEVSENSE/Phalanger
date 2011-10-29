@@ -483,6 +483,8 @@ namespace PHP.Core.Parsers
 								goto case Tokens.T_STRING;
 							}
 
+                            tokenSemantics.Object = base.GetTokenString();
+
 							goto default;
 						}
 
