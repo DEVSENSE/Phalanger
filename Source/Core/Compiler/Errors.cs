@@ -844,9 +844,9 @@ namespace PHP.Core
 		public static readonly ErrorInfo MissingCtorInClrSubclass = new ErrorInfo(1242, "missing_ctor_in_clr_subclass", ErrorSeverity.Error);
 
 		public static readonly ErrorInfo MissingImportedEntity = new ErrorInfo(1250, "missing_imported_entity", ErrorSeverity.Error);
-
         public static readonly ErrorInfo NamespaceKeywordUsedOutsideOfNamespace = new ErrorInfo(1251, "namespace_keyword_outside_namespace", ErrorSeverity.Error);
-
+        public static readonly ErrorInfo ImportOnlyInPureMode = new ErrorInfo(1252, "import_only_in_pure", ErrorSeverity.Error);
+        
         public static readonly ErrorInfo DllImportMethodMustBeStatic = new ErrorInfo(1260, "dll_import_must_be_static", ErrorSeverity.Error);
         public static readonly ErrorInfo DllImportMethodCannotBeAbstract = new ErrorInfo(1261, "dll_import_cannot_be_abstract", ErrorSeverity.Error);
 	}

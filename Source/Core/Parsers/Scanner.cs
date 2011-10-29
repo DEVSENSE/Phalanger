@@ -207,6 +207,11 @@ namespace PHP.Core.Parsers
 
 						goto default;
 
+                    case Tokens.T_ARRAY:
+                    case Tokens.T_LIST:
+                        tokenSemantics.Object = base.GetTokenString();  // remember the token string, so we can use these tokens as literals later, case sensitively
+                        goto default;
+
 					case Tokens.T_STRING_VARNAME:
 					case Tokens.T_NUM_STRING:
 					case Tokens.T_ENCAPSED_AND_WHITESPACE:
@@ -452,16 +457,16 @@ namespace PHP.Core.Parsers
 							goto default;
 						}
 
-                    //case Tokens.T_IMPORT:
-                    //    {
-                    //        if ((features & LanguageFeatures.V6Keywords) == 0)
-                    //        {
-                    //            token = Tokens.T_STRING;
-                    //            goto case Tokens.T_STRING;
-                    //        }
+                    case Tokens.T_IMPORT:
+                        {
+                            if (!sourceUnit.CompilationUnit.IsPure)
+                            {
+                                token = Tokens.T_STRING;
+                                goto case Tokens.T_STRING;
+                            }
 
-                    //        goto default;
-                    //    }
+                            goto default;
+                        }
 
 					case Tokens.T_BOOL_TYPE:
 					case Tokens.T_INT_TYPE:

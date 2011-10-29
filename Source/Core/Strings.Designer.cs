@@ -2414,6 +2414,15 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Import statement is only available in pure mode.
+        /// </summary>
+        internal static string import_only_in_pure {
+            get {
+                return ResourceManager.GetString("import_only_in_pure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Must be of the same type as this instance..
         /// </summary>
         internal static string incarnation_type_mismatch {

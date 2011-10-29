@@ -260,6 +260,8 @@ using Pair = System.Tuple<object,object>;
 %token T_LGENERIC
 %token T_RGENERIC
 
+%token T_IMPORT		// pure mode
+
 %token T_LINQ_SELECT
 %token T_LINQ_BY
 %token T_LINQ_WHERE
@@ -311,6 +313,8 @@ using Pair = System.Tuple<object,object>;
 %type<Object> use_statement_content_list              // null
 %type<Object> use_statement_content                   // null
 %type<Object> use_statement		                      // EmptyStmt
+%type<Object> import_statement		                  // EmptyStmt
+%type<Object> import_statement_list                   // EmptyStmt
 %type<Object> statement                               // Statement
 %type<Object> empty_statement                         // EmptyStmt
 %type<Object> non_empty_statement                     // Statement
@@ -461,11 +465,12 @@ using Pair = System.Tuple<object,object>;
 %type<Object> extends_opt                    // GenericQualifiedName?
 %type<Object> qualified_namespace_name       // QualifiedName	// has base name
 %type<Object> namespace_name_list			 // List<string>
+%type<Object> namespace_name_identifier		 // string
 
 %% /* Productions */
 
 start:
-		colons_opt
+		colons_opt 
 		{ 
 			astRoot = new GlobalCode(emptyStatementList, sourceUnit);
 		}
@@ -477,6 +482,15 @@ start:
 		{ 
 			List<Statement> top_statements = (List<Statement>)$3;
 			ListPrepend<Statement>(top_statements, $2);
+			astRoot = new GlobalCode(top_statements, sourceUnit);
+		}
+	|	colons_opt import_statement_list
+		{ 
+			astRoot = new GlobalCode(emptyStatementList, sourceUnit);
+		}
+	|	colons_opt import_statement_list top_statement_list 
+		{ 
+			List<Statement> top_statements = (List<Statement>)$3;
 			astRoot = new GlobalCode(top_statements, sourceUnit);
 		}
 ;
@@ -494,6 +508,15 @@ comma_opt:
 /* Added to distinguish identifiers from encapsulated strings both represented by T_STRING */
 identifier:
 		T_STRING { $$ = $1.Object; }
+;
+
+import_statement_list:	/* pure mode */
+		import_statement		{ $$ = new EmptyStmt(@$); }
+	|	import_statement_list import_statement	{ /*nop*/ }
+;
+
+import_statement: /* pure mode */
+	T_IMPORT T_NAMESPACE namespace_name_list ';'	{ /* nop */ $$ = new EmptyStmt(@$); AddImport( new QualifiedName( (List<string>)$3, false, true ) ); }
 ;
 
 use_statement: /* PHP 5.3 */
@@ -1809,8 +1832,14 @@ qualified_namespace_name:
 ;
 
 namespace_name_list:
-		identifier										{ $$ = new List<string>( ((string)$1).Split('\\') ); if (((List<string>)$$)[0]==""){ Debug.Fail("TODO: fully qualified namespace name!"); } }
-	|	namespace_name_list T_NS_SEPARATOR identifier	{ $$ = $1; ListAdd<string>($$, $3 ); }
+		identifier														{ $$ = new List<string>( ((string)$1).Split('\\') ); if (((List<string>)$$)[0]==""){ Debug.Fail("TODO: fully qualified namespace name!"); } }
+	|	namespace_name_list T_NS_SEPARATOR namespace_name_identifier	{ $$ = $1; ListAdd<string>($$, $3 ); }
+;
+
+namespace_name_identifier:	// identifier + some keywords that should be used within qualified name (List, Array, ...)
+		identifier		{ $$ = $1; }
+	|	T_LIST			{ $$ = $1.Object; }
+	|	T_ARRAY			{ $$ = $1.Object; }
 ;
 
 keyed_field_names_opt:

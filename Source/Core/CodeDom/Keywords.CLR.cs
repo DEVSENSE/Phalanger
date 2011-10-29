@@ -61,6 +61,7 @@ namespace PHP.Core.CodeDom
 		public const string Require        = "require";
 		public const string RequireOnce    = "require_once";
 		public const string Use            = "use";
+        public const string Import = "import";
 		public const string Global         = "global";
 		public const string IsSet          = "isset";
 		public const string Empty          = "empty";
@@ -84,9 +85,8 @@ namespace PHP.Core.CodeDom
 		public const string Public         = "public";
 		public const string InstanceOf     = "instanceof";
 		public const string Namespace      = "namespace";
-		public const string Import         = "import";
 		public const string Partial        = "partial";
-
+        
 		public const string NAMESPACE      = "__NAMESPACE__";
 		public const string CLASS          = "__CLASS__";
 		public const string FUNCTION       = "__FUNCTION__";
@@ -220,8 +220,7 @@ namespace PHP.Core.CodeDom
 		public const string Arrow                 = "->";
 		public const string DoubleArrow           = "=>";
 		public const string DoubleColon           = "::";
-		//public const string TripleColon           = ":::";
-        public const string NamespaceSeparator    = "\\";
+		public const string NamespaceSeparator    = "\\";
 
 		public const string Increment             = "++";
 		public const string Decrement             = "--";
