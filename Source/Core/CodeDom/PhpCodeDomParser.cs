@@ -125,7 +125,7 @@ namespace PHP.Core.CodeDom
             /// <returns><see cref="Type"/> if found or null.</returns>
             protected Type GetType(CodeTypeReference t)
             {
-                return Helper.GetType(t, aliases, imports.ToArray(), owner.references);
+                return Helper.GetType(t, CurrentBlockAliases, imports.ToArray(), owner.references);
             }
 
             /// <summary>Returns value indicating if <see cref="NewEx"/> can syntactically be creation of delegate</summary>
@@ -528,12 +528,14 @@ namespace PHP.Core.CodeDom
                     )
                 });
                 return ret;*/
-                aliases.Clear();
-                imports.Clear();
+                this.aliases.Clear();
+                this.imports.Clear();
                 CodeCompileUnit ret = new CodeCompileUnit();
                 CodeNamespace DefaultNamespace = new CodeNamespace();
+
+                PushAliases(gc.SourceUnit.Aliases);
                 ret.Namespaces.Add(DefaultNamespace);
-                foreach (var pair in gc.SourceUnit.Aliases) aliases.Add(pair.Key, pair.Value.ToClrNotation(0, 0));
+                
 
                 if (gc.SourceUnit.HasImportedNamespaces)
                     foreach (QualifiedName Namespace in gc.SourceUnit.ImportedNamespaces)
@@ -543,9 +545,32 @@ namespace PHP.Core.CodeDom
                     }
 
                 TranslateBlock(gc.Statements, new MethodContextBase(), new FileContext(ret));
+
+                PopAliases();
                 return ret;
             }
-            private Dictionary<string, string>/*!*/ aliases = new Dictionary<string, string>(StringComparer.Ordinal);
+
+            #region Aliases valid for current block
+
+            private Dictionary<string, string> CurrentBlockAliases { get { return (aliases.Count > 0) ? aliases.Peek() : null; } }
+            private Stack<Dictionary<string, string>>/*!*/aliases = new Stack<Dictionary<string, string>>();
+            private void PushAliases(Dictionary<string, QualifiedName>/*!*/aliases)
+            {
+                Debug.Assert(aliases != null);
+                Dictionary<string, string> clrAliases = new Dictionary<string, string>(aliases.Count);
+                foreach (var pair in aliases)
+                    clrAliases.Add(pair.Key, pair.Value.ToClrNotation(0, 0));
+
+                this.aliases.Push(clrAliases);
+            }
+            private void PopAliases()
+            {
+                Debug.Assert(this.aliases.Count > 0);
+                this.aliases.Pop();
+            }
+
+            #endregion
+
             /// <summary>Contains value of the <see cref="Imports"/> property</summary>
             private readonly List<string> imports = new List<string>();
             /// <summary>List of currently imported namespaces</summary>
@@ -2225,10 +2250,14 @@ namespace PHP.Core.CodeDom
             /// <param name="block">Block this namespace is containded in (should be <see cref="FileContext"/>)</param>
             protected void TranslateNamespace(NamespaceDecl /*!*/ sNamespace, IBlockContext /*!*/ block)
             {
+                PushAliases(sNamespace.Aliases);
+
                 CodeNamespace cNamespace = (CodeNamespace)
                     block.AddObject(new CodeNamespace(getCLRName(sNamespace.QualifiedName)), sNamespace);
                 currentNamespace = sNamespace.QualifiedName.ToString();
                 TranslateBlock(sNamespace.Statements, new MethodContextBase(), new NamespaceContext(cNamespace));
+
+                PopAliases();
             }
 
             /// <summary>Translates declaration of PHP type to CodeDOM and emits its content</summary>
