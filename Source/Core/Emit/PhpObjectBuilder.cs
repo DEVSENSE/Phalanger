@@ -304,7 +304,7 @@ namespace PHP.Core.Emit
                     {
                         constructorFound = true;
 
-                        if (!construct.IsPublic || construct.IsStatic || construct.PhpRoutine == null)
+                        if (!construct.IsPublic || construct.IsStatic || construct.PhpRoutine == null || construct.PhpRoutine.ArgLessInfo == null)
                             construct = null; // invalid constructor found, fall back to dynamic behavior
                         
                         break;
