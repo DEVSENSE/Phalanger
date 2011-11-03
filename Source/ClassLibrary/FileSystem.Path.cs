@@ -127,7 +127,12 @@ namespace PHP.Library
 		internal static string GetUrl(string/*!*/ absolutePath)
 		{
 			// Assert that the path is absolute
-			Debug.Assert(absolutePath.IndexOf(':') > 0);
+            Debug.Assert(
+                !string.IsNullOrEmpty(absolutePath) &&
+                (absolutePath.IndexOf(':') > 0 ||   // there is a protocol (http://) or path is rooted (c:\)
+                    (Path.VolumeSeparatorChar != ':' && // or on linux, if there is no protocol, file path is rooted
+                        (absolutePath[0] == Path.DirectorySeparatorChar || absolutePath[0] == Path.AltDirectorySeparatorChar)))                      
+                );
 
 			if (Path.IsPathRooted(absolutePath))
 				return String.Concat("file://", absolutePath);

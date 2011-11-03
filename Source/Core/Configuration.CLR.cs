@@ -1100,7 +1100,11 @@ namespace PHP.Core
 
                 // default paths, used when the configuration does not set its own:
 
-                string current_app_dir = (http_context != null) ? http_context.Server.MapPath("/bin") : ".";
+                string bin;
+                try { bin = http_context.Server.MapPath("/bin"); }  // this can throw on Mono
+                catch (InvalidOperationException) { bin = "bin"; }
+
+                string current_app_dir = (http_context != null) ? bin : ".";
                 libraries = manager = natives = wrappers = typeDefs = new FullPath(current_app_dir);
 
                 string dynamic_path = (http_context != null) ? current_app_dir : Path.GetTempPath();

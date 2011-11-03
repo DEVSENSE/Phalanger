@@ -137,9 +137,6 @@ xcopy /q /y "$(TargetPath)" "$(SolutionDir)..\Deployment\Bin"
     </ProjectReference>
     <ProjectReference Include="..\ExtSupport\PHP4\ExtSupport4.vcxproj">
       <Project>{b22c626d-e80c-4a2e-a7de-0e7ce6467e31}</Project>
-      <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\ShmChannel\ShmChannel.csproj">
       <Project>{0d5b7bfc-1236-4d9d-ac17-4a5c0964c1a2}</Project>
