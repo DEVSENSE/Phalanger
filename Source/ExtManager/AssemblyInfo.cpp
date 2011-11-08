@@ -23,7 +23,7 @@ using namespace System::Runtime::CompilerServices;
 [assembly:AssemblyCopyrightAttribute("")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];		
-[assembly:AssemblyVersionAttribute("2.2.0.0")];
+[assembly:AssemblyVersionAttribute("3.0.0.0")];
 [assembly:AssemblyDelaySignAttribute(false)];
 [assembly:AssemblyKeyFileAttribute("")];
 [assembly:AssemblyKeyNameAttribute("")];

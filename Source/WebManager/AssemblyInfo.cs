@@ -21,5 +21,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright("Copyright 2005-2006 Tomas Matousek")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("2.2.0.0")]
+[assembly: AssemblyVersion("3.0.0.0")]
 
