@@ -623,7 +623,7 @@ namespace PHP.Core.Binders
                                     Expression.Assign(insideCaller,
                                                         Expression.Constant(false))
                                     ),
-                                retValVariable);
+                                 HandleResult(retValVariable, method.PhpRoutine.ArgFullInfo.ReturnType, false));
         }
 
 
