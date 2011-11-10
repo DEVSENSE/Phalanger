@@ -530,7 +530,8 @@ namespace PHP.Core.Reflection
 							else if (in_supertype)
 							{
 								// we need to add a ghost implementation:
-								this.AddGhostImplementation(abstract_declaration, implementation);
+                                if (php_type.Builder != null)
+								    this.AddGhostImplementation(abstract_declaration, implementation);
 							}
 							else
 							{
