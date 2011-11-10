@@ -455,12 +455,24 @@ namespace PHP.Library
 			}
 
 			// no match has been found
-			if (matchAll/* bug?: && (flags & MatchFlags.PatternOrder) == 0 */)
+			if (matchAll && (flags & MatchFlags.SetOrder) == 0)
 			{
 				// in that case PHP returns an array filled with empty arrays according to parentheses count
 				matches = new PhpArray(m.Groups.Count);
-				for (int i = 0; i < converter.Regex.GetGroupNumbers().Length; i++)
-					matches[i] = new PhpArray(0);
+                for (int i = 0; i < converter.Regex.GetGroupNumbers().Length; i++)
+                {
+                    // named group?
+                    string name = converter.Regex.GroupNameFromNumber(i);
+                    //remove sign from the beginning of the groupName
+                    name = name.Remove(0, PerlRegExpConverter.GroupPrefix.Length);
+
+                    if (!String.IsNullOrEmpty(name) && name != i.ToString())
+                    {
+                        matches[name] = new PhpArray(0);
+                    }
+
+                    matches[i] = new PhpArray(0);
+                }
 			}
 			else
 			{
