@@ -290,7 +290,7 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Protects both <see cref="cache"/> and <see cref="modules"/>.
 		/// </summary>
-		private readonly ReaderWriterLockSlim/*!*/rwLock = new ReaderWriterLockSlim();
+		private readonly ReaderWriterLockSlim/*!*/rwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
 		/// <summary>
 		/// Maps transient source code to its compiled form - an instance of <see cref="ScriptModule"/> class.
