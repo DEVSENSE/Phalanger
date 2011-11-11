@@ -84,17 +84,24 @@ namespace PHP.Library
 		[return: CastToFalse]
 		public static PhpBytes DecodeBase64(string encoded_data)
 		{
-			if (encoded_data == null) return null;
-			try
-			{
-				return new PhpBytes(System.Convert.FromBase64String(encoded_data));
-			}
-			catch (FormatException)
-			{
-				PhpException.Throw(PhpError.Warning, LibResources.GetString("invalid_base64_encoded_data"));
-				return null;
-			}
+            return DecodeBase64(encoded_data, false);
 		}
+
+        [ImplementsFunction("base64_decode"), EditorBrowsable(EditorBrowsableState.Never)]
+        [return: CastToFalse]
+        public static PhpBytes DecodeBase64(string encoded_data, bool strict /* = false*/)
+        {
+            if (encoded_data == null) return null;
+            try
+            {
+                return new PhpBytes(System.Convert.FromBase64String(encoded_data));
+            }
+            catch (FormatException)
+            {
+                PhpException.Throw(PhpError.Warning, LibResources.GetString("invalid_base64_encoded_data"));
+                return null;
+            }
+        }
 
 		[ImplementsFunction("base64_encode"), EditorBrowsable(EditorBrowsableState.Never)]
 		public static string EncodeBase64(PhpBytes data_to_encode)
