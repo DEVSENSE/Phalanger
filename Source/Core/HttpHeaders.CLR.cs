@@ -406,7 +406,7 @@ namespace PHP.Core
         /// <returns></returns>
         protected virtual Encoding ContentTypeEncoding(string contentType)
         {
-            if (contentType == null || contentType.ToLower().StartsWith("text/"))
+            if (contentType == null || CultureInfo.InvariantCulture.TextInfo.ToLower(contentType).StartsWith("text/"))
                 return RequestContext.CurrentContext.DefaultResponseEncoding;
             else
                 return Configuration.Application.Globalization.PageEncoding;

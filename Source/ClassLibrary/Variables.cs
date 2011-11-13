@@ -298,7 +298,7 @@ namespace PHP.Library
 		[ImplementsFunction("settype")]
 		public static bool SetType(ref object variable, string type)
 		{
-			switch (type.ToLower())
+            switch (System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToLower(type)) // we don't need Unicode characters to be lowercased properly // CurrentCulture is slow
 			{
 				case "bool":
 				case "boolean":

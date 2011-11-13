@@ -124,7 +124,7 @@ namespace PHP.Library
                 // modify the "form" element
                 const string strFormTag = "form";
 
-                if ( tagName.ToLower() == strFormTag &&
+                if ( string.Compare(tagName, strFormTag, StringComparison.InvariantCultureIgnoreCase) == 0 &&
                      ScriptContext.CurrentContext.Config.Session.UrlRewriterTags.ContainsKey(strFormTag) )
                 {
                     foreach (KeyValuePair<string, string> item in rewriter.Variables)

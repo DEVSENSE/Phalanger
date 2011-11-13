@@ -364,7 +364,7 @@ namespace PHP.Library
 			string sval = value as string;
 			if (sval != null)
 			{
-				switch (sval.ToLower())
+				switch (sval.ToLower(System.Globalization.CultureInfo.InvariantCulture)) // we dont need any unicode chars lowercased properly, CurrentCulture is slow
 				{
 					case "on":
 					case "yes": return true;
@@ -528,7 +528,7 @@ namespace PHP.Library
 			if (action == IniAction.Set)
 			{
 				string svalue = Convert.ObjectToString(value);
-				local.ErrorControl.SysLog = svalue.ToLower() == ErrorLogSysLog;
+				local.ErrorControl.SysLog = (string.Compare(svalue, ErrorLogSysLog, StringComparison.InvariantCultureIgnoreCase) == 0);
 				local.ErrorControl.LogFile = (local.ErrorControl.SysLog) ? svalue : null;
 			}
 			return result;

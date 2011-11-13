@@ -457,7 +457,7 @@ namespace PHP.Library
 
             if (acceptEncoding != null)
             {
-                acceptEncoding = acceptEncoding.ToLower();
+                acceptEncoding = acceptEncoding.ToLower(System.Globalization.CultureInfo.InvariantCulture);
 
                 if (acceptEncoding.Contains("gzip"))
                     return DoGzipHandler(data, httpcontext, ContentEncoding.gzip);
