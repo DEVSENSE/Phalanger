@@ -172,6 +172,11 @@ namespace PHP.Core.AST
 
 			il.Emit(OpCodes.Brfalse, false_label);
 			conditions[0].Statement.Emit(codeGenerator);
+
+            codeGenerator.MarkSequencePoint(    // (J) Mark the end of condition body so debugger will jump off the block properly
+                conditions[0].Statement.Position.LastLine, conditions[0].Statement.Position.LastColumn,
+                conditions[0].Statement.Position.LastLine, conditions[0].Statement.Position.LastColumn + 1);
+
 			il.Emit(OpCodes.Br, exit_label);
 
 			// ELSEIF:
