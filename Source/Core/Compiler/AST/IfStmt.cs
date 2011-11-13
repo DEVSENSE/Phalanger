@@ -152,7 +152,7 @@ namespace PHP.Core.AST
 			return this;
 		}
 
-		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
+        /// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
 		internal override void Emit(CodeGenerator codeGenerator)
 		{
 			Statistics.AST.AddNode("IfStmt");
@@ -160,11 +160,7 @@ namespace PHP.Core.AST
 			Debug.Assert(conditions.Count > 0);
 
 			// marks a sequence point containing whole condition:
-			codeGenerator.MarkSequencePoint(
-					  conditions[0].Condition.Position.FirstLine,
-					  conditions[0].Condition.Position.FirstColumn,
-					  conditions[0].Condition.Position.LastLine,
-					  conditions[0].Condition.Position.LastColumn + 1);
+			codeGenerator.MarkSequencePoint(conditions[0].Condition);   // NOTE: (J) when emitting a statement, sequence point has to be marked. Normally it is done in Statement.Emit()
 
 			ILEmitter il = codeGenerator.IL;
 
@@ -185,6 +181,7 @@ namespace PHP.Core.AST
 				false_label = il.DefineLabel();
 
 				// IF (!<(bool) condition>)
+                codeGenerator.MarkSequencePoint(conditions[i].Condition);   // marks a sequence point of the condition "statement"
 				codeGenerator.EmitConversion(conditions[i].Condition, PhpTypeCode.Boolean);
 				il.Emit(OpCodes.Brfalse, false_label);
 
