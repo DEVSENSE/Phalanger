@@ -549,11 +549,13 @@ namespace PHP.Core
 			this.ReturnsPhpReference = function.Signature.AliasReturn;
 
             // CallSites
-            fd_context.CallSites = callSites;
-            this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
-                sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
-                fd_context.Name.ToString(),
-                LiteralPlace.Null);
+            fd_context.CallSites = null;//fd_context.CallSites = callSites;
+            //this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
+            //    sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
+            //    fd_context.Name.ToString(),
+            //    LiteralPlace.Null);
+            // keep current site container, just change the class context (to avoid of creating and baking so many types)
+            this.callSites.PushClassContext(LiteralPlace.Null, null);
             
             // Set ILEmitter to function's body
 			fd_context.IL = this.il;
@@ -619,11 +621,11 @@ namespace PHP.Core
 			locationStack.Pop();
 
             // close CallSites:
-            this.callSites.Bake();
-
+            //this.callSites.Bake();
+            
 			// restore:
-            this.callSites = fd_context.CallSites;
-			this.il = fd_context.IL;
+            this.callSites.PopClassContext();//this.callSites = fd_context.CallSites;
+            this.il = fd_context.IL;
 			this.ScriptContextPlace = fd_context.ScriptContextPlace;
 			this.TypeContextPlace = fd_context.ClassContextPlace;
 			this.SelfPlace = fd_context.SelfPlace;

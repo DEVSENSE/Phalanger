@@ -67,6 +67,7 @@ namespace PHP.Core.Emit
 		public static readonly Type[] PhpTypeDesc = new Type[] { typeof(PHP.Core.Reflection.PhpTypeDesc) };
         public static readonly Type[] CallSiteBinder = new Type[] { typeof(CallSiteBinder) };
         public static readonly Type[] CallSite = new Type[] { typeof(CallSite) };
+        public static readonly Type[] CallSiteGeneric = new Type[] { typeof(CallSite<>) };
 
         public static readonly Type[] BigInteger = new Type[] { typeof(System.Numerics.BigInteger) };
         public static readonly Type[] Complex = new Type[] { typeof(System.Numerics.Complex) };
