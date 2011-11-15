@@ -1894,16 +1894,29 @@ namespace PHP.Core
             {
                 Assembly ass;
 
-                switch ((ExtensionLibraryDescriptor.ExtSupportVersion)i)
+                try
                 {
-                    case ExtensionLibraryDescriptor.ExtSupportVersion.php4ts:
-                         ass = Assembly.Load("php4ts, Version=3.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0");
-                         break;
-                    case ExtensionLibraryDescriptor.ExtSupportVersion.php5ts:
-                         ass = Assembly.Load("php5ts, Version=3.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0");
-                         break;
-                    default:
-                         throw new NotImplementedException("Not implemented extension support " + (ExtensionLibraryDescriptor.ExtSupportVersion)i);
+                    switch ((ExtensionLibraryDescriptor.ExtSupportVersion)i)
+                    {
+                        case ExtensionLibraryDescriptor.ExtSupportVersion.php4ts:
+                            ass = Assembly.Load("php4ts, Version=3.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0");
+                            break;
+                        case ExtensionLibraryDescriptor.ExtSupportVersion.php5ts:
+                            ass = Assembly.Load("php5ts, Version=3.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0");
+                            break;
+                        default:
+                            throw new NotImplementedException("Not implemented extension support " + (ExtensionLibraryDescriptor.ExtSupportVersion)i);
+                    }
+                }
+                catch (FileNotFoundException)
+                {
+                    if (Environment.Is64BitProcess)
+                        throw new FileLoadException("Native extension support is not available in 64-bit processes.\n" +
+                        ((System.Web.HttpContext.Current != null) ?
+                        "Please 'Enable 32-bit Applications' in 'Advanced settings' of your IIS 'Application Pool'." :
+                        "Please run this process on 32-bit OS or mark it as X86 using 'corflags.exe'."));
+                    else
+                        throw;
                 }
 
                 Debug.Assert(ass != null);
