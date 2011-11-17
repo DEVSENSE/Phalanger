@@ -1915,6 +1915,8 @@ namespace PHP.Core
 				// sets variables place in the table:
 				VariablesTable.Entry entry = routine.Builder.LocalVariables[param.Name];
 
+                bool optional = index >= routine.Signature.MandatoryParamCount;
+
 				// only variables accessible by function's code are initialized;
 				// these are 
 				// - all if function has unoptimized locals or contains indirect access 
@@ -1924,8 +1926,6 @@ namespace PHP.Core
 				{
 					// if the argument is reference => the local should also be a reference:
 					Debug.Assert(!param.PassedByRef || entry.IsPhpReference);
-
-					bool optional = index >= routine.Signature.MandatoryParamCount;
 
 					// marks a sequence point if a parameter is initialized or type hinted:
 					if (optional || param.TypeHint != null)
@@ -2007,8 +2007,32 @@ namespace PHP.Core
 				}
 				else
 				{
-					// emits type hint test (if specified):
-					param.EmitTypeHintTest(this);
+                    if (param.TypeHint != null)
+                    {
+                        if (optional)
+                        {
+                            // convert Arg.Default to proper default value (so TypeHint test will check the proper value):
+
+                            Label is_default = il.DefineLabel();
+                            Label end_if = il.DefineLabel();
+
+                            // if (ARG[arg_idx] = Arg.Default) THEN
+                            il.Ldarg(real_index);
+                            il.Emit(OpCodes.Ldsfld, Fields.Arg_Default);
+                            il.Emit(OpCodes.Beq_S, is_default);
+                            il.Emit(OpCodes.Br_S, end_if);
+                            {
+                                // ARG[arg_idx] = <default value>;
+                                il.MarkLabel(is_default);
+                                EmitLoadArgumentDefaultValue(index, param, routine.FullName);
+                                il.Starg(real_index);
+                            }
+                            il.MarkLabel(end_if);
+                        }
+
+                        // emits type hint test (if specified):
+                        param.EmitTypeHintTest(this);
+                    }
 				}
 
 				real_index++;
