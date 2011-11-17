@@ -1478,7 +1478,7 @@ namespace PHP.Core.Reflection
 			DObject php_obj;
 
 			if (obj == null) return 1;
-			if (obj is bool) return (HasSetInstanceProperties ? 2 : 1) - ((bool)obj ? 2 : 1);
+            if (obj is bool) return 1 - ((bool)obj ? 1 : 0);
 
 			if ((php_obj = obj as DObject) != null)
 			{
@@ -1634,7 +1634,8 @@ namespace PHP.Core.Reflection
 		/// </remarks>
 		public int ToInteger()
 		{
-			return (HasSetInstanceProperties) ? 1 : 0;
+            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted_to_int",TypeName));
+			return 1;
 		}
 
 		/// <summary>
@@ -1646,7 +1647,8 @@ namespace PHP.Core.Reflection
 		/// </remarks>
 		public long ToLongInteger()
 		{
-			return (HasSetInstanceProperties) ? 1 : 0;
+            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted_to_int", TypeName));
+			return 1;
 		}
 
 		/// <summary>
@@ -1658,7 +1660,8 @@ namespace PHP.Core.Reflection
 		/// </remarks>
 		public double ToDouble()
 		{
-			return (HasSetInstanceProperties) ? 1.0 : 0.0;
+            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted_to_double", TypeName));
+			return 1.0;
 		}
 
 		/// <summary>
@@ -1670,7 +1673,7 @@ namespace PHP.Core.Reflection
 		/// </remarks>
 		public virtual bool ToBoolean()
 		{
-			return HasSetInstanceProperties;
+			return true;
 		}
 
 		/// <summary>
@@ -1724,9 +1727,10 @@ namespace PHP.Core.Reflection
 		/// <returns><see cref="Convert.NumberInfo.Integer"/>.</returns>
 		public Convert.NumberInfo ToNumber(out int intValue, out long longValue, out double doubleValue)
 		{
-			intValue = (HasSetInstanceProperties) ? 1 : 0;
-			doubleValue = intValue;
-			longValue = intValue;
+			intValue = 1;
+			doubleValue = 1.0;
+			longValue = 1;
+            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted_to_int", TypeName));
 			return Convert.NumberInfo.Integer;
 		}
 
@@ -2610,33 +2614,33 @@ namespace PHP.Core.Reflection
 			}
 		}
 
-		/// <summary>
-		/// Returns <B>true</B> is this instance contains at least one instance property that is not unset.
-		/// </summary>
-		public bool HasSetInstanceProperties
-		{
-			get
-			{
-				if (RuntimeFields != null && RuntimeFields.Count > 0) return true;
+        ///// <summary>
+        ///// Returns <B>true</B> is this instance contains at least one instance property that is not unset.
+        ///// </summary>
+        //public bool HasSetInstanceProperties
+        //{
+        //    get
+        //    {
+        //        if (RuntimeFields != null && RuntimeFields.Count > 0) return true;
 
-				// enumerate CT properties
-				foreach (KeyValuePair<VariableName, DPropertyDesc> pair in TypeDesc.EnumerateProperties())
-				{
-					DPropertyDesc property = pair.Value;
-					if (property.IsStatic) continue;
+        //        // enumerate CT properties
+        //        foreach (KeyValuePair<VariableName, DPropertyDesc> pair in TypeDesc.EnumerateProperties())
+        //        {
+        //            DPropertyDesc property = pair.Value;
+        //            if (property.IsStatic) continue;
 
-					if (!(property is DPhpFieldDesc)) return true;
-					else
-					{
-						// PHP fields can be unset!
-						PhpReference property_value_ref = property.Get(this) as PhpReference;
-						if (property_value_ref == null || property_value_ref.IsSet) return true;
-					}
-				}
+        //            if (!(property is DPhpFieldDesc)) return true;
+        //            else
+        //            {
+        //                // PHP fields can be unset!
+        //                PhpReference property_value_ref = property.Get(this) as PhpReference;
+        //                if (property_value_ref == null || property_value_ref.IsSet) return true;
+        //            }
+        //        }
 
-				return false;
-			}
-		}
+        //        return false;
+        //    }
+        //}
 
 		#endregion
 

@@ -2049,4 +2049,10 @@ non-infringement.
   <data name="import_deprecated" xml:space="preserve">
     <value>Import statement is deprecated and will be removed in future versions. Use PHP aliasing instead.</value>
   </data>
+  <data name="object_could_not_be_converted_to_double" xml:space="preserve">
+    <value>Object of class {0} could not be converted to double</value>
+  </data>
+  <data name="object_could_not_be_converted_to_int" xml:space="preserve">
+    <value>Object of class {0} could not be converted to int</value>
+  </data>
 </root>
