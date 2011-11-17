@@ -460,7 +460,10 @@ namespace PHP.Core
 		/// does not have a valid structure to be used as a callback (Warning).</exception>
 		public static PhpCallback ObjectToCallback(object var, bool quiet)
 		{
-			// function name given as string-like type
+            // empty variable
+            if (PhpVariable.IsEmpty(var)) return null;
+            
+            // function name given as string-like type
 			string name = PhpVariable.AsString(var);
 			if (name != null) return new PhpCallback(name);
 
@@ -496,9 +499,6 @@ namespace PHP.Core
                 return new PhpCallback(obj, method);
             }
             
-            // empty variable
-            if (PhpVariable.IsEmpty(var)) return null;
-
             // invalid callback
             if (!quiet) PhpException.Throw(PhpError.Warning, CoreResources.GetString("invalid_callback"));
 			return PhpCallback.Invalid;
