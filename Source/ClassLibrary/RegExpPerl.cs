@@ -1196,10 +1196,7 @@ namespace PHP.Library
 				{
 					object arr = NewArrayItem(m.Groups[j].Value, m.Groups[j].Index, addOffsets);
 					
-					// named group?
-                    string name = r.GroupNameFromNumber(j);
-
-                    AddGroupNameToResult(r, matches, i, (p, groupName) =>
+                    AddGroupNameToResult(r, pa, j, (p, groupName) =>
                     {
                         p[groupName] = arr;
                     });
