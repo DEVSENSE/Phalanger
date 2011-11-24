@@ -608,10 +608,12 @@ namespace PHP.Core
 			if (globalFuncs)
 			{
 				// localVariables = null, namingContext = null
-				// ScriptContex.Call(null, null, "Foo", ScriptContext.Current).value;
+				// ScriptContex.Call(null, null, "Foo", null, ScriptContext.Current).value;
 				il.LoadLiteral(null);
 				il.LoadLiteral(null);
 				il.LoadLiteral(methName);
+                il.LoadLiteral(null);
+                il.Emit(OpCodes.Ldsflda, il.TypeBuilder.DefineField("<callHint>'lambda", typeof(PHP.Core.Reflection.DRoutineDesc), FieldAttributes.Static | FieldAttributes.Private));
 				il.Ldloc(sc);
 				il.Emit(OpCodes.Call, Methods.ScriptContext.Call);
 			}

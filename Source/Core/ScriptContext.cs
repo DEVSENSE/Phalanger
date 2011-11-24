@@ -892,12 +892,34 @@ namespace PHP.Core
             try
             {
                 DeclaredFunctions.Add(fullName, function);
+                DeclareFunctionInMap(function.Index);                
             }
             catch (ArgumentException)
             {
                 PhpException.Throw(PhpError.Error, CoreResources.GetString("function_redeclared", fullName));
             }
 		}
+
+        /// <summary>
+        /// Bit map of currently declared function. If we know the index of <see cref="DRoutineDesc"/>, we can check whether it is declared quickly.
+        /// </summary>
+        private BitArray/*!*/_declaredFunctionsMap = new BitArray(DRoutineDesc.LastIndex + 1, false);
+
+        private void DeclareFunctionInMap(int index)
+        {
+            if (_declaredFunctionsMap.Length <= index) _declaredFunctionsMap.Length = index + 128;
+            if (index >= 0) _declaredFunctionsMap[index] = true;
+        }
+
+        /// <summary>
+        /// Check whether given <paramref name="desc"/> is declared on the current <see cref="ScriptContext"/> or not.
+        /// </summary>
+        /// <param name="desc"><see cref="DRoutineDesc"/> to check, if it is declared on the current <see cref="ScriptContext"/>.</param>
+        /// <returns><c>true</c> iff <paramref name="desc"/> is declared.</returns>
+        private bool IsFunctionDeclared(DRoutineDesc desc)
+        {
+            return desc != null && desc.Index >= 0 && desc.Index < _declaredFunctionsMap.Length && _declaredFunctionsMap[desc.Index];
+        }
 
 		/// <summary>
 		/// Declares a PHP lambda function.
@@ -912,7 +934,7 @@ namespace PHP.Core
 
 			string name = DynamicCode.GenerateLambdaName();
 			DeclaredFunctions[name] = new PhpRoutineDesc(PhpMemberAttributes.Public | PhpMemberAttributes.Static,
-				function);
+				function, false/*do not allocate an index for this, not preserved*/);
 
 			return name;
 		}
@@ -925,6 +947,7 @@ namespace PHP.Core
 		/// <param name="name">The name of the function. Case insensitive.</param>
         /// <param name="fallbackName">The name of the function tried if the first one does not exist.</param>
 		/// <param name="context">The script context in which to do the call.</param>
+        /// <param name="routineHint">Optional hint to skip function resolving.</param>
 		/// <returns>The return value of the function called.</returns>
 		/// <remarks>
 		/// If a compile time unknown function is called all variables are expected to be of 
@@ -933,31 +956,31 @@ namespace PHP.Core
 		/// </remarks>
 		[Emitted]
 		public static PhpReference/*!*/ Call(Dictionary<string, object> localVariables, NamingContext namingContext,
-            object name, string fallbackName,
+            object name, string fallbackName, ref DRoutineDesc routineHint,
 			ScriptContext/*!*/ context)
 		{
             return PhpVariable.MakeReference(
                     PhpVariable.Copy(
-                        CallInternal(localVariables, namingContext, name, fallbackName, context),
+                        CallInternal(localVariables, namingContext, name, fallbackName, ref routineHint, context),
                         CopyReason.ReturnedByCopy));
 		}
 
         [Emitted]
         public static void CallVoid(Dictionary<string, object> localVariables, NamingContext namingContext,
-            object name, string fallbackName,
+            object name, string fallbackName, ref DRoutineDesc routineHint,
             ScriptContext/*!*/ context)
         {
-            CallInternal(localVariables, namingContext, name, fallbackName, context);
+            CallInternal(localVariables, namingContext, name, fallbackName, ref routineHint, context);
         }
 
         [Emitted]
         public static object CallValue(Dictionary<string, object> localVariables, NamingContext namingContext,
-            object name, string fallbackName,
+            object name, string fallbackName, ref DRoutineDesc routineHint,
             ScriptContext/*!*/ context)
         {
             return PhpVariable.Dereference(
                     PhpVariable.Copy(
-                        CallInternal(localVariables, namingContext, name, fallbackName, context),
+                        CallInternal(localVariables, namingContext, name, fallbackName, ref routineHint, context),
                         CopyReason.ReturnedByCopy));
         }
 
@@ -965,7 +988,7 @@ namespace PHP.Core
         /// Calls a function which is unknown at compile time. Returns the value directly returned by <see cref="DRoutineDesc.Invoke"/>.
         /// </summary>
         private static object CallInternal(Dictionary<string, object> localVariables, NamingContext namingContext,
-            object name, string fallbackName, ScriptContext/*!*/ context)
+            object name, string fallbackName, ref DRoutineDesc routineHint, ScriptContext/*!*/ context)
         {
             // <name> should be a string:
             string function_name = PhpVariable.AsString(name);
@@ -998,12 +1021,14 @@ namespace PHP.Core
             }
             else
             {
-                DRoutineDesc desc = context.ResolveFunction(function_name, null, true);
+                DRoutineDesc desc = context.ResolveFunctionWithHint(routineHint, function_name, null, true);
 
                 if ((desc != null) ||   // we've found {function_name}
-                    (fallbackName != null && (desc = context.ResolveFunction(fallbackName, null, true)) != null) // or we've found {fallbackName}
+                    (fallbackName != null && (desc = context.ResolveFunctionWithHint(routineHint, fallbackName, null, true)) != null) // or we've found {fallbackName}
                     )
                 {
+                    routineHint = desc; // remember for the next time
+
                     // the callee may need table of local variables and/or naming context:
                     context.Stack.Variables = localVariables;
                     context.Stack.NamingContext = namingContext;
@@ -1020,7 +1045,7 @@ namespace PHP.Core
             return null;
         }
 
-		/// <summary>
+        /// <summary>
 		/// Populates given list with names of user and library functions. 
 		/// </summary>
 		public void GetDeclaredFunctions(IList/*!*/ userFunctions, IList/*!*/ libraryFunctions)
@@ -1190,6 +1215,22 @@ namespace PHP.Core
 		#endregion
 
 		#region Run-time Resolving
+
+        /// <summary>
+        /// Internally used for function lookup when we already have a candidate.
+        /// </summary>
+        /// <param name="routineHint">Hint.</param>
+        /// <param name="fullName">Full name of the function to resolve.</param>
+        /// <param name="nameContext">Current <see cref="NamingContext"/>.</param>
+        /// <param name="quiet">Wheter to throw is the function cannot be resolved.</param>
+        /// <returns><see cref="DRoutineDesc"/> or <c>null</c>.</returns>
+        private DRoutineDesc ResolveFunctionWithHint(DRoutineDesc routineHint, string/*!*/ fullName, NamingContext nameContext, bool quiet)
+        {
+            if (IsFunctionDeclared(routineHint) && string.CompareOrdinal(routineHint.MakeFullName(), fullName) == 0)
+                return routineHint;
+            else
+                return ResolveFunction(fullName, nameContext, quiet);
+        }
 
 		public DRoutineDesc ResolveFunction(string/*!*/ fullName, NamingContext nameContext, bool quiet)
 		{
@@ -2682,8 +2723,10 @@ namespace PHP.Core
 			if (arguments == null)
 				throw new ArgumentNullException("arguments");
 
+            DRoutineDesc routineHint = null;
+
 			Stack.AddFrame(arguments);
-			return Call(callerLocalVariables, namingContext, functionName, null, this);
+            return Call(callerLocalVariables, namingContext, functionName, null, ref routineHint, this);
 		}
 
 		/// <summary>

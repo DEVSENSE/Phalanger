@@ -198,7 +198,7 @@ namespace PHP.Core
 		public PhpCallback(RoutineDelegate functionDelegate, ScriptContext context)
 		{
 			// create a new DRoutineDesc based on the passed delegate
-			routineDesc = new PhpRoutineDesc(PhpMemberAttributes.Static | PhpMemberAttributes.NamespacePrivate, functionDelegate);
+			routineDesc = new PhpRoutineDesc(PhpMemberAttributes.Static | PhpMemberAttributes.NamespacePrivate, functionDelegate, false);
 
 			this.context = context;
 			this.state = State.Bound;
