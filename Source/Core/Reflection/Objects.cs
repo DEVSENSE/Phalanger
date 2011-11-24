@@ -2860,6 +2860,9 @@ namespace PHP.Core.Reflection
             byte[] bytes;
             if ((bytes = instance as byte[]) != null) return new PhpBytes(bytes);
 
+            // convert MulticastDelegate into callable PHP object
+            if (instance is MulticastDelegate) return WrapDelegate((MulticastDelegate)instance);
+
             // create ClrObject from instance
             return WrapRealObject(instance);
         }
@@ -2889,6 +2892,80 @@ namespace PHP.Core.Reflection
             }
             return result;
         }
+
+        #region MulticastDelegate wrapping
+
+        [ImplementsType]
+        public class DelegateClosure : PhpObject
+        {
+            /// <summary>
+            /// Delegate to be called when this object is converted into <see cref="PhpCallback"/> and invoked.
+            /// </summary>
+            private readonly MulticastDelegate/*!*/function;
+
+            internal DelegateClosure(MulticastDelegate/*!*/function)
+                : base(ScriptContext.CurrentContext, true)
+            {
+                Debug.Assert(function != null);
+                this.function = function;
+            }
+
+            [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+            public static object __invoke(object instance, PhpStack stack)
+            {
+                // prepare args array
+                object[] args = new object[stack.ArgCount];
+                for (int i = 0; i < args.Length; i++)
+                    args[i] = stack.PeekValue(i + 1);
+
+                // call __invoke
+                stack.RemoveFrame();
+                return ((DelegateClosure)instance).invokeDelegate(args);
+            }
+
+
+            [ImplementsMethod, System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+            public object __invoke(ScriptContext/*!*/context)
+            {
+                return invokeDelegate();
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="args">Arguments to be unwrapped and passed to <see cref="function"/>.</param>
+            /// <returns></returns>
+            private object invokeDelegate(params object[] args)
+            {
+                // unwraps arguments
+                for (int i = 0; i < args.Length; i++)
+                    args[i] = PhpVariable.Unwrap(args[i]);
+
+                // invoke the .NET delegate
+                return ClrObject.WrapDynamic(this.function.DynamicInvoke(args));
+            }
+
+            /// <summary>
+            /// Populates the provided <see cref="DTypeDesc"/> with this class's methods and properties.
+            /// </summary>
+            /// <param name="typeDesc">The type desc to populate.</param>
+            private static void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+            {
+                typeDesc.AddMethod("__invoke", PhpMemberAttributes.Public, __invoke);
+
+            }
+        }
+        /// <summary>
+        /// Wrap <see cref="MulticastDelegate"/> into PHP invokable object.
+        /// </summary>
+        /// <param name="function">.NET <see cref="MulticastDelegate"/> to be wrapped.</param>
+        /// <returns>PHP callable object.</returns>
+        public static DObject/*!*/WrapDelegate(MulticastDelegate/*!*/function)
+        {
+            return new DelegateClosure(function);
+        }
+
+        #endregion
 
         /// <summary>
         /// Called by compiled code when a new real object is being constructed.
