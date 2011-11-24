@@ -190,7 +190,7 @@ namespace PHP.Core.Reflection
 		/// Creates a descriptor for specified PHP function at run-time if argless stub delegate is available.
 		/// Called by declaring helpers emitted on script or when a callback is created.
 		/// </summary>
-		internal PhpRoutineDesc(PhpMemberAttributes memberAttributes, RoutineDelegate/*!*/ arglessStub)
+		public PhpRoutineDesc(PhpMemberAttributes memberAttributes, RoutineDelegate/*!*/ arglessStub)
 			: base(UnknownModule.RuntimeModule.GlobalType.TypeDesc, memberAttributes, arglessStub)
 		{
 			Debug.Assert(arglessStub != null);

@@ -654,11 +654,13 @@ namespace PHP.Core
 			this.ReturnsPhpReference = aliasReturn;
 
             // CallSites
-            fd_context.CallSites = callSites;
-            this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
-                sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
-                fd_context.Name.ToString(),
-                null/*class_context = Unknown (at compile time)*/);
+            fd_context.CallSites = null;
+            //this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
+            //    sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
+            //    fd_context.Name.ToString(),
+            //    null/*class_context = Unknown (at compile time)*/);
+            // keep current site container, to be compatible with LeaveFunctionDeclaration
+            this.callSites.PushClassContext(null, null);
             
             // Set ILEmitter to function's body
 			fd_context.IL = this.il;
@@ -2981,27 +2983,61 @@ namespace PHP.Core
 			return PhpTypeCodeEnum.FromType(method.ReturnType);
 		}
 
+        /// <summary>
+		/// Emits call to <see cref="ScriptContext.DeclareFunction"/>.
+		/// </summary>
+        internal void EmitDeclareFunction(PhpFunction/*!*/ function)
+        {
+            EmitDeclareFunction(il, ScriptContextPlace, function);
+        }
+
 		/// <summary>
 		/// Emits call to <see cref="ScriptContext.DeclareFunction"/>.
 		/// </summary>
-		internal void EmitDeclareFunction(PhpFunction/*!*/ function)
-		{
-			// CALL ScriptContent.DeclareFunction(<delegate>, <name>, <member attributes>);
-			EmitLoadScriptContext();
+		internal static void EmitDeclareFunction(ILEmitter/*!*/il, IPlace/*!*/scriptContextPlace, PhpFunction/*!*/ function)
+        {
+            Label lbl_fieldinitialized = il.DefineLabel();
 
-			il.Emit(OpCodes.Ldnull);
-			il.Emit(OpCodes.Ldftn, function.ArgLessInfo);
-			il.Emit(OpCodes.Newobj, Constructors.RoutineDelegate);
+            // private static PhpRoutine <routine>'function = null;
+            var attrs = FieldAttributes.Static | FieldAttributes.Private;
+            var field = il.TypeBuilder.DefineField(string.Format("<routine>'{0}", function.FullName), typeof(PhpRoutine), attrs);
 
-			il.Emit(OpCodes.Ldstr, function.FullName);
+            // if (<field> == null)
+            il.Emit(OpCodes.Ldsfld, field);
+            il.Emit(OpCodes.Brtrue, lbl_fieldinitialized);
+            {
+                // <field> = new PhpRoutineDesc(<attributes>, new RoutineDelegate(null, <delegate>))
 
-			// LOAD <attributes>;
-			il.LdcI4((int)function.MemberDesc.MemberAttributes);
+                // LOAD <attributes>;
+                il.LdcI4((int)function.MemberDesc.MemberAttributes);
 
-			il.Emit(OpCodes.Call, Methods.ScriptContext.DeclareFunction);
-		}
+                // new RoutineDelegate(null, <delegate>)
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ldftn, function.ArgLessInfo);
+                il.Emit(OpCodes.Newobj, Constructors.RoutineDelegate);
 
-		/// <summary>
+                // new PhpRoutineDesc:
+                il.Emit(OpCodes.Newobj, Constructors.PhpRoutineDesc_Attr_Delegate);
+
+                // <field> = <STACK>
+                il.Emit(OpCodes.Stsfld, field);
+            }
+            il.MarkLabel(lbl_fieldinitialized);
+
+            // CALL ScriptContent.DeclareFunction(<field>, <name>);
+            scriptContextPlace.EmitLoad(il);
+            
+            // LOAD <field>
+            il.Emit(OpCodes.Ldsfld, field);            
+
+            // LOAD <fullName>
+            il.Emit(OpCodes.Ldstr, function.FullName);
+
+            //
+            il.Emit(OpCodes.Call, Methods.ScriptContext.DeclareFunction);
+        }
+
+        /// <summary>
 		/// Emits call to <see cref="ScriptContext.DeclareLambda"/>.
 		/// </summary>
 		/// <param name="info">A method info.</param>
