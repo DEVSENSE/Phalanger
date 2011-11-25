@@ -1088,17 +1088,17 @@ namespace PHP.Core
 		public void DeclareType(PhpTypeDesc/*!*/ typeDesc, string/*!*/ fullName)
 		{
 			Debug.Assert(typeDesc != null && !typeDesc.IsGeneric && fullName != null);
-			DTypeDesc existing;
-
-			if (!DeclaredTypes.TryGetValue(fullName, out existing))
-			{
-				// the completion type needn't to be created for non-generic types
-				DeclaredTypes.Add(fullName, typeDesc);
-				return;
-			}
-
-			// a class of this name has already been declared
-			PhpException.Throw(PhpError.Error, CoreResources.GetString("type_redeclared", existing.MakeFullName()));
+			
+            try
+            {
+                // the completion type needn't to be created for non-generic types
+                DeclaredTypes.Add(fullName, typeDesc);
+            }
+            catch (ArgumentException)
+            {
+                // a class of this name has already been declared
+                PhpException.Throw(PhpError.Error, CoreResources.GetString("type_redeclared", fullName));
+            }
 		}
 
 		public void DeclareGenericType(PhpTypeDesc/*!*/ typeDesc, string/*!*/ fullName)
