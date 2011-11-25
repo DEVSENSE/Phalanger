@@ -260,6 +260,41 @@ namespace PHP.Core.Binders
 
         #endregion
 
+        public static Expression[]/*!*/ CombineArguments(Expression/*!*/ arg, Expression/*!*/[]/*!*/ args)
+        {
+            Expression[] arguments = new Expression[1 + args.Length];
+            arguments[0] = arg;
+            for (int i = 0; i < args.Length; ++i)
+                arguments[1 + i] = args[i];
+
+            return arguments;
+        }
+        
+        public static DynamicMetaObject[]/*!*/ CombineArguments(DynamicMetaObject/*!*/ arg, DynamicMetaObject/*!*/[]/*!*/ args)
+        {
+            DynamicMetaObject[] arguments = new DynamicMetaObject[1 + args.Length];
+            arguments[0] = arg;
+            for (int i = 0; i < args.Length; ++i)
+                arguments[1 + i] = args[i];
+
+            return arguments;
+        }
+
+        public static BindingRestrictions GetSimpleInvokeRestrictions(DynamicMetaObject/*!*/ target, DynamicMetaObject[]/*!*/ args)
+        {
+            BindingRestrictions restrictions = BindingRestrictions.GetTypeRestriction(target.Expression, target.LimitType);
+
+            foreach (var arg in args)
+            {
+                if (arg.RuntimeType != null)
+                    restrictions = restrictions.Merge(BindingRestrictions.GetTypeRestriction(arg.Expression, arg.LimitType));
+                else
+                    restrictions = restrictions.Merge(BindingRestrictions.GetInstanceRestriction(arg.Expression, null));//(MB) is it
+            }
+
+            return restrictions;
+        }
+
         public static Expression/*!*/ AssertNotPhpReference(Expression objEx)
         {
 #if DEBUG
