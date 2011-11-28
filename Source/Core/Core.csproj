@@ -529,6 +529,7 @@
     <Compile Include="Utils.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Utils\GlobalScope.cs" />
     <Compile Include="Variables.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -586,6 +587,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
