@@ -209,6 +209,7 @@ namespace PHP.Core.Parsers
 
                     case Tokens.T_ARRAY:
                     case Tokens.T_LIST:
+                    case Tokens.T_ASSERT:
                         tokenSemantics.Object = base.GetTokenString();  // remember the token string, so we can use these tokens as literals later, case sensitively
                         goto default;
 

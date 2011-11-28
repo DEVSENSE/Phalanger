@@ -323,6 +323,7 @@ using Pair = System.Tuple<object,object>;
 %type<Object> namespace_statement                     // Statement
 %type<Object> function_declaration_statement          // FunctionDecl
 %type<Object> class_declaration_statement             // TypeDecl
+%type<Object> class_identifier                        // String
 %type<Object> namespace_declaration_statement         // NamespaceDecl
 %type<Object> global_constant_declarator              // GlobalConstantDecl
 %type<Object> global_constant_declarator_list         // List<GlobalConstantDecl>
@@ -629,7 +630,7 @@ function_declaration_statement:
 
 class_declaration_statement:
 		attributes_opt visibility_opt modifier_opt partial_opt class
-		identifier type_parameter_list_opt
+		class_identifier type_parameter_list_opt
 		{
 			Name class_name = new Name((string)$6);
 
@@ -699,6 +700,11 @@ class_declaration_statement:
 
 class:
 	T_CLASS { PushDocComment($1); }
+;
+
+class_identifier:
+	  identifier { $$ = $1; }
+	| T_ASSERT { $$ = $1.Object; }
 ;
 
 interface:
@@ -1832,12 +1838,12 @@ qualified_namespace_name:
 ;
 
 namespace_name_list:
-		identifier														{ $$ = new List<string>( ((string)$1).Split('\\') ); if (((List<string>)$$)[0]==""){ Debug.Fail("TODO: fully qualified namespace name!"); } }
+		class_identifier												{ $$ = new List<string>( ((string)$1).Split('\\') ); if (((List<string>)$$)[0]==""){ Debug.Fail("TODO: fully qualified namespace name!"); } }
 	|	namespace_name_list T_NS_SEPARATOR namespace_name_identifier	{ $$ = $1; ListAdd<string>($$, $3 ); }
 ;
 
 namespace_name_identifier:	// identifier + some keywords that should be used within qualified name (List, Array, ...)
-		identifier		{ $$ = $1; }
+		class_identifier{ $$ = $1; }
 	|	T_LIST			{ $$ = $1.Object; }
 	|	T_BOOL_TYPE     { $$ = $1.Object; }
 	|	T_INT_TYPE      { $$ = $1.Object; }
