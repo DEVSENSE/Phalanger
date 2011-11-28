@@ -178,6 +178,10 @@ namespace PHP.Core
 
 					if (RequestEnd != null) RequestEnd();
 
+                    // remember the max capacity of dictionaries to preallocate next time:
+                    if (scriptContext != null && scriptContext.MainScriptInfo != null)
+                        scriptContext.MainScriptInfo.SaveMaxCounts(scriptContext);                        
+
 					// cleans this instance:
 					disposed = true;
 					this.scriptContext = null;
