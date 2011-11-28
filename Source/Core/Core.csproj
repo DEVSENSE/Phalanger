@@ -529,7 +529,7 @@
     <Compile Include="Utils.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Utils\GlobalScope.cs" />
+    <Compile Include="Utilities\GlobalScope.cs" />
     <Compile Include="Variables.cs">
       <SubType>Code</SubType>
     </Compile>
