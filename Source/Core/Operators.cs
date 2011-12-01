@@ -2577,9 +2577,10 @@ namespace PHP.Core
 			DObject dobj = var as DObject;
 			if (dobj != null && dobj.RealObject is Library.SPL.ArrayAccess)
 			{
-				PhpStack stack = ScriptContext.CurrentContext.Stack;
-				stack.AddFrame(null, value);
-				dobj.InvokeMethod(Library.SPL.PhpArrayObject.offsetSet, null, stack.Context);
+                //PhpStack stack = ScriptContext.CurrentContext.Stack;
+                //stack.AddFrame(null, value);
+                //dobj.InvokeMethod(Library.SPL.PhpArrayObject.offsetSet, null, stack.Context);
+                ((Library.SPL.ArrayAccess)dobj.RealObject).offsetSet(ScriptContext.CurrentContext, null, value);
 				return;
 			}
 
@@ -2766,9 +2767,10 @@ namespace PHP.Core
 			DObject dobj = var as DObject;
 			if (dobj != null && dobj.RealObject is Library.SPL.ArrayAccess)
 			{
-				PhpStack stack = ScriptContext.CurrentContext.Stack;
-				stack.AddFrame(key, value);
-				dobj.InvokeMethod(Library.SPL.PhpArrayObject.offsetSet, null, stack.Context);
+                //PhpStack stack = ScriptContext.CurrentContext.Stack;
+                //stack.AddFrame(key, value);
+                //dobj.InvokeMethod(Library.SPL.PhpArrayObject.offsetSet, null, stack.Context);
+                ((Library.SPL.ArrayAccess)dobj.RealObject).offsetSet(ScriptContext.CurrentContext, key, value);
 				return;
 			}
 

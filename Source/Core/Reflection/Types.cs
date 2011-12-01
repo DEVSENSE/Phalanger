@@ -3392,24 +3392,30 @@ namespace PHP.Core.Reflection
 
 		internal override void EmitInvokeConstructor(ILEmitter/*!*/ il, PhpType/*!*/ derivedType, ConstructedType constructedType)
 		{
-			// [ base(arg1,arg2) ]
-			il.Ldarg(FunctionBuilder.ArgThis);
-			il.Ldarg(FunctionBuilder.ArgContextInstance);
-			il.Ldarg(2);
+            if (ShortConstructorInfo != null)
+            {
+                // [ base(arg1,arg2) ]
+                il.Ldarg(FunctionBuilder.ArgThis);
+                il.Ldarg(FunctionBuilder.ArgContextInstance);
+                il.Ldarg(2);
 
-			il.Emit(OpCodes.Call, MakeConstructed(ShortConstructorInfo, constructedType));
+                il.Emit(OpCodes.Call, MakeConstructed(ShortConstructorInfo, constructedType));
+            }
 		}
 
 #if !SILVERLIGHT
 		internal override void EmitInvokeDeserializationConstructor(ILEmitter/*!*/ il, PhpType/*!*/ derivedType,
 			ConstructedType constructedType)
 		{
-			// [ base(arg0, arg1, arg2) ]
-			il.Ldarg(FunctionBuilder.ArgThis);
-			il.Emit(OpCodes.Ldarg_1);
-			il.Emit(OpCodes.Ldarg_2);
+            if (DeserializingConstructorInfo != null)
+            {
+                // [ base(arg0, arg1, arg2) ]
+                il.Ldarg(FunctionBuilder.ArgThis);
+                il.Emit(OpCodes.Ldarg_1);
+                il.Emit(OpCodes.Ldarg_2);
 
-			il.Emit(OpCodes.Call, MakeConstructed(DeserializingConstructorInfo, constructedType));
+                il.Emit(OpCodes.Call, MakeConstructed(DeserializingConstructorInfo, constructedType));
+            }
 		}
 #endif
 

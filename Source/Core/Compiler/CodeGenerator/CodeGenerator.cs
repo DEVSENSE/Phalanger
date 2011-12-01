@@ -2697,7 +2697,7 @@ namespace PHP.Core
 					param_types[0] = Types.ScriptContext[0];
 
 					MethodBuilder override_stub = type_builder.DefineMethod(
-						(sre_bug_workaround ? php_template.ArgFullInfo.Name : "<Override>"),
+                        (sre_bug_workaround ? php_template.ArgFullInfo.Name : "<Override>"),
 						attrs, return_type, param_types);
 
 					ILEmitter il = new ILEmitter(override_stub);
@@ -2718,6 +2718,9 @@ namespace PHP.Core
 					}
 					else
 					{
+                        if (!php_template.ArgFullInfo.IsVirtual)
+                            throw new InvalidOperationException(string.Format("Cannot override non-virtual method '{0}'!", php_template.ArgFullInfo.Name));
+
 						type_builder.DefineMethodOverride(override_stub,
 							DType.MakeConstructed(php_template.ArgFullInfo, template.Type as ConstructedType));
 					}

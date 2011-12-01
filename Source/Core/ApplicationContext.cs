@@ -184,6 +184,7 @@ namespace PHP.Core
             addType(typeof(Library.SPL.RecursiveIterator));
             addType(typeof(Library.SPL.Serializable));
             addType(typeof(Library.SPL.Countable));
+            addType(typeof(Library.SPL.ArrayIterator));
             addType(typeof(Library.SPL.Reflector));
 
             // primitive constants
