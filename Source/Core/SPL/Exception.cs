@@ -397,4 +397,104 @@ namespace PHP.Library.SPL
 #endif
 		#endregion
 	}
+
+    [ImplementsType]
+#if !SILVERLIGHT
+    [Serializable]
+#endif
+    public class LogicException : Exception
+    {
+        #region Implementation Details
+
+		/// <summary>
+		/// Populates the provided <see cref="DTypeDesc"/> with this class's methods and properties.
+		/// </summary>
+		/// <param name="typeDesc">The type desc to populate.</param>
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        { }
+
+        		/// <summary>
+		/// For internal purposes only.
+		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public LogicException(ScriptContext context, bool newInstance)
+			: base(context, newInstance)
+		{
+		}
+
+		/// <summary>
+		/// For internal purposes only.
+		/// </summary>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+        public LogicException(ScriptContext context, DTypeDesc caller)
+			: base(context, caller)
+		{
+		}
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+		/// Deserializing constructor.
+		/// </summary>
+		protected LogicException(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+		}
+
+#endif
+		#endregion
+    }
+
+    [ImplementsType]
+#if !SILVERLIGHT
+    [Serializable]
+#endif
+    public class InvalidArgumentException : LogicException
+    {
+        #region Implementation Details
+
+        /// <summary>
+        /// Populates the provided <see cref="DTypeDesc"/> with this class's methods and properties.
+        /// </summary>
+        /// <param name="typeDesc">The type desc to populate.</param>
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        { }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public InvalidArgumentException (ScriptContext context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public InvalidArgumentException (ScriptContext context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
+        protected InvalidArgumentException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+#endif
+        #endregion
+    }
 }
