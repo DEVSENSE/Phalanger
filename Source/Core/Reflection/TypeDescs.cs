@@ -3360,8 +3360,8 @@ namespace PHP.Core.Reflection
 
 							// TODO: how to combine attrs?
 							PhpMemberAttributes attrs = PhpMemberAttributes.None;
-							if (getter != null) attrs = Enums.GetMemberAttributes(getter);
-							if (setter != null) attrs = Enums.GetMemberAttributes(setter);
+							if (has_visible_getter) attrs |= Enums.GetMemberAttributes(getter);
+                            if (has_visible_setter) attrs |= Enums.GetMemberAttributes(setter);
 
 							ReflectProperty(name, attrs, real_prop, has_visible_getter, has_visible_setter);
 						}
