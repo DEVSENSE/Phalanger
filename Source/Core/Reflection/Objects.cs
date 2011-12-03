@@ -2425,7 +2425,7 @@ namespace PHP.Core.Reflection
 		/// This iterator returns instance property names as keys and instance property values as values. Only
 		/// properties that are visible for the <paramref name="caller"/> are enumerated - both CT and RT, CT first.
 		/// </remarks>
-		private IEnumerator<KeyValuePair<object, object>> InstancePropertyIterator(DTypeDesc caller, bool aliasedValues)
+		internal IEnumerator<KeyValuePair<object, object>> InstancePropertyIterator(DTypeDesc caller, bool aliasedValues)
 		{
 			object value;
 			PhpReference reference;
