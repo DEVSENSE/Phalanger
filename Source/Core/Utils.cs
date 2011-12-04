@@ -2448,6 +2448,11 @@ namespace PHP.Core
                 types[i] = parameters[i].ParameterType;
             return types;
         }
+
+        public static object GetDefault(Type type)
+        {
+            return (type.IsValueType) ? Activator.CreateInstance(type) : null;
+        }
     }
 
     #endregion
