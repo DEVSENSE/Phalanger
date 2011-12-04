@@ -1742,6 +1742,26 @@ namespace PHP.Core
 				errorReportingDisabled--;
 		}
 
+        /// <summary>
+        /// Last error type set by the <see cref="PhpException.Throw"/>.
+        /// </summary>
+        public PhpError LastErrorType { get; internal set; }
+
+        /// <summary>
+        /// Last error message set by the <see cref="PhpException.Throw"/>.
+        /// </summary>
+        public string LastErrorMessage { get; internal set; }
+
+        /// <summary>
+        /// Last error file set by the <see cref="PhpException.Throw"/>.
+        /// </summary>
+        public string LastErrorFile { get; internal set; }
+
+        /// <summary>
+        /// Last error line set by the <see cref="PhpException.Throw"/>.
+        /// </summary>
+        public int LastErrorLine { get; internal set; }
+
 		#endregion
 
 		#region Output Control, Echo

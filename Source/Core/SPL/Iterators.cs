@@ -174,7 +174,7 @@ namespace PHP.Library.SPL
             {
                 // throw an PHP.Library.SPL.InvalidArgumentException if anything besides an array or an object is given.
                 var e = new InvalidArgumentException(context, true);
-				e.__construct(context, null, 0);
+				e.__construct(context, null, 0, null);
 				throw new PhpUserException(e);
             }
 
@@ -770,7 +770,7 @@ namespace PHP.Library.SPL
         public virtual object key(ScriptContext context)
         {
             var e = new BadMethodCallException(context, true);
-            e.__construct(context, "Accessing the key of an EmptyIterator", 0);
+            e.__construct(context, "Accessing the key of an EmptyIterator", 0, null);
             throw new PhpUserException(e);
         }
 
@@ -778,7 +778,7 @@ namespace PHP.Library.SPL
         public virtual object current(ScriptContext context)
         {
             var e = new BadMethodCallException(context, true);
-            e.__construct(context, "Accessing the value of an EmptyIterator", 0);
+            e.__construct(context, "Accessing the value of an EmptyIterator", 0, null);
             throw new PhpUserException(e);
         }
 

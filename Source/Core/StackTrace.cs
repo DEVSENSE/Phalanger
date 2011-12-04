@@ -547,6 +547,11 @@ namespace PHP.Core
 			//}
 #endif
 
+            // add missing info about file and line
+            context.LastErrorLine = result.Line;
+            context.LastErrorFile = result.File;
+
+            //
 			return result;
 		}
 
