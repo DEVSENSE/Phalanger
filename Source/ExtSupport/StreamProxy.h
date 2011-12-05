@@ -128,7 +128,7 @@ namespace PHP
 				Object ^context);
 
 			/// <include file='../Core/Doc/Wrappers.xml' path='docs/method[@name="Stat"]/*'/>
-			virtual StatStruct Stat(String ^path, int options, Object ^context);
+			virtual StatStruct Stat(String ^path, int options, Object ^context, bool streamStat);
 
 			/// <include file='../Core/Doc/Wrappers.xml' path='docs/method[@name="Unlink"]/*'/>
 			virtual bool Unlink(String ^path, int options, Object ^context);

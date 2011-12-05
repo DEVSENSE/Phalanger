@@ -28,6 +28,7 @@
   <param name="path">The target filename.</param>
   <param name="options">Additional options.</param>
   <param name="context">Wrapper-specific options.</param>
+  <param name="streamStat">Wheter to use stream_stat() or url_stat() when invoking user wrapper.</param>
   <returns>A <see cref="StatStruct"/> containing the stat information about the target file 
   or with st_size set to <c>-1</c> in case of failure.</returns>
   <exception cref="PhpException">Throws a warning in case of failure.</exception>

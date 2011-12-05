@@ -35,10 +35,10 @@ namespace PHP.Core
 		#region Optional Wrapper Operations (Warning)
 
 		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="Stat"]/*'/>
-		/// <remarks>
+        /// <remarks>
 		/// <seealso cref="StreamStatOptions"/> for the list of additional options.
 		/// </remarks>
-		public virtual StatStruct Stat(string path, StreamStatOptions options, StreamContext context)
+        public virtual StatStruct Stat(string path, StreamStatOptions options, StreamContext context, bool streamStat)
 		{
 			// int (*url_stat)(php_stream_wrapper *wrapper, char *url, int flags, php_stream_statbuf *ssb, php_stream_context *context TSRMLS_DC);
 			PhpException.Throw(PhpError.Warning, CoreResources.GetString("wrapper_op_unsupported", "Stat"));
@@ -393,7 +393,7 @@ namespace PHP.Core
 		}
 
 		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="Stat"]/*'/>
-        public override StatStruct Stat(string path, StreamStatOptions options, StreamContext context)
+        public override StatStruct Stat(string path, StreamStatOptions options, StreamContext context, bool streamStat)
         {
             StatStruct invalid = new StatStruct();
             invalid.st_size = -1;
@@ -802,9 +802,9 @@ namespace PHP.Core
 
 
 		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="Stat"]/*'/>
-		public override StatStruct Stat(string path, StreamStatOptions options, StreamContext context)
+        public override StatStruct Stat(string path, StreamStatOptions options, StreamContext context, bool streamStat)
 		{
-			return proxy.Stat(path, (int)options, null);
+			return proxy.Stat(path, (int)options, null, streamStat);
 		}
 
 		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="Unlink"]/*'/>

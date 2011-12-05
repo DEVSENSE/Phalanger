@@ -57,6 +57,7 @@ using System.Net;
 //using System.Net.Sockets;
 using System.Collections;
 using PHP.Core;
+using PHP.Core.Reflection;
 
 namespace PHP.Library
 {
@@ -852,67 +853,68 @@ namespace PHP.Library
         /// <summary>
 		/// Registers a user-wrapper specified by the name of a defining user-class.
 		/// </summary>
-		/// <param name="protocol">The schema to be associated with the given wrapper.</param>
-		/// <param name="userWrapperName">Name of the user class implementing the wrapper functions.</param>
+        /// <param name="caller">The class context.</param>
+        /// <param name="protocol">The schema to be associated with the given wrapper.</param>
+        /// <param name="classname">Name of the user class implementing the wrapper functions.</param>
 		/// <returns>False in case of failure (ex. schema already occupied).</returns>
-		[ImplementsFunction("stream_wrapper_register")]
-        public static bool RegisterUserWrapperByName(string protocol, string userWrapperName)
+        [ImplementsFunction("stream_wrapper_register", FunctionImplOptions.NeedsClassContext)]
+        public static bool RegisterUserWrapperByName(DTypeDesc caller, string protocol, string classname)
         {
-            return RegisterUserWrapperByName(protocol, userWrapperName, StreamWrapperRegisterFlags.Default);
+            return RegisterUserWrapperByName(caller, protocol, classname, StreamWrapperRegisterFlags.Default);
         }
 
 		/// <summary>
 		/// Registers a user-wrapper specified by the name of a defining user-class.
 		/// </summary>
+        /// <param name="caller">The class context.</param>
 		/// <param name="protocol">The schema to be associated with the given wrapper.</param>
-		/// <param name="userWrapperName">Name of the user class implementing the wrapper functions.</param>
+        /// <param name="classname">Name of the user class implementing the wrapper functions.</param>
         /// <param name="flags">Should be set to STREAM_IS_URL if protocol is a URL protocol. Default is 0, local stream.</param>
 		/// <returns>False in case of failure (ex. schema already occupied).</returns>
-		[ImplementsFunction("stream_wrapper_register")]
-		public static bool RegisterUserWrapperByName(string protocol, string userWrapperName, StreamWrapperRegisterFlags flags/*=0*/)
+		[ImplementsFunction("stream_wrapper_register", FunctionImplOptions.NeedsClassContext)]
+        public static bool RegisterUserWrapperByName(DTypeDesc caller, string protocol, string classname, StreamWrapperRegisterFlags flags/*=0*/)
 		{
 			// check if the scheme is already registered:
-			if (protocol == null || StreamWrapper.Exists(protocol))
+			if (string.IsNullOrEmpty(protocol) || StreamWrapper.Exists(protocol))
 			{
 				// TODO: Warning?
 				return false;
 			}
 
-			// EX: [stream_wrapper_register]
-			PhpException.FunctionNotSupported();
+            DTypeDesc wrapperClass = ScriptContext.CurrentContext.ResolveType(classname, null, caller, null, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
+            if (wrapperClass == null)
+                return false;
 
 			// EX: [stream_wrapper_register]: create the user wrapper
-			StreamWrapper wrapper = null;
-			if (wrapper != null)
-			{
-				return StreamWrapper.RegisterUserWrapper(protocol, wrapper);
-			}
-			return false;
+            StreamWrapper wrapper = new UserStreamWrapper(ScriptContext.CurrentContext, protocol, wrapperClass, flags == StreamWrapperRegisterFlags.IsUrl);
+			return StreamWrapper.RegisterUserWrapper(protocol, wrapper);
 		}
 
 		/// <summary>
 		/// Registers a user-wrapper specified by the name of a defining user-class.
 		/// </summary>
-		/// <param name="protocol">The schema to be associated with the given wrapper.</param>
+        /// <param name="caller">The class context.</param>
+        /// <param name="protocol">The schema to be associated with the given wrapper.</param>
 		/// <param name="userWrapperName">Name of the user class implementing the wrapper functions.</param>
 		/// <returns>False in case of failure (ex. schema already occupied).</returns>
-		[ImplementsFunction("stream_register_wrapper")]
-		public static bool RegisterUserWrapperByName2(string protocol, string userWrapperName)
+        [ImplementsFunction("stream_register_wrapper", FunctionImplOptions.NeedsClassContext)]
+        public static bool RegisterUserWrapperByName2(DTypeDesc caller, string protocol, string userWrapperName)
 		{
-			return RegisterUserWrapperByName(protocol, userWrapperName);
+			return RegisterUserWrapperByName(caller, protocol, userWrapperName);
 		}
 
         /// <summary>
         /// Registers a user-wrapper specified by the name of a defining user-class.
         /// </summary>
+        /// <param name="caller">The class context.</param>
         /// <param name="protocol">The schema to be associated with the given wrapper.</param>
         /// <param name="userWrapperName">Name of the user class implementing the wrapper functions.</param>
         /// <param name="flags">Should be set to STREAM_IS_URL if protocol is a URL protocol. Default is 0, local stream.</param>
         /// <returns>False in case of failure (ex. schema already occupied).</returns>
-        [ImplementsFunction("stream_register_wrapper")]
-        public static bool RegisterUserWrapperByName2(string protocol, string userWrapperName, StreamWrapperRegisterFlags flags/*=0*/)
+        [ImplementsFunction("stream_register_wrapper", FunctionImplOptions.NeedsClassContext)]
+        public static bool RegisterUserWrapperByName2(DTypeDesc caller, string protocol, string userWrapperName, StreamWrapperRegisterFlags flags/*=0*/)
         {
-            return RegisterUserWrapperByName(protocol, userWrapperName, flags);
+            return RegisterUserWrapperByName(caller, protocol, userWrapperName, flags);
         }
 
 

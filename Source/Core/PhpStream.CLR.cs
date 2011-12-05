@@ -32,7 +32,7 @@ namespace PHP.Core
 		{
 			if (this.Wrapper != null)
 			{
-				return this.Wrapper.Stat(OpenedPath, StreamStatOptions.Empty, StreamContext.Default);
+				return this.Wrapper.Stat(OpenedPath, StreamStatOptions.Empty, StreamContext.Default, true);
 			}
 
 			PhpException.Throw(PhpError.Warning, CoreResources.GetString("wrapper_op_unsupported", "Stat"));

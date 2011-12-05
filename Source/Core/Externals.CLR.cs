@@ -298,7 +298,7 @@ namespace PHP.Core
 		IExternalStream Open(string path, string mode, int options, out string opened_path, object context);
 
 		/// <include file='Doc/Wrappers.xml' path='/docs/method[@name="Stat"]/*'/>
-		StatStruct Stat(string path, int options, object context);
+		StatStruct Stat(string path, int options, object context, bool streamStat);
 
 		/// <include file='Doc/Wrappers.xml' path='/docs/method[@name="Unlink"]/*'/>
 		bool Unlink(string path, int options, object context);

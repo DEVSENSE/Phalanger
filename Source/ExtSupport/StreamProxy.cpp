@@ -222,13 +222,13 @@ namespace PHP
 		}
 
 		// Stat wrapper operation implementation.
-		StatStruct StreamWrapperProxy::Stat(String ^path, int options, Object ^context)
+		StatStruct StreamWrapperProxy::Stat(String ^path, int options, Object ^context, bool streamStat)
 		{
 			StatStruct stat_struct;
 			Request ^request = Request::EnsureRequestExists();
 
 			TSRMLS_FETCH();
-			if (wrapper->wops->url_stat == NULL)
+			if (wrapper->wops->url_stat == NULL)	// TODO: call stream_stat() if streamStat is TRUE
 			{
 				PhpException::Throw(PhpError::Warning, LibResources::GetString("stat_wrapper_op_unsupported"));
 				stat_struct.st_size = -1;

@@ -171,7 +171,7 @@ namespace PHP.Library
         /// <returns>True if stat was successfuly added into cache.</returns>
         private static bool StatInternalStat(string path, string url, StreamWrapper wrapper, bool quiet)
         {
-            StatStruct stat = wrapper.Stat(path, quiet ? StreamStatOptions.Quiet : StreamStatOptions.Empty, StreamContext.Default);
+            StatStruct stat = wrapper.Stat(path, quiet ? StreamStatOptions.Quiet : StreamStatOptions.Empty, StreamContext.Default, false);
             if (stat.st_size >= 0)
             {
                 statCacheUrl = url;
