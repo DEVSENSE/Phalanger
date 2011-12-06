@@ -189,6 +189,7 @@ namespace PHP.Core
             addType(typeof(Library.SPL.RecursiveIterator));
             addType(typeof(Library.SPL.ArrayIterator));
             addType(typeof(Library.SPL.EmptyIterator));
+            addType(typeof(Library.SPL.IteratorIterator));
             
             // Exception:
             addType(typeof(Library.SPL.Exception));

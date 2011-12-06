@@ -1352,7 +1352,11 @@ namespace PHP.Core
         /// <returns></returns>
         public object InvokeWrapperMethod(string method, params object[] args)
         {
-            context.Stack.AddFrame(args);
+            if (args == null || args.Length == 0)
+                context.Stack.AddFrame();
+            else
+                context.Stack.AddFrame(args);
+
             return WrapperTypeInstance.InvokeMethod(method, null, context);
         }
 
