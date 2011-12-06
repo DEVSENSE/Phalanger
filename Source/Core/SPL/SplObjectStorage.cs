@@ -36,7 +36,7 @@ namespace PHP.Library.SPL
         /// <summary>
         /// Internal index while enumerating.
         /// </summary>
-        private int index = -1;
+        private int index = 0;
 
         #region SplObjectStorage
 
@@ -191,7 +191,7 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public object getInfo(ScriptContext/*!*/context)
         {
-            return (this.enumerator != null) ? this.enumerator.Current.Value : null;
+            return (this.enumerator != null && !this.enumerator.AtEnd) ? this.enumerator.Current.Value : null;
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public object setInfo(ScriptContext/*!*/context, object data)
         {
-            if (this.enumerator != null)
+            if (this.enumerator != null && !this.enumerator.AtEnd)
                 this.enumerator.current.Value = data;
 
             return null;
@@ -250,16 +250,13 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public object valid(ScriptContext context)
         {
-            if (this.enumerator == null)
-                rewind(context);
-
-            return !this.enumerator.AtEnd;
+            return (this.enumerator == null) ? false : !this.enumerator.AtEnd;
         }
 
         [ImplementsMethod]
         public object key(ScriptContext context)
         {
-            return (this.enumerator != null) ? (object)this.index : null;
+            return this.index;
         }
 
         [ImplementsMethod]
