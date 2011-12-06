@@ -175,15 +175,16 @@ namespace PHP.Core
             addType(typeof(Library.__PHP_Incomplete_Class));
             addType(typeof(Library.EventClass<>));
             addType(typeof(Library.SPL.ArrayAccess));
-            addType(typeof(Library.SPL.Traversable));
-            addType(typeof(Library.SPL.IteratorAggregate));
-
+            
             addType(typeof(Library.SPL.Serializable));
             addType(typeof(Library.SPL.Countable));
             addType(typeof(Library.SPL.Reflector));
+            addType(typeof(Library.SPL.SplObjectStorage));
 
             // Iterators:
+            addType(typeof(Library.SPL.Traversable));
             addType(typeof(Library.SPL.Iterator));
+            addType(typeof(Library.SPL.IteratorAggregate));
             addType(typeof(Library.SPL.SeekableIterator));
             addType(typeof(Library.SPL.OuterIterator));
             addType(typeof(Library.SPL.RecursiveIterator));
