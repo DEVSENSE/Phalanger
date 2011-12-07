@@ -13,6 +13,9 @@
 using System;
 using PHP.Core;
 using PHP.Core.Reflection;
+using System.ComponentModel;
+using System.Runtime.Serialization;
+using System.Runtime.InteropServices;
 
 namespace PHP.Library.SPL
 {
@@ -31,6 +34,436 @@ namespace PHP.Library.SPL
 		[ImplementsMethod]
 		object offsetExists(ScriptContext context, object index);
 	}
+
+    [ImplementsType]
+    public class SplFixedArray : PhpObject, ArrayAccess, Iterator, Countable
+    {
+        /// <summary>
+        /// Internal array storage. <c>null</c> reference if the size is <c>0</c>.
+        /// </summary>
+        protected object[] array = null;
+
+        /// <summary>
+        /// Iterator position in the array.
+        /// </summary>
+        private long position = 0;
+
+        #region Helper methods
+
+        protected void ReallocArray(long newsize)
+        {
+            Debug.Assert(newsize >= 0);
+
+            // empty the array
+            if (newsize == 0)
+            {
+                array = null;
+                return;
+            }
+
+            // resize the array
+            var newarray = new object[newsize];
+
+            // TODO: mark new elements as unsetted
+
+            if (array == null)
+            {
+                array = newarray;
+            }
+            else
+            {
+                Array.Copy(array, newarray, Math.Min(array.LongLength, newarray.LongLength));
+                array = newarray;
+            }
+        }
+
+        protected bool IsValidInternal()
+        {
+            return (position >= 0 && array != null && position < array.LongLength);
+        }
+
+        protected object SizeInternal()
+        {
+            return (array != null) ? ((array.LongLength <= int.MaxValue) ? array.Length : array.LongLength) : 0;
+        }
+
+        protected long ToLongHelper(object obj)
+        {
+            // allow only numeric types
+
+            if (obj is long) return (long)obj;
+            if (obj is int) return (int)obj;
+            if (obj is bool) return (long)((bool)obj ? 1 : 0);
+            if (obj is double) return unchecked((long)(double)obj);
+
+            return -1;
+        }
+
+        protected void IndexCheckHelper(ScriptContext/*!*/context, long index)
+        {
+            if (index < 0 || array == null || index >= array.LongLength)
+            {
+                var e = new RuntimeException(context, true);
+                e.__construct(context, "Index invalid or out of range", 0, null);
+                throw new PhpUserException(e);
+            }
+        }
+
+        #endregion
+
+        #region SplFixedArray
+
+        /// <summary>
+        /// Constructs an <see cref="ArrayIterator"/> object.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="array">The array or object to be iterated on.</param>
+        /// <returns></returns>
+        [ImplementsMethod]
+        public virtual object __construct(ScriptContext/*!*/context, [Optional] object size /*= 0*/)
+        {
+            long nsize = (size == Arg.Default || size == Type.Missing) ? 0 : Core.Convert.ObjectToLongInteger(size);
+            if (nsize < 0)
+            {
+                PhpException.InvalidArgument("size");
+                return null;
+            }
+            
+            ReallocArray(nsize);
+            
+            return null;
+        }
+
+        [ImplementsMethod]
+        public virtual object fromArray(ScriptContext/*!*/context, object data, [Optional]object save_indexes)
+        {
+            PhpArray arrdata = data as PhpArray;
+            bool bindexes = (save_indexes == Arg.Default || save_indexes == Type.Missing) ? true : Core.Convert.ObjectToBoolean(save_indexes);
+
+            if (arrdata == null || arrdata.Count == 0)
+            {
+                ReallocArray(0);
+            }
+            else if (bindexes)
+            {
+                if (arrdata.StringCount > 0)
+                {
+                    // TODO: error
+                    return null;
+                }
+
+                //foreach (var pair in arrdata)
+                //    if (pair.Key.IsString || pair.Key.Integer < 0) ; // TODO: error
+
+                ReallocArray(arrdata.MaxIntegerKey + 1);
+
+                foreach (var pair in arrdata)
+                    this.array[pair.Key.Integer] = pair.Value;
+            }
+            else //if (!bindexes)
+            {
+                ReallocArray(arrdata.Count);
+
+                int i = 0;
+                foreach (var pair in arrdata)
+                    this.array[i++] = pair.Value;
+            }
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public virtual object toArray(ScriptContext/*!*/context)
+        {
+            if (array == null) return PhpArray.NewEmptyArray;
+
+            Debug.Assert(array.LongLength <= int.MaxValue);
+
+            PhpArray result = new PhpArray(array.Length, 0);
+
+            for (int i = 0; i < array.Length; i++)
+                result[i] = array[i];
+
+            return result;
+        }
+
+        [ImplementsMethod]
+        public virtual object getSize(ScriptContext/*!*/context)
+        {
+            return SizeInternal();
+        }
+
+        [ImplementsMethod]
+        public virtual object setSize(ScriptContext/*!*/context, object size)
+        {
+            long newsize = Core.Convert.ObjectToLongInteger(size);
+            if (newsize < 0)
+            {
+                // TODO: error
+            }
+            else
+            {
+                ReallocArray(newsize);
+            }
+            return null;
+        }
+
+        #endregion
+
+        #region Implementation details
+        
+        internal static void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region SplFixedArray
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public SplFixedArray(ScriptContext/*!*/context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public SplFixedArray(ScriptContext/*!*/context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object __construct(object instance, PhpStack stack)
+        {
+            object size = stack.PeekValueOptional(1);
+            stack.RemoveFrame();
+            return ((SplFixedArray)instance).__construct(stack.Context, size);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object fromArray(object instance, PhpStack stack)
+        {
+            object data = stack.PeekValue(1);
+            object save_indexes = stack.PeekValueOptional(2);
+            stack.RemoveFrame();
+            return ((SplFixedArray)instance).fromArray(stack.Context, data, save_indexes);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object toArray(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((SplFixedArray)instance).toArray(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getSize(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((SplFixedArray)instance).getSize(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object setSize(object instance, PhpStack stack)
+        {
+            object size = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((SplFixedArray)instance).setSize(stack.Context, size);
+        }
+
+        #endregion
+
+        #region interface Iterator
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object rewind(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).rewind(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object next(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).next(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object valid(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).valid(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object key(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).key(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object current(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).current(stack.Context);
+        }
+
+        #endregion
+
+        #region interface ArrayAccess
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object offsetGet(object instance, PhpStack stack)
+        {
+            object index = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayAccess)instance).offsetGet(stack.Context, index);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object offsetSet(object instance, PhpStack stack)
+        {
+            object index = stack.PeekValue(1);
+            object value = stack.PeekValue(2);
+            stack.RemoveFrame();
+            return ((ArrayAccess)instance).offsetSet(stack.Context, index, value);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object offsetUnset(object instance, PhpStack stack)
+        {
+            object index = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayAccess)instance).offsetUnset(stack.Context, index);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object offsetExists(object instance, PhpStack stack)
+        {
+            object index = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayAccess)instance).offsetExists(stack.Context, index);
+        }
+
+        #endregion
+
+        #region interface Countable
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object count(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Countable)instance).count(stack.Context);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region interface Iterator
+
+        [ImplementsMethod]
+        public object rewind(ScriptContext context)
+        {
+            position = 0;
+            return null;
+        }
+
+        [ImplementsMethod]
+        public object next(ScriptContext context)
+        {
+            position++;
+            return null;
+        }
+
+        [ImplementsMethod]
+        public virtual object valid(ScriptContext context)
+        {
+            return IsValidInternal();
+        }
+
+        [ImplementsMethod]
+        public virtual object key(ScriptContext context)
+        {
+            return ((position <= int.MaxValue) ? (int)position : position);
+        }
+
+        [ImplementsMethod]
+        public virtual object current(ScriptContext context)
+        {
+            return IsValidInternal() ? array[position] : null;
+        }
+
+        #endregion
+
+        #region interface ArrayAccess
+
+        [ImplementsMethod]
+        public virtual object offsetGet(ScriptContext context, object index)
+        {
+            long i = ToLongHelper(index);
+            IndexCheckHelper(context, i);   // throws if the index is out of range
+
+            return array[i];
+        }
+
+        [ImplementsMethod]
+        public virtual object offsetSet(ScriptContext context, object index, object value)
+        {
+            long i = ToLongHelper(index);
+            IndexCheckHelper(context, i);   // throws if the index is out of range
+
+            array[i] = value;
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public virtual object offsetUnset(ScriptContext context, object index)
+        {
+            return offsetSet(context, index, null); // TODO: mark unsetted element
+        }
+
+        [ImplementsMethod]
+        public virtual object offsetExists(ScriptContext context, object index)
+        {
+            long i = ToLongHelper(index);
+            return (i < 0 || array == null || i >= array.LongLength) ? false : (array[i] != null);  // TODO: null does not correspond to unsetted element
+        }
+
+        #endregion
+
+        #region interface Countable
+
+        [ImplementsMethod]
+        public virtual object count(ScriptContext context)
+        {
+            return SizeInternal();
+        }
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
+        protected SplFixedArray(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+#endif
+        #endregion
+    }
 
 	internal class PhpArrayObject : PhpArray
 	{
