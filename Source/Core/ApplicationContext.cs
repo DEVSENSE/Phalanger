@@ -203,6 +203,11 @@ namespace PHP.Core
             addType(typeof(Library.SPL.InvalidArgumentException));
             addType(typeof(Library.SPL.BadFunctionCallException));
             addType(typeof(Library.SPL.BadMethodCallException));
+            addType(typeof(Library.SPL.LengthException));
+            addType(typeof(Library.SPL.RangeException));
+            addType(typeof(Library.SPL.OverflowException));
+            addType(typeof(Library.SPL.UnderflowException));
+            addType(typeof(Library.SPL.DomainException));
 
             // primitive constants
             constants.Add("TRUE", GlobalConstant.True.ConstantDesc, true);
