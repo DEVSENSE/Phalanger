@@ -180,6 +180,8 @@ namespace PHP.Core
             addType(typeof(Library.SPL.Countable));
             addType(typeof(Library.SPL.Reflector));
             addType(typeof(Library.SPL.SplObjectStorage));
+            addType(typeof(Library.SPL.SplObserver));
+            addType(typeof(Library.SPL.SplSubject));
 
             // Iterators:
             addType(typeof(Library.SPL.Traversable));
@@ -191,6 +193,7 @@ namespace PHP.Core
             addType(typeof(Library.SPL.ArrayIterator));
             addType(typeof(Library.SPL.EmptyIterator));
             addType(typeof(Library.SPL.IteratorIterator));
+            addType(typeof(Library.SPL.FilterIterator));
             
             // Exception:
             addType(typeof(Library.SPL.Exception));

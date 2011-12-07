@@ -826,12 +826,12 @@ namespace PHP.Library.SPL
         /// <summary>
         /// Enumerator over the <see cref="iterator"/>.
         /// </summary>
-        private IDictionaryEnumerator/*!*/enumerator;
+        protected IDictionaryEnumerator/*!*/enumerator;
 
         /// <summary>
         /// Wheter the <see cref="enumerator"/> is in valid state (initialized and not at the end).
         /// </summary>
-        private bool isValid = false;
+        protected bool isValid = false;
 
         [ImplementsMethod]
         public object __construct(ScriptContext/*!*/context, object/*Traversable*/ iterator, [Optional]object classname)
@@ -899,7 +899,7 @@ namespace PHP.Library.SPL
         #region Iterator
 
         [ImplementsMethod]
-        public object rewind(ScriptContext context)
+        public virtual object rewind(ScriptContext context)
         {
             if (iterator != null)
             {
@@ -913,7 +913,7 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
-        public object next(ScriptContext context)
+        public virtual object next(ScriptContext context)
         {
             if (enumerator == null)
                 rewind(context);    // init iterator first (this skips the first element as on PHP)
@@ -925,21 +925,21 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
-        public object valid(ScriptContext context)
+        public virtual object valid(ScriptContext context)
         {
             return isValid;
         }
 
         [ImplementsMethod]
-        public object key(ScriptContext context)
+        public virtual object key(ScriptContext context)
         {
             return (enumerator != null && isValid) ? enumerator.Key : null;
         }
 
         [ImplementsMethod]
-        public object current(ScriptContext context)
+        public virtual object current(ScriptContext context)
         {
-            return (enumerator != null && isValid) ? enumerator.Current : null;
+            return (enumerator != null && isValid) ? enumerator.Value : null;
         }
 
         #endregion
@@ -1046,6 +1046,90 @@ namespace PHP.Library.SPL
         }
 
 #endif
+        #endregion
+    }
+
+    [ImplementsType]
+    public abstract class FilterIterator : IteratorIterator, OuterIterator, Iterator, Traversable
+    {
+        [ImplementsMethod]
+        public abstract object accept(ScriptContext/*!*/context);
+
+        private void SkipNotAccepted(ScriptContext/*!*/context)
+        {
+            if (this.enumerator != null)
+                while (this.isValid && !Core.Convert.ObjectToBoolean(this.accept(context)))
+                    this.isValid = enumerator.MoveNext();   // skip not accepted elements
+        }
+
+        [ImplementsMethod]
+        public override object rewind(ScriptContext context)
+        {
+            base.rewind(context);
+            SkipNotAccepted(context);
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public override object next(ScriptContext context)
+        {
+            base.next(context);
+            SkipNotAccepted(context);
+
+            return null;
+        }
+
+        #region Implementation details
+
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        {
+            throw new NotImplementedException();
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object accept(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((FilterIterator)instance).accept(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static new object rewind(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((FilterIterator)instance).rewind(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static new object next(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((FilterIterator)instance).next(stack.Context);
+        }
+
+        #region Constructor
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public FilterIterator(ScriptContext/*!*/context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public FilterIterator(ScriptContext/*!*/context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion        
+
         #endregion
     }
 }
