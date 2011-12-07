@@ -1633,7 +1633,7 @@ namespace PHP.Core.Reflection
 		/// <remarks>
 		/// The result is <c>1</c> if there is at least one field in this instance, <c>0</c> otherwise.
 		/// </remarks>
-		public int ToInteger()
+		public virtual int ToInteger()
 		{
             PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted_to_int",TypeName));
 			return 1;
@@ -1646,7 +1646,7 @@ namespace PHP.Core.Reflection
 		/// <remarks>
 		/// The result is <c>1</c> if there is at least one field in this instance, <c>0</c> otherwise.
 		/// </remarks>
-		public long ToLongInteger()
+		public virtual long ToLongInteger()
 		{
             PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted_to_int", TypeName));
 			return 1;
@@ -1659,7 +1659,7 @@ namespace PHP.Core.Reflection
 		/// <remarks>
 		/// The result is <c>1.0</c> if there is at least one field in this instance, <c>0.0</c> otherwise.
 		/// </remarks>
-		public double ToDouble()
+		public virtual double ToDouble()
 		{
             PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted_to_double", TypeName));
 			return 1.0;
