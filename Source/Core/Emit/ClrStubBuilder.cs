@@ -545,9 +545,11 @@ namespace PHP.Core.Emit
 			bool defineConstructors,
 			StubSignatureFilter/*!*/ signatureFilter)
 		{
-			Type return_type = Types.Object[0];
+            Debug.Assert(target.Builder != null);
 
-			PhpRoutineSignature signature = target.Signature;
+            Type return_type = Types.Object[0];
+
+            PhpRoutineSignature signature = target.Signature;
 			List<AST.FormalParam> formal_params = target.Builder.Signature.FormalParams;
 			List<AST.FormalTypeParam> formal_type_params = target.Builder.TypeSignature.TypeParams;
 
