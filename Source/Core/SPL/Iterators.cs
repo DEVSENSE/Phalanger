@@ -131,7 +131,7 @@ namespace PHP.Library.SPL
         object getChildren(ScriptContext context);
 
         /// <summary>
-        /// Returns if an iterator can be created fot the current entry.
+        /// Returns if an iterator can be created for the current entry.
         /// </summary>
         /// <returns>Returns TRUE if the current entry can be iterated over, otherwise returns FALSE.</returns>
         [ImplementsMethod]
@@ -143,15 +143,15 @@ namespace PHP.Library.SPL
     {
         #region Fields & Properties
 
-        private PhpArray array;
-        private OrderedHashtable<IntStringKey>.Enumerator arrayEnumerator;
-        private bool isArrayIterator { get { return this.array != null; } }
+        protected PhpArray array;
+        protected OrderedHashtable<IntStringKey>.Enumerator arrayEnumerator;
+        protected bool isArrayIterator { get { return this.array != null; } }
 
-        private DObject dobj;
-        private IEnumerator<KeyValuePair<object, object>> dobjEnumerator;
-        private bool isObjectIterator { get { return this.dobj != null; } }
+        protected DObject dobj;
+        protected IEnumerator<KeyValuePair<object, object>> dobjEnumerator;
+        protected bool isObjectIterator { get { return this.dobj != null; } }
 
-        private bool isValid = false;
+        protected bool isValid = false;
 
         #endregion
 
@@ -1130,6 +1130,655 @@ namespace PHP.Library.SPL
 
         #endregion        
 
+        #endregion
+    }
+
+    [ImplementsType]
+    public class RecursiveArrayIterator : ArrayIterator, RecursiveIterator
+    {
+        #region RecursiveIterator
+
+        [ImplementsMethod]
+        public virtual object getChildren(ScriptContext context)
+        {
+            object current;
+            if (!this.isValid || (current = this.current(context)) == null)
+                return null;
+
+            if (current is RecursiveArrayIterator)
+                return current;
+            else
+            {
+                var childIterator = new RecursiveArrayIterator(context, true);
+                childIterator.__construct(context, current);
+                return childIterator;
+            }
+        }
+
+        [ImplementsMethod]
+        public virtual object hasChildren(ScriptContext context)
+        {
+            object current;
+            return this.isValid && (current = this.current(context)) is IPhpEnumerable && (current is PhpArray || current is SPL.Traversable);
+        }
+
+        #endregion
+
+        #region Implementation details
+
+        internal static void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Constructor
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public RecursiveArrayIterator(ScriptContext/*!*/context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public RecursiveArrayIterator(ScriptContext/*!*/context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+
+        #region Constants
+
+        public const int CHILD_ARRAYS_ONLY = 0x4;
+
+        #endregion
+
+        #region RecursiveIterator
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getChildren(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveIterator)instance).getChildren(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object hasChildren(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveIterator)instance).hasChildren(stack.Context);
+        }
+
+        #endregion
+
+        #endregion
+    }
+
+    [ImplementsType]
+    public class RecursiveIteratorIterator : PhpObject, OuterIterator, Iterator, Traversable
+    {
+        private class IteratorEntry
+        {
+            public readonly IPhpEnumerable obj;
+
+            private IDictionaryEnumerator enumerator;
+
+            public bool isValid { get; private set; }
+            public object currentValue { get; private set; }
+            public object currentKey { get; private set; }
+
+            public IteratorEntry(IPhpEnumerable/*!*/obj)
+            {
+                Debug.Assert(obj != null);
+                
+                enumerator = null;
+
+                currentValue = currentKey = null;
+                isValid = false;
+
+                this.obj = obj;                
+            }
+
+            public void rewind()
+            {
+                if (enumerator is PhpIteratorEnumerator)
+                    ((PhpIteratorEnumerator)enumerator).Reset();    // we can rewind() existing PhpIteratorEnumerator
+                else
+                    enumerator = obj.GetForeachEnumerator(true, false, null); // we have to reinitialize (null or not PhpIteratorEnumerator)
+
+                isValid = false;// enumerator.MoveNext();
+            }
+
+            public void next()
+            {
+                if (enumerator != null && enumerator.MoveNext())
+                {
+                    isValid = true;
+                    currentKey = enumerator.Key;
+                    currentValue = enumerator.Value;
+                }
+                else
+                {
+                    isValid = false;
+                    currentKey = currentValue = null;
+                }
+            }
+        }
+
+        private int maxDepth = -1;
+        private int level { get { return (iterators.Count > 0) ? (iterators.Count - 1) : (0); } }
+
+        /// <summary>
+        /// The root iterator object.
+        /// </summary>
+        private DObject iterator;
+
+        /// <summary>
+        /// "Stack" of active iterators and their enumerators.
+        /// </summary>
+        private List<IteratorEntry>/*!*/iterators = new List<IteratorEntry>(3);
+        private IEnumerator<KeyValuePair<object, object>> enumerator = null;
+        private bool isValid = false;
+
+        private Modes mode;
+        private bool catchGetChild;
+
+        private enum Modes
+        {
+            LeavesOnly = LEAVES_ONLY,
+            SelfFirst = SELF_FIRST,
+            ChildFirst = CHILD_FIRST,
+        }
+
+        [Flags]
+        private enum Flags
+        {
+            CatchGetChilds = CATCH_GET_CHILD,
+        }
+
+        private IEnumerator<KeyValuePair<object, object>>/*!*/GetEnumerator(ScriptContext/*!*/context, List<IteratorEntry>/*!*/iterators)
+        {
+            // reset the top level iterator
+            if (iterators.Count == 0)
+                iterators.Add(new IteratorEntry(this.iterator));
+
+            // rewind
+            iterators[0].rewind();
+            this.beginIteration(context);
+
+            // yield return elements
+            var l = 0;
+
+            for (; ; )
+            {
+                iterators[l].next();
+
+                if (iterators[l].isValid)
+                {
+                    var currentValue = iterators[l].currentValue;
+                    var currentKey = iterators[l].currentKey;
+                    
+                    // iterators[l].current is another iterator?
+                    if (Core.Convert.ObjectToBoolean(this.callHasChildren(context)) &&
+                        (this.maxDepth == -1 || this.maxDepth > l))
+                    {
+                        
+                        if (mode == Modes.SelfFirst)
+                        {
+                            this.nextElement(context);
+                            yield return new KeyValuePair<object, object>(currentValue, currentKey);
+                        }
+
+                        var child = this.callGetChildren(context) as DObject;
+                        if (child != null && child.RealObject is IPhpEnumerable)
+                        {
+                            iterators.Add(new IteratorEntry(child.RealObject as IPhpEnumerable));
+
+                            iterators[++l].rewind();
+                            this.beginChildren(context);
+                        }
+                    }
+                    else
+                    {
+                        this.nextElement(context);
+                        yield return new KeyValuePair<object, object>(currentValue, currentKey);                     
+                    }
+                }
+                else
+                {
+                    // iterator[l] end
+                    if (l == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        this.endChildren(context);
+                        iterators.RemoveAt(l--);
+
+                        if (mode == Modes.ChildFirst)
+                        {
+                            this.nextElement(context);
+                            yield return new KeyValuePair<object, object>(iterators[l].currentValue, iterators[l].currentKey);
+                        }
+                    }
+                }
+            }
+        }
+
+        #region RecursiveIteratorIterator
+
+        /// <summary>
+        /// Begin children.
+        /// </summary>
+        [ImplementsMethod]
+        public virtual object beginChildren(ScriptContext/*!*/context) { return null; }
+
+        /// <summary>
+        /// Begin Iteration.
+        /// </summary>
+        [ImplementsMethod]
+        public virtual object beginIteration(ScriptContext/*!*/context) { return null; }
+
+        /// <summary>
+        /// Get children.
+        /// </summary>
+        [ImplementsMethod]
+        public virtual object callGetChildren(ScriptContext/*!*/context)
+        {
+            var obj = ((iterators.Count > 0) ? iterators[iterators.Count - 1].obj : iterator) as RecursiveIterator;
+
+            if (obj != null)
+                return obj.getChildren(context);
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Has children.
+        /// </summary>
+        [ImplementsMethod]
+        public virtual object callHasChildren(ScriptContext/*!*/context)
+        {
+            var obj = ((iterators.Count > 0) ? iterators[iterators.Count - 1].obj : iterator) as RecursiveIterator;
+
+            if (obj != null)
+                return obj.hasChildren(context);
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Construct a RecursiveIteratorIterator.
+        /// </summary>
+        [ImplementsMethod]
+        public virtual object __construct(ScriptContext/*!*/context, object/*Traversable*/iterator, [Optional]object/*int*/mode /*= LEAVES_ONLY*/ , [Optional]object/*int*/flags /*= 0*/)
+        {
+            // ensure iterator is DObject
+            var it = iterator as DObject;
+            if (it.RealObject is IteratorAggregate)
+                it = ((IteratorAggregate)it.RealObject).getIterator(context) as DObject;
+
+            //
+            this.mode = (mode == Arg.Default || mode == Type.Missing) ?
+                Modes.LeavesOnly :
+                (Modes)Core.Convert.ObjectToInteger(mode);
+
+            this.catchGetChild = (flags == Arg.Default || mode == Type.Missing) ?
+                false :
+                ((Core.Convert.ObjectToInteger(mode) & (int)Flags.CatchGetChilds)) != 0;
+
+            // prepare stack of iterators
+            this.iterator = it;
+
+            if (this.iterators != null)
+            {
+                // TODO: rewind
+            }
+            else
+            {
+                // TODO: error
+            }
+
+            //
+            return null;
+        }
+
+        /// <summary>
+        /// End children.
+        /// </summary>
+        [ImplementsMethod]
+        public virtual object endChildren(ScriptContext/*!*/context) { return null; }
+
+        /// <summary>
+        /// End Iteration.
+        /// </summary>
+        [ImplementsMethod]
+        public virtual object endIteration(ScriptContext/*!*/context) { return null; }
+
+        /// <summary>
+        /// Get the current depth of the recursive iteration.
+        /// </summary>
+        [ImplementsMethod]
+        public virtual object getDepth(ScriptContext/*!*/context)
+        {
+            return level;
+        }
+
+        /// <summary>
+        /// Get max depth.
+        /// </summary>
+        [ImplementsMethod]
+        public virtual object getMaxDepth(ScriptContext/*!*/context)
+        {
+            return (maxDepth == -1) ? (object)false : maxDepth;
+        }
+
+        /// <summary>
+        /// The current active sub iterator.
+        /// </summary>
+        [ImplementsMethod]
+        public virtual object getSubIterator(ScriptContext/*!*/context, [Optional]object level)
+        {
+            int l = (level == Arg.Default) ? this.level : Core.Convert.ObjectToInteger(level);
+
+            if (l == 0) return iterator;
+            else if (l > 0 && l < iterators.Count) return iterators[l].obj;
+            else return null;
+        }
+
+        /// <summary>
+        /// Next element.
+        /// </summary>
+        [ImplementsMethod]
+        public virtual object nextElement(ScriptContext/*!*/context) { return null; }
+
+        /// <summary>
+        /// Set max depth.
+        /// </summary>
+        [ImplementsMethod]
+        public virtual object setMaxDepth(ScriptContext/*!*/context, [Optional]object/*int*/max_depth /*= -1*/ )
+        {
+            int i = (max_depth == Arg.Default || max_depth == Type.Missing) ? -1 : Core.Convert.ObjectToInteger(max_depth);
+
+            if (i < -1)
+            {
+                // TODO: zend_throw_exception(spl_ce_OutOfRangeException, "Parameter max_depth must be >= -1", 0 TSRMLS_CC);
+            }
+            else
+            {
+                this.maxDepth = i;
+            }
+
+            return null;        
+        }
+
+        #endregion
+
+        #region OuterIterator
+
+        [ImplementsMethod]
+        public object getInnerIterator(ScriptContext context)
+        {
+            var l = level;
+            if (l == 0) return this.iterator;
+            else if (l < iterators.Count) return iterators[level].obj;
+            else return null;
+        }
+
+        #endregion
+
+        #region Iterator
+
+        [ImplementsMethod]
+        public virtual object rewind(ScriptContext context)
+        {
+            // up to the first level
+            while (iterators.Count > 1)
+            {
+                iterators.RemoveAt(iterators.Count - 1);
+                endChildren(context);
+            }
+
+            // start enumeration
+            this.enumerator = this.GetEnumerator(context, iterators);
+            this.isValid = this.enumerator.MoveNext();
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public virtual object next(ScriptContext context)
+        {
+            if (enumerator == null)
+                rewind(context);
+            else
+                this.isValid = enumerator.MoveNext();
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public virtual object valid(ScriptContext context)
+        {
+            if (!this.isValid && this.enumerator != null)
+            {
+                this.endIteration(context);
+                this.enumerator = null;
+            }
+
+            return this.isValid;
+        }
+
+        [ImplementsMethod]
+        public virtual object key(ScriptContext context)
+        {
+            if (iterators.Count > 0)
+                return iterators[iterators.Count - 1].currentKey;
+            else
+                return null;
+        }
+
+        [ImplementsMethod]
+        public virtual object current(ScriptContext context)
+        {
+            if (iterators.Count > 0)
+                return iterators[iterators.Count - 1].currentValue;
+            else
+                return null;
+        }
+
+        #endregion
+
+        #region Implementation details
+
+        internal static void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Constants
+
+        public const int LEAVES_ONLY = 0;
+        public const int SELF_FIRST = 1;
+        public const int CHILD_FIRST = 2;
+
+        public const int CATCH_GET_CHILD = 16;
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public RecursiveIteratorIterator(ScriptContext/*!*/context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public RecursiveIteratorIterator(ScriptContext/*!*/context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+
+        #region RecursiveIteratorIterator
+
+        public static object beginChildren(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).beginChildren(stack.Context);
+        }
+
+        public static object beginIteration(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).beginIteration(stack.Context);
+        }
+
+        public static object callGetChildren(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).callGetChildren(stack.Context);
+        }
+
+        public static object callHasChildren(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).callHasChildren(stack.Context);
+        }
+
+        public static object __construct(object instance, PhpStack stack)
+        {
+            object iterator = stack.PeekValue(1);
+            object mode = stack.PeekValueOptional(2);
+            object flags = stack.PeekValueOptional(3);
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).__construct(stack.Context, iterator, mode, flags);
+        }
+
+        public static object endChildren(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).endChildren(stack.Context);
+        }
+
+        public static object endIteration(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).endIteration(stack.Context);
+        }
+
+        public static object getDepth(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).getDepth(stack.Context);
+        }
+
+        public static object getMaxDepth(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).getMaxDepth(stack.Context);
+        }
+
+        public static object getSubIterator(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).getSubIterator(stack.Context);
+        }
+
+        public static object nextElement(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).nextElement(stack.Context);
+        }
+
+        public static object setMaxDepth(object instance, PhpStack stack)
+        {
+            object max_depth = stack.PeekValueOptional(1);
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).setMaxDepth(stack.Context, max_depth);
+        }
+
+        #endregion
+
+        #region interface OuterIterator
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getInnerIterator(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((OuterIterator)instance).getInnerIterator(stack.Context);
+        }
+
+        #endregion
+
+        #region interface Iterator
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object rewind(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).rewind(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object next(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).next(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object valid(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).valid(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object key(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).key(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object current(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((Iterator)instance).current(stack.Context);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
+        protected RecursiveIteratorIterator(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+#endif
         #endregion
     }
 }

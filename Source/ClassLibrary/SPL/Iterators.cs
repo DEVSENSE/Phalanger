@@ -164,7 +164,7 @@ namespace PHP.Library.SPL
             {
                 object value = iterator.current(context);   // PHP calls current() first
                 if (use_keys)
-                    array.Add(iterator.key(context), value);
+                    array[iterator.key(context)] = value;
                 else
                     array.Add(value);
 
