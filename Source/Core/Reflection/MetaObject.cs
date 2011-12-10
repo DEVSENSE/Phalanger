@@ -38,8 +38,11 @@ namespace PHP.Core.Reflection
         public override DynamicMetaObject BindSetMember(SetMemberBinder binder, DynamicMetaObject value)
         {
             return InteropBinder.SetMember.Bind(binder, this, value, binder.FallbackSetMember);
-            
+        }
 
+        public override DynamicMetaObject BindInvoke(InvokeBinder binder, DynamicMetaObject[] args)
+        {
+            return InteropBinder.Invoke.Bind( binder, this, args);
         }
 
 

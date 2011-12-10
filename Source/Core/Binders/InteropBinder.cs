@@ -14,21 +14,25 @@ namespace PHP.Core.Binders
 
         public static Expression WrapDynamic(Expression arg)
         {
-            return Expression.Call(Methods.ClrObject_WrapDynamic, 
-                            Expression.Convert( arg, Types.Object[0]));
+            return Expression.Call(Methods.ClrObject_WrapDynamic,
+                            Expression.Convert(arg, Types.Object[0]));
 
         }
 
+        public static Expression Unwrap(Expression arg)
+        {
+            return Expression.Call(Methods.PhpVariable.Unwrap,
+                            Expression.Convert(arg, Types.Object[0]));
+        }
 
-        
         internal sealed class InvokeMember : DynamicMetaObjectBinder
         {
 
             #region Php -> DLR
 
-            public override DynamicMetaObject  Bind(DynamicMetaObject target, DynamicMetaObject[] args)
+            public override DynamicMetaObject Bind(DynamicMetaObject target, DynamicMetaObject[] args)
             {
- 	            throw new NotImplementedException();
+                throw new NotImplementedException();
             }
 
             #endregion
@@ -36,7 +40,8 @@ namespace PHP.Core.Binders
             #region DLR -> Php
 
             public static DynamicMetaObject/*!*/ Bind(InvokeMemberBinder/*!*/ binder, DynamicMetaObject/*!*/ target,
-                DynamicMetaObject/*!*/[]/*!*/ args, Func<DynamicMetaObject, DynamicMetaObject[], DynamicMetaObject>/*!*/ fallback) {
+                DynamicMetaObject/*!*/[]/*!*/ args, Func<DynamicMetaObject, DynamicMetaObject[], DynamicMetaObject>/*!*/ fallback)
+            {
                 return Bind(binder.Name, binder.CallInfo, binder, target, args, fallback);
             }
 
@@ -47,7 +52,7 @@ namespace PHP.Core.Binders
                 Debug.Assert(fallback != null);
 
                 //create DMO
-                var phpInvokeBinder = Binder.MethodCall(methodName, 0,callInfo.ArgumentCount, null, Types.Object[0]) as PhpBaseInvokeMemberBinder;
+                var phpInvokeBinder = Binder.MethodCall(methodName, 0, callInfo.ArgumentCount, null, Types.Object[0]) as PhpBaseInvokeMemberBinder;
 
                 if (phpInvokeBinder != null)
                 {
@@ -63,11 +68,12 @@ namespace PHP.Core.Binders
                     for (int i = 0; i < args.Length; ++i)
                         arguments[1 + i] = new DynamicMetaObject(WrapDynamic(args[i].Expression),
                                                                  args[i].Restrictions);
-                    //delegate preparation
-
                     var result = phpInvokeBinder.Bind(target, arguments);
 
-                    return new DynamicMetaObject(result.Expression, restrictions);
+                    //Unwrap result
+                    var res = new DynamicMetaObject(Unwrap(result.Expression), restrictions);
+
+                    return res;
                 }
                 else
                     return fallback(target, args);//this will never happen
@@ -76,6 +82,52 @@ namespace PHP.Core.Binders
             #endregion
 
         }
+
+
+        internal sealed class Invoke : InvokeBinder
+        {
+
+            public Invoke(CallInfo callInfo)
+                :base(callInfo)
+            {
+
+            }
+
+            #region Php->DLR
+
+            public override DynamicMetaObject FallbackInvoke(DynamicMetaObject target, DynamicMetaObject[] args, DynamicMetaObject errorSuggestion)
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+
+            #region DLR -> Php
+
+            public static DynamicMetaObject/*!*/ Bind(InvokeBinder/*!*/ binder,
+                DynamicMetaObject/*!*/ target, DynamicMetaObject/*!*/[]/*!*/ args)
+            {
+                //Convert.ObjectToCallback(target).Invoke(args)
+
+                var callback =  Expression.Call(Methods.Convert.ObjectToCallback,
+                                    Expression.Convert( target.Expression, Types.DObject[0]));
+
+                //restriction: target is Type
+                BindingRestrictions restrictions = BindingRestrictions.GetTypeRestriction(target.Expression, target.LimitType);
+
+                //args -> new object[](args)
+                var convertedArgs = Array.ConvertAll<DynamicMetaObject, Expression>(args, (x) => Expression.Convert(x.Expression, Types.Object[0]));
+                var argsArray = Expression.NewArrayInit(Types.Object[0], convertedArgs);
+
+                return new DynamicMetaObject(
+                    Unwrap(/*TODO: deref*/Expression.Call(callback, Methods.PhpCallback_Invoke, argsArray)),
+                    restrictions);
+            }
+
+            #endregion
+
+        }
+
 
         internal sealed class GetMember : GetMemberBinder
         {
@@ -101,7 +153,8 @@ namespace PHP.Core.Binders
                     new DynamicMetaObject(Expression.Field(Expression.Convert( target.Expression, Types.DObject[0]), Fields.DObject_TypeDesc), BindingRestrictions.Empty)
                     };
 
-                    return phpGetMemberBinder.Bind(target, args);
+                    var res = phpGetMemberBinder.Bind(target, args);
+                    return new DynamicMetaObject(Unwrap(res.Expression), res.Restrictions);
                 }
                 else
                     return fallback(target);//this will never happen
@@ -137,14 +190,14 @@ namespace PHP.Core.Binders
 
                 return new DynamicMetaObject(
                     Expression.Block(
-                        Expression.Call(Expression.Convert( target.Expression, Types.DObject[0]), Methods.DObject_SetProperty,
+                        Expression.Call(Expression.Convert(target.Expression, Types.DObject[0]), Methods.DObject_SetProperty,
                             Expression.Constant(binder.Name),
-                            WrapDynamic( value.Expression),
+                            WrapDynamic(value.Expression),
                             Expression.Constant(null, Types.DTypeDesc[0])),
-                        Expression.Constant(null,Types.Object[0])),
+                        Expression.Constant(null, Types.Object[0])),
                     restrictions
                         );
-            
+
             }
 
             #endregion

@@ -351,5 +351,27 @@ namespace PHP.Core.Binders
             //
             return stub;
         }
+
+        /// <summary>
+        /// Converts first #length elements from a given array of DynamicMetaObject to array of Expression
+        /// </summary>
+        /// <param name="args">Array of DynamicMetaObject to be converted to Expression[]</param>
+        /// <param name="startIndex">Index of first argument that's going to be converted</param>
+        /// <param name="length">Count of arguments that are going to be converted</param>
+        /// <returns>Expression[] of values of DynamicMetaObject array</returns>
+        public static Expression[]/*!*/ PackToExpressions(DynamicMetaObject/*!*/[]/*!*/ args, int startIndex, int length)
+        {
+            int top = startIndex + length;
+            Expression[] arguments = new Expression[length];
+            for (int i = 0; i < length; ++i)
+                arguments[i] = args[i + startIndex].Expression;
+
+            return arguments;
+        }
+
+        public static Expression[]/*!*/ PackToExpressions(DynamicMetaObject/*!*/[]/*!*/ args)
+        {
+            return PackToExpressions(args, 0, args.Length);
+        }
     }
 }

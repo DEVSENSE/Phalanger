@@ -419,6 +419,7 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="args">Arguments to be passed to target function or method (can be <see cref="PhpReference"/>s).</param>
 		/// <returns>The value returned by the called function or method (can be a <see cref="PhpReference"/>).</returns>
+        [Emitted]
 		public object Invoke(params object[] args)
 		{
 			if (!IsBound && !Bind()) return null;
