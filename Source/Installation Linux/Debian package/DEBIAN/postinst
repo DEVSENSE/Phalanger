@@ -1,9 +1,8 @@
 #!/bin/bash
-gacutil -i /usr/lib/phalanger/Bin/PhpNetCore.IL.dll
-gacutil -i /usr/lib/phalanger/Bin/PhpNetCore.dll
-gacutil -i /usr/lib/phalanger/Bin/PhpNetClasslibrary.dll
-gacutil -i /usr/lib/phalanger/Bin/Data.Mysql.dll
-gacutil -i /usr/lib/phalanger/Bin/PhpNetMysql.dll
+gacutil -i /usr/lib/phalanger/bin/PhpNetCore.IL.dll
+gacutil -i /usr/lib/phalanger/bin/PhpNetCore.dll
+gacutil -i /usr/lib/phalanger/bin/PhpNetClasslibrary.dll
+gacutil -i /usr/lib/phalanger/bin/PhpNetXmlDom.dll
 
 a2enmod mod_mono
 
@@ -16,23 +15,23 @@ pars="-PLq"
 xmlstarlet ed $pars -s "/configuration/configSections" -t elem -n "section" -v "" $machine_config
 xmlstarlet ed $pars -s "/configuration/configSections/section[last()]" -t attr -n "name" -v "phpNet" $machine_config
 xmlstarlet ed $pars -s "/configuration/configSections/section[last()]" -t attr -n "type" -v "PHP.Core.ConfigurationSectionHandler, PhpNetCore, Version=$version, Culture=neutral, PublicKeyToken=$public_key" $machine_config
+
 xmlstarlet ed $pars -s "/configuration" -t elem -n "phpNet" -v "" $machine_config
 xmlstarlet ed $pars -s "/configuration/phpNet" -t elem -n "compiler" -v "" $machine_config
 xmlstarlet ed $pars -s "/configuration/phpNet" -t elem -n "paths" -v "" $machine_config
+
 xmlstarlet ed $pars -s "/configuration/phpNet/paths" -t elem -n "set" -v "" $machine_config
 xmlstarlet ed $pars -s "/configuration/phpNet/paths/set" -t attr -n "name" -v "DynamicWrappers" $machine_config
-xmlstarlet ed $pars -s "/configuration/phpNet/paths/set" -t attr -n "value" -v "/usr/lib/phalanger/Dynamic/" $machine_config
+xmlstarlet ed $pars -s "/configuration/phpNet/paths/set" -t attr -n "value" -v "/usr/lib/phalanger/dynamic/" $machine_config
+
 xmlstarlet ed $pars -s "/configuration/phpNet/paths" -t elem -n "set" -v "" $machine_config
 xmlstarlet ed $pars -s "/configuration/phpNet/paths/set[last()]" -t attr -n "name" -v "Libraries" $machine_config
-xmlstarlet ed $pars -s "/configuration/phpNet/paths/set[last()]" -t attr -n "value" -v "/usr/lib/mono/phalanger/Bin" $machine_config
+xmlstarlet ed $pars -s "/configuration/phpNet/paths/set[last()]" -t attr -n "value" -v "/usr/lib/mono/phalanger/bin" $machine_config
 
 xmlstarlet ed $pars -s "/configuration/phpNet" -t elem -n "classLibrary" -v "" $machine_config
 xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary" -t elem -n "add" -v "" $machine_config
 xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add" -t attr -n "assembly" -v "PhpNetClassLibrary, Version=$version, Culture=neutral, PublicKeyToken=$public_key" $machine_config
 xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add" -t attr -n "section" -v "bcl" $machine_config
-xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary" -t elem -n "add" -v "" $machine_config
-xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add[last()]" -t attr -n "assembly" -v "PhpNetMySql, Version=$version, Culture=neutral, PublicKeyToken=$public_key" $machine_config
-xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add[last()]" -t attr -n "section" -v "mysql" $machine_config
 
 xmlstarlet ed $pars -s "/configuration/system.web/httpHandlers" -t elem -n "add" -v "" $web_config
 xmlstarlet ed $pars -s "/configuration/system.web/httpHandlers/add[last()]" -t attr -n "path" -v "*.php" $web_config
