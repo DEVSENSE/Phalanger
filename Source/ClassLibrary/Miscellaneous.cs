@@ -318,6 +318,34 @@ namespace PHP.Library
         }
 
 
+        /// <summary>
+        /// Returns the peak of memory, in bytes, that's been allocated to the PHP script.
+        /// </summary>
+        /// <returns>The size.</returns>
+        [ImplementsFunction("memory_get_peak_usage", FunctionImplOptions.NotSupported)]
+        public static int MemoryGetPeakUsage()
+        {
+            return MemoryGetPeakUsage(false);
+        }
+
+        /// <summary>
+        /// Returns the peak of memory, in bytes, that's been allocated to the PHP script.
+        /// </summary>
+        /// <param name="real_usage">
+        /// Set this to TRUE to get the real size of memory allocated from system.
+        /// If not set or FALSE only the memory used by emalloc() is reported.</param>
+        /// <returns>The size.</returns>
+        [ImplementsFunction("memory_get_peak_usage", FunctionImplOptions.NotSupported)]
+        public static int MemoryGetPeakUsage(bool real_usage)
+        {
+            //if (real_usage == false)// TODO: real_usage = false
+            //    PhpException.ArgumentValueNotSupported("real_usage");
+
+            long ws = System.Diagnostics.Process.GetCurrentProcess().NonpagedSystemMemorySize64;    // can't get current thread's memory
+            if (ws > Int32.MaxValue) return Int32.MaxValue;
+            return (int)ws;
+        }
+
 		/// <summary>
 		/// Returns the type of interface between web server and Phalanger. 
 		/// </summary>
