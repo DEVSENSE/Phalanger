@@ -1331,12 +1331,19 @@ namespace PHP.Library
 		/// <param name="handle"></param>
 		/// <param name="size"></param>
 		/// <returns></returns>
-		[ImplementsFunction("ftruncate", FunctionImplOptions.NotSupported)]
+		[ImplementsFunction("ftruncate")]
 		public static bool Truncate(PhpResource handle, int size)
 		{
-			// EX: [ftruncate]
-			PhpException.FunctionNotSupported();
-			return false;
+            PhpStream stream = PhpStream.GetValid(handle);
+            if (stream == null) return false;
+
+            if (stream.RawStream != null && stream.RawStream.CanWrite && stream.RawStream.CanSeek)
+            {
+                stream.RawStream.SetLength(size);
+                return true;
+            }
+
+            return false;
 		}
 
 		#endregion
