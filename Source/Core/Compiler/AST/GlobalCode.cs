@@ -274,6 +274,15 @@ namespace PHP.Core.AST
             this.IsSimpleSyntax = simpleSyntax;
 		}
 
+        /// <summary>
+        /// Finish parsing of namespace, complete its position.
+        /// </summary>
+        /// <param name="p"></param>
+        public void UpdatePosition(Position p)
+        {
+            this.position = p;
+        }
+
 		#endregion
 
 		internal override Statement/*!*/ Analyze(Analyzer/*!*/ analyzer)

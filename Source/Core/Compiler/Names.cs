@@ -580,21 +580,24 @@ namespace PHP.Core
 		}
 
 		public QualifiedName(Name name)
+            :this(name, Name.EmptyNames, false)
 		{
-			this.name = name;
-			this.namespaces = Name.EmptyNames;
-            this.isFullyQualifiedName = false;
 		}
 
 		public QualifiedName(Name name, Name[]/*!*/ namespaces)
+            :this(name, namespaces, false)
 		{
-			if (namespaces == null)
-				throw new ArgumentNullException("namespaces");
-
-			this.name = name;
-			this.namespaces = namespaces;
-            this.isFullyQualifiedName = false;
 		}
+
+        public QualifiedName(Name name, Name[]/*!*/ namespaces, bool fullyQualified)
+        {
+            if (namespaces == null)
+                throw new ArgumentNullException("namespaces");
+
+            this.name = name;
+            this.namespaces = namespaces;
+            this.isFullyQualifiedName = fullyQualified;
+        }
 
 		internal QualifiedName(Name name, QualifiedName namespaceName)
 		{
