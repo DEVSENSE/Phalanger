@@ -1,11 +1,5 @@
-[expect exact]
-array
-(
-  [0] => 1231
-  [1] => 1
-  [2] => 23
-  [3] => 1
-)
+[expect php]
+
 
 [file]
 <?php

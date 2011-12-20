@@ -228,6 +228,7 @@ namespace PHP.Core
 					foreach (KeyValuePair<IntStringKey, object> entry in this)
 					{
 						PhpVariable.PrintIndentation(output);
+                        PhpVariable.PrintIndentationLevel += 2;
 
 						// prints a key:
 						output.Write("[{0}] => ", entry.Key.ToString());
@@ -235,6 +236,7 @@ namespace PHP.Core
 						// prints a value:
 						PhpVariable.Print(output, entry.Value);
                         output.WriteLine();
+                        PhpVariable.PrintIndentationLevel -= 2;
 					}
 
                     PhpVariable.PrintIndentationLevel -= 2;

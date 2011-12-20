@@ -715,9 +715,14 @@ namespace PHP.Core.Reflection
 				{
 					Debug.Assert(builder != null);
 
-					PhpField field;
-					if (overrides == null || (field = overrides.Member as PhpField) == null) implementor = DeclaringPhpType;
-					else implementor = field.Implementor;
+                    PhpField overriding;
+					
+                    // Find the type, that provides storage for the field
+                    if (this.IsStatic || overrides == null ||
+                        (overriding = overrides.Member as PhpField) == null || overriding.IsPrivate)
+                        implementor = DeclaringPhpType;         // use/create FieldInfo in declaring type
+					else
+                        implementor = overriding.Implementor;   // use FieldInfo from derivated type
 				}
 				return implementor;
 			}
@@ -855,12 +860,20 @@ namespace PHP.Core.Reflection
 			// TODO:
 			//  string overridden_field_pos = String.Concat(overridden_field.Class.FullSourcePath, overridden_field.Position);
 
-			//  // field staticness non-overridable
-			//  if (overridden_field.FieldModifiers.IsStatic && !field.FieldModifiers.IsStatic)
-			//  {
-			//    classesTable.Errors.Add(Errors.MakeStaticFieldNonStatic, classesTable.SourceFile, field.Position,
-			//      overridden_field_class.Name.ToString(), field.FieldName.ToString(), Name.ToString(), overridden_field_pos);
-			//  }
+            // static field cannot be made non static
+            if (overridden.IsStatic && !this.IsStatic)
+            {
+                errors.Add(Errors.MakeStaticPropertyNonStatic, SourceUnit, Position,
+                  overridden.DeclaringType.FullName, this.Name.ToString(), this.DeclaringType.FullName);
+            }
+
+            // decrease visibility is prohibited
+            if ((overridden.IsPublic && (this.IsPrivate || this.IsProtected)) ||
+                (overridden.IsProtected && (this.IsPrivate)))
+            {
+                errors.Add(Errors.OverridingFieldRestrictsVisibility, SourceUnit, Position,
+                  overridden.DeclaringType.FullName, this.Name.ToString(), overridden.Visibility.ToString().ToLowerInvariant(), this.DeclaringType.FullName);
+            }
 
 			//  // field non-staticness non-overridable
 			//  if (!overridden_field.FieldModifiers.IsStatic && field.FieldModifiers.IsStatic)
@@ -910,7 +923,7 @@ namespace PHP.Core.Reflection
 		{
 			TypeBuilder type_builder = this.DeclaringPhpType.RealTypeBuilder;
 
-			if (Implementor == DeclaringPhpType)
+			if (this.Implementor == this.DeclaringPhpType)
 			{
 				// represent the field as a PhpReference field
 				FieldAttributes field_attrs = Enums.ToFieldAttributes(memberDesc.MemberAttributes);

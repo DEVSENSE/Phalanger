@@ -1,11 +1,4 @@
-[expect] Array to string conversion
-
-[expect]
-array
-{
-  [3] => string(3) "1.5"
-  [6] => string(5) "58.54"
-}
+[expect php]
 
 [file]
 <?php

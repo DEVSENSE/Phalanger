@@ -1,17 +1,4 @@
-[expect exact]
-Food  array
-(
-  [0] => apple
-  [1] => banana
-  [2] => squid
-  [3] => pear
-)
-Fruit array
-(
-  [0] => apple
-  [1] => banana
-  [3] => pear
-)
+[expect php]
 
 [file]
 <?
