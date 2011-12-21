@@ -79,19 +79,35 @@ namespace PHP.Core.Reflection
 			if (dynamicWrapper == null)
 				this.LoadDynamicWrapper();
 
-			Debug.Assert(dynamicWrapper != null);
+            Type[] real_types;
 
-			Type[] real_types = dynamicWrapper.GetTypes();
+            if (dynamicWrapper == null)
+            {
+                // loading without dynamic wrapper
+                Debug.Assert(!Configuration.IsLoaded); // no configuration
 
-			// functions (scan arglesses in the dynamic wrapper - full reflect needs this info as well):
-			foreach (Type type in real_types)
-			{
-				if (type.Namespace == Namespaces.LibraryStubs)
-				    ReflectArglesses(functions, type);
-			}
+                real_types = Assembly.RealAssembly.GetTypes();
 
-			if (dynamicWrapper != Assembly.RealAssembly)
-				real_types = Assembly.RealAssembly.GetTypes();
+                // functions
+                
+            }
+            else
+            {
+                Debug.Assert(Configuration.IsLoaded);
+
+                real_types = dynamicWrapper.GetTypes();
+
+                // functions (scan arglesses in the dynamic wrapper - full reflect needs this info as well):
+                foreach (Type type in real_types)
+                {
+                    if (type.Namespace == Namespaces.LibraryStubs)
+                        ReflectArglesses(functions, type);
+                }
+
+                // types are in the real assembly
+                if (dynamicWrapper != Assembly.RealAssembly)
+                    real_types = Assembly.RealAssembly.GetTypes();
+            }
 
 			foreach (Type type in real_types)
 			{
@@ -250,6 +266,19 @@ namespace PHP.Core.Reflection
         }
 
         /// <summary>
+        /// Add empty argless stub just to allow initialization without dynamic wrappers.
+        /// </summary>
+        /// <param name="functions"></param>
+        /// <param name="functionName"></param>
+        /// <returns></returns>
+        private DRoutineDesc/*!*/AddEmptyArglessStub(Dictionary<string, DRoutineDesc>/*!*/functions, string functionName)
+        {
+            var desc = new PhpLibraryFunctionDesc(this, (instance, stack) => { return null; });
+            functions.Add(functionName, desc);
+            return desc;
+        }
+
+        /// <summary>
         /// Reflect argfull stubs from the list of given methods.
         /// </summary>
         /// <param name="realMethods">List of MethodInfos to reflect.</param>
@@ -273,7 +302,8 @@ namespace PHP.Core.Reflection
                         // or argless was not reflected yet and can be found in realMethods list,
                         // otherwise an exception is thrown:
                         if (functions.TryGetValue(impl_func.Name, out desc) ||  
-                            (lookForArgless && (desc = FindArglessStub(realMethods, functions, method, impl_func)) != null))
+                            (lookForArgless && (desc = FindArglessStub(realMethods, functions, method, impl_func)) != null) ||
+                            (!Configuration.IsLoaded && (desc = AddEmptyArglessStub(functions, impl_func.Name)) != null))
                         {
                             if (desc.Member == null)
                             {
@@ -380,6 +410,7 @@ namespace PHP.Core.Reflection
 #if SILVERLIGHT
 			this.dynamicWrapper = LibraryBuilder.CreateDynamicWrapper(real_assembly);
 #else
+            if (!Configuration.IsLoaded) { return; } // continue without wrappers !! (VS Integration does not need it)
 			string wrappers_dir = Configuration.GetPathsNoLoad().DynamicWrappers;
 
 			string wrapper_name = Path.Combine(wrappers_dir,

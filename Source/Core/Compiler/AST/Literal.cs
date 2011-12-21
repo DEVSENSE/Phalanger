@@ -32,7 +32,7 @@ namespace PHP.Core.AST
 		{
 		}
 
-		internal static Literal/*!*/ Create(Position position, object value, AccessType access)
+		public static Literal/*!*/ Create(Position position, object value, AccessType access)
 		{
 			string s;
 			PhpBytes b;

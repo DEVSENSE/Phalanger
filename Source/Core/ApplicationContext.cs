@@ -44,13 +44,13 @@ namespace PHP.Core
 		public bool LazyFullReflection { get { return lazyFullReflection; } }
 		private bool lazyFullReflection;
 
-		internal Dictionary<string, DTypeDesc>/*!*/ Types { get { Debug.Assert(types != null); return types; } }
+        public Dictionary<string, DTypeDesc>/*!*/ Types { get { Debug.Assert(types != null); return types; } }
 		private readonly Dictionary<string, DTypeDesc> types;
 
-		internal Dictionary<string, DRoutineDesc>/*!*/ Functions { get { Debug.Assert(functions != null); return functions; } }
+        public Dictionary<string, DRoutineDesc>/*!*/ Functions { get { Debug.Assert(functions != null); return functions; } }
 		private readonly Dictionary<string, DRoutineDesc> functions;
 
-		internal DualDictionary<string, DConstantDesc>/*!*/ Constants { get { Debug.Assert(constants != null); return constants; } }
+		public DualDictionary<string, DConstantDesc>/*!*/ Constants { get { Debug.Assert(constants != null); return constants; } }
 		private readonly DualDictionary<string, DConstantDesc> constants;
 
 		/// <summary>
@@ -278,11 +278,6 @@ namespace PHP.Core
 		#endregion
 
 		#region Helpers
-
-		public IEnumerable<KeyValuePair<string, DRoutineDesc>> GetFunctions()
-		{
-			return functions;
-		}
 
 		public DRoutine GetFunction(QualifiedName qualifiedName, ref string/*!*/ fullName)
 		{
