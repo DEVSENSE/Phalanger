@@ -49,13 +49,14 @@ namespace PHP.Library
 		/// <summary>
 		/// Determines whether a constant is defined.
 		/// </summary>
+        /// <param name="context">Current <see cref="ScriptContext"/>.</param>
 		/// <param name="name">The name of the constant.</param>
 		/// <returns>Whether the constant is defined.</returns>
 		[ImplementsFunction("defined")]
         [PureFunction(typeof(PhpConstants), "Defined_Analyze")]
-		public static bool Defined(string name)
+		public static bool Defined(ScriptContext context, string name)
 		{
-			return ScriptContext.CurrentContext.IsConstantDefined(name);
+            return context.IsConstantDefined(name);
         }
 
         #region analyzer of: defined(), constant()

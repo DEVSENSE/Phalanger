@@ -286,7 +286,7 @@ namespace PHP.Core
 			{
 				switch (name)
 				{
-					case "ZendEngineV1Compatible": ZendEngineV1Compatible = (value == "true"); break;
+                    case "ZendEngineV1Compatible": throw new NotSupportedException(name); // ZendEngineV1Compatible = (value == "true"); break;
 					case "QuoteRuntimeVariables": QuoteRuntimeVariables = (value == "true"); break;
 					case "QuoteInDbManner": QuoteInDbManner = (value == "true"); break;
 					case "DeserializationCallback": DeserializationCallback = (value != String.Empty) ? new PhpCallback(value) : null; break;

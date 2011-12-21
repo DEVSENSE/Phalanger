@@ -392,10 +392,10 @@ namespace PHP.Core
 		/// </summary>
 		public sealed partial class VariablesSection : IPhpConfigurationSection
 		{
-			/// <summary>
-			/// Whether to emulate Zend Engine 1 behavior.
-			/// </summary>
-			public bool ZendEngineV1Compatible = false;
+            ///// <summary>
+            ///// Whether to emulate Zend Engine 1 behavior.
+            ///// </summary>
+            //public bool ZendEngineV1Compatible = false;
 
 			/// <summary>
 			/// Whether to quote values returned from some PHP functions.

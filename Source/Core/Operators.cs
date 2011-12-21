@@ -4388,7 +4388,7 @@ namespace PHP.Core
 
                 if (self == null)
                 {
-                    if (!quiet && !context.Config.Variables.ZendEngineV1Compatible)
+                    if (!quiet /*&& !context.Config.Variables.ZendEngineV1Compatible*/)
                     {
                         PhpException.Throw(PhpError.Strict, CoreResources.GetString("nonstatic_method_called_statically",
                             method.DeclaringType.MakeFullName(), method.MakeFullName()));
@@ -4678,13 +4678,13 @@ namespace PHP.Core
 			DObject objx = x as DObject;
 			if (objx != null)
 			{
-				if (!ScriptContext.CurrentContext.Config.Variables.ZendEngineV1Compatible)
-				{
-					return Object.ReferenceEquals(x, y);
-				}
+                //if (!ScriptContext.CurrentContext.Config.Variables.ZendEngineV1Compatible)
+                //{
+                    return Object.ReferenceEquals(x, y);
+                //}
 
-				DObject objy = y as DObject;
-				return (objy != null && objx.TypeDesc == objy.TypeDesc && PhpComparer./*Default.*/CompareEq(x, y));
+                //DObject objy = y as DObject;
+                //return (objy != null && objx.TypeDesc == objy.TypeDesc && PhpComparer./*Default.*/CompareEq(x, y));
 			}
 
 			// compares arrays strictly:
