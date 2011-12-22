@@ -83,18 +83,14 @@ namespace PHP.Core.Reflection
 
             if (dynamicWrapper == null)
             {
-                // loading without dynamic wrapper
-                Debug.Assert(!Configuration.IsLoaded); // no configuration
-
+                Debug.Assert(!Configuration.IsLoaded && !Configuration.IsBeingLoaded, "No dynamic wrappers are allowed only for configuration-less reflection!");
                 real_types = Assembly.RealAssembly.GetTypes();
 
                 // functions
-                
+                // only argfulls
             }
             else
             {
-                Debug.Assert(Configuration.IsLoaded);
-
                 real_types = dynamicWrapper.GetTypes();
 
                 // functions (scan arglesses in the dynamic wrapper - full reflect needs this info as well):
@@ -273,7 +269,7 @@ namespace PHP.Core.Reflection
         /// <returns></returns>
         private DRoutineDesc/*!*/AddEmptyArglessStub(Dictionary<string, DRoutineDesc>/*!*/functions, string functionName)
         {
-            var desc = new PhpLibraryFunctionDesc(this, (instance, stack) => { return null; });
+            var desc = new PhpLibraryFunctionDesc(this, (instance, stack) => { throw new NotImplementedException("empty argless!"); });
             functions.Add(functionName, desc);
             return desc;
         }
@@ -303,7 +299,7 @@ namespace PHP.Core.Reflection
                         // otherwise an exception is thrown:
                         if (functions.TryGetValue(impl_func.Name, out desc) ||  
                             (lookForArgless && (desc = FindArglessStub(realMethods, functions, method, impl_func)) != null) ||
-                            (!Configuration.IsLoaded && (desc = AddEmptyArglessStub(functions, impl_func.Name)) != null))
+                            (!Configuration.IsLoaded && !Configuration.IsBeingLoaded && (desc = AddEmptyArglessStub(functions, impl_func.Name)) != null))
                         {
                             if (desc.Member == null)
                             {
@@ -410,7 +406,7 @@ namespace PHP.Core.Reflection
 #if SILVERLIGHT
 			this.dynamicWrapper = LibraryBuilder.CreateDynamicWrapper(real_assembly);
 #else
-            if (!Configuration.IsLoaded) { return; } // continue without wrappers !! (VS Integration does not need it)
+            if (!Configuration.IsLoaded && !Configuration.IsBeingLoaded) { return; } // continue without wrappers !! (VS Integration does not need it)
 			string wrappers_dir = Configuration.GetPathsNoLoad().DynamicWrappers;
 
 			string wrapper_name = Path.Combine(wrappers_dir,
