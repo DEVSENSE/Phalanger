@@ -2406,7 +2406,9 @@ namespace PHP.Library
                                 break;
 
                             //groups
-							case 1: inner_state = (ch == '?') ? 2 : 0; break;
+							case 1: 
+                                inner_state = (ch == '?') ? 2 : 0;
+                                break;
 							case 2:
                                 if (ch == 'P')
                                 {
@@ -2809,8 +2811,262 @@ namespace PHP.Library
 				i++;
 			}
 
-			return result.ToString();
+            return ConvertPossesiveToAtomicGroup(result);
 		}
+
+        #region Conversion of possesive quantifiers
+
+        internal struct brace
+        {
+            public brace(int position, char braceType)
+            {
+                this.position = position;
+                this.braceType = braceType;
+            }
+
+            public int position;
+            public char braceType;
+        }
+
+        /// <summary>
+        /// Convert possesive quantifiers to atomic group, which .NET support.
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <returns></returns>
+        /// <remarks>Not completly finished. Just works on small subset of cases
+        /// and only for *+
+        /// </remarks>
+        private static string ConvertPossesiveToAtomicGroup(StringBuilder pattern)
+        {
+            const int preallocatedAttomicGroups = 10;
+            const string atomicGroupStart = "(?>";
+            const string atomicGroupEnd = ")";
+            Stack<brace> braceStack = new Stack<brace>(16);
+            int state = 0;
+            int escape_state = 0;
+            int escapeSequenceStart = 0;
+            int offset = 0;
+
+            StringBuilder sb = new StringBuilder(pattern.Length + atomicGroupStart.Length * preallocatedAttomicGroups);//, 0, pattern.Length, pattern.Length + 4 * 10); // (?>)
+
+            Action<int> addAtomicGroup =
+                (start) =>
+                {
+                    sb.Insert(start, atomicGroupStart);
+                    sb.Append(atomicGroupEnd);
+                    offset += atomicGroupStart.Length;
+                };
+
+            Action<int, char> pushToStack = (pos, ch) =>
+            {
+                braceStack.Push(new brace(pos + offset, ch));
+            };
+
+            brace LastBrace = new brace();
+
+            bool escaped = false;
+
+            int i = 0;
+            while (i < pattern.Length)
+            {
+                char ch = pattern[i];
+
+                if (!escaped)
+                {
+                    switch (state)
+                    {
+                        case 0:
+                            if (ch == '(')
+                            {
+                                pushToStack(i, ch);
+                                state = 2;
+                            }
+                            else if (ch == '[')
+                            {
+                                pushToStack(i, ch);
+                                state = 12;
+                            }
+
+                            break;
+
+
+                        case 2: // (. 
+                            if (ch == ')')
+                                state = 3;
+                            else if (ch == '(') //nested (
+                                pushToStack(i, ch);
+                            else if (ch == '[')
+                            {
+                                state = 12;
+                                pushToStack(i, ch);
+                            }
+
+                            break;
+
+                        case 3: // (...)
+
+                            LastBrace = braceStack.Pop();
+
+                            if (ch == '*')
+                                state = 4;
+                            else
+                            {
+                                state = DecideState(pattern, braceStack);
+                                continue;
+                            }
+
+                            break;
+
+                        case 4: // (...)*+
+
+                            if (ch == '+')
+                            {
+                                addAtomicGroup(LastBrace.position);
+
+                                state = DecideState(pattern, braceStack);
+                                ++i;
+                                continue;
+                            }
+                            else
+                                state = DecideState(pattern, braceStack);
+
+                            break;
+
+
+                        case 12: // [. 
+                            if (ch == ']')
+                                state = 13;
+                            else if (ch == '(')
+                            {
+                                state = 2;
+                                pushToStack(i, ch);
+                            }
+                            else if (ch == '[')
+                            {
+                                pushToStack(i, ch);
+                            }
+
+                            break;
+
+                        case 13: // [...]
+
+                            LastBrace = braceStack.Pop();
+
+                            if (ch == '*')
+                                state = 14;
+                            else
+                                state = DecideState(pattern, braceStack);
+
+
+                            break;
+
+                        case 14: // [...]*+
+
+                            if (ch == '+')
+                            {
+                                addAtomicGroup(LastBrace.position);
+
+                                state = DecideState(pattern, braceStack);
+                                ++i;
+                                continue;
+                            }
+                            else
+                            {
+                                state = DecideState(pattern, braceStack);
+                                continue;
+                            }
+
+                            break;
+
+
+                    }
+                }
+                else
+                {
+                    //escaped
+
+                    switch (escape_state)
+                    {
+                        case 0:
+
+                            if (ch == '\\')
+                            {
+                                escape_state = 0;
+                            }
+                            else
+                            {
+                                escape_state = 1;
+                            }
+
+                            break;
+
+                        case 1:// \.
+
+                            if (ch == '*')
+                                escape_state = 2;
+                            else
+                                escape_state = 0;
+
+
+                            break;
+
+                        case 2:
+
+                            if (ch == '+')
+                            {
+                                escape_state = 0;
+                                addAtomicGroup(escapeSequenceStart);
+                                ++i;
+                            }
+                            else
+                            {
+                                escape_state = 0;
+                            }
+
+                            break;
+
+                    }
+
+                    if (escape_state == 0)
+                    {
+                        escaped = false;
+                        continue;
+                    }
+                }
+
+
+                if (ch == '\\' && escaped == false)
+                {
+                    escaped = true;
+                    escapeSequenceStart = i + offset;
+                }
+
+                ++i;
+                sb.Append(ch);
+
+            }
+
+            return sb.ToString();
+
+        }
+        private static int DecideState(StringBuilder pattern, Stack<brace> braceStack)
+        {
+            int state;
+            if (braceStack.Count > 0)
+            {
+                brace SecondToLastBrace = braceStack.Pop();
+                braceStack.Push(SecondToLastBrace);
+
+                if (SecondToLastBrace.braceType == '(')
+                    state = 2;
+                else
+                    state = 12;
+            }
+            else
+                state = 0;
+
+            return state;
+        }
 
 
 		/// <summary>
@@ -2831,8 +3087,9 @@ namespace PHP.Library
 			return true;
 		}
 
+        #endregion
 
-		/// <summary>
+        /// <summary>
 		/// Modifies regular expression so it matches only at the beginning of the string.
 			/// </summary>
 		/// <param name="expr">Regular expression to modify.</param>
