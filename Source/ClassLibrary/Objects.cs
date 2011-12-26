@@ -595,14 +595,15 @@ namespace PHP.Library
 		/// <returns><B>true</B> if the object <paramref name="obj"/> belongs to <paramref name="className"/> class or
 		/// a class which is a subclass of <paramref name="className"/>, <B>false</B> otherwise.</returns>
         [ImplementsFunction("is_a", FunctionImplOptions.NeedsClassContext)]
-		public static bool IsA(DTypeDesc caller, DObject obj, string className)
+		public static bool IsA(DTypeDesc caller, object obj, string className)
 		{
-			if (obj == null) return false;
+			if (obj == null || !(obj is DObject)) return false;
 
+            DObject dobj = (DObject)obj;
             DTypeDesc type = ScriptContext.CurrentContext.ResolveType(className, null, caller, null, ResolveTypeFlags.None);    // do not call autoload [workitem:26664]
 			if (type == null) return false;
 
-			return type.IsAssignableFrom(obj.TypeDesc);
+			return type.IsAssignableFrom(dobj.TypeDesc);
 		}
 
 		/// <summary>
