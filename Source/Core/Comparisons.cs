@@ -277,55 +277,54 @@ namespace PHP.Core
 
             // code marked as OBSOLETE is implementing NULL comparison such that NULL is considered as 0/0.0/false/""
             // actual PHP comparison treats NULL as less or equal to any value
-            string sx, sy;
-
-            if (x is int)
+            
+            if (x == null)
             {
-                if (y is int) return ((int)x < (int)y ? -1 : ((int)x > (int)y ? 1 : 0));
-                if (y is long) return ((int)x < (long)y ? -1 : ((int)x > (long)y ? 1 : 0));
-                if (y is double) return CompareDouble((int)x, (double)y);
-                if ((sy = y as string) != null) return -CompareString(sy, (int)x);
-                if (y is bool) return ((int)x != 0 ? 2 : 1) - ((bool)y ? 2 : 1);
+                if (y == null) return 0; // x == null
+                if (y.GetType() == typeof(int)) return ((int)y == 0) ? 0 : -1;     // obsolete: -Math.Sign((int)y);                 // x == 0
+                if (y.GetType() == typeof(double)) return ((double)y == 0.0) ? 0 : -1;// obsolete: CompareDouble(0.0,(double)y);      // x == 0.0
+                if (y.GetType() == typeof(string)) return ((string)y == "") ? 0 : -1;        // obsolete: sy==String.Empty ? 0:-1;            // x == ""  
+                if (y.GetType() == typeof(bool)) return ((bool)y == false) ? 0 : -1;// obsolete: (bool)y ? 1:0;                      // x == false
+            }
+            else if (x.GetType() == typeof(int))
+            {
                 if (y == null) return ((int)x == 0) ? 0 : 1; // obsolete: Math.Sign((int)x); // y == 0
+                if (y.GetType() == typeof(int)) return ((int)x < (int)y ? -1 : ((int)x > (int)y ? 1 : 0));
+                if (y.GetType() == typeof(long)) return ((int)x < (long)y ? -1 : ((int)x > (long)y ? 1 : 0));
+                if (y.GetType() == typeof(double)) return CompareDouble((int)x, (double)y);
+                if (y.GetType() == typeof(string)) return -CompareString((string)y, (int)x);
+                if (y.GetType() == typeof(bool)) return ((int)x != 0 ? 2 : 1) - ((bool)y ? 2 : 1);
             }
-            else if(x is long)
+            else if (x.GetType() == typeof(long))
             {
-                if (y is int) return ((long)x < (int)y ? -1 : ((long)x > (int)y ? 1 : 0));
-                if (y is long) return ((long)x < (long)y ? -1 : ((long)x > (long)y ? 1 : 0));
-                if (y is double) return CompareDouble((long)x, (double)y);
-                if ((sy = y as string) != null) return -CompareString(sy, (long)x);
-                if (y is bool) return ((long)x != 0 ? 2 : 1) - ((bool)y ? 2 : 1);
                 if (y == null) return ((long)x == 0) ? 0 : 1; // obsolete: Math.Sign((int)x); // y == 0
+                if (y.GetType() == typeof(int)) return ((long)x < (int)y ? -1 : ((long)x > (int)y ? 1 : 0));
+                if (y.GetType() == typeof(long)) return ((long)x < (long)y ? -1 : ((long)x > (long)y ? 1 : 0));
+                if (y.GetType() == typeof(double)) return CompareDouble((long)x, (double)y);
+                if (y.GetType() == typeof(string)) return -CompareString((string)y, (long)x);
+                if (y.GetType() == typeof(bool)) return ((long)x != 0 ? 2 : 1) - ((bool)y ? 2 : 1);
             }
-            else if (x is double)
+            else if (x.GetType() == typeof(double))
             {
-                if (y is double) return CompareDouble((double)x, (double)y);
-                if (y is int) return CompareDouble((double)x, (int)y);
-                if ((sy = y as string) != null) return -CompareString(sy, (double)x);
-                if (y is bool) return ((double)x != 0.0 ? 2 : 1) - ((bool)y ? 2 : 1);
                 if (y == null) return ((double)x == 0.0) ? 0 : 1; // obsolete: CompareDouble((double)x,0.0); // y == 0.0
+                if (y.GetType() == typeof(double)) return CompareDouble((double)x, (double)y);
+                if (y.GetType() == typeof(int)) return CompareDouble((double)x, (int)y);
+                if (y.GetType() == typeof(string)) return -CompareString((string)y, (double)x);
+                if (y.GetType() == typeof(bool)) return ((double)x != 0.0 ? 2 : 1) - ((bool)y ? 2 : 1);
             }
-            else if ((sx = x as string) != null)
+            else if (x.GetType() == typeof(string))
             {
-                if ((sy = y as string) != null) return CompareString(sx, sy);
-                if (y is int) return CompareString(sx, (int)y);
-                if (y is double) return CompareString(sx, (double)y);
-                if (y is bool) return (Convert.StringToBoolean(sx) ? 2 : 1) - ((bool)y ? 2 : 1);
-                if (y == null) return sx == "" ? 0 : 1; // y == ""
+                if (y == null) return (string)x == "" ? 0 : 1; // y == ""
+                if (y.GetType() == typeof(string)) return CompareString((string)x, (string)y);
+                if (y.GetType() == typeof(int)) return CompareString((string)x, (int)y);
+                if (y.GetType() == typeof(double)) return CompareString((string)x, (double)y);
+                if (y.GetType() == typeof(bool)) return (Convert.StringToBoolean((string)x) ? 2 : 1) - ((bool)y ? 2 : 1);
             }
-            else if (x is bool)
+            else if (x.GetType() == typeof(bool))
             {
                 return ((bool)x ? 2 : 1) - (Convert.ObjectToBoolean(y) ? 2 : 1);
             }
-            else if (x == null)
-            {
-                if (y is int) return ((int)y == 0) ? 0 : -1;     // obsolete: -Math.Sign((int)y);                 // x == 0
-                if (y is double) return ((double)y == 0.0) ? 0 : -1;// obsolete: CompareDouble(0.0,(double)y);      // x == 0.0
-                if ((sy = y as string) != null) return (sy == "") ? 0 : -1;        // obsolete: sy==String.Empty ? 0:-1;            // x == ""  
-                if (y is bool) return ((bool)y == false) ? 0 : -1;// obsolete: (bool)y ? 1:0;                      // x == false
-                if (y == null) return 0; // x == null
-            }
-
+            
             try
             {
                 return CompareOp_Nonliterals(x, y);
@@ -371,33 +370,31 @@ namespace PHP.Core
         {
             // copied from CompareOp(object,object,bool)
 
-            string sx;
-
-            if (x is int)
-            {
-                return ((int)x < (int)y ? -1 : ((int)x > (int)y ? 1 : 0));                
-            }
-            else if (x is long)
-            {
-                return ((long)x < (int)y ? -1 : ((long)x > (int)y ? 1 : 0));
-            }
-            else if (x is double)
-            {
-                return CompareDouble((double)x, (int)y);
-            }
-            else if ((sx = x as string) != null)
-            {
-                return CompareString(sx, (int)y);
-            }
-            else if (x is bool)
-            {
-                return ((bool)x ? 2 : 1) - (Convert.ObjectToBoolean(y) ? 2 : 1);
-            }
-            else if (x == null)
+            if (x == null)
             {
                 return ((int)y == 0) ? 0 : -1;     // obsolete: -Math.Sign((int)y);                 // x == 0
             }
-
+            else if (x.GetType() == typeof(int))
+            {
+                return ((int)x < (int)y ? -1 : ((int)x > (int)y ? 1 : 0));                
+            }
+            else if (x.GetType() == typeof(long))
+            {
+                return ((long)x < (int)y ? -1 : ((long)x > (int)y ? 1 : 0));
+            }
+            else if (x.GetType() == typeof(double))
+            {
+                return CompareDouble((double)x, (int)y);
+            }
+            else if (x.GetType() == typeof(string))
+            {
+                return CompareString((string)x, (int)y);
+            }
+            else if (x.GetType() == typeof(bool))
+            {
+                return ((bool)x ? 2 : 1) - (Convert.ObjectToBoolean(y) ? 2 : 1);
+            }
+            
             try
             {
                 return CompareOp_Nonliterals(x, y);
@@ -416,16 +413,14 @@ namespace PHP.Core
         {
             // copied from CompareOp(object,object,bool)
 
-            string sy;
-
             //if (x is int)
             {
-                if (y is int) return ((int)x < (int)y ? -1 : ((int)x > (int)y ? 1 : 0));
-                if (y is long) return ((int)x < (long)y ? -1 : ((int)x > (long)y ? 1 : 0));
-                if (y is double) return CompareDouble((int)x, (double)y);
-                if ((sy = y as string) != null) return -CompareString(sy, (int)x);
-                if (y is bool) return ((int)x != 0 ? 2 : 1) - ((bool)y ? 2 : 1);
                 if (y == null) return ((int)x == 0) ? 0 : 1; // obsolete: Math.Sign((int)x); // y == 0
+                if (y.GetType() == typeof(int)) return ((int)x < (int)y ? -1 : ((int)x > (int)y ? 1 : 0));
+                if (y.GetType() == typeof(long)) return ((int)x < (long)y ? -1 : ((int)x > (long)y ? 1 : 0));
+                if (y.GetType() == typeof(double)) return CompareDouble((int)x, (double)y);
+                if (y.GetType() == typeof(string)) return -CompareString((string)y, (int)x);
+                if (y.GetType() == typeof(bool)) return ((int)x != 0 ? 2 : 1) - ((bool)y ? 2 : 1);
             }
             
             try
@@ -465,56 +460,54 @@ namespace PHP.Core
 		[Emitted]
 		public static bool CompareEq(object x, object y)
 		{
-			string sx, sy;
-
-			if (x is int)
+			if (x == null)
 			{
-				if (y is int) return (int)x == (int)y;
-				else if (y is long) return (long)(int)x == (long)y;
-				else if (y is double) return (double)(int)x == (double)y;
-				else if ((sy = y as string) != null) return CompareStringEq(sy, (int)x);
-				else if (y is bool) return ((int)x != 0) == (bool)y;
-				else if (y == null) return (int)x == 0;                     // y == 0
+				if (y == null) return true;                                // y == null
+                if (y.GetType() == typeof(int)) return (int)y == 0;								// y == 0
+                if (y.GetType() == typeof(long)) return (long)y == 0;						// y == 0
+                if (y.GetType() == typeof(double)) return (double)y == 0.0;                  // y == 0.0
+                if (y.GetType() == typeof(string)) return (string)y == String.Empty; // y == ""  
+                if (y.GetType() == typeof(bool)) return !(bool)y;                            // y == false
 			}
-			else if (x is long)
+            else if (x.GetType() == typeof(int))
 			{
-				if (y is long) return (long)x == (long)y;
-				else if (y is int) return (long)x == (long)(int)y;
-				else if (y is double) return (double)(long)x == (double)y;
-				else if ((sy = y as string) != null) return CompareStringEq(sy, (long)x);
-				else if (y is bool) return ((long)x != 0) == (bool)y;
-				else if (y == null) return (long)x == 0;                     // y == 0
+				if (y == null) return (int)x == 0;                     // y == 0
+                if (y.GetType() == typeof(int)) return (int)x == (int)y;
+				if (y.GetType() == typeof(long)) return (long)(int)x == (long)y;
+                if (y.GetType() == typeof(double)) return (double)(int)x == (double)y;
+                if (y.GetType() == typeof(string)) return CompareStringEq((string)y, (int)x);
+                if (y.GetType() == typeof(bool)) return ((int)x != 0) == (bool)y;
 			}
-			else if (x is double)
+            else if (x.GetType() == typeof(long))
 			{
-				if (y is double) return (double)x == (double)y;
-				else if (y is int) return (double)x == (double)(int)y;
-				else if (y is long) return (double)x == (double)(long)y;
-				else if ((sy = y as string) != null) return CompareStringEq(sy, (double)x);
-				else if (y is bool) return ((double)x != 0.0) == (bool)y;
-				else if (y == null) return (double)x == 0.0;                // y == 0.0
+				if (y == null) return (long)x == 0;                     // y == 0
+                if (y.GetType() == typeof(long)) return (long)x == (long)y;
+                if (y.GetType() == typeof(int)) return (long)x == (long)(int)y;
+                if (y.GetType() == typeof(double)) return (double)(long)x == (double)y;
+                if (y.GetType() == typeof(string)) return CompareStringEq((string)y, (long)x);
+                if (y.GetType() == typeof(bool)) return ((long)x != 0) == (bool)y;
 			}
-			else if ((sx = x as string) != null)
+            else if (x.GetType() == typeof(double))
 			{
-				if ((sy = y as string) != null) return CompareString(sx, sy) == 0;
-				else if (y is int) return CompareString(sx, (int)y) == 0;
-				else if (y is long) return CompareString(sx, (long)y) == 0;
-				else if (y is double) return CompareStringEq(sx, (double)y);
-				else if (y is bool) return Convert.StringToBoolean(sx) == (bool)y;
-				else if (y == null) return sx == String.Empty;             // y == ""  
+				if (y == null) return (double)x == 0.0;                // y == 0.0
+                if (y.GetType() == typeof(double)) return (double)x == (double)y;
+                if (y.GetType() == typeof(int)) return (double)x == (double)(int)y;
+                if (y.GetType() == typeof(long)) return (double)x == (double)(long)y;
+                if (y.GetType() == typeof(string)) return CompareStringEq((string)y, (double)x);
+                if (y.GetType() == typeof(bool)) return ((double)x != 0.0) == (bool)y;
 			}
-			else if (x is bool)
+            else if (x.GetType() == typeof(string))
+			{
+				if (y == null) return (string)x == String.Empty;             // y == ""  
+                if (y.GetType() == typeof(string)) return CompareString((string)x, (string)y) == 0;
+                if (y.GetType() == typeof(int)) return CompareString((string)x, (int)y) == 0;
+                if (y.GetType() == typeof(long)) return CompareString((string)x, (long)y) == 0;
+                if (y.GetType() == typeof(double)) return CompareStringEq((string)x, (double)y);
+                if (y.GetType() == typeof(bool)) return Convert.StringToBoolean((string)x) == (bool)y;
+			}
+			else if (x.GetType() == typeof(bool))
 			{
 				return (bool)x == Convert.ObjectToBoolean(y);
-			}
-			else if (x == null)
-			{
-				if (y is int) return (int)y == 0;								// y == 0
-				else if (y is long) return (long)y == 0;						// y == 0
-				else if (y is double) return (double)y == 0.0;                  // y == 0.0
-				else if ((sy = y as string) != null) return sy == String.Empty; // y == ""  
-				else if (y is bool) return !(bool)y;                            // y == false
-				else if (y == null) return true;                                // y == null
 			}
 
 			try

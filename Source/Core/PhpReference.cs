@@ -361,7 +361,7 @@ namespace PHP.Core
 	/// (i.e. whether it really is a reference).
 	/// </summary>
 	[Serializable, DebuggerNonUserCodeAttribute]
-	public class PhpSmartReference : PhpReference
+	public sealed class PhpSmartReference : PhpReference
 	{
 		#region Fields
 

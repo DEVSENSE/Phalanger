@@ -92,18 +92,25 @@ namespace PHP.Core
         /// <returns>PHP (Phalanger) representation of the CLR literal.</returns>
 		internal static object ClrLiteralToPhpLiteral(object value)
 		{
-			if (value is int || value is string || value == null || value is bool || value is double || value is long)
+            if (value == null ||
+                value.GetType() == typeof(int) ||
+                value.GetType() == typeof(string) ||
+                value.GetType() == typeof(bool) ||
+                value.GetType() == typeof(double) ||
+                value.GetType() == typeof(long))
 				return value;
 
-            if (value is Enum) return ClrEnumToPhpLiteral(value);
-			if (value is sbyte) return (int)(sbyte)value;
-			if (value is byte) return (int)(byte)value;
-			if (value is short) return (int)(short)value;
-			if (value is ushort) return (int)(ushort)value;
-			if (value is char) return ((char)value).ToString();
-			if (value is float) return (double)(float)value;
+            // velue != null
 
-			if (value is uint)
+            if (value is Enum) return ClrEnumToPhpLiteral(value);
+			if (value.GetType() == typeof(sbyte)) return (int)(sbyte)value;
+			if (value.GetType() == typeof(byte)) return (int)(byte)value;
+			if (value.GetType() == typeof(short)) return (int)(short)value;
+			if (value.GetType() == typeof(ushort)) return (int)(ushort)value;
+			if (value.GetType() == typeof(char)) return ((char)value).ToString();
+			if (value.GetType() == typeof(float)) return (double)(float)value;
+
+			if (value.GetType() == typeof(uint))
 			{
 				uint uint_value = (uint)value;
 
@@ -113,7 +120,7 @@ namespace PHP.Core
 					return (long)uint_value;
 			}
 
-			if (value is ulong)
+			if (value.GetType() == typeof(ulong))
 			{
 				ulong ulong_value = (ulong)value;
 
@@ -123,7 +130,7 @@ namespace PHP.Core
 					return unchecked((long)ulong_value);
 			}
 
-			if (value is decimal)
+			if (value.GetType() == typeof(decimal))
 			{
 				decimal decimal_value = (decimal)value;
 				if (decimal_value >= Int32.MinValue && decimal_value <= Int32.MaxValue)
@@ -247,30 +254,28 @@ namespace PHP.Core
 		{
             if (ReferenceEquals(obj, null)) return PhpBytes.Empty;
 
-			string s;
-
-            if (obj is PhpBytes)
+			if (obj.GetType() == typeof(PhpBytes))
             {
                 return (PhpBytes)obj;
             }
-			else if ((s = obj as string) != null)
+            else if (obj.GetType() == typeof(string))
 			{
-				return new PhpBytes(s);
+				return new PhpBytes((string)obj);
 			}
-			else if (obj is int)
+            else if (obj.GetType() == typeof(int))
 			{
 				return new PhpBytes(((int)obj).ToString());
 			}
-			else if (obj is long)
+            else if (obj.GetType() == typeof(long))
 			{
 				return new PhpBytes(((long)obj).ToString());
 			}
-			else if (obj is double)
+            else if (obj.GetType() == typeof(double))
 			{
 				// this is not exactly the same behavior as in PHP, but it's very close: 
 				return new PhpBytes(DoubleToString((double)obj));
 			}
-			else if (obj is bool)
+            else if (obj.GetType() == typeof(bool))
 			{
 				return (bool)obj ? new PhpBytes(1) : PhpBytes.Empty;
 			}
@@ -289,13 +294,13 @@ namespace PHP.Core
 		[Emitted]
 		public static bool ObjectToBoolean(object obj)
 		{
-			string s;
+            if (obj == null) return false;
 
-			if (obj is bool) return (bool)obj;
-			if (obj is int) return (int)obj != 0;
-			if (obj is double) return (double)obj != 0.0;
-			if (obj is long) return (long)obj != 0;
-			if ((s = obj as string) != null) return StringToBoolean(s);
+            if (obj.GetType() == typeof(bool)) return (bool)obj;
+            if (obj.GetType() == typeof(int)) return (int)obj != 0;
+            if (obj.GetType() == typeof(double)) return (double)obj != 0.0;
+            if (obj.GetType() == typeof(long)) return (long)obj != 0;
+			if (obj.GetType() == typeof(string)) return StringToBoolean((string)obj);
 
 			// PhpReference, PhpArray, PhpResource, DObject, PhpBytes:
 			IPhpConvertible conv = obj as IPhpConvertible;
@@ -313,13 +318,13 @@ namespace PHP.Core
 		[Emitted]
 		public static int ObjectToInteger(object obj)
 		{
-			string s;
+            if (obj == null) return 0;
 
-			if (obj is int) return (int)obj;
-			if (obj is bool) return (bool)obj ? 1 : 0;
-			if (obj is long) return unchecked((int)(long)obj);
-			if (obj is double) return unchecked((int)(double)obj);
-			if ((s = obj as string) != null) return StringToInteger(s);
+            if (obj.GetType() == typeof(int)) return (int)obj;
+            if (obj.GetType() == typeof(bool)) return (bool)obj ? 1 : 0;
+            if (obj.GetType() == typeof(long)) return unchecked((int)(long)obj);
+            if (obj.GetType() == typeof(double)) return unchecked((int)(double)obj);
+            if (obj.GetType() == typeof(string)) return StringToInteger((string)obj);
 
 			// PhpString, PhpReference, PhpArray, PhpResource, DObject, PhpBytes:
 			IPhpConvertible conv = obj as IPhpConvertible;
@@ -337,13 +342,13 @@ namespace PHP.Core
 		[Emitted]
 		public static long ObjectToLongInteger(object obj)
 		{
-			string s;
+            if (obj == null) return 0;
 
-			if (obj is long) return (long)obj;
-			if (obj is int) return (int)obj;
-			if (obj is bool) return (long)((bool)obj ? 1 : 0);
-			if (obj is double) return unchecked((long)(double)obj);
-			if ((s = obj as string) != null) return StringToLongInteger(s);
+            if (obj.GetType() == typeof(long)) return (long)obj;
+            if (obj.GetType() == typeof(int)) return (int)obj;
+            if (obj.GetType() == typeof(bool)) return (long)((bool)obj ? 1 : 0);
+            if (obj.GetType() == typeof(double)) return unchecked((long)(double)obj);
+            if (obj.GetType() == typeof(string)) return StringToLongInteger((string)obj);
 
 			// PhpString, PhpReference, PhpArray, PhpResource, DObject, PhpBytes:
 			IPhpConvertible conv = obj as IPhpConvertible;
@@ -361,13 +366,13 @@ namespace PHP.Core
 		[Emitted]
 		public static double ObjectToDouble(object obj)
 		{
-			string s;
+            if (obj == null) return 0.0;
 
-			if (obj is double) return (double)obj;
-			if (obj is int) return (double)(int)obj;
-			if ((s = obj as string) != null) return StringToDouble(s);
-			if (obj is bool) return (bool)obj ? 1.0 : 0.0;
-			if (obj is long) return (double)(long)obj;
+            if (obj.GetType() == typeof(double)) return (double)obj;
+            if (obj.GetType() == typeof(int)) return (double)(int)obj;
+            if (obj.GetType() == typeof(string)) return StringToDouble((string)obj);
+            if (obj.GetType() == typeof(bool)) return (bool)obj ? 1.0 : 0.0;
+            if (obj.GetType() == typeof(long)) return (double)(long)obj;
 
 			// PhpString, PhpReference, PhpArray, PhpResource, DObject, PhpBytes:
 			IPhpConvertible conv = obj as IPhpConvertible;
@@ -386,17 +391,22 @@ namespace PHP.Core
 		[Emitted]
 		public static PhpArray ObjectToPhpArray(object var)
 		{
+            if (var == null) return new PhpArray(0);
+            
             PhpArray array;
 			DObject obj;
 
-			if ((obj = var as DObject) != null)
+            if (var.GetType() == typeof(PhpArray))  // faster type check, otherwise try iherited classes in following check
+                return (PhpArray)var;
+
+            if ((array = var as PhpArray) != null)
+                return array;
+            
+            if ((obj = var as DObject) != null)
 				return obj.ToPhpArray();
 
-			if ((array = var as PhpArray) != null)
-				return array;
-
-			if (var == null) return new PhpArray(0);
-
+			
+			
 			// Integer, Double, Boolean, String, PhpBytes, PhpResource
 			PhpArray result = new PhpArray(1);
 			result.Add(var);
@@ -571,21 +581,21 @@ namespace PHP.Core
 		[Emitted]
 		public static Boolean TryObjectToBoolean(object obj, out bool success)
 		{
-			string s;
-			PhpBytes b;
-			PhpString ps;
-			success = true;
+            if (obj != null)
+            {
+                success = true;
 
-			if (obj is bool) return (bool)obj;
-			if (obj is int) return (int)obj != 0;
-			if (obj is double) return (double)obj != 0.0;
-			if (obj is long) return (long)obj != 0;
+                if (obj.GetType() == typeof(bool)) return (bool)obj;
+                if (obj.GetType() == typeof(int)) return (int)obj != 0;
+                if (obj.GetType() == typeof(double)) return (double)obj != 0.0;
+                if (obj.GetType() == typeof(long)) return (long)obj != 0;
 
-			// we have to check PHP string types separately from the rest of IPhpConvertibles here
-			// as only these strings are "naturally" convertible to boolean:
-			if ((s = obj as string) != null) return StringToBoolean(s);
-			if ((b = obj as PhpBytes) != null) return b.ToBoolean();
-			if ((ps = obj as PhpString) != null) return ps.ToBoolean();
+                // we have to check PHP string types separately from the rest of IPhpConvertibles here
+                // as only these strings are "naturally" convertible to boolean:
+                if (obj.GetType() == typeof(string)) return StringToBoolean((string)obj);
+                if (obj.GetType() == typeof(PhpBytes)) return ((PhpBytes)obj).ToBoolean();
+                if (obj.GetType() == typeof(PhpString)) return ((PhpString)obj).ToBoolean();
+            }
 
 			success = false;
 			return false;
@@ -639,40 +649,43 @@ namespace PHP.Core
 		[Emitted]
 		public static Int32 TryObjectToInt32(object obj, out bool success)
 		{
-			string s;
-			success = true;
+			if (obj != null)
+            {
+                success = true;
 
-			if (obj is int) return (int)obj;
-			if (obj is bool) return (bool)obj ? 1 : 0;
+                if (obj.GetType() == typeof(int)) return (int)obj;
+                if (obj.GetType() == typeof(bool)) return (bool)obj ? 1 : 0;
 
-			if (obj is long)
-			{
-				long lval = (long)obj;
-				success = lval >= Int32.MinValue && lval <= Int32.MaxValue;
-				return unchecked((Int32)lval);
-			}
+                if (obj.GetType() == typeof(long))
+                {
+                    long lval = (long)obj;
+                    success = lval >= Int32.MinValue && lval <= Int32.MaxValue;
+                    return unchecked((Int32)lval);
+                }
 
-			if (obj is double)
-			{
-				double dval = (double)obj;
-				success = dval >= Int32.MinValue && dval <= Int32.MaxValue;
-				return unchecked((Int32)dval);
-			}
+                if (obj.GetType() == typeof(double))
+                {
+                    double dval = (double)obj;
+                    success = dval >= Int32.MinValue && dval <= Int32.MaxValue;
+                    return unchecked((Int32)dval);
+                }
 
-			if ((s = PhpVariable.AsString(obj)) != null)
-			{
-				int ival;
-				double dval;
-				long lval;
+                string s;
+                if ((s = PhpVariable.AsString(obj)) != null)
+                {
+                    int ival;
+                    double dval;
+                    long lval;
 
-				// successfull iff the number encoded in the string fits the Int32:
-				NumberInfo info = StringToNumber(s, out ival, out lval, out dval);
-				if ((info & (NumberInfo.Integer | NumberInfo.IsNumber)) == (NumberInfo.Integer | NumberInfo.IsNumber))
-					return ival;
+                    // successfull iff the number encoded in the string fits the Int32:
+                    NumberInfo info = StringToNumber(s, out ival, out lval, out dval);
+                    if ((info & (NumberInfo.Integer | NumberInfo.IsNumber)) == (NumberInfo.Integer | NumberInfo.IsNumber))
+                        return ival;
 
-				success = false;
-				return unchecked((Int32)lval);
-			}
+                    success = false;
+                    return unchecked((Int32)lval);
+                }
+            }
 
 			success = false;
 			return 0;
@@ -681,36 +694,39 @@ namespace PHP.Core
 		[Emitted]
 		public static Int64 TryObjectToInt64(object obj, out bool success)
 		{
-			string s;
-			success = true;
+            if (obj != null)
+            {
+                success = true;
 
-			if (obj is int) return (int)obj;
-			if (obj is long) return (long)obj;
-			if (obj is bool) return (bool)obj ? 1 : 0;
+                if (obj.GetType() == typeof(int)) return (int)obj;
+                if (obj.GetType() == typeof(long)) return (long)obj;
+                if (obj.GetType() == typeof(bool)) return (bool)obj ? 1 : 0;
 
-			if (obj is double)
-			{
-				double dval = (double)obj;
-				success = dval >= Int64.MinValue && dval <= Int64.MaxValue;
-				return unchecked((Int32)dval);
-			}
+                if (obj.GetType() == typeof(double))
+                {
+                    double dval = (double)obj;
+                    success = dval >= Int64.MinValue && dval <= Int64.MaxValue;
+                    return unchecked((Int32)dval);
+                }
 
-			if ((s = PhpVariable.AsString(obj)) != null)
-			{
-				int ival;
-				double dval;
-				long lval;
+                string s;
+                if ((s = PhpVariable.AsString(obj)) != null)
+                {
+                    int ival;
+                    double dval;
+                    long lval;
 
-				// successfull iff the number encoded in the string fits Int32 or Int64:
-				NumberInfo info = StringToNumber(s, out ival, out lval, out dval);
-				if ((info & NumberInfo.Integer) != 0)
-					return ival;
-				if ((info & NumberInfo.LongInteger) != 0)
-					return lval;
+                    // successfull iff the number encoded in the string fits Int32 or Int64:
+                    NumberInfo info = StringToNumber(s, out ival, out lval, out dval);
+                    if ((info & NumberInfo.Integer) != 0)
+                        return ival;
+                    if ((info & NumberInfo.LongInteger) != 0)
+                        return lval;
 
-				success = false;
-				return unchecked((Int64)dval);
-			}
+                    success = false;
+                    return unchecked((Int64)dval);
+                }
+            }
 
 			success = false;
 			return 0;
@@ -719,48 +735,52 @@ namespace PHP.Core
 		[Emitted]
 		public static UInt64 TryObjectToUInt64(object obj, out bool success)
 		{
-			string s;
-			success = true;
+            if (obj != null)
+            {
+                success = true;
 
-			if (obj is int)
-			{
-				int ival = (int)obj;
-				success = ival >= 0;
-				return unchecked((UInt64)ival);
-			}
+                if (obj.GetType() == typeof(int))
+                {
+                    int ival = (int)obj;
+                    success = ival >= 0;
+                    return unchecked((UInt64)ival);
+                }
 
-			if (obj is long)
-			{
-				long lval = (long)obj;
-				success = lval >= 0;
-				return unchecked((UInt64)lval);
-			}
+                if (obj.GetType() == typeof(long))
+                {
+                    long lval = (long)obj;
+                    success = lval >= 0;
+                    return unchecked((UInt64)lval);
+                }
 
-			if (obj is bool) return (ulong)((bool)obj ? 1 : 0);
+                if (obj.GetType() == typeof(bool))
+                    return (ulong)((bool)obj ? 1 : 0);
 
-			if (obj is double)
-			{
-				double dval = (double)obj;
-				success = dval >= UInt64.MinValue && dval <= UInt64.MaxValue;
-				return unchecked((UInt64)dval);
-			}
+                if (obj.GetType() == typeof(double))
+                {
+                    double dval = (double)obj;
+                    success = dval >= UInt64.MinValue && dval <= UInt64.MaxValue;
+                    return unchecked((UInt64)dval);
+                }
 
-			if ((s = PhpVariable.AsString(obj)) != null)
-			{
-				int ival;
-				double dval;
-				long lval;
+                string s;
+                if ((s = PhpVariable.AsString(obj)) != null)
+                {
+                    int ival;
+                    double dval;
+                    long lval;
 
-				// successfull iff the number encoded in the string fits Int32 or Int64:
-				NumberInfo info = StringToNumber(s, out ival, out lval, out dval);
-				if ((info & NumberInfo.Integer) != 0)
-					return unchecked((UInt64)ival);
-				if ((info & NumberInfo.LongInteger) != 0)
-					return unchecked((UInt64)lval);
+                    // successfull iff the number encoded in the string fits Int32 or Int64:
+                    NumberInfo info = StringToNumber(s, out ival, out lval, out dval);
+                    if ((info & NumberInfo.Integer) != 0)
+                        return unchecked((UInt64)ival);
+                    if ((info & NumberInfo.LongInteger) != 0)
+                        return unchecked((UInt64)lval);
 
-				success = dval >= UInt64.MinValue && dval <= UInt64.MaxValue;
-				return unchecked((UInt64)dval);
-			}
+                    success = dval >= UInt64.MinValue && dval <= UInt64.MaxValue;
+                    return unchecked((UInt64)dval);
+                }
+            }
 
 			success = false;
 			return 0;
@@ -778,14 +798,17 @@ namespace PHP.Core
 		[Emitted]
 		public static Double TryObjectToDouble(object obj, out bool success)
 		{
-			string s;
-			success = true;
+            if (obj != null)
+            {
+                string s;
+                success = true;
 
-			if (obj is double) return (double)obj;
-			if (obj is int) return (double)(int)obj;
-			if ((s = PhpVariable.AsString(obj)) != null) return StringToDouble(s);
-			if (obj is bool) return (bool)obj ? 1.0 : 0.0;
-			if (obj is long) return (double)(long)obj;
+                if (obj.GetType() == typeof(double)) return (double)obj;
+                if (obj.GetType() == typeof(int)) return (double)(int)obj;
+                if ((s = PhpVariable.AsString(obj)) != null) return StringToDouble(s);
+                if (obj.GetType() == typeof(bool)) return (bool)obj ? 1.0 : 0.0;
+                if (obj.GetType() == typeof(long)) return (double)(long)obj;
+            }
 
 			success = false;
 			return 0.0;
@@ -829,10 +852,10 @@ namespace PHP.Core
 
             if ((s = PhpVariable.AsString(obj)) != null) return s;
             if (obj == null) return String.Empty;
-            if (obj is int) return obj.ToString();
-			if (obj is bool) return ((bool)obj) ? "1" : String.Empty;
-			if (obj is double) return DoubleToString((double)obj);
-			if (obj is long) return obj.ToString();
+            if (obj.GetType() == typeof(int)) return obj.ToString();
+            if (obj.GetType() == typeof(bool)) return ((bool)obj) ? "1" : String.Empty;
+            if (obj.GetType() == typeof(double)) return DoubleToString((double)obj);
+            if (obj.GetType() == typeof(long)) return obj.ToString();
 
 			// others:
 			success = false;
@@ -1146,7 +1169,12 @@ namespace PHP.Core
 			TypeMask = Integer | LongInteger | Double | Unconvertible,
 
 			IsNumber = 64,
-			IsHexadecimal = 128
+			IsHexadecimal = 128,
+
+            /// <summary>
+            /// The original object was PHP array. This has an effect on most PHP arithmetic operators.
+            /// </summary>
+            IsPhpArray = 256,
 		}
 
 		/// <summary>
@@ -1552,14 +1580,21 @@ namespace PHP.Core
 		/// <returns>Conversion info.</returns>
 		public static NumberInfo ObjectToNumber(object obj, out int intValue, out long longValue, out double doubleValue)
 		{
-			if (obj is int)
+            if (obj == null)
+            {
+                intValue = 0;
+                longValue = 0;
+                doubleValue = 0.0;
+                return NumberInfo.Integer;
+            }
+            else if (obj.GetType() == typeof(int))
             {
                 intValue = (int)obj;
                 longValue = intValue;
                 doubleValue = intValue;
                 return NumberInfo.Integer | NumberInfo.IsNumber;
             }
-            else if (obj is double)
+            else if (obj.GetType() == typeof(double))
             {
                 doubleValue = (double)obj;
                 intValue = unchecked((int)doubleValue);
@@ -1569,23 +1604,24 @@ namespace PHP.Core
             else return ObjectToNumberEpilogue(obj, out intValue, out longValue, out doubleValue);
 		}
 
-        private static NumberInfo ObjectToNumberEpilogue(object obj, out int intValue, out long longValue, out double doubleValue)
+        private static NumberInfo ObjectToNumberEpilogue(object/*!*/obj, out int intValue, out long longValue, out double doubleValue)
         {
-            string s;
+            Debug.Assert(obj != null);
+
             IPhpConvertible php_conv;
 
-            if (obj is long)
+            if (obj.GetType() == typeof(long))
             {
                 longValue = (long)obj;
                 intValue = NarrowToInt32(longValue);
                 doubleValue = (double)longValue;
                 return NumberInfo.LongInteger | NumberInfo.IsNumber;
             }
-            else if ((s = obj as string) != null)
+            else if (obj.GetType() == typeof(string))
             {
-                return StringToNumber(s, out intValue, out longValue, out doubleValue);
+                return StringToNumber((string)obj, out intValue, out longValue, out doubleValue);
             }
-            else if (obj is bool)
+            else if (obj.GetType() == typeof(bool))
             {
                 intValue = (bool)obj ? 1 : 0;
                 doubleValue = intValue;
@@ -1596,14 +1632,7 @@ namespace PHP.Core
             {
                 return php_conv.ToNumber(out intValue, out longValue, out doubleValue);
             }
-            else if (obj == null)
-            {
-                intValue = 0;
-                longValue = 0;
-                doubleValue = 0.0;
-                return NumberInfo.Integer;
-            }
-
+            
             intValue = 0;
             longValue = 0;
             doubleValue = 0.0;
@@ -1876,7 +1905,13 @@ namespace PHP.Core
 		/// <include file='Doc/Conversions.xml' path='docs/method[@name="ObjectToArrayKey"]/*' />
 		public static bool ObjectToArrayKey(object obj, out IntStringKey key)
 		{
-			if (obj is int)
+			if (obj == null)
+			{
+				key = new IntStringKey(String.Empty);
+				return true;
+			}
+
+            if (obj.GetType() == typeof(int))
 			{
 				key = new IntStringKey((int)obj);
 				return true;
@@ -1888,30 +1923,24 @@ namespace PHP.Core
 				key = StringToArrayKey(str);
 				return true;	
 			}
-			
-			if (obj is bool)
+
+            if (obj.GetType() == typeof(bool))
 			{
 				key = new IntStringKey((bool)obj ? 1 : 0);
 				return true;
 			}
 
-			if (obj is double)
+            if (obj.GetType() == typeof(double))
 			{
 				key = new IntStringKey(unchecked((int)(double)obj));
 				return true;
 			}
 
-			if (obj is long)
+            if (obj.GetType() == typeof(long))
 			{
 				key = new IntStringKey(unchecked((int)(long)obj));
 				return true;
-			}
-
-			if (obj == null)
-			{
-				key = new IntStringKey(String.Empty);
-				return true;
-			}
+			}			
 
 			PhpResource resource = obj as PhpResource;
 			if (resource != null)

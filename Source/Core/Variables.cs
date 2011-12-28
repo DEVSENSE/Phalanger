@@ -586,14 +586,12 @@ namespace PHP.Core
 		[Emitted]
 		public static bool IsEmpty(object obj)
 		{
-			string s;
-
 			if (obj == null) return true;
-			if (obj is int) return (int)obj == 0;
-			if ((s = obj as string) != null) return !Convert.StringToBoolean(s);
-			if (obj is bool) return !(bool)obj;
-			if (obj is double) return (double)obj == 0.0;
-			if (obj is long) return (long)obj == 0;
+            if (obj.GetType() == typeof(int)) return (int)obj == 0;
+            if (obj.GetType() == typeof(string)) return !Convert.StringToBoolean((string)obj);
+            if (obj.GetType() == typeof(bool)) return !(bool)obj;
+            if (obj.GetType() == typeof(double)) return (double)obj == 0.0;
+            if (obj.GetType() == typeof(long)) return (long)obj == 0;
 
 			Debug.Assert(obj is IPhpVariable, "Object should be wrapped when calling IsEmpty");
 
@@ -609,7 +607,17 @@ namespace PHP.Core
         /// <see cref="bool"/>, <see cref="long"/>, <see cref="string"/> or <see cref="IPhpVariable.IsScalar"/>.</returns>
 		public static bool IsScalar(object obj)
 		{
-			if (obj is int || obj is double || obj is bool || obj is long || obj is string) // PhpString, PhpBytes handled further
+            if (obj == null)
+                return false;
+
+            if (obj.GetType() == typeof(int) ||
+                obj.GetType() == typeof(double) ||
+                obj.GetType() == typeof(bool) ||
+                obj.GetType() == typeof(long) ||
+                obj.GetType() == typeof(string) ||
+                obj.GetType() == typeof(PhpString) ||   // handled also in IPhpVariable, but this is faster
+                obj.GetType() == typeof(PhpBytes)       // handled also in IPhpVariable, but this is faster
+                )
 				return true;
 
 			IPhpVariable php_var = obj as IPhpVariable;
@@ -733,8 +741,13 @@ namespace PHP.Core
 		/// </summary>
 		public static bool HasLiteralPrimitiveType(object variable)
 		{
-			return variable == null || variable is bool || variable is int || variable is double || variable is long
-				|| IsString(variable);
+            return
+                variable == null ||
+                variable.GetType() == typeof(bool) ||
+                variable.GetType() == typeof(int) ||
+                variable.GetType() == typeof(double) ||
+                variable.GetType() == typeof(long) ||
+                IsString(variable);
 		}
 
 		public static bool IsPrimitiveType(Type/*!*/ type)
@@ -780,13 +793,13 @@ namespace PHP.Core
 		{
 			IPhpConvertible conv;
 
-			if (obj is int) return PhpTypeCode.Integer;
-			else if (obj is bool) return PhpTypeCode.Boolean;
-			else if (obj is double) return PhpTypeCode.Double;
-			else if (obj is string) return PhpTypeCode.String;
-			else if (obj is long) return PhpTypeCode.LongInteger;
+            if (obj == null) return PhpTypeCode.Object;
+            else if (obj.GetType() == typeof(int)) return PhpTypeCode.Integer;
+            else if (obj.GetType() == typeof(bool)) return PhpTypeCode.Boolean;
+            else if (obj.GetType() == typeof(double)) return PhpTypeCode.Double;
+            else if (obj.GetType() == typeof(string)) return PhpTypeCode.String;
+            else if (obj.GetType() == typeof(long)) return PhpTypeCode.LongInteger;
 			else if ((conv = obj as IPhpConvertible) != null) return conv.GetTypeCode();
-			else if (obj == null) return PhpTypeCode.Object;
 			else return PhpTypeCode.Invalid;
 		}
 
@@ -816,19 +829,18 @@ namespace PHP.Core
         [Emitted]
 		public static string AsString(object variable)
 		{
-			string s;
-			PhpBytes bytes;
-			PhpString str;
+            if (object.ReferenceEquals(variable, null))
+                return null;
 
-			if ((s = variable as string) != null)
-				return s;
+			if (variable.GetType() == typeof(string))
+				return (string)variable;
 
-			if ((str = variable as PhpString) != null)
-				return ((IPhpConvertible)str).ToString();
+            if (variable.GetType() == typeof(PhpString))
+                return ((PhpString)variable).ToString();
 
-			if ((bytes = variable as PhpBytes) != null)
-				return ((IPhpConvertible)bytes).ToString();
-
+            if (variable.GetType() == typeof(PhpBytes))
+                return ((PhpBytes)variable).ToString();
+			
 			return null;
 		}
 
@@ -844,7 +856,13 @@ namespace PHP.Core
 		[Emitted]
 		public static bool IsString(object variable)
 		{
-			return variable is string || variable is PhpBytes || variable is PhpString;
+            if (variable == null)
+                return false;
+
+            return
+                variable.GetType() == typeof(string) ||
+                variable.GetType() == typeof(PhpBytes) ||
+                variable.GetType() == typeof(PhpString);
 		}
 
 		public static bool IsStringType(Type/*!*/ type)
@@ -861,19 +879,18 @@ namespace PHP.Core
 		/// <returns>The binary representation of <paramref name="variable"/> or a <B>null</B> reference.</returns>
 		public static PhpBytes AsBytes(object variable)
 		{
-			string s;
-			PhpBytes bytes;
-			PhpString pstr;
+            if (variable == null)
+                return null;
 
-            if ((bytes = variable as PhpBytes) != null)
-                return bytes;
+			if (variable.GetType() == typeof(PhpBytes))
+                return (PhpBytes)variable;
+
+            if (variable.GetType() == typeof(string))
+                return new PhpBytes((string)variable);
+
+            if (variable.GetType() == typeof(PhpString))
+                return ((PhpString)variable).ToPhpBytes();
             
-            if ((s = variable as string) != null)
-				return new PhpBytes(s);
-
-			if ((pstr = variable as PhpString) != null)
-				return ((IPhpConvertible)pstr).ToPhpBytes();
-
 			return null;
 		}
 
@@ -883,8 +900,15 @@ namespace PHP.Core
 		/// <returns></returns>
 		public static object Dereference(object variable)
 		{
-			PhpReference reference = variable as PhpReference;
-			return (reference != null) ? reference.Value : variable;
+            if (variable != null)
+            {
+                if (variable.GetType() == typeof(PhpReference))
+                    return ((PhpReference)variable).Value;
+                else if (variable.GetType() == typeof(PhpSmartReference))
+                    return ((PhpSmartReference)variable).Value;
+            }
+
+            return variable;
 		}
 
 		/// <summary>
@@ -894,10 +918,23 @@ namespace PHP.Core
 		/// <returns>The <paramref name="variable"/> as <see cref="PhpReference"/>.</returns>
 		public static PhpReference Dereference(ref object variable)
 		{
-			PhpReference reference = variable as PhpReference;
-			if (reference != null) variable = reference.Value;
+            if (variable != null)
+            {
+                if (variable.GetType() == typeof(PhpReference))
+                {
+                    var reference = (PhpReference)variable;
+                    variable = reference.Value;
+                    return reference;
+                }
+                else if (variable.GetType() == typeof(PhpSmartReference))
+                {
+                    var reference = (PhpSmartReference)variable;
+                    variable = reference.Value;
+                    return reference;
+                }
+            }
 
-			return reference;
+            return null;
 		}
 
 		/// <summary>
@@ -909,11 +946,18 @@ namespace PHP.Core
 		/// Note that there has to be no other CLR reference pointing to the <paramref name="variable"/> 
 		/// if it is reachable from PHP. In a case there is such a reference a deep copy has to take place.
 		/// </remarks>
-		public static PhpReference MakeReference(object variable)
-		{
-			PhpReference reference = variable as PhpReference;
-			return (reference ?? new PhpReference(variable));
-		}
+        public static PhpReference MakeReference(object variable)
+        {
+            if (variable != null)
+            {
+                if (variable.GetType() == typeof(PhpReference))
+                    return (PhpReference)variable;
+                else if (variable.GetType() == typeof(PhpSmartReference))
+                    return (PhpSmartReference)variable;
+            }
+            
+            return new PhpReference(variable);
+        }
 
 		/// <summary>
 		/// Unwraps a <see cref="Reflection.DObject"/>, <see cref="PhpBytes"/>, and <see cref="PhpString"/>
@@ -923,14 +967,17 @@ namespace PHP.Core
 		/// <returns>The real <paramref name="var"/>'s value (free of PHP-specific types).</returns>
 		public static object Unwrap(object var)
 		{
+            if (object.ReferenceEquals(var, null))
+                return null;
+
 			Reflection.DObject dobj = var as Reflection.DObject;
 			if (dobj != null) return dobj.RealObject;
 
-			PhpBytes bytes = var as PhpBytes;
-			if (bytes != null) return bytes.Data;
+            if (var.GetType() == typeof(PhpBytes))
+                return ((PhpBytes)var).Data;
 
-			PhpString str = var as PhpString;
-			if (str != null) return str.ToString();
+			if (var.GetType() == typeof(PhpString))
+                return ((PhpString)var).ToString();
 
 			return var;
 		}
