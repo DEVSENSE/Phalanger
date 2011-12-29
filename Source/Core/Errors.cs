@@ -337,6 +337,10 @@ namespace PHP.Core
 				Throw(PhpError.Warning, CoreResources.GetString("too_few_function_params", methodName, required, actual));
 		}
 
+        public static void UnsupportedOperandTypes()
+        {
+            PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+        }
 
 		/// <summary>
 		/// Emitted to a library function call which has invalid actual argument count.

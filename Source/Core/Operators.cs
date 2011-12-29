@@ -444,7 +444,7 @@ namespace PHP.Core
                     ((o1 & Convert.NumberInfo.IsPhpArray) != (o2 & Convert.NumberInfo.IsPhpArray))
                     )
                 {
-                    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                    PhpException.UnsupportedOperandTypes();
                     return 0;
                 }
 
@@ -503,7 +503,7 @@ namespace PHP.Core
 
             if ((info_x & (Convert.NumberInfo.Unconvertible|Convert.NumberInfo.IsPhpArray)) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0;
             }
 
@@ -549,7 +549,7 @@ namespace PHP.Core
             // converts x to a number:
             if ((Convert.ObjectToNumber(x, out ix, out lx, out dx) & (Convert.NumberInfo.Unconvertible | Convert.NumberInfo.IsPhpArray)) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0;
             }
 
@@ -572,13 +572,6 @@ namespace PHP.Core
         {
             Debug.Assert(!(x is PhpReference) && !(y is PhpReference));
 
-            //// filters unsupported types:
-            //if (x is PhpArray || y is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0;
-            //}
-
             double dx, dy;
             int ix, iy;
             long lx, ly;
@@ -589,7 +582,7 @@ namespace PHP.Core
 
             if ((info & (Convert.NumberInfo.Unconvertible | Convert.NumberInfo.IsPhpArray)) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0;
             }
 
@@ -631,13 +624,6 @@ namespace PHP.Core
         {
             Debug.Assert(!(y is PhpReference));
 
-            //// filters unsupported types:
-            //if (y is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0;
-            //}
-
             double dy;
             int iy;
             long ly;
@@ -648,7 +634,7 @@ namespace PHP.Core
 
             if ((info_y & (Convert.NumberInfo.Unconvertible | Convert.NumberInfo.IsPhpArray)) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0;
             }
 
@@ -684,13 +670,6 @@ namespace PHP.Core
         {
             Debug.Assert(!(y is PhpReference));
 
-            //// filters unsupported types:
-            //if (y is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0.0;
-            //}
-
             double dy;
             int iy;
             long ly;
@@ -698,7 +677,7 @@ namespace PHP.Core
             // converts x to a number:
             if ((Convert.ObjectToNumber(y, out iy, out ly, out dy) & (Convert.NumberInfo.Unconvertible | Convert.NumberInfo.IsPhpArray)) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0;
             }
 
@@ -719,13 +698,6 @@ namespace PHP.Core
         public static object Minus(object x)
         {
             Debug.Assert(!(x is PhpReference));
-
-            //// filters unsupported types:
-            //if (x is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0;
-            //}
 
             double dx;
             int ix;
@@ -754,7 +726,7 @@ namespace PHP.Core
                     return -dx;
             }
 
-            PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+            PhpException.UnsupportedOperandTypes();
             return 0;
         }
 
@@ -769,13 +741,6 @@ namespace PHP.Core
         {
             Debug.Assert(!(x is PhpReference));
 
-            //// filters unsupported types:
-            //if (x is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return false;
-            //}
-
             double dx;
             int ix;
             long lx;
@@ -787,7 +752,7 @@ namespace PHP.Core
                 case Convert.NumberInfo.Double: return dx;
             }
 
-            PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+            PhpException.UnsupportedOperandTypes();
             return 0;
         }
 
@@ -808,13 +773,6 @@ namespace PHP.Core
         {
             Debug.Assert(!(x is PhpReference) && !(y is PhpReference));
 
-            //// filter unsupported types:
-            //if (x is PhpArray || y is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0.0;
-            //}
-
             double dx, dy;
             int ix, iy;
             long lx, ly;
@@ -824,7 +782,7 @@ namespace PHP.Core
 
             if ((info & Convert.NumberInfo.IsPhpArray) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0.0;
             }
 
@@ -873,13 +831,6 @@ namespace PHP.Core
             Debug.Assert(y != 0, "Compiler should check this");
             Debug.Assert(!(x is PhpReference));
 
-            //// filters unsupported types:
-            //if (x is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0.0;
-            //}
-
             double dx;
             int ix;
             long lx;
@@ -893,7 +844,7 @@ namespace PHP.Core
 
             if ((info_x & Convert.NumberInfo.IsPhpArray) != 0)
             {   // test PhpArray, after Double (PhpArray is not converted to Double and we may spare this test)
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0.0;
             }
             
@@ -929,20 +880,13 @@ namespace PHP.Core
         {
             Debug.Assert(!(x is PhpReference));
 
-            //// filters unsupported types:
-            //if (x is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0.0;
-            //}
-
             double dx;
             int ix;
             long lx;
 
             if ((Convert.ObjectToNumber(x, out ix, out lx, out dx) & Convert.NumberInfo.IsPhpArray) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0.0;
             }
 
@@ -962,13 +906,6 @@ namespace PHP.Core
         {
             Debug.Assert(!(y is PhpReference));
 
-            //// filters unsupported types:
-            //if (y is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0.0;
-            //}
-
             double dy;
             int iy;
             long ly;
@@ -982,7 +919,7 @@ namespace PHP.Core
 
             if ((info_y & Convert.NumberInfo.IsPhpArray) != 0)  // test PhpArray (after test for Double, PhpArray cannot be double, and it is rare case)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0.0;
             }
 
@@ -1021,20 +958,13 @@ namespace PHP.Core
         {
             Debug.Assert(!(y is PhpReference));
 
-            //// filters unsupported types:
-            //if (y is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0.0;
-            //}
-
             double dy;
             int iy;
             long ly;
 
             if ((Convert.ObjectToNumber(y, out iy, out ly, out dy) & Convert.NumberInfo.IsPhpArray) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0.0;
             }
 
@@ -1057,13 +987,6 @@ namespace PHP.Core
         {
             Debug.Assert(!(x is PhpReference) && !(y is PhpReference));
 
-            //// filters unsupported types:
-            //if (x is PhpArray || y is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0.0;
-            //}
-
             double dx, dy;
             int ix, iy;
             long lx, ly;
@@ -1074,7 +997,7 @@ namespace PHP.Core
 
             if ((info & (Convert.NumberInfo.Unconvertible | Convert.NumberInfo.IsPhpArray)) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0;
             }
 
@@ -1100,6 +1023,8 @@ namespace PHP.Core
             }
         }
 
+        
+
         /// <summary>
         /// Implements binary '*' operator optimized for multiplication with an integer literal.
         /// </summary>
@@ -1112,13 +1037,6 @@ namespace PHP.Core
         {
             Debug.Assert(!(x is PhpReference));
 
-            //// filters unsupported types:
-            //if (x is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0.0;
-            //}
-
             double dx;
             int ix;
             long lx;
@@ -1129,7 +1047,7 @@ namespace PHP.Core
 
             if ((info_x & (Convert.NumberInfo.Unconvertible | Convert.NumberInfo.IsPhpArray)) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0.0;
             }
 
@@ -1166,13 +1084,6 @@ namespace PHP.Core
         {
             Debug.Assert(!(x is PhpReference));
 
-            //// filters unsupported types:
-            //if (x is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0.0;
-            //}
-
             double dx;
             int ix;
             long lx;
@@ -1180,7 +1091,7 @@ namespace PHP.Core
             // converts x to a number:
             if ((Convert.ObjectToNumber(x, out ix, out lx, out dx) & (Convert.NumberInfo.Unconvertible | Convert.NumberInfo.IsPhpArray)) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0;
             }
 
@@ -1206,20 +1117,13 @@ namespace PHP.Core
         {
             Debug.Assert(!(x is PhpReference) && !(y is PhpReference));
 
-            //// filters unsupported types:
-            //if (x is PhpArray || y is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0;
-            //}
-
             int iy, ix;
             long ly, lx;
             double dy, dx;
 
             if ((Convert.ObjectToNumber(y, out iy, out ly, out dy) & Convert.NumberInfo.IsPhpArray) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return false;
             }
 
@@ -1239,7 +1143,7 @@ namespace PHP.Core
 
             if ((Convert.ObjectToNumber(x, out ix, out lx, out dx) & Convert.NumberInfo.IsPhpArray) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return false;
             }
 
@@ -1267,13 +1171,6 @@ namespace PHP.Core
             //Debug.Assert(y != 0, "Compiler should check this.");
             Debug.Assert(!(x is PhpReference));
 
-            //// filters unsupported types:
-            //if (x is PhpArray)
-            //{
-            //    PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
-            //    return 0;
-            //}
-
             int ix;
             long lx;
             double dx;
@@ -1289,7 +1186,7 @@ namespace PHP.Core
 
             if ((Convert.ObjectToNumber(x, out ix, out lx, out dx) & Convert.NumberInfo.IsPhpArray) != 0)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+                PhpException.UnsupportedOperandTypes();
                 return 0;
             }
 
@@ -1629,7 +1526,7 @@ namespace PHP.Core
             }
 
 
-            PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
+            PhpException.UnsupportedOperandTypes();
             return null;
         }
 
