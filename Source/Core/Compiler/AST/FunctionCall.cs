@@ -241,10 +241,8 @@ namespace PHP.Core.AST
         {
             Debug.Assert(isMemberOf != null);
 
-            // TODO: determine the type of isMemberOf through CFG
-
-            // TODO: uncomment and test:
-            /*DirectVarUse memberDirectVarUse = isMemberOf as DirectVarUse;
+            // $this->
+            DirectVarUse memberDirectVarUse = isMemberOf as DirectVarUse;
             if (memberDirectVarUse != null && memberDirectVarUse.IsMemberOf == null &&  // isMemberOf is single variable
                 memberDirectVarUse.VarName.IsThisVariableName &&                        // isMemberOf if $this
                 analyzer.CurrentType != null)                                           // called in class context of known type
@@ -268,7 +266,7 @@ namespace PHP.Core.AST
                     if (isCallMethod)
                     {
                         // TODO: generic args
-
+                        
                         var arg1 = new StringLiteral(this.Position, qualifiedName.Name.Value);
                         var arg2 = this.callSignature.BuildPhpArray();
 
@@ -294,7 +292,7 @@ namespace PHP.Core.AST
 
                     return new Evaluation(this);
                 }
-            }*/
+            }
 
             // by default, fall back to dynamic method invocation
             routine = null;

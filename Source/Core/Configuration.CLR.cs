@@ -852,6 +852,10 @@ namespace PHP.Core
 						LanguageFeatures = (LanguageFeatures)ConfigUtils.ParseFlags(node, (int)LanguageFeatures, typeof(LanguageFeatures));
 						return true;
 
+                    case "EnableAggresiveOptimization":
+                        EnableAggresiveOptimization = (value == "true");
+                        return true;
+
 					case "EnableStaticInclusions":
 						{
 							if (Configuration.IsValidInCurrentScope(node))

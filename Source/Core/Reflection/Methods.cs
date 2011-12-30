@@ -1227,14 +1227,14 @@ namespace PHP.Core.Reflection
             Debug.Assert(IsStatic == (instance == null));
 
             if (IsStatic) callVirt = false; // never call static method virtually
-
+            
 			ILEmitter il = codeGenerator.IL;
 			bool args_aware = (Properties & RoutineProperties.IsArgsAware) != 0;
 
 			// load the instance reference if we have one
 			if (instance != null) instance.EmitLoad(il);
 
-			// arg-full overload may not be present in the case of classes declared Class Library where
+            // arg-full overload may not be present in the case of classes declared Class Library where
 			// we do not require the user to specify both overloads
 			if (args_aware || ArgFullInfo == null)
 			{
@@ -1867,8 +1867,18 @@ namespace PHP.Core.Reflection
             if ((Properties & RoutineProperties.IsArgsAware) != 0 || ArgFullInfo == null)
                 runtimeVisibilityCheck = true;  // force dynamic call when the method routine cannot be called virtually
 
+            // when calling an instance virtual method, and some passed arguments would be ignored,
+            // force dynamic call in case there will be an overload that takes more arguments
+            else if (callVirt && !IsFinal && !DeclaringType.IsFinal && !IsPrivate   // calling virtually non-final or private method
+                && !Configuration.Application.Compiler.EnableAggresiveOptimization) // aggresive optimizations are disabled
+                runtimeVisibilityCheck = true;
+            
             Debug.Assert(fallbackQualifiedName == null);
 
+            // private PHP methods called directly, ignoring overrides
+            if (IsPrivate || IsFinal) callVirt = false;
+
+            // emit the routine call
             return base.EmitCall(codeGenerator, fallbackQualifiedName, callSignature, instance, runtimeVisibilityCheck, overloadIndex, constructedType, position, access, callVirt);
         }
 

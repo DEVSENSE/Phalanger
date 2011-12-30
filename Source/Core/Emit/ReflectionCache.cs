@@ -676,31 +676,30 @@ namespace PHP.Core.Emit
 
         public struct PhpException
         {
-            static Type _this { get { return typeof(PHP.Core.PhpException); } }
             static MethodInfo _Throw, _MissingArgument, _MissingTypeArgument, _MissingArguments, _InvalidForeachArgument,
                       _InvalidImplicitCast, _InvalidBreakLevelCount,
                       _InvalidArgumentCount, _UndefinedVariable, _CannotReassignThis, _InvalidArgumentType, _ThisUsedOutOfObjectContext,
                       _StaticPropertyUnset, _AbstractMethodCalled, _NoSuitableOverload, _PropertyTypeMismatch, _UndefinedMethodCalled,
                       _FunctionNotSupported_String;
 
-            public static MethodInfo Throw { get { if (_Throw == null) _Throw = _this.GetMethod("Throw"); return _Throw; } }
-            public static MethodInfo MissingArgument { get { if (_MissingArgument == null) _MissingArgument = _this.GetMethod("MissingArgument"); return _MissingArgument; } }
-            public static MethodInfo MissingTypeArgument { get { if (_MissingTypeArgument == null) _MissingTypeArgument = _this.GetMethod("MissingTypeArgument"); return _MissingTypeArgument; } }
-            public static MethodInfo MissingArguments { get { if (_MissingArguments == null) _MissingArguments = _this.GetMethod("MissingArguments"); return _MissingArguments; } }
-            public static MethodInfo InvalidArgumentCount { get { if (_InvalidArgumentCount == null) _InvalidArgumentCount = _this.GetMethod("InvalidArgumentCount"); return _InvalidArgumentCount; } }
-            public static MethodInfo InvalidForeachArgument { get { if (_InvalidForeachArgument == null) _InvalidForeachArgument = _this.GetMethod("InvalidForeachArgument"); return _InvalidForeachArgument; } }
-            public static MethodInfo InvalidImplicitCast { get { if (_InvalidImplicitCast == null) _InvalidImplicitCast = _this.GetMethod("InvalidImplicitCast"); return _InvalidImplicitCast; } }
-            public static MethodInfo InvalidBreakLevelCount { get { if (_InvalidBreakLevelCount == null) _InvalidBreakLevelCount = _this.GetMethod("InvalidBreakLevelCount"); return _InvalidBreakLevelCount; } }
-            public static MethodInfo UndefinedVariable { get { if (_UndefinedVariable == null) _UndefinedVariable = _this.GetMethod("UndefinedVariable"); return _UndefinedVariable; } }
-            public static MethodInfo AbstractMethodCalled { get { if (_AbstractMethodCalled == null) _AbstractMethodCalled = _this.GetMethod("AbstractMethodCalled"); return _AbstractMethodCalled; } }
-            public static MethodInfo CannotReassignThis { get { if (_CannotReassignThis == null) _CannotReassignThis = _this.GetMethod("CannotReassignThis"); return _CannotReassignThis; } }
-            public static MethodInfo InvalidArgumentType { get { if (_InvalidArgumentType == null) _InvalidArgumentType = _this.GetMethod("InvalidArgumentType"); return _InvalidArgumentType; } }
-            public static MethodInfo ThisUsedOutOfObjectContext { get { if (_ThisUsedOutOfObjectContext == null) _ThisUsedOutOfObjectContext = _this.GetMethod("ThisUsedOutOfObjectContext"); return _ThisUsedOutOfObjectContext; } }
-            public static MethodInfo StaticPropertyUnset { get { if (_StaticPropertyUnset == null) _StaticPropertyUnset = _this.GetMethod("StaticPropertyUnset"); return _StaticPropertyUnset; } }
-            public static MethodInfo NoSuitableOverload { get { if (_NoSuitableOverload == null) _NoSuitableOverload = _this.GetMethod("NoSuitableOverload"); return _NoSuitableOverload; } }
-            public static MethodInfo PropertyTypeMismatch { get { if (_PropertyTypeMismatch == null) _PropertyTypeMismatch = _this.GetMethod("PropertyTypeMismatch"); return _PropertyTypeMismatch; } }
-            public static MethodInfo UndefinedMethodCalled { get { if (_UndefinedMethodCalled == null) _UndefinedMethodCalled = _this.GetMethod("UndefinedMethodCalled"); return _UndefinedMethodCalled; } }
-            public static MethodInfo FunctionNotSupported_String { get { return _FunctionNotSupported_String ?? (_FunctionNotSupported_String = _this.GetMethod("FunctionNotSupported", Types.String)); } }
+            public static MethodInfo Throw { get { if (_Throw == null) _Throw = new Action<PhpError,string>(Core.PhpException.Throw).Method; return _Throw; } }
+            public static MethodInfo MissingArgument { get { if (_MissingArgument == null) _MissingArgument = new Action<int, string>(Core.PhpException.MissingArgument).Method; return _MissingArgument; } }
+            public static MethodInfo MissingTypeArgument { get { if (_MissingTypeArgument == null) _MissingTypeArgument = new Action<int, string>(Core.PhpException.MissingTypeArgument).Method; return _MissingTypeArgument; } }
+            public static MethodInfo MissingArguments { get { if (_MissingArguments == null) _MissingArguments = new Action<string,string,int,int>(Core.PhpException.MissingArguments).Method; return _MissingArguments; } }
+            public static MethodInfo InvalidArgumentCount { get { if (_InvalidArgumentCount == null) _InvalidArgumentCount = new Action<string, string>(Core.PhpException.InvalidArgumentCount).Method; return _InvalidArgumentCount; } }
+            public static MethodInfo InvalidForeachArgument { get { if (_InvalidForeachArgument == null) _InvalidForeachArgument = new Action(Core.PhpException.InvalidForeachArgument).Method; return _InvalidForeachArgument; } }
+            public static MethodInfo InvalidImplicitCast { get { if (_InvalidImplicitCast == null) _InvalidImplicitCast = new Action<object,string,string>(Core.PhpException.InvalidImplicitCast).Method; return _InvalidImplicitCast; } }
+            public static MethodInfo InvalidBreakLevelCount { get { if (_InvalidBreakLevelCount == null) _InvalidBreakLevelCount = new Action<int>(Core.PhpException.InvalidBreakLevelCount).Method; return _InvalidBreakLevelCount; } }
+            public static MethodInfo UndefinedVariable { get { if (_UndefinedVariable == null) _UndefinedVariable = new Action<string>(Core.PhpException.UndefinedVariable).Method; return _UndefinedVariable; } }
+            public static MethodInfo AbstractMethodCalled { get { if (_AbstractMethodCalled == null) _AbstractMethodCalled = new Action<string, string>(Core.PhpException.AbstractMethodCalled).Method; return _AbstractMethodCalled; } }
+            public static MethodInfo CannotReassignThis { get { if (_CannotReassignThis == null) _CannotReassignThis = new Action(Core.PhpException.CannotReassignThis).Method; return _CannotReassignThis; } }
+            public static MethodInfo InvalidArgumentType { get { if (_InvalidArgumentType == null) _InvalidArgumentType = new Action<string, string>(Core.PhpException.InvalidArgumentType).Method; return _InvalidArgumentType; } }
+            public static MethodInfo ThisUsedOutOfObjectContext { get { if (_ThisUsedOutOfObjectContext == null) _ThisUsedOutOfObjectContext = new Action(Core.PhpException.ThisUsedOutOfObjectContext).Method; return _ThisUsedOutOfObjectContext; } }
+            public static MethodInfo StaticPropertyUnset { get { if (_StaticPropertyUnset == null) _StaticPropertyUnset = new Action<string, string>(Core.PhpException.StaticPropertyUnset).Method; return _StaticPropertyUnset; } }
+            public static MethodInfo NoSuitableOverload { get { if (_NoSuitableOverload == null) _NoSuitableOverload = new Action<string, string>(Core.PhpException.NoSuitableOverload).Method; return _NoSuitableOverload; } }
+            public static MethodInfo PropertyTypeMismatch { get { if (_PropertyTypeMismatch == null) _PropertyTypeMismatch = new Action<string, string>(Core.PhpException.PropertyTypeMismatch).Method; return _PropertyTypeMismatch; } }
+            public static MethodInfo UndefinedMethodCalled { get { if (_UndefinedMethodCalled == null) _UndefinedMethodCalled = new Action<string, string>(Core.PhpException.UndefinedMethodCalled).Method; return _UndefinedMethodCalled; } }
+            public static MethodInfo FunctionNotSupported_String { get { return _FunctionNotSupported_String ?? (_FunctionNotSupported_String = new Action<string>(Core.PhpException.FunctionNotSupported).Method); } }
         }
 
         #endregion

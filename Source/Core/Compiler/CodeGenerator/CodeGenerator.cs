@@ -2658,7 +2658,7 @@ namespace PHP.Core
             // if signatures match, only explicit override must be stated
 
             if (target.Name.ToString() != php_template.Name.ToString() ||           // the names differ (perhaps only in casing)
-                target.Signature.ParamCount > php_template.Signature.ParamCount     // signature was extended (additional arguments added, with implicit value only)
+                target.Signature.ParamCount != php_template.Signature.ParamCount    // signature was extended (additional arguments added, with implicit value only)
                 )
 			{
 				MethodInfo target_argfull = DType.MakeConstructed(target.ArgFullInfo, targetType as ConstructedType);
@@ -2698,7 +2698,7 @@ namespace PHP.Core
 					// determine stub return and parameters type
 					Type return_type;
 					Type[] param_types = php_template.Signature.ToArgfullSignature(1, out return_type);
-					param_types[0] = Types.ScriptContext[0];
+                    param_types[0] = Types.ScriptContext[0];
 
 					MethodBuilder override_stub = type_builder.DefineMethod(
                         (sre_bug_workaround ? php_template.ArgFullInfo.Name : "<Override>"),
@@ -2711,8 +2711,13 @@ namespace PHP.Core
                     //
 
 					// pass-thru all arguments, including this (arg0)
-					for (int i = 0; i <= param_types.Length; ++i) il.Ldarg(i);  // this, param1, ....
-                    for (int i = param_types.Length; i <= target.Signature.ParamCount; ++i) il.Emit(OpCodes.Ldsfld, PHP.Core.Emit.Fields.Arg_Default);
+                    int pass_args = Math.Min(param_types.Length, target.Signature.ParamCount + 1);
+					for (int i = 0; i <= pass_args; ++i) il.Ldarg(i);  // this, param1, ....
+                    for (int i = pass_args; i <= target.Signature.ParamCount; ++i)
+                    {
+                        // ... // PhpException.MissingArgument(i, target.FullName); // but in some override it can be optional argument 
+                        il.Emit(OpCodes.Ldsfld, PHP.Core.Emit.Fields.Arg_Default);  // paramN
+                    }
                     il.Emit(OpCodes.Callvirt, target_argfull);
 					il.Emit(OpCodes.Ret);
 
