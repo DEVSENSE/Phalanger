@@ -365,7 +365,7 @@ namespace PHP.Library.Xml
 		}
 
 		[PhpVisible]
-		public void __construct([Optional] string version, [Optional] string encoding)
+		public virtual void __construct([Optional] string version, [Optional] string encoding)
 		{
 			// append the corresponding XML declaration to the document
 			if (version == null) version = "1.0";
