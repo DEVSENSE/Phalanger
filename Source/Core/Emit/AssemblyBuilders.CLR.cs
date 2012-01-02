@@ -86,7 +86,8 @@ namespace PHP.Core.Emit
 		#region Construction
 
 		protected PhpAssemblyBuilder(PhpAssembly/*!*/ assembly, AssemblyName assemblyName, string moduleName,
-            string directory, string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug, Win32IconResource icon)
+            string directory, string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug,
+            bool saveOnlyAssembly, Win32IconResource icon)
 			: base(assembly)
 		{
 			this.kind = kind;
@@ -100,7 +101,8 @@ namespace PHP.Core.Emit
 			AssemblyBuilder assembly_builder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
 			ModuleBuilder module_builder = (ModuleBuilder)assembly_builder.ManifestModule; // SILVERLIGHT: hack? http://silverlight.org/forums/p/1444/3919.aspx#3919
 #else
-			AssemblyBuilder assembly_builder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave, directory);
+
+            AssemblyBuilder assembly_builder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, saveOnlyAssembly ? AssemblyBuilderAccess.Save : AssemblyBuilderAccess.RunAndSave, directory);
 			ModuleBuilder module_builder = assembly_builder.DefineDynamicModule(moduleName, fileName, debug);
 #endif
 			DefineGlobalType(module_builder);
@@ -385,7 +387,7 @@ namespace PHP.Core.Emit
 		public PureAssemblyBuilder(ApplicationContext/*!*/ applicationContext, AssemblyName assemblyName,
 			string directory, string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug, Win32IconResource icon)
 			: base(new PureAssembly(applicationContext), assemblyName, PureAssembly.ModuleName, directory,
-					fileName, kind, resources, debug, icon)
+					fileName, kind, resources, debug, false, icon)
 		{
 		}
 
@@ -491,8 +493,9 @@ namespace PHP.Core.Emit
 		string duckNamespace;
 
 		protected ScriptAssemblyBuilder(ScriptAssembly/*!*/ assembly, AssemblyName assemblyName, string directory,
-            string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug, Win32IconResource icon)
-			: base(assembly, assemblyName, ScriptAssembly.RealModuleName, directory, fileName, kind,resources, debug, icon)
+            string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug,
+            bool saveOnlyAssembly, Win32IconResource icon)
+			: base(assembly, assemblyName, ScriptAssembly.RealModuleName, directory, fileName, kind,resources, debug, saveOnlyAssembly, icon)
 		{
 
 		}
@@ -618,11 +621,12 @@ namespace PHP.Core.Emit
 		/// <param name="fileName">Name of the assembly file including an extension.</param>
 		/// <param name="kind">Assembly kind.</param>
 		/// <param name="debug">Whether to include debug information.</param>
-		/// <param name="icon">Icon resource or a <B>null</B> reference.</param>
+        /// <param name="saveOnlyAssembly">Whether to not load the assembly into memory.</param>
+        /// <param name="icon">Icon resource or a <B>null</B> reference.</param>
         /// <param name="resources">Resources to embed</param>
 		public SingleScriptAssemblyBuilder(ApplicationContext/*!*/ applicationContext, AssemblyName assemblyName, string directory, string fileName,
-            AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug, Win32IconResource icon)
-			: base(new SingleScriptAssembly(applicationContext), assemblyName, directory, fileName, kind,resources, debug, icon)
+            AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug, bool saveOnlyAssembly, Win32IconResource icon)
+            : base(new SingleScriptAssembly(applicationContext), assemblyName, directory, fileName, kind, resources, debug, saveOnlyAssembly, icon)
 		{
 		}
         /// <summary>
@@ -634,10 +638,12 @@ namespace PHP.Core.Emit
         /// <param name="fileName">Name of the assembly file including an extension.</param>
         /// <param name="kind">Assembly kind.</param>
         /// <param name="debug">Whether to include debug information.</param>
+        /// <param name="saveOnlyAssembly">Whether to not load the assembly into memory.</param>
         /// <param name="icon">Icon resource or a <B>null</B> reference.</param>
         public SingleScriptAssemblyBuilder(ApplicationContext/*!*/ applicationContext, AssemblyName assemblyName, string directory, string fileName,
-            AssemblyKinds kind, bool debug, Win32IconResource icon)
-            : base(new SingleScriptAssembly(applicationContext), assemblyName, directory, fileName, kind, null, debug, icon) {
+            AssemblyKinds kind, bool debug, bool saveOnlyAssembly, Win32IconResource icon)
+            : base(new SingleScriptAssembly(applicationContext), assemblyName, directory, fileName, kind, null, debug, saveOnlyAssembly, icon)
+        {
         }
 
 		/// <summary>
@@ -707,7 +713,7 @@ namespace PHP.Core.Emit
 		public MultiScriptAssemblyBuilder(ApplicationContext/*!*/ applicationContext, AssemblyName assemblyName,
             string directory, string fileName, string duckPath, string duckNs, AssemblyKinds kind, ICollection<ResourceFileReference> resources, 
 						bool debug, Win32IconResource icon, PhpSourceFile entryPoint)
-			: base(new MultiScriptAssembly(applicationContext), assemblyName, directory, fileName, kind,resources, debug, icon)
+			: base(new MultiScriptAssembly(applicationContext), assemblyName, directory, fileName, kind,resources, debug, false, icon)
 		{
 			base.DuckNamespace = duckNs;
 			base.DuckPath = duckPath;

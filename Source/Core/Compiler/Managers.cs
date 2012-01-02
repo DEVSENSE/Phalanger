@@ -47,6 +47,13 @@ namespace PHP.Core
 		public ErrorSink/*!*/ Errors { get { return errors; } }
 		private readonly ErrorSink/*!*/ errors;
 
+        /// <summary>
+        /// Resulting assembly will be only saved to the file system. It won't be loaded or reflected.
+        /// This disallows static inclusions, but allows to recompile scripts while debugging.
+        /// </summary>
+        /// <remarks><see cref="AssemblyBuilder"/> can be then created with <see cref="AssemblyBuilderAccess.Save"/> parameter only.</remarks>
+        public virtual bool SaveOnlyAssembly { get { return false; } }
+
 		/// <summary>
 		/// Creates a compilation context.
 		/// </summary>

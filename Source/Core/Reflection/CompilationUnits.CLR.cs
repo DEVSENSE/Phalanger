@@ -1325,7 +1325,7 @@ namespace PHP.Core.Reflection
 			}
 			else
 			{
-				if (context.Config.Compiler.EnableStaticInclusions ?? false)
+				if (!context.SaveOnlyAssembly && (context.Config.Compiler.EnableStaticInclusions ?? false))
 				{
 					// replacement //
 
