@@ -1,2 +1,0 @@
-rem CHANGED: ilasm /nologo /quiet /dll /key:../Core.snk /output:"%1" Assembly_Silverlight.il Utils.il PhpInterfaces.il
-ilasm.exe /nologo /quiet /dll /key:../Core.snk /output:%1 Assembly_Silverlight.il Utils.il PhpInterfaces.il || exit 0

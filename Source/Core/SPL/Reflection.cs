@@ -25,6 +25,21 @@ using PHP.CoreCLR;
 
 namespace PHP.Library.SPL
 {
+    [ImplementsType]
+    public interface Reflector
+    {
+        // HACK HACK HACK!!!
+        // The "export" method is public static in PHP, and returns always null.
+        // This can be declared in pure IL only, not in C#, however we are achieving this by
+        // adding its <see cref="DRoutineDesc"/> during initilization (<see cref="ApplicationContext.AddExportMethod"/>).
+        // Note we cannot declare the method here, since it would be needed to override it in every derived class.
+        //[ImplementsMethod]
+        //static object export(ScriptContext/*!*/context) { return null; }
+
+        [ImplementsMethod]
+        object __toString ( ScriptContext/*!*/context );
+    }
+
 	/*
 	  class ReflectionException : SPL.Exception 
 	  {

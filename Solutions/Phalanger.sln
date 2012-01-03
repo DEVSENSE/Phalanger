@@ -53,8 +53,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhpConfig", "..\Source\PhpC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.XmlDom", "..\Source\Extensions\XmlDom\Extension.XmlDom.csproj", "{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MSIL", "..\Source\Core\MSIL\Core.IL.vcxproj", "{7F13AC5E-1B8D-467E-83F1-912D12F44370}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phalanger.CompilerTask", "..\Source\Phalanger.CompilerTask\Phalanger.CompilerTask.csproj", "{68B54816-884B-48A1-949C-DBBDE2A5C412}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testers.Unit", "..\Source\Testing\Unit\Testers.Unit.csproj", "{1F0323F9-DF73-4EE0-A9C1-C59464A96104}"
@@ -63,7 +61,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.DynamicLight", ".
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 18
+		SccNumberOfProjects = 17
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
@@ -115,18 +113,15 @@ Global
 		SccProjectTopLevelParentUniqueName13 = Phalanger.sln
 		SccProjectName13 = ../Source/Extensions/XmlDom
 		SccLocalPath13 = ..\\Source\\Extensions\\XmlDom
-		SccProjectUniqueName14 = ..\\Source\\Core\\MSIL\\Core.IL.vcxproj
-		SccProjectName14 = ../Source/Core/MSIL
-		SccLocalPath14 = ..\\Source\\Core\\MSIL
-		SccProjectUniqueName15 = ..\\Source\\Phalanger.CompilerTask\\Phalanger.CompilerTask.csproj
-		SccProjectName15 = ../Source/Phalanger.CompilerTask
-		SccLocalPath15 = ..\\Source\\Phalanger.CompilerTask
-		SccProjectUniqueName16 = ..\\Source\\Testing\\Unit\\Testers.Unit.csproj
-		SccProjectName16 = ../Source/Testing/Unit
-		SccLocalPath16 = ..\\Source\\Testing\\Unit
-		SccProjectUniqueName17 = ..\\Source\\Microsoft.DynamicLight\\Microsoft.DynamicLight.csproj
-		SccProjectName17 = ../Source/Microsoft.DynamicLight
-		SccLocalPath17 = ..\\Source\\Microsoft.DynamicLight
+		SccProjectUniqueName14 = ..\\Source\\Phalanger.CompilerTask\\Phalanger.CompilerTask.csproj
+		SccProjectName14 = ../Source/Phalanger.CompilerTask
+		SccLocalPath14 = ..\\Source\\Phalanger.CompilerTask
+		SccProjectUniqueName15 = ..\\Source\\Testing\\Unit\\Testers.Unit.csproj
+		SccProjectName15 = ../Source/Testing/Unit
+		SccLocalPath15 = ..\\Source\\Testing\\Unit
+		SccProjectUniqueName16 = ..\\Source\\Microsoft.DynamicLight\\Microsoft.DynamicLight.csproj
+		SccProjectName16 = ../Source/Microsoft.DynamicLight
+		SccLocalPath16 = ..\\Source\\Microsoft.DynamicLight
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -323,20 +318,6 @@ Global
 		{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4}.Release|Win32.ActiveCfg = Release|Any CPU
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Debug|Win32.ActiveCfg = Debug|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Debug|Win32.Build.0 = Debug|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.DebugNoGac|Any CPU.ActiveCfg = Debug|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.DebugNoGac|Win32.ActiveCfg = Debug|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.DebugNoGac|Win32.Build.0 = Debug|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Any CPU.ActiveCfg = Release|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Win32.ActiveCfg = Release|Win32
-		{7F13AC5E-1B8D-467E-83F1-912D12F44370}.Release|Win32.Build.0 = Release|Win32
 		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
