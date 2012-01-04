@@ -246,14 +246,17 @@ namespace PHP.Core
             var name = new Name("export");
             var method_desc = new PhpRoutineDesc(typedesc, PhpMemberAttributes.Public | PhpMemberAttributes.Static | PhpMemberAttributes.Abstract);
 
-            typedesc.Methods.Add(name, method_desc);
-
-            // assign member
-            if (method_desc.Member == null)
+            if (!typedesc.Methods.ContainsKey(name))
             {
-                PhpMethod method = new PhpMethod(name, (PhpRoutineDesc)method_desc, emptyargfull.Method, null);
-                method.WriteUp(PhpRoutineSignature.FromArgfullInfo(method, emptyargfull.Method));
-                method_desc.Member = method;
+                typedesc.Methods.Add(name, method_desc);
+
+                // assign member
+                if (method_desc.Member == null) // always null
+                {
+                    PhpMethod method = new PhpMethod(name, (PhpRoutineDesc)method_desc, emptyargfull.Method, null);
+                    method.WriteUp(PhpRoutineSignature.FromArgfullInfo(method, emptyargfull.Method));
+                    method_desc.Member = method;
+                }
             }
         }
 
