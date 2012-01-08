@@ -2975,10 +2975,6 @@ namespace PHP.Library
                                 state = DecideState(pattern, braceStack);
                                 continue;
                             }
-
-                            break;
-
-
                     }
                 }
                 else
