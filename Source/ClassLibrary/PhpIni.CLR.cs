@@ -190,7 +190,7 @@ namespace PHP.Library
 
 				#region <variables>
 
-                case "zend.ze1_compatibility_mode": Debug.Assert(action == IniAction.Get); return false;// GSR(ref local.Variables.ZendEngineV1Compatible, @default.Variables.ZendEngineV1Compatible, value, action);
+                case "zend.ze1_compatibility_mode": Debug.Assert(action != IniAction.Set || OptionValueToBoolean(value) == false); return false;// GSR(ref local.Variables.ZendEngineV1Compatible, @default.Variables.ZendEngineV1Compatible, value, action);
 				case "magic_quotes_runtime": return GSR(ref local.Variables.QuoteRuntimeVariables, @default.Variables.QuoteRuntimeVariables, value, action);
 				case "magic_quotes_sybase": return GSR(ref local.Variables.QuoteInDbManner, @default.Variables.QuoteInDbManner, value, action);
 				case "magic_quotes_gpc": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.QuoteGpcVariables;
