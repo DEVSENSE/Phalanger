@@ -206,30 +206,30 @@ namespace PHP.Core.Emit
             {
                 static MethodInfo _Object_Object, _Object_String, _Object_ObjectArray;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Append", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
-                public static MethodInfo Object_String { get { if (_Object_String == null) _Object_String = _this.GetMethod("Append", new Type[] { typeof(Object), typeof(String) }); return _Object_String; } }
-                public static MethodInfo Object_ObjectArray { get { if (_Object_ObjectArray == null) _Object_ObjectArray = _this.GetMethod("Append", new Type[] { typeof(Object), typeof(Object[]) }); return _Object_ObjectArray; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Append).Method; return _Object_Object; } }
+                public static MethodInfo Object_String { get { if (_Object_String == null) _Object_String = new Func<object, string, object>(PHP.Core.Operators.Append).Method; return _Object_String; } }
+                public static MethodInfo Object_ObjectArray { get { if (_Object_ObjectArray == null) _Object_ObjectArray = new Func<object, object[], object>(PHP.Core.Operators.Append).Method; return _Object_ObjectArray; } }
             }
 
             public struct Prepend
             {
                 static MethodInfo _Object_Object, _Object_String, _Object_ObjectArray;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Prepend", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
-                public static MethodInfo Object_String { get { if (_Object_String == null) _Object_String = _this.GetMethod("Prepend", new Type[] { typeof(Object), typeof(String) }); return _Object_String; } }
-                public static MethodInfo Object_ObjectArray { get { if (_Object_ObjectArray == null) _Object_ObjectArray = _this.GetMethod("Prepend", new Type[] { typeof(Object), typeof(Object[]) }); return _Object_ObjectArray; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Prepend).Method; return _Object_Object; } }
+                public static MethodInfo Object_String { get { if (_Object_String == null) _Object_String = new Func<object, string, object>(PHP.Core.Operators.Prepend).Method; return _Object_String; } }
+                public static MethodInfo Object_ObjectArray { get { if (_Object_ObjectArray == null) _Object_ObjectArray = new Func<object, object[], object>(PHP.Core.Operators.Prepend).Method; return _Object_ObjectArray; } }
             }
 
             public struct GetItem
             {
                 static MethodInfo _Object, _Int32, _String;
 
-                public static MethodInfo Object { get { if (_Object == null) _Object = _this.GetMethod("GetItem", new Type[] { Types.Object[0], Types.Object[0], typeof(Core.Operators.GetItemKinds) }); return _Object; } }
-                public static MethodInfo Int32 { get { if (_Int32 == null) _Int32 = _this.GetMethod("GetItem", new Type[] { Types.Object[0], Types.Int[0], typeof(Core.Operators.GetItemKinds) }); return _Int32; } }
-                public static MethodInfo String { get { if (_String == null) _String = _this.GetMethod("GetItem", new Type[] { Types.Object[0], Types.String[0], typeof(Core.Operators.GetItemKinds) }); return _String; } }
+                public static MethodInfo Object { get { if (_Object == null) _Object = new Func<object, object, Core.Operators.GetItemKinds, object>(PHP.Core.Operators.GetItem).Method; return _Object; } }
+                public static MethodInfo Int32 { get { if (_Int32 == null) _Int32 = new Func<object, int, Core.Operators.GetItemKinds, object>(PHP.Core.Operators.GetItem).Method; return _Int32; } }
+                public static MethodInfo String { get { if (_String == null) _String = new Func<object, string, Core.Operators.GetItemKinds, object>(PHP.Core.Operators.GetItem).Method; return _String; } }
             }
 
-            public static MethodInfo GetItemExact { get { if (_GetItemExact == null) _GetItemExact = _this.GetMethod("GetItemExact", new Type[] { Types.Object[0], Types.String[0], typeof(Core.Operators.GetItemKinds), typeof(int) }); return _GetItemExact; } }
+            public static MethodInfo GetItemExact { get { if (_GetItemExact == null) _GetItemExact = new Func<object, string, Core.Operators.GetItemKinds, int, object>(PHP.Core.Operators.GetItemExact).Method; return _GetItemExact; } }
 
             public struct GetItemRef
             {
