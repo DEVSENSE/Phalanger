@@ -328,6 +328,8 @@ namespace PHP.Library.Data
 		/// <returns>true if databse was changed; otherwise returns false</returns>
 		public bool SelectDb(string databaseName)
 		{
+            ClosePendingReader();
+
 			try
 			{
 				if (this.connection.State == ConnectionState.Open)
