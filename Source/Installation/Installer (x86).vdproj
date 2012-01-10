@@ -3790,13 +3790,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -4511,7 +4511,7 @@
             "TargetName" = "8:Sample Phalanger ASP.NET web.url"
             "Tag" = "8:"
             "Folder" = "8:_C6256C38689C45F5BC2F7EF4377A797D"
-            "Condition" = "8:"
+            "Condition" = "8:IIS7WEB"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -8688,7 +8688,7 @@
             "TargetName" = "8:Sample Phalanger Tests.url"
             "Tag" = "8:"
             "Folder" = "8:_C6256C38689C45F5BC2F7EF4377A797D"
-            "Condition" = "8:"
+            "Condition" = "8:IIS7WEB"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -10088,7 +10088,7 @@
             "TargetName" = "8:Simple PHP Scripts.url"
             "Tag" = "8:"
             "Folder" = "8:_C6256C38689C45F5BC2F7EF4377A797D"
-            "Condition" = "8:"
+            "Condition" = "8:IIS7WEB"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -13173,7 +13173,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Phalanger 3.0"
         "ProductCode" = "8:{43F0DA3F-15C1-491D-B58F-02C2001A9958}"
-        "PackageCode" = "8:{6FC6EE69-D045-4160-89B2-FDB92C38A94D}"
+        "PackageCode" = "8:{00A8A08B-2284-4A05-959E-113A72F6DED2}"
         "UpgradeCode" = "8:{95478229-8324-40E1-8D9D-D3253CC726BF}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
