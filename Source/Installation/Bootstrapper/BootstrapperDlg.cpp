@@ -72,10 +72,7 @@ BOOL CBootstrapperDlg::OnInitDialog()
 
 void CBootstrapperDlg::LogVisit(wchar_t*tag)
 {
-	wchar_t szTmp[512];
-	swprintf_s(szTmp, L"<iframe src='http://log.php-compiler.net/phalanger-installer.htm?location=%s' height='0' />", tag);
-
-	SetElementHtml("Log", szTmp);
+	// TODO
 }
 
 void CBootstrapperDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
@@ -113,8 +110,24 @@ HRESULT CBootstrapperDlg::OnLinkFw(IHTMLElement* pElement)
 
 HRESULT CBootstrapperDlg::OnLinkCore(IHTMLElement* pElement)
 {
-	Launch("Setup\\setup.exe");
-	LogVisit(L"phalanger");
+	// check if VC++ (x86) redist is installed
+	CRegKey key;
+	if (!VcInstalled())
+	{
+		Launch("Setup\\en_visual_c++_2010_sp1_redistributable_package_x86_651767.exe");	// we are launching it manually since default installer prerequisities does not work properly on all systems
+	}
+
+	if (VcInstalled())
+	{
+		// launch setup
+		Launch("Setup\\setup.exe");
+		LogVisit(L"phalanger");
+	}
+	else
+	{
+		MessageBox("Prerequisity Visual C++ 2010 (x86) Redistributable could not be found.", "Could not launch the installer", MB_OK | MB_ICONSTOP);
+	}
+
 	return -1;
 }
 
@@ -270,6 +283,12 @@ bool CBootstrapperDlg::FwInstalled()
 {
 	CRegKey key;
 	return (key.Open(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\NET Framework Setup\\NDP\\v4\\Full", KEY_QUERY_VALUE) == ERROR_SUCCESS);
+}
+
+bool CBootstrapperDlg::VcInstalled()
+{
+	CRegKey key;
+	return (key.Open(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\\VisualStudio\\10.0\\VC\\VCRedist\\x86", KEY_QUERY_VALUE) == ERROR_SUCCESS);
 }
 
 bool CBootstrapperDlg::CoreInstalled()

@@ -27,6 +27,7 @@ public:
 	void UpdateState();
 
 	bool FwInstalled();
+	bool VcInstalled();
 	bool CoreInstalled();
 	bool VsNetInstalled();
 	bool VsipInstalled();
