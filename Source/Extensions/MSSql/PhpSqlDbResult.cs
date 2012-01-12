@@ -135,7 +135,7 @@ namespace PHP.Library.Data
 			if (dbValue is SqlDateTime)
 			{
 				if (dbValue.Equals(SqlDateTime.Null)) return null;
-				else return ((SqlDateTime)dbValue).Value.ToString("d M yyyy H:mm");
+                else return ((SqlDateTime)dbValue).Value.ToString("yyyy-MM-dd HH:mm:ss");
 			}
 
 			if (dbValue is SqlDouble)
