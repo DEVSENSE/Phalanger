@@ -48,7 +48,7 @@ namespace PHP.Core
 	/// </para>
 	/// </remarks>
 	[DebuggerNonUserCode]
-	public class PhpStack
+	public sealed class PhpStack
 	{
 		#region Fields, Construction, ResizeItems
 
