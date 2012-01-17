@@ -3451,7 +3451,7 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mandatory parametr &apos;{0}&apos; declared behind optional parameter.
+        ///   Looks up a localized string similar to Mandatory parameter &apos;{0}&apos; declared behind optional parameter.
         /// </summary>
         internal static string mandatory_behind_optional_param {
             get {

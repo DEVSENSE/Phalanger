@@ -1780,7 +1780,7 @@ non-infringement.
     <value>Cyclic inclusion between files '{0}' and '{1}' detected, inclusion of file '{0}' deferred to runtime</value>
   </data>
   <data name="mandatory_behind_optional_param" xml:space="preserve">
-    <value>Mandatory parametr '{0}' declared behind optional parameter</value>
+    <value>Mandatory parameter '{0}' declared behind optional parameter</value>
   </data>
   <data name="abstract_class_or_interface_instantiated" xml:space="preserve">
     <value>Instantiation of abstract class or interface '{0}'</value>
