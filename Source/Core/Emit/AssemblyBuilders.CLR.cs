@@ -234,7 +234,7 @@ namespace PHP.Core.Emit
                         foreach(ResourceFileReference resource in resources)
                             AddResourceFile(RealModuleBuilder,resource.Name, resource.Path, resource.IsPublic ? ResourceAttributes.Public : ResourceAttributes.Private);
                 } catch(Exception ex) {
-                    throw new CompilerException(FatalErrors.ErrorCreatingFile, ex, Path.Combine(directory, fileName));
+                    throw new CompilerException(FatalErrors.ErrorCreatingFile, ex, Path.Combine(directory, fileName), ex.Message);
                 }
 
                 try {
@@ -244,7 +244,7 @@ namespace PHP.Core.Emit
 
                     builder.Save(fileName);
                 } catch(IOException e) {
-                    throw new CompilerException(FatalErrors.ErrorCreatingFile, Path.Combine(directory, fileName), e.Message);
+                    throw new CompilerException(FatalErrors.ErrorCreatingFile, e, Path.Combine(directory, fileName), e.Message);
                 }
             } finally {
                 if(res_file_path != null)
