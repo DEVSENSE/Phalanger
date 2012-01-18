@@ -127,7 +127,7 @@ namespace PHP.Core.Emit
 			assembly_builder = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Save, directory);
 
 			// defines a module:
-			string file_name = name.Name + ".dll";
+            string file_name = PhpLibraryModule.DynamicWrapperFileName(assembly);
 			module_builder = assembly_builder.DefineDynamicModule(PhpLibraryModule.DynamicWrapperModuleName, file_name);
 #endif
 

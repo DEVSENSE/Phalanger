@@ -28,16 +28,15 @@ namespace PHP.Core.Reflection
 	{
 		#region Constants
 
-		/// <summary>
-		/// Dynamic wrapper assembly name suffix.
-		/// </summary>
-		internal const string DynamicAssemblySuffix = ".dynamic";
+        /// <summary>
+        /// Suffix for dynamically generated wrapper assemblies.
+        /// </summary>
+        internal const string DynamicAssemblySuffix = ".dynamic";
 
 		/// <summary>
 		/// A name of the primary module of dynamic library wrappers.
 		/// </summary>
 		internal const string DynamicWrapperModuleName = "DynamicWrapper";
-
 
 		#endregion
 
@@ -409,8 +408,7 @@ namespace PHP.Core.Reflection
             if (!Configuration.IsLoaded && !Configuration.IsBeingLoaded) { return; } // continue without wrappers !! (VS Integration does not need it)
 			string wrappers_dir = Configuration.GetPathsNoLoad().DynamicWrappers;
 
-			string wrapper_name = Path.Combine(wrappers_dir,
-				String.Concat(real_assembly.GetName(false).Name, DynamicAssemblySuffix, ".dll"));
+			string wrapper_name = Path.Combine(wrappers_dir, DynamicWrapperFileName(real_assembly));
 
 			try
 			{
@@ -484,6 +482,17 @@ namespace PHP.Core.Reflection
 
             return PhpLibraryAssembly.DefaultExtension;
 		}
+
+        /// <summary>
+        /// Get the dynamic wrapper file name based on the given extension assembly.
+        /// </summary>
+        /// <param name="ass">Extension assembly which dynamic wrapper file is needed.</param>
+        /// <returns>Dynamic wrapper assembly file name corresponding to given <paramref name="ass"/>.</returns>
+        internal static string/*!*/DynamicWrapperFileName(Assembly/*!*/ass)
+        {
+            var name = ass.GetName(false);
+            return String.Concat(name.Name, DynamicAssemblySuffix, ".", name.Version.ToString(4), ".dll");
+        }
 
 		#endregion
 	}
