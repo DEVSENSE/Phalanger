@@ -824,7 +824,7 @@ namespace PHP.Core.Emit
 
         #region Others
 
-        static MethodInfo _GetTypeFromHandle, _Object_Equals, _SetStaticInit, _AddConstant, _AddProperty, _AddMethod,
+        static MethodInfo _GetTypeFromHandle, _Equality_Type_Type, _Object_Equals, _SetStaticInit, _AddConstant, _AddProperty, _AddMethod,
             _ShellExec, _IPhpEnumerable_GetForeachEnumerator,
             _String_IsInterned, _String_Concat_String_String, _IEnumerator_MoveNext, _DTypeDesc_Create,
             _PhpTypeDesc_Create, _ClrObject_Wrap, _ClrObject_WrapDynamic, _ClrObject_WrapRealObject, _ClrObject_Create, _Object_GetType,
@@ -832,6 +832,7 @@ namespace PHP.Core.Emit
             _DRoutineDesc_Invoke, _PhpHashtable_Add, _InitializeArray, _ArrayCopy, _ArrayCopyTo, _PhpCallback_Invoke;
 
         public static MethodInfo GetTypeFromHandle { get { if (_GetTypeFromHandle == null)  _GetTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle"); return _GetTypeFromHandle; } }
+        public static MethodInfo Equality_Type_Type { get { return _Equality_Type_Type ?? (_Equality_Type_Type = typeof(Type).GetMethod("op_Equality")); } }
 
         public static MethodInfo Object_Equals { get { if (_Object_Equals == null)  _Object_Equals = Types.Object[0].GetMethod("Equals", Types.Object); return _Object_Equals; } }
         public static MethodInfo Object_GetType { get { if (_Object_GetType == null)  _Object_GetType = Types.Object[0].GetMethod("GetType", Type.EmptyTypes); return _Object_GetType; } }

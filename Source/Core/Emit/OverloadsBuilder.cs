@@ -1009,30 +1009,46 @@ namespace PHP.Core.Emit
                 string type_name = PhpVariable.GetAssignableTypeName(dstType);
 
                 Label endif_label = il.DefineLabel();
+
+                LocalBuilder loc_typed = null;
+                LocalBuilder loc_obj = il.DeclareLocal(typeof(object));
+                il.Emit(OpCodes.Dup);
+                il.Stloc(loc_obj);
                 
                 // IF (obj == null) goto ENDIF;
-                il.Emit(OpCodes.Dup);
                 il.Emit(OpCodes.Ldnull);
                 il.Emit(OpCodes.Beq_S, endif_label);
 
-                // obj = obj AS <dstType>;
-                //LocalBuilder loc_typed = il.DeclareLocal(dstType);
-                LocalBuilder loc_obj = il.DeclareLocal(typeof(object));
+                //
+                il.Ldloc(loc_obj);
+                // (obj) on top of eval stack, eat it:
 
-                il.Emit(OpCodes.Dup);
-                il.Stloc(loc_obj);
-                il.Emit(OpCodes.Isinst, dstType);
-                // (obj as dstType) is on top of the evaluation stack
-                
-                // IF (obj!=null) goto ENDIF;
-                il.Emit(OpCodes.Dup);
-                il.Emit(OpCodes.Brtrue_S, endif_label);
+                if (dstType.IsSealed)
+                {
+                    // if (<obj>.GetType() == typeof(<dstType>)) goto ENDIF;    // little JIT hack
+                    il.Emit(OpCodes.Callvirt, Methods.Object_GetType);
+                    il.Emit(OpCodes.Ldtoken, dstType);
+                    il.Emit(OpCodes.Call, Methods.GetTypeFromHandle);
+                    il.Emit(OpCodes.Call, Methods.Equality_Type_Type);
+                    il.Emit(OpCodes.Brtrue, endif_label);
+                }
+                else
+                {
+                    loc_typed = il.DeclareLocal(dstType);
+
+                    // <loc_typed> = <obj> as <dstType>:
+                    il.Emit(OpCodes.Isinst, dstType);
+                    il.Emit(OpCodes.Dup);
+                    il.Stloc(loc_typed);
+
+                    // (obj as dstType) is on top of the evaluation stack
+
+                    // IF (obj!=null) goto ENDIF;
+                    il.Emit(OpCodes.Brtrue_S, endif_label);
+                }
 
                 if (true)
                 {
-                    // pop obj
-                    il.Emit(OpCodes.Pop);
-
                     // pops all arguments already pushed:
                     for (int i = 0; i < pushedArgsCount; ++i)
                         il.Emit(OpCodes.Pop);
@@ -1056,8 +1072,16 @@ namespace PHP.Core.Emit
                 // ENDIF;
                 il.MarkLabel(endif_label);
 
-                // (obj) or (obj as dstType) is on the top of the evaluation stack
-                il.Emit(OpCodes.Castclass, dstType);
+                // load typed <obj> (already casted in <loc_typed> or boxed in <loc_obj>
+                if (loc_typed != null)
+                {
+                    il.Ldloc(loc_typed);
+                }
+                else
+                {
+                    il.Ldloc(loc_obj);
+                    il.Emit(OpCodes.Castclass, dstType);
+                }
             }
 		}
 
