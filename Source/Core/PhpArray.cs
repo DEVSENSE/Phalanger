@@ -463,7 +463,7 @@ namespace PHP.Core
 		string IPhpConvertible.ToString()
 		{
 			PhpException.Throw(PhpError.Notice, CoreResources.GetString("array_to_string_conversion"));
-			return PhpTypeName;
+            return PrintablePhpTypeName;
 		}
 
         /// <summary>
@@ -477,7 +477,7 @@ namespace PHP.Core
 			if (throwOnError)
 				PhpException.Throw(PhpError.Notice, CoreResources.GetString("array_to_string_conversion"));
 			success = false;
-			return PhpTypeName;
+            return PrintablePhpTypeName;
 		}
 
 		public override string ToString()
