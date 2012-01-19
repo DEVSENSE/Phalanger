@@ -936,8 +936,36 @@ namespace PHP.Core
                         case "user-agent":
                             request.UserAgent = value;
                             break;
+                        case "accept":
+                            request.Accept = value;
+                            break;
+                        case "connection":
+                            request.Connection = value;
+                            break;
+                        case "expect":
+                            request.Expect = value;
+                            break;
+                        case "date":
+                            request.Date = System.Convert.ToDateTime(value);
+                            break;
+                        case "host":
+                            request.Host = value;
+                            break;
+                        case "if-modified-since":
+                            request.IfModifiedSince = System.Convert.ToDateTime(value);
+                            break;
+                        case "range":
+                            request.AddRange(System.Convert.ToInt32(value));
+                            break;
+                        case "referer":
+                            request.Referer = value;
+                            break;
+                        case "transfer-encoding":
+                            request.TransferEncoding = value;
+                            break;
+
                         default:
-                            request.Headers[name] = value;
+                            request.Headers.Add(name, value);
                             break;
                     }
                 }
