@@ -40,7 +40,7 @@ namespace PHP.Core
 		/// <exception cref="IOException">Unexpected IO error occured.</exception>
 		public static void AppendLine(string fileName, string message)
 		{
-			message = DateTime.Now.ToString("[dd-MMMM-yyyy hh:mm:ss]") + message;
+			message = DateTime.Now.ToString("[dd-MMM-yyyy HH:mm:ss] ") + message;
 
 			bool mutex_created;
 			using (Mutex m = new Mutex(true, mutexNamePrefix + fileName.GetHashCode(), out mutex_created))

@@ -617,7 +617,8 @@ namespace PHP.Core
 			}
 
 			// reports error to output and logs:
-			if (do_report && is_error_reported)
+            if (do_report && is_error_reported &&
+                (config.ErrorControl.DisplayErrors || config.ErrorControl.EnableLogging))   // check if the error will be displayed to avoid stack trace loading
 			{
 				// loads stack info:
 				if (!info_loaded) { info = PhpStackTrace.TraceErrorFrame(context); info_loaded = true; }
@@ -653,8 +654,15 @@ namespace PHP.Core
 #else
 				// adds a message to log file:
 				if (config.ErrorControl.LogFile != null)
-					try { Logger.AppendLine(config.ErrorControl.LogFile, formatted_message); }
-					catch (Exception) { }
+                    try
+                    {
+                        // <error>: <caller>(): <message> in <file> on line <line>
+                        string caller = (info.Caller != null) ? (info.Caller + "(): ") : null;
+                        string place = (info.Line > 0 && info.Column > 0) ? CoreResources.GetString("error_place", info.File, info.Line, info.Column) : null;
+
+                        Logger.AppendLine(config.ErrorControl.LogFile, string.Concat(error, ": ", caller, message, place));
+                    }
+                    catch (Exception) { }
 
 				// adds a message to event log:
 				if (config.ErrorControl.SysLog)
