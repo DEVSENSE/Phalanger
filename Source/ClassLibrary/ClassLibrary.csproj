@@ -304,10 +304,19 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>"$(SolutionDir)..\Tools\gacutil" /u $(TargetName) 1&gt;nul
+    <PostBuildEvent>REM ECHO Uninstalling previous version from GAC ...
+REM "$(SolutionDir)..\Tools\gacutil" /u $(TargetName) 1&gt;nul
 
+REM ECHO Generating publisher policy assembly ...
+REM "$(SolutionDir)..\Tools\PolicyFileGen" "$(TargetPath)" "/out:$(TargetDir)policy.$(TargetName).config" 1&gt;nul
+REM "$(SolutionDir)..\Tools\al" "/link:$(TargetDir)policy.$(TargetName).config" "/out:$(TargetDir)policy.3.0.$(TargetFileName)" "/keyfile:$(ProjectDir)$(ProjectName).snk" /platform:anycpu 1&gt;nul
+
+ECHO Copying output to the Deployment folder ...
 if $(ConfigurationName) == Release (
-xcopy /q /y "$(TargetDir)$(TargetName).dll" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
+"$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
+REM "$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetDir)policy.3.0.$(TargetFileName)" 1&gt;nul
+xcopy /q /y "$(TargetDir)*$(TargetName).dll" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
+xcopy /q /y "$(ProjectDir)Doc\$(TargetName).xml" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
 
 REM mkdir "$(SolutionDir)..\Deployment\Bin\Temp"
 REM "$(SolutionDir)..\Deployment\Bin\MkDynamic" "$(SolutionDir)..\Deployment\Bin\$(TargetName).dll" "$(SolutionDir)..\Deployment\Bin\Temp"
@@ -317,18 +326,15 @@ REM del "$(SolutionDir)..\Deployment\Bin\Temp\$(TargetName).dynamic.dll"
 REM move "$(SolutionDir)..\Deployment\Bin\Temp\$(TargetName).dll" "$(SolutionDir)..\Deployment\Bin"
 REM rmdir "$(SolutionDir)..\Deployment\Bin\Temp"
 
-"$(SolutionDir)..\Tools\gacutil" -f -i "$(SolutionDir)..\Deployment\Bin\$(TargetName).dll" 1&gt;nul
-
 rem "$(SolutionDir)..\Deployment\Bin\PhpVerify" "$(TargetFileName)"
-xcopy /q /y "$(ProjectDir)Doc\$(TargetName).xml" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
 )
 if $(ConfigurationName) == Debug (
 "$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
-xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
+REM "$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetDir)policy.3.0.$(TargetFileName)" 1&gt;nul
+xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
 )
 if $(ConfigurationName) == DebugNoGac (
 xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
-)
-</PostBuildEvent>
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>

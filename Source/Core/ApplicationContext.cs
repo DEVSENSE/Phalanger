@@ -516,10 +516,11 @@ namespace PHP.Core
 
 				assembly = DAssembly.CreateNoLock(applicationContext, realAssembly, config);
 
-				loadedAssemblies.Add(realAssembly, assembly);
-
 				// load the members contained in the assembly to the global tables:
 				applicationContext.LoadModuleEntries(assembly.ExportModule);
+
+                // add the assembly into loaded assemblies list now, so if LoadModuleEntries throws, assembly is not skipped within the next request!
+                loadedAssemblies.Add(realAssembly, assembly);
 			}
 
 			if (!reflectionOnly)
