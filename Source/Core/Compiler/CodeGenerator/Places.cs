@@ -28,7 +28,7 @@ namespace PHP.Core
 	/// <summary>
 	/// Contains <see cref="PHP.Core.ScriptContext"/> loading method along with its context.
 	/// </summary>
-	internal class LazyLoadSCPlace : IPlace
+	internal sealed class LazyLoadSCPlace : IPlace
 	{
 		/// <summary>
 		/// Builder of the local variable in which the <see cref="PHP.Core.ScriptContext"/> is cached.

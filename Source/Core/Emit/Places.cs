@@ -88,7 +88,7 @@ namespace PHP.Core.Emit
 	/// A storage place that represents a local variable or a method argument given by their index,
 	/// or a direct integer value.
 	/// </summary>
-	internal class IndexedPlace : IPlace
+	internal sealed class IndexedPlace : IPlace
 	{
 		/// <summary>
 		/// The type of this place - can be either <see cref="PlaceHolder.None"/>, <see cref="PlaceHolder.Argument"/> or
@@ -218,7 +218,7 @@ namespace PHP.Core.Emit
 	/// <summary>
 	/// A read-only storage place that represents a metadata token.
 	/// </summary>
-	internal class TokenPlace : IPlace
+	internal sealed class TokenPlace : IPlace
 	{
 		/// <summary>
 		/// Runtime representation of the token.
