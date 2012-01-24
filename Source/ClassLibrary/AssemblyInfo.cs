@@ -25,7 +25,7 @@ using System.Security;
 [assembly: PhpLibrary(
     typeof(PHP.Library.LibraryDescriptor),
     "Base Library",
-    new string[]{"standard","Core","session","ctype","tokenizer","date","pcre","ereg","json","hash","SPL"})]
+    new string[]{"standard","Core","session","ctype","tokenizer","date","pcre","ereg","json","hash","SPL","filter"})]
 //#else
 //[assembly: PhpLibrary(typeof(PHP.Library.LibraryDescriptor), "Base Library", false, true)]
 //#endif
