@@ -1480,7 +1480,7 @@ namespace PHP.Library
 		/// <param name="handle"></param>
 		/// <param name="operation"></param>
 		/// <returns></returns>
-        [ImplementsFunction("flock", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("flock")]
 		public static bool Lock(PhpResource handle, int operation)
 		{
 			int dummy = 0;
