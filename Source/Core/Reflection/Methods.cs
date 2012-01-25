@@ -2119,7 +2119,7 @@ namespace PHP.Core.Reflection
 		/// Library function does deep-copy according to the <see cref="PhpDeepCopyAttribute"/>.
 		/// The call itself emits the deep-copy, so the outer code needn't to care.
 		/// </summary>
-		public override bool ReturnValueDeepCopyEmitted { get { return false; } }
+		public override bool ReturnValueDeepCopyEmitted { get { return true; } }
 
 		public override Name Name { get { return name; } }
 		private readonly Name name;
