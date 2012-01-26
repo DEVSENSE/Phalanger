@@ -742,7 +742,7 @@ namespace PHP.Testing
             // modify real_str, exp_str
 
             // at expression on line NUM, column NUM. => on line NUM
-            Regex reColumn = new Regex(@"at\sexpression\s(on\sline\s[0-9]+),\scolumn [0-9]+\.");
+            Regex reColumn = new Regex(@"(\son\sline\s[0-9]+),\scolumn [0-9]+\.");
             real_str = reColumn.Replace(real_str, CompareModifier);
 
             // array(NUM)\n*\s*{ => array(NUM){

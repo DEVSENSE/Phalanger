@@ -468,34 +468,43 @@ namespace PHP.Core
                     base[header] = value;
 
                     // store the header immediately into the buffered response
-                    header = header.ToLower();
+                    //header = header.ToLowerInvariant();
                     var response = HttpContext.Current.Response;
 
-                    switch (header)
+                    if (header.EqualsOrdinalIgnoreCase("location"))
                     {
-                        case "location":
-                            response.RedirectLocation = location;
-                            break;
-                        case "content-type":
-                            response.ContentType = contentType;
-                            response.ContentEncoding = contentEncoding.Encoding;
-                            break;
-                        case "content-length":
-                            break;  // ignore content-length header, it is set correctly by IIS. If set by the app, mostly it is not correct value (strlen() issue).
-                        case "content-encoding":
-                            if (_contentEncoding != null) _contentEncoding.SetEncoding(response);// on IntegratedPipeline, set immediately to Headers
-                            else response.ContentEncoding = RequestContext.CurrentContext.DefaultResponseEncoding;
-                            break;
-                        case "expires":
-                            SetExpires(response,value);
-                            break;
-                        case "cache-control":
-                            CacheLimiter(response, value, null);// ignore invalid cache limiter?
-                            break;
-                        default:
-                            if (value != null) response.Headers[header] = value;
-                            else response.Headers.Remove(header);
-                            break;
+                        response.RedirectLocation = location;
+                    }
+                    else if (header.EqualsOrdinalIgnoreCase("content-type"))
+                    {
+                        response.ContentType = contentType;
+                        response.ContentEncoding = contentEncoding.Encoding;
+                    }
+                    //else if (header.EqualsOrdinalIgnoreCase("set-cookie"))
+                    //{
+                    //    response.AddHeader(header, value);
+                    //}
+                    else if (header.EqualsOrdinalIgnoreCase("content-length"))
+                    {
+                        // ignore content-length header, it is set correctly by IIS. If set by the app, mostly it is not correct value (strlen() issue).
+                    }
+                    else if (header.EqualsOrdinalIgnoreCase("content-encoding"))
+                    {
+                        if (_contentEncoding != null) _contentEncoding.SetEncoding(response);// on IntegratedPipeline, set immediately to Headers
+                        else response.ContentEncoding = RequestContext.CurrentContext.DefaultResponseEncoding;
+                    }
+                    else if (header.EqualsOrdinalIgnoreCase("expires"))
+                    {
+                        SetExpires(response, value);
+                    }
+                    else if (header.EqualsOrdinalIgnoreCase("cache-control"))
+                    {
+                        CacheLimiter(response, value, null);// ignore invalid cache limiter?
+                    }
+                    else
+                    {
+                        if (value != null) response.AddHeader(header, value);//response.Headers[header] = value;
+                        else response.Headers.Remove(header);
                     }
                 }
             }
