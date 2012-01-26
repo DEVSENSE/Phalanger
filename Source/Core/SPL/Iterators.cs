@@ -536,23 +536,33 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual object key(ScriptContext context)
         {
-            if (isArrayIterator)
-                return arrayEnumerator.Current.Key.Object;
-            else if (isObjectIterator)
-                return dobjEnumerator.Current.Key;
+            if (this.isValid)
+            {
+                if (isArrayIterator)
+                    return arrayEnumerator.Current.Key.Object;
+                else if (isObjectIterator)
+                    return dobjEnumerator.Current.Key;
+                else
+                    Debug.Fail();
+            }
 
-            return false;
+            return null;
         }
 
         [ImplementsMethod]
         public virtual object current(ScriptContext context)
         {
-            if (isArrayIterator)
-                return arrayEnumerator.Current.Value;
-            else if (isObjectIterator)
-                return dobjEnumerator.Current.Value;
+            if (this.isValid)
+            {
+                if (isArrayIterator)
+                    return arrayEnumerator.Current.Value;
+                else if (isObjectIterator)
+                    return dobjEnumerator.Current.Value;
+                else
+                    Debug.Fail();
+            }
 
-            return false;
+            return null;
         }
 
         #endregion
