@@ -144,12 +144,36 @@ namespace PHP.Library.SPL
         #region Fields & Properties
 
         protected PhpArray array;
-        protected OrderedHashtable<IntStringKey>.Enumerator arrayEnumerator;
+        protected OrderedHashtable<IntStringKey>.Enumerator arrayEnumerator;    // lazily instantiated so we can rewind() once when needed
         protected bool isArrayIterator { get { return this.array != null; } }
 
         protected DObject dobj;
-        protected IEnumerator<KeyValuePair<object, object>> dobjEnumerator;
+        protected IEnumerator<KeyValuePair<object, object>> dobjEnumerator;    // lazily instantiated so we can rewind() once when needed
         protected bool isObjectIterator { get { return this.dobj != null; } }
+
+        /// <summary>
+        /// Instantiate new PHP array's enumerator and advances its position to the first element.
+        /// </summary>
+        /// <returns><c>True</c> whether there is an first element.</returns>
+        protected void InitArrayIteratorHelper()
+        {
+            Debug.Assert(this.array != null);
+
+            this.arrayEnumerator = new OrderedHashtable<IntStringKey>.Enumerator(this.array, false);
+            this.isValid = this.arrayEnumerator.MoveFirst();
+        }
+
+        /// <summary>
+        /// Instantiate new object's enumerator and advances its position to the first element.
+        /// </summary>
+        /// <returns><c>True</c> whether there is an first element.</returns>
+        protected void InitObjectIteratorHelper()
+        {
+            Debug.Assert(this.dobj != null);
+
+            this.dobjEnumerator = dobj.InstancePropertyIterator(null, false);   // we have to create new enumerator (or implement InstancePropertyIterator.Reset)
+            this.isValid = this.dobjEnumerator.MoveNext();
+        }
 
         protected bool isValid = false;
 
@@ -168,11 +192,11 @@ namespace PHP.Library.SPL
         {
             if ((this.array = array as PhpArray) != null)
             {
-                this.arrayEnumerator = new OrderedHashtable<IntStringKey>.Enumerator(this.array, false);
+                InitArrayIteratorHelper();  // instantiate now, avoid repetitous checks during iteration
             }
             else if ((this.dobj = array as DObject) != null)
             {
-                // this.dobjEnumerator = dobj.InstancePropertyIterator(null, false); // instantiated in rewind()
+                //InitObjectIteratorHelper();   // lazily to avoid one additional allocation
             }
             else
             {
@@ -182,8 +206,6 @@ namespace PHP.Library.SPL
                 throw new PhpUserException(e);
             }
 
-            // move first:
-            this.isValid = false; // this.rewind(context);
             return null;
         }
 
@@ -509,7 +531,31 @@ namespace PHP.Library.SPL
             }
             else if (isObjectIterator)
             {
-                this.dobjEnumerator = dobj.InstancePropertyIterator(null, false);   // we have to create new enumerator (or implement InstancePropertyIterator.Reset)
+                // isValid set by InitObjectIteratorHelper()
+                InitObjectIteratorHelper(); // DObject enumerator does not support MoveFirst()
+            }
+
+            return null;
+        }
+
+        private void EnsureEnumeratorsHelper()
+        {
+            if (isObjectIterator && dobjEnumerator == null)
+                InitObjectIteratorHelper();
+
+            // arrayEnumerator initialized in __construct()
+        }
+
+        [ImplementsMethod]
+        public virtual object next(ScriptContext context)
+        {
+            if (isArrayIterator)
+            {
+                this.isValid = arrayEnumerator.MoveNext();
+            }
+            else if (isObjectIterator)
+            {
+                EnsureEnumeratorsHelper();
                 this.isValid = dobjEnumerator.MoveNext();
             }
 
@@ -517,25 +563,17 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
-        public virtual object next(ScriptContext context)
-        {
-            if (isArrayIterator)
-                this.isValid = arrayEnumerator.MoveNext();
-            else if (isObjectIterator)
-                this.isValid = dobjEnumerator.MoveNext();
-
-            return null;
-        }
-
-        [ImplementsMethod]
         public virtual object valid(ScriptContext context)
         {
+            EnsureEnumeratorsHelper();
             return this.isValid;
         }
 
         [ImplementsMethod]
         public virtual object key(ScriptContext context)
         {
+            EnsureEnumeratorsHelper();
+
             if (this.isValid)
             {
                 if (isArrayIterator)
@@ -552,6 +590,8 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual object current(ScriptContext context)
         {
+            EnsureEnumeratorsHelper();
+
             if (this.isValid)
             {
                 if (isArrayIterator)
