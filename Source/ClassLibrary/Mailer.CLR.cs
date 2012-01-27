@@ -109,7 +109,11 @@ namespace PHP.Library
                 while ((inner = inner.InnerException) != null)
                     error_message += "; " + inner.Message;
 
-                PhpException.Throw(PhpError.Warning, LibResources.GetString("cannot_send_email", error_message) + "\n" + e.StackTrace);
+                PhpException.Throw(PhpError.Warning, LibResources.GetString("cannot_send_email", error_message)
+#if DEBUG
+                    + "\n\n" + e.StackTrace
+#endif
+                    );
                 return false;
             }
             finally
