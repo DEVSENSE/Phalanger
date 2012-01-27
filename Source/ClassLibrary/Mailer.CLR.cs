@@ -93,7 +93,13 @@ namespace PHP.Library
             try
             {
                 client.Connect();
-                client.SendMessage(from, new string[] { to }, subject, new string[] { "X-PHP-Originating-Script: 1:" + ScriptContext.CurrentContext.MainScriptFile.RelativePath.Path, additionalHeaders }, message);
+                client.SendMessage(
+                    from, to,
+                    subject,
+                    string.Format(
+                        "X-PHP-Originating-Script: 1:{0}\n{1}", ScriptContext.CurrentContext.MainScriptFile.RelativePath.Path,
+                        additionalHeaders),
+                    message);
                 return true;
             }
             catch (Exception e)
@@ -103,7 +109,7 @@ namespace PHP.Library
                 while ((inner = inner.InnerException) != null)
                     error_message += "; " + inner.Message;
 
-                PhpException.Throw(PhpError.Warning, LibResources.GetString("cannot_send_email", error_message));
+                PhpException.Throw(PhpError.Warning, LibResources.GetString("cannot_send_email", error_message) + "\n" + e.StackTrace);
                 return false;
             }
             finally
@@ -562,10 +568,7 @@ namespace PHP.Library
                     // send ESMTP welcome message
                     if (_useExtendedSmtp)
                     {
-                        _writer.WriteLine("EHLO " + System.Net.Dns.GetHostName());
-
-                        // flush the stream
-                        _writer.Flush();
+                        Post("EHLO " + System.Net.Dns.GetHostName());
 
                         // read response
                         line = _reader.ReadLine();
@@ -620,12 +623,9 @@ namespace PHP.Library
                     }
                     else if (line.StartsWith("500") || !_useExtendedSmtp)
                     {
-                        // no need to send another HELO if we have already sent one
-                        _writer.WriteLine("HELO " + System.Net.Dns.GetHostName());
+                        Post("HELO " + System.Net.Dns.GetHostName());
 
-                        line = _reader.ReadLine();
-
-                        if (line.StartsWith("250"))
+                        if (Ack("250"))
                         {
                             _extensions = ArrayUtils.EmptyStrings;
 
@@ -656,17 +656,8 @@ namespace PHP.Library
                     return;
                 }
 
-                _writer.WriteLine("QUIT");
-
-                // flush the stream
-                _writer.Flush();
-
-                string line = _reader.ReadLine();
-
-                if (!line.StartsWith("221"))
-                {
-                    //incorrect response (do nothing)
-                }
+                Post("QUIT");
+                Ack("221", null, (_) => {/*incorrect response (do nothing)*/});
 
                 //correct response
                 ResetConnection();
@@ -686,18 +677,9 @@ namespace PHP.Library
                     return;
                 }
 
-                _writer.WriteLine("RSET");
-
-                // flush the stream
-                _writer.Flush();
-
-                string line = _reader.ReadLine();
-
-                if (!line.StartsWith("250"))
-                {
-                    //invalid response
-                    ResetConnection();
-                }
+                Post("RSET");
+                Ack("250", null,
+                    (_) => ResetConnection());
             }
 
             /// <summary>
@@ -709,73 +691,63 @@ namespace PHP.Library
             /// <param name="subject">Subject of the mail.</param>
             /// <param name="headers">Additional headers.</param>
             /// <param name="body">Message body.</param>
-            /// <returns></returns>
-            private string[] PrepareMessageData(string from, string[] to, string subject, string[] headers, string body)
+            /// <returns>List of message body lines.</returns>
+            private IEnumerable<string>/*!*/ProcessMessageData(string from, string to, string subject, string headers, string body)
             {
-                Dictionary<string, int> headerHashtable = new Dictionary<string, int>();
+                Dictionary<string, int> headerHashtable = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
                 List<KeyValuePair<string, string>> headerList = new List<KeyValuePair<string, string>>();
 
                 //parse headers
-                foreach (string header in headers)
-                {
-                    StringReader reader = new StringReader(header);
-
-                    while (reader.Peek() != -1)
+                if (headers != null)
+                    using (StringReader reader = new StringReader(headers))
                     {
-                        string line = reader.ReadLine();
-                        int index = line.IndexOf(": ");
-
-                        if (index == -1)
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
                         {
-                            continue;
-                        }
-                        else
-                        {
-                            string name = line.Substring(0, index);
-                            string value = line.Substring(index + 2);
+                            int index = line.IndexOf(": ", StringComparison.Ordinal);
 
-                            if (headerHashtable.ContainsKey(name))
+                            if (index > 0)
                             {
-                                headerHashtable[name] = headerList.Count;
-                            }
-                            else
-                            {
-                                headerHashtable.Add(name, headerList.Count);
-                            }
+                                string name = line.Substring(0, index);
+                                string value = line.Substring(index + 2);
 
-                            headerList.Add(new KeyValuePair<string, string>(name, value));
+                                //
+                                headerHashtable[name] = headerList.Count;   // remember last position of <name> header
+                                headerList.Add(new KeyValuePair<string, string>(name, value));
+
+                                // process known headers:
+                                if (name.EqualsOrdinalIgnoreCase("cc") || name.EqualsOrdinalIgnoreCase("bcc"))
+                                    PostRcptTo(value);
+                            }
                         }
                     }
-                }
 
                 List<string> ret = new List<string>();
 
+                // Date:
                 ret.Add("Date: " + DateTime.Now.ToString("ddd, dd MMM yyyy HH:mm:ss zz00", new CultureInfo("en-US")));
-                ret.Add("Subject: " + subject);
+                
+                // From: // Only add the From: field from <from> parameter if it isn't in the custom headers:
+                if (!headerHashtable.ContainsKey("from") && !string.IsNullOrEmpty(from))
+                    ret.Add("From: " + from);
 
-                StringBuilder recipients = new StringBuilder();
+                // Subject:
+                ret.Add("Subject: " + (subject ?? "No Subject"));
+                
+                // To: // Only add the To: field from the <to> parameter if isn't in the custom headers:
+                if (!headerHashtable.ContainsKey("to") && !string.IsNullOrEmpty(to))
+                    ret.Add("To: " + to);
 
-                for (int i = 0; i < to.Length; i++)
+                // add headers, ignore duplicities (only accept the last occurance):
+                foreach (var headerIndex in headerHashtable.Values)
                 {
-                    if (i != 0) recipients.Append(", ");
-
-                    recipients.Append(to[i]);
-                }
-
-                ret.Add("To: " + recipients);
-
-                for (int i = 0; i < headerList.Count; i++)
-                {
-                    var header = headerList[i];
-
-                    if (headerHashtable[header.Key] == i)
-                    {
-                        ret.Add(header.Key + ": " + header.Value);
-                    }
+                    var header = headerList[headerIndex];
+                    ret.Add(string.Format("{0}: {1}", header.Key, header.Value));
                 }
 
                 ret.Add("");
 
+                // parse the <body> into lines:
                 StringReader bodyReader = new StringReader(body);
 
                 while (bodyReader.Peek() != -1)
@@ -785,11 +757,95 @@ namespace PHP.Library
             }
 
             /// <summary>
+            /// Cut out the address if contained within &lt;...&gt; characters. Otherwise take the whole <paramref name="address"/> string.
+            /// The address is transformed using given <paramref name="formatString"/> format.
+            /// </summary>
+            /// <param name="address">Given mail address.</param>
+            /// <param name="formatString">Format to be used for <see cref="String.Format"/> method.</param>
+            /// <returns>Formatted email address.</returns>
+            private static string FormatEmailAddress(string/*!*/address, string/*!*/formatString)
+            {
+                Debug.Assert(address != null, "address == null");
+                Debug.Assert(formatString != null, "formatString == null");
+
+                int a, b;
+                if ((a = address.IndexOf('<')) >= 0 && (b = address.IndexOf('>', a)) >= 0)
+                    address = address.Substring(a + 1, b - a - 1);
+
+                return string.Format(formatString, address.Trim());
+            }
+
+            #region Post, Ack
+
+            /// <summary>
+            /// Writes <paramref name="line"/>, appends <c>CRLF</c> and flushes internal writer.
+            /// </summary>
+            /// <param name="line"><see cref="String"/> to be written onto the internal writer.</param>
+            private void Post(string line)
+            {
+                this._writer.WriteLine(line);
+                this._writer.Flush();
+            }
+
+            private bool Ack(string expected1)
+            {
+                return Ack(expected1, null,
+                    (line) => ThrowExpectedResponseHelper(line, expected1));
+            }
+
+            private bool Ack(string expected1, string expected2)
+            {
+                return Ack(expected1, expected2,
+                    (line) => ThrowExpectedResponseHelper(line, string.Format("{0} or {1}", expected1, expected2)));
+            }
+
+            private void ThrowExpectedResponseHelper(string givenResponse, string expectedStr)
+            {
+                Reset();
+                throw new SmtpException(string.Format("Expected response {0}, '{1}' given.", expectedStr, givenResponse));
+            }
+            
+            private bool Ack(string expected1, string expected2, Action<string>/*!*/fail)
+            {
+                Debug.Assert(fail != null);
+
+                var line = _reader.ReadLine();
+
+                if (expected1 != null && line.StartsWith(expected1, StringComparison.Ordinal))
+                    return true; // ok
+
+                if (expected2 != null && line.StartsWith(expected2, StringComparison.Ordinal))
+                    return true; // ok
+
+                fail(line);
+                return false;
+            }
+
+            #endregion
+
+            /// <summary>
+            /// Send <c>RCPT TO</c> commands.
+            /// </summary>
+            /// <param name="recipients">List of recipients comma-separated.</param>
+            private void PostRcptTo(string recipients)
+            {
+                if (!string.IsNullOrEmpty(recipients))
+                    foreach (var rcpt in recipients.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        if (rcpt.StartsWith("undisclosed-recipients:", StringComparison.Ordinal))
+                            continue;   // this should be specified in To: header, it is not intended for the SMTP server within RCPT TO command
+
+                        Post(FormatEmailAddress(rcpt, "RCPT TO:<{0}>"));
+                        Ack("250", "251");
+                    }
+            }
+
+            /// <summary>
             /// Sends the raw message.
             /// </summary>
             /// <remarks>On eny error an exception is thrown.</remarks>
             /// <exception cref="SmtpException">When any error occures during the mail send.</exception>
-            public void SendMessage(string from, string[] to, string subject, string[] headers, string body)
+            public void SendMessage(string from, string to, string subject, string headers, string body)
             {
                 //
                 // see http://email.about.com/cs/standards/a/smtp_error_code_2.htm for response codes.
@@ -799,65 +855,31 @@ namespace PHP.Library
                     throw new SmtpException("NOT CONNECTED");
                 
                 // start mail transaction
-                _writer.WriteLine("MAIL FROM:" + from);
+                Post(FormatEmailAddress(from, "MAIL FROM:<{0}>"));
+                Ack("250");
 
-                // flush the stream
-                _writer.Flush();
+                PostRcptTo(to);
 
-                string line = _reader.ReadLine();
+                // process headers (may contain additional recipients)
+                // and prepare data that is broken up to form data lines.
+                // Note ProcessMessageData may add additional recipients, so it must be called before "DATA" section.
+                var dataLines = ProcessMessageData(from, to, subject, headers, body);
 
-                if (!line.StartsWith("250"))
-                {
-                    Reset();
-                    throw new SmtpException(string.Format("Expected response {0}, '{1}' given.", 250, line));
-                }
-
-                foreach (string recipientstr in to)
-                {
-                    var recipient = new MailAddress(recipientstr);
-                    _writer.WriteLine("RCPT TO:" + recipient.Address);
-
-                    // flush the stream
-                    _writer.Flush();
-
-                    line = _reader.ReadLine();
-
-                    if (!(line.StartsWith("250") || line.StartsWith("251")))
-                    {
-                        Reset();
-                        throw new SmtpException(string.Format("Expected response {0}, '{1}' given.", "250 or 251", line));
-                    }
-                }
-
-                _writer.WriteLine("DATA");
-
-                // flush the stream
-                _writer.Flush();
-
-                line = _reader.ReadLine();
-
-                if (!line.StartsWith("354"))
-                {
-                    Reset();
-                    throw new SmtpException(string.Format("Expected response {0}, '{1}' given.", 354, line));
-                }
-
-                //prepare data that is broken up to form data lines.
-                string[] dataLines = PrepareMessageData(from, to, subject, headers ?? ArrayUtils.EmptyStrings, body);
-
+                // send DATA
+                Post("DATA");
+                Ack("354");
+                
                 foreach (string dataLine in dataLines)
                 {
                     // PHP implementation uses 991 line length limit (including CRLF)
-                    int maxLineLength = 989;
+                    const int maxLineLength = 989;
                     int lineStart = 0;
                     int correction = 0;
 
                     // if SP character is on the first place, we need to duplicate it
                     if (dataLine.Length > 0 && dataLine[0] == '.')
-                    {
                         _writer.Write('.');
-                    }
-
+                    
                     // according to MIME, the lines must not be longer than 998 characters (1000 including CRLF)
                     // so we need to break such lines using folding
                     while (dataLine.Length - lineStart > maxLineLength - correction)
@@ -883,13 +905,7 @@ namespace PHP.Library
                 // flush the stream
                 _writer.Flush();
 
-                line = _reader.ReadLine();
-
-                if (!line.StartsWith("250"))
-                {
-                    Reset();
-                    throw new SmtpException(string.Format("Expected response {0}, '{1}' given.", 250, line));
-                }
+                Ack("250");
 
                 //return true; // ok
             }

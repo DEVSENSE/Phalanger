@@ -16,7 +16,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
-using System.Text.RegularExpressions;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
@@ -174,7 +173,7 @@ namespace PHP.Library
         
         /// <summary>
         /// ID of "email" filter.
-        /// Remove all characters except letters, digits and !#$%&'*+-/=?^_`{|}~@.[].
+        /// Remove all characters except letters, digits and !#$%&amp;'*+-/=?^_`{|}~@.[].
         /// </summary>
         [ImplementsConstant("FILTER_SANITIZE_EMAIL")]
         EMAIL = 517,
@@ -250,7 +249,7 @@ namespace PHP.Library
         ENCODE_HIGH = 32,
 
         /// <summary>
-        /// Encode &.
+        /// Encode &amp;.
         /// </summary>
         [ImplementsConstant("FILTER_FLAG_ENCODE_AMP")]
         ENCODE_AMP = 64,
