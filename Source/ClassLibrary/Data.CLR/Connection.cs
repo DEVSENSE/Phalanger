@@ -14,6 +14,7 @@ using System;
 using System.Text;
 using System.Data;
 using System.Collections;
+using System.Collections.Generic;
 
 using PHP.Core;
 
@@ -223,7 +224,7 @@ namespace PHP.Library.Data
 		/// <returns>PhpDbResult class representing the data read from database.</returns>
 		/// <exception cref="ArgumentNullException"><paramref name="procedureName"/> is a <B>null</B> reference.</exception>
 		/// <exception cref="PhpException">Procedure execution failed (Warning).</exception>
-		public PhpDbResult ExecuteProcedure(string/*!*/ procedureName, IEnumerable parameters, bool skipResults)     // GENERICS
+		public PhpDbResult ExecuteProcedure(string/*!*/ procedureName, IEnumerable<IDataParameter> parameters, bool skipResults)
 		{
 			if (procedureName == null)
 				throw new ArgumentNullException("procedureName");
@@ -243,7 +244,7 @@ namespace PHP.Library.Data
 		/// <exception cref="ArgumentNullException"><paramref name="commandText"/> is a <B>null</B> reference.</exception>
 		/// <exception cref="PhpException">Command execution failed (Warning).</exception>
 		public PhpDbResult ExecuteCommand(string/*!*/ commandText, CommandType commandType, bool convertTypes,
-		  IEnumerable parameters, bool skipResults) // GENERICS: IDataParameter
+		  IEnumerable<IDataParameter> parameters, bool skipResults)
 		{
 			if (commandText == null)
 				throw new ArgumentNullException("commandText");
