@@ -160,7 +160,7 @@ namespace PHP.Library
             {
                 if (!fileExtensions.MoveNext())
                 {
-                    // TODO: php_error_docref(NULL TSRMLS_CC, E_ERROR, "Class %s could not be loaded", class_name);
+                    PhpException.Throw(PhpError.Error, string.Format(CoreResources.class_could_not_be_loaded, className));
                     return;
                 }
 
@@ -169,7 +169,7 @@ namespace PHP.Library
 
                 if (PhpFile.Exists(FullFileName))
                 {
-                    context.DynamicInclude(FullFileName, context.WorkingDirectory, null, null, null/*TODO: includer*/, InclusionTypes.IncludeOnce);
+                    context.DynamicInclude(FullFileName, context.WorkingDirectory, null, null, null, InclusionTypes.IncludeOnce);
                     stateChanged = true;
                 }
                 else

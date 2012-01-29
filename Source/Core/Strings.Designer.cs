@@ -22,7 +22,7 @@ namespace PHP.Core.Localizations {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    public class Strings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace PHP.Core.Localizations {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PHP.Core.Strings", typeof(Strings).Assembly);
@@ -51,7 +51,7 @@ namespace PHP.Core.Localizations {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to (related location).
         /// </summary>
-        internal static string _related_location_ {
+        public static string _related_location_ {
             get {
                 return ResourceManager.GetString("(related_location)", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Abstract method {0}::{1}() cannot contain body.
         /// </summary>
-        internal static string abstract_bodyful_method {
+        public static string abstract_bodyful_method {
             get {
                 return ResourceManager.GetString("abstract_bodyful_method", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot instantiate abstract class &apos;{0}&apos;.
         /// </summary>
-        internal static string abstract_class_instantiated {
+        public static string abstract_class_instantiated {
             get {
                 return ResourceManager.GetString("abstract_class_instantiated", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Instantiation of abstract class or interface &apos;{0}&apos;.
         /// </summary>
-        internal static string abstract_class_or_interface_instantiated {
+        public static string abstract_class_or_interface_instantiated {
             get {
                 return ResourceManager.GetString("abstract_class_or_interface_instantiated", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Abstract method cannot be declared final.
         /// </summary>
-        internal static string abstract_final_method_declared {
+        public static string abstract_final_method_declared {
             get {
                 return ResourceManager.GetString("abstract_final_method_declared", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot call abstract method {0}::{1}().
         /// </summary>
-        internal static string abstract_method_called {
+        public static string abstract_method_called {
             get {
                 return ResourceManager.GetString("abstract_method_called", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Names of the abstract method {0}::{1}() and its implementation {2}::{3}() must be the same (case sensitively) in the current version of Phalanger.
         /// </summary>
-        internal static string abstract_method_name_not_matching_implementation {
+        public static string abstract_method_name_not_matching_implementation {
             get {
                 return ResourceManager.GetString("abstract_method_name_not_matching_implementation", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Class &apos;{0}&apos; doesn&apos;t implement abstract method {1}::{2}().
         /// </summary>
-        internal static string abstract_method_not_implemented {
+        public static string abstract_method_not_implemented {
             get {
                 return ResourceManager.GetString("abstract_method_not_implemented", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Abstract method cannot be declared private.
         /// </summary>
-        internal static string abstract_private_method_declared {
+        public static string abstract_private_method_declared {
             get {
                 return ResourceManager.GetString("abstract_private_method_declared", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Class &apos;{0}&apos; doesn&apos;t implement abstract property {1}::${2}.
         /// </summary>
-        internal static string abstract_property_not_implemented {
+        public static string abstract_property_not_implemented {
             get {
                 return ResourceManager.GetString("abstract_property_not_implemented", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to &apos;&amp;&apos; modifier ignored in the function call, use &apos;&amp;&apos; modifier in function declaration to pass the argument by reference.
         /// </summary>
-        internal static string act_param_with_ampersand {
+        public static string act_param_with_ampersand {
             get {
                 return ResourceManager.GetString("act_param_with_ampersand", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot use {0} as {1} because the name is already in use.
         /// </summary>
-        internal static string alias_in_use {
+        public static string alias_in_use {
             get {
                 return ResourceManager.GetString("alias_in_use", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Ambiguous constant name: &apos;{1}&apos; and &apos;{2}&apos; are both imported as &apos;{0}&apos;.
         /// </summary>
-        internal static string ambiguous_constant_match {
+        public static string ambiguous_constant_match {
             get {
                 return ResourceManager.GetString("ambiguous_constant_match", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Ambiguous file access mode (binary mode assumed). Specify either &apos;{0}b&apos; or &apos;{0}t&apos; or set Phalanger configuration option DefaultFileOpenMode in file-system section of .config file..
         /// </summary>
-        internal static string ambiguous_file_mode {
+        public static string ambiguous_file_mode {
             get {
                 return ResourceManager.GetString("ambiguous_file_mode", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Ambiguous function name: &apos;{1}&apos; and &apos;{2}&apos; are both imported as &apos;{0}&apos;.
         /// </summary>
-        internal static string ambiguous_function_match {
+        public static string ambiguous_function_match {
             get {
                 return ResourceManager.GetString("ambiguous_function_match", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Ambiguous name: &apos;{1}&apos; and &apos;{2}&apos; are both imported as &apos;{0}&apos;.
         /// </summary>
-        internal static string ambiguous_name_match {
+        public static string ambiguous_name_match {
             get {
                 return ResourceManager.GetString("ambiguous_name_match", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Ambiguous type name: &apos;{1}&apos; and &apos;{2}&apos; are both imported as &apos;{0}&apos;.
         /// </summary>
-        internal static string ambiguous_type_match {
+        public static string ambiguous_type_match {
             get {
                 return ResourceManager.GetString("ambiguous_type_match", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Application configuration file copied..
         /// </summary>
-        internal static string application_config_file_copied {
+        public static string application_config_file_copied {
             get {
                 return ResourceManager.GetString("application_config_file_copied", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Argless stub for populated method &apos;{0}&apos; not found..
         /// </summary>
-        internal static string argless_stub_not_found {
+        public static string argless_stub_not_found {
             get {
                 return ResourceManager.GetString("argless_stub_not_found", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Argument {0} cannot be equal to {1}..
         /// </summary>
-        internal static string argument_equals {
+        public static string argument_equals {
             get {
                 return ResourceManager.GetString("argument_equals", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Environment variable name cannot contain equal character..
         /// </summary>
-        internal static string Argument_IllegalEnvVarName {
+        public static string Argument_IllegalEnvVarName {
             get {
                 return ResourceManager.GetString("Argument_IllegalEnvVarName", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Environment variable name or value is too long..
         /// </summary>
-        internal static string Argument_LongEnvVarValue {
+        public static string Argument_LongEnvVarValue {
             get {
                 return ResourceManager.GetString("Argument_LongEnvVarValue", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Argument #{0} should be passed by reference.
         /// </summary>
-        internal static string argument_not_passed_byref {
+        public static string argument_not_passed_byref {
             get {
                 return ResourceManager.GetString("argument_not_passed_byref", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Argument #{0} should be passed to {1}() by reference.
         /// </summary>
-        internal static string argument_not_passed_byref_to {
+        public static string argument_not_passed_byref_to {
             get {
                 return ResourceManager.GetString("argument_not_passed_byref_to", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Argument #{0} not passed to the function/method.
         /// </summary>
-        internal static string argument_not_passed_to_function {
+        public static string argument_not_passed_to_function {
             get {
                 return ResourceManager.GetString("argument_not_passed_to_function", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Argument &apos;{0}&apos; should not be NULL.
         /// </summary>
-        internal static string argument_null {
+        public static string argument_null {
             get {
                 return ResourceManager.GetString("argument_null", resourceCulture);
             }
@@ -297,7 +297,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The first char in the string is the null character..
         /// </summary>
-        internal static string Argument_StringFirstCharIsZero {
+        public static string Argument_StringFirstCharIsZero {
             get {
                 return ResourceManager.GetString("Argument_StringFirstCharIsZero", resourceCulture);
             }
@@ -306,7 +306,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to String cannot be of zero length..
         /// </summary>
-        internal static string Argument_StringZeroLength {
+        public static string Argument_StringZeroLength {
             get {
                 return ResourceManager.GetString("Argument_StringZeroLength", resourceCulture);
             }
@@ -315,7 +315,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Value &apos;{0}&apos; of argument &apos;{1}&apos; is not supported.
         /// </summary>
-        internal static string argument_value_not_supported {
+        public static string argument_value_not_supported {
             get {
                 return ResourceManager.GetString("argument_value_not_supported", resourceCulture);
             }
@@ -324,7 +324,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Arguments.
         /// </summary>
-        internal static string Arguments {
+        public static string Arguments {
             get {
                 return ResourceManager.GetString("Arguments", resourceCulture);
             }
@@ -333,7 +333,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Arrays are not allowed in class constants.
         /// </summary>
-        internal static string array_in_cls_const {
+        public static string array_in_cls_const {
             get {
                 return ResourceManager.GetString("array_in_cls_const", resourceCulture);
             }
@@ -342,7 +342,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Array to string conversion.
         /// </summary>
-        internal static string array_to_string_conversion {
+        public static string array_to_string_conversion {
             get {
                 return ResourceManager.GetString("array_to_string_conversion", resourceCulture);
             }
@@ -351,7 +351,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to An array used as an object.
         /// </summary>
-        internal static string array_used_as_object {
+        public static string array_used_as_object {
             get {
                 return ResourceManager.GetString("array_used_as_object", resourceCulture);
             }
@@ -360,7 +360,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Script &apos;{0}&apos; inclusion failed. Script not found in the application&apos;s script libraries.
         /// </summary>
-        internal static string assembly_script_inclusion_failed {
+        public static string assembly_script_inclusion_failed {
             get {
                 return ResourceManager.GetString("assembly_script_inclusion_failed", resourceCulture);
             }
@@ -369,7 +369,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Assertion &apos;{0}&apos; failed.
         /// </summary>
-        internal static string assertion_failed {
+        public static string assertion_failed {
             get {
                 return ResourceManager.GetString("assertion_failed", resourceCulture);
             }
@@ -378,7 +378,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Assigning the return value of new by reference is deprecated.
         /// </summary>
-        internal static string assign_new_as_ref_is_deprecated {
+        public static string assign_new_as_ref_is_deprecated {
             get {
                 return ResourceManager.GetString("assign_new_as_ref_is_deprecated", resourceCulture);
             }
@@ -387,7 +387,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Library function &apos;{0}&apos; called with wrong number of parameters.
         /// </summary>
-        internal static string bad_system_fcn_params_count {
+        public static string bad_system_fcn_params_count {
             get {
                 return ResourceManager.GetString("bad_system_fcn_params_count", resourceCulture);
             }
@@ -396,7 +396,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Compiling {0} ....
         /// </summary>
-        internal static string begin_compile {
+        public static string begin_compile {
             get {
                 return ResourceManager.GetString("begin_compile", resourceCulture);
             }
@@ -405,7 +405,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Buffering level couldn&apos;t be decresed below zero.
         /// </summary>
-        internal static string buffering_level_decreased_under_zero {
+        public static string buffering_level_decreased_under_zero {
             get {
                 return ResourceManager.GetString("buffering_level_decreased_under_zero", resourceCulture);
             }
@@ -414,7 +414,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Buffers must not be empty..
         /// </summary>
-        internal static string buffers_must_not_be_empty {
+        public static string buffers_must_not_be_empty {
             get {
                 return ResourceManager.GetString("buffers_must_not_be_empty", resourceCulture);
             }
@@ -423,7 +423,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The magic method __callStatic() must have public visibility and be static.
         /// </summary>
-        internal static string callstat_must_be_public_static {
+        public static string callstat_must_be_public_static {
             get {
                 return ResourceManager.GetString("callstat_must_be_public_static", resourceCulture);
             }
@@ -432,7 +432,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Could not change the section of loaded library. The library &apos;{0}&apos; has already been bound to configuration section &apos;{1}&apos;..
         /// </summary>
-        internal static string cannot_change_library_section {
+        public static string cannot_change_library_section {
             get {
                 return ResourceManager.GetString("cannot_change_library_section", resourceCulture);
             }
@@ -441,7 +441,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Changing the target instance is unsupported if the callback is already bound..
         /// </summary>
-        internal static string cannot_change_target_instance {
+        public static string cannot_change_target_instance {
             get {
                 return ResourceManager.GetString("cannot_change_target_instance", resourceCulture);
             }
@@ -450,7 +450,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot create configuration file &apos;{0}&apos;. Error: {1}.
         /// </summary>
-        internal static string cannot_create_config_file {
+        public static string cannot_create_config_file {
             get {
                 return ResourceManager.GetString("cannot_create_config_file", resourceCulture);
             }
@@ -459,7 +459,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot derive from &apos;{0}&apos; because it is a generic type parameter.
         /// </summary>
-        internal static string cannot_derive_from_type_parameter {
+        public static string cannot_derive_from_type_parameter {
             get {
                 return ResourceManager.GetString("cannot_derive_from_type_parameter", resourceCulture);
             }
@@ -468,7 +468,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Configuration option cannot be modified here since it has been prevented to so by &apos;allowOverride&apos; attribute in configuration file &apos;{0}&apos;..
         /// </summary>
-        internal static string cannot_modify_option {
+        public static string cannot_modify_option {
             get {
                 return ResourceManager.GetString("cannot_modify_option", resourceCulture);
             }
@@ -477,7 +477,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot re-assign $this.
         /// </summary>
-        internal static string cannot_reassign_this {
+        public static string cannot_reassign_this {
             get {
                 return ResourceManager.GetString("cannot_reassign_this", resourceCulture);
             }
@@ -486,7 +486,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot unset string offsets.
         /// </summary>
-        internal static string cannot_unset_string_offsets {
+        public static string cannot_unset_string_offsets {
             get {
                 return ResourceManager.GetString("cannot_unset_string_offsets", resourceCulture);
             }
@@ -495,7 +495,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Name &apos;{0}&apos; is reserved and cannot be used here.
         /// </summary>
-        internal static string cannot_use_reserved_name {
+        public static string cannot_use_reserved_name {
             get {
                 return ResourceManager.GetString("cannot_use_reserved_name", resourceCulture);
             }
@@ -504,7 +504,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t clone system classes table..
         /// </summary>
-        internal static string cant_clone_sys_table {
+        public static string cant_clone_sys_table {
             get {
                 return ResourceManager.GetString("cant_clone_sys_table", resourceCulture);
             }
@@ -513,7 +513,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t create types for system classes..
         /// </summary>
-        internal static string cant_create_sys_class_types {
+        public static string cant_create_sys_class_types {
             get {
                 return ResourceManager.GetString("cant_create_sys_class_types", resourceCulture);
             }
@@ -522,7 +522,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t generate builders for system classes..
         /// </summary>
-        internal static string cant_generate_sys_class_builders {
+        public static string cant_generate_sys_class_builders {
             get {
                 return ResourceManager.GetString("cant_generate_sys_class_builders", resourceCulture);
             }
@@ -531,7 +531,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to This stream does not support casting as System.IO.Stream..
         /// </summary>
-        internal static string casting_to_stream_unsupported {
+        public static string casting_to_stream_unsupported {
             get {
                 return ResourceManager.GetString("casting_to_stream_unsupported", resourceCulture);
             }
@@ -540,7 +540,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Index is not within catch clausules.
         /// </summary>
-        internal static string cdp_index_not_within_catch_calusules {
+        public static string cdp_index_not_within_catch_calusules {
             get {
                 return ResourceManager.GetString("cdp_index_not_within_catch_calusules", resourceCulture);
             }
@@ -549,7 +549,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to There is not enough items in list.
         /// </summary>
-        internal static string cdp_not_enough_items_in_list {
+        public static string cdp_not_enough_items_in_list {
             get {
                 return ResourceManager.GetString("cdp_not_enough_items_in_list", resourceCulture);
             }
@@ -558,7 +558,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Start must be greater than or equal to zero.
         /// </summary>
-        internal static string cdp_start_greater_than_zero {
+        public static string cdp_start_greater_than_zero {
             get {
                 return ResourceManager.GetString("cdp_start_greater_than_zero", resourceCulture);
             }
@@ -567,7 +567,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to start canot be less than zero.
         /// </summary>
-        internal static string cdp_start_less_than_zero {
+        public static string cdp_start_less_than_zero {
             get {
                 return ResourceManager.GetString("cdp_start_less_than_zero", resourceCulture);
             }
@@ -576,7 +576,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Start must be less than number of conditions.
         /// </summary>
-        internal static string cdp_start_must_be_less_tahn_number_of_conditions {
+        public static string cdp_start_must_be_less_tahn_number_of_conditions {
             get {
                 return ResourceManager.GetString("cdp_start_must_be_less_tahn_number_of_conditions", resourceCulture);
             }
@@ -585,7 +585,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Statement not found.
         /// </summary>
-        internal static string cdp_statement_not_found {
+        public static string cdp_statement_not_found {
             get {
                 return ResourceManager.GetString("cdp_statement_not_found", resourceCulture);
             }
@@ -594,7 +594,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Two static variables with same name.
         /// </summary>
-        internal static string cdp_unsup_2_stat_vars_with_same_name {
+        public static string cdp_unsup_2_stat_vars_with_same_name {
             get {
                 return ResourceManager.GetString("cdp_unsup_2_stat_vars_with_same_name", resourceCulture);
             }
@@ -603,7 +603,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot add anything into delegate.
         /// </summary>
-        internal static string cdp_unsup_anything_delegate {
+        public static string cdp_unsup_anything_delegate {
             get {
                 return ResourceManager.GetString("cdp_unsup_anything_delegate", resourceCulture);
             }
@@ -612,7 +612,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Array items passed by reference are not supported for PHP-to-CodeDOM translation.
         /// </summary>
-        internal static string cdp_unsup_array_item_reference {
+        public static string cdp_unsup_array_item_reference {
             get {
                 return ResourceManager.GetString("cdp_unsup_array_item_reference", resourceCulture);
             }
@@ -621,7 +621,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to PHP associative array initialization cannot be done in place where additional statements cannot be inserted..
         /// </summary>
-        internal static string cdp_unsup_assoc_arr_init_context {
+        public static string cdp_unsup_assoc_arr_init_context {
             get {
                 return ResourceManager.GetString("cdp_unsup_assoc_arr_init_context", resourceCulture);
             }
@@ -630,7 +630,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to CodeTargetRequest supports only break and continue.
         /// </summary>
-        internal static string cdp_unsup_break_continue_only {
+        public static string cdp_unsup_break_continue_only {
             get {
                 return ResourceManager.GetString("cdp_unsup_break_continue_only", resourceCulture);
             }
@@ -639,7 +639,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The break statement with non-constant argument is not supported fro PHP-toCodeDOM translation..
         /// </summary>
-        internal static string cdp_unsup_break_non_constant {
+        public static string cdp_unsup_break_non_constant {
             get {
                 return ResourceManager.GetString("cdp_unsup_break_non_constant", resourceCulture);
             }
@@ -648,7 +648,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to CodeVariableReferenceExpression was expected as result of TranslateVariableUse for DirectVarUse. Note: Static variables are not supported as DirectVarUse (e.g. Catch statement exception variable)..
         /// </summary>
-        internal static string cdp_unsup_CodeVariableReferenceExpression_excpected {
+        public static string cdp_unsup_CodeVariableReferenceExpression_excpected {
             get {
                 return ResourceManager.GetString("cdp_unsup_CodeVariableReferenceExpression_excpected", resourceCulture);
             }
@@ -657,7 +657,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The &apos;else&apos; clausule must be last clausule of if statement..
         /// </summary>
-        internal static string cdp_unsup_else_last {
+        public static string cdp_unsup_else_last {
             get {
                 return ResourceManager.GetString("cdp_unsup_else_last", resourceCulture);
             }
@@ -666,7 +666,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot translate &apos;else&apos; clausule separatelly..
         /// </summary>
-        internal static string cdp_unsup_else_separatelly {
+        public static string cdp_unsup_else_separatelly {
             get {
                 return ResourceManager.GetString("cdp_unsup_else_separatelly", resourceCulture);
             }
@@ -675,7 +675,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Empty expressions are not supported for PHP-to-CodeDOM translation.
         /// </summary>
-        internal static string cdp_unsup_empty_ex {
+        public static string cdp_unsup_empty_ex {
             get {
                 return ResourceManager.GetString("cdp_unsup_empty_ex", resourceCulture);
             }
@@ -684,7 +684,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot translate empty expression list.
         /// </summary>
-        internal static string cdp_unsup_empty_ex_list {
+        public static string cdp_unsup_empty_ex_list {
             get {
                 return ResourceManager.GetString("cdp_unsup_empty_ex_list", resourceCulture);
             }
@@ -693,7 +693,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Eval is not supported.
         /// </summary>
-        internal static string cdp_unsup_eval {
+        public static string cdp_unsup_eval {
             get {
                 return ResourceManager.GetString("cdp_unsup_eval", resourceCulture);
             }
@@ -702,7 +702,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot add field into interface.
         /// </summary>
-        internal static string cdp_unsup_filed_delegate {
+        public static string cdp_unsup_filed_delegate {
             get {
                 return ResourceManager.GetString("cdp_unsup_filed_delegate", resourceCulture);
             }
@@ -711,7 +711,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Global constants are not supported for generating CodeDOM.
         /// </summary>
-        internal static string cdp_unsup_global_constants {
+        public static string cdp_unsup_global_constants {
             get {
                 return ResourceManager.GetString("cdp_unsup_global_constants", resourceCulture);
             }
@@ -720,7 +720,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Functions declared at global- or method-level are not supported for generating CodeDOM.
         /// </summary>
-        internal static string cdp_unsup_global_method_func {
+        public static string cdp_unsup_global_method_func {
             get {
                 return ResourceManager.GetString("cdp_unsup_global_method_func", resourceCulture);
             }
@@ -729,7 +729,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Global PHP statement is not supported for generating CodeDOM.
         /// </summary>
-        internal static string cdp_unsup_global_statement {
+        public static string cdp_unsup_global_statement {
             get {
                 return ResourceManager.GetString("cdp_unsup_global_statement", resourceCulture);
             }
@@ -738,7 +738,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Only constant static fields can be added into enumerations.
         /// </summary>
-        internal static string cdp_unsup_in_enum {
+        public static string cdp_unsup_in_enum {
             get {
                 return ResourceManager.GetString("cdp_unsup_in_enum", resourceCulture);
             }
@@ -747,7 +747,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Only fields can be added into enumerations.
         /// </summary>
-        internal static string cdp_unsup_in_enum_other {
+        public static string cdp_unsup_in_enum_other {
             get {
                 return ResourceManager.GetString("cdp_unsup_in_enum_other", resourceCulture);
             }
@@ -756,7 +756,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Includes and requires are not supported for PHP-to-CodeDOM translation.
         /// </summary>
-        internal static string cdp_unsup_include_require {
+        public static string cdp_unsup_include_require {
             get {
                 return ResourceManager.GetString("cdp_unsup_include_require", resourceCulture);
             }
@@ -765,7 +765,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Indirect type references are not supported for PHP-to-CodeDOM translation..
         /// </summary>
-        internal static string cdp_unsup_indirect_type_ref {
+        public static string cdp_unsup_indirect_type_ref {
             get {
                 return ResourceManager.GetString("cdp_unsup_indirect_type_ref", resourceCulture);
             }
@@ -774,7 +774,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid expression for event translation.
         /// </summary>
-        internal static string cdp_unsup_invalid_event {
+        public static string cdp_unsup_invalid_event {
             get {
                 return ResourceManager.GetString("cdp_unsup_invalid_event", resourceCulture);
             }
@@ -783,7 +783,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to isset with no variable is not supported for PHP-to-CodeDOM translation.
         /// </summary>
-        internal static string cdp_unsup_isset_no_var {
+        public static string cdp_unsup_isset_no_var {
             get {
                 return ResourceManager.GetString("cdp_unsup_isset_no_var", resourceCulture);
             }
@@ -792,7 +792,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Number of levels to break must be 1 or more.
         /// </summary>
-        internal static string cdp_unsup_levels_0 {
+        public static string cdp_unsup_levels_0 {
             get {
                 return ResourceManager.GetString("cdp_unsup_levels_0", resourceCulture);
             }
@@ -801,7 +801,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to LINQ is not supported for PHP-to-CodeDOM translation.
         /// </summary>
-        internal static string cdp_unsup_LINQ {
+        public static string cdp_unsup_LINQ {
             get {
                 return ResourceManager.GetString("cdp_unsup_LINQ", resourceCulture);
             }
@@ -810,7 +810,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to List expressions cannot be created in places outside methods.
         /// </summary>
-        internal static string cdp_unsup_list_context {
+        public static string cdp_unsup_list_context {
             get {
                 return ResourceManager.GetString("cdp_unsup_list_context", resourceCulture);
             }
@@ -819,7 +819,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot add local variable at this level (eg. namespace or class).
         /// </summary>
-        internal static string cdp_unsup_loc_var_class_namespace {
+        public static string cdp_unsup_loc_var_class_namespace {
             get {
                 return ResourceManager.GetString("cdp_unsup_loc_var_class_namespace", resourceCulture);
             }
@@ -828,7 +828,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Local variable declarations are not supported at this level (e.g. namespace or class)..
         /// </summary>
-        internal static string cdp_unsup_loc_var_context {
+        public static string cdp_unsup_loc_var_context {
             get {
                 return ResourceManager.GetString("cdp_unsup_loc_var_context", resourceCulture);
             }
@@ -837,7 +837,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Containing block returned no label to jump to for break statement.
         /// </summary>
-        internal static string cdp_unsup_no_jump_label {
+        public static string cdp_unsup_no_jump_label {
             get {
                 return ResourceManager.GetString("cdp_unsup_no_jump_label", resourceCulture);
             }
@@ -846,7 +846,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function calls that are not members of object cannot be translated..
         /// </summary>
-        internal static string cdp_unsup_nonobj_func {
+        public static string cdp_unsup_nonobj_func {
             get {
                 return ResourceManager.GetString("cdp_unsup_nonobj_func", resourceCulture);
             }
@@ -855,7 +855,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Object of type {0} is not allowed at block-statement level.
         /// </summary>
-        internal static string cdp_unsup_not_allowed_at_block_level {
+        public static string cdp_unsup_not_allowed_at_block_level {
             get {
                 return ResourceManager.GetString("cdp_unsup_not_allowed_at_block_level", resourceCulture);
             }
@@ -864,7 +864,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Object of type {0} is not supported at file level.
         /// </summary>
-        internal static string cdp_unsup_not_allowed_at_file_level {
+        public static string cdp_unsup_not_allowed_at_file_level {
             get {
                 return ResourceManager.GetString("cdp_unsup_not_allowed_at_file_level", resourceCulture);
             }
@@ -873,7 +873,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Object of type {0} is not allowed at method level.
         /// </summary>
-        internal static string cdp_unsup_not_allowed_at_method_level {
+        public static string cdp_unsup_not_allowed_at_method_level {
             get {
                 return ResourceManager.GetString("cdp_unsup_not_allowed_at_method_level", resourceCulture);
             }
@@ -882,7 +882,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Object of type {0} is not supported at namespace level.
         /// </summary>
-        internal static string cdp_unsup_not_allowed_at_namespace_level {
+        public static string cdp_unsup_not_allowed_at_namespace_level {
             get {
                 return ResourceManager.GetString("cdp_unsup_not_allowed_at_namespace_level", resourceCulture);
             }
@@ -891,7 +891,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to There is not enough expressions in list.
         /// </summary>
-        internal static string cdp_unsup_not_enough_expressions_in_list {
+        public static string cdp_unsup_not_enough_expressions_in_list {
             get {
                 return ResourceManager.GetString("cdp_unsup_not_enough_expressions_in_list", resourceCulture);
             }
@@ -900,7 +900,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to use.IsMemberOf must not be null..
         /// </summary>
-        internal static string cdp_unsup_null {
+        public static string cdp_unsup_null {
             get {
                 return ResourceManager.GetString("cdp_unsup_null", resourceCulture);
             }
@@ -909,7 +909,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Only loops can provide jump labels.
         /// </summary>
-        internal static string cdp_unsup_only_loop_jump {
+        public static string cdp_unsup_only_loop_jump {
             get {
                 return ResourceManager.GetString("cdp_unsup_only_loop_jump", resourceCulture);
             }
@@ -918,7 +918,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unsupported type of pseudo-constant {0} ({1}) reached. This type is not supported for PHP-to-CodeDOM translation..
         /// </summary>
-        internal static string cdp_unsup_pseudoconstant_type {
+        public static string cdp_unsup_pseudoconstant_type {
             get {
                 return ResourceManager.GetString("cdp_unsup_pseudoconstant_type", resourceCulture);
             }
@@ -927,7 +927,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Reference assignments are not supported for PHP-to-CodeDOM translation.
         /// </summary>
-        internal static string cdp_unsup_ref_assign {
+        public static string cdp_unsup_ref_assign {
             get {
                 return ResourceManager.GetString("cdp_unsup_ref_assign", resourceCulture);
             }
@@ -936,7 +936,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Static variables can be used only inside methods that are members of clases.
         /// </summary>
-        internal static string cdp_unsup_static_var {
+        public static string cdp_unsup_static_var {
             get {
                 return ResourceManager.GetString("cdp_unsup_static_var", resourceCulture);
             }
@@ -945,7 +945,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot add static variables when not in method.
         /// </summary>
-        internal static string cdp_unsup_static_var_otside_method {
+        public static string cdp_unsup_static_var_otside_method {
             get {
                 return ResourceManager.GetString("cdp_unsup_static_var_otside_method", resourceCulture);
             }
@@ -954,7 +954,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Array item of unknown type {0} reached. This kind of array item is not supported for PHP-to-CodeDOM translation..
         /// </summary>
-        internal static string cdp_unsup_unknown_array_item_type {
+        public static string cdp_unsup_unknown_array_item_type {
             get {
                 return ResourceManager.GetString("cdp_unsup_unknown_array_item_type", resourceCulture);
             }
@@ -963,7 +963,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unknown event operation reached. Only Add and Remove operations are supported..
         /// </summary>
-        internal static string cdp_unsup_unknown_event_op {
+        public static string cdp_unsup_unknown_event_op {
             get {
                 return ResourceManager.GetString("cdp_unsup_unknown_event_op", resourceCulture);
             }
@@ -972,7 +972,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unknown kind of type reference {0} reached. This type reference is not supported for PHP-to-CodeDOM translation..
         /// </summary>
-        internal static string cdp_unsup_unknown_ref_kind {
+        public static string cdp_unsup_unknown_ref_kind {
             get {
                 return ResourceManager.GetString("cdp_unsup_unknown_ref_kind", resourceCulture);
             }
@@ -981,7 +981,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unknown PHP statement {0} is not supported for generating CodeDOM.
         /// </summary>
-        internal static string cdp_unsup_unknown_statement {
+        public static string cdp_unsup_unknown_statement {
             get {
                 return ResourceManager.GetString("cdp_unsup_unknown_statement", resourceCulture);
             }
@@ -990,7 +990,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unknown switch statement item {0}. This kind of switch items is not supported fro PHP-to-CodeDOM translation..
         /// </summary>
-        internal static string cdp_unsup_unknown_switch {
+        public static string cdp_unsup_unknown_switch {
             get {
                 return ResourceManager.GetString("cdp_unsup_unknown_switch", resourceCulture);
             }
@@ -999,7 +999,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unknown kind of variable use {0} reached. This kind of variable use is not supported for PHP-to-CodeDOM translation.
         /// </summary>
-        internal static string cdp_unsup_unknown_var_kind {
+        public static string cdp_unsup_unknown_var_kind {
             get {
                 return ResourceManager.GetString("cdp_unsup_unknown_var_kind", resourceCulture);
             }
@@ -1008,7 +1008,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unknown kind of variabele-like construct use {0} reached. This kind of use is not supported for PHP-to-CodeDOM translation.
         /// </summary>
-        internal static string cdp_unsup_unknown_varlike_construct_use {
+        public static string cdp_unsup_unknown_varlike_construct_use {
             get {
                 return ResourceManager.GetString("cdp_unsup_unknown_varlike_construct_use", resourceCulture);
             }
@@ -1017,7 +1017,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unsupported assign operator {0} ({1}) reached. Not an assign operator?.
         /// </summary>
-        internal static string cdp_unsup_unsup_assign {
+        public static string cdp_unsup_unsup_assign {
             get {
                 return ResourceManager.GetString("cdp_unsup_unsup_assign", resourceCulture);
             }
@@ -1026,7 +1026,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unsupported binary operator {0} ({1}) reached. Not a binary operator?.
         /// </summary>
-        internal static string cdp_unsup_unsup_binop {
+        public static string cdp_unsup_unsup_binop {
             get {
                 return ResourceManager.GetString("cdp_unsup_unsup_binop", resourceCulture);
             }
@@ -1035,7 +1035,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unsupported delegate creation reached. Delegate must be created using NewEx with only one parameter type ArrayEx that consits of 2 ValueItem-s without index where ValueExpr of 2nd item is StringLiteral..
         /// </summary>
-        internal static string cdp_unsup_unsup_delegate_creartion {
+        public static string cdp_unsup_unsup_delegate_creartion {
             get {
                 return ResourceManager.GetString("cdp_unsup_unsup_delegate_creartion", resourceCulture);
             }
@@ -1044,7 +1044,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unsupported type of expression {0} reached. This type of expression is not supported for PHP-to-CodeDOM translation.
         /// </summary>
-        internal static string cdp_unsup_unsup_ex {
+        public static string cdp_unsup_unsup_ex {
             get {
                 return ResourceManager.GetString("cdp_unsup_unsup_ex", resourceCulture);
             }
@@ -1053,7 +1053,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unsupported unary operator {0:F} ({0:D} reached. This operator is not supported for PHP-to-CodeDOM translation.
         /// </summary>
-        internal static string cdp_unsup_unsup_unop {
+        public static string cdp_unsup_unsup_unop {
             get {
                 return ResourceManager.GetString("cdp_unsup_unsup_unop", resourceCulture);
             }
@@ -1062,7 +1062,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Object of type {0} is not supported at type level.
         /// </summary>
-        internal static string cdp_unsup_unsupported_at_type_level {
+        public static string cdp_unsup_unsupported_at_type_level {
             get {
                 return ResourceManager.GetString("cdp_unsup_unsupported_at_type_level", resourceCulture);
             }
@@ -1071,7 +1071,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t use function/method return value in write context.
         /// </summary>
-        internal static string check_varuse_fault {
+        public static string check_varuse_fault {
             get {
                 return ResourceManager.GetString("check_varuse_fault", resourceCulture);
             }
@@ -1080,7 +1080,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Circular class inheritance dependency involving &apos;{0}&apos; and &apos;{1}&apos;.
         /// </summary>
-        internal static string circular_base_class_dependency {
+        public static string circular_base_class_dependency {
             get {
                 return ResourceManager.GetString("circular_base_class_dependency", resourceCulture);
             }
@@ -1089,7 +1089,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Circular interface inheritance dependency involving &apos;{0}&apos; and &apos;{1}&apos;.
         /// </summary>
-        internal static string circular_base_interface_dependency {
+        public static string circular_base_interface_dependency {
             get {
                 return ResourceManager.GetString("circular_base_interface_dependency", resourceCulture);
             }
@@ -1098,7 +1098,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Circular constant definition involving class constant &apos;{0}::{1}&apos;.
         /// </summary>
-        internal static string circular_constant_definition_class {
+        public static string circular_constant_definition_class {
             get {
                 return ResourceManager.GetString("circular_constant_definition_class", resourceCulture);
             }
@@ -1107,7 +1107,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Circular constant definition involving global constant &apos;{0}&apos;.
         /// </summary>
-        internal static string circular_constant_definition_global {
+        public static string circular_constant_definition_global {
             get {
                 return ResourceManager.GetString("circular_constant_definition_global", resourceCulture);
             }
@@ -1116,16 +1116,25 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Use of the class &apos;{0}&apos; in PHP code is not recommended as the resulting effect will probably be different than expected.
         /// </summary>
-        internal static string class_behavior_may_be_unexpected {
+        public static string class_behavior_may_be_unexpected {
             get {
                 return ResourceManager.GetString("class_behavior_may_be_unexpected", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Class {0} could not be loaded.
+        /// </summary>
+        public static string class_could_not_be_loaded {
+            get {
+                return ResourceManager.GetString("class_could_not_be_loaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The class &apos;{0}&apos; has no parent.
         /// </summary>
-        internal static string class_has_no_parent {
+        public static string class_has_no_parent {
             get {
                 return ResourceManager.GetString("class_has_no_parent", resourceCulture);
             }
@@ -1134,7 +1143,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Class {0} has no unserializer.
         /// </summary>
-        internal static string class_has_no_unserializer {
+        public static string class_has_no_unserializer {
             get {
                 return ResourceManager.GetString("class_has_no_unserializer", resourceCulture);
             }
@@ -1143,7 +1152,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Class &apos;{0}&apos; has no visible constructor.
         /// </summary>
-        internal static string class_has_no_visible_ctor {
+        public static string class_has_no_visible_ctor {
             get {
                 return ResourceManager.GetString("class_has_no_visible_ctor", resourceCulture);
             }
@@ -1152,7 +1161,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot declare class {0} because the name is already in use.
         /// </summary>
-        internal static string class_in_use {
+        public static string class_in_use {
             get {
                 return ResourceManager.GetString("class_in_use", resourceCulture);
             }
@@ -1161,7 +1170,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to instantiate class &apos;{0}&apos;..
         /// </summary>
-        internal static string class_instantiation_failed {
+        public static string class_instantiation_failed {
             get {
                 return ResourceManager.GetString("class_instantiation_failed", resourceCulture);
             }
@@ -1170,7 +1179,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Class &apos;{0}&apos; not found.
         /// </summary>
-        internal static string class_not_found {
+        public static string class_not_found {
             get {
                 return ResourceManager.GetString("class_not_found", resourceCulture);
             }
@@ -1179,7 +1188,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to A class or an interface &apos;{0}&apos; is redeclared in the assembly scope.
         /// </summary>
-        internal static string class_redeclared_in_assembly {
+        public static string class_redeclared_in_assembly {
             get {
                 return ResourceManager.GetString("class_redeclared_in_assembly", resourceCulture);
             }
@@ -1188,7 +1197,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare class/interface {0}.
         /// </summary>
-        internal static string class_redeclared_runtime {
+        public static string class_redeclared_runtime {
             get {
                 return ResourceManager.GetString("class_redeclared_runtime", resourceCulture);
             }
@@ -1197,7 +1206,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Inclusion redeclares class/interface {0}.
         /// </summary>
-        internal static string class_redeclared_runtime_include {
+        public static string class_redeclared_runtime_include {
             get {
                 return ResourceManager.GetString("class_redeclared_runtime_include", resourceCulture);
             }
@@ -1206,7 +1215,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to __clone method called on non-object.
         /// </summary>
-        internal static string clone_called_on_non_object {
+        public static string clone_called_on_non_object {
             get {
                 return ResourceManager.GetString("clone_called_on_non_object", resourceCulture);
             }
@@ -1215,7 +1224,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Clone method {0}::__clone() cannot be static.
         /// </summary>
-        internal static string clone_cannot_be_static {
+        public static string clone_cannot_be_static {
             get {
                 return ResourceManager.GetString("clone_cannot_be_static", resourceCulture);
             }
@@ -1224,7 +1233,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Clone method {0}::__clone() cannot accept any arguments.
         /// </summary>
-        internal static string clone_cannot_take_arguments {
+        public static string clone_cannot_take_arguments {
             get {
                 return ResourceManager.GetString("clone_cannot_take_arguments", resourceCulture);
             }
@@ -1233,7 +1242,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Error occured during assembly generation: {0}.
         /// </summary>
-        internal static string code_generation_error {
+        public static string code_generation_error {
             get {
                 return ResourceManager.GetString("code_generation_error", resourceCulture);
             }
@@ -1242,7 +1251,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Declaration of {0} {1} will issue a run-time error if executed since the {0} will already be declared here.
         /// </summary>
-        internal static string conditionally_redeclared {
+        public static string conditionally_redeclared {
             get {
                 return ResourceManager.GetString("conditionally_redeclared", resourceCulture);
             }
@@ -1251,7 +1260,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Inclusion will issue a run-time error if executed - a redeclaration of {0} {1}.
         /// </summary>
-        internal static string conditionally_redeclared_by_inclusion {
+        public static string conditionally_redeclared_by_inclusion {
             get {
                 return ResourceManager.GetString("conditionally_redeclared_by_inclusion", resourceCulture);
             }
@@ -1260,7 +1269,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Configuration error: {0}.
         /// </summary>
-        internal static string configuration_error {
+        public static string configuration_error {
             get {
                 return ResourceManager.GetString("configuration_error", resourceCulture);
             }
@@ -1269,7 +1278,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Configuration file &apos;{0}&apos; not found..
         /// </summary>
-        internal static string configuration_file_not_found {
+        public static string configuration_file_not_found {
             get {
                 return ResourceManager.GetString("configuration_file_not_found", resourceCulture);
             }
@@ -1278,7 +1287,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Configuration has not been loaded yet..
         /// </summary>
-        internal static string configuration_not_loaded {
+        public static string configuration_not_loaded {
             get {
                 return ResourceManager.GetString("configuration_not_loaded", resourceCulture);
             }
@@ -1287,7 +1296,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Configuration record is read only..
         /// </summary>
-        internal static string configuration_record_read_only {
+        public static string configuration_record_read_only {
             get {
                 return ResourceManager.GetString("configuration_record_read_only", resourceCulture);
             }
@@ -1296,7 +1305,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Constant &apos;{0}&apos; has already been imported.
         /// </summary>
-        internal static string conflicting_constant_aliases {
+        public static string conflicting_constant_aliases {
             get {
                 return ResourceManager.GetString("conflicting_constant_aliases", resourceCulture);
             }
@@ -1305,7 +1314,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function &apos;{0}&apos; has already been imported.
         /// </summary>
-        internal static string conflicting_function_aliases {
+        public static string conflicting_function_aliases {
             get {
                 return ResourceManager.GetString("conflicting_function_aliases", resourceCulture);
             }
@@ -1314,7 +1323,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to All partial declarations of &apos;{0}&apos; must have the same visibility.
         /// </summary>
-        internal static string conflicting_partial_visibility {
+        public static string conflicting_partial_visibility {
             get {
                 return ResourceManager.GetString("conflicting_partial_visibility", resourceCulture);
             }
@@ -1323,7 +1332,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Type &apos;{0}&apos; has already been imported.
         /// </summary>
-        internal static string conflicting_type_aliases {
+        public static string conflicting_type_aliases {
             get {
                 return ResourceManager.GetString("conflicting_type_aliases", resourceCulture);
             }
@@ -1332,7 +1341,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The option is valid only in console application configuration..
         /// </summary>
-        internal static string console_only_option {
+        public static string console_only_option {
             get {
                 return ResourceManager.GetString("console_only_option", resourceCulture);
             }
@@ -1341,7 +1350,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Couldn&apos;t find constant {0}.
         /// </summary>
-        internal static string constant_not_found {
+        public static string constant_not_found {
             get {
                 return ResourceManager.GetString("constant_not_found", resourceCulture);
             }
@@ -1350,7 +1359,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare constant &apos;{0}&apos;.
         /// </summary>
-        internal static string constant_redeclared {
+        public static string constant_redeclared {
             get {
                 return ResourceManager.GetString("constant_redeclared", resourceCulture);
             }
@@ -1359,7 +1368,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Attempt to redefine constant &apos;{0}&apos;.
         /// </summary>
-        internal static string constant_redefined {
+        public static string constant_redefined {
             get {
                 return ResourceManager.GetString("constant_redefined", resourceCulture);
             }
@@ -1368,7 +1377,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}.{1}: Constant &apos;{2}&apos; is reimplemented. Previously implemented by {3}.{4}..
         /// </summary>
-        internal static string constant_reimplemented {
+        public static string constant_reimplemented {
             get {
                 return ResourceManager.GetString("constant_reimplemented", resourceCulture);
             }
@@ -1377,7 +1386,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot define value which is neither scalar nor NULL as a constant.
         /// </summary>
-        internal static string constant_value_neither_scalar_nor_null {
+        public static string constant_value_neither_scalar_nor_null {
             get {
                 return ResourceManager.GetString("constant_value_neither_scalar_nor_null", resourceCulture);
             }
@@ -1386,7 +1395,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Constructor {0}::{1}() cannot be static.
         /// </summary>
-        internal static string construct_cannot_be_static {
+        public static string construct_cannot_be_static {
             get {
                 return ResourceManager.GetString("construct_cannot_be_static", resourceCulture);
             }
@@ -1395,7 +1404,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The &apos;{0}&apos; construct is not supported.
         /// </summary>
-        internal static string construct_not_supported {
+        public static string construct_not_supported {
             get {
                 return ResourceManager.GetString("construct_not_supported", resourceCulture);
             }
@@ -1404,7 +1413,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Constructor {0}::{1}() cannot be static.
         /// </summary>
-        internal static string constructor_cannot_be_static {
+        public static string constructor_cannot_be_static {
             get {
                 return ResourceManager.GetString("constructor_cannot_be_static", resourceCulture);
             }
@@ -1413,7 +1422,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot instantiate class &apos;{0}&apos; because it has no visible constructor.
         /// </summary>
-        internal static string constructor_less_type_instantiated {
+        public static string constructor_less_type_instantiated {
             get {
                 return ResourceManager.GetString("constructor_less_type_instantiated", resourceCulture);
             }
@@ -1422,7 +1431,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Supplied resource is not a valid Stream-Context resource.
         /// </summary>
-        internal static string context_expected {
+        public static string context_expected {
             get {
                 return ResourceManager.GetString("context_expected", resourceCulture);
             }
@@ -1431,7 +1440,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Could not create event..
         /// </summary>
-        internal static string could_not_create_event {
+        public static string could_not_create_event {
             get {
                 return ResourceManager.GetString("could_not_create_event", resourceCulture);
             }
@@ -1440,7 +1449,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Could not load extension: .
         /// </summary>
-        internal static string could_not_load_extension {
+        public static string could_not_load_extension {
             get {
                 return ResourceManager.GetString("could_not_load_extension", resourceCulture);
             }
@@ -1449,7 +1458,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to ASP.NET Integration, CodeDom.
         /// </summary>
-        internal static string credits_aspnet {
+        public static string credits_aspnet {
             get {
                 return ResourceManager.GetString("credits_aspnet", resourceCulture);
             }
@@ -1458,7 +1467,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Abstract Syntax Tree.
         /// </summary>
-        internal static string credits_ast {
+        public static string credits_ast {
             get {
                 return ResourceManager.GetString("credits_ast", resourceCulture);
             }
@@ -1467,7 +1476,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Authors.
         /// </summary>
-        internal static string credits_authors {
+        public static string credits_authors {
             get {
                 return ResourceManager.GetString("credits_authors", resourceCulture);
             }
@@ -1476,7 +1485,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Automatic Tester.
         /// </summary>
-        internal static string credits_automatic_tester {
+        public static string credits_automatic_tester {
             get {
                 return ResourceManager.GetString("credits_automatic_tester", resourceCulture);
             }
@@ -1485,7 +1494,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Automatic Tests.
         /// </summary>
-        internal static string credits_automatic_tests {
+        public static string credits_automatic_tests {
             get {
                 return ResourceManager.GetString("credits_automatic_tests", resourceCulture);
             }
@@ -1494,7 +1503,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to CLR Features Integration.
         /// </summary>
-        internal static string credits_clr_features {
+        public static string credits_clr_features {
             get {
                 return ResourceManager.GetString("credits_clr_features", resourceCulture);
             }
@@ -1503,7 +1512,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Code Analysis.
         /// </summary>
-        internal static string credits_code_analysis {
+        public static string credits_code_analysis {
             get {
                 return ResourceManager.GetString("credits_code_analysis", resourceCulture);
             }
@@ -1512,7 +1521,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Code Generation.
         /// </summary>
-        internal static string credits_code_generation {
+        public static string credits_code_generation {
             get {
                 return ResourceManager.GetString("credits_code_generation", resourceCulture);
             }
@@ -1521,7 +1530,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Code Generator.
         /// </summary>
-        internal static string credits_code_generator {
+        public static string credits_code_generator {
             get {
                 return ResourceManager.GetString("credits_code_generator", resourceCulture);
             }
@@ -1530,7 +1539,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Compiler&apos;s Tables.
         /// </summary>
-        internal static string credits_compiler_tables {
+        public static string credits_compiler_tables {
             get {
                 return ResourceManager.GetString("credits_compiler_tables", resourceCulture);
             }
@@ -1539,7 +1548,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Configuration.
         /// </summary>
-        internal static string credits_configuration {
+        public static string credits_configuration {
             get {
                 return ResourceManager.GetString("credits_configuration", resourceCulture);
             }
@@ -1548,7 +1557,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Contribution.
         /// </summary>
-        internal static string credits_contribution {
+        public static string credits_contribution {
             get {
                 return ResourceManager.GetString("credits_contribution", resourceCulture);
             }
@@ -1557,7 +1566,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Core Functionality.
         /// </summary>
-        internal static string credits_core_functionality {
+        public static string credits_core_functionality {
             get {
                 return ResourceManager.GetString("credits_core_functionality", resourceCulture);
             }
@@ -1566,7 +1575,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Design.
         /// </summary>
-        internal static string credits_design {
+        public static string credits_design {
             get {
                 return ResourceManager.GetString("credits_design", resourceCulture);
             }
@@ -1575,7 +1584,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Extensions Management.
         /// </summary>
-        internal static string credits_extensions_management {
+        public static string credits_extensions_management {
             get {
                 return ResourceManager.GetString("credits_extensions_management", resourceCulture);
             }
@@ -1584,7 +1593,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Extensions Manager and Wrappers.
         /// </summary>
-        internal static string credits_extmgr_wrappers {
+        public static string credits_extmgr_wrappers {
             get {
                 return ResourceManager.GetString("credits_extmgr_wrappers", resourceCulture);
             }
@@ -1593,7 +1602,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Implementation.
         /// </summary>
-        internal static string credits_implementation {
+        public static string credits_implementation {
             get {
                 return ResourceManager.GetString("credits_implementation", resourceCulture);
             }
@@ -1602,7 +1611,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Installation.
         /// </summary>
-        internal static string credits_installation {
+        public static string credits_installation {
             get {
                 return ResourceManager.GetString("credits_installation", resourceCulture);
             }
@@ -1611,7 +1620,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Interactive Tests.
         /// </summary>
-        internal static string credits_interactive_tests {
+        public static string credits_interactive_tests {
             get {
                 return ResourceManager.GetString("credits_interactive_tests", resourceCulture);
             }
@@ -1620,7 +1629,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Lexical and Syntactic Analysis.
         /// </summary>
-        internal static string credits_lexical_syntactic_analysis {
+        public static string credits_lexical_syntactic_analysis {
             get {
                 return ResourceManager.GetString("credits_lexical_syntactic_analysis", resourceCulture);
             }
@@ -1629,7 +1638,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Object Oriented PHP Language Features Compilation.
         /// </summary>
-        internal static string credits_oo_features_compilation {
+        public static string credits_oo_features_compilation {
             get {
                 return ResourceManager.GetString("credits_oo_features_compilation", resourceCulture);
             }
@@ -1638,7 +1647,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Overall Compiler Design.
         /// </summary>
-        internal static string credits_overall_compiler_design {
+        public static string credits_overall_compiler_design {
             get {
                 return ResourceManager.GetString("credits_overall_compiler_design", resourceCulture);
             }
@@ -1647,7 +1656,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Overall Concept.
         /// </summary>
-        internal static string credits_overall_concept {
+        public static string credits_overall_concept {
             get {
                 return ResourceManager.GetString("credits_overall_concept", resourceCulture);
             }
@@ -1656,7 +1665,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to PHP/CLR Language Extensions.
         /// </summary>
-        internal static string credits_php_clr {
+        public static string credits_php_clr {
             get {
                 return ResourceManager.GetString("credits_php_clr", resourceCulture);
             }
@@ -1665,7 +1674,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Semantic Analysis.
         /// </summary>
-        internal static string credits_semantic_analysis {
+        public static string credits_semantic_analysis {
             get {
                 return ResourceManager.GetString("credits_semantic_analysis", resourceCulture);
             }
@@ -1674,7 +1683,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Specific PHP Language Features Compilation.
         /// </summary>
-        internal static string credits_specific_features_compilation {
+        public static string credits_specific_features_compilation {
             get {
                 return ResourceManager.GetString("credits_specific_features_compilation", resourceCulture);
             }
@@ -1683,7 +1692,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Streams, IO Wrappers, and Filters.
         /// </summary>
-        internal static string credits_streams {
+        public static string credits_streams {
             get {
                 return ResourceManager.GetString("credits_streams", resourceCulture);
             }
@@ -1692,7 +1701,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Utilities.
         /// </summary>
-        internal static string credits_utilities {
+        public static string credits_utilities {
             get {
                 return ResourceManager.GetString("credits_utilities", resourceCulture);
             }
@@ -1701,7 +1710,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to VS.NET Integration.
         /// </summary>
-        internal static string credits_vsnet {
+        public static string credits_vsnet {
             get {
                 return ResourceManager.GetString("credits_vsnet", resourceCulture);
             }
@@ -1710,7 +1719,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cyclic inclusion between files &apos;{0}&apos; and &apos;{1}&apos; detected, inclusion of file &apos;{0}&apos; deferred to runtime.
         /// </summary>
-        internal static string cyclic_inclusion {
+        public static string cyclic_inclusion {
             get {
                 return ResourceManager.GetString("cyclic_inclusion", resourceCulture);
             }
@@ -1719,7 +1728,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Declaration of {0}::{1}() should be compatible with that of {2}::{3}().
         /// </summary>
-        internal static string declaration_should_be_compatible {
+        public static string declaration_should_be_compatible {
             get {
                 return ResourceManager.GetString("declaration_should_be_compatible", resourceCulture);
             }
@@ -1728,7 +1737,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unknown exception.
         /// </summary>
-        internal static string default_exception_message {
+        public static string default_exception_message {
             get {
                 return ResourceManager.GetString("default_exception_message", resourceCulture);
             }
@@ -1737,7 +1746,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Creating default object from empty value.
         /// </summary>
-        internal static string default_object_created {
+        public static string default_object_created {
             get {
                 return ResourceManager.GetString("default_object_created", resourceCulture);
             }
@@ -1746,7 +1755,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Method is no longer supported. Use TypeBuilder.DefineMethod instead..
         /// </summary>
-        internal static string define_method_unsupported {
+        public static string define_method_unsupported {
             get {
                 return ResourceManager.GetString("define_method_unsupported", resourceCulture);
             }
@@ -1755,7 +1764,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to it defines application wide configuration.
         /// </summary>
-        internal static string defines_app_wide_config {
+        public static string defines_app_wide_config {
             get {
                 return ResourceManager.GetString("defines_app_wide_config", resourceCulture);
             }
@@ -1764,7 +1773,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to it defines machine wide configuration.
         /// </summary>
-        internal static string defines_machine_wide_config {
+        public static string defines_machine_wide_config {
             get {
                 return ResourceManager.GetString("defines_machine_wide_config", resourceCulture);
             }
@@ -1773,7 +1782,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Object instance must be given for non-static method &apos;{1}::{2}&apos; when creating delegate &apos;{0}&apos;. Use array($instance, &quot;{2}&quot;).
         /// </summary>
-        internal static string delegate_target_instance_missing {
+        public static string delegate_target_instance_missing {
             get {
                 return ResourceManager.GetString("delegate_target_instance_missing", resourceCulture);
             }
@@ -1782,7 +1791,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unrecognized constructor arguments were given to delegate &apos;{0}&apos;. Use &quot;function&quot;, array($instance, &quot;method&quot;), or array(&quot;class&quot;, &quot;method&quot;).
         /// </summary>
-        internal static string delegate_unrecognized_ctor_args {
+        public static string delegate_unrecognized_ctor_args {
             get {
                 return ResourceManager.GetString("delegate_unrecognized_ctor_args", resourceCulture);
             }
@@ -1791,7 +1800,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Destructor {0}::__destruct() cannot be static.
         /// </summary>
-        internal static string destruct_cannot_be_static {
+        public static string destruct_cannot_be_static {
             get {
                 return ResourceManager.GetString("destruct_cannot_be_static", resourceCulture);
             }
@@ -1800,7 +1809,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Destructor {0}::__destruct() cannot take arguments.
         /// </summary>
-        internal static string destruct_cannot_take_arguments {
+        public static string destruct_cannot_take_arguments {
             get {
                 return ResourceManager.GetString("destruct_cannot_take_arguments", resourceCulture);
             }
@@ -1809,7 +1818,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Destructor {0}::{1}() cannot be static.
         /// </summary>
-        internal static string destructor_cannot_be_static {
+        public static string destructor_cannot_be_static {
             get {
                 return ResourceManager.GetString("destructor_cannot_be_static", resourceCulture);
             }
@@ -1818,7 +1827,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Directory &apos;{0}&apos; does not exist..
         /// </summary>
-        internal static string directory_not_exists {
+        public static string directory_not_exists {
             get {
                 return ResourceManager.GetString("directory_not_exists", resourceCulture);
             }
@@ -1827,7 +1836,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Directory &apos;{0}&apos; not found..
         /// </summary>
-        internal static string directory_not_found {
+        public static string directory_not_found {
             get {
                 return ResourceManager.GetString("directory_not_found", resourceCulture);
             }
@@ -1836,7 +1845,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Division by zero.
         /// </summary>
-        internal static string division_by_zero {
+        public static string division_by_zero {
             get {
                 return ResourceManager.GetString("division_by_zero", resourceCulture);
             }
@@ -1845,7 +1854,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Body of function decorated with the DllImportAttribute is ignored. System provides this body..
         /// </summary>
-        internal static string dll_import_body_ignored {
+        public static string dll_import_body_ignored {
             get {
                 return ResourceManager.GetString("dll_import_body_ignored", resourceCulture);
             }
@@ -1854,7 +1863,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Method decorated with DllImportAttribute cannot be abstract..
         /// </summary>
-        internal static string dll_import_cannot_be_abstract {
+        public static string dll_import_cannot_be_abstract {
             get {
                 return ResourceManager.GetString("dll_import_cannot_be_abstract", resourceCulture);
             }
@@ -1863,7 +1872,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function decorated with DllImportAttribute must be static..
         /// </summary>
-        internal static string dll_import_must_be_static {
+        public static string dll_import_must_be_static {
             get {
                 return ResourceManager.GetString("dll_import_must_be_static", resourceCulture);
             }
@@ -1872,7 +1881,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to No &apos;..&apos; components allowed in path.
         /// </summary>
-        internal static string dotdot_not_allowed_in_path {
+        public static string dotdot_not_allowed_in_path {
             get {
                 return ResourceManager.GetString("dotdot_not_allowed_in_path", resourceCulture);
             }
@@ -1881,7 +1890,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Duplicate attribute &apos;{0}&apos;.
         /// </summary>
-        internal static string duplicate_attribute_usage {
+        public static string duplicate_attribute_usage {
             get {
                 return ResourceManager.GetString("duplicate_attribute_usage", resourceCulture);
             }
@@ -1890,7 +1899,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Duplicate generic type parameter.
         /// </summary>
-        internal static string duplicate_generic_parameter {
+        public static string duplicate_generic_parameter {
             get {
                 return ResourceManager.GetString("duplicate_generic_parameter", resourceCulture);
             }
@@ -1899,7 +1908,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Duplicate parameter name &apos;{0}&apos;.
         /// </summary>
-        internal static string duplicate_parameter_name {
+        public static string duplicate_parameter_name {
             get {
                 return ResourceManager.GetString("duplicate_parameter_name", resourceCulture);
             }
@@ -1908,7 +1917,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Dynamic wrapper &apos;{0}&apos; could not be loaded..
         /// </summary>
-        internal static string dynamic_wrapper_loading_failed {
+        public static string dynamic_wrapper_loading_failed {
             get {
                 return ResourceManager.GetString("dynamic_wrapper_loading_failed", resourceCulture);
             }
@@ -1917,7 +1926,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Supplied file access mode is empty.
         /// </summary>
-        internal static string empty_file_mode {
+        public static string empty_file_mode {
             get {
                 return ResourceManager.GetString("empty_file_mode", resourceCulture);
             }
@@ -1926,7 +1935,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot use [] for reading.
         /// </summary>
-        internal static string empty_index_in_read_context {
+        public static string empty_index_in_read_context {
             get {
                 return ResourceManager.GetString("empty_index_in_read_context", resourceCulture);
             }
@@ -1935,7 +1944,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Path must not be empty..
         /// </summary>
-        internal static string empty_path {
+        public static string empty_path {
             get {
                 return ResourceManager.GetString("empty_path", resourceCulture);
             }
@@ -1944,7 +1953,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to An empty variable used as an array.
         /// </summary>
-        internal static string empty_used_as_array {
+        public static string empty_used_as_array {
             get {
                 return ResourceManager.GetString("empty_used_as_array", resourceCulture);
             }
@@ -1953,7 +1962,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to An empty variable used as an object.
         /// </summary>
-        internal static string empty_used_as_object {
+        public static string empty_used_as_object {
             get {
                 return ResourceManager.GetString("empty_used_as_object", resourceCulture);
             }
@@ -1962,7 +1971,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0} compiled successfully.
         /// </summary>
-        internal static string end_compile {
+        public static string end_compile {
             get {
                 return ResourceManager.GetString("end_compile", resourceCulture);
             }
@@ -1971,7 +1980,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Entry point has already been defined.
         /// </summary>
-        internal static string entry_point_redefined {
+        public static string entry_point_redefined {
             get {
                 return ResourceManager.GetString("entry_point_redefined", resourceCulture);
             }
@@ -1980,7 +1989,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Entry point script not specified..
         /// </summary>
-        internal static string entrypoint_not_specified {
+        public static string entrypoint_not_specified {
             get {
                 return ResourceManager.GetString("entrypoint_not_specified", resourceCulture);
             }
@@ -1989,7 +1998,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Specified enumerator doesn&apos;t reference this table..
         /// </summary>
-        internal static string enumerator_not_referencing_this_table {
+        public static string enumerator_not_referencing_this_table {
             get {
                 return ResourceManager.GetString("enumerator_not_referencing_this_table", resourceCulture);
             }
@@ -1998,7 +2007,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unexpected error creating file &apos;{0}&apos;: {1}.
         /// </summary>
-        internal static string error_creating_file {
+        public static string error_creating_file {
             get {
                 return ResourceManager.GetString("error_creating_file", resourceCulture);
             }
@@ -2009,7 +2018,7 @@ namespace PHP.Core.Localizations {
         ///&lt;b&gt;{0}&lt;/b&gt;: {1}{2}.&lt;br/&gt;
         ///.
         /// </summary>
-        internal static string error_message_html {
+        public static string error_message_html {
             get {
                 return ResourceManager.GetString("error_message_html", resourceCulture);
             }
@@ -2020,7 +2029,7 @@ namespace PHP.Core.Localizations {
         ///&lt;b&gt;{0}&lt;/b&gt;: {1}{2} in &lt;b&gt;{3}&lt;/b&gt; on line &lt;b&gt;{4}&lt;/b&gt;, column &lt;b&gt;{5}&lt;/b&gt;.&lt;br/&gt;
         ///.
         /// </summary>
-        internal static string error_message_html_debug {
+        public static string error_message_html_debug {
             get {
                 return ResourceManager.GetString("error_message_html_debug", resourceCulture);
             }
@@ -2029,7 +2038,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0} inside {1}.
         /// </summary>
-        internal static string error_message_html_eval {
+        public static string error_message_html_eval {
             get {
                 return ResourceManager.GetString("error_message_html_eval", resourceCulture);
             }
@@ -2038,7 +2047,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to inside {0} (on line &lt;b&gt;{1}&lt;/b&gt;, column &lt;b&gt;{2}&lt;/b&gt;).
         /// </summary>
-        internal static string error_message_html_eval_debug {
+        public static string error_message_html_eval_debug {
             get {
                 return ResourceManager.GetString("error_message_html_eval_debug", resourceCulture);
             }
@@ -2049,7 +2058,7 @@ namespace PHP.Core.Localizations {
         ///{0}: {1}{2}.
         ///.
         /// </summary>
-        internal static string error_message_plain {
+        public static string error_message_plain {
             get {
                 return ResourceManager.GetString("error_message_plain", resourceCulture);
             }
@@ -2060,7 +2069,7 @@ namespace PHP.Core.Localizations {
         ///{0}: {1}{2} in {3} on line {4}, column {5}.
         ///.
         /// </summary>
-        internal static string error_message_plain_debug {
+        public static string error_message_plain_debug {
             get {
                 return ResourceManager.GetString("error_message_plain_debug", resourceCulture);
             }
@@ -2069,7 +2078,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0} inside {1}.
         /// </summary>
-        internal static string error_message_plain_eval {
+        public static string error_message_plain_eval {
             get {
                 return ResourceManager.GetString("error_message_plain_eval", resourceCulture);
             }
@@ -2078,7 +2087,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to inside {0} (on line {1}, column {2}).
         /// </summary>
-        internal static string error_message_plain_eval_debug {
+        public static string error_message_plain_eval_debug {
             get {
                 return ResourceManager.GetString("error_message_plain_eval_debug", resourceCulture);
             }
@@ -2087,7 +2096,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to  in {0} on line {1}, column {2}.
         /// </summary>
-        internal static string error_place {
+        public static string error_place {
             get {
                 return ResourceManager.GetString("error_place", resourceCulture);
             }
@@ -2096,7 +2105,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Event &apos;{0}::{1}&apos; has no Add accessor method.
         /// </summary>
-        internal static string event_has_no_add_accessor {
+        public static string event_has_no_add_accessor {
             get {
                 return ResourceManager.GetString("event_has_no_add_accessor", resourceCulture);
             }
@@ -2105,7 +2114,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Event &apos;{0}::{1}&apos; has no Remove accessor method.
         /// </summary>
-        internal static string event_has_no_remove_accessor {
+        public static string event_has_no_remove_accessor {
             get {
                 return ResourceManager.GetString("event_has_no_remove_accessor", resourceCulture);
             }
@@ -2114,7 +2123,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot write to event {0}::${1}, use {0}::${1}-&gt;Add() and {0}::${1}-&gt;Remove() to add or remove an event handler.
         /// </summary>
-        internal static string event_written {
+        public static string event_written {
             get {
                 return ResourceManager.GetString("event_written", resourceCulture);
             }
@@ -2123,7 +2132,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Exception cannot be thrown here: {0}.
         /// </summary>
-        internal static string exception_cannot_be_thrown {
+        public static string exception_cannot_be_thrown {
             get {
                 return ResourceManager.GetString("exception_cannot_be_thrown", resourceCulture);
             }
@@ -2132,7 +2141,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Maximum execution time of {0} seconds exceeded.
         /// </summary>
-        internal static string execution_timed_out {
+        public static string execution_timed_out {
             get {
                 return ResourceManager.GetString("execution_timed_out", resourceCulture);
             }
@@ -2141,7 +2150,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Expecting parent constructor call.
         /// </summary>
-        internal static string expecting_parent_ctor_invocation {
+        public static string expecting_parent_ctor_invocation {
             get {
                 return ResourceManager.GetString("expecting_parent_ctor_invocation", resourceCulture);
             }
@@ -2150,7 +2159,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Attribute &apos;Export&apos; can be used only in pure unit.
         /// </summary>
-        internal static string export_attribute_in_non_pure {
+        public static string export_attribute_in_non_pure {
             get {
                 return ResourceManager.GetString("export_attribute_in_non_pure", resourceCulture);
             }
@@ -2159,7 +2168,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Extension &apos;{0}&apos; (file &apos;{1}&apos;) has alredy been loaded..
         /// </summary>
-        internal static string extension_already_loaded {
+        public static string extension_already_loaded {
             get {
                 return ResourceManager.GetString("extension_already_loaded", resourceCulture);
             }
@@ -2168,7 +2177,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Error while loading library (extension) classes: .
         /// </summary>
-        internal static string extension_loading_error {
+        public static string extension_loading_error {
             get {
                 return ResourceManager.GetString("extension_loading_error", resourceCulture);
             }
@@ -2177,7 +2186,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Native PHP extensions are not installed or properly configured.
         /// </summary>
-        internal static string extensions_not_installed {
+        public static string extensions_not_installed {
             get {
                 return ResourceManager.GetString("extensions_not_installed", resourceCulture);
             }
@@ -2186,7 +2195,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Call to undefined external function &apos;{0}&apos;, extension &apos;{1}&apos; - native PHP extensions are not installed or properly configured.
         /// </summary>
-        internal static string extensions_not_installed_in_invoke {
+        public static string extensions_not_installed_in_invoke {
             get {
                 return ResourceManager.GetString("extensions_not_installed_in_invoke", resourceCulture);
             }
@@ -2195,7 +2204,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to At least one extension is to be run in isolated mode but ExtManager path is not configured..
         /// </summary>
-        internal static string extmanager_path_not_configured {
+        public static string extmanager_path_not_configured {
             get {
                 return ResourceManager.GetString("extmanager_path_not_configured", resourceCulture);
             }
@@ -2204,7 +2213,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to A field with the same name already exists in this object..
         /// </summary>
-        internal static string field_already_exists {
+        public static string field_already_exists {
             get {
                 return ResourceManager.GetString("field_already_exists", resourceCulture);
             }
@@ -2213,7 +2222,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Reflected field &apos;{0}&apos; has unknown implementor. PhpPublicFieldAttribute incorrect usage..
         /// </summary>
-        internal static string field_implementor_not_found {
+        public static string field_implementor_not_found {
             get {
                 return ResourceManager.GetString("field_implementor_not_found", resourceCulture);
             }
@@ -2222,7 +2231,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Interfaces cannot have properties.
         /// </summary>
-        internal static string field_in_interface {
+        public static string field_in_interface {
             get {
                 return ResourceManager.GetString("field_in_interface", resourceCulture);
             }
@@ -2231,7 +2240,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to File &apos;{0}&apos; does not exist..
         /// </summary>
-        internal static string file_not_exists {
+        public static string file_not_exists {
             get {
                 return ResourceManager.GetString("file_not_exists", resourceCulture);
             }
@@ -2240,7 +2249,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot inherit from final class &apos;{0}&apos;.
         /// </summary>
-        internal static string final_class_extended {
+        public static string final_class_extended {
             get {
                 return ResourceManager.GetString("final_class_extended", resourceCulture);
             }
@@ -2249,7 +2258,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}.{1}: First parameter should be of type IDictionary due to NeedsVariables option..
         /// </summary>
-        internal static string first_param_not_dictionary {
+        public static string first_param_not_dictionary {
             get {
                 return ResourceManager.GetString("first_param_not_dictionary", resourceCulture);
             }
@@ -2258,7 +2267,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0} is intended for internal usage only..
         /// </summary>
-        internal static string for_internal_usage_only {
+        public static string for_internal_usage_only {
             get {
                 return ResourceManager.GetString("for_internal_usage_only", resourceCulture);
             }
@@ -2267,7 +2276,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The function already has parametr {0}.
         /// </summary>
-        internal static string formal_param_redeclaration {
+        public static string formal_param_redeclaration {
             get {
                 return ResourceManager.GetString("formal_param_redeclaration", resourceCulture);
             }
@@ -2276,7 +2285,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function {0}() is deprecated.
         /// </summary>
-        internal static string function_is_deprecated {
+        public static string function_is_deprecated {
             get {
                 return ResourceManager.GetString("function_is_deprecated", resourceCulture);
             }
@@ -2285,7 +2294,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function needs a table of defined variables.
         /// </summary>
-        internal static string function_needs_variables {
+        public static string function_needs_variables {
             get {
                 return ResourceManager.GetString("function_needs_variables", resourceCulture);
             }
@@ -2294,7 +2303,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function is not supported.
         /// </summary>
-        internal static string function_not_supported {
+        public static string function_not_supported {
             get {
                 return ResourceManager.GetString("function_not_supported", resourceCulture);
             }
@@ -2303,7 +2312,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare function &apos;{0}&apos;.
         /// </summary>
-        internal static string function_redeclared {
+        public static string function_redeclared {
             get {
                 return ResourceManager.GetString("function_redeclared", resourceCulture);
             }
@@ -2312,7 +2321,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}.{1}: Function &apos;{2}&apos; is reimplemented. Previously implemented by {3}.{4}..
         /// </summary>
-        internal static string function_reimplemented {
+        public static string function_reimplemented {
             get {
                 return ResourceManager.GetString("function_reimplemented", resourceCulture);
             }
@@ -2321,7 +2330,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Generating assembly ....
         /// </summary>
-        internal static string generating_assembly {
+        public static string generating_assembly {
             get {
                 return ResourceManager.GetString("generating_assembly", resourceCulture);
             }
@@ -2330,7 +2339,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot use generic arguments when calling a library function.
         /// </summary>
-        internal static string generic_call_to_library_function {
+        public static string generic_call_to_library_function {
             get {
                 return ResourceManager.GetString("generic_call_to_library_function", resourceCulture);
             }
@@ -2339,7 +2348,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot declare generic type parameter {0} because the name is already in use.
         /// </summary>
-        internal static string generic_in_use {
+        public static string generic_in_use {
             get {
                 return ResourceManager.GetString("generic_in_use", resourceCulture);
             }
@@ -2348,7 +2357,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Generic type parameter &apos;{0}&apos; has the same name as the containing class/interface.
         /// </summary>
-        internal static string generic_parameter_collides_with_declarer {
+        public static string generic_parameter_collides_with_declarer {
             get {
                 return ResourceManager.GetString("generic_parameter_collides_with_declarer", resourceCulture);
             }
@@ -2357,7 +2366,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Generic type parameter must be an identifier different from &apos;self&apos; and &apos;parent&apos; in this context.
         /// </summary>
-        internal static string generic_parameter_is_reserved_identifier {
+        public static string generic_parameter_is_reserved_identifier {
             get {
                 return ResourceManager.GetString("generic_parameter_is_reserved_identifier", resourceCulture);
             }
@@ -2366,7 +2375,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Generic parameter must refer to a type in this context.
         /// </summary>
-        internal static string generic_parameter_must_be_type {
+        public static string generic_parameter_must_be_type {
             get {
                 return ResourceManager.GetString("generic_parameter_must_be_type", resourceCulture);
             }
@@ -2375,7 +2384,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Generic parameters cannot be defined on constructor.
         /// </summary>
-        internal static string generic_parameters_disallowed_on_ctor {
+        public static string generic_parameters_disallowed_on_ctor {
             get {
                 return ResourceManager.GetString("generic_parameters_disallowed_on_ctor", resourceCulture);
             }
@@ -2384,7 +2393,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Objects returned by {0}::getIterator() must be traversable or implement interface Iterator.
         /// </summary>
-        internal static string getiterator_must_return_traversable {
+        public static string getiterator_must_return_traversable {
             get {
                 return ResourceManager.GetString("getiterator_must_return_traversable", resourceCulture);
             }
@@ -2393,7 +2402,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Global code is not allowed in the pure unit..
         /// </summary>
-        internal static string global_code_in_pure_unit {
+        public static string global_code_in_pure_unit {
             get {
                 return ResourceManager.GetString("global_code_in_pure_unit", resourceCulture);
             }
@@ -2402,7 +2411,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Illegal type returned from {0}::key().
         /// </summary>
-        internal static string illegal_key_return_type {
+        public static string illegal_key_return_type {
             get {
                 return ResourceManager.GetString("illegal_key_return_type", resourceCulture);
             }
@@ -2411,7 +2420,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Illegal offset type.
         /// </summary>
-        internal static string illegal_offset_type {
+        public static string illegal_offset_type {
             get {
                 return ResourceManager.GetString("illegal_offset_type", resourceCulture);
             }
@@ -2420,7 +2429,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Illegal string offset &apos;{0}&apos;.
         /// </summary>
-        internal static string illegal_string_offset {
+        public static string illegal_string_offset {
             get {
                 return ResourceManager.GetString("illegal_string_offset", resourceCulture);
             }
@@ -2429,7 +2438,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Import statement is deprecated and will be removed in future versions. Use PHP aliasing instead..
         /// </summary>
-        internal static string import_deprecated {
+        public static string import_deprecated {
             get {
                 return ResourceManager.GetString("import_deprecated", resourceCulture);
             }
@@ -2438,7 +2447,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Import statement is only available in pure mode.
         /// </summary>
-        internal static string import_only_in_pure {
+        public static string import_only_in_pure {
             get {
                 return ResourceManager.GetString("import_only_in_pure", resourceCulture);
             }
@@ -2447,7 +2456,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Must be of the same type as this instance..
         /// </summary>
-        internal static string incarnation_type_mismatch {
+        public static string incarnation_type_mismatch {
             get {
                 return ResourceManager.GetString("incarnation_type_mismatch", resourceCulture);
             }
@@ -2456,7 +2465,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Inclusion of file &apos;{0}&apos; deferred to runtime because: {1}.
         /// </summary>
-        internal static string inclusion_deferred_to_runtime {
+        public static string inclusion_deferred_to_runtime {
             get {
                 return ResourceManager.GetString("inclusion_deferred_to_runtime", resourceCulture);
             }
@@ -2465,7 +2474,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Inclusions are not allowed in the pure unit..
         /// </summary>
-        internal static string inclusion_in_pure_unit {
+        public static string inclusion_in_pure_unit {
             get {
                 return ResourceManager.GetString("inclusion_in_pure_unit", resourceCulture);
             }
@@ -2474,7 +2483,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to No inclusion pattern does match expression &apos;{0}&apos;.
         /// </summary>
-        internal static string inclusion_replacement_failed {
+        public static string inclusion_replacement_failed {
             get {
                 return ResourceManager.GetString("inclusion_replacement_failed", resourceCulture);
             }
@@ -2483,7 +2492,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Arrays which are incomparable have been compared..
         /// </summary>
-        internal static string incomparable_arrays_compared {
+        public static string incomparable_arrays_compared {
             get {
                 return ResourceManager.GetString("incomparable_arrays_compared", resourceCulture);
             }
@@ -2492,7 +2501,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Incomparable objects have been compared.
         /// </summary>
-        internal static string incomparable_objects_compared {
+        public static string incomparable_objects_compared {
             get {
                 return ResourceManager.GetString("incomparable_objects_compared", resourceCulture);
             }
@@ -2501,7 +2510,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Partial declarations of &apos;{0}&apos; must be all classes or all interfaces.
         /// </summary>
-        internal static string incompatible_partial_declarations {
+        public static string incompatible_partial_declarations {
             get {
                 return ResourceManager.GetString("incompatible_partial_declarations", resourceCulture);
             }
@@ -2510,7 +2519,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Class/interface &apos;{0}&apos; is incompatible with the constraints imposed on the generic type argument #{1} (&apos;{2}&apos;) by method &apos;{3}&apos;.
         /// </summary>
-        internal static string incompatible_type_parameter_constraints_method {
+        public static string incompatible_type_parameter_constraints_method {
             get {
                 return ResourceManager.GetString("incompatible_type_parameter_constraints_method", resourceCulture);
             }
@@ -2519,7 +2528,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Class/interface &apos;{0}&apos; is incompatible with the constraints imposed on the generic type argument #{1} (&apos;{2}&apos;) by type &apos;{3}&apos;.
         /// </summary>
-        internal static string incompatible_type_parameter_constraints_type {
+        public static string incompatible_type_parameter_constraints_type {
             get {
                 return ResourceManager.GetString("incompatible_type_parameter_constraints_type", resourceCulture);
             }
@@ -2528,7 +2537,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The class &apos;{0}&apos; is incomplete - its base class or interface is unknown.
         /// </summary>
-        internal static string incomplete_class {
+        public static string incomplete_class {
             get {
                 return ResourceManager.GetString("incomplete_class", resourceCulture);
             }
@@ -2537,7 +2546,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Path &apos;{0}&apos; is incomplete. The path is relative or drive specification is missing..
         /// </summary>
-        internal static string incomplete_path {
+        public static string incomplete_path {
             get {
                 return ResourceManager.GetString("incomplete_path", resourceCulture);
             }
@@ -2546,7 +2555,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Configuration.
         /// </summary>
-        internal static string info_config {
+        public static string info_config {
             get {
                 return ResourceManager.GetString("info_config", resourceCulture);
             }
@@ -2555,7 +2564,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Credits.
         /// </summary>
-        internal static string info_credits {
+        public static string info_credits {
             get {
                 return ResourceManager.GetString("info_credits", resourceCulture);
             }
@@ -2564,7 +2573,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Directive.
         /// </summary>
-        internal static string info_directive {
+        public static string info_directive {
             get {
                 return ResourceManager.GetString("info_directive", resourceCulture);
             }
@@ -2573,7 +2582,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Environment.
         /// </summary>
-        internal static string info_environment_variables {
+        public static string info_environment_variables {
             get {
                 return ResourceManager.GetString("info_environment_variables", resourceCulture);
             }
@@ -2582,7 +2591,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Global Variables.
         /// </summary>
-        internal static string info_global_variables {
+        public static string info_global_variables {
             get {
                 return ResourceManager.GetString("info_global_variables", resourceCulture);
             }
@@ -2591,7 +2600,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to License.
         /// </summary>
-        internal static string info_license {
+        public static string info_license {
             get {
                 return ResourceManager.GetString("info_license", resourceCulture);
             }
@@ -2608,7 +2617,7 @@ namespace PHP.Core.Localizations {
         ///gives no express warranties, guarantees or conditions. You may have additional
         ///consumer rights under your l [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string info_license_text {
+        public static string info_license_text {
             get {
                 return ResourceManager.GetString("info_license_text", resourceCulture);
             }
@@ -2617,7 +2626,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Loaded Native Extensions.
         /// </summary>
-        internal static string info_loaded_extensions {
+        public static string info_loaded_extensions {
             get {
                 return ResourceManager.GetString("info_loaded_extensions", resourceCulture);
             }
@@ -2626,7 +2635,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Master Value.
         /// </summary>
-        internal static string info_master_value {
+        public static string info_master_value {
             get {
                 return ResourceManager.GetString("info_master_value", resourceCulture);
             }
@@ -2635,7 +2644,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Script Dependent.
         /// </summary>
-        internal static string info_script_dependent {
+        public static string info_script_dependent {
             get {
                 return ResourceManager.GetString("info_script_dependent", resourceCulture);
             }
@@ -2644,7 +2653,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Script&apos;s Value.
         /// </summary>
-        internal static string info_script_value {
+        public static string info_script_value {
             get {
                 return ResourceManager.GetString("info_script_value", resourceCulture);
             }
@@ -2653,7 +2662,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Shared.
         /// </summary>
-        internal static string info_shared {
+        public static string info_shared {
             get {
                 return ResourceManager.GetString("info_shared", resourceCulture);
             }
@@ -2662,7 +2671,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Value.
         /// </summary>
-        internal static string info_value {
+        public static string info_value {
             get {
                 return ResourceManager.GetString("info_value", resourceCulture);
             }
@@ -2671,7 +2680,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Variable.
         /// </summary>
-        internal static string info_variable {
+        public static string info_variable {
             get {
                 return ResourceManager.GetString("info_variable", resourceCulture);
             }
@@ -2680,7 +2689,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot inherit constant {0}::{1} previously declared in interface &apos;{2}&apos;.
         /// </summary>
-        internal static string inheriting_previously_inherited_constant {
+        public static string inheriting_previously_inherited_constant {
             get {
                 return ResourceManager.GetString("inheriting_previously_inherited_constant", resourceCulture);
             }
@@ -2689,7 +2698,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The instance has already been disposed.
         /// </summary>
-        internal static string instance_disposed {
+        public static string instance_disposed {
             get {
                 return ResourceManager.GetString("instance_disposed", resourceCulture);
             }
@@ -2698,7 +2707,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot add item to array - integer key reached maximal possible value (2^31-1).
         /// </summary>
-        internal static string integer_key_reached_max_value {
+        public static string integer_key_reached_max_value {
             get {
                 return ResourceManager.GetString("integer_key_reached_max_value", resourceCulture);
             }
@@ -2707,7 +2716,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Interface method {0}::{1}() cannot contain body.
         /// </summary>
-        internal static string interface_bodyful_method {
+        public static string interface_bodyful_method {
             get {
                 return ResourceManager.GetString("interface_bodyful_method", resourceCulture);
             }
@@ -2716,7 +2725,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot instantiate interface &apos;{0}&apos;.
         /// </summary>
-        internal static string interface_instantiated {
+        public static string interface_instantiated {
             get {
                 return ResourceManager.GetString("interface_instantiated", resourceCulture);
             }
@@ -2725,7 +2734,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Access type for interface method {0}::{1}() must be omitted or declared public.
         /// </summary>
-        internal static string interface_method_non_public {
+        public static string interface_method_non_public {
             get {
                 return ResourceManager.GetString("interface_method_non_public", resourceCulture);
             }
@@ -2737,7 +2746,7 @@ namespace PHP.Core.Localizations {
         ///Additional information: 
         ///{1}.
         /// </summary>
-        internal static string internal_error {
+        public static string internal_error {
             get {
                 return ResourceManager.GetString("internal_error", resourceCulture);
             }
@@ -2746,7 +2755,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid argument &apos;{0}&apos;.
         /// </summary>
-        internal static string invalid_argument {
+        public static string invalid_argument {
             get {
                 return ResourceManager.GetString("invalid_argument", resourceCulture);
             }
@@ -2755,7 +2764,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid argument count.
         /// </summary>
-        internal static string invalid_argument_count {
+        public static string invalid_argument_count {
             get {
                 return ResourceManager.GetString("invalid_argument_count", resourceCulture);
             }
@@ -2764,7 +2773,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid argument count in a call to the function &apos;{0}&apos;.
         /// </summary>
-        internal static string invalid_argument_count_for_function {
+        public static string invalid_argument_count_for_function {
             get {
                 return ResourceManager.GetString("invalid_argument_count_for_function", resourceCulture);
             }
@@ -2773,7 +2782,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid argument count in a call to the method &apos;{0}::{1}&apos;.
         /// </summary>
-        internal static string invalid_argument_count_for_method {
+        public static string invalid_argument_count_for_method {
             get {
                 return ResourceManager.GetString("invalid_argument_count_for_method", resourceCulture);
             }
@@ -2782,7 +2791,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Argument &apos;{0}&apos; must be of type &apos;{1}&apos;.
         /// </summary>
-        internal static string invalid_argument_type {
+        public static string invalid_argument_type {
             get {
                 return ResourceManager.GetString("invalid_argument_type", resourceCulture);
             }
@@ -2791,7 +2800,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Value &apos;{1}&apos; is invalid for argument &apos;{0}&apos;.
         /// </summary>
-        internal static string invalid_argument_value {
+        public static string invalid_argument_value {
             get {
                 return ResourceManager.GetString("invalid_argument_value", resourceCulture);
             }
@@ -2800,7 +2809,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid argument: .
         /// </summary>
-        internal static string invalid_argument_with_message {
+        public static string invalid_argument_with_message {
             get {
                 return ResourceManager.GetString("invalid_argument_with_message", resourceCulture);
             }
@@ -2809,7 +2818,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid array rank..
         /// </summary>
-        internal static string invalid_array_rank {
+        public static string invalid_array_rank {
             get {
                 return ResourceManager.GetString("invalid_array_rank", resourceCulture);
             }
@@ -2818,7 +2827,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to An attribute argument must be a constant expression.
         /// </summary>
-        internal static string invalid_attribute_expression {
+        public static string invalid_attribute_expression {
             get {
                 return ResourceManager.GetString("invalid_attribute_expression", resourceCulture);
             }
@@ -2827,7 +2836,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Attribute &apos;{0}&apos; cannot be used in configuration file located on virtual path &apos;{0}&apos;..
         /// </summary>
-        internal static string invalid_attribute_location {
+        public static string invalid_attribute_location {
             get {
                 return ResourceManager.GetString("invalid_attribute_location", resourceCulture);
             }
@@ -2836,7 +2845,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; is not a valid attribute target selector (specify one of &apos;return&apos;, &apos;assembly&apos;, &apos;module&apos;).
         /// </summary>
-        internal static string invalid_attribute_target_selector {
+        public static string invalid_attribute_target_selector {
             get {
                 return ResourceManager.GetString("invalid_attribute_target_selector", resourceCulture);
             }
@@ -2845,7 +2854,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid use of attribute &apos;{0}&apos;.
         /// </summary>
-        internal static string invalid_attribute_usage {
+        public static string invalid_attribute_usage {
             get {
                 return ResourceManager.GetString("invalid_attribute_usage", resourceCulture);
             }
@@ -2854,7 +2863,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The value of attribute &apos;{0}&apos; is invalid..
         /// </summary>
-        internal static string invalid_attribute_value {
+        public static string invalid_attribute_value {
             get {
                 return ResourceManager.GetString("invalid_attribute_value", resourceCulture);
             }
@@ -2863,7 +2872,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid base..
         /// </summary>
-        internal static string invalid_base {
+        public static string invalid_base {
             get {
                 return ResourceManager.GetString("invalid_base", resourceCulture);
             }
@@ -2872,7 +2881,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot break/continue {0} level(s).
         /// </summary>
-        internal static string invalid_break_level_count {
+        public static string invalid_break_level_count {
             get {
                 return ResourceManager.GetString("invalid_break_level_count", resourceCulture);
             }
@@ -2881,7 +2890,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid call context data in slot {0}..
         /// </summary>
-        internal static string invalid_call_context_data {
+        public static string invalid_call_context_data {
             get {
                 return ResourceManager.GetString("invalid_call_context_data", resourceCulture);
             }
@@ -2890,7 +2899,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid callback.
         /// </summary>
-        internal static string invalid_callback {
+        public static string invalid_callback {
             get {
                 return ResourceManager.GetString("invalid_callback", resourceCulture);
             }
@@ -2899,7 +2908,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The library &apos;{0}&apos; is not a valid Phalanger Class Library..
         /// </summary>
-        internal static string invalid_class_library {
+        public static string invalid_class_library {
             get {
                 return ResourceManager.GetString("invalid_class_library", resourceCulture);
             }
@@ -2908,7 +2917,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The dynamic wrapper for the library, file &apos;{0}&apos;, is invalid. Delete the wrapper file so that it could be regenerated automatically during the next request..
         /// </summary>
-        internal static string invalid_class_library_wrapper {
+        public static string invalid_class_library_wrapper {
             get {
                 return ResourceManager.GetString("invalid_class_library_wrapper", resourceCulture);
             }
@@ -2917,7 +2926,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Class name must be a valid object or a string.
         /// </summary>
-        internal static string invalid_class_name {
+        public static string invalid_class_name {
             get {
                 return ResourceManager.GetString("invalid_class_name", resourceCulture);
             }
@@ -2926,7 +2935,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Value &apos;{0}&apos; doesn&apos;t encode a valid Unicode character.
         /// </summary>
-        internal static string invalid_code_point {
+        public static string invalid_code_point {
             get {
                 return ResourceManager.GetString("invalid_code_point", resourceCulture);
             }
@@ -2935,7 +2944,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Value &apos;{0}&apos; doesn&apos;t encode a valid Unicode character name.
         /// </summary>
-        internal static string invalid_code_point_name {
+        public static string invalid_code_point_name {
             get {
                 return ResourceManager.GetString("invalid_code_point_name", resourceCulture);
             }
@@ -2944,7 +2953,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid command line argument &apos;/{0}&apos;: {1}.
         /// </summary>
-        internal static string invalid_command_line_argument {
+        public static string invalid_command_line_argument {
             get {
                 return ResourceManager.GetString("invalid_command_line_argument", resourceCulture);
             }
@@ -2953,7 +2962,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid command line argument(s): {0}.
         /// </summary>
-        internal static string invalid_command_line_argument_noname {
+        public static string invalid_command_line_argument_noname {
             get {
                 return ResourceManager.GetString("invalid_command_line_argument_noname", resourceCulture);
             }
@@ -2962,7 +2971,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}.{1}: Field implementing PHP constant should be public literal..
         /// </summary>
-        internal static string invalid_constant_field {
+        public static string invalid_constant_field {
             get {
                 return ResourceManager.GetString("invalid_constant_field", resourceCulture);
             }
@@ -2971,7 +2980,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}.{1}: Invalid constant name &apos;{2}&apos;..
         /// </summary>
-        internal static string invalid_constant_name {
+        public static string invalid_constant_name {
             get {
                 return ResourceManager.GetString("invalid_constant_name", resourceCulture);
             }
@@ -2980,7 +2989,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}.{1}: Invalid constant type ({2})..
         /// </summary>
-        internal static string invalid_constant_type {
+        public static string invalid_constant_type {
             get {
                 return ResourceManager.GetString("invalid_constant_type", resourceCulture);
             }
@@ -2989,7 +2998,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid format of dynamic wrapper &apos;{0}&apos;..
         /// </summary>
-        internal static string invalid_dynamic_wrapper_format {
+        public static string invalid_dynamic_wrapper_format {
             get {
                 return ResourceManager.GetString("invalid_dynamic_wrapper_format", resourceCulture);
             }
@@ -2998,7 +3007,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Escape sequence &apos;{0}&apos; requires exactly {1} hexadecimal digits.
         /// </summary>
-        internal static string invalid_escape_sequence_length {
+        public static string invalid_escape_sequence_length {
             get {
                 return ResourceManager.GetString("invalid_escape_sequence_length", resourceCulture);
             }
@@ -3007,7 +3016,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Exceptions must be valid objects derived from the Exception base class.
         /// </summary>
-        internal static string invalid_exception_object {
+        public static string invalid_exception_object {
             get {
                 return ResourceManager.GetString("invalid_exception_object", resourceCulture);
             }
@@ -3016,7 +3025,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid file extension &apos;{0}&apos;..
         /// </summary>
-        internal static string invalid_file_extension {
+        public static string invalid_file_extension {
             get {
                 return ResourceManager.GetString("invalid_file_extension", resourceCulture);
             }
@@ -3025,7 +3034,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Supplied file access mode ({0}) is not valid.
         /// </summary>
-        internal static string invalid_file_mode {
+        public static string invalid_file_mode {
             get {
                 return ResourceManager.GetString("invalid_file_mode", resourceCulture);
             }
@@ -3034,7 +3043,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to create filter ({0}).
         /// </summary>
-        internal static string invalid_filter_name {
+        public static string invalid_filter_name {
             get {
                 return ResourceManager.GetString("invalid_filter_name", resourceCulture);
             }
@@ -3043,7 +3052,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid argument supplied for foreach statement.
         /// </summary>
-        internal static string invalid_foreach_argument {
+        public static string invalid_foreach_argument {
             get {
                 return ResourceManager.GetString("invalid_foreach_argument", resourceCulture);
             }
@@ -3052,7 +3061,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function name must be a string.
         /// </summary>
-        internal static string invalid_function_name {
+        public static string invalid_function_name {
             get {
                 return ResourceManager.GetString("invalid_function_name", resourceCulture);
             }
@@ -3061,7 +3070,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Header &apos;{0}&apos; is invalid: {1}.
         /// </summary>
-        internal static string invalid_header {
+        public static string invalid_header {
             get {
                 return ResourceManager.GetString("invalid_header", resourceCulture);
             }
@@ -3070,7 +3079,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The icon has an invalid format..
         /// </summary>
-        internal static string invalid_icon_format {
+        public static string invalid_icon_format {
             get {
                 return ResourceManager.GetString("invalid_icon_format", resourceCulture);
             }
@@ -3079,7 +3088,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; is not a valid identifier; an identifier cannot be non-empty and cannot contain any of the characters &apos;&lt;&apos;, &apos;&gt;&apos; and &apos;#&apos;..
         /// </summary>
-        internal static string invalid_identifier {
+        public static string invalid_identifier {
             get {
                 return ResourceManager.GetString("invalid_identifier", resourceCulture);
             }
@@ -3088,7 +3097,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot convert {0} to {1} implicitly in a call to function {2}().
         /// </summary>
-        internal static string invalid_implicit_cast {
+        public static string invalid_implicit_cast {
             get {
                 return ResourceManager.GetString("invalid_implicit_cast", resourceCulture);
             }
@@ -3097,7 +3106,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Modifier cannot be applied on the interface.
         /// </summary>
-        internal static string invalid_interface_modifier {
+        public static string invalid_interface_modifier {
             get {
                 return ResourceManager.GetString("invalid_interface_modifier", resourceCulture);
             }
@@ -3106,7 +3115,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid library contant type &apos;{0}&apos;..
         /// </summary>
-        internal static string invalid_library_contant_type {
+        public static string invalid_library_contant_type {
             get {
                 return ResourceManager.GetString("invalid_library_contant_type", resourceCulture);
             }
@@ -3115,7 +3124,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Line pragma has an invalid value.
         /// </summary>
-        internal static string invalid_line_pragma {
+        public static string invalid_line_pragma {
             get {
                 return ResourceManager.GetString("invalid_line_pragma", resourceCulture);
             }
@@ -3124,7 +3133,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid implementation of method &apos;{0}&apos;..
         /// </summary>
-        internal static string invalid_method_implementation {
+        public static string invalid_method_implementation {
             get {
                 return ResourceManager.GetString("invalid_method_implementation", resourceCulture);
             }
@@ -3133,7 +3142,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}.{1}: Method implementing PHP function should be public and static..
         /// </summary>
-        internal static string invalid_method_modifiers {
+        public static string invalid_method_modifiers {
             get {
                 return ResourceManager.GetString("invalid_method_modifiers", resourceCulture);
             }
@@ -3142,7 +3151,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Method name must be a string.
         /// </summary>
-        internal static string invalid_method_name {
+        public static string invalid_method_name {
             get {
                 return ResourceManager.GetString("invalid_method_name", resourceCulture);
             }
@@ -3151,7 +3160,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid node..
         /// </summary>
-        internal static string invalid_node {
+        public static string invalid_node {
             get {
                 return ResourceManager.GetString("invalid_node", resourceCulture);
             }
@@ -3160,7 +3169,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Node cannot be used in configuration file located on virtual path &apos;{0}&apos; because {1}..
         /// </summary>
-        internal static string invalid_node_location {
+        public static string invalid_node_location {
             get {
                 return ResourceManager.GetString("invalid_node_location", resourceCulture);
             }
@@ -3169,7 +3178,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid option &apos;{0}&apos;..
         /// </summary>
-        internal static string invalid_option {
+        public static string invalid_option {
             get {
                 return ResourceManager.GetString("invalid_option", resourceCulture);
             }
@@ -3178,7 +3187,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}.{1}: Invalid parameter &apos;{2}&apos; type ({3})..
         /// </summary>
-        internal static string invalid_parameter_type {
+        public static string invalid_parameter_type {
             get {
                 return ResourceManager.GetString("invalid_parameter_type", resourceCulture);
             }
@@ -3187,7 +3196,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Path is not valid..
         /// </summary>
-        internal static string invalid_path {
+        public static string invalid_path {
             get {
                 return ResourceManager.GetString("invalid_path", resourceCulture);
             }
@@ -3196,7 +3205,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid query source.
         /// </summary>
-        internal static string invalid_query_source {
+        public static string invalid_query_source {
             get {
                 return ResourceManager.GetString("invalid_query_source", resourceCulture);
             }
@@ -3205,7 +3214,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid global variables registering order..
         /// </summary>
-        internal static string invalid_registering_order {
+        public static string invalid_registering_order {
             get {
                 return ResourceManager.GetString("invalid_registering_order", resourceCulture);
             }
@@ -3214,7 +3223,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid regular expression..
         /// </summary>
-        internal static string invalid_regular_expression {
+        public static string invalid_regular_expression {
             get {
                 return ResourceManager.GetString("invalid_regular_expression", resourceCulture);
             }
@@ -3223,7 +3232,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid resource visibility. Must be private or public.
         /// </summary>
-        internal static string invalid_resource_visibility {
+        public static string invalid_resource_visibility {
             get {
                 return ResourceManager.GetString("invalid_resource_visibility", resourceCulture);
             }
@@ -3232,7 +3241,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}.{1}: Invalid return type ({2})..
         /// </summary>
-        internal static string invalid_return_type {
+        public static string invalid_return_type {
             get {
                 return ResourceManager.GetString("invalid_return_type", resourceCulture);
             }
@@ -3241,7 +3250,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The assembly &apos;{0}&apos; is not a valid Phalanger compiled script assembly.
         /// </summary>
-        internal static string invalid_script_assembly {
+        public static string invalid_script_assembly {
             get {
                 return ResourceManager.GetString("invalid_script_assembly", resourceCulture);
             }
@@ -3250,7 +3259,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Supplied resource is not a valid Socket Stream resource.
         /// </summary>
-        internal static string invalid_socket_stream_resource {
+        public static string invalid_socket_stream_resource {
             get {
                 return ResourceManager.GetString("invalid_socket_stream_resource", resourceCulture);
             }
@@ -3259,7 +3268,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid source file or directory: {0}.
         /// </summary>
-        internal static string invalid_source {
+        public static string invalid_source {
             get {
                 return ResourceManager.GetString("invalid_source", resourceCulture);
             }
@@ -3268,7 +3277,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Supplied resource is not a valid Stream resource.
         /// </summary>
-        internal static string invalid_stream_resource {
+        public static string invalid_stream_resource {
             get {
                 return ResourceManager.GetString("invalid_stream_resource", resourceCulture);
             }
@@ -3277,7 +3286,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}: Type implementing PHP function or constant should be in namespace {1} or its subnamespace..
         /// </summary>
-        internal static string invalid_type_namespace {
+        public static string invalid_type_namespace {
             get {
                 return ResourceManager.GetString("invalid_type_namespace", resourceCulture);
             }
@@ -3286,7 +3295,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}: Type implementing PHP function or constant should be public..
         /// </summary>
-        internal static string invalid_type_visibility {
+        public static string invalid_type_visibility {
             get {
                 return ResourceManager.GetString("invalid_type_visibility", resourceCulture);
             }
@@ -3295,7 +3304,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Invalid value &apos;{0}&apos;..
         /// </summary>
-        internal static string invalid_value {
+        public static string invalid_value {
             get {
                 return ResourceManager.GetString("invalid_value", resourceCulture);
             }
@@ -3304,7 +3313,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot remove item from empty array..
         /// </summary>
-        internal static string item_removed_from_empty_array {
+        public static string item_removed_from_empty_array {
             get {
                 return ResourceManager.GetString("item_removed_from_empty_array", resourceCulture);
             }
@@ -3313,7 +3322,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Key element cannot be a reference.
         /// </summary>
-        internal static string key_alias {
+        public static string key_alias {
             get {
                 return ResourceManager.GetString("key_alias", resourceCulture);
             }
@@ -3322,7 +3331,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The label &apos;{0}&apos; is already declared.
         /// </summary>
-        internal static string label_redeclared {
+        public static string label_redeclared {
             get {
                 return ResourceManager.GetString("label_redeclared", resourceCulture);
             }
@@ -3331,7 +3340,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The last must be greater than or equal to the first..
         /// </summary>
-        internal static string last_is_less_than_first {
+        public static string last_is_less_than_first {
             get {
                 return ResourceManager.GetString("last_is_less_than_first", resourceCulture);
             }
@@ -3340,7 +3349,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The number of items in {0} should be the same as in {1}.
         /// </summary>
-        internal static string lengths_are_different {
+        public static string lengths_are_different {
             get {
                 return ResourceManager.GetString("lengths_are_different", resourceCulture);
             }
@@ -3349,7 +3358,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Library assembly &apos;{0}&apos; could not be loaded..
         /// </summary>
-        internal static string library_assembly_loading_failed {
+        public static string library_assembly_loading_failed {
             get {
                 return ResourceManager.GetString("library_assembly_loading_failed", resourceCulture);
             }
@@ -3358,7 +3367,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare library class/interface {0}.
         /// </summary>
-        internal static string library_class_redeclared {
+        public static string library_class_redeclared {
             get {
                 return ResourceManager.GetString("library_class_redeclared", resourceCulture);
             }
@@ -3367,7 +3376,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Inclusion will issue a run-time error if executed as it redeclares library class/interface {0}.
         /// </summary>
-        internal static string library_class_redeclared_by_inclusion {
+        public static string library_class_redeclared_by_inclusion {
             get {
                 return ResourceManager.GetString("library_class_redeclared_by_inclusion", resourceCulture);
             }
@@ -3376,7 +3385,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The configuration handler of the library &apos;{0}&apos; has failed..
         /// </summary>
-        internal static string library_config_handler_failed {
+        public static string library_config_handler_failed {
             get {
                 return ResourceManager.GetString("library_config_handler_failed", resourceCulture);
             }
@@ -3385,7 +3394,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare library function &apos;{0}&apos;.
         /// </summary>
-        internal static string library_func_redeclared {
+        public static string library_func_redeclared {
             get {
                 return ResourceManager.GetString("library_func_redeclared", resourceCulture);
             }
@@ -3394,7 +3403,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Library &apos;{0}&apos; cannot be loaded; {1}.
         /// </summary>
-        internal static string library_load_failed {
+        public static string library_load_failed {
             get {
                 return ResourceManager.GetString("library_load_failed", resourceCulture);
             }
@@ -3403,7 +3412,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Library configuration section &apos;{0}&apos; has already been bound to the library &apos;{1}&apos;..
         /// </summary>
-        internal static string library_section_redeclared {
+        public static string library_section_redeclared {
             get {
                 return ResourceManager.GetString("library_section_redeclared", resourceCulture);
             }
@@ -3412,7 +3421,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Loaded libraries.
         /// </summary>
-        internal static string loaded_libraries {
+        public static string loaded_libraries {
             get {
                 return ResourceManager.GetString("loaded_libraries", resourceCulture);
             }
@@ -3421,7 +3430,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The magic method {0}() must have public visibility and cannot be static.
         /// </summary>
-        internal static string magic_method_must_be_public_nonstatic {
+        public static string magic_method_must_be_public_nonstatic {
             get {
                 return ResourceManager.GetString("magic_method_must_be_public_nonstatic", resourceCulture);
             }
@@ -3430,7 +3439,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot make non-static method {0}::{1}() static in class &apos;{2}&apos;.
         /// </summary>
-        internal static string make_nonstatic_method_static {
+        public static string make_nonstatic_method_static {
             get {
                 return ResourceManager.GetString("make_nonstatic_method_static", resourceCulture);
             }
@@ -3439,7 +3448,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare non-static property {0}::${1} as static {2}::${1} (non-static declared in &apos;{3}&apos;).
         /// </summary>
-        internal static string make_nonstatic_property_static {
+        public static string make_nonstatic_property_static {
             get {
                 return ResourceManager.GetString("make_nonstatic_property_static", resourceCulture);
             }
@@ -3448,7 +3457,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot make static method {0}::{1}() non-static in class &apos;{2}&apos;.
         /// </summary>
-        internal static string make_static_method_non_static {
+        public static string make_static_method_non_static {
             get {
                 return ResourceManager.GetString("make_static_method_non_static", resourceCulture);
             }
@@ -3457,7 +3466,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare static property {0}::${1} as non static {2}::${1} (static declared in &apos;{3}&apos;).
         /// </summary>
-        internal static string make_static_property_nonstatic {
+        public static string make_static_property_nonstatic {
             get {
                 return ResourceManager.GetString("make_static_property_nonstatic", resourceCulture);
             }
@@ -3466,7 +3475,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Mandatory parameter &apos;{0}&apos; declared behind optional parameter.
         /// </summary>
-        internal static string mandatory_behind_optional_param {
+        public static string mandatory_behind_optional_param {
             get {
                 return ResourceManager.GetString("mandatory_behind_optional_param", resourceCulture);
             }
@@ -3475,7 +3484,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Method declared in interface cannot have body.
         /// </summary>
-        internal static string method_body_in_interface {
+        public static string method_body_in_interface {
             get {
                 return ResourceManager.GetString("method_body_in_interface", resourceCulture);
             }
@@ -3484,7 +3493,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Call to a member function {0}() on a non-object.
         /// </summary>
-        internal static string method_called_on_non_object {
+        public static string method_called_on_non_object {
             get {
                 return ResourceManager.GetString("method_called_on_non_object", resourceCulture);
             }
@@ -3493,7 +3502,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Method {0}::{1}() cannot take arguments.
         /// </summary>
-        internal static string method_cannot_take_arguments {
+        public static string method_cannot_take_arguments {
             get {
                 return ResourceManager.GetString("method_cannot_take_arguments", resourceCulture);
             }
@@ -3502,7 +3511,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Method {0}::{1}() must take exactly {2} arguments.
         /// </summary>
-        internal static string method_must_take_exact_args_count {
+        public static string method_must_take_exact_args_count {
             get {
                 return ResourceManager.GetString("method_must_take_exact_args_count", resourceCulture);
             }
@@ -3511,7 +3520,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Declaration of {0}::{1}() must be compatible with that of {2}::{1}().
         /// </summary>
-        internal static string method_not_compatible {
+        public static string method_not_compatible {
             get {
                 return ResourceManager.GetString("method_not_compatible", resourceCulture);
             }
@@ -3520,7 +3529,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare method {0}::{1}.
         /// </summary>
-        internal static string method_redeclared {
+        public static string method_redeclared {
             get {
                 return ResourceManager.GetString("method_redeclared", resourceCulture);
             }
@@ -3529,7 +3538,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Missing argument #{0}.
         /// </summary>
-        internal static string missing_argument {
+        public static string missing_argument {
             get {
                 return ResourceManager.GetString("missing_argument", resourceCulture);
             }
@@ -3538,7 +3547,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Missing argument #{0} for {1}().
         /// </summary>
-        internal static string missing_argument_for {
+        public static string missing_argument_for {
             get {
                 return ResourceManager.GetString("missing_argument_for", resourceCulture);
             }
@@ -3547,7 +3556,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Missing attribute &apos;{0}&apos;..
         /// </summary>
-        internal static string missing_attribute {
+        public static string missing_attribute {
             get {
                 return ResourceManager.GetString("missing_attribute", resourceCulture);
             }
@@ -3556,7 +3565,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Configuration option {0} has not been defined..
         /// </summary>
-        internal static string missing_configuration {
+        public static string missing_configuration {
             get {
                 return ResourceManager.GetString("missing_configuration", resourceCulture);
             }
@@ -3565,7 +3574,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Missing constructor - class &apos;{0}&apos; extends a CLR type without a default constructor and therefore must implement a constructor.
         /// </summary>
-        internal static string missing_ctor_in_clr_subclass {
+        public static string missing_ctor_in_clr_subclass {
             get {
                 return ResourceManager.GetString("missing_ctor_in_clr_subclass", resourceCulture);
             }
@@ -3574,7 +3583,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Missing entry point; no static parameterless method or function &apos;{0}&apos; found.
         /// </summary>
-        internal static string missing_entry_point {
+        public static string missing_entry_point {
             get {
                 return ResourceManager.GetString("missing_entry_point", resourceCulture);
             }
@@ -3583,7 +3592,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Expecting kind of imported subject (specify one of &apos;namespace&apos;, &apos;class&apos;, &apos;interface&apos;, &apos;function&apos;, &apos;const&apos;).
         /// </summary>
-        internal static string missing_imported_entity {
+        public static string missing_imported_entity {
             get {
                 return ResourceManager.GetString("missing_imported_entity", resourceCulture);
             }
@@ -3592,7 +3601,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Missing &apos;partial&apos; modifier on declaration of class/interface &apos;{0}&apos; - another partial declaration of this type exists.
         /// </summary>
-        internal static string missing_partial_modifier {
+        public static string missing_partial_modifier {
             get {
                 return ResourceManager.GetString("missing_partial_modifier", resourceCulture);
             }
@@ -3601,7 +3610,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Missing generic type argument #{0}.
         /// </summary>
-        internal static string missing_type_argument {
+        public static string missing_type_argument {
             get {
                 return ResourceManager.GetString("missing_type_argument", resourceCulture);
             }
@@ -3610,7 +3619,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Missing generic type argument #{0} for {1}().
         /// </summary>
-        internal static string missing_type_argument_for {
+        public static string missing_type_argument_for {
             get {
                 return ResourceManager.GetString("missing_type_argument_for", resourceCulture);
             }
@@ -3619,7 +3628,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Use of type &apos;{0}&apos; requires generic type parameter #{1} (&apos;{2}&apos;) to be specified (no default type applicable).
         /// </summary>
-        internal static string missing_type_argument_in_type_use {
+        public static string missing_type_argument_in_type_use {
             get {
                 return ResourceManager.GetString("missing_type_argument_in_type_use", resourceCulture);
             }
@@ -3628,7 +3637,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The &apos;case&apos; label with value {0} has already been declared.
         /// </summary>
-        internal static string more_switch_cases_with_same_value {
+        public static string more_switch_cases_with_same_value {
             get {
                 return ResourceManager.GetString("more_switch_cases_with_same_value", resourceCulture);
             }
@@ -3637,7 +3646,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The &apos;switch&apos; already contains a &apos;default&apos; section.
         /// </summary>
-        internal static string more_then_one_default_in_switch {
+        public static string more_then_one_default_in_switch {
             get {
                 return ResourceManager.GetString("more_then_one_default_in_switch", resourceCulture);
             }
@@ -3646,7 +3655,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Assertion contains multiple statements but only the first one is relevant.
         /// </summary>
-        internal static string multiple_statements_in_assertion {
+        public static string multiple_statements_in_assertion {
             get {
                 return ResourceManager.GetString("multiple_statements_in_assertion", resourceCulture);
             }
@@ -3655,7 +3664,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Multiple access type modifiers are not allowed.
         /// </summary>
-        internal static string multiple_visibility_modifiers {
+        public static string multiple_visibility_modifiers {
             get {
                 return ResourceManager.GetString("multiple_visibility_modifiers", resourceCulture);
             }
@@ -3664,7 +3673,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Must reflect an instance field of PhpReference type declared in the class assignable from the class associated with this table..
         /// </summary>
-        internal static string must_be_associated_instance_field {
+        public static string must_be_associated_instance_field {
             get {
                 return ResourceManager.GetString("must_be_associated_instance_field", resourceCulture);
             }
@@ -3673,7 +3682,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Must be bound to an instance method of the class associated with this table..
         /// </summary>
-        internal static string must_be_associated_instance_method {
+        public static string must_be_associated_instance_method {
             get {
                 return ResourceManager.GetString("must_be_associated_instance_method", resourceCulture);
             }
@@ -3682,7 +3691,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Must be bound to a method of the class associated with this table..
         /// </summary>
-        internal static string must_be_associated_method {
+        public static string must_be_associated_method {
             get {
                 return ResourceManager.GetString("must_be_associated_method", resourceCulture);
             }
@@ -3691,7 +3700,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Must be bound to a static method of the class associated with this table..
         /// </summary>
-        internal static string must_be_associated_static_method {
+        public static string must_be_associated_static_method {
             get {
                 return ResourceManager.GetString("must_be_associated_static_method", resourceCulture);
             }
@@ -3700,7 +3709,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Must be an instance of DeclaringType..
         /// </summary>
-        internal static string must_be_declaringtype_instance {
+        public static string must_be_declaringtype_instance {
             get {
                 return ResourceManager.GetString("must_be_declaringtype_instance", resourceCulture);
             }
@@ -3709,7 +3718,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Must be an IPhpMemberHandle..
         /// </summary>
-        internal static string must_be_iphpmemberhandle {
+        public static string must_be_iphpmemberhandle {
             get {
                 return ResourceManager.GetString("must_be_iphpmemberhandle", resourceCulture);
             }
@@ -3718,7 +3727,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Must be a class derived from PhpObject..
         /// </summary>
-        internal static string must_be_phpobject_subclass {
+        public static string must_be_phpobject_subclass {
             get {
                 return ResourceManager.GetString("must_be_phpobject_subclass", resourceCulture);
             }
@@ -3727,7 +3736,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Must be static..
         /// </summary>
-        internal static string must_be_static {
+        public static string must_be_static {
             get {
                 return ResourceManager.GetString("must_be_static", resourceCulture);
             }
@@ -3736,7 +3745,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Must target an instance method..
         /// </summary>
-        internal static string must_target_instance_method {
+        public static string must_target_instance_method {
             get {
                 return ResourceManager.GetString("must_target_instance_method", resourceCulture);
             }
@@ -3745,7 +3754,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Namespace keyword used outside namespace declaration.
         /// </summary>
-        internal static string namespace_keyword_outside_namespace {
+        public static string namespace_keyword_outside_namespace {
             get {
                 return ResourceManager.GetString("namespace_keyword_outside_namespace", resourceCulture);
             }
@@ -3754,7 +3763,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to NetworkUtils are not supported on this system..
         /// </summary>
-        internal static string networkutils_unsupported {
+        public static string networkutils_unsupported {
             get {
                 return ResourceManager.GetString("networkutils_unsupported", resourceCulture);
             }
@@ -3763,7 +3772,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Class &apos;{0}&apos; has no constructor defined - using default constructor and ignoring arguments.
         /// </summary>
-        internal static string no_ctor_defined {
+        public static string no_ctor_defined {
             get {
                 return ResourceManager.GetString("no_ctor_defined", resourceCulture);
             }
@@ -3772,7 +3781,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Called from the global scope - no function context.
         /// </summary>
-        internal static string no_function_context {
+        public static string no_function_context {
             get {
                 return ResourceManager.GetString("no_function_context", resourceCulture);
             }
@@ -3781,7 +3790,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to No source files to compile..
         /// </summary>
-        internal static string no_source_files_to_compile {
+        public static string no_source_files_to_compile {
             get {
                 return ResourceManager.GetString("no_source_files_to_compile", resourceCulture);
             }
@@ -3790,7 +3799,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to No accessible overload of function &apos;{1}&apos; is compatible with the specified arguments.
         /// </summary>
-        internal static string no_suitable_function_overload {
+        public static string no_suitable_function_overload {
             get {
                 return ResourceManager.GetString("no_suitable_function_overload", resourceCulture);
             }
@@ -3799,7 +3808,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to No accessible overload of method &apos;{0}::{1}&apos; is compatible with the specified arguments.
         /// </summary>
-        internal static string no_suitable_method_overload {
+        public static string no_suitable_method_overload {
             get {
                 return ResourceManager.GetString("no_suitable_method_overload", resourceCulture);
             }
@@ -3808,7 +3817,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot extend &apos;{0}&apos; because it is not a class.
         /// </summary>
-        internal static string non_class_extended {
+        public static string non_class_extended {
             get {
                 return ResourceManager.GetString("non_class_extended", resourceCulture);
             }
@@ -3817,7 +3826,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Type &apos;{0}&apos; cannot be used with generic type arguments.
         /// </summary>
-        internal static string non_generic_type_used_with_type_arguments {
+        public static string non_generic_type_used_with_type_arguments {
             get {
                 return ResourceManager.GetString("non_generic_type_used_with_type_arguments", resourceCulture);
             }
@@ -3826,7 +3835,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot extend &apos;{0}&apos; because it is not an interface.
         /// </summary>
-        internal static string non_interface_extended {
+        public static string non_interface_extended {
             get {
                 return ResourceManager.GetString("non_interface_extended", resourceCulture);
             }
@@ -3835,7 +3844,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot implement &apos;{0}&apos; because it is not an interface.
         /// </summary>
-        internal static string non_interface_implemented {
+        public static string non_interface_implemented {
             get {
                 return ResourceManager.GetString("non_interface_implemented", resourceCulture);
             }
@@ -3844,7 +3853,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Non-abstract method {0}::{1}() must contain body.
         /// </summary>
-        internal static string nonabstract_bodyless_method {
+        public static string nonabstract_bodyless_method {
             get {
                 return ResourceManager.GetString("nonabstract_bodyless_method", resourceCulture);
             }
@@ -3853,7 +3862,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot make non-abstract method {0}::{1}() abstract in class &apos;{2}&apos;.
         /// </summary>
-        internal static string nonabstract_method_overridden_with_abstract {
+        public static string nonabstract_method_overridden_with_abstract {
             get {
                 return ResourceManager.GetString("nonabstract_method_overridden_with_abstract", resourceCulture);
             }
@@ -3862,7 +3871,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to A callback &apos;{0}&apos; specified in the argument &apos;{1}&apos; is not callable.
         /// </summary>
-        internal static string noncallable_callback {
+        public static string noncallable_callback {
             get {
                 return ResourceManager.GetString("noncallable_callback", resourceCulture);
             }
@@ -3871,7 +3880,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Non-static method {0}::{1}() should not be called statically.
         /// </summary>
-        internal static string nonstatic_method_called_statically {
+        public static string nonstatic_method_called_statically {
             get {
                 return ResourceManager.GetString("nonstatic_method_called_statically", resourceCulture);
             }
@@ -3880,7 +3889,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Only variables can be passed by reference.
         /// </summary>
-        internal static string nonvar_passed_by_ref {
+        public static string nonvar_passed_by_ref {
             get {
                 return ResourceManager.GetString("nonvar_passed_by_ref", resourceCulture);
             }
@@ -3889,7 +3898,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Not all populated constants have been reflected..
         /// </summary>
-        internal static string not_all_constants_reflected {
+        public static string not_all_constants_reflected {
             get {
                 return ResourceManager.GetString("not_all_constants_reflected", resourceCulture);
             }
@@ -3898,7 +3907,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Not all populated fields have been reflected..
         /// </summary>
-        internal static string not_all_fields_reflected {
+        public static string not_all_fields_reflected {
             get {
                 return ResourceManager.GetString("not_all_fields_reflected", resourceCulture);
             }
@@ -3907,7 +3916,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Not all populated methods have been reflected..
         /// </summary>
-        internal static string not_all_methods_reflected {
+        public static string not_all_methods_reflected {
             get {
                 return ResourceManager.GetString("not_all_methods_reflected", resourceCulture);
             }
@@ -3916,7 +3925,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; is not a custom attribute class.
         /// </summary>
-        internal static string not_custom_attribute_class {
+        public static string not_custom_attribute_class {
             get {
                 return ResourceManager.GetString("not_custom_attribute_class", resourceCulture);
             }
@@ -3925,7 +3934,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Not enought space in the target array..
         /// </summary>
-        internal static string not_enought_space_in_target_array {
+        public static string not_enought_space_in_target_array {
             get {
                 return ResourceManager.GetString("not_enought_space_in_target_array", resourceCulture);
             }
@@ -3934,7 +3943,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function &apos;{0}&apos; is not supported.
         /// </summary>
-        internal static string notsupported_function_called {
+        public static string notsupported_function_called {
             get {
                 return ResourceManager.GetString("notsupported_function_called", resourceCulture);
             }
@@ -3943,7 +3952,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Object of class {0} could not be converted to {1}.
         /// </summary>
-        internal static string object_could_not_be_converted {
+        public static string object_could_not_be_converted {
             get {
                 return ResourceManager.GetString("object_could_not_be_converted", resourceCulture);
             }
@@ -3952,7 +3961,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to An object of type &apos;{0}&apos; used as an array.
         /// </summary>
-        internal static string object_used_as_array {
+        public static string object_used_as_array {
             get {
                 return ResourceManager.GetString("object_used_as_array", resourceCulture);
             }
@@ -3961,7 +3970,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Method offsetGet() of objects used with [] operator followed by increment, decrement, assignment to reference, or another [] operators must return by reference.
         /// </summary>
-        internal static string offsetGet_must_return_byref {
+        public static string offsetGet_must_return_byref {
             get {
                 return ResourceManager.GetString("offsetGet_must_return_byref", resourceCulture);
             }
@@ -3970,7 +3979,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Only variables should be assigned by reference.
         /// </summary>
-        internal static string only_vars_assigned_by_ref {
+        public static string only_vars_assigned_by_ref {
             get {
                 return ResourceManager.GetString("only_vars_assigned_by_ref", resourceCulture);
             }
@@ -3979,7 +3988,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to AllowedPathPrefixes restriction in effect. File({0}) is not within the allowed path(s): ({1}).
         /// </summary>
-        internal static string open_basedir_effect {
+        public static string open_basedir_effect {
             get {
                 return ResourceManager.GetString("open_basedir_effect", resourceCulture);
             }
@@ -3988,7 +3997,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot use [] for reading.
         /// </summary>
-        internal static string operator___used_for_reading {
+        public static string operator___used_for_reading {
             get {
                 return ResourceManager.GetString("operator[]_used_for_reading", resourceCulture);
             }
@@ -3997,7 +4006,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to option.
         /// </summary>
-        internal static string option {
+        public static string option {
             get {
                 return ResourceManager.GetString("option", resourceCulture);
             }
@@ -4006,7 +4015,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Attribute &apos;Out&apos; can be used only on parameters passed by reference; add &apos;&amp;&apos; modifier to the parameter &apos;${0}&apos;.
         /// </summary>
-        internal static string out_attribute_on_byval_param {
+        public static string out_attribute_on_byval_param {
             get {
                 return ResourceManager.GetString("out_attribute_on_byval_param", resourceCulture);
             }
@@ -4015,7 +4024,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Value should be between {0} and {1} including..
         /// </summary>
-        internal static string out_of_range {
+        public static string out_of_range {
             get {
                 return ResourceManager.GetString("out_of_range", resourceCulture);
             }
@@ -4024,7 +4033,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Output buffering is disabled.
         /// </summary>
-        internal static string output_buffering_disabled {
+        public static string output_buffering_disabled {
             get {
                 return ResourceManager.GetString("output_buffering_disabled", resourceCulture);
             }
@@ -4033,7 +4042,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}.{1}: This overload of &apos;{2}&apos; has different implementation options than the others..
         /// </summary>
-        internal static string overload_has_different_impl_options {
+        public static string overload_has_different_impl_options {
             get {
                 return ResourceManager.GetString("overload_has_different_impl_options", resourceCulture);
             }
@@ -4042,7 +4051,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}.{1}: Overload has lesser mandatory parameter count than another one, even though it has optional arguments..
         /// </summary>
-        internal static string overload_has_lesser_param_count {
+        public static string overload_has_lesser_param_count {
             get {
                 return ResourceManager.GetString("overload_has_lesser_param_count", resourceCulture);
             }
@@ -4051,7 +4060,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}.{1}: Suboptimal implementation. Overloads of &apos;{2}&apos; are not placed one following the other in metadata table..
         /// </summary>
-        internal static string overloads_not_contiguous {
+        public static string overloads_not_contiguous {
             get {
                 return ResourceManager.GetString("overloads_not_contiguous", resourceCulture);
             }
@@ -4060,7 +4069,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot override final method {0}::{1}().
         /// </summary>
-        internal static string override_final_method {
+        public static string override_final_method {
             get {
                 return ResourceManager.GetString("override_final_method", resourceCulture);
             }
@@ -4069,7 +4078,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot override constant &apos;{0}&apos; defined in interface &apos;{1}&apos;.
         /// </summary>
-        internal static string overriding_interface_constant {
+        public static string overriding_interface_constant {
             get {
                 return ResourceManager.GetString("overriding_interface_constant", resourceCulture);
             }
@@ -4078,7 +4087,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}::{1}() must be at least as visible as &apos;{2}&apos; specified in class/interface &apos;{3}&apos;.
         /// </summary>
-        internal static string overriding_method_restrict_visibility {
+        public static string overriding_method_restrict_visibility {
             get {
                 return ResourceManager.GetString("overriding_method_restrict_visibility", resourceCulture);
             }
@@ -4087,7 +4096,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}::${1} must be at least as visible as &apos;{2}&apos; specified in class/interface &apos;{3}&apos;.
         /// </summary>
-        internal static string overriding_property_restrict_visibility {
+        public static string overriding_property_restrict_visibility {
             get {
                 return ResourceManager.GetString("overriding_property_restrict_visibility", resourceCulture);
             }
@@ -4096,7 +4105,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot change initial value of property static protected {0}::${1} in class &apos;{2}&apos; (previously declared in {3}).
         /// </summary>
-        internal static string overriding_protected_static_with_init_value {
+        public static string overriding_protected_static_with_init_value {
             get {
                 return ResourceManager.GetString("overriding_protected_static_with_init_value", resourceCulture);
             }
@@ -4105,7 +4114,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare property static &apos;{3}&apos; {0}::${1} in class &apos;{2}&apos; (previously declared in &apos;{4}&apos;).
         /// </summary>
-        internal static string overriding_static_field_with_static {
+        public static string overriding_static_field_with_static {
             get {
                 return ResourceManager.GetString("overriding_static_field_with_static", resourceCulture);
             }
@@ -4114,7 +4123,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to instantiate page &apos;{0}&apos;..
         /// </summary>
-        internal static string page_instantiation_failed {
+        public static string page_instantiation_failed {
             get {
                 return ResourceManager.GetString("page_instantiation_failed", resourceCulture);
             }
@@ -4123,7 +4132,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Parameter &apos;{0}&apos; must be passed by reference.
         /// </summary>
-        internal static string parameter_must_be_byref {
+        public static string parameter_must_be_byref {
             get {
                 return ResourceManager.GetString("parameter_must_be_byref", resourceCulture);
             }
@@ -4132,7 +4141,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot access parent:: when current class scope has no parent.
         /// </summary>
-        internal static string parent_accessed_in_parentless_class {
+        public static string parent_accessed_in_parentless_class {
             get {
                 return ResourceManager.GetString("parent_accessed_in_parentless_class", resourceCulture);
             }
@@ -4141,7 +4150,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot access parent:: when no class scope is active.
         /// </summary>
-        internal static string parent_accessed_out_of_class {
+        public static string parent_accessed_out_of_class {
             get {
                 return ResourceManager.GetString("parent_accessed_out_of_class", resourceCulture);
             }
@@ -4150,7 +4159,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to &apos;parent&apos; used out of class declaration.
         /// </summary>
-        internal static string parent_used_out_of_class {
+        public static string parent_used_out_of_class {
             get {
                 return ResourceManager.GetString("parent_used_out_of_class", resourceCulture);
             }
@@ -4159,7 +4168,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The &apos;partial&apos; modifier cannot be used on a conditional declaration.
         /// </summary>
-        internal static string partial_conditional_declaration {
+        public static string partial_conditional_declaration {
             get {
                 return ResourceManager.GetString("partial_conditional_declaration", resourceCulture);
             }
@@ -4168,7 +4177,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to All partial declarations of &apos;{0}&apos; must not specify different base classes.
         /// </summary>
-        internal static string partial_declarations_differ_in_base {
+        public static string partial_declarations_differ_in_base {
             get {
                 return ResourceManager.GetString("partial_declarations_differ_in_base", resourceCulture);
             }
@@ -4177,7 +4186,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to All partial declarations of &apos;{0}&apos; must have the same type parameter definitions.
         /// </summary>
-        internal static string partial_declarations_differ_in_type_parameter {
+        public static string partial_declarations_differ_in_type_parameter {
             get {
                 return ResourceManager.GetString("partial_declarations_differ_in_type_parameter", resourceCulture);
             }
@@ -4186,7 +4195,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to All partial declarations of &apos;{0}&apos; must have the same number of type parameters.
         /// </summary>
-        internal static string partial_declarations_differ_in_type_parameter_count {
+        public static string partial_declarations_differ_in_type_parameter_count {
             get {
                 return ResourceManager.GetString("partial_declarations_differ_in_type_parameter_count", resourceCulture);
             }
@@ -4195,7 +4204,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The &apos;partial&apos; modifier can be used only in pure unit.
         /// </summary>
-        internal static string partial_impure_declaration {
+        public static string partial_impure_declaration {
             get {
                 return ResourceManager.GetString("partial_impure_declaration", resourceCulture);
             }
@@ -4204,7 +4213,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The &apos;partial&apos; modifier cannot be used in an evaluated code.
         /// </summary>
-        internal static string partial_transient_declaration {
+        public static string partial_transient_declaration {
             get {
                 return ResourceManager.GetString("partial_transient_declaration", resourceCulture);
             }
@@ -4213,7 +4222,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Path argument can not be empty.
         /// </summary>
-        internal static string path_argument_empty {
+        public static string path_argument_empty {
             get {
                 return ResourceManager.GetString("path_argument_empty", resourceCulture);
             }
@@ -4222,7 +4231,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Path contains invalid characters.
         /// </summary>
-        internal static string path_contains_invalid_characters {
+        public static string path_contains_invalid_characters {
             get {
                 return ResourceManager.GetString("path_contains_invalid_characters", resourceCulture);
             }
@@ -4231,7 +4240,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Performing compilation.
         /// </summary>
-        internal static string performing_compilation {
+        public static string performing_compilation {
             get {
                 return ResourceManager.GetString("performing_compilation", resourceCulture);
             }
@@ -4240,7 +4249,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to &lt;?php_track_vars?&gt; is not supported.
         /// </summary>
-        internal static string php_track_vars_not_supported {
+        public static string php_track_vars_not_supported {
             get {
                 return ResourceManager.GetString("php_track_vars_not_supported", resourceCulture);
             }
@@ -4249,7 +4258,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Replace this argument by arguments stated in a specified file..
         /// </summary>
-        internal static string phpc_arg_at_path {
+        public static string phpc_arg_at_path {
             get {
                 return ResourceManager.GetString("phpc_arg_at_path", resourceCulture);
             }
@@ -4262,7 +4271,7 @@ namespace PHP.Core.Localizations {
         ///3. settings in the file(s) specified by this option if specified
         ///4. App.config/Web.config file located in the application source root if exists and no /config options specified..
         /// </summary>
-        internal static string phpc_arg_config_path {
+        public static string phpc_arg_config_path {
             get {
                 return ResourceManager.GetString("phpc_arg_config_path", resourceCulture);
             }
@@ -4271,7 +4280,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Compile in debug mode (debug information is generated to .pdb files, asserts are ignored)..
         /// </summary>
-        internal static string phpc_arg_debug {
+        public static string phpc_arg_debug {
             get {
                 return ResourceManager.GetString("phpc_arg_debug", resourceCulture);
             }
@@ -4280,7 +4289,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Generate documentation into XML file named as the resulting assembly and placed to the same directory..
         /// </summary>
-        internal static string phpc_arg_doc {
+        public static string phpc_arg_doc {
             get {
                 return ResourceManager.GetString("phpc_arg_doc", resourceCulture);
             }
@@ -4289,7 +4298,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Generate documentation into a specified XML file..
         /// </summary>
-        internal static string phpc_arg_doc_path {
+        public static string phpc_arg_doc_path {
             get {
                 return ResourceManager.GetString("phpc_arg_doc_path", resourceCulture);
             }
@@ -4298,7 +4307,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Disables warnigs regarding ampersand modifiers (references). Automatically disabled when /dw:CompilerStrict specified..
         /// </summary>
-        internal static string phpc_arg_dw_AmpModifiers {
+        public static string phpc_arg_dw_AmpModifiers {
             get {
                 return ResourceManager.GetString("phpc_arg_dw_AmpModifiers", resourceCulture);
             }
@@ -4307,7 +4316,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Disables strict compiler warnings such as unreachable code, using &amp; modifier in function calls, etc..
         /// </summary>
-        internal static string phpc_arg_dw_CompilerStrict {
+        public static string phpc_arg_dw_CompilerStrict {
             get {
                 return ResourceManager.GetString("phpc_arg_dw_CompilerStrict", resourceCulture);
             }
@@ -4316,7 +4325,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Disables warnings related to deferred compilation..
         /// </summary>
-        internal static string phpc_arg_dw_DeferredToRuntime {
+        public static string phpc_arg_dw_DeferredToRuntime {
             get {
                 return ResourceManager.GetString("phpc_arg_dw_DeferredToRuntime", resourceCulture);
             }
@@ -4325,7 +4334,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Disables warnings reported when inclusion mapping fails. Automatically disabled when /dw:DeferredToRuntime specified..
         /// </summary>
-        internal static string phpc_arg_dw_InclusionsMapping {
+        public static string phpc_arg_dw_InclusionsMapping {
             get {
                 return ResourceManager.GetString("phpc_arg_dw_InclusionsMapping", resourceCulture);
             }
@@ -4334,7 +4343,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Encoding of the scripts. Examples: UTF-8, Windows-1250, Latin1, Latin2, etc. See also method System.Text.Encoding.GetEncoding(string)..
         /// </summary>
-        internal static string phpc_arg_encoding {
+        public static string phpc_arg_encoding {
             get {
                 return ResourceManager.GetString("phpc_arg_encoding", resourceCulture);
             }
@@ -4343,7 +4352,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to That one of compiled scripts which will be used as an entry point of a console application..
         /// </summary>
-        internal static string phpc_arg_entrypoint {
+        public static string phpc_arg_entrypoint {
             get {
                 return ResourceManager.GetString("phpc_arg_entrypoint", resourceCulture);
             }
@@ -4352,7 +4361,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Enables specified warning(s) (same options as /dw)..
         /// </summary>
-        internal static string phpc_arg_ew {
+        public static string phpc_arg_ew {
             get {
                 return ResourceManager.GetString("phpc_arg_ew", resourceCulture);
             }
@@ -4361,7 +4370,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Comma separated list of file extensions which to add to compilation when recursively searching directories. Default value is &apos;php,inc&apos;..
         /// </summary>
-        internal static string phpc_arg_ext {
+        public static string phpc_arg_ext {
             get {
                 return ResourceManager.GetString("phpc_arg_ext", resourceCulture);
             }
@@ -4370,7 +4379,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Displays this usage message..
         /// </summary>
-        internal static string phpc_arg_help {
+        public static string phpc_arg_help {
             get {
                 return ResourceManager.GetString("phpc_arg_help", resourceCulture);
             }
@@ -4379,7 +4388,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to File containing key pair generated by sn utility. Makes resulting assembly strongly named..
         /// </summary>
-        internal static string phpc_arg_key {
+        public static string phpc_arg_key {
             get {
                 return ResourceManager.GetString("phpc_arg_key", resourceCulture);
             }
@@ -4388,7 +4397,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Enable language features of the specified PHP language version..
         /// </summary>
-        internal static string phpc_arg_lang {
+        public static string phpc_arg_lang {
             get {
                 return ResourceManager.GetString("phpc_arg_lang", resourceCulture);
             }
@@ -4397,7 +4406,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Indicates that the COM threading model for the application is multithreaded apartment. Disabled by default..
         /// </summary>
-        internal static string phpc_arg_mta {
+        public static string phpc_arg_mta {
             get {
                 return ResourceManager.GetString("phpc_arg_mta", resourceCulture);
             }
@@ -4406,7 +4415,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Disables one or more warnings by number. Separate multiple warning numbers with a commas..
         /// </summary>
-        internal static string phpc_arg_nowarn_warning_numbers {
+        public static string phpc_arg_nowarn_warning_numbers {
             get {
                 return ResourceManager.GetString("phpc_arg_nowarn_warning_numbers", resourceCulture);
             }
@@ -4416,7 +4425,7 @@ namespace PHP.Core.Localizations {
         ///   Looks up a localized string similar to If the target is a web application specifies a directory where the resulting assembly should be stored in.
         ///Otherwise, specifies a name of the resulting application assembly..
         /// </summary>
-        internal static string phpc_arg_out_path {
+        public static string phpc_arg_out_path {
             get {
                 return ResourceManager.GetString("phpc_arg_out_path", resourceCulture);
             }
@@ -4425,7 +4434,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Build a pure PHP/CLR application..
         /// </summary>
-        internal static string phpc_arg_pure {
+        public static string phpc_arg_pure {
             get {
                 return ResourceManager.GetString("phpc_arg_pure", resourceCulture);
             }
@@ -4434,7 +4443,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Suppresses display of any messages..
         /// </summary>
-        internal static string phpc_arg_quiet {
+        public static string phpc_arg_quiet {
             get {
                 return ResourceManager.GetString("phpc_arg_quiet", resourceCulture);
             }
@@ -4443,7 +4452,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Directory which to recursively search for files to compile. Can be specified repeatedly..
         /// </summary>
-        internal static string phpc_arg_recurse {
+        public static string phpc_arg_recurse {
             get {
                 return ResourceManager.GetString("phpc_arg_recurse", resourceCulture);
             }
@@ -4452,7 +4461,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Path to a referenced PHP library assembly. More these options can be stated..
         /// </summary>
-        internal static string phpc_arg_reference_path {
+        public static string phpc_arg_reference_path {
             get {
                 return ResourceManager.GetString("phpc_arg_reference_path", resourceCulture);
             }
@@ -4461,7 +4470,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to File or directory to embed to the resulting assembly as a managed resource (if a directory is specified its content is embedded recursively). Can be specified repeatedly. Optionally can contain specification fo resource name and visibiliy - only for files. Default name is filename and visibility is public..
         /// </summary>
-        internal static string phpc_arg_resource {
+        public static string phpc_arg_resource {
             get {
                 return ResourceManager.GetString("phpc_arg_resource", resourceCulture);
             }
@@ -4470,7 +4479,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to A path to a root directory of the compiled web/console/win application or library. Defaults to the current directory..
         /// </summary>
-        internal static string phpc_arg_root_path {
+        public static string phpc_arg_root_path {
             get {
                 return ResourceManager.GetString("phpc_arg_root_path", resourceCulture);
             }
@@ -4479,7 +4488,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to File or directory which will be skipped during compilation. This also prevents a file(s) to be included statically if /static+ option is specified..
         /// </summary>
-        internal static string phpc_arg_skip {
+        public static string phpc_arg_skip {
             get {
                 return ResourceManager.GetString("phpc_arg_skip", resourceCulture);
             }
@@ -4488,7 +4497,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Enable static inclusions..
         /// </summary>
-        internal static string phpc_arg_static {
+        public static string phpc_arg_static {
             get {
                 return ResourceManager.GetString("phpc_arg_static", resourceCulture);
             }
@@ -4497,7 +4506,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Build a library..
         /// </summary>
-        internal static string phpc_arg_target_dll {
+        public static string phpc_arg_target_dll {
             get {
                 return ResourceManager.GetString("phpc_arg_target_dll", resourceCulture);
             }
@@ -4506,7 +4515,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Build an executable console application..
         /// </summary>
-        internal static string phpc_arg_target_exe {
+        public static string phpc_arg_target_exe {
             get {
                 return ResourceManager.GetString("phpc_arg_target_exe", resourceCulture);
             }
@@ -4515,7 +4524,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Build a web application..
         /// </summary>
-        internal static string phpc_arg_target_web {
+        public static string phpc_arg_target_web {
             get {
                 return ResourceManager.GetString("phpc_arg_target_web", resourceCulture);
             }
@@ -4524,7 +4533,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Build a Windows application..
         /// </summary>
-        internal static string phpc_arg_target_winexe {
+        public static string phpc_arg_target_winexe {
             get {
                 return ResourceManager.GetString("phpc_arg_target_winexe", resourceCulture);
             }
@@ -4533,7 +4542,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Whether to report additional infromation about the compilation process..
         /// </summary>
-        internal static string phpc_arg_verbose {
+        public static string phpc_arg_verbose {
             get {
                 return ResourceManager.GetString("phpc_arg_verbose", resourceCulture);
             }
@@ -4542,7 +4551,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Version of the resulting assembly. Default version is 1.0.0.0..
         /// </summary>
-        internal static string phpc_arg_version {
+        public static string phpc_arg_version {
             get {
                 return ResourceManager.GetString("phpc_arg_version", resourceCulture);
             }
@@ -4551,7 +4560,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to File containing an Win32 icon (or multiple icons) that will be included to the resulting assembly..
         /// </summary>
-        internal static string phpc_arg_win32icon {
+        public static string phpc_arg_win32icon {
             get {
                 return ResourceManager.GetString("phpc_arg_win32icon", resourceCulture);
             }
@@ -4561,7 +4570,7 @@ namespace PHP.Core.Localizations {
         ///   Looks up a localized string similar to Paths to scripts to be compiled should be specified on the command line following the options. The paths can be either absolute or relative to the /root directory.
         ///If no files are specified nor /recurse option is specified the /root directory is recursively searched for scripts to compile..
         /// </summary>
-        internal static string phpc_other_args {
+        public static string phpc_other_args {
             get {
                 return ResourceManager.GetString("phpc_other_args", resourceCulture);
             }
@@ -4570,7 +4579,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Precompiled assembly &apos;{0}&apos; is corrupted (unable to resolve type token 0x{1:X8})..
         /// </summary>
-        internal static string precompiled_assembly_corrupted {
+        public static string precompiled_assembly_corrupted {
             get {
                 return ResourceManager.GetString("precompiled_assembly_corrupted", resourceCulture);
             }
@@ -4579,7 +4588,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Precompiled assembly &apos;{0}&apos; contains &lt;Script&gt; type that misses ScriptAttribute..
         /// </summary>
-        internal static string precompiled_assembly_missing_script_attribute {
+        public static string precompiled_assembly_missing_script_attribute {
             get {
                 return ResourceManager.GetString("precompiled_assembly_missing_script_attribute", resourceCulture);
             }
@@ -4588,7 +4597,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot declare a private class in the global namespace.
         /// </summary>
-        internal static string private_class_in_global_ns {
+        public static string private_class_in_global_ns {
             get {
                 return ResourceManager.GetString("private_class_in_global_ns", resourceCulture);
             }
@@ -4597,7 +4606,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot access private constant {0}::{1} from context &apos;{2}&apos;.
         /// </summary>
-        internal static string private_constant_accessed {
+        public static string private_constant_accessed {
             get {
                 return ResourceManager.GetString("private_constant_accessed", resourceCulture);
             }
@@ -4606,7 +4615,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Call to private constructor {0}::{1}() from context &apos;{2}&apos;.
         /// </summary>
-        internal static string private_ctor_called {
+        public static string private_ctor_called {
             get {
                 return ResourceManager.GetString("private_ctor_called", resourceCulture);
             }
@@ -4615,7 +4624,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Call to private method {0}::{1}() from context &apos;{2}&apos;.
         /// </summary>
-        internal static string private_method_called {
+        public static string private_method_called {
             get {
                 return ResourceManager.GetString("private_method_called", resourceCulture);
             }
@@ -4624,7 +4633,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot access private property {0}::${1} from context &apos;{2}&apos;.
         /// </summary>
-        internal static string private_property_accessed {
+        public static string private_property_accessed {
             get {
                 return ResourceManager.GetString("private_property_accessed", resourceCulture);
             }
@@ -4633,7 +4642,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Properties cannot be declared abstract.
         /// </summary>
-        internal static string property_declared_abstract {
+        public static string property_declared_abstract {
             get {
                 return ResourceManager.GetString("property_declared_abstract", resourceCulture);
             }
@@ -4642,7 +4651,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Properties cannot be declared final.
         /// </summary>
-        internal static string property_declared_final {
+        public static string property_declared_final {
             get {
                 return ResourceManager.GetString("property_declared_final", resourceCulture);
             }
@@ -4651,7 +4660,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare property {0}::${1}.
         /// </summary>
-        internal static string property_redeclared {
+        public static string property_redeclared {
             get {
                 return ResourceManager.GetString("property_redeclared", resourceCulture);
             }
@@ -4660,7 +4669,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to assign the specified value to &apos;{0}::{1}&apos;. There is no suitable conversion..
         /// </summary>
-        internal static string property_type_mismatch {
+        public static string property_type_mismatch {
             get {
                 return ResourceManager.GetString("property_type_mismatch", resourceCulture);
             }
@@ -4669,7 +4678,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot access protected constant {0}::{1} from context &apos;{2}&apos;.
         /// </summary>
-        internal static string protected_constant_accessed {
+        public static string protected_constant_accessed {
             get {
                 return ResourceManager.GetString("protected_constant_accessed", resourceCulture);
             }
@@ -4678,7 +4687,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Call to protected constructor {0}::{1}() from context &apos;{2}&apos;.
         /// </summary>
-        internal static string protected_ctor_called {
+        public static string protected_ctor_called {
             get {
                 return ResourceManager.GetString("protected_ctor_called", resourceCulture);
             }
@@ -4687,7 +4696,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Call to protected method {0}::{1}() from context &apos;{2}&apos;.
         /// </summary>
-        internal static string protected_method_called {
+        public static string protected_method_called {
             get {
                 return ResourceManager.GetString("protected_method_called", resourceCulture);
             }
@@ -4696,7 +4705,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot access protected property {0}::${1} from context &apos;{2}&apos;.
         /// </summary>
-        internal static string protected_property_accessed {
+        public static string protected_property_accessed {
             get {
                 return ResourceManager.GetString("protected_property_accessed", resourceCulture);
             }
@@ -4705,7 +4714,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Reading configuration.
         /// </summary>
-        internal static string reading_configuration {
+        public static string reading_configuration {
             get {
                 return ResourceManager.GetString("reading_configuration", resourceCulture);
             }
@@ -4714,7 +4723,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot write to read-only property {0}::${1}.
         /// </summary>
-        internal static string readonly_property_written {
+        public static string readonly_property_written {
             get {
                 return ResourceManager.GetString("readonly_property_written", resourceCulture);
             }
@@ -4723,7 +4732,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare {0} &apos;{1}&apos; previously declared in {2}{3}.
         /// </summary>
-        internal static string redeclared_previous_decl {
+        public static string redeclared_previous_decl {
             get {
                 return ResourceManager.GetString("redeclared_previous_decl", resourceCulture);
             }
@@ -4732,7 +4741,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Inclusion of &apos;{2}{3}&apos; redeclares {0} &apos;{1}&apos; declared in {2}{3}.
         /// </summary>
-        internal static string redeclared_previous_decl_include {
+        public static string redeclared_previous_decl_include {
             get {
                 return ResourceManager.GetString("redeclared_previous_decl_include", resourceCulture);
             }
@@ -4741,7 +4750,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot declare inherited constant &apos;{0}&apos; from interface &apos;{1}&apos; in class/interface &apos;{2}&apos;.
         /// </summary>
-        internal static string redeclaring_inherited_constant {
+        public static string redeclaring_inherited_constant {
             get {
                 return ResourceManager.GetString("redeclaring_inherited_constant", resourceCulture);
             }
@@ -4750,7 +4759,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Argument &apos;{0}&apos; is passed by reference and hence should not be NULL.
         /// </summary>
-        internal static string reference_null {
+        public static string reference_null {
             get {
                 return ResourceManager.GetString("reference_null", resourceCulture);
             }
@@ -4759,7 +4768,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to A scalar of type &apos;{0}&apos; used as an array.
         /// </summary>
-        internal static string scalar_used_as_array {
+        public static string scalar_used_as_array {
             get {
                 return ResourceManager.GetString("scalar_used_as_array", resourceCulture);
             }
@@ -4768,7 +4777,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to A scalar of type &apos;{0}&apos; used as an object.
         /// </summary>
-        internal static string scalar_used_as_object {
+        public static string scalar_used_as_object {
             get {
                 return ResourceManager.GetString("scalar_used_as_object", resourceCulture);
             }
@@ -4777,7 +4786,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Script &apos;{0}&apos; inclusion failed. Cause: {1} Search paths: include_path is &apos;{2}&apos;, working directory is &apos;{3}&apos; .
         /// </summary>
-        internal static string script_inclusion_failed {
+        public static string script_inclusion_failed {
             get {
                 return ResourceManager.GetString("script_inclusion_failed", resourceCulture);
             }
@@ -4786,7 +4795,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Script library &quot;{0}&quot; could not be loaded..
         /// </summary>
-        internal static string script_library_assembly_loading_failed {
+        public static string script_library_assembly_loading_failed {
             get {
                 return ResourceManager.GetString("script_library_assembly_loading_failed", resourceCulture);
             }
@@ -4795,7 +4804,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Script file &apos;{0}&apos; not found..
         /// </summary>
-        internal static string script_not_found {
+        public static string script_not_found {
             get {
                 return ResourceManager.GetString("script_not_found", resourceCulture);
             }
@@ -4804,7 +4813,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot access self:: when no class scope is active.
         /// </summary>
-        internal static string self_accessed_out_of_class {
+        public static string self_accessed_out_of_class {
             get {
                 return ResourceManager.GetString("self_accessed_out_of_class", resourceCulture);
             }
@@ -4813,7 +4822,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to &apos;self&apos; used out of class declaration.
         /// </summary>
-        internal static string self_used_out_of_class {
+        public static string self_used_out_of_class {
             get {
                 return ResourceManager.GetString("self_used_out_of_class", resourceCulture);
             }
@@ -4822,7 +4831,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Semicolon ignored, using it in this context is possible in PHP 5, but depracated in PHP.NET.
         /// </summary>
-        internal static string semicolon_ignored {
+        public static string semicolon_ignored {
             get {
                 return ResourceManager.GetString("semicolon_ignored", resourceCulture);
             }
@@ -4831,7 +4840,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0}::serialize() must return a string or NULL.
         /// </summary>
-        internal static string serialize_must_return_null_or_string {
+        public static string serialize_must_return_null_or_string {
             get {
                 return ResourceManager.GetString("serialize_must_return_null_or_string", resourceCulture);
             }
@@ -4840,7 +4849,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Session state not available, session operation cannot be performed.
         /// </summary>
-        internal static string session_state_unavailable {
+        public static string session_state_unavailable {
             get {
                 return ResourceManager.GetString("session_state_unavailable", resourceCulture);
             }
@@ -4849,7 +4858,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Compilation of {0} skipped, file is already compiled.
         /// </summary>
-        internal static string skip_compile {
+        public static string skip_compile {
             get {
                 return ResourceManager.GetString("skip_compile", resourceCulture);
             }
@@ -4858,7 +4867,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to __sleep should return an array containing the names of instance-variables to serialize.
         /// </summary>
-        internal static string sleep_must_return_array {
+        public static string sleep_must_return_array {
             get {
                 return ResourceManager.GetString("sleep_must_return_array", resourceCulture);
             }
@@ -4867,7 +4876,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; returned as member variable from __sleep() but does not exist.
         /// </summary>
-        internal static string sleep_returned_bad_field {
+        public static string sleep_returned_bad_field {
             get {
                 return ResourceManager.GetString("sleep_returned_bad_field", resourceCulture);
             }
@@ -4876,7 +4885,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Source file &apos;{0}&apos; not found..
         /// </summary>
-        internal static string source_file_not_found {
+        public static string source_file_not_found {
             get {
                 return ResourceManager.GetString("source_file_not_found", resourceCulture);
             }
@@ -4885,7 +4894,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Accessing static property {0}::${1} as non static.
         /// </summary>
-        internal static string static_property_as_nonstatic {
+        public static string static_property_as_nonstatic {
             get {
                 return ResourceManager.GetString("static_property_as_nonstatic", resourceCulture);
             }
@@ -4894,7 +4903,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Attempt to unset static property {0}::${1}.
         /// </summary>
-        internal static string static_property_unset {
+        public static string static_property_unset {
             get {
                 return ResourceManager.GetString("static_property_unset", resourceCulture);
             }
@@ -4903,7 +4912,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Failed to open stream ({0}): The specified directory does not exist.
         /// </summary>
-        internal static string stream_bad_directory {
+        public static string stream_bad_directory {
             get {
                 return ResourceManager.GetString("stream_bad_directory", resourceCulture);
             }
@@ -4912,7 +4921,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Failed to open stream ({0}): The specified file does not exist.
         /// </summary>
-        internal static string stream_bad_filename {
+        public static string stream_bad_filename {
             get {
                 return ResourceManager.GetString("stream_bad_filename", resourceCulture);
             }
@@ -4921,7 +4930,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to find the wrapper &apos;{0}&apos; - did you forget to enable it when you configured PHP?.
         /// </summary>
-        internal static string stream_bad_wrapper {
+        public static string stream_bad_wrapper {
             get {
                 return ResourceManager.GetString("stream_bad_wrapper", resourceCulture);
             }
@@ -4930,7 +4939,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to make directory ({0}): Permission denied.
         /// </summary>
-        internal static string stream_directory_access_denied {
+        public static string stream_directory_access_denied {
             get {
                 return ResourceManager.GetString("stream_directory_access_denied", resourceCulture);
             }
@@ -4939,7 +4948,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to make directory ({0}): Directory not empty or read-only.
         /// </summary>
-        internal static string stream_directory_error {
+        public static string stream_directory_error {
             get {
                 return ResourceManager.GetString("stream_directory_error", resourceCulture);
             }
@@ -4948,7 +4957,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to make directory ({0}): Use recursive mode to create more than one directory at a time.
         /// </summary>
-        internal static string stream_directory_make_parent {
+        public static string stream_directory_make_parent {
             get {
                 return ResourceManager.GetString("stream_directory_make_parent", resourceCulture);
             }
@@ -4957,7 +4966,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to make directory ({0}): Can not create root directory.
         /// </summary>
-        internal static string stream_directory_make_root {
+        public static string stream_directory_make_root {
             get {
                 return ResourceManager.GetString("stream_directory_make_root", resourceCulture);
             }
@@ -4966,7 +4975,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The specified directory does not exist ({0}).
         /// </summary>
-        internal static string stream_directory_not_exists {
+        public static string stream_directory_not_exists {
             get {
                 return ResourceManager.GetString("stream_directory_not_exists", resourceCulture);
             }
@@ -4975,7 +4984,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Can not access resource ({0}): {1}.
         /// </summary>
-        internal static string stream_error {
+        public static string stream_error {
             get {
                 return ResourceManager.GetString("stream_error", resourceCulture);
             }
@@ -4984,7 +4993,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to access ({0}): Permission denied.
         /// </summary>
-        internal static string stream_file_access_denied {
+        public static string stream_file_access_denied {
             get {
                 return ResourceManager.GetString("stream_file_access_denied", resourceCulture);
             }
@@ -4993,7 +5002,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The specified file already exists ({0}).
         /// </summary>
-        internal static string stream_file_exists {
+        public static string stream_file_exists {
             get {
                 return ResourceManager.GetString("stream_file_exists", resourceCulture);
             }
@@ -5002,7 +5011,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Failed to open stream ({0}): The specified filename is invalid.
         /// </summary>
-        internal static string stream_file_invalid {
+        public static string stream_file_invalid {
             get {
                 return ResourceManager.GetString("stream_file_invalid", resourceCulture);
             }
@@ -5011,7 +5020,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Failed to open stream ({0}) due to I/O error: {1}.
         /// </summary>
-        internal static string stream_file_io_error {
+        public static string stream_file_io_error {
             get {
                 return ResourceManager.GetString("stream_file_io_error", resourceCulture);
             }
@@ -5020,7 +5029,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The specified file does not exist ({0}).
         /// </summary>
-        internal static string stream_file_not_exists {
+        public static string stream_file_not_exists {
             get {
                 return ResourceManager.GetString("stream_file_not_exists", resourceCulture);
             }
@@ -5029,7 +5038,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to access ({0}): The filename is invalid.
         /// </summary>
-        internal static string stream_filename_invalid {
+        public static string stream_filename_invalid {
             get {
                 return ResourceManager.GetString("stream_filename_invalid", resourceCulture);
             }
@@ -5038,7 +5047,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to open {0} for reading.
         /// </summary>
-        internal static string stream_open_read_unsupported {
+        public static string stream_open_read_unsupported {
             get {
                 return ResourceManager.GetString("stream_open_read_unsupported", resourceCulture);
             }
@@ -5047,7 +5056,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to open {0} for writing.
         /// </summary>
-        internal static string stream_open_write_unsupported {
+        public static string stream_open_write_unsupported {
             get {
                 return ResourceManager.GetString("stream_open_write_unsupported", resourceCulture);
             }
@@ -5056,7 +5065,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The specified path does not exist ({0}).
         /// </summary>
-        internal static string stream_path_not_exists {
+        public static string stream_path_not_exists {
             get {
                 return ResourceManager.GetString("stream_path_not_exists", resourceCulture);
             }
@@ -5065,7 +5074,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to An error occured when reading from stream: {0}.
         /// </summary>
-        internal static string stream_read_error {
+        public static string stream_read_error {
             get {
                 return ResourceManager.GetString("stream_read_error", resourceCulture);
             }
@@ -5074,7 +5083,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to An I/O error occured when reading from stream: {0}.
         /// </summary>
-        internal static string stream_read_io_error {
+        public static string stream_read_io_error {
             get {
                 return ResourceManager.GetString("stream_read_io_error", resourceCulture);
             }
@@ -5083,7 +5092,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The stream was not opened for reading.
         /// </summary>
-        internal static string stream_read_off {
+        public static string stream_read_off {
             get {
                 return ResourceManager.GetString("stream_read_off", resourceCulture);
             }
@@ -5092,7 +5101,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Can not rename &apos;{0}&apos; to &apos;{1}&apos;: target file exists.
         /// </summary>
-        internal static string stream_rename_file_exists {
+        public static string stream_rename_file_exists {
             get {
                 return ResourceManager.GetString("stream_rename_file_exists", resourceCulture);
             }
@@ -5101,7 +5110,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Can not remove directory ({0}): directory not empty.
         /// </summary>
-        internal static string stream_rmdir_io_error {
+        public static string stream_rmdir_io_error {
             get {
                 return ResourceManager.GetString("stream_rmdir_io_error", resourceCulture);
             }
@@ -5110,7 +5119,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Seeking in a {0} stream! It may lead to unpredictable results..
         /// </summary>
-        internal static string stream_seek_filtered {
+        public static string stream_seek_filtered {
             get {
                 return ResourceManager.GetString("stream_seek_filtered", resourceCulture);
             }
@@ -5119,7 +5128,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Socket error: {0}.
         /// </summary>
-        internal static string stream_socket_error {
+        public static string stream_socket_error {
             get {
                 return ResourceManager.GetString("stream_socket_error", resourceCulture);
             }
@@ -5128,7 +5137,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Failed to stat ({0}) - invalid filename.
         /// </summary>
-        internal static string stream_stat_invalid_path {
+        public static string stream_stat_invalid_path {
             get {
                 return ResourceManager.GetString("stream_stat_invalid_path", resourceCulture);
             }
@@ -5137,7 +5146,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Can not unlink file ({0}): unexpected error.
         /// </summary>
-        internal static string stream_unlink_error {
+        public static string stream_unlink_error {
             get {
                 return ResourceManager.GetString("stream_unlink_error", resourceCulture);
             }
@@ -5146,7 +5155,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Can not unlink file ({0}): The specified filename is invalid.
         /// </summary>
-        internal static string stream_unlink_file_not_found {
+        public static string stream_unlink_file_not_found {
             get {
                 return ResourceManager.GetString("stream_unlink_file_not_found", resourceCulture);
             }
@@ -5155,7 +5164,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Can not unlink file ({0}) due to I/O error: {1}.
         /// </summary>
-        internal static string stream_unlink_io_error {
+        public static string stream_unlink_io_error {
             get {
                 return ResourceManager.GetString("stream_unlink_io_error", resourceCulture);
             }
@@ -5164,7 +5173,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Failed to open stream ({0}): The specified URL is invalid.
         /// </summary>
-        internal static string stream_url_invalid {
+        public static string stream_url_invalid {
             get {
                 return ResourceManager.GetString("stream_url_invalid", resourceCulture);
             }
@@ -5173,7 +5182,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Failed to open stream ({0}): The specified request method is invalid.
         /// </summary>
-        internal static string stream_url_method_invalid {
+        public static string stream_url_method_invalid {
             get {
                 return ResourceManager.GetString("stream_url_method_invalid", resourceCulture);
             }
@@ -5182,7 +5191,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to An error occured when writing to stream: {0}.
         /// </summary>
-        internal static string stream_write_error {
+        public static string stream_write_error {
             get {
                 return ResourceManager.GetString("stream_write_error", resourceCulture);
             }
@@ -5191,7 +5200,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to write to stream (only {0} bytes of {1} written).
         /// </summary>
-        internal static string stream_write_failed {
+        public static string stream_write_failed {
             get {
                 return ResourceManager.GetString("stream_write_failed", resourceCulture);
             }
@@ -5200,7 +5209,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to An I/O error occured when writing to stream: {0}.
         /// </summary>
-        internal static string stream_write_io_error {
+        public static string stream_write_io_error {
             get {
                 return ResourceManager.GetString("stream_write_io_error", resourceCulture);
             }
@@ -5209,7 +5218,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The stream was not opened for writing.
         /// </summary>
-        internal static string stream_write_off {
+        public static string stream_write_off {
             get {
                 return ResourceManager.GetString("stream_write_off", resourceCulture);
             }
@@ -5218,7 +5227,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to A string item used as a reference.
         /// </summary>
-        internal static string string_item_used_as_reference {
+        public static string string_item_used_as_reference {
             get {
                 return ResourceManager.GetString("string_item_used_as_reference", resourceCulture);
             }
@@ -5227,7 +5236,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to String should consist of a single character.
         /// </summary>
-        internal static string string_should_be_single_character {
+        public static string string_should_be_single_character {
             get {
                 return ResourceManager.GetString("string_should_be_single_character", resourceCulture);
             }
@@ -5236,7 +5245,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to A string used as an array.
         /// </summary>
-        internal static string string_used_as_array {
+        public static string string_used_as_array {
             get {
                 return ResourceManager.GetString("string_used_as_array", resourceCulture);
             }
@@ -5245,7 +5254,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to A string used as an object.
         /// </summary>
-        internal static string string_used_as_object {
+        public static string string_used_as_object {
             get {
                 return ResourceManager.GetString("string_used_as_object", resourceCulture);
             }
@@ -5256,7 +5265,7 @@ namespace PHP.Core.Localizations {
         ///Stack trace:
         ///{2}.
         /// </summary>
-        internal static string stringified_exception {
+        public static string stringified_exception {
             get {
                 return ResourceManager.GetString("stringified_exception", resourceCulture);
             }
@@ -5267,7 +5276,7 @@ namespace PHP.Core.Localizations {
         ///Stack trace:
         ///{5}.
         /// </summary>
-        internal static string stringified_exception_debug {
+        public static string stringified_exception_debug {
             get {
                 return ResourceManager.GetString("stringified_exception_debug", resourceCulture);
             }
@@ -5276,7 +5285,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Syntax error: {0}.
         /// </summary>
-        internal static string syntax_error {
+        public static string syntax_error {
             get {
                 return ResourceManager.GetString("syntax_error", resourceCulture);
             }
@@ -5285,7 +5294,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The variable $this used in write context.
         /// </summary>
-        internal static string this_in_write_context {
+        public static string this_in_write_context {
             get {
                 return ResourceManager.GetString("this_in_write_context", resourceCulture);
             }
@@ -5294,7 +5303,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The variable $this used out of method.
         /// </summary>
-        internal static string this_out_of_method {
+        public static string this_out_of_method {
             get {
                 return ResourceManager.GetString("this_out_of_method", resourceCulture);
             }
@@ -5303,7 +5312,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Using $this when not in object context.
         /// </summary>
-        internal static string this_used_out_of_object {
+        public static string this_used_out_of_object {
             get {
                 return ResourceManager.GetString("this_used_out_of_object", resourceCulture);
             }
@@ -5312,7 +5321,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Timeout when waiting for ExtManager to start up..
         /// </summary>
-        internal static string timeout_waiting_for_extmanager {
+        public static string timeout_waiting_for_extmanager {
             get {
                 return ResourceManager.GetString("timeout_waiting_for_extmanager", resourceCulture);
             }
@@ -5321,7 +5330,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The integer number {0} is too big, converting to double instead.
         /// </summary>
-        internal static string too_big_int_conversion {
+        public static string too_big_int_conversion {
             get {
                 return ResourceManager.GetString("too_big_int_conversion", resourceCulture);
             }
@@ -5330,7 +5339,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Missing parameter(s) to the call of the class &apos;{0}&apos; constructor - at least {1} required but only {2} provided.
         /// </summary>
-        internal static string too_few_ctor_params {
+        public static string too_few_ctor_params {
             get {
                 return ResourceManager.GetString("too_few_ctor_params", resourceCulture);
             }
@@ -5339,7 +5348,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Missing parameter(s) to the call of &apos;{0}&apos; - at least {1} required but only {2} provided.
         /// </summary>
-        internal static string too_few_function_params {
+        public static string too_few_function_params {
             get {
                 return ResourceManager.GetString("too_few_function_params", resourceCulture);
             }
@@ -5348,7 +5357,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Missing parameter(s) to the call of &apos;{0}::{1}&apos; - at least {2} required but only {3} provided.
         /// </summary>
-        internal static string too_few_method_params {
+        public static string too_few_method_params {
             get {
                 return ResourceManager.GetString("too_few_method_params", resourceCulture);
             }
@@ -5357,7 +5366,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Too little data buffered..
         /// </summary>
-        internal static string too_little_data_buffered {
+        public static string too_little_data_buffered {
             get {
                 return ResourceManager.GetString("too_little_data_buffered", resourceCulture);
             }
@@ -5366,7 +5375,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function &apos;{0}&apos; declares too many local variables ({1}) which may lead to suboptimal performace.
         /// </summary>
-        internal static string too_many_local_variables_function {
+        public static string too_many_local_variables_function {
             get {
                 return ResourceManager.GetString("too_many_local_variables_function", resourceCulture);
             }
@@ -5375,7 +5384,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Method &apos;{0}::{1}&apos; declares too many local variables ({2}) which may lead to suboptimal performace.
         /// </summary>
-        internal static string too_many_local_variables_method {
+        public static string too_many_local_variables_method {
             get {
                 return ResourceManager.GetString("too_many_local_variables_method", resourceCulture);
             }
@@ -5384,7 +5393,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Use of type &apos;{0}&apos; requires at most {1} generic type arguments.
         /// </summary>
-        internal static string too_many_type_arguments_in_type_use {
+        public static string too_many_type_arguments_in_type_use {
             get {
                 return ResourceManager.GetString("too_many_type_arguments_in_type_use", resourceCulture);
             }
@@ -5393,7 +5402,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Method {0}::__toString() must return a string value.
         /// </summary>
-        internal static string tostring_must_return_string {
+        public static string tostring_must_return_string {
             get {
                 return ResourceManager.GetString("tostring_must_return_string", resourceCulture);
             }
@@ -5402,7 +5411,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Generic type argument #{0} not passed to the function/method.
         /// </summary>
-        internal static string type_argument_not_passed_to_function {
+        public static string type_argument_not_passed_to_function {
             get {
                 return ResourceManager.GetString("type_argument_not_passed_to_function", resourceCulture);
             }
@@ -5411,7 +5420,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot redeclare class/interface &apos;{0}&apos;.
         /// </summary>
-        internal static string type_redeclared {
+        public static string type_redeclared {
             get {
                 return ResourceManager.GetString("type_redeclared", resourceCulture);
             }
@@ -5420,7 +5429,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to connect to ExtManager..
         /// </summary>
-        internal static string unable_to_connect_extmanager {
+        public static string unable_to_connect_extmanager {
             get {
                 return ResourceManager.GetString("unable_to_connect_extmanager", resourceCulture);
             }
@@ -5429,7 +5438,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to find extension &apos;{0}&apos;.
         /// </summary>
-        internal static string unable_to_find_extension {
+        public static string unable_to_find_extension {
             get {
                 return ResourceManager.GetString("unable_to_find_extension", resourceCulture);
             }
@@ -5438,7 +5447,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to launch ExtManager..
         /// </summary>
-        internal static string unable_to_launch_extmanager {
+        public static string unable_to_launch_extmanager {
             get {
                 return ResourceManager.GetString("unable_to_launch_extmanager", resourceCulture);
             }
@@ -5447,7 +5456,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unable to resolve script type (source path &apos;{0}&apos;, referential type &apos;{1}&apos;).
         /// </summary>
-        internal static string unable_to_resolve_script_type {
+        public static string unable_to_resolve_script_type {
             get {
                 return ResourceManager.GetString("unable_to_resolve_script_type", resourceCulture);
             }
@@ -5456,7 +5465,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Uncaught {0}.
         /// </summary>
-        internal static string uncaught_exception {
+        public static string uncaught_exception {
             get {
                 return ResourceManager.GetString("uncaught_exception", resourceCulture);
             }
@@ -5465,7 +5474,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Access to undeclared static property: {0}::${1}.
         /// </summary>
-        internal static string undeclared_static_property_accessed {
+        public static string undeclared_static_property_accessed {
             get {
                 return ResourceManager.GetString("undeclared_static_property_accessed", resourceCulture);
             }
@@ -5474,7 +5483,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Undefined class constant &apos;{0}::{1}&apos;.
         /// </summary>
-        internal static string undefined_class_constant {
+        public static string undefined_class_constant {
             get {
                 return ResourceManager.GetString("undefined_class_constant", resourceCulture);
             }
@@ -5483,7 +5492,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Use of undefined constant {0} - assumed &apos;{0}&apos;.
         /// </summary>
-        internal static string undefined_constant {
+        public static string undefined_constant {
             get {
                 return ResourceManager.GetString("undefined_constant", resourceCulture);
             }
@@ -5492,7 +5501,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Call to undefined external function &apos;{0}&apos;, extension &apos;{1}&apos; - check configuration.
         /// </summary>
-        internal static string undefined_external_function_called {
+        public static string undefined_external_function_called {
             get {
                 return ResourceManager.GetString("undefined_external_function_called", resourceCulture);
             }
@@ -5501,7 +5510,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Call to undefined external function &apos;{0}&apos;, extension &apos;{1}&apos; (extension not found).
         /// </summary>
-        internal static string undefined_external_module_called {
+        public static string undefined_external_module_called {
             get {
                 return ResourceManager.GetString("undefined_external_module_called", resourceCulture);
             }
@@ -5510,7 +5519,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Call to undefined function: &apos;{0}&apos;.
         /// </summary>
-        internal static string undefined_function_called {
+        public static string undefined_function_called {
             get {
                 return ResourceManager.GetString("undefined_function_called", resourceCulture);
             }
@@ -5519,7 +5528,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Use of undefined label &apos;{0}&apos;.
         /// </summary>
-        internal static string undefined_label {
+        public static string undefined_label {
             get {
                 return ResourceManager.GetString("undefined_label", resourceCulture);
             }
@@ -5528,7 +5537,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Call to undefined method: {0}::{1}().
         /// </summary>
-        internal static string undefined_method_called {
+        public static string undefined_method_called {
             get {
                 return ResourceManager.GetString("undefined_method_called", resourceCulture);
             }
@@ -5537,7 +5546,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Undefined offset ({0}).
         /// </summary>
-        internal static string undefined_offset {
+        public static string undefined_offset {
             get {
                 return ResourceManager.GetString("undefined_offset", resourceCulture);
             }
@@ -5546,7 +5555,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Undefined property: {0}::${1}.
         /// </summary>
-        internal static string undefined_property_accessed {
+        public static string undefined_property_accessed {
             get {
                 return ResourceManager.GetString("undefined_property_accessed", resourceCulture);
             }
@@ -5555,7 +5564,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot access undefined property for object with overloaded property access.
         /// </summary>
-        internal static string undefined_property_when_access_overloaded {
+        public static string undefined_property_when_access_overloaded {
             get {
                 return ResourceManager.GetString("undefined_property_when_access_overloaded", resourceCulture);
             }
@@ -5564,7 +5573,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Undefined variable: {0}.
         /// </summary>
-        internal static string undefined_variable {
+        public static string undefined_variable {
             get {
                 return ResourceManager.GetString("undefined_variable", resourceCulture);
             }
@@ -5573,7 +5582,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unexpected parent constructor call (such call is allowed only in the constructor of the class extending a CLR type).
         /// </summary>
-        internal static string unexpected_parent_ctor_invocation {
+        public static string unexpected_parent_ctor_invocation {
             get {
                 return ResourceManager.GetString("unexpected_parent_ctor_invocation", resourceCulture);
             }
@@ -5582,7 +5591,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to unexpected token &apos;{0}&apos;.
         /// </summary>
-        internal static string unexpected_token {
+        public static string unexpected_token {
             get {
                 return ResourceManager.GetString("unexpected_token", resourceCulture);
             }
@@ -5591,7 +5600,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to String offset &apos;{0}&apos; hasn&apos;t been initialized.
         /// </summary>
-        internal static string uninitialized_string_offset {
+        public static string uninitialized_string_offset {
             get {
                 return ResourceManager.GetString("uninitialized_string_offset", resourceCulture);
             }
@@ -5600,7 +5609,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Class &apos;{0}&apos; is unknown at this point at compile-time.
         /// </summary>
-        internal static string unknown_class_used {
+        public static string unknown_class_used {
             get {
                 return ResourceManager.GetString("unknown_class_used", resourceCulture);
             }
@@ -5609,7 +5618,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Class &apos;{0}&apos; (imported as &apos;{1}&apos;) is unknown at this point at compile-time.
         /// </summary>
-        internal static string unknown_class_used_with_alias {
+        public static string unknown_class_used_with_alias {
             get {
                 return ResourceManager.GetString("unknown_class_used_with_alias", resourceCulture);
             }
@@ -5618,7 +5627,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Constant &apos;{0}&apos; is unknown at this point at compile-time.
         /// </summary>
-        internal static string unknown_constant_used {
+        public static string unknown_constant_used {
             get {
                 return ResourceManager.GetString("unknown_constant_used", resourceCulture);
             }
@@ -5627,7 +5636,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Constant &apos;{0}&apos; (imported as &apos;{1}&apos;) is unknown at this point at compile-time.
         /// </summary>
-        internal static string unknown_constant_used_with_alias {
+        public static string unknown_constant_used_with_alias {
             get {
                 return ResourceManager.GetString("unknown_constant_used_with_alias", resourceCulture);
             }
@@ -5636,7 +5645,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unknown custom attribute; neither of types &apos;{0}&apos; and &apos;{1}&apos; exists.
         /// </summary>
-        internal static string unknown_custom_attribute {
+        public static string unknown_custom_attribute {
             get {
                 return ResourceManager.GetString("unknown_custom_attribute", resourceCulture);
             }
@@ -5645,7 +5654,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function &apos;{0}&apos; is unknown at this point at compile-time.
         /// </summary>
-        internal static string unknown_function_used {
+        public static string unknown_function_used {
             get {
                 return ResourceManager.GetString("unknown_function_used", resourceCulture);
             }
@@ -5654,7 +5663,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function &apos;{0}&apos; (imported as &apos;{1}&apos;) is unknown at this point at compile-time.
         /// </summary>
-        internal static string unknown_function_used_with_alias {
+        public static string unknown_function_used_with_alias {
             get {
                 return ResourceManager.GetString("unknown_function_used_with_alias", resourceCulture);
             }
@@ -5663,7 +5672,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Class &apos;{0}&apos; does not contain definition of method &apos;{1}&apos;.
         /// </summary>
-        internal static string unknown_method_called {
+        public static string unknown_method_called {
             get {
                 return ResourceManager.GetString("unknown_method_called", resourceCulture);
             }
@@ -5672,7 +5681,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Session handler &apos;{0}&apos; is unknown. It hasn&apos;t been registered by any loaded library..
         /// </summary>
-        internal static string unknown_session_handler {
+        public static string unknown_session_handler {
             get {
                 return ResourceManager.GetString("unknown_session_handler", resourceCulture);
             }
@@ -5681,7 +5690,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unknown error &quot;{0}&quot;..
         /// </summary>
-        internal static string UnknownError_Num {
+        public static string UnknownError_Num {
             get {
                 return ResourceManager.GetString("UnknownError_Num", resourceCulture);
             }
@@ -5690,7 +5699,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function {0} requires access to local variables and prevents optimizing them. To improve performance, separate this function call into small function..
         /// </summary>
-        internal static string unoptimized_local_variables_function {
+        public static string unoptimized_local_variables_function {
             get {
                 return ResourceManager.GetString("unoptimized_local_variables_function", resourceCulture);
             }
@@ -5699,7 +5708,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unreachable code detected.
         /// </summary>
-        internal static string unreachable_code {
+        public static string unreachable_code {
             get {
                 return ResourceManager.GetString("unreachable_code", resourceCulture);
             }
@@ -5708,7 +5717,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Function {0}() hasn&apos;t defined the class it was called for.
         /// </summary>
-        internal static string unserialize_callback_failed {
+        public static string unserialize_callback_failed {
             get {
                 return ResourceManager.GetString("unserialize_callback_failed", resourceCulture);
             }
@@ -5717,7 +5726,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unsupported operand type.
         /// </summary>
-        internal static string unsupported_operand_type {
+        public static string unsupported_operand_type {
             get {
                 return ResourceManager.GetString("unsupported_operand_type", resourceCulture);
             }
@@ -5726,7 +5735,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unsupported operand types.
         /// </summary>
-        internal static string unsupported_operand_types {
+        public static string unsupported_operand_types {
             get {
                 return ResourceManager.GetString("unsupported_operand_types", resourceCulture);
             }
@@ -5735,7 +5744,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Unterminated comment starting line {0}.
         /// </summary>
-        internal static string unterminated_comment {
+        public static string unterminated_comment {
             get {
                 return ResourceManager.GetString("unterminated_comment", resourceCulture);
             }
@@ -5744,7 +5753,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The label &apos;{0}&apos; is defined but not used within the current scope.
         /// </summary>
-        internal static string unused_label {
+        public static string unused_label {
             get {
                 return ResourceManager.GetString("unused_label", resourceCulture);
             }
@@ -5753,7 +5762,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to URL file-access is disabled in the server configuration.
         /// </summary>
-        internal static string url_fopen_disabled {
+        public static string url_fopen_disabled {
             get {
                 return ResourceManager.GetString("url_fopen_disabled", resourceCulture);
             }
@@ -5762,7 +5771,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to No URL resource specified.
         /// </summary>
-        internal static string url_resource_missing {
+        public static string url_resource_missing {
             get {
                 return ResourceManager.GetString("url_resource_missing", resourceCulture);
             }
@@ -5771,7 +5780,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to The option is valid only in web application configuration..
         /// </summary>
-        internal static string web_only_option {
+        public static string web_only_option {
             get {
                 return ResourceManager.GetString("web_only_option", resourceCulture);
             }
@@ -5780,7 +5789,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Web server context is not available..
         /// </summary>
-        internal static string web_server_not_available {
+        public static string web_server_not_available {
             get {
                 return ResourceManager.GetString("web_server_not_available", resourceCulture);
             }
@@ -5789,7 +5798,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to {0} operation is not supported by this stream wrapper.
         /// </summary>
-        internal static string wrapper_op_unsupported {
+        public static string wrapper_op_unsupported {
             get {
                 return ResourceManager.GetString("wrapper_op_unsupported", resourceCulture);
             }
@@ -5798,7 +5807,7 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot read from write-only property {0}::${1}.
         /// </summary>
-        internal static string writeonly_property_read {
+        public static string writeonly_property_read {
             get {
                 return ResourceManager.GetString("writeonly_property_read", resourceCulture);
             }

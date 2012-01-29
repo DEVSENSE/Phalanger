@@ -21,7 +21,7 @@ namespace PHP.Core
 	/// Manages resources of the Core.
 	/// </summary>
     [DebuggerNonUserCode]
-    public class CoreResources
+    public class CoreResources : PHP.Core.Localizations.Strings
 	{
         /// <summary>
         /// Resource manager of strings.

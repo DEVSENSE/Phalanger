@@ -2056,4 +2056,7 @@ non-infringement.
   <data name="error_place" xml:space="preserve">
     <value> in {0} on line {1}, column {2}</value>
   </data>
+  <data name="class_could_not_be_loaded" xml:space="preserve">
+    <value>Class {0} could not be loaded</value>
+  </data>
 </root>
