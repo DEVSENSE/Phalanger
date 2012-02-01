@@ -65,6 +65,8 @@ namespace PHP.Core.Emit
 
 		public AssemblyBuilder/*!*/ RealAssemblyBuilder { get { return (AssemblyBuilder)assembly.RealAssembly; } }
 		public ModuleBuilder/*!*/ RealModuleBuilder { get { return (ModuleBuilder)assembly.RealModule; } }
+        internal DelegateBuilder/*!*/ DelegateBuilder { get { return deleateBuilder ?? (deleateBuilder = new DelegateBuilder(RealModuleBuilder)); } }
+        private DelegateBuilder deleateBuilder;
 
         /// <summary>
         /// Prevent calling of ReflectionUtils.CreateGlobalType(RealModuleBuilder) more than once.

@@ -370,9 +370,16 @@ namespace PHP.Core
 		/// To be called from the compiled scripts before library loading; libraries should check for conflicts.
 		/// </summary>
 		[Emitted]
-		public void DeclareFunction(RoutineDelegate/*!*/ arglessStub, string/*!*/ fullName, PhpMemberAttributes memberAttributes)
+		public void DeclareFunction(RoutineDelegate/*!*/ arglessStub, string/*!*/ fullName, PhpMemberAttributes memberAttributes, MethodInfo/*!*/argfull)
 		{
-			functions[fullName] = new PhpRoutineDesc(memberAttributes, arglessStub, true);
+            Debug.Assert(argfull != null);
+
+            var desc = new PhpRoutineDesc(memberAttributes, arglessStub, true);
+            
+            if (argfull != null)    // only if we have the argfull
+                new PurePhpFunction(desc, fullName, argfull);   // writes desc.Member
+
+            functions[fullName] = desc;
 		}
 
 		/// <summary>

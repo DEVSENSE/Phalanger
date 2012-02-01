@@ -2930,4 +2930,67 @@ namespace PHP.Core.Reflection
 	}
 
 	#endregion
+
+    #region PurePhpFunction
+
+    [DebuggerNonUserCode]
+    public sealed class PurePhpFunction : PhpRoutine
+    {
+        #region Properties
+
+        public override bool IsLambda { get { return false; } }
+        public override bool ReturnValueDeepCopyEmitted { get { return false; } }
+        public override bool IsIdentityDefinite { get { return true; } }
+
+        public override Name Name { get { return name; } }
+        private readonly Name name;
+
+        public override bool IsFunction { get { return true; } }
+
+        public override SourceUnit SourceUnit { get { throw new NotSupportedException(); } }
+        public override Position Position { get { throw new NotSupportedException(); } }
+
+        internal override bool IsExported { get { return false; } }
+
+        public override string GetFullClrName() { return Name.Value; }
+
+        #endregion
+
+        #region Construction
+
+        /// <summary>
+        /// Used by full-reflect.
+        /// </summary>
+        public PurePhpFunction(PhpRoutineDesc/*!*/routine, string name, MethodInfo/*!*/argfull)
+            : base(routine)
+        {
+            Debug.Assert(routine != null);
+            Debug.Assert(argfull != null);
+
+            this.name = new Name(name);
+            this.argfull = argfull;
+            this.signature = PhpRoutineSignature.FromArgfullInfo(this, argfull);
+        }
+
+        #endregion
+
+        #region Utils
+
+        public override string GetFullName()
+        {
+            return name.Value;
+        }
+
+        internal override int ResolveOverload(Analyzer analyzer, CallSignature callSignature, Position position, out RoutineSignature overloadSignature)
+        {
+            overloadSignature = signature;
+            return 0;
+        }
+
+        #endregion
+
+        
+    }
+
+    #endregion
 }

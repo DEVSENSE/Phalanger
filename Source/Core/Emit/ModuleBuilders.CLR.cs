@@ -111,7 +111,10 @@ namespace PHP.Core.Emit
 					// LOAD <attributes>;
 					il.LdcI4((int)function.MemberDesc.MemberAttributes);
 
-					// CALL <application context>.DeclareFunction(<stub>, <name>, <member attributes>)
+                    // LOAD <argfull>
+                    il.Emit(OpCodes.Ldnull); //CodeGenerator.EmitLoadMethodInfo(il, function.ArgFullInfo/*, AssemblyBuilder.DelegateBuilder*/); // argfull is global method, cannot be called from different module
+                    
+					// CALL <application context>.DeclareFunction(<stub>, <name>, <member attributes>, <argfull>)
 					il.Emit(OpCodes.Call, Methods.ApplicationContext.DeclareFunction);
 				}
 			}
@@ -142,7 +145,7 @@ namespace PHP.Core.Emit
 			il.Emit(OpCodes.Ret);
 		}
 
-		#endregion
+        #endregion
 	}
 
 	#endregion
