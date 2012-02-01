@@ -2933,6 +2933,9 @@ namespace PHP.Core.Reflection
 
     #region PurePhpFunction
 
+    /// <summary>
+    /// Represents runtime global PHP function declared in &lt;Declare&gt; helper method.
+    /// </summary>
     [DebuggerNonUserCode]
     public sealed class PurePhpFunction : PhpRoutine
     {

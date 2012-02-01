@@ -370,10 +370,8 @@ namespace PHP.Core
 		/// To be called from the compiled scripts before library loading; libraries should check for conflicts.
 		/// </summary>
 		[Emitted]
-		public void DeclareFunction(RoutineDelegate/*!*/ arglessStub, string/*!*/ fullName, PhpMemberAttributes memberAttributes, MethodInfo/*!*/argfull)
+		public void DeclareFunction(RoutineDelegate/*!*/ arglessStub, string/*!*/ fullName, PhpMemberAttributes memberAttributes, MethodInfo argfull)
 		{
-            Debug.Assert(argfull != null);
-
             var desc = new PhpRoutineDesc(memberAttributes, arglessStub, true);
             
             if (argfull != null)    // only if we have the argfull

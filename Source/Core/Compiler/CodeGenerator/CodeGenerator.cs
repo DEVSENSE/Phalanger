@@ -3039,7 +3039,7 @@ namespace PHP.Core
                 il.Emit(OpCodes.Ldsfld, field);
                 il.Emit(OpCodes.Ldstr, function.FullName);
                 CodeGenerator.EmitLoadMethodInfo(il, function.ArgFullInfo/*, AssemblyBuilder.DelegateBuilder*/);
-                il.Emit(OpCodes.Newobj, typeof(PurePhpFunction).GetConstructor(new Type[] { typeof(PhpRoutineDesc), Types.String[0], typeof(MethodInfo) }));
+                il.Emit(OpCodes.Newobj, Constructors.PurePhpFunction);
                 il.Emit(OpCodes.Pop);
                 
             }
@@ -3122,7 +3122,7 @@ namespace PHP.Core
             ////delegateArgs[0] = mi.ReturnType;
             ////for (int i = 0; i < miArgs.Length; i++) delegateArgs[i + 1] = miArgs[i].ParameterType;
             //var delegateCtor = DelegateBuilder.GetDelegateCtor(dbuild.GetDelegateType(delegateArgs, il.GetNextUniqueIndex()));
-            var delegateCtor = DelegateBuilder.GetDelegateCtor(typeof(Action)); // NOT NICE
+            var delegateCtor = DelegateBuilder.GetDelegateCtor(Types.Action[0]); // NOT NICE
 
             //.ldnull
             //.ldftn <mi>
