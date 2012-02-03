@@ -326,7 +326,7 @@ namespace PHP.Library
     [ImplementsExtension("filter")]
     public static class PhpFiltering
     {
-        #region (NS) filter_input_array, filter_input, filter_var_array, filter_id, filter_list
+        #region (NS) filter_input_array, filter_var_array, filter_id, filter_list
         
         [ImplementsFunction("filter_input_array", FunctionImplOptions.NotSupported)]
         public static object filter_input_array(int type)
@@ -339,27 +339,6 @@ namespace PHP.Library
         /// </summary>
         [ImplementsFunction("filter_input_array", FunctionImplOptions.NotSupported)]
         public static object filter_input_array(int type, object definition)
-        {
-            return false;
-        }
-
-        [ImplementsFunction("filter_input", FunctionImplOptions.NotSupported)]
-        public static object filter_input(int type, string variable_name)
-        {
-            return filter_input(type, variable_name, (int)FilterSanitize.FILTER_DEFAULT, null);
-        }
-
-        [ImplementsFunction("filter_input", FunctionImplOptions.NotSupported)]
-        public static object filter_input(int type, string variable_name, int filter)
-        {
-            return filter_input(type, variable_name, filter, null);
-        }
-
-        /// <summary>
-        /// Gets a specific external variable by name and optionally filters it.
-        /// </summary>
-        [ImplementsFunction("filter_input", FunctionImplOptions.NotSupported)]
-        public static object filter_input(int type, string variable_name, int filter /*= FILTER_DEFAULT*/ , object options)
         {
             return false;
         }
@@ -397,6 +376,36 @@ namespace PHP.Library
         public static object filter_var_array(PhpArray data, object definition)
         {
             return null;
+        }
+
+        #endregion
+
+        #region filter_input
+
+        [ImplementsFunction("filter_input")]
+        public static object filter_input(ScriptContext/*!*/context, FilterInput type, string variable_name)
+        {
+            return filter_input(context, type, variable_name, (int)FilterSanitize.FILTER_DEFAULT, null);
+        }
+
+        [ImplementsFunction("filter_input")]
+        public static object filter_input(ScriptContext/*!*/context, FilterInput type, string variable_name, int filter)
+        {
+            return filter_input(context, type, variable_name, filter, null);
+        }
+
+        /// <summary>
+        /// Gets a specific external variable by name and optionally filters it.
+        /// </summary>
+        [ImplementsFunction("filter_input")]
+        public static object filter_input(ScriptContext/*!*/context, FilterInput type, string variable_name, int filter /*= FILTER_DEFAULT*/ , object options)
+        {
+            var arrayobj = GetArrayByInput(context, type);
+            object value;
+            if (arrayobj == null || !arrayobj.TryGetValue(variable_name, out value))
+                return null;
+
+            return filter_var(value, filter, options);
         }
 
         #endregion
@@ -474,6 +483,13 @@ namespace PHP.Library
         {
             switch (filter)
             {
+                //
+                // SANITIZE
+                //
+
+                case (int)FilterSanitize.FILTER_DEFAULT:
+                    return Core.Convert.ObjectToString(variable);
+
                 case (int)FilterSanitize.EMAIL:
                     // Remove all characters except letters, digits and !#$%&'*+-/=?^_`{|}~@.[].
                     return FilterSanitizeString(PHP.Core.Convert.ObjectToString(variable), (c) =>
@@ -487,6 +503,37 @@ namespace PHP.Library
                     {
                         var str = PHP.Core.Convert.ObjectToString(variable);
                         return RegexUtilities.IsValidEmail(str) ? str : (object)false;
+                    }
+
+                //
+                // VALIDATE
+                //
+
+                case (int)FilterValidate.INT:
+                    {
+                        int result;
+                        if (int.TryParse((PhpVariable.AsString(variable) ?? string.Empty).Trim(), out result))
+                        {
+                            if (options != null) PhpException.ArgumentValueNotSupported("options", "!null");
+                            return result;  // TODO: options: min_range, max_range
+                        }
+                        else
+                            return false;
+                    }
+                case (int)FilterValidate.REGEXP:
+                    {
+                        PhpArray optarray;
+                        // options = options['options']['regexp']
+                        if ((optarray = PhpArray.AsPhpArray(options)) != null &&
+                            optarray.TryGetValue("options", out options) && (optarray = PhpArray.AsPhpArray(options)) != null &&
+                            optarray.TryGetValue("regexp", out options))
+                        {
+                            if (PerlRegExp.Match(options, variable) > 0)
+                                return variable;
+                        }
+                        else
+                            PhpException.InvalidArgument("options", LibResources.GetString("option_missing", "regexp"));
+                        return false;
                     }
 
                 default:

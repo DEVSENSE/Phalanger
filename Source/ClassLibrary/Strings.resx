@@ -597,4 +597,7 @@
   <data name="unexpected_arg_given" xml:space="preserve">
     <value>expects parameter {0} to be {1}, {2} given</value>
   </data>
+  <data name="option_missing" xml:space="preserve">
+    <value>'{0}' option missing</value>
+  </data>
 </root>
