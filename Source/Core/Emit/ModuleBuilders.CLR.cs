@@ -93,6 +93,7 @@ namespace PHP.Core.Emit
 			PureCompilationUnit unit = this.PureCompilationUnit;
 			ILEmitter il = new ILEmitter(declareHelperBuilder);
 			IndexedPlace app_context_place = new IndexedPlace(PlaceHolder.Argument, 0);
+            TypeBuilder publicsContainer = null;    // container type for public stubs of global declarations (which are inaccessible from other assemblies)
 
 			foreach (PhpFunction function in unit.GetDeclaredFunctions())
 			{
@@ -112,10 +113,15 @@ namespace PHP.Core.Emit
 					il.LdcI4((int)function.MemberDesc.MemberAttributes);
 
                     // LOAD <argfull>
-                    if (function.ArgFullInfo != null && function.ArgFullInfo.DeclaringType != null)
-                        CodeGenerator.EmitLoadMethodInfo(il, function.ArgFullInfo/*, AssemblyBuilder.DelegateBuilder*/);
+                    if (function.ArgFullInfo != null)
+                        CodeGenerator.EmitLoadMethodInfo(
+                            il,
+                            (function.ArgFullInfo.DeclaringType != null)
+                                ? function.ArgFullInfo
+                                : EmitPhpFunctionPublicStub(ref publicsContainer, function) // function.ArgFullInfo is real global method not accessible from other assemblies, must be wrapped
+                            /*, AssemblyBuilder.DelegateBuilder*/);
                     else
-                        il.Emit(OpCodes.Ldnull); // TODO: argfull is real global method, cannot be called from different module; emit public stub that can be called
+                        il.Emit(OpCodes.Ldnull);
                     
 					// CALL <application context>.DeclareFunction(<stub>, <name>, <member attributes>, <argfull>)
 					il.Emit(OpCodes.Call, Methods.ApplicationContext.DeclareFunction);
@@ -147,7 +153,55 @@ namespace PHP.Core.Emit
 			}
 
 			il.Emit(OpCodes.Ret);
+
+            // complete the publicsContainer type, if created:
+            if (publicsContainer != null)
+                publicsContainer.CreateType();
 		}
+
+        /// <summary>
+        /// Emit publically accessible stub that just calls argfull of <paramref name="function"/>.
+        /// </summary>
+        /// <returns><see cref="MethodInfo"/> of newly created function stub.</returns>
+        private MethodInfo/*!*/EmitPhpFunctionPublicStub(ref TypeBuilder publicsContainer, PhpFunction/*!*/function)
+        {
+            Debug.Assert(function != null);
+            Debug.Assert(function.ArgFullInfo != null, "!function.ArgFullInfo");
+
+            if (publicsContainer == null)
+            {
+                publicsContainer = PureAssemblyBuilder.RealModuleBuilder.DefineType(
+                    string.Format("{1}<{0}>",
+                        StringUtils.ToClsCompliantIdentifier(Path.ChangeExtension(PureAssemblyBuilder.FileName, "")),
+                        QualifiedName.Global.ToString()),
+                    TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.Class | TypeAttributes.SpecialName);
+            }
+
+            Type returnType;
+            var parameterTypes = function.Signature.ToArgfullSignature(1, out returnType);
+            parameterTypes[0] = Types.ScriptContext[0];
+
+            var mi = publicsContainer.DefineMethod(function.GetFullName(), MethodAttributes.Public | MethodAttributes.Static, returnType, parameterTypes);
+            var il = new ILEmitter(mi);
+
+            // load arguments
+            for (int i = 0; i < parameterTypes.Length; i++)
+            {
+                if (function.Builder != null)
+                    mi.DefineParameter(i + 1, ParameterAttributes.None, function.Builder.ParameterBuilders[i].Name);
+
+                il.Ldarg(i);
+            }
+            
+            // call function.ArgFullInfo
+            il.Emit(OpCodes.Call, function.ArgFullInfo);
+            
+            // .ret
+            il.Emit(OpCodes.Ret);
+
+            //
+            return mi;
+        }
 
         #endregion
 	}
