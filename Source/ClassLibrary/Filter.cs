@@ -499,15 +499,15 @@ namespace PHP.Library
                             c == '?' || c == '^' || c == '_' || c == '`' || c == '{' || c == '|' ||
                             c == '}' || c == '~' || c == '@' || c == '.' || c == '[' || c == ']'));
 
+                //
+                // VALIDATE
+                //
+
                 case (int)FilterValidate.EMAIL:
                     {
                         var str = PHP.Core.Convert.ObjectToString(variable);
                         return RegexUtilities.IsValidEmail(str) ? str : (object)false;
                     }
-
-                //
-                // VALIDATE
-                //
 
                 case (int)FilterValidate.INT:
                     {
