@@ -1785,6 +1785,8 @@ namespace PHP.Core
                         declarationBodyPosition.Line, declarationBodyPosition.Column + 1);
                 }
                 il.Emit(OpCodes.Nop);
+
+                EmitArgsAwareCheck(routine);
             }
 
 			// declares and initializes real locals (should be before args init):
@@ -1816,6 +1818,22 @@ namespace PHP.Core
 
 			EmitRoutineEpilogue(null, false);
 		}
+
+        /// <summary>
+        /// Emit check whether the argsaware routine was called properly with <see cref="PhpStack"/> initialized.
+        /// </summary>
+        /// <remarks>Emitted code is equivalent to <code>context.Stack.ThrowIfNotArgsaware(routine.Name.Value);</code></remarks>
+        private void EmitArgsAwareCheck(PhpRoutine/*!*/ routine)
+        {
+            if ((routine.Properties & RoutineProperties.IsArgsAware) != 0)
+            {
+                //  <context>.Stack.ThrowIfNotArgsaware(routine.Name.Value)
+                this.EmitLoadScriptContext();   // <context>
+                this.IL.Emit(OpCodes.Ldfld, Fields.ScriptContext_Stack);    // .Stack
+                this.IL.Emit(OpCodes.Ldstr, routine.Name.Value);    // routine.Name.Value
+                this.IL.Emit(OpCodes.Call, Methods.PhpStack.ThrowIfNotArgsaware);   // .call ThrowIfNotArgsaware
+            }
+        }
 
 		/// <summary>
 		/// Declares all locals used in a function.

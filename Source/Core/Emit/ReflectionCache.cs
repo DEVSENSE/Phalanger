@@ -599,7 +599,7 @@ namespace PHP.Core.Emit
             static Type _this { get { return typeof(PHP.Core.PhpStack); } }
             static MethodInfo _RemoveFrame, _RemoveArgsAwareFrame, _PeekValue, _PeekValueOptional,
               _PeekReference, _PeekReferenceOptional, _PeekReferenceUnchecked, _PeekValueUnchecked,
-              _MakeArgsAware, _PeekType, _PeekTypeOptional;
+              _MakeArgsAware, _PeekType, _PeekTypeOptional, _ThrowIfNotArgsaware;
 
 
             public static class AddFrame
@@ -669,6 +669,7 @@ namespace PHP.Core.Emit
             public static MethodInfo RemoveFrame { get { if (_RemoveFrame == null) _RemoveFrame = _this.GetMethod("RemoveFrame"); return _RemoveFrame; } }
             public static MethodInfo RemoveArgsAwareFrame { get { if (_RemoveArgsAwareFrame == null) _RemoveArgsAwareFrame = _this.GetMethod("RemoveArgsAwareFrame"); return _RemoveArgsAwareFrame; } }
             public static MethodInfo MakeArgsAware { get { if (_MakeArgsAware == null) _MakeArgsAware = _this.GetMethod("MakeArgsAware"); return _MakeArgsAware; } }
+            public static MethodInfo ThrowIfNotArgsaware { get { return _ThrowIfNotArgsaware ?? (_ThrowIfNotArgsaware = _this.GetMethod("ThrowIfNotArgsaware")); } }
         }
 
         #endregion
