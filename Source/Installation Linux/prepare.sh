@@ -1,3 +1,2 @@
-#!/bin/bash
-sudo -s
-apt-get install build-essential dpkg alien
+#!/bin/sh
+sudo apt-get install build-essential dpkg alien
