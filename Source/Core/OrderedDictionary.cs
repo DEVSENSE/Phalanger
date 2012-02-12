@@ -583,21 +583,21 @@ namespace PHP.Core
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _enlist_to_bucket(ref Entry entry, int entry_index, int list_head)
         {
-            entry.next = list_head;
             entry.last = -1;
+            entry.next = list_head;
             if (list_head >= 0)
                 this.entries[list_head].last = entry_index;
         }
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _enlist_to_global(ref Entry entry, int entry_index)
         {
-            entry.listLast = this.listTail;
             entry.listNext = -1;
-            
-            this.listTail = entry_index;
-            if (entry.listLast >= 0)
-                this.entries[entry.listLast].listNext = entry_index;
+            entry.listLast = this.listTail;
 
+            if (this.listTail >= 0)
+                this.entries[this.listTail].listNext = entry_index;
+
+            this.listTail = entry_index; 
             if (this.listHead < 0)
                 this.listHead = entry_index;
         }
@@ -605,8 +605,23 @@ namespace PHP.Core
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _enlist(ref Entry entry, int entry_index, int list_head)
         {
-            this._enlist_to_bucket(ref entry, entry_index, list_head);
-            this._enlist_to_global(ref entry, entry_index);
+            //this._enlist_to_bucket(ref entry, entry_index, list_head);
+            //this._enlist_to_global(ref entry, entry_index);
+
+            entry.next = list_head;
+            entry.last = -1;
+            entry.listNext = -1;
+            entry.listLast = this.listTail;
+            
+            if (list_head >= 0)
+                this.entries[list_head].last = entry_index;
+            
+            if (this.listTail >= 0)
+                this.entries[this.listTail].listNext = entry_index;
+
+            this.listTail = entry_index;
+            if (this.listHead < 0)
+                this.listHead = entry_index;                        
         }
 
         /// <summary>

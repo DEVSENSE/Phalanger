@@ -88,7 +88,7 @@ namespace PHP.Core.AST
 				// CALL array.SetArrayItemRef(z, p);
 				// CALL array.SetArrayItem(x, PhpVariable.Copy(y, CopyReason.Assigned));
 				// CALL array.SetArrayItem(PhpVariable.Copy(x, CopyReason.Assigned))
-                // CALL array.AddLast(x)
+                // CALL array.AddToEnd(x)
 
 				il.Ldloc(array_local);
 				PhpTypeCode index_type_code = item.EmitIndex(codeGenerator);
