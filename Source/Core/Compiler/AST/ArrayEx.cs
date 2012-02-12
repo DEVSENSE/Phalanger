@@ -69,7 +69,7 @@ namespace PHP.Core.AST
 			// count integer and string keys:
 			int int_count = 0;
 			int string_count = 0;
-			DetermineCapacities(out int_count, out string_count);
+            DetermineCapacities(out int_count, out string_count);
 
 			LocalBuilder array_local = il.DeclareLocal(Types.PhpArray[0]);
 
@@ -88,11 +88,12 @@ namespace PHP.Core.AST
 				// CALL array.SetArrayItemRef(z, p);
 				// CALL array.SetArrayItem(x, PhpVariable.Copy(y, CopyReason.Assigned));
 				// CALL array.SetArrayItem(PhpVariable.Copy(x, CopyReason.Assigned))
+                // CALL array.AddLast(x)
 
 				il.Ldloc(array_local);
 				PhpTypeCode index_type_code = item.EmitIndex(codeGenerator);
 				item.EmitValue(codeGenerator);
-				codeGenerator.EmitSetArrayItem(index_type_code, item.Index, item is RefItem);
+				codeGenerator.EmitSetArrayItem(index_type_code, item.Index, item is RefItem, true);
 			}
 
 			switch (this.access)
@@ -111,15 +112,16 @@ namespace PHP.Core.AST
 			return PhpTypeCode.Invalid;
 		}
 
-		private void DetermineCapacities(out int intCount, out int stringCount)
+        private void DetermineCapacities(out int intCount, out int stringCount)
 		{
 			intCount = 0;
 			stringCount = 0;
+            
 			foreach (Item item in items)
 			{
 				if (item.HasKey)
 				{
-					if (item.IsIndexStringLiteral)
+            		if (item.IsIndexStringLiteral)
 						stringCount++;
 					else
 						intCount++; // Item is IntLiteral, Variable, Constant, etc.

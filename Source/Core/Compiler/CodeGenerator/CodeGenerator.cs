@@ -3252,7 +3252,7 @@ namespace PHP.Core
 			il.Emit(method.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, method);
 		}
 
-		internal void EmitSetArrayItem(PhpTypeCode keyTypeCode, Expression keyExpr, bool reference)
+		internal void EmitSetArrayItem(PhpTypeCode keyTypeCode, Expression keyExpr, bool reference, bool ctor)
 		{
 			MethodInfo method; 
 			switch (keyTypeCode)
@@ -3276,18 +3276,18 @@ namespace PHP.Core
 					break;
 
 				case PhpTypeCode.Object:
-					method = (reference) ? Methods.PhpArray.SetArrayItemRef_Object : Methods.PhpArray.SetArrayItem_Object;
+                    method = reference ? Methods.PhpArray.SetArrayItemRef_Object : Methods.PhpArray.SetArrayItem_Object;
 					break;
 					
 				case PhpTypeCode.Invalid:
-					method = Methods.PhpArray.SetArrayItem;
+					method = ctor ? Methods.PhpArray.AddToEnd_Object : Methods.PhpArray.SetArrayItem;
 					break;
 					
 				default:
 					Debug.Fail();
 					throw null;
 			}
-			il.Emit(OpCodes.Callvirt, method);
+            il.Emit(method.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, method);
 		}
 
 		internal void EmitGetItem(PhpTypeCode keyTypeCode, Expression keyExpr, bool reference)

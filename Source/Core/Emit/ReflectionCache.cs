@@ -746,6 +746,8 @@ namespace PHP.Core.Emit
                 _SetArrayItem_String,
                 _SetArrayItemExact_String,
 
+                _AddToEnd_Object,
+
                 _SetArrayItemRef_Object,
                 _SetArrayItemRef_Int32,
                 _SetArrayItemRef_String,
@@ -773,6 +775,8 @@ namespace PHP.Core.Emit
             public static MethodInfo SetArrayItem_Int32 { get { if (_SetArrayItem_Int32 == null) _SetArrayItem_Int32 = _this.GetMethod("SetArrayItem", new Type[] { typeof(int), typeof(object) }); return _SetArrayItem_Int32; } }
             public static MethodInfo SetArrayItem_String { get { if (_SetArrayItem_String == null) _SetArrayItem_String = _this.GetMethod("SetArrayItem", new Type[] { typeof(string), typeof(object) }); return _SetArrayItem_String; } }
             public static MethodInfo SetArrayItemExact_String { get { if (_SetArrayItemExact_String == null) _SetArrayItemExact_String = _this.GetMethod("SetArrayItemExact", new Type[] { typeof(string), typeof(object), typeof(int) }); return _SetArrayItemExact_String; } }
+
+            public static MethodInfo AddToEnd_Object { get { return _AddToEnd_Object ?? (_AddToEnd_Object = _this.GetMethod("AddToEnd", Types.Object)); } }
 
             public static MethodInfo SetArrayItemRef_Object { get { if (_SetArrayItemRef_Object == null) _SetArrayItemRef_Object = _this.GetMethod("SetArrayItemRef", new Type[] { typeof(object), typeof(PhpReference) }); return _SetArrayItemRef_Object; } }
             public static MethodInfo SetArrayItemRef_Int32 { get { if (_SetArrayItemRef_Int32 == null) _SetArrayItemRef_Int32 = _this.GetMethod("SetArrayItemRef", new Type[] { typeof(int), typeof(PhpReference) }); return _SetArrayItemRef_Int32; } }

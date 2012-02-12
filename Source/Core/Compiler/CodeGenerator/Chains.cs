@@ -1173,7 +1173,7 @@ namespace PHP.Core
 
 		public void EmitSetArrayItem(PhpTypeCode keyTypeCode, Expression index, bool reference)
 		{
-			codeGenerator.EmitSetArrayItem(keyTypeCode, index, reference);
+			codeGenerator.EmitSetArrayItem(keyTypeCode, index, reference, false);
 		}
 
 		public void EmitSetObjectField()
