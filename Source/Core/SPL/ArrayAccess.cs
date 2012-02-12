@@ -157,16 +157,18 @@ namespace PHP.Library.SPL
 
                 ReallocArray(arrdata.MaxIntegerKey + 1);
 
-                foreach (var pair in arrdata)
-                    this.array[pair.Key.Integer] = pair.Value;
+                using (var enumerator = arrdata.GetFastEnumerator())
+                    while (enumerator.MoveNext())
+                        this.array[enumerator.CurrentKey.Integer] = enumerator.CurrentValue;
             }
             else //if (!bindexes)
             {
                 ReallocArray(arrdata.Count);
 
                 int i = 0;
-                foreach (var pair in arrdata)
-                    this.array[i++] = pair.Value;
+                using (var enumerator = arrdata.GetFastEnumerator())
+                    while (enumerator.MoveNext())
+                        this.array[i++] = enumerator.CurrentValue;
             }
 
             return null;
@@ -175,7 +177,7 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual object toArray(ScriptContext/*!*/context)
         {
-            if (array == null) return PhpArray.NewEmptyArray;
+            if (array == null) return new PhpArray();
 
             Debug.Assert(array.LongLength <= int.MaxValue);
 
@@ -467,8 +469,6 @@ namespace PHP.Library.SPL
 
 	internal class PhpArrayObject : PhpArray
 	{
-		public override bool IsProxy { get { return true; } }
-		
 		internal DObject ArrayAccess { get { return arrayAccess; } }
 		readonly private DObject arrayAccess/*!*/;
 
@@ -488,96 +488,81 @@ namespace PHP.Library.SPL
 		
 		#region Operators
 
-		public override object GetArrayItem(object key, bool quiet)
+        protected override object GetArrayItemOverride(object key, bool quiet)
 		{
 			PhpStack stack = ScriptContext.CurrentContext.Stack;
 			stack.AddFrame(key);
 			return PhpVariable.Dereference(arrayAccess.InvokeMethod(offsetGet, null, stack.Context));
 		}
-		
-		public override PhpReference GetArrayItemRef()
+
+        protected override PhpReference GetArrayItemRefOverride()
 		{
 			return GetUserArrayItemRef(arrayAccess, null, ScriptContext.CurrentContext);
 		}
 
-		public override PhpReference GetArrayItemRef(object key)
+        protected override PhpReference GetArrayItemRefOverride(object key)
 		{
 			return GetUserArrayItemRef(arrayAccess, key, ScriptContext.CurrentContext);
 		}
 
-		public override PhpReference/*!*/ GetArrayItemRef(int key)
+        protected override PhpReference/*!*/ GetArrayItemRefOverride(int key)
 		{
 			return GetUserArrayItemRef(arrayAccess, key, ScriptContext.CurrentContext);
 		}
 
-		public override PhpReference/*!*/ GetArrayItemRef(string key)
+        protected override PhpReference/*!*/ GetArrayItemRefOverride(string key)
 		{
 			return GetUserArrayItemRef(arrayAccess, key, ScriptContext.CurrentContext);
 		}	
 
-		public override void SetArrayItem(object value)
+		protected override void SetArrayItemOverride(object value)
 		{
 			PhpStack stack = ScriptContext.CurrentContext.Stack;
 			stack.AddFrame(null, value);
 			arrayAccess.InvokeMethod(offsetSet, null, stack.Context);
 		}
 
-		public override void SetArrayItem(object key, object value)
+		protected override void SetArrayItemOverride(object key, object value)
 		{
 			PhpStack stack = ScriptContext.CurrentContext.Stack;
 			stack.AddFrame(key, value);
 			arrayAccess.InvokeMethod(offsetSet, null, stack.Context);
 		}
 
-		public override void SetArrayItem(int key, object value)
+        protected override void SetArrayItemOverride(int key, object value)
 		{
-			SetArrayItem((object)key, value);
+            SetArrayItemOverride((object)key, value);
 		}
 
-		public override void SetArrayItem(string key, object value)
+        protected override void SetArrayItemOverride(string key, object value)
 		{
-			SetArrayItem((object)key, value);
+            SetArrayItemOverride((object)key, value);
 		}
 
-		public override void SetArrayItemExact(string key, object value, int hashcode)
-		{
-			SetArrayItem((object)key, value);
-		}
-
-		public override void SetArrayItemRef(object key, PhpReference value)
+        protected override void SetArrayItemRefOverride(object key, PhpReference value)
 		{
 			PhpStack stack = ScriptContext.CurrentContext.Stack;
 			stack.AddFrame(key, value);
 			arrayAccess.InvokeMethod(offsetSet, null, stack.Context);
 		}
 
-		public override void SetArrayItemRef(int key, PhpReference value)
-		{
-			SetArrayItemRef((object)key, value);
-		}
-
-		public override void SetArrayItemRef(string/*!*/ key, PhpReference value)
-		{
-			SetArrayItemRef((object)key, value);			
-		}
-
-		public override PhpArray EnsureItemIsArray()
+        protected override PhpArray EnsureItemIsArrayOverride()
 		{
 			return EnsureIndexerResultIsRefArray(null);
 		}
 		
-		public override PhpArray EnsureItemIsArray(object key)
+		protected override PhpArray EnsureItemIsArrayOverride(object key)
 		{
 			// an object behaving like an array:
 			return EnsureIndexerResultIsRefArray(key);
 		}
 
-		public override DObject EnsureItemIsObject(ScriptContext/*!*/ context)
+		protected override DObject EnsureItemIsObjectOverride(ScriptContext/*!*/ context)
 		{
 			return EnsureIndexerResultIsRefObject(null, context);
 		}
 
-		public override DObject EnsureItemIsObject(object key, ScriptContext/*!*/ context)
+        protected override DObject EnsureItemIsObjectOverride(object key, ScriptContext/*!*/ context)
 		{
 			return EnsureIndexerResultIsRefObject(key, context);
 		}

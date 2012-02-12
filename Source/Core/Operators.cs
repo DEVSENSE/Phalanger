@@ -1005,22 +1005,24 @@ namespace PHP.Core
             if ((info & Convert.NumberInfo.Double) != 0)
                 return dx * dy;
 
+            long rl;
             try
             {
-                long rl = lx * ly;
-
-                // int to long overflow check
-                int il = unchecked((int)rl);
-                if (il == rl)
-                    return il;
-
-                // we need long
-                return rl;
+                rl = lx * ly;
             }
             catch (OverflowException)
             {
+                // we need double
                 return dx * dy;
             }
+
+            // int to long overflow check
+            int il = unchecked((int)rl);
+            if (il == rl)
+                return il;
+
+            // we need long
+            return rl;
         }
 
         
@@ -1225,8 +1227,8 @@ namespace PHP.Core
 
             if (x != null && x.GetType() == typeof(int))
             {
-                int i;
-                return unchecked(((i = (int)x) == int.MaxValue) ? (object)((long)int.MaxValue + 1) : (object)(i + 1));
+                int i = (int)x;
+                return (i == int.MaxValue) ? (object)((long)int.MaxValue + 1) : (i+1);
             }
             else
             {
@@ -1237,7 +1239,7 @@ namespace PHP.Core
         /// <summary>
         /// Increments an operand which is surely not <see cref="int"/>.
         /// </summary>
-        internal static object IncrementNonInt(object x)
+        private static object IncrementNonInt(object x)
         {
             if (x == null)
                 return 1;
@@ -1321,7 +1323,7 @@ namespace PHP.Core
         /// </summary>
         /// <param name="s">The string to decrement.</param>
         /// <returns>The result.</returns>
-        internal static object DecrementString(string/*!*/ s)
+        private static object DecrementString(string/*!*/ s)
         {
             Debug.Assert(s != null);
 
@@ -2219,15 +2221,25 @@ namespace PHP.Core
         {
             Debug.Assert(!(var is PhpReference));
 
+            if (var != null && var.GetType() == typeof(PhpArray))   // derived types checked later in Epilogue
+                // an item of a PhpArray:
+                return ((PhpArray)var).GetArrayItem(key, kind != GetItemKinds.Get);
+            else
+                // the rest:
+                return GetItemEpilogue(var, key, kind);
+        }
+
+        private static object GetItemEpilogue(object var, int key, GetItemKinds kind)
+        {
+            Debug.Assert(!(var is PhpReference));
+            Debug.Assert(var == null || var.GetType() != typeof(PhpArray));
+
             // handle null reference:
             if (var == null)
                 return null;
 
+            //
             bool quiet = kind != GetItemKinds.Get;
-
-            // an item of a PhpArray:
-            if (var.GetType() == typeof(PhpArray))   // derived types checked in Epilogue
-                return ((PhpArray)var).GetArrayItem(key, quiet);
 
             // a character of a string:
             if (var.GetType() == typeof(string))
@@ -2241,7 +2253,8 @@ namespace PHP.Core
             if (var.GetType() == typeof(PhpBytes))
                 return (CheckStringIndexRange(key, ((PhpBytes)var).Length, quiet)) ? new PhpBytes(new byte[] { ((PhpBytes)var)[key] }) : null;
 
-            return GetItemEpilogue(var, key, kind);
+            // general GetItem epilogue:
+            return GetItemEpilogue(var, (object)key, kind);
         }
 
         [Emitted]
@@ -2535,22 +2548,33 @@ namespace PHP.Core
             Debug.Assert(!(var is PhpReference));
             Debug.Assert(!(var is PhpArrayString), "ensures and end-of-chain operators only");
 
+            if (var != null && var.GetType() == typeof(PhpArray))
+                ((PhpArray)var).Add(value); // Add never returns 0 now
+            else
+                SetItemEpilogue(value, ref var);            
+        }
+
+        private static void SetItemEpilogue(object value, ref object var)
+        {
+            Debug.Assert(var == null || var.GetType() != typeof(PhpArray));
+
             PhpArray array;
-
-            // PhpArray:
-            if ((array = var as PhpArray) != null)
-            {
-                if (array.Add(value) == 0)
-                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("integer_key_reached_max_value"));
-                return;
-            }
-
+            
             // creates a new array and stores it into a new item which is added to the array:
             if (IsEmptyForEnsure(var))
             {
                 array = new PhpArray(1, 0);
                 array.Add(value);
                 var = array;
+                return;
+            }
+            
+            // PhpArray derivates:
+            if ((array = var as PhpArray) != null)
+            {
+                if (array.Add(value) == 0)
+                    PhpException.Throw(PhpError.Warning, CoreResources.GetString("integer_key_reached_max_value"));
+
                 return;
             }
 
@@ -2633,15 +2657,20 @@ namespace PHP.Core
             Debug.Assert(!(var is PhpReference) && !(value is PhpReference));
             Debug.Assert(!(var is PhpArrayString), "ensures and end-of-chain operators only");
 
+            if (var != null && var.GetType() == typeof(PhpArray))
+                // PhpArray:
+                ((PhpArray)var).SetArrayItem(key, value);
+            else
+                // the rest:
+                SetItemEpilogue(value, key, ref var);
+        }
+
+        private static void SetItemEpilogue(object value, int key, ref object var)
+        {
+            Debug.Assert(var == null || var.GetType() != typeof(PhpArray));
+
             if (var != null)
             {
-                // PhpArray:
-                if (var.GetType() == typeof(PhpArray))
-                {
-                    ((PhpArray)var).SetArrayItem(key, value);
-                    return;
-                }
-
                 // string:
                 if (var.GetType() == typeof(string) && (string)var != "")
                 {
@@ -3044,7 +3073,7 @@ namespace PHP.Core
             if (IsEmptyForEnsure(var))
             {
                 PhpArray tmparray;
-                var = tmparray = PhpArray.NewEmptyArray;
+                var = tmparray = new PhpArray();
                 return tmparray;
             }
 
@@ -3123,42 +3152,40 @@ namespace PHP.Core
             Debug.Assert(array != null);
             Debug.Assert(!(array is PhpArrayString) && !(array is Library.SPL.PhpArrayObject));
 
-            PhpArray array_item;
-            OrderedHashtable<IntStringKey>.Element element;
-
             // treats empty key as a missing key:
             if (key == String.Empty)
             {
-                array_item = new PhpArray();
+                PhpArray array_item = new PhpArray();
                 array.Add(array_item);
                 return array_item;
             }
 
             IntStringKey array_key = Core.Convert.StringToArrayKey(key);
 
-            element = array.GetElement(array_key);
+            return array.table._ensure_item_array(ref array_key, array);
+            //element = array.GetElement(array_key);
 
-            // creates a new array if an item is not one:
-            array_item = (element != null) ? element.Value as PhpArray : null;
-            if (array_item == null)
-            {
-                array_item = new PhpArray();
-                if (element != null)
-                {
-                    if (array.table.IsShared)
-                    {
-                        // we are going to change the internal array, it must be writable
-                        array.EnsureWritable();
-                        element = array.table.dict[array_key]; // get the item again
-                    }
+            //// creates a new array if an item is not one:
+            //array_item = (element != null) ? element.Value as PhpArray : null;
+            //if (array_item == null)
+            //{
+            //    array_item = new PhpArray();
+            //    if (element != null)
+            //    {
+            //        if (array.table.IsShared)
+            //        {
+            //            // we are going to change the internal array, it must be writable
+            //            array.EnsureWritable();
+            //            element = array.table.dict[array_key]; // get the item again
+            //        }
 
-                    element.Value = array_item;
-                }
-                else
-                    array.Add(array_key, array_item);
-            }
+            //        element.Value = array_item;
+            //    }
+            //    else
+            //        array.Add(array_key, array_item);
+            //}
 
-            return array_item;
+            //return array_item;
         }
 
         #endregion

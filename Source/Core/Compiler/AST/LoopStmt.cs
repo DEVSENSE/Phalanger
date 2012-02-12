@@ -476,7 +476,7 @@ namespace PHP.Core.AST
 			codeGenerator.BranchingStack.BeginLoop(loop_test, foreach_end,
 			  codeGenerator.ExceptionBlockNestingLevel);
 
-			LocalBuilder enumerable = il.DeclareLocal(typeof(IPhpEnumerable));
+			LocalBuilder enumerable = il.GetTemporaryLocal(typeof(IPhpEnumerable));
 
 			// marks foreach "header" (the first part of the IL code):
 			codeGenerator.MarkSequencePoint(
@@ -501,7 +501,7 @@ namespace PHP.Core.AST
 			// FOREACH_BEGIN:
 			il.MarkLabel(foreach_begin);
 			{
-				LocalBuilder enumerator = il.DeclareLocal(typeof(System.Collections.IDictionaryEnumerator));
+				LocalBuilder enumerator = il.GetTemporaryLocal(typeof(System.Collections.IDictionaryEnumerator));
 
 				// enumerator = enumerable.GetForeachEnumerator(KEYED,ALIASED,TYPE_HANDLE);
 				il.Ldloc(enumerable);
@@ -552,9 +552,14 @@ namespace PHP.Core.AST
 				il.Ldloc(enumerator);
 				il.Emit(OpCodes.Callvirt, Methods.IEnumerator_MoveNext);
 				il.Emit(OpCodes.Brtrue, loop_begin);
+
+                //
+                il.ReturnTemporaryLocal(enumerator);
 			}
 			// FOREACH_END:
 			il.MarkLabel(foreach_end);
+
+            il.ReturnTemporaryLocal(enumerable);
 
 			codeGenerator.BranchingStack.EndLoop();
 

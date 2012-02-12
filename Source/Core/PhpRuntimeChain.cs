@@ -529,21 +529,19 @@ namespace PHP.Core
 	[Serializable]
 	internal sealed class PhpSetterChainArray : PhpArray
 	{
-		public override bool IsProxy { get { return true; } }
-		
 		internal PhpSetterChainArray()
 		{
 		}
 
 		#region Operators
 
-		public override object GetArrayItem(object key, bool quiet)
+        protected override object GetArrayItemOverride(object key, bool quiet)
 		{
 			Debug.Fail("N/A");
 			throw null;
 		}
 		
-		public override void SetArrayItem(object key, object value)
+		protected override void SetArrayItemOverride(object key, object value)
 		{
 			IntStringKey array_key;
 			ScriptContext context = ScriptContext.CurrentContext; // TODO: context -> field 
@@ -561,79 +559,64 @@ namespace PHP.Core
 			return;
 		}
 
-		public override PhpReference GetArrayItemRef()
+        protected override PhpReference GetArrayItemRefOverride()
 		{
 			ScriptContext.CurrentContext.AbortSetterChain(false);
 			return new PhpReference();
 		}
 
-		public override PhpReference GetArrayItemRef(object key)
+        protected override PhpReference GetArrayItemRefOverride(object key)
 		{
 			ScriptContext.CurrentContext.AbortSetterChain(false);
 			return new PhpReference();
 		}
 
-		public override PhpReference GetArrayItemRef(int key)
+        protected override PhpReference GetArrayItemRefOverride(int key)
 		{
 			ScriptContext.CurrentContext.AbortSetterChain(false);
 			return new PhpReference();
 		}
 
-		public override PhpReference GetArrayItemRef(string key)
+        protected override PhpReference GetArrayItemRefOverride(string key)
 		{
 			ScriptContext.CurrentContext.AbortSetterChain(false);
 			return new PhpReference();
 		}
 
-		public override void SetArrayItem(object value)
-		{
-			ScriptContext.CurrentContext.AbortSetterChain(false);
-		}
-		
-		public override void SetArrayItem(int key, object value)
+        protected override void SetArrayItemOverride(object value)
 		{
 			ScriptContext.CurrentContext.AbortSetterChain(false);
 		}
 
-		public override void SetArrayItem(string key, object value)
+        protected override void SetArrayItemOverride(int key, object value)
 		{
 			ScriptContext.CurrentContext.AbortSetterChain(false);
 		}
 
-		public override void SetArrayItemExact(string key, object value, int hashcode)
+        protected override void SetArrayItemOverride(string key, object value)
 		{
 			ScriptContext.CurrentContext.AbortSetterChain(false);
 		}
 
-		public override void SetArrayItemRef(object key, PhpReference value)
+        protected override void SetArrayItemRefOverride(object key, PhpReference value)
 		{
 			ScriptContext.CurrentContext.AbortSetterChain(false);
 		}
 
-		public override void SetArrayItemRef(int key, PhpReference value)
-		{
-			ScriptContext.CurrentContext.AbortSetterChain(false);
-		}
-
-		public override void SetArrayItemRef(string/*!*/ key, PhpReference value)
-		{
-			ScriptContext.CurrentContext.AbortSetterChain(false);
-		}				
-
-		public override PhpArray EnsureItemIsArray()
+        protected override PhpArray EnsureItemIsArrayOverride()
 		{
 			ScriptContext.CurrentContext.AbortSetterChain(false);
 			return null;
 		}
 
-		public override DObject EnsureItemIsObject(ScriptContext context)
+        protected override DObject EnsureItemIsObjectOverride(ScriptContext context)
 		{
 			// setter chain:
 			ScriptContext.CurrentContext.AbortSetterChain(false);
 			return null;
 		}
 		
-		public override PhpArray EnsureItemIsArray(object key)
+		protected override PhpArray EnsureItemIsArrayOverride(object key)
 		{
 			ScriptContext context = ScriptContext.CurrentContext;
 
@@ -652,7 +635,7 @@ namespace PHP.Core
 			return this;
 		}
 
-		public override DObject EnsureItemIsObject(object key, ScriptContext/*!*/ context)
+        protected override DObject EnsureItemIsObjectOverride(object key, ScriptContext/*!*/ context)
 		{
 			IntStringKey array_key;
 

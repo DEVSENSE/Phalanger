@@ -66,7 +66,7 @@ namespace PHP.Library
             if (args != null)
             {
                 args_array = new object[args.Count];
-                args.Values.CopyTo(args_array, 0);
+                args.CopyValuesTo(args_array, 0);
             }
             else
             {
