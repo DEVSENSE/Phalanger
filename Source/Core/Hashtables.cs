@@ -2255,7 +2255,8 @@ namespace PHP.Core
         {
             get
             {
-                if (nextNewIndex < 0) nextNewIndex = this.table._find_max_int_key() + 1;
+                if (nextNewIndex < 0)
+                    RefreshMaxIntegerKeyInternal();
 
                 return nextNewIndex - 1;
             }
@@ -3113,7 +3114,7 @@ namespace PHP.Core
 			{
                 this.EnsureWritable();
 
-                if (nextNewIndex < 0) nextNewIndex = this.table._find_max_int_key() + 1;
+                if (nextNewIndex < 0) RefreshMaxIntegerKeyInternal();
                 AddToEnd(value);
 				return 1;
 			}
@@ -3154,6 +3155,11 @@ namespace PHP.Core
 
 		public bool Remove(IntStringKey key)
 		{
+            //if (key.Integer == this.nextNewIndex - 1)
+            //{
+            //    // copy of this array has to find new max int
+            //}
+
             this.EnsureWritable();
             return this.table._del_key_or_index(ref key, this.activeEnumerators);
 		}
@@ -3230,6 +3236,7 @@ namespace PHP.Core
 
 		internal void KeyAdded(int key)
 		{
+            if (nextNewIndex < 0) RefreshMaxIntegerKeyInternal();
             if (key >= nextNewIndex) nextNewIndex = key + 1;
 			++intCount;
 		}
@@ -3739,6 +3746,14 @@ namespace PHP.Core
 		{
             this.nextNewIndex = -1;
 		}
+
+        /// <summary>
+        /// Recalculates <see cref="nextNewIndex"/> value.
+        /// </summary>
+        private void RefreshMaxIntegerKeyInternal()
+        {
+            this.nextNewIndex = (this.intCount == 0) ? 0 : this.table._find_max_int_key() + 1;
+        }
 
         /// <summary>
 		/// Sets all keys to increasing integers according to their respective order in the list.
