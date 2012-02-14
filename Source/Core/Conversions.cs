@@ -550,16 +550,7 @@ namespace PHP.Core
 					return null;
 				}
 
-				resolveFlags |= ResolveTypeFlags.PreserveFrame;
-				//if (autoload) flags |= (ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
-
-				DTypeDesc type = context.ResolveType(name, nameContext, caller, genericArgs, resolveFlags);
-
-				// fill default type arguments or report an error:
-				if (type != null && type.IsGenericDefinition && (resolveFlags & ResolveTypeFlags.SkipGenericNameParsing) == 0)
-					type = Operators.MakeGenericTypeInstantiation(type, DTypeDesc.EmptyArray, 0);
-
-				return type;
+                return StringToTypeDesc(name, resolveFlags, caller, context, nameContext, genericArgs);
 			}
 		}
 
@@ -2081,6 +2072,23 @@ namespace PHP.Core
             {
                 RuntimeFields = runtimeFields
             };
+        }
+
+        [Emitted]
+        public static DTypeDesc StringToTypeDesc(string name, ResolveTypeFlags resolveFlags, DTypeDesc caller, ScriptContext/*!*/ context, NamingContext nameContext, object[] genericArgs)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(name));
+
+            resolveFlags |= ResolveTypeFlags.PreserveFrame;
+            //if (autoload) flags |= (ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
+
+            DTypeDesc type = context.ResolveType(name, nameContext, caller, genericArgs, resolveFlags);
+
+            // fill default type arguments or report an error:
+            if (type != null && type.IsGenericDefinition && (resolveFlags & ResolveTypeFlags.SkipGenericNameParsing) == 0)
+                type = Operators.MakeGenericTypeInstantiation(type, DTypeDesc.EmptyArray, 0);
+
+            return type;
         }
 
 		#endregion

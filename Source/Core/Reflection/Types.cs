@@ -2349,6 +2349,18 @@ namespace PHP.Core.Reflection
 		public FieldInfo ProxyFieldInfo { get { return proxyFieldInfo; } }
 		private FieldInfo proxyFieldInfo;
 
+        /// <summary>
+        /// Method that declares (compiles) incomplete class definition. Is <c>null</c> if the type is not incomplete.
+        /// Method is in format <c>private static void &lt;Declare&gt;XXX(ScriptContext)</c>
+        /// </summary>
+        public MethodInfo IncompleteClassDeclareMethodInfo { get; internal set; }
+
+        /// <summary>
+        /// Unique identifier of the incomplete class declaration.
+        /// Used in runtime (<see cref="ScriptContext.IncompleteTypesInAdvance"/>) to determine whether class was declared in advance.
+        /// </summary>
+        public string IncompleteClassDeclarationId { get; internal set; }
+
 		#endregion
 
 		#region Construction
@@ -3463,6 +3475,8 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		internal void EmitAutoDeclareOnScriptContext(ILEmitter/*!*/ il, IPlace/*!*/ contextPlace)
 		{
+            Debug.Assert(this.IsComplete);
+
 			contextPlace.EmitLoad(il);
 
 			if (IsGeneric)
@@ -3481,7 +3495,35 @@ namespace PHP.Core.Reflection
 			}
 		}
 
-		internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)
+        internal void EmitDeclareIncompleteOnScriptContext(ILEmitter/*!*/ il, IPlace/*!*/ contextPlace)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(this.IncompleteClassDeclarationId));
+            Debug.Assert(this.IncompleteClassDeclareMethodInfo != null);
+
+            if (!this.Declaration.IsConditional &&
+                this.Base != null && this.Builder.BaseInterfaces.Count == 0)    // for now, only types without interfaces
+            {
+                // if (<context>.DeclareIncompleteTypeHelper(<uid>, type.Base))
+                //     CALL <type.IncompleteClassDeclareMethodInfo>(<context>)
+
+                var end_if = il.DefineLabel();
+
+                contextPlace.EmitLoad(il);
+                il.Emit(OpCodes.Ldstr, this.IncompleteClassDeclarationId);
+                il.Emit(OpCodes.Ldstr, this.Base.FullName);
+                il.Emit(OpCodes.Call, Methods.ScriptContext.DeclareIncompleteTypeHelper);
+                il.Emit(OpCodes.Brfalse, end_if);
+                if (true)
+                {
+                    contextPlace.EmitLoad(il);
+                    il.Emit(OpCodes.Call, this.IncompleteClassDeclareMethodInfo);
+                }
+                il.MarkLabel(end_if);
+                il.ForgetLabel(end_if);
+            }                        
+        }
+
+        internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)
 		{
 			if (IsDefinite)
 			{

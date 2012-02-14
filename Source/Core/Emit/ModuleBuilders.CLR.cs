@@ -360,6 +360,16 @@ namespace PHP.Core.Emit
 					// CALL <context>.DeclareType(<type desc>, <name>);
 					type.EmitAutoDeclareOnScriptContext(il, script_context_place);
 				}
+                else if (!type.IsComplete)
+                {
+                    if (type.IncompleteClassDeclareMethodInfo != null)
+                    {
+                        // check whether base class is known at this point of execution,
+                        // if so, declare this incomplete class immediately. As PHP does.
+
+                        type.EmitDeclareIncompleteOnScriptContext(il, script_context_place);
+                    }
+                }
 			}
 
             foreach (GlobalConstant constant in unit.GetDeclaredConstants())

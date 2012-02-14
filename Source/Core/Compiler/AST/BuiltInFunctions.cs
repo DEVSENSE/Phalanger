@@ -441,6 +441,7 @@ namespace PHP.Core.AST
 			Statistics.AST.AddNode("EvalEx");
 
 			ILEmitter il = codeGenerator.IL;
+            PhpTypeCode result;
 
 			if (inlinedCode != null)
 			{
@@ -482,88 +483,20 @@ namespace PHP.Core.AST
 				}
 				// END IF;
 				il.MarkLabel(endif_label);
+
+                result = PhpTypeCode.Object;
 			}
 			else
 			{
-				// LOAD DynamicCode.<Eval | Assert>(<code>, context, definedVariables, self, includer, source, line, column, evalId)
-				if (kind == EvalKinds.Assert)
-				{
-					// an argument of the assert is boxed:
-					codeGenerator.EmitBoxing(code.Emit(codeGenerator));
-				}
-				else if (kind == EvalKinds.SyntheticEval)
-				{
-					// an argument of the eval is converted to a string:
-					il.Emit(OpCodes.Ldstr, (string)code.Value);
-					il.Emit(OpCodes.Ldc_I4_1);
-				}
-				else
-				{
-					// an argument of the eval is converted to a string:
-					codeGenerator.EmitConversion(code, PhpTypeCode.String);
-					il.Emit(OpCodes.Ldc_I4_0);
-				}
-
-				codeGenerator.EmitLoadScriptContext();
-				codeGenerator.EmitLoadRTVariablesTable();
-				codeGenerator.EmitLoadSelf();
-				codeGenerator.EmitLoadClassContext();
-				codeGenerator.EmitEvalInfoPass(position.FirstLine, position.FirstColumn);
-                this.EmitCurrentNamingContext(codeGenerator);//codeGenerator.EmitLoadNamingContext();
-				il.Emit(OpCodes.Call, (kind == EvalKinds.Assert) ? Methods.DynamicCode.Assert : Methods.DynamicCode.Eval);
+                result = codeGenerator.EmitEval(kind, code, position, currentNamespace, aliases);
 			}
 
 			// handles return value according to the access type:
-			PhpTypeCode result = (kind == EvalKinds.Assert) ? PhpTypeCode.Boolean : PhpTypeCode.Object;
 			codeGenerator.EmitReturnValueHandling(this, false, ref result);
 			return result;
 		}
 
-        /// <summary>
-        /// Loads (cached) instance of current state of <see cref="NamingContext"/> onto the evaluation stack.
-        /// </summary>
-        /// <param name="codeGenerator"></param>
-        private void EmitCurrentNamingContext(CodeGenerator/*!*/ codeGenerator)
-        {
-            // TODO: J: move into codeGenerator
-            // NOTE: J: we must not pass NamingContext everywhere where codeGenerator.EmitLoadNamingContext() is used!!! (actully only here)
-
-            Debug.Assert(codeGenerator != null);
-            ILEmitter il = codeGenerator.IL;
-            
-            if (NamingContext.NeedsNamingContext(currentNamespace, aliases))
-            {
-                // private static NamingContext <id> = null;
-                string fname = (codeGenerator.SourceUnit != null) ? codeGenerator.SourceUnit.SourceFile.ToString() : string.Empty;
-                string id = String.Format("<namingContext>{0}${1}${2}", unchecked((uint)fname.GetHashCode()), position.FirstLine, position.FirstColumn);
-
-                // create static field for static local index: static int <id>;
-                Debug.Assert(il.TypeBuilder != null, "The method does not have declaring type! (global code in pure mode?)");
-                var fld = il.TypeBuilder.DefineField(id, typeof(NamingContext), System.Reflection.FieldAttributes.Private | System.Reflection.FieldAttributes.Static);
-
-                // <id> ?? (<id> = NamingContext.<EmitNewNamingContext>)
-                Label end = il.DefineLabel();
-
-                il.Emit(OpCodes.Ldsfld, fld);
-                il.Emit(OpCodes.Dup);
-                il.Emit(OpCodes.Brtrue, end);
-                if (true)
-                {
-                    il.Emit(OpCodes.Pop);
-                    NamingContext.EmitNewNamingContext(il, currentNamespace, aliases);
-                    il.Emit(OpCodes.Dup);
-                    il.Emit(OpCodes.Stsfld, fld);
-                }
-
-                il.MarkLabel(end);
-            }
-            else
-            {
-                il.Emit(OpCodes.Ldnull);
-            }
-        }
-
-		#endregion
+        #endregion
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.

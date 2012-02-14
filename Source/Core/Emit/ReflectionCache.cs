@@ -24,6 +24,7 @@ using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using PHP.Core;
 using PHP.Core.Reflection;
+using Core = PHP.Core;
 
 namespace PHP.Core.Emit
 {
@@ -391,7 +392,7 @@ namespace PHP.Core.Emit
                 _DisableErrorReporting, _EnableErrorReporting,
                 _GetCurrentContext, _Die, _StaticInclude, _DynamicInclude, _GetStaticLocal, _GetStaticLocalId, _AddStaticLocal, _RunApplication,
                 _IsConstantDefined, _GetConstantValue, _DeclareConstant, _RegisterDObjectForFinalization,
-                _DeclareFunction, _DeclareLambda, _Call, _CallValue, _CallVoid, _DeclareType_TypeDesc, _DeclareType_Handle,
+                _DeclareFunction, _DeclareLambda, _Call, _CallValue, _CallVoid, _DeclareType_TypeDesc, _DeclareType_Handle, _DeclareIncompleteTypeHelper, _IncompleteTypeDeclared,
                 _GetWorkingDirectory;
 
             public static MethodInfo RunApplication { get { if (_RunApplication == null) _RunApplication = _this.GetMethod("RunApplication", new Type[] { typeof(Delegate), typeof(string), typeof(string) }); return _RunApplication; } }
@@ -424,7 +425,8 @@ namespace PHP.Core.Emit
 
             public static MethodInfo DeclareType_Handle { get { if (_DeclareType_Handle == null) _DeclareType_Handle = _this.GetMethod("DeclareType", new Type[] { typeof(RuntimeTypeHandle), Types.String[0] }); return _DeclareType_Handle; } }
             public static MethodInfo DeclareType_TypeDesc { get { if (_DeclareType_TypeDesc == null) _DeclareType_TypeDesc = _this.GetMethod("DeclareType", new Type[] { Types.PhpTypeDesc[0], Types.String[0] }); return _DeclareType_TypeDesc; } }
-
+            public static MethodInfo DeclareIncompleteTypeHelper { get { return _DeclareIncompleteTypeHelper ?? (_DeclareIncompleteTypeHelper = _this.GetMethod("DeclareIncompleteTypeHelper")); } }
+            public static MethodInfo IncompleteTypeDeclared { get { return _IncompleteTypeDeclared ?? (_IncompleteTypeDeclared = _this.GetMethod("IncompleteTypeDeclared")); } }
         }
 
         #endregion
@@ -460,7 +462,7 @@ namespace PHP.Core.Emit
                 _TryObjectToBoolean, _TryObjectToInt8, _TryObjectToInt16, _TryObjectToInt32, _TryObjectToInt64, _TryObjectToUInt8,
                 _TryObjectToUInt16, _TryObjectToUInt32, _TryObjectToUInt64, _TryObjectToSingle, _TryObjectToDouble, _TryObjectToDecimal,
                 _TryObjectToChar, _TryObjectToString, _TryObjectToDateTime, _TryObjectToDBNull, _TryObjectToClass, _TryObjectToStruct,
-                _TryObjectToDelegate, _TryObjectToArray, _TryObjectToType;
+                _TryObjectToDelegate, _TryObjectToArray, _TryObjectToType, _StringToTypeDesc;
 
             public static MethodInfo ObjectToString { get { if (_ObjectToString == null) _ObjectToString = _this.GetMethod("ObjectToString", Types.Object); return _ObjectToString; } }
             public static MethodInfo ObjectToChar { get { if (_ObjectToChar == null) _ObjectToChar = _this.GetMethod("ObjectToChar"); return _ObjectToChar; } }
@@ -474,6 +476,8 @@ namespace PHP.Core.Emit
             public static MethodInfo ObjectToCallback { get { if (_ObjectToCallback == null) _ObjectToCallback = _this.GetMethod("ObjectToCallback", Types.Object); return _ObjectToCallback; } }
             public static MethodInfo ObjectToTypeDesc { get { if (_ObjectToTypeDesc == null) _ObjectToTypeDesc = _this.GetMethod("ObjectToTypeDesc"); return _ObjectToTypeDesc; } }
             public static MethodInfo ObjectToLinqSource { get { if (_ObjectToLinqSource == null) _ObjectToLinqSource = _this.GetMethod("ObjectToLinqSource"); return _ObjectToLinqSource; } }
+
+            public static MethodInfo StringToTypeDesc { get { return _StringToTypeDesc ?? (_StringToTypeDesc = new Func<string, ResolveTypeFlags, DTypeDesc, Core.ScriptContext, Core.NamingContext, object[], DTypeDesc>(Core.Convert.StringToTypeDesc).Method); } }
 
             public static MethodInfo TryObjectToBoolean { get { if (_TryObjectToBoolean == null) _TryObjectToBoolean = _this.GetMethod("TryObjectToBoolean"); return _TryObjectToBoolean; } }
             public static MethodInfo TryObjectToInt8 { get { if (_TryObjectToInt8 == null) _TryObjectToInt8 = _this.GetMethod("TryObjectToInt8"); return _TryObjectToInt8; } }

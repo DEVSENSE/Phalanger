@@ -374,6 +374,10 @@ namespace PHP.Core.AST
         private ShortPosition headingEndPosition;
         public ShortPosition HeadingEndPosition { get { return headingEndPosition; } }
 
+        /// <summary>
+        /// Code of the class used when declared deferred in Eval.
+        /// </summary>
+        private string typeDefinitionCode = null;
 
         /// <summary>Contains value of the <see cref="PartialKeyword"/> property</summary>
         private bool partialKeyword;
@@ -720,17 +724,21 @@ namespace PHP.Core.AST
                 // report the warning, incomplete_class
                 analyzer.ErrorSink.Add(Warnings.IncompleteClass, analyzer.SourceUnit, position, this.name);
 
-				// we return an eval
-                EvalEx evalEx = new EvalEx(
-                    entireDeclarationPosition, analyzer.SourceUnit.GetSourceCode(entireDeclarationPosition),
-                    (this.Namespace != null && this.Namespace.QualifiedName.Namespaces.Length > 0) ? this.Namespace.QualifiedName : (QualifiedName?)null,
-                    this.validAliases);
-				Statement stmt = new ExpressionStmt(entireDeclarationPosition, evalEx);
+                this.typeDefinitionCode = analyzer.SourceUnit.GetSourceCode(entireDeclarationPosition);
+                //// we return an eval
+                //EvalEx evalEx = new EvalEx(
+                //    entireDeclarationPosition, this.typeDefinitionCode,
+                //    (this.Namespace != null && this.Namespace.QualifiedName.Namespaces.Length > 0) ? this.Namespace.QualifiedName : (QualifiedName?)null,
+                //    this.validAliases);
+                //Statement stmt = new ExpressionStmt(entireDeclarationPosition, evalEx);
 
-				// this annotation is for the duck-type generation - we need to know the original typedecl
-				evalEx.Annotations.Set<TypeDecl>(this);
+                //// this annotation is for the duck-type generation - we need to know the original typedecl
+                //evalEx.Annotations.Set<TypeDecl>(this);
 
-				return stmt;
+                //return stmt;
+
+                // we emit eval
+                return this;
 			}
 			else
 			{
@@ -759,44 +767,115 @@ namespace PHP.Core.AST
 
 		internal void EmitDefinition(CodeGenerator/*!*/ codeGenerator)
 		{
-			Debug.Assert(type.IsComplete, "Incomplete types should be converted to evals.");
-			Debug.Assert(type.RealTypeBuilder != null, "A class declared during compilation should have a type builder.");
-
-			attributes.Emit(codeGenerator, this);
-			typeSignature.Emit(codeGenerator);
-
-			codeGenerator.EnterTypeDeclaration(type);
-
-            foreach (TypeMemberDecl member_decl in members)
+            if (type.IsComplete)
             {
-                member_decl.EnterCodegenerator(codeGenerator);
-                member_decl.Emit(codeGenerator);
-                member_decl.LeaveCodegenerator(codeGenerator);
+                Debug.Assert(type.IsComplete, "Incomplete types should be converted to evals.");
+                Debug.Assert(type.RealTypeBuilder != null, "A class declared during compilation should have a type builder.");
+
+                attributes.Emit(codeGenerator, this);
+                typeSignature.Emit(codeGenerator);
+
+                codeGenerator.EnterTypeDeclaration(type);
+
+                foreach (TypeMemberDecl member_decl in members)
+                {
+                    member_decl.EnterCodegenerator(codeGenerator);
+                    member_decl.Emit(codeGenerator);
+                    member_decl.LeaveCodegenerator(codeGenerator);
+                }
+
+                // emit stubs for implemented methods & properties that were not declared by this type:
+                codeGenerator.EmitGhostStubs(type);
+
+                codeGenerator.LeaveTypeDeclaration();
             }
+            else
+            {
+                Debug.Assert(this.typeDefinitionCode != null);
 
-			// emit stubs for implemented methods & properties that were not declared by this type:
-			codeGenerator.EmitGhostStubs(type);
+                // LOAD DynamicCode.Eval(<code>, context, definedVariables, self, includer, source, line, column, evalId)
+                
+                // wrap Eval into static method
+                MethodBuilder method = codeGenerator.IL.TypeBuilder.DefineMethod(
+                    string.Format("{0}{1}", ScriptModule.DeclareHelperNane, type.FullName),
+                    MethodAttributes.Private | MethodAttributes.Static | MethodAttributes.SpecialName,
+                    Types.Void, Types.ScriptContext);
 
-			codeGenerator.LeaveTypeDeclaration();
+                var il = new ILEmitter(method);
+                    
+                codeGenerator.EnterLambdaDeclaration(il, false, LiteralPlace.Null, new IndexedPlace(PlaceHolder.Argument, 0), LiteralPlace.Null, LiteralPlace.Null);
+                if (true)
+                {
+                    codeGenerator.EmitEval(
+                        EvalKinds.SyntheticEval,
+                        new StringLiteral(position, this.typeDefinitionCode, AccessType.Read),
+                        position,
+                        (this.Namespace != null) ? this.Namespace.QualifiedName : (QualifiedName?)null, this.validAliases);
+                    il.Emit(OpCodes.Pop);
+                    il.Emit(OpCodes.Ret);
+                }
+                codeGenerator.LeaveFunctionDeclaration();
+
+                //
+                il = codeGenerator.IL;
+
+                type.IncompleteClassDeclareMethodInfo = method;
+                type.IncompleteClassDeclarationId = String.Format("{0}${1}:{2}:{3}", type.FullName, unchecked((uint)codeGenerator.SourceUnit.SourceFile.ToString().GetHashCode()), position.FirstLine, position.FirstColumn);
+
+                // sequence point here
+                codeGenerator.MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 2);
+                
+                if (type.Declaration.IsConditional)
+                {
+                    // CALL <Declare>.<FullName>(<context>)
+                    codeGenerator.EmitLoadScriptContext();
+                    il.Emit(OpCodes.Call, method);
+                }
+                else
+                {
+                    // if (!<context>.IncompleteTypeDeclared(<id>))
+                    //     CALL <Declare>.<FullName>(<context>)
+                    var end_if = il.DefineLabel();
+
+                    codeGenerator.EmitLoadScriptContext();
+                    il.Emit(OpCodes.Ldstr, type.IncompleteClassDeclarationId);
+                    il.Emit(OpCodes.Call, Methods.ScriptContext.IncompleteTypeDeclared);
+                    il.Emit(OpCodes.Brtrue, end_if);
+                    if (true)
+                    {
+                        codeGenerator.EmitLoadScriptContext();
+                        il.Emit(OpCodes.Call, type.IncompleteClassDeclareMethodInfo);
+                    }
+                    il.MarkLabel(end_if);
+                    il.ForgetLabel(end_if);
+                }
+            }
 		}
 
 		internal void EmitDeclaration(CodeGenerator/*!*/ codeGenerator)
 		{
-			Debug.Assert(type.IsComplete, "Incomplete types should be converted to evals.");
-			Debug.Assert(type.RealTypeBuilder != null, "A class declared during compilation should have a type builder.");
+            if (type.IsComplete)
+            {
+                Debug.Assert(type.IsComplete, "Incomplete types should be converted to evals.");
+                Debug.Assert(type.RealTypeBuilder != null, "A class declared during compilation should have a type builder.");
 
-			if (type.Declaration.IsConditional)
-			{
-				ILEmitter il = codeGenerator.IL;
+                if (type.Declaration.IsConditional)
+                {
+                    ILEmitter il = codeGenerator.IL;
 
-				codeGenerator.MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 2);
+                    codeGenerator.MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 2);
 
-				// this class was conditionally declared, so we'll emit code that activates it:
-				type.EmitAutoDeclareOnScriptContext(il, codeGenerator.ScriptContextPlace);
+                    // this class was conditionally declared, so we'll emit code that activates it:
+                    type.EmitAutoDeclareOnScriptContext(il, codeGenerator.ScriptContextPlace);
 
-				if (codeGenerator.Context.Config.Compiler.Debug)
-					il.Emit(OpCodes.Nop);
-			}
+                    if (codeGenerator.Context.Config.Compiler.Debug)
+                        il.Emit(OpCodes.Nop);
+                }
+            }
+            else
+            {
+                // declared in emitted Eval
+            }
 		}
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
