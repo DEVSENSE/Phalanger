@@ -199,7 +199,7 @@ namespace PHP.VisualStudio.PhalangerTasks
 			}
 			else
 			{
-				ps.LanguageFeatures = (ps.Pure) ? Core.LanguageFeatures.PureModeDefault : Core.LanguageFeatures.PhpClr;
+				ps.LanguageFeatures = (ps.Pure) ? Core.LanguageFeatures.PureModeDefault : Core.LanguageFeatures.Default;
 			}
 
 			// source paths:
