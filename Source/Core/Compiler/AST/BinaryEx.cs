@@ -258,22 +258,30 @@ namespace PHP.Core.AST
 				case Operations.Sub:
 					//Template: "x - y"        Operators.Subtract(x,y) [overloads]
 					lo_typecode = leftExpr.Emit(codeGenerator);
-					switch (lo_typecode)
-					{
-						case PhpTypeCode.Integer:
-							codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));
-							returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Int32_Object);
-							break;
-						case PhpTypeCode.Double:
-							codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));
-							returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Double_Object);
-							break;
-						default:
-							codeGenerator.EmitBoxing(lo_typecode);
-							codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));
-							returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Object_Object);
-							break;
-					}
+                    switch (lo_typecode)
+                    {
+                        case PhpTypeCode.Integer:
+                            codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));
+                            returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Int32_Object);
+                            break;
+                        case PhpTypeCode.Double:
+                            codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));
+                            returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Double_Object);
+                            break;
+                        default:
+                            codeGenerator.EmitBoxing(lo_typecode);
+                            ro_typecode = rightExpr.Emit(codeGenerator);
+                            if (ro_typecode == PhpTypeCode.Integer)
+                            {
+                                returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Object_Int);
+                            }
+                            else
+                            {
+                                codeGenerator.EmitBoxing(ro_typecode);
+                                returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Object_Object);
+                            }
+                            break;
+                    }
 					break;
 
 				case Operations.Div:

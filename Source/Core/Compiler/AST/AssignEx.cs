@@ -286,10 +286,21 @@ namespace PHP.Core.AST
 							break;
 						}
 
-					case Operations.AssignSub:
-						codeGenerator.EmitBoxing(right_type);
-						result = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Object_Object);
-						break;
+                    case Operations.AssignSub:
+                        {
+                            switch (right_type)
+                            {
+                                case PhpTypeCode.Integer:
+                                    result = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Object_Int);
+                                    break;
+
+                                default:
+                                    codeGenerator.EmitBoxing(right_type);
+                                    result = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Object_Object);
+                                    break;
+                            }
+                            break;
+                        }
 
 					case Operations.AssignDiv:
 						{

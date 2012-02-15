@@ -613,6 +613,58 @@ namespace PHP.Core
         }
 
         /// <summary>
+        /// Implements binary '-' operator.
+        /// </summary>
+        /// <param name="x">The first operand.</param>
+        /// <param name="iy">The second operand.</param>
+        /// <returns>The result of type <see cref="int"/> or <see cref="double"/>.</returns>
+        /// <exception cref="PhpException">Subtraction is not supported on the types of operands specified.</exception>
+        [Emitted]
+        public static object Subtract(object x, int iy)
+        {
+            Debug.Assert(!(x is PhpReference));
+
+            double dx;
+            int ix;
+            long lx;
+            Convert.NumberInfo info;
+
+            // converts x and y to numbers:
+            info = Convert.ObjectToNumber(x, out ix, out lx, out dx);
+
+            if ((info & (Convert.NumberInfo.Unconvertible | Convert.NumberInfo.IsPhpArray)) != 0)
+            {
+                PhpException.UnsupportedOperandTypes();
+                return 0;
+            }
+
+            // at least one operand is convertible to a double:
+            if ((info & Convert.NumberInfo.Double) != 0)
+                return dx - (double)iy;
+
+            // 
+            long rl = unchecked(lx - iy);
+
+            if ((lx & LONG_SIGN_MASK) != (rl & LONG_SIGN_MASK) &&   // result has different sign than x
+                (lx & LONG_SIGN_MASK) != ((long)iy & LONG_SIGN_MASK)      // x and y have the same sign                
+                )
+            {
+                // overflow:
+                return dx - (double)iy;
+            }
+            else
+            {
+                // int to long overflow check
+                int il = unchecked((int)rl);
+                if (il == rl)
+                    return il;
+
+                // we need long
+                return rl;
+            }
+        }
+
+        /// <summary>
         /// Implements binary '-' operator optimized for subtraction from an integer literal.
         /// </summary>
         /// <param name="x">The first operand.</param>
