@@ -1301,7 +1301,8 @@ namespace PHP.Core.Emit
 	{
 		static PropertyInfo _ImplementsConstantCase, _PhpReference_IsSet, _PhpReference_IsAliased,
           _IDictionaryEnumerator_Key, _IDictionaryEnumerator_Value, _Type_TypeHandle, _DObject_RealObject, _DObject_RealType,
-          _ClrTypeDesc_Constructor, _ScriptContext_CurrentContext, _Assembly_Location, _InsideCaller, _Delegate_Method;
+          _ClrTypeDesc_Constructor, _ScriptContext_CurrentContext, _Assembly_Location, _InsideCaller, _Delegate_Method,
+          _PhpArray_InplaceCopyOnReturn;
 
 		public static PropertyInfo ImplementsConstantCase { get { if (_ImplementsConstantCase == null) _ImplementsConstantCase = typeof(ImplementsConstantAttribute).GetProperty("CaseInsensitive"); return _ImplementsConstantCase; } }
 		public static PropertyInfo PhpReference_IsSet { get { if (_PhpReference_IsSet == null) _PhpReference_IsSet = typeof(PhpReference).GetProperty("IsSet"); return _PhpReference_IsSet; } }
@@ -1323,6 +1324,8 @@ namespace PHP.Core.Emit
         public static PropertyInfo Assembly_Location { get { return _Assembly_Location ?? (_Assembly_Location = typeof(System.Reflection.Assembly).GetProperty("Location")); } }
 
         public static PropertyInfo Delegate_Method { get { return _Delegate_Method ?? (_Delegate_Method = typeof(System.Delegate).GetProperty("Method")); } }
+
+        public static PropertyInfo PhpArray_InplaceCopyOnReturn { get { return _PhpArray_InplaceCopyOnReturn ?? (_PhpArray_InplaceCopyOnReturn = typeof(PhpArray).GetProperty("InplaceCopyOnReturn")); } }
 	}
 
 	/// <exclude/>

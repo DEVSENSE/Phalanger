@@ -71,17 +71,17 @@ namespace PHP.Core.AST
 			int string_count = 0;
             DetermineCapacities(out int_count, out string_count);
 
-			LocalBuilder array_local = il.DeclareLocal(Types.PhpArray[0]);
-
 			// array = new PhpArray(<int_count>, <string_count>);
 			il.Emit(OpCodes.Ldc_I4, int_count);
 			il.Emit(OpCodes.Ldc_I4, string_count);
 			il.Emit(OpCodes.Newobj, Constructors.PhpArray.Int32_Int32);
-			il.Stloc(array_local);
 
-			il.Emit(OpCodes.Nop);
-			il.Emit(OpCodes.Nop);
-			il.Emit(OpCodes.Nop);
+            if (codeGenerator.Context.Config.Compiler.Debug)
+            {
+                il.Emit(OpCodes.Nop);
+                il.Emit(OpCodes.Nop);
+                il.Emit(OpCodes.Nop);
+            }
 
 			foreach (Item item in items)
 			{
@@ -90,7 +90,7 @@ namespace PHP.Core.AST
 				// CALL array.SetArrayItem(PhpVariable.Copy(x, CopyReason.Assigned))
                 // CALL array.AddToEnd(x)
 
-				il.Ldloc(array_local);
+                il.Emit(OpCodes.Dup);
 				PhpTypeCode index_type_code = item.EmitIndex(codeGenerator);
 				item.EmitValue(codeGenerator);
 				codeGenerator.EmitSetArrayItem(index_type_code, item.Index, item is RefItem, true);
@@ -99,16 +99,16 @@ namespace PHP.Core.AST
 			switch (this.access)
 			{
 				case AccessType.Read:
-					// load array on the stack
-					il.Ldloc(array_local);
+					// keep array on the stack
 					return PhpTypeCode.PhpArray;
 
 				case AccessType.None:
-					// do nothing
+					// pop array from the stack
+                    il.Emit(OpCodes.Pop);
 					return PhpTypeCode.Void;
 			}
 
-			Debug.Fail();
+            Debug.Fail();
 			return PhpTypeCode.Invalid;
 		}
 

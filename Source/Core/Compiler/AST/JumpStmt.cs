@@ -173,9 +173,20 @@ namespace PHP.Core.AST
 
 				// dereference return value:
 				if (result == PhpTypeCode.PhpReference)
+                {
 					il.Emit(OpCodes.Ldfld, Fields.PhpReference_Value);
+                }
+                else if (result == PhpTypeCode.PhpArray)
+                {
+                    // <array>.InplaceCopyOnReturn = true;
+                    il.Emit(OpCodes.Dup);
+                    il.Emit(OpCodes.Ldc_I4_1);
+                    il.Emit(OpCodes.Call, Properties.PhpArray_InplaceCopyOnReturn.GetSetMethod());
+                }
 				else
+                {
 					codeGenerator.EmitBoxing(result);
+                }
 			}
 			else
 			{
