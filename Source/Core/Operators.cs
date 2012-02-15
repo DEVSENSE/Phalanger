@@ -556,6 +556,34 @@ namespace PHP.Core
             return dx + y;
         }
 
+        /// <summary>
+        /// Implements '+' operator optimized for addition with double literal.
+        /// </summary>
+        /// <param name="x">The first operand.</param>
+        /// <param name="y">The second operand.</param>
+        /// <returns>
+        /// The result of addition.
+        /// </returns>
+        /// <exception cref="PhpException">Addition is not supported on the types of operands specified.</exception>
+        [Emitted]
+        public static double Add(double x, object y)
+        {
+            Debug.Assert(!(y is PhpReference));
+
+            double dy;
+            int iy;
+            long ly;
+
+            // converts x to a number:
+            if ((Convert.ObjectToNumber(y, out iy, out ly, out dy) & (Convert.NumberInfo.Unconvertible | Convert.NumberInfo.IsPhpArray)) != 0)
+            {
+                PhpException.UnsupportedOperandTypes();
+                return 0;
+            }
+
+            return x + dy;
+        }
+
         #endregion
 
         #region Subtraction
@@ -1150,6 +1178,32 @@ namespace PHP.Core
             }
 
             return dx * y;
+        }
+
+        /// <summary>
+        /// Implements binary '*' operator.
+        /// </summary>
+        /// <param name="x">The first operand.</param>
+        /// <param name="y">The second operand.</param>
+        /// <returns>The result.</returns>
+        /// <exception cref="PhpException">The operator is not supported on the type of operand specified.</exception>
+        [Emitted]
+        public static double Multiply(double x, object y)
+        {
+            Debug.Assert(!(y is PhpReference));
+
+            double dy;
+            int iy;
+            long ly;
+
+            // converts x to a number:
+            if ((Convert.ObjectToNumber(y, out iy, out ly, out dy) & (Convert.NumberInfo.Unconvertible | Convert.NumberInfo.IsPhpArray)) != 0)
+            {
+                PhpException.UnsupportedOperandTypes();
+                return 0.0;
+            }
+
+            return x * dy;
         }
 
         #endregion

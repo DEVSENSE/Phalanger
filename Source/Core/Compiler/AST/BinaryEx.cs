@@ -233,27 +233,49 @@ namespace PHP.Core.AST
 				#region Arithmetic Operations
 
 				case Operations.Add:
-					// Template: x + y : Operators.Add(x,y) [3 overloads]
+					// Template: x + y : Operators.Add(x,y) [overloads]
 
-					codeGenerator.EmitBoxing(leftExpr.Emit(codeGenerator));
-					ro_typecode = rightExpr.Emit(codeGenerator);
+                    switch (lo_typecode = leftExpr.Emit(codeGenerator))
+                    {
+                        case PhpTypeCode.Double:
+                            switch (ro_typecode = rightExpr.Emit(codeGenerator))
+                            {
+                                case PhpTypeCode.Integer:
+                                    codeGenerator.IL.Emit(OpCodes.Conv_R8);
+                                    goto case PhpTypeCode.Double;   // fallback:
+                                case PhpTypeCode.Double:
+                                    codeGenerator.IL.Emit(OpCodes.Add);
+                                    returned_typecode = PhpTypeCode.Double;
+                                    break;
+                                default:
+                                    codeGenerator.EmitBoxing(ro_typecode);
+                                    returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Add.Double_Object);
+                                    break;
+                            }
+                            
+                            break;
+                        default:
+                            codeGenerator.EmitBoxing(lo_typecode);
+                            ro_typecode = rightExpr.Emit(codeGenerator);
 
-					switch (ro_typecode)
-					{
-						case PhpTypeCode.Integer:
-							returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Add.Object_Int32);
-							break;
+                            switch (ro_typecode)
+                            {
+                                case PhpTypeCode.Integer:
+                                    returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Add.Object_Int32);
+                                    break;
 
-						case PhpTypeCode.Double:
-							returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Add.Object_Double);
-							break;
+                                case PhpTypeCode.Double:
+                                    returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Add.Object_Double);
+                                    break;
 
-						default:
-							codeGenerator.EmitBoxing(ro_typecode);
-							returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Add.Object_Object);
-							break;
-					}
-					break;
+                                default:
+                                    codeGenerator.EmitBoxing(ro_typecode);
+                                    returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Add.Object_Object);
+                                    break;
+                            }
+                            break;
+                    }
+                    break;
 
 				case Operations.Sub:
 					//Template: "x - y"        Operators.Subtract(x,y) [overloads]
@@ -265,8 +287,21 @@ namespace PHP.Core.AST
                             returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Int32_Object);
                             break;
                         case PhpTypeCode.Double:
-                            codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));
-                            returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Double_Object);
+                            switch (ro_typecode = rightExpr.Emit(codeGenerator))
+                            {
+                                case PhpTypeCode.Integer:
+                                    codeGenerator.IL.Emit(OpCodes.Conv_R8);
+                                    goto case PhpTypeCode.Double;   // fallback:
+                                case PhpTypeCode.Double:
+                                    codeGenerator.IL.Emit(OpCodes.Sub);
+                                    returned_typecode = PhpTypeCode.Double;
+                                    break;
+                                default:
+                                    codeGenerator.EmitBoxing(ro_typecode);
+                                    returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Subtract.Double_Object);
+                                    break;
+                            }
+                            
                             break;
                         default:
                             codeGenerator.EmitBoxing(lo_typecode);
@@ -296,9 +331,18 @@ namespace PHP.Core.AST
 							break;
 
 						case PhpTypeCode.Double:
-							codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));
-							returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Divide.Double_Object);
-							break;
+                            switch (ro_typecode = rightExpr.Emit(codeGenerator))
+                            {
+                                case PhpTypeCode.Double:
+                                    codeGenerator.IL.Emit(OpCodes.Div);
+                                    returned_typecode = PhpTypeCode.Double;
+                                    break;
+                                default:
+                                    codeGenerator.EmitBoxing(ro_typecode);
+                                    returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Divide.Double_Object);
+                                    break;
+                            }
+                            break;
 
 						default:
 							codeGenerator.EmitBoxing(lo_typecode);
@@ -324,24 +368,50 @@ namespace PHP.Core.AST
 					break;
 
 				case Operations.Mul:
-					//Template: "x * y"  Operators.Multiply(x,y) [overloads]
-					codeGenerator.EmitBoxing(leftExpr.Emit(codeGenerator));
-					ro_typecode = rightExpr.Emit(codeGenerator);
-					switch (ro_typecode)
-					{
-						case PhpTypeCode.Integer:
-							returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Multiply.Object_Int32);
-							break;
+					switch (lo_typecode = leftExpr.Emit(codeGenerator))
+                    {
+                        case PhpTypeCode.Double:
+                            // "x * (double)y"
+                            // Operators.Multiply((double)x,(object)y)
 
-						case PhpTypeCode.Double:
-							returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Multiply.Object_Double);
-							break;
+                            switch (ro_typecode = rightExpr.Emit(codeGenerator))
+                            {
+                                case PhpTypeCode.Integer:
+                                    codeGenerator.IL.Emit(OpCodes.Conv_R8);
+                                    goto case PhpTypeCode.Double;   // fallback:
+                                case PhpTypeCode.Double:
+                                    codeGenerator.IL.Emit(OpCodes.Mul);
+                                    returned_typecode = PhpTypeCode.Double;
+                                    break;
+                                default:
+                                    codeGenerator.EmitBoxing(ro_typecode);
+                                    returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Multiply.Double_Object);
+							        break;
+                            }
+                    
+                            break;
+                        default:
+                            //Template: "x * y"  Operators.Multiply((object)x,y) [overloads]
+                            codeGenerator.EmitBoxing(lo_typecode);
 
-						default:
-							codeGenerator.EmitBoxing(ro_typecode);
-							returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Multiply.Object_Object);
-							break;
-					}
+                            ro_typecode = rightExpr.Emit(codeGenerator);
+					        switch (ro_typecode)
+					        {
+						        case PhpTypeCode.Integer:
+							        returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Multiply.Object_Int32);
+							        break;
+
+						        case PhpTypeCode.Double:
+							        returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Multiply.Object_Double);
+							        break;
+
+						        default:
+							        codeGenerator.EmitBoxing(ro_typecode);
+							        returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Multiply.Object_Object);
+							        break;
+					        }
+                            break;
+                    }					
 					break;
 
 				case Operations.Mod:
