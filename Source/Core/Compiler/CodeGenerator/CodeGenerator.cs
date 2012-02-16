@@ -3030,7 +3030,7 @@ namespace PHP.Core
 
             // private static PhpRoutine <routine>'function = null;
             var attrs = FieldAttributes.Static | FieldAttributes.Private;
-            var field = il.TypeBuilder.DefineField(string.Format("<routine>'{0}", function.FullName), typeof(PhpRoutine), attrs);
+            var field = il.TypeBuilder.DefineField(string.Format("<routine>'{0}", function.FullName), typeof(PhpRoutineDesc), attrs);
 
             // if (<field> == null)
             il.Emit(OpCodes.Ldsfld, field);

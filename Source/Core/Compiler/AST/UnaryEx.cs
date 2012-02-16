@@ -30,7 +30,7 @@ namespace PHP.Core.AST
         /// <summary>Expression the operator is applied on</summary>
         public Expression /*!*/ Expr { get { return expr; } }
 
-		#region Construction
+        #region Construction
 
 		public UnaryEx(Position position, Operations operation, Expression/*!*/ expr)
 			: base(position)
@@ -281,8 +281,12 @@ namespace PHP.Core.AST
 				case Operations.UInt8Cast:
 				case Operations.UInt16Cast:
 					// CALL int Convert.ObjectToInteger(<expr>)
-					codeGenerator.EmitBoxing(expr.Emit(codeGenerator));
-					il.Emit(OpCodes.Call, Methods.Convert.ObjectToInteger);
+                    o_typecode = expr.Emit(codeGenerator);
+                    if (o_typecode != PhpTypeCode.Integer)
+                    {
+                        codeGenerator.EmitBoxing(o_typecode);
+                        il.Emit(OpCodes.Call, Methods.Convert.ObjectToInteger);
+                    }
 
 					// CONV for unsigned:
 					switch (operation)
@@ -298,8 +302,12 @@ namespace PHP.Core.AST
 				case Operations.UInt32Cast:
 				case Operations.Int64Cast:
 					// CALL long Convert.ObjectToLongInteger(<expr>)
-					codeGenerator.EmitBoxing(expr.Emit(codeGenerator));
-					il.Emit(OpCodes.Call, Methods.Convert.ObjectToLongInteger);
+                    o_typecode = expr.Emit(codeGenerator);
+                    if (o_typecode != PhpTypeCode.LongInteger)
+                    {
+                        codeGenerator.EmitBoxing(o_typecode);
+                        il.Emit(OpCodes.Call, Methods.Convert.ObjectToLongInteger);
+                    }
 
 					// CONV for unsigned:
 					switch (operation)
@@ -315,8 +323,12 @@ namespace PHP.Core.AST
 				case Operations.DoubleCast:
 				case Operations.FloatCast:
 					// CALL double Convert.ObjectToDouble(<expr>)
-					codeGenerator.EmitBoxing(expr.Emit(codeGenerator));
-					il.Emit(OpCodes.Call, Methods.Convert.ObjectToDouble);
+                    o_typecode = expr.Emit(codeGenerator);
+                    if (o_typecode != PhpTypeCode.Double)
+                    {
+                        codeGenerator.EmitBoxing(expr.Emit(codeGenerator));
+                        il.Emit(OpCodes.Call, Methods.Convert.ObjectToDouble);
+                    }
 					returned_typecode = PhpTypeCode.Double;
 					break;
 
@@ -343,8 +355,12 @@ namespace PHP.Core.AST
 
 				case Operations.ArrayCast:
 					//Template: "(array)x"   Convert.ObjectToArray(x)
-					codeGenerator.EmitBoxing(expr.Emit(codeGenerator));
-					il.Emit(OpCodes.Call, Methods.Convert.ObjectToPhpArray);
+                    o_typecode = expr.Emit(codeGenerator);
+                    if (o_typecode != PhpTypeCode.PhpArray)
+                    {
+                        codeGenerator.EmitBoxing(expr.Emit(codeGenerator));
+                        il.Emit(OpCodes.Call, Methods.Convert.ObjectToPhpArray);
+                    }
 					returned_typecode = PhpTypeCode.PhpArray;
 					break;
 
