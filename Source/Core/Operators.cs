@@ -1755,10 +1755,23 @@ namespace PHP.Core
             Debug.Assert(!(x is PhpReference));
             Debug.Assert(y != null);
 
-            if (x != null && x.GetType() == typeof(PhpBytes))
+            if (x == null)
+                return y;
+
+            if (x.GetType() == typeof(string))
+                return String.Concat((string)x, y);
+
+            if (x.GetType() == typeof(PhpBytes))
                 return PhpBytes.Concat((PhpBytes)x, new PhpBytes(y));
-            else
-                return String.Concat(Convert.ObjectToString(x), y);
+
+            if (x.GetType() == typeof(PhpString))
+            {
+                var bld = ((PhpString)x).StringBuilder;
+                if (bld.Length == 0) return y;
+                return String.Concat(bld.ToString(), y);
+            }
+            
+            return String.Concat(Convert.ObjectToString(x), y);
         }
 
         /// <summary>
@@ -1775,10 +1788,16 @@ namespace PHP.Core
             Debug.Assert(!(y is PhpReference));
             Debug.Assert(x != null);
 
-            if (x != null && x.GetType() == typeof(PhpBytes))
+            if (y == null)
+                return x;
+
+            if (y.GetType() == typeof(string))
+                return String.Concat(x, (string)y);
+            
+            if (y.GetType() == typeof(PhpBytes))
                 return PhpBytes.Concat(new PhpBytes(x), (PhpBytes)y);
-            else
-                return String.Concat(x, Convert.ObjectToString(y));
+            
+            return String.Concat(x, Convert.ObjectToString(y));
         }
 
         /// <summary>

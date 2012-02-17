@@ -122,16 +122,39 @@ namespace PHP.Core.AST
             return chunks;
         }
 
+        /// <summary>
+        /// Expressions from ConcatChunks, Values are transformed into corresponding literals.
+        /// </summary>
+        private static IEnumerable<Expression> ChunkExpressions(List<ConcatChunk>/*!*/concatChunks)
+        {
+            Debug.Assert(concatChunks != null);
+            foreach (var chunk in concatChunks)
+            {
+                if (chunk.HasValue)
+                {
+                    if (chunk.Value is PhpBytes)
+                        yield return new BinaryStringLiteral(Position.Invalid, (PhpBytes)chunk.Value, AccessType.Read);
+                    else
+                        yield return new StringLiteral(Position.Invalid, Convert.ObjectToString(chunk.Value), AccessType.Read);
+                }
+                else
+                {
+                    foreach (var expr in chunk.Expressions)
+                        yield return expr;
+                }
+            }
+        }
+
         internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
         {
             Debug.Assert(expressions.Count > 0);
             access = info.Access;
 
-            ConcatChunks = AnalyzeChunks(analyzer, expressions);
-            expressions = new List<Expression>(ChunkExpressions);   // replace expressions with optimized one
+            var concatChunks = AnalyzeChunks(analyzer, expressions);
+            this.expressions = new List<Expression>(ChunkExpressions(concatChunks));   // replace expressions with optimized one
 
-            if (ConcatChunks.Count == 1 && ConcatChunks[0].HasValue)
-                return new Evaluation(this, ConcatChunks[0].Value); // can be resolved during compilation time
+            if (concatChunks.Count == 1 && concatChunks[0].HasValue)
+                return new Evaluation(this, concatChunks[0].Value); // can be resolved during compilation time
             else
                 return new Evaluation(this);
 
@@ -210,39 +233,6 @@ namespace PHP.Core.AST
             /// </summary>
             public List<Expression> Expressions;
         }
-
-        /// <summary>
-        /// Initialized during the Analysis().
-        /// It contains alternating Expression and Object (evaluated expression).
-        /// </summary>
-        private List<ConcatChunk> ConcatChunks = null;
-
-        /// <summary>
-        /// Expressions from ConcatChunks, Values are transformed into corresponding literals.
-        /// </summary>
-        private IEnumerable<Expression> ChunkExpressions
-        {
-            get
-            {
-                Debug.Assert(ConcatChunks != null);
-                foreach (var chunk in ConcatChunks)
-                {
-                    if (chunk.HasValue)
-                    {
-                        if (chunk.Value is PhpBytes)
-                            yield return new BinaryStringLiteral(Position.Invalid, (PhpBytes)chunk.Value, AccessType.Read);
-                        else
-                            yield return new StringLiteral(Position.Invalid, Convert.ObjectToString(chunk.Value), AccessType.Read);
-                    }
-                    else
-                    {
-                        foreach (var expr in chunk.Expressions)
-                            yield return expr;
-                    }
-                }
-            }
-        }
-
 
         #endregion
 
