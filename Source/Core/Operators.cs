@@ -2314,16 +2314,20 @@ namespace PHP.Core
         {
             Debug.Assert(!(var is PhpReference) && !(key is PhpReference));
 
+            // an item of a PhpArray (fast check):
+            if (var != null && var.GetType() == typeof(PhpArray))   // derived types checked in Epilogue
+                return ((PhpArray)var).GetArrayItem(key, kind != GetItemKinds.Get);
+            else
+                return GetItemNonPhpArray(var, key, kind);
+        }
+
+        private static object GetItemNonPhpArray(object var, object key, GetItemKinds kind)
+        {
             // handle null reference:
             if (var == null)
                 return null;
 
             bool quiet = kind != GetItemKinds.Get;
-
-            // an item of a PhpArray (fast check):
-            if (var.GetType() == typeof(PhpArray))   // derived types checked in Epilogue
-                return ((PhpArray)var).GetArrayItem(key, quiet);
-
             int index;
 
             // a character of a string:
