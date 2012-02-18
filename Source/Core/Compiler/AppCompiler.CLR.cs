@@ -1344,26 +1344,30 @@ namespace PHP.Core
 
 			ICompilerManager manager = (!ps.Pure) ? new ApplicationCompilerManager(applicationContext, assembly_builder) : null;
 
-			try
-			{
-				CompilationContext context = new CompilationContext(applicationContext, manager, config, errorSink, config.Compiler.SourceRoot);
+            try
+            {
+                CompilationContext context = new CompilationContext(applicationContext, manager, config, errorSink, config.Compiler.SourceRoot);
 
-				assembly_builder.Build(EnumerateScripts(ps.SourcePaths, ps.SourceDirs, ps.FileExtensions, context), context);
+                assembly_builder.Build(EnumerateScripts(ps.SourcePaths, ps.SourceDirs, ps.FileExtensions, context), context);
 
-				if (!context.Errors.AnyError && (ps.Target == Targets.Console || ps.Target == Targets.WinApp))
-					CopyApplicationConfigFile(config.Compiler.SourceRoot, ps.OutPath);
-			}
-			catch (CompilerException e)
-			{
-				errorSink.Add(e.ErrorInfo, null, ErrorPosition.Invalid, e.ErrorParams);
-			}
-			catch (Exception e)
-			{
+                if (!context.Errors.AnyError && (ps.Target == Targets.Console || ps.Target == Targets.WinApp))
+                    CopyApplicationConfigFile(config.Compiler.SourceRoot, ps.OutPath);
+            }
+            catch (CompilerException e)
+            {
+                errorSink.Add(e.ErrorInfo, null, ErrorPosition.Invalid, e.ErrorParams);
+            }
+            catch (InvalidSourceException e)
+            {
+                e.Report(errorSink);
+            }
+            catch (Exception e)
+            {
 #if DEBUG
-				//Console.WriteLine("Unexpected error: {0}", e.ToString());// removed, exception added into the error sink, so it's displayed in the VS Integration too
+                //Console.WriteLine("Unexpected error: {0}", e.ToString());// removed, exception added into the error sink, so it's displayed in the VS Integration too
 #endif
                 errorSink.AddInternalError(e);  // compilation will fail, error will be displayed in Errors by VS Integration               
-			}
+            }
 			finally
 			{
 #if DEBUG
