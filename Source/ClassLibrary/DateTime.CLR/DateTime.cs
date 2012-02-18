@@ -277,10 +277,10 @@ namespace PHP.Library
 					case 'c':
 						{
 							// ISO 8601 date (added in PHP 5) 2004-02-12T15:19:21+00:00 
-							result.Append(local.ToString("yyyy-MM-dd'T'H:mm:ss", DateTimeFormatInfo.InvariantInfo));
+							result.Append(local.ToString("yyyy-MM-dd'T'HH:mm:ss", DateTimeFormatInfo.InvariantInfo));
 
 							TimeSpan offset = zone.GetUtcOffset(local);
-							result.AppendFormat("{0}{1:00}:{2:00}", (offset.Ticks < 0) ? "-" : "+", offset.Hours, offset.Minutes);
+                            result.AppendFormat("{0}{1:00}:{2:00}", (offset.Ticks < 0) ? ""/*offset.Hours already < 0*/ : "+", offset.Hours, offset.Minutes);
 							break;
 						}
 
