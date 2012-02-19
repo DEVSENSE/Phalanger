@@ -1929,7 +1929,7 @@ namespace PHP.Library
 			ConvertPattern(pattern);
 
             if (replacement != null)
-                dotNetReplaceExpression = PerlRegExpReplacementCache.Get(regex, replacement);
+                dotNetReplaceExpression = (replacement.Length == 0) ? string.Empty : PerlRegExpReplacementCache.Get(regex, replacement);
 		}
 
 		private void ConvertPattern(object pattern)
@@ -2187,7 +2187,7 @@ namespace PHP.Library
 		/// Parses escaped sequences: "\[xX][0-9A-Fa-f]{2}", "\[xX]\{[0-9A-Fa-f]{0,4}\}", "\[0-7]{3}", 
 		/// "\[pP]{Unicode Category}"
 		/// </summary>
-		private static bool ParseEscapeCode(Encoding/*!*/ encoding, string/*!*/ str, ref int pos, ref char ch, ref bool escaped)
+		private static bool ParseEscapeCode(Encoding/*!*/ encoding, string/*!*/ str, ref int pos, ref int ch, ref bool escaped)
 		{
 			Debug.Assert(encoding != null && str != null && pos >= 0 && pos < str.Length && str[pos] == '\\');
 
@@ -2208,10 +2208,10 @@ namespace PHP.Library
 						number = (number << 4) + digit;
 						i++;
 					}
-					if (number > Char.MaxValue || i >= str.Length) return false;
+					if (/*number > Char.MaxValue || */i >= str.Length) return false;
 					pos = i;
-					ch = (char)number;
-					escaped = IsCharRegexSpecial(ch);
+					ch = number;
+					escaped = ch < Char.MaxValue ? IsCharRegexSpecial((char)ch) : false;
 				}
 				else
 				{
@@ -2228,8 +2228,8 @@ namespace PHP.Library
 					if (chars.Length == 1)
 						ch = chars[0];
 					else
-						ch = (char)number;
-					escaped = IsCharRegexSpecial(ch);
+						ch = number;
+                    escaped = ch < Char.MaxValue ? IsCharRegexSpecial((char)ch) : false;
 				}
 				return true;
 			}
@@ -2245,7 +2245,7 @@ namespace PHP.Library
 				}
 				pos += 3;
 				ch = encoding.GetChars(new byte[] { (byte)number })[0];
-				escaped = IsCharRegexSpecial(ch);
+                escaped = ch < Char.MaxValue ? IsCharRegexSpecial((char)ch) : false;
 				return true;
 			}
 			else if (str[pos + 1] == 'p' || str[pos + 1] == 'P')
@@ -2345,7 +2345,7 @@ namespace PHP.Library
 			int i = 0;
 			while (i < perlExpr.Length)
 			{
-				char ch = perlExpr[i];
+				int ch = perlExpr[i];
 
 				escaped = false;
 				if (ch == '\\' && !ParseEscapeCode(encoding, perlExpr, ref i, ref ch, ref escaped))
@@ -2378,7 +2378,7 @@ namespace PHP.Library
 						if (escaped)
 						{
 							result.Append('\\');
-							result.Append(ch);
+							Append(result, ch);
 							last_quantifier = false; 
 							break;
 						}
@@ -2718,14 +2718,14 @@ namespace PHP.Library
 						if (ch == '[')
 							state = 1;
 
-						result.Append(ch);
-						break;
+                        Append(result, ch);
+                        break;
 
 					case 1: // first character of character class
 						if (escaped)
 						{
 							result.Append('\\');
-							result.Append(ch);
+                            Append(result, ch);
 							state = 2;
 							break;
 						}
@@ -2733,7 +2733,7 @@ namespace PHP.Library
 						// special characters:
 						if (ch == '^' || ch == ']' || ch == '-')
 						{
-							result.Append(ch);
+							Append(result, ch);
 						}
 						else
 						{
@@ -2748,7 +2748,7 @@ namespace PHP.Library
 						if (escaped)
 						{
 							result.Append('\\');
-							result.Append(ch);
+                            Append(result, ch);
 							leaving_range = false;
 							break;
 						}
@@ -2778,10 +2778,12 @@ namespace PHP.Library
 
 						if (ch == ']')
 							state = 0;
-						if (ch == '-')
-							result.Append("\\x2d");
-						else
-							result.Append(ch);
+                        if (ch == '-')
+                            result.Append("\\x2d");
+                        else
+                        {
+                            AppendEscaped(result, ch);
+                        }
 						break;
 
 					case 3: // range previous character was '-'
@@ -2792,17 +2794,20 @@ namespace PHP.Library
 							break;
 						}
 
-						string range;
-						int error;
-						if (!PosixRegExp.BracketExpression.CountRange(result[result.Length - 1], ch, out range, out error))
-						{
-							if ((error != 1) || (!CountUnicodeRange(result[result.Length - 1], ch, out range)))
-							{
-								Debug.Assert(error == 2);
-								throw new ArgumentException(LibResources.GetString("range_first_character_greater"));
-							}
-						}
-						result.Append(PosixRegExp.BracketExpression.EscapeBracketExpressionSpecialChars(range)); // left boundary is duplicated, but doesn't matter...
+                        //string range;
+                        //int error;
+                        //if (!PosixRegExp.BracketExpression.CountRange(result[result.Length - 1], ch, out range, out error))
+                        //{
+                        //    if ((error != 1) || (!CountUnicodeRange(result[result.Length - 1], ch, out range)))
+                        //    {
+                        //        Debug.Assert(error == 2);
+                        //        throw new ArgumentException(LibResources.GetString("range_first_character_greater"));
+                        //    }
+                        //}
+                        //PosixRegExp.BracketExpression.EscapeBracketExpressionSpecialChars(result, range); // left boundary is duplicated, but doesn't matter...
+                        result.Append('-');
+                        AppendEscaped(result, ch);
+
 						state = 2;
 						leaving_range = true;
 						break;
@@ -2813,6 +2818,34 @@ namespace PHP.Library
 
             return ConvertPossesiveToAtomicGroup(result);
 		}
+
+        private static void AppendEscaped(StringBuilder/*!*/sb, int ch)
+        {
+            Debug.Assert(sb != null);
+
+            if (ch < 0x80 && ch != '\\' && ch != '-')
+                sb.Append((char)ch);
+            else
+                AppendUnicode(sb, ch);
+        }
+
+        private static void Append(StringBuilder/*!*/sb, int ch)
+        {
+            Debug.Assert(sb != null);
+            Debug.Assert(ch >= 0);
+
+            if (ch < Char.MaxValue && ch > 0)
+                sb.Append((char)ch);
+            else
+                AppendUnicode(sb, ch);
+        } 
+
+        private static void AppendUnicode(StringBuilder/*!*/sb, int ch)
+        {
+            Debug.Assert(sb != null);
+
+            sb.Append(@"\u" + ((int)ch).ToString("X4"));
+        }
 
         #region Conversion of possesive quantifiers
 

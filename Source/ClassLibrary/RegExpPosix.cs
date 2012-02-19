@@ -748,7 +748,9 @@ namespace PHP.Library
 
 				if (CountRange(firstCharacter, secondCharacter, out characters, out result))
 				{
-					return EscapeBracketExpressionSpecialChars(characters);
+                    StringBuilder sb = new StringBuilder(characters.Length);
+					EscapeBracketExpressionSpecialChars(sb, characters);
+                    return sb.ToString();
 				}
 
 				// there was an error
@@ -773,11 +775,12 @@ namespace PHP.Library
 			/// <summary>
 			/// Escapes characters that have special meaning in bracket expression to make them ordinary characters.
 			/// </summary>
+            /// <param name="sb"><see cref="StringBuilder"/> to output the result.</param>
 			/// <param name="chars">String possibly containing characters with special meaning.</param>
 			/// <returns>String with escaped characters.</returns>
-			internal static string EscapeBracketExpressionSpecialChars(string chars)
+			internal static void EscapeBracketExpressionSpecialChars(StringBuilder/*!*/sb, string chars)
 			{
-				StringBuilder sb = new StringBuilder();
+                Debug.Assert(sb != null);
 
 				for (int i = 0; i < chars.Length; i++)
 				{
@@ -795,8 +798,6 @@ namespace PHP.Library
 							break;
 					}
 				}
-
-				return sb.ToString();
 			}
 
 			/// <summary>
