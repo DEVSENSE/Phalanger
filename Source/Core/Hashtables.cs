@@ -2232,11 +2232,13 @@ namespace PHP.Core
 		/// Must be set to <B>false</B> immediately after the pass.
 		/// </remarks>
 		public bool Visited { get { return visited; } set { visited = value; } }
-		private bool visited = false;
+        [NonSerialized]
+        private bool visited = false;
 
 		/// <summary>
 		/// A field used by <see cref="RecursiveEnumerator"/> to store an enumerator of respective recursion level.
 		/// </summary>
+        [NonSerialized]
         private OrderedDictionary.Enumerator recursiveEnumerator;
 
 		/// <summary>
@@ -2283,6 +2285,7 @@ namespace PHP.Core
         /// <summary>
         /// Callback methods for entry deletion event.
         /// </summary>
+        [NonSerialized]
         internal OrderedDictionary.Enumerator activeEnumerators = null;
 
         /// <summary>
