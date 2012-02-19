@@ -1,37 +1,9 @@
 <?
+	// timing
+	require_once '..\timing.php';
 
-	class TimingFunction
-	{
-		static function GetTicks()
-		{
-			return microtime(true);
-		}
-	}
+	// tests:
 	
-	class Timing
-	{
-		private static $start;
-		private static $descr;
-		
-		public static $LastTime;
-		
-		static function Start($descr)
-		{
-			self::$descr = $descr;
-			self::$start = TimingFunction::GetTicks();
-		}
-		
-		static function Stop()
-		{
-			self::$LastTime = TimingFunction::GetTicks() - self::$start;
-			
-			$descr = self::$descr;
-			$time = str_replace('.', ',', self::$LastTime); // numbers with comma instead of dot - can be read as excel CSV
-			
-			echo "$descr; $time \n";
-		}
-	}
-
 	function Ack($m, $n){
 	  if($m == 0) return $n + 1;
 	  if($n == 0) return Ack($m-1, 1);
@@ -372,6 +344,8 @@
 				self::mystrcat();
 				self::nestedloop();
 			}
+			
+			Timing::OutputResults();
 		}
 
 		static function ackermann() {

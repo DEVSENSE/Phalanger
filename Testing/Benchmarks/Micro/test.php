@@ -1,36 +1,9 @@
 <?php
 
-	class TimingFunction
-	{
-		static function GetTicks()
-		{
-			return microtime(true);
-		}
-	}
-	
-	class Timing
-	{
-		private static $start;
-		private static $descr;
-		
-		public static $LastTime;
-		
-		static function Start($descr)
-		{
-			self::$descr = $descr;
-			self::$start = TimingFunction::GetTicks();
-		}
-		
-		static function Stop()
-		{
-			self::$LastTime = TimingFunction::GetTicks() - self::$start;
-			
-			$descr = self::$descr;
-			$time = str_replace('.', ',', self::$LastTime); // numbers with comma instead of dot - can be read as excel CSV
-			
-			echo "$descr; $time \n";
-		}
-	}
+    // timing functions
+	require_once '..\timing.php';
+
+    // tests:
 
 	class X
 	{
@@ -91,12 +64,7 @@
 				echo "Benchmark #$k\n";
 				echo "============\n";
 			
-				for ($j = 0; $j < 3; $j++)
-				{
-					Timing::Start("Empty loop");
-					for ($i = 0; $i < self::LOOP_COUNT; $i++) { }
-					Timing::Stop();
-				}
+				self::EmptyLoop();
 				
 				self::UnoptimalizedLoop();
 				self::StaticFields();
@@ -114,7 +82,19 @@
 				
 				self::Instantiation();
 			}
+            
+            Timing::OutputResults();
 		}
+
+        static function EmptyLoop()
+        {
+            for ($j = 0; $j < 3; $j++)
+			{
+				Timing::Start("Empty loop");
+				for ($i = 0; $i < self::LOOP_COUNT; $i++) { }
+				Timing::Stop();
+			}
+        }
 
 		static function UnoptimalizedLoop()
 		{
