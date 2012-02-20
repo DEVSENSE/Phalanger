@@ -335,25 +335,13 @@ namespace PHP.Core.Binders
                             Func<DObject, string, DTypeDesc, PhpReference> op = (self, name, caller) =>
                             {
                                 PhpReference reference;
-                                object value;
                                 bool getter_exists;
 
                                 // search in RT fields
-                                OrderedHashtable<string>.Element element;
-                                if (self.RuntimeFields != null && (element = self.RuntimeFields.GetElement(name)) != null)
+                                if (self.RuntimeFields != null && self.RuntimeFields.ContainsKey(name))
                                 {
-                                    value = element.Value;
-                                    reference = value as PhpReference;
-
-                                    if (reference == null)
-                                    {
-                                        // it is correct to box the value without making a deep copy since there was a single pointer on value
-                                        // before this operation (by invariant) and there will be a single one after the operation as well:
-                                        reference = new PhpReference(value);
-                                        element.Value = reference;
-                                    }
-
-                                    return reference;
+                                    var namekey = new IntStringKey(name);
+                                    return self.RuntimeFields.table._ensure_item_ref(ref namekey, self.RuntimeFields);
                                 }
 
                                 // property is not present -> try to invoke __get
@@ -364,7 +352,7 @@ namespace PHP.Core.Binders
 
                                 // add the field
                                 reference = new PhpReference();
-                                if (self.RuntimeFields == null) self.RuntimeFields = new OrderedHashtable<string>();
+                                if (self.RuntimeFields == null) self.RuntimeFields = new PhpArray();
                                 self.RuntimeFields[name] = reference;
 
                                 return reference;
@@ -395,9 +383,12 @@ namespace PHP.Core.Binders
                             {
                                 Func<DObject, string, DTypeDesc, object> notsetOperation = (self, name, caller) =>
                                 {
-                                    OrderedHashtable<string>.Element element;
-                                    if (self.RuntimeFields != null && (element = self.RuntimeFields.GetElement(name)) != null)
-                                        return element.Value;
+                                    if (self.RuntimeFields != null)
+                                    {
+                                        object value;
+                                        if (self.RuntimeFields.TryGetValue(name, out value))
+                                            return value;
+                                    }
 
                                     bool handled;
                                     return self.PropertyIssetHandler(name, caller, out handled);

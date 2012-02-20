@@ -540,6 +540,12 @@ namespace PHP.Core
                 this.table.entries[this.currentEntry]._key = newkey;
             }
 
+            internal void ModifyCurrentValue(object newvalue)
+            {
+                Debug.Assert(IsValid);
+                this.table.entries[this.currentEntry].Value = newvalue;
+            }
+
             /// <summary>
             /// Delete current entry from the table and advances enumerator to the next entry.
             /// </summary>

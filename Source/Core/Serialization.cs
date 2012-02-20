@@ -146,10 +146,10 @@ namespace PHP.Core
 			// enumerate RT fields:
 			if (instance.RuntimeFields != null)
 			{
-				foreach (KeyValuePair<string, object> pair in instance.RuntimeFields)
-				{
-					yield return pair;
-				}
+                foreach (var pair in instance.RuntimeFields)
+                {
+                    yield return new KeyValuePair<string, object>(pair.Key.String, pair.Value);
+                }
 			}
 		}
 
@@ -324,7 +324,7 @@ namespace PHP.Core
 				// suitable CT field not found -> add it to RT fields
 				// (note: care must be taken so that the serialize(unserialize($x)) round
 				// trip returns $x even if user classes specified in $x are not declared)
-				if (instance.RuntimeFields == null) instance.RuntimeFields = new OrderedHashtable<string>();
+                if (instance.RuntimeFields == null) instance.RuntimeFields = new PhpArray();
 				instance.RuntimeFields[name] = value;
 			}
 		}

@@ -330,7 +330,7 @@ namespace PHP.Core.Reflection
 		/// <remarks>
 		/// This field is initialized in a lazy manner. It is <B>null</B> until the first RT field is created.
 		/// </remarks>
-		public OrderedHashtable<string> RuntimeFields;
+		public PhpArray RuntimeFields;
 
 		/// <summary>
 		/// <B>True</B> iff this instance has already been disposed off.
@@ -799,10 +799,11 @@ namespace PHP.Core.Reflection
 				{
 					if (issetSemantics)
 					{
-						OrderedHashtable<string>.Element element;
-						if (RuntimeFields != null && (element = RuntimeFields.GetElement(name)) != null)
+						var namekey = new IntStringKey(name);
+                        object value;
+						if (RuntimeFields != null && RuntimeFields.TryGetValue(namekey, out value))
 						{
-							return element.Value;
+							return value;
 						}
 						else
 						{
@@ -876,22 +877,12 @@ namespace PHP.Core.Reflection
 			}
 
 			// search in RT fields
-			OrderedHashtable<string>.Element element;
-			if (RuntimeFields != null && (element = RuntimeFields.GetElement(name)) != null)
-			{
-				value = element.Value;
-				reference = value as PhpReference;
 
-				if (reference == null)
-				{
-					// it is correct to box the value without making a deep copy since there was a single pointer on value
-					// before this operation (by invariant) and there will be a single one after the operation as well:
-					reference = new PhpReference(value);
-					element.Value = reference;
-				}
-
-				return reference;
-			}
+			if (RuntimeFields != null && RuntimeFields.ContainsKey(name))
+            {
+                var namekey = new IntStringKey(name);
+                return RuntimeFields.table._ensure_item_ref(ref namekey, RuntimeFields);
+            }
 
 			// property is not present -> try to invoke __get
 			reference = InvokeGetterRef(name, caller, out getter_exists);
@@ -901,7 +892,7 @@ namespace PHP.Core.Reflection
 
 			// add the field
 			reference = new PhpReference();
-			if (RuntimeFields == null) RuntimeFields = new OrderedHashtable<string>();
+            if (RuntimeFields == null) RuntimeFields = new PhpArray();
 			RuntimeFields[name] = reference;
 
 			return reference;
@@ -916,23 +907,23 @@ namespace PHP.Core.Reflection
 		/// <remarks>This is merely a helper method called from <see cref="GetProperty"/>.</remarks>
 		public object GetRuntimeField(string name, DTypeDesc caller)
 		{
-			OrderedHashtable<string>.Element element;
-			if (RuntimeFields == null || (element = RuntimeFields.GetElement(name)) == null)
-			{
-				// invoke __get
-				bool handled;
-				object ret_val = PropertyReadHandler(name, caller, out handled);
-				
-				if (!handled)
-				{
-					PhpException.Throw(PhpError.Notice, CoreResources.GetString("undefined_property_accessed",
-						TypeName, name));
-					return null;
-				}
+			object value;
+            var namekey = new IntStringKey(name);
+            if (RuntimeFields == null || !RuntimeFields.table.TryGetValue(namekey, out value))
+            {
+                // invoke __get
+                bool handled;
+                value = PropertyReadHandler(name, caller, out handled);
 
-				return ret_val;
-			}
-			else return element.Value;
+                if (!handled)
+                {
+                    PhpException.Throw(PhpError.Notice, CoreResources.GetString("undefined_property_accessed",
+                        TypeName, name));
+                    return null;
+                }
+            }
+            
+            return value;
 		}
 
 		/// <summary>
@@ -1021,7 +1012,7 @@ namespace PHP.Core.Reflection
 				!= GetMemberResult.OK)
 			{
 				// no, it is an RT field
-				if (RuntimeFields == null) RuntimeFields = new OrderedHashtable<string>();
+                if (RuntimeFields == null) RuntimeFields = new PhpArray();
 				RuntimeFields[name_str] = value;
 				return;
 			}
@@ -1060,8 +1051,8 @@ namespace PHP.Core.Reflection
 		{
 			PhpReference reference = value as PhpReference;
 
-			OrderedHashtable<string>.Element element;
-			if (RuntimeFields == null || (element = RuntimeFields.GetElement(name)) == null)
+            object elementvalue;
+            if (RuntimeFields == null || !RuntimeFields.TryGetValue(name, out elementvalue))
 			{
 				if (reference != null)
 				{
@@ -1092,7 +1083,7 @@ namespace PHP.Core.Reflection
 					}
 					else
 					{
-						if (RuntimeFields == null) RuntimeFields = new OrderedHashtable<string>();
+                        if (RuntimeFields == null) RuntimeFields = new PhpArray();
 						RuntimeFields[name] = value;
 					}
 				}
@@ -1100,14 +1091,14 @@ namespace PHP.Core.Reflection
 			else
 			{
 				// if the new value is a PhpReference, it is always directly written to the RuntimeFields table
-				if (reference != null) element.Value = reference;
+				if (reference != null) RuntimeFields[name] = reference;
 				else
 				{
 					// if the new value is not a PhpReference, check has to be made whether the original field value
 					// was a PhpReference
-					reference = element.Value as PhpReference;
+                    reference = elementvalue as PhpReference;
 					if (reference != null) reference.Value = value;
-					else element.Value = value;
+                    else RuntimeFields[name] = value;
 				}
 			}
 		}
@@ -1157,7 +1148,7 @@ namespace PHP.Core.Reflection
 			else
 			{
 				// search in RT fields
-				if (RuntimeFields == null || !RuntimeFields.Remove(name))
+				if (RuntimeFields == null || !RuntimeFields.table.Remove(new IntStringKey(name)))
 				{
 					// invoke the unset handler (will call the __unset special method)
 					PropertyUnsetHandler(name, caller);
@@ -1190,8 +1181,8 @@ namespace PHP.Core.Reflection
 			// copy RT fields
 			if (RuntimeFields != null)
 			{
-				copy.RuntimeFields = new OrderedHashtable<string>(RuntimeFields.Count);
-				foreach (KeyValuePair<string, object> pair in RuntimeFields)
+                copy.RuntimeFields = new PhpArray(RuntimeFields.Count);
+				foreach (var pair in RuntimeFields)
 				{
 					copy.RuntimeFields.Add(pair.Key, deepCopyFields ?
 						PhpVariable.DeepCopy(pair.Value) :
@@ -1411,7 +1402,7 @@ namespace PHP.Core.Reflection
 			if (RuntimeFields == null)
 			{
 				if (newState.RuntimeFields != null)
-					RuntimeFields = (OrderedHashtable<string>)newState.RuntimeFields.Clone();
+					RuntimeFields = (PhpArray)newState.RuntimeFields.Clone();
 			}
 			else
 			{
@@ -1419,9 +1410,9 @@ namespace PHP.Core.Reflection
 				else
 				{
 					// both this.RuntimeFields and newSate.RuntimeFields are non-null
-					OrderedHashtable<string> new_rt_fields = new OrderedHashtable<string>(newState.RuntimeFields.Count);
+					var new_rt_fields = new PhpArray(newState.RuntimeFields.Count);
 
-					foreach (KeyValuePair<string, object> pair in newState.RuntimeFields)
+					foreach (var pair in newState.RuntimeFields)
 					{
 						PhpReference new_ref = pair.Value as PhpReference;
 						if (new_ref == null) new_rt_fields.Add(pair.Key, pair.Value);
@@ -1456,7 +1447,7 @@ namespace PHP.Core.Reflection
 
 			// incarnate RT fields
 			if (newState.RuntimeFields == null) RuntimeFields = null;
-			else RuntimeFields = (OrderedHashtable<string>)newState.RuntimeFields.Clone();
+			else RuntimeFields = new PhpArray(newState.RuntimeFields, true);
 		}
 
 		#endregion
@@ -1556,21 +1547,21 @@ namespace PHP.Core.Reflection
 				// compare RT fields
 				if (x.RuntimeFields != null && y.RuntimeFields != null)
 				{
-					IEnumerator<KeyValuePair<string, object>> enum_x = x.RuntimeFields.GetEnumerator();
-					IEnumerator<KeyValuePair<string, object>> enum_y = y.RuntimeFields.GetEnumerator();
+					var enum_x = x.RuntimeFields.GetFastEnumerator();
+					var enum_y = y.RuntimeFields.GetFastEnumerator();
 
 					while (enum_x.MoveNext())
 					{
 						enum_y.MoveNext();
 
 						// compare keys
-						result = PhpArrayKeysComparer.Default.Compare(enum_x.Current.Key, enum_y.Current.Key);
+						result = PhpArrayKeysComparer.Default.Compare(enum_x.CurrentKey, enum_y.CurrentKey);
 						if (result != 0) return result;
 
 						// compare values
 						result = CompareObjectsCore(
-							PhpVariable.Dereference(enum_x.Current.Value),
-							PhpVariable.Dereference(enum_y.Current.Value),
+							PhpVariable.Dereference(enum_x.CurrentValue),
+							PhpVariable.Dereference(enum_y.CurrentValue),
 							comparer,
 							out incomparable);
 
@@ -1859,7 +1850,9 @@ namespace PHP.Core.Reflection
 				// convert RT fields
 				if (RuntimeFields != null)
 				{
-					foreach (KeyValuePair<string, object> pair in RuntimeFields) array[pair.Key] = pair.Value;
+                    using (var fields = RuntimeFields.GetFastEnumerator())
+                        while (fields.MoveNext())
+                            array[fields.CurrentKey] = fields.CurrentValue;
 				}
 			}
 
@@ -1970,10 +1963,10 @@ namespace PHP.Core.Reflection
 				// print RT fields
 				if (RuntimeFields != null)
 				{
-					foreach (KeyValuePair<string, object> pair in RuntimeFields)
+					foreach (var pair in RuntimeFields)
 					{
 						PhpVariable.PrintIndentation(output);
-						output.Write("[{0}] => ", pair.Key);
+						output.Write("[{0}] => ", pair.Key.Object);
 						PhpVariable.Print(output, pair.Value);
 					}
 				}
@@ -2058,10 +2051,10 @@ namespace PHP.Core.Reflection
 				// print RT fields
 				if (RuntimeFields != null)
 				{
-					foreach (KeyValuePair<string, object> pair in RuntimeFields)
+					foreach (var pair in RuntimeFields)
 					{
 						PhpVariable.PrintIndentation(output);
-						output.WriteLine("[\"{0}\"]=>", pair.Key);
+						output.WriteLine("[\"{0}\"]=>", pair.Key.String);
 
                         PhpVariable.PrintIndentation(output);
 						property_value_ref = pair.Value as PhpReference;
@@ -2135,14 +2128,14 @@ namespace PHP.Core.Reflection
 				// print RT fields
 				if (RuntimeFields != null)
 				{
-					foreach (KeyValuePair<string, object> pair in RuntimeFields)
+					foreach (var pair in RuntimeFields)
 					{
 						if (!first) output.WriteLine(String.Empty);
 						else first = false;
 
 						PhpVariable.PrintIndentation(output);
 
-						output.Write("public ${0} = ", pair.Key);
+						output.Write("public ${0} = ", pair.Key.String);
 
 						PhpVariable.Export(output, pair.Value);
 						output.Write(';');
@@ -2251,16 +2244,17 @@ namespace PHP.Core.Reflection
 					// walks RT fields:
 					if (RuntimeFields != null)
 					{
-						foreach (KeyValuePair<string, object> pair in RuntimeFields)
-						{
-							IPhpObjectGraphNode node = pair.Value as IPhpObjectGraphNode;
-							if (node != null)
-							{
-								object res = callback(node, context);
-								if (!Object.ReferenceEquals(res, pair.Value)) RuntimeFields[pair.Key] = res;
-								if ((node = res as IPhpObjectGraphNode) != null) node.Walk(callback, context);
-							}
-						}
+                        using (var fields = RuntimeFields.GetFastEnumerator())
+                            while (fields.MoveNext())
+                            {
+                                IPhpObjectGraphNode node = fields.CurrentValue as IPhpObjectGraphNode;
+                                if (node != null)
+                                {
+                                    object res = callback(node, context);
+                                    if (!Object.ReferenceEquals(res, fields.CurrentValue)) fields.ModifyCurrentValue(res);
+                                    if ((node = res as IPhpObjectGraphNode) != null) node.Walk(callback, context);
+                                }
+                            }
 					}
 				}
 				finally
@@ -2467,7 +2461,7 @@ namespace PHP.Core.Reflection
 			// enumerate RT fields
 			if (RuntimeFields != null)
 			{
-				foreach (KeyValuePair<string, object> pair in RuntimeFields)
+				foreach (var pair in RuntimeFields)
 				{
 					value = pair.Value;
 
@@ -2483,7 +2477,7 @@ namespace PHP.Core.Reflection
 					}
 					else value = PhpVariable.Copy(PhpVariable.Dereference(value), CopyReason.Assigned);
 
-					yield return new KeyValuePair<object, object>(pair.Key, value);
+					yield return new KeyValuePair<object, object>(pair.Key.Object, value);
 				}
 			}
 		}
@@ -2500,7 +2494,7 @@ namespace PHP.Core.Reflection
 			if (name == null) throw new ArgumentNullException("name");
 			if (Contains(name)) throw new ArgumentException(CoreResources.GetString("field_already_exists"));
 
-			if (RuntimeFields == null) RuntimeFields = new OrderedHashtable<string>();
+			if (RuntimeFields == null) RuntimeFields = new PhpArray();
 			RuntimeFields.Add(Convert.ObjectToString(name), value);
 		}
 
@@ -2510,7 +2504,7 @@ namespace PHP.Core.Reflection
                 return;
 
             if (RuntimeFields == null)
-                RuntimeFields = new OrderedHashtable<string>();
+                RuntimeFields = new PhpArray();
 
             foreach (var member in members)
             {

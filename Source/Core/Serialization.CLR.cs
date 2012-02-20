@@ -186,7 +186,7 @@ namespace PHP.Core
 			// use the instance's RuntimeFields as a temp storage for deserialized members
 			DObject instance = (DObject)obj;
 
-			instance.RuntimeFields = new OrderedHashtable<string>(1);
+            instance.RuntimeFields = new PhpArray();
 			instance.RuntimeFields.Add(MembersSerializationInfoKey,
 				info.GetValue(MembersSerializationInfoKey, typeof(object[])));
 

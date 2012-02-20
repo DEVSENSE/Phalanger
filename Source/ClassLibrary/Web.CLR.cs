@@ -839,32 +839,22 @@ namespace PHP.Library
                     {
                         if (ib > 0) caps["parent"] = browserCaps.Browsers[ib - 1].ToString();
                         break;
-                    }*/                
+                    }*/
+
+            // create an array of browser capabilities:
+            var caps = new PhpArray(browserCaps.Capabilities.Count);
+
+            foreach (var x in browserCaps.Capabilities.Keys)
+                caps.Add(x, browserCaps.Capabilities[x]);
 
             if (return_array)
-            {
-                // create an array of browser capabilities:
-                var caps = new PhpArray(browserCaps.Capabilities.Count);
-
-                foreach (var x in browserCaps.Capabilities.Keys)
-                    caps.Add(x, browserCaps.Capabilities[x]);
-                
                 return caps;
-            }
-            else
+
+            // create an object of browser capabilities:
+            return new stdClass()
             {
-                // collect browser capabilities into the object runtime fields:
-                var caps = new OrderedHashtable<string>(browserCaps.Capabilities.Count);
-
-                foreach (var x in browserCaps.Capabilities.Keys)
-                    caps.Add(x.ToString(), browserCaps.Capabilities[x]);
-
-                // create an object of browser capabilities:
-                return new stdClass()
-                {
-                    RuntimeFields = caps
-                };
-            }
+                RuntimeFields = caps
+            };
         }
 
         private static HttpBrowserCapabilities GetBrowserCaps(string user_agent)
