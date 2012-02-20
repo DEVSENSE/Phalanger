@@ -501,11 +501,13 @@ namespace PHP.Core
 		/// <summary>
 		/// <see cref="PhpObject"/> is its own real object.
 		/// </summary>
-		public override object/*!*/ RealObject { get { return this; } }
+        [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+        public override object/*!*/ RealObject { get { return this; } }
 
         /// <summary>
         /// <see cref="PhpObject"/> is passed to its method and property invokes.
         /// </summary>
+        [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
         public override object InstanceObject { get { return this; } }
 
 		#endregion
