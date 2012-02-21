@@ -68,9 +68,6 @@ namespace PHP.Library
 		[ImplementsFunction("clr_typeof", FunctionImplOptions.NeedsNamingContext | FunctionImplOptions.NeedsClassContext)]
 		public static DObject GetTypeOf(NamingContext/*!*/ namingContext, DTypeDesc caller, object typeNameOrObject)
 		{
-			if (namingContext == null)
-				throw new ArgumentNullException("namingContext");
-
 			ScriptContext context = ScriptContext.CurrentContext;
 			DTypeDesc type = PhpObjects.ClassNameOrObjectToType(context, namingContext, caller, typeNameOrObject, true);
 			if (type == null) return null;
