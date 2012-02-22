@@ -408,20 +408,24 @@ namespace PHP.Core.Reflection
             if (!Configuration.IsLoaded && !Configuration.IsBeingLoaded) { return; } // continue without wrappers !! (VS Integration does not need it)
 			string wrappers_dir = Configuration.GetPathsNoLoad().DynamicWrappers;
 
-			string wrapper_name = Path.Combine(wrappers_dir, DynamicWrapperFileName(real_assembly));
+            // determine wrapper file name,
+            // we are looking for an up-to-date wrapper or a writable location:
+            string wrapper_file = DetermineDynamicWrapperFileName(wrappers_dir, real_assembly);
+            string wrapper_fullfile = Path.Combine(wrappers_dir, wrapper_file);
 
+            // 
 			try
 			{
 				// builds wrapper if it doesn't exist:
-                if (!IsDynamicWrapperUpToDate(real_assembly, wrapper_name))
+                if (!IsDynamicWrapperUpToDate(real_assembly, wrapper_fullfile))
 				{
-					Mutex mutex = new Mutex(false, String.Concat(@"Global\", wrapper_name.Replace('\\', '/')));
+                    Mutex mutex = new Mutex(false, String.Concat(@"Global\", wrapper_fullfile.Replace('\\', '/')));
 					mutex.WaitOne();
 					try
 					{
 						// if the file still does not exist, we are in charge!
-                        if (!IsDynamicWrapperUpToDate(real_assembly, wrapper_name))
-							LibraryBuilder.CreateDynamicWrapper(real_assembly, wrappers_dir);
+                        if (!IsDynamicWrapperUpToDate(real_assembly, wrapper_fullfile))
+                            LibraryBuilder.CreateDynamicWrapper(real_assembly, wrappers_dir, wrapper_file);
 					}
 					finally
 					{
@@ -430,11 +434,11 @@ namespace PHP.Core.Reflection
 				}
 
 				// loads wrapper:
-				this.dynamicWrapper = System.Reflection.Assembly.LoadFrom(wrapper_name);
+                this.dynamicWrapper = System.Reflection.Assembly.LoadFrom(wrapper_fullfile);
 			}
 			catch (Exception e)
 			{
-				throw new DynamicWrapperLoadException(wrapper_name, e);
+                throw new DynamicWrapperLoadException(wrapper_fullfile, e);
 			}
 #endif
 		}
@@ -487,11 +491,51 @@ namespace PHP.Core.Reflection
         /// Get the dynamic wrapper file name based on the given extension assembly.
         /// </summary>
         /// <param name="ass">Extension assembly which dynamic wrapper file is needed.</param>
+        /// <param name="version">Wrapper version to to be appended to the file name.</param>
         /// <returns>Dynamic wrapper assembly file name corresponding to given <paramref name="ass"/>.</returns>
-        internal static string/*!*/DynamicWrapperFileName(Assembly/*!*/ass)
+        private static string/*!*/DynamicWrapperFileName(Assembly/*!*/ass, int version)
         {
             var name = ass.GetName(false);
-            return String.Concat(name.Name, DynamicAssemblySuffix, /*".", name.Version.ToString(2),*/ ".dll");
+            return String.Concat(name.Name, DynamicAssemblySuffix, (version > 0) ? version.ToString() : string.Empty  ,".dll");
+        }
+
+        /// <summary>
+        /// Determine file name to be use for dynamic wrapper. The resulting file has to not exists, be writable or up-to-date.
+        /// </summary>
+        /// <param name="wrappers_dir">Directory with dynamic wrappers.</param>
+        /// <param name="ass">Class library assembly.</param>
+        /// <returns>File name (relatively to <paramref name="wrappers_dir"/>) for dyamic wrapper.</returns>
+        private static string/*!*/DetermineDynamicWrapperFileName(string/*!*/wrappers_dir, Assembly/*!*/ass)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(wrappers_dir));
+            Debug.Assert(ass != null);
+
+            for (int version = 0; ; version++)
+            {
+                var fname = DynamicWrapperFileName(ass, version);
+                var fullname = Path.Combine(wrappers_dir, fname);
+
+                if (!File.Exists(fullname) || IsDynamicWrapperUpToDate(ass, fullname) || FileIsWritable(fullname))
+                    return fname;
+            }
+        }
+
+        /// <summary>
+        /// Determine whether given <paramref name="filename"/> can be overwritten.
+        /// </summary>
+        /// <param name="filename">Full file name to be checked.</param>
+        /// <returns><c>True</c> if file can be overwritten.</returns>
+        private static bool FileIsWritable(string/*!*/filename)
+        {
+            try
+            {
+                using (var stream = File.OpenWrite(filename))
+                { }
+                return true;
+            }
+            catch{}
+
+            return false;
         }
 
         /// <summary>
