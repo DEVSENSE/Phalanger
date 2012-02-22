@@ -2620,7 +2620,7 @@ namespace PHP.Core
             Debug.Assert(!(var is PhpArrayString), "ensures and end-of-chain operators only");
 
             // PhpArray:
-            if (var != null && var.GetType() == typeof(PhpArray))   // fast vcheck for PhpArray, not derived types
+            if (var != null && var.GetType() == typeof(PhpArray))   // fast check for PhpArray, not derived types
                 return ((PhpArray)var).GetArrayItemRef(key);
 
             // creates a new reference and adds it to an a new array:
@@ -2648,7 +2648,7 @@ namespace PHP.Core
             // PhpArray (derived types):
             PhpArray array;
             if ((array = var as PhpArray) != null)
-                return array.GetArrayItemRef();
+                return array.GetArrayItemRef(key);
 
             // errors:
             PhpException.VariableMisusedAsArray(var, true);
