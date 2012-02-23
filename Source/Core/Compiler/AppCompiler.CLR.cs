@@ -1521,6 +1521,10 @@ namespace PHP.Core
                 result.LoadFromFile(appContext, path);
             }
 
+            // load libraries lazily
+            result.LoadLibraries(appContext);
+
+            //
             return result;
         }
 

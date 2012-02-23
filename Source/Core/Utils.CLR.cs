@@ -429,7 +429,7 @@ namespace PHP.Core
 		/// Parses list of library assemblies.
 		/// </summary>
 		/// <param name="node">Node containing the list.</param>
-		/// <param name="callback">Callback called for each parsed library.</param>
+		/// <param name="libraries">List of libraries to be modified by given <paramref name="node"/>.</param>
 		/// <param name="extensionsPath">Full path to the extensions directory.</param>
 		/// <param name="librariesPath">Full path to the libraries directory.</param>
 		/// <remarks>
@@ -438,17 +438,18 @@ namespace PHP.Core
 		///   &lt;add assembly="{string}" [section="{string}"] {additional attributes specific to library} /&gt;
 		/// </code>
 		/// </remarks>
-		public static void ParseLibraryAssemblyList(XmlNode/*!*/ node, ParseLibraryAssemblyCallback/*!*/ callback,
+		public static void ParseLibraryAssemblyList(XmlNode/*!*/ node,
+            LibrariesConfigurationList/*!*/ libraries,
 			FullPath extensionsPath, FullPath librariesPath)
 		{
 			if (node == null)
 				throw new ArgumentNullException("node");
-			if (callback == null)
-				throw new ArgumentNullException("callback");
+            if (libraries == null)
+                throw new ArgumentNullException("libraries");
 
 			foreach (XmlNode child in node.ChildNodes)
 			{
-                if (child.Name == "add")
+                if (child.Name == "add" || child.Name == "remove")
 				{
 					if (!Configuration.IsValidInCurrentScope(child)) continue;
 
@@ -498,16 +499,17 @@ namespace PHP.Core
 						}
 					}
 
-					if (!callback(assembly_name, uri, section_name, child)) break;
+                    if (child.Name == "add")
+                        libraries.AddLibrary(assembly_name, uri, section_name, child);
+                    else if (child.Name == "remove")
+                        libraries.RemoveLibrary(assembly_name, uri);
+                    else
+                        Debug.Fail();
 				}
-                /*else if (child.Name == "remove")
-                {
-
-                }
                 else if (child.Name == "clear")
                 {
-
-                }*/
+                    libraries.ClearLibraries();
+                }
                 else if (child.NodeType == XmlNodeType.Element)
                 {
                     throw new ConfigUtils.InvalidNodeException(child);

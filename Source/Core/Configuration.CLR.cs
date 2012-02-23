@@ -497,12 +497,32 @@ namespace PHP.Core
 	{
 		#region Loading
 
+        /// <summary>
+        /// Class libraries collected while parsing configuration files.
+        /// </summary>
+        private LibrariesConfigurationList/*!*/addedLibraries = new LibrariesConfigurationList();
+
+        /// <summary>
+        /// Load class libraries collected while parsing configuration files.
+        /// </summary>
+        /// <param name="appContext"></param>
+        internal void LoadLibraries(ApplicationContext/*!*/ appContext)
+        {
+            addedLibraries.LoadLibrariesNoLock(
+                    (_assemblyName, _assemblyUrl, _sectionName, /*!*/ _node) =>
+                    {
+                        appContext.AssemblyLoader.Load(_assemblyName, _assemblyUrl, new LibraryConfigStore(_node));
+                        return true;
+                    });
+        }
+
 		/// <summary>
 		/// Parses a XML node and loads the configuration values from it.
 		/// </summary>
 		/// <param name="applicationContext">Context where to load libraries.</param>
 		/// <param name="section">The "phpNet" section node.</param>
-		internal void Parse(ApplicationContext/*!*/ applicationContext, XmlNode/*!*/ section)
+        /// <param name="addedLibraries">List of class libraries to be loaded lazily.</param>
+        internal void Parse(ApplicationContext/*!*/ applicationContext, XmlNode/*!*/ section, LibrariesConfigurationList/*!*/addedLibraries)
 		{
 			// parses XML tree:
 			foreach (XmlNode node in section.ChildNodes)
@@ -512,12 +532,9 @@ namespace PHP.Core
 					switch (node.Name)
 					{
 						case ConfigurationSectionHandler.NodeClassLibrary:
-							ConfigUtils.ParseLibraryAssemblyList(node, new ConfigUtils.ParseLibraryAssemblyCallback(
-								delegate(string _assemblyName, Uri _assemblyUrl, string _sectionName, XmlNode/*!*/ _node)
-								{
-									applicationContext.AssemblyLoader.Load(_assemblyName, _assemblyUrl, new LibraryConfigStore(_node));
-									return true;
-								}),
+							ConfigUtils.ParseLibraryAssemblyList(
+                                node,
+                                addedLibraries,
 								Paths.ExtWrappers,
 								Paths.Libraries);
 							break;
@@ -587,7 +604,7 @@ namespace PHP.Core
 		/// <param name="path">A full path to the .config file.</param>
 		/// <returns>The new configuration record.</returns>
 		/// <exception cref="ConfigurationErrorsException">An error in configuration.</exception>
-		public void LoadFromFile(ApplicationContext/*!*/ appContext, FullPath path)
+        public void LoadFromFile(ApplicationContext/*!*/ appContext, FullPath path)
 		{
 			if (appContext == null)
 				throw new ArgumentNullException("appContext");
@@ -606,10 +623,10 @@ namespace PHP.Core
 			}
 
 			XmlNode root = doc.DocumentElement;
-			if (root.Name == "configuration")
-			{
-                ProcessNodes(appContext, root);
-			}
+            if (root.Name == "configuration")
+            {
+                ProcessNodes(appContext, root, addedLibraries);
+            }
 		}
 
         /// <summary>
@@ -617,18 +634,19 @@ namespace PHP.Core
         /// </summary>
         /// <param name="appContext">Application context where to load libraries.</param>
         /// <param name="root">Root to parse child nodes from</param>
-        private void ProcessNodes(ApplicationContext appContext, XmlNode root)
+        /// <param name="addedLibraries">List of class libraries that are collected while parsing configuration node.</param>
+        private void ProcessNodes(ApplicationContext appContext, XmlNode root, LibrariesConfigurationList/*!*/addedLibraries)
         {
             foreach (XmlNode node in root.ChildNodes) {
                 if (node.NodeType == XmlNodeType.Element) {
                     switch (node.Name) {
                         case Configuration.SectionName:
-                            Parse(appContext, node);
+                            Parse(appContext, node, addedLibraries);
                             break;
 
                         case Configuration.LocationName:
                             // Recursively parse the Web.config file to include everything in the <location> element
-                            ProcessNodes(appContext, node);
+                            ProcessNodes(appContext, node, addedLibraries);
                             break;
 
                         case "system.web":
@@ -1403,6 +1421,86 @@ namespace PHP.Core
 
 	#region Configuration Context
 
+    public sealed class LibrariesConfigurationList
+    {
+        /// <summary>
+        /// Information about library being load to be loaded lazily.
+        /// </summary>
+        private class AddLibraryInfo
+        {
+            public AddLibraryInfo(string assemblyName, Uri assemblyUrl, string sectionName, XmlNode/*!*/ node)
+            {
+                Debug.Assert(node != null && (assemblyName != null ^ assemblyUrl != null));
+
+                this.assemblyName = assemblyName;
+                this.assemblyUrl = assemblyUrl;
+                this.sectionName = sectionName;
+                this.node = node;
+            }
+
+            public readonly string assemblyName;
+            public readonly Uri assemblyUrl;
+            public readonly string sectionName;
+            public readonly XmlNode/*!*/ node;
+        }
+
+        /// <summary>
+        /// Libraries to be loaded lazily at the and of parsing of all the configuration sections.
+        /// Checks for duplicities, loads libraries using the same configuration after processing all sub-configurations.
+        /// </summary>
+        private Dictionary<string, AddLibraryInfo> addedLibraries = null;
+
+        /// <summary>
+        /// Adds the library to the list of libraries to be loaded lazily.
+        /// </summary>
+        public bool AddLibrary(string assemblyName, Uri assemblyUrl, string sectionName, XmlNode/*!*/ node)
+        {
+            if (addedLibraries == null)
+                addedLibraries = new Dictionary<string, AddLibraryInfo>();
+
+            // add the library to be loaded lazily, avoids duplicities in config sections by overwriting previously added library
+            addedLibraries[LibraryKey(assemblyName, assemblyUrl)] = new AddLibraryInfo(assemblyName, assemblyUrl, sectionName, node);
+            return true;
+        }
+
+        /// <summary>
+        /// Remove given library from the list of libraries that will be loaded.
+        /// </summary>
+        public bool RemoveLibrary(string assemblyName, Uri assemblyUrl)
+        {
+            return addedLibraries != null && addedLibraries.Remove(LibraryKey(assemblyName, assemblyUrl));
+        }
+
+        /// <summary>
+        /// Clear the list of libraries that will be loaded.
+        /// </summary>
+        public void ClearLibraries()
+        {
+            addedLibraries = null;
+        }
+
+        private string LibraryKey(string assemblyName, Uri assemblyUrl)
+        {
+            return string.Format("{0}^{1}",
+                (assemblyName != null) ? assemblyName.ToLowerInvariant() : string.Empty,
+                (assemblyUrl != null) ? assemblyUrl.ToString().ToLowerInvariant() : string.Empty);
+        }
+
+        /// <summary>
+        /// Load libraries specified by <see cref="AddLibrary"/> lazily.
+        /// </summary>
+        public void LoadLibrariesNoLock(Func<string,Uri,string,XmlNode,bool>/*!*/callback)
+        {
+            if (addedLibraries != null)
+            {
+                foreach (var lib in addedLibraries.Values)
+                    callback(lib.assemblyName, lib.assemblyUrl, lib.sectionName, lib.node);
+
+                addedLibraries = null;
+            }
+        }
+    }
+
 	/// <summary>
 	/// Configuration context used when loading configuration from XML files.
 	/// </summary>
@@ -1438,10 +1536,10 @@ namespace PHP.Core
 		/// </summary>
 		internal GlobalConfiguration Global { get { return global; } }
 		private GlobalConfiguration global;
-		
-		private readonly ApplicationContext/*!*/ applicationContext;
 
-		/// <summary>
+        private readonly ApplicationContext/*!*/ applicationContext;
+
+        /// <summary>
 		/// Creates an empty configuration context used as a root context.
 		/// </summary>
 		internal PhpConfigurationContext(ApplicationContext/*!*/ applicationContext, string virtualPath)
@@ -1452,6 +1550,7 @@ namespace PHP.Core
 
 			this.sections = new Dictionary<string, LibrarySection>();
 			this.sealedSections = new Dictionary<string, string>();
+            this.librariesList = new LibrariesConfigurationList();
 
 			this.local = new LocalConfiguration();
 			this.global = new GlobalConfiguration();
@@ -1470,68 +1569,81 @@ namespace PHP.Core
 			// section tables are shared:
 			this.sections = parent.sections;
 			this.sealedSections = parent.sealedSections;
+            this.librariesList = parent.librariesList;
 
 			// configuration records are copied:
 			this.local = (LocalConfiguration)parent.local.DeepCopy();
 			this.global = (GlobalConfiguration)parent.global.DeepCopy();
 		}
 
-		/// <summary>
-		/// Loads a library and adds a new section to the list of sections if available.
-		/// </summary>
-		internal bool AddLibrary(string assemblyName, Uri assemblyUrl, string sectionName, XmlNode/*!*/ node)
-		{
-			Debug.Assert(node != null && (assemblyName != null ^ assemblyUrl != null));
+        #region Libraries loading
 
+        internal LibrariesConfigurationList/*!*/librariesList;
+
+        /// <summary>
+        /// Actually loads libraries specified in <see cref="librariesList"/>.
+        /// </summary>
+        internal void LoadLibrariesNoLock()
+        {
+            this.librariesList.LoadLibrariesNoLock(this.LoadLibrary);
+        }
+
+        /// <summary>
+        /// Loads a library and adds a new section to the list of sections if available.
+        /// </summary>
+        private bool LoadLibrary(string assemblyName, Uri assemblyUrl, string sectionName, XmlNode/*!*/ node)
+        {
             // load the assembly:
-			DAssembly assembly = applicationContext.AssemblyLoader.Load(assemblyName, assemblyUrl, new LibraryConfigStore(node));
-			PhpLibraryAssembly lib_assembly = assembly as PhpLibraryAssembly;
+            DAssembly assembly = applicationContext.AssemblyLoader.Load(assemblyName, assemblyUrl, new LibraryConfigStore(node));
+            PhpLibraryAssembly lib_assembly = assembly as PhpLibraryAssembly;
 
-			// not a PHP library or the library is loaded for reflection only:
-			if (lib_assembly == null)
-				return true;
+            // not a PHP library or the library is loaded for reflection only:
+            if (lib_assembly == null)
+                return true;
 
-			PhpLibraryDescriptor descriptor = lib_assembly.Descriptor;
+            PhpLibraryDescriptor descriptor = lib_assembly.Descriptor;
 
-			// section name not stated or the descriptor is not available (reflected-only assembly):
-			if (sectionName == null || descriptor == null)
-				return true;
+            // section name not stated or the descriptor is not available (reflected-only assembly):
+            if (sectionName == null || descriptor == null)
+                return true;
 
-			if (descriptor.ConfigurationSectionName == sectionName)
-			{
-				// an assembly has already been assigned a section? => ok
-				if (sections.ContainsKey(sectionName)) return true;
+            if (descriptor.ConfigurationSectionName == sectionName)
+            {
+                // an assembly has already been assigned a section? => ok
+                if (sections.ContainsKey(sectionName)) return true;
 
-				// TODO (TP): Consider whether this is correct behavior?
-				//       This occurs under stress test, because ASP.NET calls 
-				//       ConfigurationSectionHandler.Create even though we already loaded assemblies
-				Debug.WriteLine("CONFIG", "WARNING: Loading configuration for section '{0}'. "+
-					"Library has been loaded, but the section is missing.", sectionName);
-			}
-			else if (descriptor.ConfigurationSectionName != null)
-			{
-				// an assembly has already been loaded with another section name => error:
-				throw new ConfigurationErrorsException(CoreResources.GetString("cannot_change_library_section",
-					descriptor.RealAssembly.FullName, descriptor.ConfigurationSectionName), node);
-			}
+                // TODO (TP): Consider whether this is correct behavior?
+                //       This occurs under stress test, because ASP.NET calls 
+                //       ConfigurationSectionHandler.Create even though we already loaded assemblies
+                Debug.WriteLine("CONFIG", "WARNING: Loading configuration for section '{0}'. " +
+                    "Library has been loaded, but the section is missing.", sectionName);
+            }
+            else if (descriptor.ConfigurationSectionName != null)
+            {
+                // an assembly has already been loaded with another section name => error:
+                throw new ConfigurationErrorsException(CoreResources.GetString("cannot_change_library_section",
+                    descriptor.RealAssembly.FullName, descriptor.ConfigurationSectionName), node);
+            }
 
-			// checks whether the section has not been used yet:
-			LibrarySection existing_section;
-			if (sections.TryGetValue(sectionName, out existing_section))
-			{
-				Assembly conflicting_assembly = existing_section.Descriptor.RealAssembly;
-				throw new ConfigurationErrorsException(CoreResources.GetString("library_section_redeclared",
-						sectionName, conflicting_assembly.FullName), node);
-			}
+            // checks whether the section has not been used yet:
+            LibrarySection existing_section;
+            if (sections.TryGetValue(sectionName, out existing_section))
+            {
+                Assembly conflicting_assembly = existing_section.Descriptor.RealAssembly;
+                throw new ConfigurationErrorsException(CoreResources.GetString("library_section_redeclared",
+                        sectionName, conflicting_assembly.FullName), node);
+            }
 
-			// maps section name to the library descriptor:
-			descriptor.WriteConfigurationUp(sectionName);
-			sections.Add(sectionName, new LibrarySection(descriptor));
+            // maps section name to the library descriptor:
+            descriptor.WriteConfigurationUp(sectionName);
+            sections.Add(sectionName, new LibrarySection(descriptor));
 
-			return true;
-		}
+            return true;
+        }
 
-		/// <summary>
+        #endregion
+
+        /// <summary>
 		/// Processes library configuration section.
 		/// </summary>
 		/// <param name="node">Configuration node of the section.</param>
@@ -1560,7 +1672,7 @@ namespace PHP.Core
 			}
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Finishes and validates the configuration. 
 		/// Creates an array of library configurations and stores it to local and global config records.
 		/// The first validated configuration is the global one, local ones follows in the order in which 
@@ -1792,8 +1904,11 @@ namespace PHP.Core
 					// a new context has been loaded from .config file //
 
 					// fills in missing configuration and checks whether the configuration has been loaded properly:
-					if (context != null)
-						context.ValidateNoLock();
+                    if (context != null)
+                    {
+                        context.LoadLibrariesNoLock();
+                        context.ValidateNoLock();
+                    }
 
 					// validates application configuration if it has not been validated yet;
 					// the application configuration is shared among all requests (threads); 
@@ -1869,12 +1984,12 @@ namespace PHP.Core
 			// configuration loading is assumed to be synchronized:
 			ApplicationConfiguration app = Configuration.application;
 
-            // little hack, parse the NodeClassLibrary as the last one (must be parsed after the <paths> node)
-            XmlNode node_ClassLibrary = null;
-
             // same with script libraries - these need to be parsed after <sourceRoot>
             XmlNode node_ScriptLibrary = null;
 
+            // determine configuration modification time:
+            result.Global.LastConfigurationModificationTime = ConfigUtils.GetConfigModificationTime(section, result.Global.LastConfigurationModificationTime);
+            
 			// parses XML tree:
 			foreach (XmlNode node in section.ChildNodes)
 			{
@@ -1893,8 +2008,13 @@ namespace PHP.Core
 							// libraries can be loaded only in application root config and above:
 							result.EnsureApplicationConfig(node);
 
-                            node_ClassLibrary = node;// postpone parsing							
-							break;
+                            // parses and loads libraries contained in the list (lazy):
+                            ConfigUtils.ParseLibraryAssemblyList(
+                                node,
+                                result.librariesList,
+                                app.Paths.ExtWrappers,
+                                app.Paths.Libraries);
+                            break;
 
                         case NodeScriptLibrary:
                             // script libraries can be loaded only in application root config and above:
@@ -1970,31 +2090,9 @@ namespace PHP.Core
 				}
 			}
 
-            // parse the class library node at the end
-            if (node_ClassLibrary != null)
-            {
-                // parses and loads libraries contained in the list:
-                ConfigUtils.ParseLibraryAssemblyList(
-                    node_ClassLibrary,
-                    (string assemblyName, Uri assemblyUrl, string sectionName, XmlNode/*!*/ node) =>
-                    {
-                        // determine configuration modification time:
-                        result.Global.LastConfigurationModificationTime =
-                            ConfigUtils.GetConfigModificationTime(node, result.Global.LastConfigurationModificationTime);
-
-                        //
-                        return result.AddLibrary(assemblyName, assemblyUrl, sectionName, node);
-                    },
-                    app.Paths.ExtWrappers,
-                    app.Paths.Libraries);
-            }
-
             // and script library after that
             if (node_ScriptLibrary != null)
             {
-                result.Local.LastConfigurationModificationTime =
-                            ConfigUtils.GetConfigModificationTime(node_ScriptLibrary, result.Local.LastConfigurationModificationTime);
-
                 ConfigUtils.ParseScriptLibraryAssemblyList(node_ScriptLibrary,
                     applicationContext.ScriptLibraryDatabase.AddLibrary,
                     applicationContext.ScriptLibraryDatabase.RemoveLibrary,
