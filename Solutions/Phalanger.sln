@@ -337,7 +337,6 @@ Global
 		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.DebugNoGac|Mixed Platforms.Build.0 = DebugNoGac|Any CPU
 		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.DebugNoGac|Win32.ActiveCfg = DebugNoGac|Any CPU
 		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Win32.ActiveCfg = Release|Any CPU
