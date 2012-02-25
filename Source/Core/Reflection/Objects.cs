@@ -1181,13 +1181,10 @@ namespace PHP.Core.Reflection
 			// copy RT fields
 			if (RuntimeFields != null)
 			{
-                copy.RuntimeFields = new PhpArray(RuntimeFields.Count);
-				foreach (var pair in RuntimeFields)
-				{
-					copy.RuntimeFields.Add(pair.Key, deepCopyFields ?
-						PhpVariable.DeepCopy(pair.Value) :
-						PhpVariable.Copy(pair.Value, CopyReason.Assigned));
-				}
+                copy.RuntimeFields = new PhpArray(RuntimeFields);
+
+                if (deepCopyFields)
+                    copy.RuntimeFields.EnsureWritable();
 			}
 
 			return copy;
