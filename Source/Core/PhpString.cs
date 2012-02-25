@@ -22,7 +22,7 @@ namespace PHP.Core
 	/// String representation that uses <see cref="StringBuilder"/> internally to improve
     /// performance of modifications such as Append, Prepend and singe character change.
 	/// </summary>
-	public sealed class PhpString : IPhpVariable, IPhpObjectGraphNode
+	public sealed class PhpString : IPhpVariable, IPhpObjectGraphNode, IComparable
 	{
         /// <summary>
         /// PhpStrings PHP type name (string).
@@ -431,6 +431,17 @@ namespace PHP.Core
 		{ }
 
 		#endregion
+
+        public override bool Equals(object obj)
+        {
+            if (obj != null && obj.GetType() == typeof(PhpString))
+                return this.cow.Builder.Equals(((PhpString)obj).cow.Builder);
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            return this.cow.Builder.Length;
+        }
 	}
 
 	#region Array Proxy

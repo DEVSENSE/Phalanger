@@ -246,8 +246,7 @@ namespace PHP.Core
 			this.applicationContext = appContext;
 
             // On Windows it's case-insensitive, because same file can be accessed with various cases
-            cache = new Dictionary<string, CacheEntry>(100,	
-                EnvironmentUtils.IsDotNetFramework ? StringComparer.CurrentCultureIgnoreCase : StringComparer.CurrentCulture);
+            cache = new Dictionary<string, CacheEntry>(100, FullPath.StringComparer);
 
 			watcher = new FileSystemWatcher();
 
