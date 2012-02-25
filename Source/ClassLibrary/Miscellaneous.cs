@@ -577,9 +577,9 @@ namespace PHP.Library
 		{
 			PhpArray result = new PhpArray();
 
-			foreach (PhpSourceFile source_file in ScriptContext.CurrentContext.GetIncludedScripts())
+			foreach (var source_file in ScriptContext.CurrentContext.GetIncludedScripts())
 			{
-				result.Add(source_file.FullPath.ToString());
+				result.Add(source_file/*.FullPath.ToString()*/);
 			}
 			return result;
 		}

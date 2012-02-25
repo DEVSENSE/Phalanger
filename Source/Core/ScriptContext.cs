@@ -90,8 +90,7 @@ namespace PHP.Core
 
         internal ScriptInfo(Type/*!*/script)
 		{
-            if (!PhpScript.IsScriptType(script))
-                throw new ArgumentException("Given script type is not IPhpScript.", "script");
+            Debug.Assert(PhpScript.IsScriptType(script), "Given script type is not IPhpScript.");
 
 			Script = script;
 		}
@@ -269,13 +268,15 @@ namespace PHP.Core
 		/// List of <see cref="ScriptInfo"/>s included by the current script. Contains also the script itself.
 		/// Used for resolving inclusions.
         /// </summary>
-        private readonly Dictionary<PhpSourceFile, ScriptInfo> scripts = new Dictionary<PhpSourceFile, ScriptInfo>();
+        private readonly Dictionary<string, ScriptInfo> scripts = new Dictionary<string, ScriptInfo>(FullPath.StringComparer);
 
-		public PhpSourceFile[] GetIncludedScripts()
+        /// <summary>
+        /// List currently included script files.
+        /// </summary>
+        /// <returns></returns>
+		public IEnumerable<string> GetIncludedScripts()
 		{
-			PhpSourceFile[] result = new PhpSourceFile[scripts.Count];
-			scripts.Keys.CopyTo(result, 0);
-			return result;
+            return scripts.Keys;
 		}
 
 		/// <summary>
@@ -2642,7 +2643,7 @@ namespace PHP.Core
 		{
 			Debug.Assert(mainScriptFile == null, "Main script redefined.");
 
-			scripts.Add(sourceFile, script);
+			scripts.Add(sourceFile.FullPath.ToString(), script);
 			mainScriptFile = sourceFile;
             mainScriptInfo = script;
 

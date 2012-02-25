@@ -238,7 +238,7 @@ namespace PHP.Core
             _constants.Add("PHALANGER", Assembly.GetExecutingAssembly().GetName().Version.ToString(), false);
             _constants.Add("PHP_VERSION", PhpVersion.Current, false);
             _constants.Add("PHP_OS", Environment.OSVersion.Platform == PlatformID.Win32NT ? "WINNT" : "WIN32", false); // TODO: GENERICS (Unix)
-            _constants.Add("DIRECTORY_SEPARATOR", Path.DirectorySeparatorChar.ToString(), false);
+            _constants.Add("DIRECTORY_SEPARATOR", FullPath.DirectorySeparatorString, false);
             _constants.Add("PATH_SEPARATOR", Path.PathSeparator.ToString(), false);
 
             //TODO: should be specified elsewhere (app context??)
@@ -355,10 +355,8 @@ namespace PHP.Core
             FullPath included_full_path = SearchForIncludedFile(PhpError.Error, relativeSourcePath, FullPath.Empty);
             if (included_full_path.IsEmpty) return false;
 
-            PhpSourceFile included_source_file = new PhpSourceFile(app_config.Compiler.SourceRoot, included_full_path);
-
             ScriptInfo info;
-            bool already_included = scripts.TryGetValue(included_source_file, out info);
+            bool already_included = scripts.TryGetValue(included_full_path.ToString(), out info);
 
             // skips inclusion if script has already been included and inclusion's type is "once":
             if (already_included)
@@ -370,6 +368,8 @@ namespace PHP.Core
             }
             else
             {
+                PhpSourceFile included_source_file = new PhpSourceFile(app_config.Compiler.SourceRoot, included_full_path);
+                
                 // loads script type:
                 info = LoadDynamicScriptType(included_source_file);
 
@@ -382,7 +382,7 @@ namespace PHP.Core
                     DefineMainScript(info, included_source_file);
                 else
                     // adds included file into the script list
-                    scripts.Add(included_source_file, info);
+                    scripts.Add(included_full_path.ToString(), info);
             }
 
             Debug.Assert(info != null);
@@ -481,12 +481,13 @@ namespace PHP.Core
 		{
 			ApplicationConfiguration app_config = Configuration.Application;
 
-			PhpSourceFile source_file = new PhpSourceFile(
-				app_config.Compiler.SourceRoot,
-				new FullPath(app_config.Compiler.SourceRoot, new RelativePath((sbyte)level, relativeSourcePath))
-			);
+            var included_full_path =
+            //PhpSourceFile source_file = new PhpSourceFile(
+            //	app_config.Compiler.SourceRoot,
+                new FullPath(app_config.Compiler.SourceRoot, new RelativePath((sbyte)level, relativeSourcePath));
+			//);
 
-			if (scripts.ContainsKey(source_file))
+            if (scripts.ContainsKey(included_full_path.ToString()))
 			{
 				// the script has been included => returns whether it should be included again:
 				return !InclusionTypesEnum.IsOnceInclusion(inclusionType);
@@ -494,7 +495,7 @@ namespace PHP.Core
 			else
 			{
 				// the script has not been included yet:
-				scripts.Add(source_file, new ScriptInfo(Type.GetTypeFromHandle(includee)));
+                scripts.Add(included_full_path.ToString(), new ScriptInfo(Type.GetTypeFromHandle(includee)));
 
 				// the script should be included:
 				return true;
@@ -523,75 +524,38 @@ namespace PHP.Core
 			ApplicationConfiguration app_config = Configuration.Application;
 
 			// determines inclusion behavior:
-			PhpError error_severity = InclusionTypesEnum.IsMustInclusion(inclusionType) ? PhpError.Error : PhpError.Warning;
-			bool once = InclusionTypesEnum.IsOnceInclusion(inclusionType);
-
 			FullPath includer_full_path = new FullPath(includerFileRelPath, app_config.Compiler.SourceRoot);
 
 			// searches for file:
-			FullPath included_full_path = SearchForIncludedFile(error_severity, includedFilePath, includer_full_path);
+			FullPath included_full_path = SearchForIncludedFile(
+                InclusionTypesEnum.IsMustInclusion(inclusionType) ? PhpError.Error : PhpError.Warning,
+                includedFilePath, includer_full_path);
+
 			if (included_full_path.IsEmpty) return false;
 
-			PhpSourceFile included_source_file = new PhpSourceFile(app_config.Compiler.SourceRoot, included_full_path);
-
 			ScriptInfo info;
-			bool already_included = scripts.TryGetValue(included_source_file, out info);
+            bool already_included = scripts.TryGetValue(included_full_path.ToString(), out info);
 
 			// skips inclusion if script has already been included and inclusion's type is "once":
-			if (already_included && once)
+            if (already_included && InclusionTypesEnum.IsOnceInclusion(inclusionType))
 				return ScriptModule.SkippedIncludeReturnValue;
 
 			if (!already_included)
 			{
 				// loads script type:
-				info = LoadDynamicScriptType(included_source_file);
+                info = LoadDynamicScriptType(new PhpSourceFile(app_config.Compiler.SourceRoot, included_full_path));
 
 				// script not found:
 				if (info == null) return false;
 
 				// adds included file into the script list
-				scripts.Add(included_source_file, info/* = new ScriptInfo(script)*/);
+                scripts.Add(included_full_path.ToString(), info/* = new ScriptInfo(script)*/);
 			}
 
 			return info.Main(this, variables, self, includer, false);
 		}
 
         /// <summary>
-        /// Build the delegate checking if the given script specified by its FullPath exists on available locations.
-        /// </summary>
-        /// <returns>Function determinig the given script existance or null if no script can be included with current configuration.</returns>
-        private Predicate<FullPath> BuildFileExistsDelegate()
-        {
-            RequestContext context = RequestContext.CurrentContext;
-
-            Predicate<FullPath> file_exists = null;
-
-            // 1. ScriptLibrary database
-            var database = applicationContext.ScriptLibraryDatabase;
-            if (database != null && database.Count > 0)
-                file_exists = file_exists.OrElse((path) => database.ContainsScript(path)); // file_exists can really be null
-
-            if (context != null)
-            {
-                // on web, check following locations too:
-
-                // 2. bin/WebPages.dll
-                var msa = context.GetPrecompiledAssembly();
-                if (msa != null)
-                    file_exists = file_exists.OrElse((path) => msa.ScriptExists(path));
-
-                // 3. file system
-                file_exists = file_exists.OrElse((path) => path.FileExists);
-            }
-            else
-            {
-                // on non-web application, only script library should be checked
-            }
-
-            return file_exists;
-        }
-
-		/// <summary>
 		/// Searches for a file in the script library, current directory, included paths, and web application root respectively.
 		/// </summary>
 		/// <param name="errorSeverity">A severity of an error (if occures).</param>
@@ -608,7 +572,7 @@ namespace PHP.Core
             // construct the delegate checking the script existance
             //
 
-            var file_exists = BuildFileExistsDelegate();            
+            var file_exists = applicationContext.BuildFileExistsDelegate();            
 
             //
             // try to find the script
