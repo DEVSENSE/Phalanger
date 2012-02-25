@@ -198,7 +198,7 @@ namespace PHP.Library
 			RegisterCoreOption("max_input_time", IniFlags.Unsupported | IniFlags.Global);
 			RegisterCoreOption("memory_limit", IniFlags.Unsupported | IniFlags.Local);
 			RegisterCoreOption("mime_magic.magicfile", IniFlags.Unsupported | IniFlags.Global);
-			RegisterCoreOption("open_basedir", IniFlags.Unsupported | IniFlags.Global);
+			RegisterCoreOption("open_basedir", IniFlags.Supported | IniFlags.Global);
 			RegisterCoreOption("output_buffering", IniFlags.Supported | IniFlags.Global);
 			RegisterCoreOption("output_handler", IniFlags.Supported | IniFlags.Global);
 			RegisterCoreOption("post_max_size", IniFlags.Supported | IniFlags.Global);
