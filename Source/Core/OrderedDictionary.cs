@@ -2485,7 +2485,7 @@ namespace PHP.Core
 
         public void CopyTo(KeyValuePair<IntStringKey, object>[] array, int arrayIndex)
         {
-            if (array == null || arrayIndex < 0 || (arrayIndex + this.Count) >= array.Length)
+            if (array == null || arrayIndex < 0 || (arrayIndex + this.Count) > array.Length)
                 throw new ArgumentException();
 
             using (var enumerator = GetFastEnumerator())
