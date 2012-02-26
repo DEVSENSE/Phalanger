@@ -115,7 +115,7 @@ namespace PHP.Core
 			string dynamic_assembly_path;
 			try
 			{
-				dynamic_assembly_path = LibraryBuilder.CreateDynamicWrapper(attr, assembly, directory);
+                dynamic_assembly_path = LibraryBuilder.CreateDynamicWrapper(attr, assembly, directory, PHP.Core.Reflection.PhpLibraryModule.DynamicWrapperFileName(assembly, 0));
 			}
 			catch (Exception e)
 			{

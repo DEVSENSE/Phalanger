@@ -493,7 +493,7 @@ namespace PHP.Core.Reflection
         /// <param name="ass">Extension assembly which dynamic wrapper file is needed.</param>
         /// <param name="version">Wrapper version to to be appended to the file name.</param>
         /// <returns>Dynamic wrapper assembly file name corresponding to given <paramref name="ass"/>.</returns>
-        private static string/*!*/DynamicWrapperFileName(Assembly/*!*/ass, int version)
+        public static string/*!*/DynamicWrapperFileName(Assembly/*!*/ass, int version)
         {
             var name = ass.GetName(false);
             return String.Concat(name.Name, DynamicAssemblySuffix, (version > 0) ? version.ToString() : string.Empty  ,".dll");

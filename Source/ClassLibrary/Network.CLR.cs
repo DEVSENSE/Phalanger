@@ -475,7 +475,7 @@ namespace PHP.Library
 		[return: CastToFalse]
 		public static int IPToInteger(string ipAddress)
 		{
-			if (ipAddress == null) return -1;
+			if (string.IsNullOrEmpty(ipAddress)) return -1;
 			IPAddress addr;
 			try
 			{
