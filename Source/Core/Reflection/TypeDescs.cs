@@ -77,6 +77,7 @@ namespace PHP.Core.Reflection
 		public static readonly PrimitiveTypeDesc/*!*/ ResourceTypeDesc;
 		public static readonly PrimitiveTypeDesc/*!*/ ArrayTypeDesc;
 		public static readonly PrimitiveTypeDesc/*!*/ ObjectTypeDesc;
+        public static readonly PrimitiveTypeDesc/*!*/ CallableTypeDesc;
 
 		private static readonly GetMemberDictionary<VariableName, DConstantDesc> getConstantDictionary;
 		private static readonly GetMemberDictionary<VariableName, DPropertyDesc> getPropertyDictionary;
@@ -113,6 +114,7 @@ namespace PHP.Core.Reflection
 			ResourceTypeDesc = new PrimitiveTypeDesc(typeof(PhpResource), PhpTypeCode.PhpResource);
 			ArrayTypeDesc = new PrimitiveTypeDesc(typeof(PhpArray), PhpTypeCode.PhpArray);
 			ObjectTypeDesc = new PrimitiveTypeDesc(typeof(DObject), PhpTypeCode.DObject);
+            CallableTypeDesc = new PrimitiveTypeDesc(typeof(void)/*not used*/, PhpTypeCode.PhpCallable);
 		}
 
 		#endregion

@@ -138,6 +138,7 @@ namespace PHP.Core.Emit
                 _SetObjectFieldDirect, _SetObjectFieldDirectRef, _GetObjectFieldDirectRef, _GetObjectFieldDirect, _ToAbsoluteSourcePath,
                 _GetItemExact, _SetItemExact,
 
+                _IsCallable,
                 _Select, _Where;
 
             public struct Add
@@ -308,6 +309,7 @@ namespace PHP.Core.Emit
             public static MethodInfo StrictEquality { get { if (_StrictEquality == null) _StrictEquality = _this.GetMethod("StrictEquality"); return _StrictEquality; } }
             public static MethodInfo Throw { get { if (_Throw == null) _Throw = _this.GetMethod("Throw"); return _Throw; } }
             public static MethodInfo ToAbsoluteSourcePath { get { if (_ToAbsoluteSourcePath == null) _ToAbsoluteSourcePath = _this.GetMethod("ToAbsoluteSourcePath"); return _ToAbsoluteSourcePath; } }
+            public static MethodInfo IsCallable { get { return _IsCallable ?? (_IsCallable = _this.GetMethod("IsCallable")); } }
 
             // LINQ stuff
             public static MethodInfo Where { get { if (_Where == null) _Where = _this.GetMethod("Where"); return _Where; } }

@@ -173,6 +173,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"xor"							{ return Tokens.T_LOGICAL_XOR; }
 <ST_IN_SCRIPTING>"list"							{ return Tokens.T_LIST; }
 <ST_IN_SCRIPTING>"array"			 			{ return Tokens.T_ARRAY; }
+<ST_IN_SCRIPTING>"callable"			 			{ return Tokens.T_CALLABLE; }
 <ST_IN_SCRIPTING>"__CLASS__"    		{ return Tokens.T_CLASS_C; }
 <ST_IN_SCRIPTING>"__FUNCTION__" 		{ return Tokens.T_FUNC_C; }
 <ST_IN_SCRIPTING>"__METHOD__"   		{ return Tokens.T_METHOD_C; }

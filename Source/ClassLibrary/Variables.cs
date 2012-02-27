@@ -574,10 +574,7 @@ namespace PHP.Library
 		[ImplementsFunction("is_callable", FunctionImplOptions.NeedsClassContext)]
 		public static bool IsCallable(PHP.Core.Reflection.DTypeDesc caller, object variable, bool syntaxOnly)
 		{
-			PhpCallback callback = PHP.Core.Convert.ObjectToCallback(variable, true);
-			if (callback == null || callback.IsInvalid) return false;
-
-            return (syntaxOnly ? true : callback.Bind(true, caller, null));
+            return Operators.IsCallable(variable, caller, syntaxOnly);
 		}
 
 		/// <summary>
