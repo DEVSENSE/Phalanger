@@ -409,20 +409,20 @@ namespace PHP.Library
             /// <summary>
             /// Gets or sets a value indicating whether this client should implicitly use ESMTP to connect to the server.
             /// </summary>
-            public bool UseExtendedSmtp { get { return _useExtendedSmtp; } set { _useExtendedSmtp = value; } }
+            public bool UseExtendedSmtp { get { return _useExtendedSmtp; } }
             private bool _useExtendedSmtp;
 
             /// <summary>
             /// Gets host name set for this client to connect to.
             /// </summary>
-            public string HostName { get { return _hostName; } }
-            private string _hostName;
+            public string/*!*/HostName { get { return _hostName; } }
+            private readonly string/*!*/_hostName;
 
             /// <summary>
             /// Gets port number set for this client to connect to.
             /// </summary>
             public int Port { get { return _port; } }
-            private int _port;
+            private readonly int _port;
 
             /// <summary>
             /// Gets a list of SMTP extensions supported by current connection.
@@ -448,7 +448,7 @@ namespace PHP.Library
             /// <param name="port">Port on which SMTP server runs.</param>
             public RawSmtpClient(string hostName, int port)
             {
-                _hostName = hostName;
+                _hostName = hostName ?? string.Empty;
                 _port = port;
                 _connected = false;
                 _useExtendedSmtp = true;

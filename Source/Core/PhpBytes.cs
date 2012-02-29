@@ -366,7 +366,7 @@ namespace PHP.Core
             foreach (byte b in ReadonlyData)
             {
                 // printable characters are outputted normally
-                if (b >= 0x20 && b <= 0x7e)
+                if (b < 0x7f)
                 {
                     output.Write((char)b);
                 }
