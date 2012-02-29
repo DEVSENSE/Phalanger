@@ -578,7 +578,7 @@ namespace PHP
 			zend_hash_internal_pointer_reset_ex(properties, &pos);
 			while (zend_hash_get_current_data_ex(properties, (void **)&elem, &pos) == SUCCESS)
 			{
-				if (ManagedObj->RuntimeFields == nullptr) ManagedObj->RuntimeFields = gcnew OrderedHashtable<String ^>();
+				if (ManagedObj->RuntimeFields == nullptr) ManagedObj->RuntimeFields = gcnew PhpArray();
 
 				if (zend_hash_get_current_key_ex(properties, &string_key, &string_key_len, 
 					&num_key, 0, &pos) == HASH_KEY_IS_LONG)
