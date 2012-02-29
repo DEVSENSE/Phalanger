@@ -1366,11 +1366,11 @@ namespace PHP.Library
 
                     if (replacement[i] == '{') { i++; add = 1; }
 
+                    // parse number
                     int number = replacement[i++] - '0';
                     if (i < length && Char.IsDigit(replacement, i))
                     {
-                        number = number * 10 + replacement[i];
-                        i++;
+                        number = number * 10 + (replacement[i++] - '0');
                     }
 
                     // insert only existing group references (others replaced with empty string):
