@@ -693,8 +693,13 @@ namespace PHP.Library
 
 			// check for decimal number
 			int pos = start;
-			int res = Core.Convert.SubstringToInteger(line, length, ref pos);
-			if (pos == start + length) return res;
+			long res = Core.Convert.SubstringToLongInteger(line, length, ref pos);
+            if (pos == start + length)
+            {
+                int ires = unchecked((int)res);
+                if (ires == res) return ires;   // is Int32 big enough?
+                return res;
+            }
 
 			string val = line.Substring(start, length);
 

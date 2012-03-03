@@ -230,15 +230,15 @@ namespace PHP.Library
 			}
 
 			int j = i;
-			int result = Core.Convert.SubstringToInteger(format, format.Length - j, ref j);
+			long result = Core.Convert.SubstringToLongInteger(format, format.Length - j, ref j);
 
-			// invalid repeater or no repeater:
-			if (result < 0 || i == j)
+            // invalid repeater or no repeater:
+            if (result < 0 || i == j || unchecked((int)result) != result)   // not an int or too big int
 				return 1;
 
 			// advance index:
 			i = j;
-			return result;
+			return (int)result;
 		}
 
 		/// <summary>
