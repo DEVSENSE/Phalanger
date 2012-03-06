@@ -3790,13 +3790,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -13225,7 +13225,7 @@
                                 {
                                     "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_1B9387DA3BEF4C728EF56F8243D185F7"
                                     {
-                                    "Name" = "8:v2.1"
+                                    "Name" = "8:v3.0"
                                     "Condition" = "8:"
                                     "AlwaysCreate" = "11:TRUE"
                                     "DeleteAtUninstall" = "11:FALSE"
@@ -13287,7 +13287,7 @@
                                                 {
                                                     "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_D92BD14B2175434CA77603F244879BA7"
                                                     {
-                                                    "Name" = "8:Phalanger_2.1_wrappers"
+                                                    "Name" = "8:Phalanger_3.0_wrappers"
                                                     "Condition" = "8:"
                                                     "AlwaysCreate" = "11:FALSE"
                                                     "DeleteAtUninstall" = "11:FALSE"
@@ -13309,7 +13309,7 @@
                                                     }
                                                     "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_DC6F4625DBD64F41B90EBB34A193C50C"
                                                     {
-                                                    "Name" = "8:Phalanger_2.1"
+                                                    "Name" = "8:Phalanger_3.0"
                                                     "Condition" = "8:"
                                                     "AlwaysCreate" = "11:FALSE"
                                                     "DeleteAtUninstall" = "11:FALSE"
