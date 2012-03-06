@@ -130,6 +130,16 @@ namespace PHP.Core
 			Debug.Fail("GetCodeFromType used on a method with a return type unknown for Phalanger");
 			return PhpTypeCode.Invalid;
 		}
+
+        /// <summary>
+        /// Retrieves <see cref="PhpTypeCode"/> from a specified <paramref name="value"/> instance.
+        /// </summary>
+        internal static PhpTypeCode FromObject(object value)
+        {
+            if (value == null) return PhpTypeCode.Object;
+
+            return FromType(value.GetType());
+        }
         
         /// <summary>
         /// <c>True</c> iff given <paramref name="code"/> represents value that can be copied (is IPhpCloneable and implements some logic in Copy method).

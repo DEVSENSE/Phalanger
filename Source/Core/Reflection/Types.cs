@@ -3187,6 +3187,7 @@ namespace PHP.Core.Reflection
 				}
 
 				this.EmitTypeDescInitialization();
+                this.EmitSetStaticInit();
 			}
 
 			// define builders for the other versions:
@@ -3203,6 +3204,24 @@ namespace PHP.Core.Reflection
 			il.Emit(OpCodes.Stsfld, this.typeDescFieldInfo);
 		}
 
+        private void EmitSetStaticInit()
+        {
+            // thread static field init
+            if (this.Builder.HasThreadStaticFields)
+            {
+                ILEmitter il = builder.StaticCtorEmitter;
+
+                // [ typeDesc.SetStaticInit(new Action<ScriptContext>(__tsinit)) ]
+
+                il.Emit(OpCodes.Ldsfld, this.typeDescFieldInfo);
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ldftn, this.StaticFieldInitMethodInfo);
+                il.Emit(OpCodes.Newobj, Constructors.Action_ScriptContext);
+
+                il.Emit(OpCodes.Call, Methods.SetStaticInit);
+            }
+        }
+        
 		/// <summary>
 		/// Returns a plain type-desc corresponding to the baked real type or a <B>null</B> reference if the type 
 		/// cannot be baked due to its indefiniteness.
@@ -3551,6 +3570,23 @@ namespace PHP.Core.Reflection
 					referringUnit.CompilationUnit.ModuleBuilder.AssemblyBuilder.RealModuleBuilder);
 			}
 		}
+
+        internal void EmitThreadStaticInit(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType)
+        {
+            ILEmitter il = codeGenerator.IL;
+
+            DType feature = ((DType)constructedType ?? (DType)this);
+
+            // ensure that the field has been initialized for this request by invoking __InitializeStaticFields
+            if (!il.IsFeatureControlFlowPrecedent(feature))
+            {
+                codeGenerator.EmitLoadScriptContext();
+                il.Emit(OpCodes.Call, DType.MakeConstructed(this.StaticFieldInitMethodInfo, constructedType));
+
+                // remember that we have just initialized class_entry's static fields
+                il.MarkFeature(feature);
+            }
+        }
 
 		#endregion
 

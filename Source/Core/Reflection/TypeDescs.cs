@@ -2623,6 +2623,9 @@ namespace PHP.Core.Reflection
                                     PhpMemberAttributes.Public | PhpMemberAttributes.Static,
                                     info.GetValue(null));
 
+                                if (!info.IsLiteral)    // deferred constant value
+                                    constant_desc.ValueIsDeferred = true;
+
                                 constants.Add(name, constant_desc);
                             }
 
@@ -2853,7 +2856,7 @@ namespace PHP.Core.Reflection
 
         private bool IsPhpConstant(FieldInfo/*!*/ info)
         {
-            return (info.IsStatic && info.IsPublic && (info.IsLiteral || info.IsInitOnly) &&
+            return (info.IsStatic && info.IsPublic && (info.IsLiteral || info.IsInitOnly || info.FieldType == typeof(object)/*lazily initialized non-literal constant*/) &&
                 (
                     info.FieldType == typeof(object) ||
                     info.FieldType == typeof(int) ||
@@ -2998,20 +3001,8 @@ namespace PHP.Core.Reflection
 
 		internal void EnsureThreadStaticFieldsInitialized(ScriptContext context)
 		{
-            // ensure properties are reflected
-            var props = this.Properties;
-
-            //if (properties == null)
-            //{
-            //    lock (this)
-            //        if (properties == null)
-            //        {
-            //            pendingReflect = true;
-            //            AutoPopulateNoLock();
-            //            pendingReflect = false;
-            //        }
-            //}
-			if (initializeStaticFields != null) initializeStaticFields(context);
+            if (initializeStaticFields != null)
+                initializeStaticFields(context);
 		}
 
 		#endregion

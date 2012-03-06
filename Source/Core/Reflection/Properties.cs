@@ -983,24 +983,6 @@ namespace PHP.Core.Reflection
 			}
 		}
 
-		private void EmitThreadStaticInit(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType)
-		{
-			ILEmitter il = codeGenerator.IL;
-
-			PhpType implementor = Implementor;
-			DType feature = ((DType)constructedType ?? (DType)implementor);
-
-			// ensure that the field has been initialized for this request by invoking __InitializeStaticFields
-			if (!il.IsFeatureControlFlowPrecedent(feature))
-			{
-				codeGenerator.EmitLoadScriptContext();
-				il.Emit(OpCodes.Call, DType.MakeConstructed(implementor.StaticFieldInitMethodInfo, constructedType));
-
-				// remember that we have just initialized class_entry's static fields
-				il.MarkFeature(feature);
-			}
-		}
-
 		private PhpTypeCode EmitGetInternal(CodeGenerator/*!*/ codeGenerator, IPlace instance, bool wantRef,
 			ConstructedType constructedType, bool runtimeVisibilityCheck, bool setAliasedFlag)
 		{
@@ -1014,7 +996,7 @@ namespace PHP.Core.Reflection
 					return codeGenerator.EmitGetStaticPropertyOperator(DeclaringType, this.FullName, null, wantRef);
 				}
 
-				if (!IsAppStatic) EmitThreadStaticInit(codeGenerator, constructedType);
+				if (!IsAppStatic) Implementor.EmitThreadStaticInit(codeGenerator, constructedType);
 
 				// retrieve field value
 				il.Emit(OpCodes.Ldsfld, DType.MakeConstructed(RealField, constructedType));
@@ -1086,7 +1068,7 @@ namespace PHP.Core.Reflection
 
 				if (isRef)
 				{
-					if (!IsAppStatic) EmitThreadStaticInit(codeGenerator, constructedType);
+					if (!IsAppStatic) Implementor.EmitThreadStaticInit(codeGenerator, constructedType);
 
 					// just write the PhpReference to the field upon assignment
 					return delegate(CodeGenerator codeGen, PhpTypeCode stackTypeCode)

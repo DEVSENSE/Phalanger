@@ -883,15 +883,16 @@ namespace PHP.Core
 			try
 			{
 				// set il and SC-emitter appropriately
-				il = constant.DeclaringPhpType.Builder.StaticCtorEmitter;
-
+				
 				if (constant.HasValue)
 				{
-					il.LoadLiteralBox(constant.Value);
+					il = constant.DeclaringPhpType.Builder.StaticCtorEmitter;
+                    il.LoadLiteralBox(constant.Value);
 				}
 				else
 				{
-					ScriptContextPlace = new LazyLoadSCPlace();
+                    il = new ILEmitter(constant.DeclaringPhpType.StaticFieldInitMethodBuilder);
+                    ScriptContextPlace = new IndexedPlace(PlaceHolder.Argument, ScriptBuilder.ArgContext);
 
 					// emit the expression evaluating code
 					EmitBoxing(constant.Node.Initializer.Emit(this));
