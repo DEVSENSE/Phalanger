@@ -1031,6 +1031,8 @@ namespace PHP.Core.Reflection
 		{
 			int added_count = 0;
 
+            Dictionary<QualifiedName, ScopedDeclaration<T>> dstTableOverwrites = null;
+
 			foreach (KeyValuePair<QualifiedName, ScopedDeclaration<T>> entry in srcTable)
 			{
 				ScopedDeclaration<T> existing;
@@ -1048,11 +1050,19 @@ namespace PHP.Core.Reflection
                         !entry.Value.Member.IsUnknown || existing.Member.IsUnknown) // otherwise, we don't want to overwrite a Known member with an Unknown!
                     {
                         // overwrite the existing declaration with better inclusion scope:
-                        dstTable[entry.Key] = entry.Value.CloneWithScope(inclusion.Scope);
+                        if (dstTableOverwrites == null)
+                            dstTableOverwrites = new Dictionary<QualifiedName, ScopedDeclaration<T>>();
+                        dstTableOverwrites[entry.Key] = entry.Value.CloneWithScope(inclusion.Scope);
                     }
                 }
 			}
 
+            // merge overwrites into dstTable // to avoid changing of enumerated collection above
+            if (dstTableOverwrites != null)
+                foreach (var entry in dstTableOverwrites)
+                    dstTable[entry.Key] = entry.Value;
+
+            //
 			return added_count;
 		}
 

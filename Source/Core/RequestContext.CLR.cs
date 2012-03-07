@@ -423,7 +423,7 @@ namespace PHP.Core
 		internal static void EnsureSessionId()
 		{
 			HttpContext httpContext = HttpContext.Current;
-            if (httpContext.Session.IsNewSession && httpContext.Session.Count == 0)
+            if (httpContext.Session != null && httpContext.Session.IsNewSession && httpContext.Session.Count == 0)
             {
                 httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
 
