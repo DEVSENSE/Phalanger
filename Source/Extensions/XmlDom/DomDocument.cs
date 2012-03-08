@@ -844,20 +844,10 @@ namespace PHP.Library.Xml
 		[PhpVisible]
         public object loadHTML(string source)
 		{
-            HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
-            StringWriter sw = new StringWriter();
+            if (source == null)
+                return false;
 
-            // load HTML
-            htmlDoc.LoadHtml(source);
-
-            CheckHtmlErrors(htmlDoc);
-
-            // save to string as XML
-            htmlDoc.OptionOutputAsXml = true;
-            htmlDoc.Save(sw);
-
-            // load as XML
-            return loadXML(this, sw.ToString(), 0);
+            return loadHTML(source, null);
 		}
 
         /// <summary>
@@ -873,22 +863,35 @@ namespace PHP.Library.Xml
             {
                 if (stream == null) return false;
 
-                HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
-                StringWriter sw = new StringWriter();
+                return loadHTML(null, stream);
+            }
+		}
 
-                // load HTML
+        /// <summary>
+        /// Load HTML DOM from <paramref name="source"/> text or a <paramref name="stream"/>.
+        /// </summary>
+        private object loadHTML(string source, PhpStream stream)
+        {
+            HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
+            
+            // load HTML (from string or a stream)
+            if (source != null)
+                htmlDoc.LoadHtml(source);
+            else if (stream != null)
                 htmlDoc.Load(stream.RawStream);
 
-                CheckHtmlErrors(htmlDoc);
+            CheckHtmlErrors(htmlDoc);
 
-                // save to string as XML
+            // save to string as XML
+            using (StringWriter sw = new StringWriter())
+            {
                 htmlDoc.OptionOutputAsXml = true;
                 htmlDoc.Save(sw);
 
                 // load as XML
                 return loadXML(this, sw.ToString(), 0);
             }
-		}
+        }
 
 		/// <summary>
 		/// Not implemented (TODO: need an HTML parser for this).
