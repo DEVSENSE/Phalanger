@@ -814,40 +814,100 @@ namespace PHP.Library.Xml
 			}
 		}
 
+        /// <summary>
+        /// Prints HTML errors, if any.
+        /// </summary>
+        /// <param name="htmlDoc"></param>
+        private void CheckHtmlErrors(HtmlAgilityPack.HtmlDocument htmlDoc)
+        {
+            foreach (var error in htmlDoc.ParseErrors)
+            {
+                string message =
+                    String.Format(
+                        "HTML parse error: ({0}) {1} on line {2}, column {3}.",
+                        error.Code,
+                        error.Reason,
+                        error.Line,
+                        error.LinePosition
+                    );
+
+                PhpException.Throw(PhpError.Warning, message);
+            }
+        }
+
 		/// <summary>
-		/// Not implemented (TODO: need an HTML parser for this).
+        /// Loads HTML from a string.
 		/// </summary>
+        /// <param name="source">
+        /// String containing HTML document.
+        /// </param>
 		[PhpVisible]
-		public void loadHTML(string source)
+        public object loadHTML(string source)
 		{
-			PhpException.Throw(PhpError.Warning, Resources.NotYetImplemented);
+            HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
+            StringWriter sw = new StringWriter();
+
+            // load HTML
+            htmlDoc.LoadHtml(source);
+
+            CheckHtmlErrors(htmlDoc);
+
+            // save to string as XML
+            htmlDoc.OptionOutputAsXml = true;
+            htmlDoc.Save(sw);
+
+            // load as XML
+            return loadXML(this, sw.ToString(), 0);
+		}
+
+        /// <summary>
+        /// Loads HTML from a file.
+        /// </summary>
+        /// <param name="sourceFile">
+        /// Path to a file containing HTML document.
+        /// </param>
+		[PhpVisible]
+		public object loadHTMLFile(string sourceFile)
+		{
+            using (PhpStream stream = PhpStream.Open(sourceFile, "wt"))
+            {
+                if (stream == null) return false;
+
+                HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
+                StringWriter sw = new StringWriter();
+
+                // load HTML
+                htmlDoc.Load(stream.RawStream);
+
+                CheckHtmlErrors(htmlDoc);
+
+                // save to string as XML
+                htmlDoc.OptionOutputAsXml = true;
+                htmlDoc.Save(sw);
+
+                // load as XML
+                return loadXML(this, sw.ToString(), 0);
+            }
 		}
 
 		/// <summary>
 		/// Not implemented (TODO: need an HTML parser for this).
 		/// </summary>
 		[PhpVisible]
-		public void loadHTMLFile(string source)
+		public object saveHTML()
 		{
-			PhpException.Throw(PhpError.Warning, Resources.NotYetImplemented);
+            //TODO: use the HTML parse to same HTML
+            return saveXML(null);
 		}
 
 		/// <summary>
 		/// Not implemented (TODO: need an HTML parser for this).
 		/// </summary>
 		[PhpVisible]
-		public void saveHTML()
-		{
-			PhpException.Throw(PhpError.Warning, Resources.NotYetImplemented);
-		}
-
-		/// <summary>
-		/// Not implemented (TODO: need an HTML parser for this).
-		/// </summary>
-		[PhpVisible]
-		public void saveHTMLFile(string file)
-		{
-			PhpException.Throw(PhpError.Warning, Resources.NotYetImplemented);
+        public object saveHTMLFile(string file)
+        {            
+            //TODO: use the HTML parse to same HTML
+            return save(file, 0);
 		}
 
 		#endregion
