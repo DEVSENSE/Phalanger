@@ -166,7 +166,7 @@ namespace PHP.Library
 			RegisterCoreOption("default_socket_timeout", IniFlags.Supported | IniFlags.Local);
 			RegisterCoreOption("define_syslog_variables", IniFlags.Unsupported | IniFlags.Local);
 			RegisterCoreOption("disable_classes", IniFlags.Unsupported | IniFlags.Global);
-			RegisterCoreOption("disable_functions", IniFlags.Unsupported | IniFlags.Global);
+			RegisterCoreOption("disable_functions", IniFlags.Supported | IniFlags.Global);
 			RegisterCoreOption("display_errors", IniFlags.Supported | IniFlags.Local);
 			RegisterCoreOption("display_startup_errors", IniFlags.Unsupported | IniFlags.Local);
 			RegisterCoreOption("doc_root", IniFlags.Unsupported | IniFlags.Global);
@@ -196,7 +196,7 @@ namespace PHP.Library
 			RegisterCoreOption("magic_quotes_sybase", IniFlags.Supported | IniFlags.Local);
 			RegisterCoreOption("max_execution_time", IniFlags.Supported | IniFlags.Local);
 			RegisterCoreOption("max_input_time", IniFlags.Unsupported | IniFlags.Global);
-			RegisterCoreOption("memory_limit", IniFlags.Unsupported | IniFlags.Local);
+            RegisterCoreOption("memory_limit", IniFlags.Supported | IniFlags.Local);
 			RegisterCoreOption("mime_magic.magicfile", IniFlags.Unsupported | IniFlags.Global);
 			RegisterCoreOption("open_basedir", IniFlags.Supported | IniFlags.Global);
 			RegisterCoreOption("output_buffering", IniFlags.Supported | IniFlags.Global);
