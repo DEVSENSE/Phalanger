@@ -613,16 +613,6 @@ namespace PHP.Core
         }
 
         /// <summary>
-        /// Load plugin from its full type name.
-        /// </summary>
-        /// <param name="typename">Full type name.</param>
-        public static void LoadPlugin(string/*!*/typename)
-        {
-            var type = Type.GetType(typename, true);
-            type.GetMethod("Initialize", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[] { });
-        }
-
-		/// <summary>
 		/// Parses an integer from a string.
 		/// </summary>
 		/// <param name="value">The string.</param>
