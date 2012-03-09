@@ -17,6 +17,7 @@ using System.Text;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Linq;
 
 using PHP.Core;
 
@@ -55,26 +56,36 @@ namespace PHP.Library.Xml
 			: base(ScriptContext.CurrentContext, true)
 		{
 			this.XPathNavigator = navigator;
-			InitNamespaceManager();
+			InitNamespaceManager(false);
 		}
 
-		private void InitNamespaceManager()
+		private void InitNamespaceManager(bool isHtmlDocument)
 		{
-			this.XmlNamespaceManager = new XmlNamespaceManager(XPathNavigator.NameTable);
+            this.XmlNamespaceManager = new XmlNamespaceManager(XPathNavigator.NameTable);
 
-			XPathNodeIterator iterator = XPathNavigator.Select("//namespace::*[not(. = ../../namespace::*)]");
+            if (isHtmlDocument)
+            {
+                string ns = XmlNamespaceManager.LookupNamespace("xmlns");
+                if (!string.IsNullOrEmpty(ns))
+                {
+                }
+            }
+            else
+            {
+                XPathNodeIterator iterator = XPathNavigator.Select("//namespace::*[not(. = ../../namespace::*)]");
 
-			while (iterator.MoveNext())
-			{
-				XmlNamespaceManager.AddNamespace(iterator.Current.Name, iterator.Current.Value);
-			}
+                while (iterator.MoveNext())
+                {
+                    XmlNamespaceManager.AddNamespace(iterator.Current.Name, iterator.Current.Value);
+                }
+            }
 		}
 
 		[PhpVisible]
 		public void __construct(DOMDocument document)
 		{
 			this.XPathNavigator = document.XmlDocument.CreateNavigator();
-			InitNamespaceManager();
+            InitNamespaceManager(document._isHtmlDocument);
 		}
 
 		#endregion

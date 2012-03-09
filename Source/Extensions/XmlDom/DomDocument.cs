@@ -42,6 +42,7 @@ namespace PHP.Library.Xml
 
 		private bool _formatOutput;
 		private bool _validateOnParse;
+        internal bool _isHtmlDocument;
 
 		/// <summary>
 		/// Returns &quot;#document&quot;.
@@ -653,6 +654,8 @@ namespace PHP.Library.Xml
 			}
 			else static_call = false;
 
+            instance._isHtmlDocument = false;
+
 			using (PhpStream stream = PhpStream.Open(fileName, "rt"))
 			{
 				if (stream == null) return false;
@@ -706,6 +709,8 @@ namespace PHP.Library.Xml
 			}
 			else static_call = false;
 
+            instance._isHtmlDocument = false;
+
 			try
 			{
 				if (instance._validateOnParse)
@@ -715,7 +720,7 @@ namespace PHP.Library.Xml
 #pragma warning disable 618
 					settings.ValidationType = ValidationType.Auto;
 #pragma warning restore 618
-
+                    
 					instance.XmlDocument.Load(XmlReader.Create(new StringReader(xmlString), settings));
 				}
 				else instance.XmlDocument.LoadXml(xmlString);
@@ -822,16 +827,23 @@ namespace PHP.Library.Xml
         {
             foreach (var error in htmlDoc.ParseErrors)
             {
-                string message =
-                    String.Format(
-                        "HTML parse error: ({0}) {1} on line {2}, column {3}.",
-                        error.Code,
-                        error.Reason,
-                        error.Line,
-                        error.LinePosition
-                    );
+                switch (error.Code)
+                {
+                    case HtmlAgilityPack.HtmlParseErrorCode.EndTagNotRequired:
+                        break;
+                    default:
+                        string message =
+                            String.Format(
+                                "HTML parse error: ({0}) {1} on line {2}, column {3}.",
+                                error.Code,
+                                error.Reason,
+                                error.Line,
+                                error.LinePosition
+                            );
 
-                PhpException.Throw(PhpError.Warning, message);
+                        PhpException.Throw(PhpError.Warning, message);
+                        break;
+                }
             }
         }
 
@@ -886,10 +898,18 @@ namespace PHP.Library.Xml
             using (StringWriter sw = new StringWriter())
             {
                 htmlDoc.OptionOutputAsXml = true;
+                htmlDoc.OptionFixNestedTags = true;
                 htmlDoc.Save(sw);
 
                 // load as XML
-                return loadXML(this, sw.ToString(), 0);
+                try
+                {
+                    return loadXML(this, sw.ToString(), 0);
+                }
+                finally
+                {
+                    this._isHtmlDocument = true;
+                }
             }
         }
 

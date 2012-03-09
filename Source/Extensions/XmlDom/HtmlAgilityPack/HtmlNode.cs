@@ -1548,6 +1548,21 @@ namespace HtmlAgilityPack
 
                                 if (rootnodes > 1)
                                 {
+                                    foreach (HtmlNode node in _childnodes)
+                                    {
+                                        // ignore text attribute outside root element:
+                                        if (node.NodeType == HtmlNodeType.Element)
+                                        {
+                                            // get rid of xmlns attribute:
+                                            if (string.Equals(node.Name, "html", StringComparison.OrdinalIgnoreCase) && node.Attributes != null)
+                                            {
+                                                var xmlns = node.Attributes["xmlns"];
+                                                if (xmlns != null) xmlns.Remove();
+                                            }
+                                            node.WriteTo(outText);
+                                        }
+                                    }
+                                    /*
                                     if (_ownerdocument.OptionOutputUpperCase)
                                     {
                                         outText.Write("<SPAN>");
@@ -1559,7 +1574,7 @@ namespace HtmlAgilityPack
                                         outText.Write("<span>");
                                         WriteContentTo(outText);
                                         outText.Write("</span>");
-                                    }
+                                    }*/
                                     break;
                                 }
                             }
