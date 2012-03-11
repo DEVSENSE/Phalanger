@@ -1863,16 +1863,18 @@ namespace HtmlAgilityPack
             string quote = att.QuoteType == AttributeValueQuote.DoubleQuote ? "\"" : "'";
             if (_ownerdocument.OptionOutputAsXml)
             {
-                if (_ownerdocument.OptionOutputUpperCase)
-                {
-                    name = att.XmlName.ToUpper();
-                }
-                else
-                {
-                    name = att.XmlName;
-                }
                 if (_ownerdocument.OptionOutputOriginalCase)
                     name = att.OriginalName;
+                else
+                    name = _ownerdocument.OptionOutputUpperCase ? att.XmlName.ToUpper() : name = att.XmlName;
+
+                if (!string.IsNullOrEmpty(name))
+                {
+                    char firstChar = name[0];
+
+                    if (firstChar == '-' || (firstChar >= '0' && firstChar <= '9'))  // an invalid XML attribute name
+                        name = '_' + name;  //   // fix such attribute name by prepending '_'
+                }
 
                 outText.Write(" " + name + "=" + quote + HtmlDocument.HtmlEncode(att.XmlValue) + quote);
             }

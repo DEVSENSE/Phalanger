@@ -830,6 +830,7 @@ namespace PHP.Library.Xml
                 switch (error.Code)
                 {
                     case HtmlAgilityPack.HtmlParseErrorCode.EndTagNotRequired:
+                    case HtmlAgilityPack.HtmlParseErrorCode.TagNotOpened:
                         break;
                     default:
                         string message =
