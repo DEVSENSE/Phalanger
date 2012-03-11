@@ -116,8 +116,7 @@ namespace PHP.Core.Reflection
 			{
 				PhpLibraryAttribute lib;
 				PurePhpAssemblyAttribute pure;
-                PluginAssemblyAttribute plug;
-
+                
 				if ((lib = attr as PhpLibraryAttribute) != null)
 				{
 					// PHP library or extension: 
