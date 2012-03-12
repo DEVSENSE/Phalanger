@@ -860,7 +860,7 @@ namespace PHP.Library.Xml
             if (source == null)
                 return false;
 
-            return loadHTML(source, null);
+            return loadHTML(new StringReader(source));
 		}
 
         /// <summary>
@@ -876,30 +876,32 @@ namespace PHP.Library.Xml
             {
                 if (stream == null) return false;
 
-                return loadHTML(null, stream);
+                return loadHTML(new StreamReader(stream.RawStream));
             }
 		}
 
         /// <summary>
-        /// Load HTML DOM from <paramref name="source"/> text or a <paramref name="stream"/>.
+        /// Load HTML DOM from given <paramref name="stream"/>.
         /// </summary>
-        private object loadHTML(string source, PhpStream stream)
+        private object loadHTML(TextReader stream)
         {
             HtmlAgilityPack.HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
+
+            // setup HTML parser
+            htmlDoc.OptionOutputAsXml = true;
+            htmlDoc.OptionOutputOriginalCase = true;
+            htmlDoc.OptionFixNestedTags = true;
+            htmlDoc.OptionCheckSyntax = false;
+            htmlDoc.OptionWriteEmptyNodes = true;
             
             // load HTML (from string or a stream)
-            if (source != null)
-                htmlDoc.LoadHtml(source);
-            else if (stream != null)
-                htmlDoc.Load(stream.RawStream);
+            htmlDoc.Load(stream);
 
             CheckHtmlErrors(htmlDoc);
 
             // save to string as XML
             using (StringWriter sw = new StringWriter())
             {
-                htmlDoc.OptionOutputAsXml = true;
-                htmlDoc.OptionFixNestedTags = true;
                 htmlDoc.Save(sw);
 
                 // load as XML

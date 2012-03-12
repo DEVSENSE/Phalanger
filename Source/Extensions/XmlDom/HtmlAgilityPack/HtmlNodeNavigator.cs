@@ -20,7 +20,7 @@ namespace HtmlAgilityPack
         private HtmlDocument _doc = new HtmlDocument();
         private HtmlNameTable _nametable = new HtmlNameTable();
 
-        internal bool Trace;
+        internal bool Trace = false;
 
         #endregion
 
