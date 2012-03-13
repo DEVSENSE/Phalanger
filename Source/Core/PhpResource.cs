@@ -81,8 +81,11 @@ namespace PHP.Core
 			this.mResourceId = resourceId;
 			this.mTypeName = resourceTypeName;
 
+            // register this resource into RequestContext,
+            // so the resource will be automatically disposed at the request end.
 			RequestContext req_context = RequestContext.CurrentContext;
-			if (req_context != null) req_context.RegisterResource(this);
+			if (req_context != null)
+                reqContextRegistrationNode = req_context.RegisterResource(this);
 		}
 
 		/// <summary>
@@ -172,6 +175,14 @@ namespace PHP.Core
 
 				// dispose unmanaged resources ("unfinalized"):
 				this.FreeUnmanaged();
+
+                // unregister from the RequestContext
+                if (this.reqContextRegistrationNode != null)
+                {
+                    Debug.Assert(RequestContext.CurrentContext != null);
+                    RequestContext.CurrentContext.UnregisterResource(this.reqContextRegistrationNode);
+                    this.reqContextRegistrationNode = null;
+                }
 			}
 
 			// shows the user this Resource is no longer valid:
@@ -231,6 +242,11 @@ namespace PHP.Core
 		/// Set in Dispose to avoid multiple cleanup attempts.
 		/// </summary>
 		private bool mDisposed = false;
+
+        /// <summary>
+        /// If this resource is registered into <see cref="RequestContext"/>, this points into linked list containing registered resources.
+        /// </summary>
+        private System.Collections.Generic.LinkedListNode<PhpResource> reqContextRegistrationNode;
 
 		/// <summary>Static counter for unique PhpResource instance Id's</summary>
 		private static int ResourceIdCounter = 0;
