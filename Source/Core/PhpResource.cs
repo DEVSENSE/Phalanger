@@ -139,7 +139,7 @@ namespace PHP.Core
 		/// <summary>
 		/// An alias of <see cref="Dispose"/>.
 		/// </summary>
-		public void Close()
+		public virtual void Close()
 		{
 			Dispose();
 		}

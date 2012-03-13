@@ -111,7 +111,7 @@ namespace PHP.Core
                 for (var p = resources.First; p != null; )
                 {
                     var next = p.Next;
-                    p.Value.Dispose();
+                    p.Value.Close();
                     p = next;
                 }
 
