@@ -25,28 +25,29 @@ else
 	fi
 fi
 
-#Installing preconditions
+#Installing preconditions (replace apt-get with yum for fedora)
 apt-get install xmlstarlet
 apt-get install apache2 libapache2-mod-mono
 
-echo "Enter Phalanger installation directory: (default=/usr/lib)"
+echo "Enter Phalanger installation directory: (default=/usr/local/lib/phalanger)"
 read phalanger_folder
 
 if  [ "$phalanger_folder" == "" ]; then
-	phalanger_folder="/usr/lib/phalanger"
+	phalanger_folder="/usr/local/lib/phalanger"
 fi
 
 cp -r "phalanger/bin" $phalanger_folder
 cp -r "phalanger/dynamic" $phalanger_folder
 cp -r "phalanger/license.txt" $phalanger_folder
 
+#Set these rights so Mono has right to write into this folder
 chmod 777 $phalanger_folder/dynamic
 
-echo "Enter Mono etc directory: (default=/etc/mono)"
+echo "Enter Mono etc directory: (default=/usr/local/etc/mono)"
 read mono_etc_folder
 
 if  [ "$mono_etc_folder" == "" ]; then
-	mono_etc_folder="/etc/mono/"
+	mono_etc_folder="/usr/local/etc/mono"
 fi
 
 version="3.0.0.0"
@@ -54,9 +55,14 @@ machine_config="$mono_etc_folder/4.0/machine.config"
 web_config="$mono_etc_folder/4.0/web.config"
 public_key="0a8e8c4c76728c71"
 public_key_lib="4af37afe3cde05fb"
-pars="-P -L"
+pars="-L"
 
-# Adding definition of phpNet section
+#Remove previous phalanger version
+#xmlstarlet ed $pars -d "/configuration/configSections[@name=phpNet]" $machine_config
+#xmlstarlet ed $pars -d "/configuration/phpNet" $machine_config
+#xmlstarlet ed $pars -d "/configuration/system.web/httpHandlers[@path=*.php]" $web_config
+
+#Adding definition of phpNet section
 xmlstarlet ed $pars -s "/configuration/configSections" -t elem -n "section" -v "" $machine_config
 xmlstarlet ed $pars -s "/configuration/configSections/section[last()]" -t attr -n "name" -v "phpNet" $machine_config
 xmlstarlet ed $pars -s "/configuration/configSections/section[last()]" -t attr -n "type" -v "PHP.Core.ConfigurationSectionHandler, PhpNetCore, Version=$version, Culture=neutral, PublicKeyToken=$public_key" $machine_config
@@ -83,10 +89,9 @@ xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add" -t attr -n "asse
 xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add" -t attr -n "section" -v "bcl" $machine_config
 
 #Registering PhpNetXmlDom
-xmlstarlet ed $pars -s "/configuration/phpNet" -t elem -n "classLibrary" -v "" $machine_config
 xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary" -t elem -n "add" -v "" $machine_config
-xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add" -t attr -n "assembly" -v "PhpNetXmlDom, Version=$version, Culture=neutral, PublicKeyToken=$public_key_lib" $machine_config
-xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add" -t attr -n "section" -v "bcl" $machine_config
+xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add[last()]" -t attr -n "assembly" -v "PhpNetXmlDom, Version=$version, Culture=neutral, PublicKeyToken=$public_key_lib" $machine_config
+xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add[last()]" -t attr -n "section" -v "bcl" $machine_config
 
 #Registering Phalanger as HttpHandler
 xmlstarlet ed $pars -s "/configuration/system.web/httpHandlers" -t elem -n "add" -v "" $web_config
@@ -94,7 +99,7 @@ xmlstarlet ed $pars -s "/configuration/system.web/httpHandlers/add[last()]" -t a
 xmlstarlet ed $pars -s "/configuration/system.web/httpHandlers/add[last()]" -t attr -n "verb" -v "*" $web_config
 xmlstarlet ed $pars -s "/configuration/system.web/httpHandlers/add[last()]" -t attr -n "type" -v "PHP.Core.RequestHandler, PhpNetCore, Version=$version, Culture=neutral, PublicKeyToken=$public_key" $web_config
 
-#Installing necessary assemblies in GAC
+#Installing necessary assemblies into GAC
 gacutil -i $phalanger_folder/bin/PhpNetCore.dll
 gacutil -i $phalanger_folder/bin/PhpNetClassLibrary.dll
 gacutil -i $phalanger_folder/bin/PhpNetXmlDom.dll
