@@ -1520,7 +1520,7 @@ namespace HtmlAgilityPack
                     html = ((HtmlCommentNode) this).Comment;
                     if (_ownerdocument.OptionOutputAsXml)
                     {
-                        outText.Write("<!--" + GetXmlComment((HtmlCommentNode) this) + " -->");
+                        outText.Write("<!--" + GetXmlComment((HtmlCommentNode) this) + "-->");
                     }
                     else
                     {
@@ -1603,7 +1603,7 @@ namespace HtmlAgilityPack
                     }
                     else
                     {
-                        name = Name;
+                        name = Name;    // already .ToLower();
                     }
 
                     if (_ownerdocument.OptionOutputOriginalCase)
@@ -1868,7 +1868,7 @@ namespace HtmlAgilityPack
                 if (_ownerdocument.OptionOutputOriginalCase)
                     name = att.OriginalName;
                 else
-                    name = _ownerdocument.OptionOutputUpperCase ? att.XmlName.ToUpper() : name = att.XmlName;
+                    name = _ownerdocument.OptionOutputUpperCase ? att.XmlName.ToUpper() : att.XmlName;
 
                 if (!string.IsNullOrEmpty(name))
                 {
