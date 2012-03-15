@@ -103,5 +103,12 @@ namespace MachineConfig
 		}
 
 		#endregion
+
+        public override void Commit(IDictionary savedState)
+        {
+            base.Commit(savedState);
+
+            System.Diagnostics.Process.Start("http://www.php-compiler.net/Phalanger-Installed.html");
+        }
 	}
 }
