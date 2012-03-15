@@ -810,6 +810,83 @@ namespace PHP.Core
             return true;
         }
 
+
+        internal static bool IsWhiteSpace(byte b)
+        {
+            return b == ' ' || (b >= '\t' && b <= '\r') || b == '\u00a0' || b == '\u0085';
+        }
+
+        public static bool IsConvertableToNumber(byte[] bytes)
+        {
+            int state = 0;
+            byte b;
+
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                b = bytes[i];
+
+                switch (state)
+                {
+                    case 0: // expecting whitespaces to be skipped
+                        {
+                            if (!IsWhiteSpace(b))
+                            {
+                                state = 1;
+                                goto case 1;
+                            }
+                            break;
+                        }
+
+                    case 1:
+                        {
+
+                            if (b >= '0' && b <= '9')
+                            {
+                                //it's a number
+                                return true;
+                            }
+
+                            if (b == '-')//sign
+                            {
+                                state = 2;
+                                break;
+                            }
+
+                            if (b == '+')//sign
+                            {
+                                state = 2;
+                                break;
+                            }
+
+                            // switch to decimals in next turn:
+                            if (b == '.')
+                            {
+                                state = 2;
+                                break;
+                            }
+
+                            //it's not a valid number
+                            return false;
+
+                        }
+
+                    case 2:
+                        {
+                            if (b >= '0' && b <= '9')
+                            {
+                                //it's a number
+                                return true;
+                            }
+
+                            //it's not a valid number
+                            return false;
+                        }
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// <see cref="Char.ConvertFromUtf32"/> is missing from Mono so we must implement it by ourselves.
         /// </summary>
@@ -1096,6 +1173,8 @@ namespace PHP.Core
         {
             return 0 == string.Compare(self, str, StringComparison.OrdinalIgnoreCase);
         }
+
+
     }
 
     #endregion
@@ -2236,6 +2315,7 @@ namespace PHP.Core
                 return ms.ToArray();
             }
         }
+
     }
 
     public struct SubArray<T> : IEnumerable<T>

@@ -479,7 +479,8 @@ namespace PHP.Core
                 // if both PhpByte instances share the same internal byte array:
                 if (this._data == other._data) return 0;
 
-                if (object.ReferenceEquals(comparer, PhpComparer.Default))
+                if (object.ReferenceEquals(comparer, PhpComparer.Default) &&
+                    !(StringUtils.IsConvertableToNumber(this.ReadonlyData) && StringUtils.IsConvertableToNumber(other.ReadonlyData)))
                 {
                     // we don't have to convert bytes to string:
                     return ArrayUtils.Compare(this.ReadonlyData, other.ReadonlyData);
