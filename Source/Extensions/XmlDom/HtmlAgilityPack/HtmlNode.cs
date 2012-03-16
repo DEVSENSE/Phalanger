@@ -82,38 +82,37 @@ namespace HtmlAgilityPack
             ElementsFlags.Add("script", HtmlElementFlag.CData);
             ElementsFlags.Add("style", HtmlElementFlag.CData);
             ElementsFlags.Add("noxhtml", HtmlElementFlag.CData);
-            /*
-            // tags that can not contain other tags
-            ElementsFlags.Add("base", HtmlElementFlag.Empty);
+            
+            //// tags that can not contain other tags
+            //ElementsFlags.Add("base", HtmlElementFlag.Empty);
             ElementsFlags.Add("link", HtmlElementFlag.Empty);
             ElementsFlags.Add("meta", HtmlElementFlag.Empty);
-            ElementsFlags.Add("isindex", HtmlElementFlag.Empty);
+            //ElementsFlags.Add("isindex", HtmlElementFlag.Empty);
             ElementsFlags.Add("hr", HtmlElementFlag.Empty);
-            ElementsFlags.Add("col", HtmlElementFlag.Empty);
+            //ElementsFlags.Add("col", HtmlElementFlag.Empty);
             ElementsFlags.Add("img", HtmlElementFlag.Empty);
-            ElementsFlags.Add("param", HtmlElementFlag.Empty);
-            ElementsFlags.Add("embed", HtmlElementFlag.Empty);
-            ElementsFlags.Add("frame", HtmlElementFlag.Empty);
-            ElementsFlags.Add("wbr", HtmlElementFlag.Empty);
-            ElementsFlags.Add("bgsound", HtmlElementFlag.Empty);
-            ElementsFlags.Add("spacer", HtmlElementFlag.Empty);
-            ElementsFlags.Add("keygen", HtmlElementFlag.Empty);
-            ElementsFlags.Add("area", HtmlElementFlag.Empty);
-            ElementsFlags.Add("input", HtmlElementFlag.Empty);
-            ElementsFlags.Add("basefont", HtmlElementFlag.Empty);
+            //ElementsFlags.Add("param", HtmlElementFlag.Empty);
+            //ElementsFlags.Add("embed", HtmlElementFlag.Empty);
+            //ElementsFlags.Add("frame", HtmlElementFlag.Empty);
+            //ElementsFlags.Add("wbr", HtmlElementFlag.Empty);
+            //ElementsFlags.Add("bgsound", HtmlElementFlag.Empty);
+            //ElementsFlags.Add("spacer", HtmlElementFlag.Empty);
+            //ElementsFlags.Add("keygen", HtmlElementFlag.Empty);
+            //ElementsFlags.Add("area", HtmlElementFlag.Empty);
+            //ElementsFlags.Add("input", HtmlElementFlag.Empty);
+            //ElementsFlags.Add("basefont", HtmlElementFlag.Empty);
 
-            ElementsFlags.Add("form", HtmlElementFlag.CanOverlap);// | HtmlElementFlag.Empty);
+            //ElementsFlags.Add("form", HtmlElementFlag.CanOverlap);// | HtmlElementFlag.Empty);
 
-            // they sometimes contain, and sometimes they don 't...
-            //ElementsFlags.Add("option", HtmlElementFlag.Empty);
+            //// they sometimes contain, and sometimes they don 't...
+            ////ElementsFlags.Add("option", HtmlElementFlag.Empty);
 
-            // tag whose closing tag is equivalent to open tag:
-            // <p>bla</p>bla will be transformed into <p>bla</p>bla
-            // <p>bla<p>bla will be transformed into <p>bla<p>bla and not <p>bla></p><p>bla</p> or <p>bla<p>bla</p></p>
-            //<br> see above
+            //// tag whose closing tag is equivalent to open tag:
+            //// <p>bla</p>bla will be transformed into <p>bla</p>bla
+            //// <p>bla<p>bla will be transformed into <p>bla<p>bla and not <p>bla></p><p>bla</p> or <p>bla<p>bla</p></p>
+            ////<br> see above
             ElementsFlags.Add("br", HtmlElementFlag.Empty | HtmlElementFlag.Closed);
             //ElementsFlags.Add("p", HtmlElementFlag.Empty | HtmlElementFlag.Closed);
-            */
         }
 
         /// <summary>
