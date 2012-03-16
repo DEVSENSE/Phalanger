@@ -18,7 +18,7 @@ namespace HtmlAgilityPack
         #region Fields
 
         private int _c;
-        private Crc32 _crc32;
+        //private Crc32 _crc32;
         private HtmlAttribute _currentattribute;
         private HtmlNode _currentnode;
         private Encoding _declaredencoding;
@@ -154,23 +154,23 @@ namespace HtmlAgilityPack
 
         #region Properties
 
-        /// <summary>
-        /// Gets the document CRC32 checksum if OptionComputeChecksum was set to true before parsing, 0 otherwise.
-        /// </summary>
-        public int CheckSum
-        {
-            get
-            {
-                if (_crc32 == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return (int)_crc32.CheckSum;
-                }
-            }
-        }
+        ///// <summary>
+        ///// Gets the document CRC32 checksum if OptionComputeChecksum was set to true before parsing, 0 otherwise.
+        ///// </summary>
+        //public int CheckSum
+        //{
+        //    get
+        //    {
+        //        if (_crc32 == null)
+        //        {
+        //            return 0;
+        //        }
+        //        else
+        //        {
+        //            return (int)_crc32.CheckSum;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Gets the document's declared encoding.
@@ -1269,11 +1269,11 @@ namespace HtmlAgilityPack
 
         private void IncrementPosition()
         {
-            if (_crc32 != null)
-            {
-                // REVIEW: should we add some checksum code in DecrementPosition too?
-                _crc32.AddToCRC32(_c);
-            }
+            //if (_crc32 != null)
+            //{
+            //    // REVIEW: should we add some checksum code in DecrementPosition too?
+            //    _crc32.AddToCRC32(_c);
+            //}
 
             _index++;
             _maxlineposition = _lineposition;
@@ -1356,10 +1356,10 @@ namespace HtmlAgilityPack
         private void Parse()
         {
             int lastquote = 0;
-            if (OptionComputeChecksum)
-            {
-                _crc32 = new Crc32();
-            }
+            //if (OptionComputeChecksum)
+            //{
+            //    _crc32 = new Crc32();
+            //}
 
             _lastnodes = new Hashtable();
             _c = 0;
