@@ -484,28 +484,6 @@ namespace PHP.Library
                 }
 			}
 		}
-
-		/// <summary>
-		/// Gets a serializer by name reporting errors.
-		/// </summary>
-		internal static Serializer GetSerializerVerbose(string name)
-		{
-			if (name == null)
-			{
-				PhpException.ArgumentNull("name");
-				return null;
-			}
-
-			Serializer result = GetSerializer(name);
-
-			if (result == null)
-			{
-				PhpException.Throw(PhpError.Warning, LibResources.GetString("unknown_serializer", name));
-				return null;
-			}
-
-			return result;
-		}
 	}
 
 	#endregion
