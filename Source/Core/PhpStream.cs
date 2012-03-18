@@ -37,7 +37,7 @@ namespace PHP.Core
         /// <summary>
         /// Default StreamContext. Cannot be null.
         /// </summary>
-		public static readonly StreamContext/*!*/Default = new StreamContext();
+		public static readonly StreamContext/*!*/Default = new StreamContext(null, false);
 
 		#region Properties
 
@@ -73,19 +73,27 @@ namespace PHP.Core
 		/// <summary>
 		/// Create an empty StreamContext (allows lazy PhpArray instantiation).
 		/// </summary>
-		public StreamContext() : this(null) { }
+		public StreamContext() : this(null, true) { }
 
-		/// <summary>
+        /// <summary>
 		/// Create a new context resource from an array of wrapper options.
 		/// </summary>
 		/// <param name="data">A 2-dimensional array of wrapper options</param>
-		public StreamContext(PhpArray data)
-			: base(StreamContextTypeName)
-		{
-			this.data = data;
-		}
+        public StreamContext(PhpArray data)
+            : this(data, true) { }
 
-		#endregion
+        /// <summary>
+        /// Create a new context resource from an array of wrapper options.
+        /// </summary>
+        /// <param name="data">A 2-dimensional array of wrapper options</param>
+        /// <param name="registerInReqContext">Whether to register this instance in current <see cref="RequestContext"/>. Should be <c>false</c> for static resources.</param>
+        private StreamContext(PhpArray data, bool registerInReqContext)
+            : base(StreamContextTypeName, registerInReqContext)
+        {
+            this.data = data;
+        }
+
+        #endregion
 
         /// <summary>
 		/// Checks the context for validity, throws a warning it is not.

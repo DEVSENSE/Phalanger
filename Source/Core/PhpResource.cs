@@ -76,27 +76,47 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="resourceId">Unique resource identifier (odd for external resources).</param>
 		/// <param name="resourceTypeName">The type to be reported to use when dumping a resource.</param>
-		protected PhpResource(int resourceId, String resourceTypeName)
+        /// <param name="registerInReqContext">Whether to register this instance in current <see cref="RequestContext"/>. Should be <c>false</c> for static resources.</param>
+		protected PhpResource(int resourceId, String resourceTypeName, bool registerInReqContext)
 		{
 			this.mResourceId = resourceId;
 			this.mTypeName = resourceTypeName;
 
-            // register this resource into RequestContext,
-            // so the resource will be automatically disposed at the request end.
-			RequestContext req_context = RequestContext.CurrentContext;
-			if (req_context != null)
-                reqContextRegistrationNode = req_context.RegisterResource(this);
+            if (registerInReqContext)
+            {
+                // register this resource into RequestContext,
+                // so the resource will be automatically disposed at the request end.
+                RequestContext req_context = RequestContext.CurrentContext;
+                if (req_context != null)
+                    reqContextRegistrationNode = req_context.RegisterResource(this);
+            }
 		}
+
+        /// <summary>
+        /// Create a new instance with the given Id. Used by <see cref="PhpExternalResource"/>s.
+        /// </summary>
+        /// <param name="resourceId">Unique resource identifier (odd for external resources).</param>
+        /// <param name="resourceTypeName">The type to be reported to use when dumping a resource.</param>
+        protected PhpResource(int resourceId, String resourceTypeName)
+            : this(resourceId, resourceTypeName, true) { }
 
 		/// <summary>
 		/// Create a new instance of a given Type and Name.
 		/// The instance Id is auto-incrementing starting from 1.
 		/// </summary>
 		/// <param name="resourceTypeName">The type to be reported to use when dumping a resource.</param>
-		public PhpResource(String resourceTypeName)
-			: this(PhpResource.RegisterInternalInstance(), resourceTypeName)
-		{
-		}
+        public PhpResource(String resourceTypeName)
+            : this(resourceTypeName, true) { }
+
+        /// <summary>
+        /// Create a new instance of a given Type and Name.
+        /// The instance Id is auto-incrementing starting from 1.
+        /// </summary>
+        /// <param name="resourceTypeName">The type to be reported to use when dumping a resource.</param>
+        /// <param name="registerInReqContext">Whether to register this instance in current <see cref="RequestContext"/>. Should be <c>false</c> for static resources.</param>
+        public PhpResource(String resourceTypeName, bool registerInReqContext)
+            : this(PhpResource.RegisterInternalInstance(), resourceTypeName, registerInReqContext)
+        { }
 
 #if !SILVERLIGHT
 		/// <include file='Doc/Common.xml' path='/docs/method[@name="serialization.ctor"]/*'/>
@@ -177,17 +197,25 @@ namespace PHP.Core
 				this.FreeUnmanaged();
 
                 // unregister from the RequestContext
-                if (this.reqContextRegistrationNode != null)
-                {
-                    Debug.Assert(RequestContext.CurrentContext != null);
-                    RequestContext.CurrentContext.UnregisterResource(this.reqContextRegistrationNode);
-                    this.reqContextRegistrationNode = null;
-                }
+                this.UnregisterResource();
 			}
 
 			// shows the user this Resource is no longer valid:
 			this.mTypeName = PhpResource.DisposedTypeName;
 		}
+
+        /// <summary>
+        /// Unregister this instance of <see cref="PhpResource"/> from current <see cref="RequestContext"/>.
+        /// </summary>
+        private void UnregisterResource()
+        {
+            if (this.reqContextRegistrationNode != null)
+            {
+                Debug.Assert(RequestContext.CurrentContext != null);
+                RequestContext.CurrentContext.UnregisterResource(this.reqContextRegistrationNode);
+                this.reqContextRegistrationNode = null;
+            }
+        }
 
 		/// <summary>
 		/// Override this virtual method in your descendants to perform 
