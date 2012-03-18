@@ -97,6 +97,7 @@
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <AdditionalDependencies>windowscodecs.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(TargetPath)" "$(SolutionDir)..\Deployment\Debug\Package\" /E /Y 1&gt;nul</Command>
@@ -111,6 +112,7 @@
       <OutputFile>$(OutDir)$(TargetFileName)</OutputFile>
       <SubSystem>Windows</SubSystem>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <AdditionalDependencies>windowscodecs.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(TargetPath)" "$(SolutionDir)..\Deployment\Bin\Package\" /E /Y 1&gt;nul</Command>

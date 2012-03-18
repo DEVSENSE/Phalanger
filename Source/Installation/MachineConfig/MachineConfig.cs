@@ -393,7 +393,8 @@ namespace MachineConfig
 		/// </summary>
 		/// <param name="savedState">An <see cref="IDictionary"/> that contains the state of the computer after
 		/// the installation was complete.</param>
-		public override void Uninstall(IDictionary savedState)
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand)]
+        public override void Uninstall(IDictionary savedState)
 		{
 			XmlDocument machine_config;
 			XmlDocument web_config;
@@ -418,22 +419,17 @@ namespace MachineConfig
 		/// </summary>
 		/// <param name="stateSaver">An <see cref="IDictionary"/> used to save information needed to perform a commit,
 		/// rollback, or uninstall operation.</param>
-		public override void Install(IDictionary stateSaver)
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand)]
+        public override void Install(IDictionary stateSaver)
 		{
             // check the installation directory
-			string install_dir = Context.Parameters["InstallDir"];
+			string install_dir = Context.Parameters["InstallDir"].TrimEnd('\\', '/', ' ');
 
 			if (!Directory.Exists(install_dir))
 			{
 				ShowError("Directory '{0}' does not exist.", install_dir);
 				return;
 			}
-
-            // install_dir must not end with \\
-            if (install_dir.EndsWith("\\") || install_dir.EndsWith("/"))
-            {
-                install_dir = install_dir.Substring(0, install_dir.Length - 1);
-            }
 
             // modify .NET .config files
             XmlDocument machine_config;
