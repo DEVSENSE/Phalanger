@@ -702,7 +702,7 @@ namespace PHP.Core
     public static class PhalangerVersion
     {
         /// <summary>
-        /// Current Phalanger version obtained from <see cref="AssemblyFileVersionAttribute"/> or <see cref="AssemblyVersionAtribute"/> of this assembly.
+        /// Current Phalanger version obtained from <see cref="AssemblyFileVersionAttribute"/> or version of this assembly.
         /// </summary>
         public static readonly string/*!*/Current;
 
