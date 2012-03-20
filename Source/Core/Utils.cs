@@ -816,7 +816,12 @@ namespace PHP.Core
             return b == ' ' || (b >= '\t' && b <= '\r') || b == '\u00a0' || b == '\u0085';
         }
 
-        public static bool IsConvertableToNumber(byte[] bytes)
+        /// <summary>
+        /// Checks if binary data can be converted a number
+        /// </summary>
+        /// <param name="bytes">The bytes to checked.</param>
+        /// <returns>Returns true if bytes can be converted to a number.</returns>
+        internal static bool IsConvertableToNumber(byte[] bytes)
         {
             int state = 0;
             byte b;
