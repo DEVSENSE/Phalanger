@@ -28,6 +28,8 @@ namespace PHP.Core
 	/// </summary>
     public class HttpHeaders : IEnumerable<KeyValuePair<string, string>>
     {
+        protected readonly HttpContext/*!*/httpContext;
+        
         #region Initialization
 
         #region HttpRuntime.UsingIntegratedPipeline helper
@@ -60,7 +62,7 @@ namespace PHP.Core
         /// <returns>Instance of HttpHeaders object.</returns>
         public static HttpHeaders Create()
         {
-            if (/*HttpRuntime.*/UsingIntegratedPipeline)
+            if (UsingIntegratedPipeline)
                 return new IntegratedPipelineHeaders();
             
             return new HttpHeaders(true);
@@ -72,12 +74,12 @@ namespace PHP.Core
         /// </summary>
         private HttpHeaders(bool attach)
         {
+            this.httpContext = HttpContext.Current;
+                
             if (attach)
             {
-                var context = HttpContext.Current;
-
-                if (context != null)
-                    TryAttachApplication(context.ApplicationInstance);
+                if (this.httpContext != null)
+                    TryAttachApplication(this.httpContext.ApplicationInstance);
             }
         }
 
@@ -275,7 +277,7 @@ namespace PHP.Core
         {
             if (location != null)
             {
-                HttpResponse response = HttpContext.Current.Response;
+                HttpResponse response = this.httpContext.Response;
                 if (response.StatusCode == 302)
                     response.StatusCode = 200;
 
@@ -315,11 +317,11 @@ namespace PHP.Core
             if (contentType != null)
                 yield return new KeyValuePair<string, string>("content-type", contentType);
 
-            //if (HttpContext.Current != null)
+            //if (this.httpContext != null)
             //{
             //    try
             //    {
-            //        HttpResponse response = HttpContext.Current.Response;
+            //        HttpResponse response = this.httpContext.Response;
             //        foreach (string key in response.Headers.Keys)
             //        {
             //            string values = response.Headers[key];
@@ -394,7 +396,7 @@ namespace PHP.Core
         protected virtual void OnLocationSet(string location)
         {
             // set status code 302 unless the 201 or a 3xx status code has already been set 
-            HttpResponse response = HttpContext.Current.Response;
+            HttpResponse response = this.httpContext.Response;
             if (location != null && response.StatusCode != 201 && (response.StatusCode < 300 || response.StatusCode >= 400))
                 response.StatusCode = 302;
         }
@@ -419,12 +421,18 @@ namespace PHP.Core
 
         private class IntegratedPipelineHeaders : HttpHeaders
         {
+            #region Fields
+
+            private static string/*!*/PoweredByHeader = PhalangerVersion.ProductName + " " + PhalangerVersion.Current;
+
+            #endregion
+
             #region ctor
 
             public IntegratedPipelineHeaders()
                 :base(false)
             {
-
+                httpContext.Response.Headers["X-Powered-By"] = PoweredByHeader;
             }
 
             #endregion
@@ -461,7 +469,7 @@ namespace PHP.Core
             {
                 get
                 {
-                    return base[header] ?? HttpContext.Current.Response.Headers[header];
+                    return base[header] ?? httpContext.Response.Headers[header];
                 }
                 set
                 {
@@ -469,7 +477,7 @@ namespace PHP.Core
 
                     // store the header immediately into the buffered response
                     //header = header.ToLowerInvariant();
-                    var response = HttpContext.Current.Response;
+                    var response = httpContext.Response;
 
                     if (header.EqualsOrdinalIgnoreCase("location"))
                     {
@@ -524,7 +532,7 @@ namespace PHP.Core
             {
                 base.Clear();
 
-                HttpResponse response = HttpContext.Current.Response;
+                HttpResponse response = httpContext.Response;
 
                 response.RedirectLocation = null;
                 response.ContentEncoding = RequestContext.CurrentContext.DefaultResponseEncoding;
@@ -545,7 +553,7 @@ namespace PHP.Core
             //    {
             //        // return flushed headers from HttpContext (may be also set by ASP application)
 
-            //        var context = HttpContext.Current;
+            //        var context = httpContext;
             //        if (context != null)
             //        {
             //            HttpResponse response = context.Response;

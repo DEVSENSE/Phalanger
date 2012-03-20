@@ -26,10 +26,11 @@ using System;
 #if !SILVERLIGHT
 [assembly: AssemblyTitle("Phalanger Core")]
 [assembly: AssemblyDescription("Phalanger Core Functionality")]
-[assembly: AssemblyVersion("3.0.0.0")]
 //[assembly: AllowPartiallyTrustedCallers]
 #else
 [assembly: AssemblyTitle("Phalanger Core (Silverlight)")]
 [assembly: AssemblyDescription("Phalanger Core Functionality (Silverlight)")]
-[assembly: AssemblyVersion("3.0.0.0")]
 #endif
+
+[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyFileVersion("3.0.0.0")]
