@@ -231,7 +231,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		[ImplementsFunction("checkdnsrr")]
+        [ImplementsFunction("checkdnsrr", FunctionImplOptions.NotSupported)]
 		public static int CheckRecordRows(string host)
 		{
 			return CheckRecords(host, "MX");
@@ -240,7 +240,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		[ImplementsFunction("checkdnsrr")]
+        [ImplementsFunction("checkdnsrr", FunctionImplOptions.NotSupported)]
 		public static int CheckRecordRows(string host, string type)
 		{
 			return CheckRecords(host, type);
@@ -264,7 +264,7 @@ namespace PHP.Library
 		/// <summary>
 		/// Not supported.
 		/// </summary>
-		[ImplementsFunction("dns_get_record")]
+        [ImplementsFunction("dns_get_record", FunctionImplOptions.NotSupported)]
 		public static PhpArray GetRecord(string host)
 		{
 			return GetRecord(host, DnsRecordType.All);
@@ -413,9 +413,9 @@ namespace PHP.Library
 		[return: CastToFalse]
 		public static int GetProtocolByName(string name)
 		{
-			if (name == null) return -1;
+			if (string.IsNullOrEmpty(name)) return -1;
 
-			NetworkUtils.ProtoEnt ent = NetworkUtils.GetProtocolByName(name);
+            NetworkUtils.ProtoEnt ent = NetworkUtils.GetProtocolByName(name);
 			if (ent == null) return -1;
 			return ent.p_proto;
 		}
