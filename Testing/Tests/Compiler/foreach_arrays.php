@@ -1,29 +1,4 @@
-[expect exact]
-1
-2
-3
-0-1
-1-2
-2-3
-0-1
-1-2
-2-3
-array(3)
-{
-  [0] => &integer(10)
-  [1] => &integer(11)
-  [2] => &integer(12)
-}
-array(7)
-{
-  [0] => &integer(100)
-  [1] => &integer(101)
-  [2] => &integer(102)
-  [4] => &integer(104)
-  [5] => &integer(105)
-  [6] => integer(4)
-  [3] => &integer(100)
-}
+[expect php]
 [file]
 <?
 $a = array(1,2,3);
