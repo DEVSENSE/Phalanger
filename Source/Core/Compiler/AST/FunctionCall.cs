@@ -314,6 +314,26 @@ namespace PHP.Core.AST
         }
 
         /// <summary>
+        /// Modifies AST if possible, in order to generate better code.
+        /// </summary>
+        /// <remarks>Some well-known constructs can be modified to be analyzed and emitted better.</remarks>
+        private void AnalyzeSpecial(Analyzer/*!*/ analyzer)
+        {
+            if (routine is PhpLibraryFunction)
+            {
+                // basename(__FILE__, ...) -> basename("actual_file", ...)  // SourceRoot can be ignored in this case
+                if (routine.FullName.EqualsOrdinalIgnoreCase("basename"))
+                    if (callSignature.Parameters.Count > 0)
+                    {
+                        var path_param = callSignature.Parameters[0];
+                        var path_expr = path_param.Expression;
+                        if (path_expr is PseudoConstUse && ((PseudoConstUse)path_expr).Type == PseudoConstUse.Types.File)
+                            callSignature.Parameters[0] = new ActualParam(path_param.Position, new StringLiteral(path_expr.Position, analyzer.SourceUnit.SourceFile.RelativePath.Path), false);
+                    }
+            }
+        }
+
+        /// <summary>
 		/// Tries to determine a value of the node.
 		/// </summary>
 		/// <returns>
@@ -323,6 +343,10 @@ namespace PHP.Core.AST
 		/// </returns>
 		private bool TryEvaluate(Analyzer/*!*/ analyzer, out object value)
 		{
+            // special cases, allow some AST transformation:
+            this.AnalyzeSpecial(analyzer);
+
+            // try evaluate function call in compile time:
             if (callSignature.AllParamsHaveValue)
             {
                 PureFunctionAttribute pureAttribute;
