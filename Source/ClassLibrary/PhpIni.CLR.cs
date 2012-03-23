@@ -192,8 +192,8 @@ namespace PHP.Library
 
                 case "zend.ze1_compatibility_mode": Debug.Assert(action != IniAction.Set || OptionValueToBoolean(value) == false); return false;// GSR(ref local.Variables.ZendEngineV1Compatible, @default.Variables.ZendEngineV1Compatible, value, action);
 				case "magic_quotes_runtime": return GSR(ref local.Variables.QuoteRuntimeVariables, @default.Variables.QuoteRuntimeVariables, value, action);
-				case "magic_quotes_sybase": return GSR(ref local.Variables.QuoteInDbManner, @default.Variables.QuoteInDbManner, value, action);
-				case "magic_quotes_gpc": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.QuoteGpcVariables;
+				case "magic_quotes_sybase": Debug.Assert(action == IniAction.Get); return local.Variables.QuoteInDbManner; //GSR(ref local.Variables.QuoteInDbManner, @default.Variables.QuoteInDbManner, value, action);
+                case "magic_quotes_gpc": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.QuoteGpcVariables;
 				case "register_argc_argv": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.RegisterArgcArgv;
 				case "register_globals": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.RegisterGlobals;
 				case "register_long_arrays": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.RegisterLongArrays;
@@ -300,9 +300,9 @@ namespace PHP.Library
 			ow.WriteOption("register_argc_argv", "RegisterArgcArgv", true, global.GlobalVariables.RegisterArgcArgv);
 			ow.WriteOption("register_long_arrays", "RegisterLongArrays", true, global.GlobalVariables.RegisterLongArrays);
 			ow.WriteOption("variables_order", "RegisteringOrder", "EGPCS", local.Variables.RegisteringOrder);
-			ow.WriteOption("magic_quotes_gpc", "QuoteGpcVariables", true, global.GlobalVariables.QuoteGpcVariables);
+			//ow.WriteOption("magic_quotes_gpc", "QuoteGpcVariables", true, global.GlobalVariables.QuoteGpcVariables);
 			ow.WriteOption("magic_quotes_runtime", "QuoteRuntimeVariables", false, local.Variables.QuoteRuntimeVariables);
-			ow.WriteOption("magic_quotes_sybase", "QuoteInDbManner", false, local.Variables.QuoteInDbManner);
+			//ow.WriteOption("magic_quotes_sybase", "QuoteInDbManner", false, local.Variables.QuoteInDbManner);
 			ow.WriteOption("unserialize_callback_func", "DeserializationCallback", null, local.Variables.DeserializationCallback);
 
 			ow.StartSection("output-control");
@@ -789,7 +789,7 @@ namespace PHP.Library
 		[ImplementsFunction("get_magic_quotes_gpc")]
 		public static bool GetMagicQuotesGPC()
 		{
-			return Configuration.Global.GlobalVariables.QuoteGpcVariables;
+            return Configuration.Global.GlobalVariables.QuoteGpcVariables;
 		}
 
 		/// <summary>

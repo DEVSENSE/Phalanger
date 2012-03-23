@@ -405,7 +405,7 @@ namespace PHP.Core
 			/// <summary>
 			/// Whether to quote values in Sybase DB manner, i.e. using '' instead of \'.
 			/// </summary>
-			public bool QuoteInDbManner = false;
+			public readonly bool QuoteInDbManner = false;
 
 			/// <summary>
 			/// User callback called on failed serialization. Can be empty.
@@ -995,10 +995,10 @@ namespace PHP.Core
 			/// </summary>
 			public bool RegisterLongArrays = false;
 
-			/// <summary>
-			/// Whether to quote GET/POST/Cookie variables' values when they are added to respective global arrays.
-			/// </summary>
-			public bool QuoteGpcVariables = false;
+            /// <summary>
+            /// Whether to quote GET/POST/Cookie variables' values when they are added to respective global arrays.
+            /// </summary>
+            public readonly bool QuoteGpcVariables = false;
 
 			internal GlobalVariablesSection DeepCopy()
 			{
