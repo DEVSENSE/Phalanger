@@ -452,7 +452,9 @@ namespace PHP
 			tsrm_update_native_tls(Request::GetThreadStorage());
 
 			// skip earlyInit collocated extensions if running under IIS
-			if (StartupHelper::IsCollocated && descriptor->EarlyInit)					
+			if (
+				//StartupHelper::IsCollocated &&
+				descriptor->EarlyInit)					
 			{
 				RequestContext ^req_context = RequestContext::CurrentContext;
 				if (req_context != nullptr) return false;
@@ -472,8 +474,8 @@ namespace PHP
 			#ifdef DEBUG
 						Debug::WriteLine("EXT SUP", System::String::Format("Loading failed ({0})", e->ToString()));
 			#endif
-						StartupHelper::StartupErrors->Add(ExtResources::GetString("error_during_extension_loading",
-							descriptor->FileName, e->Message));
+						StartupHelper::StartupErrors->Add(/*ExtResources::GetString("error_during_extension_loading",
+							descriptor->FileName, e->Message)*/e->StackTrace);
 					}
 					return true;
 				}
@@ -870,19 +872,19 @@ namespace PHP
 			}
 			else
 			{
-				RequestCookie ^cookie = Request::GetCurrentRequest()->GetCookie();
-
-				if (cookie != nullptr)
-				{
-					// extensions are isolated
-#ifdef DEBUG
-					Debug::WriteLine("EXT SUP", "managed_zend_error: about to call back RequestCookie::ExceptionCallback");
-#endif
-
-					// call core to handle the error (output the message etc.)
-					cookie->ExceptionCallback(errType, message);
-				}
-				else
+//				RequestCookie ^cookie = Request::GetCurrentRequest()->GetCookie();
+//
+//				if (cookie != nullptr)
+//				{
+//					// extensions are isolated
+//#ifdef DEBUG
+//					Debug::WriteLine("EXT SUP", "managed_zend_error: about to call back RequestCookie::ExceptionCallback");
+//#endif
+//
+//					// call core to handle the error (output the message etc.)
+//					cookie->ExceptionCallback(errType, message);
+//				}
+//				else
 				{
 					// extensions are collocated
 #ifdef DEBUG

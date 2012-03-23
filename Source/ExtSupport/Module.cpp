@@ -1446,8 +1446,11 @@ namespace PHP
 				// load the dynamic library, search dependencies in the ExtNatives directory:
 				hLib = LoadLibraryEx(file_path, IntPtr::Zero, LOAD_WITH_ALTERED_SEARCH_PATH);
 				
-				if (hLib == NULL) throw gcnew CouldNotLoadExtensionException(fileName,
-					ShmNative::GetErrorString(Marshal::GetLastWin32Error()));
+				if (hLib == NULL)
+				{
+					System::ComponentModel::Win32Exception ^ex = gcnew System::ComponentModel::Win32Exception();
+					throw gcnew CouldNotLoadExtensionException(fileName, ex->Message);
+				}
 				
 				// get get_module
 				GetModuleProto get_module = (GetModuleProto)GetProcAddress(hLib, "get_module");

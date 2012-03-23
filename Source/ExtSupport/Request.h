@@ -162,10 +162,10 @@ namespace PHP
 			virtual Object ^InitializeLifetimeService() override
 			{
 				ILease ^lease = static_cast<ILease ^>(MarshalByRefObject::InitializeLifetimeService());
-#pragma warning (push)
-#pragma warning (disable: 4538)
-				if (cookie != nullptr) lease->Register(cookie);
-#pragma warning (pop)
+//#pragma warning (push)
+//#pragma warning (disable: 4538)
+//				if (cookie != nullptr) lease->Register(cookie);
+//#pragma warning (pop)
 				return lease;
 			}
 
@@ -208,7 +208,7 @@ namespace PHP
 				}
 			}
 
-			/// <summary>
+			/*/// <summary>
 			/// Read-only access to the request cookie.
 			/// </summary>
 			/// <remarks>
@@ -218,7 +218,7 @@ namespace PHP
 			PHP::Core::RequestCookie ^GetCookie()
 			{
 				return cookie;
-			}
+			}*/
 
 			/// <summary>
 			/// Information about the current function/method invocation.
@@ -321,12 +321,12 @@ namespace PHP
 			/// </summary>
 			Hashtable ^lifetimeBoundMBRs;
 
-			/// <summary>
+			/*/// <summary>
 			/// Reference to the <c>RequestCookie</c> associated with this request. This cookie lives\
 			/// on the client side. One of its purposes is to terminate the request when the client thread dies.
 			/// It also provides an empty <c>Ping</c> method which is (remotely) called to make sure that the client
 			/// thread is still alive. See <see cref="MarshalByRefObject"/>, <see cref="ILease"/>, <see cref="ISponsor"/>.
-			PHP::Core::RequestCookie ^cookie;
+			PHP::Core::RequestCookie ^cookie;*/
 
 			/// <summary>Unique logical thread ID (used by the Zend TSRM).</summary>
 			DWORD logicalThreadId;

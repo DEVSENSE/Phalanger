@@ -124,7 +124,7 @@ RemoteDispatcher ^StartupHelper::Collocate()
 {
 	if (singleton == nullptr) singleton = gcnew StartupHelper();
 
-	IsCollocated = true;
+	//IsCollocated = true;
 
 #if defined(PHP4TS)
 	Request::RequestThreadSlotName = "LocalExtManRequest4";

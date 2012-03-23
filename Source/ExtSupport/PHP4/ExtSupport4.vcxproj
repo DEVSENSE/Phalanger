@@ -288,9 +288,6 @@ xcopy /q /y "$(TargetPath)" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
     <ProjectReference Include="..\..\Core\Core.csproj">
       <Project>{9a2867a2-981c-4b5a-a1c5-eaccc80b5148}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\ShmChannel\ShmChannel.csproj">
-      <Project>{0d5b7bfc-1236-4d9d-ac17-4a5c0964c1a2}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

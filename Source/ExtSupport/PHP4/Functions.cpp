@@ -156,13 +156,13 @@ ZEND_API int zend_call_function(zend_fcall_info *fci, zend_fcall_info_cache *fci
 
 	Object ^ret_val;
 
-	RequestCookie ^cookie = request->GetCookie();
-	if (cookie != nullptr)
-	{
-		// second arg passed by ref!
-		ret_val = cookie->CallFunction(callback, mng_args);
-	}
-	else
+	//RequestCookie ^cookie = request->GetCookie();
+	//if (cookie != nullptr)
+	//{
+	//	// second arg passed by ref!
+	//	ret_val = cookie->CallFunction(callback, mng_args);
+	//}
+	//else
 	{
 		ret_val = RequestCookie::CallFunctionDirect(callback, mng_args);
 	}

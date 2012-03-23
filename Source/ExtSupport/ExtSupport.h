@@ -146,10 +146,10 @@ namespace PHP
 			/// interface.</returns>
 			static RemoteDispatcher ^Collocate();
 
-			///<summary>
+			/*///<summary>
 			/// <B>true</B> if this <c>ExtManager</c> is collocated with <c>Core</c>, <B>false</B> otherwise.
 			///</summary>
-			static bool IsCollocated = false;
+			static bool IsCollocated = false;*/
 
 			/// <summary>
 			/// List of <see cref="String"/>s - errors that occurred during <see cref="LoadExtensions"/>.

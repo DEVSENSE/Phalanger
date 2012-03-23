@@ -59,22 +59,22 @@ namespace PHP
 				request->Terminate();
 			}
 
-			// if we are not collocated, obtain current RequestCookie
-			if (StartupHelper::IsCollocated == false)
-			{
-				cookie = RequestCookie::GetCurrentThreadCookie();
-				if (cookie == nullptr)
-				{
-					throw gcnew InvalidOperationException(ExtResources::GetString("thread_not_associated_with_cookie"));
-				}
-				else
-				{
-					// set the method to be called when the client side knows for sure that there
-					// will not be more external function calls on behalf of this request
-					cookie->Terminator = static_cast<IRequestTerminator ^>(this);
-				}
-			}
-			else
+			//// if we are not collocated, obtain current RequestCookie
+			//if (StartupHelper::IsCollocated == false)
+			//{
+			//	cookie = RequestCookie::GetCurrentThreadCookie();
+			//	if (cookie == nullptr)
+			//	{
+			//		throw gcnew InvalidOperationException(ExtResources::GetString("thread_not_associated_with_cookie"));
+			//	}
+			//	else
+			//	{
+			//		// set the method to be called when the client side knows for sure that there
+			//		// will not be more external function calls on behalf of this request
+			//		cookie->Terminator = static_cast<IRequestTerminator ^>(this);
+			//	}
+			//}
+			//else
 			{
 				// if we are collocated reference the config directly
 				AppConfig = PHP::Core::Configuration::Application;
