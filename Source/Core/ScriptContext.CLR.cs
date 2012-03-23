@@ -235,7 +235,7 @@ namespace PHP.Core
             // Thease constants are here, because they are environment dependent
             // When the code is compiled and assembly is run on another platforms they could be different
 
-            _constants.Add("PHALANGER", Assembly.GetExecutingAssembly().GetName().Version.ToString(), false);
+            _constants.Add("PHALANGER", PhalangerVersion.Current, false);
             _constants.Add("PHP_VERSION", PhpVersion.Current, false);
             _constants.Add("PHP_OS", Environment.OSVersion.Platform == PlatformID.Win32NT ? "WINNT" : "WIN32", false); // TODO: GENERICS (Unix)
             _constants.Add("DIRECTORY_SEPARATOR", FullPath.DirectorySeparatorString, false);

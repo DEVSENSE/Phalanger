@@ -99,6 +99,13 @@ namespace PHP.Library
                 }
             }
 
+            // special constants defined in runtime, but definitely defined:
+            if (name == "PHALANGER")
+            {
+                exists = true;
+                return null;
+            }
+
             // do not evaluate in compile time
             exists = null;   // we are not sure about existance of this constant.
             return null;
