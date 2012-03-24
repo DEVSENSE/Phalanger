@@ -77,20 +77,11 @@ namespace PHP.Library
 			/// <summary>
 			/// The default value of "From" header.
 			/// </summary>
-			public string DefaultFromHeader;
+			public string DefaultFromHeader = null;
 
             public MailerSection()
             {
-                DefaultFromHeader = String.Concat(Environment.UserName, "@", Environment.UserDomainName);
-
-                try
-                {
-                    MailAddress address = new MailAddress(DefaultFromHeader);
-                }
-                catch
-                {
-                    DefaultFromHeader = "me@myserver.com";
-                }
+                
             }
 
 			internal MailerSection DeepCopy()
@@ -103,7 +94,19 @@ namespace PHP.Library
 				switch (name)
 				{
 					case "DefaultFromHeader":
-						DefaultFromHeader = value;
+                        try
+                        {
+                            // check the mail address:
+                            MailAddress address = new MailAddress(value);
+
+                            // remember the value only if the address is valid:
+                            DefaultFromHeader = value;
+                        }
+                        catch
+                        {
+                            // an invalid mail address provided:
+                            throw new ConfigUtils.InvalidAttributeValueException(node, "value");
+                        }
 						break;
 
 					case "SmtpServer":

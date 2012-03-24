@@ -600,4 +600,7 @@
   <data name="option_missing" xml:space="preserve">
     <value>'{0}' option missing</value>
   </data>
+  <data name="smtp_sendmail_from_not_set" xml:space="preserve">
+    <value>From header was not specified.</value>
+  </data>
 </root>
