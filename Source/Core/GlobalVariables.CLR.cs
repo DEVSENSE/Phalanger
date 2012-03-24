@@ -260,12 +260,9 @@ namespace PHP.Core
         /// <summary>
         /// Returns <see cref="HttpUtility.UrlDecode"/>  of <paramref name="value"/> if it is a string.
         /// </summary>
-        private static object UrlDecodeValue(object value)
+        private static string UrlDecodeValue(string value)
         {
-            if (value != null && value.GetType() == typeof(string))
-                return HttpUtility.UrlDecode((string)value, Configuration.Application.Globalization.PageEncoding);
-
-            return value;
+            return HttpUtility.UrlDecode(value, Configuration.Application.Globalization.PageEncoding);
         }
 
         //private static object GpcEncodeValue(object value, LocalConfiguration config)
@@ -591,16 +588,19 @@ namespace PHP.Core
 		public static void InitializeCookieVariables(LocalConfiguration/*!*/ config, HttpRequest request,
 		  out PhpArray cookieArray)
 		{
-			if (config == null)
-				throw new ArgumentNullException("config");
+            Debug.Assert(config != null);
 
 			if (request != null)
 			{
-				cookieArray = new PhpArray(0, request.Cookies.Count);
+                var cookies = request.Cookies;
+                Debug.Assert(cookies != null, "cookies == null");
 
-				foreach (string cookie_name in request.Cookies)
-				{
-					HttpCookie cookie = request.Cookies[cookie_name];
+                int count = cookies.Count;
+				cookieArray = new PhpArray(0, count);
+
+                for (int i = 0; i < count; i++)
+                {
+                    HttpCookie cookie = cookies.Get(i);
 					AddVariable(cookieArray, cookie.Name, UrlDecodeValue(cookie.Value), null);
 
 					// adds a copy of cookie with the same key as the session name;
@@ -630,7 +630,7 @@ namespace PHP.Core
 				// adds items from GET, POST, COOKIE arrays in the order specified by RegisteringOrder config option:
 				for (int i = 0; i < gpcOrder.Length; i++)
 				{
-					switch (Char.ToUpper(gpcOrder[i]))
+					switch (Char.ToUpperInvariant(gpcOrder[i]))
 					{
 						case 'G': AddVariables(requestArray, getArray); break;
 						case 'P': AddVariables(requestArray, postArray); break;
