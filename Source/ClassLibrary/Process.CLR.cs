@@ -271,6 +271,7 @@ namespace PHP.Library
 			process.StartInfo.FileName = (Environment.OSVersion.Platform != PlatformID.Win32Windows) ? "cmd.exe" : "command.com";
 			process.StartInfo.Arguments = "/c " + command;
 			process.StartInfo.UseShellExecute = false;
+            process.StartInfo.WorkingDirectory = ScriptContext.CurrentContext.WorkingDirectory;
 
 			return process;
 		}
