@@ -1820,10 +1820,10 @@ namespace PHP.Library
 		/// comparison methods to be used. See PHP manual for more details.</param>
 		/// <returns>Whether arrays were sorted successfully.</returns>
 		/// <remarks>Reindexes integer keys in the sorted arrays and restarts their intrinsic enumerators.</remarks>
-		/// <exception cref="PhpReference"><paramref name="first"/> is a <B>null</B> reference (Warning).</exception>
-		/// <exception cref="PhpReference">Arrays has different lengths (Warning).</exception>
-		/// <exception cref="PhpReference">Invalid sorting flags (Warning).</exception>
-		/// <exception cref="PhpReference">Multiple sorting flags applied on single array (Warning).</exception>
+		/// <exception cref="PhpException"><paramref name="first"/> is a <B>null</B> reference (Warning).</exception>
+        /// <exception cref="PhpException">Arrays has different lengths (Warning).</exception>
+        /// <exception cref="PhpException">Invalid sorting flags (Warning).</exception>
+        /// <exception cref="PhpException">Multiple sorting flags applied on single array (Warning).</exception>
 		[ImplementsFunction("array_multisort")]
 		public static bool MultiSort([PhpRw] PhpArray first, params object[] args)
 		{
