@@ -138,13 +138,11 @@ namespace PHP.Core
 						break;
 
 					case "ContentType":
-						if (HttpContext.Current != null)
-							HttpContext.Current.Response.ContentType = value;
+                        this.contentType = (value != "") ? value : null;
 						break;
 
 					case "Charset":
-						if (HttpContext.Current != null)
-							HttpContext.Current.Response.Charset = value;
+						this.charSet = (value != "") ? value : null;
 						break;
 
 					default:

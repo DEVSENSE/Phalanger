@@ -67,6 +67,8 @@ namespace PHP.Core
 			result.IsOutputBuffered = config.OutputControl.OutputBuffering;
 			result.ThrowExceptionOnError = true;
 			result.WorkingDirectory = Path.GetDirectoryName(context.Request.PhysicalPath);
+            if (config.OutputControl.ContentType != null) context.Response.ContentType = config.OutputControl.ContentType;
+            if (config.OutputControl.CharSet != null) context.Response.Charset = config.OutputControl.CharSet;
 
 			result.AutoGlobals.Initialize(config, context);
 
