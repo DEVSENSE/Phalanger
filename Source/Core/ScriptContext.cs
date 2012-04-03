@@ -448,6 +448,11 @@ namespace PHP.Core
 		public ScriptContext(ApplicationContext/*!*/ appContext)
 			: this(appContext, (LocalConfiguration)Configuration.DefaultLocal.DeepCopy(), TextWriter.Null, Stream.Null)
 		{
+#if !SILVERLIGHT
+            this.workingDirectory = Directory.GetCurrentDirectory();
+#else
+			this.workingDirectory = "";
+#endif
 		}
 
 		/// <summary>
@@ -480,11 +485,7 @@ namespace PHP.Core
 
 			// initializes output redirecting fields:
 			this.IsOutputBuffered = false;
-#if !SILVERLIGHT
-			this.workingDirectory = Directory.GetCurrentDirectory();
-#else
-			this.workingDirectory = "";
-#endif
+
 
 			this.applicationContext = appContext;
 		}
@@ -939,7 +940,8 @@ namespace PHP.Core
             }
             catch (ArgumentException)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("function_redeclared", fullName));
+                if (!IsFunctionDeclared(function))  // since PHP 5.3 redeclaration is ok for the exact same function ?
+                    PhpException.Throw(PhpError.Error, CoreResources.GetString("function_redeclared", fullName));
             }
 		}
 
