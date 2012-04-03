@@ -75,7 +75,8 @@ namespace PHP.Core.AST
 			else
 			{
 				// value is not known yet, try to resolve it:
-				known_const.Node.Analyze(analyzer);
+                if (known_const.Node != null)
+				    known_const.Node.Analyze(analyzer);
 
 				return (known_const.HasValue) ? new Evaluation(this, known_const.Value) : new Evaluation(this);
 			}
