@@ -25,7 +25,6 @@
     <paths>
       <set name="DynamicWrappers" value="{$TARGETDIR}\Dynamic" />
       <set name="Libraries" value="{$TARGETDIR}\Bin" />
-      <set name="ExtManager" value="{$TARGETDIR}\Bin" />
       <set name="ExtWrappers" value="{$TARGETDIR}\Wrappers" />
       <set name="ExtTypeDefs" value="{$TARGETDIR}\TypeDefs" />
       <set name="ExtNatives" value="{$TARGETDIR}\Extensions" />
