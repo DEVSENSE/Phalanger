@@ -603,4 +603,7 @@
   <data name="smtp_sendmail_from_not_set" xml:space="preserve">
     <value>From header was not specified.</value>
   </data>
+  <data name="aspnet_sessionhandler_id_reset" xml:space="preserve">
+    <value>By changing ASP.NET session ID, all the session data created during this request will be lost. New session will start in the next request.</value>
+  </data>
 </root>

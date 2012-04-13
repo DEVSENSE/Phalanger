@@ -420,12 +420,12 @@ namespace PHP.Core
 		/// Ensures that Session ID is set, so calls to Flush() don't cause issues
 		/// (if flush() is called, session ID can't be set because cookie can't be created).
 		/// </summary>
-        internal static void EnsureSessionId(HttpContext/*!*/ httpContext)
+        private void EnsureSessionId()
 		{
             Debug.Assert(httpContext != null);
             if (httpContext.Session != null && httpContext.Session.IsNewSession && httpContext.Session.Count == 0)
             {
-                httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
+                //httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
 
                 // Ensure the internal method SessionStateModule.DelayedGetSessionId() is called now,
                 // not after the request is processed if no one uses SessionId during the request.
@@ -440,7 +440,7 @@ namespace PHP.Core
         /// Adds/update a SID global PHP constant.
         /// </summary>
         /// <remarks>The constant is non-empty only for cookie-less sessions.</remarks>
-        public static void UpdateSID(ScriptContext scriptContext, HttpContext httpContext)
+        public void UpdateSID()
         {
             Debug.Assert(httpContext.Session != null);
 
@@ -470,8 +470,10 @@ namespace PHP.Core
 			if (disposed || sessionState != SessionStates.Closed) return;
 			sessionState = SessionStates.Starting;
 
-			if (httpContext.Session == null)
+            if (httpContext.Session == null)
 				throw new SessionException(CoreResources.GetString("session_state_unavailable"));
+
+            EnsureSessionId();
 
 			GlobalConfiguration global = Configuration.Global;
 			PhpArray variables = null;
@@ -495,7 +497,7 @@ namespace PHP.Core
 				scriptContext.RegisterSessionGlobals();
 
 			// adds a SID constant:
-            UpdateSID(scriptContext, httpContext);
+            UpdateSID();
 
 			sessionState = SessionStates.Started;
 		}

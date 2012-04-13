@@ -2082,10 +2082,10 @@ namespace PHP.Core
         }
 
         /// <summary>
-        /// Concats two arrays of bytes.
+        /// Concats two arrays of <typeparamref name="T"/>.
         /// </summary>
-        /// <param name="x">The first array of bytes to be concatenated.</param>
-        /// <param name="y">The second array of bytes to be concatenated.</param>
+        /// <param name="x">The first array of <typeparamref name="T"/> to be concatenated.</param>
+        /// <param name="y">The second array of <typeparamref name="T"/> to be concatenated.</param>
         /// <returns>The concatenation of <paramref name="x"/> and <paramref name="y"/>.</returns>
         public static T[]/*!*/ Concat<T>(T[]/*!*/ x, T[]/*!*/ y)
         {
@@ -2096,6 +2096,29 @@ namespace PHP.Core
 
             Array.Copy(x, 0, result, 0, x.Length);
             Array.Copy(y, 0, result, x.Length, y.Length);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Concats array of <typeparamref name="T"/> with single <typeparamref name="T"/> element.
+        /// </summary>
+        /// <param name="x">The array of <typeparamref name="T"/> to be concatenated.</param>
+        /// <param name="y">The element of <typeparamref name="T"/> to be appended.</param>
+        /// <returns>The concatenation of <paramref name="x"/> and <paramref name="y"/>.</returns>
+        public static T[]/*!*/ Concat<T>(T[] x, T y)
+        {
+            if (x == null || x.Length == 0)
+                return new T[] { y };
+
+            if (x.Length == 1)
+                return new T[] { x[0], y }; 
+
+            //
+            T[] result = new T[x.Length + 1];
+
+            Array.Copy(x, 0, result, 0, x.Length);
+            result[x.Length] = y;
 
             return result;
         }

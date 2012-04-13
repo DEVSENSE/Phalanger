@@ -86,13 +86,13 @@ namespace PHP.Library
 
             protected override void OnTagAttribute(string tagName, ref string attributeName, ref string attributeValue, ref char attributeValueQuote)
             {
-                List<string> attrs;
+                string[] attrs;
 
                 if (ScriptContext.CurrentContext.Config.Session.UrlRewriterTags.TryGetValue(tagName.ToLower(), out attrs))
                 {
-                    foreach ( string att in attrs )
+                    for (int i = 0; i < attrs.Length; i++)
                     {
-                        if (att == attributeName.ToLower())
+                        if (string.Equals(attrs[i], attributeName, StringComparison.InvariantCultureIgnoreCase))
                         {
                             if (protocolPattern.IsMatch(attributeValue))
                                 return; // the URL must NOT be an absolute URL (not start with the protocol name)

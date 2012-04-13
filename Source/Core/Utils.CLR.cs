@@ -204,9 +204,7 @@ namespace PHP.Core
 				{
 					string name = MandatoryAttribute(child, "name");
 					string allow_override = OptionalAttribute(child, "allowOverride");
-					string value = OptionalAttribute(child, "value");
-
-					if (value == null) value = "";
+					string/*!*/value = OptionalAttribute(child, "value") ?? string.Empty;
 
 					// checks for sealed nodes:
 					if (context != null)
@@ -222,7 +220,7 @@ namespace PHP.Core
 					}
 
 					// processes the option:                             					
-					if ((section1 == null || !section1.Parse(name, value, child)) &&
+					if ((/*section1 == null ||*/ !section1.Parse(name, value, child)) &&
 						(section2 == null || !section2.Parse(name, value, child)) &&
 						(section3 == null || !section3.Parse(name, value, child)))
 						throw new InvalidAttributeValueException(child, "name");

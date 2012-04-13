@@ -18,7 +18,6 @@ using System.Runtime.Remoting.Messaging;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Collections.Generic;
 
 namespace PHP.Core
@@ -256,14 +255,14 @@ namespace PHP.Core
 		/// <summary>
 		/// Registered handlers.
 		/// </summary>
-		private static ListDictionary handlers; // <string,IPhpSessionHandler>
+        private static Dictionary<string, SessionHandler>/*!!*/handlers;
 
 		/// <summary>
 		/// Initializes static list of handlers to contain an ASP.NET handler.
 		/// </summary>
 		static SessionHandlers()
 		{
-			handlers = new ListDictionary();
+            handlers = new Dictionary<string, SessionHandler>(3);
 			RegisterHandler(AspNetSessionHandler.Default);
 		}
 
@@ -278,9 +277,9 @@ namespace PHP.Core
 			if (handler == null) throw new ArgumentNullException("handler");
 			if (handler.Name == null) return false;
 
-			lock (handlers.SyncRoot)
+			lock (handlers)
 			{
-				if (handlers.Contains(handler.Name))
+				if (handlers.ContainsKey(handler.Name))
 					return false;
 
 				handlers.Add(handler.Name, handler);
@@ -299,10 +298,11 @@ namespace PHP.Core
 		{
 			if (name == null) throw new ArgumentNullException("name");
 
-			lock (handlers.SyncRoot)
-			{
-				return (SessionHandler)handlers[name];
-			}
+			SessionHandler value;
+            lock (handlers)
+                handlers.TryGetValue(name, out value);
+
+            return value;
 		}
 	}
 
