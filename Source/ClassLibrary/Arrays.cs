@@ -2701,7 +2701,7 @@ namespace PHP.Library
         }
 
         /// <summary>
-		/// Removes duplicate values from an array. Not supported.
+		/// Removes duplicate values from an array.
 		/// </summary>
 		/// <param name="array">The array which duplicate values to remove.</param>
 		/// <returns>A copy of <paramref name="array"/> without duplicated values.</returns>
@@ -2717,7 +2717,7 @@ namespace PHP.Library
         }
 
 		/// <summary>
-		/// Removes duplicate values from an array. Not supported.
+		/// Removes duplicate values from an array.
 		/// </summary>
 		/// <param name="array">The array which duplicate values to remove.</param>
         /// <param name="sortFlags">Specifies how the values are compared to be identical.</param>
