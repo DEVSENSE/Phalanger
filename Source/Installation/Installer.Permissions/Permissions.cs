@@ -49,7 +49,8 @@ namespace MachineConfig
         /// <param name="folder">Phalanger install folder.</param>
         private static void SetEveryonePermission(string folder)
         {
-            FileSystemAccessRule everyOne = new FileSystemAccessRule("Everyone", FileSystemRights.FullControl | FileSystemRights.Write | FileSystemRights.Read, AccessControlType.Allow);
+            var everyonesid = new System.Security.Principal.SecurityIdentifier(System.Security.Principal.WellKnownSidType.WorldSid, null);
+            FileSystemAccessRule everyOne = new FileSystemAccessRule(everyonesid, FileSystemRights.FullControl | FileSystemRights.Write | FileSystemRights.Read, AccessControlType.Allow);
             DirectorySecurity dirSecurity = new DirectorySecurity(folder, AccessControlSections.Group);
             dirSecurity.AddAccessRule(everyOne);
             Directory.SetAccessControl(folder, dirSecurity);
