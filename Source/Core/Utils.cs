@@ -1176,10 +1176,8 @@ namespace PHP.Core
         /// <returns>True iff two given strings are equals when using <see cref="StringComparison.OrdinalIgnoreCase"/>.</returns>
         public static bool EqualsOrdinalIgnoreCase(this string self, string str)
         {
-            return 0 == string.Compare(self, str, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(self, str, StringComparison.OrdinalIgnoreCase);
         }
-
-
     }
 
     #endregion
