@@ -99,7 +99,7 @@ namespace HtmlAgilityPack
             //ElementsFlags.Add("spacer", HtmlElementFlag.Empty);
             //ElementsFlags.Add("keygen", HtmlElementFlag.Empty);
             //ElementsFlags.Add("area", HtmlElementFlag.Empty);
-            //ElementsFlags.Add("input", HtmlElementFlag.Empty);
+            ElementsFlags.Add("input", HtmlElementFlag.Empty);
             //ElementsFlags.Add("basefont", HtmlElementFlag.Empty);
 
             //ElementsFlags.Add("form", HtmlElementFlag.CanOverlap);// | HtmlElementFlag.Empty);
