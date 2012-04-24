@@ -234,8 +234,13 @@ namespace PHP.Core.AST
 	public sealed class IndirectTypeRef : TypeRef
 	{
 		public override DType ResolvedType { get { return null; } }
-		private VariableUse/*!*/ classNameVar;
 
+        /// <summary>
+        /// <see cref="VariableUse"/> which value in runtime contains the name of the type.
+        /// </summary>
+        public VariableUse/*!*/ ClassNameVar { get { return this.classNameVar; } }
+        private readonly VariableUse/*!*/ classNameVar;
+        
 		public IndirectTypeRef(Position position, VariableUse/*!*/ classNameVar, List<TypeRef>/*!*/ genericParams)
 			: base(position, genericParams)
 		{
