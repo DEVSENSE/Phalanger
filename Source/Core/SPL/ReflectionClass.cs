@@ -17,6 +17,153 @@ using System.Diagnostics;
 using System.Reflection;
 
 using PHP.Core;
+using PHP.Core.Reflection;
+
+namespace PHP.Library.SPL
+{
+
+    [Serializable]
+    [ImplementsType]
+    public class ReflectionClass : PhpObject, Reflector
+    {
+        /// <summary>
+        /// Resolved <see cref="DTypeDesc"/> of reflected type.
+        /// </summary>
+        protected DTypeDesc typedesc;
+
+        #region Constructor
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public ReflectionClass(ScriptContext/*!*/context, bool newInstance)
+            : base(context, newInstance)
+        { }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public ReflectionClass(ScriptContext/*!*/context, DTypeDesc caller)
+            : base(context, caller)
+        { }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object __construct(object instance, PhpStack stack)
+        {
+            object argument = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).__construct(stack.Context, argument);
+        }
+
+        [ImplementsMethod]
+        public object __construct(ScriptContext context, object arg)
+        {
+            DObject dobj;
+
+            if ((dobj = arg as DObject) != null)
+            {
+                typedesc = dobj.TypeDesc;
+            }
+            else
+            {
+                // namespaces are ignored in runtime
+                // any value except DObject is converted to string
+                typedesc = ResolveType(context, PHP.Core.Convert.ObjectToString(arg));
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Resolves the <paramref name="typeName"/> and provides corresponding <see cref="DTypeDesc"/> or <c>null</c> reference.
+        /// </summary>
+        private static DTypeDesc ResolveType(ScriptContext/*!*/context, string typeName)
+        {
+            return context.ResolveType(typeName, null, null, null, ResolveTypeFlags.ThrowErrors | ResolveTypeFlags.UseAutoload);
+        }
+
+        #endregion
+
+        #region ReflectionClass
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object newInstance(object instance, PhpStack stack)
+        {
+            // call newInstance, keep arguments on stack:
+            return ((ReflectionClass)instance).newInstance(stack.Context);
+        }
+
+        [ImplementsMethod]
+        [NeedsArgless]
+        public object newInstance(ScriptContext/*!*/context)
+        {
+            if (this.typedesc == null)
+            {
+                context.Stack.RemoveFrame();
+                return null;
+            }
+
+            // preserve arguments on stack for New
+            // ...
+            
+            // instantiate the object, checks whether typedesc is an abstract type:
+            return Operators.New(typedesc, null, context, null);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object newInstanceArgs(object instance, PhpStack stack)
+        {
+            object args = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).newInstanceArgs(stack.Context, args);
+        }
+
+        [ImplementsMethod]
+        public object newInstanceArgs(ScriptContext/*!*/context, object arg)
+        {
+            if (this.typedesc == null)
+                return null;
+
+            // push arguments onto the stack:
+            var array = PhpArray.AsPhpArray(arg);
+            
+            if (array != null)
+            {
+                var args = new object[array.Count];
+                array.CopyValuesTo(args, 0);
+                context.Stack.AddFrame(args);
+            }
+            else
+            {
+                PhpException.InvalidArgumentType("arg", PhpArray.PhpTypeName);
+                return null;
+            }
+
+            //
+            return Operators.New(typedesc, null, context, null);
+        }
+
+        #endregion
+
+        #region Reflector
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object __toString(object instance, PhpStack stack)
+        {
+            return ((ReflectionClass)instance).__toString(stack.Context);
+        }
+
+        [ImplementsMethod]
+        public object __toString(ScriptContext/*!*/context)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+    }
+
+}
 
 /*
 namespace PHP.Library.SPL
