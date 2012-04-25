@@ -75,28 +75,28 @@ namespace PHP.Core.Reflection
 
 		#region Error-throwing setters and getters
 
-		private void EventSetter(object instance, object value)
-		{
-			PhpException.Throw(PhpError.Error,
-				CoreResources.GetString("event_written",
-				DeclaringType.MakeFullName(), MakeFullName()));
-		}
+        private void EventSetter(object instance, object value)
+        {
+            PhpException.Throw(
+                PhpError.Error,
+                string.Format(CoreResources.event_written, DeclaringType.MakeFullName(), MakeFullName()));
+        }
 
-		private void MissingSetter(object instance, object value)
-		{
-			PhpException.Throw(PhpError.Error,
-				CoreResources.GetString("readonly_property_written",
-				DeclaringType.MakeFullName(), MakeFullName()));
-		}
+        private void MissingSetter(object instance, object value)
+        {
+            PhpException.Throw(
+                PhpError.Error,
+                string.Format(CoreResources.readonly_property_written, DeclaringType.MakeFullName(), MakeFullName()));
+        }
 
-		private object MissingGetter(object instance)
-		{
-			PhpException.Throw(PhpError.Error,
-				CoreResources.GetString("writeonly_property_read",
-				DeclaringType.MakeFullName(), MakeFullName()));
+        private object MissingGetter(object instance)
+        {
+            PhpException.Throw(
+                PhpError.Error,
+                string.Format(CoreResources.writeonly_property_read, DeclaringType.MakeFullName(), MakeFullName()));
 
-			return null;
-		}
+            return null;
+        }
 
 		#endregion
 
@@ -1324,7 +1324,7 @@ namespace PHP.Core.Reflection
             {
                 il.Emit(OpCodes.Ldstr, declaringType.Name);
                 il.Emit(OpCodes.Ldstr, "set_" + propertyInfo.Name);
-                il.Emit(OpCodes.Call, Methods.PhpException.UndefinedMethodCalled);
+                il.Emit(OpCodes.Call, Methods.PhpException.UndefinedMethodCalled);  // CoreResources.readonly_property_written
                 
                 il.Emit(OpCodes.Ret);
                 return;

@@ -640,7 +640,7 @@ Stack trace:
   <data name="serialize_must_return_null_or_string" xml:space="preserve">
     <value>{0}::serialize() must return a string or NULL</value>
   </data>
-  <data name="(related_location)" xml:space="preserve">
+  <data name="__related_location" xml:space="preserve">
     <value>(related location)</value>
   </data>
   <data name="invalid_header" xml:space="preserve">
@@ -686,7 +686,7 @@ Stack trace:
     <value>Cannot access private property {0}::${1} from context '{2}'</value>
   </data>
   <data name="readonly_property_written" xml:space="preserve">
-    <value>Cannot write to read-only property {0}::${1}</value>
+    <value>Cannot set read-only property {0}::${1}</value>
   </data>
   <data name="writeonly_property_read" xml:space="preserve">
     <value>Cannot read from write-only property {0}::${1}</value>
@@ -976,7 +976,7 @@ Stack trace:
   <data name="incompatible_type_parameter_constraints_method" xml:space="preserve">
     <value>Class/interface '{0}' is incompatible with the constraints imposed on the generic type argument #{1} ('{2}') by method '{3}'</value>
   </data>
-  <data name="operator[]_used_for_reading" xml:space="preserve">
+  <data name="operator_array_access_used_for_reading" xml:space="preserve">
     <value>Cannot use [] for reading</value>
   </data>
   <data name="integer_key_reached_max_value" xml:space="preserve">
@@ -2064,5 +2064,14 @@ non-infringement.
   </data>
   <data name="isolated_extensions_unsupported" xml:space="preserve">
     <value>Isolated extensions are not supported anymore.</value>
+  </data>
+  <data name="spl_index_invalid" xml:space="preserve">
+    <value>Index invalid or out of range</value>
+  </data>
+  <data name="spl_empty_iterator_key_access" xml:space="preserve">
+    <value>Accessing the key of an EmptyIterator</value>
+  </data>
+  <data name="spl_empty_iterator_value_access" xml:space="preserve">
+    <value>Accessing the value of an EmptyIterator</value>
   </data>
 </root>

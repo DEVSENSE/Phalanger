@@ -576,7 +576,7 @@ namespace PHP.Core
 
 		#endregion
 
-		#region Error handling stuff
+        #region Error handling stuff
 
         /// <summary>
         /// Delegate used to catch any thrown PHP exception. Used in compile time to catch PHP runtime exceptions.

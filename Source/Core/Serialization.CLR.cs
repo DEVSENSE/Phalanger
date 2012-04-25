@@ -568,11 +568,10 @@ namespace PHP.Core
 				if (res_str == null)
 				{
 					// serialize did not return NULL nor a string -> throw an exception
-					Library.SPL.Exception e = new Library.SPL.Exception(context.ScriptContext, true);
-					e.__construct(context.ScriptContext, CoreResources.GetString("serialize_must_return_null_or_string",
-						instance.TypeName), 0);
-
-					throw new PhpUserException(e);
+                    Library.SPL.Exception.ThrowSplException(
+                        _ctx => new Library.SPL.Exception(_ctx, true),
+                        context.ScriptContext,
+                        string.Format(CoreResources.serialize_must_return_null_or_string, instance.TypeName), 0, null);
 				}
 
 				info.AddValue(SerializedDataFieldName, res_str);

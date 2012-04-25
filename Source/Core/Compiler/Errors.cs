@@ -587,7 +587,7 @@ namespace PHP.Core
 
 	internal static class Warnings
 	{
-		public static readonly ErrorInfo RelatedLocation = new ErrorInfo(-1, "(related_location)", ErrorSeverity.Warning);
+		public static readonly ErrorInfo RelatedLocation = new ErrorInfo(-1, "__related_location", ErrorSeverity.Warning);
 		public static readonly ErrorInfo None = new ErrorInfo(-2, "", ErrorSeverity.Warning);
 		
 		// deferred-to-runtime group:
@@ -670,7 +670,7 @@ namespace PHP.Core
 	// 1000+
 	internal static class Errors
 	{
-		public static readonly ErrorInfo RelatedLocation = new ErrorInfo(-1, "(related_location)", ErrorSeverity.Error);
+		public static readonly ErrorInfo RelatedLocation = new ErrorInfo(-1, "__related_location", ErrorSeverity.Error);
 
 		public static readonly ErrorInfo ArrayInClassConstant = new ErrorInfo(1000, "array_in_cls_const", ErrorSeverity.Error);
 		public static readonly ErrorInfo NonVariablePassedByRef = new ErrorInfo(1001, "nonvar_passed_by_ref", ErrorSeverity.Error);
@@ -855,7 +855,7 @@ namespace PHP.Core
 	// 2000+
 	internal static class FatalErrors
 	{
-		public static readonly ErrorInfo RelatedLocation = new ErrorInfo(-1, "(related_location)", ErrorSeverity.Error);
+		public static readonly ErrorInfo RelatedLocation = new ErrorInfo(-1, "__related_location", ErrorSeverity.Error);
 
 		public static readonly ErrorInfo TypeRedeclared = new ErrorInfo(2000, "type_redeclared", ErrorSeverity.FatalError);
 		public static readonly ErrorInfo FunctionRedeclared = new ErrorInfo(2001, "function_redeclared", ErrorSeverity.FatalError);

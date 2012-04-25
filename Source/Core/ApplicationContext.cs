@@ -195,6 +195,7 @@ namespace PHP.Core
             // Reflection:
             AddExportMethod(addType(typeof(Library.SPL.Reflector)));
             addType(typeof(Library.SPL.ReflectionClass));
+            addType(typeof(Library.SPL.ReflectionException));
 
             // Iterators:
             addType(typeof(Library.SPL.Traversable));

@@ -409,10 +409,10 @@ namespace PHP.Library
                         if (resdata == null)
 						{
 							// serialize did not return NULL nor a string -> throw an exception
-							SPL.Exception e = new SPL.Exception(context, true);
-							e.__construct(context, LibResources.GetString("serialize_must_return_null_or_string", value.TypeName), 0);
-
-							throw new PhpUserException(e);
+                            SPL.Exception.ThrowSplException(
+                                _ctx => new SPL.Exception(_ctx, true),
+                                context,
+                                string.Format(CoreResources.serialize_must_return_null_or_string, value.TypeName), 0, null);
 						}
 
 						writer.Write(Tokens.ObjectSer);
