@@ -138,6 +138,11 @@ namespace PHP.Library.SPL
             return ((ReflectionClass)instance).newInstance(stack.Context);
         }
 
+        /// <summary>
+        /// Creates a new instance of the class. The given arguments are passed to the class constructor.
+        /// </summary>
+        /// <param name="context">Current context.</param>
+        /// <returns>Returns a new instance of the class.</returns>
         [ImplementsMethod]
         [NeedsArgless]
         public object newInstance(ScriptContext/*!*/context)
@@ -163,6 +168,12 @@ namespace PHP.Library.SPL
             return ((ReflectionClass)instance).newInstanceArgs(stack.Context, args);
         }
 
+        /// <summary>
+        /// Creates a new instance of the class, the given arguments are passed to the class constructor.
+        /// </summary>
+        /// <param name="context">Current context.</param>
+        /// <param name="arg">The parameters to be passed to the class constructor as an <see cref="PhpArray"/>.</param>
+        /// <returns>Returns a new instance of the class.</returns>
         [ImplementsMethod]
         public object newInstanceArgs(ScriptContext/*!*/context, object arg)
         {
@@ -186,6 +197,22 @@ namespace PHP.Library.SPL
 
             //
             return Operators.New(typedesc, null, context, null);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getName(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getName(stack.Context);
+        }
+
+        /// <summary>
+        /// Gets the class name.
+        /// </summary>
+        [ImplementsMethod]
+        public object getName(ScriptContext/*!*/context)
+        {
+            return this.name;
         }
 
         #endregion
