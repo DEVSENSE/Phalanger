@@ -541,9 +541,10 @@ namespace PHP.Core.Emit
 
         #region Comparisons
 
-        static MethodInfo _CompareEq, _CompareOp_object_object_bool, _CompareOp_int_int, _CompareOp_object_int_bool, _CompareOp_int_object_bool;
+        static MethodInfo _CompareEq_object_object, _CompareEq_object_int, _CompareOp_object_object_bool, _CompareOp_int_int, _CompareOp_object_int_bool, _CompareOp_int_object_bool;
 
-        public static MethodInfo CompareEq { get { if (_CompareEq == null) _CompareEq = typeof(PHP.Core.PhpComparer).GetMethod("CompareEq"); return _CompareEq; } }
+        public static MethodInfo CompareEq_object_object { get { return _CompareEq_object_object ?? (_CompareEq_object_object = new Func<object,object,bool>(PHP.Core.PhpComparer.CompareEq).Method); } }
+        public static MethodInfo CompareEq_object_int { get { return _CompareEq_object_int ?? (_CompareEq_object_int = new Func<object, int, bool>(PHP.Core.PhpComparer.CompareEq).Method); } }
         public static MethodInfo CompareOp_object_object_bool { get { return _CompareOp_object_object_bool ?? (_CompareOp_object_object_bool = typeof(PHP.Core.PhpComparer).GetMethod("CompareOp", Types.Object_Object_Bool)); } }
         public static MethodInfo CompareOp_int_int { get { return _CompareOp_int_int ?? (_CompareOp_int_int = typeof(PHP.Core.PhpComparer).GetMethod("CompareOp", Types.Int_Int)); } }
         public static MethodInfo CompareOp_object_int_bool { get { return _CompareOp_object_int_bool ?? (_CompareOp_object_int_bool = typeof(PHP.Core.PhpComparer).GetMethod("CompareOp", new Type[] { typeof(object), typeof(int), typeof(bool) })); } }
