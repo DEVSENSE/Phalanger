@@ -29,43 +29,56 @@ namespace PHP.Core.Parsers.GPPG
 {
 	#region State, Rule
 
-	public class State
+	public struct State
 	{
 		public int num;
-		public Dictionary<int, int> parser_table;  // Terminal -> ParseAction
-		public Dictionary<int, int> Goto;          // NonTerminal -> State;
-		public int defaultAction = 0;			   // ParseAction
-
-
-		public State(int num, int[] actions, int[] gotos)
-			: this(num, actions)
+		public readonly Dictionary<int, int> parser_table;  // Terminal -> ParseAction
+		public readonly Dictionary<int, int> Goto;          // NonTerminal -> State;
+		public readonly int defaultAction;			        // ParseAction
+        
+		private State(int num, int defaultAction, int[] actions, int[] gotos)
 		{
-			Goto = new Dictionary<int, int>();
-			for (int i = 0; i < gotos.Length; i += 2)
-				Goto.Add(gotos[i], gotos[i + 1]);
+            this.num = num;
+            this.defaultAction = defaultAction;
+
+            if (actions != null)
+            {
+                this.parser_table = new Dictionary<int, int>(actions.Length / 2);
+                for (int i = 0; i < actions.Length; i += 2)
+                    this.parser_table.Add(actions[i], actions[i + 1]);
+            }
+            else
+                this.parser_table = null;
+
+            if (gotos != null)
+            {
+                this.Goto = new Dictionary<int, int>(gotos.Length / 2);
+                for (int i = 0; i < gotos.Length; i += 2)
+                    this.Goto.Add(gotos[i], gotos[i + 1]);
+            }
+            else
+                this.Goto = null;
 		}
 
-		public State(int num, int[] actions)
+        public State(int num, int[] actions, int[] gotos)
+            :this(num, 0, actions, gotos)
 		{
-			this.num = num;
-			parser_table = new Dictionary<int, int>();
-			for (int i = 0; i < actions.Length; i += 2)
-				parser_table.Add(actions[i], actions[i + 1]);
 		}
+
+        public State(int num, int[] actions)
+            : this(num, 0, actions, null)
+        {
+        }
 
 		public State(int num, int defaultAction)
+            : this(num, defaultAction, null, null)
 		{
-			this.num = num;
-			this.defaultAction = defaultAction;
 		}
 
-		public State(int num, int defaultAction, int[] gotos)
-			: this(num, defaultAction)
-		{
-			Goto = new Dictionary<int, int>();
-			for (int i = 0; i < gotos.Length; i += 2)
-				Goto.Add(gotos[i], gotos[i + 1]);
-		}
+        public State(int num, int defaultAction, int[] gotos)
+            : this(num, defaultAction, null, gotos)
+        {
+        }
 	}
 
 	public struct Rule
@@ -180,12 +193,13 @@ namespace PHP.Core.Parsers.GPPG
 		protected bool yypos_valid;
 		
 		private int next;
-		private State current_state;
+		private int current_state_index;
+        //private State current_state { get { return this.states[current_state_index]; } }
 
 		private bool recovering;
 		private int tokensSinceLastError;
 
-		private Stack<State> state_stack = new Stack<State>();
+		private readonly Stack<int> state_stack = new Stack<int>();
 		protected ParserStack<ValueType, PositionType> value_stack = new ParserStack<ValueType, PositionType>();
 
 		protected abstract string[] NonTerminals { get; }
@@ -197,12 +211,12 @@ namespace PHP.Core.Parsers.GPPG
 		protected virtual PositionType InvalidPosition { get { return default(PositionType); } } 
 		protected abstract PositionType CombinePositions(PositionType first, PositionType last);
 
-		private string[] nonTerminals;
-		private State[] states;
-		private Rule[] rules;
-		private int errToken;
-		private int eofToken;
-		private PositionType invalidPosition;
+		private readonly string[] nonTerminals;
+		private readonly State[] states;
+		private readonly Rule[] rules;
+		private readonly int errToken;
+		private readonly int eofToken;
+		private readonly PositionType invalidPosition;
 
 		protected ShiftReduceParser()
 		{
@@ -220,19 +234,20 @@ namespace PHP.Core.Parsers.GPPG
 		public bool Parse()
 		{
 			next = 0;
-			current_state = states[0];
+            current_state_index = 0;// current_state = states[0];
 
-			state_stack.Push(current_state);
+            state_stack.Push(current_state_index);
 			value_stack.Push(yyval, yypos, yypos_valid);
 
 			while (true)
 			{
 				if (Trace)
-					Console.Error.WriteLine("Entering state {0} ", current_state.num);
+					Console.Error.WriteLine("Entering state {0} ", states[current_state_index].num);
 
-				int action = current_state.defaultAction;
+                int action = states[current_state_index].defaultAction;
 
-				if (current_state.parser_table != null)
+                var current_state_parser_table = states[current_state_index].parser_table;
+                if (current_state_parser_table != null)
 				{
 					if (next == 0)
 					{
@@ -245,7 +260,7 @@ namespace PHP.Core.Parsers.GPPG
 					if (Trace)
 						Console.Error.WriteLine("Next token is {0}", TerminalToString(next));
 
-					current_state.parser_table.TryGetValue(next, out action);
+                    current_state_parser_table.TryGetValue(next, out action);
 				}
 
 				if (action > 0)         // shift
@@ -271,10 +286,10 @@ namespace PHP.Core.Parsers.GPPG
 			if (Trace)
 				Console.Error.Write("Shifting token {0}, ", TerminalToString(next));
 
-			current_state = states[state_nr];
+            current_state_index = state_nr; //current_state = states[state_nr];
 
 			value_stack.Push(scanner.TokenValue, scanner.TokenPosition, true);
-			state_stack.Push(current_state);
+			state_stack.Push(current_state_index);
 
 			if (recovering)
 			{
@@ -361,12 +376,13 @@ namespace PHP.Core.Parsers.GPPG
 			if (Trace)
 				DisplayStack();
 
-			current_state = state_stack.Peek();
+			current_state_index = state_stack.Peek();
 
-			if (current_state.Goto.ContainsKey(rule.lhs))
-				current_state = states[current_state.Goto[rule.lhs]];
+            int goto_state;
+            if (states[current_state_index].Goto.TryGetValue(rule.lhs, out goto_state))
+                current_state_index = goto_state;
 
-			state_stack.Push(current_state);
+			state_stack.Push(current_state_index);
 			value_stack.Push(yyval, yypos, yypos_valid);
 		}
 
@@ -406,12 +422,13 @@ namespace PHP.Core.Parsers.GPPG
 		{
 			string[] expected_terminals = null;
 
-			if (current_state.parser_table != null)
+            var current_state_parser_table = states[current_state_index].parser_table;
+            if (current_state_parser_table != null)
 			{
-				expected_terminals = new string[current_state.parser_table.Count];
+                expected_terminals = new string[current_state_parser_table.Count];
 
 				int i = 0;
-				foreach (int terminal in current_state.parser_table.Keys)
+                foreach (int terminal in current_state_parser_table.Keys)
 					expected_terminals[i++] = TerminalToString(terminal);
 			}
 
@@ -424,10 +441,10 @@ namespace PHP.Core.Parsers.GPPG
 			int old_next = next;
 			next = errToken;
 
-			Shift(current_state.parser_table[next]);
+			Shift(states[current_state_index].parser_table[next]);
 
 			if (Trace)
-				Console.Error.WriteLine("Entering state {0} ", current_state.num);
+                Console.Error.WriteLine("Entering state {0} ", states[current_state_index].num);
 
 			next = old_next;
 		}
@@ -437,13 +454,15 @@ namespace PHP.Core.Parsers.GPPG
 		{
 			while (true)    // pop states until one found that accepts error token
 			{
-				if (current_state.parser_table != null &&
-					current_state.parser_table.ContainsKey(errToken) &&
-					current_state.parser_table[errToken] > 0) // shift
+                int i;
+                var current_state_parser_table = states[current_state_index].parser_table;
+                if (current_state_parser_table != null &&
+                    current_state_parser_table.TryGetValue(errToken, out i) && //current_state_parser_table.ContainsKey(errToken) &&
+                    i /*current_state_parser_table[errToken]*/ > 0) // shift
 					return true;
 
 				if (Trace)
-					Console.Error.WriteLine("Error: popping state {0}", state_stack.Peek().num);
+					Console.Error.WriteLine("Error: popping state {0}", states[state_stack.Peek()].num);
 
 				state_stack.Pop();
 				value_stack.Pop();
@@ -458,7 +477,7 @@ namespace PHP.Core.Parsers.GPPG
 					return false;
 				}
 				else
-					current_state = state_stack.Peek();
+					current_state_index = state_stack.Peek();
 			}
 		}
 
@@ -466,9 +485,10 @@ namespace PHP.Core.Parsers.GPPG
 		internal bool DiscardInvalidTokens()
 		{
 
-			int action = current_state.defaultAction;
+			int action = states[current_state_index].defaultAction;
 
-			if (current_state.parser_table != null)
+            var current_state_parser_table = states[current_state_index].parser_table;
+            if (current_state_parser_table != null)
 			{
 				// Discard tokens until find one that works ...
 				while (true)
@@ -487,8 +507,9 @@ namespace PHP.Core.Parsers.GPPG
 					if (next == eofToken)
 						return false;
 
-					if (current_state.parser_table.ContainsKey(next))
-						action = current_state.parser_table[next];
+                    int i;
+                    if (current_state_parser_table.TryGetValue(next, out i))
+                        action = i;// current_state.parser_table[next];
 
 					if (action != 0)
 						return true;
@@ -510,21 +531,17 @@ namespace PHP.Core.Parsers.GPPG
 			recovering = false;
 		}
 
-
-		protected void AddState(int statenr, State state)
-		{
-			states[statenr] = state;
-			state.num = statenr;
-		}
-
-
-
+        //protected void AddState(int statenr, State state)
+        //{
+        //    states[statenr] = state;
+        //    state.num = statenr;
+        //}
 
 		private void DisplayStack()
 		{
 			Console.Error.Write("State now");
-			foreach (State state in state_stack)
-				Console.Error.Write(" {0}", state.num);
+			foreach (var state in state_stack)
+                Console.Error.Write(" {0}", states[state].num);
 			Console.Error.WriteLine();
 		}
 
