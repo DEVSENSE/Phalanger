@@ -115,7 +115,7 @@ namespace PHP.Core.AST
                     /*changed to static method*/ //il.Emit(OpCodes.Ldsfld, Fields.PhpComparer_Default);
 					il.Ldloc(condition_value);
 					codeGenerator.EmitBoxing(case_item.EmitCaseValue(codeGenerator));
-					il.Emit(OpCodes.Call, Methods.CompareEq);
+					il.Emit(OpCodes.Call, Methods.CompareEq_object_object);
 
 					// IF (!STACK) GOTO false_label;
 					il.Emit(OpCodes.Brfalse, false_label);
