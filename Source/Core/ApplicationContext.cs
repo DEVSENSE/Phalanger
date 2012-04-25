@@ -224,6 +224,7 @@ namespace PHP.Core
             addType(typeof(Library.SPL.RangeException));
             addType(typeof(Library.SPL.OverflowException));
             addType(typeof(Library.SPL.UnderflowException));
+            addType(typeof(Library.SPL.UnexpectedValueException));
             addType(typeof(Library.SPL.DomainException));
 
             // primitive constants
