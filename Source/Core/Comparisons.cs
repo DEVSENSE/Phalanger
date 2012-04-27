@@ -560,6 +560,58 @@ namespace PHP.Core
         /// <returns>Whether the values of operands are the same.</returns>
         /// <remarks>Faster than Compare(x,y) == 0.</remarks>
         [Emitted]
+        public static bool CompareEq(object x, string/*!*/y)
+        {
+            Debug.Assert(y != null);
+
+            if (x == null)
+            {
+                if (y == null) return true;
+                return string.IsNullOrEmpty(y);
+            }
+            else if (x.GetType() == typeof(string))
+            {
+                if (y == null) return (string)x == string.Empty;
+                return CompareString((string)x, (string)y) == 0;
+            }
+            else if (x.GetType() == typeof(int))
+            {
+                if (y == null) return (int)x == 0;
+                return CompareStringEq((string)y, (int)x);
+            }
+            else if (x.GetType() == typeof(long))
+            {
+                if (y == null) return (long)x == 0;
+                return CompareStringEq((string)y, (long)x);
+            }
+            else if (x.GetType() == typeof(double))
+            {
+                if (y == null) return (double)x == 0.0;
+                return CompareStringEq((string)y, (double)x);
+            }
+            else if (x.GetType() == typeof(bool))
+            {
+                return (bool)x == Convert.StringToBoolean(y);
+            }
+
+            try
+            {
+                return (CompareOp_Nonliterals(x, y) == 0);
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Compares two objects for equality in a manner of the PHP regular comparison.
+        /// </summary>
+        /// <param name="x">The first object.</param>
+        /// <param name="y">The second object.</param>
+        /// <returns>Whether the values of operands are the same.</returns>
+        /// <remarks>Faster than Compare(x,y) == 0.</remarks>
+        [Emitted]
         public static bool CompareEq(object x, int y)
         {
             if (x == null)
