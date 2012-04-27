@@ -97,7 +97,7 @@ namespace PHP.Core.AST
 			  switchValue.Position.LastColumn + 1);
 
 			// Evaluate condition value and store the result into local variable
-			codeGenerator.EmitBoxing(switchValue.Emit(codeGenerator));
+            codeGenerator.EmitBoxing(switchValue.Emit(codeGenerator));
 			LocalBuilder condition_value = il.DeclareLocal(Types.Object[0]);
 			il.Stloc(condition_value);
 
@@ -113,10 +113,10 @@ namespace PHP.Core.AST
 
 					// PhpComparer.Default.CompareEq(<switch expr. value>,<case value>);
                     /*changed to static method*/ //il.Emit(OpCodes.Ldsfld, Fields.PhpComparer_Default);
-					il.Ldloc(condition_value);
-					codeGenerator.EmitBoxing(case_item.EmitCaseValue(codeGenerator));
-					il.Emit(OpCodes.Call, Methods.CompareEq_object_object);
-
+                    codeGenerator.EmitCompareEq(
+                        cg => { cg.IL.Ldloc(condition_value); return PhpTypeCode.Object; },
+                        cg => case_item.EmitCaseValue(cg));
+					
 					// IF (!STACK) GOTO false_label;
 					il.Emit(OpCodes.Brfalse, false_label);
 					if (fall_through == true)
