@@ -333,8 +333,7 @@ namespace PHP.Core.AST
 		private readonly List<Statement>/*!*/ body;
         public List<Statement>/*!*/ Body { get { return body; } }
 		private readonly CustomAttributes attributes;
-		private readonly CustomAttributes returnValueAttributes;
-
+		
 		public PhpFunction/*!*/ Function { get { return function; } }
 		private readonly PhpFunction/*!*/ function;
 
@@ -353,7 +352,7 @@ namespace PHP.Core.AST
             Position position, Position entireDeclarationPosition, ShortPosition headingEndPosition, ShortPosition declarationBodyPosition,
 			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, string/*!*/ name, NamespaceDecl ns,
 			bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalTypeParam>/*!*/ genericParams,
-			List<Statement>/*!*/ body, List<CustomAttribute> attributes, List<CustomAttribute> returnValueAttributes)
+			List<Statement>/*!*/ body, List<CustomAttribute> attributes)
 			: base(position)
 		{
 			Debug.Assert(genericParams != null && name != null && formalParams != null && body != null);
@@ -363,7 +362,6 @@ namespace PHP.Core.AST
 			this.signature = new Signature(aliasReturn, formalParams);
 			this.typeSignature = new TypeSignature(genericParams);
 			this.attributes = new CustomAttributes(attributes);
-			this.returnValueAttributes = new CustomAttributes(returnValueAttributes, CustomAttribute.TargetSelectors.Return);
 			this.body = body;
 			this.entireDeclarationPosition = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
@@ -391,7 +389,6 @@ namespace PHP.Core.AST
 		void IDeclarationNode.AnalyzeMembers(Analyzer/*!*/ analyzer)
 		{
 			attributes.AnalyzeMembers(analyzer, function.Declaration.Scope);
-			returnValueAttributes.AnalyzeMembers(analyzer, function.Declaration.Scope);
 
 			typeSignature.AnalyzeMembers(analyzer, function.Declaration.Scope);
 			signature.AnalyzeMembers(analyzer, function);
@@ -410,8 +407,7 @@ namespace PHP.Core.AST
 			function.Declaration.IsInsideIncompleteClass = analyzer.IsInsideIncompleteClass();
 
 			attributes.Analyze(analyzer, this);
-			returnValueAttributes.Analyze(analyzer, this);
-
+			
 			// function is analyzed even if it is unreachable in order to discover more errors at compile-time:
 			function.Declaration.IsUnreachable = analyzer.IsThisCodeUnreachable();
 
@@ -479,8 +475,7 @@ namespace PHP.Core.AST
 
             // emits attributes on the function itself, its return value, type parameters and regular parameters:
 			attributes.Emit(codeGenerator, this);
-            returnValueAttributes.Emit(codeGenerator, this);
-			signature.Emit(codeGenerator);
+            signature.Emit(codeGenerator);
 			typeSignature.Emit(codeGenerator);
 
 			// prepares code generator for emitting arg-full overload;

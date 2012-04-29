@@ -73,20 +73,6 @@ namespace PHP.Core.AST
 			this.attributes = attributes;
 		}
 
-		/// <summary>
-		/// Creates a set of custom attributes and sets their target selectors to the specified one.
-		/// Used when a <see cref="IPhpCustomAttributeProvider"/> provides more than one set of attributes.
-		/// </summary>
-		public CustomAttributes(List<CustomAttribute> attributes, CustomAttribute.TargetSelectors selector)
-			: this(attributes)
-		{
-			if (attributes != null)
-			{
-				foreach (CustomAttribute attribute in this.attributes)
-					attribute.TargetSelector = selector;
-			}
-		}
-
 		internal void Merge(CustomAttributes other)
 		{
 			if (other.attributes == null)

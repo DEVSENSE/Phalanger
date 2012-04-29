@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2008 Daniel Balas.
+ Copyright (c) 2012 DEVSENSE
 
  Parser was generated using The Gardens Point Parser Generator (GPPG).
 

@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2006-2010 Tomas Matousek, Daniel Balas.
+ Copyright (c) 2006-2012 Tomas Matousek, DEVSENSE
 
  The use and distribution terms for this software are contained in the file named License.txt, 
  which can be found in the root of the Phalanger distribution. By using this software 

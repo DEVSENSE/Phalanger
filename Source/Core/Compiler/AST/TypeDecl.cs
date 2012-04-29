@@ -1083,9 +1083,6 @@ namespace PHP.Core.AST
 		public List<ActualParam> BaseCtorParams { get { return baseCtorParams; } }
 		private List<ActualParam> baseCtorParams;
         
-		public CustomAttributes ReturnValueAttributes { get { return returnValueAttributes; } }
-		private CustomAttributes returnValueAttributes;
-
 		/// <summary>
 		/// Item in the table of methods or a <B>null</B> reference if added to the type yet or an error occured while adding.
 		/// </summary>
@@ -1106,7 +1103,7 @@ namespace PHP.Core.AST
         public MethodDecl(Position position, Position entireDeclarationPosition, ShortPosition headingEndPosition, ShortPosition declarationBodyPosition, 
 			string name, bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalTypeParam>/*!*/ genericParams, 
 			List<Statement> body, PhpMemberAttributes modifiers, List<ActualParam> baseCtorParams, 
-			List<CustomAttribute> attributes, List<CustomAttribute> returnValueAttributes)
+			List<CustomAttribute> attributes)
             : base(position, attributes)
         {
             Debug.Assert(genericParams != null && formalParams != null);
@@ -1117,7 +1114,6 @@ namespace PHP.Core.AST
             this.typeSignature = new TypeSignature(genericParams);
             this.body = body;
             this.baseCtorParams = baseCtorParams;
-            this.returnValueAttributes = new CustomAttributes(returnValueAttributes, CustomAttribute.TargetSelectors.Return);
             this.entireDeclarationPosition = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
             this.declarationBodyPosition = declarationBodyPosition;
@@ -1141,7 +1137,6 @@ namespace PHP.Core.AST
 
 			base.AnalyzeMembers(analyzer, declaringType);
 
-			returnValueAttributes.AnalyzeMembers(analyzer, declaringType.Declaration.Scope);
 			typeSignature.AnalyzeMembers(analyzer, declaringType.Declaration.Scope);
 			signature.AnalyzeMembers(analyzer, method);
             method.IsDllImport = this.IsDllImport;
@@ -1155,7 +1150,6 @@ namespace PHP.Core.AST
 			if (method == null) return;
 
 			base.Analyze(analyzer);
-			returnValueAttributes.Analyze(analyzer, this);
 
 			PhpType declaring_type = analyzer.CurrentType;
 
@@ -1291,7 +1285,6 @@ namespace PHP.Core.AST
 			base.Emit(codeGenerator);
 
 			// emit attributes on return value, generic and regular parameters:
-			returnValueAttributes.Emit(codeGenerator, this);
 			signature.Emit(codeGenerator);
 			typeSignature.Emit(codeGenerator);
 

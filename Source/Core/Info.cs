@@ -296,7 +296,7 @@ namespace PHP.Core
 			output.Write("<tr><td>");
 			output.Write(
 			"<p align='center'>" +
-            "<b>Copyright (c) Daniel Balas, Jan Benda, Miloslav Beno, Martin Maly, Tomas Matousek, Jakub Misek, Pavel Novak, Vaclav Novak, and Ladislav Prosek.</b>" +
+            "<b>Copyright (c) Jan Benda, Miloslav Beno, Martin Maly, Tomas Matousek, Jakub Misek, Pavel Novak, Vaclav Novak, and Ladislav Prosek.</b>" +
 			"</p>");
 			output.Write(CoreResources.GetString("info_license_text"));
 			output.Write("</td></tr>");

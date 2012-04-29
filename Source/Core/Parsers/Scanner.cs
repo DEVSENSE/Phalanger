@@ -189,7 +189,7 @@ namespace PHP.Core.Parsers
 					case Tokens.T_CLASS:
 					case Tokens.T_VAR:
 					case Tokens.T_CONST:
-						// Tokens.T_INTERFACE is handled later in V5Keywords:
+					// Tokens.T_INTERFACE: // handled later in V5Keywords
 						tokenSemantics.Object = lastDocComment;
 						goto default;
 
@@ -527,7 +527,7 @@ namespace PHP.Core.Parsers
 
 					case Tokens.T_SEMI:
 					default:
-						lastDocComment = null;
+						this.lastDocComment = null;
 						return token;
 				}
 			}

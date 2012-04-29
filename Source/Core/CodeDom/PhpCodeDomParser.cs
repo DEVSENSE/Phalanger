@@ -2347,16 +2347,16 @@ namespace PHP.Core.CodeDom
                     foreach (CustomAttribute Attr in Method.Attributes.Attributes)
                     {
                         CodeAttributeDeclaration attr = TranslateAttribute(Attr);
-                        if (attr != null) cMethod.CustomAttributes.Add(attr);
+                        if (attr != null)
+                        {
+                            if (Attr.TargetSelector == CustomAttribute.TargetSelectors.Return)
+                                cMethod.ReturnTypeCustomAttributes.Add(attr);
+                            else
+                                cMethod.CustomAttributes.Add(attr);
+                        }
                     }
                 cMethod.Attributes = TranslateModifiers(Method.Modifiers);
                 cMethod.ReturnType = new CodeTypeReference(typeof(object));
-                if (Method.ReturnValueAttributes.Attributes != null)
-                    foreach (CustomAttribute Attr in Method.ReturnValueAttributes.Attributes)
-                    {
-                        CodeAttributeDeclaration attr = TranslateAttribute(Attr);
-                        if (attr != null) cMethod.ReturnTypeCustomAttributes.Add(attr);
-                    }
                 foreach (FormalTypeParam TParam in Method.TypeSignature.TypeParams)
                     cMethod.TypeParameters.Add(TranslateFormalTypeParam(TParam));
                 foreach (FormalParam Param in Method.Signature.FormalParams)

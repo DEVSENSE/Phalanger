@@ -714,11 +714,14 @@ namespace PHP.Core.Parsers
 
 		private CustomAttribute.TargetSelectors IdentifierToTargetSelector(Position position, string/*!*/ identifier)
 		{
-			if (String.Compare(identifier, "assembly", StringComparison.OrdinalIgnoreCase) == 0)
+			if (identifier.EqualsOrdinalIgnoreCase("assembly"))
 				return CustomAttribute.TargetSelectors.Assembly;
 
-			if (String.Compare(identifier, "module", StringComparison.OrdinalIgnoreCase) == 0)
+			if (identifier.EqualsOrdinalIgnoreCase("module"))
 				return CustomAttribute.TargetSelectors.Module;
+
+            if (identifier.EqualsOrdinalIgnoreCase("return"))
+                return CustomAttribute.TargetSelectors.Return;
 
 			errors.Add(Errors.InvalidAttributeTargetSelector, SourceUnit, position, identifier);
 			return CustomAttribute.TargetSelectors.Default;
