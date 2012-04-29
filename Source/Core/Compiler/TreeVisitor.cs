@@ -679,6 +679,19 @@ namespace PHP.Core.AST
             VisitElement(x.RValue);
         }
 
+        /// <summary>
+        /// Visit <see cref="LambdaFunctionExpr"/> expression.
+        /// </summary>
+        virtual public void VisitLambdaFunctionExpr(LambdaFunctionExpr x)
+        {
+            // function parameters
+            foreach (var p in x.Signature.FormalParams)
+                VisitElement(p);
+
+            // function body
+            VisitStatementList(x.Body);
+        }
+
         #endregion
 
         #region Literals

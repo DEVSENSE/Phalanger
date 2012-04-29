@@ -324,6 +324,8 @@ using Pair = System.Tuple<object,object>;
 %type<Object> namespace_statement_list_opt            // List<Statement>
 %type<Object> namespace_statement                     // Statement
 %type<Object> function_declaration_statement          // FunctionDecl
+%type<Object> function_declaration_head				  // Tuple<List<CustomAttribute>,string,bool>!	// <attributes,doc_comment,is_ref>
+%type<Object> ref_opt_identifier					  // Tuple<bool,string>!	// <is_ref, func_name>
 %type<Object> class_declaration_statement             // TypeDecl
 %type<Object> class_identifier                        // String
 %type<Object> namespace_declaration_statement         // NamespaceDecl
@@ -341,6 +343,8 @@ using Pair = System.Tuple<object,object>;
 %type<Object> expression_list_opt                     // List<Expression> 
 %type<Object> foreach_variable                        // ForeachVar
 %type<Object> attributes_opt                          // List<CustomAttribute>
+%type<Object> attributes_group						  // List<CustomAttribute>/*!*/
+%type<Object> attributes							  // List<CustomAttribute>/*!*/
 %type<Object> attribute                               // CustomAttribute
 %type<Object> attribute_list                          // List<CustomAttribute>
 %type<Object> attribute_named_arg_list                // List<NamedActualParam>
@@ -442,7 +446,7 @@ using Pair = System.Tuple<object,object>;
 %type<Object> additional_catches
 
 %type<Object> lambda_function_expression				// LambdaFuncExpr!
-%type<Integer> lambda_function_head						// PhpMemberAttributes
+%type<Object> lambda_function_head_						// Tuple<PhpMemberAttributes,string,bool>!	// <static,doc_comment,is_ref>
 %type<Object> lambda_function_use_var					// FormalParam!
 %type<Object> lambda_function_use_var_list				// List<FormalParam>!
 %type<Object> lambda_function_use_vars					// List<FormalParam>
@@ -607,36 +611,47 @@ namespace_statement:         /* PHP 5.3 */
 ;
 
 function_declaration_statement:
-		attributes_opt T_FUNCTION reference_opt identifier 
+		function_declaration_head identifier 
 		type_parameter_list_opt
 		{
-			ReserveTypeNames((List<FormalTypeParam>)$5);
+			ReserveTypeNames((List<FormalTypeParam>)$3);
 		}
 		'(' formal_parameter_list_opt ')' 
 		{ 
 		  EnterConditionalCode(); 
 		}
 		'{' inner_statement_list_opt '}'
-		{ 
-			CheckTypeParameterNames((List<FormalTypeParam>)$5, (string)$4);
+		{
+			var func_name = (string)$2;
+			var attrs_doc_ref = (Tuple<List<CustomAttribute>,string,bool>)$1;
 			
-			$$ = new FunctionDecl(sourceUnit, @4, @$, GetHeadingEnd(@9), GetBodyStart(@11), 
+			CheckTypeParameterNames((List<FormalTypeParam>)$3, func_name);
+			
+			$$ = new FunctionDecl(sourceUnit, @2, @$, GetHeadingEnd(@7), GetBodyStart(@9), 
 				IsCurrentCodeOneLevelConditional, GetScope(), 
 				PhpMemberAttributes.Public | PhpMemberAttributes.Static,
-				(string)$4, currentNamespace, (int)$3 != 0, 
-			  (List<FormalParam>)$8, (List<FormalTypeParam>)$5, (List<Statement>)$12, (List<CustomAttribute>)$1);
+				func_name, currentNamespace, attrs_doc_ref.Item3, 
+			  (List<FormalParam>)$6, (List<FormalTypeParam>)$3, (List<Statement>)$10, attrs_doc_ref.Item1);
 			  
-			if ($2 != null)
+			var doc_comment = attrs_doc_ref.Item2;
+			if (doc_comment != null)
 			{
-				var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, (string)$2)} );			  
+				var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, doc_comment)} );			  
 				($$ as LangElement).Annotations.Set<CommentSet>(cs);
 			}
 			
 			reductionsSink.FunctionDeclarationReduced(this,	(FunctionDecl)$$); 
 			  
 			LeaveConditionalCode();
-			UnreserveTypeNames((List<FormalTypeParam>)$5);
+			UnreserveTypeNames((List<FormalTypeParam>)$3);
 		} 
+;
+
+function_declaration_head:
+		T_FUNCTION					{ $$ = new Tuple<List<CustomAttribute>,string,bool>(null, (string)$1, false); }
+	|	attributes T_FUNCTION		{ $$ = new Tuple<List<CustomAttribute>,string,bool>((List<CustomAttribute>)$1, (string)$2, false); }
+	|	T_FUNCTION '&'				{ $$ = new Tuple<List<CustomAttribute>,string,bool>(null, (string)$1, true); }
+	|	attributes T_FUNCTION '&'	{ $$ = new Tuple<List<CustomAttribute>,string,bool>((List<CustomAttribute>)$1, (string)$2, true); }
 ;
 
 class_declaration_statement:
@@ -835,21 +850,26 @@ generic_dynamic_args_opt:
 ;
   
 
-attributes_opt:
-    attributes_opt '[' attribute_list ']'
+attributes:
+		attributes attributes_group { $$ = ListAdd<CustomAttribute>($1, $2); }
+	|	attributes_group			{ $$ = (List<CustomAttribute>)$1; }
+;
+
+attributes_group:
+    '[' attribute_list ']'
     {
-      $$ = AddCustomAttributes((List<CustomAttribute>)$1, (List<CustomAttribute>)$3, CustomAttribute.TargetSelectors.Default);
+      $$ = CustomAttributes((List<CustomAttribute>)$2, CustomAttribute.TargetSelectors.Default);
     }
-  | attributes_opt '[' identifier ':' attribute_list ']' 
+  | '[' identifier ':' attribute_list ']' 
     { 
-      $$ = AddCustomAttributes((List<CustomAttribute>)$1, (List<CustomAttribute>)$5, 
-        IdentifierToTargetSelector(@3, (string)$3));
-    } 
-  | /* empty */ 
-    { 
-      $$ = null; 
+      $$ = CustomAttributes((List<CustomAttribute>)$4, IdentifierToTargetSelector(@2, (string)$2));
     }
-;  
+;
+
+attributes_opt:
+		/* empty */	{ $$ = null; }
+	|	attributes	{ $$ = $1; }
+;
 
 attribute_list:	
 		attribute_list ',' attribute 
@@ -1632,24 +1652,33 @@ expr_without_chain:
 
 	| linq_query_expression				{ $$ = $1; }
 
-	//| lambda_function_expression		{ $$ = $1; }
+	| lambda_function_expression		{ $$ = $1; }
 ;
 
 lambda_function_expression:
-	lambda_function_head reference_opt '(' formal_parameter_list_opt ')' lambda_function_use_vars
+	lambda_function_head_ formal_parameter_list_opt ')' lambda_function_use_vars
 	{ 
 		EnterConditionalCode(); 
 	}
 	'{' inner_statement_list_opt '}'
-	{ 
-		throw new NotImplementedException();
+	{
+		var static_doc_ref = (Tuple<PhpMemberAttributes,string,bool>)$1;
+
+		$$ = new LambdaFunctionExpr(sourceUnit,
+            @2, @$, GetHeadingEnd(@4), GetBodyStart(@6),
+            GetScope(), currentNamespace,
+            static_doc_ref.Item3, (List<FormalParam>)$2,
+            (List<Statement>)$7);
+
 		LeaveConditionalCode();
 	}
 ;
 
-lambda_function_head:
-		T_FUNCTION				{ $$ = (int)PhpMemberAttributes.None; }
-	|	T_STATIC T_FUNCTION		{ $$ = (int)PhpMemberAttributes.Static; }
+lambda_function_head_:
+		T_FUNCTION	'('				{ $$ = new Tuple<PhpMemberAttributes,string,bool>(PhpMemberAttributes.None, (string)$1, false); }
+	|	T_STATIC T_FUNCTION	'('		{ $$ = new Tuple<PhpMemberAttributes,string,bool>(PhpMemberAttributes.Static, (string)$2, false); }
+	|	T_FUNCTION '&' '('			{ $$ = new Tuple<PhpMemberAttributes,string,bool>(PhpMemberAttributes.None, (string)$1, true); }
+	|	T_STATIC T_FUNCTION '&' '('	{ $$ = new Tuple<PhpMemberAttributes,string,bool>(PhpMemberAttributes.Static, (string)$2, true); }
 ;
 
 lambda_function_use_vars:
