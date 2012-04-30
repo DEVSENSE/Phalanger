@@ -41,6 +41,11 @@ namespace PHP.Core.AST
 
 		private GenericParameter/*! PreAnalyze */ parameter;
 
+        /// <summary>
+        /// Singleton instance of an empty <see cref="List&lt;FormalTypeParam&gt;"/>.
+        /// </summary>
+        public static readonly List<FormalTypeParam>/*!*/EmptyList = new List<FormalTypeParam>();
+
 		#region Construction
 
 		public FormalTypeParam(Position position, Name name, object defaultType, List<CustomAttribute> attributes)
@@ -1207,12 +1212,7 @@ namespace PHP.Core.AST
                 analyzer.ErrorSink.Add(Errors.DllImportMethodCannotBeAbstract, analyzer.SourceUnit, position);
 
 			if (body != null)
-			{
-				for (int i = 0; i < body.Count; i++)
-				{
-					body[i] = body[i].Analyze(analyzer);
-				}
-			}
+                body.Analyze(analyzer);
 
 			method.ValidateBody(analyzer.ErrorSink);
 

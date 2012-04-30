@@ -746,48 +746,56 @@ namespace PHP.Core.AST
 		/// <remarks>Also handles loading of <B>$this</B>.</remarks>
 		internal override PhpTypeCode EmitLoad(CodeGenerator codeGenerator)
 		{
-			ILEmitter il = codeGenerator.IL;
+            if (varName.IsThisVariableName)
+            {
+                return EmitLoadThis(codeGenerator);
+            }
 
-			if (varName.IsThisVariableName)
-			{
-				return EmitLoadThis(codeGenerator);
-			}
-
-			// Check if the variable is auto-global
-			if (codeGenerator.VariableIsAutoGlobal(varName))
-			{
-				codeGenerator.EmitAutoGlobalLoad(varName);
-				return PhpTypeCode.Object;
-			}
-
-			// Variable is local
-			if (codeGenerator.OptimizedLocals)
-			{
-				// Template:
-				//			ldloc loc
-				//	***** // If the specidied variable is of type PhpReference
-				//				ldfld PhpReference.value
-				//	*****
-				VariablesTable.Entry entry = codeGenerator.CurrentVariablesTable[varName];
-				entry.Variable.EmitLoad(il);
-				if (entry.IsPhpReference)
-					il.Emit(OpCodes.Ldfld, Fields.PhpReference_Value);
-
-				return PhpTypeCode.Object;
-			}
-
-			// LOAD Operators.GetVariable[Unchecked](<script context>, <local variable table>, <name>);
-			codeGenerator.EmitLoadScriptContext();
-			codeGenerator.EmitLoadRTVariablesTable();
-			EmitName(codeGenerator);
-
-			if (codeGenerator.ChainBuilder.QuietRead)
-				il.Emit(OpCodes.Call, Methods.Operators.GetVariableUnchecked);
-			else
-				il.Emit(OpCodes.Call, Methods.Operators.GetVariable);
-
-			return PhpTypeCode.Object;
+            return EmitLoad(codeGenerator, varName);
 		}
+
+        /// <summary>
+        /// Emit load of variable named <paramref name="varName"/>.
+        /// </summary>
+        internal static PhpTypeCode EmitLoad(CodeGenerator codeGenerator, VariableName varName)
+        {
+            ILEmitter il = codeGenerator.IL;            
+
+            // Check if the variable is auto-global
+            if (codeGenerator.VariableIsAutoGlobal(varName))
+            {
+                codeGenerator.EmitAutoGlobalLoad(varName);
+                return PhpTypeCode.Object;
+            }
+
+            // Variable is local
+            if (codeGenerator.OptimizedLocals)
+            {
+                // Template:
+                //			ldloc loc
+                //	***** // If the specidied variable is of type PhpReference
+                //				ldfld PhpReference.value
+                //	*****
+                VariablesTable.Entry entry = codeGenerator.CurrentVariablesTable[varName];
+                entry.Variable.EmitLoad(il);
+                if (entry.IsPhpReference)
+                    il.Emit(OpCodes.Ldfld, Fields.PhpReference_Value);
+
+                return PhpTypeCode.Object;
+            }
+
+            // LOAD Operators.GetVariable[Unchecked](<script context>, <local variable table>, <name>);
+            codeGenerator.EmitLoadScriptContext();
+            codeGenerator.EmitLoadRTVariablesTable();
+            il.Emit(OpCodes.Ldstr, varName.Value);
+
+            if (codeGenerator.ChainBuilder.QuietRead)
+                il.Emit(OpCodes.Call, Methods.Operators.GetVariableUnchecked);
+            else
+                il.Emit(OpCodes.Call, Methods.Operators.GetVariable);
+
+            return PhpTypeCode.Object;
+        }
 
 		/// <summary>
 		/// Emits IL instructions that load the "$this" variable onto the evaluation stack.
@@ -922,40 +930,48 @@ namespace PHP.Core.AST
 
 		internal override void EmitLoadRef(CodeGenerator/*!*/ codeGenerator)
 		{
-			ILEmitter il = codeGenerator.IL;
+            if (varName.IsThisVariableName)
+            {
+                EmitLoadThisRef(codeGenerator);
+                return;
+            }
 
-			if (varName.IsThisVariableName)
-			{
-				EmitLoadThisRef(codeGenerator);
-				return;
-			}
-
-			// Check if the variable is auto-global
-			if (codeGenerator.VariableIsAutoGlobal(varName))
-			{
-				codeGenerator.EmitAutoGlobalLoadRef(varName);
-				return;
-			}
-
-			if (codeGenerator.OptimizedLocals)
-			{
-				// Template: for DirectVarUse			
-				//		"LOAD ref $x;"
-				//
-				//		ldloc loc // Local variable should be of type PhpReference
-				VariablesTable.Entry entry = codeGenerator.CurrentVariablesTable[varName];
-				entry.Variable.EmitLoad(il);
-			}
-			else
-			{
-				// Template:
-				//		PhpReference Operators.GetVariableRef(IDictionary table, string name) 
-				codeGenerator.EmitLoadScriptContext();
-				codeGenerator.EmitLoadRTVariablesTable();
-				EmitName(codeGenerator);
-				il.Emit(OpCodes.Call, Methods.Operators.GetVariableRef);
-			}
+            EmitLoadRef(codeGenerator, varName);
 		}
+
+        /// <summary>
+        /// Emit reference load of variable named <paramref name="varName"/>.
+        /// </summary>
+        internal static void EmitLoadRef(CodeGenerator/*!*/ codeGenerator, VariableName varName)
+        {
+            ILEmitter il = codeGenerator.IL;
+
+            // Check if the variable is auto-global
+            if (codeGenerator.VariableIsAutoGlobal(varName))
+            {
+                codeGenerator.EmitAutoGlobalLoadRef(varName);
+                return;
+            }
+
+            if (codeGenerator.OptimizedLocals)
+            {
+                // Template: for DirectVarUse			
+                //		"LOAD ref $x;"
+                //
+                //		ldloc loc // Local variable should be of type PhpReference
+                VariablesTable.Entry entry = codeGenerator.CurrentVariablesTable[varName];
+                entry.Variable.EmitLoad(il);
+            }
+            else
+            {
+                // Template:
+                //		PhpReference Operators.GetVariableRef(IDictionary table, string name) 
+                codeGenerator.EmitLoadScriptContext();
+                codeGenerator.EmitLoadRTVariablesTable();
+                il.Emit(OpCodes.Ldstr, varName.Value);
+                il.Emit(OpCodes.Call, Methods.Operators.GetVariableRef);
+            }
+        }
 
 		/// <summary>
 		/// Loads a PhpReference to "this" special variable to the evaluation stack.

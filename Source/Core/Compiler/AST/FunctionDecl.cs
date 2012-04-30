@@ -109,11 +109,16 @@ namespace PHP.Core.AST
 				referring_type = routine.DeclaringPhpType;
 				referring_scope = referring_type.Declaration.Scope;
 			}
-			else
-			{
-				referring_type = null;
-				referring_scope = ((PhpFunction)routine).Declaration.Scope;
-			}
+            else if (routine.IsLambdaFunction)
+            {
+                referring_type = analyzer.CurrentType;
+                referring_scope = analyzer.CurrentScope;
+            }
+            else
+            {
+                referring_type = null;
+                referring_scope = ((PhpFunction)routine).Declaration.Scope;
+            }
 
 			attributes.AnalyzeMembers(analyzer, referring_scope);
 
@@ -421,11 +426,8 @@ namespace PHP.Core.AST
 
 			function.Validate(analyzer.ErrorSink);
 
-			for (int i = 0; i < body.Count; i++)
-			{
-				body[i] = body[i].Analyze(analyzer);
-			}
-
+            this.Body.Analyze(analyzer);
+			
 			// validate function and its body:
 			function.ValidateBody(analyzer.ErrorSink);
 

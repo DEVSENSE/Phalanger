@@ -53,10 +53,7 @@ namespace PHP.Core.AST
 		internal override Statement Analyze(Analyzer/*!*/ analyzer)
 		{
 			analyzer.EnterConditionalCode();
-
-			for (int i = 0; i < statements.Count; i++)
-				statements[i] = statements[i].Analyze(analyzer);
-
+            this.Statements.Analyze(analyzer);
 			analyzer.LeaveConditionalCode();
 
 			for (int i = 0; i < catches.Count; i++)
@@ -225,8 +222,7 @@ namespace PHP.Core.AST
 			variable.Analyze(analyzer, info);
 
 			analyzer.EnterConditionalCode();
-			for (int i = 0; i < statements.Count; i++)
-				statements[i] = statements[i].Analyze(analyzer);
+            this.Statements.Analyze(analyzer);
 			analyzer.LeaveConditionalCode();
 		}
 

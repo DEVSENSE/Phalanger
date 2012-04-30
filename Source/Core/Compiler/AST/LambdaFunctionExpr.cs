@@ -62,7 +62,7 @@ namespace PHP.Core.AST
         public ShortPosition DeclarationBodyPosition { get { return declarationBodyPosition; } }
         private ShortPosition declarationBodyPosition;
 
-        private PhpMethod/*!*/function;
+        private PhpLambdaFunction/*!*/function;
 
         #region Construction
 
@@ -75,6 +75,10 @@ namespace PHP.Core.AST
         {
             Debug.Assert(formalParams != null && body != null);
 
+            // inject use parameters at the begining of formal parameters
+            if (useParams != null && useParams.Count > 0)
+                formalParams.InsertRange(0, useParams);
+            
             //this.ns = ns;
             this.signature = new Signature(aliasReturn, formalParams);
             this.useParams = useParams;
@@ -87,8 +91,8 @@ namespace PHP.Core.AST
 
             //QualifiedName qn = (ns != null) ? new QualifiedName(this.name, ns.QualifiedName) : new QualifiedName(this.name);
             //function = new PhpFunction(qn, memberAttributes, signature, typeSignature, isConditional, scope, sourceUnit, position);
-            //function.WriteUp(typeSignature.ToPhpRoutineSignature(function));
-            function = null;// new PhpMethod(CLOSURE, __invoke, None, true, signature, typeSignature, sourceUnit, position);
+            function = new PhpLambdaFunction(this.signature, sourceUnit, position);
+            function.WriteUp(new TypeSignature(FormalTypeParam.EmptyList).ToPhpRoutineSignature(function));
         }
 
         #endregion
@@ -97,33 +101,27 @@ namespace PHP.Core.AST
 
         internal override Evaluation Analyze(Analyzer analyzer, ExInfoFromParent info)
         {
-            if (function == null)
-                throw new NotImplementedException();
+            signature.AnalyzeMembers(analyzer, function);
 
             //attributes.Analyze(analyzer, this);
 
+            // ensure 'use' parameters in parent scope:
+            if (this.useParams != null)
+                foreach (var p in this.useParams)
+                    analyzer.CurrentVarTable.Set(p.Name, p.PassedByRef);
+
             // function is analyzed even if it is unreachable in order to discover more errors at compile-time:
-            analyzer.EnterMethodDeclaration(function);
+            analyzer.EnterFunctionDeclaration(function);
 
             //typeSignature.Analyze(analyzer);
             signature.Analyze(analyzer);
 
-            //function.Validate(analyzer.ErrorSink);
-
-            for (int i = 0; i < body.Count; i++)
-            {
-                body[i] = body[i].Analyze(analyzer);
-            }
-
+            this.Body.Analyze(analyzer);
+            
             // validate function and its body:
             function.ValidateBody(analyzer.ErrorSink);
 
-            /*
-            if (docComment != null)
-                AnalyzeDocComment(analyzer);
-            */
-
-            analyzer.LeaveMethodDeclaration();
+            analyzer.LeaveFunctionDeclaration();
 
             return new Evaluation(this);
         }
@@ -132,13 +130,100 @@ namespace PHP.Core.AST
 
         #region Emission
 
+        internal override bool IsDeeplyCopied(CopyReason reason, int nestingLevel)
+        {
+            return false;
+        }
+
         /// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
         internal override PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator)
         {
             Statistics.AST.AddNode("LambdaFunctionExpr");
+            
+            var typeBuilder = codeGenerator.IL.TypeBuilder;
 
-            throw new NotImplementedException();
+            // define argless and argfull
+            this.function.DefineBuilders(typeBuilder);
 
+            //
+            codeGenerator.MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 2);
+            if (!codeGenerator.EnterFunctionDeclaration(function))
+                throw new Exception("EnterFunctionDeclaration() failed!");
+
+            codeGenerator.EmitArgfullOverloadBody(function, body, entireDeclarationPosition, declarationBodyPosition);
+            
+            codeGenerator.LeaveFunctionDeclaration();
+
+            // new Closure( <context>, new RoutineDelegate(null,function.ArgLess), <parameters>, <static> )
+            codeGenerator.EmitLoadScriptContext();
+
+            var/*!*/il = codeGenerator.IL;
+            il.Emit(OpCodes.Ldnull);
+            il.Emit(OpCodes.Ldftn, function.ArgLessInfo);
+            il.Emit(OpCodes.Newobj, Constructors.RoutineDelegate);
+
+            if (signature.FormalParams != null && signature.FormalParams.Count > 0)
+            {
+                // array = new PhpArray(<int_count>, <string_count>);
+                il.Emit(OpCodes.Ldc_I4, 0);
+                il.Emit(OpCodes.Ldc_I4, signature.FormalParams.Count);
+                il.Emit(OpCodes.Newobj, Constructors.PhpArray.Int32_Int32);
+
+                foreach (var p in signature.FormalParams)
+                {
+                    // CALL array.SetArrayItem("&$name", "<required>" | "<optional>");
+                    il.Emit(OpCodes.Dup);   // PhpArray
+
+                    string keyValue = string.Format("{0}${1}", p.PassedByRef ? "&" : null, p.Name.Value);
+
+                    il.Emit(OpCodes.Ldstr, keyValue);
+                    il.Emit(OpCodes.Ldstr, (p.InitValue != null) ? "<optional>" : "<required>");
+                    il.LdcI4(IntStringKey.StringKeyToArrayIndex(keyValue));
+
+                    il.Emit(OpCodes.Call, Methods.PhpArray.SetArrayItemExact_String);
+                }
+            }
+            else
+            {
+                il.Emit(OpCodes.Ldnull);
+            }
+
+            if (useParams != null & useParams.Count > 0)
+            {
+                // array = new PhpArray(<int_count>, <string_count>);
+                il.Emit(OpCodes.Ldc_I4, 0);
+                il.Emit(OpCodes.Ldc_I4, useParams.Count);
+                il.Emit(OpCodes.Newobj, Constructors.PhpArray.Int32_Int32);
+
+                foreach (var p in useParams)
+                {
+                    // CALL array.SetArrayItem("&$name", "<required>" | "<optional>");
+                    il.Emit(OpCodes.Dup);   // PhpArray
+
+                    string variableName = p.Name.Value;
+
+                    il.Emit(OpCodes.Ldstr, variableName);
+                    if (p.PassedByRef)
+                    {
+                        DirectVarUse.EmitLoadRef(codeGenerator, p.Name);
+                        il.Emit(OpCodes.Call, Methods.PhpArray.SetArrayItemRef_String);
+                    }
+                    else
+                    {
+                        DirectVarUse.EmitLoad(codeGenerator, p.Name);
+                        il.LdcI4(IntStringKey.StringKeyToArrayIndex(variableName));
+                        il.Emit(OpCodes.Call, Methods.PhpArray.SetArrayItemExact_String);
+                    }
+                }
+            }
+            else
+            {
+                il.Emit(OpCodes.Ldnull);
+            }
+
+            il.Emit(OpCodes.Newobj, typeof(PHP.Library.SPL.Closure).GetConstructor(new Type[] { typeof(ScriptContext), typeof(RoutineDelegate), typeof(PhpArray), typeof(PhpArray) }));
+             
+            return PhpTypeCode.Object;
             //// marks a sequence point if function is declared here (i.e. is m-decl):
             ////Note: this sequence point goes to the function where this function is declared not to this declared function!
             //if (!function.IsLambda && function.Declaration.IsConditional)

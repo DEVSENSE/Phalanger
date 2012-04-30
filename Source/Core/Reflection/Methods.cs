@@ -825,6 +825,7 @@ namespace PHP.Core.Reflection
 		
 		public abstract bool IsFunction { get; }
 		public bool IsMethod { get { return !IsFunction; } }
+        public virtual bool IsLambdaFunction { get { return false; } }
 
 		public abstract SourceUnit SourceUnit { get; }
 		public abstract Position Position { get; }
@@ -929,7 +930,7 @@ namespace PHP.Core.Reflection
 
 		#region Analysis
 
-		internal void ValidateBody(ErrorSink/*!*/ errors)
+        internal void ValidateBody(ErrorSink/*!*/ errors)
 		{
 			// checks whether there are too many local variables (warning only):
 			if (builder.LocalVariables.Count > VariablesTable.SuboptimalLocalsCount)
@@ -957,6 +958,16 @@ namespace PHP.Core.Reflection
 		#region Emission
 
 		#region DefineBuilders
+
+        /// <summary>
+        /// Defines real method on routine declaring type.
+        /// </summary>
+        protected virtual MethodInfo/*!*/DefineRealMethod(string/*!*/realMethodName, MethodAttributes attrs, Type/*!*/returnType, Type[]/*!!*/parametersType)
+        {
+            Debug.Assert(realMethodName != null);
+
+            return this.DeclaringType.DefineRealMethod(realMethodName, attrs, returnType, parametersType);
+        }
 
 		internal virtual void DefineBuilders()
 		{
@@ -991,7 +1002,7 @@ namespace PHP.Core.Reflection
 				attrs |= MethodAttributes.Static | MethodAttributes.SpecialName;
 				attrs &= ~(MethodAttributes.Virtual | MethodAttributes.Final);
 
-				this.argless = this.DeclaringType.DefineRealMethod(realMethodName, attrs, Types.Object[0], Types.Object_PhpStack);
+				this.argless = DefineRealMethod(realMethodName, attrs, Types.Object[0], Types.Object_PhpStack);
 
 				// [EditorBrowsable(Never)] for user convenience - not available on SL:
 #if !SILVERLIGHT
@@ -1016,16 +1027,16 @@ namespace PHP.Core.Reflection
 			}
 		}
 
-		private void DefineArgfullOverload(MethodAttributes attrs, string/*!*/ realMethodName)
+        private void DefineArgfullOverload(MethodAttributes attrs, string/*!*/ realMethodName)
 		{
 			Type return_type;
-			Type[] param_types;
+            Type[] param_types;
 
-			param_types = signature.ToArgfullSignature(1, out return_type);
-			param_types[0] = Types.ScriptContext[0];
+            param_types = signature.ToArgfullSignature(1, out return_type);
+            param_types[0] = Types.ScriptContext[0];
 
 			// defines overload:
-			this.argfull = this.DeclaringType.DefineRealMethod(realMethodName, attrs, return_type, param_types);
+			this.argfull = DefineRealMethod(realMethodName, attrs, return_type, param_types);
 
 			DefineParameterBuildersOnArgFull();
 
@@ -1118,7 +1129,7 @@ namespace PHP.Core.Reflection
 			for (int i = 0; i < signature.ParamCount; i++)
 				EmitPeekArgument(il, i);
 
-			// emits pre call code (alters a frame if a function is args-aware removes it otherwise):
+            // emits pre call code (alters a frame if a function is args-aware removes it otherwise):
 			PhpStackBuilder.EmitArgFullPreCall(il, arglessStackPlace, args_aware, signature.ParamCount,
 			  signature.GenericParamCount, out loc_count);
 
@@ -1132,7 +1143,7 @@ namespace PHP.Core.Reflection
 			il.Emit(OpCodes.Ret);
 		}
 
-		private void EmitPeekPseudoGenericArgument(ILEmitter/*!*/ il, int index)
+        private void EmitPeekPseudoGenericArgument(ILEmitter/*!*/ il, int index)
 		{
 			bool optional = index >= signature.MandatoryGenericParamCount;
 			int stack_offset = index + 1;
@@ -1189,7 +1200,7 @@ namespace PHP.Core.Reflection
 
 			arg_types[0] = Types.ScriptContext[0];
 
-			MethodInfo mediator = this.DeclaringPhpType.DefineRealMethod(
+			MethodInfo mediator = DefineRealMethod(
 			  "<Mediator>", MethodAttributes.PrivateScope | MethodAttributes.SpecialName, ret_type, arg_types);
 
 			// just delegate the call to the real argfull
@@ -1912,6 +1923,122 @@ namespace PHP.Core.Reflection
 	}
 
 	#endregion
+
+    #region PhpLambdaFunction
+
+    public sealed class PhpLambdaFunction : PhpRoutine
+    {
+        #region Properties
+
+        public override bool IsFunction { get { return true; } }
+        public override bool IsLambda { get { return true; } } // but different lambda
+        public override bool IsLambdaFunction { get { return true; } }
+        public override bool IsIdentityDefinite { get { return true; } }
+
+        public override Name Name { get { return Name.ClosureFunctionName; } }
+
+        public override Position Position { get { return position; } }
+        private readonly Position position;
+
+        public override SourceUnit SourceUnit { get { return sourceUnit; } }
+        private SourceUnit sourceUnit;
+
+        internal override bool IsExported { get { return false; } }
+
+        #endregion
+
+        #region Construction
+
+        /// <summary>
+        /// Used by the compiler.
+        /// </summary>
+        internal PhpLambdaFunction(Signature astSignature, SourceUnit/*!*/ sourceUnit, Position position)
+            : base(
+            new PhpRoutineDesc(
+                DTypeDesc.Create(typeof(PHP.Library.SPL.Closure)),
+                PhpMemberAttributes.Private | PhpMemberAttributes.Static | PhpMemberAttributes.Final),
+            astSignature,
+            new TypeSignature(FormalTypeParam.EmptyList))
+        {
+            Debug.Assert(sourceUnit != null && position.IsValid);
+
+            this.position = position;
+            this.sourceUnit = sourceUnit;
+        }
+
+        #endregion
+
+        #region Utils
+
+        public override string GetFullName()
+        {
+            return Name.Value;
+        }
+
+        public override string GetFullClrName()
+        {
+            return Name.Value;
+        }
+
+        #endregion
+
+        #region Analysis
+
+        internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Position position,
+            out RoutineSignature overloadSignature)
+        {
+            overloadSignature = signature;
+            return 0;
+        }
+
+        internal override void AddAbstractOverride(DMemberRef/*!*/ abstractMethod)
+        {
+            throw new NotSupportedException();
+        }
+
+        #endregion
+
+        #region Validation
+
+        internal override void ReportError(ErrorSink/*!*/ sink, ErrorInfo error)
+        {
+            if (sourceUnit != null)
+                sink.Add(error, SourceUnit, position);
+        }
+
+        #endregion
+
+        #region Emission
+
+        private TypeBuilder/*!*/typeBuilder;
+        protected override MethodInfo DefineRealMethod(string realMethodName, MethodAttributes attrs, Type returnType, Type[] parametersType)
+        {
+            return typeBuilder.DefineMethod(realMethodName, attrs, returnType, parametersType);
+        }
+        internal override void DefineBuilders()
+        {
+            throw new InvalidOperationException();
+        }
+        public void DefineBuilders(TypeBuilder/*!*/typeBuilder)
+        {
+            this.typeBuilder = typeBuilder;
+            base.DefineBuilders();
+        }
+
+        internal override PhpTypeCode EmitCall(
+            CodeGenerator codeGenerator, string fallbackQualifiedName, CallSignature callSignature, IPlace instance,
+            bool runtimeVisibilityCheck, int overloadIndex, ConstructedType constructedType, Position position,
+            AccessType access, bool callVirt)
+        {
+            // calling closured function directly is not handled yet (not needed without type inference),
+            // anyway in future, this will be probably handled thru Closure::__invoke( instance, stack ).
+            throw new NotImplementedException();
+        }
+
+        #endregion
+    }
+
+    #endregion
 
 	#region PhpLibraryFunction
 

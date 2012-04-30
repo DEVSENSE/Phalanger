@@ -1665,7 +1665,7 @@ lambda_function_expression:
 		var static_doc_ref = (Tuple<PhpMemberAttributes,string,bool>)$1;
 
 		$$ = new LambdaFunctionExpr(sourceUnit,
-            @2, @$, GetHeadingEnd(@4), GetBodyStart(@6),
+            @1, @$, GetHeadingEnd(@3), GetBodyStart(@6),
             GetScope(), currentNamespace,
             static_doc_ref.Item3, (List<FormalParam>)$2, (List<FormalParam>)$4,
             (List<Statement>)$7);

@@ -134,8 +134,17 @@ namespace PHP.Library.SPL
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static object newInstance(object instance, PhpStack stack)
         {
-            // call newInstance, keep arguments on stack:
-            return ((ReflectionClass)instance).newInstance(stack.Context);
+            var self = (ReflectionClass)instance;
+            if (self.typedesc == null)
+            {
+                stack.RemoveFrame();
+                return null;
+            }
+
+            // preserve arguments on stack for New
+            
+            // instantiate the object, checks whether typedesc is an abstract type:
+            return Operators.New(self.typedesc, null, stack.Context, null);
         }
 
         /// <summary>
@@ -147,17 +156,8 @@ namespace PHP.Library.SPL
         [NeedsArgless]
         public object newInstance(ScriptContext/*!*/context)
         {
-            if (this.typedesc == null)
-            {
-                context.Stack.RemoveFrame();
-                return null;
-            }
-
-            // preserve arguments on stack for New
-            // ...
-            
-            // instantiate the object, checks whether typedesc is an abstract type:
-            return Operators.New(typedesc, null, context, null);
+            // this method should not be called, its argless should.
+            throw new InvalidOperationException();
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]

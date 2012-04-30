@@ -54,12 +54,42 @@ namespace PHP.Core.AST
 		internal virtual bool IsDeclaration { get { return false; } }
 
 		internal virtual bool SkipInPureGlobalCode() { return false; }
-       
 	}
 
-	#endregion
+    #region StatementUtils
 
-	#region BlockStmt
+    internal static class StatementUtils
+    {
+        /// <summary>
+        /// Analyze all the <see cref="Statement"/> objects in the <paramref name="statements"/> list.
+        /// This methods replaces items in the original list if <see cref="Statement.Analyze"/> returns a different instance.
+        /// </summary>
+        /// <param name="statements">List of statements to be analyzed.</param>
+        /// <param name="analyzer">Current <see cref="Analyzer"/>.</param>
+        public static void Analyze(this List<Statement>/*!*/statements, Analyzer/*!*/ analyzer)
+        {
+            Debug.Assert(statements != null);
+            Debug.Assert(analyzer != null);
+
+            // analyze statements:
+            for (int i = 0; i < statements.Count; i++)
+            {
+                // analyze the statement
+                var statement = statements[i];
+                var analyzed = statement.Analyze(analyzer);
+
+                // update the statement in the list
+                if (!object.ReferenceEquals(statement, analyzer))
+                    statements[i] = analyzed;
+            }
+        }
+    }
+
+    #endregion
+
+    #endregion
+
+    #region BlockStmt
 
 	/// <summary>
 	/// Block statement.
@@ -86,10 +116,7 @@ namespace PHP.Core.AST
 				return EmptyStmt.Unreachable;
 			}
 
-			for (int i = 0; i < statements.Count; i++)
-			{
-				statements[i] = statements[i].Analyze(analyzer);
-			}
+            this.Statements.Analyze(analyzer);
 			return this;
 		}
 
