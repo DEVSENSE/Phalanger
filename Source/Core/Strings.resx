@@ -2074,4 +2074,7 @@ non-infringement.
   <data name="spl_empty_iterator_value_access" xml:space="preserve">
     <value>Accessing the value of an EmptyIterator</value>
   </data>
+  <data name="instantiation_not_allowed" xml:space="preserve">
+    <value>Instantiation of '{0}' is not allowed</value>
+  </data>
 </root>

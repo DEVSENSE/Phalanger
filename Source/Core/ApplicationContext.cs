@@ -192,6 +192,8 @@ namespace PHP.Core
             addType(typeof(Library.SPL.SplObserver));
             addType(typeof(Library.SPL.SplSubject));
 
+            addType(typeof(Library.SPL.Closure));
+
             // Reflection:
             AddExportMethod(addType(typeof(Library.SPL.Reflector)));
             addType(typeof(Library.SPL.ReflectionClass));

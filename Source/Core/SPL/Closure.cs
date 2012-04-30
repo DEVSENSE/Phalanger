@@ -26,7 +26,7 @@ namespace PHP.Library.SPL
     /// Prototype class for PHP closure.
     /// </summary>
     [ImplementsType]
-    public class Closure : PhpObject
+    public sealed class Closure : PhpObject
     {
         private readonly RoutineDelegate/*!*/lambda;
         private readonly PhpArray parameter;
@@ -60,7 +60,7 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public object __construct(ScriptContext context)
         {
-            // TODO: "PHP Catchable fatal error:  Instantiation of 'Closure' is not allowed"
+            PhpException.Throw(PhpError.Error, string.Format(CoreResources.instantiation_not_allowed, "Closure"));
             return null;
         }
 

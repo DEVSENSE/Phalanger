@@ -2714,6 +2714,15 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Instantiation of &apos;{0}&apos; is not allowed.
+        /// </summary>
+        public static string instantiation_not_allowed {
+            get {
+                return ResourceManager.GetString("instantiation_not_allowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot add item to array - integer key reached maximal possible value (2^31-1).
         /// </summary>
         public static string integer_key_reached_max_value {

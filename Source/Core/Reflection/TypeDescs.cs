@@ -2399,7 +2399,7 @@ namespace PHP.Core.Reflection
 		{
 			// this type-desc represents non-generic type or the generic definition => create the ClrType for it:
 			if (!RealType.IsGenericType || RealType.IsGenericTypeDefinition)
-				return new PhpType(this, QualifiedName.FromClrNotation(RealType.FullName, true));
+				return new PhpType(this, QualifiedName.FromClrNotation(RealType));
 
 			// this type-desc represents a generic type instantiation; 
 			// all instantiations of a single generic type share the same ClrType => do not create new ClrType;
