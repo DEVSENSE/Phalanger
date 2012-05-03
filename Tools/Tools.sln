@@ -12,9 +12,11 @@ Project("{94D665CA-D915-4DE1-AA53-913450A1AE2D}") = "SilverlightSecurityVerifier
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PolicyFileGen", "PolicyFileGen\PolicyFileGen.csproj", "{B4D10B92-31C3-4DB5-9CD4-CBE9215AD4F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionReplacer", "VersionReplacer\VersionReplacer.csproj", "{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 7
+		SccNumberOfProjects = 8
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
@@ -36,6 +38,9 @@ Global
 		SccProjectUniqueName6 = PolicyFileGen\\PolicyFileGen.csproj
 		SccProjectName6 = PolicyFileGen
 		SccLocalPath6 = PolicyFileGen
+		SccProjectUniqueName7 = VersionReplacer\\VersionReplacer.csproj
+		SccProjectName7 = VersionReplacer
+		SccLocalPath7 = VersionReplacer
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +119,18 @@ Global
 		{B4D10B92-31C3-4DB5-9CD4-CBE9215AD4F0}.Release|Win32.ActiveCfg = Release|x86
 		{B4D10B92-31C3-4DB5-9CD4-CBE9215AD4F0}.Release|x86.ActiveCfg = Release|x86
 		{B4D10B92-31C3-4DB5-9CD4-CBE9215AD4F0}.Release|x86.Build.0 = Release|x86
+		{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}.Debug|Win32.ActiveCfg = Debug|x86
+		{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}.Debug|x86.ActiveCfg = Debug|x86
+		{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}.Debug|x86.Build.0 = Debug|x86
+		{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}.Release|Any CPU.ActiveCfg = Release|x86
+		{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}.Release|Mixed Platforms.Build.0 = Release|x86
+		{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}.Release|Win32.ActiveCfg = Release|x86
+		{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}.Release|x86.ActiveCfg = Release|x86
+		{0C213A39-E376-4C9B-8A7B-E5BC8AC71DAB}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
