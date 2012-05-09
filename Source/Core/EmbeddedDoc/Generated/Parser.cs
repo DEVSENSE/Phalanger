@@ -78,101 +78,105 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 
     states = new State[]
     {
-      new State(0, -15, new int[] {-1,1,-6,3,-15,15}),
+      new State(0, -16, new int[] {-1,1,-6,3,-15,15}),
       new State(1, new int[] {2,2}),
       new State(2, -1),
       new State(3, -4, new int[] {-2,4}),
-      new State(4, new int[] {21,8,22,42,23,47,24,52,2,-2}, new int[] {-3,5}),
-      new State(5, -10, new int[] {-14,6}),
+      new State(4, new int[] {21,8,22,45,23,50,24,55,2,-2}, new int[] {-3,5}),
+      new State(5, -11, new int[] {-14,6}),
       new State(6, new int[] {3,7,21,-3,22,-3,23,-3,24,-3,2,-3}),
-      new State(7, -9),
+      new State(7, -10),
       new State(8, new int[] {3,9}),
-      new State(9, new int[] {13,33,17,34}, new int[] {-9,10,-10,30,-11,41}),
+      new State(9, new int[] {13,36,17,37,8,28}, new int[] {-9,10,-4,30,-10,33,-11,44,-12,27}),
       new State(10, new int[] {3,11}),
       new State(11, new int[] {8,28}, new int[] {-4,12,-12,27}),
       new State(12, new int[] {3,13}),
-      new State(13, -15, new int[] {-6,14,-15,15}),
+      new State(13, -16, new int[] {-6,14,-15,15}),
       new State(14, -5),
-      new State(15, -19, new int[] {-7,16}),
-      new State(16, new int[] {16,19,25,20,21,-16,22,-16,23,-16,24,-16,2,-16,3,-16}, new int[] {-16,17,-8,18}),
-      new State(17, -17),
-      new State(18, -18),
-      new State(19, -20),
-      new State(20, -21, new int[] {-17,21}),
+      new State(15, -20, new int[] {-7,16}),
+      new State(16, new int[] {16,19,25,20,21,-17,22,-17,23,-17,24,-17,2,-17,3,-17}, new int[] {-16,17,-8,18}),
+      new State(17, -18),
+      new State(18, -19),
+      new State(19, -21),
+      new State(20, -22, new int[] {-17,21}),
       new State(21, new int[] {3,22}),
       new State(22, new int[] {13,23}),
-      new State(23, -22, new int[] {-18,24}),
+      new State(23, -23, new int[] {-18,24}),
       new State(24, new int[] {16,25}),
       new State(25, new int[] {12,26}),
-      new State(26, -23),
-      new State(27, -14),
+      new State(26, -24),
+      new State(27, -15),
       new State(28, new int[] {13,29}),
-      new State(29, -33),
-      new State(30, new int[] {9,31,3,-24}),
-      new State(31, new int[] {13,33,17,34}, new int[] {-11,32}),
-      new State(32, -25),
-      new State(33, -27),
-      new State(34, new int[] {10,35,9,-28,3,-28,11,-28}),
-      new State(35, new int[] {11,36,13,33,17,34}, new int[] {-11,38}),
-      new State(36, new int[] {13,33,17,34,9,-29,3,-29,11,-29}, new int[] {-11,37}),
-      new State(37, -31),
-      new State(38, new int[] {11,39}),
-      new State(39, new int[] {13,33,17,34,9,-30,3,-30,11,-30}, new int[] {-11,40}),
+      new State(29, -34),
+      new State(30, new int[] {3,31}),
+      new State(31, -16, new int[] {-6,32,-15,15}),
+      new State(32, -6),
+      new State(33, new int[] {9,34,3,-25}),
+      new State(34, new int[] {13,36,17,37}, new int[] {-11,35}),
+      new State(35, -26),
+      new State(36, -28),
+      new State(37, new int[] {10,38,9,-29,3,-29,11,-29}),
+      new State(38, new int[] {11,39,13,36,17,37}, new int[] {-11,41}),
+      new State(39, new int[] {13,36,17,37,9,-30,3,-30,11,-30}, new int[] {-11,40}),
       new State(40, -32),
-      new State(41, -26),
-      new State(42, new int[] {3,43}),
-      new State(43, new int[] {13,33,17,34}, new int[] {-9,44,-10,30,-11,41}),
-      new State(44, new int[] {3,45}),
-      new State(45, -15, new int[] {-6,46,-15,15}),
-      new State(46, -6),
+      new State(41, new int[] {11,42}),
+      new State(42, new int[] {13,36,17,37,9,-31,3,-31,11,-31}, new int[] {-11,43}),
+      new State(43, -33),
+      new State(44, -27),
+      new State(45, new int[] {3,46}),
+      new State(46, new int[] {13,36,17,37}, new int[] {-9,47,-10,33,-11,44}),
       new State(47, new int[] {3,48}),
-      new State(48, new int[] {13,33,17,34}, new int[] {-9,49,-10,30,-11,41}),
-      new State(49, new int[] {3,50}),
-      new State(50, -15, new int[] {-6,51,-15,15}),
-      new State(51, -7),
+      new State(48, -16, new int[] {-6,49,-15,15}),
+      new State(49, -7),
+      new State(50, new int[] {3,51}),
+      new State(51, new int[] {13,36,17,37}, new int[] {-9,52,-10,33,-11,44}),
       new State(52, new int[] {3,53}),
-      new State(53, new int[] {20,56,18,57,19,58}, new int[] {-5,54}),
-      new State(54, -15, new int[] {-6,55,-15,15}),
-      new State(55, -8),
-      new State(56, -11),
-      new State(57, -12),
-      new State(58, -13),
+      new State(53, -16, new int[] {-6,54,-15,15}),
+      new State(54, -8),
+      new State(55, new int[] {3,56}),
+      new State(56, new int[] {20,59,18,60,19,61}, new int[] {-5,57}),
+      new State(57, -16, new int[] {-6,58,-15,15}),
+      new State(58, -9),
+      new State(59, -12),
+      new State(60, -13),
+      new State(61, -14),
     };
 
-    rules = new Rule[34];
+    rules = new Rule[35];
     rules[1]=new Rule(-13, new int[]{-1,2});
     rules[2]=new Rule(-1, new int[]{-6,-2});
     rules[3]=new Rule(-2, new int[]{-2,-3,-14});
     rules[4]=new Rule(-2, new int[]{});
     rules[5]=new Rule(-3, new int[]{21,3,-9,3,-4,3,-6});
-    rules[6]=new Rule(-3, new int[]{22,3,-9,3,-6});
-    rules[7]=new Rule(-3, new int[]{23,3,-9,3,-6});
-    rules[8]=new Rule(-3, new int[]{24,3,-5,-6});
-    rules[9]=new Rule(-14, new int[]{-14,3});
-    rules[10]=new Rule(-14, new int[]{});
-    rules[11]=new Rule(-5, new int[]{20});
-    rules[12]=new Rule(-5, new int[]{18});
-    rules[13]=new Rule(-5, new int[]{19});
-    rules[14]=new Rule(-4, new int[]{-12});
-    rules[15]=new Rule(-15, new int[]{});
-    rules[16]=new Rule(-16, new int[]{});
-    rules[17]=new Rule(-6, new int[]{-15,-7,-16});
-    rules[18]=new Rule(-7, new int[]{-7,-8});
-    rules[19]=new Rule(-7, new int[]{});
-    rules[20]=new Rule(-8, new int[]{16});
-    rules[21]=new Rule(-17, new int[]{});
-    rules[22]=new Rule(-18, new int[]{});
-    rules[23]=new Rule(-8, new int[]{25,-17,3,13,-18,16,12});
-    rules[24]=new Rule(-9, new int[]{-10});
-    rules[25]=new Rule(-10, new int[]{-10,9,-11});
-    rules[26]=new Rule(-10, new int[]{-11});
-    rules[27]=new Rule(-11, new int[]{13});
-    rules[28]=new Rule(-11, new int[]{17});
-    rules[29]=new Rule(-11, new int[]{17,10,11});
-    rules[30]=new Rule(-11, new int[]{17,10,-11,11});
-    rules[31]=new Rule(-11, new int[]{17,10,11,-11});
-    rules[32]=new Rule(-11, new int[]{17,10,-11,11,-11});
-    rules[33]=new Rule(-12, new int[]{8,13});
+    rules[6]=new Rule(-3, new int[]{21,3,-4,3,-6});
+    rules[7]=new Rule(-3, new int[]{22,3,-9,3,-6});
+    rules[8]=new Rule(-3, new int[]{23,3,-9,3,-6});
+    rules[9]=new Rule(-3, new int[]{24,3,-5,-6});
+    rules[10]=new Rule(-14, new int[]{-14,3});
+    rules[11]=new Rule(-14, new int[]{});
+    rules[12]=new Rule(-5, new int[]{20});
+    rules[13]=new Rule(-5, new int[]{18});
+    rules[14]=new Rule(-5, new int[]{19});
+    rules[15]=new Rule(-4, new int[]{-12});
+    rules[16]=new Rule(-15, new int[]{});
+    rules[17]=new Rule(-16, new int[]{});
+    rules[18]=new Rule(-6, new int[]{-15,-7,-16});
+    rules[19]=new Rule(-7, new int[]{-7,-8});
+    rules[20]=new Rule(-7, new int[]{});
+    rules[21]=new Rule(-8, new int[]{16});
+    rules[22]=new Rule(-17, new int[]{});
+    rules[23]=new Rule(-18, new int[]{});
+    rules[24]=new Rule(-8, new int[]{25,-17,3,13,-18,16,12});
+    rules[25]=new Rule(-9, new int[]{-10});
+    rules[26]=new Rule(-10, new int[]{-10,9,-11});
+    rules[27]=new Rule(-10, new int[]{-11});
+    rules[28]=new Rule(-11, new int[]{13});
+    rules[29]=new Rule(-11, new int[]{17});
+    rules[30]=new Rule(-11, new int[]{17,10,11});
+    rules[31]=new Rule(-11, new int[]{17,10,-11,11});
+    rules[32]=new Rule(-11, new int[]{17,10,11,-11});
+    rules[33]=new Rule(-11, new int[]{17,10,-11,11,-11});
+    rules[34]=new Rule(-12, new int[]{8,13});
 
     nonTerminals = new string[] {"", "start", "element_block", "element", 
       "identifier_attribute", "access_modifier", "compound_attribute", "expression_list", 
@@ -202,82 +206,85 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
       case 5: // element -> T_ELEMENT_PARAM T_WHITESPACE type_attribute T_WHITESPACE identifier_attribute T_WHITESPACE compound_attribute 
 { yyval.Object = new Tuple<DocElementType,DocElement>(DocElementType.Param, new DocParamElement(value_stack.array[value_stack.top-5].yyval.Object as DocTypeAttribute, value_stack.array[value_stack.top-3].yyval.Object as DocIdentifierAttribute, value_stack.array[value_stack.top-1].yyval.Object as DocCompoundAttribute)); }
         return;
-      case 6: // element -> T_ELEMENT_RETURN T_WHITESPACE type_attribute T_WHITESPACE compound_attribute 
+      case 6: // element -> T_ELEMENT_PARAM T_WHITESPACE identifier_attribute T_WHITESPACE compound_attribute 
+{ yyval.Object = new Tuple<DocElementType,DocElement>(DocElementType.Param, new DocParamElement(null, value_stack.array[value_stack.top-3].yyval.Object as DocIdentifierAttribute, value_stack.array[value_stack.top-1].yyval.Object as DocCompoundAttribute)); }
+        return;
+      case 7: // element -> T_ELEMENT_RETURN T_WHITESPACE type_attribute T_WHITESPACE compound_attribute 
 { yyval.Object = new Tuple<DocElementType,DocElement>(DocElementType.Return, new DocReturnElement(value_stack.array[value_stack.top-3].yyval.Object as DocTypeAttribute, value_stack.array[value_stack.top-1].yyval.Object as DocCompoundAttribute)); }
         return;
-      case 7: // element -> T_ELEMENT_VAR T_WHITESPACE type_attribute T_WHITESPACE compound_attribute 
+      case 8: // element -> T_ELEMENT_VAR T_WHITESPACE type_attribute T_WHITESPACE compound_attribute 
 { yyval.Object = new Tuple<DocElementType,DocElement>(DocElementType.Var, new DocVarElement(value_stack.array[value_stack.top-3].yyval.Object as DocTypeAttribute, value_stack.array[value_stack.top-1].yyval.Object as DocCompoundAttribute)); }
         return;
-      case 8: // element -> T_ELEMENT_ACCESS T_WHITESPACE access_modifier compound_attribute 
+      case 9: // element -> T_ELEMENT_ACCESS T_WHITESPACE access_modifier compound_attribute 
 { yyval.Object = new Tuple<DocElementType,DocElement>(DocElementType.Access, new DocAccessElement(new DocAccessModifierAttribute((DocAccessModifier)(value_stack.array[value_stack.top-2].yyval.Object)))); }
         return;
-      case 11: // access_modifier -> T_PUBLIC 
+      case 12: // access_modifier -> T_PUBLIC 
 { yyval.Object = DocAccessModifier.Public; }
         return;
-      case 12: // access_modifier -> T_PRIVATE 
+      case 13: // access_modifier -> T_PRIVATE 
 { yyval.Object = DocAccessModifier.Private; }
         return;
-      case 13: // access_modifier -> T_PROTECTED 
+      case 14: // access_modifier -> T_PROTECTED 
 { yyval.Object = DocAccessModifier.Protected; }
         return;
-      case 14: // identifier_attribute -> variable 
+      case 15: // identifier_attribute -> variable 
 { yyval.Object = new DocIdentifierAttribute(value_stack.array[value_stack.top-1].yyval.String); }
         return;
-      case 15: // @1 -> 
+      case 16: // @1 -> 
 { CompoundTokens = true; }
         return;
-      case 16: // @2 -> 
+      case 17: // @2 -> 
 { CompoundTokens = false; }
         return;
-      case 17: // compound_attribute -> @1 expression_list @2 
+      case 18: // compound_attribute -> @1 expression_list @2 
 { yyval.Object = new DocCompoundAttribute(value_stack.array[value_stack.top-2].yyval.Object as List<DocExpression>); }
         return;
-      case 18: // expression_list -> expression_list expression 
+      case 19: // expression_list -> expression_list expression 
 { (value_stack.array[value_stack.top-2].yyval.Object as List<DocExpression>).Add(value_stack.array[value_stack.top-1].yyval.Object as DocExpression); yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
         return;
-      case 19: // expression_list -> 
+      case 20: // expression_list -> 
 { yyval.Object = new List<DocExpression>(); }
         return;
-      case 20: // expression -> T_COMPOUND 
+      case 21: // expression -> T_COMPOUND 
 { yyval.Object = new DocTextExpr(value_stack.array[value_stack.top-1].yyval.String.ToString()); }
         return;
-      case 21: // @3 -> 
+      case 22: // @3 -> 
 { CompoundTokens = false; }
         return;
-      case 22: // @4 -> 
+      case 23: // @4 -> 
 { CompoundTokens = true; }
         return;
-      case 23: // expression -> T_INLINE_LINK @3 T_WHITESPACE T_IDENTIFIER @4 T_COMPOUND T_RCURLY 
+      case 24: // expression -> T_INLINE_LINK @3 T_WHITESPACE T_IDENTIFIER @4 T_COMPOUND T_RCURLY 
 { yyval.Object = new DocLinkExpr(value_stack.array[value_stack.top-5].yyval.String.ToString(), value_stack.array[value_stack.top-4].yyval.String.ToString()); }
         return;
-      case 24: // type_attribute -> type_list 
+      case 25: // type_attribute -> type_list 
 { yyval.Object = new DocTypeAttribute(value_stack.array[value_stack.top-1].yyval.Object as List<DocRawType>); }
         return;
-      case 25: // type_list -> type_list T_BAR type 
+      case 26: // type_list -> type_list T_BAR type 
 { (value_stack.array[value_stack.top-3].yyval.Object as List<DocRawType>).Add(value_stack.array[value_stack.top-1].yyval.Object as DocRawType); yyval.Object = value_stack.array[value_stack.top-3].yyval.Object; }
         return;
-      case 26: // type_list -> type 
+      case 27: // type_list -> type 
 { yyval.Object = new List<DocRawType>(); (yyval.Object as List<DocRawType>).Add(value_stack.array[value_stack.top-1].yyval.Object as DocRawType); }
         return;
-      case 27: // type -> T_IDENTIFIER 
+      case 28: // type -> T_IDENTIFIER 
 { yyval.Object = new DocRawTypeIdentifier(value_stack.array[value_stack.top-1].yyval.String.ToString()); }
         return;
-      case 28: // type -> T_ARRAY 
+      case 29: // type -> T_ARRAY 
 { yyval.Object = new DocRawTypeArray(null, null); }
         return;
-      case 29: // type -> T_ARRAY T_LBRA T_RBRA 
+      case 30: // type -> T_ARRAY T_LBRA T_RBRA 
 { yyval.Object = new DocRawTypeArray(null, null); }
         return;
-      case 30: // type -> T_ARRAY T_LBRA type T_RBRA 
+      case 31: // type -> T_ARRAY T_LBRA type T_RBRA 
 { yyval.Object = new DocRawTypeArray(value_stack.array[value_stack.top-2].yyval.Object as DocRawType, null); }
         return;
-      case 31: // type -> T_ARRAY T_LBRA T_RBRA type 
+      case 32: // type -> T_ARRAY T_LBRA T_RBRA type 
 { yyval.Object = new DocRawTypeArray(null, value_stack.array[value_stack.top-1].yyval.Object as DocRawType); }
         return;
-      case 32: // type -> T_ARRAY T_LBRA type T_RBRA type 
+      case 33: // type -> T_ARRAY T_LBRA type T_RBRA type 
 { yyval.Object = new DocRawTypeArray(value_stack.array[value_stack.top-3].yyval.Object as DocRawType, value_stack.array[value_stack.top-1].yyval.Object as DocRawType); }
         return;
-      case 33: // variable -> T_DOLLAR T_IDENTIFIER 
+      case 34: // variable -> T_DOLLAR T_IDENTIFIER 
 { yyval.String = value_stack.array[value_stack.top-1].yyval.String; }
         return;
     }

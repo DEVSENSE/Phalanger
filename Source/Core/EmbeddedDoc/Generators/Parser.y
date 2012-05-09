@@ -111,6 +111,9 @@ element:
 	T_ELEMENT_PARAM T_WHITESPACE type_attribute T_WHITESPACE identifier_attribute T_WHITESPACE compound_attribute
 		{ $$ = new Tuple<DocElementType,DocElement>(DocElementType.Param, new DocParamElement($3 as DocTypeAttribute, $5 as DocIdentifierAttribute, $7 as DocCompoundAttribute)); }
 	|
+	T_ELEMENT_PARAM T_WHITESPACE identifier_attribute T_WHITESPACE compound_attribute
+		{ $$ = new Tuple<DocElementType,DocElement>(DocElementType.Param, new DocParamElement(null, $3 as DocIdentifierAttribute, $5 as DocCompoundAttribute)); }
+	|
 	T_ELEMENT_RETURN T_WHITESPACE type_attribute T_WHITESPACE compound_attribute
 		{ $$ = new Tuple<DocElementType,DocElement>(DocElementType.Return, new DocReturnElement($3 as DocTypeAttribute, $5 as DocCompoundAttribute)); }
 	|
