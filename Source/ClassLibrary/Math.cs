@@ -934,61 +934,294 @@ namespace PHP.Library
 
 		#region  ceil, floor, round, abs, fmod, max, min
 
-		[ImplementsFunction("ceil"/*, FunctionImplOptions.Special*/)]
+		[ImplementsFunction("ceil")]
         [PureFunction]
         public static double Ceiling(double x)
 		{
 			return Math.Ceiling(x);
 		}
 
-		[ImplementsFunction("floor"/*, FunctionImplOptions.Special*/)]
+		[ImplementsFunction("floor")]
         [PureFunction]
         public static double Floor(double x)
 		{
 			return Math.Floor(x);
 		}
 
-		[ImplementsFunction("round"/*, FunctionImplOptions.Special*/)]
+        /// <summary>
+        /// Rounds a float.
+        /// </summary>
+        /// <param name="x">The value to round.</param>
+        /// <returns>The rounded value.</returns>
+		[ImplementsFunction("round")]
         [PureFunction]
         public static double Round(double x)
 		{
-			return Math.Round(x);
+            return RoundInternal(x, RoundMode.HalfUp);
 		}
 
-		private static double[] pow10 = 
-		{
-			1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0,
-			1000000.0, 10000000.0, 100000000.0, 1000000000.0
-		};
-
-		[ImplementsFunction("round"/*, FunctionImplOptions.Special*/)]
+        /// <summary>
+        /// Rounds a float.
+        /// </summary>
+        /// <param name="x">The value to round.</param>
+        /// <param name="precision">The optional number of decimal digits to round to. Can be less than zero to ommit digits at the end. Default is <c>0</c>.</param>
+        /// <returns>The rounded value.</returns>
+        [ImplementsFunction("round")]
         [PureFunction]
-        public static double Round(double x, int precision)
+        public static double Round(double x, int precision /*= 0*/)
 		{
-			long p = Math.Abs((long)precision);
-			double power;
-
-			if (p < pow10.Length)
-			{
-				power = pow10[p];
-			}
-			else
-			{
-				long _lpower;
-				Power(10, p, out _lpower, out power);
-			}
-
-			if (precision < 0)
-				power = 1 / power;
-
-			x *= power;
-
-			if (x >= 0.0) x = Math.Floor(x + 0.50000000001);
-			else x = Math.Ceiling(x - 0.50000000001);
-
-			x /= power;
-			return x;
+            return Round(x, precision, RoundMode.HalfUp);
 		}
+
+        /// <summary>
+        /// <c>$mode</c> parameter for <see cref="Round(double,int,RoundMode)"/> function.
+        /// </summary>
+        public enum RoundMode : int
+        {
+            /// <summary>
+            /// When a number is halfway between two others, it is rounded away from zero.
+            /// </summary>
+            [ImplementsConstant("PHP_ROUND_HALF_UP")]
+            HalfUp = 1,
+
+            /// <summary>
+            /// When a number is halfway between two others, it is rounded to the zero.
+            /// </summary>
+            [ImplementsConstant("PHP_ROUND_HALF_DOWN")]
+            HalfDown = 2,
+
+            /// <summary>
+            /// When a number is halfway between two others, it is rounded toward the nearest even number.
+            /// </summary>
+            [ImplementsConstant("PHP_ROUND_HALF_EVEN")]
+            HalfEven = 3,
+
+            /// <summary>
+            /// When a number is halfway between two others, it is rounded toward the nearest odd number.
+            /// </summary>
+            [ImplementsConstant("PHP_ROUND_HALF_ODD")]
+            HalfOdd = 4,
+        }
+
+        #region Round Helpers
+
+        /// <summary>
+        /// Returns precise value of 10^<paramref name="power"/>.
+        /// </summary>
+        private static double Power10Value(int power)
+        {
+            switch (power)
+            {
+                case -15: return .000000000000001;
+                case -14: return .00000000000001;
+                case -13: return .0000000000001;
+                case -12: return .000000000001;
+                case -11: return .00000000001;
+                case -10: return .0000000001;
+                case -9: return .000000001;
+                case -8: return .00000001;
+                case -7: return .0000001;
+                case -6: return .000001;
+                case -5: return .00001;
+                case -4: return .0001;
+                case -3: return .001;
+                case -2: return .01;
+                case -1: return .1;
+                case 0: return 1.0;
+                case 1: return 10.0;
+                case 2: return 100.0;
+                case 3: return 1000.0;
+                case 4: return 10000.0;
+                case 5: return 100000.0;
+                case 6: return 1000000.0;
+                case 7: return 10000000.0;
+                case 8: return 100000000.0;
+                case 9: return 1000000000.0;
+                case 10: return 10000000000.0;
+                case 11: return 100000000000.0;
+                case 12: return 1000000000000.0;
+                case 13: return 10000000000000.0;
+                case 14: return 100000000000000.0;
+                case 15: return 1000000000000000.0;
+                default: return Math.Pow(10.0, (double)power);
+            }
+        }
+
+        private static double RoundInternal(double value, RoundMode mode)
+        {
+            double tmp_value;
+
+            if (value >= 0.0)
+            {
+                tmp_value = Math.Floor(value + 0.5);
+                if (mode != RoundMode.HalfUp)
+                {
+                    if ((mode == RoundMode.HalfDown && value == (-0.5 + tmp_value)) ||
+                        (mode == RoundMode.HalfEven && value == (0.5 + 2 * Math.Floor(tmp_value * .5))) ||
+                        (mode == RoundMode.HalfOdd && value == (0.5 + 2 * Math.Floor(tmp_value * .5) - 1.0)))
+                    {
+                        tmp_value = tmp_value - 1.0;
+                    }
+                }
+            }
+            else
+            {
+                tmp_value = Math.Ceiling(value - 0.5);
+                if (mode != RoundMode.HalfUp)
+                {
+                    if ((mode == RoundMode.HalfDown && value == (0.5 + tmp_value)) ||
+                        (mode == RoundMode.HalfEven && value == (-0.5 + 2 * Math.Ceiling(tmp_value * .5))) ||
+                        (mode == RoundMode.HalfOdd && value == (-0.5 + 2 * Math.Ceiling(tmp_value * .5) + 1.0)))
+                    {
+                        tmp_value = tmp_value + 1.0;
+                    }
+                }
+            }
+
+            return tmp_value;
+        }
+
+        private static readonly double[] _Log10AbsValues = new[]
+        {
+			1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1,
+			1e0,  1e1,  1e2,  1e3,  1e4,  1e5,  1e6,  1e7,
+			1e8,  1e9,  1e10, 1e11, 1e12, 1e13, 1e14, 1e15,
+			1e16, 1e17, 1e18, 1e19, 1e20, 1e21, 1e22
+        };
+
+        private static int _Log10Abs(double value)
+        {
+            value = Math.Abs(value);
+
+            if (value < 1e-8 || value > 1e23)
+            {
+                return (int)Math.Floor(Math.Log10(value));
+            }
+            else
+            {
+                var values = _Log10AbsValues;
+
+                /* Do a binary search with 5 steps */
+                var result = 16;
+                if (value < values[result])
+                    result -= 8;
+                else
+                    result += 8;
+                
+                if (value < values[result])
+                    result -= 4;
+                else
+                    result += 4;
+                
+                if (value < values[result])
+                    result -= 2;
+                else
+                    result += 2;
+                
+                if (value < values[result])
+                    result -= 1;
+                else
+                    result += 1;
+                
+                if (value < values[result])
+                    result -= 1;
+                
+                result -= 8;
+
+                //
+                return result;
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Rounds a float.
+        /// </summary>
+        /// <param name="x">The value to round.</param>
+        /// <param name="precision">The optional number of decimal digits to round to. Can be less than zero to ommit digits at the end. Default is <c>0</c>.</param>
+        /// <param name="mode">One of PHP_ROUND_HALF_UP, PHP_ROUND_HALF_DOWN, PHP_ROUND_HALF_EVEN, or PHP_ROUND_HALF_ODD. Default is <c>PHP_ROUND_HALF_UP</c>.</param>
+        /// <returns>The rounded value.</returns>
+        [ImplementsFunction("round")]
+        [PureFunction]
+        public static double Round(double x, int precision /*= 0*/, RoundMode mode /*= RoundMode.HalfUp*/)
+        {
+            if (Double.IsInfinity(x) || Double.IsNaN(x))
+                return x;
+
+            if (precision == 0)
+            {
+                return RoundInternal(x, mode);
+            }
+            else
+            {
+                if (precision > 23 || precision < -23)
+                    return x;
+
+                //
+                // Following code is taken from math.c to avoid incorrect .NET rounding
+                //
+
+                var precision_places = 14 - _Log10Abs(x);
+
+                var f1 = Power10Value(precision);
+                double tmp_value;
+
+                /* If the decimal precision guaranteed by FP arithmetic is higher than
+                   the requested places BUT is small enough to make sure a non-zero value
+                   is returned, pre-round the result to the precision */
+                if (precision_places > precision && precision_places - precision < 15)
+                {
+                    var f2 = Power10Value(precision_places);
+                    tmp_value = x * f2;
+                    /* preround the result (tmp_value will always be something * 1e14,
+                       thus never larger than 1e15 here) */
+                    tmp_value = RoundInternal(tmp_value, mode);
+                    /* now correctly move the decimal point */
+                    f2 = Power10Value(Math.Abs(precision - precision_places));
+                    /* because places < precision_places */
+                    tmp_value = tmp_value / f2;
+                }
+                else
+                {
+                    /* adjust the value */
+                    tmp_value = x * f1;
+                    /* This value is beyond our precision, so rounding it is pointless */
+                    if (Math.Abs(tmp_value) >= 1e15)
+                        return x;
+                }
+
+                /* round the temp value */
+                tmp_value = RoundInternal(tmp_value, mode);
+
+                /* see if it makes sense to use simple division to round the value */
+                //if (precision < 23 && precision > -23)
+                {
+                    tmp_value = tmp_value / f1;
+                }
+                //else
+                //{
+                //    /* Simple division can't be used since that will cause wrong results.
+                //       Instead, the number is converted to a string and back again using
+                //       strtod(). strtod() will return the nearest possible FP value for
+                //       that string. */
+
+                //    /* 40 Bytes should be more than enough for this format string. The
+                //       float won't be larger than 1e15 anyway. But just in case, use
+                //       snprintf() and make sure the buffer is zero-terminated */
+                //    char buf[40];
+                //    snprintf(buf, 39, "%15fe%d", tmp_value, -places);
+                //    buf[39] = '\0';
+                //    tmp_value = zend_strtod(buf, NULL);
+                //    /* couldn't convert to string and back */
+                //    if (!zend_finite(tmp_value) || zend_isnan(tmp_value)) {
+                //        tmp_value = value;
+                //    }
+                //}
+
+                return tmp_value;
+            }
+        }
 
 		[ImplementsFunction("abs")]
         [PureFunction]
