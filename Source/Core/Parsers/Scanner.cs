@@ -527,7 +527,16 @@ namespace PHP.Core.Parsers
 
 					case Tokens.T_SEMI:
 					default:
-						this.lastDocComment = null;
+
+                        // clear last PHPDoc if there is a token not corresponding to function or class declaration
+                        if (lastDocComment != null &&
+                            token != Tokens.T_PUBLIC && token != Tokens.T_PRIVATE && token != Tokens.T_PROTECTED &&
+                            token != Tokens.T_STATIC && token != Tokens.T_FINAL &&
+                            token != Tokens.T_NAMESPACE)
+                        {
+                            this.lastDocComment = null;
+                        }
+
 						return token;
 				}
 			}
