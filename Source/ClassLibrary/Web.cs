@@ -405,7 +405,7 @@ namespace PHP.Library
 
 		#endregion
 
-		#region rawurlencode, rawurldecode, urlencode, urldecode, urlencode_unicode
+		#region rawurlencode, rawurldecode, urlencode, urldecode
 
 		/// <summary>
 		/// Decode URL-encoded strings
@@ -416,11 +416,7 @@ namespace PHP.Library
 		public static string RawUrlDecode(string str)
 		{
 			if (str == null) return null;
-#if SILVERLIGHT
             return HttpUtility.UrlDecode(str);//.Replace(' ','+');
-#else
-            return HttpUtility.UrlDecode(str, Configuration.Application.Globalization.PageEncoding);//.Replace(' ','+');
-#endif
         }
 
 		/// <summary>
@@ -432,11 +428,7 @@ namespace PHP.Library
 		public static string RawUrlEncode(string str)
 		{
 			if (str == null) return null;
-#if SILVERLIGHT
 			return HttpUtility.UrlEncode(str).Replace("+", "%20");
-#else
-			return PhpHttpUtility.UrlEncode(str, Configuration.Application.Globalization.PageEncoding).Replace("+", "%20");
-#endif
 		}
 
 		/// <summary>
@@ -445,11 +437,7 @@ namespace PHP.Library
 		[ImplementsFunction("urldecode")]
 		public static string UrlDecode(string str)
 		{
-#if SILVERLIGHT
             return HttpUtility.UrlDecode(str);
-#else
-			return HttpUtility.UrlDecode(str, Configuration.Application.Globalization.PageEncoding);
-#endif
 		}
 
 		/// <summary>
@@ -458,23 +446,19 @@ namespace PHP.Library
 		[ImplementsFunction("urlencode")]
 		public static string UrlEncode(string str)
 		{
-#if SILVERLIGHT
 			return HttpUtility.UrlEncode(str);
-#else
-			return PhpHttpUtility.UrlEncode(str, Configuration.Application.Globalization.PageEncoding);
-#endif
 		}
 
-#if !SILVERLIGHT
-		/// <summary>
-		/// Encodes a Unicode URL string.
-		/// </summary>  
-		[ImplementsFunction("urlencode_unicode")]
-		public static string UrlEncodeUnicode(string str)
-		{
-			return HttpUtility.UrlEncodeUnicode(str);//TODO: implement this in PhpHttpUtility
-		}
-#endif
+//#if !SILVERLIGHT
+//        /// <summary>
+//        /// Encodes a Unicode URL string.
+//        /// </summary>  
+//        [ImplementsFunction("urlencode_unicode")]
+//        public static string UrlEncodeUnicode(string str)
+//        {
+//            return HttpUtility.UrlEncodeUnicode(str);//TODO: implement this in PhpHttpUtility
+//        }
+//#endif
 
 		#endregion
 
