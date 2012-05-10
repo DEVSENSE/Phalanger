@@ -53,45 +53,50 @@ namespace PHP.Core.EmbeddedDoc
 			get { return tokenPosition; }
 		}
 
-		public int FetchToken()
+        private int FetchToken()
 		{
 			tokenPosition = new PHP.Core.EmbeddedDoc.Position();
 			tokenSemantics = new SemanticValueType();
 
-			while (true)
-			{
-				Tokens token = base.GetNextToken();
+            for (; ; )
+            {
+                Tokens token = base.GetNextToken();
 
-				switch (token)
-				{
-					case Tokens.T_BEGIN:
-					case Tokens.T_END:
-					case Tokens.T_LINE_BEGIN:
-						continue;
-					case Tokens.T_IDENTIFIER:
-					case Tokens.T_WHITESPACE:
-					case Tokens.T_INTEGER:
-					case Tokens.T_SYMBOL:
-					case Tokens.T_LBRA:
-					case Tokens.T_RBRA:
-					case Tokens.T_ARRAY:
-					case Tokens.T_PUBLIC:
-					case Tokens.T_PRIVATE:
-					case Tokens.T_PROTECTED:
-					case Tokens.T_DOLLAR:
-					case Tokens.T_BAR:
-						tokenSemantics.String = GetTokenString();
-						break;
-					case Tokens.T_NEWLINE:
-						tokenSemantics.String = "\n";
-						token = Tokens.T_WHITESPACE;
-						break;
-				}
+                switch (token)
+                {
+                    // ignore these:
+                    case Tokens.T_BEGIN:
+                    case Tokens.T_END:
+                    case Tokens.T_LINE_BEGIN:
+                        continue;
 
-				//Console.WriteLine(token + " \"" + TokenValue.ToString() + "\"");
+                    //// change these:
+                    //case Tokens.T_NEWLINE:
+                    //    token = Tokens.T_WHITESPACE;
+                    //    tokenSemantics.String = "\n";
+                    //    break;
 
-				return (int)token;
-			}
+                    // pass:
+                    case Tokens.T_IDENTIFIER:
+                    case Tokens.T_INTEGER:
+                    case Tokens.T_SYMBOL:
+                    case Tokens.T_LBRA:
+                    case Tokens.T_RBRA:
+                    case Tokens.T_ARRAY:
+                    case Tokens.T_PUBLIC:
+                    case Tokens.T_PRIVATE:
+                    case Tokens.T_PROTECTED:
+                    case Tokens.T_DOLLAR:
+                    case Tokens.T_BAR:
+                    case Tokens.T_WHITESPACE:
+                    case Tokens.T_NEWLINE:
+                    default:
+                        tokenSemantics.String = GetTokenString();
+                        break;
+                }
+
+                return (int)token;
+            }
 		}
 
 		public int CompoundToken()
@@ -115,7 +120,8 @@ namespace PHP.Core.EmbeddedDoc
 				{
 					case Tokens.T_IDENTIFIER:
 					case Tokens.T_WHITESPACE:
-					case Tokens.T_INTEGER:
+					case Tokens.T_NEWLINE:
+                    case Tokens.T_INTEGER:
 					case Tokens.T_SYMBOL:
 					case Tokens.T_LBRA:
 					case Tokens.T_RBRA:					
