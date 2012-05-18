@@ -643,7 +643,7 @@ namespace PHP.Library
                     return statCache.st_size;
 
                 // we are not calling full stat(), it is slow
-                return FileStreamWrapper.HandleNewFileSystemInfo(-1, path, (p) => unchecked((int)new FileInfo(p).Length));
+                return FileStreamWrapper.HandleNewFileSystemInfo(-1, path, (p) => FileSystemUtils.FileSize(new FileInfo(p)));
             }
 
             return -1;
