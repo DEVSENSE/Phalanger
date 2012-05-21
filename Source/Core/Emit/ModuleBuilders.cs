@@ -50,8 +50,8 @@ namespace PHP.Core.Emit
 		private TypeBuilder globalBuilder;
 
 		internal TransientModuleBuilder(int id, EvalKinds kind, TransientCompilationUnit/*!*/ compilationUnit,
-			TransientAssemblyBuilder/*!*/ assemblyBuilder, TransientModule containingModule)
-			: base(id, kind, compilationUnit, assemblyBuilder.TransientAssembly, containingModule)
+			TransientAssemblyBuilder/*!*/ assemblyBuilder, TransientModule containingModule, string sourcePath)
+            : base(id, kind, compilationUnit, assemblyBuilder.TransientAssembly, containingModule, sourcePath)
 		{
 			this.assemblyBuilder = assemblyBuilder;
 
