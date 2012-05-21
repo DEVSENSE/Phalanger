@@ -1049,8 +1049,6 @@ namespace PHP.Core
                 return;
             }
 
-            Debug.Assert(!this._contains(ref key), "Item with given key already exists!");
-            
             var _entries = this.entries;
             int p;
 
