@@ -2691,8 +2691,7 @@ namespace PHP.Library
         /// </summary>
         /// <param name="pattern"></param>
         /// <returns></returns>
-        /// <remarks>Not completly finished. Just works on small subset of cases
-        /// and only for *+
+        /// <remarks>Works on these cases *+, ++, ?+, {}+
         /// </remarks>
         private static string ConvertPossesiveToAtomicGroup(StringBuilder pattern)
         {
@@ -2728,6 +2727,8 @@ namespace PHP.Library
             while (i < pattern.Length)
             {
                 char ch = pattern[i];
+
+                //TODO: handle comments
 
                 if (!escaped)
                 {
@@ -2765,8 +2766,10 @@ namespace PHP.Library
 
                             LastBrace = braceStack.Pop();
 
-                            if (ch == '*')
+                            if (ch == '*' || ch == '?' || ch =='+')
                                 state = 4;
+                            else if (ch == '{')
+                                state = 5;
                             else
                             {
                                 state = DecideState(pattern, braceStack);
@@ -2775,7 +2778,7 @@ namespace PHP.Library
 
                             break;
 
-                        case 4: // (...)*+
+                        case 4: // (...)*+ | (...)++ | (...)?+
 
                             if (ch == '+')
                             {
@@ -2790,15 +2793,26 @@ namespace PHP.Library
 
                             break;
 
+                        case 5: // (...){
+
+                            if (ch == '}')
+                                state = 4;
+                            //if (!char.IsDigit(ch))
+                            //{
+                            //    state = DecideState(pattern, braceStack);
+                            //}
+
+                            break;
 
                         case 12: // [. 
                             if (ch == ']')
                                 state = 13;
-                            else if (ch == '(')
-                            {
-                                state = 2;
-                                pushToStack(i, ch);
-                            }
+                            //else 
+                            //if (ch == '(')
+                            //{
+                            //    state = 2;
+                            //    pushToStack(i, ch);
+                            //}
                             else if (ch == '[')
                             {
                                 pushToStack(i, ch);
@@ -2810,8 +2824,10 @@ namespace PHP.Library
 
                             LastBrace = braceStack.Pop();
 
-                            if (ch == '*')
+                            if (ch == '*' || ch == '?' || ch == '+')
                                 state = 14;
+                            else if (ch == '{')
+                                state = 15;
                             else
                                 state = DecideState(pattern, braceStack);
 
@@ -2833,6 +2849,13 @@ namespace PHP.Library
                                 state = DecideState(pattern, braceStack);
                                 continue;
                             }
+
+                        case 15: // [...]{
+
+                            if (ch == '}')
+                                state = 4;
+
+                            break;
                     }
                 }
                 else
@@ -2856,7 +2879,7 @@ namespace PHP.Library
 
                         case 1:// \.
 
-                            if (ch == '*')
+                            if (ch == '*' || ch == '?' || ch == '+')
                                 escape_state = 2;
                             else
                                 escape_state = 0;

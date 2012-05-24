@@ -180,9 +180,7 @@ namespace PHP.Core.Reflection
 
 		#endregion
 
-		public abstract ScriptInfo GetScriptInfo(PhpSourceFile sourceFile);
-
-        public abstract IEnumerable<ScriptModule> GetModules();
+		public abstract IEnumerable<ScriptModule> GetModules();
 
 		/// <summary>
 		/// Gets a type name of the script type given a subnamespace.
@@ -222,6 +220,7 @@ namespace PHP.Core.Reflection
 	{
 		public ScriptModule Module { get { return module; } internal /* friend SSAB */ set { module = value; } }
 		private ScriptModule module;
+        private Type scriptType;
 
 		public override bool IsMultiScript { get { return false; } }
 
@@ -234,10 +233,13 @@ namespace PHP.Core.Reflection
         /// <param name="realAssembly">Underlying real assembly.</param>
         /// <param name="libraryRoot">Offset path for scripts.</param>
         internal SingleScriptAssembly(ApplicationContext/*!*/ applicationContext, Assembly/*!*/ realAssembly, string libraryRoot)
-			: base(applicationContext, realAssembly)
-		{
-            this.module = new ScriptModule(libraryRoot, GetScriptType(), this, String.Empty);
-		}
+            : base(applicationContext, realAssembly)
+        {
+            var scriptType = this.GetScriptType();
+            var subnamespace = string.IsNullOrEmpty(scriptType.Namespace) ? string.Empty : (scriptType.Namespace + ".");
+
+            this.module = new ScriptModule(libraryRoot, scriptType, this, subnamespace);
+        }
 
 		/// <summary>
 		/// Used by the builder, written-up.
@@ -261,17 +263,19 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Gets a script type stored in a specified single-script assembly.
 		/// </summary>
-		public override ScriptInfo GetScriptInfo(PhpSourceFile name)
+        internal Type/*!*/GetScriptType()
 		{
-			return new ScriptInfo(GetScriptType());
-		}
+            if (this.scriptType == null)
+            {
+                var attr = ScriptAssemblyAttribute.Reflect(RealModule.Assembly);
+                Debug.Assert(attr != null);
+                Debug.Assert(!attr.IsMultiScript);
+                Debug.Assert(attr.SSAScriptType != null);
 
-		/// <summary>
-		/// Gets a script type stored in a specified single-script assembly.
-		/// </summary>
-		internal Type GetScriptType()
-		{
-			return RealModule.GetType(GetQualifiedScriptTypeName(null), false, true);
+                this.scriptType = attr.SSAScriptType;
+                Debug.Assert(this.scriptType != null);
+            }
+            return this.scriptType;
 		}
 
         /// <summary>
@@ -394,23 +398,6 @@ namespace PHP.Core.Reflection
 		internal void AddScriptModule(PhpSourceFile/*!*/ sourceFile, ScriptModule/*!*/ module)
 		{
 			modules.Add(sourceFile, module);
-		}
-
-		/// <summary>
-		/// Gets a script type stored in a specified multi-script assembly.
-		/// </summary>
-        public override ScriptInfo GetScriptInfo(PhpSourceFile/*!*/ sourceFile)
-		{
-			Debug.Assert(sourceFile != null);
-
-            EnsureLibraryReflected();
-
-            ScriptModule result;
-            if (modules.TryGetValue(sourceFile, out result))
-                return result.ScriptInfo;
-            else
-                return null;
-			//return RealModule.GetType(GetQualifiedScriptTypeName(sourceFile), false, true);
 		}
 
 		/// <summary>

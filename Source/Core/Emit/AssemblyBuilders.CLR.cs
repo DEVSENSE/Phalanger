@@ -547,12 +547,15 @@ namespace PHP.Core.Emit
 			return success;
 		}
 
-		protected override void SetAttributes()
+    	protected override void SetAttributes()
 		{
 			AssemblyBuilder builder = (AssemblyBuilder)RealModuleBuilder.Assembly;
 
+            var ssabuilder = this as SingleScriptAssemblyBuilder;
+            var scriptType = (ssabuilder != null) ? ssabuilder.ModuleBuilder.ScriptType : null; // SAVE THIS TO THE ATTRIBUTE
+
 			builder.SetCustomAttribute(new CustomAttributeBuilder(Constructors.ScriptAssembly,
-				new object[] { ScriptAssembly.IsMultiScript }));
+                new object[] { ScriptAssembly.IsMultiScript, scriptType }));
 		}
 
 		protected abstract ScriptBuilder GetEntryScriptBuilder();
@@ -652,7 +655,8 @@ namespace PHP.Core.Emit
 		public ScriptBuilder/*!*/ DefineScript(ScriptCompilationUnit/*!*/ compilationUnit)
 		{
 			// defines a new script:
-			ScriptBuilder sb = new ScriptBuilder(compilationUnit, this, null);
+            string subnamespace = ScriptModule.GetSubnamespace(compilationUnit.SourceUnit.SourceFile.RelativePath, true);
+            ScriptBuilder sb = new ScriptBuilder(compilationUnit, this, subnamespace);
 
 			// adds the script into script assembly builder:
 			this.SingleScriptAssembly.Module = sb;
