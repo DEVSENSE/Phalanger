@@ -23,8 +23,9 @@ $sqlite = extension_loaded("sqlite") ? "" : "&nbsp;(does not work : missing sqli
             </td>
             <td>
                 <fieldset>
-                    <legend>SQLite</legend>
-		            <a href="sqlite.php">test</a><br />
+                    <legend>Tests</legend>
+		            <a href="sqlite.php">SQLite</a><br />
+		            <a href="reflection.php">ReflectionClass</a><br />
                 </fieldset>
             </td>
         </tr>

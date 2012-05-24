@@ -239,7 +239,7 @@ namespace PHP.Library.SPL
         {
             try
             {
-                Name name = new Name(System.Convert.ToString(argName));
+                Name name = new Name(PHP.Core.Convert.ObjectToString(argName));
                 var type = this.typedesc;
                 while (type != null)
                 {
@@ -271,7 +271,7 @@ namespace PHP.Library.SPL
         {
             try
             {
-                VariableName name = new VariableName(System.Convert.ToString(argName));
+                VariableName name = new VariableName(PHP.Core.Convert.ObjectToString(argName));
                 var type = this.typedesc;
                 while (type != null)
                 {
@@ -299,7 +299,6 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
-        [return: CastToFalse]
         public object getFileName(ScriptContext/*!*/context)
         {
             int id;
@@ -315,14 +314,46 @@ namespace PHP.Library.SPL
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [return: CastToFalse]
         public static object getFileName(object instance, PhpStack stack)
         {
             stack.RemoveFrame();
             return ((ReflectionClass)instance).getFileName(stack.Context);
         }
-    }
 
+        [ImplementsMethod]
+        public object getStaticPropertyValue(ScriptContext/*!*/context, object argName, object argDefault)
+        {
+            string name = PHP.Core.Convert.ObjectToString(argName);
+            var type = this.typedesc;
+            while (type != null)
+            {
+                foreach (var propName in type.Properties.Keys)
+                {
+                    if (propName.Value == name)
+                    {
+                        var prop = type.Properties[propName];
+                        if (prop.IsStatic)
+                        {
+                            var value = prop.Get(null);
+                            return value;
+                        }
+                    }
+                }
+                type = type.Base;
+            }
+            //TODO : better error generation
+            throw new System.Exception("Property not found");
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getStaticPropertyValue(object instance, PhpStack stack)
+        {
+            object argName = stack.PeekValue(1);
+            object argDefault = stack.PeekValueOptional(2);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getStaticPropertyValue(stack.Context, argName, argDefault);
+        }
+    }
 }
 
 /*

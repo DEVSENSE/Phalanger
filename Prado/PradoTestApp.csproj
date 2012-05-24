@@ -2224,6 +2224,8 @@
     <None Include="prado\HISTORY" />
     <None Include="prado\requirements\index.php" />
     <None Include="prado\UPGRADE" />
+    <None Include="reflection.inc.php" />
+    <None Include="reflection.php" />
     <None Include="sqlite.php" />
   </ItemGroup>
   <ItemGroup>
@@ -2235,13 +2237,13 @@
       <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PhpSQLite\PhpSQLite.csproj">
-      <Project>{B7E4DD8D-A51F-42E5-8964-0774CDAE0F3F}</Project>
-      <Name>PhpSQLite</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Source\Extensions\MSSql\Extension.MsSql.csproj">
       <Project>{2153C1DA-B1C5-4B6F-B6D9-272D6099FFC6}</Project>
       <Name>Extension.MsSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Source\Extensions\SQLite\Extension.SQLite.csproj">
+      <Project>{B7E4DD8D-A51F-42E5-8964-0774CDAE0F3F}</Project>
+      <Name>Extension.SQLite</Name>
     </ProjectReference>
     <ProjectReference Include="..\Source\Extensions\XmlDom\Extension.XmlDom.csproj">
       <Project>{CCF4F53B-E0EF-47E5-A82B-B52EC6C521D4}</Project>
@@ -2317,7 +2319,8 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>REM xcopy "$(SolutionDir)..\PhpSQLite\lib\*" "$(TargetDir)" /S /E /V /R /-Y</PostBuildEvent>
+    <PostBuildEvent>REM For sqlite x86/x64 native wrapper
+xcopy "$(SolutionDir)..\Source\Extensions\SQLite\lib\*" "$(ProjectDir).." /S /E /V /R /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
