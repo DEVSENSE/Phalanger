@@ -1173,6 +1173,22 @@ namespace PHP.Core.Emit
 			return type;
 		}
 
+        internal FieldBuilder/*!*/DefineInitializedData(string name, byte[] data, FieldAttributes attributes)
+        {
+            // regular function, we have a type builder:
+            if (TypeBuilder != null)
+                return TypeBuilder.DefineInitializedData(name, data, attributes);
+
+            // global function in pure mode:
+            var moduleBuilder = this.MethodBuilder.Module as ModuleBuilder;
+            if (moduleBuilder != null)
+                return moduleBuilder.DefineInitializedData(name, data, attributes);
+
+            //
+            throw new NotImplementedException();
+        }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -1198,10 +1214,10 @@ namespace PHP.Core.Emit
 
             if (value.Length > 0)   // not valid for zero-length byte arrays
             {
-                FieldBuilder datafld = TypeBuilder.DefineInitializedData(
-                    "<PhpBytes>" + System.Guid.NewGuid().ToString("B"),
-                    value.ReadonlyData,
-                    FieldAttributes.Assembly | FieldAttributes.Static);
+                FieldBuilder datafld = this.DefineInitializedData(
+                        "<PhpBytes>" + System.Guid.NewGuid().ToString("B"),
+                        value.ReadonlyData,
+                        FieldAttributes.Assembly | FieldAttributes.Static);
 
                 Emit(OpCodes.Dup);
                 Emit(OpCodes.Ldtoken, datafld);
