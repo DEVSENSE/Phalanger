@@ -12,7 +12,7 @@
  * @version $Id: PradoBase.php 3016 2011-07-16 15:29:13Z ctrlaltca@gmail.com $
  * @package System
  */
-use System\Diagnostics;
+
 /**
  * Defines the PRADO framework installation path.
  */
@@ -284,10 +284,6 @@ class PradoBase
 	{
 		if(isset(self::$_usings[$namespace]) || class_exists($namespace,false))
 			return;
-        if(strpos($namespace, "HTTPNegotiator") !== FALSE)
-        {
-            $a = "0";
-        }
 		if(($pos=strrpos($namespace,'.'))===false)  // a class name
 		{
 			try
