@@ -1,0 +1,63 @@
+<com:TContent ID="body" >
+
+<h1 id="501">Mise à jour à partir des versions v2.x et v1.x</h1>
+
+<div id="from-2-or-1"  class="block-content">
+<p id="40023">
+PRADO v3.0 n'est pas rétro-compatible avec les versions précédents de PRADO.
+</p>
+<p id="40024">
+La bonne nouvelle est que les propriétés et que les évènements de la plupart des contrôles restent identiques ainsi que la syntaxe des templates qui reste largement inchangée. Par conséquent, les connaissances des développeurs des anciennes versions restent applicables dans la v3.0.
+</p>
+<p id="40025">
+Nous résumons ci-dessous les changements les plus significatifs de la v3.0 afin d'aider les développeurs à migrer leurs applications v2.x et v1.x plus facilement, si besoin est.
+</p>
+</div>
+
+<h2 id="502">Définition des composants</h2>
+<p id="40026" class="block-content">
+La version 3.0 a complètement changé de besoin de fichiers de spécifications des composants. Il se fonde davantage sur des conventions pour définir les propriétés et les événements des composants . En particulié, une propriété est définit par la présence d'une méthode getter et/ou setter, tandis qu'un évènement est définit par l'existance d'une méthode <tt>on</tt>... .Les noms des propriétés et évènements dans la v3.0 sont tous les deux case-insensitive. Par conséquence, les développeurs sont désormais obligés de faire attention aux conversions de type lorsque la propriété d'un composant est définie. Par example, le code suivant est utilisé afin de définir la propriété <tt>Enabled</tt> propriétaire d'un <tt>TControl</tt>, qui est un type <tt>booléen</tt>,
+</p>
+<com:TTextHighlighter Language="php" CssClass="block-content source" ID="code1">
+public function setEnabled($value)
+{
+	$value=TPropertyValue::ensureBoolean($value);
+	$this->setViewState('Enabled',$value,true);
+}
+</com:TTextHighlighter>
+<p id="40027" class="block-content">
+où la fonction <tt>TPropertyValue::ensureBoolean()</tt> est utilisée afin de s'assurer que la variable est bien un booléen. Ceci car lorsque la propriété est configurée dans un template, une chaîne de caractère est passée au setter. Dans les versions précédentes, PRADO connaissait le type de chaque propriété des composants grâce aux fichiers de spécifications et se chargeait de la conversion de type pour vous.
+</p>
+
+<h2 id="503">Contrôleur de l'application</h2>
+<p id="40028" class="block-content">
+Le contrôleur de l'application implémente désormais une architecture modulaire. Les modules peuvent être ajoutés et configurés dans la configuration de l'application. Chaque module assure une fonction particulière et ils peuvent être coordonnés entre eux par <a href="?page=Fundamentals.Applications">le cycle de vie de l'application</a>. Le concept des modules de la version 2.x a été replacé dans la v3.0 par <a href="?page=Configurations.PageConfig">les répertoires des pages</a>. En conséquence, le format de <a href="?page=Configurations.AppConfig">configuration de l'application</a> de la v3.0 est très différent des versions précédentes.
+</p>
+
+<h2 id="504">Pages</h2>
+<p id="40029" class="block-content">
+Les pages dans la version 3.0 sont organisés dans des répertoires qui peuvent être comparés au concept des modules de la v2.x. Les pages sont demandées selon leur structure. Par exemple, une URL <tt>index.php?page=Controls.Samples.Sample1</tt> sera utilisée pour servir une page nommée <tt>Sample1</tt> se trouvant dans le répertoire <tt>[BasePath]/Controls/Samples</tt>, où <tt>[BasePath]</tt> se réfère au répertoire racine des pages. Le nom d'un fichier template d'une page doit avoir comme extension <tt>.page</tt>, principalement pour différencier les templates des pages des templates des contrôles qui se termineront par l'extension <tt>.tpl</tt>.
+</p>
+
+<h2 id="505">Relation des contrôles</h2>
+<p id="40030" class="block-content">
+La version 3.0 redéfinit les relations entre les contrôles. En particulier, la relation parent-enfant se réfère désormais à la relation entre les contrôles et la présentation. Un nouveau nom de relation est introduit afin d'aider la gestion des identifiants des contrôles. Pour plus de détails, voir la section concernant les <a href="?page=Fundamentals.Controls">contrôles</a>.
+</p>
+
+<h2 id="506">Syntaxe des Templates</h2>
+<div id="template-syntax" class="block-content">
+<p id="40031">
+La syntaxe des contrôles dans les templates de la v3.0 est très similaire à celle des versions précédentes avec beaucoup d'améliorations. Un changement important est au sujet des expression dans le databinding. Dans la v3.0, cela est fait de la façon suivante,</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_40002">
+&lt;com:MyComponent PropertyName=&lt;%# PHP expression %&gt; .../&gt;
+</com:TTextHighlighter>
+<p id="40032">
+Les expressions et les tags d'états ont aussi changé. Pour plus de détails, voir la section concernant la <a href="?page=Configurations.Templates1">définition des templates</a>.
+</p>
+</div>
+<h2 id="507">Syntaxe des Thèmes</h2>
+<p id="40033" class="block-content">
+Les thèmes dans la v3.0 sont définis comme les contrôles des templates avec quelques restrictions.
+</p>
+
+<div class="last-modified">$Id: Upgrading.page 1712 2007-02-18 18:55:32Z mickymax $</div></com:TContent>

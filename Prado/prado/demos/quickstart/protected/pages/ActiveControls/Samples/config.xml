@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: config.xml 1405 2006-09-10 01:03:56Z wei $ -->
+<configuration>
+  <paths>
+    <using namespace="System.Web.UI.ActiveControls.*" />
+  </paths>
+  <pages MasterClass="SampleLayout" />
+</configuration>

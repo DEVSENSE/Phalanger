@@ -1,0 +1,38 @@
+<com:TContent ID="body" >
+
+<h1 id="3901">TPager</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TPager" />
+
+<p id="450300" class="block-content">
+<tt>TPager</tt> membuat sebuah lembaran yang menyediakan UI bagi pengguna akhir untuk secara interaktif menetapkan halaman data mana yang disajikan dalam kontrol turunan-<tt>TDataBoundControl</tt>, seperti <tt>TDataList</tt>, <tt>TRepeater</tt>, <tt>TCheckBoxList</tt>, dll. Kontrol data-terikat sasaran ditetapkan dengan properti <tt>ControlToPaginate</tt>, yang harus berupa path ID dari kontrol sasaran yang dijangkau dari tempat penamaan lembar. 
+</p>
+
+<p id="450301" class="block-content">
+Note, the target data-bound control must have its <tt>AllowPaging</tt> set to true. Otherwise the pager will be invisible. Also, in case when there is only one page of data available, the pager will also be invisible.
+</p>
+
+<p id="450302" class="block-content">
+<tt>TPager</tt> dapat menampilkan salah satu dari tiga tipe antarmuka pengguna, ditetapkan melalui properti <tt>Mode</tt>-nya:
+</p>
+<ul id="u1" class="block-content">
+<li><tt>NextPrev</tt> - tombol halaman berikutnya dan sebelumnya yang disajikan pada setiap halaman.</li>
+<li><tt>Numeric</tt> - daftar tombol indeks halaman yang disajikan.</li>
+<li><tt>DropDownList</tt> - daftar dropdown pada indeks halaman yang disajikan.</li>
+</ul>
+<p id="450303" class="block-content">
+Antarmuka pengguna ini selanjutnya dapat dikustomisasi dengan mengkonfigurasi properti berikut
+</p>
+<ul id="u2" class="block-content">
+<li><tt>NextPageText</tt> dan <tt>PrevPageText</tt> - label dari tombol halaman berikutnya/sebelumnya. Properti ini dipakai ketika <tt>Mode</tt> lembar adalah <tt>NextPrev</tt> atau <tt>Numeric</tt>.</li>
+<li><tt>FirstPageText</tt> dan <tt>LastPageText</tt> - label dari tombol halaman pertama/terakhir. Jika kosong, tombol terkait tidak akan ditampilkan. Properti ini dipakai ketika <tt>Mode</tt> lembar adalah <tt>NextPrev</tt> atau <tt>Numeric</tt>.</li>
+<li><tt>PageButtonCount</tt> - jumlah maksimum tombol indeks halaman pada sebuah halaman. Properti ini dipakai saat <tt>Mode</tt> lembar adalah <tt>Numeric</tt>.</li>
+<li><tt>ButtonType</tt> - tipe tombol halaman, <tt>PushButton</tt> berarti tombol submisi normal, atau <tt>LinkButton</tt> berarti tombol hiperlink.</li>
+</ul>
+
+<p id="450304" class="block-content">
+<tt>TPager</tt> memunculkan event <tt>OnPageIndexChanged</tt> ketika pengguna-akhir berinteraksi dengannya dan menetapkan halaman baru (misalnya dengan mengklik pada tombol halaman berikutnya yang akan membawa ke halaman berikutnya). Para pengembang dapat menulis pengendali untuk merspon event ini dan medapatkan indeks halaman baru yang diinginkan, seseorang bisa memasukan halaman baru data ke kontrol ikatan-data terkait.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TPager.Sample1" />
+
+<div class="last-modified">$Id: Pager.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

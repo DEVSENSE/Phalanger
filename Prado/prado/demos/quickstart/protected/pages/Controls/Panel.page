@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="3901">TPanel</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TPanel" />
+
+<p id="460305" class="block-content">
+<tt>TPanel</tt> acts as a presentational container for other control. It displays a &lt;div&gt; element on a page. The property <tt>Wrap</tt> specifies whether the panel's body content should wrap or not, while <tt>HorizontalAlign</tt> governs how the content is aligned horizontally and <tt>Direction</tt> indicates the content direction (left to right or right to left). You can set <tt>BackImageUrl</tt> to give a background image to the panel, and you can set <tt>GroupingText</tt> so that the panel is displayed as a field set with a legend text. Finally, you can specify a default button to be fired when users press 'return' key within the panel by setting the <tt>DefaultButton</tt> property.
+</p>
+<com:RunBar PagePath="Controls.Samples.TPanel.Home" />
+
+<div class="last-modified">$Id: Panel.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

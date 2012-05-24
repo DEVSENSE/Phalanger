@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+	<paths>
+		<alias id="I18NSample" path="." />
+		<using namespace="System.I18N.*" />
+		<using namespace="I18NSample.LanguageList" />
+	</paths>
+
+  <modules>
+  		<module id="globalization2" class="TGlobalizationAutoDetect">
+			<translation  type="XLIFF" source="I18NSample.messages" />
+		</module>
+  </modules>
+
+  <pages MasterClass="SampleLayout" />
+
+</configuration>

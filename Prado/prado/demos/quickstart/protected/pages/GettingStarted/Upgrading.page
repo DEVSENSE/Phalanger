@@ -1,0 +1,64 @@
+<com:TContent ID="body" >
+
+<h1 id="501">Upgrading from v2.x and v1.x</h1>
+
+<div id="from-2-or-1"  class="block-content">
+<p id="40023">
+PRADO v3.0 is NOT backward compatible with earlier versions of PRADO.
+</p>
+<p id="40024">
+A good news is, properties and events of most controls remain intact, and the syntax of control templates remains largely unchanged. Therefore, developers' knowledge of earlier versions of PRADO are still applicable in v3.0.
+</p>
+<p id="40025">
+We summarize in the following the most significant changes in v3.0 to help developers upgrade their v2.x and v1.x PRADO applications more easily, if needed.
+</p>
+</div>
+
+<h2 id="502">Component Definition</h2>
+<p id="40026" class="block-content">
+Version 3.0 has completely discarded the need of component specification files. It relies more on conventions for defining component properties and events. In particular, a property is defined by the existence of a getter method and/or a setter method, while an event is defined by the existence of an <tt>on</tt>-method. Property and event names in v3.0 are both case-insensitive. As a consequence, developers are now required to take care of type conversions when a component property is being set. For example, the following code is used to define the setter method for the <tt>Enabled</tt> property of <tt>TControl</tt>, which is of <tt>boolean</tt> type,
+</p>
+<com:TTextHighlighter Language="php" CssClass="block-content source" ID="code1">
+public function setEnabled($value)
+{
+	$value=TPropertyValue::ensureBoolean($value);
+	$this->setViewState('Enabled',$value,true);
+}
+</com:TTextHighlighter>
+<p id="40027" class="block-content">
+where <tt>TPropertyValue::ensureBoolean()</tt> is used to ensure that the input value be a boolean. This is because when the property is configured in template, a string value is passed to the setter. In previous versions, PRADO knows the property type based on the component specification files and does the type conversion for you.
+</p>
+
+<h2 id="503">Application Controller</h2>
+<p id="40028" class="block-content">
+Application controller now implements a modular architecture. Modules can be plugged in and configured in application specifications. Each module assumes a particular functionality, and they are coordinated together by the <a href="?page=Fundamentals.Applications">application lifecycle</a>. The concept of v2.x modules is replaced in v3.0 by <a href="?page=Configurations.PageConfig">page directories</a>. As a result, the format of v3.0 <a href="?page=Configurations.AppConfig">application specification</a> is also different from earlier versions.
+</p>
+
+<h2 id="504">Pages</h2>
+<p id="40029" class="block-content">
+Pages in v3.0 are organized in directories which may be compared to the module concept in v2.x. Pages are requested using the path to them. For example, a URL <tt>index.php?page=Controls.Samples.Sample1</tt> would be used to request for a page named <tt>Sample1</tt> stored under the <tt>[BasePath]/Controls/Samples</tt> directory, where <tt>[BasePath]</tt> refers to the root page path. The file name of a page template must be ended with <tt>.page</tt>, mainly to differentiate page templates from non-page control templates whose file names must be ended with <tt>.tpl</tt>.
+</p>
+
+<h2 id="505">Control Relationship</h2>
+<p id="40030" class="block-content">
+Version 3.0 redefines the relationships between controls. In particular, the parent-child relationship now refers to the enclosure relationship between controls' presentation. And a new naming-container relationship is introduced to help better manage control IDs. For more details, see the <a href="?page=Fundamentals.Controls">controls</a> section.
+</p>
+
+<h2 id="506">Template Syntax</h2>
+<div id="template-syntax" class="block-content">
+<p id="40031">
+The syntax of control templates in v3.0 remains similar to those in earlier versions, with many enhancements. A major change is about the databinding expression. In v3.0, this is done by the following,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_40002">
+&lt;com:MyComponent PropertyName=&lt;%# PHP expression %&gt; .../&gt;
+</com:TTextHighlighter>
+<p id="40032">
+Expression and statement tags are also changed similarly. For more details, see the <a href="?page=Configurations.Templates1">template definition</a> section.
+</p>
+</div>
+<h2 id="507">Theme Syntax</h2>
+<p id="40033" class="block-content">
+Themes in v3.0 are defined like control templates with a few restrictions.
+</p>
+
+<div class="last-modified">$Id: Upgrading.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

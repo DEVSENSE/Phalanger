@@ -1,0 +1,83 @@
+<%@ Title="System Configuration" %>
+
+<com:TContent ID="Main">
+
+<h2>Administration Center</h2>
+
+<com:Application.Pages.Admin.AdminMenu />
+
+<com:TPanel GroupingText="General settings">
+
+<span class="input-label">Title</span>
+<br/>
+<com:TTextBox ID="SiteTitle" Columns="50"/>
+<br/>
+
+<span class="input-label">Subtitle</span>
+<br/>
+<com:TTextBox ID="SiteSubtitle" Columns="50"/>
+<br/>
+
+<span class="input-label">Owner name</span>
+<br/>
+<com:TTextBox ID="SiteOwner" />
+<br/>
+
+<span class="input-label">Owner email</span>
+<br/>
+<com:TTextBox ID="AdminEmail" />
+<br/>
+
+<span class="input-label">Site theme</span>
+<br/>
+<com:TDropDownList ID="ThemeName" />
+<br/>
+
+</com:TPanel>
+
+
+<com:TPanel GroupingText="Account settings">
+
+<com:TCheckBox ID="MultipleUser" Text="Allow creating new accounts" />
+<br/>
+
+<com:TCheckBox ID="AccountApproval" Text="New accounts need approval" />
+<br/>
+
+</com:TPanel>
+
+<com:TPanel GroupingText="Post settings">
+
+<span class="input-label">Number of posts per page</span>
+<com:TTextBox ID="PostPerPage" Columns="8"/>
+<com:TRegularExpressionValidator
+	ControlToValidate="PostPerPage"
+	ValidationGroup="settings"
+	Display="Dynamic"
+	RegularExpression="[1-9]\d*"
+	Text="Please enter a number." />
+<br/>
+
+<span class="input-label">Number of recent comments shown</span>
+<com:TTextBox ID="RecentComments" Columns="8"/>
+<com:TRegularExpressionValidator
+	ControlToValidate="RecentComments"
+	ValidationGroup="settings"
+	Display="Dynamic"
+	RegularExpression="[1-9]\d*"
+	Text="Please enter a number." />
+<br/>
+
+<com:TCheckBox ID="PostApproval" Text="New posts need approval" />
+<br/>
+
+</com:TPanel>
+<br/>
+<com:TLinkButton
+	Text="Save"
+	ValidationGroup="settings"
+	CssClass="link-button"
+	OnClick="saveButtonClicked" />
+<com:TLabel ID="Result" Visible=<%= $this->IsPostBack && $this->IsValid %> Text="Your changes have been saved." />
+
+</com:TContent>

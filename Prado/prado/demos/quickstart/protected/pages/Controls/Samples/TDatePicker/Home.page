@@ -1,0 +1,61 @@
+<com:TContent ID="body">
+
+<h1>TDatePicker Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+	<td class="samplenote">Default TDatePicker</td>
+	<td class="sampleaction">
+		<com:TDatePicker />
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">Button Mode, <br />pre-selected date 20-10-2005</td>
+	<td class="sampleaction">
+		<com:TDatePicker Mode="Button" Date="20-10-2005"/>
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">InputMode="DropDownList", <br />custom DateFormat="yyyy/MMM"</td>
+	<td class="sampleaction">
+		<com:TDatePicker DateFormat="yyyy/MMM" InputMode="DropDownList"/>
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">InputMode="DropDownList", <br/>custom DateFormat="MMM/yyyy", <br/>Culture="fr"</td>
+	<td class="sampleaction">
+		<com:TDatePicker DateFormat="MMM/yyyy" Culture="fr" InputMode="DropDownList"/>
+	</td>
+</tr>
+
+
+<tr>
+	<td class="samplenote">Custom DateFormat="日期：yyyy年M月d日", <br/>culture="zh_CN", <br />ImageButton mode, <br />pre-selected using Timestamp=&lt;%= @strtotime("-1 year") %&gt;</td>
+	<td class="sampleaction">
+		<com:TDatePicker Mode="ImageButton" Culture="zh_CN" 
+			DateFormat="日期：yyyy年M月d日"  
+			Timestamp=<%= @strtotime("-1 year") %>/>
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">Custom DateFormat="yyyy/MMMM/dd", <br />DropDownList, <br />pre-selected Date="2005/05/15"</td>
+	<td class="sampleaction">
+		<com:TDatePicker DateFormat="yyyy/MMMM/dd" Date="2005/05/15" InputMode="DropDownList"/>
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">DropDownList, <br />pre-selected date Timestamp=&lt;%= @strtotime("-1 month") %&gt;</td>
+	<td class="sampleaction">
+		<com:TDatePicker InputMode="DropDownList" Timestamp=<%= @strtotime("-1 month") %>/>
+	</td>
+</tr>
+	
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

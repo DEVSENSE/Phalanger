@@ -1,0 +1,55 @@
+<com:TContent ID="body" >
+
+<h1 id="1201">Aplikasi</h1>
+<p id="160157" class="block-content">
+Aplikasi adalah turunan dari <tt>TApplication</tt> atau asal kelasnya. Ia mengatur modul yang menyediakan fungsionalitas berbeda dan diambil bila diperlukan. Ia menyediakan layanan bagi pengguna-akhir. Ia adalah tempat utama untuk menyimpan berbagai parameter dalam sebuah aplikasi. Dalam aplikasi PRADO, turunan aplikasi adalah satu-satunya obyek yang secara global dapat diakses melalui panggilan fungsi <tt>Prado::getApplication()</tt>.
+</p>
+<p id="160158" class="block-content">
+Aplikasi dikonfigurasi melalui <a href="?page=Configurations.AppConfig">konfigurasi aplikasi</a>. Biasanya dibuat dalam naskah entri seperti berikut,
+<com:TTextHighlighter CssClass="source block-content" id="code_160071">
+require_once('/path/to/prado.php');
+$application = new TApplication;
+$application->run();
+</com:TTextHighlighter>
+Di mana metode <tt>run()</tt> memulai aplikasi untuk menangani permintaan pengguna.
+</p>
+
+<h2 id="1202">Organisasi Direktori</h2>
+<p id="160159" class="block-content">
+Aplikasi PRADO minimal berisi dua file: file entri dan file template halaman. Ini harus diatur sebagai berikut,
+<img src="<%~directory.gif%>" class="figure"/>
+</p>
+<ul id="u2" class="block-content">
+<li><tt>wwwroot</tt> - Akar dokumen Web atau sub-direktori.</li>
+<li><tt>index.php</tt> - naskah entri dari aplikasi PRADO.</li>
+<li><tt>assets</tt> - direktori yang menyimpan file pribadi yang dipublikasikan. Lihat seksi <a href="?page=Advanced.Assets">assets</a>.</li>
+<li><tt>protected</tt> - path basis aplikasi yang menyimpan data aplikasi dan file naskah pribadi. Direktori ini harus dikonfigurasi tidak bisa diakses terhadap Web-inaccessible, atau ia dapat ditempatkan di luar direktori Web.</li>
+<li><tt>runtime</tt> - path penyimpan runtime aplikasi. Direktori ini dipakai oleh PRADO untuk menyimpan informasi runtime aplikasi, seperti kondisi aplikasi, data di-cache, dll.</li>
+<li><tt>pages</tt> - path basis yang menyimpan semua halaman PRADO. Lihat seksi <a href="?page=Fundamentals.Services">layanan</a>.</li>
+<li><tt>Home.page</tt> - Halaman standar yang diberikan saat pengguna tidak secara eksplisit menetapkan halaman yang diminta. Ini adalah file template halaman. Nama file tanpa akhiran adalah nama halaman. Kelas halaman adalah <tt>TPage</tt>. Jika di sana juga aga file kelas <tt>Home.php</tt>, kelas halaman menjadi <tt>Home</tt>.</li>
+</ul>
+
+<p id="160160" class="block-content">
+Produk aplikasi PRADO biasanya membutuhkan file lebih banyak. Ia dapat menyertakan file konfigurasi aplikasi bernama <tt>application.xml</tt> di bawah path basis aplikasi <tt>protected</tt>. Halaman bisa diatur dalam direktori, beberapa diantaranya dapat berisi file konfigurasi halaman bernama <tt>config.xml</tt>. Untuk lebih jelasnya, silahkan lihat seksi <a href="?page=Configurations.Overview">konfigurasi</a>.
+</p>
+
+<h2 id="1203">Penyebaran Aplikasi</h2>
+<p id="160161" class="block-content">
+Menyebarkan aplikasi PRADO sebagian besar terkait dengan meng-copy direktori. Sebagai contoh, untuk menyebarkan aplikasi minimal di atas ke server lain, ikuti langkah-langkah berikut,
+</p>
+<ol>
+<li>Copy konten di bawah <tt>wwwroot</tt> ke direktori yang dapat diakses=Web pada server baru.</li>
+<li>Ubah file naskah entri <tt>index.php</tt> agar ia menyertakan file <tt>prado.php</tt> secara benar.</li>
+<li>Hapus semua konten di bawah direktori <tt>assets</tt> dan <tt>runtime</tt> dan pastikan kedua direktori dapat ditulis oleh proses server Web.</li>
+</ol>
+
+<h2 id="1204">Masa Hidup Aplikasi</h2>
+<p id="160162" class="block-content">
+Seperti masa hidup halaman, aplikasi juga mempunyai masa hidup. Modul aplikasi dapat meregistrasi event masa hidup. Ketika aplikasi mencapai masa hidup tertentu dan memunculkan event terkait, metode modul teregistrasi akan di panggil secara otomatis. Modul yang disertakan dalam rilis PRADO, seperti <tt>TAuthManager</tt>, menggunakan cara ini untuk melasanakan tujuannya.
+</p>
+<p id="160163" class="block-content">
+Masa hidup aplikasi dapat digambarkan sebagai berikut,
+</p>
+<img src="<%~applifecycles.gif%>" />
+
+<div class="last-modified">$Id: Applications.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

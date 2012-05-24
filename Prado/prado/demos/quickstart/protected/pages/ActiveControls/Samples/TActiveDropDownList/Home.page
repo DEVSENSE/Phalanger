@@ -1,0 +1,108 @@
+<com:TContent ID="body">
+
+<h1>TActiveDropDownList Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Callback dropdown list:
+</td>
+<td class="sampleaction">
+<com:TActiveDropDownList
+	OnSelectedIndexChanged="selectionChanged">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TActiveDropDownList>
+<com:TActiveLabel ID="SelectionResult" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+
+<h2>Changing items to DropDown Lists on callback</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Adding an item on every callback:
+  </td>
+  <td class="sampleaction">
+    <com:TActiveDropDownList ID="ddl1" />
+    <com:TActiveButton ID="button1" Text="add a new item" OnCallback="buttonClicked" />
+    <com:TActiveLabel ID="label1" ForeColor="red" />
+  </td>
+</tr>
+
+</table>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Clearing / restoring the dropdownlist on callback:
+  </td>
+  <td class="sampleaction">
+    <com:TActiveDropDownList ID="ddl2" />
+    <com:TActiveButton ID="button2" Text="clear" OnCallback="clearClicked" />
+    <com:TActiveButton ID="button3" Text="reset" OnCallback="resetClicked" />
+    <com:TActiveLabel ID="label2" ForeColor="red" />
+  </td>
+</tr>
+
+</table>
+
+<h2>List Boxes with Validation</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Dropdown list is being validated:
+</td>
+<td class="sampleaction">
+<com:TActiveDropDownList ID="VDropDownList1">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TActiveDropDownList>
+<com:TRequiredFieldValidator
+	ControlToValidate="VDropDownList1"
+	ErrorMessage="You must make a selection other than the first option"
+	InitialValue="value 1"
+	Display="Dynamic"
+	ValidationGroup="Group1"
+	/>
+<com:TActiveButton Text="Submit" ValidationGroup="Group1" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Dropdown list causing validation:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	ErrorMessage="You must enter a value"
+	Display="Dynamic"
+	ValidationGroup="Group2"
+	/>
+<com:TActiveDropDownList
+	ID="VDropDownList2"
+	ValidationGroup="Group2">
+  <com:TListItem Text="Agree" />
+  <com:TListItem Text="Disagree" />
+</com:TActiveDropDownList>
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2957 2011-06-02 11:16:04Z ctrlaltca@gmail.com $</div></com:TContent>

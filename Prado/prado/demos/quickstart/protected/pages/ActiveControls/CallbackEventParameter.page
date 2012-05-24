@@ -1,0 +1,26 @@
+<com:TContent ID="body" >
+
+<h1 id="196022">TCallbackEventParameter</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TCallbackEventParameter" />
+
+<p class="block-content">
+<tt>TCallbackEventParameter</tt> provides the parameter passed during the callback
+request in the <tt>CallbackParameter</tt> property. The
+callback response content (e.g. new HTML content) must be rendered
+using an THtmlWriter obtained from the <tt>NewWriter</tt>
+property, which returns a <b>NEW</b> instance of TCallbackResponseWriter.
+</p>
+
+<p class="block-content">
+Each instance <tt>TCallbackResponseWriter</tt> is associated with a unique
+boundary delimited. By default each panel only renders its own content.
+To replace the content of ONE panel with that of rendered from multiple panels
+use the same writer instance for the panels to be rendered.
+</p>
+
+<p class="block-content">
+The response data (i.e., passing results back to the client-side
+callback handler function) can be set using <tt>ResponseData</tt> property.
+</p>
+
+<div class="last-modified">$Id: CallbackEventParameter.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

@@ -1,0 +1,164 @@
+<com:TContent ID="Main">
+
+<h1>Initial Setup</h1>
+
+<p>
+We start by setting up the directories and the files that are required by most PRADO applications. We use the <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a> to achieve this goal.
+</p>
+
+<p>
+Assume <tt>blog</tt> is the name of the directory to hold the whole blog system, and the URL to access this folder is <tt>http://hostname/blog/</tt> (replace <tt>hostname</tt> with the actual host name).
+</p>
+
+<p>
+Under the <tt>blog</tt> directory, we run the <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a> with the following command (replace <tt>path/to</tt> with the actual path to the PRADO framework installation):
+</p>
+<com:TTextHighlighter CssClass="source cli">
+php path/to/prado-cli.php -c .
+</com:TTextHighlighter>
+
+<p>
+Running the above command creates the following directories and files:
+</p>
+
+<img src="<%~ directories.gif %>" class="output" />
+
+<p>
+We now have a skeleton PRADO application accessible via the URL <tt>http://hostname/blog/index.php</tt> which brings up a Web page showing "Welcome to PRADO".
+</p>
+
+<p>
+It is beneficial to learn more details about the directories and files we just created.
+</p>
+
+
+<h2>Initial Files</h2>
+
+<h3>The Entry Script</h3>
+
+<p>
+Every PRADO application has an entry script, often named as <tt>index.php</tt>. In most cases, it is the only PHP script that is directly accessible by Web users. This reduces the risk of allowing Web users to execute unwanted scripts on the server.
+</p>
+
+<p>
+The main purpose of the entry script is to initialize the PRADO application and have it handle user requests. The entry script usually contains the following PHP statements,
+</p>
+
+<com:TTextHighlighter CssClass="source">
+<?php
+// include prado.php which contains basic PRADO classes
+require_once('path/to/prado.php');
+// create a PRADO application instance
+$application = new TApplication;
+// run the application and handle user requests
+$application->run();
+?>
+</com:TTextHighlighter>
+
+<com:InfoBox>
+The name of the entry script does not need to be <tt>index.php</tt>. It can be any name as long as the Web server can tell that the script is a PHP 5 script. For example, on some shared hosting environments, one may need to name the script as <tt>index.php5</tt> so that it can be properly handled by the Web server.
+</com:InfoBox>
+
+<h3>Application Configuration</h3>
+<p>
+The <i>optional</i> XML file <tt>application.xml</tt> contains the <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.AppConfig">application configuration</a>. Its main purpose is to customize in a configurable fashion the application instance created in the entry script. For example, we may enable the <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Logging">logging</a> feature for our blog system with the help of application configuration.
+</p>
+
+<p>
+The file <tt>application.xml</tt> we have now is nearly empty. In fact, we may safely remove it because the application at the moment uses only default settings of PRADO. As we move forward, we will refer back constantly and show how to configure our application in <tt>application.xml</tt>.
+</p>
+
+
+<h3>Homepage</h3>
+
+<p>
+The homepage (also called default page) <tt>Home.page</tt> is the only <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">page</a> created by the PRADO command line tool. It is the content in this file that shows up in the browser when visiting the URL <tt>http://hostname/blog/index.php</tt>.
+</p>
+
+<p>
+Content in the file <tt>Home.page</tt> uses the <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">PRADO template format</a>, which is mostly like HTML enhanced with a few PRADO-specific tags. For example, in <tt>Home.page</tt> we see the following pure HTML content:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<html>
+<head>
+  <title>Welcome to PRADO</title>
+</head>
+<body>
+<h1>Welcome to PRADO!</h1>
+</body>
+</html>
+</com:TTextHighlighter>
+
+
+<h2>Initial Directories</h2>
+
+<h3>The <tt>protected</tt> Directory</h3>
+
+<p>
+The <tt>protected</tt> directory, also known as the <i>application base path</i>, is the root directory holding pages, templates, configurations, data, etc. The name <tt>protected</tt> indicates this directory should be hidden from Web users, because files under this directory often contain sensitive data.
+</p>
+
+<p>
+Different Web servers have different ways of "protecting" a directory. For Apache httpd server, the easiest way is to place under the directory a file named <tt>.htaccess</tt> with the content <tt>deny from all</tt>.
+</p>
+
+
+<h3>The <tt>protected/runtime</tt> and <tt>assets</tt> Directories</h3>
+
+<p>
+The <tt>protected/runtime</tt> and <tt>assets</tt> directories are the two directories that must be set writable by the Web server process. The <tt>runtime</tt> directory stores sensitive data (e.g. parsed application configuration) generated when running a PRADO application, while the <tt>assets</tt> directory stores published resources (e.g. image files, javascript files).
+</p>
+
+<com:InfoBox>
+It is safe to remove files and directories under <tt>protected/runtime</tt> and <tt>assets</tt>. In fact, developers are recommended to do this cleanup work when they upgrade their PRADO installation.
+</com:InfoBox>
+
+
+<h3>The <tt>pages</tt> Directory</h3>
+
+<p>
+The <tt>pages</tt> directory is the <i>root page directory</i> holding all <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">pages</a> in a PRADO application. It bears an analogy to the <tt>htdocs</tt> directory for the Apache httpd Web server.
+</p>
+
+<p>
+We already see how to access the homepage. To access an arbitrary page located under <tt>pages</tt>, use the URL <tt>http://hostname/blog/index.php?page=path.to.PageName</tt>. According to this URL, PRADO will look for a page named <tt>PageName</tt> under the directory <tt>pages/path/to</tt>. The URL we used to access the homepage previously is equivalent to <tt>http://hostname/blog/index.php?page=Home</tt>.
+</p>
+
+
+<h2>Customization</h2>
+
+<p>
+It is possible to customize the name and location of the files and directories described above.
+</p>
+
+<p>
+For example, to improve security, one may want to move the whole <tt>protected</tt> directory to somewhere else that is not a Web folder. To do so, use the following PHP statement to create the application instance in the entry script:
+</p>
+
+<com:TTextHighlighter CssClass="source">
+$application = new TApplication( 'path/to/protected' );
+</com:TTextHighlighter>
+
+<p>
+To change the location of the root page directory and change the name of homepage, one can specify it in the application configuration <tt>application.xml</tt> as follows:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<application id="blog" mode="Debug">
+  <services>
+    <service id="page" 
+           class="TPageService" 
+           BasePath="path.to.pages"
+           DefaultPage="NewHome"
+           />
+  </services>
+</application>
+</com:TTextHighlighter>
+
+<p>
+As you learn more about PRADO, you will see that PRADO is such a flexible framework that it allows you to customize nearly every aspect. We will describe more customization techniques as we continue with our tutorial.
+</p>
+
+</com:TContent>

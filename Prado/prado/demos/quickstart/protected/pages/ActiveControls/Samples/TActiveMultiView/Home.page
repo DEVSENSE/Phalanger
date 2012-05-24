@@ -1,0 +1,37 @@
+<com:TContent ID="body">
+
+<h1>TActiveMultiView Samples</h1>
+
+<com:TActiveMultiView ID="MultiView" ActiveViewIndex="0" OnActiveViewChanged="viewChanged">
+  <com:TView ID="View1">
+    <h2>View 1</h2>
+    <p>Please enter a memo:</p>
+    <com:TActiveTextBox ID="Memo" />
+    <hr/>
+    <com:TActiveButton Text="View 2" CommandName="NextView" />
+    <com:TActiveButton Text="View 3" CommandName="SwitchViewIndex" ActiveControl.CallbackParameter="2" />
+  </com:TView>
+  <com:TView>
+    <h2>View 2</h2>
+    <p>Please choose a color:</p>
+    <com:TActiveDropDownList ID="DropDownList">
+      <com:TListItem Value="Red" />
+      <com:TListItem Value="Blue" />
+      <com:TListItem Value="Green" />
+    </com:TActiveDropDownList>
+    <hr/>
+    <com:TActiveButton Text="View 1" CommandName="PreviousView" />
+    <com:TActiveButton Text="View 3" CommandName="NextView" />
+  </com:TView>
+  <com:TView>
+    <h2>View 3</h2>
+    <com:TActiveLabel ID="Result1" />
+    <br/>
+    <com:TActiveLabel ID="Result2" />
+    <hr/>
+    <com:TActiveButton Text="View 1" CommandName="SwitchViewID" ActiveControl.CallbackParameter="View1" />
+    <com:TActiveButton Text="View 2" CommandName="PreviousView" />
+  </com:TView>
+</com:TActiveMultiView>
+
+<div class="last-modified">$Id: Home.page 2949 2011-06-01 21:39:49Z ctrlaltca@gmail.com $</div></com:TContent>

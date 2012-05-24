@@ -1,0 +1,43 @@
+<com:TContent ID="body" >
+
+<h1>TCaptcha</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TCaptcha" />
+
+<p>
+<tt>TCaptcha</tt> menampilkan <a href="http://en.wikipedia.org/wiki/Captcha">CAPTCHA</a> yang bisa dipakai untuk menentukan apakah input dimasukan oleh pengguna asli ataukah beberapa program. <tt>TCaptcha</tt> menampilkan sebuah token (string terdiri dari karakter alfanumerik) sebagai sebuah gambar dan pengguna diharapkan untuk mengulang token dalam kotak teks. Gambar token dibuat dalam cara tertentu yang bisa dikenali oleh manusia, tapi tidak oleh sebuah program.
+</p>
+
+<p>
+Untuk menggunakan <tt>TCaptcha</tt>, anda hrus menghidupkan ekstensi PHP GD2 dengan dukungan font TrueType. Tidak seperti naskah CAPTCHA lain, <tt>TCaptcha</tt> tidak memerlukan sesi atau cookie.
+</p>
+
+<p>
+Token yang dibuat oleh <tt>TCaptcha</tt> dapat dikonfigurasi dalam beberapa cara. Untuk menetapkan panjang karakter dalam token, setel <tt>MinTokenLength</tt> dan <tt>MaxTokenLength</tt>. Untuk menggunakan perbandingan huruf tidak sensitif-huruf dan hanya membuat token huruf-besar, setel <tt>CaseSensitive</tt> ke false. Para pengguna tingkat lanjut dapat mencoba untuk menyetel <tt>TokenAlphabet</tt> guna menetapkan karakter mana yang akan muncul dalam token yang dibuatnya.
+</p>
+
+<p>
+Validasi token terkait dengan dua properti: <tt>TestLimit</tt> (standarnya 5 kali) dan <tt>TokenExpiry</tt> (standarnya 600 detik). Pembentuk menetapkan berapa kali token bisa diuji pada sisi-server, dan yang terakhir mengatakan kapan token yang dibuat akan berakhir. Jika validasi gagal dalam salah satu dari dua skenario, token baru akan secara otomatis dibuat.
+</p>
+
+<p>
+Untuk menetapkan tampilan dari gambar token yang dibuat, setel <tt>TokenImageTheme</tt> ke integer antara 0 dan 31. Ada bisa mencoba contoh berikut untuk melihat bagaimana nilai ini mempengaruhi gambar token yang dihasilkan. Ukuran gambar token ditentukan oleh <tt>TokenFontSize</tt>. Dalam keadaan tertentu, panjang gambar adalah proporsional bagi ukuran font. Anda juga bisa menyetel <tt>Width</tt> untuk mengubah gambar yang dihasilkan ke ukuran yang anda inginkan, gambar yang diskala mungkin tidak terlihat baik.
+</p>
+
+<p>
+Setelah postback, input pengguna dapat di validasi dengan memanggil metode <tt>TCaptcha.validate()</tt>. Jauh lebih mudah, anda dapat menggunakan <tt>TCaptchaValidator</tt> untuk mengotomasi pekerjaan validasi bagi anda.  <tt>TCaptchaValidator</tt> mempunyai keuntungan tambahan dari kemampuan untuk memvalidasi input pengguna pada sisi-klien. Standarnya, token yang dihasilkan akan tetap tidak berubah selama postbacks. Token baru dapat dibuat dengan memanggil <tt>TCaptcha.regenerateToken()</tt> secara manual.
+</p>
+
+<p>
+Template berikut memperlihatkan penggunaan umum dari kontrol <tt>TCaptcha</tt>:
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TCaptcha ID="Captcha" />
+&lt;com:TTextBox ID="Input" />
+&lt;com:TCaptchaValidator CaptchaControl="Captcha"
+                          ControlToValidate="Input"
+                          ErrorMessage="You are challenged!" />
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="Controls.Samples.TCaptcha.Home" />
+
+<div class="last-modified">$Id: Captcha.page 2175 2007-08-29 19:57:50Z xue $</div></com:TContent>

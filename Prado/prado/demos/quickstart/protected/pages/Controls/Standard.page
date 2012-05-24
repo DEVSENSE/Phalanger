@@ -1,0 +1,153 @@
+<com:TContent ID="body" >
+
+<h1 id="52001">Standard Controls</h1>
+<ul id="u1" class="block-content">
+  <li>
+  <a href="?page=Controls.Button">TButton</a> represents a click button on a Web page. It is mainly used to trigger page postback.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Captcha">TCaptcha</a> displays a CAPTCHA to keep spammers from signing up for certain accounts online.
+  </li>
+
+  <li>
+  <a href="?page=Controls.CheckBox">TCheckBox</a> represents a checkbox on a Web page. It can be used to collect two-state user input.
+  </li>
+
+  <li>
+  <a href="?page=Controls.ClientScript">TClientScript</a> adds javascript code to the page.
+  </li>
+
+  <li>
+  <a href="?page=Controls.ClientScriptLoader">TClientScriptLoader</a> loads custom javascript libraries.
+  </li>
+
+  <li>
+  <a href="?page=Controls.ColorPicker">TColorPicker</a> represents an input field taking color values via a color dialog.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Conditional">TConditional</a> displays content corresponding to true or false result of a PHP expression.
+  </li>
+
+  <li>
+  <a href="?page=Controls.DatePicker">TDatePicker</a> represents an input field taking date values via a calendar dialog.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Expression">TExpression</a> accepts a PHP expression and displays the evaluation result on a Web page.
+  </li>
+
+  <li>
+  <a href="?page=Controls.FileUpload">TFileUpload</a> represents a file upload field. It allows users to upload a file to server.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Head">THead</a> represents the &lt;head&gt; element on an HTML Web page. It is required by a PRADO page should it use themes.
+  </li>
+
+  <li>
+  <a href="?page=Controls.HiddenField">THiddenField</a> represents a hidden input field on a Web page.
+  </li>
+
+  <li>
+  <a href="?page=Controls.HtmlArea">THtmlArea</a> represents a WYSIWYG text input field taking user input that are in HTML format.
+  </li>
+
+  <li>
+  <a href="?page=Controls.HyperLink">THyperLink</a> represents a hyperlink on a Web page.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Image">TImage</a> represents an image on a Web page.
+  </li>
+
+  <li>
+  <a href="?page=Controls.ImageButton">TImageButton</a> represents a click button that has an image as the background. It is mainly used to trigger page postback.
+  </li>
+
+  <li>
+  <a href="?page=Controls.ImageMap">TImageMap</a> represents an image on a Web page with clickable hotspot regions.
+  </li>
+
+  <li>
+  <a href="?page=Controls.InlineFrame">TInlineFrame</a> represents an &lt;iframe&gt; HTML element on a Web page.
+  </li>
+
+  <li>
+  <a href="?page=Controls.JavascriptLogger">TJavascriptLogger</a> represents a logger on a Web page that can log various JavaScript information.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Keyboard">TKeyboard</a> displays a virtual keyboard for users to enter input into a text box.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Label">TLabel</a> represents a label on a Web page. The label can be customized via various CSS attributes.
+  </li>
+
+  <li>
+  <a href="?page=Controls.LinkButton">TLinkButton</a> represents a hyperlink that can perform page postbacks.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Literal">TLiteral</a> represents a static text without any HTML tag surrounding it on a Web page.
+  </li>
+
+  <li>
+  <a href="?page=Controls.MultiView">TMultiView</a> represents a container for a group of <tt>TView</tt> controls, each of which is container for other controls. At any time, at most one <tt>TView</tt> is visible.
+  </li>
+
+  <li>
+  <a href="?page=Controls.OutputCache">TOutputCache</a> enables caching portions of page output and may significantly improve page response time.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Pager">TPager</a> generates UI that allows users to interactively specify which page of data to be displayed in a data-bound control.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Panel">TPanel</a> represents a container for other controls on a Web page. In HTML, it is displayed as a &lt;div&gt; element.
+  </li>
+
+  <li>
+  <a href="?page=Controls.PlaceHolder">TPlaceHolder</a> reserves a place on a control template. It inserts its body content at that place.
+  </li>
+
+  <li>
+  <a href="?page=Controls.RadioButton">TRadioButton</a> represents a radiobutton on a Web page. It is mainly used in a group from which users make a choice.
+  </li>
+
+  <li>
+  <a href="?page=Controls.SafeHtml">TSafeHtml</a> displays its body content with assurance that the content contain no harmful code (such as <a href="?page=Advanced.Security">XSS</a>).
+  </li>
+
+  <li>
+  <a href="?page=Controls.Slider">TSlider</a> represents a Slider control
+  </li>
+
+  <li>
+  <a href="?page=Controls.Statements">TStatements</a> accepts a few PHP statements and displays their standard output on the Web page.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Table">TTable</a> represents an HTML table on a Web page. It is used together with <tt>TTableRow</tt> and <tt>TTableCell</tt>.
+  </li>
+
+  <li>
+  <a href="?page=Controls.TabPanel">TTabPanel</a> displays a tabbed panel consisting of multiple tab views. At any time, only one tab view is visible.
+  </li>
+  <li>
+  <a href="?page=Controls.TextBox">TTextBox</a> represents a text input field on a Web page. It can collect single-line, multi-line or password text input from users.
+  </li>
+
+  <li>
+  <a href="?page=Controls.TextHighlighter">TTextHighlighter</a> highlights its body content according to the specified syntax highlighter, such as PHP, XML, PRADO, etc.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Wizard">TWizard</a> represents a multi-step form that can take user input step by step. It resembles to Windows installation wizards.
+  </li>
+</ul>
+
+<div class="last-modified">$Id: Standard.page 2954 2011-06-01 23:01:03Z ctrlaltca@gmail.com $</div></com:TContent>

@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="3601">TLinkButton</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TLinkButton" />
+
+<p id="410282" class="block-content">
+<tt>TLinkButton</tt> mirip dengan <tt>TButton</tt> dalam setiap aspek kecuali bahwa <tt>TLinkButton</tt> ditampilkan sebagai hiperlink. Teks link ditentukan oleh properti <tt>Text</tt>. Jika properti <tt>Text</tt> kosong, maka konten tombol yang ditampilkan (oleh karenanya, anda bisa menutupi tag &lt;img&gt; di dalam badan tombol dan mendapatkan tombol gambar.
+</p>
+<com:RunBar PagePath="Controls.Samples.TLinkButton.Home" />
+
+<div class="last-modified">$Id: LinkButton.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,23 @@
+<com:TContent ID="body">
+<!-- $Id: ActiveCustomValidator.page 1650 2007-01-24 06:55:32Z wei $ -->
+<h1 id="126030">TActiveCustomValidator</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveCustomValidator" />
+
+<p id="630421" class="block-content">Melakukan validasi kustom hanya menggunakan event validasi <tt>OnServerValidate</tt>
+ sisi-server. Sisi-klien menggunakan callback untuk memunculkan event
+ <tt>onServerValidate</tt>. Properti <tt>ClientValidationFunction</tt> dimatikan
+ dan akan mengeluarkan eksepsi jika mencoba untuk menyetel properti ini.
+</p>
+
+<p id="630422" class="block-content"> Harap berhati-hati <tt>onServerValidate</tt> dapat
+dimunculkan saat kontrol yang divalidasi pada sisi klien mengubah nilai,
+yaitu validasi server mungkin dipanggil berkali-kali.
+
+Setelah callback atau postback, {@link onServerValidate onServerValidate}
+dimunculkan hanya sekali. Properti <tt>IsCallback</tt> dari kelas <tt>TPage</tt>
+menjadi true ketika validasi dibuat selama permintaan callback.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveCustomValidator.Home" />
+
+<div class="last-modified">$Id: ActiveCustomValidator.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

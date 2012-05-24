@@ -1,0 +1,20 @@
+<com:TContent ID="body">
+
+<h1>TActiveImage Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+<tt>ImageUrl</tt> being changed on callback request:
+</td><td class="sampleaction">
+<com:TActiveImage
+	ID="imageTest"
+	ImageUrl=<%~hello_world.gif%>
+	AlternateText="Hello World!"/>
+<com:TActiveButton OnCallback="buttonClicked" Text="First hello world image"/>
+<com:TActiveButton OnCallback="buttonClicked2" Text="Second hello world image"/>
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2944 2011-06-01 20:35:06Z ctrlaltca@gmail.com $</div></com:TContent>

@@ -1,0 +1,61 @@
+<com:TContent ID="body" >
+
+<h1 id="6101">Logging</h1>
+<p id="780615" class="block-content">
+PRADO provides a highly flexible and extensible logging functionality. Messages logged can be classified according to log levels and message categories. Using level and category filters, the messages can be further routed to different destinations, such as files, emails, browser windows, etc. The following diagram shows the basic architecture of PRADO logging mechanism,
+</p>
+<img src="<%~ logrouter.gif %>" alt="Log router" />
+
+<h2 id="6102">Using Logging Functions</h2>
+<p id="780616" class="block-content">
+The following two methods are provided for logging messages in PRADO,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_780201">
+Prado::log($message, $logLevel, $category);
+Prado::trace($message, $category);
+</com:TTextHighlighter>
+<p id="780617" class="block-content">
+The difference between <tt>Prado::log()</tt> and <tt>Prado::trace()</tt> is  that the latter automatically selects the log level according to the application mode. If the application is in <tt>Debug</tt> mode, stack trace information is appended to the messages. <tt>Prado::trace()</tt> is widely used in the core code of the PRADO framework.
+</p>
+
+<h2 id="6103">Message Routing</h2>
+<p id="780618" class="block-content">
+Messages logged using the above two functions are kept in memory. To make use of the messages, developers need to route them to specific destinations, such as files, emails, or browser windows. The message routing is managed by <tt>System.Util.TLogRouter</tt> module. When plugged into an application, it can route the messages to different destination in parallel. Currently, PRADO provides three types of routes:
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>TFileLogRoute</tt> - filtered messages are stored in a specified log file. By default, this file is named <tt>prado.log</tt> under the runtime directory of the application. File rotation is provided.</li>
+  <li><tt>TEmailLogRoute</tt> - filtered messages are sent to pre-specified email addresses.</li>
+  <li><tt>TBrowserLogRoute</tt> - filtered messages are appended to the end of the current page output.</li>
+</ul>
+<p id="780619" class="block-content">
+To enable message routing, plug in and configure the <tt>TLogRouter</tt> module in application configuration,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_780202">
+&lt;module id="log" class="System.Util.TLogRouter"&gt;
+  &lt;route class="TBrowserLogRoute"
+      Levels="Info"
+      Categories="System.Web.UI.TPage, System.Web.UI.WebControls" /&gt;
+  &lt;route class="TFileLogRoute"
+      Levels="Warning, Error"
+      Categories="System.Web" /&gt;
+&lt;/module&gt;
+</com:TTextHighlighter>
+<p id="780620" class="block-content">
+In the above, the <tt>Levels</tt> and <tt>Categories</tt> specify the log and category filters to selectively retrieve the messages to the corresponding destinations.
+</p>
+
+<h2 id="6104">Message Filtering</h2>
+<p id="780621" class="block-content">
+Messages can be filtered according to their log levels and categories. Each log message is associated with a log level and a category. With levels and categories, developers can selectively retrieve messages that they are interested on.
+</p>
+<p id="780622" class="block-content">
+Log levels defined in <tt>System.Util.TLogger</tt> include : <tt>DEBUG</tt>, <tt>INFO</tt>, <tt>NOTICE</tt>, <tt>WARNING</tt>, <tt>ERROR</tt>, <tt>ALERT</tt>, <tt>FATAL</tt>. Messages can be filtered according log level criteria. For example, if a filter specifies <tt>WARNING</tt> and <tt>ERROR</tt> levels, then only those messages that are of <tt>WARNING</tt> and <tt>ERROR</tt> will be returned.
+</p>
+<p id="780623" class="block-content">
+Message categories are hierarchical. A category whose name is the prefix of another is said to be the ancestor category of the other category. For example, <tt>System.Web</tt> category is the ancestor of <tt>System.Web.UI</tt> and <tt>System.Web.UI.WebControls</tt> categories. Messages can be selectively retrieved using such hierarchical category filters. For example, if the category filter is <tt>System.Web</tt>, then all messages in the <tt>System.Web</tt> are returned. In addition, messages in the child categories, such as <tt>System.Web.UI.WebControls</tt>, are also returned.
+</p>
+<p id="780624" class="block-content">
+By convention, the messages logged in the core code of PRADO are categorized according to the namespace of the corresponding classes. For example, messages logged in <tt>TPage</tt> will be of category <tt>System.Web.UI.TPage</tt>.
+</p>
+
+<div class="last-modified">$Id: Logging.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

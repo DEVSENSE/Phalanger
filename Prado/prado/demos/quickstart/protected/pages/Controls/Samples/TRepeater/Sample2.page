@@ -1,0 +1,58 @@
+<com:TContent ID="body">
+
+<h1>TRepeater Sample 2</h1>
+
+<com:TRepeater ID="Repeater"
+	EnableViewState="false"
+    OnItemDataBound="dataBindRepeater2"
+    OnItemCreated="repeaterItemCreated">
+
+<prop:HeaderTemplate>
+<table cellspacing="1" style="border:1px solid silver">
+</prop:HeaderTemplate>
+
+<prop:ItemTemplate>
+<tr>
+<com:TTableCell ID="Cell">
+  <%#$this->Data %>
+</com:TTableCell>
+<td>
+    <com:TRepeater
+         ID="Repeater2"
+         EnableViewState="false"
+         OnItemCreated="Page.repeater2ItemCreated">
+
+    <prop:HeaderTemplate>
+    <table cellspacing="1">
+    </prop:HeaderTemplate>
+
+    <prop:ItemTemplate>
+    <com:TTableRow ID="Row">
+      <com:TTableCell Width="70px">
+        <%#$this->Data['name'] %>
+      </com:TTableCell>
+      <com:TTableCell Width="20">
+        <%#$this->Data['age'] %>
+      </com:TTableCell>
+      <com:TTableCell Width="150px">
+        <%#$this->Data['position'] %>
+      </com:TTableCell>
+    </com:TTableRow>
+    </prop:ItemTemplate>
+
+    <prop:FooterTemplate>
+    </table>
+    </prop:FooterTemplate>
+
+    </com:TRepeater>
+</td>
+</tr>
+</prop:ItemTemplate>
+
+<prop:FooterTemplate>
+</table>
+</prop:FooterTemplate>
+
+</com:TRepeater>
+
+<div class="last-modified">$Id: Sample2.page 1688 2007-02-09 22:48:31Z xue $</div></com:TContent>

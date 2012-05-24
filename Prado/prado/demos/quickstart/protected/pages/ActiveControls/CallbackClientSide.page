@@ -1,0 +1,79 @@
+<com:TContent ID="body" >
+
+<h1 id="194019">TCallbackClientSide</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TCallbackClientSide" />
+
+<p class="block-content">
+<tt>TCallbackClientSide</tt> is used to specify client-side callback request options and client-side event handlers.
+Each active control that inherits from <tt>TActiveBaseCallbackControl</tt> has a ClientSide property.
+The ClientSide property is an instance <tt>TCallbackClientSide</tt> containing the actual options and event handlers
+that are used by the client-side when that control is making a callback request.
+The following example demonstrates the toggling of a "loading" indicator when the client-side is making a callback request. 
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content">
+&lt;com:TClientScript PradoScripts="effects" /&gt;
+<span id="callback_status">Loading...</span>
+
+&lt;com:TActiveButton
+	Text="Click Me"
+	OnCallback="button_callback"
+	ActiveControl.CallbackParameter="value" &gt;
+	&lt;prop:ClientSide
+		OnLoading="Element.show('callback_status')"
+		OnComplete="Element.hide('callback_status')" /&gt;
+&lt;/com:TActiveButton&gt;
+</com:TTextHighlighter>
+
+<h3 id="194020">Events</h3>
+
+<p class="block-content">
+The following client side events are executing in order if the callback
+request and response are send and received successfuly.
+</p>
+
+<ul>
+  <li><tt>onPreDispatch</tt>: executed before a request is dispatched;</li>
+  <li><tt>onUninitialized</tt>: executed when callback request is uninitialized;</li>
+  <li><tt>onLoading</tt>* : executed when callback request is initiated;</li>
+  <li><tt>onLoaded</tt>* : executed when callback request begins;</li>
+  <li><tt>onInteractive</tt>: executed when callback request is in progress;</li>
+  <li><tt>onComplete</tt>: executed when callback response returns;</li>
+  <li><tt>onSuccess</tt> executed when callback request returns and is successful;</li>
+  <li><tt>onFailure</tt> executed when callback request fails (only for communication errors);</li>
+  <li><tt>onException</tt> raised when callback request fails due to request/response errors.</li>
+</ul>
+
+<p class="block-content">
+* Note that theses 2 events are not fired correctly by Opera. To make
+  them work in this browser, Prado will fire them just after <tt>onPreDispatch</tt>.
+</p>
+
+<p class="block-content">
+In a general way, onUninitialized, onLoading, onLoaded and onInteractive events 
+are not implemented consistently in all browsers. When cross browser compatibility is
+needed, it is best to avoid use them.
+<br/>The OnSuccess and OnFailure events are raised when the
+response is returned. A successful request/response will raise
+OnSuccess event otherwise OnFailure will be raised.
+</p>
+
+<h3 id="194021">Properties</h3>
+
+<p class="block-content">
+The following properties can be used to change the way the callback request is performed.
+</p>
+
+<ul>
+  <li><tt>PostState</tt>: true to collect the form inputs and post them during callback (default: true);</li>
+  <li><tt>RequestTimeOut</tt> The request timeout in milliseconds (default: 30000, i.e. 30 seconds);</li>
+  <li><tt>HasPriority</tt> true to ensure that the callback request will be sent
+  immediately and will abort existing prioritized requests. It does not affect
+  callbacks that are not prioritized (default: true);</li>
+  <li><tt>EnablePageStateUpdate</tt> enable the callback response to enable the
+  viewstate update. This will automatically set HasPriority to true when enabled. (default: true).</li>
+</ul>
+
+<com:RunBar PagePath="ActiveControls.Samples.TCallbackClientSide.Home" />
+
+<div class="last-modified">$Id: CallbackClientSide.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

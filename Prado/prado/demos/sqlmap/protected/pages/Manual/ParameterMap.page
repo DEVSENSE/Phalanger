@@ -1,0 +1,184 @@
+<com:TContent ID="body">
+<h1>Parameter Maps and Inline Parameters</h1>
+
+<p>Most SQL statements are useful because we can pass them values at runtime.
+Someone wants a database record with the ID 42, and we need to merge that ID
+number into a select statement. A list of one or more parameters are passed at
+runtime, and each placeholder is replaced in turn. This is simple but labor
+intensive, since developers spend a lot of time counting symbols to make sure
+everything is in sync.</p>
+
+<div class="note"><b class="tip">Note:</b>
+Preceding sections briefly touched on inline parameters, which automatically
+map properties to named parameters. Many iBATIS developers prefer this
+approach. But others prefer to stick to the standard, anonymous approach to
+SQL parameters by using parameter maps. Sometimes people need to retain the
+purity of the SQL statements; other times they need the detailed specification
+offered by parameter maps due to database or provider-specific information
+that needs to be used.
+</div>
+
+<h1>Parameter Map</h1>
+<p>A Parameter Map defines an ordered list of values that match up with the
+placeholders of a parameterized query statement. While the attributes
+specified by the map still need to be in the correct order, each parameter is
+named. You can populate the underlying class in any order, and the Parameter
+Map ensures each value is passed in the correct order.</p>
+
+<p>Parameter Maps can be provided as an external element and \emph{inline}.
+The following example shows an external Parameter Map.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<parameterMap id="parameterMapIdentifier"
+  [extends="[sqlMapNamespace.]parameterMapId"]>
+  <parameter
+    property ="propertyName"
+    [column="columnName"]
+    [dbType="databaseType"]
+    [type="propertyCLRType"]
+    [nullValue="nullValueReplacement"]
+    [size="columnSize"]
+    [precision="columnPrecision"]
+    [scale="columnScale"]
+    [typeHandler="class.name"]
+  <parameter ... ... />
+  <parameter ... ... />
+</parameterMap>
+</com:TTextHighlighter>
+
+<p>In the above example, the parts in <tt>[brackets]</tt> are optional. The
+<tt>parameterMap</tt> element only requires the id attribute.
+The following example shows a typical <tt>&lt;parameterMap&gt;</tt>.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<parameterMap id="insert-product-param" class="Product">
+  <parameter property="description" />
+  <parameter property="id"/>
+</parameterMap>
+
+<statement id="insertProduct" parameterMap="insert-product-param">
+  insert into PRODUCT (PRD_DESCRIPTION, PRD_ID) values (?,?);
+</statement>
+</com:TTextHighlighter>
+
+<div class="note"><b class="tip">Note:</b>
+Parameter Map names are always local to the Data Map definition file where
+they are defined. You can refer to a Parameter Map in another Data Map
+definition file by prefixing the <tt>id</tt> of the Parameter Map with the
+namespace of the Data Map (set in the <tt>&lt;sqlMap&gt;</tt> root element). 
+</div>
+
+<h2><tt>&lt;parameterMap&gt;</tt> attributes</h2>
+
+<p>The <tt>&lt;parameterMap&gt;</tt> element
+accepts two attributes: <tt>id</tt> (required) and <tt>extends</tt> (optional).</p>
+
+<h3><tt>id</tt> attribute</h3>
+
+<p>The required <tt>id</tt> attribute provides a
+unique identifier for the <tt>&lt;parameterMap&gt;</tt> within this Data Map.</p>
+
+<h3><tt>extends</tt> attribute</h3>
+<p>The optional <tt>extends</tt> attribute can be set to the name of another
+<tt>parameterMap</tt> upon which to base this <tt>parameterMap</tt>. All properties of
+the super <tt>parameterMap</tt> will be included as part of this
+<tt>parameterMap</tt>, and values from the super <tt>parameterMap</tt> are set before
+any values specified by this <tt>parameterMap</tt>. The effect is similar to
+extending a class.</p>
+
+<h1><tt>&lt;parameter&gt;</tt> Elements</h1>
+<p>The <tt>&lt;parameterMap&gt;</tt> element holds one or more parameter child elements
+that map object properties to placeholders in a SQL statement. The sections
+that follow describe each of the attributes.</p>
+
+<h2><tt>property</tt> attribute</h2>
+<p>The <tt>property</tt> attribute of <tt>&lt;parameter&gt;</tt> is the name of a property of
+the parameter object. It may also be the name of an entry in an array. The
+name can be used more than once depending on the number of times it is needed
+in the statement. (In an update, you might set a column that is also part of
+the where clause.)</p>
+
+<h2><tt>direction</tt> attribute</h2>
+<p>The <tt>direction</tt> attribute may be used to indicate a stored procedure
+parameter's direction.</p>
+
+<!-- tabular: align=|l|l|, width=(0.2 0.4) --> 
+<table class="tabular">
+	<tr><th>Value</th><th>Description</th></tr>
+	<tr>
+		<td><tt>Input</tt></td>
+		<td>input-only</td>
+	</tr>
+	<tr>
+		<td><tt>Output</tt></td>
+		<td>output-only</td>
+	</tr>
+	<tr>
+		<td><tt>InputOutput</tt></td>
+		<td>bidirectional</td>
+	</tr>
+</table>
+
+<h2><tt>column</tt> attribute</h2>
+<p>The <tt>column</tt> attribute is used to define to the name of a parameter used by
+a stored procedure.</p>
+
+<h2><tt>dbType</tt> attribute</h2>
+<p>The <tt>dbType</tt> attribute is used to explicitly specify the database column
+type of the parameter to be set by this property. This attribute is normally
+only required if the column is nullable. Although, another reason to use the
+<tt>dbType</tt> attribute is to explicitly specify date types. Most SQL databases
+have more than one <tt>datetime</tt> type. Usually, a database has at least three
+different types (DATE, DATETIME, TIMESTAMP). In order for the value to map
+correctly, you might need to specify the column's <tt>dbType</tt>.</p>
+
+<div class="note"><b class="tip">Note:</b>
+Most providers only need the <tt>dbType</tt> specified for nullable columns. In
+this case, you only need to specify the type for the columns that are
+nullable.
+</div>
+
+<h2><tt>type</tt> attribute</h2>
+<p>The <tt>type</tt> attribute is used to specify the type of the parameter's
+property. This attribute is useful when passing <tt>InputOutput</tt> and
+<tt>Output</tt> parameters into stored procedures. The framework uses the
+specified type to properly handle and set the parameter object's properties
+with the procedure's output values after execution.</p>
+
+<h2><tt>nullValue</tt> attribute</h2>
+
+<p>The <tt>nullValue</tt> attribute can be set to any valid value (based on property
+type). The <tt>nullValue</tt> attribute is used to specify an outgoing null value
+replacement. What this means is that when the value is detected in the object
+property, a NULL will be written to the database (the opposite behavior of an
+inbound null value replacement). This allows you to use a magic null number in
+your application for types that do not support null values (such as int,
+double, float). When these types of properties contain a matching null value
+(for example, say, -9999), a NULL will be written to the database instead of
+the value.</p>
+
+<div class="tip"><b class="tip">Tip:</b>
+For round-trip transparency of null values, you must also specify database
+columns null value replacements in your <a href="?page=Manual.ResultMaps">Result Map</a>.
+</div>
+
+<h2><tt>size</tt> attribute</h2>
+<p>The <tt>size</tt> attribute sets the maximum size of the data within the column.</p>
+
+<h2><tt>precision</tt> attribute</h2>
+<p>The <tt>precision</tt> attribute is used to set the maximum number of digits used
+to represent the property value.</p>
+
+<h2><tt>scale</tt> attribute</h2>
+<p>The <tt>scale</tt> attribute sets the number of decimal places used to resolve the
+property value.</p>
+
+<h2><tt>typeHandler</tt> attribute</h2>
+<p>The <tt>typeHandler</tt> attribute allows the use of a 
+<a href="?page=Manual.CustomTypeHandlers">Custom Type Handler</a>. This allows you to extend the DataMapper's
+capabilities in handling types that are specific to your database provider,
+are not handled by your database provider, or just happen to be a part of your
+application design. You can create custom type handlers to deal with storing
+and retrieving booleans from your database for example.</p>
+
+</com:TContent>

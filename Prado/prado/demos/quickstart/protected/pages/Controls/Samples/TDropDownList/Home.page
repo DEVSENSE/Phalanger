@@ -1,0 +1,203 @@
+<com:TContent ID="body">
+
+<h1>TDropDownList Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Dropdown list with default settings:
+</td>
+<td class="sampleaction">
+<com:TDropDownList />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Dropdown list with initial items:
+</td>
+<td class="sampleaction">
+<com:TDropDownList>
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TDropDownList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+List box with customized row number, color and font:
+</td>
+<td class="sampleaction">
+<com:TDropDownList ForeColor="blue" Font.Size="14pt">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TDropDownList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Disabled dropdown list:
+</td>
+<td class="sampleaction">
+<com:TDropDownList Enabled="false">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TDropDownList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Auto postback dropdown list:
+</td>
+<td class="sampleaction">
+<com:TDropDownList
+	AutoPostBack="true"
+	OnSelectedIndexChanged="selectionChanged">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TDropDownList>
+<com:TLabel ID="SelectionResult" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Dropdown list's behavior upon postback:
+</td>
+<td class="sampleaction">
+<com:TDropDownList ID="DropDownList1">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TDropDownList>
+<com:TButton Text="Submit" OnClick="buttonClicked"/>
+<com:TLabel ID="SelectionResult2" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+
+<h2>DropDown Lists with DataBinding</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Databind to an integer-indexed array:
+</td>
+<td class="sampleaction">
+<com:TDropDownList ID="DBDropDownList1"
+	AutoPostBack="true"
+	OnSelectedIndexChanged="DBDropDownList1Changed" />
+<com:TLabel ID="DBDropDownList1Result" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Databind to an associative array:
+</td>
+<td class="sampleaction">
+<com:TDropDownList ID="DBDropDownList2"
+	AutoPostBack="true"
+	OnSelectedIndexChanged="DBDropDownList2Changed" />
+<com:TLabel ID="DBDropDownList2Result" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Databind with DataTextField and DataValueField specified:
+</td>
+<td class="sampleaction">
+<com:TDropDownList ID="DBDropDownList3"
+	AutoPostBack="true"
+	DataTextField="name"
+	DataValueField="id"
+	OnSelectedIndexChanged="DBDropDownList3Changed" />
+<com:TLabel ID="DBDropDownList3Result" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+
+<h2>List Boxes with Validation</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Dropdown list is being validated:
+</td>
+<td class="sampleaction">
+<com:TDropDownList ID="VDropDownList1">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TDropDownList>
+<com:TRequiredFieldValidator
+	ControlToValidate="VDropDownList1"
+	ErrorMessage="You must make a selection other than the first option"
+	InitialValue="value 1"
+	Display="Dynamic"
+	ValidationGroup="Group1"
+	/>
+<com:TButton Text="Submit" ValidationGroup="Group1" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Dropdown list causing validation:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	ErrorMessage="You must enter a value"
+	Display="Dynamic"
+	ValidationGroup="Group2"
+	/>
+<com:TDropDownList
+	ID="VDropDownList2"
+	AutoPostBack="true"
+	ValidationGroup="Group2">
+  <com:TListItem Text="Agree" />
+  <com:TListItem Text="Disagree" />
+</com:TDropDownList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Dropdown list with option groups:
+</td>
+<td class="sampleaction">
+<com:TDropDownList>
+  <com:TListItem Value="value 1" Text="item 1" Attributes.Group="group 1"/>
+  <com:TListItem Value="value 2" Text="item 2" Attributes.Group="group 1"/>
+  <com:TListItem Value="value 3" Text="item 3" Attributes.Group="group 2"/>
+  <com:TListItem Value="value 4" Text="item 4" Attributes.Group="group 2"/>
+</com:TDropDownList>
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

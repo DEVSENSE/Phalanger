@@ -1,0 +1,16 @@
+<com:TContent ID="body" >
+
+<h1 id="2001">TButton</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TButton" />
+
+<p id="240234" class="block-content">
+<tt>TButton</tt> membuat tombol klik pada halaman Web. judul tombol ditetapkan dengan properti <tt>Text</tt>. Tombol digunakan untuk mengirimkan data ke sebuah halaman. <tt>TButton</tt> memunculkan dua event sisi-server, <tt>OnClick</tt> dan <tt>OnCommand</tt>, ketika diklik pada sisi-klien. Perbedaan diantara event <tt>OnClick</tt> dan <tt>OnCommand</tt> adalah bahwa event kedua meneruskan ke leluhur kontrol tombol. Pengendali event <tt>OnCommand</tt> bisa menggunakan <tt>CommandName</tt> dan <tt>CommandParameter</tt> terkait dengan event guna melakukan aksi spesifik.
+</p>
+<p id="240235" class="block-content">
+Mengklik tombol dapat memicu formulir validasi, jika <tt>CausesValidation</tt> adalah true. Dan validasi mungkin dibatasi di dalam grup tertentu dari kontrol validator menurut <tt>ValidationGroup</tt>.
+</p>
+<com:RunBar PagePath="Controls.Samples.TButton.Home" />
+
+UNTUK DIKERJAKAN: atribut kustom
+
+<div class="last-modified">$Id: Button.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

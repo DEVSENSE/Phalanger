@@ -1,0 +1,19 @@
+<com:TContent ID="body" >
+
+<h1 id="156013">TActiveLinkButton</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveLinkButton" />
+
+<p class="block-content">
+<tt>TActiveLinkButton</tt> is the active control counter part to <tt>TLinkButton</tt>.
+When a <tt>TActiveLinkButton</tt> is clicked, rather than a normal post back request a
+callback request is initiated.
+The <tt>OnCallback</tt> event is raised during a callback request
+and it is raise <b>after</b> the <tt>OnClick</tt> event.
+When the <tt>ActiveControl.EnableUpdate</tt>
+property is true, changing the <tt>Text</tt> property during callback request
+will update the link text upon callback response completion.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveLinkButton.Home" />
+
+<div class="last-modified">$Id: ActiveLinkButton.page 2954 2011-06-01 23:01:03Z ctrlaltca@gmail.com $</div></com:TContent>

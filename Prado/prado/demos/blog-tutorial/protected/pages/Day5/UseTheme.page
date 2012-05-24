@@ -1,0 +1,138 @@
+<com:TContent ID="Main">
+
+<h1>Using Themes and Skins</h1>
+
+<p>
+PRADO has intrinsic support for <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Themes">themes</a>. By using themes, we can better separate logic and presentation, and we can also change the overall appearance of our blog system more easily.
+</p>
+
+<h2>Creating Theme</h2>
+
+<p>
+We first create a new directory <tt>themes</tt>. This is the parent directory of all themes for a particular PRADO application. Any subdirectory under this directory will become a theme whose name is the subdirectory name.
+</p>
+
+<p>
+To create a theme named <tt>Basic</tt>, we create a subdirectory <tt>theme/Basic</tt>. Under this directory, we may place theme-dependent stylesheet files, Javascript files, images, and skin files.
+</p>
+
+<com:InfoBox>
+The <tt>themes</tt> directory must be Web-accessible, like the <tt>assets</tt> directory. Do not place sensitive data files under this directory. You can change the name or location of this directory by configuring the <a href="http://www.pradosoft.com/docs/classdoc/TThemeManager">TThemeManager</a> module in the application configuration.
+</com:InfoBox>
+
+
+<h3>Creating Stylesheet File</h2>
+
+<p>
+Under the <tt>themes/Basic</tt> directory, we create a CSS stylesheet file named <tt>style.css</tt>. When a page uses this theme, PRADO will automatically import this stylesheet to the page. The same occurs for Javascript files.
+</p>
+
+<p>
+The CSS file is shown as follows.
+</p>
+
+<com:TTextHighlighter CssClass="source">
+body {
+	font-family: verdana, 'trebuchet ms', sans-serif;
+	font-size: 10pt;
+	background: white;
+}
+#page {
+	margin: 0 auto 0 auto;
+	width: 600px;
+}
+#footer {
+	text-align: center;
+	margin-top: 10px;
+	padding: 10px;
+	border-top: 1px solid silver;
+}
+.post-box {
+	margin-bottom: 10px;
+	padding: 5px;
+}
+.post-box h3 {
+	padding: 5px;
+	font-size: 13pt;
+	background: lightgray;
+}
+.post-box a {
+	color: black;
+	text-decoration: none;
+}
+.post-box a:hover {
+	color: red;
+}
+</com:TTextHighlighter>
+
+
+<h3>Creating Skin File</h2>
+
+<p>
+We use skins to initialize the properties of PRADO controls. Skins are stored as skin files (suffix name <tt>.skin</tt>) under a theme directory. Each skin file can contain multiple skins for one or several types of control.
+</p>
+
+<p>
+As a test, we will try to create a skin that changes the background color of the link buttons in the page footer. We create a file named <tt>button.skin</tt> under the theme directory <tt>themes/Basic</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;com:THyperLink SkinID="MainMenu" BackColor="lightgreen" />
+</com:TTextHighlighter>
+
+<p>
+The <tt>button.skin</tt> skin file contains only one skin for <tt>THyperLink</tt> controls whose <tt>SkinID</tt> property is <tt>MainMenu</tt>. The skin sets the background color of the control to be light-green.
+</p>
+
+<p>
+Accordingly, we need to modify <tt>protected/common/MainLayout.tpl</tt> so that the link buttons in the footer use <tt>MainMenu</tt> as their <tt>SkinID</tt>.
+</p>
+<com:TTextHighlighter CssClass="source" Language="prado">
+......
+<div id="footer">
+......
+&lt;com:THyperLink Text="Home" SkinID="MainMenu"
+	NavigateUrl="&lt;%= $this->Service->DefaultPageUrl %>" />
+
+&lt;com:THyperLink Text="New Post" SkinID="MainMenu"
+	NavigateUrl="&lt;%= $this->Service->constructUrl('posts.NewPost') %>"
+	Visible="&lt;%= !$this->User->IsGuest %>" />
+......
+</div>
+......
+</com:TTextHighlighter>
+
+<com:InfoBox>
+The syntax for skin files is very similar to that of PRADO templates. Each <tt>&lt;com:&gt;</tt> tag defines a skin for a particular type of control. PRADO automatically aggregates all skin files in a theme and applies them when a themed page is being rendered.
+</com:InfoBox>
+
+
+<h2>Using Theme</h2>
+
+<p>
+To use the theme we just created, we modify the application configuration as follows. As we see, the <tt>Theme</tt> property for all pages is set as <tt>Basic</tt>, the name of the theme we created.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+......
+  <services>
+    <service id="page" class="TPageService" DefaultPage="posts.ListPost">
+      <pages MasterClass="Application.layouts.MainLayout" Theme="Basic" />
+    </service>
+  </services>
+......
+</com:TTextHighlighter>
+
+<com:InfoBox>
+It is possible to specify different themes for different pages, and this can be done either in application/page configurations or programmatically (note <tt>Theme</tt> a page property). For the latter, it is must be done in <tt>onPreInit()</tt> method of the page because PRADO applies a theme to a page early in the page lifecycle.
+</com:InfoBox>
+
+
+<h2>Testing</h2>
+<p>
+To see how our blog pages look like, visit the URL <tt>http://hostname/blog/index.php</tt>. We shall see the font, layout, borders are changed in the page. Also, the link buttons in the footer have light-green background.
+</p>
+
+<img src="<%~ output.gif %>" class="output" />
+
+</com:TContent>

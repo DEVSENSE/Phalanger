@@ -1,0 +1,14 @@
+<com:TContent ID="body" >
+
+<h1 id="158014">TActiveMultiView</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveMultiView" />
+
+<p class="block-content">
+<tt>TActiveMultiView</tt> is the active counterpart to the original <tt>TMultiView</tt> control.
+<tt>TActiveMultiView</tt> serves as a container for a group of <tt>TView</tt> controls, which can be retrieved by the <tt>Views</tt> property. Each view contains child controls. <tt>TActiveMultiView</tt> determines which view and its child controls are visible. At any time, at most one view is visible (called <i>active</i>). To make a view active, set <tt>ActiveView</tt> or <tt>ActiveViewIndex</tt>. Note, by default there is no active view.
+<tt>TActiveMultiView</tt> is able to render itself on Callback when <tt>ActiveView</tt> or <tt>ActiveViewIndex</tt> properties are changed.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveMultiView.Home" />
+
+<div class="last-modified">$Id: ActiveMultiView.page 2954 2011-06-01 23:01:03Z ctrlaltca@gmail.com $</div></com:TContent>

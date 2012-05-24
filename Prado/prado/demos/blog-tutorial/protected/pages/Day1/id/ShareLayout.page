@@ -1,0 +1,180 @@
+<com:TContent ID="Main">
+
+<h1>Berbagi Tata Letak Umum</h1>
+
+<p>
+Dalam bagian ini, kita akan menggunakan fitur <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.MasterContent">master/content</a> PRADO untuk membagi tata letak umum diantara halaman. Tata letak merujuk ke area yang sama atay sebagian besar sama untuk setelan halaman. Sebagai contoh, dalam sistem blog kita, semua halaman akan berbagi header yang sama, footer dan bar-samping yang berisi link jalan pintas. Implementasi langsung adalah untuk mengulang tata letak umum dalam setiap halaman. Akan tetapi, pendekatan ini adalah cenderung salah dan sulit untuk dipelihara. Fitur <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.MasterContent">master/content</a> membolehkan kita untuk menggunakan tata letak umum sebagai sebuah kontrol yang memusatkan logika dan penyajian tata letak umum untuk setiap halaman.
+</p>
+
+<com:InfoBox>
+Ini juga memungkinkan untuk membagi tata letak umum melalui <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">penyertaan template</a>, yang mirip inklusi file PHP. Akibat dari penyertaan inklusi template ini adalah bahwa ia tidak berdiri sendiri dan tidak membawa kelas untuk mengisi logika untuk tata letak umum.
+</com:InfoBox>
+
+
+<h2>Membuat Kontrol Master</h2>
+
+<p>
+Sekarang kita membuat kontrol master <tt>MainLayout</tt> untuk mewakili tata letak umum berbagi dengan halaman blog kita. Kontrol <tt>MainLayout</tt> adalah kontrol template yang diperluas dari <tt>TTemplateControl</tt>. Ini mememerlukan file template <tt>MainLayout.tpl</tt> dan sebuah file kelas <tt>MainLayout.php</tt> yang ditempatkan di bawah direktori yang sama. Guna menjembatani pemeliharaan, kita membuat direktori baru <tt>protected/layouts</tt> untuk menampungnya.
+</p>
+
+<img src="<%~ directories3.gif %>" class="output" />
+
+<p>
+Untuk saat ini, <tt>MainLayout</tt> hanya berisi header dan footer sederhana, seperti ditampilkan berikut ini. Kedepan, kita akan menambahkan bar-samping. Para pembaca juga disarankan untuk meningkatkan tata letak dengan fitur yang lainnya.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<html>
+&lt;com:THead />
+<body>
+&lt;com:TForm>
+<div id="page">
+
+<div id="header">
+<h1>My PRADO Blog</h1>
+</div>
+
+<div id="main">
+&lt;com:TContentPlaceHolder ID="Main" />
+</div>
+
+<div id="footer">
+&lt;%= PRADO::poweredByPrado() %>
+</div>
+
+</div>
+&lt;/com:TForm>
+</body>
+</html>
+</com:TTextHighlighter>
+
+<p>
+Contoh di atas memperlihatkan konten dalam file template <tt>MainLayout.tpl</tt>. Tiga tag baru ini dipakai:
+</p>
+<ul>
+<li><tt>&lt;com:TContentPlaceHolder&gt;</tt> mewakili kontrol <a href="http://www.pradosoft.com/docs/classdoc/TContentPlaceHolder">TContentPlaceHolder</a>. Ia menyimpan tempat dalam template di mana konten akan ditempatkan. Di sini, konten datang dari halaman yang menggunakan kontrol master ini.</li>
+<li><tt>&lt;com:THead&gt;</tt> mewakili kontrol <a href="http://www.pradosoft.com/docs/classdoc/THead">THead</a> yang menyajikan tag &lt;head&gt; dalam HTML. Ia membolehkan PRADO untuk memanipulasi tag &lt;head&gt; sebagai sebuah komponen (misalnya setelan judul halaman, menambahkan gaya CSS kustom.)</li>
+<li><tt>&lt;%= %&gt;</tt> adalah sebuah <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates2#et">tag ekspresi</a>. Ia menampilkan hasil evaluasi daru ekspresi yang dikurung di tempat di mana ia muncul.</li>
+</ul>
+
+<p>
+File kelas <tt>MainLayout.php</tt> sangat sederhana:
+</p>
+
+<com:TTextHighlighter CssClass="source">
+<?php
+class MainLayout extends TTemplateControl
+{
+}
+?>
+</com:TTextHighlighter>
+
+<com:InfoBox>
+Nama ekstensi file untuk template halaman <tt>.page</tt>, sementara untuk template non-halaman yaitu <tt>.tpl</tt>. Ini untuk membedakan halaman dari kontrol lain. Keduanya menggunakan <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">sintaks template</a> yang sama. Untuk halaman, file kelasnya adalah opsional (standarnya <tt>TPage</tt>), sementara untuk kontrol non-halaman, file kelasnya adalah mandatori. Mirip dengan Java, nama file kelas harus sama seperti nama kelas. Harap berhati-hati mengenai sensitifitas-huruf pada sistem Linux/Unix.
+</com:InfoBox>
+
+
+<h2>Menggunakan Kontrol Master</h2>
+<p>
+Untuk menggunakan kontrol master yang baru saja dibuat, kita akan memodifikasi <tt>Home.page</tt> dan <tt>Contact.page</tt>. Dalam keadaan tertentu, kita perlu untuk menghapus header dan footer darinya karena kontrol master akan bertanggung jawab untuk menampilkannya; dan kita perlu memberitahu dua halaman di mana mereka harus menggunakan <tt>MainLayout</tt> sebagai masternya.
+</p>
+
+<p>
+Kode berikut memperlihatkan konten dalam <tt>Contact.page</tt> setelah perubahan:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ MasterClass="Application.layouts.MainLayout" Title="My Blog - Contact" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Contact</h1>
+<p>Please fill out the following form to let me know your feedback on my blog. Thanks!</p>
+
+...kotak teks dan validator untuk nama pengguna...
+
+...kotak teks dan  validator untuk emali pengguna...
+
+...kotak teks dan validator untuk konten umpan balik...
+
+&lt;com:TButton Text="Submit" OnClick="submitButtonClicked" />
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+<p>
+Konten yang dikurung di dalam tag <tt>&lt;com:TContent&gt;</tt> tag akan disisipkan ke dalam tempat yang disiapkan oleh <tt>&lt;com:TContentPlaceHolder&gt;</tt> pada template master.
+</p>
+
+<com:InfoBox>
+Dimungkinkan untuk memiliki multipel <tt>TContentPlaceHolder</tt> dalam sebuah template master dan multipel <tt>TContent</tt> dakan tenokate konten. Mereka saling dipasangkan dengan nilai <tt>ID</tt>-nya. Juga dimungkinkan untuk membuat template konten menjadi master template konten lainnya dengan menempatkan <tt>TContentPlaceHolder</tt> di pembentuk. Ini disebut <i>master berulang</i>.
+</com:InfoBox>
+
+<p>
+Selain <tt>&lt;com:TContent&gt;</tt>, kita juga melihat tag baru lain <tt>&lt;%@ %&gt;</tt> di atas, yang disebut <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1#tct">tag kontrol template</a>. Ia berisi pasangan nama-nilai yang dipakai untuk menginisialisasi properti terkait bagi pemilik template, yaitu, halaman <tt>Contact</tt>.
+</p>
+
+<p>
+Dengan menyetel properti <tt>MasterClass</tt> sebagai <tt>Application.layouts.MainLayout</tt>, kita menginstruksikan halaman <tt>Contact</tt> untuk menggunakan <tt>MainLayout</tt> sebagai masternya. Di sini, kita sedang menggunakan <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">format namespace</a> untuk merujuk ke kelas <tt>MainLayout</tt>.
+</p>
+
+<com:InfoBox>
+Format namespace sebagian besar dipakai dalam pemrograman PRADO. Dipakai bersama dengan <a href="http://www.pradosoft.com/demos/quickstart/index.php?page=Fundamentals.Components">alias path</a>. PRADO mendefinisikan dua alias path: <tt>System</tt> merujuk ke direktori <tt>framework</tt> pada instalasi PRADO, dan <tt>Application</tt> merujuk ke direktori <tt>protected</tt>. Namespace <tt>Application.layouts.MainLayout</tt> selanjutnya bisa diterjemahkan sebagai <tt>protected/layouts/MainLayout</tt> yang tepatnya adalah nama file (tanpa ekstensi <tt>.php</tt>) untuk kelas <tt>MainLayout</tt>.
+</com:InfoBox>
+
+
+<h2>Cara Alternatif Menetapkan Master</h2>
+
+<p>
+Ada beberapa cara tambahan untuk menetapkan kelas master untuk sebuah halaman.
+</p>
+
+<p>
+Kita dapat menetapkan master dalam kode seperti berikut untuk menghidupkan perubahan dinamis terhadap tata letak:
+</p>
+
+<com:TTextHighlighter CssClass="source">
+<?php
+class Contact extends TPage
+{
+    public function onPreInit($param)
+    {
+        parent::onPreInit($param);
+        $this->MasterClass='Path.To.NewLayout';
+    }
+
+    // ...
+}
+?>
+</com:TTextHighlighter>
+
+<p>
+Dalam contoh di atas, kita menetapkan <tt>MasterClass</tt> dalam metode <tt>onPreInit()</tt> yang diturunkan dari <tt>TPage</tt>. Metode dipanggil oleh PRADO langsung setelah turunan halaman dibuat. Selanjutnya kita dapat menentukan secara dinamis tata letak yang dipakai saat halaman diminta. Sebagai contoh, ketika halaman yang diminta oleh pengguna terdaftar kita memakai tata letak A, dan tata letak B dipakai jika pengguna tamu yang meminta halaman.
+</p>
+
+<p>
+Kita juga dapat menetapkan master dalam <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.AppConfig">konfigurasi aplikasi</a>  atau <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.PageConfig">konfigurasi halaman</a>. Kode berikut memperlihatkan konfigurasi aplikasi yang dimutakhirkan untuk sistem blog kita:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<application id="blog" mode="Debug">
+  <!-- konfigurasi untuk layanan yang tersedia -->
+  <services>
+    <service id="page" class="TPageService" DefaultPage="Home">
+      <!-- initial properties set for all pages -->
+      <pages MasterClass="Application.layouts.MainLayout" />
+    </service>
+  </services>
+</application>
+</com:TTextHighlighter>
+
+<p>
+Dengan melakukan demikian, kita menghindari kesulitan pada penetapan master dalam setiap template halaman. Jika kita memutuskan untuk menggunakan master yang berbeda untuk halaman, kita hanya perlu mengubah konfigurasi aplikasi. Untuk alasan ini, dalam sistem blog kita, kita akan menggunakan pendekatan untuk menetapkan master.
+</p>
+
+<com:InfoBox>
+Ada urutan yang menentukan master yang mana yang sebenarnya diterapkan ketika ia ditetapkan dalam tempat multipel. Dalam keadaan tertentu, <tt>onPreInit()</tt> diambil lebih dulu di atas template halaman di atas konfigurasi aplikasi/halaman. Oleh karena itu, jika kita menetapkan <tt>MainLayout</tt> dalam konfigurasi aplikasi/halaman dan kita menetapkan <tt>SpecialLayout</tt> dalam <tt>Contact.page</tt>, master yang efektif adalah yang terakhir.
+</com:InfoBox>
+
+</com:TContent>

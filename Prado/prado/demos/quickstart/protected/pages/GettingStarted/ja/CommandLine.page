@@ -1,0 +1,106 @@
+<com:TContent ID="body" >
+<h1 id="501">Command Line Tool</h1>
+<p id="70046" class="block-content">The optional <tt>prado-cli.php</tt> PHP script file in the <tt>framework</tt>
+directory provides command line tools to perform various tedious takes in Prado.
+The <tt>prado-cli.php</tt> can be used to create Prado project skeletons, create
+initial test fixtures, and access to an interactive PHP shell.
+</p>
+<h2 id="502">Requirements</h2>
+<p id="70047" class="block-content">
+To use the command line tool, you need to use your command prompt, command console
+or terminal. In addition, PHP must be able to execute PHP scripts from
+the command line.
+</p>
+
+<h2 id="503">Usage</h2>
+<p id="70048" class="block-content">
+If you type <tt>php path/to/framework/prado-cli.php</tt>, you should see
+the following information. Alternatively, if you are not on Windows, 
+you may try to change the <tt>prado-cli.php</tt> into an executable
+and execute it as a script</p>
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70006">
+Command line tools for Prado 3.0.5.
+usage: php prado-cli.php action <parameter> [optional]
+example: php prado-cli.php -c mysite
+
+actions:
+  -c <directory>
+    Creates a Prado project skeleton for the given <directory>.
+
+  -t <directory>
+    Create test fixtures in the given <directory>.
+
+  shell [directory]
+    Runs a PHP interactive interpreter. Initializes the Prado
+    application in the given [directory].
+</com:TTextHighlighter>
+
+<p id="70049" class="block-content">The <b>&lt;parameter&gt;</b> are required parameters and <b>[optional]</b>
+are optional parameters. </p>
+
+<h2 id="504">Creating a new Prado project skeleton</h2>
+
+<p id="70050" class="block-content">To create a Prado project skeleton, do the following:</p>
+<ol>
+	<li>Change to the directory where you want to create the project skeleton.</li>
+	<li>Type, <tt>php ../prado/framework/prado-cli.php -c helloworld</tt>, where
+	<tt>helloworld</tt> is the directory name that you want to create the project skeleton files.</li>
+	<li>Type, <tt>php ../prado/framework/prado-cli.php <b>-t</b> helloworld</tt> to create
+	the test fixtures for the <tt>helloworld</tt> project.</li>
+</ol>
+
+<h2 id="505">Interactive Shell</h2>
+<p id="70051" class="block-content">
+The interactive shell allows you to evaluate PHP statements from the command line.
+The <tt>prado-cli.php</tt> script can be used to start the shell and load an existing
+Prado project. For example, let us load the blog demo project. Assume that your
+command line is in the <tt>prado</tt> distribution directory and you type.
+</p>
+<p id="70052" class="block-content">
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70007">
+$: php framework/prado-cli.php shell demos/blog
+</com:TTextHighlighter>
+The output should be
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70008">
+Command line tools for Prado 3.0.5.
+** Loaded Prado application in directory "demos\blog\protected".
+PHP-Shell - Version 0.3.1
+(c) 2006, Jan Kneschke <jan@kneschke.de>
+
+>> use '?' to open the inline help
+
+>>
+</com:TTextHighlighter>
+Then we will get an instance of the Prado blog application, and from
+that instance we want an instance of the <tt>'data'</tt> module. Notice that
+a <b>semicolon</b> at the end of the line <b>suppresses the output</b>.
+
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70009">
+>> $app = Prado::getApplication();
+
+>> $db = $app->getModule('data');
+</com:TTextHighlighter>
+Lastly, we want to use the data module to query for a post with <tt>ID=1</tt>. Notice that
+we <b>leave out the semicolon</b> to show the results.
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70010">
+>> $db->queryPostByID(1)
+</com:TTextHighlighter>
+There should not be any errors and you should see the following. 
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70011">
+PostRecord#1
+(
+    [ID] => 1
+    [AuthorID] => 1
+    [AuthorName] => 'Prado User'
+    [CreateTime] => 1148819691
+    [ModifyTime] => 0
+    [Title] => 'Welcome to Prado Weblog'
+    [Content] => 'Congratulations! You have successfully installed Prado Blog --
+ a PRADO-driven weblog system. A default administrator account has been created.
+ Please login with <b>admin/prado</b> and update your password as soon as possible.'
+    [Status] => 0
+    [CommentCount] => 0
+)
+</com:TTextHighlighter>
+</p>
+<div class="last-modified">$Id: CommandLine.page 1927 2007-05-10 23:00:04Z wei $</div></com:TContent>

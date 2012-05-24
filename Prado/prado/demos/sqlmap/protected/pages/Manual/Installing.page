@@ -1,0 +1,51 @@
+<com:TContent ID="body">
+
+<h1>Installing the DataMapper for PHP</h1>
+
+<p>This section explains how to install, configure, and use the SQLMap DataMapper
+with your PHP application.</p>
+
+<p>There are two steps to using SQLMap DataMapper with your application for the
+first time.</p>
+<ol>
+  <li>Setup the distribution</li>
+  <li>Add XML documents</li>
+</ol>
+
+<h2>Setup the Distribution</h2>
+
+<p>The official site for SQLMap PHP DataMapper is <a href="http://www.pradosoft.com">http://www.pradosoft.com</a>. 
+The DataMapper
+is availabe as a source distribution in the form of a ZIP archive. To download
+the distributions, follow the link to the Downloads area on the web site, and
+select the the source distribution for the SQLMap PHP DataMapper release. You
+can extract the distribution using a utility like WinZip or the extractor
+built into newer versions of Windows.</p>
+
+<p><b>TODO: Add distribution contents</b></p>
+
+<h1>Add XML file items</h1>
+<p>After unpacking the source distribution, you will need to add two types of XML
+files to your Web application, or library project (and Test project if you
+have one). These files are:</p>
+
+<dl>
+    <dt>SqlMap.xml</dt>
+    <dd>--  A Data Map file that contains your SQL queries. Your project will contain one
+  or more of these files with names such as Account.xml or Product.xml.
+    </dd>
+    
+    <dt>SqlMap.config</dt>
+    <dd>--
+    The DataMapper configuration file that is used to specify the locations of your
+    SqlMap.xml files. It is also used to define other DataMapper
+   configuration options such as caching. You will need to include one SqlMap.config
+   file for each data source that your project has.
+    </dd>
+  </dl>
+  
+<p>As expected, the <tt>SqlMap.config</tt> file should be (by default) placed where the DataMapper
+can find them at runtime.</p>
+
+
+</com:TContent>

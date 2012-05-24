@@ -1,0 +1,23 @@
+<com:TContent ID="body" >
+
+<h1 id="901">Halaman</h1>
+<p id="130137" class="block-content">
+Halaman adalah kontrol teratas yang tidak mempunyai leluhur. Presentasi halaman ditampilkan secara langsung ke pengguna-akhir. Pengguna mengakses halaman dengan mengirimkan permintaan layanan halaman.
+</p>
+<p id="130138" class="block-content">
+Setiap halaman harus mempunyai file <a href="?page=Configurations.Templates1">template</a>. Akhiran nama file harus <tt>.page</tt>. Nama file (tanpa akhiran) adalah nama halaman. PRADO akan mencoba mencari file kelas halaman di bawah direktori yang berisi file template halaman. File kelas halaman tersebut harus mempunyai nama file yang sama (diakhiri dengan <tt>.php</tt>) seperti file template. Jika file kelas tidak ditemukan, halaman akan mengambil kelas <tt>TPage</tt>.
+</p>
+
+<h2 id="902">PostBack</h2>
+<p id="130139" class="block-content">
+Submisi formulir disebut <i>postback</i> jika submisi dibuat untuk halaman yang berisi formulir. Postback dapat dianggap sebagai kondisi di sisi klien, dimunculkan oleh pengguna. PRADO akan mencoba mengidentifikasi kontrol mana pada sisi server untuk postback kondisi. Jika seseorang menentukan misalnya, <tt>TButton</tt>, kami menyebutnya pengirim event postback yang akan menterjemahkan event postback ke dalam beberapa event sisi-server tertentu (contoh event <tt>OnClick</tt> dan <tt>OnCommand</tt> untuk <tt>TButton</tt>).
+
+</p>
+
+<h2 id="903">Masa Hidup Halaman</h2>
+<p id="130140" class="block-content">
+Mengerti masa hidup halaman adalah penting untuk menguasai pemrograman PRADO. Masa hidup halaman merujuk ke transisi kondisi dari sebuah halaman saat melayani halaman ini bagi pengguna-akhir. Ini dapat digambarkan dalam grafik kondisi berikut,
+<img src="<%~lifecycles.gif %>" />
+</p>
+
+<div class="last-modified">$Id: Pages.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

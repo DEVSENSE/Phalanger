@@ -1,0 +1,52 @@
+body
+{
+	font-family: arial;
+	font-size: 0.85em;
+}
+
+fieldset
+{
+	background-color: #ffc;
+	border: 1px solid #ccc;
+}
+
+legend
+{
+	font-weight: bold;
+	font-size: 1.2em;
+	color: #333;
+}
+
+fieldset div
+{
+	margin: 0.5em;
+}
+
+label, span.total-label
+{
+	width: 15em;
+	float: left;
+	text-align: right;
+	margin-right: 0.35em;
+}
+
+.total-field
+{
+	margin-bottom: 2.5em;
+}
+
+.total-field .result
+{
+	float: left;
+	height: 1em;
+	width: 10em;
+}
+
+.convert-button
+{
+	display: block;
+	border-top: 1px solid #ccc;
+	margin-top: 1.7em;
+	padding-left: 15.5em;
+	padding-top: 0.5em;
+}

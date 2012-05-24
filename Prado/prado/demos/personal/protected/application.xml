@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="personal" mode="Normal">
+  <paths>
+    <using namespace="Application.Common.*" />
+  </paths>
+  <!-- modules configured and loaded for all services -->
+  <modules>
+    <!-- Remove this comment mark to enable caching
+    <module id="cache" class="System.Caching.TSqliteCache" />
+    -->
+    <!-- Remove this comment mark to enable PATH url format
+    <module id="request" class="THttpRequest" UrlFormat="Path" />
+    -->
+    <!-- Remove this comment mark to enable logging
+    <module id="log" class="System.Util.TLogRouter">
+      <route class="TBrowserLogRoute" Categories="System" />
+      <route class="TFileLogRoute" Categories="System" Levels="Notice,Warning,Error,Alert,Fatal" />
+    </module>
+    -->
+  </modules>
+  <services>
+    <!-- page service -->
+    <service id="page" class="TPageService" BasePath="Application.Pages">
+      <!-- modules configured and loaded when page service is requested -->
+      <modules>
+        <!-- user manager module -->
+        <module id="users" class="System.Security.TUserManager" PasswordMode="Clear">
+          <user name="demo" password="demo" />
+        </module>
+        <!-- auth manager module -->
+        <module id="auth" class="System.Security.TAuthManager" UserManager="users" LoginPage="UserLogin" />
+      </modules>
+    </service>
+  </services>
+</application>

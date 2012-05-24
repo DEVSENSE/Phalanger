@@ -1,0 +1,25 @@
+<com:TContent ID="body" >
+
+<h1 id="4201">TSafeHtml</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TSafeHtml" />
+
+<p id="490308" class="block-content">
+<tt>TSafeHtml</tt> adalah kontrol yang membuang semua konten HTML yang berpotensi membahayakan. Ini terutama sebagai pelapis dari proyek <a href="http://pixel-apes.com/safehtml/">SafeHTML</a>. Menurut proyek SafeHTML, ia mencoba untuk mengamankan situasi berikut saat string ditampilkan kepada pengguna-akhir:
+</p>
+<ul id="u1" class="block-content">
+  <li>Tag pembuka tanpa tang penutupnya</li>
+  <li>penutupan tag tanpa tag pembukanya
+  <li>salah satu dari tag ini: base, basefont, head, html, body, applet, object, iframe, frame, frameset, script, layer, ilayer, embed, bgsound, link, meta, style, title, blink, xml, dll.</li>
+  <li>seiap atribut ini: on*, data*, dynsrc</li>
+  <li>javascript:/vbscript:/about: dll. protocols</li>
+  <li>ekspresi/perangai, dll. dalam style</li>
+  <li>konten aktif lainnya.</li>
+</ul>
+
+<p id="490309" class="block-content">
+Untuk menggunakan <tt>TSafeHtml</tt>, cukup kurung konten untuk diamankan dalam tag komponen <tt>TSafeHtml</tt> pada template. Konten bisa terdiri dari teks statis dan kontrol PRADO. Jika yang kedua, hasil penyajian kontrol akan aman.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TSafeHtml.Home" />
+
+<div class="last-modified">$Id: SafeHtml.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

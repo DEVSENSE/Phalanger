@@ -1,0 +1,1001 @@
+<com:TContent ID="body" >
+<!-- $Id $ -->
+<h1 id="138046">Rekaman Aktif</h1>
+<com:SinceVersion Version="3.1a" />
+<p id="690478" class="block-content">Rekaman Aktif adalah obyek yang melapisi baris dalam tabel atau view database,
+    melindungi akses database dan menambahkan logika domain pada data tersebut.
+    Dasar dari Rekaman Aktif adalah kelas bisnis, sebagai contoh, kelas 
+    <tt>Products</tt>, yang hampir menyamai struktur rekaman dari tabel database
+    dibawahnya. Setiap Rekaman Aktif akan bertanggung jawab atas
+    penyimpanan dan pengambilan data ke dan dari database. </p>
+<div class="info"><b class="note">Info:</b>
+    Struktur Rekaman Aktif harus sama dengan tabel dalam database.
+    Setiap kolom tabel harus mempunyai variabel atau properti anggota terkait dalam
+    kelas Rekaman Aktif yang mewakili tabel.
+</div>
+
+<h2 id="138047">Kapan Menggunakannya</h2>
+<p id="690479" class="block-content">Rekaman Aktif adalah pilihan yang baik untuk logika domain yang tidak terlalu rumit, 
+    seperti membuat, membaca, memutakhirkan, dan menghapus. Derivasi dan validasi
+    didasarkan pada satu rekaman yang bekerja denga baik dalam struktur ini. Rekaman Aktif mempunyai kuntungan utama dalam hal kesederhanaan. Mudah untuk membangun Rekaman Aktif, dan mudah untuk dimengerti.</p>
+
+    <p id="690480" class="block-content">Akan tetapi, seiring dengan perkembangan logika bisnis Anda dalm hal kompleksitas, Anda akan segera ingin menggunakan hubungan langsung obyek Anda, koleksi, turunan, dan seterusnya. Ini tidak mudah diterapkan ke dalam Rekaman Aktif, dan menambahkannya sedikit demi sedikit menjadi sangat kacau.
+    Argumen lain terhadap Rekaman Aktif adalah kenyataan bahwa ia menyandingkan desin obyek ke desain database. Ini menjadikannya lebih sulit untuk merefraktorisasi karena proyek terus berjalan.</p>
+    
+    <p id="690481" class="block-content">Alternatifnya adalah menggunakan Pemeta Data yang yang memisahkan aturan dari obyek bisnis dan bagaimana obyek ini disimpan.       
+        Prado menyediakan pilihan tambahan antara Rekaman Aktif dan
+        <a href="?page=Database.SqlMap">Pemeta Data SqlMap</a>. 
+        Pemeta Data SqlMap bisa dipakai untuk mengambil obyek Rekaman Aktif, hasilnya; obyek Rekaman Aktif ini bisa dipakai untuk memutakhirkan database. 
+        "Hubungan" antara Rekaman Aktif dan <a href="?page=Database.SqlMap">SqlMap</a> digambarkan dalam diagram berikut. Lebih rinci mengenai Pemeta Data SqlMap dapat ditemukan dalam
+    <a href="http://www.pradosoft.com/demos/sqlmap/">Manual SqlMap</a>.
+    <img src=<%~ sqlmap_active_record.png %> alt="Rekaman Aktif dan SqlMap DataMapper" id="fig:diagram.png" class="figure"/>
+    </p>
+    
+    <p id="690482" class="block-content">
+        Kelas Rekaman Aktif berfungsi untuk melakukan tugas-tugas berikut.
+    </p>
+    <ul id="u1" class="block-content">
+        <li>Membuat, Mengambil, Memutakhirkan dan Menghapus rekaman.</li>
+        <li>Metode pencari untuk melapisi queri SQL yang umum dipakai dan mengemalikan obyek Rekaman Aktif.</li>
+        <li>Mengambil hubungan (terkait dengan obyek asing) seperti "has many", "has one", "belongs to" dan "has many" melalui asosiasi tabel.</li>
+        <li>Pengambilan lazy atas hubungan.</li>
+    </ul>
+<h2>Implikasi Desain</h2>
+<p>
+Implementasi Prado terhadap Rekaman Aktif tidak memelihara identitas referensial. Setiap obyek diperoleh menggunakan Rekaman Aktif pada data dalam database. Sebagai contoh, jika Anda meminta kustomer tertentu dan mendapatkan kembali obyek <tt>Customer</tt>, kali berikutnya Anda meminta kustomer itu, Anda akan kembali mendapatkan turunan lain dari obyek <tt>Customer</tt>. Ini berarti bahwa perbandingan tepat (misalnya menggunakan <tt>===</tt>) akan mengembalikan false, sementara perbandingan bebas (misalnya menggunakan <tt>==</tt>) akan mengembalikan true jika nilai obyek sama menurut perbandingan bebas. 
+<p>
+<p>
+Implikasi desain ini terkait dengan pertanyaan berikut.
+<i>"Anda pikir kustomer sebagai obyek, di mana hanya satu, 
+atau Anda pikir obyek yang Anda operasikan sebagai <b>duplikat</b> dari database?"</i>
+Pemetaan O/R lain akan mengartikan bahwa hanya ada satu obyek Kustomer dengan custID 100, dan secara literal ia adalah kustomer. 
+Jika Anda mendapatkan kustomer dan mengubah field-nya, maka Anda sekarang telah mengubah kustomer itu. 
+<i>"Itu berbatasan dengan: Anda telah mengubah duplikat kustomer ini, tapi bukan pada duplikat itu. 
+Dan jika dua orang memutakhirkan kustomer pada dua duplikat obyek, siapapun yang memutakhirkan pertama kali, atau mungkin yang terakhir yang menang."</i> [A. Hejlsberg 2003]
+</p>
+
+<h2 id="142010">Database yang Didukung</h2>
+<p id="p1" class="block-content">
+Implementasi Rekaman Aktif memanfaatkan kelas <a href="?page=Database.DAO">Prado DAO</a> untuk akses data.   
+Implementasi Rekaman Aktif saat ini mendukung database sebagai berikut. 
+</p>
+<ul>
+    <li><a href="http://www.mysql.com">MySQL 4.1 atau lebih tinggi</a></li>
+    <li><a href="http://www.postgres.com">Postgres SQL 7.3 atau lebih tinggi</a></li>
+    <li><a href="http://www.sqlite.org">SQLite 2 dan 3</a></li>
+    <li><a href="#">MS SQL 2000 atau terbaru</a></li>
+    <li><a href="http://www.oracle.com">Oracle Database (alfa)</a></li>
+</ul>
+<p id="710009" class="block-content">Dukungan database lain dapat disediakan jika permintaan mencukupi.</p>
+
+<h1 id="138048">Mendefinisikan Rekaman Aktif</h1>
+<p id="690483" class="block-content">Mari kita anggap tabel
+    "<tt>users</tt>" berikut yang berisi dua kolom bernama "<tt>username</tt>" dan "<tt>email</tt>", 
+    di mana "<tt>username</tt>" juga merupakan kunci primer. 
+<com:TTextHighlighter Language="sql" CssClass="source block-content" id="code_690147">
+CREATE TABLE users
+(
+    username VARCHAR( 20 ) NOT NULL ,
+    email VARCHAR( 200 ) ,
+    PRIMARY KEY ( username )
+);
+</com:TTextHighlighter>
+</p>
+<p id="690484" class="block-content">Selanjutnya kelas Rekaman Aktif kita yang terkait dengan tabel "<tt>users</tt>".
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690148">
+class UserRecord extends TActiveRecord
+{
+    const TABLE='users'; //nama tabel
+
+    public $username; //kolom bernama "username" dalam tabel "users"
+    public $email;
+    
+    /**
+     * @return TActiveRecord active record finder instance
+     */
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+</p>
+<p id="690485" class="block-content">Setiap kolom dari tabel "<tt>users</tt>" harus mempunyai properti terkait atas nama yang sama seperti nama kolom dalam kelas <tt>UserRecord</tt>.
+    Tentunya, Anda juga mendefinisikan variabel atau properti tambahan yang tidak ada dalam struktur tabel.
+    Konstan kelas
+    <tt>TABLE</tt> adalah opsional saat nama kelas adalah sama seperti nama tabel dalam database, sebaliknya <tt>TABLE</tt> harus
+    menetapkan nama tabel yang terkait dengan kelas Rekaman Aktif Anda.
+</p>
+
+<div class="tip"><b class="note">Tip:</b>
+Anda dapat menetapkan nama-nama tabel yang memenuhi syarat. Contohnya untuk MySQL, <tt>TABLE = "`database1`.`table1`"</tt>.
+</div>
+
+<p class="block-content" id="ar_as_component">
+    Karena <tt>TActiveRecord</tt> memperluas <tt>TComponent</tt>, metode penyetel dan pengambil dapat didefinisikan guna membolehkan kontrol melalui bagaimana variabel disetel dan dikembalikan. Sebagai contoh, menambah properti <tt>$level</tt> untuk menggunakan kelas UserRecord:
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690149">
+class UserRecord extends TActiveRecord {
+    ... //definisi yang sudah ada seprti di atas
+    
+    private $_level;
+    public function setLevel($value) {
+        $this->_level=TPropertyValue::ensureInteger($value,0);
+    }
+    public function getLevel($value){
+        return $this->_level;
+    }
+}
+</com:TTextHighlighter>
+<p id="710010" class="block-content">Lebih jelas mengenai TComponent dapat ditemukan dalam <a href="?page=Fundamentals.Components">Dokumentasi komponen</a>.
+Nantinya kita harus dapat menggunakan pengambil/penyetel guna membolehkan pengambilan malas atas obyek yang berhubungan.
+</p>
+
+<div class="info"><b class="note">Info:</b>
+<tt>TActiveRecord</tt> juga dapat bekerja dengan view database dengan menetapkan konstan <tt>TABLE</tt> terkait ke nama view. Akan tetapi,
+obyek yang dikembalikan dari view hanya-baca, memanggil metode
+<tt>save()</tt> atau <tt>delete()</tt> akan memunculkan eksepsi. 
+</div>
+
+<p id="690486" class="block-content">
+    Metode statis <tt>finder()</tt> mengembalilkan turunan <tt>UserRecord</tt> 
+    yang dapat dipakai untuk mengambil rekaman dari database. Pengambilan rekaman menggunakan metode finder akan didiskusikan nanti. Metode statis <tt>TActiveRecord::finder()</tt> mengambil nama kelas Rekaman Aktif sebagai parameter.
+</p>
+
+<h2 id="138049">Menyiapkan koneksi database</h2>
+<p id="690487" class="block-content">
+    Koneksi database standar untuk Rekaman Aktif dapat disetel sebagai berikut.
+    Lihat <a href="?page=Database.DAO">Menetapkan Koneksi Database</a> untuk
+    rincian lebih jauh mengenai pembuatan koneksi database secara umum.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690150">
+//buat koneksi dan berikan kepada manajer Rekaman Aktif.
+$dsn = 'pgsql:host=localhost;dbname=test'; //Postgres SQL
+$conn = new TDbConnection($dsn, 'dbuser','dbpass');
+TActiveRecordManager::getInstance()->setDbConnection($conn);
+</com:TTextHighlighter> 
+
+<p id="710011" class="block-content">Alternatifnya, Anda dapat membuat basis kelas dan mengganti metode <tt>getDbConnection()</tt> untuk mengembalikan
+koneksi database. Ini adalah cara sederhana untuk mengijinkan koneksi database multipel. Kode berikut mendemonstrasikan penetapan koneksi database dalam sebuah basis kelas (tidak perlu menyetel koneksi DB di manapun juga).
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class MyDb1Record extends TActiveRecord
+{
+    public function getDbConnection()
+    {
+        static $conn;
+        if($conn===null)
+            $conn = new TDbConnection('xxx','yyy','zzz');
+        return $conn;
+    }
+}
+class MyDb2Record extends TActiveRecord
+{
+    public function getDbConnection()
+    {
+        static $conn;
+        if($conn===null)
+            $conn = new TDbConnection('aaa','bbb','ccc');
+        return $conn;
+    }
+}
+</com:TTextHighlighter> 
+
+
+<h3 class="prado-specific">Menggunakan <tt>application.xml</tt> di dalam Kerangka Kerja Prado</h3>
+<div class="prado-specific">
+<p id="690488" class="block-content">
+    Koneksi database standar dapat juga dikonfigurasi menggunakan tag <tt>&lt;module&gt;</tt> dalam <a href="?page=Configurations.AppConfig">application.xml</a> 
+    atau <a href="?page=Configurations.PageConfig">config.xml</a> seperti berikut.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_690151">
+<modules>
+  <module class="System.Data.ActiveRecord.TActiveRecordConfig" EnableCache="true">
+    <database ConnectionString="pgsql:host=localhost;dbname=test"
+        Username="dbuser" Password="dbpass" />
+  </module>
+</modules>  
+</com:TTextHighlighter> 
+<div class="tip"><b class="note">Tip:</b>
+    Atribut <tt>EnableCache</tt> ketika disetel ke "true" akan melakukan cache meta data tabel, yakni nama kolom tabel, indeks dan batasan yang disimpan dalam cache dan dipakai ulang. Anda harus membersihkan atau mematikan cache jika Anda ingin melihat perubahan terhadap definisi tabel Anda. <a href="?page=Advanced.Performance#6402">Modul cache</a> juga harus didefinisikan agar cache berfungsi.
+</div>
+</p>
+
+<p id="690489" class="block-content">Properti <tt>ConnectionID</tt> dapat ditetapkan dengan nilai yang terkait ke nilai ID konfigurasi modul <tt>TDataSourceConfig</tt> lain. Ini membolehkan koneksi database yang sama untuk dipakai dalam modul lainnya seperti <a href="?page=Database.SqlMap">SqlMap</a>.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_690152">
+<modules>
+  <module class="System.Data.TDataSourceConfig" id="db1">
+    <database ConnectionString="pgsql:host=localhost;dbname=test"
+        Username="dbuser" Password="dbpass" />
+  </module>
+
+  <module class="System.Data.ActiveRecord.TActiveRecordConfig" 
+        ConnectionID="db1" EnableCache="true"  />
+
+  <module class="System.Data.SqlMap.TSqlMapConfig"
+        ConnectionID="db1"  ... />
+</modules>  
+</com:TTextHighlighter>     
+</p>
+</div>
+
+<h2 id="138050">Mengambil data dari database</h2>
+<p id="690490" class="block-content">
+    Kelas <tt>TActiveRecord</tt> menyediakan banyak metode yang sesuai untuk mencari rekaman dari database. Yang paling sederhana adalah mencari satu rekaman yang sama dengan kunci primer atau kunci komposit (kunci primer yang terdiri dari multipel kolom).
+    Lihat <com:DocLink ClassPath="System.Data.ActiveRecord.TActiveRecord" /> untuk lebih jelasnya.
+</p>
+
+<div class="info"><b class="note">Info:</b>
+Semua metode finder yang dapat mengembalikan hanya 1 rekaman akan mengembalikan <tt>null</tt> jika tidak ada data yang sama yang ditemukan. Semua metode finder yang mengembalikan array rekaman akan mengembalikan array kosong jika tidak ada data yang ditemukan.
+</div>
+
+	<h3 id="138055"><tt>findByPk()</tt></h3>
+    <p id="690491" class="block-content">Mencari satu rekaman hanya menggunakan kunci primer atau kunci gabungan.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690153">
+$finder = UserRecord::finder();
+$user = $finder->findByPk($primaryKey);
+
+//ketika tabel menggunakan kunci gabungan
+$record = $finder->findByPk($key1, $key2, ...);
+$record = $finder->findByPk(array($key1, $key2,...));
+</com:TTextHighlighter>
+</p>
+
+    <h3 id="138056"><tt>findAllByPks()</tt></h3>
+    <p id="690492" class="block-content">Mencari multipel rekaman menggunakan sebuah daftar kunci primer atau kunci gabungan.
+Berikut adalah persamaan untuk kunci primer (kunci primer terdiri dari hanya satu kolom/field).
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690154">
+$finder = UserRecord::finder();
+$users = $finder->findAllByPks($key1, $key2, ...);
+$users = $finder->findAllByPks(array($key1, $key2, ...));
+</com:TTextHighlighter>
+Berikut adalah persamaan untuk kunci gabungan.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690155">
+//ketika tabel menggunakan kunci gabungan
+$record = $finder->findAllByPks(array($key1, $key2), array($key3, $key4), ...);
+
+$keys = array(  array($key1, $key2), array($key3, $key4), ... );
+$record = $finder->findAllByPks($keys);
+</com:TTextHighlighter>
+
+
+<h3 id="138057"><tt>find()</tt></h3>
+<p id="690493" class="block-content">Mencari <b>satu rekaman tunggal</b> yang memenuhi kriteria. Kriteria dapat berupa bagian string SQL atau obyek <tt>TActiveRecordCriteria</tt>.</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690156">
+$finder = UserRecord::finder();
+
+//:name dan :pass adalah tempat untuk nilai $name dan $pass tertentu
+$finder->find('username = :name AND password = :pass',
+                          array(':name'=>$name, ':pass'=>$pass));
+
+//menggunakan tempat posisi
+$finder->find('username = ? AND password = ?', array($name, $pass));
+//same as above
+$finder->find('username = ? AND password = ?', $name, $pass);
+
+//$criteria adalah TActiveRecordCriteria
+$finder->find($criteria); //the 2nd parameter for find() is ignored.
+</com:TTextHighlighter>
+
+<p id="690494" class="block-content">Kelas <tt>TActiveRecordCriteria</tt> mempunyai properti sebagai berikut:
+</p>
+    <ul id="u2" class="block-content">
+        <li><tt>Parameters</tt> -- pasangan parameter nama nilai.</li>
+        <li><tt>OrdersBy</tt> -- pasangan nama kolom dan urutan.</li>
+        <li><tt>Condition</tt> -- bagian dari kondisi SQL WHERE.</li>
+        <li><tt>Limit</tt> -- jumlah maksimum rekaman diambil.</li>
+        <li><tt>Offset</tt> -- ofset rekaman dalam tabel.</li>
+    </ul>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690157">
+$criteria = new TActiveRecordCriteria;
+$criteria->Condition = 'username = :name AND password = :pass';
+$criteria->Parameters[':name'] = 'admin';
+$criteria->Parameters[':pass'] = 'prado';
+$criteria->OrdersBy['level'] = 'desc';
+$criteria->OrdersBy['name'] = 'asc';
+$criteria->Limit = 10;
+$criteria->Offset = 20;
+</com:TTextHighlighter>
+
+<div class="note"><b class="note">Catatan:</b>
+Untuk MSSQL dan saat <tt>Limit</tt> serta <tt>Offset</tt> berisi nilai integer positif. Query aktual yang dijalankan diubah oleh kelas
+<com:DocLink ClassPath="System.Data.ActiveRecord.Common.Mssql.TMssqlCommandBuilder" 
+Text="TMssqlCommandBuilder"
+/>
+berdasarkan pada 
+<a href="http://troels.arvin.dk/db/rdbms/#select-limit-offset">http://troels.arvin.dk/db/rdbms/</a>
+untuk mengemulasikan kondisi <tt>Limit</tt> dan <tt>Offset</tt>.
+</div>
+
+<h3 id="138058"><tt>findAll()</tt></h3>
+<p id="690495" class="block-content">Sama seperti <tt>find()</tt> tapi mengembalikan array obyek.</p>
+
+<h3 id="138059"><tt>findBy*()</tt> dan <tt>findAllBy*()</tt></h3>
+<p id="690496" class="block-content">Metode find dinamis menggunakan bagian dari nama metode sebagai kriteria pencarian.
+Nama metode dimulai dengan <tt>findBy</tt> mengembalikan hanya 1 rekaman dan nama metode yang dimulai dengan <tt>findAllBy</tt> mengembalikan array rekaman.
+Kondisi diambil sebagai bagian dari nama metode setelah <tt>findBy</tt> atau <tt>findAllBy</tt>.
+
+Blok kode berikut adalah sama:
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690158">
+$finder->findByName($name)
+$finder->find('Name = ?', $name);
+</com:TTextHighlighter>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690159">
+$finder->findByUsernameAndPassword($name,$pass);
+$finder->findBy_Username_And_Password($name,$pass);
+$finder->find('Username = ? AND Password = ?', $name, $pass);
+</com:TTextHighlighter>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690160">
+$finder->findAllByAge($age);
+$finder->findAll('Age = ?', $age);
+</com:TTextHighlighter>
+    
+<div class="tip"><b class="note">Tip:</b>
+Anda juga dapat menggunakan kombinasi <tt>AND</tt> dan <tt>OR</tt> sebagai kondisi dalam metode dinamis.
+</div>
+    
+<h3 id="138060"><tt>findBySql()</tt> dan <tt>findAllBySql()</tt></h3>
+<p id="690497" class="block-content">Mencari rekaman menggunakan SQL penuh di mana <tt>findBySql()</tt> mengembalikan Rekaman Aktif dan <tt>findAllBySql()</tt>mengembalikan array obyek rekaman.
+Untuk setiap kolom yang dikembalikan, kelas Rekaman Aktif terkait harus mendefinisikan variabel atau properti untuk setiap nama kolom terkait.
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class UserRecord2 extends UserRecord
+{
+    public $another_value;
+}
+$sql = "SELECT users.*, 'hello' as another_value FROM users";
+$users = TActiveRecord::finder('UserRecord2')->findAllBySql($sql);
+</com:TTextHighlighter>
+</p>
+<h3 id="138061"><tt>count()</tt></h3>
+<p id="690498" class="block-content">Mencari jumlah rekaman yang sama, menerima beberapa parameters seperti metode <tt>findAll()</tt>.</p>
+
+<h2 id="138051">Menyisipkan dan memutakhirkan rekaman</h2>
+<p id="690499" class="block-content">
+Menambah rekaman baru menggunakan TActiveRecord sangat sederhana, cukup buat obyek Rekaman Aktif baru dan panggil metode <tt>save()</tt>. Misalnya
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690161">
+$user1 = new UserRecord();
+$user1->username = "admin";
+$user1->email = "admin@example.com";
+$user1->save(); //sisipkan rekaman baru
+
+$data = array('username'=>'admin', 'email'=>'admin@example.com');
+$user2 = new UserRecord($data); //buat dengan mengirimkan beberapa data yang sudah ada
+$user2->save(); //sisipkan rekaman baru
+</com:TTextHighlighter>
+<div class="tip"><b class="note">Tip:</b>
+Obyek dimutakhirkan dengan kunci primer dari tabel itu yang berisi definisi yang secara otomatis membuat kunci primer untuk rekaman yang baru saja disisipkan.
+Sebagai contoh, jika Anda menyisipkan sebuah rekaman baru ke dalam tabel MySQL yang kolomnya didefinisikan dengan "autoincrement", obyek Rekaman Aktif akan dimutakhirkan dengan nilai yang ditambahkan.</div>
+
+<p id="690500" class="block-content">
+Untuk memutakhirkan rekaman dalam database, cukup ubah satu atau lebih properti obyek Rekaman Aktif yang sudah diambil dari database dan kemudian panggil metode <tt>save()</tt>.    
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690162">
+$user = UserRecord::finder()->findByName('admin');
+$user->email="test@example.com"; //ubah properti
+$user->save(); //mutakhirkan.
+</com:TTextHighlighter>
+</p>
+
+<p id="710012" class="block-content">
+Obyek Rekaman Aktif mempunyai masa-hidup sederhana seperti digambarkan dalam diagram berikut.
+</p>
+<img src=<%~ object_states.png %> alt="Active Records Life Cycle" id="fig:cycle.png" class="figure"/>
+<p id="690501" class="block-content">
+Kita melihat bahwa obyek TActiveRecord baru dibuat dengan menggunakan salah satu metode <tt>find*()</tt> ataupun membuat turunan baru dengan menggunakan kata kunci PHP <tt>new</tt>. Obyek yang dibuat dengan metode <tt>find*()</tt> dimulai dengan kondisi <tt>clean</tt>. Turunan baru TActiveRecord membuat selain metode <tt>find*()</tt> yang dimulai dengan kondisi <tt>new</tt>.
+Kapan saja Anda memanggil metode <tt>save()</tt> pada obyek TActiveRecord, obyek memasuki keadaan <tt>clean</tt>. Obyek dalam <tt>clean</tt> menjadi <tt>dirty</tt> ketika satu atau lebih keadaan internalnya diubah. Pemanggilan metode <tt>delete()</tt> pada obyek mengakhiri masa-hidup obyek, tidak ada aksi lanjutan yang dilakukan pada obyek.
+</p>
+
+<h2 id="138052">Menghapus rekaman yang sudah ada</h2>
+<p id="690502" class="block-content">
+    Untuk menghapus rekaman yang sudah ada dan diambil, cukup panggil metode <tt>delete()</tt>.
+    Anda juga dapat menghapus rekaman dalam database dengan kunci primer tanpa mengambil rekaman apapun menggunakan metode <tt>deleteByPk()</tt> (dan metode yang sama <tt>deleteAllByPks()</tt>). 
+    Sebagai contoh, untuk menghapus satu atau beberapa rekaman dengan menggunakan satu atau lebih kunci primer.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690163">
+$finder->deleteByPk($primaryKey); //hapus 1 rekaman
+$finder->deleteAllByPks($key1,$key2,...); //hapus multipel rekaman
+$finder->deleteAllByPks(array($key1,$key2,...)); //hapus multipel rekaman
+</com:TTextHighlighter>
+
+<p id="690503" class="block-content">
+Untuk kunci gabungan (ditentukan secara otomatis dari definisi tabel):
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690164">
+$finder->deleteByPk(array($key1,$key2)); //hapus 1 rekaman
+
+//hapus multipel rekaman
+$finder->deleteAllByPks(array($key1,$key2), array($key3,$key4),...);
+
+//hapus multipel rekaman
+$finder->deleteAllByPks(array( array($key1,$key2), array($key3,$key4), .. ));
+</com:TTextHighlighter>
+
+<h3 id="138052a"><tt>deleteAll()</tt> dan <tt>deleteBy*()</tt></h3>
+<p id="690502a" class="block-content">
+Untuk menghapus dengan kriteria, gunakan <tt>deleteAll($criteria)</tt> dan <tt>deleteBy*()</tt>
+yang sintaksnya mirip dengan <tt>findAll($criteria)</tt> dan <tt>findAllBy*()</tt> seperti dijelaskan di atas.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690163a">
+//hapus semua rekaman dengan Name yang sama
+$finder->deleteAll('Name = ?', $name);
+$finder->deleteByName($name);
+
+//hapus dengan username dan password
+$finder->deleteBy_Username_And_Password($name,$pass);
+</com:TTextHighlighter>
+
+<h2 id="138053">Transaksi</h2>
+<p id="690504" class="block-content">Semua obyek Rekaman Aktif berisi properti <tt>DbConnection</tt> yang dapat dipakai untuk mendapatkan obyek transaksi.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_690165">
+$finder = UserRecord::finder();
+$finder->DbConnection->Active=true; //buka bila perlu
+$transaction = $finder->DbConnection->beginTransaction();
+try
+{
+    $user = $finder->findByPk('admin');
+    $user->email = 'test@example.com'; //ubah obyek $user
+    $user->save();
+    $transaction->commit();
+}
+catch(Exception $e) // eksepsi dimunculkan jika query gagal
+{
+    $transaction->rollBack();
+}
+</com:TTextHighlighter>
+
+<h2 id="142011">Event</h2>
+<p id="710013" class="block-content">
+TActiveRecord menawarkan dua event, <tt>OnCreateCommand</tt> dan <tt>OnExecuteCommand</tt>.
+</p>
+
+<p id="710014" class="block-content">Event <tt>OnCreateCommand</tt> dimunculkan ketika perintah disiapkan dan penyatuan parameter lengkap. Obyek parameter adalah <tt>TDataGatewayEventParameter</tt> di mana properti
+<tt>Command</tt> bisa diperiksa agar SQL query dijalankan.
+</p>
+
+<p id="710015" class="block-content">
+Event <tt>OnExecuteCommand</tt> dimunculkan ketika perintah dijalankan dan hasil dari database dikembalikan. Obyek parameter <tt>TDataGatewayResultEventParameter</tt> 
+dari properti <tt>Result</tt> berisi data yang dikembalikan dari database. 
+Data yang dikembalikan dapat diubah dengan setelan properti <tt>Result</tt>.
+</p>
+
+<h3 id="142016">Contoh Pencatatan</h3>
+<p id="710016" class="block-content">Menggunakan <tt>OnExecuteCommand</tt> kita dapat menempelkan pengendali event untuk mencatat seluruh query SQL yang dijalankan untuk kelas TActiveRecord atau turunan yang diberikan. Sebagai contoh, kita mendefinisikan sebuah basis kelas dan mengganti <tt>getDbConnection()</tt> atau konstruktornya.
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class MyDb1Record extends TActiveRecord
+{
+    public function getDbConnection()
+    {
+        static $conn;
+        if($conn===null)
+        {
+            $conn = new TDbConnection('xxx','yyy','zzz');
+            $this->OnExecuteCommand[] = array($this,'logger');
+        }
+        return $conn;
+    }
+    public function logger($sender,$param)
+    {
+        var_dump($param->Command->Text);
+    }
+}
+//alternatifnya sebagai per turunan dari per obyek finder
+function logger($sender,$param)
+{
+    var_dump($param->Command->Text);
+}
+TActiveRecord::finder('MyRecord')->OnExecuteCommand[] = 'logger';
+$obj->OnExecuteCommand[] = array($logger, 'log'); //setiap PHP callback yg benar.
+</com:TTextHighlighter> 
+
+<h1 id="ar_relations">Hubungan Rekaman Aktif</h1>
+<com:SinceVersion Version="3.1rc1" />
+<p id="690504a" class="block-content">
+Implementasi Rekaman Aktif Prado mendukung pemetaan kunci asing untuk database
+yang mendukung batasan kunci asing. Agar hubungan Rekaman Aktif berfungsi, database di bawahnya harus mendukung batasan kunci asing (misalnya MySQL menggunakan InnoDB).
+</p>
+
+<p id="710017" class="block-content">
+Dalam bagian berikut kita akan menganggap hubungan tabel antara
+<tt>Teams</tt>, <tt>Players</tt>, <tt>Skills</tt> dan <tt>Profiles</tt>.
+</p>
+<img src=<%~ ar_relations.png %> class="figure" />
+
+
+<p id="710018" class="block-content">Tujuannya adalah untuk mendapatkan model obyek yang mewakili ke beberapa derajat hubungan entitas dalam gambar di atas. 
+</p>
+
+<img src=<%~ ar_objects.png %> class="figure" />
+
+<p class="block-content">
+Ada ketidak cocokan antara hubungan dengan obyek dan hubungan tabel. Pertama, ada perbedaan dalam penyajian. Penghubung kendali obyek dengen menyimpan referensi yang dipegang oleh lingkungan memori-teratur runtime. Database relasional menangani kaitan dengan membentuk sebuah kunci ke dalam tabel lainnya. Keuda, obyek dapat dengan mudah menggunakan koleksi guna menangani multipel referensi dari satu field, sementara normalisasi memaksa seluruh relasi entitas mengaitkan ke nilai tunggal. Ini menyebabkan pembalikan struktur data antara obyek dan tabel. Pendekatan yang diambil dalam desain Rekaman Aktif Prado adalah untuk menggunakan batasan kunci asing guna memperoleh hubungan obyek. Ini berarti bahwa database di bawahnya harus mendukung batasan kunci asing.
+</p>
+<div class="tip"><b class="note">Tip:</b>
+Untuk database SQLite, Anda dapat membuat tabel yang mendefinisikan batasan kunci asing seperti contoh di bawah ini. Akan tetapi, batasan ini <b>TIDAK</b>
+dipaksakan oleh database SQLite itu sendiri.
+<com:TTextHighlighter Language="sql" CssClass="source block-content">
+CREATE TABLE foo
+(
+    id INTEGER NOT NULL PRIMARY KEY,
+    id2 CHAR(2)
+);
+CREATE TABLE bar
+(
+    id INTEGER NOT NULL PRIMARY KEY,
+    foo_id INTEGER
+        CONSTRAINT fk_foo_id REFERENCES foo(id) ON DELETE CASCADE
+);
+</com:TTextHighlighter>
+</div>
+
+<h2 id="142012">Pemetaan Kunci Asing</h2>
+<p class="block-content">Hubungan entitas antara tabel <tt>Teams</tt> dan <tt>Players</tt> adalah apa yang dikenal sebagai hubungan 1-M. Yaitu, satu Tim dapat berisi 0 atau lebih Pemain. Dalam batasan hubungan obyek, kita katakan bahwa obyek <tt>TeamRecord</tt> <b>memiliki banyak</b> obyek <tt>PlayerRecord</tt>. 
+(Perhatikan kebalikan dari arah hubungan antara tabel dan obyek.)
+<p id="710019" class="block-content">
+
+<h3 id="142017">Hubungan Has Many</h3>
+<p id="710020" class="block-content">
+Kita membuat model obyek <tt>Team</tt> sebagai kelas Rekaman Aktif berikut.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class TeamRecord extends TActiveRecord
+{
+    const TABLE='Teams';
+    public $name;
+    public $location;
+    
+    public $players=array();  // deklarasi ini tidak diperlukan lagi sejak v3.1.2
+
+    //mendefinisikan anggota $player yang memiliki hubungan banyak dengan PlayerRecord
+    public static $RELATIONS=array
+    (
+        'players' => array(self::HAS_MANY, 'PlayerRecord', 'team_name'),
+    );
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+<p id="710021" class="block-content">
+Properti statis <tt>$RELATIONS</tt> dari <tt>TeamRecord</tt> mendefinisikan bahwa properti <tt>$players</tt> <b>has many</b> <tt>PlayerRecord</tt>. Multipel hubungan dibolehkan dengan mendefinisikan setiap hubungan dengan sebuah entitas dalam array <tt>$RELATIONS</tt> di mana kunci array untuk entri menunjukan nama properti.
+Dalam <tt>array(self::HAS_MANY, 'PlayerRecord')</tt>, elemen pertama mendefinisikan tipe hubungan, tipe yang benar adalah <tt>self::HAS_MANY</tt>,
+<tt>self::HAS_ONE</tt> dan <tt>self::BELONGS_TO</tt>.
+Elemen kedua adalah string <tt>'PlayerRecord'</tt> yang menunjukan nama kelas dari kelas <tt>PlayerRecord</tt>.
+</p>
+
+<div class="note"><b class="note">Catatan:</b>
+Seperti dijelaska dalam komentar kode di atas, sejak versi <b>3.1.2</b>, properti terkait tidak tidak lagi perlu dideklarasikan secara eksplisit. Standarnya, akan secara implisit dideklarasikan berdasarkan pada kunci array <tt>$RELATIONS</tt>. Keuntungan utama atas properti terkait yang dideklarasikan secara implisit adalah obyek terkait dapat diambil secara otomatis dengan cara malas. Sebagai contoh, anggap kita mempunyai <tt>TeamRecord</tt> turunan <tt>$team</tt>. Kita dapat mengakses players via <tt>$team->players</tt>,
+meskipun kita tidak pernah menerbitkan perintah mengambil untuk players. Jika <tt>$players</tt> dideklarasikan secara eksplisit, kita harus menggunakan pendekatan <tt>with</tt> seperti dijelaskan dalam contoh berikut untuk mengambil rekaman player.
+</div>
+
+<p id="710022" class="block-content">
+Batasan kunci asing tabel <tt>Players</tt> dipakai untuk menentukan nama kunci tabel <tt>Teams</tt> terkait. Ini dikerjakan secara otomatis, ditangani dalam Rekaman Aktif dengan memeriksa definisi tabel <tt>Players</tt> dan <tt>Teams</tt>.
+</p>
+
+<div class="info"><b class="note">Info:</b>
+Sejak versi <b>3.1.2</b>, Rekaman Aktif mendukung multipel referensi kunci asing pada tabel yang sama. Kerancuan diantara multipel referensi kunci asing dipecahkan dengan penyediaan nama kolom kunci asing sebagai parameter ke-3 dalam array relationship.
+Sebagai contoh, kedua kunci asing <tt>owner_id</tt> dan <tt>reporter_id</tt>
+merujuk tabel yang sama, didefinisikan dalam <tt>UserRecord</tt>.
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class TicketRecord extends TActiveRecord
+{
+     public $owner_id;
+	 public $reporter_id;
+
+     public $owner;     // deklarasi ini tidak diperlukan lagi sejak v3.1.2
+	 public $reporter;  // deklarasi ini tidak diperlukan lagi sejak v3.1.2
+
+	 public static $RELATION=array
+	 (
+	     'owner' => array(self::BELONGS_TO, 'UserRecord', 'owner_id'),
+		 'reporter' => array(self::BELONGS_TO, 'UserRecord', 'reporter_id'),
+	 );
+}
+</com:TTextHighlighter>
+Ini berlaku untuk hubungan termasuk <tt>BELONGS_TO</tt>, <tt>HAS_ONE</tt> dan
+<tt>HAS_MANY</tt>. Lihat seksi <a href="#142021">Tabel Asosiaasi Merujuk Dirinya Sendiri</a> untuk memecahkan kerancuan atas hubungan <tt>MANY_TO_MANY</tt>.
+</div>
+
+<p id="710023" class="block-content">Hubungan "has many" tidak diambil secara otomatis ketika Anda menggunakan salah satu metode finder Rekaman Aktif.
+Anda perlu untuk mengambil secara eksplisit obyek terkait seperti berikut. Dalam kode di bawah ini, kedua baris adalah sama dan nama metode tidak sensitif huruf.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+$team = TeamRecord::finder()->withPlayers()->findAll();
+$team = TeamRecord::finder()->with_players()->findAll(); //equivalent
+</com:TTextHighlighter>
+<p id="710024" class="block-content">
+Metode <tt>with_xxx()</tt> (di mana <tt>xxx</tt> adalah nama properti hubungan, dalam hal ini, <tt>players</tt>) mengambil PlayerRecords terkait menggunakan query kedua (bukan menggunakan join). <tt>with_xxx()</tt> menerima argumen yang sama seperti metode finder lainnya dari TActiveRecord, misalnya <tt>with_players('age = ?', 35)</tt>.
+</p>
+
+<div class="note"><b class="note">Catatan:</b>
+Penting untuk dimengerti bahwa obyek terkait diambil menggunakan query tambahan. Query pertama mengambil obyek sumber, misalnya <tt>TeamRecord</tt> dalam contoh kode di atas.
+Query kedua dipakai untuk mengambil obyek <tt>PlayerRecord</tt> terkait. 
+Penggunaan dua query mirip dengan query tunggal menggunakan Left-Outer join dengan eksepsi bahwa hasil null pada tabel kanan tidak dikembalikan. Konsekuensi pemakaian dua tau lebih query adalah kondisi agregat dan join tidak layak menggunakan Rekaman Aktif. Untuk query di luar lingkup Rekaman Aktif, <a href="?page=Database.SqlMap">Pemeta Data SqlMap</a> diapat dupertimbangkan.
+</div>
+
+<div class="info"><b class="info">Info:</b>
+Pendekatan <tt>with</tt> di atas juga bekerja dengan properti terkait yang dideklarasikan secara implisit (diperkenalkan dalam versi 3.1.2). Lalu apa perbedaan antara pendekatan <tt>with</tt> dan pendekatan pengambilan malas? Pengambilan malas berarti kita menerbitkan query SQL jika obyek terkait awalnya diakses dan tidak siap,
+sementara query pendekatan <tt>with</tt> untuk obyek terkait sekaligus, tida peduli obyek terkait diakses atau tidak. Pendekatan pengambilan malas sangat cocok karena kita tidak perlu secara eksplisit mengambil obyek terkait, sementara pendekatan <tt>with</tt> lebih efisien jika multipel rekaman yang dikembalikan, masing-masing dengan beberapa obyek terkait.
+</div>
+
+<h3 id="142018">Hubungan Belongs To</h3>
+<p id="710025" class="block-content">Hubungan "has many" dalam bagian di atas mendefinisikan koleksi obyek asing. Dalam keadaan tertentu, kita mempunyai <tt>TeamRecord</tt> memiliki banyak (nol atau lebih) obyek <tt>PlayerRecord</tt>. Kita juga dapat menambah penunjuk kembali dengan menambahkan properti dalam kelas <tt>PlayerRecord</tt> yang mengaitkan kembali ke obyek <tt>TeamRecord</tt>, secara efektif membuat asosiasi dua arah.
+Kita katakan bahwa properti <tt>$team</tt> dalam kelas <tt>PlayerRecord</tt> <tt>belongs to</tt> obyek <tt>TeamRecord</tt>.
+Kode berikut mendefinisikan kelas <tt>PlayerRecord</tt> lengkap dengan 3 hubungan.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class PlayerRecord extends TActiveRecord
+{
+    const TABLE='Players';
+    public $player_id;	
+    public $age;	
+    public $team_name;	
+
+    public $team;		// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+    public $skills=array();	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+    public $profile;		// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+
+    public static $RELATIONS=array
+    (
+        'team' => array(self::BELONGS_TO, 'TeamRecord', 'team_name'),
+        'skills' => array(self::MANY_TO_MANY, 'SkillRecord', 'Player_Skills'),
+        'profile' => array(self::HAS_ONE, 'ProfileRecord', 'player_id'),
+    );
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+<p id="710026" class="block-content">
+Properti <tt>$RELATIONS</tt> dari <tt>PlayerRecord</tt> mendefinisikan properti <tt>$team</tt> <b>milik</b> <tt>TeamRecord</tt>. 
+Array <tt>$RELATIONS</tt> juga mendefinisikan dua hubungan lainnya yang nanti akan kita uji dalam seksi di bawah ini. 
+Dalam <tt>array(self::BELONGS_TO, 'TeamRecord')</tt>, elemen pertama mendefinisikan tipe hubungan, dalam hal ini <strong><tt>self::BELONGS_TO</tt></strong> dan 
+elemen kedua adalah string <tt>'TeamRecord'</tt> yang terkait ke nama kelas dari kelas <tt>TeamRecord</tt>.
+Obyek pemain dengan obyek tim terkait dapat diambil serperti berikut.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+$players = PlayerRecord::finder()->with_team()->findAll();
+</com:TTextHighlighter>
+
+<p id="710027" class="block-content">
+ Metode <tt>with_xxx()</tt> (di mana <tt>xxx</tt> adalah nama properti hubungan dalam hal ini, <tt>team</tt>) mengambil <tt>TeamRecords</tt> terkait menggunakan query kedua (bukan menggunakan join). <tt>with_xxx()</tt> menerima argumen yang sama seperti metode finder lainnya dari <tt>TActiveRecord</tt>, contohnya <tt>with_team('location = ?', 'Madrid')</tt>.
+</p>
+
+<div class="tip"><b class="note">Tip:</b>
+Hubungan tambahan dapat diambil dengan mengaitkan <tt>with_xxx()</tt> bersama seperti yang didemonstrasikan berikut.
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+$players = PlayerRecord::finder()->with_team()->with_skills()->findAll();
+</com:TTextHighlighter>
+Setiap metode <tt>with_xxx()</tt> akan menjalankan query SQL tambahan. Setiap <tt>with_xxx()</tt> menerima argumen mirip dengan apa yang ada di dalam metode <tt>findAll()</tt> dan hanya diterapkan ke query hubungan tertentu tersebut.
+</div>
+
+<p id="710028" class="block-content">Hubungan "belongs to" dari kelas <tt>ProfileRecord</tt> didefinisikan hampir sama.</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class ProfileRecord extends TActiveRecord
+{
+    const TABLE='Profiles';
+    public $player_id;
+    public $salary;
+
+    public $player;  // deklarasi ini tidak diperlukan lagi sejak v3.1.2
+
+    public static $RELATIONS=array
+    (
+        'player' => array(self::BELONGS_TO, 'PlayerRecord'),
+    );
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+
+<p id="710029" class="block-content">Intinya, ada hubungan "<b>belongs to</b>" untuk obyek yang mengaitkan entitas yang memmpunyai kolom yakni kunci asing. Dalam keadaan tertentu, kita melihat bahwa tabel <tt>Profiles</tt> mempunyai batasan kunci asing pada kolom <tt>player_id</tt> yang terkait ke tabel
+<tt>Players</tt> kolom <tt>player_id</tt>. Selanjutnya, obyek <tt>ProfileRecord</tt>
+memiliki properti (<tt>$player</tt>) yang adalah <b>milik</b> obyek <tt>PlayerRecord</tt>.
+Demikian juga, tabel <tt>Players</tt> mempunyai batasan kunci asing pada kolom <tt>team_name</tt> yang terkait ke tabel <tt>Teams</tt> kolom <tt>name</tt>. 
+Kemudian, obyek <tt>PlayerRecord</tt> mempunyai properti (<tt>$team</tt>) yang adalah <b>milik</b> obyek <tt>TeamRecord</tt>.
+</p>
+
+<h3 id="142019">Hubungan Has One</h3>
+<p id="710030" class="block-content">Hubungan entitas antara <tt>Players</tt> dan <tt>Profiles</tt> adalah satu ke satu. Yaitu, setiap obyek
+<tt>PlayerRecord</tt> <b>has one</b> obyek <tt>ProfileRecord</tt> (mungkin tidak ada atau null).
+Hubungan <b>has one</b> hampir identik ke hubungan <b>has many</b> dengan eksepsi bahwa obyek terkait hanya satu obyek (bukan koleksi obyek).
+</p>
+
+<h3 id="142020">Hubungan Leluhur Anak</h3>
+<p id="710031" class="block-content">Hubungan leluhur anak bisa didefinisikan menggunakan kombinasi hubungan <tt>has many</tt> dan <tt>belongs to</tt> yang
+merujuk ke kelas yang sama. Contoh berikut memperlihatkan hubungan leluhur dan anaknya antara "kategori" dan "leluhur kategori".
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class Category extends TActiveRecord
+{
+    public $cat_id;
+    public $category_name;
+    public $parent_cat_id;
+
+    public $parent_category;	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+    public $child_categories=array();	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+
+    public static $RELATIONS=array
+    (
+        'parent_category' => array(self::BELONGS_TO, 'Category', 'parent_cat_id'),
+        'child_categories' => array(self::HAS_MANY, 'Category', 'parent_cat_id'),
+    );
+}
+</com:TTextHighlighter>
+
+<h3>Kriteria Query untuk Obyek Terkait</h3>
+<p>
+Dalam contoh di atas, kami memperlihatkan bahwa obyek Rekaman Aktif dapat mereferensi ke obyek terkaitnya sendiri dengan
+mendeklarasikan anggota kelas statis $RELATIONS yang menetapkan sebuah daftar relasi. Setiap relasi
+ditetapkan sebagai array yang terdiri dari tiga elemen: tipe relasi, nama kelas AR terkait,
+dan kunci asing. Sebagai contoh, kami menggunakan <tt>array(self::HAS_MANY, 'PlayerRecord', 'team_name')</tt>
+untuk menetapkan pemain dalam sebuah tim. Ada dua elemen opsional berikutnya yang dapat ditetapkan
+dalam array ini: kondisi query (elemen keempat) dan parameters (elemen kelima).
+Elemen tersebut dipakai untuk mengontrol bagaimana untuk melakukan query terhadap obyek terkait. Sebagai contoh, jika kita ingin memperoleh
+para pemain yang diurut dengan usianya, kita dapat menetapkan <tt>array(self::HAS_MANY, 'PlayerRecord', 'team_name', 'ORDER BY age')</tt>.
+Jika kita ingin mendapatkan para pemain yang usianya kurang dari  30, kita dapat menggunakan
+<tt>array(self::HAS_MANY, 'PlayerRecord', 'team_name', 'age<:age', array(':age'=>30))</tt>. Secara umum,
+dua elemen tambahan ini mirip seperti parameter yang dikirimkan ke metode <tt>find()</tt> dalam AR.
+</p>
+
+<h2 id="142013">Pemetaan Tabel Asosiasi</h2>
+<p id="710032" class="block-content">
+Obyek dapat dengan mudah menangani field multi nilai dengan menggunakan koleksi sebagai nilai field. Database relasional tidak memiliki fitur ini dan dibatasi hanya ke field nilai-tunggal.  Ketika Anda memetakan asosiasi satu-ke-banyak, Anda bisa menangani ini menggunakan hubungan <b>has many</b>, intinya menggunakan kunci asing untuk nilai-tunggal akhir dari asosiasi. Tapi asosiasi banyak-ke-banyak tidak bisa melakukan ini karena tidak ada nilai-tunggal akhir ke kunci asing yang dipegangnya.
+</p>
+<p id="710033" class="block-content">
+Jawabannya adalah resolusi klasik yang telah dipakai oleh orang selama dekade ini yakni: buat tabel ekstra (tabel asosiasi) untuk merekam asosiasi. 
+Ide dasarnya adalah menggunakan tabel asosiasi untuk menyimpan asosiasi. Tabel ini memiliki ID kunci asing untuk dua tabel yang dikaitkan bersama, masing-masing memiliki pasangan dari obyek yang diasosiasikan.
+</p>
+<p id="710034" class="block-content">
+Tabel asosiasi tidak mempunyai kaitan obyek dalam-memori dan kunci primernya adalah gabungan dari dua kunci primer dari tabel yang diasosiasikan.
+Dalam batasan yang sederhana, tuntuk mengambil data dari tabel asosiasi, Anda melakukan dua query (secara umum, ini juga bisa dicapai menggunakan satu query yang terdiri dari join). 
+Anggap pengambilan koleksi <tt>SkillRecord</tt> untuk daftar obyek <tt>PlayerRecord</tt>. 
+Dalam hal ini, Anda melakukan query dalam dua tahap.  Tahap pertama meng-query tabel <tt>Players</tt> untuk mencari seluruh baris dari pemain yang Anda inginkan. Tahap kedua mencari obyek <tt>SkillRecord</tt> ID pemain terkait untuk setiap barisnya dalam tabel asosiasi  <tt>Player_Skills</tt> menggunakan sebuah inner join.
+</p>
+
+<p id="710035" class="block-content">Desain Rekaman Aktif Prado mengimplementasikan dua tahap pendekatan. Untuk hubungan entitas <tt>Players</tt>-<tt>Skills</tt> M-N (many-to-many), kita perlu mendefinisikan sebuah hubungan <b>has many</b> dalam kelas <tt>PlayerRecord</tt> dan sebagai tambahan mendefinisikan hubungan <b>has many</b> dalam kelas <tt>SkillRecord</tt> juga.
+Kode contoh berikut mendefinisikan kelas <tt>SkillRecord</tt> lengkap dengan hubungan banyak-ke-banyak dengan kelas <tt>PlayerRecord</tt>. (Lihat definisi kelas <tt>PlayerRecord</tt> di atas untuk mengaitkan hubungan banyak-ke-banyak dengan kelas <tt>SkillRecord</tt>.)
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class SkillRecord extends TActiveRecord
+{
+    const TABLE='Skills';
+    public $skill_id;
+    public $name;
+
+    public $players=array();	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+
+    public static $RELATIONS=array
+    (
+        'players' => array(self::MANY_TO_MANY, 'PlayerRecord', 'Player_Skills'),
+    );
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+
+<p id="710036" class="block-content">
+Properti statis <tt>$RELATIONS</tt> dari SkillRecord mendefinisikan bahwa properti <tt>$players</tt> memiliki banyak <tt>PlayerRecord</tt>s melalui tabel asosiasi '<tt>Player_Skills</tt>'.
+Dalam <tt>array(self::MANY_TO_MANY, 'PlayerRecord', 'Player_Skills')</tt>, elemen pertama mendefinisikan tipe hubungan, dalam hal ini <strong><tt>self::HAS_MANY</tt></strong>,
+elemen kedua adalah string <tt>'PlayerRecord'</tt> yang terkait ke nama kelas dari kelas <tt>PlayerRecord</tt>, dan elemen ketiga adalah nama dari nama tabel asosiasi. 
+</p>
+
+<div class="note"><b class="note">Catatan:</b>
+Sebelum versi <b>3.1.2</b> (versi sampai dengan 3.1.1), hubungan many-to-many didefinisikan menggunakan <tt>self::HAS_MANY</tt>. Untuk versi <b>3.1.2</b> dan seterusnya, ini harus diubah ke <tt>self::MANY_TO_MANY</tt>. Ini bisa dikerjakan dengan mencari <tt>HAS_MANY</tt> dalam kode sumber dan hati-hati mengubah definisi terkait.
+</div>
+
+<p id="710037" class="block-content">
+Daftar obyek pemain dengan koleksi obyek skil terkait bisa diambil seperti berikut.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+$players = PlayerRecord::finder()->withSkills()->findAll();
+</com:TTextHighlighter>
+<p id="710038" class="block-content">
+Metode <tt>with_xxx()</tt> (di mana <tt>xxx</tt> adalah nama properti hubungan, dalam hal ini, <tt>Skill</tt>) mengambil <tt>SkillRecords</tt> terkait menggunakan query kedua (tidak dengan menggunakan join). <tt>with_xxx()</tt> menerima argumen yang sama seperti metode finder dari <tt>TActiveRecord</tt>.
+</p>
+
+<h3 id="142021">Tabel Asosiasi Mereferensi Dirinya</h3>
+<p id="710039" class="block-content">
+Untuk tabel asosiasi yang mererefensi dirinya sendiri, yaitu titik asosiasi ke tabel yang sama. Sebagai contoh, anggap tabel <tt>items</tt> dengan item terkait M-N melalui tabel asosiasi <tt>related_items</tt>. Sintaks dalam contoh berikut adalah benar untuk database PostgreSQL. Untuk database lain, lihat dokumentasinya masing-masing untuk mendefinisikan batasan kunci asing.
+<com:TTextHighlighter Language="sql" CssClass="source block-content">
+CREATE TABLE items 
+(
+  "item_id" SERIAL, 
+  "name" VARCHAR(128) NOT NULL,
+  PRIMARY KEY("item_id")
+);
+CREATE TABLE "related_items" 
+(
+  "item_id" INTEGER NOT NULL, 
+  "related_item_id" INTEGER NOT NULL, 
+  CONSTRAINT "related_items_pkey" PRIMARY KEY("item_id", "related_item_id"), 
+  CONSTRAINT "related_items_item_id_fkey" FOREIGN KEY ("item_id")
+    REFERENCES "items"("item_id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "related_items_related_item_id_fkey" FOREIGN KEY ("related_item_id")
+    REFERENCES "items"("item_id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+);
+</com:TTextHighlighter>
+
+<p id="710040" class="block-content">Nama tabel asosiasi dalam elemen ketiga dari array hubungan dapat berisi nama kolom tabel asing. Kolom yang didefinisikan dalam tabel asosiasi harus juga didefinisikan dalam kelas rekaman (contohnya properti <tt>$related_item_id</tt> terkait ke kolom <tt>related_item_id</tt> dalam tabel <tt>related_items</tt>). 
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class Item extends TActiveRecord
+{
+    const TABLE="items";
+    public $item_id;
+    public $details;
+
+    //id item asing tambahan didefinisikan dalam tabel asosiasi
+    public $related_item_id; 
+    public $related_items=array();	// deklarasi ini tidak diperlukan lagi sejak v3.1.2
+
+    public static $RELATIONS=array
+    (
+        'related_items' => array(self::MANY_TO_MANY, 
+            'Item', 'related_items.related_item_id'),
+    );
+}
+</com:TTextHighlighter>
+<div class="tip"><b class="note">Tip:</b>
+Kunci gabungan dalam tabel asing dapat ditetapkan sebagai nilai dipisahkan koma diantara kurung buka/tutup. Contohnya <tt>'related_items.(id1,id2)'</tt>. 
+</div>
+
+<!---
+<h2 id="142014">Menambah/Menghapus/Memutakhirkan Obyek Terkait</h2>
+
+<p id="710041" class="block-content">Obyek terkait dapat disisipkan/dimutakhirkan dengan menambahkan obyek terkait itu ke obyek sumber saat ini (misalnya obyek yang saat ini sedang bekerja) dan kemudian memanggil metode <tt>save()</tt> pada obyek sumber. Referensi obyek terkait dan referensi asosiasi (jika diperlukan) akan ditambahkan dan/atau dimutakhirkan.
+Sebagai contoh, untuk menambah dua pemain baru ke tim (mengasumsikan bahwa 'Team A' ada), kita cukup melakukan hal berikut.
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+$team = TeamRecord::finder()->findByPk('Team A');
+$team->players[] = new PlayerRecord(array('age'=>20));
+$team->players[] = new PlayerRecord(array('age'=>25));
+$team->save();
+</com:TTextHighlighter>
+<p id="710042" class="block-content">
+Karena kelas <tt>TeamRecord</tt> berisi hubungan <b>has many</b> dengan <tt>PlayerRecord</tt>, maka menyimpan obyek <tt>TeamRecord</tt> juga akan memutakhirkan obyek asing terkait dalam array <tt>$players</tt>. Yaitu, obyek dalam <tt>$players</tt> disisipkan/dimutakhirkan dalam database dan properti
+<tt>$team_name</tt>, obyek itu akan berisi nilai kunci asing yang terkait dengan obyek nilai kunci primer <tt>$team</tt>.
+</p>
+
+<p id="710043" class="block-content">Untuk menghapus obyek asing tertentu (atau setiap obyek Rekaman Aktif), cukup panggil metode obyek <tt>delete()</tt>. Anda dapat menyiapkan batas kunci asing tabel database seperti saat menghapus data tertentu dalam database ia akan menghapus data yang direferensi juga (ia juga dapat dicapai dengan menggunakan pemicu database). Contohnya seperti mempunyai batasan "<tt>ON DELETE CASCADE</tt>".
+Menghapus kunci obyek asing dengan menyetel nilai properti ke  null atau menghapus obyek dari array <b>TIDAK</b> akan menghapus data terkait dalam database. 
+</p>
+
+<p id="710044" class="block-content">Untuk menghapus asosiasi hubungan banyak-ke-banyak melalui tabel asosiasi, Rekaman Aktif yang terkait tabel asosiasi yang bisas dipakai. Kemudian asosiasi dapat dihapus dengan memanggil metode <tt>deleteByPk()</tt>, sebagai contoh:
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+PlayerSkillAssocation::finder()->deleteByPk(array('fk1','fk2'));
+//di mana 'fk1' adalah nilai kunci primer dari seorang player
+// dan 'fk2' adalah nilai kunci primer dari skill
+</com:TTextHighlighter>
+--->
+
+<h2 id="142015">Pengambilan Malas Obyek Terkait</h2>
+
+<div class="note"><b class="note">Catatan:</b>
+Secara implisit mendeklarasikan properti terkait yang diperkenalkan dalam  versi 3.1.2 secara otomatis memiliki fitur pengambilan malas. Oleh karena itu, teknik pengambilan malas dijelaskan berikut ini tidak lagi diperlukan dalam banyak kasus, kecuali Anda ingin memanipulasi obyek terkait melalui pengambil/penyetel.
+</div>
+
+<p id="710045" class="block-content">Menggunakan metode <tt>with_xxx()</tt> akan mengambil hubungan rekaman sesuai permintaan. Mengambil rekaman terkait dengan  lazy loading (yaitu, hanya obyek terkait itu saja yang diakses) bisa dicapai dengan menggunakan sebuah fitur <tt>TComponent</tt> yang menyediakan metode pengakses. Dalam keadaan tertentu, kita mendefinisikan pasangan metode pengambil dan penyetel di mana metode pengambil akan mengambil hubungan secara kondisional. Contoh berikut menggambarkan bahwa <tt>PlayerRecord</tt> dapat mengambil obyek asing <tt>$skills</tt> secara kondisional.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class PlayerRecord extends BaseFkRecord
+{
+    //... properti dan metode lainnya seperti sebelumnya
+
+    private $_skills; //ubah ke private dan standar sebagai null
+    
+    public function getSkills()
+    {
+        if($this->_skills===null && $this->player_id !==null)
+        {
+            //lazy load rekaman skill
+            $this->setSkills($this->withSkills()->findByPk($this->player_id)->skills);
+        }
+        else if($this->_skills===null)
+        {
+            //buat TList baru;
+            $this->setSkills(new TList());
+        }
+
+        return $this->_skills;
+    }
+
+    public function setSkills($value)
+    {
+        $this->_skills = $value instanceof TList ? $value : new TList($value);
+    }
+}
+</com:TTextHighlighter>
+<p id="710046" class="block-content">Pertama kita perlu mengubah deklarasi <tt>$skills=array()</tt> ke properti private <tt>$_skills</tt> (perhatikan garis bawah) dan sebaliknya setel ke null. Ini membolehkan kita untuk mendefinisikan properti <tt>skills</tt> menggunakan metode pengambil/penyetel
+(lihat <a href="?page=Fundamentals.Components">Komponen</a> untuk lebih jelasnya). Metode pengambil <tt>getSkills()</tt> untuk properti <tt>skills</tt> akan mengambil malas rekaman skill terkait saat ia dipakai sebagai berikut. Catatan bahwa kita hanya melakukan pengambilan malas ketika  <tt>$player_id</tt> tidak null (yakni, ketika rekaman sudah diambil dari database ataau id player sudah disetel).
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+$player = PlayerRecord::finder()->findByPk(1);
+var_dump($player->skills); //pengambilan malas saat akses pertama
+var_dump($player->skills[0]); //properti skills sudah diambil
+$player->skills[] = new SkillRecord(); //menambah skill
+</com:TTextHighlighter>
+
+<p id="710047" class="block-content">The <tt>setSkills()</tt> memastikan bahwa properti <tt>skills</tt> akan selalu berupa TList.
+Menggunakan TList yang membolehkan kita untuk menyetel elemen properti <tt>skills</tt> seolah-olah mereka
+sebuah array. Contohnya <tt>$player->skills[] = new SkillRecord()</tt>. Jika <tt>array</tt> dipakai, kesalahan PHP 
+akan dikeluarkan. 
+</p>
+
+<h2>Pemetaan Kolom</h2>
+<p>
+Sejak v3.1.1, Rekaman Aktif mulai mendukung pemetaan kolom. Pemetaan kolom membolehkan para 
+pengembang untuk mengalamatkan kolom dalam Rekaman Aktif menggunakan konvensi penamaan lebih
+konsisten. Dalam keadaan tertentu, menggunakan pemetaan kolom, seseorang dapat mengakses kolom
+menggunakan apapun namanya yang disukainya, daripada nama terbatas yang didefinisikan dalam
+skema database.
+</p>
+<p>
+Untuk menggunakan pemetaan kolom, deklarasikan array statis bernama <tt>COLUMN_MAPPING</tt> dalam kelas Rekaman Aktif.
+Kunci dari array adalah nama kolom (disebut <i>nama kolom fisik</i>) yang didefinisikan dalam skema database,
+sementara nilai terkait dengan nama properti (disebut <i>nama kolom logika</i>) didefinisikan dalam
+kelas Rekaman Aktif. Nama properti dapat nama variabel anggota kelas public atau nama properti komponen
+yang didefinisikan via pengambil/penyetel. Jika nama kolom fisik terjadi sama seperti nama kolom logika,
+keduanya tidak perlu didaftarkan dalam <tt>COLUMN_MAPPING</tt>.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class UserRecord extends TActiveRecord
+{
+	const TABLE='users';
+	public static $COLUMN_MAPPING=array
+	(
+		'user_id'=>'id',
+		'email_address'=>'email',
+		'first_name'=>'firstName',
+		'last_name'=>'lastName',
+	);
+	public $id;
+	public $username; // nama kolom fisik dan logika sama
+	public $email;
+	public $firstName;
+	public $lastName;
+	//....
+}
+</com:TTextHighlighter>
+<p>
+Dengan pemetaan kolom di atas, kita mengalamatkan <tt>first_name</tt> menggunakan <tt>$userRecord->firstName</tt>
+daripada <tt>$userRecord->first_name</tt>. Ini membantu pemisahan dari logika dengan model.
+</p>
+
+<h2 id="138054">Referensi</h2>
+<ul id="u3" class="block-content">
+    <li>Fowler et. al. <i>Patterns of Enterprise Application Architecture</i>,
+    Addison Wesley, 2002.</li>
+	<li>B. Venners with B. Eckel. <i><a href="http://www.artima.com/intv/abstract3.html">Inappropriate Abstractions - A Conversation with Anders Hejlsberg, Part VI.</a></i>
+	Artima Developer, 2003.
+	</li>
+
+</ul>
+
+<div class="last-modified">$Id: ActiveRecord.page 2323 2007-10-21 20:52:05Z xue $</div></com:TContent>

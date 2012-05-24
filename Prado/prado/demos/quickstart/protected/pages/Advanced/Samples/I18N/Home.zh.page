@@ -1,0 +1,156 @@
+<%@ Title="PRADO 国际化" 
+	Page.Application.Globalization.TranslationCatalogue="index" %>
+<com:TContent ID="body">
+
+<h1>PRADO 国际化</h1>
+<p>本演示将介绍如何用PRADO中的一些部件对您的Web应用进行国际化和本地化。
+本网页的显示是根据您的当地设置从多个不同语言的模板中选择进行的。
+如果你想查看其它语言版本，请更改浏览器的语言设置。</p>
+
+<p>
+您目前的语言设置是
+<%= $this->Page->CurrentCulture %>.
+<div class="links">
+可查看的语言版本包括：
+	<com:LanguageList />
+</div>
+</p>
+
+<p>
+除了能自动侦知语言设置的模板外，文本也可以使用不同的翻译源进行本地化。
+PRADO提供了gettext，XML，SQLite以及MySQL等手段用于存放消息的各种翻译。
+下面连接所指向的例子展示了如何使用TTranslate部件对文本进行本地化。
+<hr />
+<h2>简介</h2>
+<p>开发和维护多语言的站点对Web开发者而言是一个很常见的问题。</p>
+<dl>
+<dt><strong>国际化（I18N）</strong></dt>
+<dd>产品开发的一个步骤，它使得产品能接受不同语言的数据，并且在没有更改设计
+的情况下使产品能用于不同的市场。</dd>
+<dt><strong>L本地化（L10N）</strong></dt>
+<dd>国际化的一个细节步骤，它针对某个特定的市场文化对产品进行翻译和调整。</dd>
+</dl>
+<p>PRADO支持以下功能：</p>
+<ul id="u1" class="block-content">
+  <li>文本翻译</li>
+  <li>属性翻译（尚未完成）</li>
+  <li>参数替换（如需要可进行翻译）</li>
+  <li>日期，数字和货币的格式化</li>
+  </ul>
+<h2>例子</h2>
+<h3>日期：完整格式，en_GB语言设置</h3>
+<h4>例: </h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TDateFormat ID="Time1" Pattern="full" Culture="en_GB"/&gt;
+</com:TTextHighlighter>
+<h4>结果: </h4>
+<com:TDateFormat ID="Time1" Pattern="full" Culture="en_GB"/> <br />
+<hr />
+
+<h3>日期：短格式</h3>
+<h4>例：</h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TDateFormat ID="Time2" Pattern="short" /&gt;
+</com:TTextHighlighter>
+<h4>结果：</h4>
+<com:TDateFormat ID="Time2" Pattern="short" /> <br />
+<hr />
+
+<h3>日期：<%= $this->Page->CurrentCulture %>的缺省模式</h3>
+<h4>例：</h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TDateFormat ID="Time3" Value="2004/12/06" /&gt;
+</com:TTextHighlighter>
+<h4>结果：</h4>
+<com:TDateFormat ID="Time3" Value="2004/12/06" /> <br />
+<hr />
+
+<h3>货币，缺省格式</h3>
+<h4>例：</h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TNumberFormat Type="currency" Value="12.4" /&gt;
+</com:TTextHighlighter>
+<h4>结果：</h4>
+<com:TNumberFormat Type="currency" Value="12.4" /> <br />
+<hr />
+<h3>货币，de_DE语言以及欧币</h3>
+<h4>例：</h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TNumberFormat ID="Number2" Type="currency" Culture="de_DE" Currency="EUR"/&gt;
+</com:TTextHighlighter>
+<h4>结果：</h4>
+<com:TNumberFormat ID="Number2" Type="currency" Culture="de_DE" Currency="EUR"/> <br />
+
+<hr />
+
+<h3>货币, 美国格式以及欧币</h3>
+<h4>例：</h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TNumberFormat Type="currency" Culture="en_US" Currency="EUR" Value="100" /&gt;
+</com:TTextHighlighter>
+<h4>结果：</h4>
+<com:TNumberFormat Type="currency" Culture="en_US" Currency="EUR" Value="100" /> <br />
+<hr />
+
+<h3>翻译实例</h3>
+<h4>例：</h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TTranslate&gt;Hello&lt;/com:TTranslate&gt;
+</com:TTextHighlighter>
+<h4>结果：</h4>
+<com:TTranslate>Hello</com:TTranslate> <br />
+<h4>例：</h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TTranslate Text="Goodbye" /&gt;
+</com:TTextHighlighter>
+<h4>结果：</h4>
+<com:TTranslate Text="Goodbye" /> <br />
+
+<hr />
+<h3>Using localization tag</h3>
+<h4>Example:</h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;%[ Goodbye ]%&gt;
+</com:TTextHighlighter>
+
+<h4>Result:</h4>
+<%[ Goodbye ]%>
+<br />
+
+<hr />
+<h3>用不同目录进行翻译</h3>
+<h4>例：</h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TTranslate Text="Goodbye" Catalogue="tests" /&gt;
+</com:TTextHighlighter>
+<h4>结果：</h4>
+<com:TTranslate Text="Goodbye" Catalogue="tests" />
+<br />
+
+
+<hr />
+<h3>用参数替换进行翻译</h3>
+<h4>例：</h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TTranslate&gt;
+	{greeting} {name}!, The unix-time is "{time}". 
+	&lt;com:TTranslateParameter Key="name"&gt;
+		&lt;com:TTranslate Catalogue="tests" Text="World" /&gt;
+	&lt;/com:TTranslateParameter&gt;	
+	&lt;com:TTranslateParameter Key="greeting" Value="Hello" /&gt;
+	&lt;com:TTranslateParameter Key="time" Value="&lt;%= Time() %&gt;" /&gt;
+&lt;/com:TTranslate&gt;
+</com:TTextHighlighter>
+
+<h4>结果：</h4>
+
+<com:TTranslate>
+	{greeting} {name}!, The unix-time is "{time}". 
+	<com:TTranslateParameter Key="name">
+		<com:TTranslate Catalogue="tests" Text="World" />
+	</com:TTranslateParameter>	
+	<com:TTranslateParameter Key="greeting" Value="Hello" />
+	<com:TTranslateParameter Key="time" Value="<%= Time() %>" />
+</com:TTranslate>
+
+<div class="last-modified">$Id: Home.zh.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

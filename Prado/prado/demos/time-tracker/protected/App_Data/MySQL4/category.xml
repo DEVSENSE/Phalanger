@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+
+<resultMap id="category-result" class="CategoryRecord">
+	<result property="Name" column="Name" />
+	<result property="EstimateDuration" column="EstimateDuration" type="float" />
+	<result property="ProjectID" column="ProjectID" type="integer" />
+	<result property="Abbreviation" column="Abbreviation" />
+	<result property="ID" column="CategoryID" type="integer" />
+	<result property="ActualDuration" column="ActualDuration" type="float" />
+</resultMap>
+
+<insert id="AddNewCategory" parameterClass="CategoryRecord">
+	INSERT INTO categories 
+	(Name, ProjectID, Abbreviation, EstimateDuration)
+	VALUES(#Name#, #ProjectID#, #Abbreviation#, #EstimateDuration#)
+	<selectKey property="ID" type="post" resultClass="int">
+		select LAST_INSERT_ID() as value
+    </selectKey>
+</insert>
+
+<select id="GetCategoryByID" parameterClass="integer" resultMap="category-result">
+	SELECT 
+		categories.*,
+		sum(time_entry.Duration) as ActualDuration
+	FROM
+		categories
+		LEFT JOIN time_entry ON categories.CategoryID = time_entry.CategoryID
+	WHERE
+		categories.CategoryID = #value#
+	GROUP BY
+		categories.CategoryID
+	ORDER BY
+		categories.Name
+</select>
+
+<select id="GetAllCategories" resultMap="category-result">
+	SELECT 
+		categories.*,
+		sum(time_entry.Duration) as ActualDuration
+	FROM
+		categories
+		LEFT JOIN time_entry ON categories.CategoryID = time_entry.CategoryID
+	GROUP BY
+		categories.CategoryID
+	ORDER BY
+		categories.Name
+</select>
+
+<delete id="DeleteCategory" parameterClass="integer">
+	DELETE FROM categories WHERE CategoryID = #value#
+</delete>
+
+<select id="GetCategoriesByProjectID" resultMap="category-result">
+	SELECT 
+		categories.*,
+		sum(time_entry.Duration) as ActualDuration
+	FROM
+		categories
+		LEFT JOIN time_entry ON categories.CategoryID = time_entry.CategoryID
+	WHERE
+		categories.ProjectID = #value#
+	GROUP BY
+		categories.CategoryID
+	ORDER BY
+		categories.Name
+</select>
+
+<select id="GetCategoryByNameInProject" parameterClass="array" resultMap="category-result">
+	SELECT 
+		categories.*,
+		sum(time_entry.Duration) as ActualDuration
+	FROM
+		categories
+		LEFT JOIN time_entry ON categories.CategoryID = time_entry.CategoryID
+	WHERE
+			categories.ProjectID = #project#
+		AND categories.Name = #category#
+	GROUP BY
+		categories.CategoryID
+</select>
+
+<update id="UpdateCategory" parameterClass="CategoryRecord">
+	UPDATE categories SET
+		Abbreviation = #Abbreviation#,
+		EstimateDuration = #EstimateDuration#,
+		Name = #Name#,
+		ProjectId = #ProjectID#
+	WHERE 
+		CategoryID = #ID#
+</update>
+
+</sqlMap>

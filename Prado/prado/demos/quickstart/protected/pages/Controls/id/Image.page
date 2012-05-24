@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="3201">TImage</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TImage" />
+
+<p id="370273" class="block-content">
+<tt>TImage</tt> menampilkan gambar pada halaman. Gambar ditetapkan melalui properti <tt>ImageUrl</tt> yang mengambil URL absolut terhadap file gambar. Penjajaran gambar yang ditampilkan disetel oleh properti <tt>ImageAlign</tt>. Untuk menyetel teks alternatif atau penjelasan panjang atas gambar, gunakan masing-masing <tt>AlternateText</tt> atau <tt>DescriptionUrl</tt>.
+</p>
+<com:RunBar PagePath="Controls.Samples.TImage.Home" />
+
+<div class="last-modified">$Id: Image.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

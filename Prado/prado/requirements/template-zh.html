@@ -1,0 +1,48 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="content-language" content="en"/>
+<title>PRADO配置需求检查</title>
+<style>
+body {font-family:"Verdana";font-weight:normal;color:black;}
+h1 { font-family:"Verdana";font-weight:normal;font-size:18pt; }
+h3 {font-family:"Verdana";font-weight:bold;font-size:11pt}
+p, td {font-family:"Verdana";font-weight:normal;font-size:10pt;}
+table.result {border-collapse: collapse; width: 100%; font-size: 10pt; font-family:"Verdana";}
+td.passed {background-color: #60BF60;border: 1px solid silver; padding: 2px;}
+td.warning {background-color: #FFFFBF;border: 1px solid silver; padding: 2px;}
+td.error {background-color: #FF8080;border: 1px solid silver; padding: 2px;}
+.version {color: gray;font-size:8pt;border-top:1px solid #aaaaaa;}
+</style>
+</head>
+
+<body bgcolor="white">
+<h1>PRADO配置需求检查</h1>
+<h3>检查说明</h3>
+<p>
+本页面用于检查您的服务器配置是否达到运行<a href="http://www.pradosoft.com/">PRADO</a>应用程序所需的标准。
+它将检查服务器运行的PHP版本，PHP加载的模块，以及php.ini文件中的一些设置。
+</p>
+<h3>检查结果</h3>
+<p>
+%%Conclusion%%
+</p>
+<h3>具体情况</h3>
+</p>
+%%Details%%
+</p>
+<p>
+<table>
+<tr>
+<td class="passed">&nbsp;</td><td>通过</td>
+<td class="error">&nbsp;</td><td>失败</td>
+<td class="warning">&nbsp;</td><td>警告</td>
+</tr>
+</table>
+</p>
+<div class="version">
+%%Time%% %%Version%%
+
+</div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<com:TContent ID="body">
+<h1>Inline Parameter Maps</h1>
+
+<p>If you prefer to use inline parameters instead of parameter maps, you can add
+extra type information inline too. The inline parameter map syntax lets you
+embed the property name, the property type, the column type, and a null value
+replacement into a parametrized SQL statement. The next four examples shows
+statements written with inline parameters.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="insertProduct" parameterClass="Product">
+  insert into PRODUCT (PRD_ID, PRD_DESCRIPTION)
+  values (#id#, #description#)
+</statement>
+</com:TTextHighlighter>
+
+<p>The following example shows how <tt>dbTypes</tt> can be declared inline.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="insertProduct" parameterClass="Product">
+  insert into PRODUCT (PRD_ID, PRD_DESCRIPTION)
+  values (#id, dbType=int#, #description, dbType=VarChar#)
+</statement>
+</com:TTextHighlighter>
+
+<p>The next example shows how <tt>dbTypes</tt> and null value replacements can also
+be declared inline.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="insertProduct" parameterClass="Product">
+  insert into PRODUCT (PRD_ID, PRD_DESCRIPTION)
+  values (#id, dbType=int, nullValue=-999999#, #description, dbType=VarChar#)
+</statement>
+</com:TTextHighlighter>
+
+<p>A more complete example.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<update id="UpdateAccountViaInlineParameters" parameterClass="Account">
+ update Accounts set
+ Account_FirstName = #FirstName#,
+ Account_LastName = #LastName#,
+ Account_Email = #EmailAddress,type=string,dbType=Varchar,nullValue=no_email@provided.com#
+ where
+ Account_ID = #Id#
+</update>
+</com:TTextHighlighter>
+
+<div class="note"><b class="tip">Note:</b>
+Inline parameter maps are handy for small jobs, but when there are a lot of
+type descriptors and null value replacements in a complex statement, an
+industrial-strength, external <tt>parameterMap</tt> can be easier.
+</div>
+
+<h1>Standard Type Parameters</h1>
+<p>In practice, you will find that many statements take a single parameter, often
+an <tt>integer</tt> or a <tt>string</tt>. Rather than wrap a single value in another
+object, you can use the standard library object (string, integer, et cetera)
+as the parameter directly. The following example shows a statement using
+a standard type parameter.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="getProduct" parameterClass="System.Int32">
+  select * from PRODUCT where PRD_ID = #value#
+</statement>
+</com:TTextHighlighter>
+
+<p>Assuming <tt>PRD_ID</tt> is a numeric type, when a call is made to this Mapped
+Statement, a standard integer can be passed in. The <tt>#value#</tt> parameter
+will be replaced with the value of the integer. The name <tt>value</tt> is simply
+a placeholder, you can use another moniker of your choice. Result Maps support
+primitive types as results as well.</p>
+
+<p>For your convenience, the following PHP primitive types are supported.</p>
+<ul>
+  <li><tt>string</tt></li>
+  <li><tt>float</tt> or <tt>double</tt></li>
+  <li><tt>integer</tt> or <tt>int</tt></li>
+  <li><tt>bool</tt> or <tt>boolean</tt></li>
+</ul>
+
+<h1>Array Type Parameters</h1>
+<p>You can also pass in a array as a parameter object. This would usually be a an
+associative array. The following example shows a <tt><statement></tt> using
+an array for a <tt>parameterClass</tt>.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="getProduct" parameterClass="array">
+  select * from PRODUCT
+  where PRD_CAT_ID = #catId#
+  and PRD_CODE = #code#
+</statement>
+</com:TTextHighlighter>
+
+<p>In the above example, notice that the SQL in this Mapped Statement
+looks like any other. There is no difference in how the inline parameters are
+used. If an associative array is passed, it must contain keys named <tt>catId</tt>
+and <tt>code</tt>. The values referenced by those keys must be of the appropriate
+type for the column, just as they would be if passed from a properties object.</p>
+
+
+</com:TContent>

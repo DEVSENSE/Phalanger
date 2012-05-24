@@ -1,0 +1,17 @@
+﻿<com:TContent ID="Main">
+
+<h1>Bienvenue dans ce tutoriel de développement d'un Blog</h1>
+
+<p>
+Le but de ce tutoriel est de fournir aux nouveaux utilisateurs de PRADO, un guide pas à pas sur la façon de développer avec PRADO. Les lecteurs de ce tutoriel n'ont besoin d'aucune connaissance au sujet de PRADO. Par contre, les lecteurs doivent avoir des connaissances de base concernant la programmation orientée objet (POO) et les bases de données. Pour un guide plus exhaustif de PRADO, les lecteurs peuvent se référer au document <a href="http://www.pradosoft.com/demos/quickstart/">Quickstart Tutorial</a>.
+</p>
+
+<p>
+Ce tutoriel est organisé sous la forme de journées. Chaque journée, des concepts et des techniques nouvelles de PRADO sont abordés et de nouvelles fonctionnalités sont mises en place. A la fin, nous obtiendrons un moteur de Blog simple mettant en place les fonctionnalités suivantes <a href="?page=Requirements">buts à atteindre</a>.
+</p>
+
+<p>
+Pour pouvoir suivre ce tutoriel et créer les <a href="samples/">exemples pas à pas</a>, les lecteurs doivent avoir accès à un serveur Web qui implémente <b>PHP 5.1.0+</b> et <b>PRADO 3.1+</b>. Les instructions pour installer PRADO peuvent être trouvées ici : <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.Installation">pradosoft.com</a>.
+</p>
+
+</com:TContent>

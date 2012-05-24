@@ -1,0 +1,71 @@
+.tab-panel
+{
+	position: relative;
+	float: left;
+	width: 100%;
+}
+
+.tab-normal
+{
+	font-family:	Verdana, Helvetica, Arial;
+	font-size:		12px;
+	display:		inline;
+	margin:			1px -5px 1px 5px;
+	float:			left;
+	padding:		3px 6px 4px 6px;
+	background:		rgb(234,242,255);
+	border:			1px  solid;
+	border-color:	rgb(120,172,255);
+	z-index:		1;
+	position:		relative;
+	top:			0;
+}
+
+.tab-active
+{
+	position:		relative;
+	display:		inline;
+	float:			left;
+
+	font-family:	Verdana, Helvetica, Arial;
+	font-size:		12px;
+
+	border:			1px solid rgb(120,172,255);
+	border-bottom:	0;
+	z-index:		3;
+	padding:		2px 6px 8px 6px;
+	margin:			1px -6px -2px 0px;
+	top:			-2px;
+	background:		white;
+}
+
+.tab-view
+{
+	clear:			both;
+	border:			1px solid rgb(120,172,255);
+	z-index:		2;
+	position:		relative;
+	top:			-2px;
+	padding:		10px;
+}
+
+.tab-active a
+{
+	color: black;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+.tab-normal a
+{
+	color: gray;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+.tab-normal a:hover, .tab-normal a:focus
+{
+	color: rgb(120,172,255);
+	text-decoration: none;
+	font-weight: bold;
+}

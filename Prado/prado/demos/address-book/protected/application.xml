@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application id="address-book" mode="Debug">
+
+<paths>
+	<using namespace="System.Data.*" />
+	<using namespace="System.Security.*" />
+	<using namespace="System.Data.ActiveRecord.*" />
+	<using namespace="System.Web.Services.*" />
+</paths>
+
+<modules>
+	<!-- database configuration for Active Record -->
+	<module id="sqlite-db" class="TActiveRecordConfig">
+		<database ConnectionString="sqlite:./protected/pages/sqlite.db" />
+	</module>
+
+	<!-- authentication and authorization -->
+  	<module id="users" class="TUserManager" PasswordMode="Clear">
+		<user name="demo" password="demo" />
+      	<user name="admin" password="admin" />
+     </module>
+    <module id="auth" class="TAuthManager" UserManager="users" LoginPage="Login" />
+
+</modules>
+
+<services>
+	<!-- soap entry point definition for address book service -->
+	<service id="soap" class="TSoapService">
+		<soap id="address-book"
+			provider="Application.pages.AddressProvider"
+			ClassMaps="AddressRecord" />
+	</service>
+
+</services>
+
+</application>

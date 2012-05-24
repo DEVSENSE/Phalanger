@@ -1,0 +1,29 @@
+<com:TContent ID="body" >
+<h1 id="301">Installing PRADO</h1>
+<div id="install-info" class="block-content">
+<p id="30018">
+If you are viewing this page from your own Web server, you are already done with the installation.
+</p>
+<p id="30019">
+The minimum requirement by PRADO is that the Web server support PHP 5. PRADO has been tested with Apache Web server on Windows and Linux. Highly possibly it may also run on other platforms with other Web servers, as long as PHP 5 is supported.
+</p>
+</div>
+
+<div id="install-steps" class="block-content">
+<p id="30020">
+Installation of PRADO mainly involves downloading and unpacking.
+</p>
+<ol>
+<li>Go to <a href="http://www.pradosoft.com/">pradosoft.com</a> to grab the latest version of PRADO.</li>
+<li>Unpack the PRADO release file to a Web-accessible directory.
+</ol>
+</div>
+<div id="install-after" class="block-content">
+<p id="30021">
+Your installation of PRADO is done and you can start to play with the demo applications included in the PRADO release via URL <tt>http://web-server-address/prado/demos/</tt>. Here we assume PRADO is unpacked to the <tt>prado</tt> subdirectory under the <tt>DocumentRoot</tt> of the Web server.
+</p>
+<p id="30022">
+If you encounter any problems with the demo applications, please use the PRADO requirement checker script, accessible via <tt>http://web-server-address/prado/requirements/index.php</tt>, to check first if your server configuration fulfills the conditions required by PRADO.
+</p>
+</div>
+<div class="last-modified">$Id: Installation.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

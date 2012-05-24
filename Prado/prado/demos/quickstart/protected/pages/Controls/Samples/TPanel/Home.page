@@ -1,0 +1,71 @@
+<com:TContent ID="body">
+
+<h1>TPanel Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Panel with contents:
+</td><td class="sampleaction">
+<com:TPanel>
+This is panel content with a <com:TLabel Text="label" Font.Italic="true" />.
+</com:TPanel>
+</td></tr>
+
+<tr><td class="samplenote">
+Panel with customized background color, font and horizontal alignment:
+</td><td class="sampleaction">
+<com:TPanel
+	BackColor="silver"
+	Font.Size="14pt"
+	HorizontalAlign="Center">
+This is panel content with a <com:TLabel Text="label" Font.Italic="true" />.
+</com:TPanel>
+</td></tr>
+
+<tr><td class="samplenote">
+Panel with customized background image, width and scroll bars:
+</td><td class="sampleaction">
+<com:TPanel
+	BackImageUrl=<%~hello_world.gif%>
+	Width="400px"
+	Height="200px"
+	ScrollBars="Both"
+	Wrap="false">
+This is panel content with a <com:TLabel Text="label" Font.Italic="true" />.
+This is panel content with a <com:TLabel Text="label" Font.Italic="true" />.
+This is panel content with a <com:TLabel Text="label" Font.Italic="true" />.
+This is panel content with a <com:TLabel Text="label" Font.Italic="true" />.
+This is panel content with a <com:TLabel Text="label" Font.Italic="true" />.
+</com:TPanel>
+</td></tr>
+
+<tr><td class="samplenote">
+Panel with grouping text:
+</td><td class="sampleaction">
+<com:TPanel GroupingText="grouping text" Width="400px">
+This is panel content with a <com:TLabel Text="label" Font.Italic="true" />.
+This is panel content with a <com:TLabel Text="label" Font.Italic="true" />.
+This is panel content with a <com:TLabel Text="label" Font.Italic="true" />.
+This is panel content with a <com:TLabel Text="label" Font.Italic="true" />.
+</com:TPanel>
+</td></tr>
+
+<tr><td class="samplenote">
+Panel with a default button (hit 'enter' key to see what happened):
+</td><td class="sampleaction">
+<com:TPanel BackColor="#CCFFCC" DefaultButton="Button2" Width="400px">
+This is panel content with a <com:TLabel Text="label" Font.Italic="true" />
+and two buttons: <br/>
+<com:TCheckBox />
+<com:TButton ID="Button1" Text="button1" OnClick="buttonClicked" />
+<com:TButton ID="Button2" Text="button2" OnClick="buttonClicked" />
+<com:TLabel ID="Result" ForeColor="red" />
+<br/>
+When you change focus to the panel and hit 'enter' key, <tt>button2</tt>
+will be clicked because it is set as the default button of the panel.
+</com:TPanel>
+</td></tr>
+</table>
+<com:TJavascriptLogger />
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,180 @@
+<com:TContent ID="Main">
+
+<h1>Sharing Common Layout</h1>
+
+<p>
+In this section, we will use the <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.MasterContent">master/content</a> feature of PRADO to share common layout among pages. Common layout refers to the area that is the same or largely the same for a set of pages. For example, in our blog system, all pages will share the same header, footer and side-bar containing shortcut links. A straightforward implementation is to repeat the common layout in every page. However, this approach is prone to error and is hard to maintain. The <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.MasterContent">master/content</a> feature allows us to treat the common layout as a control which centralizes the logic and presentation of the common layout for every page.
+</p>
+
+<com:InfoBox>
+It is also possible to share common layout via <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">template inclusion</a>, which is like PHP file inclusion. The drawback of template inclusion is that it is not self-contained and does not carry a class to contain the logic for the common layout.
+</com:InfoBox>
+
+
+<h2>Creating Master Control</h2>
+
+<p>
+We now create the master control <tt>MainLayout</tt> to represent the common layout shared by our blog pages. The <tt>MainLayout</tt> control is a template control extending from <tt>TTemplateControl</tt>. It requires a template file <tt>MainLayout.tpl</tt> and a class file <tt>MainLayout.php</tt> located under the same directory. To facilitate maintenance, we create a new directory <tt>protected/layouts</tt> to hold them.
+</p>
+
+<img src="<%~ directories3.gif %>" class="output" />
+
+<p>
+For the moment, <tt>MainLayout</tt> only contains a simple header and a footer, as shown in the following. In future, we will add a side-bar to it. Readers are also encouraged to enhance the layout with other features.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<html>
+&lt;com:THead />
+<body>
+&lt;com:TForm>
+<div id="page">
+
+<div id="header">
+<h1>My PRADO Blog</h1>
+</div>
+
+<div id="main">
+&lt;com:TContentPlaceHolder ID="Main" />
+</div>
+
+<div id="footer">
+&lt;%= PRADO::poweredByPrado() %>
+</div>
+
+</div>
+&lt;/com:TForm>
+</body>
+</html>
+</com:TTextHighlighter>
+
+<p>
+The above shows the content in the template file <tt>MainLayout.tpl</tt>. Three new tags are used:
+</p>
+<ul>
+<li><tt>&lt;com:TContentPlaceHolder&gt;</tt> represents <a href="http://www.pradosoft.com/docs/classdoc/TContentPlaceHolder">TContentPlaceHolder</a> control. It reserves the place in the template where content will be placed at. Here, the content comes from the pages who use this master control.</li>
+<li><tt>&lt;com:THead&gt;</tt> represents <a href="http://www.pradosoft.com/docs/classdoc/THead">THead</a> control which represents the &lt;head&gt; tag in HTML. It allows PRADO to manipulate the &lt;head&gt; tag as a component (e.g., setting page titles, adding custom CSS styles.)</li>
+<li><tt>&lt;%= %&gt;</tt> is an <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates2#et">expression tag</a>. It displays the evaluation result of the enclosed expression at the place where it appears.</li>
+</ul>
+
+<p>
+The class file <tt>MainLayout.php</tt> is very simple:
+</p>
+
+<com:TTextHighlighter CssClass="source">
+<?php
+class MainLayout extends TTemplateControl
+{
+}
+?>
+</com:TTextHighlighter>
+
+<com:InfoBox>
+The file extension name for page templates is <tt>.page</tt>, while for non-page templates it is <tt>.tpl</tt>. This is to differentiate pages from other controls. They both use the same <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">template syntax</a>. For pages, their class files are optional (default to <tt>TPage</tt>), while for non-page controls, their class files are mandatory. Similar to Java, the name of a class file must be the same as the class name. Be careful about the case-sensitivity on Linux/Unix systems.
+</com:InfoBox>
+
+
+<h2>Using Master Control</h2>
+<p>
+To use the newly created master control, we will modify <tt>Home.page</tt> and <tt>Contact.page</tt>. In particular, we need to remove the header and footer from them because the master control will be responsible for displaying them; and we need to tell the two pages that they should use <tt>MainLayout</tt> as their master.
+</p>
+
+<p>
+The following shows the content in <tt>Contact.page</tt> after the change:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ MasterClass="Application.layouts.MainLayout" Title="My Blog - Contact" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Contact</h1>
+<p>Please fill out the following form to let me know your feedback on my blog. Thanks!</p>
+
+...textbox and validator for user's name...
+
+...textbox and validators for user's email...
+
+...textbox and validator for user's feedback content...
+
+&lt;com:TButton Text="Submit" OnClick="submitButtonClicked" />
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+<p>
+Content enclosed within the <tt>&lt;com:TContent&gt;</tt> tag will be inserted into the place that is reserved by <tt>&lt;com:TContentPlaceHolder&gt;</tt> in the master template.
+</p>
+
+<com:InfoBox>
+It is possible to have multiple <tt>TContentPlaceHolder</tt>'s in a master template and multiple <tt>TContent</tt>'s in a content template. They are matched to each other by their <tt>ID</tt> values. It is also possible to make a content template the master of another content template by placing a <tt>TContentPlaceHolder</tt> in the former. This is called <i>nested master</i>.
+</com:InfoBox>
+
+<p>
+Besides <tt>&lt;com:TContent&gt;</tt>, we also see another new tag <tt>&lt;%@ %&gt;</tt> in the above, which is called <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1#tct">template control tag</a>. It contains name-value pairs which are used to initialize the corresponding properties for the template owner, namely, the <tt>Contact</tt> page.
+</p>
+
+<p>
+By setting <tt>MasterClass</tt> property as <tt>Application.layouts.MainLayout</tt>, we instruct the <tt>Contact</tt> page to use <tt>MainLayout</tt> as its master. Here, we are using the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">namespace format</a> to refer to the <tt>MainLayout</tt> class.
+</p>
+
+<com:InfoBox>
+Namespace format is widely used in PRADO programming. It is used together with <a href="http://www.pradosoft.com/demos/quickstart/index.php?page=Fundamentals.Components">path aliases</a>. PRADO defines two path aliases: <tt>System</tt> refers to the <tt>framework</tt> directory of the PRADO installation, and <tt>Application</tt> refers to the <tt>protected</tt> directory. The namespace <tt>Application.layouts.MainLayout</tt> can thus be translated as <tt>protected/layouts/MainLayout</tt> which is exactly the file name (without the extension <tt>.php</tt>) for the <tt>MainLayout</tt> class.
+</com:InfoBox>
+
+
+<h2>Alternative Ways of Specifying Master</h2>
+
+<p>
+There are several additional ways to specify the master class for a page.
+</p>
+
+<p>
+We can specify master in code like the following to enable dynamic change of layout:
+</p>
+
+<com:TTextHighlighter CssClass="source">
+<?php
+class Contact extends TPage
+{
+    public function onPreInit($param)
+    {
+        parent::onPreInit($param);
+        $this->MasterClass='Path.To.NewLayout';
+    }
+
+    // ...
+}
+?>
+</com:TTextHighlighter>
+
+<p>
+In the above, we specify <tt>MasterClass</tt> in the <tt>onPreInit()</tt> method which is inherited from <tt>TPage</tt>. The method is invoked by PRADO right after the page instance is created. We thus can dynamically determine the layout to use when the page is requested. For example, when the page is requested by a registered user we use layout A, and layout B is used if a guest user is requesting the page.
+</p>
+
+<p>
+We can also specify master in <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.AppConfig">application configuration</a>  or <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.PageConfig">page configuration</a>. The following shows the updated application configuration for our blog system:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<application id="blog" mode="Debug">
+  <!-- configuration for available services -->
+  <services>
+    <service id="page" class="TPageService" DefaultPage="Home">
+      <!-- initial properties set for all pages -->
+      <pages MasterClass="Application.layouts.MainLayout" />
+    </service>
+  </services>
+</application>
+</com:TTextHighlighter>
+
+<p>
+By doing so, we save the trouble of specifying master in every page template. If we decide to use a different master for the pages, we only need to change the application configuration. For this reason, in our blog system we will use this approach to specify master.
+</p>
+
+<com:InfoBox>
+There is an order determining which master is acutally applied when it is specified in multiple places. In particular, <tt>onPreInit()</tt> takes precedence over page template over application/page configuration. Therefore, if we specify <tt>MainLayout</tt> in the application/page configuration and we specify <tt>SpecialLayout</tt> in <tt>Contact.page</tt>, the effective master would be the latter.
+</com:InfoBox>
+
+</com:TContent>

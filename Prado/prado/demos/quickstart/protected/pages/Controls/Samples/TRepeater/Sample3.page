@@ -1,0 +1,92 @@
+<com:TContent ID="body">
+
+<h1>TRepeater Sample 3</h1>
+
+<p>
+The following example allows users to modify the existing tabular data using a <tt>TRepeater</tt>. Two validators are used in the repeater to ensure the validity of user inputs. One is to ensure product names are not empty, the other ensures product prices are valid numeric format. After clicking on the <tt>save</tt> button, the input data is displayed in a table at the bottom of the page.
+</p>
+
+<table>
+<tr>
+  <th>Name</th>
+  <th>Category</th>
+  <th>Price</th>
+  <th>Imported</th>
+</tr>
+<com:TRepeater ID="Repeater" OnItemDataBound="repeaterDataBound">
+<prop:ItemTemplate>
+<tr>
+  <td>
+  <com:TTextBox
+       ID="ProductName"
+       Text=<%#$this->Data['name']%> />
+  </td>
+  <td>
+  <com:TDropDownList
+       ID="ProductCategory" />
+  </td>
+  <td>
+  <com:TTextBox
+       ID="ProductPrice"
+       Columns="7"
+       Text=<%#$this->Data['price']%> />
+  </td>
+  <td>
+  <com:TCheckBox
+       ID="ProductImported"
+       Checked=<%#$this->Data['imported']%> />
+  <com:TRequiredFieldValidator
+       ControlToValidate="ProductName"
+       ErrorMessage="Product name cannot be empty."
+       Display="Dynamic" />
+  <com:TRegularExpressionValidator
+       ControlToValidate="ProductPrice"
+       RegularExpression="\d+(\.\d{1,2})?"
+       ErrorMessage="Product price must be in the format of ddd.dd"
+       Display="Dynamic" />
+  </td>
+</tr>
+</prop:ItemTemplate>
+</com:TRepeater>
+</table>
+
+<div>
+<com:TButton Text="Save" OnClick="saveInput"/>
+</div>
+
+<com:TSafeHtml>
+<com:TRepeater ID="Repeater2" EnableViewState="false">
+
+<prop:HeaderTemplate>
+<table cellpadding="2">
+<tr style="color:white;background-color:black">
+  <th>ID</th>
+  <th>Name</th>
+  <th>Category</th>
+  <th>Price</th>
+  <th>Imported</th>
+</tr>
+</prop:HeaderTemplate>
+
+<prop:ItemTemplate>
+<tr style="<%# 'background-color:' . ($this->ItemIndex%2 ? '#BFCFFF' : '#E6ECFF') %>">
+<td><%#$this->Data['id']%></td>
+<td><%#$this->Data['name']%></td>
+<td><%#$this->Data['category']%></td>
+<td><%#$this->Data['price']%></td>
+<td><%#$this->Data['imported']?'Yes':'No'%></td>
+</tr>
+</prop:ItemTemplate>
+
+<prop:FooterTemplate>
+<tr style="color:white;background-color:black;text-align:center;">
+<td colspan="5">Computer Parts Inventory</td>
+</tr>
+</table>
+</prop:FooterTemplate>
+
+</com:TRepeater>
+
+</com:TSafeHtml>
+
+<div class="last-modified">$Id: Sample3.page 1688 2007-02-09 22:48:31Z xue $</div></com:TContent>

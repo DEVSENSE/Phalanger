@@ -1,0 +1,34 @@
+<com:TContent ID="body" >
+
+<h1 id="92009">TKeyboard</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TKeyboard" />
+
+<p id="460010" class="block-content">
+<tt>TKeyboard</tt> displays a virtual keyboard that users can click on to enter input in
+an associated text box. It helps to reduce the keyboard recording hacking.
+</p>
+
+<p id="460011" class="block-content">
+To use TKeyboard, write a template like following:
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_460120">
+&lt;com:TTextBox ID="PasswordInput" />
+&lt;com:TKeyboard ForControl="PasswordInput" />
+</com:TTextHighlighter>
+
+<p id="460012" class="block-content">
+A TKeyboard control is associated with a <tt>TTextBox</tt> control by specifying
+<tt>ForControl</tt> to be the ID of that control. When the textbox is in focus,
+a virtual keyboard will pop up; and when the text box is losing focus, the keyboard
+will hide automatically. Set <tt>AutoHide</tt> to false to keep the keyboard showing all the time.
+</p>
+
+<p id="460013" class="block-content">
+The appearance of the keyboard can also be changed by specifying a customized CSS file via
+<tt>CssUrl</tt>. By default, the CSS class name for the keyboard is 'Keyboard'. This may
+also be changed by specifying <tt>KeyboardCssClass</tt>
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TKeyboard.Home" />
+
+<div class="last-modified">$Id: Keyboard.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

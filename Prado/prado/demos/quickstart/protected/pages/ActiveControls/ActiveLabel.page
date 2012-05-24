@@ -1,0 +1,16 @@
+<com:TContent ID="body" >
+
+<h1 id="154012">TActiveLabel</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveLabel" />
+
+<p class="block-content">
+<tt>TActiveLabel</tt> is the active control counterpart of <tt>TLabel</tt> component. When
+<tt>ActiveControl.EnableUpdate</tt> property is true during a callback request, setting <tt>Text</tt>
+property will also set the text of the label on the client upon callback
+completion. Similarly, setting <tt>ForControl</tt> will also set
+the client-side "for" attribute on the label.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveLabel.Home" />
+
+<div class="last-modified">$Id: ActiveLabel.page 2954 2011-06-01 23:01:03Z ctrlaltca@gmail.com $</div></com:TContent>

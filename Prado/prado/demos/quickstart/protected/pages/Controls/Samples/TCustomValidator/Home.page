@@ -1,0 +1,70 @@
+<com:TContent ID="body">
+
+<script type="text/javascript"><!--
+function myValidationFunction(sender, parameter)
+{
+    if(parameter == 'test')
+        return true;
+    else
+        return false;
+}
+--></script>
+
+<h1>TCustomValidator Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Custom validator with default settings:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox1" />
+<com:TCustomValidator
+	ValidationGroup="Group1"
+	ControlToValidate="TextBox1"
+	ClientValidationFunction="myValidationFunction"
+	OnServerValidate="serverValidate"
+	Text="You must enter 'test'." />
+<com:TButton Text="Submit" ValidationGroup="Group1" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Custom validator with client-side validation disabled:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox2" />
+<com:TCustomValidator
+	ValidationGroup="Group2"
+	EnableClientScript="false"
+	ControlToValidate="TextBox2"
+	ClientValidationFunction="myValidationFunction"
+	OnServerValidate="serverValidate"
+	Text="You must enter 'test'." />
+<com:TButton Text="Submit" ValidationGroup="Group2" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Custom validator with focus-on-error enabled and dynamic display:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox3" />
+<com:TCustomValidator
+	ValidationGroup="Group3"
+	ControlToValidate="TextBox3"
+	ClientValidationFunction="myValidationFunction"
+	OnServerValidate="serverValidate"
+	FocusOnError="true"
+	Text="You must enter 'test'." />
+<com:TButton Text="Submit" ValidationGroup="Group3" />
+</td>
+</tr>
+
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

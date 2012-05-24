@@ -1,0 +1,397 @@
+<com:TContent ID="body" >
+<h1 id="6501">Introduction to Javascript</h1>
+This guide is based on the <a href="http://www.sergiopereira.com/articles/advjs.html">
+Quick guide to somewhat advanced JavaScript tour of some OO features</a> by Sergio Pereira.
+
+<h2 id="6502">Hey, I didn't know you could do that</h2>
+<p id="820693" class="block-content">
+    If you are a web developer and come from the same place I do, you have probably
+    used quite a bit of Javascript in your web pages, mostly as UI glue.
+</p>
+<p id="820694" class="block-content">
+
+    Until recently, I knew that Javascript had more OO capabilities than I was employing,
+    but I did not feel like I needed to use it. As the browsers started to support a more
+    standardized featureset of Javascript and the DOM, it became viable to write more
+    complex and functional code to run on the client. That helped giving birth to the
+    AJAX phenomena.
+</p>
+<p id="820695" class="block-content">
+    As we all start to learn what it takes to write our cool, AJAX applications, we begin
+    to notice that the Javascript we used to know was really just the tip of the iceberg.
+    We now see Javascript being used beyond simple UI chores like input validation and frivolous
+    tasks. The client code now is far more advanced and layered, much like a real desktop
+    application or a client-server thick client. We see class libraries, object models,
+    hierarchies, patterns, and many other things we got used to seeing only in our server
+    side code.
+</p>
+<p id="820696" class="block-content">
+    In many ways we can say that suddenly the bar was put much higher than before. It takes
+    a heck lot more proficiency to write applications for the new Web and we need to improve
+    our Javascript skills to get there.
+    If you try to use many of the existing javascript libraries out there, like
+    <a href="http://prototype.conio.net/">Prototype.js</a>,
+    <a href="http://script.aculo.us/">Scriptaculous</a>,
+    <a href="http://moofx.mad4milk.net/">moo.fx</a>,
+    <a href="http://bennolan.com/behaviour/">Behaviour</a>,
+    <a href="http://developer.yahoo.net/yui/">YUI</a>,
+    etc you'll eventually find yourself reading the JS code. Maybe because you want
+    to learn how they do it, or because you're curious, or more often because that's the
+    only way to figure out how to use it, since documentation does not seem to be highly
+    regarded with most of these libraries. Whatever the case may be, you'll face some
+    kung-fu techniques that will be foreign and scary if you haven't seen anything like
+    that before.
+</p>
+
+<p id="820697" class="block-content">
+    The purpose of this article is precisely explaining the types of constructs that
+    many of us are not familiar with yet.
+</p>
+
+
+<h2 id="6503">JSON (JavaScript Object Notation)</h2>
+<p id="820698" class="block-content">
+    JavaScript Object Notation (<a href="http://www.json.org/">JSON</a>,) is one of the new
+    buzzwords popping up around the AJAX theme. JSON, simply put, is a way of
+    declaring an object in Javascript. Let's see an example right away and note
+    how simple it is.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820233">
+var myPet = { color: 'black', leg_count: 4, communicate: function(repeatCount){
+for(i=0;i&lt;repeatCount;i++) alert('Woof!');} };
+</com:TTextHighlighter>
+
+<p id="820699" class="block-content">
+    Let's just add little bit of formatting so it looks more like how we usually find out there:
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820234">
+var myPet =
+{
+    color: 'black',
+    legCount: 4,
+    communicate: function(repeatCount)
+    {
+        for(i=0;i&lt;repeatCount;i++)
+            alert('Woof!');
+    }
+};
+</com:TTextHighlighter>
+<p id="820700" class="block-content">
+    Here we created a reference to an object with two properties (<tt>color</tt>
+    and <tt>legCount</tt>) and a method (<tt>communicate</tt>.)
+    It's not hard to figure out that the object's properties and methods
+    are defined as a comma delimited list. Each of the members is introduced by name, followed
+    by a colon and then the definition. In the case of the properties it is easy, just the value
+    of the property. The methods are created by assigning an anonymous function, which we will
+    explain better down the line.
+    After the object is created and assigned to the variable <tt>myPet</tt>,
+    we can use it like this:
+</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820235">
+alert('my pet is ' + myPet.color);
+alert('my pet has ' + myPet.legCount + ' legs');
+//if you are a dog, bark three times:
+myPet.communicate(3);
+</com:TTextHighlighter>
+<p id="820701" class="block-content">
+    You'll see JSON used pretty much everywhere in JS these days, as arguments to functions,
+    as return values, as server responses (in strings,) etc.
+</p>
+
+<h2 id="6504">What do you mean? A function is an object too?</h2>
+<p id="820702" class="block-content">
+    This might be unusual to developers that never thought about that, but in JS a function is
+    also an object. You can pass a function around as an argument to another function just like
+    you can pass a string, for example. This is extensively used and very handy.
+</p>
+
+<p id="820703" class="block-content">
+    Take a look at this example. We will pass functions to another function that will use them.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820236">
+var myDog =
+{
+    bark: function()
+    {
+        alert('Woof!');
+    }
+};
+
+var myCat =
+{
+    meow: function()
+    {
+        alert('I am a lazy cat. I will not meow for you.');
+    }
+};
+
+function annoyThePet(petFunction)
+{
+    //let's see what the pet can do
+    petFunction();
+}
+
+//annoy the dog:
+annoyThePet(myDog.bark);
+//annoy the cat:
+annoyThePet(myCat.meow);
+</com:TTextHighlighter>
+<p id="820704" class="block-content">
+    Note that we pass myDog.bark and myCat.meow without appending parenthesis
+    <tt>"()"</tt> to them. If we did that we would not be passing
+    the function, rather we would be calling the method and passing the return value,
+    <tt>undefined</tt> in both cases here.
+</p>
+
+<p id="820705" class="block-content">
+    If you want to make my lazy cat start barking, you can easily do this:
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820237">
+myCat.meow = myDog.bark;
+myCat.meow(); //alerts 'Woof!'
+</com:TTextHighlighter>
+
+<h2 id="6505">Arrays, items, and object members</h2>
+<p id="820706" class="block-content">
+    The following two lines in JS do the same thing.
+</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820238">
+var a = new Array();
+var b = [];
+</com:TTextHighlighter>
+<p id="820707" class="block-content">
+    As I'm sure you already know, you can access individual items in an array
+    by using the square brackets:
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820239">
+var a = ['first', 'second', 'third'];
+var v1 = a[0];
+var v2 = a[1];
+var v3 = a[2];
+</com:TTextHighlighter>
+<p id="820708" class="block-content">
+
+    But you are not limited to numeric indices. You can access any member of a JS
+    object by using its name, in a string. The following example creates an empty
+    object, and adds some members by name.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820240">
+var obj = {}; //new, empty object
+obj['member_1'] = 'this is the member value';
+obj['flag_2'] = false;
+obj['some_function'] = function(){ /* do something */};
+</com:TTextHighlighter>
+<p id="820709" class="block-content">
+    The above code has identical effect as the following:
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820241">
+var obj =
+{
+    member_1:'this is the member value',
+    flag_2: false,
+    some_function: function(){ /* do something */}
+};
+</com:TTextHighlighter>
+
+<p id="820710" class="block-content">
+    In many ways, the idea of objects and associative arrays (hashes) in JS are not
+    distiguishable. The following two lines do the same thing too.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820242">
+obj.some_function();
+obj['some_function']();
+</com:TTextHighlighter>
+
+
+<h2 id="6506">Enough about objects, may I have a class now?</h2>
+<p id="820711" class="block-content">
+
+    The great power of object oriented programming languages derive from the use
+    of classes. I don't think I would have guessed how classes are defined in JS
+    using only my previous experience with other languages. Judge for yourself.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820243">
+//defining a new class called Pet
+var Pet = function(petName, age)
+{
+    this.name = petName;
+    this.age = age;
+};
+
+//let's create an object of the Pet class
+var famousDog = new Pet('Santa\'s Little Helper', 15);
+alert('This pet is called ' + famousDog.name);
+</com:TTextHighlighter>
+<p id="820712" class="block-content">
+    Let's see how we add a method to our <tt>Pet</tt> class. We will be using the
+    <tt>prototype</tt> property that all classes have. The <tt>prototype</tt>
+    property is an object that contains all the members that any object of the class will have.
+    Even the default JS classes, like <tt>String</tt>, <tt>Number</tt>,
+    and <tt>Date</tt> have a <tt>prototype</tt> object that we
+    can add methods and properties to and make any object of that class automatically gain this new member.
+</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820244">
+Pet.prototype.communicate = function()
+{
+    alert('I do not know what I should say, but my name is ' + this.name);
+};
+</com:TTextHighlighter>
+<p id="820713" class="block-content">
+    That's when a library like <a href="http://www.sergiopereira.com/articles/prototype.js.html">prototype.js</a> comes in
+    handy. If we are using prototype.js, we can make our code look cleaner (at least in my opinion.)
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820245">
+var Pet = Class.create();
+Pet.prototype =
+{
+    //our 'constructor'
+    initialize: function(petName, age)
+    {
+        this.name = petName;
+        this.age = age;
+    },
+
+    communicate: function()
+    {
+        alert('I do not know what I should say, but my name is ' + this.name);
+    }
+};
+</com:TTextHighlighter>
+
+<h2 id="6507">Functions as arguments, an interesting pattern</h2>
+<p id="820714" class="block-content">
+    If you have never worked with languages that support closures
+     you may find the following idiom too funky.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820246">
+var myArray = ['first', 'second', 'third'];
+myArray.each( function(item, index)
+{
+    alert('The item in the position #' + index + ' is:' + item);
+});
+</com:TTextHighlighter>
+<p id="820715" class="block-content">
+
+    Whoa! Let's explain what is going on here before you decide I've gone too
+    far and navigate to a better article than this one.
+</p>
+<p id="820716" class="block-content">
+    First of all, in the above example we are using the prototype.js library, which
+    adds the each function to the Array class. The each function accepts one
+    argument that is a function object. This function, in turn, will be called once
+    for each item in the array, passing two arguments when called, the item and the index
+    for the current item. Let's call this function our iterator function.
+    We could have also written the code like this.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820247">
+function myIterator(item, index)
+{
+    alert('The item in the position #' + index + ' is:' + item);
+}
+
+var myArray = ['first', 'second', 'third'];
+myArray.each( myIterator );
+</com:TTextHighlighter>
+<p id="820717" class="block-content">
+    But then we would not be doing like all the cool kids in school, right?
+    More seriously, though, this last format is simpler to understand but causes
+    us to jump around in the code looking for the myIterator function. It's nice
+    to have the logic of the iterator function right there in the same place
+    it's called. Also, in this case, we will not need the iterator function anywhere
+    else in our code, so we can transform it into an anonymous function without penalty.
+</p>
+
+<h2 id="6508">This is <tt>this</tt> but sometimes <tt>this</tt> is also that</h2>
+<p id="820718" class="block-content">
+
+    One of the most common troubles we have with JS when we start writing our code
+    it the use of the <tt>this</tt> keyword. It could be a real
+    tripwire.
+</p>
+<p id="820719" class="block-content">
+    As we mentioned before, a function is also an object in JS, and sometimes we
+    do not notice that we are passing a function around.
+</p>
+<p id="820720" class="block-content">
+    Take this code snippet as an example.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820248">
+function buttonClicked()
+{
+    alert('button ' + this.id + ' was clicked');
+}
+
+var myButton = document.getElementById('someButtonID');
+var myButton2 = document.getElementById('someOtherButtonID');
+myButton.onclick = buttonClicked;
+myButton2.onclick = buttonClicked;
+</com:TTextHighlighter>
+<p id="820721" class="block-content">
+    Because the buttonClicked function is defined outside any object we may tend to
+    think the <tt>this</tt> keyword will contain a reference to
+    the <tt>window</tt> or <tt>document</tt>
+    object (assuming this code is in the middle of an HTML page viewed in a browser.)
+</p>
+
+<p id="820722" class="block-content">
+    But when we run this code we see that it works as intended and displays the <tt>id</tt> of
+    the clicked button. What happened here is that we made the onclick method of each button contain the
+    <tt>buttonClicked</tt> object reference, replacing whatever was there before. Now
+    whenever the button is clicked, the browser will execute something similar to the following line.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820249">
+myButton.onclick();
+</com:TTextHighlighter>
+<p id="820723" class="block-content">
+
+    That isn't so confusing afterall, is it? But see what happens you start having other
+    objects to deal with and you want to act on these object upon events like the button's click.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820250">
+var myHelper =
+{
+    formFields: [ ],
+    emptyAllFields: function()
+    {
+        for(i=0; i < this.formFields.length; i++)
+        {
+            var elementID = this.formFields[i];
+            var field = document.getElementById(elementID);
+            field.value = '';
+        }
+    }
+};
+
+//tell which form fields we want to work with
+myHelper.formFields.push('txtName');
+myHelper.formFields.push('txtEmail');
+myHelper.formFields.push('txtAddress');
+
+//clearing the text boxes:
+myHelper.emptyAllFields();
+
+var clearButton = document.getElementById('btnClear');
+clearButton.onclick = myHelper.emptyAllFields;
+</com:TTextHighlighter>
+<p id="820724" class="block-content">
+    So you think, nice, now I can click the Clear button on my page and those three text boxes
+    will be emptied. Then you try clicking the button only to get a runtime error. The error
+    will be related to (guess what?) the <tt>this</tt> keyword.
+    The problem is that <tt>this.formFields</tt> is not defined if
+    <tt>this</tt> contains a referece to the button, which is
+    precisely what's happening. One quick solution would be to rewrite our last line of code.
+</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820251">
+clearButton.onclick = function()
+{
+    myHelper.emptyAllFields();
+};
+</com:TTextHighlighter>
+<p id="820725" class="block-content">
+    That way we create a brand new function that calls our helper method within the helper object's context.
+</p>
+<div class="last-modified">$Id: Scripts.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

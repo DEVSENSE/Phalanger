@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Prado Address Book</title>
+	<style>
+	body{ font-family: cambria; "New Times Roman" }
+	</style>
+</head>
+<body>
+<h1>Prado + Adobe Flex + Soap Demo</h1>
+<h2><a href="?soap=address-book.wsdl">View SOAP WSDL</a></h2>
+<p>Flash player version 9 or greater is required.</p>
+<com:Application.pages.FlexApp
+	BinDirectory=<%~ flex/bin %>
+	AppName="flex_address_book"
+	Parameters.wsdl="<%= $this->Request->constructUrl('soap', 'address-book.wsdl') %>"
+	Width="100%" Height="300"/>
+
+</body>
+
+</html>

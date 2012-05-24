@@ -1,0 +1,52 @@
+<com:TContent ID="body" >
+
+<h1 id="154012">TCallbackOptions</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TCallbackOptions" />
+
+<p class="block-content">
+<tt>TCallbackOptions</tt> allows a common set of callback client-side options
+to be attached to one or more active controls. 
+This can be useful if a lot of active controls on the same page are sharing the same callback client-side options.
+Instead of specifying the same set of options again and again inside each control, these can be written once
+inside a <tt>TCallbackOptions</tt>; this <tt>TCallbackOptions</tt> can be then attached to each control using the
+<tt>ActiveControl.CallbackOptions</tt> property. For a full list of assignable properties, please check the 
+<a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> documentation.
+</p>
+
+<p class="block-content">
+The typical scenario of use for a <tt>TCallbackOptions</tt> is a page where a lot of active controls needs to
+pause the user interaction with a "Please wait" style message until callback completion.
+First create a single <tt>TCallbackOptions</tt> control, assign it an ID and the the needed properties:
+</p>
+
+<com:TTextHighlighter Language="text" CssClass="source block-content" >
+&lt;com:TCallbackOptions
+	ID="MyOptions"
+	ClientSide.OnLoading="... kindly inform the user that he should wait ..."
+	ClientSide.OnComplete="... callback completed, ready to serve the user again ..."
+/&gt;
+</com:TTextHighlighter>
+
+<p class="block-content">
+Then, share this set of options to one or more active controls; each control will follow them:
+</p>
+
+<com:TTextHighlighter Language="text" CssClass="source block-content" >
+&lt;com:TActiveButton
+	Text="simple button"
+	OnCallback="..."
+	ActiveControl.CallbackOptions="MyOptions"
+	...
+/&gt;
+
+&lt;com:TActiveCheckBox
+	Text="simple checkbox"
+	OnCallback="..."
+	ActiveControl.CallbackOptions="MyOptions"
+	...
+/&gt;
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="ActiveControls.Samples.TCallbackOptions.Home" />
+
+<div class="last-modified">$Id: CallbackOptions.page 2958 2011-06-02 16:03:13Z ctrlaltca@gmail.com $</div></com:TContent>

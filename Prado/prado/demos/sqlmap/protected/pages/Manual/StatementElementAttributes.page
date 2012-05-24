@@ -1,0 +1,216 @@
+<com:TContent ID="body">
+
+<h1>Statement-type Element Attributes</h1>
+<p>The six statement-type elements take various attributes. See
+<a href="?page=Manual.MappedStatements">Mapped Statements</a> for a 
+table itemizing which attributes each
+element-type accepts. The individual attributes are described in the sections
+that follow.</p>
+
+<h2><tt>id</tt> attribute</h2>
+<p>
+The required <tt>id</tt> attribute provides a name for this statement, which must
+be unique within this <tt>&lt;SqlMap&gt;</tt>.</p>
+
+<h2><tt>parameterMap</tt> attribute</h2>
+<p>A Parameter Map defines an ordered list of values that match up with the "?"
+placeholders of a standard, parameterized query statement.
+The following example shows a <tt>&lt;parameterMap&gt;</tt> and a corresponding
+<tt>&lt;statement&gt;</tt>.
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<parameterMap id="insert-product-param" class="Product">
+  <parameter property="id"/>
+  <parameter property="description"/>
+</parameterMap>
+
+<statement id="insertProduct" parameterMap="insert-product-param">
+  insert into PRODUCT (PRD_ID, PRD_DESCRIPTION) values (?,?);
+</statement>
+</com:TTextHighlighter>
+
+In the above example, the Parameter Map describes two parameters that
+will match, in order, two placeholders in the SQL statement. The first "?"
+is replaced by the value of the <tt>id</tt> property. The second is replaced with
+the <tt>description</tt> property.</p>
+
+<p>SQLMap also supports named, inline parameters, which most developers seem to
+prefer. However, Parameter Maps are useful when the SQL must be kept in a
+standard form or when extra information needs to be provided. See
+<a href="?page=Manual.ParameterMap">Parameter Maps</a> for futher details.</p>
+
+<h2><tt>parameterClass</tt> attribute</h2>
+<p>If a <tt>parameterMap</tt> attribute is not specified, you may specify a
+<tt>parameterClass</tt> instead and use <a href="?page=Manual.InlineParameterMaps">inline parameters</a>. 
+The value of the <tt>parameterClass</tt> attribute
+can be any existing PHP class name. The following example shows a
+statement using a PHP class named <tt>Product</tt> in <tt>parameterClass</tt>
+attribute.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="statementName" parameterClass="Product">
+  insert into PRODUCT values (#id#, #description#, #price#)
+</statement>
+</com:TTextHighlighter>
+
+<h2><tt>resultMap</tt> attribute</h2>
+<p>A Result Map lets you control how data is extracted from the result of a
+query, and how the columns are mapped to object properties.
+The following example shows a <tt>&lt;resultMap&gt;</tt> element and a
+corresponding <tt>&lt;statement&gt;</tt> element.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<resultMap id="select-product-result" class="product">
+  <result property="id" column="PRD_ID"/>
+  <result property="description" column="PRD_DESCRIPTION"/>
+</resultMap>
+
+<statement id="selectProduct" resultMap="select-product-result">
+  select * from PRODUCT
+</statement>
+</com:TTextHighlighter>
+
+<p>In the above example, the result of the SQL query will be mapped to
+an instance of the <tt>Product</tt> class using the "select-product-result"
+<tt>&lt;resultMap&gt;</tt>. The <tt>&lt;resultMap&gt;</tt> says to 
+populate the <tt>id</tt> property
+from the <tt>PRD_ID</tt> column, and to populate the <tt>description</tt> property
+from the <tt>PRD_DESCRIPTION</tt> column.</p>
+
+<div class="tip"><b class="tip">Tip:</b>
+In the above example, note that using "<tt> select * </tt>" is supported. If
+you want all the columns, you don't need to map them all individually. (Though
+many developers consider it a good practice to always specify the columns
+expected.)
+</div>
+
+<p>See <a href="?page=Manual.ResultMaps">Result Maps</a> for futher details.</p>
+
+<h2><tt>resultClass</tt> attribute</h2>
+<p>If a <tt>resultMap</tt> is not specified, you may specify a <tt>resultClass</tt>
+instead. The value of the <tt>resultClass</tt> attribute can be the name of a PHP
+class or primitives like <tt>integer</tt>, <tt>string</tt>, or <tt>array</tt>. The class
+specified will be automatically mapped to the columns in the result, based on
+the result metadata. The following example shows a <tt>&lt;statement&gt;</tt> element
+with a <tt>resultClass</tt> attribute.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="SelectPerson" parameterClass="int" resultClass="Person">
+  SELECT
+  PER_ID as Id,
+  PER_FIRST_NAME as FirstName,
+  PER_LAST_NAME as LastName,
+  PER_BIRTH_DATE as BirthDate,
+  PER_WEIGHT_KG as WeightInKilograms,
+  PER_HEIGHT_M as HeightInMeters
+  FROM PERSON
+  WHERE PER_ID = #value#
+</statement>
+</com:TTextHighlighter>
+
+<p>In the above example, the <tt>Person</tt> class has properties including:
+<tt>Id</tt>, <tt>FirstName</tt>, <tt>LastName</tt>, <tt>BirthDate</tt>,
+<tt>WeightInKilograms</tt>, and <tt>HeightInMeters</tt>. Each of these corresponds
+with the column aliases described by the SQL select statement using the "as"
+keyword, a standard SQL feature. When executed, a <tt>Person</tt> object is
+instantiated and populated by matching the object property names to the column
+names from the query.</p>
+
+<p>Using SQL aliases to map columns to properties saves defining a
+<tt>&lt;resultMap&gt;</tt> element, but there are limitations. There is no way to
+specify the types of the output columns (if needed), there is no way to
+automatically load related data such as complex properties.You can overcome
+these limitations with an explicit <a href="?page=Manual.ResultMaps">Result Map</a>.</p>
+
+<h2><tt>listClass</tt> attribute</h2>
+<p>In addition to providing the ability to return an <tt>TList</tt> of objects, the
+DataMapper supports the use of custom collection: a class that implements
+<tt>ArrayAccess</tt>. The following is an example of a TList (it implements
+ArrayAccess) class that can be used with the DataMapper.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+class AccountCollection extends TList
+{
+    public function addRange($accounts)
+    {
+        foreach($accounts as $account)
+            $this->add($account);
+    }
+
+    public function copyTo(TList $array)
+    {
+        $array->copyFrom($this);
+    }
+}
+</com:TTextHighlighter>
+
+<p>An <tt>ArrayAccess</tt> class can be specified for a select statement through the
+<tt>listClass</tt> attribute. The value of the <tt>listClass</tt> attribute is the
+full name of a PHP class that implements <tt>ArrayAccess</tt>. The statement
+should also indicate the <tt>resultClass</tt> so that the DataMapper knows how to
+handle the type of objects in the collection. The <tt>resultClass</tt> specified
+will be automatically mapped to the columns in the result, based on the result
+metadata. The following example shows a <tt>&lt;statement&gt;</tt> element with a
+<tt>listClass</tt> attribute.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="GetAllAccounts"
+ listClass="AccountCollection"
+ resultClass="Account">
+   select
+   Account_ID as Id,
+   Account_FirstName as FirstName,
+   Account_LastName as LastName,
+   Account_Email as EmailAddress
+   from Accounts
+   order by Account_LastName, Account_FirstName
+</statement>
+</com:TTextHighlighter>
+
+<h2><tt>cacheModel</tt> attribute</h2>
+<p>If you want to cache the result of a query, you can specify a Cache Model as
+part of the <tt>&lt;statement&gt;</tt> element. The following example shows a
+<tt>&lt;cacheModel&gt;</tt> element and a corresponding <tt>&lt;statement&gt;</tt>.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<cacheModel id="product-cache" implementation="LRU">
+  <flushInterval hours="24"/>
+  <flushOnExecute statement="insertProduct"/>
+  <flushOnExecute statement="updateProduct"/>
+  <flushOnExecute statement="deleteProduct"/>
+  <property name="size" value="1000" />
+</cacheModel>
+
+<statement id="selectProductList" parameterClass="int" cacheModel="product-cache">
+  select * from PRODUCT where PRD_CAT_ID = #value#
+</statement>
+</com:TTextHighlighter>
+
+<p>In the above example, a cache is defined for products that uses a
+Least Recently Used [LRU] type and flushes every 24 hours or whenever
+associated update statements are executed. See 
+<a href="?page=Manual.CacheModels">Cache Models</a> for futher details</p>
+
+<h2><tt>extends</tt> attribute</h2>
+<p>When writing Sql, you often encounter duplicate fragments of SQL. SQLMap
+offers a simple yet powerful attribute to reuse them.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<select id="GetAllAccounts"
+  resultMap="indexed-account-result">
+select
+  Account_ID,
+  Account_FirstName,
+  Account_LastName,
+  Account_Email
+from Accounts
+</select>
+
+<select id="GetAllAccountsOrderByName"
+  extends="GetAllAccounts"
+  resultMap="indexed-account-result">
+    order by Account_FirstName
+</select>
+</com:TTextHighlighter>
+
+</com:TContent>

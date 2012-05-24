@@ -1,0 +1,33 @@
+<com:TContent ID="body" >
+<h1 id="301">PRADO のインストール</h1>
+<div id="install-info" class="block-content">
+<p id="30018">
+ご自分で管理されているサーバーをお持ちであれば、すぐにインストールすることが可能です。
+</p>
+<p id="30019">
+PRADO の最小構成は、サーバーがPHP5をサポートしていることです。<br />
+PRADO は Windows と Linux 両環境の Apache　サーバーでテストされています。<br />
+PHP5 がサポートされているのであれば、他の環境でも動作させることができるかもしれません。
+</p>
+</div>
+
+<div id="install-steps" class="block-content">
+<p id="30020">
+PRADO のインストールは、PRADO をダウンロードし解凍することが主な作業となります。
+</p>
+<ol>
+<li><a href="http://www.pradosoft.com/">PRADO公式ページ</a>からPRADOの最新版をダウンロードします。</li>
+<li>ウェブアクセス可能なディレクトリに展開します。</li>
+</ol>
+</div>
+<div id="install-after" class="block-content">
+<p id="30021">
+上記の作業のみでPRADOのインストールが完了します。<br />
+<tt>http://web-server-address/prado/demos/</tt> 以下にPRADOデモアプリケーションが展開されますので、PRADOを利用したアプリケーションの動作を体験する事ができます。<br />
+デモアプリケーションの動作が確認できていれば、<tt>DocumentRoot</tt> 配下に <tt>prado</tt> サブディレクトリが展開されたことになりますので、インストールは正常に完了しております。
+</p>
+<p id="30022">
+もしデモアプリケーションが動作しない等の問題が発生しましたら、サーバー構成がPRADO必要条件を満たしているかどうかを確認する事ができるスクリプト <tt>http://web-server-address/prado/requirements/index.php</tt> が用意されていますので、確認してください。
+</p>
+</div>
+<div class="last-modified">$Id: Installation.page * 2007-06-03 17:01:00Z Shinya.K $</div></com:TContent>

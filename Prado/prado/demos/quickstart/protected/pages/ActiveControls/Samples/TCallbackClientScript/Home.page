@@ -1,0 +1,39 @@
+<com:TContent ID="body">
+<h1>TCallbackClientScript Samples</h1>
+
+<p>
+  Choose an action from the list and click the button; the server-side php code will get the selected value and
+  force the execution of some clientside js code in the callback response.
+</p>
+
+<h2>Actions</h2>
+<com:TRadioButtonList ID="radio1">
+  <com:TListItem Value="1" Text="alert() me of something" />
+  <com:TListItem Value="2" Text="toggle Checkbox 1" />
+  <com:TListItem Value="3" Text="hide Label 1" />
+  <com:TListItem Value="4" Text="show Label 1" />
+  <com:TListItem Value="5" Text="focus TextBox 1" />
+</com:TRadioButtonList>
+
+<br/><com:TActiveButton ID="button1" OnCallback="buttonCallback" Text="callback!" />
+
+<h2>Results</h2>
+
+<table>
+  <tr>
+    <td>Checkbox 1:</td>
+    <td><com:TCheckBox ID="check1" Text="Checkbox 1" /></td>
+  </tr>
+  <tr>
+    <td>Label 1:</td>
+    <td><com:TLabel ID="label1" ForeColor="Red" Text="Text of Label 1" /></td>
+  </tr>
+  <tr>
+    <td>TextBox 1:</td>
+    <td><com:TTextBox ID="txt1" Text="Sample text" /></td>
+  </tr>
+</table>
+
+<com:TJavascriptLogger />
+
+<div class="last-modified">$Id: Home.page -1   $</div></com:TContent>

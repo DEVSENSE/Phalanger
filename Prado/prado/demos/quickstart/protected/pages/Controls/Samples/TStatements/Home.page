@@ -1,0 +1,20 @@
+<com:TContent ID="body">
+
+<h1>TStatements Sample</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Using TStatements component tag:
+</td><td class="sampleaction">
+<com:TStatements>
+  <prop:Statements>
+  $uid=$this->UniqueID;
+  echo "UniqueID is '$uid'.";
+  </prop:Statements>
+</com:TStatements>
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

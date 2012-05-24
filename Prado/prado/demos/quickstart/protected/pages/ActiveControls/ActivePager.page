@@ -1,0 +1,41 @@
+<com:TContent ID="body" >
+
+<h1 id="3901">TActivePager</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TPager" />
+
+<p id="450300" class="block-content">
+<tt>TActivePager</tt> creates a pager that provides UI for end-users to interactively specify which page of data to be rendered in a <tt>TDataBoundControl</tt>-derived control, such as <tt>TDataList</tt>, <tt>TRepeater</tt>, <tt>TCheckBoxList</tt>, etc. 
+The target data-bound control is specified by the <tt>ControlToPaginate</tt> property, which must be the ID path of the target control reaching from the pager's naming container. The target-databound must be enclosed inside a <tt>TActivePanel</tt> in order
+to be re-rendered during callback
+</p>
+
+<p id="450301" class="block-content">
+Note, the target data-bound control must have its <tt>AllowPaging</tt> set to true. Otherwise the pager will be invisible. Also, in case when there is only one page of data available, the pager will also be invisible.
+</p>
+
+<p id="450302" class="block-content">
+<tt>TActivePager</tt> can display one of the following three types of user interface, specified via its <tt>Mode</tt> property:
+</p>
+<ul id="u1" class="block-content">
+<li><tt>NextPrev</tt> - a next page and a previous page button are rendered on each page.</li>
+<li><tt>Numeric</tt> - a list of page index buttons are rendered.</li>
+<li><tt>DropDownList</tt> - a dropdown list of page indices is rendered.</li>
+</ul>
+<p id="450303" class="block-content">
+These user interfaces may be further customized by configuring the following properties
+</p>
+<ul id="u2" class="block-content">
+<li><tt>NextPageText</tt> and <tt>PrevPageText</tt> - the label of the next/previous page button. These properties are used when the pager <tt>Mode</tt> is <tt>NextPrev</tt> or <tt>Numeric</tt>.</li>
+<li><tt>FirstPageText</tt> and <tt>LastPageText</tt> - the label of the first/last page button. If empty, the corresponding button will not be displayed. These properties are used when the pager <tt>Mode</tt> is <tt>NextPrev</tt> or <tt>Numeric</tt>.</li>
+<li><tt>PageButtonCount</tt> - the maximum number of page index buttons on a page. This property is used when the pager <tt>Mode</tt> is <tt>Numeric</tt>.</li>
+<li><tt>ButtonType</tt> - type of page buttons, either <tt>PushButton</tt> meaning normal form submission buttons, or <tt>LinkButton</tt> meaning hyperlink buttons.</li>
+</ul>
+
+<p id="450304" class="block-content">
+<tt>TActivePager</tt> raises an <tt>OnPageIndexChanged</tt> event when an end-user interacts with it and specifies a new page (e.g. by clicking on a next page button that would lead to the next page.) Developers may write handlers to respond to this event and obtain the desired new page index from the event parameter's property <tt>NewPageIndex</tt>. Using this new page index, one can feed a new page of data to the associated data-bound control.
+Additionnaly, <tt>TActivePager</tt> raises <tt>OnCallback</tt> after the <tt>OnPageIndexChanged</tt>.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActivePager.Home" />
+
+<div class="last-modified">$Id: Pager.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

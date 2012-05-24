@@ -1,0 +1,49 @@
+<com:TContent ID="body">
+
+<h1>TDataList Sample 1</h1>
+<p>
+TDataList is good at displaying tabular data in a non-tabular format. The following example displays a list of computer product information in 3 columns.
+</p>
+<p>
+Since the page is mainly for display and does not require user interactions, the viewstate of TDataList is disabled to reduce page size.
+</p>
+
+<com:TDataList
+     ID="DataList"
+     EnableViewState="false"
+     RepeatColumns="3"
+     RepeatDirection="Horizontal"
+     ItemStyle.Font.Italic="true"
+     ItemStyle.BackColor="#BFCFFF"
+     HeaderStyle.BackColor="black"
+     HeaderStyle.ForeColor="white"
+     FooterStyle.BackColor="gray"
+     AlternatingItemStyle.BackColor="#E6ECFF">
+
+<prop:HeaderTemplate>
+<div style="font-weight:bold; text-align:center;">Computer Parts</div>
+</prop:HeaderTemplate>
+
+<prop:FooterTemplate>
+<div style="font-weight:bold; text-align:center;">
+Total <%# $this->Parent->ItemCount %> products.
+</div>
+</prop:FooterTemplate>
+
+<prop:ItemTemplate>
+<table border="0" width="100%">
+<tr>
+  <th>ID</th><th>Name</th><th>Quantity</th><th>Price</th>
+</tr>
+<tr>
+  <td align="right"><%#$this->DataItem['id'] %></td>
+  <td align="right"><%#$this->DataItem['name'] %></td>
+  <td align="right"><%#$this->DataItem['quantity'] %></td>
+  <td align="right">$<%#$this->DataItem['price'] %></td>
+</tr>
+</table>
+</prop:ItemTemplate>
+
+</com:TDataList>
+
+<div class="last-modified">$Id: Sample1.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

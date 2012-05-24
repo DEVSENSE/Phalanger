@@ -1,0 +1,43 @@
+<com:TContent ID="body" >
+
+<h1 id="3801">TMultiView</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TMultiView" />
+
+<p id="430287" class="block-content">
+<tt>TMultiView</tt> serves as a container for a group of <tt>TView</tt> controls, which can be retrieved by the <tt>Views</tt> property. Each view contains child controls. <tt>TMultiView</tt> determines which view and its child controls are visible. At any time, at most one view is visible (called <i>active</i>). To make a view active, set <tt>ActiveView</tt> or <tt>ActiveViewIndex</tt>. Note, by default there is no active view.
+</p>
+<p id="430288" class="block-content">
+To add a view to <tt>TMultiView</tt>, manipulate the <tt>Views</tt> collection or add it in template as follows,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_430109">
+&lt;com:TMultiView&gt;
+   &lt;com:TView&gt;
+      view 1 content
+   &lt;/com:TView&gt;
+   &lt;com:TView&gt;
+      view 2 content
+   &lt;/com:TView&gt;
+&lt;/com:TMultiView&gt;
+</com:TTextHighlighter>
+
+<p id="430289" class="block-content">
+<tt>TMultiView</tt> responds to the following command events to manage the visibility of its views.
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>NextView</tt> : switch to the next view (with respect to the currently active view).
+  <li><tt>PreviousView</tt> : switch to the previous view (with respect to the currently active view).
+  <li><tt>SwitchViewID</tt> : switch to a view by its ID path. The ID path is fetched from the command parameter.
+  <li><tt>SwitchViewIndex</tt> : switch to a view by its zero-based index in the <tt>Views</tt> collection. The index is fetched from the command parameter.
+</ul>
+
+<p id="430290" class="block-content">
+Upon postback, if the active view index is changed, <tt>TMultiView</tt> will raise an <tt>OnActiveViewChanged</tt> event.
+</p>
+
+<p id="430291" class="block-content">
+The <a href="?page=Fundamentals.Samples.Hangman.Home">Hangman game</a> is a typical use of <tt>TMultiView</tt>. The following example demonstrates another usage of <tt>TMultiView</tt>.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TMultiView.Home" />
+
+<div class="last-modified">$Id: MultiView.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

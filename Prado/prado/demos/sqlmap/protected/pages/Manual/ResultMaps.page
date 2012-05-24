@@ -1,0 +1,67 @@
+<com:TContent ID="body">
+<h1>Result Maps</h1>
+<a href="?page=Manual.ParameterMaps">Parameter Maps</a> and 
+<a href="?page=Manual.InlineParameterMaps">Inline parameters</a>
+ map object properties to parameters in a database query. Result Maps
+finish the job by mapping the result of a database query (a set of columns) to
+object properties. Next to Mapped Statements, the Result Map is probably one
+of the most commonly used and most important features to understand.</p>
+
+<p>A Result Map lets you control how data is extracted from the result of a
+query, and how the columns are mapped to object properties. A Result Map can
+describe the column type, a null value replacement, and complex property
+mappings including Collections. The following example shows the structure
+of a <tt>&lt;resultMap&gt;</tt> element.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<resultMap id="resultMapIdentifier"
+           [class="class.name"]
+           [extends="[sqlMapNamespace.]resultMapId"]>
+
+   <result property="propertyName"
+           column="columnName"
+           [columnIndex="columnIndex"]
+           [dbType="databaseType"]
+           [type="propertyCLRType"]
+           [resultMapping="resultMapName"]
+           [nullValue="nullValueReplacement"]
+           [select="someOtherStatementName"]
+           [lazyLoad="true|false"]
+           [typeHandler="class.name"]
+   />
+   <result ... .../>
+   <result ... .../>
+</resultMap>
+</com:TTextHighlighter>
+
+<p>In the above example, the <tt>[brackets]</tt> indicate optional attributes.
+The <tt>id</tt> attribute is required and provides a name for the statement to
+reference. The <tt>class</tt> attribute is also required, and specifies the full
+name of a PHP class. This is the class that will be instantiated and populated
+based on the result mappings it contains.</p>
+
+<p>The <tt>resultMap</tt> can contain any number of property mappings that map object
+properties to the columns of a result element. The property mappings are
+applied, and the columns are read, in the order that they are defined.
+Maintaining the element order ensures consistent results between different
+drivers and providers.</p>
+
+<div class="note"><b class="tip">Note:</b>
+As with parameter classes, the result class must be a PHP class object or
+array instance.
+</div>
+
+<h1>Extending <tt>resultMaps</tt></h1>
+<p>The optional <tt>extends</tt> attribute can be set to the name of another
+<tt>resultMap</tt> upon which to base this <tt>resultMap</tt>. All properties of the
+"parent" <tt>resultMap</tt> will be included as part of this <tt>resultMap</tt>, and
+values from the "parent" <tt>resultMap</tt> are set before any values specified
+by this <tt>resultMap</tt>. The effect is similar to extending a class.</p>
+
+<div class="tip"><b class="tip">Tip:</b>
+The "parent" <tt>resultMap</tt> must be defined in the file before the extending
+<tt>resultMap</tt>. The classes for the parent and child <tt>resultMaps</tt> need not be
+the same, and do not need to be related in any way.
+</div>
+
+</com:TContent>

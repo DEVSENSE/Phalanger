@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="3901">TPanel</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TPanel" />
+
+<p id="460305" class="block-content">
+<tt>TPanel</tt> bertindak sebagai tempat penyajian untuk kontrol lain. Ia menampilkan elemen &lt;div&gt; pada halaman. Properti <tt>Wrap</tt> menetapkan konten badan panel yang menggulung ataupun tidak, sementara <tt>HorizontalAlign</tt> mengatur bagaimana konten dijajarkan secara horisontal dan <tt>Direction</tt> menunjukan arah konten (kiri ke kanan atau kanan ke kiri). Anda dapat menyetel <tt>BackImageUrl</tt> untuk memberikan gambar latar belakang pada panel, dan dana bisa menyetel <tt>GroupingText</tt> agar panel ditampilkan sebagai set field dengan legenda teks. Terakhir, anda bisa menetapkan tombol standar untuk dipicu saat para pengguna menekan tombol 'return' di dalam panel dengan menyetel properti <tt>DefaultButton</tt>.
+</p>
+<com:RunBar PagePath="Controls.Samples.TPanel.Home" />
+
+<div class="last-modified">$Id: Panel.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

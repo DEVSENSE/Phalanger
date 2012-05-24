@@ -1,0 +1,32 @@
+<com:TContent ID="body" >
+
+<h1 id="146002">TActiveCheckBoxList</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveCheckBoxList" />
+
+<p class="block-content">
+<tt>TActiveCheckBoxList</tt> is the active counterpart to the original <tt>TCheckBoxList</tt> control.
+</p>
+
+<p class="block-content">
+The <tt>AutoPostBack</tt> property is set to true by default.
+Thus, when a checkbox is clicked a <tt>OnCallback</tt> event is
+raised after <tt>OnSelectedIndexChanged</tt> event.
+</p>
+
+<p class="block-content">
+With <tt>ActiveControl.EnabledUpdate</tt>
+set to true (default is true), changes to the selection will be updated
+on the client side.
+</p>
+
+<p class="block-content">
+List items can <b>not</b> be changed dynamically during a callback request.
+</p>
+
+<p class="block-content">
+Please refer to the original documentation of <a href="?page=Controls.List">TCheckBoxList</a> for usage.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveCheckBoxList.Home" />
+
+<div class="last-modified">$Id: ActiveCheckBoxList.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

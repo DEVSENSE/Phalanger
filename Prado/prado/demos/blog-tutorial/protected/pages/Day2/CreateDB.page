@@ -1,0 +1,69 @@
+<com:TContent ID="Main">
+
+<h1>Creating Database</h1>
+
+<p>
+Most Web applications use database to keep data. Our blog system is not an exception. In this section, we will describe how to write database-driven pages for our blog system. We will use techniques including <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.DAO">database access object (DAO)</a> and <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a>.
+</p>
+
+<p>
+For tutorial purpose, we have simplified the requirements of our blog system so that it only needs to deal with user and post data. We thus create two database tables, <tt>users</tt> and <tt>posts</tt>, as shown in the following entity-relationship (ER) diagram.
+</p>
+
+<img src="<%~ ER.gif %>" class="output" />
+
+<p>
+We use a SQLite 3 database to keep our data. We first convert the ER diagram into the following SQL statements and save them in the file <tt>protected/schema.sql</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="sql">
+/* create users table */
+CREATE TABLE users (
+  username      VARCHAR(128) NOT NULL PRIMARY KEY,
+  email         VARCHAR(128) NOT NULL,
+  password      VARCHAR(128) NOT NULL,  /* in plain text */
+  role          INTEGER NOT NULL,       /* 0: normal user, 1: administrator */
+  first_name    VARCHAR(128),
+  last_name     VARCHAR(128)
+);
+
+/* create posts table */
+CREATE TABLE posts (
+  post_id       INTEGER NOT NULL PRIMARY KEY,
+  author_id     VARCHAR(128) NOT NULL
+                CONSTRAINT fk_author REFERENCES users(username),
+  create_time   INTEGER NOT NULL,       /* UNIX timestamp */
+  title         VARCHAR(256) NOT NULL,  /* title of the post */
+  content       TEXT,                   /* post body */
+  status        INTEGER NOT NULL        /* 0: published; 1: draft; 2: pending; 2: denied */
+);
+
+/* insert some initial data records for testing */
+INSERT INTO users VALUES ('admin', 'admin@example.com', 'demo', 1, 'Qiang', 'Xue');
+INSERT INTO users VALUES ('demo', 'demo@example.com', 'demo', 0, 'Wei', 'Zhuo');
+INSERT INTO posts VALUES (NULL, 'admin', 1175708482, 'first post', 'this is my first post', 0);
+</com:TTextHighlighter>
+
+<com:NoteBox>
+The <tt>fk_author</tt> constraint is ignored by SQLite because SQLite does not support <a href="http://www.sqlite.org/omitted.html">foreign key constraint</a>. Nevertheless, we still keep the constraint there for the capability of porting our blog system to different DBMS. Also, in the above we are exploiting the fact that the <tt>posts.post_id</tt> field is <a href="http://www.sqlite.org/autoinc.html">auto-incremental</a> if we assign NULL to it.
+</com:NoteBox>
+
+<p>
+We then use the <a href="http://www.sqlite.org/download.html">SQLite command line tool</a> to create the SQLite database. We create a directory <tt>protected/data</tt> to hold the SQLite database file. We now execute the following command under the directory <tt>protected/data</tt>:
+</p>
+
+<com:TTextHighlighter CssClass="source cli">
+sqlite3 blog.db < ../schema.sql
+</com:TTextHighlighter>
+
+<p>
+The database has been created as <tt>protected/data/blog.db</tt> and we shall see the following directories and files:
+</p>
+
+<img src="<%~ directories.gif %>" class="output" />
+
+<com:NoteBox>
+It is required by SQLite that both the directory <tt>protected/data</tt> and the database file <tt>protected/data/blog.db</tt> be set writable by the Web server process.
+</com:NoteBox>
+
+</com:TContent>

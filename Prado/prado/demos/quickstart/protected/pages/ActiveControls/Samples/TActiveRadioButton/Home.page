@@ -1,0 +1,82 @@
+<com:TContent ID="body">
+
+<h1>TActiveRadioButton Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A  callback radiobutton:
+</td><td class="sampleaction">
+<com:TActiveRadioButton
+	Text="click me"
+	OnCheckedChanged="radiobuttonClicked"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A radiobutton causing validation on a textbox:
+</td><td class="sampleaction">
+<com:TActiveTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	Display="Dynamic"
+	ErrorMessage="input required in the textbox"
+	ValidationGroup="Group"
+	/>
+<com:TActiveRadioButton
+	Text="submit"
+	AutoPostBack="true"
+	ValidationGroup="Group"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A radiobutton validated by a required field validator:
+</td><td class="sampleaction">
+<com:TActiveRadioButton
+	ID="RadioButton"
+	Text="Consent"
+	ValidationGroup="Group2"
+	/>
+<com:TActiveButton Text="Submit" ValidationGroup="Group2" />
+<com:TRequiredFieldValidator
+	ControlToValidate="RadioButton"
+	Display="Dynamic"
+	ErrorMessage="You must consent."
+	ValidationGroup="Group2"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A radiobutton group:
+</td><td class="sampleaction">
+<com:TActiveRadioButton
+	ID="Radio1"
+	GroupName="RadioGroup"
+	Text="Option 1"
+	OnCallback="selectRadioButton"
+	/>
+<com:TActiveRadioButton
+	ID="Radio2"
+	GroupName="RadioGroup"
+	Text="Option 2"
+	OnCallback="selectRadioButton"
+	/>
+<com:TActiveRadioButton
+	ID="Radio3"
+	GroupName="RadioGroup"
+	Text="Option 3"
+	OnCallback="selectRadioButton"
+	/>
+<com:TActiveRadioButton
+	ID="Radio4"
+	Text="Option 4 (in a different group)"
+	OnCallback="selectRadioButton"
+	/>
+<br/>
+<com:TActiveLabel ID="Result" />
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2950 2011-06-01 21:47:27Z ctrlaltca@gmail.com $</div></com:TContent>

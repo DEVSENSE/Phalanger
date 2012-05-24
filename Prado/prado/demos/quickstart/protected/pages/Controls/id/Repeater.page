@@ -1,0 +1,111 @@
+<com:TContent ID="body" >
+
+<h1 id="5301">TRepeater</h1>
+
+<p id="600400" class="block-content">
+TRepeater menampilkan kontennya secara berulang berdasarkan data yang diambil dari <tt>DataSource</tt>. Konten yang diulang dalam TRepeater disebut <i>items</i> sebuah kontrol yang dapat diakses melalui properti <tt>Items</tt>. Ketika <tt>dataBind()</tt> dipanggil, TRepeater membuat sebuah item untuk setiap baris data dan mengikat baris data ke item. Secara opsional, TDataList dapat mempunyai header, footer dan/atau pemisah antara item.
+</p>
+
+<p id="600401" class="block-content">
+Tata letak dari konten yang diulang dalam TDataList ditetapkan dengan template inline. Item TDataList, header, footer, dll. diturunkan dengan template terkait saat data sedang diikat ke pengulang.
+</p>
+
+<p id="600402" class="block-content">
+Sejak v3.1.0, tata letak juga bisa dietapkan oleh <i>penyaji</i>. Penyaji adalah kelas kontrol yang dapat diturunkan sebagai item datalist, header, dll. Penyaji dapat dilihat sebagai template eksternal (sebenarnya, ia juga merupakan kontrol  tanpa-template). Penyaji bisa berupa kelas kontrol apapun. Dengan menggunakan penyaji, seseorang dapat menghindari penulisan panjang dan template yang kacau. Karena penyaji adalah sebuah kelas, ia juga membantu menggunakan kembali template yang sebelumnya mungkin disertekan di dalam template lain. Jika diimplementasikan dengan salah satu antarmuka berikut, penyaji akan diinisialisasi dengan properti tambahan yang relevan terhadap item penyaji:
+</p>
+
+<ul id="u1" class="block-content">
+<li><tt>IDataRenderer</tt> - properti <tt>Data</tt> akan disetel sebagai baris dari data terikat ke item penyaji. Banyak kontrol PRADO mengimplementasikan antarmuka ini, seperti <tt>TLabel</tt>, <tt>TTextBox</tt>, dll.</li>
+<li><tt>IItemDataRenderer</tt> - properti <tt>ItemIndex</tt> akan disetel sebagai indeks berbasis-nol pada item dalam koleksi item penyaji, dan properti <tt>ItemType</tt> sebagai tipe item (seperti <tt>TListItemType::Item</tt>). Untuk kenyamanan basis kelas, <tt>TRepeaterItemRenderer</tt> mengimplementasikan <tt>IDataItemRenderer</tt> dan dapat mempunyai template terkait karena diperluas dari <tt>TTemplateControl</tt>.</li>
+</ul>
+
+
+<p id="600403" class="block-content">
+Properti berikut dipakai untuk menetapkan tipe template dan penyaji datalist. Jika tipe konten didefinisikan dengan template dan penyaji, maka penyaji diambil lebih dulu.
+</p>
+<ul id="u2" class="block-content">
+<li><tt>ItemTemplate</tt>, <tt>ItemRenderer</tt> - untuk setiap baris data yang diulang.</li>
+<li><tt>AlternatingItemTemplate</tt>, <tt>AlternatingItemRenderer</tt>: untuk setiap pergantian baris data. Jika tidak disetel, masing-masing <tt>ItemTemplate</tt> atau <tt>ItemRenderer</tt> yang akan dipakai.</li>
+<li><tt>HeaderTemplate</tt>, <tt>HeaderRenderer</tt> - untuk header repeater.</li>
+<li><tt>FooterTemplate</tt>, <tt>FooterRenderer</tt> - untuk footer repeater.</li>
+<li><tt>SeparatorTemplate</tt>, <tt>SeparatorRenderer</tt> - untuk konten yang ditampilkan diantara item.</li>
+<li><tt>EmptyTemplate</tt>, <tt>EmptyRenderer</tt> - dipakai saat data yang terikat ke penyaji kosong.</li>
+</ul>
+
+
+<p id="600404" class="block-content">
+Untuk mempopulasikan data ke dalam item pengulag, setel <tt>DataSource</tt> ke obyek data yang benar, seperti array, <tt>TList</tt>, <tt>TMap</tt>, atau tabel database, dan kemudian panggil <tt>dataBind()</tt> untuk pengulang. Yaitu,
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_600125">
+class MyPage extends TPage {
+    public function onLoad($param) {
+        parent::onLoad($param);
+        if(!$this->IsPostBack) {
+            $this->Repeater->DataSource=$data;
+            $this->Repeater->dataBind();
+        }
+    }
+}
+</com:TTextHighlighter>
+
+<p id="600405" class="block-content">
+Ketika <tt>dataBind()</tt> dipanggil, TRepeater menjalani masa hidup seperti berikut untuk setiap baris data:
+</p>
+
+<ol id="u3" class="block-content">
+<li>buat item berdasarkan template atau penyaji</li>
+<li>setel baris data ke item</li>
+<li>munculkan event <tt>OnItemCreated</tt></li>
+<li>tambah item sebagai kontrol anak</li>
+<li>panggil <tt>dataBind()</tt> pada item</li>
+<li>munculkan event <tt>OnItemDataBound</tt></li>
+</ol>
+
+<p id="600406" class="block-content">
+Biasanya anda hanya perlu mengikat data ke pengulang saat halaman yang berisi pengulang mulai diminta. Ketika halaman adalah post back, pengulang akan mengembalikan secara otomatis seluruh konten, termasuk item, header, footer dan pemisah. Akan tetapi, baris data yang terkait dengan setiap item tidak akan ditemukan kembali dan menjadi null.
+</p>
+
+<p id="600407" class="block-content">
+Untuk mengakses data item pengulang dalam postbacks, gunakan salah satu cara berikut:
+</p>
+<ul id="u4" class="block-content">
+<li>Gunakan <tt>DataKeys</tt> untuk memperoleh kunci data terkait dengan item pengulang (repeater) yang ditetapkan dan gunakan kunci untuk mengambil data terkait dari beberapa penyimpanan persisten seperti misalnya DB. </li>
+<li>Simpan seluruh dataset dalam kondisi tampilan, yang akan mengembalikan  dataset secara otomatis setelah postback. Bagaimanapun juga, harap berhati-hati jika ukuran dataset anda besar, ukuran halaman akan menjadi besar. Beberapa data kompleks mungkin juga mempunyai masalah serialisasi jika disimpan dalam kondisi tampilan.</li>
+</ul>
+
+
+<p id="600408" class="block-content">
+TRepeater memunculkan <tt>OnItemCommand</tt> kapan saja kontrol tombol di dalam beberapa item pengulang memunculkan event <tt>OnCommand</tt>. Oleh karena itu, anda bisa menangani semua event <tt>OnCommand</tt> di satu tempat dengan menulis pengendali event untuk event <tt>OnItemCommand</tt>.
+</p>
+
+<p id="600409" class="block-content">
+Contoh berikut memperlihatkan bagaimana menggunakan TRepeater guna menampilkan data tabular.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRepeater.Sample1" />
+<p id="600410" class="block-content">
+TRepeater Dapat digunakan dalam situasi lebih kompleks. Sebagai contoh, kami tampilkan dalam contoh berikut bagaimana menggunakan pengulang yang diulang-ulang, misalnya pengulang dalam pengulang. Ini umum terlihat dalam penyajian data master-detail. Untuk menggunakan pengulang di dalam pengulang lain, untuk sebuah item untuk pengulang di luarnya dibuat, kita perlu menyetel sumber data detail untuk pengulang terdalam. Ini bisa dilakukan dengan merespon ke event <tt>OnItemDataBound</tt> pada pengulang terluar. Event <tt>OnItemDataBound</tt> dimunculkan setiap kali item pengulang terluar menyelesaikan penyatuan data. Dalam contoh berikut, kita mengeksploitasi event lain pada pengulang yang disebut <tt>OnItemCreated</tt>, yang dimunculkan setiap kali item pengulang (dan kontennya) baru saja dibuat. Kita respon ke event ini dengan menyetel warna latar belakang berbeda untuk item pengulang guna menyempurnakan tampilan latar belakang item berganti. Ini menghemat kita dari penulisan <tt>AlternatingItemTemplate</tt> untuk pengulang.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRepeater.Sample2" />
+<p id="600411" class="block-content">
+Selain menampilkan data, TRepeater juga bisa dipakai untuk mengumpulkan data dari pengguna. Kontrol validasi dapat ditempatkan dalam template TRepeater guna memberifikasi bahwa input pengguna sudah benar.
+</p>
+<p id="600412" class="block-content">
+Demo <a href="../composer/index.php">Penyusun komponen PRADO</a> adalah contoh yang baik atas penggunaan tersebut. Ia menggunakan pengulang untuk mengumpulkan properti komponen dan definisi event. Para pengguna juga dapat menghapus atau menyesuaikan event dan propertinya, yang diimplementasikan dengan merespon ke event <tt>OnItemCommand</tt> pada pengulang.
+</p>
+<p id="600413" class="block-content">
+Lihat dalam contoh lain berikut yang memperlihatkan bagaimana menggunakan pengulang untuk mengumpulkan input pengguna.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRepeater.Sample3" />
+
+<p id="600414" class="block-content">
+Contoh ini memperlihatkan bagaimana menggunakan penyaji item "drop-in", tersedia sejak v3.1.0. Penyaji ini ada dalam rilis PRADO. Mereka intinya kontrol yang mengimplementasikan antarmuka <tt>IDataRenderer</tt>. Kontrol Web umum, seperti <tt>TTextBox</tt>, <tt>TLabel</tt>, semuanya mengimplementasikan antarmuka ini. Ketika kontrol tersebut adalah penyaji item yang dipakai, properti <tt>Data</tt> ditempati dengan baris data yang sedang diikat ke item pengulang.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRepeater.Sample4" />
+
+<p id="600415" class="block-content">
+Lebih sering, seseorang perlu mengkustomisasi tata letak item pengulang. Contoh di atas bergantng pada <tt>OnItemCreated</tt> untuk menyesuaikan penampilan pengulang. Pengulang item template lebih disukai dalam situasi ini, karena membolehkan kita untuk menyimpan tata letak dan konten yang lebih kompleks dalam sebuah item pengulang. Contoh berikut mengimplementasikan ulang contoh pengulang yang diulang-ulang menggunakan template item penyadi yang disebut <tt>RegionDisplay</tt>. seperti kita lihat, kode baru lebih mudah dimengerti dan dipelihara.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRepeater.Sample5" />
+
+
+<div class="last-modified">$Id: Repeater.page 1688 2007-02-09 22:48:31Z xue $</div></com:TContent>

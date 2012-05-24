@@ -1,0 +1,116 @@
+<com:TContent ID="body">
+
+<h1>Playtest second!</h1>
+<p>Now that we have a passing test, we want to display some results as web pages.
+The following examples utilize the Prado framework to display and manipulate
+the database through SQLMap. Since SQLMap framework and Prado framework solve
+different problems, they are both fairly independent, they can be used
+together or separately.</p>
+
+<h2>SQLMap and Prado</h2>
+<p>To setup Prado, we need to create the follow files and directory structure
+under our <tt>example/WebView</tt> directory.</p>
+<com:TTextHighlighter Language="code" CssClass="source">
+assets/                         % application public assets
+
+protected/pages/Home.page       % default page
+protected/pages/Home.php        % default page class
+protected/runtime/              % run time data
+
+protected/application.xml       % application configuration
+
+index.php                       % application entry point
+</com:TTextHighlighter>
+
+<p>The <tt>application.xml</tt> and <tt>assets</tt> directory are not necessary but we
+will make use of them later. The <tt>application.xml</tt> is used to define some
+directory aliases and override the data source definitions in the
+<tt>sqlmap.config</tt>. This is because SQLite database files are defined
+relatively, otherwise we don't need to override the data source definitions.
+The example <tt>application.xml</tt> is shown below, defining path aliases and override SQLite database
+location.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<?xml version="1.0" encoding="utf-8"?>
+<application id="SQLMap Example" Mode="Debug">
+  <paths>
+    <alias id="Example" path="../../" />
+    <using namespace="System.DataAccess.*" />
+  </paths>
+  <modules>
+    <module id="SQLMap" class="TSQLMap"
+            configFile="Example.sqlmap">
+        <!-- override sqlmap.config's database provider -->
+        <provider class="TAdodbProvider">
+            <datasource driver="sqlite" host="../Data/test.db" />
+        </provider>
+    </module>
+  </modules>
+</application>
+</com:TTextHighlighter>
+
+<p>The entry point to a Prado application in this example is <tt>index.php</tt>
+and generally contains the following code.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+&lt;?php
+error_reporting(E_ALL);
+require_once('/path/to/prado/framework/prado.php');
+$application=new TApplication;
+$application->run();
+?>
+</com:TTextHighlighter>
+
+<p>Now we are ready to setup a page to display our list of people.
+The following sample shows the Prado code for our display page. The key
+piece is the <tt>TDataGrid</tt>. We save the file as <tt>Home.page</tt>.</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source">
+<!doctype html public "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <title>Person</title>
+</head>
+<body>
+&lt;com:TForm>
+    <h1>Person List</h1>
+    &lt;com:TDataGrid id="personList">
+        &lt;com:TBoundColumn DataField="BirthDate"
+                HeaderText="Birth Date"/>
+    &lt;/com:TDataGrid>
+&lt;/com:TForm>
+</body>
+</html>
+</com:TTextHighlighter>
+
+<p>Of course, we still need to populate that TDataGrid. The following code
+shows the PHP for <tt>Home.php</tt>. The operative method is <tt>loadData()</tt>.
+The rest is supporting code.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+&lt;?php
+Prado::using('Example.Models.Person');
+class Home extends TPage
+{
+    private function loadData()
+    {
+        $sqlmap = $this->Application->getModule('SQLMap')->getClient();
+        $this->personList->DataSource = $sqlmap->queryForList('SelectAll');
+        $this->personList->dataBind();
+    }
+
+    public function onLoad($param)
+    {
+        if(!$this->IsPostBack)
+            $this->loadData();
+    }
+}
+?&gt;
+</com:TTextHighlighter>
+
+<p>If we run this now, we'll get a list like the one shown the figure below.</p>
+<img src=<%~ grid1.png %> class="figure" />
+<div class="caption"><b>Figure 3:</b> A quick-and-dirty Person List</div>
+
+</com:TContent>

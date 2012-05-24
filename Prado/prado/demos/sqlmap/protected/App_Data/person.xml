@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<sqlMapConfig>
+
+	<select id="SelectAll" resultClass="Person">
+		SELECT
+			per_id as ID,
+			per_first_name as FirstName,
+			per_last_name as LastName,
+			per_birth_date as BirthDate,
+			per_weight_kg as WeightInKilograms,
+			per_height_m as HeightInMeters
+		FROM
+			person
+	</select>
+
+  <insert id="Insert" parameterClass="Person">
+   insert into PERSON
+    (PER_FIRST_NAME, PER_LAST_NAME, PER_BIRTH_DATE, PER_WEIGHT_KG, PER_HEIGHT_M)
+   values
+    (#FirstName#, #LastName#, #BirthDate#, #WeightInKilograms#, #HeightInMeters#)
+  </insert>
+
+  <update id="Update" parameterClass="Person">
+   update PERSON set
+    PER_FIRST_NAME = #FirstName#,
+    PER_LAST_NAME = #LastName#,
+    PER_BIRTH_DATE = #BirthDate#,
+    PER_WEIGHT_KG = #WeightInKilograms#,
+    PER_HEIGHT_M = #HeightInMeters#
+   where PER_ID = #ID#
+  </update>
+
+  <delete id="Delete" parameterClass="int">
+   delete from PERSON
+   where PER_ID = #value#
+  </delete>
+
+</sqlMapConfig>

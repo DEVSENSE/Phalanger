@@ -1,0 +1,208 @@
+<com:TContent ID="body">
+
+<h1>TCheckBoxList Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Check box list with default settings:
+</td>
+<td class="sampleaction">
+<com:TCheckBoxList>
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+</com:TCheckBoxList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Check box list with customized cellpadding, cellspacing, color and text alignment:
+</td>
+<td class="sampleaction">
+<com:TCheckBoxList
+	CellPadding="5"
+	CellSpacing="1"
+	BackColor="silver"
+	TextAlign="Left">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+</com:TCheckBoxList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Check box list with vertical (default) repeat direction:
+</td>
+<td class="sampleaction">
+<com:TCheckBoxList RepeatColumns="3">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+</com:TCheckBoxList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Check box list with horizontal repeat direction:
+</td>
+<td class="sampleaction">
+<com:TCheckBoxList RepeatDirection="Horizontal"	RepeatColumns="3">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+</com:TCheckBoxList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Check box list with flow layout and vertical (default) repeat direction:
+</td>
+<td class="sampleaction">
+<com:TCheckBoxList RepeatLayout="Flow" RepeatColumns="3">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+</com:TCheckBoxList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Check box list with flow layout and horizontal repeat direction:
+</td>
+<td class="sampleaction">
+<com:TCheckBoxList
+	RepeatLayout="Flow"
+	RepeatDirection="Horizontal"
+	RepeatColumns="3">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+</com:TCheckBoxList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Check box list's behavior upon postback:
+</td>
+<td class="sampleaction">
+<com:TCheckBoxList ID="CheckBoxList">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Enabled="false" />
+  <com:TListItem Value="value 5" Text="item 5" Selected="true" />
+</com:TCheckBoxList>
+<com:TButton Text="Submit" OnClick="buttonClicked" />
+<br/>
+<com:TLabel ID="SelectionResult" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Auto postback check box list:
+</td>
+<td class="sampleaction">
+<com:TCheckBoxList
+	AutoPostBack="true"
+	OnSelectedIndexChanged="selectionChanged">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Enabled="false" />
+  <com:TListItem Value="value 5" Text="item 5" Selected="true" />
+</com:TCheckBoxList>
+<com:TLabel ID="SelectionResult2" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+
+
+<h2>Checkbox Lists with DataBinding</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Databind to an integer-indexed array:
+</td>
+<td class="sampleaction">
+<com:TCheckBoxList ID="DBCheckBoxList1"
+	AutoPostBack="true"
+	OnSelectedIndexChanged="DBCheckBoxList1Changed" />
+<com:TLabel ID="DBCheckBoxList1Result" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Databind to an associative array:
+</td>
+<td class="sampleaction">
+<com:TCheckBoxList ID="DBCheckBoxList2"
+	AutoPostBack="true"
+	OnSelectedIndexChanged="DBCheckBoxList2Changed" />
+<com:TLabel ID="DBCheckBoxList2Result" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Databind with DataTextField and DataValueField specified:
+</td>
+<td class="sampleaction">
+<com:TCheckBoxList ID="DBCheckBoxList3"
+	AutoPostBack="true"
+	DataTextField="name"
+	DataValueField="id"
+	OnSelectedIndexChanged="DBCheckBoxList3Changed" />
+<com:TLabel ID="DBCheckBoxList3Result" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+
+<h2>CheckBox List with Validation</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+CheckBox list causing validation:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	ErrorMessage="You must enter a value"
+	Display="Dynamic"
+	ValidationGroup="Group2"
+	/>
+<com:TCheckBoxList AutoPostBack="true" ValidationGroup="Group2">
+  <com:TListItem Text="Agree" />
+  <com:TListItem Text="Disagree" />
+</com:TCheckBoxList>
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

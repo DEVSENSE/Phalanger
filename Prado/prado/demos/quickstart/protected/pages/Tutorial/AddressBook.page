@@ -1,0 +1,9 @@
+<com:TContent ID="body">
+	<h1 id="22007">A Simple Address Book</h1>
+	<p id="110006" class="block-content">This tutorial introduces the basics of connecting to a database
+	using <a href="?page=Database.ActiveRecord">ActiveRecord</a>
+	and using <a href="?page=Database.Scaffold">Active Record scaffolds </a>to quickly
+	build a simple address book.
+	</p>
+
+</com:TContent>

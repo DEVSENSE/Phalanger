@@ -1,0 +1,39 @@
+<com:TContent ID="body" >
+
+<h1 id="64008">TConditional</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TConditional" />
+
+<p class="block-content">
+<tt>TConditional</tt> displays appropriate content based on the evaluation result
+of a PHP expression specified via <tt>Condition</tt>.
+If the result is true, it instantiates the template <tt>TrueTemplate</tt>;
+otherwise, the template <tt>FalseTemplate</tt> is instantiated.
+The PHP expression is evaluated right before the <tt>onInit</tt> stage of the control lifecycle.
+</p>
+
+<p class="block-content">
+Since <tt>TConditional</tt> evaluates <tt>Condition</tt> at a very early stage, it is recommended
+you set <tt>Condition</tt> in template only and the expression should not refer to
+objects that are available on or after the <tt>onInit</tt> lifecycle.
+</p>
+
+<p id="320009" class="block-content">
+<tt>TConditional</tt> is very light. It instantiates either <tt>TrueTemplate</tt>
+<tt>FalseTemplate</tt>, but never both. And the condition is evaluated only once.
+A typical usage of TConditional is shown as following:
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_320112">
+&lt;com:TConditional Condition="$this->User->IsGuest">
+	&lt;prop:TrueTemplate>
+		<a href="path/to/login">Login</a>
+	&lt;/prop:TrueTemplate>
+	&lt;prop:FalseTemplate>
+		<a href="path/to/logout">Logout</a>
+	&lt;/prop:FalseTemplate>
+&lt;/com:TConditional>
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="Controls.Samples.TConditional.Home" />
+
+<div class="last-modified">$Id: Conditional.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

@@ -1,0 +1,17 @@
+<%@ Title="Error" %>
+
+<com:TContent ID="Main">
+
+<h2>Error</h2>
+
+<p>
+<com:TLiteral ID="ErrorMessage" />
+</p>
+
+<p>
+Please <a href="mailto:<%$ AdminEmail %>">report to  us</a>
+if you believe this error is caused by our system. Thanks!
+</p>
+
+
+</com:TContent>

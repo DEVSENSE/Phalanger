@@ -1,0 +1,214 @@
+<com:TContent ID="body" >
+<h1 id="6701">Event DOM dan Javascript</h1>
+
+<h2 id="6702">Penanganan event dasar</h2>
+
+<p id="840735" class="block-content">Sintaks untuk bekerja dengan event terlihat seperti kode di bawah.</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840254">
+Event.observe(element, name, observer, [useCapture]);
+</com:TTextHighlighter>
+
+<p id="840736" class="block-content">Menganggap untuk saat ini kita ingin mengamati sebuah link yang diklik, kita dapat melakukan yang berikut:</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840255">
+// &lt;a id="clicker" href="http://foo.com"&gt;Click me&lt;/a&gt;
+Event.observe('clicker', 'click', function(event)
+{
+    alert('clicked!');
+});
+</com:TTextHighlighter>
+
+<p id="840737" class="block-content">Jika kita menginginkan untuk mendapatkan elemen yang memicu event, kita melakukan ini:</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840256">
+Event.observe('clicker', 'click', function(event)
+{
+    alert(Event.element(event));
+});
+</com:TTextHighlighter>
+
+<h2 id="6703">Mengamati tekanan tombol</h2>
+
+<p id="840738" class="block-content">Jika kita ingin mengamati tekanan tombol untuk seluruh dokumen, kita dapat melakukan yang berikut:</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840257">
+Event.observe(document, 'keypress', function(event)
+{
+    if(Event.keyCode(event) == Event.KEY_TAB)
+        alert('Tab Pressed');
+});
+</com:TTextHighlighter>
+
+<p id="840739" class="block-content">Dan katakanlah kita ingin melacak apa yang telak diketikan:</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840258">
+Event.observe('search', 'keypress', function(event)
+{
+    Element.update('search-results', $F(Event.element(event)));
+});
+</com:TTextHighlighter>
+
+<p id="840740" class="block-content">Prototipe mendefinisikan properti di dalam obyek event untuk beberapa dari tombol yang lebih umum, maka jangan ragu-ragu untuk mencari di sekitar Prototype guna melihat yang mana saja itu.</p>
+
+<p id="840741" class="block-content">Catatan terakhir pada event tekanan tombol; Jika Anda ingin mendeteksi klik kiri, Anda bisa menggunakan <tt>Event.isLeftClick(event)</tt>.</p>
+
+<h2 id="6704">Mendapatkan koordinat dari penunjuk mouse</h2>
+
+<p id="840742" class="block-content">Tarik dan jatuhkan, pengukuran ulang elemen dinamis, permainan, dan lebih banyak lagi, semuanya memerlukan kemampuan untuk melacak lokasi X dan Y dari mouse. Prototipe menjadikan hal ini cukup sederhana. Kode di bawah melacak posisi X dan Y dari mouse dan memindahkan nilainya ke dalam kotak input bernama mouse.</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840259">
+Event.observe(document, 'mousemove', function(event)
+{
+    $('mouse').value = "X: " + Event.pointerX(event) +
+                       "px Y: " + Event.pointerY(event) + "px";
+});
+</com:TTextHighlighter>
+
+<p id="840743" class="block-content">Jika kita ingin mengamati lokasi mouse saat ia melewati elemen tertentu, cukup ubah argumen dokumen ke id atau elemen yang relevan.</p>
+
+<h2 id="6705">Menghentikan Propagasi</h2>
+
+<p id="840744" class="block-content"><tt>Event.stop(event)</tt> akan menghentikan propagasi sebuah event .</p>
+
+<h2 id="6706">Event, Penyatuan, dan Obyek</h2>
+
+<p id="840745" class="block-content">Sejauh ini semuanya sudah jelas, tapi sesuatu mulai menjadi sedikit lebih rumit ketika Anda perlu bekerja dengan event dalam lingkungan obyek-terorientasi. Anda harus berhadapan dengan penyatuan dan sintaks yang terlihat aneh yang memerlukan beberapa waktu bagi Anda untuk mengetahuinya.</p>
+
+<p id="840746" class="block-content">Mari kita lihat pada beberapa kode agar Anda bisa mendapatkan pengertian yang lebih baik atas apa yang sedang saya bicarakan.</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840260">
+EventDispenser = Class.create();
+EventDispenser.prototype =
+{
+  initialize: function(list)
+  {
+    this.list = list;
+
+    // Amati klik pada item list kita
+    $$(this.list + " li").each(function(item)
+    {
+        Event.observe(item, 'click', this.showTagName.bindEvent(this));
+    }.bind(this));
+
+    // Amati saat tombol pada keyboard ditekan.
+    // Dalam pengamat, kita memeriksa
+    // tombol tab dan memunculkan pesan jika ditekan.
+    Event.observe(document, 'keypress', this.onKeyPress.bindEvent(this));
+
+    // Amati kotak pencarian kita yang palsu.  Ketika pengguna mengetik
+    // sesuatu ke dalam kotak, pengamat akan mengambil nilai (-1) itu
+    // dan memutakhirkan hasil pencarian div dengannya.
+    Event.observe('search', 'keypress', this.onSearch.bindEvent(this));
+
+    Event.observe(document, 'mousemove', this.onMouseMove.bindEvent(this));
+  },
+
+  // Fungsi bebas untuk merespon event
+  showTagName: function(event)
+  {
+    alert(Event.element(event).tagName);
+  },
+
+  onKeyPress: function(event)
+  {
+    var code = event.keyCode;
+    if(code == Event.KEY_TAB)
+        alert('Tab key was pressed');
+  },
+
+  onSearch: function(event)
+  {
+    Element.update('search-results', $F(Event.element(event)));
+  },
+
+  onMouseMove: function(event)
+  {
+    $('mouse').value = "X: " + Event.pointerX(event) +
+                "px Y: " + Event.pointerY(event) + "px";
+  }
+}
+</com:TTextHighlighter>
+<p id="840747" class="block-content">Wah! Apa yang terjadi di sini? Kita telah mendefinisikan kelas kustom kita <tt>EventDispenser</tt>. Kita akan menggunakan kelas ini untuk menyiapkan event untuk dokumenkita. Banyak dari kode ini ditulis ulang yang kita lihat di awal kecuali kali ini, kita bekerja dari dalam sebuah obyek.</p>
+
+<p id="840748" class="block-content">Melihat metode <tt>initialize</tt>, sebenarnya kita dapat melihat bagaimana sesuatu menjadi berbeda sekarang. Lihat kode di bawah ini:</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840261">
+// Observe clicks on our list items
+$$(this.list + " li").each(function(item)
+{
+    Event.observe(item, 'click', this.showTagName.bindEvent(this));
+}.bind(this));
+</com:TTextHighlighter>
+
+<p id="840749" class="block-content">Kita mendapatkan iterator, penyatuan dan semua hal lainnya. Mari kita rinci apa yang dikerjakan kode ini.</p>
+
+<p id="840750" class="block-content">Pertama kita memburu koleksi elemen berdasarkan selektor CSS. Ini menggunakan fungsi selektor Prototipe <tt>$$()</tt>.
+Setelah kita menemukan daftar item kita berhadapan dengan apa yang kita kirim ke dalam setiap iterasi di mana kita akan menambahkan pengamat kita.</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840262">
+Event.observe(item, 'click', this.showTagName.bindEvent(this));
+</com:TTextHighlighter>
+
+<p id="840751" class="block-content">Sekarang, melihat kode di atas, Anda akan mencatat fungsi <tt>bindEvent</tt>. Ini mengambil metode sebelumnya <tt>showTagName</tt> dan memperlakukannya sebagai metode yang akan dipicu ketika seseorang mengklik salah satu dari item daftar kita.</p>
+
+<p id="840752" class="block-content">Anda juga akan mencatat bahwa kita mengirimkan ini sebagai argumen ke fungsi <tt>bindEvent</tt>.
+Ini membolehkan kita untuk mereferensi obyek dalam konteks <tt>EventDispenser</tt>
+di dalam fungsi <tt>showTagName(event)</tt> kita. Jika fungsi <tt>showTagName</tt> memerlukan parameter tambahan, Anda melampirkannya ke parameter terakhir dari <tt>bindEvent</tt>. Sebagai contoh</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840263">
+this.showTagName.bindEvent(this, param1, param2);
+
+//di mana fungsi showTagName didefinisikan seperti
+showTime : function (event, param1, param2) { ... }
+</com:TTextHighlighter>
+
+<p id="840753" class="block-content">Selanjutnya, Anda akan melihat <tt>bind(this)</tt> yang dilampirkan ke fungsi iterator.
+Ini sama sekali tidak berkaitan dengan event, ia berada di sini untuk membolehkan saya menggunakan <tt>this</tt> di dalam iterator. Jika kita tidak menggunakan <tt>bind(this)</tt>, saya tidak bisa mereferensi metode <tt>showTagName</tt> di dalam iterator.</p>
+
+<p id="840754" class="block-content">Ok, kita berlanjut untuk melihat metode kita yang sebenarnya dipanggil saat terjadi event. Karena kita sudah berhadapan dengan <tt>showTagName</tt>, mari kita lihat itu.</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840264">
+showTagName: function(event)
+{
+    alert(Event.element(event).tagName);
+}
+</com:TTextHighlighter>
+
+<p id="840755" class="block-content">Seperti yang Anda lihat, fungsi ini menerima satu argumen--event.
+Agar kita mendapatkan elemen yang memicu event kita perlu mengirimkan argumen ke <tt>Event.element</tt>. Sekarang kita dapat memanipulasinya kapan saja.</p>
+
+<p id="840756" class="block-content">Ini mencakup bagian yang paling membingungkan dari kode kita. Teks di atas juga relevan untuk bagian sisa dari kode kita. Jika ada sesuatu mengenai ini yang tidak Anda mengerti, jangan ragu-ragu untuk mengajukan pertanyaan dalam forum.</p>
+
+<h2 id="6707">Menghapus Pendengar Event</h2>
+
+<p id="840757" class="block-content">Yang satu ini melontarkan saya dari lingkaran untuk pertama kali saya mencoba menggunakannya.
+Saya mencoba sesuatu yang mirip dengan apa yang saya lakukan dalam pemanggilan <tt>Event.observe</tt> dengan kekecualian penggunaan <tt>stopObserving</tt>, tapi tidak ada yang berubah. Dengan kata lain, kode di bawah ini <b>TIDAK</b> bekerja.</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840265">
+$$(this.list + " li").each(function(item)
+{
+    Event.stopObserving(item, 'click', this.showTagName);
+}.bind(this));
+</com:TTextHighlighter>
+
+<p id="840758" class="block-content">Apa yang terjadi di sini? Alasan ini tidak bekerja karena tidak ada penunjuk ke pengamat. Ini berarti bahwa ketika kita mengirimkan <tt>this.showTagName</tt> dalam metode <tt>Event.observe</tt> sebelumnya, kita mengirimkannya sebagai fungsi anonim. Kita tidak bisa mereferensi fungsi anonim karena ia tidak mempunyai penunjuk.</p>
+
+<p id="840759" class="block-content">Lalu bagaimana kita yakin pekerjaan diselesaikan? Semua yang kita perlukan adalah memberikan fungsi mengamati penunjuk, atau kelompok versi bebas: Setel variabel yang mengarah ke <tt>this.showTagName</tt>. Ok, mari kita ubah kode kita sedikit.</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840266">
+this.showTagObserver = this.showTagName.bindEvent(this);
+
+// Amati klik pada item list kita
+$$(this.list + " li").each(function(item)
+{
+    Event.observe(item, 'click', this.showTagObserver);
+}.bind(this));
+</com:TTextHighlighter>
+
+<p id="840760" class="block-content">Sekarang kita bisa menghapus pendengar event dari daftar kita seperti ini:</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840267">
+$$(this.list + " li").each(function(item)
+{
+    Event.stopObserving(item, 'click', this.showTagObserver);
+}.bind(this));
+</com:TTextHighlighter>
+
+<div class="last-modified">$Id: Scripts2.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

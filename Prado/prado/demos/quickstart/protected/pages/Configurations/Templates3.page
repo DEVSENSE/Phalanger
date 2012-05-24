@@ -1,0 +1,104 @@
+<com:TContent ID="body" >
+<h1 id="1701">Templates: Part III</h1>
+
+<a name="dpt"></a>
+<h2 id="1702">Dynamic Property Tags</h2>
+<p id="200196" class="block-content">
+Dynamic property tags are very similar to dynamic content tags, except that they are applied to component properties. The purpose of dynamic property tags is to allow more versatile component property configuration. Note, you are not required to use dynamic property tags because what can be done using dynamic property tags can also be done in PHP code. However, using dynamic property tags bring you much more convenience at accomplishing the same tasks. The basic usage of dynamic property tags is as follows,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_200087">
+&lt;com:ComponentType PropertyName=DynamicPropertyTag ...&gt;
+body content
+&lt;/com:ComponentType&gt;
+</com:TTextHighlighter>
+<p id="200197" class="block-content">
+where you may enclose <tt>DynamicPropertyTag</tt> within single or double quotes for better readability.
+</p>
+<p id="200198" class="block-content">
+Like dynamic content tags, we have <a href="#et">expression tags</a>, <a href="#dt">databind tags</a>, <a href="#pt">parameter tags</a>, <a href="#at">asset tags</a> and <a href="#lot">localization tags</a>. (Note, there is no statement tag here.)
+</p>
+
+<a name="et"></a>
+<h3 id="1703">Expression Tags</h3>
+<p id="200199" class="block-content">
+An expression tag represents a PHP expression that is evaluated when the control is in <tt>PreRender</tt> stage. The expression evaluation result is assigned to the corresponding component property. The format of expression tags is as follows,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_200088">
+&lt;%= PhpExpression %&gt;
+</com:TTextHighlighter>
+<p id="200200" class="block-content">
+In the expression, <tt>$this</tt> refers to the control owning the template. The following example specifies a <tt>TLabel</tt> control whose <tt>Text</tt> property is initialized as the current page title when the <tt>TLabel</tt> control is being constructed,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_200089">
+&lt;com:TLabel Text=&lt;%= $this-&gt;Page-&gt;Title %&gt; /&gt;
+</com:TTextHighlighter>
+
+<a name="dt"></a>
+<h3 id="1704">Databind Tags</h3>
+<p id="200201" class="block-content">
+Databind tags are similar to expression tags, except that they can only be used with control properties and the expressions are evaluated only when a <tt>dataBind()</tt> call is invoked on the controls represented by the component tags. In the expression, <tt>$this</tt> refers to the control owning the template. Databind tags do not apply to all components. They can only be used for controls.
+</p>
+<p id="200202" class="block-content">
+The format of databind tags is as follows,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_200090">
+&lt;%# PhpExpression %&gt;
+</com:TTextHighlighter>
+<p id="200203" class="block-content">
+Since v3.0.2, expression tags and databind tags can be embedded within static strings. For example, you can write the following in a template,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_200091">
+&lt;com:TLabel&gt;
+  &lt;prop:Text&gt;
+  Today is &lt;%= date('F d, Y',time()) %&gt;.
+  The page class is &lt;%= get_class($this) %&gt;.
+  &lt;/prop:Text&gt;
+&lt;/com:TLabel&gt;
+</com:TTextHighlighter>
+<p id="200204" class="block-content">
+Previously, you would have to use a single expression with string concatenations to achieve the same effect.
+</p>
+
+<a name="pt"></a>
+<h3 id="1705">Parameter Tags</h3>
+<p id="200205" class="block-content">
+Parameter tags are used to assign application parameter values to the corresponding component properties. The format of parameter tags is as follows,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_200092">
+&lt;%$ ParameterName %&gt;
+</com:TTextHighlighter>
+<p id="200206" class="block-content">
+Note, application parameters are usually defined in application configurations or page directory configurations. The parameters are evaluated when the template is instantiated.
+</p>
+
+<a name="at"></a>
+<h3 id="1706">Asset Tags</h3>
+<p id="200207" class="block-content">
+Asset tags are used to publish private files and assign the corresponding the URLs to the component properties. For example, if you have an image file that is not Web-accessible and you want to make it visible to end-users, you can use asset tags to publish this file and show the URL to end-users so that they can fetch the published image. The asset tags are evaluated when the template is instantiated.
+</p>
+<p id="200208" class="block-content">
+The format of asset tags is as follows,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_200093">
+&lt;%~ LocalFileName %&gt;
+</com:TTextHighlighter>
+<p id="200209" class="block-content">
+where <tt>LocalFileName</tt> refers to a file path that is relative to the directory containing the current template file. The file path can be a single file or a directory. If the latter, the content in the whole directory will be made accessible by end-users.
+</p>
+<p id="200210" class="block-content">
+BE VERY CAUTIOUS when you are using asset tags as it may expose to end-users files that you probably do not want them to see.
+</p>
+
+<a name="lot"></a>
+<h3 id="1707">Localization Tags</h3>
+<p id="200211" class="block-content">
+Localization tags represent localized texts. They are in the following format,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_200094">
+&lt;%[string]%&gt;
+</com:TTextHighlighter>
+<p id="200212" class="block-content">
+where <tt>string</tt> will be translated to different languages according to the end-user's language preference. The localization tags are evaluated when the template is instantiated. Localization tags are in fact shortcuts to the function call <tt>Prado::localize(string)</tt>.
+</p>
+
+<div class="last-modified">$Id: Templates3.page 2036 2007-06-26 17:12:54Z xue $</div></com:TContent>

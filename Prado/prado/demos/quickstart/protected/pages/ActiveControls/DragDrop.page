@@ -1,0 +1,26 @@
+<com:TContent ID="body">
+<!-- $Id$ -->
+<h1 id="170019">TDropContainer</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TDropContainer" />
+
+<p class="block-content"><tt>TDropContainer</tt> represent an area where 
+<tt>TDraggable</tt> controls can be dropped.
+When a <tt>TDraggable</tt> is dropped,  a
+callback request is initiated. The <tt>OnCallback</tt> event is raised
+during a callback request and it is raised <strong>after</strong>
+the <tt>OnDrop</tt> event.
+</p>
+
+
+<h1 id="170020">TDraggable</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TDraggable" />
+
+<p class="block-content"><tt>TDraggable</tt> will make its child controls 'draggable'.
+When a <tt>TDraggable</tt> is dropped,  a
+callback request is initiated. The <tt>OnCallback</tt> event is raised
+during a callback request and it is raised <strong>after</strong>
+the <tt>OnDrop</tt> event.
+</p>
+<com:RunBar PagePath="ActiveControls.Samples.DragDrop.Home" />
+
+<div class="last-modified">$Id$</div></com:TContent>

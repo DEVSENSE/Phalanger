@@ -1,0 +1,64 @@
+<com:TContent ID="body" >
+
+<h1 id="501">Aktualizowanie z wersji 2.x i 1.x</h1>
+
+<div id="from-2-or-1"  class="block-content">
+<p id="40023">
+PRADO 3.0 nie jest kompatybilne wstecz z wcześniejszymi wersjalmi PRADO.
+</p>
+<p id="40024">
+Dobrą wiadomością jest, że własciwości oraz zdarzenia większości kontrolek pozostają niezmienione a składnia szablonów kontrolek pozostaje w dużej mierze niezmieniona. Dlatego więc, wiedza develoiperów dotycząca wcześniejszych wersji PRADO wciąż znajduje zastosowanie w wersji 3.0.
+</p>
+<p id="40025">
+Kolejno podsumujemu najbardziej znaczące zmiany w wersji 3.0 aby pomóc developerom aktualizację ich aplikacji PRADO z wersji 2.x oraz 1.x jeśli wystąpi taka potrzeba.
+</p>
+</div>
+
+<h2 id="502">Definicja komponentu (<i>Component definition</i>)</h2>
+<p id="40026" class="block-content">
+Wersja 3.0 całkowicie zarzuciła potrzebę występowania pliku specyfikującego komponent. Polega ona obecnie bardziej na konwencji definiowania właściwości komponentu i jego zdarzeń. Uszczegóławiając, właściwość (ang. <i>property</i>) jest definiowana poprzez istnienie metod: getterów i/lub setterów (ang. getter and/or setter methods), natomiast zdarzenie jest zdefiniowane poprzez istnienie metod z przedrostniem <tt>on</tt> (ang. <i>on-methods</i>). Zarówno właściwości jak i nazwy zdarzeń są w wersji 3.0 nie są wrażliwe na wielkość liter. W konsekwencji developerzy, są teraz zobowiązaniu do troszczenia się konwersję typów, kiedy właściwość komponentu jest ustawiana. Na przykład, następujący kod jest używany do zdefiniowania metody będącej setterem dla właściwości <tt>Enabled</tt> (przyp. tłum. ang <i>enabled</i> - dostępny, umożliwiony) <tt>TControl</tt>, która jest typu boolowskiego: <tt>boolean</tt>,
+</p>
+<com:TTextHighlighter Language="php" CssClass="block-content source" ID="code1">
+public function setEnabled($value)
+{
+	$value=TPropertyValue::ensureBoolean($value);
+	$this->setViewState('Enabled',$value,true);
+}
+</com:TTextHighlighter>
+<p id="40027" class="block-content">
+gdzie <tt>TPropertyValue::ensureBoolean()</tt> jest używana aby ipewnić się, że wartość wejściowa jest typu boolean. Dziejse się tak ponieważ, gdy watość jest konfigurowana w szablonie, wartość łańcuchowa (ang. <i>string value<i/>) jest przekazywana do settera. W poprzednich wersjach PRADO znało typ właściwości bazując na pliku specyfikacji i wykonywało konwersję typów za Ciebie.
+</p>
+
+<h2 id="503">Kontroler aplickacji (<i>Application Controller</i>)</h2>
+<p id="40028" class="block-content">
+Kontroler aplickacji implementuje teraz architekturę modułową. Moduły mogą być podłączone i skonfigurowane w specyfikacji aplikacji. Każdy moduł obejmuje określoną funkcjonalność a wszystkie one są koordynowane przez <a href="?page=Fundamentals.Applications">cykl życia aplickacji</a> (ang. <i>application lidecycle</i>). Konecpcja modułów w wersji 2.x została zastąpiona w wersji 3.0 przez <a href="?page=Configurations.PageConfig">katalogi stron</a> (ang. <i>page directories</i>). W wyniku tego format <a href="?page=Configurations.AppConfig">specyfikacji aplikacji</a> (ang. <i>application specification</i>) w wersji 3.0 różni się od wersji wcześniejszych.
+</p>
+
+<h2 id="504">Strony (<i>Pages</i>)</h2>
+<p id="40029" class="block-content">
+Strony w wersji 3.0 są zorganizowane w katalogach, które mogą zostać porównane do koncepcji modułów w wersji 2.x. Strony są dostępne poprzez ścieżkę do nich. Na przykład, adres URL <tt>index.php?page=Kontrolki.Przyklady.Przyklad1</tt> będzie używany do dostępu do strony nazwanej <tt>Przyklad1</tt> przechowywanej w katalogu <tt>[ŚcieżkaBazowa]/Kontrolki/Przyklad</tt>, gdzie <tt>[ŚcieżkaBazowa]</tt> oznacza główny katalog stron (ang. <i>root page path</i>). Nazwa pliku szablonu strony musi kończyć się rozszerzeniem <tt>.page</tt>, głównie, aby odróżnić szablony stron od "niestronowych" (ang. <i>non-paged</i>) szablonów kontrolek, których nazwa musi być zakończona rozszerzeniem <tt>.tpl</tt>.
+</p>
+
+<h2 id="505">Zależności między kontrolkami (<i>Control Relationship</i>)</h2>
+<p id="40030" class="block-content">
+Wersja 3.0 redefiniuje zależności pomiędzy kontrolkami. W szczególności, relacja rodzic-dziecko (<i>parent-child relationship</i> teraz odnosi się do relacji zawierajacej się w prezentacji kontrolek. Nowa relacja naming-container (przyp tłum. ang. <i>naming</i> - nazywanie, <i>container</i> - kontener) została wprowadzona dla lepszego zarządzania identyfikatorami ID kontrolek. Aby uzyskać więcej informacji zobacz sekcję <a href="?page=Fundamentals.Controls">kontrolki</a>.
+</p>
+
+<h2 id="506">Składnia szablonów (<i>Template Syntax</i>)</h2>
+<div id="template-syntax" class="block-content">
+<p id="40031">
+Składnia szblonów kontrolek w wersji 3.0 została podobna do tej we wcześniejszych wersjach, ale z wieloma rozszerzeniami. Główna zmiana dotyczy wyrażenia wiążącego dane (ang. <i>databind expression</i>), które jest wykonywane następująco
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_40002">
+&lt;com:MojKomponent NazwaWlasciwosci=&lt;%# formuła PHP %&gt; .../&gt;
+</com:TTextHighlighter>
+<p id="40032">
+Tagi formuł oraz wyrażeń (ang. <i>expression and statement tags</i>) zostały zmienione w podobny sposób. Aby uzyskać więcej szczegółów zobacz sekcję <a href="?page=Configurations.Templates1">definiowanie szablonów</a> (ang. <i>template definition</i>).
+</p>
+</div>
+<h2 id="507">Składnia tematów (<i>Theme Syntax</i>)</h2>
+<p id="40033" class="block-content">
+Tematy w wersji 3.0 są definiowane jak szablony kotnrolek z kilkoma obwarowaniami.
+</p>
+
+<div class="last-modified">$Id: Upgrading.page 1704 2007-02-17 16:18:32Z aztech $</div></com:TContent>

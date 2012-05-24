@@ -1,0 +1,54 @@
+<com:TContent ID="body" >
+
+<h1 id="6001">Kondisi Persisten</h1>
+<p id="770606" class="block-content">
+Aplikasi Web sering memerlukan untuk mengingat apa yang pengguna akhir kerjakan dalam permintaan halaman sebelumnya agar permintaan halaman baru bisa dilayani sesuai dengan itu. Persisten kondisi untuk menangani masalah ini. Secara tradisional, jika halaman perlu memelihara interaksi pengguna, ia akan mengurut ulang sesi, cookie, atau field tersembunyi. PRADO menyediakan baris baru skema kondisi persisten, termasuk kondisi tampilan, kondisi kontrol, dan kondisi aplikasi.
+</p>
+
+<h2 id="6002">Kondisi Tampilan</h2>
+<p id="770607" class="block-content">
+Kondisi tampilan berada di jantung PRADO. Dengan kondisi tampilan, halaman Web menjadi tangguh dan mampu menyimpan kembali halaman ke kondisi terakhir kali pengguna akhir berinteraksi sebelum permintaan halaman saat ini. Pemrograman Web mirip dengan pemrograman GUI Windows, dan para pengembang dapat berpikir secara kontinyu tanpa mencemaskan mengenai perjalanan pulang pergi antara pengguna akhir dan server web. Sebagai contoh, dengan kondisi tampilan, sebuah kontrol kotak centang dapat mendeteksi apakah input pengguna mengubah konten dalam kotak centang atau tidak.
+</p>
+<p id="770608" class="block-content">
+Kondisi tampilan hanya tersedia untuk kontrol. Kondisi tampilan dari kontrol bisa dimatikan dengan menyetel properti <tt>EnableViewState</tt> menjadi false. Untuk menyimpan variabel dalam kondisi tampilan, panggil yang berikut,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_770197">
+$this->setViewState('Caption',$caption);
+</com:TTextHighlighter>
+<p id="770609" class="block-content">
+di mana <tt>$this</tt> merujuk ke obyek kontrol, <tt>Caption</tt> adalah kunci unik yang mengidentifikasi variabel <tt>$caption</tt> yang disimpan dalam kondisi tampilan. Untuk mengambil variabel kembali dari kondisi tampilan, panggil yang berikut,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_770198">
+$caption = $this->getViewState('Caption');
+</com:TTextHighlighter>
+
+<h2 id="6003">Kondisi Kontrol</h2>
+<p id="770610" class="block-content">
+Kondisi kontrol mirip dengan kondisi tampilan dalam setiap aspek kecuali bahwa kondisi kontrol tidak bisa dimatikan. Kondisi kontrol bertujuan dipakai untuk menyimpan informasi kondisi krusial halaman atau kontrol mana yang tidak bekerja dengan baik.
+</p>
+<p id="770611" class="block-content">
+Untuk menyimpan dan mengambil variabel dalam kondisi kontrol, gunakan perintah berikut,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_770199">
+$this->setControlState('Caption',$caption);
+$caption = $this->getControlState('Caption');
+</com:TTextHighlighter>
+
+<h2 id="6004">Kondisi Aplikasi</h2>
+<p id="770612" class="block-content">
+Kondisi aplikasi merujuk ke data yang persisten melalui sesi pengguna dan permintaan halaman. Contoh umum dari kondisi aplikasi adalah penghitung kunjungan pengguna. Nilai penghitung adalah persisten meskipun sesi pengguna saat ini berakhir. Catatan, kondisi tampilan dan kondisi kontrol hilang jika permintaan pengguna untuk halaman yang berbeda, karena kondisi sesi hilang jika sesi pengguna berakhir.
+</p>
+<p id="770613" class="block-content">
+Untuk menyimpan dan mengambil variabel dalam kondisi aplikasi, gunakan perintah berikut,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_770200">
+$application->setGlobalState('Caption',$caption);
+$caption = $application->getGlobalState('Caption');
+</com:TTextHighlighter>
+
+<h2 id="6005">Kondisi Sesi</h2>
+<p id="770614" class="block-content">
+PRADO melapisi manajemen sesi tradisional dalam modul <tt>THttpSession</tt>. Modul dapat diakses dari dalam setiap komponen dengan menggunakan <tt>$this->Session</tt>, di mana <tt>$this</tt> merujuk ke obyek komponen.
+</p>
+
+<div class="last-modified">$Id: State.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

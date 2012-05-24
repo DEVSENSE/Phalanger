@@ -1,0 +1,184 @@
+<%@ MasterClass="Application.pages.Layout" Theme="PradoSoft" %>
+<com:TContent ID="body" >
+
+<com:TPanel CssClass="classinfo" GroupingText="Class Information">
+class
+<com:TTextBox ID="ClassName"
+	Text=<%#$this->Page->ClassDefinition->ClassName%>
+	CssClass="slTextBox"/>
+extends
+<com:TTextBox ID="ParentClass"
+	Text=<%#$this->Page->ClassDefinition->ParentClass%>
+	CssClass="slTextBox"/>
+implements <com:TTextBox ID="Interfaces" CssClass="slTextBox"/>
+</com:TPanel>
+
+<com:TPanel CssClass="propertydef" GroupingText="Property Definitions">
+<com:TRepeater ID="PropertyList" OnItemCommand="propertyAction">
+
+<prop:EmptyTemplate>
+No properties defined.<br/>
+</prop:EmptyTemplate>
+
+<prop:HeaderTemplate>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Type</th>
+  <th>Default Value</th>
+  <th>Storage Mode</th>
+  <th>Accessibility</th>
+  <th>Comments</th>
+  <th>Actions</th>
+</tr>
+</prop:HeaderTemplate>
+
+<prop:FooterTemplate>
+</table>
+</prop:FooterTemplate>
+
+<prop:ItemTemplate>
+<tr>
+  <td>
+  <com:TTextBox ID="PropertyName" Text=<%# $this->DataItem->Name %> CssClass="slTextBox"/>
+  </td>
+  <td>
+  <com:TDropDownList ID="PropertyType" SelectedValue=<%# $this->DataItem->Type %> >
+    <com:TListItem Text="string" />
+    <com:TListItem Text="integer" />
+    <com:TListItem Text="boolean" />
+    <com:TListItem Text="enumerable" />
+    <com:TListItem Text="float" />
+    <com:TListItem Text="mixed" />
+  </com:TDropDownList>
+  </td>
+  <td>
+  <com:TTextBox ID="DefaultValue" Text=<%# $this->DataItem->DefaultValue %> CssClass="slTextBox"/>
+  </td>
+  <td>
+  <com:TDropDownList ID="Storage" SelectedValue=<%# $this->DataItem->Storage %> >
+    <com:TListItem Text="ViewState" />
+    <com:TListItem Text="ControlState" />
+    <com:TListItem Text="Memory" />
+  </com:TDropDownList>
+  </td>
+  <td>
+  <com:TCheckBox ID="IsProtected" Text="protected" Checked=<%# $this->DataItem->IsProtected %> />
+  <com:TCheckBox ID="ReadOnly" Text="read-only" Checked=<%# $this->DataItem->ReadOnly %> />
+  </td>
+  <td>
+  <com:TTextBox ID="Comments" Text=<%# $this->DataItem->Comments %> CssClass="slTextBox"/>
+  </td>
+  <td>
+  <com:TButton
+  		Text="Remove"
+  		CommandName="remove"
+  		CommandParameter=<%# $this->ItemIndex %>
+  		CssClass="button"
+  		/>
+  <com:TButton
+  		Text="Up"
+  		CommandName="up"
+  		CommandParameter=<%# $this->ItemIndex %>
+  		Enabled=<%# $this->ItemIndex > 0%>
+  		CssClass="button"
+  		/>
+  <com:TButton
+  		Text="Down"
+  		CommandName="down"
+  		CommandParameter=<%# $this->ItemIndex %>
+  		Enabled=<%# $this->ItemIndex < $this->Page->ClassDefinition->Properties->Count-1 %>
+  		CssClass="button"
+  		/>
+  </td>
+</tr>
+</prop:ItemTemplate>
+
+</com:TRepeater>
+<p>
+<com:TButton Text="New Property" OnCommand="propertyAction" CommandName="add" CssClass="button" />
+</p>
+</com:TPanel>
+
+<com:TPanel CssClass="eventdef" GroupingText="Event Definitions">
+<com:TRepeater ID="EventList" OnItemCommand="eventAction">
+
+<prop:EmptyTemplate>
+<p>No events defined</p>
+</prop:EmptyTemplate>
+
+<prop:HeaderTemplate>
+<table>
+<tr>
+  <th>Name</th>
+  <th>Comments</th>
+  <th>Actions</th>
+</tr>
+</prop:HeaderTemplate>
+
+<prop:FooterTemplate>
+</table>
+</prop:FooterTemplate>
+
+<prop:ItemTemplate>
+<tr>
+  <td>
+  <com:TTextBox ID="EventName" Text=<%# $this->DataItem->Name %> CssClass="slTextBox"/>
+  </td>
+  <td>
+  <com:TTextBox ID="Comments" Text=<%# $this->DataItem->Comments %> CssClass="slTextBox"/>
+  </td>
+  <td>
+  <com:TButton
+  		Text="Remove"
+  		CommandName="remove"
+  		CommandParameter=<%# $this->ItemIndex %>
+  		CssClass="button"
+  		/>
+  <com:TButton
+  		Text="Up"
+  		CommandName="up"
+  		CommandParameter=<%# $this->ItemIndex %>
+  		Enabled=<%# $this->ItemIndex > 0%>
+  		CssClass="button"
+  		/>
+  <com:TButton
+  		Text="Down"
+  		CommandName="down"
+  		CommandParameter=<%# $this->ItemIndex %>
+  		Enabled=<%# $this->ItemIndex < $this->Page->ClassDefinition->Events->Count-1 %>
+  		CssClass="button"
+  		/>
+  </td>
+</tr>
+</prop:ItemTemplate>
+
+</com:TRepeater>
+<p>
+<com:TButton Text="New Event" OnCommand="eventAction" CommandName="add" CssClass="button" />
+</p>
+</com:TPanel>
+
+<com:TPanel CssClass="comments" GroupingText="Comments">
+<com:TTextBox ID="Comments" TextMode="MultiLine" Columns="80" Rows="6" />
+<br/>
+Author Name
+<com:TTextBox ID="AuthorName"
+	Text=<%#$this->Page->ClassDefinition->Author%>
+	CssClass="slTextBox"/>
+Author Email
+<com:TTextBox ID="AuthorEmail"
+	Text=<%#$this->Page->ClassDefinition->Email%>
+	CssClass="slTextBox"/>
+    <p>
+    <com:TButton Text="Generate Code" OnClick="generateCode" CssClass="button" />
+    </p>
+</com:TPanel>
+
+<com:TPanel CssClass="generator">
+    <com:TTextHighlighter>
+        <com:TLiteral ID="SourceCode" />
+    </com:TTextHighlighter>
+</com:TPanel>
+
+</com:TContent>

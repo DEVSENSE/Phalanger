@@ -1,0 +1,34 @@
+<com:TContent ID="body" >
+
+<h1 id="1101">Serwisy (ang. services)</h1>
+<p id="150151" class="block-content">
+Serwis jest instancją klasy implementującej interfejs <tt>IService</tt>. Każdy rodzaj serwisu przetwarza specyficzny typ żądania użytkownika. Na przykład serwis strony (ang. page service) odpowiada na żądania użytkownika dla stron PRADO.
+</p>
+<p id="150152" class="block-content">
+Serwis jest jednoznacznie identyfikowany poprzez swoją właściwość <tt>ID</tt>. Domyślnie kiedy <tt>THttpRequest</tt> jest używany jako <a href="?page=Fundamentals.Modules#request">moduł żądania</a> (ang. request module), nazwy zmiennych GET są używane by zidentyfikować serwis żadany przez użytkownika. Jeśli nazwa zmiennej GET zgadza się z jakimś <tt>ID</tt> serwisu, żądanie jest przetwarzane przez ten serwis oraz wartość parametru GET jest przekazywana jako parametr serwisu. Dla serwisu strony nazwą zmiennej GET musi być <tt>page</tt>. Na przykład następujący adres URL żadą strony <tt>Fundamentals.Services</tt>,
+<com:TTextHighlighter Language="none" CssClass="source block-content" id="code_150069">
+http://hostname/index.php?page=Fundamentals.Services
+</com:TTextHighlighter>
+</p>
+<p id="150153" class="block-content">
+Deweloper może zaimplementować dodatkowe serwisy dla swojej aplikacji. Aby uczynić serwis dostępnym należy go skonfigurować w <a href="?page=Configurations.AppConfig">konfiguracji aplikacji</a>.
+</p>
+
+<h2 id="1102">Serwis strony (ang. page service)</h2>
+<p id="150154" class="block-content">
+PRADO implementuje <tt>TPageService</tt> by przetwarzać żądania stron użytkonika. Strony są przechowywane w katalogu określonej przez właściwość <tt>BasePath</tt> serwisu strony. Właściwość wskazuje domyślnie na katalog <tt>pages</tt> w ścieżce aplikacji. Możesz zmienić tą wartość domyślną poprzez skonfigurowanie serwisu w konfiguracji aplikacji.
+</p>
+<p id="150155" class="block-content">
+Strony mogą być zorganizowane w podkatalogi w <tt>BasePath</tt>. W każdym katalogu może znajdować się plik konfiguracji strony o nazwie <tt>config.xml</tt>, który zawiera konfigurację aktywną tylko wtedy gdy strona spod tego katalogu lub podkatalogu jest żądana. Aby dowiedzieć się wiecej zobacz sekcję <a href="?page=Configurations.PageConfig">konfiguracja strony</a>.
+</p>
+<p id="150156" class="block-content">
+Parametr dla serwisu stron wskazuje na żądaną stronę. Parametr taki jak <tt>Fundamentals.Services</tt> wskazuje na stronę <tt>Services</tt> w katalogu <tt>&lt;BasePath&gt;/Fundamentals</tt>. Jeśli taki parametr nie jest obecny w żądaniu domyślnie przyjmowana jest jego wartość jako <tt>Home</tt>. Używając <tt>THttpRequest</tt> jako moduł żądania (domyślnie), następujący adres URL zażada stron <tt>Home</tt>, <tt>About</tt> i <tt>Register</tt> odpowiednio dla:
+<com:TTextHighlighter Language="none" CssClass="source block-content" id="code_150070">
+http://hostname/index.php
+http://hostname/index.php?page=About
+http://hostname/index.php?page=Users.Register
+</com:TTextHighlighter>
+gdzie pierwszy przukład wynika z faktu, że serwis strony jest domyślnym serwisem a strona <tt>Home</tt> jest stroną domyślną.
+</p>
+
+<div class="last-modified">$Id: Services.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,45 @@
+<com:TContent ID="body">
+
+<h1>TRangeValidator Samples</h1>
+<p><strong>Note:</strong> TRangeValidator will start
+to validate only if both inputs are not empty.</p>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Range validator with default settings:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox1" Text="a1" />
+<com:TRangeValidator
+	ControlToValidate="TextBox1"
+	ValidationGroup="Group1"
+	MinValue="aaa"
+	MaxValue="zzz"
+	Text="Input must be between 'aaa' and 'zzz'." />
+<com:TButton Text="Submit" ValidationGroup="Group1" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Range validator with client-side validation disabled:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox2" Text="11"/>
+<com:TRangeValidator
+	ValidationGroup="Group2"
+	EnableClientScript="false"
+	ControlToValidate="TextBox2"
+	DataType="Integer"
+	MinValue="100"
+	MaxValue="999"
+	Text="Input must be between 100 and 999." />
+<com:TButton Text="Submit" ValidationGroup="Group2" />
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

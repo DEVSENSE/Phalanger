@@ -1,0 +1,34 @@
+<com:TContent ID="body">
+
+<h1>TActiveLabel Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+An active label text being set as the result of a callback:
+</td><td class="sampleaction">
+<com:TActiveLabel Text="This is a label" ID="label1"
+/>
+
+<com:TActiveButton
+	Text="click me"
+	OnClick="buttonClicked"
+/>
+</td></tr>
+
+<tr><td class="samplenote">
+Upon button click, the textbox contents will be set on the label. Note that text needs to be properly escaped to avoid html injections:
+</td><td class="sampleaction">
+<com:TActiveTextBox ID="txt2"
+/>
+<com:TActiveButton
+	Text="=>"
+	OnClick="buttonClicked2"
+/>
+<com:TActiveLabel Text="" ID="label2"
+/>
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2946 2011-06-01 21:01:57Z ctrlaltca@gmail.com $</div></com:TContent>

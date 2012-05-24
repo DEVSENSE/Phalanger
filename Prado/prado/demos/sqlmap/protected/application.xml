@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application id="Database" Mode="Debug">
+  <paths>
+	<alias id="Example" path="APP_CODE" />
+	<alias id="Quickstart" path="../../quickstart" />
+	<using namespace="Quickstart.protected.controls.*" />
+  </paths>
+  <services>
+    <service id="page" class="TPageService" DefaultPage="Manual.Overview" />
+  </services>  
+</application>

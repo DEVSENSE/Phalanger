@@ -1,0 +1,23 @@
+<com:TContent ID="body" >
+<h1 id="101">Witamy w przewodniku SzybkiStart z PRADO</h1>
+<div id="intro" class="block-content">
+<p id="10001">
+Niniejszy przewodnik powstał by pomóc Tobie w szybkim rozpoczęciu budowania Twojej własnej aplikacji internetowej bazującej na PRADO w wersji 3.x
+</p>
+<p id="10001" class="block-content">
+Jeśli jesteś już użytkownikiem PRADO #.x i chciałbyś dowiedzieć się jakie rozszerzenia są dostępne dla każdej nowej wersji, proszę sprawdź <a href="?page=GettingStarted.NewFeatures">nowe właściwości</a>. 
+Następujące sekcje są pomocne dla początkujących.
+</p>
+<p id="10002">
+Możesz odwoływać się do następujących zasobów jeśli czujesz, że ten przewodnik nie spełnia wszystkich twoich oczekiwań.
+</p>
+</div>
+<ul class="block-content" id="intro-links">
+  <li><a href="http://www.pradosoft.com/docs/classdoc/">Klasy PRADO</a></li>
+  <li><a href="http://www.pradosoft.com/docs/manual/">Dokumentacja API PRADO</a></li>
+  <li><a href="http://www.pradosoft.com/forum/">Forum PRADO</a></li>
+  <li><a href="http://www.pradosoft.com/wiki/">PRADO Wiki</a></li>
+  <li><a href="http://trac.pradosoft.com/prado/">PRADO Trac</a></li>
+</ul>
+
+<div class="last-modified">$Id: Introduction.page 1703 2007-02-17 14:45:00Z aztech $</div></com:TContent>

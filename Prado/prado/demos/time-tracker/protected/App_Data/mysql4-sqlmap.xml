@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMapConfig>
+		
+	<typeHandler type="TimeTrackerUser" class="TimeTrackerUserTypeHandler"/>
+	<typeHandler type="DateTime" class="DateTimeTypeHandler" />
+
+	<connection class="TDbConnection"
+		ConnectionString="mysql:host=localhost;dbname=time-tracker"
+		Username="time-tracker" Password="prado" />
+
+	<sqlMap resource="MySQL4/users.xml"/>
+	<sqlMap resource="MySQL4/projects.xml"/>
+	<sqlMap resource="MySQL4/category.xml" />
+	<sqlMap resource="MySQL4/time-entry.xml" />
+	<sqlMap resource="MySQL4/reports.xml" />
+    
+</sqlMapConfig>

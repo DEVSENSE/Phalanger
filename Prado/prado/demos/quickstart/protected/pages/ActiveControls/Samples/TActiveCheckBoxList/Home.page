@@ -1,0 +1,66 @@
+<com:TContent ID="body">
+
+<h1>TActiveCheckBoxList Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Check box list with default settings:
+</td>
+<td class="sampleaction">
+<com:TActiveCheckBoxList>
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+</com:TActiveCheckBoxList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Check box list's behavior upon callback:
+</td>
+<td class="sampleaction">
+<com:TActiveCheckBoxList ID="CheckBoxList" OnCallback="selectionChanged">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Enabled="false" />
+  <com:TListItem Value="value 5" Text="item 5" Selected="true" />
+</com:TActiveCheckBoxList>
+<br/>
+<com:TActiveLabel ID="SelectionResult" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+
+<h2>CheckBox List with Validation</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+CheckBox list causing validation:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	ErrorMessage="You must enter a value"
+	Display="Dynamic"
+	ValidationGroup="Group2"
+	/>
+<com:TActiveCheckBoxList ValidationGroup="Group2">
+  <com:TListItem Text="Agree" />
+  <com:TListItem Text="Disagree" />
+</com:TActiveCheckBoxList>
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2957 2011-06-02 11:16:04Z ctrlaltca@gmail.com $</div></com:TContent>

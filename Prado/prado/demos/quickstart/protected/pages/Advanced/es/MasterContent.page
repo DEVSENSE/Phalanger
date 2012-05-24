@@ -1,0 +1,57 @@
+<com:TContent ID="body" >
+
+<h1 id="5801">Master and Content</h1>
+<p id="750587" class="block-content">
+Pages in a Web application often share common portions. For example, all pages of this tutorial application share the same header and footer portions. If we repeatedly put header and footer in every page source file, it will be a maintenance headache if in future we want to something in the header or footer. To solve this problem, PRADO introduces the concept of master and content. It is essentially a decorator pattern, with content being decorated by master.
+</p>
+<p id="750588" class="block-content">
+Master and content only apply to template controls (controls extending <tt>TTemplateControl</tt> or its child classes). A template control can have at most one master control and one or several contents (each represented by a <tt>TContent</tt> control). Contents will be inserted into the master control at places reserved by <tt>TContentPlaceHolder</tt> controls. And the presentation of the template control is that of the master control with <tt>TContentPlaceHolder</tt> replaced by <tt>TContent</tt>.
+</p>
+<p id="750589" class="block-content">
+For example, assume a template control has the following template:
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_750192">
+&lt;%@ MasterClass="MasterControl" %&gt;
+&lt;com:TContent ID="A" &gt;
+content A
+&lt;/com:TContent &gt;
+&lt;com:TContent ID="B" &gt;
+content B
+&lt;/com:TContent &gt;
+&lt;com:TContent ID="B" &gt;
+content B
+&lt;/com:TContent &gt;
+</com:TTextHighlighter>
+<p id="750590" class="block-content">
+which uses <tt>MasterControl</tt> as its master control. The master control has the following template,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_750193">
+other stuff
+&lt;com:TContentPlaceHolder ID="A" /&gt;
+other stuff
+&lt;com:TContentPlaceHolder ID="B" /&gt;
+other stuff
+&lt;com:TContentPlaceHolder ID="C" /&gt;
+other stuff
+</com:TTextHighlighter>
+<p id="750591" class="block-content">
+Then, the contents are inserted into the master control according to the following diagram, while the resulting parent-child relationship can be shown in the next diagram. Note, the template control discards everything in the template other than the contents, while the master control keeps everything and replaces the content placeholders with the contents according to ID matching.
+</p>
+<img src=<%~ mastercontent.gif %> alt="Master and Content" />
+<img src=<%~ pcrelation.gif %> alt="Parent-child relationship between master and content" />
+
+<h2 id="6301">Master vs. External Template</h2>
+<p id="750592" class="block-content">
+Master is very similar to external templates which are introduced since version 3.0.5. A special <a href="?page=Configurations.Templates1">include tag</a> is used to include an external template file into a base template.
+</p>
+<p id="750593" class="block-content">
+Both master and external template can be used to share common contents among pages. A master is a template control whose template contains the common content and whose class file contains the logic associated with the master. An external template, on the other hand, is a pure template file without any class files.
+</p>
+<p id="750594" class="block-content">
+Therefore, use master control if the common content has to be associated with some logic, such as a page header with search box or login box. A master control allows you to specify how the common content should interact with end users. If you use external templates, you will have to put the needed logic in the page or control class who owns the base template.
+</p>
+<p id="750595" class="block-content">
+Performancewise, external template is lighter than master as the latter is a self-contained control participating the page lifecycles, while the former is used only when the template is being parsed.
+</p>
+
+<div class="last-modified">$Id: MasterContent.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

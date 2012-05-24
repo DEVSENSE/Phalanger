@@ -1,0 +1,249 @@
+
+/** Colors **/
+
+.TColorPicker_button
+{
+}
+
+.TColorPicker
+{
+	background-color: white;
+	border: 1px solid #919EA9;
+}
+
+.FullColorPicker
+{
+	width: 388px;
+}
+
+.BasicColorPicker .basic_colors td img
+{
+	border: 1px solid #919EA9;
+}
+
+.BasicColorPicker .basic_colors .pickerhover
+{
+	border-color: white;
+}
+
+.FullColorPicker .colors .colorpanel
+{
+	border: 1px solid #919EA9;
+}
+
+.FullColorPicker .hue .strip
+{
+	border: 1px solid #919EA9;
+}
+
+.FullColorPicker .inputs .currentcolor span
+{
+	border: 1px solid #919EA9;
+}
+
+.FullColorPicker .options td
+{
+	border-top: 1px solid #919EA9;
+}
+
+/** UI **/
+.TColorPicker_button img
+{
+	border: 2px ridge ActiveBorder;
+	background-color: #fff;
+	padding: 1px;
+	height: 16px;
+	width: 16px;
+	margin: 1px;
+	margin-bottom: -6px;
+	margin-bottom: expression(-4); /** IE hack **/
+}
+
+.TColorPicker
+{
+	position: absolute;
+}
+
+.BasicColorPicker .palette_Tiny img
+{
+	width: 30px;
+	height: 30px;
+}
+.BasicColorPicker .basic_colors
+{
+	border-collapse: separate;
+	border-spacing: 2px;
+}
+
+.BasicColorPicker .basic_colors td 
+{
+	padding: 0;
+	font-size: 0;
+}
+
+.FullColorPicker table
+{
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+.FullColorPicker .colors .colorpanel
+{
+	margin-left: 7px;
+	margin-top: -9px;
+	display: block;
+	width:256px; 
+	height:256px;
+	background-image: url(background.png);
+}
+
+* html .FullColorPicker .colors .colorpanel
+{
+	background-image: none;
+	margin-top: -10px;
+}
+
+.FullColorPicker .colors
+{
+	padding-bottom: 10px;
+	padding-top: 17px;
+}
+
+* html .FullColorPicker .colors
+{
+	margin-top: 10px;
+}
+
+.FullColorPicker .colors .selector
+{
+	position: relative;
+	top: 0px;
+	left: 0px;
+	border: 0 none;
+	float: left;
+	margin-left: 2px;
+	margin-top: -12px;
+	display: block;
+	background-image: url(target_black.gif);
+	background-repeat: no-repeat;
+	width: 8px; 
+	height:8px;
+	background-position: 50%
+}
+
+* html .FullColorPicker .colors .selector
+{
+	margin-top: -16px;
+}
+
+.FullColorPicker .colors span.target_white
+{
+	background-image: url(target_white.gif);
+}
+
+.FullColorPicker .hue
+{
+	text-align: center;
+	width: 50px;
+}
+
+.FullColorPicker .hue .strip
+{
+	margin-top: -5px;
+	margin-left: 9px;
+	display: block;
+	background-image: url(hue.gif);
+	width:19px;
+	height:256px;
+}
+
+* html .FullColorPicker .hue .strip
+{
+	margin-left: 10px;
+}
+
+.FullColorPicker .slider
+{
+	position: relative;
+	top: 0px;
+	margin-top: -5px;
+	background-image: url(slider.gif);
+	width: 40px;
+	height: 9px;
+	font-size: 0;
+	display: block;
+}
+
+* html .FullColorPicker .slider
+{
+	margin-left: 10px;
+}
+
+.FullColorPicker .inputs
+{
+	font-family: Tahoma;
+	font-size: 10pt;
+}
+
+.FullColorPicker .inputs input
+{
+	width: 30px;
+	text-align: center;
+	height: 16px;
+	margin-right: 2px;
+}
+
+.FullColorPicker .currentcolor
+{
+	text-align: center;
+}
+
+.FullColorPicker .inputs .currentcolor span
+{
+	display: block;
+	width: 60px;
+	height: 30px;
+}
+
+.FullColorPicker .inputs .currentcolor span.currentColor
+{
+	margin: 5px 5px 0 2px;
+	border-bottom: 0 none;
+}
+
+.FullColorPicker .inputs .currentcolor span.oldColor
+{
+	margin: 0px 5px 5px 2px;
+	border-top: 0 none;
+}
+
+.FullColorPicker input.hex
+{
+	width: 50px;
+	margin-right: 5px;
+}
+
+.FullColorPicker input.button
+{
+	width: 90px;
+	margin: 3px;
+	font-size: 10px;
+}
+
+.FullColorPicker .inputs .gap
+{
+	padding-top: 8px;
+}
+
+.FullColorPicker .customs
+{
+	width: 100%;
+	border-collapse: separate;
+}
+
+.FullColorPicker .options td
+{
+	height: 0px;
+	text-align: right;
+	padding: 7px 10px 7px 0px;
+}

@@ -1,0 +1,47 @@
+<com:TContent ID="body">
+
+<h1>Configuring the DataMapper for PHP</h1>
+<p>The SQLMap PHP DataMapper is configured using a central XML descriptor file,
+usually named <tt>SqlMap.config</tt>, which provides the details for your data
+source, data maps, and other features like caching, and transactions. At
+runtime, your application code will call a class method provided by the SQLMap
+library to read and parse your <tt>SqlMap.config</tt> file. After parsing the
+configuration file, a DataMapper client will be returned by SQLMap for your
+application to use.</p>
+
+<h2>DataMapper clients</h2>
+<p>Currently, the SQLMap PHP DataMapper framework revolves around the
+<tt>TSqlMapper</tt> class, which acts as a facade to the DataMapper framework API.
+You can create a DataMapper client by instantiating an object of the
+<tt>TSqlMapper</tt> class. An instance of the <tt>TSqlMapper</tt> class (your
+DataMapper client) is created by reading a single configuration file. Each
+configuration file can specify one database or data source. You can of couse
+use multiple DataMapper clients in your application. Just create another
+configuration file and pass the name of that file when the DataMapper client
+is created. The configuration files might use a different account with the
+same database, or reference different databases on different servers. You can
+read from one client and write to another, if that's what you need to do. 
+First, let's take a look at the DataMapper configuration file.
+
+<h1>DataMapper Configuration File (SqlMap.config)</h1>
+<p>A sample configuration file for a PHP web application is shown below. 
+Not all configuration elements are required. See 
+<a href="?page=Manual.ConfigurationElements">DataMapper Configuration Elements</a>
+for details of each configuration elements in a <tt>SqlMap.config</tt> file.
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+<sqlMapConfig>
+    <provider class="TAdodbProvider" >
+        <datasource ConnectionString="mysql://user:pass@localhost/test1" />
+    </provider>
+    <sqlMaps>
+        <sqlMap name="Account" resource="maps/Account.xml"/>
+        <sqlMap name="Order" resource="maps/Order.xml"/>
+        <sqlMap name="Category" resource="maps/Category.xml"/>
+        <sqlMap name="LineItem" resource="maps/LineItem.xml"/>
+    </sqlMaps>
+</sqlMapConfig>
+</com:TTextHighlighter>
+
+</com:TContent>

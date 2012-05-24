@@ -1,0 +1,114 @@
+<com:TContent ID="body" >
+
+<h1 id="5301">TRepeater</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRepeater" />
+
+<p id="600400" class="block-content">
+TRepeater displays its content repeatedly based on the data fetched from <tt>DataSource</tt>. The repeated contents in TRepeater are called <i>items</i> which are controls accessible through <tt>Items</tt> property. When <tt>dataBind()</tt> is invoked, TRepeater creates an item for each row of data and binds the data row to the item. Optionally, a repeater can have a header, a footer and/or separators between items.
+</p>
+
+<p id="600401" class="block-content">
+The layout of the repeated contents are specified by inline templates. In particular, repeater items, header, footer, etc. are being instantiated with the corresponding templates when data is being bound to the repeater.
+</p>
+
+<p id="600402" class="block-content">
+Since v3.1.0, the layout can also be specified by <i>renderers</i>. A renderer is a control class that can be instantiated as repeater items, header, etc. A renderer can thus be viewed as an external template (in fact, it can also be non-templated controls). A renderer can be any control class. By using item renderers, one can avoid writing long and messy templates. Since a renderer is a class, it also helps reusing templates that previously might be embedded within other templates. If implemented with one of the following interfaces, a renderer will be initialized with additional properties relevant to the repeater items:
+</p>
+
+<ul id="u1" class="block-content">
+<li><tt>IDataRenderer</tt> - the <tt>Data</tt> property will be set as the row of the data bound to the repeater item. Many PRADO controls implement this interface, such as <tt>TLabel</tt>, <tt>TTextBox</tt>, etc.</li>
+<li><tt>IItemDataRenderer</tt> - the <tt>ItemIndex</tt> property will be set as the zero-based index of the item in the repeater item collection, and the <tt>ItemType</tt> property as the item's type (such as <tt>TListItemType::Item</tt>). As a convenient base class, <tt>TRepeaterItemRenderer</tt> implements <tt>IDataItemRenderer</tt> and can have an associated template because it extends from <tt>TTemplateControl</tt>.</li>
+</ul>
+
+
+<p id="600403" class="block-content">
+The following properties are used to specify different types of template and renderer for a repeater. If an item type is defined with both a template and a renderer, the latter takes precedence.
+</p>
+<ul id="u2" class="block-content">
+<li><tt>ItemTemplate</tt>, <tt>ItemRenderer</tt> - for each repeated row of data.</li>
+<li><tt>AlternatingItemTemplate</tt>, <tt>AlternatingItemRenderer</tt>: for each alternating row of data. If not set, <tt>ItemTemplate</tt> or <tt>ItemRenderer</tt> will be used instead, respectively.</li>
+<li><tt>HeaderTemplate</tt>, <tt>HeaderRenderer</tt> - for the repeater header.</li>
+<li><tt>FooterTemplate</tt>, <tt>FooterRenderer</tt> - for the repeater footer.</li>
+<li><tt>SeparatorTemplate</tt>, <tt>SeparatorRenderer</tt> - for content to be displayed between items.</li>
+<li><tt>EmptyTemplate</tt>, <tt>EmptyRenderer</tt> - used when data bound to the repeater is empty.</li>
+</ul>
+
+
+<p id="600404" class="block-content">
+To populate data into the repeater items, set <tt>DataSource</tt> to a valid data object, such as array, <tt>TList</tt>, <tt>TMap</tt>, or a database table, and then call <tt>dataBind()</tt> for the repeater. That is,
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_600125">
+class MyPage extends TPage {
+    public function onLoad($param) {
+        parent::onLoad($param);
+        if(!$this->IsPostBack) {
+            $this->Repeater->DataSource=$data;
+            $this->Repeater->dataBind();
+        }
+    }
+}
+</com:TTextHighlighter>
+
+<p id="600405" class="block-content">
+When <tt>dataBind()</tt> is called, TRepeater undergoes the following lifecycles for each row of data:
+</p>
+
+<ol id="u3" class="block-content">
+<li>create item based on templates or renderers</li>
+<li>set the row of data to the item</li>
+<li>raise an <tt>OnItemCreated</tt> event</li>
+<li>add the item as a child control</li>
+<li>call <tt>dataBind()</tt> of the item</li>
+<li>raise an <tt>OnItemDataBound</tt> event</li>
+</ol>
+
+<p id="600406" class="block-content">
+Normally, you only need to bind the data to repeater when the page containing the repeater is initially requested. When the page is post back, the repeater will restore automatically all its contents, including items, header, footer and separators. However, the data row associated with each item will not be recovered and thus become null.
+</p>
+
+<p id="600407" class="block-content">
+To access the repeater item data in postbacks, use one of the following ways:
+</p>
+<ul id="u4" class="block-content">
+<li>Use <tt>DataKeys</tt> to obtain the data key associated with the specified repeater item and use the key to fetch the corresponding data from some persistent storage such as DB. </li>
+<li>Save the whole dataset in viewstate, which will restore the dataset automatically upon postback. Be aware though, if the size of your dataset is big, your page size will become big. Some complex data may also have serializing problem if saved in viewstate.</li>
+</ul>
+
+
+<p id="600408" class="block-content">
+TRepeater raises an <tt>OnItemCommand</tt> event whenever a button control within some repeater item raises a <tt>OnCommand</tt> event. Therefore,
+you can handle all sorts of <tt>OnCommand</tt> event in a central place by
+writing an event handler for <tt>OnItemCommand</tt>.
+</p>
+
+<p id="600409" class="block-content">
+The following example shows how to use TRepeater to display tabular data.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRepeater.Sample1" />
+<p id="600410" class="block-content">
+TRepeater can be used in more complex situations. As an example, we show in the following how to use nested repeaters, i.e., repeater in repeater. This is commonly seen in presenting master-detail data. To use a repeater within another repeater, for an item for the outer repeater is created, we need to set the detail data source for the inner repeater. This can be achieved by responding to the <tt>OnItemDataBound</tt> event of the outer repeater. An <tt>OnItemDataBound</tt> event is raised each time an outer repeater item completes databinding. In the following example, we exploit another event of repeater called <tt>OnItemCreated</tt>, which is raised each time a repeater item (and its content) is newly created. We respond to this event by setting different background colors for repeater items to achieve alternating item background display. This saves us from writing an <tt>AlternatingItemTemplate</tt> for the repeaters.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRepeater.Sample2" />
+<p id="600411" class="block-content">
+Besides displaying data, TRepeater can also be used to collect data from users. Validation controls can be placed in TRepeater templates to verify that user inputs are valid.
+</p>
+<p id="600412" class="block-content">
+The <a href="../composer/index.php">PRADO component composer</a> demo is a good example of such usage. It uses a repeater to collect the component property and event definitions. Users can also delete or adjust the order of the properties and events, which is implemented by responding to the <tt>OnItemCommand</tt> event of repeater.
+</p>
+<p id="600413" class="block-content">
+See in the following yet another example showing how to use repeater to collect user inputs.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRepeater.Sample3" />
+
+<p id="600414" class="block-content">
+This sample shows how to use "drop-in" item renderers, available since v3.1.0. These renderers come in the PRADO release. They are essentially controls implementing the <tt>IDataRenderer</tt> interface. Common Web controls, such as <tt>TTextBox</tt>, <tt>TLabel</tt>, all implement this interface. When such controls are used item renderers, their <tt>Data</tt> property is assigned with the row of the data being bound to the repeater item.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRepeater.Sample4" />
+
+<p id="600415" class="block-content">
+More often, one needs to customize the layout of repeater items. The sample above relies on <tt>OnItemCreated</tt> to adjust the appearance of the renderer. Templated item renderers are perferred in this situation, as they allow us to put in more complex layout and content in a repeater item. The following sample reimplements the nested repeater sample using a templated item renderer called <tt>RegionDisplay</tt>. As we can see, the new code is much easier to understand and maintain.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRepeater.Sample5" />
+
+
+<div class="last-modified">$Id: Repeater.page 2955 2011-06-02 09:30:55Z ctrlaltca@gmail.com $</div></com:TContent>

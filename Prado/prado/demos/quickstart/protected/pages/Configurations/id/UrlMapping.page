@@ -1,0 +1,106 @@
+<com:TContent ID="body" >
+
+<h1 id="2101">Pemetaan URL (URL bersahabat)</h1>
+
+<com:DocLink ClassPath="System.Web.TUrlMapping" />
+
+<p id="230222" class="block-content">
+Modul TUrlMapping membolehkan PRADO membentuk dan mengenali URL bersahabat berdasarkan pada pola spesifik.
+</p>
+
+<p id="230223" class="block-content">
+TUrlMapping terdiri dari daftar pola URL yang dipakai untuk menyamakan terhadap URL yang saat ini sedang diminta. Pola pertama yang sama kemudian akan dipakai untuk mendekomposisi URL ke dalam parameter request (dapat diakses melalui
+<tt>$this->Request['paramname']</tt>). Pola juga dipakai untuk membentuk URL yang dikustomisasi. Dalam hal ini, parameter dalam pola yang diterapkan akan diganti dengan nilai variabel GET terkait.
+</p>
+
+<p id="230224" class="block-content">
+Untuk menggunakan <tt>TUrlMapping</tt>, seseorang harus menyetel properti <tt>UrlManager</tt> dari modul <tt>THttpRequest</tt> sebagai ID modul <tt>TUrlMapping</tt>. Lihat contoh berikut,
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_230098">
+<modules>
+    <module id="request" class="THttpRequest" UrlManager="friendly-url" />
+    <module id="friendly-url" class="System.Web.TUrlMapping">
+        <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/?" parameters.id="\d+" />
+        <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/?" parameters.time="\d{6}" />
+        <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/?" parameters.cat="\d+" />
+    </module>
+</modules>
+</com:TTextHighlighter>
+</p>
+
+<p id="230225" class="block-content">
+Contoh di atas adalah bagian dari konfigurasi aplikasi dari demo <tt>blog</tt> dalam rilis PRADO. Ia menghidupkan pengakuan format URL berikut:
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>/index.php/post/123</tt> diakui sebagai <tt>/index.php?page=Posts.ViewPost&amp;id=123</tt></li>
+  <li><tt>/index.php/archive/200605</tt> diakui sebagai <tt>/index.php?page=Posts.ListPost&amp;time=200605</tt></li>
+  <li><tt>/index.php/category/2</tt> diakui sebagai <tt>/index.php?page=Posts.ListPost&amp;cat=2</tt></li>
+</ul>
+
+<p id="230226" class="block-content">
+<tt>ServiceParameter</tt> dan <tt>ServiceID</tt> (ID standarnya adalah 'page') masing-masing menyetel parameter layanan dan ID layanan terhadap <a href="?page=Fundamentals.Modules">modul Request</a>. Parameter layanan untuk layanan <tt>TPageService</tt> adalah nama kelas Page, contohnya untuk URL "index.php?page=Home", "page" adalah ID layanan dan parameter layanan adalah "Home". Layanan lain dapat menggunakan parameter layanan dan ID secara berbeda. Lihat <a href="?page=Fundamentals.Services">Layanan</a> untuk lebih jelasnya.
+</p>
+
+<div class="info"><b class="tip">Info:</b>
+<tt>TUrlMapping</tt> harus dikonfigurasi sebelum 
+<a href="?page=Fundamentals.Modules">modul Request</a> mengatasi permintaan.
+Ini biasanya berarti mendeklarasikan modul <tt>TUrlMapping</tt> sebelum tag
+<tt>&lt;services&gt;</tt> dalam  <a href="?page=Configurations.AppConfig">konfigurasi aplikasi</a>.
+Menetapkan pemetaan dalam direktori <tt>config.xml</tt> tidak didukung.
+</div>
+
+<h2 id="46023">Menetapkan Pola URL</h2>
+<p id="230227" class="block-content">
+<tt>TUrlMapping</tt> menghidupkan pengakuan terhadap format URL yang dikustomisasi berdasarkan pada daftar pola URL yang ditetapkan sebelumnya. Setiap pola ditetapkan dalam tag <tt>&lt;url&gt;</tt>.
+</p>
+
+<p id="230228" class="block-content">
+Nilai atribut <tt>Pattern</tt> dan <tt>Parameters</tt> adalah pola ekspresi reguler yang menentukan kriteria pemetaan. Properti <tt>Pattern</tt> mengambil ekspresi reguler dengan nama parameter dikurung antara kurung kurawal kiri '<tt>{</tt>' dan kurung kurawal kanan '<tt>}</tt>'. Pola untuk setiap parameter dapat disetel menggunakan koleksi atribut <tt>Parameters</tt>.
+Sebagai contoh,
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_230099">
+<url ServiceParameter="ArticleView" pattern="articles/{year}/{month}/{day}"
+     parameters.year="\d{4}" parameters.month="\d{2}" parameters.day="\d+" />
+</com:TTextHighlighter>
+</p>
+Contoh mirip dengan ekspresi reguler berikut (ia memakai fitur "named group" dalam ekspresi reguler yang tersedia dalam PHP):
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_230100">
+<url ServiceParmaeter="ArticleView">
+     RegularExpression="/articles\/(?P<year>\d{4})\/(?P<month>\d{2})\/(?P<day>\d+)/u"</url>
+</com:TTextHighlighter>
+<p id="230229" class="block-content">
+Dalam contoh di atas, pola berisi 3 parameter bernama "<tt>year</tt>",
+"<tt>month</tt>" dan "<tt>day</tt>". Pola untuk parameter ini masing-masing adalah, "<tt>\d{4}</tt>" (4 digit), "<tt>\d{2}</tt>" (2 digit)
+dan "<tt>\d+</tt>" (1 atau lebih digit).
+Intinya, nama dan nilai atribut <tt>Parameters</tt> digunakan sebagai substrings dalam penggantian tempat pada string <tt>Pattern</tt> untuk membentuk string ekspresi reguler lengkap.
+</p>
+
+<div class="note"><b class="tip">Catatan:</b> Jika Anda bermaksud untuk menggunakan properti <tt>RegularExpression</tt> Anda perlu mengulang garis miring dalam ekspresi reguler.
+</div>
+
+<p id="230230" class="block-content">Berikut dari contoh pola di atas,
+sebuah URL "<tt>http://example.com/index.php/articles/2006/07/21</tt>" akan disamakan dan benar.  Akan tetapi, "<tt>http://example.com/index.php/articles/2006/07/hello</tt>" tidak benar karena pola parameter "<tt>day</tt>" tidak memuaskan.
+ Dalam kelas <tt>TUrlMappingPattern</tt> standarnya, pola disamakan dengan properti <b>path</b> dari hanya URL. Sebagai contoh, hanya bagian
+"<tt>/index.php/articles/2006/07/21</tt>" dari URL yang ditetapkan.
+ </p>
+
+<p id="230231" class="block-content">
+URL permintaan yang dipetakan mirip dengan <tt>index.php?page=ArticleView&amp;year=2006&amp;month=07&amp;day=21</tt>.
+Nilai parameter tersedia melalui obyek standar <tt>Request</tt>. Sebagai contoh, <tt>$this->Request['year']</tt>.
+</p>
+
+<p id="230232" class="block-content">Pemetaan URL dievaluasi agar ia ditempatkan dan hanya pemetaan pertama yang menyamai URL akan dipakai. Pemetaan beruntun dapat dicapat dengan menempatkan pemetaan URL dalam urutan tertentu. Sebagai contoh, menempatkan pemetaan paling spesifik terlebih dahulu.
+</p>
+
+<h2 id="46024">Membentuk URL Dikustomisasi</h2>
+<p id="230233" class="block-content">
+Sejak versi 3.1.1, <tt>TUrlMapping</tt> mulai mendukung pembentukan format URL terkustomisasi berdasarkan pola yang disediakan. Untuk menghidupkan fitur ini, setel <tt>TUrlMapping.EnableCustomUrl</tt> menjadi true. Saat <tt>THttpRequest.constrcutUrl()</tt> dipanggil, pembantukan kerja URL aktual akan didelegasikan ke turunan <tt>TUrlMappingPattern</tt> yang sama. Ia mengganti parameter dalam pola dengan variabel GET terkait dikirimkan ke <tt>constructUrl()</tt>.
+</p>
+
+<p id="230234" class="block-content">
+Pola yang sama adalah propreti <tt>ServiceID</tt> dan <tt>ServiceParameter</tt> yang sama seperti yang dikirimkan ke <tt>constructUrl()</tt> dan parameter yang diberi nama ditemukan dalam variabel GET. Sebagai contoh, <tt>constructUrl('Posts.ListPost',array('cat'=>2))</tt> akan menggunakan pola pihak ketiga dalam contoh di atas.
+<p>
+
+<p id="230235" class="block-content">
+Standarnya <tt>TUrlMapping</tt> akan membentuk URL yang diawali dengan yang saat ini meminta path naskah PHP, seperti <tt><b>/path/to/index.php</b>/article/3</tt>. Para pengguna dapat mengubah perilaku ini dengan menetapkan prefiks URL secara spesifik melalui properti <tt>UrlPrefix</tt>-nya. Sebagai contoh, jika konfigurasi server Web memperlakukan <tt>index.php</tt> sebagai naskah standar, kita bisa menyetel <tt>UrlPrefix</tt> sebagai <tt>/path/to</tt> dan URL yang dibentuk akan terlihat seperti <tt>/path/to/article/3</tt>.
+</p>
+
+<div class="last-modified">$Id: UrlMapping.page 2118 2007-08-11 14:30:07Z xue $</div></com:TContent>

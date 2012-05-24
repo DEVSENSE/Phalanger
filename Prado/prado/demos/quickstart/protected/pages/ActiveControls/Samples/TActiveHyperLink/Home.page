@@ -1,0 +1,70 @@
+<com:TContent ID="body">
+
+<h1>TActiveHyperLink Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A regular hyperlink:
+</td><td class="sampleaction">
+Welcome to
+<com:TActiveHyperLink
+	ID="link1"
+	NavigateUrl="http://www.pradosoft.com/"
+	Text="PradoSoft.com"
+	Target="_blank" />.
+</td>
+<td class="sampleaction">
+<com:TActiveButton ID="button1" Text="Change to Navigate Url" OnClick="button1_clicked" />
+</td>
+</tr>
+
+<tr><td class="samplenote">
+A text hyperlink with css style:
+</td><td class="sampleaction">
+Welcome to
+<com:TActiveHyperLink
+	ID="link2"
+	NavigateUrl="http://www.pradosoft.com/"
+	Text="PradoSoft.com"
+	Target="_blank"
+	BackColor="silver"
+	Font.Italic="true" />.
+</td>
+<td class="sampleaction">
+<com:TActiveButton ID="button2" Text="Change to Target" OnClick="button2_clicked" />
+</td>
+</tr>
+
+<tr><td class="samplenote">
+An image hyperlink:
+</td><td class="sampleaction">
+<com:TActiveHyperLink
+	ID="link3"
+	NavigateUrl="http://www.pradosoft.com/"
+	ImageUrl=<%~hello_world.gif%>
+	Text="Hello World" />.
+</td>
+<td class="sampleaction">
+<com:TActiveButton ID="button3" Text="Change to Text" OnClick="button3_clicked" />
+</td>
+</tr>
+
+<tr><td class="samplenote">
+A hyerplink with body contents as link text:
+</td><td class="sampleaction">
+<com:TActiveHyperLink
+	ID="link4"
+	NavigateUrl="http://www.pradosoft.com/"
+	Target="_blank">
+Body contents
+</com:TActiveHyperLink>
+</td>
+<td class="sampleaction">
+<com:TActiveButton ID="button4" Text="Change to Image" OnClick="button4_clicked" />
+</td>
+</tr>
+
+</table>
+<com:TJavascriptLogger />
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

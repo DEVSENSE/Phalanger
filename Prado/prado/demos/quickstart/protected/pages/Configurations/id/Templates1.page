@@ -1,0 +1,103 @@
+<com:TContent ID="body" >
+<h1 id="1501">Template: Bagian I</h1>
+<p id="180166" class="block-content">
+Template dipakai untuk menetapkan penyajian tata letak kontrol. Sebuah template dapat berisi teks statis, komponen, atau kontrol yang membantu penyajian kontrol terkait. Standarnya, turunan <tt>TTemplateControl</tt> atau subkelasnya secara otomatis mengambil dan menurunkan template dari sebuah file yang namanya sama dengan nama kelas kontrol. Untuk template halaman, nama file harus berakhiran <tt>.page</tt>; untuk kontrol template reguler lainnya, akhirannya adalah <tt>.tpl</tt>.
+</p>
+<p id="180167" class="block-content">Format template mirrip HTML, dengan beberapa tag spesifik-PRADO, termasuk <a href="#ct">tag komponen</a>, <a href="#tct">tag kontrol template</a>, <a href="#cot">tag komentar</a>, <a href="?page=Configurations.Templates2#dct">tag konten dinamis</a>, and <a href="?page=Configurations.Templates3#dpt">tag properti dinamis</a>. .
+</p>
+
+<a name="ct"></a>
+<h2 id="1502">Tag Komponen</h2>
+<p id="180168" class="block-content">
+Tag komponen menetapkan komponen sebagai bagian dari konten body pada kontrol template. Jika komponen adalah sebuah kontrol, biasanya akan menjadi anak atau cucu dari kontrol template, dan hasil penyajiannya akan disisipkan di tempat di mana ia terlihat dalam template.
+</p>
+<p id="180169" class="block-content">
+Format dari tag komponen adalah sebagai berikut,
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_180072">
+&lt;com:ComponentType PropertyName="PropertyValue" ... EventName="EventHandler" ...&gt;
+body content
+&lt;/com:ComponentType&gt;
+</com:TTextHighlighter>
+<tt>ComponentType</tt> berupa nama kelas atau nama tipe bertitik (contoh <tt>System.Web.UI.TControl</tt>) pada komponen. <tt>PropertyName</tt> dan <tt>EventName</tt> keduanya tidak sensitif-huruf. <tt>PropertyName</tt> bisa berupa nama properti atau subproperti (contoh <tt>Font.Name</tt>). Catatan, <tt>PropertyValue</tt> menjadi dekode HTML saat ditempatkan ke properti terkait. Konten dikurung diantara tag komponen pembuka dan penutup biasanya diperlakukan sebagai badan komponen.
+</p>
+<p id="180170" class="block-content">
+Diperlukan bahwa tag properti komponen saling mengumpulkan dan tag komponen pembuka dipasangkan dengan tag penutup, mirip dengan apa yang ada dalam XML.
+</p>
+<p id="180171" class="block-content">
+Template berikut memperlihatkan sebuah tag komponen yang menetapkan properti <tt>Text</tt> dan event <tt>OnClick</tt> dari kontrol tombol,
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_180073">
+&lt;com:TButton Text="Register" OnClick="registerUser" />
+</com:TTextHighlighter>
+Catatan, nama properti dan nama event semuanya tidak sensitif-huruf, sementara nama tipe komponen adalah sensitif-huruf. Nama event selalu diawali dengan <tt>On</tt>.
+</p>
+<p id="180172" class="block-content">
+Juga diperhatikan, nilai awal untuk properti yang namanya diakhiri dengan <tt>Template</tt> diproses secara khusus. Dalam keadaan tertentu, nilai awal diurai sebagai obyek <tt>TTemplate</tt>. Properti <tt>ItemTemplate</tt> dari kontrol <tt>TRepeater</tt> dalam contoh tersebut.
+</p>
+<p id="180173" class="block-content">
+Untuk menjembatani properti dengan tempat data besar, tag inisialisasi properti berikut diperkenalkan. Ini sama dengan <tt>...PropertyName="PropertyValue"...</tt> pada setiap aspeknya. Tag inisialisasi properti harus secara langsung dikurung diantara tag pembuka dan penutup komponen.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_180074">
+&lt;prop:PropertyName&gt;
+PropertyValue
+&lt;/prop:PropertyName&gt;
+</com:TTextHighlighter>
+<p id="200007" class="block-content">
+Sejak versi 3.1.0, inisialisasi tag properti dapat juga dipakai untuk menginisialisasi set subproperti yang berbagi properti leluhur yang sama. Sebagai contoh, yang berikut adalah sama <tt>HeaderStyle.BackColor="black"</tt> dan <tt>HeaderStyle.ForeColor="red"</tt>.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_180075">
+&lt;prop:HeaderStyle BackColor="black" ForeColor="red" />
+</com:TTextHighlighter>
+
+<h3 id="1505">ID Komponen</h3>
+<p id="180174" class="block-content">
+Ketika ditetapkan dalam template, properti <tt>ID</tt> komponen mempunyai arti khusus sebagai tambahan terhadap definisi properti normalnya. Tag komponen yang ditetapkan dengan nilai ID dalam template akan meregistrasi komponen terkait ke dalam kontrol pemilik template. Selanjutnya komponen dapat diakses secara langsung dari kontrol template dengan nilai ID-nya. Sebagai contoh, dalam template halaman <tt>Home</tt>, tag komponen berikut 
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_180076">
+&lt;com:TTextBox ID="TextBox" Text="First Name" />
+</com:TTextHighlighter>
+memungkinkan untuk memperoleh obyek kotak teks dalam kode menggunakan <tt>$page->TextBox</tt>.
+</p>
+
+<a name="tct"></a>
+<h2 id="1503">Tag Kontrol Template</h2>
+Tag kontrol template digunakan untuk mengkonfigurasi nilai properti awal dari kontrol yang memiliki template. Formatnya adalah sebagai berikut,
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_180077">
+&lt;%@ PropertyName="PropertyValue" ... %&gt;
+</com:TTextHighlighter>
+Seperti dalam tag komponen, <tt>PropertyName</tt> adalah tidak sensitif-huruf dan bisa berupa nama properti atau subproperti.
+</p>
+<p id="180175" class="block-content">
+Nilai awal yang ditetapkan melalui tag kontrol template ditempatkan ke properti terkait saat kontrol template dibentuk. Oleh karena itu, Anda dapat mengganti nilai properti ini dalam langkah berikutnya, seperti tahap <tt>Init</tt> dari kontrol.
+</p>
+<p id="180176" class="block-content">
+Tag kontrol template adalah opsional dalam sebuah template. Setiap template dapat berisi paling banyak satu tag kontrol template. Anda dapat menempatkan tag kontrol template di mana saja di dalam template. Direkomendasikan bahwa Anda menempatkannya di awal template untuk visibilitas lebih baik.
+</p>
+
+<a name="cot"></a>
+<h2 id="1504">Tag Komentar</h2>
+<p id="180177" class="block-content">
+Tag komentar dipakai untuk menyimpan komentar pengembang dalam  template yang tidak akan ditampilkan ke pengguna-akhir. Isi dikurung di dalam tag komentar akan diperlakukan sebagai teks tring biasa dan PRADO tidak akan mencoba untuk menguraikannya. Tag komentar tidak bisa dipakai di dalam nilai properti. Format tag komentar adalah sebagai berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_180078">
+&lt;!---
+Komentar TIDAK TERLIHAT bagi pengguna-akhir
+---&gt;
+</com:TTextHighlighter>
+<div class="note"><b class="tip">Catatan:</b>
+Tag komentar baru <tt>&lt;!--- ... ---&gt;</tt> diperkenalkan sejak  PRADO versi 3.1. Sebelumnya adalah <tt>&lt;!-- ... --!&gt;</tt> yang tidak dipakai lagi karena beberapa editor mempunyai masalah dalam penerangan-sintaks tag seperti itu. </div>
+
+<h2 id="1601">Tag Include</h2>
+<p id="180178" class="block-content">
+Sejak versi 3.0.5, PRADO mulai mendukung penyertaan template eksternal. Ini dilakukan melalui tag include, di mana file template eksternal ditetapkan dalam format namespace dan nama filenya harus diakhiri dengan <tt>.tpl</tt>.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_180079">
+&lt;%include path.to.templateFile %&gt;
+</com:TTextHighlighter>
+
+<p id="180179" class="block-content">
+Template eksternal akan disisipkan di tempat di mana tag include terjadi dalam basis template.
+</p>
+<p id="180180" class="block-content">
+Catatan, pengulangan penyertaan template tidak didukung, misalnya Anda tidak dapat mempunyai tag include di dalam template eksternal.
+</p>
+
+<div class="last-modified">$Id: Templates1.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>

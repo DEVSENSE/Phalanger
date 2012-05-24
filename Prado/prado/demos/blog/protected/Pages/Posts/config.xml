@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+  <authorization>
+    <deny pages="EditPost,NewPost,MyPost" users="?" />
+    <allow pages="NewCategory,EditCategory" roles="admin" />
+    <deny pages="NewCategory,EditCategory" users="*" />
+  </authorization>
+</configuration>

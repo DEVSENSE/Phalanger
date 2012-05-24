@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+
+<head>
+<meta http-equiv="Expires" content="Fri, Jan 01 1900 00:00:00 GMT"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="content-language" content="en"/>
+<title>TSoapService Demo</title>
+</head>
+
+<body>
+
+<h1>TSoapService Demo</h1>
+<p>
+This demo shows basic usage of TSoapService which provides integrated
+SOAP service for PRADO applications.
+</p>
+<p>
+The demo includes both a SOAP server and a client (this page).
+The SOAP server supports two operations which are provided by <tt>SimpleService</tt> class:
+</p>
+<ul>
+<li><tt>highlight()</tt>: takes a string and returns the highlighted version.</li>
+<li><tt>add()</tt>: takes two numbers and returns the addition of them.</li>
+</ul>
+<p>
+For more details about the server, see its 
+<a href="<%=$this->Request->AbsoluteApplicationUrl.'?soap=calculator.wsdl'%>">WSDL specification</a>.
+</p>
+
+<com:TForm>
+<h2>SOAP Calculator</h2>
+<com:TTextBox ID="Number1" Columns="3"/> + 
+<com:TTextBox ID="Number2" Columns="3"/> = 
+<com:TTextBox ID="AdditionResult" ReadOnly="true" Columns="3" /> 
+<com:TButton Text="Compute" OnClick="computeButtonClicked"/>
+
+<h2>Source Code Highlighter</h2>
+<p>
+Click on the button below to show the highlighted source code of
+this page class:
+</p>
+<com:TButton Text="Highlight" OnClick="highlightButtonClicked"/>
+<br/>
+<div style="background:lightyellow">
+<com:TLiteral ID="HighlightResult" />
+</div>
+
+</com:TForm>
+</body>
+</html>

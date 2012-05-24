@@ -1,0 +1,59 @@
+<com:TContent ID="body" >
+
+<h1 id="1801">Application Configurations</h1>
+<p id="210213" class="block-content">
+Application configurations are used to specify the global behavior of an application. They include specification of path aliases, namespace usages, module and service configurations, and parameters.
+</p>
+<p id="210214" class="block-content">
+Configuration for an application is stored in an XML file named <tt>application.xml</tt>, which should be located under the application base path. Its format is shown in the following. Complete specification of application configurations can be found in the <a href="<%~../../../../../docs/specs/application.dtd%>">DTD</a> and <a href="<%~../../../../../docs/specs/application.xsd%>">XSD</a> files.
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_210095">
+<application PropertyName="PropertyValue" ...>
+  <paths>
+    <alias id="AliasID" path="AliasPath" />
+    <using namespace="Namespace" />
+  </paths>
+  <modules>
+    <module id="ModuleID" class="ModuleClass"  PropertyName="PropertyValue" ... />
+  </modules>
+  <parameters>
+    <parameter id="ParameterID" class="ParameterClass" PropertyName="PropertyValue" ... />
+  </parameters>
+  <include file="path.to.extconfig" when="PHP expression" />
+  <services>
+    <service id="ServiceID" class="ServiceClass" PropertyName="PropertyValue" ... />
+  </services>
+</application>
+</com:TTextHighlighter>
+
+<ul id="u1" class="block-content">
+
+<li>The outermost element <tt>&lt;application&gt;</tt> corresponds to the <tt>TApplication</tt> instance. The <tt>PropertyName="PropertyValue"</tt> pairs specify the initial values for the properties of <tt>TApplication</tt>.</li>
+
+<li>The <tt>&lt;paths&gt;</tt> element contains the definition of path aliases and the PHP inclusion paths for the application. Each path alias is specified via an <tt>&lt;alias&gt;</tt> whose <tt>path</tt> attribute takes an absolute path or a path relative to the directory containing the application configuration file. The <tt>&lt;using&gt;</tt> element specifies a particular path (in terms of namespace) to be appended to the PHP include paths when the application runs. PRADO defines two default aliases: <tt>System</tt> and <tt>Application</tt>. The former refers to the PRADO framework root directory, and the latter refers to the directory containing the application configuration file.</li>
+
+<li>The <tt>&lt;modules&gt;</tt> element contains the configurations for a list of modules. Each module is specified by a <tt>&lt;module&gt;</tt> element. Each module is uniquely identified by the <tt>id</tt> attribute and is of type <tt>class</tt>. The <tt>PropertyName="PropertyValue"</tt> pairs specify the initial values for the properties of the module.</li>
+
+<li>The <tt>&lt;parameters&gt;</tt> element contains a list of application-level parameters that are accessible from anywhere in the application. You may specify component-typed parameters like specifying modules, or you may specify string-typed parameters which take a simpler format as follows,
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_210096">
+<parameter id="ParameterID" value="ParameterValue" />
+</com:TTextHighlighter>
+Note, if the <tt>value</tt> attribute is not specified, the whole parameter XML node (of type <tt>TXmlElement</tt>) will be returned as the parameter value. In addition, the <tt>System.Util.TParameterModule</tt> module provides a way to load parameters from an external XML file. See more details in its API documentation.
+</li>
+
+<li>The <tt>&lt;include&gt;</tt> element allows one to include external configuration files. It has been introduced since v3.1.0. The <tt>file</tt> attribute specifies the external configuration file in namespace format. The extension name of the file must be <tt>.xml</tt>. The <tt>when</tt> attribute contains a PHP expression and is optional (defaults to true). Only when the expression evaluates true, will the external configuration file be included. The context of the expression is the application, i.e., <tt>$this</tt> in the expression would refer to the application object.
+</li>
+
+<li>The <tt>&lt;services&gt;</tt> element is similar to the <tt>&lt;modules&gt;</tt> element. It mainly specifies the services provided by the application. Within a <tt>&lt;service&gt;</tt> element, one can have any of the above elements. They will be effective only when the corresponding service is being requested.</li>
+
+</ul>
+
+<p id="210215" class="block-content">
+An external configuration file has the same format as described above. Although the name of the root element does not matter, it is recommended to be <tt>&lt;configuration&gt;</tt>. External configurations will append to the main configuration. For example, if a path alias is specified in an external configuration, it will become available in addition to those aliases specified in the main configuration.
+</p>
+
+<p id="210216" class="block-content">
+By default without explicit configuration, a PRADO application will load a few core modules, such as <tt>THttpRequest</tt>, <tt>THttpResponse</tt>, etc. It will also provide the <tt>TPageService</tt> as a default service. Configuration and usage of these modules and services are covered in individual sections of this tutorial. Note, if your application takes default settings for these modules and service, you do not need to provide an application configuration. However, if these modules or services are not sufficient, or you want to change their behavior by configuring their property values, you will need an application configuration.
+</p>
+
+<div class="last-modified">$Id: AppConfig.page 1695 2007-02-13 14:16:09Z xue $</div></com:TContent>

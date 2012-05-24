@@ -1,0 +1,86 @@
+<com:TContent ID="body" >
+
+<h1 id="6601">Catatan Pengembang untuk prototype.js</h1>
+Bimbingan ini didasarkan pada <a href="http://www.sergiopereira.com/articles/prototype.js.html">
+Catatan Pengembang untuk prototype.js</a> oleh Sergio Pereira.
+
+<h2 id="6603">Apa itu?</h2>
+<p id="830726" class="block-content">
+Dalam hal Anda tidak pernah menggunakannya, <a href="http://prototype.conio.net">prototype.js</a> adalah librari 
+    JavaScript yang ditulis oleh <a href="http://www.conio.net">Sam Stephenson</a>.
+    Pemikiran yang hebat ini dan kode <b>sesuai-standar</b> yang ditulis dengan baik mengambil banyak beban terkait dengan pembuatan halaman web sangat interaktif dan kaya yang mengkarakterkan Web 2.0 di belakang Anda.
+</p>
+
+<p id="830727" class="block-content">
+    Jika Anda baru saja mencoba menggunakan librari ini, Anda mungkin mencatat bahwa dokumentasi bukanlah salah satu titik yang terkuat. Seperti banyak pengembang lain sebelum saya, saya mempelajari prototype.js dengan membaca kode sumber dan melakukan percobaan denganya. Saya pikir akan baik jika mengambil catatan selama saya mempelajari dan berbagi dengan orang lain.
+</p>
+<p id="830728" class="block-content">
+    Setelah Anda membaca contoh dan referensi, para pengembang yang terbiasa dengan bahasa pemrograman Ruby akan mencatat kesamaan maksud antara kelas  built-in Ruby dan banyak ekstensi diimplementasikan oleh librari ini.
+</p>
+
+
+<h2 id="6604">Menggunakan fungsi <tt>$()</tt></h2>
+<p id="830729" class="block-content">
+    Fungsi <tt>$()</tt> adalah jalan pintas yang siap digunakan untuk fungsi yang semua-terlalu-sering <tt>document.getElementById()</tt> terhadap DOM. Seperti fungsi DOM, fungsi ini mengembalikan elemen yang id-nya dikirimkan sebagai sebuah argumen.
+</p>
+
+<p id="830730" class="block-content">
+    Tidak seperti fungsi DOM, bagaimanapun juga, yang satu ini melampauinya. Anda dapat mengirimkan lebih dari satu id dan 
+    <tt>$()</tt> akan mengembalikan obyek <tt>Array</tt> dengan semua elemen yang diminta. Contoh di bawah seharunya menggambarkan ini.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_830252">
+&lt;com:TClientScript UsingClientScripts="prado" /&gt;
+<div id="myDiv">
+    <p id="830731" class="block-content">This is a paragraph</p>
+</div>
+
+<div id="myOtherDiv">
+    <p id="830732" class="block-content">This is another paragraph</p>
+</div>
+
+<input type="button" value=Test1 onclick="test1();" />
+<input type="button" value=Test2 onclick="test2();" />
+
+<script type="text/javascript">
+/*<![CDATA[*/
+function test1()
+{
+    var d = $('myDiv');
+    alert(d.innerHTML);
+}
+
+function test2()
+{
+    var divs = $('myDiv','myOtherDiv');
+    for(i=0; i<divs.length; i++)
+    {
+        alert(divs[i].innerHTML);
+    }
+}
+/*]]>*/
+</script>
+</com:TTextHighlighter>
+<p id="830733" class="block-content">
+    Hal baik lainnya dari fungsi ini adalah bahwa Anda bisa mengirimkan baik string <tt>id</tt> ataupun elemen obyek itu sendiri, yang menjadikan fungsi ini sangat berguna ketika membuat fungsi lain yang juga mengambil bentuk argumen.
+</p>
+
+<h2 id="6605">Menggunakan fungsi <tt>$F()</tt></h2>
+
+<p id="830734" class="block-content">
+    Fungsi <tt>$F()</tt> adalah jalan pintas penyambutan lainnya. Ia mengembalikan nilai dari setiap kontrol input field, seperti kotak teks atau daftar drop-down. Fungsi bisa diambil sebagai argumen baik elemen <tt>id</tt> ataupun elemen obyek itu sendiri.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_830253">
+<input type="text" id="userName" value="Joe Doe" />
+<input type="button" value=Test3 onclick="test3();" />
+
+<script type="text/javascript">
+/*<![CDATA[*/
+function test3()
+{
+    alert($F('userName'));
+}
+/*]]>*/
+</script>
+</com:TTextHighlighter>
+
+<div class="last-modified">$Id: Scripts1.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

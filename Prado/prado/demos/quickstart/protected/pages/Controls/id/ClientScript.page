@@ -1,0 +1,42 @@
+<com:TContent ID="body" >
+
+<h1 id="2201">TClientScript</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TClientScript" />
+<h2 id="2202">Menyertakan Bundel Librari Javascript dalam Prado</h2>
+<p id="260238" class="block-content">
+<tt>TClientScript</tt> membolehkan kode Javascript disisipkan atau di-link ke template halaman. PRADO dibundel dengan fungsionalitas librari besar Javascript termasuk efek, AJAX, pengendali event dasar, dan masih banyak lagi. Librari Javascript yang dibundel bisa di-link ke template halaman saat ini menggunakan properti <tt>PradoScripts</tt>. Multipel librari Javascript yang dibundel bisa ditetapkan menggunakan string nama librari Javascript dipisahkan koma untuk disertakan pada halaman. Contoh berikut akan menggunakan librari "ajax" dan "effects".
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_260101">
+&lt;com:TClientScript PradoScripts="ajax, effects" /&gt;
+</com:TTextHighlighter>
+
+<p id="260239" class="block-content">
+	Bundel librari yang disertakan dalam Prado adalah</p>
+	<ul id="u1" class="block-content">
+	    <li><tt>prado</tt> : kerangka kerja javascript prado dasar berdasarkan Prototype</li>
+	    <li><tt>effects</tt> : efek visual dari script.aculo.us</li>
+	    <li><tt>ajax</tt> : terkait ajax dan callback berdasarkan Prototype</li>
+	    <li><tt>validator</tt> : validasi</li>
+	    <li><tt>logger</tt> : javascript pencatat dan browser obyek</li>
+	    <li><tt>datepicker</tt> : datepicker</li>
+	    <li><tt>colorpicker</tt> : colorpicker</li>
+	</ul>
+<p id="260240" class="block-content">
+Banyak dari librari, seperti <tt>validator</tt> dan <tt>datepicker</tt> akan secara otomatis ketika kontrol yang menggunakan librari ini terlihat pada halaman. Sebagai contoh, semua <a href="?page=Controls.Validation">validator</a>
+jika <tt>EnableClientScript</tt> disetel true akan menyertakan librari javascript <tt>prado</tt> dan <tt>validator</tt>. 
+Ketergantungan dari setiap librari secara otomatis dipecahkan. Yakni, menetapkan, katakanlah "ajax", juga akan menyertakan librari "prado".</p>
+
+<h2 id="2203">Menyertakan File Javascript Kustom</h2>
+<p id="260241" class="block-content">File Javascript kustom dapat diregistrasi menggunakan properti <tt>ScriptUrl</tt>. Contoh berikut menyertakan file Javascript "test.js" ke halaman. Dalam hal ini, file "test.js" relatif ke template saat ini yang sedang anda gunakan. Karena nilai properti adalah
+<a href="?page=Configurations.Templates3">tag asset dinamis</a>, file "test.js" akan dipublikasikan secara otomatis, yaitu file akan di-copy ke direktori asset bila perlu.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_260102">
+&lt;com:TClientScript ScriptUrl=&lt;%~ test.js %&gt; /&gt;
+</com:TTextHighlighter>
+<p id="260242" class="block-content">You can include Javascript files from other servers by specifying the full URL string in
+	the <tt>ScriptUrl</tt> property.</p>
+
+<h2 id="2204">Menyertakan Blok Kode Javascript Kustom</h2>
+<p id="260243" class="block-content"> Setiap konten di dalam tag kontrol <tt>TClientScript</tt> akan dianggap sebagai kode Javascript dan akan disajikan di mana ia dideklarasikan.</p>
+
+<div class="last-modified">$Id: ClientScript.page 1846 2007-04-07 10:35:16Z wei $</div></com:TContent>

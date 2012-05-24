@@ -1,0 +1,59 @@
+<com:TContent ID="body" >
+
+<h1 id="1801">Konfigurasi Aplikasi</h1>
+<p id="210213" class="block-content">
+Konfigurasi aplikasi digunakan untuk menetapkan perilaku global atas aplikasi. Ini terrmasuk spesifikasi alias path, pemakaian namespace, konfigurasi modul dan dan layanan, serta parameter.
+</p>
+<p id="210214" class="block-content">
+Konfigurasi untuk aplikasi disimpan dalam sebuah file XML bernama <tt>application.xml</tt>, yang harus ditempatkan di bawah path basis aplikasi. Formatnya ditampilkan berikut ini. Spesifikasi lengkap dari konfigurasi aplikasi dapat ditemukan dalam file <a href="<%~../../../../../../docs/specs/application.dtd%>">DTD</a> dan <a href="<%~../../../../../../docs/specs/application.xsd%>">XSD</a>.
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_210095">
+<application PropertyName="PropertyValue" ...>
+  <paths>
+    <alias id="AliasID" path="AliasPath" />
+    <using namespace="Namespace" />
+  </paths>
+  <modules>
+    <module id="ModuleID" class="ModuleClass"  PropertyName="PropertyValue" ... />
+  </modules>
+  <parameters>
+    <parameter id="ParameterID" class="ParameterClass" PropertyName="PropertyValue" ... />
+  </parameters>
+  <include file="path.to.extconfig" when="PHP expression" />
+  <services>
+    <service id="ServiceID" class="ServiceClass" PropertyName="PropertyValue" ... />
+  </services>
+</application>
+</com:TTextHighlighter>
+
+<ul id="u1" class="block-content">
+
+<li>Elemen paling luar <tt>&lt;application&gt;</tt> berkaitan dengan turunan <tt>TApplication</tt>. Pasangan <tt>PropertyName="PropertyValue"</tt> menetapkan nilai awal untuk properti <tt>TApplication</tt>.</li>
+
+<li>Elemen <tt>&lt;paths&gt;</tt> berisi definisi alias path dan path penyertaan PHP untuk aplikasi. Setiap alias path ditetapkan melalui <tt>&lt;alias&gt;</tt> yang mana atribut <tt>path</tt> mengambil path absolut atau path relatif ke direktori yang berisi file konfigurasi aplikasi. Elemen <tt>&lt;using&gt;</tt> menetapkan path tertentu (dalam batasan namespace) akan ditambahkan ke path include PHP saat aplikasi dijalankan. PRADO mendefinisikan dua alias standar: <tt>System</tt> dan <tt>Application</tt>. Pembentuk merujuk ke direktori akar framework PRADO, dan yang terakhir merujuk ke direktori berisi file konfigurasi aplikasi.</li>
+
+<li>Elemen <tt>&lt;modules&gt;</tt> berisi konfigurasi untuk daftar modul. Setiap modul ditetapkan dengan elemen <tt>&lt;module&gt;</tt>. Setiap modul diidentifikasi secara unik oleh atribut <tt>id</tt> dan tipe <tt>class</tt>. Pasangan <tt>PropertyName="PropertyValue"</tt> menetapkan nilai awal untuk properti modul.</li>
+
+<li>Elemen <tt>&lt;parameters&gt;</tt> berisi daftar parameter level-aplikasi yang dapat diakses dari mana saja dalam aplikasi. Anda bisa menetapkan parameter tipe-komponen seperti menetapkan modul, atau Anda bisa menetapkan parameter tipe-string yang merupakan format lebih sederhana seperti berikut,
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_210096">
+<parameter id="ParameterID" value="ParameterValue" />
+</com:TTextHighlighter>
+Catatan, jika atribut <tt>value</tt> tidak ditetapkan, seluruh parameter XML node (dari tipe <tt>TXmlElement</tt>) akan dikembalikan sebagai nilai parameter. Sebagai tambahan, modul <tt>System.Util.TParameterModule</tt> menyediakan satu cara untuk mengambil parameter dari file XML eksternal. Lihat lebih jelasnya dalam dokumentasi API.
+</li>
+
+<li>Elemen <tt>&lt;include&gt;</tt> membolehkan seseorang menyertakan file konfigurasi eksternal. Sudah diperkenalkan sejak v3.1.0. Atribut <tt>file</tt> menetapkan file konfigurasi eksternal dalam format namespace. Nama ekstensi dari file harus <tt>.xml</tt>. Atribut <tt>when</tt> berisi ekspresi PHP dan opsional (standarnya true). Hanya ketika ekspresi mengevaluasi true, file konfigurasi eksternal akan disertakan. Konteks ekspresi adalah aplikasi, misalnya <tt>$this</tt> dalam ekspresi akan merujuk ke obyek aplikasi.
+</li>
+
+<li>Elemen <tt>&lt;services&gt;</tt> mirip dengan elemen <tt>&lt;modules&gt;</tt>. Ia sebagian besar menetapkan layanan yang disediakan oleh aplikasi. Di dalam elemen <tt>&lt;service&gt;</tt>, seseorang dapat memiliki salah satu elemen di atas. Ini akan efektif hanya ketika layanan terkait sedang diminta.</li>
+
+</ul>
+
+<p id="210215" class="block-content">
+File konfigurasi eksternal mempunyai format yang sama seperti dijelaskan di atas. Meskipun nama elemen akar tidak menjadi masalah, direkomendasikan adalah <tt>&lt;configuration&gt;</tt>. Konfigurasi eksternal akan menambah konfigurasi utama. Sebagai contoh, jika alias path ditetapkan dalam konfigurasi eksternal, ia akan menjadi tersedia sebagai tambahan terhadap alias yang ditetapkan dalam konfigurasi utama.
+</p>
+
+<p id="210216" class="block-content">
+Standarnya tanpa konfigurasi eksplisit, aplikasi PRADO akan mengambil beberapa modul inti, seperti <tt>THttpRequest</tt>, <tt>THttpResponse</tt>, dll. Ia juga akan menyediakan <tt>TPageService</tt> sebagai layanan standar. Konfigurasi dan penggunaan modul serta layanan ini tercakup dalam seksi individual pada  tutorial ini. Catatan, jika aplikasi Anda mengambil setelan standar untuk modul dan layanan ini, Anda tidak perlu menyediakan konfigurasi aplikasi. Akan tetapi, jika modul atau layanan ini tidak mencukupi, atau Anda ingin menghubah perilakunya dengan mengkonfigurasi nilai propertinya, Anda memerlukan konfigurasi aplikasi.
+</p>
+
+<div class="last-modified">$Id: AppConfig.page 1695 2007-02-13 14:16:09Z xue $</div></com:TContent>

@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="3501">TLabel</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TLabel" />
+
+<p id="400281" class="block-content">
+<tt>TLabel</tt> menampilkan teks pada halaman Web. Teks yang ditampilkan disetel melalui properti <tt>Text</tt>. Jika <tt>Text</tt> kosong, konten yang ditutupi dalam tag komponen <tt>TLabel</tt> akan ditampilkan. <tt>TLabel</tt> juga dapat dipakai sebagai label formulir yang terkait dengan beberapa kontrol pada formulir. Karena <tt>Text</tt> bukan HTML-dikodekan ketika disajikan, pastikan ia tidak berisi karakter berbahaya yang ingin anda hindari.
+</p>
+<com:RunBar PagePath="Controls.Samples.TLabel.Home" />
+
+<div class="last-modified">$Id: Label.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

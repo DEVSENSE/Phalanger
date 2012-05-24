@@ -1,0 +1,29 @@
+<com:TContent ID="body">
+<div class="quicksearch">
+	<div class="search">
+	<com:SearchBox ID="search"  />
+	</div>
+
+	<com:TRepeater id="quickstart_results">
+	<prop:HeaderTemplate>
+	<div class="searchHeader">
+		<%# $this->Parent->DataSource->Count %> znalezionych w Quickstart Tutorial.
+	</div>
+	</prop:HeaderTemplate>
+	<prop:ItemTemplate>
+	<div class="searchItem">
+		<div class="searchItemLink">
+		<%# $this->ItemIndex + 1 %>.
+		<a href="<%# $this->DataItem->link %>">
+			<%# $this->DataItem->title %>
+		</a>
+		</div>
+		<p class="searchItemBody"><%# $this->Page->HighlightSearch($this->DataItem->text) %></p>
+	</div>
+	</prop:ItemTemplate>
+	</com:TRepeater>
+	<com:TPanel id="emptyResult" CssClass="empty_search_result" Visible="false">
+	Nie znaleziono żadnych rezultatów dla frazy  "<%= htmlentities($this->Page->search->Text) %>".
+	</com:TPanel>
+</div>
+<div class="last-modified">$Id: Search.page 1859 2007-04-10 21:27:01Z xue $</div></com:TContent>

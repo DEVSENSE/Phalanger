@@ -1,0 +1,15 @@
+<com:TContent ID="body">
+
+<h1>TActiveFileUpload Sample</h1>
+
+<p>
+Please choose a file to upload:
+</p>
+
+<com:TActiveFileUpload OnFileUpload="fileUploaded" />
+
+<br/>
+
+<com:TActiveLabel ID="Result" />
+
+<div class="last-modified">$Id: Home.page 2961 2011-06-02 19:27:21Z ctrlaltca@gmail.com $</div></com:TContent>

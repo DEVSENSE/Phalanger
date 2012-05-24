@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="northwind-db" mode="Debug">
+  <!-- alias definitions and namespace usings -->
+  <paths>
+	<using namespace="System.Data.*" />
+	<using namespace="System.Data.ActiveRecord.*" />
+	<using namespace="System.Data.ActiveRecord.Scaffold.*" />
+	<using namespace="Application.database.*" />
+  </paths>
+
+  <modules>
+	<module class="TActiveRecordConfig">
+		<!-- db file is relative to the index.php -->
+		<database ConnectionString="sqlite:protected/data/Northwind.db" />	
+	</module>
+	<module class="System.I18N.TGlobalization" DefaultCharset="UTF-8" />
+  </modules>
+
+</application>

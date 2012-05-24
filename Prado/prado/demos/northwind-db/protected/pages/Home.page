@@ -1,0 +1,19 @@
+<html>
+<com:THead Title="Northwind Database Sample">
+<style>
+body{ font-family: cambria, "New Times Roman" }
+</style>
+</com:THead>
+<body>
+<h1>Northwind Database Sample</h1>
+<p>
+The Northwind Traders sample database contains the sales data for a fictitious 
+company called Northwind Traders, which imports and exports specialty foods from around the world.
+The database contains information about customers, suppliers, products, orders and employees (as well as a few other bits of miscellaneous information). 
+</p>
+<h2><a href="?page=NorthwindCrud">View/Edit database</a></h2>
+<img src=<%~ northwind.gif %> />
+
+<p>Northwind Traders sample database is part of the SQL Server 2000 Sample Databases, Copyright Microsoft, Inc. 1994 - 2000.</p>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<%@ Title="Post Management" %>
+
+<com:TContent ID="Main">
+
+<h2>Administration Center</h2>
+
+<com:Application.Pages.Admin.AdminMenu />
+
+<com:TDataGrid ID="PostGrid"
+	AutoGenerateColumns="false"
+	DataKeyField="ID"
+	CssClass="grid"
+	HeaderStyle.CssClass="grid-header"
+	ItemStyle.CssClass="grid-row1"
+	SelectedItemStyle.CssClass="grid-row-selected"
+	AlternatingItemStyle.CssClass="grid-row2"
+	AllowPaging="true"
+	AllowCustomPaging="true"
+	PageSize="20"
+	PagerStyle.CssClass="grid-pager"
+	PagerStyle.Mode="Numeric"
+	OnPageIndexChanged="changePage"
+	OnPagerCreated="pagerCreated"
+	OnEditCommand="editItem"
+	OnUpdateCommand="saveItem"
+	OnCancelCommand="cancelItem"
+	>
+	<com:THyperLinkColumn
+		HeaderText="Title"
+		DataNavigateUrlField="ID"
+		DataNavigateUrlFormatString="#$this->Service->constructUrl('Posts.ViewPost',array('id'=>{0}))"
+		DataTextField="Title"
+		/>
+	<com:THyperLinkColumn
+		HeaderText="Author"
+		DataNavigateUrlField="AuthorID"
+		DataNavigateUrlFormatString="#$this->Service->constructUrl('Users.ViewUser',array('id'=>{0}))"
+		DataTextField="AuthorName"
+		/>
+	<com:TTemplateColumn
+		HeaderText="Status"
+		ItemStyle.HorizontalAlign="Center"
+		ItemStyle.Width="90px" >
+		<prop:ItemTemplate>
+		<%#
+			$this->Parent->DataItem->Status===0 ?
+				'Published' :
+				($this->Parent->DataItem->Status===1 ?
+					'Draft' :
+					($this->Parent->DataItem->Status===2 ? 'Pending' : 'Sticky'))
+		%>
+		</prop:ItemTemplate>
+		<prop:EditItemTemplate>
+		<com:TDropDownList ID="PostStatus" SelectedValue=<%# $this->Parent->DataItem->Status %> >
+			<com:TListItem Value="0" Text="Published" />
+			<com:TListItem Value="1" Text="Draft" />
+			<com:TListItem Value="2" Text="Pending" />
+			<com:TListItem Value="3" Text="Sticky" />
+		</com:TDropDownList>
+		</prop:EditItemTemplate>
+	</com:TTemplateColumn>
+	<com:TBoundColumn
+		HeaderText="Time"
+		ReadOnly="true"
+		DataField="ModifyTime"
+		DataFormatString="#date('M j, Y',{0})"
+		ItemStyle.Wrap="false"
+		ItemStyle.Width="90px"
+		ItemStyle.HorizontalAlign="Center"
+		/>
+	<com:TEditCommandColumn
+		HeaderText="Command"
+		HeaderStyle.Width="80px"
+		UpdateText="Save"
+		ItemStyle.HorizontalAlign="Center"
+		ItemStyle.Wrap="false"
+		ItemStyle.Width="80px"
+		/>
+</com:TDataGrid>
+
+</com:TContent>

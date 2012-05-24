@@ -1,0 +1,60 @@
+<com:TContent ID="body" >
+<h1 id="101">Bienvenido al Tutorial rápido de PRADO</h1>
+<div id="intro" class="block-content">
+<p id="10001">Este tutorial rápido se presta a ayudarle rápidamente a empezar a construir tu propia web aplicaciones basadas en PRADO versión 3.x.
+</p>
+<p id="10001" class="block-content">Si ya es usuario PRADO 3.x y me gustaría saber qué mejoras están disponibles para cada nueva versión, por favor, consulte las <a href="?page=GettingStarted.NewFeatures"> nuevas características </a>. De lo contrario, las siguientes secciones son útiles para novatos.
+</p>
+
+<div class="start-page">
+	<div class="concepts start-block">
+	<h2 id="2001">¿Cómo funciona PRADO?</h2>
+	<p id="10002" class="block-content">Conceptos y fundamentos</p>
+	<ol>
+		<li><a href="#">Creación de aplicaciones web con PRADO</a></li>
+		<li><a href="#">Controles Web y eventos</a></li>
+		<li><a href="#">Validación de entrada de usuario</a></li>
+		<li><a href="#">Conexión a bases de datos</a></li>
+		<li><a href="#">Viendo los datos de la base de datos</a></li>
+	</ol>
+	</div>
+	<div class="examples start-block">
+	<h2 id="2002">Examples and Demos</h2>
+	<ul>
+		<li><a href="../helloworld/">Hello World (Hola Mundo)</a></li>
+		<li><a href="../currency-convert/">Currency Converter (Conversor de monedas)</a></li>
+		<li><a href="../address-book/">Address Book (Libreta de direcciones)</a></li>
+		<li><a href="../blog/">Blog</a></li>
+		<li><a href="../chat/">AJAX Chat (Chat en AJAX)</a></li>
+		<li><a href="../time-tracker/">Project Time Tracker (Seguimiento de tiempos de un proyecto)</a></li>
+	</ul>
+	<p id="10003" class="block-content">Más ejemplos en <a href="?page=Controls.Standard">Controles Estándard</a>,
+	<a href="?page=Controls.Validation">Controles de validación</a> and
+	<a href="?page=Controls.Data">Controles de Datos</a>.
+	</div>
+
+	<div class="tutorials start-block">
+	<h2 id="2003">Tutorials and Help</h2>
+	<ul>
+		<li><a href="?page=GettingStarted.HelloWorld">Hello World en detalles</a></li>
+		<li><a href="?page=Tutorial.CurrencyConverter">Tutorial de Currency Converter</a></li>
+		<li><a href="?page=Tutorial.AddressBook">Tutorial de Address Book Tutorial</a></li>
+		<li><a href="?page=Tutorial.AjaxChat">Tutorial de AJAX Chat Tutorial</a></li>
+	</ul>
+	</div>
+</div>
+<p> </p>
+
+<p id="10002">
+Usted podrá hacer referencia a los siguientes recursos si usted encuentra que este tutorial no cumple con todas sus necesidades.
+</p>
+</div>
+<ul class="block-content" id="intro-links">
+  <li><a href="http://www.pradosoft.com/docs/classdoc/">Classes PRADO </a></li>
+  <li><a href="http://www.pradosoft.com/docs/manual/">Documentación API PRADO </a></li>
+  <li><a href="http://www.pradosoft.com/forum/">Foro PRADO</a></li>
+  <li><a href="http://www.pradosoft.com/wiki/">Wiki PRADO</a></li>
+  <li><a href="http://trac.pradosoft.com/prado/">Trac PRADO</a></li>
+</ul>
+
+<div class="last-modified">$Id: Introduction.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>

@@ -1,0 +1,35 @@
+<com:TContent ID="body" >
+
+<h1 id="8005">Nowe możliwości</h1>
+
+<p id="40005" class="block-content">
+Poniższa strona podsumowuje główne możliwości, które zostały wprowadzone w każnym z wydań PRADO.
+</p>
+
+<h2>Wersja 3.1.1</h2>
+<ul>
+<li>Dodano nową kontrolkę <a href="?page=Controls.TabPanel">TTabPanel</a> wyświetlającą zawartość widoków w zakładkach.</li>
+<li>Dodano nową kontrolkę <a href="?page=Controls.Keyboard">TKeyboard</a> wyświetlającą wirtualną klawiaturę do wprowadzania tekstu.</li>
+<li>Dodano nową kontrolkę <a href="?page=Controls.Captcha">TCaptcha</a> wyświetlającą CAPTCHA uniemożliwiającą spamerom logowanie się do kont online. Powiązany Validator <tt>TCaptchaValidator</tt> został również zaimplementowany.</li>
+<li>Dodano nową kontrolkę <a href="?page=Controls.Slider">TSlider</a> wyświetlającą suwak do wprowadzania wartości numerycznych.</li>
+<li>Dodano nową kontrolkę <a href="?page=Controls.Conditional">TConditional</a> wyświetlającą jedną z dwóch rodzajów zawartości w zależności od spełnionego (bądź nie) warunku.</li>
+<li>Dodano wsparcie dla baz Oracle dla Rekordu Aktywnego (Active Record).</li>
+<li>Dodano wsparcie dla TDataGrid umożliwiające grupowanie kolejnych komórek z tą samą zawartością.</li>
+<li>Dodanow możliwość konfiguracji właściwości strony oraz reguł autoryzacji za pomocą <a href="?page=Configurations.PageConfig">relacyjnych ścieżek strony</a> w aplikacji oraz konfiguracji strony. Dodano możliwość <a href="?page=Advanced.Auth">autoryzacji</a> bazującej na zewnętrzym adresie hosta.</li>
+<li>Dodano nowy utrzymywacz (ang. persister) stanu strony <tt>TCachePageStatePersister</tt> umożliwiający przetrzymywanie stanu strony za pomocą modułów cache (np. TMemCache, TDbCache, itd.)
+<li>Dodano wsparcie dla <a href="?page=Advanced.Auth">frameworku authentykacji</a> umożliwiającą zapamiętanie logowania.</li>
+<li>Dodano możliwość wyświetlenia wskazówki w TDropDownList oraz TListBox (coś na wzów 'Proszę wybrać :' jako pierwszą pozycję w liście.)</li>
+<li>Dodanow wsparcie dla <a href="?page=Database.ActiveRecord">mapowania kolumn w Rekordzie Aktywnym (Active Record)</a>.</li>
+</ul>
+
+<h2 id="8006">wersja 3.1.0</h2>
+<ul>
+<li>Dodano jednolite/spójne wsparcie dla AJAX-a. Wprowadzono cały zestaw kontrolek AJAX-owych, nazywanych kontrolkami aktywnymi (ang. <i>active controls</i>).Uzywanie tych kontrolek jest bardzo podobne do swoich nieAJAX-owych odpowiedników, np. wstaw w kod i korzystaj. Aby uzyskać więcej szczegółów, zobacz przewodnik o <a href="?page=ActiveControls.Home">aktywnych kotnrolkach</a>.</li>
+<li>Dodano kompletną obsługę baz danych. </li>
+<li>Dodano nowe kontrolki, moduły i serwisy, w tym <a href="?page=Services.SoapService">TSoapService</a>, <a href="?page=Controls.OutputCache">TOutputCache</a>, TSessionPageStatePersister, TFeedService, TJsonService, klasy powiązane z cachem (ang. <i>cache dependency classes</i>), TXmlTransform.</li>
+<li>Rozszerzono część kontrolek danych o "odtwóców" (ang. <i>renderers</i>). "Odtwórcy" umożliwiają ponowne używanie szablonów pozycji (ang. <i>item templates</i>), które powszechnie można znaleźć w <tt>TRepeater</tt>, <tt>TDataList</tt> i <tt>TDataGrid</tt>, przez co czynią konfigurację tych kontrolek bardziej przejrzystą. Aby uzyskać więcej szczegółów o "odtwórcach" zobacz zaktualizowany przewodnik <a href="?page=Controls.Repeater"><tt>TRepeater</tt></a>, <a href="?page=Controls.DataList"><tt>TDataList</tt></a> oraz <a href="?page=Controls.DataGrid"><tt>TDataGrid</tt></a>.</li>
+<li>Dodano usługę umożliwiającą <a href="?page=Configurations.AppConfig">inkludowanie zewnętrznej konfiguracji serwera</a>. Rozszerzono składnię szablonów ułatwiającą <a href="?page=Configurations.Templates1">konfigurację subwłaściwości</a> (ang. <i>subproperties</i>).</li>
+</ul>
+
+<div class="last-modified">$Id: NewFeatures.page 2342 2007-12-17 01:20:20Z aztech $</div>
+</com:TContent>

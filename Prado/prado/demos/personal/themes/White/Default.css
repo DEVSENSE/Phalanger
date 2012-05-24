@@ -1,0 +1,326 @@
+﻿/* 0 BASIC TAGS */
+
+table {
+	font-size: 1em;
+}
+
+h1, h2, h3, h4 {
+	margin: 0;
+	font-family: tahoma, arial, helvetica, sans-serif;
+}
+
+p {
+	line-height: 1.4em;
+}
+
+hr {
+	border: 0;
+	border-top: 1px solid #bababa;
+	height: 1px;
+}
+
+a {
+	text-decoration: none;
+	color: #d32525;
+}
+
+a:visited {
+	color: #980000;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #e05252;
+}
+
+a:active {
+	color: #980000;
+}
+
+body {
+	background-color: #ffffff;
+	background-image: url(images/background.gif);
+	background-repeat: repeat-x;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 0.7em;
+	color: #666666;
+}
+
+img {
+	border-width: 0;
+}
+
+/* 1 HEADER */
+
+.header {
+	background-image: url(Images/header.gif);
+	background-repeat: no-repeat;
+	position: relative;
+	width: 760px;
+	height: 81px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+h1 {
+	position: absolute;
+	left: 37px;
+	top: 12px;
+	text-transform: uppercase;
+	font-size: 18px;
+}
+
+h2 {
+	position: absolute;
+	left: 37px;
+	top: 60px;
+	font-size: 11px;
+}
+
+.mainmenu {
+	position: absolute;
+	right: 37px;
+	top: 17px;
+	text-transform: uppercase;
+	font-size: 10px;
+}
+
+.mainmenu a:visited, .nav a:visited {
+	color: #d32525;
+}
+
+.nav {
+	position: absolute;
+	right: 37px;
+	top: 60px;
+	text-transform: uppercase;
+	font-size: 10px;
+}
+
+
+/* 1.1 SHIM */
+
+.shim {
+	background-repeat: no-repeat;
+	margin-left: auto;
+	margin-right: auto;
+	width: 760px;
+	height: 8px;
+	font-size: 0;
+}
+
+.column {
+	background-image: url(images/content-shim.gif);
+}
+
+.gradient {
+	background-image: url(images/content-shim-photo.gif);
+}
+
+.solid {
+	background-image: url(images/content-shim-none.gif);
+}
+
+/* 2 PAGE */
+
+.page {
+	background-repeat: repeat-y;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left;
+}
+
+h3 {
+	margin-top: 1.0em;
+	margin-bottom: 1.12em;
+	font-size: 1.5em;
+	font-weight: bold;
+}
+h4 {
+	margin-top: 1.0em;
+	margin-bottom: 1.12em;
+	font-size: 1.3em;
+	font-weight: bold;
+}
+
+/* 2.1 HOME, RESUME, LINKS, REGISTER, ADMIN/ALBUMS, ADMIN/PHOTOS PAGES */
+
+#home, #resume, #links, #register, #admin-albums, #admin-photos {
+	background-image: url(images/body-repeat.gif);
+	position: relative;
+	width: 686px;
+	padding: 0px 37px;
+	padding-top: 1px; /* Weird Mozilla Bug */
+	padding-bottom: 40px; /* Weird Mozilla Bug */
+}
+
+#sidebar {
+	float: left;
+	width: 214px;
+	height: 100%;
+}
+
+#content {
+	margin-left: 256px;
+}
+
+#whatsnew {
+	float: left;
+	width: 200px;
+	height: 100%;
+}
+
+#coollinks {
+	margin-left: 220px;
+}
+
+#resume h4, #links h4 {
+	margin-top: 0;
+	border-top: 1px solid #bababa;
+	padding-top: 1.0em;
+	position: absolute;
+	left: 37px;
+	width: 214px;
+}
+
+#resume #photo {
+	position: absolute;
+	left: 37px;
+	top: 20px;
+	width: 214px;
+}
+
+#resume .first {
+	margin-top: 0;
+	border-top: 1px solid #bababa;
+	padding-top: 1.5em;
+}
+
+dl {
+	margin-top: 0;
+	margin-bottom: 0;
+	border-top: 1px solid #bababa;
+	padding-top: 1.5em;
+	padding-bottom: 1.5em;
+	position: relative;
+}
+
+dt {
+	position: absolute;
+	left: 0;
+}
+
+dd {
+	margin-left: 150px;
+	height: 2.0em;
+}
+
+.emptydata td {
+	padding: 50px;
+	color: #aeaeae;
+}
+
+/* 2.2 ALBUMS PAGE */
+
+#albums {
+	background-image: url(images/body-repeat-photo.gif);
+	padding: 0px 37px;
+	padding-bottom: 40px;
+	width: 686px;
+}
+
+.view {
+	margin-left: auto;
+	margin-right: auto;
+	width: 686px;
+	text-align: center;
+}
+
+.view .photo-frame {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.item {
+	padding: 20px 50px;
+	color: #B2B2B2;
+}
+
+.item h4 {
+	margin-bottom: 0.4em;
+}
+
+.nullpanel {
+	padding: 150px;
+	width: auto;
+	text-align: center;
+}
+
+/* 2.3 PHOTOS, DETAILS, ADMIN/DETAILS PAGE */
+
+#photos, #details, #admin-details {
+	background-image: url(images/body-repeat-photo.gif);
+	padding: 0;
+	width: 760px;
+}
+
+.buttonbar {
+	background-image: url(images/photonav-bg.gif);
+	background-repeat: repeat-x;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 4px;
+	width: 744px;
+	height: 33px;
+	text-align: center;
+}
+
+.buttonbar-top {
+	background-image: url(images/photonav-top-bg.gif);
+}
+
+#photos .view, #admin-details .view {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+/* 3 FOOTER */
+
+.footerbg {
+	background-image: url(images/footer-side.gif);
+	background-repeat: repeat-x;
+	width: auto;
+	height: 75px;
+	text-align: center;
+}
+.footer {
+	background-image: url(images/footer.gif);
+	background-repeat: no-repeat;
+	margin-left: auto;
+	margin-right: auto;
+	width: 760px;
+	height: 75px;
+	text-align: center;
+	font-size: 10px;
+}
+
+.menub {
+	margin: 12px auto 5px auto;
+	text-transform: uppercase;
+	font-size: 10px;
+}
+
+.menub a:visited {
+	color: #d32525;
+}
+
+
+
+/* Inline styles are used because image controls hard code a border property */
+
+.photo_198 {
+	border: 4px solid #FFFFFF;
+}

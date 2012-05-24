@@ -1,0 +1,50 @@
+<com:TContent ID="body" >
+
+<h1 id="1001">Moduły (ang. modules)</h1>
+<p id="140141" class="block-content">
+Moduł jest instancją klasy implementującej interfejs <tt>IModule</tt>. Moduł jest zazwyczaj zaprojektowany by dostarczać określonej funkcjonalności, która może być podłączona do aplikacji PRADO i dzielona wśród wszystkich komponentów aplikacji.
+</p>
+<p id="140142" class="block-content">
+PRADO używa konfiguracji aby określić kiedy załadować moduł, jaki rodzaj modułu i jak zainicjalizować załadowane moduły. Deweloper może zastąpić zródłowe (ang. core) moduły własnymi implementacjami poprzez konfigurację aplikacji lub może napisać nowe moduły by dostarczać dodatkowe funkcjonalności. Na przykład można stworzyć moduł, który będzie dostarczał wspólną logikę baz danych dla jednej lub więcej stron. Aby dowiedzieć się więcej zobacz sekcję <a href="?page=Configurations.Overview">konfiguracja</a>.
+</p>
+<p id="140143" class="block-content">
+Domyślnie ładowane są 3 moduły źródłowe (ang. core modules) podczas starty aplikacji. Są to <a href="#request">moduł żądania (ang. request module)</a>, <a href="#response">moduł odpowiedzi (ang. responce module)</a> oraz <a href="#error">moduł zarządzania błędami (ang. error handler module)</a>. Dodatkowo  <a href="#session">moduł sesji (ang. session module)</a> jest ładowany kiedy jejst on używany w aplikacji. PRADO dostarcza domyślną implementację dla wszystkich tych modułów. <a href="#custom">Dodatkowe moduły (ang. custom modules)</a> mogą być konfigurowane lub stworzone by nadpisać  lub uzupełnić te trzy moduły źródłowe.
+</p>
+
+<a name="request"></a>
+<h2 id="1002">Moduł żądania (ang. request module)</h2>
+<p id="140144" class="block-content">
+Moduł żądań reprezentuje i dostarcza schemat dostępu i przechowywania żądań użytkownika wysyłanych poprzez HTTP. Dane żądania użytkownika przychodzą z kilku źródeł wliczając adresy URL, dane z żądania POST, dane sesyjne, dane z ciasteczek, itd. Te dane są dostępne poprzez moduł żądania. Domyślnie PRADO używa <tt>THttpRequest</tt> jako moduł żądania. Moduł żądania jest dostępne poprzez właściwość <tt>Request</tt> aplikacjji i kontrolek.
+</p>
+
+<a name="response"></a>
+<h2 id="1003">Moduł odpowiedzi (ang. response module)</h2>
+<p id="140145" class="block-content">
+Moduł odpowiedzi implementuje mechanizm do wysywałania wyjścia do klienta użytkwonika. Moduł odpowiedzi może zostać skonfigurowany by kontrolować jak wyjście jest keszowane po stronie klienta. Może on być również uzywany by wysyłać cookie z powrotem na stronę klienta. Domyślnie PRADO używa <tt>THttpResponse</tt> jako moduły odpowiedzi. Moduł odpowiedzi jest dostępny poprzez właściwość <tt>Response</tt> aplikacji i kontrolek.
+</p>
+
+<a name="session"></a>
+<h2 id="1004">Moduł sesji (ang. session module)</h2>
+<p id="140146" class="block-content">
+Moduł sesji enkapsuluje funkcjonalność związaną z zarządzaniem sesji użytkowika. Moduł sesji jest automatycznie ładowany jeśli aplikacja używa sesji. Domyślnie PRADO używa <tt>THttpSession</tt> jako moduł sesji, który jest po prostu nadkładką (ang. wrapper) dla funkcji sesyjnych dostarczanych przez PHP. Moduł sesji jest dostępny poprzez właściwość <tt>Session</tt> aplikacji i kontrolek.
+</p>
+
+<a name="error"></a>
+<h2 id="1005">moduł zarządzania błędami (ang. error handler module)</h2>
+<p id="140147" class="block-content">
+Moduł zarządzzania błędami jest użuwany by przechwycić i obsłużyć wszystkie przypadki błędów w aplikacji. PRADO używa <tt>TErrorHandler</tt> jako moduł zarządzania błędami. Przechwytuje on wszystkie ostrzeżenia PHP (ang. warnings), wiadomości (ang. notices) oraz wyjątki (ang. exceptions) i wyświetla w odpowiedniej formie użytkownikowi końcowemu. Moduł zarządzania błędami jest dostępny poprzez właściwość <tt>ErrorHandler</tt> instancji aplikacji.
+</p>
+
+<a name="custom"></a>
+<h2 id="1006">Dodatkowe moduły (ang. custom modules)</h2>
+<p id="140148" class="block-content">
+PRADO zostało wydane z większą ilością modułów niż wymienione moduły źródłowe. PRADO zawiera moduły keszujące (<tt>TSqliteCache</tt> oraz <tt>TMemCache</tt>), moduły zarządzające użytkownikami (<tt>TUserManager</tt>), moduły autentykacji i autoryzacji (<tt>TAuthManager</tt>), itd.
+</p>
+<p id="140149" class="block-content">
+Kiedy wystąpi żądanie <tt>TPageService</tt> ładowane są także określone moduły dla serwisu stron, włączając menedżer elementów aktywnych (ang. assets manager) (<tt>TAssetManager</tt>), menedżer szablonów (<tt>TTemplateManager</tt>), menedżer tematów/skórek (ang. theme/skin manager) (<tt>TThemeManager</tt>).
+</p>
+<p id="140150" class="block-content">
+Dodatkowe moduły oraz moduły źródłowe są konfigurowalne poprzez <a href="?page=Configurations.Overview">konfigurację</a>.
+</p>
+
+<div class="last-modified">$Id: Modules.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

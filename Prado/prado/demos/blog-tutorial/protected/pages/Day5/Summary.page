@@ -1,0 +1,36 @@
+<com:TContent ID="Main">
+
+<h1>Summary</h1>
+
+<p>
+We finally can deploy our blog system. To do so, we only need to copy the whole <tt>blog</tt> directory to the target Web directory. We may need to modify <tt>index.php</tt> so that it can locate the correct path where the PRADO framework is installed.
+</p>
+
+<p>
+So we have completed our blog system. The process may seem not trivial because it takes us nearly five days to reach here. However, as we stated at the beginning, the main purpose of this tutorial is to help PRADO developers get familiar with the commonly used PRADO techniques. The tutorial is not meant to finish a blog system in five minutes and then we learn nothing.
+</p>
+
+<p>
+In summary, developing a DB-driven PRADO application involves the following steps:
+</p>
+<ol>
+  <li>Design and create database</li>
+  <li>Create initial application layout using <tt>prado-cli</tt></li>
+  <li>Set up error handling process to deal with end-user errors</li>
+  <li>Create and set up themes</li>
+  <li>Design and create master classes to share common page layouts</li>
+  <li>Create database classes and set up database connections</li>
+  <li>Design and create various pages</li>
+  <li>Test and tune up performance</li>
+  <li>Deploy the application</li>
+</ol>
+
+<p>
+Unlike the order in our tutorial, error handling and creating theme are done earlier in the above process. This is because they often require global change in class code and template. For example, we need to replace <tt>THttpException</tt> with <tt>BlogException</tt> in our tutorial. If we define stylesheet classes earlier, we could more easily use them when creating page templates.
+</p>
+
+<p>
+As a final tip, try to think in object-oriented way during the design and implementation. Use class inheritance and composition wisely, and you will find the whole project is easier to be developed in parallel by multiple developers. The code also has more chance to be reused so that future projects can be finished much faster.
+</p>
+
+</com:TContent>

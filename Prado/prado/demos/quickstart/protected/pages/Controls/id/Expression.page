@@ -1,0 +1,23 @@
+<com:TContent ID="body" >
+
+<h1 id="2401">TExpression</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TExpression" />
+
+<p id="290254" class="block-content">
+<tt>TExpression</tt> mengevaluasi ekspresi PHP dan menampilkan hasil evaluasinya. Untuk menetapkan ekspresi yang akan dievaluasi, setel properti <tt>Expression</tt>. Catatan, <tt>TExpression</tt> mengevaluasi ekspresi selama menyajikan masa hidup kontrol.
+</p>
+
+<p id="290255" class="block-content">
+Konteks dari ekspresi dalam kontrol <tt>TExpression</tt> adalah kontrol itu sendiri. Yaitu, <tt>$this</tt> mewakili obyek kontrol jika ia ada dalam ekspresi. Sebagai contoh, tag template akan menampilkan judul halaman yang berisi kontrol <tt>TExpression</tt>.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_290104">
+&lt;com:TExpression Expression="$this->Page->Title" /&gt;
+</com:TTextHighlighter>
+
+<p id="290256" class="block-content">
+Harap berhati-hati karena <tt>TExpression</tt> membolehkan eksekusi kode bebas PHP, secara umum anda seharusnya tidak menggunakannya untuk mengevaluasi ekspresi yang dikirimkan oleh para pengguna aplikasi anda.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TExpression.Home" />
+
+<div class="last-modified">$Id: Expression.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

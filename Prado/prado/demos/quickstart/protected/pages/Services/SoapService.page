@@ -1,0 +1,177 @@
+<com:TContent ID="body" >
+
+<h1 id="134038">SOAP Service</h1>
+
+<p id="670450" class="block-content">
+SOAP forms the foundation layer of the Web services stack. It provides a neat way for PHP applications to communicate with each other or with applications written in other languages. PRADO provides <tt>TSoapService</tt> that makes developing a SOAP server application an extremely easy task.
+</p>
+
+<p id="670451" class="block-content">
+To use <tt>TSoapService</tt>, configure it in the application specification like following:
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_670133">
+<services>
+  <service id="soap" class="System.Web.Services.TSoapService">
+    <soap id="stockquote" provider="path.to.StockQuote" />
+    <!--
+    <soap...other soap service... />
+    -->
+  </service>
+</services>
+</com:TTextHighlighter>
+<p id="670452" class="block-content">
+The example specifies a SOAP service provider named <tt>stockquote</tt> which implements the <tt>getPrice</tt> SOAP method in the provider class <tt>StockQuote</tt>,
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_670134">
+class StockQuote
+{
+	/**
+	 * @param string $symbol the symbol of the stock
+	 * @return float the stock price
+	 * @soapmethod
+	 */
+	public function getPrice($symbol)
+	{
+		....return stock price for $symbol
+	}
+}
+</com:TTextHighlighter>
+
+<div class="note"><b class="tip">Note:</b>
+<tt>TSoapService</tt> is based on <a href="http://www.php.net/manual/en/ref.soap.php">PHP SOAP extension</a> and thus requires the extension to be installed.
+</div>
+
+<p id="670453" class="block-content">
+With the above simple code, we already finish a simple SOAP service that allows other applications to query the price of a specific stock. For example, a typical SOAP client may be written as follows to query the stock price of IBM,
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_670135">
+$client=new SoapClient('http://path/to/index.php?soap=stockquote.wsdl');
+echo $client->getPrice('IBM');
+</com:TTextHighlighter>
+
+<p id="670454" class="block-content">
+Notice the URL used to construct <tt>SoapClient</tt> (a class provided by PHP SOAP extension). This is the URL for the <a href="http://en.wikipedia.org/wiki/WSDL">WSDL</a> that describes the communication protocol for the SOAP service we just implemented. WSDL is often too complex to be manually written. Fortunately, <tt>TSoapService</tt> can generate this for us using a WSDL generator. In general, the URL for the automatically generated WSDL in PRADO has the following format:
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_670136">
+http://path/to/index.php?SoapServiceID=SoapProviderID.wsdl
+</com:TTextHighlighter>
+
+<p id="670455" class="block-content">
+In order for the WSDL generator to generate WSDL for a SOAP service, the provider class needs to follow certain syntax. In particular, for methods to be exposed as SOAP methods, a keyword <tt>@soapmethod</tt> must appear in the phpdoc comment of the method with the following lines specifying method parameters and return value:
+</p>
+<ul id="u1" class="block-content">
+<li>parameter: <tt>@param parameter-type $parameter-name description</tt></li>
+<li>return value: <tt>@return value-type description</tt></li>
+</ul>
+<p id="670456" class="block-content">
+Valid parameter and return types include: <tt>string</tt>, <tt>int</tt>, <tt>boolean</tt>, <tt>float</tt>, <tt>array</tt>, <tt>mixed</tt>, etc. You may also specify a class name as the type, which translates into a complex SOAP type. For example, for a complex type <tt>Contact</tt>
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_670137">
+/**
+ * Extends TComponent to provide property setter/getter methods
+ */
+class Contact {
+    /**
+     * @var string $name
+     * @soapproperty
+     */
+    public $name;
+
+    /**
+     * @var Address $address
+     * @soapproperty
+     */
+    private $_address;
+
+    public function setAddress($value) {
+        $this->_address=$value;
+    }
+
+    public function getAddress() {
+        if($this->_address===null)
+            $this->_address=new Address;
+        return $this->_address;
+    }
+}
+
+class Address{
+    /**
+     * @var string $city
+     * @soapproperty
+     */
+    public $city;
+}
+
+class ContactManager {
+    /**
+     * @return Contact[] an array of contacts
+     * @soapmethod
+     */
+    function getAllContacts() {
+        return array(new Contact);
+    }
+
+    /**
+     * @return Contact one contact
+     * @soapmethod
+     */
+    function getContact($name) {
+        return new Contact;
+    }
+}
+</com:TTextHighlighter>
+<p id="670457" class="block-content">For a complex soap object, the properties of the object are specified with 
+<tt>@soapproperty</tt> keyword in the property phpdocs. Furthermore, the
+propert's type name must be specified as <tt>@var type $name</tt> where <tt>type
+</tt> is any valid type in mentioned earlier and <tt>$name</tt> will defined
+a property <tt>name</tt> (notice that if your class is a TComponent, you can
+provide property setter/getter methods).
+</p>
+<p id="670458" class="block-content">
+An array of complex objects can also be returned by adding a pair of 
+enclosing square brackets after the type name. For example, to return an
+array of <tt>Contact</tt> type, we define <tt>@return Contact[] ...</tt>.
+</p>
+
+<div class="tip"><b class="note">Tip:</b>
+A very useful tool to test out your web services is the free tool 
+<a href="http://www.gotdotnet.com/Community/UserSamples/Details.aspx?SampleGuid=65a1d4ea-0f7a-41bd-8494-e916ebc4159c">WebServiceStudio 2.0</a>. It can invoke webmethods interactively. The user can provide a WSDL endpoint. On clicking button Get the tool fetches the WSDL, generates .NET proxy from the WSDL and displays the list of methods available. The user can choose any method and provide the required input parameters.
+The tool requires a MS .NET runtime to be installed.
+
+<p id="690008" class="block-content">A similar tool is available for Mac OS X Tiger from 
+<a href="http://www.ditchnet.org/soapclient/">http://www.ditchnet.org/soapclient/</a>
+</p>
+</div>
+
+<p id="670459" class="block-content">
+<tt>TSoapService</tt> may be configured and customized in several ways. In the example above, the <tt>&lt;soap&gt;</tt> element actually specifies a SOAP service using the default <tt>TSoapServer</tt> implementation. Attributes in <tt>&lt;soap&gt;</tt> are passed to <tt>TSoapServer</tt> as its initial property values. For example, the <tt>provider</tt> attribute initializes the <tt>Provider</tt> property of <tt>TSoapServer</tt>. By setting <tt>SessionPersistent</tt> to be true in <tt>&lt;soap&gt;</tt> element, the provider instance will persist within the user session. You may develop your own SOAP server class and use it by specifying the <tt>class</tt> attribute of <tt>&lt;soap&gt;</tt>.
+</p>
+
+<p id="670460" class="block-content">By default, PHP's soap server will create objects of the type <tt>StdClass</tt>
+when objects are received from the client. The soap server can be configured to
+automatically create objects of certain type objects are received as method
+parameters. For example, if we have a Soap method that accepts
+a <tt>Contact</tt> object as parameter.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_670138">
+/**
+ * @param Contact $contact
+ * @return boolean true if saved, false otherwise
+ * @soapmethod
+ */
+ function save(Contact $contact)
+ {
+	return true
+ }
+</com:TTextHighlighter>
+The do this, we need to set the <tt>ClassMaps</tt> property of
+the <tt>TSoapServer</tt> in the <tt>&lt;soap&gt;</tt> tags as
+a comma separated string of class names that we wish to be automatically
+converted.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_670139">
+<soap id="contact-manager" provider="path.to.ContactManager"
+	ClassMaps="Contact, Address"/>
+</com:TTextHighlighter>
+</p>
+
+<div class="last-modified">$Id: SoapService.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>

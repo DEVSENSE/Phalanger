@@ -1,0 +1,27 @@
+<com:TContent ID="body" >
+
+<h1 id="2501">TFileUpload</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TFileUpload" />
+
+<p id="300257" class="block-content">
+<tt>TFileUpload</tt> menampilkan field file upload pada halaman Web. Setelah postback, teks yang dimasukan ke dalam field akan diperlkakukan sebagai nama (lokal) file yang di-upload ke server.
+</p>
+<p id="300258" class="block-content">
+<tt>TFileUpload</tt> memunculkan event <tt>OnFileUpload</tt> ketika ia adalah post back. Properti <tt>HasFile</tt> menunjukan apakah file yang di-upload sukses atau tidak. Jika sukses, file yang di-upload dapat disimpan pada server dengan memanggil metode <tt>saveAs()</tt>.
+</p>
+<p id="300259" class="block-content">
+Properti berikut memberikan informasi mengenai file yang di-upload:
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>FileName</tt> - nama file asal pada sisi-klien tanpa direktori.</li>
+  <li><tt>FileType</tt> - tipe MIME dari file yang di-upload.</li>
+  <li><tt>FileSize</tt> - ukuran file dalam byte.</li>
+  <li><tt>LocalName</tt> - path file absolut dari file yang di-upload ke server. Catatan, file ini akan dihapus setelah permintaan halaman saat ini selesai. Panggil <tt>saveAs()</tt> untuk menyimpan file yang di-upload.</li>
+</ul>
+<p id="300260" class="block-content">
+Jika upload file tidak berhasil, properti <tt>ErrorCode</tt> memberikan kode kesalahan yang menyebabkan kegagalan. Lihat <a href="http://www.php.net/manual/en/features.file-upload.errors.php">dokumentasi PHP</a> untuk penjelasan lengkap atas kode kesalahan yang mungkin.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TFileUpload.Home" />
+
+<div class="last-modified">$Id: FileUpload.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

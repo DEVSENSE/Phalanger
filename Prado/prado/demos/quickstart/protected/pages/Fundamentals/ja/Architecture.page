@@ -1,0 +1,15 @@
+<com:TContent ID="body" >
+<h1 id="601">アーキテクチャ</h1>
+
+<p id="100111" class="block-content">
+PRADO は主にプレゼンテーションを操作するためのフレームワークです。（プレゼンテーション操作のみで制限されるわけではありません）<br />
+このフレームワークはウェブプログラミングに集中するためのものであり、開発者がより生産性を上げられるようにコンポーネントベース、イベントドリブンなプログラミングが可能なつくりになっています。<br />
+以下のクラスツリーは PRADO によって提供されている主要なクラスについて書かれたものです。
+</p>
+<img src="<%~classtree.gif%>" />
+
+<p id="100112" class="block-content">
+PRADO アプリケーションがページ要求処理を行う際、以下のオブジェクトダイアグラムで動作します。
+</p>
+<img src="<%~objectdiagram.gif%>" />
+<div class="last-modified">$Id: Architecture.page * 2007-06-04 01:39:00Z Shinya.K $</div></com:TContent>

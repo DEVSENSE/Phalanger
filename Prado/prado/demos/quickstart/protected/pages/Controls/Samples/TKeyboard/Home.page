@@ -1,0 +1,15 @@
+<com:TContent ID="body">
+<h1>TKeyboard Samples</h1>
+
+<div>
+<com:TTextBox ID="PasswordInput" />
+<com:TButton Text="Submit" OnClick="buttonClicked" />
+<com:TLiteral ID="Result" />
+</div>
+<div>
+<com:TKeyboard ForControl="PasswordInput" AutoHide="true" />
+</div>
+
+
+<div class="last-modified">$Id: Home.page 2159 2007-08-27 21:23:33Z xue $</div>
+</com:TContent>

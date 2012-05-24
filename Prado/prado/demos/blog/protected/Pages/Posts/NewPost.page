@@ -1,0 +1,45 @@
+<%@ Title="Write New Post" %>
+
+<com:TContent ID="Main">
+
+<h2>Write New Post</h2>
+
+<span class="input-label">Title</span>
+<com:TRequiredFieldValidator
+Display="Dynamic"
+	ControlToValidate="Title"
+	ErrorMessage="...is required"
+	ValidationGroup="post" />
+<br/>
+<com:TTextBox ID="Title" Columns="80" MaxLength="256" />
+<br/>
+
+<span class="input-label">Content</span>
+<com:TRequiredFieldValidator
+Display="Dynamic"
+	ControlToValidate="Content"
+	ErrorMessage="...is required"
+	ValidationGroup="post" />
+<br/>
+<com:THtmlArea ID="Content" Width="500px" />
+<br/>
+
+<span class="input-label">Categories</span>
+<br/>
+<com:TListBox
+	ID="Categories"
+	SelectionMode="Multiple"
+	DataTextField="Name"
+	DataValueField="ID" />
+<br/>
+
+<com:TCheckBox ID="DraftMode" Text="in draft mode (the post will not be published)" />
+<br/>
+<br/>
+<com:TLinkButton
+	Text="Save"
+	OnClick="saveButtonClicked"
+	CssClass="link-button"
+	ValidationGroup="post" />
+
+</com:TContent>

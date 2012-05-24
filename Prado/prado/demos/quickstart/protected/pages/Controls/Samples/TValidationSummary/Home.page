@@ -1,0 +1,84 @@
+<com:TContent ID="body">
+
+<h1>TValidationSummary Samples</h1>
+
+
+<fieldset id="quickRegistration">
+	<legend>Create New Account</legend>
+
+<div class="username">
+	Username:
+	<com:TTextBox ID="Username" />
+	<com:TRequiredFieldValidator
+		ID="UsernameVal"
+		ControlToValidate="Username"
+		ValidationGroup="Group1"
+		Text="*"
+		ErrorMessage="a username is required." />
+</div>
+<div class="password">
+	Password
+	<com:TTextBox ID="Password" TextMode="Password" />
+	<com:TRequiredFieldValidator
+		ID="PasswordVal"
+		ControlToValidate="Password"
+		ValidationGroup="Group1"
+		Text="*"
+		ErrorMessage="a password is required." />
+</div>
+
+<div class="create">
+	<com:TButton ID="Create" ValidationGroup="Group1" Text="Create New Account"/>
+</div>
+
+
+<div class="registrationSummary">
+	<com:TValidationSummary
+		ValidationGroup="Group1"
+		Display="None"
+		HeaderText="Unable to create new account because" />
+</div>
+
+</fieldset>
+
+
+<fieldset id="LoginForm">
+	<legend>Sign In</legend>
+
+<div class="username">
+	Login Name:
+	<com:TTextBox ID="UserID" />
+
+	<com:TRequiredFieldValidator
+		ID="UserVal1"
+		ControlToValidate="UserID"
+		Display="None"
+		ValidationGroup="Group2"
+		ErrorMessage="the username or email was not provided" />
+</div>
+
+<div class="password" >
+	Password:
+	<com:TTextBox ID="Pass" TextMode="Password" />
+	<com:TRequiredFieldValidator
+		ID="loginValidator3"
+		ControlToValidate="Pass"
+		Display="None"
+		ValidationGroup="Group2"
+		ErrorMessage="the password was not provided" />
+</div>
+
+<com:TButton ID="login" ValidationGroup="Group2" CssClass="button" Text="Sign In" />
+
+<div class="validation">
+	<com:TValidationSummary
+		ValidationGroup="Group2"
+		AutoUpdate="false"
+		Display="None"
+		ShowMessageBox="true"
+		HeaderText="You could not login because" />
+</div>
+
+</fieldset>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

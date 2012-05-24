@@ -1,0 +1,28 @@
+﻿<com:TContent ID="Main">
+
+<h1>Vue d'ensemble de la gestion des messages</h1>
+
+<p>
+Dans cette section, nous allons créer les pages correspondantes à la gestion des messages. En particulier, nous mettrons en place les quatre opérations de base (Création-Lecture-Modification-Suppression) (CRUD:Create-Retrieve-Update-Delete).
+</p>
+
+
+<p>
+Nous allons créer les nouvelles pages dans le dossier <tt>protected/pages/posts</tt> créé à cet effet.
+</p>
+
+
+<ul>
+  <li><tt>ListPost</tt> affiche la liste des messages triés par ordre de date décroissante.</li>
+  <li><tt>ReadPost</tt> affiche le détail d'un message.</li>
+  <li><tt>NewPost</tt> permet aux utilisateurs enregistrés de créer un nouveau message.</li>
+  <li><tt>EditPost</tt> permet à l'auteur et aux administrateurs de modifier un message.</li>
+</ul>
+
+<p>
+Après avoir fini cette section, nous devrions obtenir l'arborescence suivante :
+</p>
+
+<img src="<%~ directories.gif %>" class="output" />
+
+</com:TContent>

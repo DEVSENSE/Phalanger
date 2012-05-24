@@ -1,0 +1,17 @@
+<com:TContent ID="Main">
+
+<h1>Welcome to the PRADO Blog Tutorial</h1>
+
+<p>
+The purpose of this tutorial is to provide new PRADO users a step-by-step guidance on how to develop a blog system using PRADO. Readers of this tutorial are not required to have prior knowledge about PRADO. However, readers should have basic knowledge of object-oriented programming (OOP) and database programming. For a more definitive guidance about PRADO, readers may refer to the <a href="http://www.pradosoft.com/demos/quickstart/">Quickstart Tutorial</a>.
+</p>
+
+<p>
+This tutorial is organized in a day-by-day fashion. Each day new PRADO concepts and techniques are introduced, and new features of the blog system are implemented. At the end, we will complete a simple blog application that meets a list of <a href="?page=Requirements">initial requirements</a>.
+</p>
+
+<p>
+In order to follow the tutorial to create and run the <a href="samples/">day-by-day examples</a>, readers should have access to a Web server installed with <b>PHP 5.1.0+</b> and <b>PRADO 3.1+</b>. Instructions for installing PRADO can be found at <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.Installation">pradosoft.com</a>.
+</p>
+
+</com:TContent>

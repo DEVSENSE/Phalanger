@@ -1,0 +1,22 @@
+<com:TContent ID="Main">
+<h2>Users</h2>
+<fieldset>
+  <legend>User List</legend>
+	
+  <com:TRepeater ID="list" EnableViewState="false">
+  <prop:HeaderTemplate>
+	<table cellpadding="2">
+	<tr class="header">
+	<th>User Name</th>
+	<th>E-Mail Address</th>
+	</tr>
+  </prop:HeaderTemplate>
+  <prop:ItemTemplate>
+	<tr class="row0">	<td><%# h($this->DataItem->Name) %></td>	<td><%# h($this->DataItem->EmailAddress) %></td>	</tr>  </prop:ItemTemplate>  <prop:AlternatingItemTemplate>	<tr class="row1">	<td><%# h($this->DataItem->Name) %></td>
+	<td><%# h($this->DataItem->EmailAddress) %></td>
+	</tr>  </prop:AlternatingItemTemplate>  <prop:FooterTemplate>	</table>  </prop:FooterTemplate>
+</com:TRepeater>
+<div style="padding:1em">
+	<a href="?page=TimeTracker.UserCreate">Create New User</a>
+</div>
+</com:TContent>

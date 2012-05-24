@@ -1,0 +1,55 @@
+<com:TContent ID="body" >
+
+<h1 id="1201">Applications</h1>
+<p id="160157" class="block-content">
+An application is an instance of <tt>TApplication</tt> or its derived class. It manages modules that provide different functionalities and are loaded when needed. It provides services to end-users. It is the central place to store various parameters used in an application. In a PRADO application, the application instance is the only object that is globally accessible via <tt>Prado::getApplication()</tt> function call.
+</p>
+<p id="160158" class="block-content">
+Applications are configured via <a href="?page=Configurations.AppConfig">application configurations</a>. They are usually created in entry scripts like the following,
+<com:TTextHighlighter CssClass="source block-content" id="code_160071">
+require_once('/path/to/prado.php');
+$application = new TApplication;
+$application->run();
+</com:TTextHighlighter>
+where the method <tt>run()</tt> starts the application to handle user requests.
+</p>
+
+<h2 id="1202">Directory Organization</h2>
+<p id="160159" class="block-content">
+A minimal PRADO application contains two files: an entry file and a page template file. They must be organized as follows,
+<img src="<%~directory.gif%>" class="figure"/>
+</p>
+<ul id="u2" class="block-content">
+<li><tt>wwwroot</tt> - Web document root or sub-directory.</li>
+<li><tt>index.php</tt> - entry script of the PRADO application.</li>
+<li><tt>assets</tt> - directory storing published private files. See <a href="?page=Advanced.Assets">assets</a> section.</li>
+<li><tt>protected</tt> - application base path storing application data and private script files. This directory should be configured inaccessible to Web-inaccessible, or it may be located outside of Web directories.</li>
+<li><tt>runtime</tt> - application runtime storage path. This directory is used by PRADO to store application runtime information, such as application state, cached data, etc.</li>
+<li><tt>pages</tt> - base path storing all PRADO pages. See <a href="?page=Fundamentals.Services">services</a> section.</li>
+<li><tt>Home.page</tt> - default page returned when users do not explicitly specify the page requested. This is a page template file. The file name without suffix is the page name. The page class is <tt>TPage</tt>. If there is also a class file <tt>Home.php</tt>, the page class becomes <tt>Home</tt>.</li>
+</ul>
+
+<p id="160160" class="block-content">
+A product PRADO application usually needs more files. It may include an application configuration file named <tt>application.xml</tt> under the application base path <tt>protected</tt>. The pages may be organized in directories, some of which may contain page configuration files named <tt>config.xml</tt>. Fore more details, please see <a href="?page=Configurations.Overview">configurations</a> section.
+</p>
+
+<h2 id="1203">Application Deployment</h2>
+<p id="160161" class="block-content">
+Deploying a PRADO application mainly involves copying directories. For example, to deploy the above minimal application to another server, follow the following steps,
+</p>
+<ol>
+<li>Copy the content under <tt>wwwroot</tt> to a Web-accessible directory on the new server.</li>
+<li>Modify the entry script file <tt>index.php</tt> so that it includes correctly the <tt>prado.php</tt> file.</li>
+<li>Remove all content under <tt>assets</tt> and <tt>runtime</tt> directories and make sure both directories are writable by the Web server process.</li>
+</ol>
+
+<h2 id="1204">Application Lifecycles</h2>
+<p id="160162" class="block-content">
+Like page lifecycles, an application also has lifecycles. Application modules can register for the lifecycle events. When the application reaches a particular lifecycle and raises the corresponding event, the registered module methods are invoked automatically. Modules included in the PRADO release, such as <tt>TAuthManager</tt>, are using this way to accomplish their goals.
+</p>
+<p id="160163" class="block-content">
+The application lifecycles can be depicted as follows,
+</p>
+<img src="<%~applifecycles.gif%>" />
+
+<div class="last-modified">$Id: Applications.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,54 @@
+<com:TContent ID="body" >
+
+<h1 id="6001">Persistent State</h1>
+<p id="770606" class="block-content">
+Web applications often need to remember what an end user has done in previous page requests so that the new page request can be served accordingly. State persistence is to address this problem. Traditionally, if a page needs to keep track of user interactions, it will resort to session, cookie, or hidden fields. PRADO provides a new line of state persistence schemes, including view state, control state, and application state.
+</p>
+
+<h2 id="6002">View State</h2>
+<p id="770607" class="block-content">
+View state lies at the heart of PRADO. With view state, Web pages become stateful and are capable of restoring pages to the state that end users interacted with before the current page request. Web programming thus resembles to Windows GUI programming, and developers can think continuously without worrying about the round trips between end users and the Web server. For example, with view state, a textbox control is able to detect if the user input changes the content in the textbox.
+</p>
+<p id="770608" class="block-content">
+View state is only available to controls. View state of a control can be disabled by setting its <tt>EnableViewState</tt> property to false. To store a variable in view state, call the following,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_770197">
+$this->setViewState('Caption',$caption);
+</com:TTextHighlighter>
+<p id="770609" class="block-content">
+where <tt>$this</tt> refers to the control object, <tt>Caption</tt> is a unique key identifying the <tt>$caption</tt> variable stored in viewstate. To retrieve the variable back from view state, call the following,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_770198">
+$caption = $this->getViewState('Caption');
+</com:TTextHighlighter>
+
+<h2 id="6003">Control State</h2>
+<p id="770610" class="block-content">
+Control state is like view state in every aspect except that control state cannot be disabled. Control state is intended to be used for storing crucial state information without which a page or control may not work properly.
+</p>
+<p id="770611" class="block-content">
+To store and retrieve a variable in control state, use the following commands,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_770199">
+$this->setControlState('Caption',$caption);
+$caption = $this->getControlState('Caption');
+</com:TTextHighlighter>
+
+<h2 id="6004">Application State</h2>
+<p id="770612" class="block-content">
+Application state refers to data that is persistent across user sessions and page requests. A typical example of application state is the user visit counter. The counter value is persistent even if the current user session terminates. Note, view state and control state are lost if the user requests for a different page, while session state is lost if the user session terminates.
+</p>
+<p id="770613" class="block-content">
+To store and retrieve a variable in application state, use the following commands,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_770200">
+$application->setGlobalState('Caption',$caption);
+$caption = $application->getGlobalState('Caption');
+</com:TTextHighlighter>
+
+<h2 id="6005">Session State</h2>
+<p id="770614" class="block-content">
+PRADO encapsulates the traditional session management in <tt>THttpSession</tt> module. The module can be accessed from within any component by using <tt>$this->Session</tt>, where <tt>$this</tt> refers to the component object.
+</p>
+
+<div class="last-modified">$Id: State.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

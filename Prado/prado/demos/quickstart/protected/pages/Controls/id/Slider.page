@@ -1,0 +1,50 @@
+<com:TContent ID="body" >
+
+<h1 id="4401">TSlider</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TSlider" />
+
+<p id="510314" class="block-content">
+<tt>TSlider</tt> menampilkan sebuah slider untuk keperluan input numerik. Slider terdiri dari <em>lajur</em>
+yang medefinisikan jangkauan nilai yang mungkin, dan sebuah <em>kendali</em> yang dapt bergeser pada lajur, untuk memilih 
+sebuah nilai dalam jangkauan. Lajur dapat berupa Horisontal atau Vertikal, tergantung dari properti <tt>Direction</tt>.
+Standarnya adalah horisontal.
+</p>
+<p>
+Batas jangkauan ditetapkan oleh properti <tt> MinValue</tt> dan <tt>MaxValue</tt>. 
+Jangkauan standar mulai dari 0 sampai 100. 
+Properti <tt>StepSize</tt> bisa dipakai untuk mendefinisikan <em>langkah</em> diantara 2 nilai didalam jangkauan.
+Catatan bahwa langkah ini akan dihitung ulang jika ada lebih dari 200 nilai diantara batas jangkauan.
+Anda juga bisa melengkapi nilai yang diijinkan dengan menyetel array <tt>Values</tt>.
+</p>
+
+<p>
+sub-properti kendali dapat diakses dengan properti <tt>Handle</tt>. Anda juga bisa menyediakan kontrol anda sendiri
+untuk kendali, menggunakan properti <tt>HandleClass</tt>. Catatan bahwa kelas ini harus berupa subkelas dari <tt>TSliderHandle</tt>
+</p>
+
+<p>
+Kontrol TSlider bisa dikustomisasi dengan mudah menggunakan CssClasses. Anda bisa menyediakan file css sendiri menggunakan properti <tt>CssUrl</tt>.
+Kelas css untuk TSlider dapat disetel dengan properti <tt>CssClass</tt>. Nilai standarnya dalah <b>'hslider'</b> untuk
+slider Horisontal, atau <b>'vslider'</b> untuk Vertikal. 
+Kelas css untuk Handle bisa disetel dengan subproperti <tt>Handle.CssClass</tt>. Standarnya adalah <b>'handle'</b>, yang menggambar blok merah sebagai kursor. Kelas css <b>'handle-image'</b> juga disediakan demi kenyamanan anda, yang berfungsi menampilkan gambar sebagai kendali.
+</p>
+
+<p>
+Jika properti <tt>AutoPostBack</tt> adalah true, postback dilakukan segera setelah nilai berubah.
+</p>
+
+<p>
+TSlider memunculkan event <tt>onValueChanged</tt> saat nilai slider telah berubah selama postback.
+</p>
+
+<p>
+Anda juga bisa melampirkan pengendali event javascript ClientSide ke slider :
+<ul>
+<li><tt>ClientSide.onSlide</tt> dipanggil ketika kendali digeser pada lajur. Anda akan mendapatkan nilai saat ini di dalam variabel javascript <b>value</b>. Anda dapat menggunakan event ini untuk dimutakhirkan pada sisi klien dengan sebuah label dengan nilai saat ini</li>
+<li><tt>ClientSide.onChange</tt> dipanggil saat nilai slider berubah (di akhir perpindahan).</li>
+</ul> 
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TSlider.Home" />
+
+<div class="last-modified">$Id: Slider.page 2200 2007-09-04 08:56:24Z tof $</div></com:TContent>

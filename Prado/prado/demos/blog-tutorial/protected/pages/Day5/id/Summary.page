@@ -1,0 +1,36 @@
+<com:TContent ID="Main">
+
+<h1>Ringkasan</h1>
+
+<p>
+Akhirnya kita dapat menyebarkan sistem blog kita. Untuk melakukannya, kita hanya perlu meng-copy seluruh direktori <tt>blog</tt> directory ke direktori Web sasaran. Kita perlu untuk memodifikasi <tt>index.php</tt> agar ia dapat mencari path yang benar di mana kerangka kerja PRADO diinstalasi.
+</p>
+
+<p>
+Dengan demikian kita telah menyelesaikan sistem blog kita. Proses terlihat tidak gampang karena ia memerlukan hampir lima hari untuk sampai di sini. Akan tetapi, karena kita memulainya dari awal, tujuan utama dari tutorial ini adalah untuk membantu para pengembang PRADO terbiasa dengan teknik yang umum digunakan dalam PRADO. Tutorial tidak berarti menyelesaikan sistem blog dalam waktu lima menit dan selanjutnya tidak mempelajari apapun.
+</p>
+
+<p>
+Secara ringkas, mengembangkan aplikasi PRADO dengan kendali-DB melibatkan langkah-langkah berikut:
+</p>
+<ol>
+  <li>Mendesain dan membuat database</li>
+  <li>Membuat tata letak aplikasi awal menggunakan <tt>prado-cli</tt></li>
+  <li>Menyiapkan proses pengendalian kesalahan untuk menghadapi kesalahan pengguna-akhir</li>
+  <li>Membuat dan menyiapkan tema</li>
+  <li>Mendesain dan membuat kelas master untuk berbagi tata letak umum halaman</li>
+  <li>Membuat kelas database dan menyiapkan koneksi database</li>
+  <li>Mendesain dan membuat bermacam-macam halaman</li>
+  <li>Menguji dan menyesuaikan performansi</li>
+  <li>Menyebarkan aplikasi</li>
+</ol>
+
+<p>
+Tidak seperti urutan dalam tutorial kita, pengendalian kesalahan dan pembuatan tema dikerjakan lebih awal dalam proses di atas. Ini dikarenakan seringkali diperlukan perubahan besar dalam kode kelas dan template. Sebagai contoh, kita perlu mengganti <tt>THttpException</tt> dengan <tt>BlogException</tt> dalam tutorial kita. Jika kita mendefinisikan kelas stylesheet lebih awal, kita dapat dengan mudah menggunakannya saat membuat template halaman.
+</p>
+
+<p>
+Sebagai tips terakhir, coba untuk berpikir dalam cara terorientasi-obyek selama mendesain dan mengimplementasikan. Gunakan turunan kelas dan komposisi secara luas, dan Anda akan menemukan seluruh proyek lebih mudah dikembangkan secara paralel oleh multipel pengembang. Kode juga lebih banya memiliki kesempatan dipakai ulang agar proyek mendatang dapat diselesaikan dalam waktu yang lebih cepat.
+</p>
+
+</com:TContent>

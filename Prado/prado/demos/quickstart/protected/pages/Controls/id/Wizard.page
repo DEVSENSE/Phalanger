@@ -1,0 +1,100 @@
+<com:TContent ID="body" >
+
+<h1 id="4701">TWizard</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TWizard" />
+
+<h2 id="4702">Tinjauan</h2>
+<p id="540319" class="block-content">
+<tt>TWizard</tt> adalah analogi terhadap bimbingan instalasi yang umum digunakan untuk menginstalasi software pada Windows. Ia memisahkan formulir besar dan menyajikan pengguna dengan sederetan formulir lebih kecil, disebut langkah bimbingan, untuk diselesaikan. Gambar berikut memperlihatkan bagaimana bimbingan dibuat atas kapan disajikan untuk pengguna, di mana <tt>konten langkah</tt> adalah konten utama pada langkah bimbingan untuk diselesaikan oleh para pengguna, <tt>header</tt> merujuk ke konten header yang umum bagi seluruh langkah, <tt>navigasi</tt> berisi tombol yang membolehkan pengguna untuk menjelajahi langkah demi langkah, dan <tt>bar samping</tt> berisi daftar hiperlink di mana para pengguna dapat menjangkau ke setiap langkah dengan satu klik. Penampakan bar samping dapat dihidup matikan dengan menyetel <tt>ShowSideBar</tt>.
+</p>
+<img src="<%~wizard.gif%>" alt="components of wizard" />
+
+<p id="540320" class="block-content">
+Standarnya <tt>TWizard</tt> menyertakan komponen di atas dalam sebuah tabel HTML agar bar samping bisa ditampilkan di kiri sementara sisanya di kanan. Jika <tt>UseDefaultLayout</tt> disetel ke false, tidak ada tabel HTML yang akan dipakai, dan para pengembang hrus menggunakan teknik murni CSS untuk posisi komponen bimbingan. Catatan, setiap komponen ditampilkan sebagai &lt;div&gt; dan bimbingan sendiri juga adalah &lt;div&gt; yang mengurung komponennya &lt;div&gt;.
+</p>
+
+<p id="540321" class="block-content">
+Langkah bimbingan disajikan dengan <tt>TWizardStep</tt> dan dipelihara dalam <tt>TWizard</tt> melalui properti <tt>WizardSteps</tt>. Kapan saja hanya satu yang terlihat, yang ditentukan oleh properti <tt>ActiveStep</tt>. Properti <tt>ActiveStepIndex</tt> memberikan indeks pada langkah yang aktif dalam koleksi langkah. Mengklik pada tombol navigasi dapat mengaktifkan langkah bimbingan yang berbeda.
+</p>
+
+<p id="540322" class="block-content">
+Langkah bimbingan biasanya ditambahkan ke bimbingan melalui template seperti berikut,
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_540114">
+&lt;com:TWizard&gt;
+	&lt;com:TWizardStep Title="step 1" StepType="Start"&gt;
+	konten dalam langkah 1 dapat berisi kontrol lain
+	&lt;/com:TWizardStep&gt;
+
+	&lt;com:TWizardStep Title="step 2" StepType="Step"&gt;
+	konten dalam langkah 2 dapat berisi kontrol lain
+	&lt;/com:TWizardStep&gt;
+
+	&lt;com:TWizardStep Title="finish step" StepType="Finish"&gt;
+	konten dalam langkah selesai dapat berisi kontrol lain
+	&lt;/com:TWizardStep&gt;
+&lt;/com:TWizard&gt;
+</com:TTextHighlighter>
+
+<p id="540323" class="block-content">
+Dalam contoh di atas, <tt>StepType</tt> merujuk ke tipe langkah bimbingan, yang dapat mempengaruhi bagaimana penampilan navigasi dan perilaku langkah. Langkah bimbingan dapat berupa salah satu dari tipe berikut:
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>Start</tt> - langkah pertama dalam bimbingan.</li>
+  <li><tt>Step</tt> - langkah internal dalam bimbiingan.</li>
+  <li><tt>Finish</tt> - langkah terakhir yang membolehkan interaksi pengguna.</li>
+  <li><tt>Complete</tt> - langkah yang memperlihatkan ringkasan kepada penngguna. Dalam langkah ini, bar samping dan panel navigasi tidak terlihat. Selanjutnya, langkah ini biasanya tidak membolehkan interaksi pengguna.</li>
+  <li><tt>Auto</tt> - tipe langkah ditentukan oleh bimbingan secara otomatis.</li>
+</ul>
+
+
+<h2 id="4703">Menggunakan TWizard</h2>
+
+<h3 id="4704">Contoh Bimbingan Satu-Langkah</h3>
+<p id="540324" class="block-content">
+Dalam contoh ini, kita menggunakan bimbingan untuk mengumpulkan preferensi pengguna pada warna. Dalam langkah pertama, pengguna disajikan dengan daftar  dropdown dari mana dia dapat memilih warna favoritnya. Dalam langkah kedua, langkah lengkap, pilihannya dalam langkah sebelumnya ditampilkan. Dalam aplikasi sebenarnya, pada langkah ini pilihan bisa disimpan dalam database di belakang layar.
+</p>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample1" />
+
+<h3 id="4705">Mengkustomisasi Gaya Bimbingan</h3>
+<p id="540325" class="block-content">
+<tt>TWizard</tt> mendefinisikan seluruh set properti untuk kustomisasi penampilan berbagai komponennya seperti yang ditampilkan pada gambar di atas. Dalam keadaan tertentu, properti berikut disediakan untuk kustomisasi gaya:
+</p>
+<ul id="u2" class="block-content">
+  <li>Header - <tt>HeaderStyle</tt>.</li>
+  <li>Langkah - <tt>StepStyle</tt>.</li>
+  <li>Navigasi - <tt>NavigationStyle</tt>, <tt>StartNextButtonStyle</tt>, <tt>StepNextButtonStyle</tt>, <tt>StepPreviousButtonStyle</tt>, <tt>FinishPreviousButtonStyle</tt>, <tt>FinishCompleteButtonStyle</tt>, <tt>CancelButtonStyle</tt>.</li>
+  <li>Bar samping - <tt>SideBarStyle</tt>, <tt>SideBarButtonStyle</tt>.</li>
+</ul>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample2" />
+
+<h3 id="4706">Mengkustomisasi Navigasi Bimbingan</h3>
+<p id="540326" class="block-content">
+Berikut adalah set langkah bimbingan, <tt>TWizard</tt> mendukung tiga cara navigasi diantaranya:
+</p>
+<ul id="u3" class="block-content">
+  <li>Bidirectional - Para pengguna dapat menjelajahi maju dan mundur sepanjang rangkaian langkah bimbingan. Input data pengguna biasanya dikumpulkan di langkah terakhir. Ini juga dikenal sebagai model commit-at-the-end. Itulah cara navigasi standar yang didukung <tt>TWizard</tt>.</li>
+  <li>Unidirectional - Para pengguna dapat menjelajahi maju sepanjang rangkaian langkah bimbingan. Pindah mundur tidak dibolehkan. Data input pengguna biasa dikumpulkan langkah demi langkah. Ini juga dikenal sebagai model command-as-you-go. Untuk melarang perpindahan mundur ke langkah tertentu, setel properti <tt>AllowReturn</tt> ke false.</li>
+  <li>Nonlinear - Input pengguna dalam langkah menentukan langkah mana berikutnya. Untuk melakukannya, setel <tt>ActiveStepIndex</tt> ke langkah yang anda ingin agar pengguna pergi ke sana. Dalam hal ini, ketika pengguna mengklik pada tombol sebelumnya alam panel navigasi, langkah sebelumnya yang telah mereka kunjungi (bukan langkah sebelumnya dalam urtan sekuensial) akan menjadi terlihat.</li>
+</ul>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample3" />
+
+<h3 id="4707">Menggunakan Template dalam Bimbingan</h3>
+<p id="540327" class="block-content">
+<tt>TWizard</tt> mendukung kontrol konkrit dari penampilannya melalui template. Dalam keadaan tertentu, ia menyediakan properti template yang membolehkan kustomisasi lengkap pada header, navigasi dan bar samping.
+</p>
+<ul id="u4" class="block-content">
+  <li>Header - <tt>HeaderTemplate</tt>.</li>
+  <li>Navigation - <tt>StartNavigationTemplate</tt>, <tt>StepNavigationTemplate</tt>, <tt>FinishNavigationTemplate</tt>.</li>
+  <li>Side bar - <tt>SideBarTemplate</tt>.</li>
+</ul>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample4" />
+
+<h3 id="4708">Menggunakan Langkah Bimbingan Bertemplate</h3>
+<p id="540328" class="block-content">
+Langkah bimbingan juga dapat diberi template. Dengan menggunakan <tt>TTemplatedWizardStep</tt>, seseorang dapat mengkustomisasi konten langkah dan navigasi melalui masing-masing properti <tt>ContentTemplate</tt> dan <tt>NavigationTemplate</tt>. Ini berguna untuk pengembang kontrol guna membangun bimbingan khusus seperti registrasi pengguna, kereta belanja, dll.
+</p>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample5" />
+
+<div class="last-modified">$Id: Wizard.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

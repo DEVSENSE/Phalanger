@@ -1,0 +1,41 @@
+<com:TContent ID="body">
+
+<h1>TImage Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Image with only <tt>ImageUrl</tt> being set:
+</td><td class="sampleaction">
+<com:TImage ImageUrl=<%~hello_world.gif%> />
+</td></tr>
+
+<tr><td class="samplenote">
+Image with <tt>AlterantiveText</tt> being set:
+</td><td class="sampleaction">
+<com:TImage
+	ImageUrl=<%~hello_world.gif%>
+	AlternateText="Hello World!"/>
+</td></tr>
+
+<tr><td class="samplenote">
+Image with <tt>baseline</tt> alignment:
+</td><td class="sampleaction">
+Hello World! Hello World! Hello World! Hello World! Hello World! Hello World!
+Hello World! Hello World! Hello World! Hello World! Hello World! Hello World!
+Hello World! Hello World! Hello World! Hello World! Hello World! Hello World!
+Hello World! Hello World! Hello World! Hello World! Hello World! Hello World!
+<com:TImage ImageUrl=<%~hello_world.gif%> ImageAlign="baseline" />
+</td></tr>
+
+<tr><td class="samplenote">
+Image with <tt>DescriptionUrl</tt>:
+</td><td class="sampleaction">
+<com:TImage
+	ImageUrl=<%~hello_world.gif%>
+	DescriptionUrl=<%~HelloWorld.html%> />
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

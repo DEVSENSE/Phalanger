@@ -1,0 +1,18 @@
+<com:TContent ID="body">
+
+<h1>TActiveDataGrid Sample 1</h1>
+<h2>Using Automatically Generated Columns</h2>
+
+<com:TActiveButton ID="button1" Text="click me" OnCallback="buttonClicked" />
+<com:TActiveDataGrid
+	ID="DataGrid"
+	EnableViewState="false"
+	CellPadding="2"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="#E6ECFF"
+	/>
+
+<div class="last-modified">$Id: Sample1.page 2955 2011-06-02 09:30:55Z ctrlaltca@gmail.com $</div></com:TContent>

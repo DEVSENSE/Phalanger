@@ -1,0 +1,164 @@
+<com:TContent ID="body" >
+<!-- $Id $ -->
+<h1 id="136039">Data Access Object (DAO)</h1>
+<com:SinceVersion Version="3.1a" />
+<p id="680461" class="block-content">
+Obyek Akses Data atau Data Access Object (DAO) memisahkan data sumber daya antarmuka klien dari mekanisme akses datanya. Ia mengadaptasi API akses sumber daya ke antarmuka klien generik. Hasilnya, mekanisme akses data dapat diubah tersendiri atas kode yang menggunakan data.
+</p>
+<p id="680462" class="block-content">
+Sejak versi 3.1, PRADO mulai menyediakan DAO yang adalah pelapis tipis sekitar <a href="http://www.php.net/manual/en/ref.pdo.php">PHP Data Objects (PDO)</a>. Meskipun PDO memiliki set fitur bagus dan API yang baik, kami memilih untuk mengimplementasikan PRADO DAO di atas PDO karena kelas PRADO DAO adalah kelas komponen dan bisa dikonfigurasi dalam aplikasi PRADO. Para pengguna dapat menggunakan kelas DAO ini dalam cara yang lebih disukai-PRADO.
+</p>
+<div class="note"><b class="tip">Catatan:</b>
+Karena PRADO DAO didasarkan pada PDO, ekstensi PDO PHP perlu diinstalasi. Sebagai tambahan, Anda perlu menginstalasi driver PDO database terkait untuk  digunakan dalam aplikasi Anda. Lihat lebih jelasnya dalam <a href="http://www.php.net/manual/en/ref.pdo.php">PHP Manual</a>.
+</div>
+<p id="680463" class="block-content">
+PRADO DAO sebagian besar terdiri dari empat kelas (kebalikan dari PDO yang hanya dua kelas, <tt>PDO</tt> dan <tt>PDOStatement</tt>):
+</p>
+<ul id="u1" class="block-content">
+<li><tt>TDbConnection</tt> - mewakili koneksi ke database.</li>
+<li><tt>TDbCommand</tt> - mewakili pernyataan SQL yang dijalankan terhadap database.</li>
+<li><tt>TDbDataReader</tt> - mewakili stream hanya-maju atas stream baris dari set hasil query.</li>
+<li><tt>TDbTransaction</tt> - mewakili transaksi DB.</li>
+</ul>
+<p id="680464" class="block-content">
+Berikutnya, kami memperkenalkan penggunaan PRADO DAO dalam skenario yang berbeda.
+</p>
+
+<h2 id="136040">Menetapkan Koneksi Database</h2>
+<p id="680465" class="block-content">
+Untuk menetapkan koneksi database, seseorang membuat turunan <tt>TDbConnection</tt> dan mengaktifkannya. Nama sumber data (DSN) diperlukan guna menetapkan informasi yang dibutuhkan untuk menyambung ke database. Nama pengguna dan kata sandi database mungkin perlu disertakan untuk menetapkan koneksi.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680140">
+$connection=new TDbConnection($dsn,$username,$password);
+// panggil setAttribute() untuk mengirim parameter koneksi tambahan
+// $connection->Persistent=true;  // gunakan koneksi persisten
+$connection->Active=true;  // koneksi terlaksana
+....
+$connection->Active=false;  // koneksi ditutup
+</com:TTextHighlighter>
+<p id="680466" class="block-content">
+Spesifikasi lengkap terhadap DSN dapat ditemukan dalam <a href="http://www.php.net/manual/en/ref.pdo.php#pdo.drivers">dokumentasi PDO</a>. Di bawah ini adalah daftar  format DNS paling umum dipakai:
+</p>
+<ul id="u2" class="block-content">
+<li>MySQL - <tt>mysql:host=localhost;dbname=test</tt></li>
+<li>SQLite - <tt>sqlite:/path/to/dbfile</tt></li>
+<li>ODBC - <tt>odbc:SAMPLE</tt>
+</ul>
+<p id="680467" class="block-content">
+Dalam hal terjadi kesalahan ketika menetapkan koneksi (seperti DSN atau nama pengguna/sandi salah), <tt>TDbException</tt> akan dimunculkan.
+</p>
+
+<h2 id="136041">Menjalankan Pernyataan SQL</h2>
+<p id="680468" class="block-content">
+Sekali koneksi database terlaksana, pernyataan SQL dapat dijalankan melalui <tt>TDbCommand</tt>. Seseorang membuat <tt>TDbCommand</tt> dengan memanggil <tt>TDbConnection.createCommand()</tt> dengan pernyataan SQL yang ditetapkan:
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680141">
+$command=$connection->createCommand($sqlStatement);
+// jika diperlukan, pernyataan SQL dapat dimutakhirkan seperti berikut:
+$command->Text=$newSqlStatement;
+</com:TTextHighlighter>
+
+<p id="680469" class="block-content">
+Pernyataan SQL dijalankan melalui <tt>TDbCommand</tt> dalam salah satu dari dua cara berikut:
+</p>
+<ul id="u4" class="block-content">
+<li><tt>execute()</tt> - melakukan pernyataan SQL non-query, seperti <tt>INSERT</tt>, <tt>UPDATE</tt> dan <tt>DELETE</tt>. Jika berhasil, ia mengembalikan jumlah baris yang dipengaruhi oleh eksekusi.</li>
+<li><tt>query()</tt> - melakukan pernyataan SQL yang mengembalikan baris data, seperti <tt>SELECT</tt>. Jika berhasil, ia mengembalikan turunan <tt>TDbDataReader</tt> dari salah satu yang bisa mengambil hasil baris data.
+</li>
+</ul>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680142">
+$affectedRowCount=$command->execute();  // jalankan SQL non-query
+$dataReader=$command->query();          // jalankan query SQL
+$row=$command->queryRow();              // jalankan query SQL dan kembalikan hasil baris pertama
+$value=$command->queryScalar();         // jalankan query SQL dan kembalikan nilai kolom pertama
+</com:TTextHighlighter>
+<p id="680470" class="block-content">
+Dalam hal terjadi kesalahan selama eksekusi pernyataan SQL, <tt>TDbException</tt> akan dimunculkan.
+</p>
+
+<h2 id="136042">Mengambil Hasil Query</h2>
+<p id="680471" class="block-content">
+Setelah <tt>TDbCommand.query()</tt> membuat turunan <tt>TDbDataReader</tt>, seseorang dapat mengambil baris dari data hasil dengan memanggil <tt>TDbDataReader.read()</tt> secara berulang. Seseorang juga bisa menggunakan <tt>TDbDataReader</tt> dalam konstruksi bahasa PHP <tt>foreach</tt> untuk mengambil baris demi baris.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680143">
+// memanggil read() secara berulang sampai ia mengembalikan false
+while(($row=$dataReader->read())!==false) { ... }
+// menggunakan foreach untuk menjelajah melalui setiap baris data
+foreach($dataReader as $row) { ... }
+// mengambil semua baris sekaligus dalam satu array tunggal
+$rows=$dataReader->readAll();
+</com:TTextHighlighter>
+
+<h2 id="136043">Menggunakan Transaksi</h2>
+<p id="680472" class="block-content">
+Ketika aplikasi menjalankan beberapa query, setiap pembacaan dan/atau penulisan informasi dalam database, penting untuk memastikan bahwa datanase tidak dibiarkan dengan hanya beberapa query yang dibawanya. Transaksi, mewakili turunan <tt>TDbTransaksi</tt> dalam PRADO, dapat diinisialisasi dalam hal ini:
+</p>
+<ul id="u5" class="block-content">
+<li>Mulai transaksi.</li>
+<li>Jalankan query satu demi satu. Setiap memutakhirkan ke database tidak terlihat bagi dunia luar.</li>
+<li>Komit transaksi. Pemutakhiran menjadi terlihat jika transaksi berhasil.</li>
+<li>Jika salah satu query gagal, seluruh transaksi digulung kembali.</li>
+</ul>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680144">
+$transaction=$connection->beginTransaction();
+try
+{
+    $connection->createCommand($sql1)->execute();
+    $connection->createCommand($sql2)->execute();
+    //.... eksekusi SQL lain
+    $transaction->commit();
+}
+catch(Exception $e) // eksepsi dimunculkan jika query gagal
+{
+    $transaction->rollBack();
+}
+</com:TTextHighlighter>
+
+
+<h2 id="136044">Mengikat Parameter</h2>
+<p id="680473" class="block-content">
+Guna menghindari <a href="http://en.wikipedia.org/wiki/SQL_injection">serangan injeksi SQL</a> dan untuk meningkatkan performansi dari eksekusi pernyataan SQL yang dipakai secara berulang-ulang, seseorang dapat "menyiapkan" pernyataan SQL dengan tempat parameter opsional yang akan diganti dengan parameter sebenarnya selama proses pengikatan parameter.
+</p>
+<p id="680474" class="block-content">
+Tempat parameter dapat bernama (diwakili dengan token unik) ataupun tidak bernama (diwakili dengan tanda tanya). Panggil <tt>TDbCommand.bindParameter()</tt> atau <tt>TDbCommand.bindValue()</tt> untuk mengganti tempat ini dengan parameter aktual. Parameter tidak perlu diberi tanda kutip: driver database melakukan ini bagi Anda. Pengikatan parameter harus dikerjakan sebelum pernyataan SQL dijalankan.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680145">
+// sebuah SQL dengan dua tempat ":username" dan ":email"
+$sql="INSERT INTO users(username, email) VALUES(:username,:email)";
+$command=$connection->createCommand($sql);
+// ganti tempat ":username" dengan nilai username sebenarnya
+$command->bindParameter(":username",$username,PDO::PARAM_STR);
+// ganti tempat ":email" dengan nilai email sebenarnya
+$command->bindParameter(":email",$email,PDO::PARAM_STR);
+$command->execute();
+// sisipkan baris lain dengan set parameter baru
+$command->bindParameter(":username",$username2,PDO::PARAM_STR);
+$command->bindParameter(":email",$email2,PDO::PARAM_STR);
+$command->execute();
+</com:TTextHighlighter>
+<p id="680475" class="block-content">
+Metode <tt>bindParameter()</tt> dan <tt>bindValue()</tt> sangat mirip. Perbedaanya hanyalah pembentuk mengikat parameter dengan referensi variabel PHP sementara yang terkahir dengan nila. Untuk parameters yang mewakili blok memori data besar, pembentuk lebih disukai untuk pertimbangan performansi.
+</p>
+<p id="680476" class="block-content">
+Untuk lebih jelasnya mengenai pengikatan parameter, lihat <a href="http://www.php.net/manual/en/function.pdostatement-bindparam.php">dokumentasi PHP terkait</a>.
+</p>
+
+
+<h2 id="136045">Mengikat Kolom</h2>
+<p id="680477" class="block-content">
+Ketika mengambil hasil query, seseorang dapat juga mengikat kolom dengan bariabel PHP agar dipopulasikan secara otomatis dengan data terbaru setiap kali baris diambil.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680146">
+$sql="SELECT username, email FROM users";
+$dataReader=$connection->createCommand($sql)->query();
+// ikat kolom ke-1 (username) dengan variabel $username
+$dataReader->bindColumn(1,$username);
+// ikat kolom ke-2 (email) dengan variabel $email
+$dataReader->bindColumn(2,$email);
+while($dataReader->read()!==false)
+{
+    // $username dan $email berisi username dan email dalam baris sekarang
+}
+</com:TTextHighlighter>
+
+<div class="last-modified">$Id: DAO.page 2234 2007-09-23 14:27:54Z xue $</div></com:TContent>

@@ -1,0 +1,171 @@
+<com:TContent ID="body" >
+
+<h1 id="5501">Autenticaci&oacute;n y Autorizacion</h1>
+<p id="720549" class="block-content">
+Autenticaci&oacute;n es un proceso de verificacion de alguna persona cuando esta dice ser quien es. Usualmente se utiliza  para esto un nombre de usuario y un contrase&ntilde;a, pero podr&iacute;a incluir otros m&eacute;todos para demostrar su identidad, tales como tarjetas inteligentes, huellas digitales, etc.
+</p>
+<p id="720550" class="block-content">
+Autorizaci&oacute;n es el proceso de saber si la persona, una vez indetificada, esta permitida a manipular recursos especificos. Esto  es comunmente determinado conociendo si la persona tiene un rol especifico que le da acceso a los recursos solicitados.
+</p>
+
+<h2 id="5502">Funcionamiento de la Autenticaci&oacute;n y Autorizacion en PRADO</h2>
+<p id="720551" class="block-content">
+PRADO proporciona una capa extensible de autenticacion/autirizacion. Como esta descrito en el <a href="">Ciclo de vida de una aplicacion PRADO</a>, <tt>TApplication</tt> reserva diversos modulos del ciclo de vida, responsables de la autenticacion y la autorizacion. PRADO proporciona el modulo <tt>TAuthManager</tt> para este prop&oacute;sito. Los desarrolladores pueden incorporar sus propios modulos de autenticacion/autorizacion (auth) facilmente.
+<tt>TAuthManager</tt> esta dise&ntilde;ado para ser usado en conjunto con el modulo <tt>TUserManager</tt>, el cual implementa una base de datos de usuarios de solo lectura (read-only).
+</p>
+<p id="720552" class="block-content">
+When a page request occurs, <tt>TAuthManager</tt> will try to restore user information from session. If no user information is found, the user is considered as an anonymous or guest user. To facilitate user identity verification, <tt>TAuthManager</tt> provides two commonly used methods: <tt>login()</tt> and <tt>logout()</tt>. A user is logged in (verified) if his username and password entries match a record in the user database managed by <tt>TUserManager</tt>. A user is logged out if his user information is cleared from session and he needs to re-login if he makes new page requests.
+</p>
+<p id="720553" class="block-content">
+During <tt>Authorization</tt> application lifecycle, which occurs after <tt>Autenticaci&oacute;n</tt> lifecycle, <tt>TAuthManager</tt> will verify if the current user has access to the requested page according to a set of authorization rules. The authorization is role-based, i.e., a user has access to a page if 1) the page explicitly states that the user has access; 2) or the user is of a particular role that has access to the page. If the user does not have access to the page, <tt>TAuthManager</tt> will redirect user browser to the login page which is specified by <tt>LoginPage</tt> property.
+</p>
+
+<h2 id="5503">Using PRADO Auth Framework</h2>
+<p id="720554" class="block-content">
+To enable PRADO auth framework, add the <tt>TAuthManager</tt> module and <tt>TUserManager</tt> module to <a href="">application configuration</a>,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code1">
+&lt;service id="page" class="TPageService"&gt;
+  &lt;modules&gt;
+    &lt;module id="auth" class="System.Security.TAuthManager"
+               UserManager="users" LoginPage="UserLogin" /&gt;
+    &lt;module id="users" class="System.Security.TUserManager"
+               PasswordMode="Clear"&gt;
+      &lt;user name="demo" password="demo" /&gt;
+      &lt;user name="admin" password="admin" /&gt;
+    &lt;/module&gt;
+  &lt;/modules&gt;
+&lt;/service&gt;
+</com:TTextHighlighter>
+<p id="720555" class="block-content">
+In the above, the <tt>UserManager</tt> property of <tt>TAuthManager</tt> is set to the <tt>users</tt> module which is <tt>TUserManager</tt>. Developers may replace it with a different user management module that is derived from <tt>TUserManager</tt>.
+</p>
+<p id="720556" class="block-content">
+Authorization rules for pages are specified in <a href="">page configurations</a> as follows,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code2">
+&lt;authorization&gt;
+    &lt;allow pages="PageID1,PageID2"
+              users="User1,User2"
+              roles="Role1" /&gt;
+    &lt;deny pages="PageID1,PageID2"
+              users="?"
+              verb="post" /&gt;
+&lt;/authorization&gt;
+</com:TTextHighlighter>
+<p id="720557" class="block-content">
+An authorization rule can be either an <tt>allow</tt> rule or a <tt>deny</tt> rule. Each rule consists of four optional properties:
+</p>
+<ul id="u1" class="block-content">
+<li><tt>pages</tt> - list of comma-separated page names that this rule applies to. If empty, not set or wildcard '*', this rule will apply to all pages under the current directory and all its subdirectories recursively.</li>
+<li><tt>users</tt> - list of comma-separated user names that this rule applies to. If empty, not set or wildcard '*', this rule will apply to all users including anonymous/guest user. A character ? refers to anonymous/guest user. And a character @ refers to authenticated users (available since v3.1).</li>
+<li><tt>roles</tt> - list of comma-separated user roles that this rule applies to. If empty, not set or wildcard '*', this rule will apply to all user roles.</li>
+<li><tt>verb</tt> - page access method that this rule applies to. It can be either <tt>get</tt> or <tt>post</tt>. If empty, not set or wildcard '*', the rule will apply to both methods.</li>
+</ul>
+
+<p id="720558" class="block-content">
+When a page request is being processed, a list of authorization rules may be available. However, only the <i>first effective</i> rule <i>matching</i> the current user will render the authorization result.
+</p>
+<ul id="u2" class="block-content">
+<li>Rules are ordered bottom-up, i.e., the rules contained in the configuration of current page folder go first. Rules in configurations of parent page folders go after.</li>
+<li>A rule is effective if the current page is in the listed pages of the rule AND the current user action (<tt>get</tt> or <tt>post</tt>) is in the listed actions.</li>
+<li>A rule matching occurs if the current user name is in the listed user names of an <i>effective</i> rule OR if the user's role is in the listed roles of that rule.</li>
+<li>If no rule matches, the user is authorized.</li>
+</ul>
+<p id="720559" class="block-content">
+In the above example, anonymous users will be denied from posting to <tt>PageID1</tt> and <tt>PageID2</tt>, while <tt>User1</tt> and <tt>User2</tt> and all users of role <tt>Role1</tt> can access the two pages (in both <tt>get</tt> and <tt>post</tt> methods).
+</p>
+<com:SinceVersion Version="3.1.1" />
+<p class="block-content">
+Since version 3.1.1, the <tt>pages</tt> attribute in the authorization rules can take relative page paths with wildcard '*'. For example, <tt>pages="admin.Home"</tt> refers to the <tt>Home</tt> page under the <tt>admin</tt> directory, and <tt>pages="admin.*"</tt> would refer to all pages under the <tt>admin</tt> directory and subdirectories.
+</p>
+
+<p class="block-content">
+Also introduced in version 3.1.1 are IP rules. They are specified by a new attribute <tt>ips</tt> in authorization rules. The IP rules are used to determine if an authorization rule aplies to an end-user according to his IP address. One can list a few IPs together, separated by comma ','. Wildcard '*' can be used in the rules. For example, <tt>ips="192.168.0.2, 192.168.1.*"</tt> means the rule applies to users whose IP address is 192.168.0.2 or 192.168.1.*. The latter matches any host in the subnet 192.168.1. If the attribute 'ips' is empty, not set or wildcard '*', the corresponding rule will apply to requests coming from any host address.
+</p>
+
+<h2 id="5504">Using <tt>TUserManager</tt></h2>
+<p id="720560" class="block-content">
+As aforementioned, <tt>TUserManager</tt> implements a read-only user database. The user information are specified in either application configuration or an external XML file.
+</p>
+<p id="720561" class="block-content">
+We have seen in the above example that two users are specified in the application configuration. Complete syntax of specifying the user and role information is as follows,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code3">
+&lt;user name="demo" password="demo" roles="demo,admin" /&gt;
+&lt;role name="admin" users="demo,demo2" /&gt;
+</com:TTextHighlighter>
+<p id="720562" class="block-content">
+where the <tt>roles</tt> attribute in <tt>user</tt> element is optional. User roles can be specified in either the <tt>user</tt> element or in a separate <tt>role</tt> element.
+</p>
+
+<h2 id="5505">Using <tt>TDbUserManager</tt></h2>
+<p id="720563" class="block-content">
+<tt>TDbUserManager</tt> is introduced in v3.1.0. Its main purpose is to simplify the task of managing user accounts that are stored in a database. It requires developers to write a user class that represents the necessary information for a user account. The user class must extend from <tt>TDbUser</tt>.
+</p>
+<p id="720564" class="block-content">
+To use <tt>TDbUserManager</tt>, configure it in the application configuration like following:
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code4">
+<module id="db"
+     class="System.Data.TDataSourceConfig" ..../>
+<module id="users"
+     class="System.Security.TDbUserManager"
+     UserClass="Path.To.MyUserClass"
+     ConnectionID="db" />
+<module id="auth"
+     class="System.Security.TAuthManager"
+     UserManager="users" LoginPage="Path.To.LoginPage" />
+</com:TTextHighlighter>
+
+</p>
+<p id="720565" class="block-content">
+In the above, <tt>UserClass</tt> specifies what class will be used to create user instance. The class must extend from <tt>TDbUser</tt>. <tt>ConnectionID</tt> refers to the ID of a <tt>TDataSourceConfig</tt> module which specifies how to establish database connection to retrieve user information.
+</p>
+<p id="720566" class="block-content">
+The user class has to implement the two abstract methods in <tt>TDbUser</tt>: <tt>validateUser()</tt> and <tt>createUser()</tt>. Since user account information is stored in a database, the user class may make use of its <tt>DbConnection</tt> property to reach the database.
+</p>
+<com:SinceVersion Version="3.1.1" />
+<p id="720567" class="block-content">
+Since 3.1.1, <tt>TAuthManager</tt> provides support to allow remembering login by setting <tt>AllowAutoLogin</tt> to true. Accordingly, <tt>TDbUser</tt> adds two methods to facilitate the implementation of this feature. In particular, two new methods are introduced: <tt>createUserFromCookie()</tt> and <tt>saveUserToCookie()</tt>. Developers should implement these two methods if remembering login is needed. Below is a sample implementation:
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code5">
+public function createUserFromCookie($cookie)
+{
+	if(($data=$cookie->Value)!=='')
+	{
+		$application=Prado::getApplication();
+		if(($data=$application->SecurityManager->validateData($data))!==false)
+		{
+			$data=unserialize($data);
+			if(is_array($data) && count($data)===3)
+			{
+				list($username,$address,$token)=$data;
+				$sql='SELECT passcode FROM user WHERE LOWER(username)=:username';
+				$command=$this->DbConnection->createCommand($sql);
+				$command->bindValue(':username',strtolower($username));
+				if($token===$command->queryScalar() && $token!==false && $address=$application->Request->UserHostAddress)
+					return $this->createUser($username);
+			}
+		}
+	}
+	return null;
+}
+
+public function saveUserToCookie($cookie)
+{
+	$application=Prado::getApplication();
+	$username=strtolower($this->Name);
+	$address=$application->Request->UserHostAddress;
+	$sql='SELECT passcode FROM user WHERE LOWER(username)=:username';
+	$command=$this->DbConnection->createCommand($sql);
+	$command->bindValue(':username',strtolower($username));
+	$token=$command->queryScalar();
+	$data=array($username,$address,$token);
+	$data=serialize($data);
+	$data=$application->SecurityManager->hashData($data);
+	$cookie->setValue($data);
+}
+</com:TTextHighlighter>
+
+<div class="last-modified">$Id: Auth.page 2245 2007-09-26 13:22:02Z xue $</div></com:TContent>

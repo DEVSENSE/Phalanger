@@ -1,0 +1,113 @@
+<com:TContent ID="body" >
+<h1 id="1601">Templates: Part II</h1>
+
+<a name="dct"></a>
+<h2 id="1602">Dynamic Content Tags</h2>
+<p id="190181" class="block-content">
+Dynamic content tags are introduced as shortcuts to some commonly used <a href="?page=Configurations.Templates1#ct">component tags</a>. These tags are mainly used to render contents resulted from evaluating some PHP expressions or statements. They include <a href="#et">expression tags</a>, <a href="#st">statement tags</a>, <a href="#dt">databind tags</a>, <a href="#pt">parameter tags</a>, <a href="#at">asset tags</a> and <a href="#lot">localization tags</a>.
+</p>
+
+<a name="et"></a>
+<h3 id="1603">Expression Tags</h3>
+<p id="190182" class="block-content">
+An expression tag represents a PHP expression that is evaluated when the template control is in <tt>PreRender</tt> stage. The expression evaluation result is inserted at the place where the tag resides in the template. The context (namely <tt>$this</tt>) of the expression is the control owning the template.
+</p>
+<p id="190183" class="block-content">
+The format of an expression tag is as follows,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190079">
+&lt;%= PhpExpression %&gt;
+</com:TTextHighlighter>
+<p id="190184" class="block-content">
+For example, the following expression tag will display the current page title at the place,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190080">
+&lt;%= $this-&gt;Title %&gt;
+</com:TTextHighlighter>
+
+<a name="st"></a>
+<h3 id="1604">Statement Tags</h3>
+<p id="190185" class="block-content">
+Statement tags are similar to expression tags, except that statement tags contain PHP statements rather than expressions. The output of the PHP statements (using for example <tt>echo</tt> or <tt>print</tt> in PHP) are displayed at the place where the statement tag resides in the template. The context (namely <tt>$this</tt>) of the statements is the control owning the template. The format of statement tags is as follows,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190081">
+&lt;%%
+PHP Statements
+%&gt;
+</com:TTextHighlighter>
+<p id="190186" class="block-content">
+The following example displays the current time in Dutch at the place,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190082">
+&lt;%%
+setlocale(LC_ALL, 'nl_NL');
+echo strftime("%A %e %B %Y",time());
+%&gt;
+</com:TTextHighlighter>
+
+<a name="dt"></a>
+<h3 id="1605">Databind Tags</h3>
+<p id="190187" class="block-content">
+Databind tags are similar to expression tags, except that the expressions are evaluated only when a <tt>dataBind()</tt> call is invoked on the controls representing the databind tags. The context (namely <tt>$this</tt>) of a databind expression is the control owning the template. The format of databind tags is as follows,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190083">
+&lt;%# PhpExpression %&gt;
+</com:TTextHighlighter>
+
+<a name="pt"></a>
+<h3 id="1606">Parameter Tags</h3>
+<p id="190188" class="block-content">
+Parameter tags are used to insert application parameters at the place where they appear in the template. The format of parameter tags is as follows,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190084">
+&lt;%$ ParameterName %&gt;
+</com:TTextHighlighter>
+<p id="190189" class="block-content">
+Note, application parameters are usually defined in application configurations or page directory configurations. The parameters are evaluated when the template is instantiated.
+</p>
+
+<a name="at"></a>
+<h3 id="1607">Asset Tags</h3>
+<p id="190190" class="block-content">
+Asset tags are used to publish private files and display the corresponding the URLs. For example, if you have an image file that is not Web-accessible and you want to make it visible to end-users, you can use asset tags to publish this file and show the URL to end-users so that they can fetch the published image.
+</p>
+<p id="190191" class="block-content">
+The format of asset tags is as follows,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190085">
+&lt;%~ LocalFileName %&gt;
+</com:TTextHighlighter>
+<p id="190192" class="block-content">
+where <tt>LocalFileName</tt> refers to a file path that is relative to the directory containing the current template file. The file path can be a single file or a directory. If the latter, the content in the whole directory will be made accessible by end-users.
+</p>
+<p id="190193" class="block-content">
+BE VERY CAUTIOUS when you are using asset tags as it may expose to end-users files that you probably do not want them to see.
+</p>
+
+<a name="lot"></a>
+<h3 id="1608">Localization Tags</h3>
+<p id="190194" class="block-content">
+Localization tags represent localized texts. They are in the following format,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190086">
+&lt;%[string]%&gt;
+</com:TTextHighlighter>
+<p id="190195" class="block-content">
+where <tt>string</tt> will be translated to different languages according to the end-user's language preference. Localization tags are in fact shortcuts to the function call <tt>Prado::localize(string)</tt>.
+</p>
+
+
+<a name="ut"></a>
+<h3 id="1609">URL Tags</h3>
+<p id="190195" class="block-content">
+URL tags are used to insert the relative web url path to the Prado application in the template. You can use it in the following format: 
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190087">
+&lt;%/ image.jpg %&gt;
+</com:TTextHighlighter>
+</p>
+<p id="190196" class="block-content">
+If your Prado application is deployed on http://localhost/pradoapp/, the tag above will produce "/pradoapp/image.jpg". This tag will help you to use the correct file path even with UrlFormat set to Path, or if you are using url mappings.
+</p>
+
+<div class="last-modified">$Id: Templates2.page 2568 2008-11-13 11:27:44Z carlgmathisen $</div></com:TContent>

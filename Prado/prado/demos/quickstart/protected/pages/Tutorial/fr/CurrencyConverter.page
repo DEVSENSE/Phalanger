@@ -1,0 +1,405 @@
+<com:TContent ID="body">
+	<h1 id="16001">Building a Simple Currency Converter</h1>
+	<p id="80053" class="block-content">This tutorial introduces the Prado web application framework and teaches
+		you how to build a simple web application in a few simple steps. This
+		tutorial assumes that you are familiar with PHP and you have access
+		to a web server that is able to serve PHP5 scripts.
+	</p>
+
+	<p id="80054" class="block-content">In this tutorial you will build a simple web application that converts
+		a dollar amount to an other currency, given the rate of that currency
+		relative to the dollar. The completed application is shown bellow.
+		<img src=<%~ example2.png %> class="figure" />
+		You can try the application <a href="../currency-converter/index.php">locally</a> or at
+		<a href="http://www.pradosoft.com/demos/currency-converter/">Pradosoft.com</a>.
+		Notice that the application still functions exactly the same if javascript
+		is not available on the user's browser.
+	</p>
+
+	<h1 id="download">Downloading and Installing Prado</h1>
+	<p id="80055" class="block-content">To install Prado, simply download the latest version of Prado from
+		<a href="http://www.pradosoft.com/">http://www.pradosoft.com</a>
+		and unzip the file to a directory <b>not</b> accessible by your web server
+		(you may unzip it to a directory accessible by the web server if you wish
+		to see the demos and test). For further detailed installation, see the
+		<a href="?page=GettingStarted.Installation">Quickstart Installation</a> guide.
+	</p>
+
+	<h1 id="16002">Creating a new Prado web Application</h1>
+	<p id="80056" class="block-content">The quickest and simplest way to create a new Prado web application is
+		to use the command tool <tt>prado-cli.php</tt> found in the <tt>framework</tt>
+		directory of the Prado distribution.  We create a new application by running
+		the  following command in your
+		command prompt or console. The command creates a new directory named
+		<tt>currency-converter</tt> in your current working directory.
+		You may need to change to the appropriate directory
+		first.
+		See the <a href="?page=GettingStarted.CommandLine">Command Line Tool</a>
+		for more details.
+	</p>
+<com:TTextHighlighter Language="text" CssClass="source block-content" id="code111">
+php prado/framework/prado-cli.php -c currency-converter
+</com:TTextHighlighter>
+
+	<p id="80057" class="block-content">The above command creates the necessary directory structure and minimal
+		files (including "index.php" and "Home.page") to run a Prado  web application.
+		Now you can point your browser's url to the web server to serve up
+		the <tt>index.php</tt> script in the <tt>currency-converter</tt> directory.
+		You should see the message "Welcome to Prado!"
+	</p>
+
+	<h1 id="16003">Creating the Currency Converter User Interface</h1>
+	<p id="80058" class="block-content">We start by editing the <tt>Home.page</tt> file found in the
+		<tt>currency-converter/protected/pages/</tt> directory. Files ending
+		with ".page" are page templates that contains HTML and Prado controls.
+		We simply add two textboxes, three labels and one button as follows.
+	</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="form1">
+&lt;com:TForm&gt;
+    <fieldset>
+        <legend>Currency Converter</legend>
+        <div class="rate-field">
+            &lt;com:TLabel ForControl="currencyRate" Text="Exchange Rate per $1:" /&gt;
+            &lt;com:TTextBox ID="currencyRate" /&gt;
+        </div>
+        <div class="dollar-field">
+            &lt;com:TLabel ForControl="dollars" Text="Dollars to Convert:" /&gt;
+            &lt;com:TTextBox ID="dollars" /&gt;
+        </div>
+        <div class="total-field">
+            <span class="total-label">Amount in Other Currency:</span>
+            &lt;com:TLabel ID="total" CssClass="result" /&gt;
+        </div>
+        <div class="convert-button">
+            &lt;com:TButton Text="Convert" /&gt;
+        </div>
+    </fieldset>
+&lt;/com:TForm&gt;
+</com:TTextHighlighter>
+	<p id="refresh" class="block-content">
+	If you refresh the page, you should see something similar to the following figure.
+	It may not look very pretty or orderly, but we shall change that later using CSS.
+	<img src=<%~ example1.png %> class="figure" />
+	</p>
+
+	<p id="80059" class="block-content">
+		The first component we add is a
+		<com:DocLink ClassPath="System.Web.UI.TForm" Text="TForm" />
+		that basically corresponds to the HTML <tt>&lt;form&gt;</tt> element.
+		In Prado, only <b>one</b> <tt>TForm</tt> element is allowed per page.
+	</p>
+
+	<p id="80060" class="block-content">The next two pair of component we add is the
+		<com:DocLink ClassPath="System.Web.UI.WebControls.TLabel" Text="TLabel" />
+		and
+		<com:DocLink ClassPath="System.Web.UI.WebControls.TTextBox" Text="TTextBox" />
+		that basically defines a label and a textbox for the user of the application
+		to enter the currency exchange rate.
+		The <tt>ForControl</tt> property value determines which component
+		that the label is for. This allows the user of the application to click
+		on the label to focus on the field (a good thing). You could have used
+		a plain HTML <tt>&lt;label&gt;</tt> element to do the same thing, but
+		you would have to find the correct <tt>ID</tt> of the textbox (or
+		<tt>&lt;input&gt;</tt> in HTML) as Prado components may/will render the
+		<tt>ID</tt> value differently in the HTML output.
+	</p>
+
+	<p id="80061" class="block-content">The next pair of components are similar and defines the textbox
+		to hold the dollar value to be converted.
+		The <tt>TLabel</tt> with <tt>ID</tt> value "total" defines a simple label.
+		Notice that the <tt>ForControl</tt> property is absent. This means that this
+		label is simply a simple label which we are going to use to display the
+		converted total amount.
+	</p>
+
+	<p id="80062" class="block-content">The final component is a
+		<com:DocLink ClassPath="System.Web.UI.WebControls.TButton" Text="TButton" />
+		that the user will click to calculate the results. The <tt>Text</tt>
+		property sets the button label.
+	</p>
+
+	<h1 id="16004">Implementing Currency Conversion</h1>
+
+	<p id="80063" class="block-content">If you tried clicking on the "Convert" button then the page will refresh
+		and does not do anything else. For the button to do some work, we need
+		to add a "Home.php" to where "Home.page" is. The <tt>Home</tt> class
+		should extends the
+		<com:DocLink ClassPath="System.Web.UI.TPage" Text="TPage" />, the default base
+		class for all Prado pages.
+	</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code3">
+&lt;?php
+class Home extends TPage
+{
+
+}
+?&gt;
+</com:TTextHighlighter>
+	<p id="1111" class="block-content">
+		Prado uses PHP's <tt>__autoload</tt> method to load classes. The convention
+		is to use the class name with ".php" extension as filename.
+	</p>
+
+	<p id="80064" class="block-content">So far there is nothing interesting about Prado, we just declared some
+		"web components" in some template file named Home.page and created
+		a "Home.php" file with a <tt>Home</tt> class. The more interesting
+		bits are in Prado's event-driven architecture as we shall see next.
+	</p>
+
+	<p id="80065" class="block-content">We want that when the user click on the "Convert" button, we take the
+		values in the textbox, do some calculation and present the user with
+		the converted total. To handle the user clicking of the "Convert" button
+		we simply add an <tt>OnClick</tt> property to the "Convert" button in
+	 	the "Home.page" template and add a corresponding event handler method
+		in the "Home.php".
+	</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code4">
+&lt;com:TButton Text="Convert" OnClick="convert_clicked" /&gt;
+</com:TTextHighlighter>
+	<p id="222" class="block-content">
+		The value of the <tt>OnClick</tt>, "<tt>convert_clicked</tt>", will be the method
+		name in the "Home.php" that will called when the user clicks on the
+		"Convert" button.
+	</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code5">
+class Home extends TPage
+{
+    public function convert_clicked($sender, $param)
+    {
+        $rate = floatval($this->currencyRate->Text);
+        $dollars = floatval($this->dollars->Text);
+        $this->total->Text = $rate * $dollars;
+    }
+}
+</com:TTextHighlighter>
+<div id="3332" class="block-content">
+	<p id="333">
+		If you run the application in your web browser, enter some values and click
+		the "Convert" button then you should see that calculated value displayed next
+		to the "Amount in Other Currency" label.
+	</p>
+
+	<p id="80066">In the "<tt>convert_clicked</tt>" method the first parameter, <tt>$sender</tt>,
+		corresponds to the object that raised the event, in this case,
+		the "Convert" button. The second parameter, <tt>$param</tt> contains
+		any additional data that the <tt>$sender</tt> object may wish to have added.
+	</p>
+
+	<p id="80067">We shall now examine, the three lines that implements the simply currency
+		conversion in the "<tt>convert_clicked</tt>" method.
+	</p>
+</div>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code6" >
+$rate = floatval($this->currencyRate->Text);
+</com:TTextHighlighter>
+	<p id="444" class="block-content">
+		The statement <tt>$this->currencyRate</tt> corresponds to the
+		<tt>TTextBox</tt> component with <tt>ID</tt> value "currencyRate" in the
+		"Home.page" template. The <tt>Text</tt> property of the <tt>TTextBox</tt>
+		contains the value that the user entered. So, we obtain this
+		value by <tt>$this->currencyRate->Text</tt> which we convert the
+		value to a float value.
+	</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code7">
+$dollars = floatval($this->dollars->Text);
+</com:TTextHighlighter>
+<div id="5551" class="block-content">
+	<p id="555">
+		The next line does a similar things, it takes the user value from
+		the <tt>TTextBox</tt> with <tt>ID</tt> value "dollars and converts it to
+		a float value.
+	</p>
+
+	<p id="80068">The third line calculates the new amount and set this value in the
+		<tt>Text</tt> property of the <tt>TLabel</tt> with <tt>ID="total"</tt>.
+		Thus, we display the new amount to the user in the label.
+	</p>
+</div>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code8">
+$this->total->Text = $rate * $dollars;
+</com:TTextHighlighter>
+
+	<h1 id="16005">Adding Validation</h1>
+	<p id="80069" class="block-content">The way we convert the user entered value to float ensures that the
+		total amount is always a number. So the user is free to enter what
+		ever they like, they could even enter letters. The user's experience
+		in using the application can be improved by adding validators
+		to inform the user of the allowed values in the currency rate and the
+		amount to be calcuated.
+	</p>
+
+	<p id="80070">For the currency rate, we should ensure that</p>
+		<ol id="o111" class="block-content">
+			<li>the user enters a value,</li>
+			<li>the currency rate is a valid number,</li>
+			<li>the currency rate is positive.</li>
+		</ol>
+	<p id="666" class="block-content">
+	 To ensure 1 we add one
+	<com:DocLink ClassPath="System.Web.UI.WebControls.TRequiredFieldValidator" Text="TRequiredFieldValidator" />. To ensure 2 and 3, we add one
+	<com:DocLink ClassPath="System.Web.UI.WebControls.TCompareValidator" Text="TCompareValidator" />. We may add these validators any where within
+	the "Home.page" template. Further details regarding these validator and other
+	validators can be found in the
+	<a href="?page=Controls.Validation">Validation Controls</a> page.
+	</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code9">
+&lt;com:TRequiredFieldValidator
+	ControlToValidate="currencyRate"
+	ErrorMessage="Please enter a currency rate." /&gt;
+&lt;com:TCompareValidator
+	ControlToValidate="currencyRate"
+	DataType="Float"
+	ValueToCompare="0"
+	Operator="GreaterThan"
+	ErrorMessage="Please enter a positive currency rate." /&gt;
+</com:TTextHighlighter>
+
+	<p id="80071" >For the amount to be calculated, we should ensure that</p>
+		<ol id="o222" class="block-content">
+			<li>the user enters a value,</li>
+			<li>the value is a valid number (not including any currency or dollar signs).</li>
+		</ol>
+	<p id="777" class="block-content">
+	To ensure 1 we just add another <tt>TRequiredFieldValidator</tt>, for 2
+	we could use a
+	<com:DocLink ClassPath="System.Web.UI.WebControls.TDataTypeValidator" Text="TDataTypeValidator" />. For simplicity we only allow the user to enter
+	a number for the amount they wish to convert.
+	</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code9a">
+&lt;com:TRequiredFieldValidator
+	ControlToValidate="dollars"
+	ErrorMessage="Please enter the amount you wish to calculate." /&gt;
+&lt;com:TDataTypeValidator
+	ControlToValidate="dollars"
+	DataType="Float"
+	ErrorMessage="Please enter a number." /&gt;
+</com:TTextHighlighter>
+	</p>
+
+	<p id="80072" class="block-content">Now if you try to enter some invalid data in the application or left out
+		any of the fields the validators will be activated and present the user
+		with error messages. Notice that the error messages are presented
+		without reloading the page. Prado's validators by default validates
+		using both javascript and server side. The server side validation
+		is <b>always performed</b>. For the server side, we
+		should skip the calculation if the validators are not satisfied. This can
+		done as follows.
+	</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code10" >
+public function convert_clicked($sender, $param)
+{
+    if($this->Page->IsValid)
+    {
+        $rate = floatval($this->currencyRate->Text);
+        $dollars = floatval($this->dollars->Text);
+        $this->total->Text = $rate * $dollars;
+    }
+}
+</com:TTextHighlighter>
+
+	<h1 id="16006">Improve User Experience With Active Controls</h1>
+	<p id="80073" class="block-content">In this simple application we may further improve the user experience
+		by increasing the responsiveness of the application. One way to achieve
+		a faster response is calculate and present the results without reloading
+		the whole page.
+	</p>
+
+	<p id="80074" class="block-content">We can replace the <tt>TButton</tt> with the Active Control counter part,
+		<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveButton" Text="TActiveButton" />,
+		that can trigger a server side click event without reloading the page.
+		In addition, we can change the "totals" <tt>TLabel</tt> with the
+		Active Control counter part,
+		<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveLabel" Text="TActiveLabel" />, such that the server side can update the browser without
+		reloading the page.
+	</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code11">
+<div class="total-field">
+    <span class="total-label">Amount in Other Currency:</span>
+         &lt;com:TActiveLabel ID="total" CssClass="result" /&gt;
+    </div>
+    <div class="convert-button">
+        &lt;com:TActiveButton Text="Convert" OnClick="convert_clicked" /&gt;
+</div>
+</com:TTextHighlighter>
+	<p id="1232" class="block-content">
+		The server side logic remains the same, we just need to import the
+		Active Controls name space as they are not included by default. We
+		add the following line to the begin of "Home.php".
+	</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code12">
+Prado::using('System.Web.UI.ActiveControls.*');
+</com:TTextHighlighter>
+
+	<p id="80075" class="block-content">If you try the application now, you may notice that the page no longer
+		needs to reload to calculate and display the converted total amount.
+		However, since there is not page reload, there is no indication or not obvious
+		that by clicking on the "Convert" button any has happened.
+		We can further refine the user experience by change the text of "total" label
+		to "calculating..." when the user clicks on the "Convert" button. The text of
+		the "total" label will still be updated with the new calculate amount as before.
+	</p>
+
+	<p id="80076" class="block-content">To indicate that the calculation is in progress, we can change the text
+		of the "total" label as follows. We add a <tt>ClientSide.OnLoading</tt> property
+		to the "Convert" button (since this button is responsible for requesting
+		the calculation).
+	</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code13">
+&lt;com:TActiveButton Text="Convert" OnClick="convert_clicked" &gt;
+    &lt;prop:ClientSide.OnLoading&gt;
+        $('&lt;%= $this->total->ClientID %&gt;').innerHTML = "calculating..."
+    &lt;/prop:ClientSide.OnLoading&gt;
+&lt;/com:TActiveButton&gt;
+</com:TTextHighlighter>
+
+	<p id="80077" class="block-content">The <tt>ClientSide.OnLoading</tt> and various
+	<com:DocLink ClassPath="System.Web.UI.ActiveControls.TCallbackClientSide" Text="other properties" /> accept a javascript block as their content or value.
+	The javascript code <tt>$('...')</tt> is a javascript function that is
+	equivalent to <tt>document.getElementById('...')</tt> that takes a string
+	with the ID of an HTML element. Since Prado renders its components's IDs, we need
+	to use the rendered ID of the "total" label, that is, <tt>$this->total->ClientID</tt>. We place this bit of code within a <tt>&lt;%= %&gt;</tt> to obtain the rendered HTML ID for the "total" label. The rest of the
+	javascript code <tt>innerHTML = "calculating..."</tt> simply changes
+	the content of the "total" label.
+	</p>
+
+	<h1 id="16007">Adding Final Touches</h1>
+	<p id="80078" class="block-content">So far we have built a simple currency converter web application with
+		little attention of the looks and feel. Now we can add a stylesheet
+		to improve the overall appearance of the application. We can simply
+		add the stylesheet inline with the template code or we may create
+		a "theme".
+	</p>
+
+	<p id="80079" class="block-content">To create and use a theme with Prado applications, we simply create a new
+		directory "themes/Basic" in the <tt>currency-converter</tt> directory.
+		You may need to create the <tt>themes</tt> directory first. Any
+		directory within the <tt>themes</tt> are considered as a theme with the
+		name of the theme being the directory name. See the
+		<a href="?page=Advanced.Themes">Themes and Skins</a> for further details.
+	</p>
+
+	<p id="80080" class="block-content">We simply create a CSS file named "common.css" and save it in the
+		<tt>themes/Basic</tt> directory. Then we add the following code
+		to the beginning of "Home.page" (we add a little more HTML as well).
+	</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code14">
+&lt;%@ Theme="Basic" %&gt;
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+&lt;com:THead Title="Currency Converter" /&gt;
+<body>
+</com:TTextHighlighter>
+	<p id="4334" class="block-content">
+		The first line <tt>&lt;%@ Theme="Basic" %&gt;</tt> defines the
+		theme to be used for this page. The
+		<com:DocLink ClassPath="System.Web.UI.WebControls.THead" Text="THead" />
+		corresponds to the HTML <tt>&lt;head&gt;</tt> element. In addition
+		to display the <tt>Title</tt> property by the <tt>THead</tt>, all CSS
+		files in the <tt>themes/Basic</tt> directory are also rendered/linked
+		for the current page. Our final currency converter web application
+		looks like the following.
+		<img src=<%~ example2.png %> class="figure" />
+		This completes introduction tutorial to the Prado web application framework.
+	</p>
+<div class="last-modified">$Id: CurrencyConverter.page 1654 2007-01-25 07:24:40Z wei $</div></com:TContent>

@@ -1,0 +1,7 @@
+<com:TContent ID="body" >
+
+<h1>Active Record Scaffold Example</h1>
+
+<com:TScaffoldView RecordClass="AddressRecord" />
+
+</com:TContent>

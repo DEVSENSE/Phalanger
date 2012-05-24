@@ -1,0 +1,137 @@
+<com:TContent ID="Main">
+
+<h1>Creating <tt>AdminUser</tt> Page</h1>
+
+<p>
+The <tt>AdminUser</tt> page displays all user accounts in a list so that the administrator can perform some administrative work. For simplicity, the administrative work our blog system supports include editting a user account and deleting a user account.
+</p>
+
+<p>
+We will display the user list in a table. Each row of the table represents a single user account, and the following columns are to be displayed:
+</p>
+<ul>
+<li>Username - displays the usernames. In each cell a hyerplink is displayed which leads to the corresponding <a href="?page=Day3.CreateEditUser">EditUser</a> page.</li>
+<li>Email - displays the emails.</li>
+<li>Administrator - shows whether the user account is of the administrator role.</li>
+<li>Command - displays a column of "Delete" buttons. Clicking on any of them will lead to deletion of the corresponding user account.</li>
+</ul>
+
+<p>
+We create two files <tt>protected/pages/users/AdminUser.page</tt> and <tt>protected/pages/users/AdminUser.php</tt> to save the page template and page class, respectively.
+</p>
+
+<h2>Creating Page Template</h2>
+<p>
+We use <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.DataGrid">TDataGrid</a> to display the user accounts. Based on the above analysis, we configure the following four columns:
+</p>
+<ul>
+<li><a href="http://www.pradosoft.com/docs/classdoc/THyperLinkColumn">THyperLinkColumn</a> displays the username column. The URL is constructed according to the PHP expression specified in the <tt>DataNavigateUrlFormatString</tt> property.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TBoundColumn">TBoundColumn</a> displays the email column.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TCheckBoxColumn">TCheckBoxColumn</a> uses checkboxes to indicate whether a user account is of role administrator.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TButtonColumn">TButtonColumn</a> displays a column of "Delete" buttons.</li>
+</ul>
+
+<p>The complete page template is shown as follows:</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ Title="My Blog - Manage User Accounts" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Manage User Accounts</h1>
+
+<a href="&lt;%= $this->Service->constructUrl('users.NewUser')%>">Create New User</a>
+<br/>
+
+&lt;com:TDataGrid ID="UserGrid"
+    DataKeyField="username"
+    AutoGenerateColumns="false"
+    OnDeleteCommand="deleteButtonClicked">
+
+    &lt;com:THyperLinkColumn
+        HeaderText="Username"
+        DataTextField="username"
+        DataNavigateUrlField="username">
+        &lt;prop:DataNavigateUrlFormatString>#
+          $this->Service->constructUrl('users.EditUser',array('username'=>{0}))
+        &lt;/prop:DataNavigateUrlFormatString>
+    &lt;/com:THyperLinkColumn>
+
+    &lt;com:TBoundColumn
+        HeaderText="Email"
+        DataField="email" />
+
+    &lt;com:TCheckBoxColumn
+        HeaderText="Administrator"
+        DataField="role" />
+
+    &lt;com:TButtonColumn
+        HeaderText="Command"
+        Text="Delete"
+        ButtonType="PushButton"
+        CommandName="delete" />
+
+&lt;/com:TDataGrid>
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+
+<h2>Creating Page Class</h2>
+
+<p>
+In the above page template, the datagrid's <tt>OnDeleteCommand</tt> event is ttached with the method <tt>deleteButtonClicked()</tt> which we shall implement in the page class. In addition, the datagrid needs to be populated with user accounts data when the page is initialized. Therefore, we write the page class as follows:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class AdminUser extends TPage
+{
+    /**
+     * Populates the datagrid with user lists.
+     * This method is invoked by the framework when initializing the page
+     * @param mixed event parameter
+     */
+    public function onInit($param)
+    {
+        parent::onInit($param);
+        // fetches all data account information
+        $this->UserGrid->DataSource=UserRecord::finder()->findAll();
+        // binds the data to interface components
+        $this->UserGrid->dataBind();
+    }
+
+    /**
+     * Deletes a specified user record.
+     * This method responds to the datagrid's OnDeleteCommand event.
+     * @param TDataGrid the event sender
+     * @param TDataGridCommandEventParameter the event parameter
+     */
+    public function deleteButtonClicked($sender,$param)
+    {
+        // obtains the datagrid item that contains the clicked delete button
+        $item=$param->Item;
+        // obtains the primary key corresponding to the datagrid item
+        $username=$this->UserGrid->DataKeys[$item->ItemIndex];
+        // deletes the user record with the specified username primary key
+        UserRecord::finder()->deleteByPk($username);
+    }
+}
+</com:TTextHighlighter>
+
+<p>
+In the above, the <tt>deleteButtonClicked()</tt> method is invoked whenever a "Delete" button is clicked. To determine which row of the buttons is clicked, we check the <tt>Item.ItemIndex</tt> property of the event parameter. To further identify which user account is to be deleted, we retrieve the primary key (username) value via the datagrid's <tt>DataKeys</tt> property.
+</p>
+
+<com:TipBox>
+All <a href="http://www.pradosoft.com/docs/classdoc/TDataBoundControl">data-bound</a> controls have similar usage pattern. That is, set the <tt>DataSource</tt> property with the data and call <tt>dataBind()</tt> method to binds the data to the control's internal structure.
+</com:TipBox>
+
+
+<h2>Testing</h2>
+<p>
+To test the <tt>AdminUser</tt> page, visit the URL <tt>http://hostname/blog/index.php?page=users.AdminUser</tt>. You may be required to login as an administrator first if you have not done so. We shall expect to see the following result.
+</p>
+
+<img src="<%~ output3.gif %>" class="output" />
+
+</com:TContent>

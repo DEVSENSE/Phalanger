@@ -1,0 +1,13 @@
+<com:TContent ID="body" >
+
+<h1 id="2701">THiddenField</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.THiddenField" />
+
+<p id="320262" class="block-content">
+<tt>THiddenField</tt> mewakili field tersembyni pada halaman Web. Nilai field tersembunyi dapat diakses melalui properti <tt>Value</tt>.
+</p>
+<p id="320263" class="block-content">
+<tt>THiddenField</tt> memunculkan event <tt>OnValueChanged</tt> jika nilainya diubah selama postback.
+</p>
+
+<div class="last-modified">$Id: HiddenField.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

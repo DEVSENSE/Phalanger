@@ -1,0 +1,34 @@
+<com:TContent ID="body">
+
+<h1>TInlineFrame Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Inline frame with default settings:
+</td><td class="sampleaction">
+<com:TInlineFrame FrameUrl="http://www.google.com/" />
+</td></tr>
+
+<tr><td class="samplenote">
+Inline frame customized with margins and align:
+</td><td class="sampleaction">
+<com:TInlineFrame
+	MarginWidth="100"
+	MarginHeight="100"
+	Align="Right"
+	FrameUrl="http://www.google.com/" />
+</td></tr>
+
+<tr><td class="samplenote">
+Inline frame without scrollbars and border:
+</td><td class="sampleaction">
+<com:TInlineFrame
+	ScrollBars="None"
+	ShowBorder="false"
+	FrameUrl="http://www.google.com/" />
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

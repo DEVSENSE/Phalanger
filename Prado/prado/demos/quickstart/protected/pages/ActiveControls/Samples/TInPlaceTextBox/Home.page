@@ -1,0 +1,17 @@
+<com:TContent ID="body">
+
+<h1>TInPlaceTextBox Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+An in-place textbox text updating a label when its text changes:
+</td><td class="sampleaction">
+<com:TInPlaceTextBox ID="txt1" Text="This is an in-place textbox" OnTextChanged="textChanged" />
+<br/><com:TActiveLabel Text="This is a label" ID="label1"
+/>
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2961 2011-06-02 19:27:21Z ctrlaltca@gmail.com $</div></com:TContent>

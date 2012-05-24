@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+
+  <modules>
+    <!-- user manager module -->
+  	<module id="users" class="Application.App_Code.UserManager" />
+    <!-- auth manager module -->
+    <module id="auth" class="Application.App_Code.TrackerAuthManager" 
+		UserManager="users" LoginPage="TimeTracker.Login" />
+  </modules>
+
+  <authorization>
+    <allow roles="admin" />
+	<allow pages="ProjectList, ProjectDetails, ReportResource, ReportProject" roles="manager" />
+	<allow pages="LogTimeEntry" roles="consultant" />
+	<allow pages="UserCreate,Logout,Login" users="*" />
+    <deny users="*" />
+  </authorization>
+
+  <pages MasterClass="Application.pages.TimeTracker.MainLayout" Theme="TimeTracker" />
+
+  <parameters>
+  	<parameter id="NewUserRoles" value="admin,manager,consultant" />
+  </parameters>
+</configuration>

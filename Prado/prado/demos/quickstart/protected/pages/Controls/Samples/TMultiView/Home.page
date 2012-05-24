@@ -1,0 +1,37 @@
+<com:TContent ID="body">
+
+<h1>TMultiView Samples</h1>
+
+<com:TMultiView ID="MultiView" ActiveViewIndex="0" OnActiveViewChanged="viewChanged">
+  <com:TView ID="View1">
+    <h2>View 1</h2>
+    <p>Please enter a memo:</p>
+    <com:TTextBox ID="Memo" />
+    <hr/>
+    <com:TButton Text="View 2" CommandName="NextView" />
+    <com:TButton Text="View 3" CommandName="SwitchViewIndex" CommandParameter="2" />
+  </com:TView>
+  <com:TView>
+    <h2>View 2</h2>
+    <p>Please choose a color:</p>
+    <com:TDropDownList ID="DropDownList">
+      <com:TListItem Value="Red" />
+      <com:TListItem Value="Blue" />
+      <com:TListItem Value="Green" />
+    </com:TDropDownList>
+    <hr/>
+    <com:TButton Text="View 1" CommandName="PreviousView" />
+    <com:TButton Text="View 3" CommandName="NextView" />
+  </com:TView>
+  <com:TView>
+    <h2>View 3</h2>
+    <com:TLabel ID="Result1" />
+    <br/>
+    <com:TLabel ID="Result2" />
+    <hr/>
+    <com:TButton Text="View 1" CommandName="SwitchViewID" CommandParameter="View1" />
+    <com:TButton Text="View 2" CommandName="PreviousView" />
+  </com:TView>
+</com:TMultiView>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0"?>
+<xliff version="1.0">
+<!-- @author $Author: qiangxue $ -->
+<!-- @version $Id: tests.zh.xml 1398 2006-09-08 19:31:03Z xue $ -->
+<file orginal="I18N Example IndexPage" source-language="EN" datatype="plaintext" date="2004-12-29T11:08:54Z">
+<body>
+<trans-unit id="1">
+<source>Goodbye</source>
+<target>拜拜</target>
+</trans-unit>
+<trans-unit id="2">
+<source>World</source>
+<target>世界</target>
+</trans-unit>
+</body>
+</file>
+</xliff>

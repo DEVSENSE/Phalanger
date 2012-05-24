@@ -1,0 +1,51 @@
+<com:TContent ID="body" >
+<h1 id="801">Kontrolki (ang. controls)</h1>
+<p id="120128" class="block-content">
+Kontrolka jest instancją klasy <tt>TControl</tt> lub jej dziecka. Kontrolka jest komponentem definiowanym z dodatkiem interfejsu użytkownika. Klasa bazowa <tt>TControl</tt> definiuje relację rodzic-dziecko among controls which reflects the containment relationship among user interface elements.
+</p>
+
+<h2 id="802">Drzewko kontrolek</h2>
+<p id="120129" class="block-content">
+Kontrolki są powiązane z sobą za pomocą relacji rodzic-dziecko. Każda kontrolka rodzica może posiadać jedną lub więcej kontrolek dzieci. Kontrolka rodzica jest in charge of the state transition of its child controls. Wynik renderowanie kontrolki dziecka jest zazwyczaj używany do stworzenia warstwy prezentacji kontrolki rodzica. Relacja rodzic-dziecko brings together controls into a control tree. Strona jest korzeniem drzewka, której warstwa prezentacji jest zwracana dla użytkownika końcowego.
+</p>
+<p id="120130" class="block-content">
+Relacja rodzic-dziecko jest zazwyczaj ustalana przez framework poprzez <a href="?page=Configurations.Templates1">szablony</a>. W kodzie można bezpośrednio określić kontrolkę jako dziecko innej kontrolki stosując jedną z następujących metod:
+<com:TTextHighlighter CssClass="source block-content" id="code_120067">
+$parent->Controls->add($child);
+$parent->Controls[]=$child;
+</com:TTextHighlighter>
+gdzie właściwość <tt>Controls</tt> wskazuje na kolekcję kontrolek bedących dziećmi rodzica.
+</p>
+
+<h2 id="803">Identyfikacja kontrolki</h2>
+<p id="120131" class="block-content">
+Każda kontrolka ma właściwość <tt>ID</tt>, która jednoznacznie identyfikuje ją samą spośród jej rodzeństwa. W dodatku każda kontrolka posiada właściwość <tt>UniqueID</tt> oraz <tt>ClientID</tt>, która może zostać użyta do identyfikacji "globalnej" kontrolki w drzewku gdzie znajduje się ta kontrolka. Właściwości <tt>UniqueID</tt> oraz <tt>ClientID</tt> są bardzo podobne. Pierwsza jest używana przez framework do określenia położenia odpowiedniej kontrolki w drzewku, druga jest głównie używana po stronie klienta jako ID w tagach HTML. Ogólnie rzecz ujmując nie powinno się polegać na tak sprecyzowanym formacie <tt>UniqueID</tt> lub <tt>ClientID</tt>.
+</p>
+
+<h2 id="804">Kontenery nazw (ang. naming containers)</h2>
+<p id="120132" class="block-content">
+Każda kontrolka posiada kontener nazw, który jest kontrolką tworzącą unikalną przestrzeń nazw dla rozróżnienie pomiędzy kontrolkami o tych samych <tt>ID</tt>. Na przykład kontrolka <tt>TRepeater</tt> tworzy wiele pozycji, które posiadają kontrolki-dzieci o tych samych <tt>ID</tt>. Aby rozróżnić te kontrolki-dzieci, każda pozycja służy jako kontener nazw. Dzięki temu, kontrolka-dziecko może zostać jednoznacznie zidentyfikowana używając <tt>ID</tt> swojego kontenera nazw razem z swoim własnym <tt>ID</tt>. Powinieneś teraz zrozumieć, że właściwości <tt>UniqueID</tt> i <tt>ClientID</tt> bazują (wynikają?) na kontenerze nazw.
+</p>
+<p id="120133" class="block-content">
+Kontrolka może służyć jako kontener naz jeśli implementuje interfejs <tt>INamingContainer</tt>.
+</p>
+
+<h2 id="805">Stan widoku (ang. ViewState) oraz stan kontrolki (ang. ControlState)</h2>
+<p id="120134" class="block-content">
+HTTP jest protokołem bezstanowym, co oznacza, że nie dostarcza on funkjonalności wspierającej kontynuowanie interakcji pomiędzy użytkownikiem a serwerem. Każde żądanie (ang. request) jest rozpatrywane jako pojedyńcze i niezależne w stosunku do innego żądania. Jednakże, aplikacja webowa często potrzebuje wiedzieć co użytkownik zrobił w poprzednich żądaniach. Dlatego wprowadzono sesje by pomóc zapamiętać te informacje o stanie.
+</p>
+<p id="120135" class="block-content">
+PRADO zapożycza koncept stanu widoku oraz stanu kontrolki z ASP.NET Microsoftu by dostarczać dodatkowego stanowego mechanizmu programowania (ang. stateful programming mechanism). Wartość zachowana w stanie widoku lub stanie kontrolki może być dostępna w następnym żądaniu jeśli nowe żądanie pochodzi od wysłania formularza (ang. form submissions) (nazywanej postback'iem) do tej samej strony przez tego samego użytkownika. Różnica pomiędzy stanem widoku a stanem kontrolki wynika z tego iż pierwsza może zostać wyłączona a druga nie.
+</p>
+<p id="120136" class="block-content">
+Stan widoku i stan kontrolki są zaimplementowane w <tt>TControl</tt>. Są one zazwyczaj używane do zdefiniowania różnych właściwościu kontrolki. By zapisać i przywrócić wartości ze stanu widoku lub stanu kontrolki, należy użyć następujących sposobów:
+<com:TTextHighlighter CssClass="source block-content" id="code_120068">
+$this->getViewState('Nazwa',$wartoscDomyslna);
+$this->setViewState('Nazwa',$wartosc,$wartoscDomyslna);
+$this->getControlState('Nazwa',$wartoscDomyslna);
+$this->setControlState('Nazwa',$wartosc,$wartoscDomyslna);
+</com:TTextHighlighter>
+gdzie <tt>$this</tt> odnosi się do instancji kontrolki, <tt>Nazwa</tt> odnosi się to klucza identyfikującego zachowaną wartość, <tt>$wartoscDomyslna</tt> jest opcjonalna. Kiedy przywracamy wartości z stanu widoku lub stanu kontrolki, jeśli podany klucz nie istnieje, wartość domyślna jest zwracana.
+</p>
+
+<div class="last-modified">$Id: Controls.page 2350 2008-01-03 00:50:51Z aztech $</div></com:TContent>

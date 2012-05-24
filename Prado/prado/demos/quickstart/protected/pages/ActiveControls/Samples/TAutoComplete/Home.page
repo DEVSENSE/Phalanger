@@ -1,0 +1,57 @@
+<com:TContent ID="body">
+<!-- $Id: Home.page 2474 2008-07-03 17:28:20Z mikl $ -->
+
+<style type="text/css">
+<!--
+.acomplete { position: relative; z-index: 5; background-color: #EDF5FF; border: 1px solid #243356; }
+.acomplete ul, .acomplete li { margin: 0px; padding: 0px; list-style: none; color: #333; }
+.acomplete li { padding: 4px; border-top: 1px solid #ccc; }
+.acomplete .selected { background-color: #ffc; }
+-->
+</style>
+
+<h1>TAutoComplete Sample (AJAX)</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Simple Autocompleter:
+</td><td class="sampleaction">
+<com:TAutoComplete
+    ID="AutoComplete"
+    OnSuggest="suggestNames"
+    OnSuggestionSelected="suggestionSelected1"
+    ResultPanel.CssClass="acomplete"
+    Suggestions.DataKeyField="id" >
+
+    <prop:Suggestions.ItemTemplate>
+    <li><%# $this->Data['name'] %></li>
+    </prop:Suggestions.ItemTemplate>
+</com:TAutoComplete>
+<com:TActiveLabel ID="Selection1" />
+</td></tr>
+
+<tr><td class="samplenote">
+Autocompleter with multiple selection:
+</td><td class="sampleaction">
+<com:TAutoComplete
+    ID="AutoComplete2"
+    OnSuggest="suggestNames"
+    OnSuggestionSelected="suggestionSelected2"
+    Separator=","
+    ResultPanel.CssClass="acomplete"
+    Suggestions.DataKeyField="id" >
+
+    <prop:Suggestions.ItemTemplate>
+    <li><%# $this->Data['name'] %></li>
+    </prop:Suggestions.ItemTemplate>
+</com:TAutoComplete>
+(Use ',' to separate the selected suggestions)
+<com:TActiveLabel ID="Selection2" />
+</td></tr>
+
+</table>
+
+<com:TJavascriptLogger />
+
+<div class="last-modified">$Id: Home.page 2474 2008-07-03 17:28:20Z mikl $</div></com:TContent>

@@ -1,0 +1,64 @@
+<com:TContent ID="body" >
+
+<h1 id="501">Meningkatkan dari v2.x dan v1.x</h1>
+
+<div id="from-2-or-1"  class="block-content">
+<p id="40023">
+PRADO v3.0 TIDAK kompatibel mundur dengan versi PRADO sebelumnya.
+</p>
+<p id="40024">
+Berita baiknya adalah, properti dan event dari kebanyakan kontrol tetap sama, dan sintaks template kontrol sebagian besar tidak diubah. Oleh karena itu, pengetahuan para pengembang dari versi PRADIO sebelumnya masih berlaku dalam v3.0.
+</p>
+<p id="40025">
+Kami meringkas perubahan paling berarti dalam v3.0 guna membantu para pengembang meningkatkan aplikasi PRADO v2.x dan v1.x lebih mudah, jika diperlukan.
+</p>
+</div>
+
+<h2 id="502">Definisi Komponen</h2>
+<p id="40026" class="block-content">
+Versi 3.0 sepenuhnya telah mengabaikan kebutuhan file spesifikasi komponen. Ia banyak bergantung pada konvensi untuk mendefinisikan properti dan event komponen. Dalam keadaan tertentu, properti didefinisikan oleh keberadaan dari metode pengambil dan/atau metode penyetel, sementara event didefinisikan dengan keberadaan <tt>pada</tt>-metode. Nama properti dan event dalam v3.0 keduanya sensitif-huruf. Sebagai konsekuensinya, para pengembang diperlukan untuk memelihara perubahan tipe saat properti komponen sedang disetel. Sebagai contoh, kode berikut dipakai untuk mendefinisikan metode penyetel untuk properti yang <tt>Dihidupkan</tt> dari <tt>TControl</tt>, yang merupakan tipe <tt>boolean</tt>,
+</p>
+<com:TTextHighlighter Language="php" CssClass="block-content source" ID="code1">
+public function setEnabled($value)
+{
+	$value=TPropertyValue::ensureBoolean($value);
+	$this->setViewState('Enabled',$value,true);
+}
+</com:TTextHighlighter>
+<p id="40027" class="block-content">
+di mana <tt>TPropertyValue::ensureBoolean()</tt> dipakai untuk memastikan bahwa nilai input adalah boolean. Ini adalah karena ketika properti dikonfigurasi dalam template, nilai string dikirimkan ke penyetel. Dalam versi sebelumnya, PRADO mengetahui tipe properti berdasarkan file spesifikasi  komponen dan melakukan konversi tipe bagi Anda.
+</p>
+
+<h2 id="503">Pengontrol Aplikasi</h2>
+<p id="40028" class="block-content">
+Pengontrol aplikasi sekarang menerapkan sebuah arsitektur modular. Modul bisa disertakan dan dikonfigurasi dalam spesifikasi aplikasi. Setiap modul menganggap fungsionalitas tertentu, dan dikoordinasikan bersama oleh <a href="?page=Fundamentals.Applications">masa hidup aplikasi</a>. Konsep modul v2.x diganti dalam v3.0 by <a href="?page=Configurations.PageConfig">direktori halaman</a>. Walhasil, format v3.0 <a href="?page=Configurations.AppConfig">spesifikasi aplikasi</a> juga berbeda dari versi sebelumnya.
+</p>
+
+<h2 id="504">Halaman</h2>
+<p id="40029" class="block-content">
+Halaman pada v3.0 diatur dalam direktori yang bisa dibandingkan ke konsep modul pada v2.x. Halaman diminta menggunakan path kepadanya. Sebagai contoh, URL <tt>index.php?page=Controls.Samples.Sample1</tt> akan dipakai untuk meminta halaman bernama <tt>Sample1</tt> yang disimpan di bawah direktori <tt>[BasePath]/Controls/Samples</tt>, di mana <tt>[BasePath]</tt> merujuk ke akar path halaman. Nama file dari template halaman harus diakhiri dengan <tt>.page</tt>, terutama untuk membedakan template halaman dari template kontrol non-halaman yang nama filenya sama harus diakhiri dengan <tt>.tpl</tt>.
+</p>
+
+<h2 id="505">Hubungan Kontrol</h2>
+<p id="40030" class="block-content">
+Versi 3.0 mendefinsikan kembali hubungan diantara kontrol. Dalam keadaan tertentu, hubungan leluhur-anak sekarang merujuk ke hubungan lampiran antara penyajian kontrol. Dan hubungan wadah-penamaan baru diperkenalkan guna membantu lebih baik mengatur ID kontrol. Untuk lebih jelasnya, lihat seksi <a href="?page=Fundamentals.Controls">controls</a>.
+</p>
+
+<h2 id="506">Sintaks Template</h2>
+<div id="template-syntax" class="block-content">
+<p id="40031">
+Sintaks template kontrol dalam v3.0 tetap mirip dengan versi sebelumnya, dengan banyak peningkatan. Perubahan utama adalah mengenai ekspresi penyatuan data. Dalam v3.0, ini dikerjakan dengan mengikuti,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_40002">
+&lt;com:MyComponent PropertyName=&lt;%# PHP expression %&gt; .../&gt;
+</com:TTextHighlighter>
+<p id="40032">
+Tag ekspresi dan pernyataan juga diubah. Untuk lebih jelasnya, lihat seksi <a href="?page=Configurations.Templates1">definisi template</a>.
+</p>
+</div>
+<h2 id="507">Sintaks Tema</h2>
+<p id="40033" class="block-content">
+Tema dalam v3.0 didefinisikan seperti template kontrol dengan beberapa batasan.
+</p>
+
+<div class="last-modified">$Id: Upgrading.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

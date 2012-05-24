@@ -1,0 +1,211 @@
+<com:TContent ID="body">
+<!-- $Id $ -->
+
+<h1 id="140062">Pemeta Data</h1>
+<com:SinceVersion Version="3.1a" />
+<p id="700505" class="block-content">Pemeta Data memindahkan data antara obyek dan database sementara memeliharanya berdiri sendiri satu sama lain dan pemetanya sendiri. Jika Anda mulai dengan
+    <a href="?page=Database.ActiveRecord">Active Records</a>, mungkin nantinya Anda dihadapkan dengan obyek bisnis lebih kompleks seiring denga kemajuan proyek Anda. Ketika Anda membangun model obyek dengan banyak logika bisnis, sangat berharga untuk memakai mekanisme ini untuk mengatur data lebih baik dan perilaku bersamanya. Melakukan itu menyebabkan skema varian; yakni skema obyek dan skema relasional tidak sama.
+</p>
+
+<p id="700506" class="block-content">Pemeta Data memisahkan obyek dalam-memori dari database. Tanggung jawabnya adalah mentransfer data diantara keduanya dan juga saling mengisolasinya. 
+    Dengan Pemeta Data obyek dalam-memori tidak perlu mengetahui meskipun ada sebuah database; tidak perlu kode antarmuka SQL, dan tentunya tidak mengetahui skema database. (Skema database selalu diabaikan dari obyek yang memakainya.) 
+</p>
+
+<h2 id="140063">Kapan Menggunakannya</h2>
+<p id="700507" class="block-content">Tujuan utama menggunakan Pemeta Data ialah ketika Anda menginginkan skema database dan model obyek tumbuh secara independen. Keuntungan utama dari Pemeta Data adalah bahwa saat bekerja pada obyek bisnis (atau domain) Anda bisa mengabaikan database, baik dalam desain maupun pembangunan propes pengujian. Obyek domain tidak mengetahui struktur databasenya karena semua ini dikerjakan oleh pemeta.
+</p>
+
+<p id="700508" class="block-content">Ini membantu Anda dalam kode karena Anda bisa mengerti serta bekerja dengan obyek domain tanpa harus mengerti bagaimana ia disimpan dalam. Anda bisa memodifikasi model bisnis atau database tanpa harus mengubahnya. Dengan pemetaan rumit, terutama yang menyangkut <b>database yang sudah ada</b>, ini sangat berharga.
+</p>
+
+<p id="700509" class="block-content">Harga tentunya merupakan lapisan ekstra yang tidak Anda peroleh dengan <a href="?page=Database.ActiveRecord">Rekaman Aktif</a>, maka pengujian menggunakan pola ini adalah kompleksitas dari logika bisnis. Jika Anda memiliki logika bisa cukup sederhana, <a href="?page=Database.ActiveRecord">Rekaman Aktif</a> mungkin akan mencukupi.
+Untuk logika yang lebih rumit, Pemeta Data mungkin lebih cocok.
+</p>
+
+<h2 id="140064">Pemeta Data SqlMap</h2>
+<p id="700510" class="block-content">Kerangka kerja Pemeta Data SqlMap memudahkan untuk menggunakan database dengan aplikasi PHP. 
+    PemetaData SqlMap memasangkan obyek dengan prosedur tersimpan atau pernyataan SQL menggunakan deskriptor XML. Kesederhanaan adalah keuntungan terbesar dari PemetaData SqlMap di atas piranti pemetaan relasional obyek. Untuk menggunakan PemetaData SqlMap Anda bergantung pada obyek Anda sendiri, 
+    XML, dan SQL. Anda sedikit yang harus mempelajari yang belum Anda ketahui. 
+    Dengan Pemeta Data SqlMap Anda mempunyai tenaga penuh pada SQL dan prosedur tersimpan di tangan Anda.
+</p>
+
+<p id="700511" class="block-content">
+    <img src=<%~ diagram.png %> alt="Tinjauan Pemeta Data SqlMap" id="fig:sqlmap.png" class="figure"/>
+    
+    Ini adalah penjelasan tingkat tinggi atas alur kerja yang dilukiskan pada gambar di atas. 
+    Menyediakan parameter, baik sebagai obyek ataupun tipe primitif. Parameter bisa dipakai untuk menyetel nilai runtime dalam pernyataan SQL atau prosedur. Jika nilai runtime tidak diperlukan, parameter dapat diabaikan.
+</p>
+<p id="700512" class="block-content">Menjalankan pemetaan dengan mengirimkan parameter dan nama yang Anda berikan pada deskriptor XML Anda. Langkah ini adalah saat di mana keajaiban terjadi. Kerangka kerja akan menyiapkan pernyataan SQL atau prosedur tersimpan, menyetel setiap nilai runtime menggunakan parameter Anda, menjalankan prosedur atau pernyataan, dan mengembalikan hasil.
+</p>
+
+<p id="700513" class="block-content">Dalam hal pemutakhiran, jumlah baris yang dipengaruhi dikembalikan. Dalam hal query, obyek tunggal, atau koleksi obyek dikembalikan. Seperti parameter, obyek hasil, atau koleksi obyek, bisa berupa obyek biasa ataupun tipe PHP primitif.
+</p>
+
+<h2 id="140065">Menyiapkan koneksi database dan menginisialisasi SqlMap</h2>
+<p id="700514" class="block-content">
+    Koneksi database untuk SqlMap dapat disetel seperti berikut.
+    Lihat <a href="?page=Database.DAO">Menetapkan Koneksi Database</a> untuk lebih jelasnya mengenai pembuatan koneksi database secara umum.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700166">
+//buat koneksi dan berikan ke manajer SqlMap.
+$dsn = 'pgsql:host=localhost;dbname=test'; //Postgres SQL
+$conn = new TDbConnection($dsn, 'dbuser','dbpass');
+$manager = new TSqlMapManager($conn);
+$manager->configureXml('my-sqlmap.xml');
+$sqlmap = $manager->getSqlMapGateway(); 
+</com:TTextHighlighter> 
+</p>
+
+<p id="700515" class="block-content">
+    <tt>TSqlMapManager</tt> bertanggung jawab untuk menyiapkan koneksi database dan mengkonfigurasi SqlMap dengan file XML yang diberikan. metode <tt>configureXml()</tt> menerima string yang merujuk ke file konfigurasi XML SqlMap. Sekali dikonfigurasi, panggil metode <tt>getSqlMapGateway()</tt> untuk memperoleh turunan dari antarmuka gateway SqlMap (pakai obyek ini untuk menyisipkan/menghapus/mencari rekaman).
+</p>
+
+<p id="700516" class="block-content">
+    Koneksi database SqlMap juga bisa dikonfigurasi menggunakan tag <tt>&lt;module&gt;</tt> dalam <a href="?page=Configurations.AppConfig">application.xml</a> atau
+    <a href="?page=Configurations.PageConfig">config.xml</a> seperti berikut.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_700167">
+<modules>
+  <module id="my-sqlmap" class="System.Data.SqlMap.TSqlMapConfig" 
+        EnableCache="true" ConfigFile="my-sqlmap.xml" >
+    <database ConnectionString="pgsql:host=localhost;dbname=test"
+        Username="dbuser" Password="dbpass" />
+  </module>
+</modules>  
+</com:TTextHighlighter> 
+</p>
+
+<p id="700517" class="block-content">
+    Atribut <tt>ConfigFile</tt> harus menunjuk ke file konfigurasi SqlMap     (dijelaskan nanti) baik menggunakan path absolut, path relatif ataupun path notasi titik namespace Prado (harus mengabaikan ekstensi ".xml").
+    
+    <div class="tip"><b class="note">Tip:</b>
+        Atribut <tt>EnableCache</tt> saat disetel "true" akan men-cache 
+        konfigurasi yang diurai. Anda harus membersihkan atau menghapus cache jika Anda mengubah file konfigurasinya. 
+        <a href="?page=Advanced.Performance#6402">modul cache</a> juga harus didefinisikan agar cache berfungsi.
+    </div>  
+</p>
+
+<p id="700518" class="block-content">Untuk mendapatkan antarmuka gateway SqlMap dari konfigurasi &lt;module&gt;, cukup lakukan misalnya
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700168">
+class MyPage extends TPage
+{
+    public function onLoad($param)
+    {
+        parent::onLoad($param);
+        $sqlmap = $this->Application->Modules['my-sqlmap']->Client;
+        $sqlmap->queryForObject(...); //query beberapa obyek
+    }
+}
+</com:TTextHighlighter>
+</p>
+
+<h2 id="140066">Contoh cepat</h2>
+<p id="700519" class="block-content">Mari kita anggap tabel "users" berikut yang berisi dua kolom bernama "username" dan "email", di mana "username" juga merupakan kunci primer. 
+<com:TTextHighlighter Language="sql" CssClass="source block-content" id="code_700169">
+CREATE TABLE users
+(
+    username VARCHAR( 20 ) NOT NULL ,
+    email VARCHAR( 200 ) ,
+    PRIMARY KEY ( username )
+);
+</com:TTextHighlighter>
+</p>
+<p id="700520" class="block-content">Kemudian kita mendefinisikan kelas <tt>User</tt> biasa seperti berikut. Perhatikan bahwa <tt>User</tt> sangat sederhana.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700170">
+class User
+{
+    public $username;
+    public $email;
+}
+</com:TTextHighlighter>
+</p>
+</p>
+
+<p id="700521" class="block-content">Selanjutnya, kita perlu mendefinisikan file konfigurasi XML SqlMap, mari namai file sebagai <tt>my-sqlmap.xml</tt>.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_700171">
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMapConfig>
+    <select id="SelectUsers" resultClass="User">
+        SELECT username, email FROM users
+    </select>
+</sqlMapConfig>
+</com:TTextHighlighter>
+</p>
+<p id="700522" class="block-content">Tag &lt;select&gt; mengembalikan definisi pernyataan SQL. Atribut <tt>id</tt> akan dipakai sebagai pengenal untuk query. Nilai atribut <tt>resultClass</tt> adalah nama kelas obyek yang dikembalikan.
+    Sekarang kita dapat melakukan query obyek sebagai berikut:
+    
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700172">
+//anggap bahwa $sqlmap adalah turunan TSqlMapGateway
+$userList = $sqlmap->queryForList("SelectUsers");
+
+//Atau hanya satu, jika hanya itu yang Anda butuhkan:
+$user = $sqlmap->queryForObject("SelectUsers");
+</com:TTextHighlighter>
+</p>
+
+<p id="700523" class="block-content">Contoh di atas hanya menampilkan demonstrasi sedikit kemampuan Pemeta Data SqlMap. Rincian selanjutnya dapat ditemukan dalam
+    <a href="http://www.pradosoft.com/demo/sqlamp/">SqlMap Manual</a>.
+</p>
+
+<h2 id="140067">Menggabung SqlMap dengan Rekaman Aktif</h2>
+<p id="700524" class="block-content">Contoh di atas nampaknya seperti sepele dan ia juga seperti banyak pekerjaan hanya untuk mengambil data. Akan tetapi, perhatikan bahwa kelas <tt>User</tt> sama sekali tidak mengetahui telah disimpan dalam database, dan database tidak mengetahui kelas <tt>User</tt>. 
+</p>
+<p id="700525" class="block-content">
+    Salah satu keuntungan dari SqlMap adalah kemampuan memetakan hubungan
+    obyek yang kompleks, koleksi dari datbase yang sudah ada. Dilain pihak,
+    <a href="?page=Database.ActiveRecord">Rekaman Aktif</a> menyediakan cara
+    yang sangat sederhana untuk berinteraksi dengan database tapi tidak bisa
+    melakukan hubungan atau koleksi yang lebih rumit. Kompromi yang baik adalah
+    menggunakan SqlMap untuk mengambil hubungan dan koleksi rumit sebagai
+    obyek Rekaman Aktif dan kemudian menggunakan Rekaman Aktif ini untuk memutakhirkan, menyisipkan dan menghapus.
+</p>
+<p id="700526" class="block-content">Melanjutkan contoh sebelumnya, kita mengubah definisi kelas <tt>User</tt> menjadi sebuah Rekaman Aktif.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700173">
+class UserRecord extends TActiveRecord
+{
+	const TABLE='users'; //nama tabel 
+
+    public $username; //kolom bernama "username" dalam tabel "users" 
+    public $email;
+        
+    /**
+     * @return TActiveRecord active record finder instance
+     */
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+</p>
+
+<p id="700527" class="block-content">Kita juga perlu mengubah definisi dari konfigurasi XML SqlMap XML configuration. Kita cukup perlu mengubah nilai atribut <tt>resultClass</tt> ke <tt>UserRecord</tt>.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_700174">
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMapConfig>
+    <select id="SelectUsers" resultClass="UserRecord">
+        SELECT username, email FROM users
+    </select>
+</sqlMapConfig>
+</com:TTextHighlighter>
+</p>
+
+
+<p id="700528" class="block-content">Kode PHP untuk mengambil pengguna tetap sama, tapi sebaliknya SqlMap mengembalikan Rekaman Aktif, dan kita bisa mengambil keuntungan dari metode Rekaman Aktif.
+    
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700175">
+//anggap bahwa $sqlmap adalah turunan TSqlMapGateway
+$user = $sqlmap->queryForObject("SelectUsers");
+
+$user->email = 'test@example.com'; //ubah data
+$user->save(); //simpan menggunakan Rekaman Aktif
+</com:TTextHighlighter>
+</p>
+
+<h2 id="140068">Referensi</h2>
+<ul id="u1" class="block-content">
+    <li>Fowler et. al. <i>Patterns of Enterprise Application Architecture</i>,
+    Addison Wesley, 2002.</li>
+    <li>iBatis Team. <i>iBatis Data Mapper</i>, 
+    <a href="http://ibatis.apache.org">http://ibatis.apache.org</a>.</li>
+</ul>
+
+<div class="last-modified">$Id: SqlMap.page 1846 2007-04-07 10:35:16Z wei $</div></com:TContent>

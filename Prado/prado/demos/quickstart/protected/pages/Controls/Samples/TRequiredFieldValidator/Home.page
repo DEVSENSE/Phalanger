@@ -1,0 +1,122 @@
+<com:TContent ID="body">
+
+<h1>TRequiredFieldValidator Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Validator with default settings:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox1" />
+<com:TRequiredFieldValidator
+	ValidationGroup="Group1"
+	ControlToValidate="TextBox1"
+	Text="Field required." />
+<com:TButton Text="Submit" ValidationGroup="Group1" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Validator with client-side validation disabled:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox2" />
+<com:TRequiredFieldValidator
+	ValidationGroup="Group2"
+	EnableClientScript="false"
+	ControlToValidate="TextBox2"
+	Text="Field required." />
+<com:TButton Text="Submit" ValidationGroup="Group2" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Validator with focus-on-error enabled and dynamic display:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox3" />
+<com:TRequiredFieldValidator
+	ValidationGroup="Group3"
+	Display="Dynamic"
+	ControlToValidate="TextBox3"
+	FocusOnError="true"
+	Text="Field required." />
+<com:TButton Text="Submit" ValidationGroup="Group3" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Validating if initial value (test) is changed:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox4" Text="test" />
+<com:TRequiredFieldValidator
+	ValidationGroup="Group4"
+	Display="Dynamic"
+	ControlToValidate="TextBox4"
+	InitialValue="test"
+	Text="Input must not be 'test'." />
+<com:TButton Text="Submit" ValidationGroup="Group4" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Validating if checkbox is checked:
+</td>
+<td class="sampleaction">
+<com:TCheckBox ID="CheckBox" Text="agree" />
+<com:TRequiredFieldValidator
+	ValidationGroup="Group5"
+	Display="Dynamic"
+	ControlToValidate="CheckBox"
+	Text="You must agree." />
+<com:TButton Text="Submit" ValidationGroup="Group5" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Validating if a selection has been made in a dropdown list:
+</td>
+<td class="sampleaction">
+<com:TDropDownList ID="DropDownList">
+  <com:TListItem Value="value 1" Text="text 1" Selected="true" />
+  <com:TListItem Value="value 2" Text="text 2" />
+  <com:TListItem Value="value 3" Text="text 3" />
+</com:TDropDownList>
+<com:TRequiredFieldValidator
+	ValidationGroup="Group6"
+	ControlToValidate="DropDownList"
+	InitialValue="value 1"
+	Text="A selection must be made." />
+<com:TButton Text="Submit" ValidationGroup="Group6" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Validating if a selection has been made in a dropdown list:
+</td>
+<td class="sampleaction">
+<com:TListBox ID="ListBox">
+  <com:TListItem Value="value 1" Text="text 1" />
+  <com:TListItem Value="value 2" Text="text 2" />
+  <com:TListItem Value="value 3" Text="text 3" />
+</com:TListBox>
+<com:TRequiredFieldValidator
+	ValidationGroup="Group7"
+	ControlToValidate="ListBox"
+	Text="A selection must be made." />
+<com:TButton Text="Submit" ValidationGroup="Group7" />
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

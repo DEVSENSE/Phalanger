@@ -1,0 +1,48 @@
+<com:TContent ID="body" >
+
+<h1 id="2801">THtmlArea</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.THtmlArea" />
+
+<p id="330264" class="block-content">
+<tt>THtmlArea</tt> displays a WYSIWYG text input field on a Web page to collect input in HTML format. The text displayed in the <tt>THtmlArea</tt> control is specified or determined by using the <tt>Text</tt> property. To adjust the size of the input region, set <tt>Width</tt> and <tt>Height</tt> properties instead of <tt>Columns</tt> and <tt>Rows</tt> because the latter has no meaning under this situation.  To disable the WYSIWYG feature, set <tt>EnableVisualEdit</tt> to false.
+</p>
+
+<p id="330265" class="block-content">
+<tt>THtmlArea</tt> provides the WYSIWYG feature by wrapping the functionalities provided by the <a href="http://tinymce.moxiecode.com/">TinyMCE project</a>.
+</p>
+
+<p id="330266" class="block-content">
+The default editor gives only the basic tool bar. To change or add additional tool bars, use the <tt>Options</tt> property to add additional editor options with each options on a new line. See <a href="http://tinymce.moxiecode.com/tinymce/docs/index.html">TinyMCE website</a> for a complete list of options. The following example displays a toolbar specific for HTML table manipulation,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_330105">
+&lt;com:THtmlArea&gt;
+  &lt;prop:Options&gt;
+	plugins : "table"
+	theme_advanced_buttons3 : "tablecontrols"
+  &lt;/prop:Options&gt;
+&lt;/com:THtmlArea&gt;
+</com:TTextHighlighter>
+
+<p id="330267" class="block-content">
+The client-side visual editing capability is supported by Internet Explorer 5.0+ for Windows and Gecko-based browser. If the browser does not support the visual editing, a traditional textarea will be displayed.
+</p>
+
+<pre>
+                Windows XP        MacOS X 10.4
+----------------------------------------------------
+MSIE 6                  OK
+MSIE 5.5 SP2            OK
+MSIE 5.0                OK
+Mozilla 1.7.x           OK              OK
+Firefox 1.0.x           OK              OK
+Firefox 1.5b2           OK              OK
+Safari 2.0 (412)                        OK(1)
+Opera 9 Preview 1       OK(1)           OK(1)
+----------------------------------------------------
+(1) - Partially working
+----------------------------------------------------
+</pre>
+
+<com:RunBar PagePath="Controls.Samples.THtmlArea.Home" />
+
+<div class="last-modified">$Id: HtmlArea.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

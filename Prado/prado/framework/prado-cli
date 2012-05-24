@@ -1,0 +1,4 @@
+#!/usr/bin/env php
+<?php
+//execute the command line tool
+include(dirname(__FILE__).'/prado-cli.php');

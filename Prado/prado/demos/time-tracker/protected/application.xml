@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application id="Time-Tracker" Mode="Debug">
+
+  <!-- configure to use Quickstart theme directory -->
+  <paths>
+	<alias id="Quickstart" path="../../quickstart" />
+	<using namespace="Quickstart.protected.controls.*" />
+	<using namespace="System.Data.*" />
+	<using namespace="System.Security.*" />
+	<using namespace="Application.App_Code.*" />
+	<using namespace="Application.App_Code.Dao.*" />
+	<using namespace="Application.App_Data.*" />
+  </paths>
+  <modules>
+
+<!--
+	<module id="cache" class="System.Caching.TMemCache" />
+-->
+	<module id="daos" class="DaoManager" EnableCache="true"
+  		configFile="Application.App_Data.sqlite-sqlmap">
+		<dao id="UserDao" class="Application.App_Code.Dao.UserDao" />
+		<dao id="ProjectDao" class="Application.App_Code.Dao.ProjectDao" />
+		<dao id="TimeEntryDao" class="Application.App_Code.Dao.TimeEntryDao" />
+		<dao id="CategoryDao" class="Application.App_Code.Dao.CategoryDao" />
+		<dao id="ReportDao" class="Application.App_Code.Dao.ReportsDao" />
+  	</module>
+
+	<module id="globalization"
+		class="System.I18N.TGlobalization"
+		Charset="UTF-8" />
+
+  </modules>
+  <services>
+    <service id="page" class="TPageService" DefaultPage="TimeTracker.LogTimeEntry"/>
+  </services>
+ </application>

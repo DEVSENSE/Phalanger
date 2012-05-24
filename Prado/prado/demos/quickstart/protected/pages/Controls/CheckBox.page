@@ -1,0 +1,14 @@
+<com:TContent ID="body" >
+
+<h1 id="2101">TCheckBox</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TCheckBox" />
+
+<p id="250236" class="block-content">
+<tt>TCheckBox</tt> displays a check box on a Web page. A caption can be specified via <tt>Text</tt> and displayed beside the check box. It can appear either on the right or left of the check box, which is determined by <tt>TextAlign</tt>. You may further specify attributes applied to the text by using <tt>LabelAttributes</tt>.
+</p>
+<p id="250237" class="block-content">
+To determine whether the check box is checked, test the <tt>Checked</tt> property. A <tt>CheckedChanged</tt> event is raised if the state of <tt>Checked</tt> is changed between posts to the server. If <tt>AutoPostBack</tt> is true, changing the check box state will cause postback action. And if <tt>CausesValidation</tt> is also true, upon postback validation will be performed for validators within the specified <tt>ValidationGroup</tt>.
+</p>
+<com:RunBar PagePath="Controls.Samples.TCheckBox.Home" />
+
+<div class="last-modified">$Id: CheckBox.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,210 @@
+<com:TContent ID="Main">
+
+<h1>Creating <tt>NewUser</tt> Page</h1>
+
+<p>
+The <tt>NewUser</tt> page is provided to the administrator user to create new a new user account. It needs to display a form that collects the information about the new user account. According to our <a href="?page=Day2.CreateDB">database definition</a>, we will need to collect the following information:
+</p>
+
+<ul>
+<li><tt>username</tt> - string, required and unique</li>
+<li><tt>email</tt> - string, required and unique</li>
+<li><tt>password</tt> - string, required</li>
+<li><tt>role</tt> - integer, required (either 0 or 1)</li>
+<li><tt>first_name</tt> - string, optional</li>
+<li><tt>last_name</tt> - string, optional</li>
+</ul>
+
+<p>
+We create two files <tt>protected/pages/users/NewUser.page</tt> and <tt>protected/pages/users/NewUser.php</tt> to save the page template and page class, respectively.
+</p>
+
+<h2>Creating Page Template</h2>
+<p>
+Based on the above analysis, we write the page template as follows:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ Title="My Blog - New User" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Create New User</h1>
+
+<span>Username:</span>
+&lt;com:TRequiredFieldValidator
+    ControlToValidate="Username"
+    ErrorMessage="Please provide a username."
+    Display="Dynamic" />
+&lt;com:TCustomValidator
+    ControlToValidate="Username"
+    ErrorMessage="Sorry, your username is taken by someone else. Please choose another username."
+    OnServerValidate="checkUsername"
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Username" />
+
+<br/>
+<span>Password:</span>
+&lt;com:TRequiredFieldValidator
+    ControlToValidate="Password"
+    ErrorMessage="Please provide a password."
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Password" TextMode="Password" />
+
+<br/>
+<span>Re-type Password:</span>
+&lt;com:TCompareValidator
+    ControlToValidate="Password"
+    ControlToCompare="Password2"
+    ErrorMessage="Your password entries did not match."
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Password2" TextMode="Password" />
+
+<br/>
+<span>Email Address:</span>
+&lt;com:TRequiredFieldValidator
+    ControlToValidate="Email"
+    ErrorMessage="Please provide your email address."
+    Display="Dynamic" />
+&lt;com:TEmailAddressValidator
+    ControlToValidate="Email"
+    ErrorMessage="You entered an invalid email address."
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Email" />
+
+<br/>
+<span>Role:</span>
+<br/>
+&lt;com:TDropDownList ID="Role">
+    &lt;com:TListItem Text="Normal User" Value="0" />
+    &lt;com:TListItem Text="Administrator" Value="1" />
+&lt;/com:TDropDownList>
+
+<br/>
+<span>First Name:</span>
+<br/>
+&lt;com:TTextBox ID="FirstName" />
+
+<br/>
+<span>Last Name:</span>
+<br/>
+&lt;com:TTextBox ID="LastName" />
+
+<br/>
+&lt;com:TButton Text="Create" OnClick="createButtonClicked" />
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+<p>
+The template is not much different from the <tt>Contact</tt> template and the <tt>LoginUser</tt> page. It mainly consists of text boxes and validators. Some text boxes, such as username, are associated with two validators because of the multiple validation rules involved.
+</p>
+
+
+<h2>Creating Page Class</h2>
+
+<p>
+From the above page template, we see that we need to write a page class that implements the two event handlers: <tt>checkUsername()</tt> (attached to the first custom validator's <tt>OnServerValidate</tt> event) and <tt>createButtonClicked()</tt> (attached to the "create" button's <tt>OnClick</tt> event). Therefore, we write the page class as follows:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class NewUser extends TPage
+{
+    /**
+     * Checks whether the username exists in the database.
+     * This method responds to the OnServerValidate event of username's custom validator.
+     * @param mixed event sender
+     * @param mixed event parameter
+     */
+    public function checkUsername($sender,$param)
+    {
+        // valid if the username is not found in the database
+        $param->IsValid=UserRecord::finder()->findByPk($this->Username->Text)===null;
+    }
+
+    /**
+     * Creates a new user account if all inputs are valid.
+     * This method responds to the OnClick event of the "create" button.
+     * @param mixed event sender
+     * @param mixed event parameter
+     */
+    public function createButtonClicked($sender,$param)
+    {
+        if($this->IsValid)  // when all validations succeed
+        {
+            // populates a UserRecord object with user inputs
+            $userRecord=new UserRecord;
+            $userRecord->username=$this->Username->Text;
+            $userRecord->password=$this->Password->Text;
+            $userRecord->email=$this->Email->Text;
+            $userRecord->role=(int)$this->Role->SelectedValue;
+            $userRecord->first_name=$this->FirstName->Text;
+            $userRecord->last_name=$this->LastName->Text;
+
+            // saves to the database via Active Record mechanism
+            $userRecord->save();
+
+            // redirects the browser to the homepage
+			$this->Response->redirect($this->Service->DefaultPageUrl);
+        }
+    }
+}
+</com:TTextHighlighter>
+
+<p>
+In the above, calling <tt>save()</tt> will insert a new row in the <tt>users</tt> table. This intuitive feature is enabled by <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a>.
+</p>
+
+<com:NoteBox>
+For simplicity, usernames in our blog system are case-sensitive! In many practical systems, usernames may be required to be case-sensitive. So special handling needs to be made when creating a new user account as well as <a href="?page=Day3.Auth">performing authentication</a>. Also, the surrounding blanks in a username may need to be trimmed when creating a new account with it.
+</com:NoteBox>
+
+
+<h2>Testing</h2>
+<p>
+To test the <tt>NewUser</tt> page, visit the URL <tt>http://hostname/blog/index.php?page=users.NewUser</tt>. We shall see the following page output. Try enter different information into the form and see how the inputs are being validated. If all validation rules are satisfied, we shall expect the user account being created and the browser being redirected to the homepage.
+</p>
+
+<img src="<%~ output2.gif %>" class="output"/>
+
+
+<h2>Adding Permission Check</h2>
+<p>
+During testing, you may have asked: shouldn't the <tt>NewUser</tt> page be only accessible by the administrator user? Yes, this is called <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Auth">authorization</a>. We now describe how we add this permission check to the <tt>NewUser</tt> page.
+</p>
+
+<p>
+A straightforward way of performing permission check is in the page class where we check whether <tt>$this->User->IsAdmin</tt> is true, and if not we redirect the browser to the <tt>LoginUser</tt> page.
+</p>
+
+<p>
+PRADO offers a more systematic way of checking page access permissions. To do so, we need to use <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.PageConfig">page configuration</a>. Create a file <tt>protected/pages/users/config.xml</tt> with the content as follows:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <authorization>
+    <allow roles="admin"/>
+    <deny users="*"/>
+  </authorization>
+</configuration>
+</com:TTextHighlighter>
+
+<p>
+The page configuration contains authorization rules that apply to the pages under the directory <tt>protected/pages/users</tt>. The above configuration reads that users in the role <tt>admin</tt> can access all pages (see <a href="?page=Day3.Auth">BlogUser.createUser()</a> for why the word "admin"). For now all other users (<tt>users="*"</tt>) are denied acess to pages in this directory - except for the <tt>LoginUser</tt> page which by convention can always be accessed. 
+</p>
+
+<p>
+Now if we visit the <tt>NewUser</tt> page as a guest, we will be redirected to the <tt>LoginUser</tt> page first. If our login as <tt>admin</tt> is successful, we will be redirected back to the <tt>NewUser</tt> page.
+</p>
+
+<com:TipBox>
+Page configuration can contain more than authorization rules. For example, it can include <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Modules">modules</a> like we did in the <a href="?page=Day2.ConnectDB">application configuration</a>. For a PRADO application, each page directory can have a page configuration which applies to the pages in the same directory and all its subdirectories.
+</com:TipBox>
+
+</com:TContent>

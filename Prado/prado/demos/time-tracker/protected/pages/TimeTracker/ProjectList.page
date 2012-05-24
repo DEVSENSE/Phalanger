@@ -1,0 +1,42 @@
+<com:TContent ID="Main">
+<h2>Projects</h2>
+
+<fieldset class="project-list">
+<legend>Project List</legend>
+<com:TDataGrid
+	ID="projectList"
+	AllowSorting="true"
+	OnSortCommand="sortProjects"
+	AutoGenerateColumns="false">
+	<com:THyperLinkColumn
+		HeaderText="Project Name"
+		DataTextField="Name"
+		DataNavigateUrlField="ID"
+		SortExpression="Name"
+		DataNavigateUrlFormatString="?page=TimeTracker.ProjectDetails&ProjectID=%d" />
+	<com:TBoundColumn
+		SortExpression="ManagerUserName"
+		HeaderText="Project Manager"
+		DataField="ManagerUserName" />
+	<com:TBoundColumn
+		SortExpression="Description"
+		HeaderText="Description"
+		DataField="Description" />
+	<com:TTemplateColumn HeaderText="Completion" SortExpression="CompletionDate">
+		<prop:ItemTemplate>
+		<com:System.I18N.TDateFormat 
+			Pattern="dd/MM/yyyy"
+			Value=<%# $this->NamingContainer->DataItem->CompletionDate %> />
+		</prop:ItemTemplate>
+	</com:TTemplateColumn>
+	<com:TBoundColumn
+		SortExpression="EstimateDuration"
+		HeaderText="Estimate Duration"
+		DataField="EstimateDuration" />
+</com:TDataGrid>
+<div style="padding:1em">
+	<a href="?page=TimeTracker.ProjectDetails">Create New Project</a>
+</div>
+</fieldset>
+
+</com:TContent>

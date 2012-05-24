@@ -1,0 +1,208 @@
+<com:TContent ID="body">
+
+<h1>TRadioButtonList Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Radio button list with default settings:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList>
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Radio button list with customized cellpadding, cellspacing, color and text alignment:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList
+	CellPadding="5"
+	CellSpacing="1"
+	BackColor="silver"
+	TextAlign="Left">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Radio button list with vertical (default) repeat direction:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList RepeatColumns="3">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Radio button list with horizontal repeat direction:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList RepeatDirection="Horizontal"	RepeatColumns="3">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Radio button list with flow layout and vertical (default) repeat direction:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList RepeatLayout="Flow" RepeatColumns="3">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Radio button list with flow layout and horizontal repeat direction:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList
+	RepeatLayout="Flow"
+	RepeatDirection="Horizontal"
+	RepeatColumns="3">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TRadioButtonList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Radio button list's behavior upon postback:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList ID="RadioButtonList">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Enabled="false" />
+  <com:TListItem Value="value 5" Text="item 5" />
+</com:TRadioButtonList>
+<com:TButton Text="Submit" OnClick="buttonClicked" />
+<br/>
+<com:TLabel ID="SelectionResult" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Auto postback radio button list:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList
+	AutoPostBack="true"
+	OnSelectedIndexChanged="selectionChanged">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Enabled="false" />
+  <com:TListItem Value="value 5" Text="item 5" />
+</com:TRadioButtonList>
+<com:TLabel ID="SelectionResult2" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+
+
+<h2>Radio Button Lists with DataBinding</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Databind to an integer-indexed array:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList ID="DBRadioButtonList1"
+	AutoPostBack="true"
+	OnSelectedIndexChanged="DBRadioButtonList1Changed" />
+<com:TLabel ID="DBRadioButtonList1Result" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Databind to an associative array:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList ID="DBRadioButtonList2"
+	AutoPostBack="true"
+	OnSelectedIndexChanged="DBRadioButtonList2Changed" />
+<com:TLabel ID="DBRadioButtonList2Result" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Databind with DataTextField and DataValueField specified:
+</td>
+<td class="sampleaction">
+<com:TRadioButtonList ID="DBRadioButtonList3"
+	AutoPostBack="true"
+	DataTextField="name"
+	DataValueField="id"
+	OnSelectedIndexChanged="DBRadioButtonList3Changed" />
+<com:TLabel ID="DBRadioButtonList3Result" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+
+<h2>RadioButton List with Validation</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+RadioButton list causing validation:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	ErrorMessage="You must enter a value"
+	Display="Dynamic"
+	ValidationGroup="Group2"
+	/>
+<com:TRadioButtonList AutoPostBack="true" ValidationGroup="Group2">
+  <com:TListItem Text="Agree" />
+  <com:TListItem Text="Disagree" />
+</com:TRadioButtonList>
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

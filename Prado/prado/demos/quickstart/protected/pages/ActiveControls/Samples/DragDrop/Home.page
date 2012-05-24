@@ -1,0 +1,90 @@
+<com:TContent id="body">
+<style>
+.cart {
+	border: 1px solid #E8A400;
+	background-color: white;
+	padding: 8px;
+	width: 500px;
+	height: 150px;
+}
+
+.cart-hover {
+	background-color: #E8A400;
+}
+
+.cart-items {
+	width: 30px;
+	height: 30px;
+}
+
+.products {
+	float: left;
+	width: 100px;
+	height: 100px;
+	margin-right: 10px;
+}
+
+.draggable {
+	cursor: move
+}
+
+.removable {
+}
+
+.trash {
+	width: 50px;
+	height: 50px;
+	border: 1px solid black;
+}
+
+.trash-hover {
+	background-image: url(<%~ images/trash.png%>);
+}
+
+</style>
+<h1>Drag &amp; Drop demo !</h1>
+
+<h2>Product List :</h2>
+
+<div style="margin-bottom: 20px; height: 120px">
+
+<com:TRepeater Id="ProductList" DataKeyField="ProductId">
+	<prop:ItemTemplate>
+		<com:TDraggable CssClass="products draggable" >
+		<com:TImage ImageUrl=<%#$this->Data['ProductImageUrl']%> />
+		</com:TDraggable>
+	</prop:ItemTemplate>
+</com:TRepeater>
+</div>
+<h2>Your shopping cart :</h2>
+<com:TDropContainer CssClass="cart" Id="cart"
+	AcceptCssClass="draggable" 
+	HoverCssClass="cart-hover"
+	OnDrop="addItemToCart"
+	OnCallback="redrawCart"
+	>
+	<com:TRepeater id="ShoppingList" DataKeyField="ProductId">
+		<prop:EmptyTemplate>
+			Your shopping cart is empty, please add some items !
+		</prop:EmptyTemplate>
+		<prop:ItemTemplate>
+			<com:TDraggable CssClass="removable" 
+				Revert="true" 
+				Handle="<%=$this->itemImage->ClientId%>" 
+				Ghosting=<%#($this->Data['ProductCount'] > 1)%> 
+				>
+			<com:TImage id="itemImage" CssClass="cart-items" Style="cursor:move" ImageUrl=<%#$this->Data['ProductImageUrl']%>/>
+			<com:TLabel id="itemTitle" Text=<%#$this->Data['ProductTitle']%>/>
+			<com:TLabel id="itemCount" Text="(<%#$this->Data['ProductCount']%>)" />
+			</com:TDraggable>
+		</prop:ItemTemplate>
+	</com:TRepeater>
+</com:TDropContainer>
+<h2>Remove Items from cart by dropping them here</h2>
+<com:TDropContainer CssClass="trash" id="trash"
+	AcceptCssClass="removable"
+	OnDrop="removeItemFromCart"
+	OnCallback="redrawCart"
+	HoverCssClass="trash-hover"
+/>
+</com:TContent>

@@ -1,0 +1,14 @@
+<%@ Title="My Blog" %>
+
+<com:TContent ID="Main">
+
+<com:TRepeater ID="Repeater"
+	ItemRenderer="Application.pages.posts.PostRenderer"
+	AllowPaging="true"
+	AllowCustomPaging="true"
+	PageSize="5"
+	/>
+
+<com:TPager ControlToPaginate="Repeater" OnPageIndexChanged="pageChanged" />
+
+</com:TContent>

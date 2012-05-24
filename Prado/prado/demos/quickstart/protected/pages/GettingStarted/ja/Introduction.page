@@ -1,0 +1,63 @@
+<com:TContent ID="body" >
+<h1 id="101">ようこそ PRADO クイックスタートチュートリアルへ</h1>
+<div id="intro" class="block-content">
+<p id="10001">
+このチュートリアルはPRADO3.xを使ったアプリケーションをスピーディーに構築するためのものです。
+</p>
+<p id="10001" class="block-content">
+既にPRADO3.xを使用しており新しいバージョンで強化された機能を知りたい方は、まずは<a href="?page=GettingStarted.NewFeatures">新機能ページ</a>をご覧ください。PRADOを使用したことのない方にはこのチュートリアルはとても役立つものですので、ぜひご覧下さい。
+</p>
+<!--
+<div class="start-page">
+	<div class="concepts start-block">
+	<h2 id="2001">How PRADO Works</h2>
+	<p id="10002" class="block-content">Concepts and fundamentals</p>
+	<ol>
+		<li><a href="#">Building web applications with PRADO</a></li>
+		<li><a href="#">Web controls and events</a></li>
+		<li><a href="#">Validating user input</a></li>
+		<li><a href="#">Connecting to your database</a></li>
+		<li><a href="#">Displaying data from database</a></li>
+	</ol>
+	</div>
+	<div class="examples start-block">
+	<h2 id="2002">Examples and Demos</h2>
+	<ul>
+		<li><a href="../helloworld/">Hello World</a></li>
+		<li><a href="../currency-convert/">Currency Converter</a></li>
+		<li><a href="../address-book/">Address Book</a></li>
+		<li><a href="../blog/">Blog</a></li>
+		<li><a href="../chat/">AJAX Chat</a></li>
+		<li><a href="../time-tracker/">Project Time Tracker</a></li>
+	</ul>
+	<p id="10003" class="block-content">More examples in <a href="?page=Controls.Standard">Standard Controls</a>,
+	<a href="?page=Controls.Validation">Validation Controls</a> and
+	<a href="?page=Controls.Data">Data Controls</a>.
+	</div>
+
+	<div class="tutorials start-block">
+	<h2 id="2003">Tutorials and Help</h2>
+	<ul>
+		<li><a href="?page=GettingStarted.HelloWorld">Hello World in detail</a></li>
+		<li><a href="?page=Tutorial.CurrencyConverter">Currency Converter Tutorial</a></li>
+		<li><a href="?page=Tutorial.AddressBook">Address Book Tutorial</a></li>
+		<li><a href="?page=Tutorial.AjaxChat">AJAX Chat Tutorial</a></li>
+	</ul>
+	</div>
+</div>
+-->
+
+<p id="10002">
+もしこのチュートリアルの内容では不十分と感じたら、以下リンクの各種資料もご覧ください。
+</p>
+</div>
+<ul class="block-content" id="intro-links">
+  <li><a href="http://www.pradosoft.com/docs/classdoc/">PRADO Classes</a></li>
+  <li><a href="http://www.pradosoft.com/docs/manual/">PRADO APIドキュメント</a></li>
+  <li><a href="http://www.pradosoft.com/forum/">PRADO フォーラム</a></li>
+  <li><a href="http://www.pradosoft.com/wiki/">PRADO Wiki</a></li>
+  <li><a href="http://trac.pradosoft.com/prado/">PRADO Trac</a></li>
+</ul>
+
+<div class="last-modified">$Id: Introduction.page * 2007-06-03 16:43:00Z Shinya.K $</div>
+</com:TContent>

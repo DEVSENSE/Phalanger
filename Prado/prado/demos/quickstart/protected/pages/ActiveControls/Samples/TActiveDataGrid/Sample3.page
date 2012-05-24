@@ -1,0 +1,83 @@
+<com:TContent ID="body">
+
+<h1>TActiveDataGrid Sample 3</h1>
+<h2>Interacting with TActiveDataGrid</h2>
+
+<com:TActiveDataGrid
+	Width="800px"
+	CellPadding="2"
+	ID="DataGrid"
+	DataKeyField="ISBN"
+	AutoGenerateColumns="false"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="#E6ECFF"
+	EditItemStyle.BackColor="lightyellow"
+	OnItemCreated="itemCreated"
+	OnEditCommand="editItem"
+	OnUpdateCommand="saveItem"
+	OnCancelCommand="cancelItem"
+	OnDeleteCommand="deleteItem"
+	>
+
+	<com:TActiveBoundColumn
+		ID="BookTitleColumn"
+		HeaderText="Book Title"
+		HeaderStyle.Width="400px"
+		DataField="title"
+		/>
+	<com:TActiveBoundColumn
+		ID="PublisherColumn"
+		HeaderText="Publisher"
+		HeaderStyle.Width="150px"
+		DataField="publisher"
+		/>
+	<com:TActiveBoundColumn
+		ID="PriceColumn"
+		ItemStyle.HorizontalAlign="Right"
+		ItemStyle.Wrap="false"
+		ItemStyle.Font.Italic="false"
+		ItemStyle.ForeColor="green"
+		HeaderText="Price"
+		HeaderStyle.Width="70px"
+		DataField="price"
+		DataFormatString="$%.2f"
+		/>
+	<com:TActiveCheckBoxColumn
+		ID="InStockColumn"
+		HeaderText="In-stock"
+		DataField="instock"
+		/>
+	<com:TActiveDropDownListColumn 
+		ID="RatingColumn"
+		HeaderText="Rating"
+		DataTextField="rating"
+		>
+		<prop:DataTextFormatString><img src="images/star%s.gif" alt="" /></prop:DataTextFormatString>
+		<com:TListItem Value="1" />
+		<com:TListItem Value="2" />
+		<com:TListItem Value="3" />
+		<com:TListItem Value="4" />
+		<com:TListItem Value="5" />
+	</com:TActiveDropDownListColumn>
+	<com:TActiveEditCommandColumn
+		HeaderText="Edit"
+		HeaderStyle.Width="100px"
+		UpdateText="Save"
+		ItemStyle.HorizontalAlign="Center"
+		ItemStyle.Font.Italic="false"
+		/>
+	<com:TActiveButtonColumn
+		ID="DeleteColumn"
+		HeaderText="Delete"
+		HeaderStyle.Width="50px"
+		ItemStyle.HorizontalAlign="Center"
+		ItemStyle.Font.Italic="false"
+		Text="Delete"
+		CommandName="delete"
+		/>
+</com:TActiveDataGrid>
+
+<div class="last-modified">$Id: Sample3.page 2955 2011-06-02 09:30:55Z ctrlaltca@gmail.com $</div></com:TContent>

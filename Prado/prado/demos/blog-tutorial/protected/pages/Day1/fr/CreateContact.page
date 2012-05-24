@@ -1,0 +1,203 @@
+﻿<com:TContent ID="Main">
+
+<h1>Création de la page Contact</h1>
+
+<p>
+Nous avons créé une page par défaut <tt>Home.page</tt> en utilisant les <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">outils en ligne de commande de PRADO</a>. Cette page est relativement statique parce qu'elle ne contient que du contenu HTML. Dans cette session, nous allons créer une page dynamique dénommée <tt>Contact</tt>.
+</p>
+
+<p>
+Le but de cette page est de collecter les retours d'informations des utilisateurs Web concernant notre outil de blog. Pour atteindre ce but, nous envisageons d'utiliser un formulaire qui sera à remplir. Dans ce formulaire, nous demanderons le nom de l'utilisateur, son adresse email et son commentaire. Après que le formulaire ai été rempli et envoyé, un email avec le commentaire sera envoyé à l'administrateur.
+</p>
+
+<p>
+Pour créer la page <tt>Contact</tt>, nous avons besoin de 2 fichiers dans le dossier <tt>pages</tt> : le fichier de gabarit <tt>Contact.page</tt> et le fichier de classe PHP <tt>Contact.PHP</tt>.
+</p>
+
+<img src="<%~ directories2.gif %>" class="output" />
+
+<com:InfoBox>
+Une <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">page</a> doit avoir un fichier de <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">gabarit</a> (extension <tt>.page</tt>) ou un fichier de classe PHP, ou les deux :
+</p>
+
+<ul>
+<li>Une page avec seulement un gabarit est généralement une page statique, comme la page d'accueil que nous avons déjà créée ;</li>
+<li>Une page avec seulement un fichier de classe PHP produit le code HTML directement à partir de l'exécution du script.
+<li>Une page avec un gabarit et un fichier de classe PHP combine les avantages des deux : un gabarit pour facilement organiser la présentation de la page et un fichier de classe PHP pour produire le contenu dynamique.</li>
+</ul>
+</com:InfoBox>
+
+
+<h2>Création de la page gabarit</h2>
+
+<p>
+Nous allons premièrement créer le fichier gabarit de la page <tt>Contact</tt>.
+</p>
+
+<p>
+Nous utilisons un fichier gabarit pour organiser la présentation de notre formulaire. Dans notre gabarit, nous utilisons des <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.TextBox">champs de saisie</a> pour collecter le nom de l'utilisateur, son email et son commentaire. D'autre part, nous utilisons des <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Validation">validateurs</a> pour nous assurer que l'utilisateur a bien fourni les éléments avant d'envoyer le formulaire. Le contenu complet du gabarit est le suivant,
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<html>
+<head><title>Mon Blog - Contact</title></head>
+<body>
+<h1>Contact</h1>
+<p>Veuillez remplir le formulaire suivant pour me laisser vos impressions au sujet de mon blog. Merci !</p>
+
+&lt;com:TForm> 
+
+<span>Votre nom:</span>
+&lt;com:TRequiredFieldValidator ControlToValidate="Name"
+    ErrorMessage="Veuillez indiquer votre nom." 
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Name" />
+
+<br/>
+<span>Votre email:</span>
+&lt;com:TRequiredFieldValidator ControlToValidate="Email"
+    ErrorMessage="Veuillez indiquer votre email." 
+    Display="Dynamic" />
+&lt;com:TEmailAddressValidator ControlToValidate="Email"
+    ErrorMessage="Vous avez saisi un email invalide." 
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Email" />
+
+<br/>
+<span>Commentaires:</span>
+&lt;com:TRequiredFieldValidator ControlToValidate="Feedback"
+    ErrorMessage="Veuillez saisir un commentaire." 
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Feedback" 
+    TextMode="MultiLine" 
+    Rows="10"
+    Columns="40" />
+
+<br/>
+&lt;com:TButton Text="Envoyer" OnClick="submitButtonClicked" />
+
+&lt;/com:TForm>
+
+</body>
+</html>
+</com:TTextHighlighter>
+
+<p>
+Comme vous pouvez le voir, un fichier gabarit ressemble énormément à un fichier HTML classique. La principale différence concerne le fichier gabarit qui contient quelques balises <tt>&lt;com:&gt;</tt>. Chaque balise <tt>&lt;com:&gt;</tt> fait référence à un <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Controls">contrôle</a> dont les propriétés sont initialisées grâce aux paires nom-valeur de la balise. Par exemple, la balise <tt>&lt;com:TButton&gt;</tt> fait référence au contrôle <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Button">TButton</a> qui affiche un bouton permettant à l'utilisateur de soumettre le formulaire. Pour une syntaxe complète, veuillez vous référer au <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">Tutoriel de démarrage rapide</a>.
+
+<com:InfoBox>
+PRADO fournit un contrôle pour chaque type de balise HTML. Par exemple, <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.TextBox">TTextBox</a> affiche un champ de saisie, <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.List">TDropDownList</a> affiche une liste déroulante. Chaque contrôle est un composant auquel on peut accéder par code et dont les propriétés sont modifiables.
+</com:InfoBox>
+
+
+<p>
+Avant le contrôle <tt>TTextBox</tt>, le gabarit utilise aussi plusieurs validateurs qui permettent de s'assurer que les données saisies sont bien conformes à notre attente. Par exemple, pour nous assurer que l'adresse email est valide, nous utilisons les deux validateurs suivants,
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<span>Your Email:</span>
+&lt;com:TRequiredFieldValidator 
+    ControlToValidate="Email"
+    ErrorMessage="Veuillez indiquer votre email." 
+    Display="Dynamic" />
+&lt;com:TEmailAddressValidator 
+    ControlToValidate="Email"
+    ErrorMessage="Vous avez saisi un email invalide." 
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Email" />
+<br/>
+</com:TTextHighlighter>
+
+<p>
+Ci-dessous, un résumé des contrôles utilisés dans le gabarit :
+</p>
+
+<ul>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TForm">TForm</a> affiche un formulaire HTML. Chaque contrôle de saisie doit être au sein d'un TForm. Et le plus important, au plus un <tt>TForm</tt> peut apparaitre dans une page.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TTextBox">TTextBox</a> affiche un champ de saisie utilisateur.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TRequiredFieldValidator">TRequiredFieldValidator</a> s'assure que le contrôle de saisie associé n'est pas vide quand le formulaire est envoyé.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TEmailAddressValidator">TEmailAddressValidator</a> s'assure que le champ de saisie contient une adresse email <i>valide</i> quand le formulaire est envoyé.</li>
+</ul>
+
+<com:TipBox>
+Ecrire des gabarits seulement avec un éditeur de texte peut être pénible et pas vraiment intuitif pour les designers. Pour faciliter ceci, PRADO inclus dans cette version, une extension pour Dreamweaver qui permet la complétion automatique des balises PRADO (ceci inclut le nom des balises, le nom des propriétés, le nom des évènements, etc.).
+</com:TipBox>
+
+<h2>Création du fichier de classe PHP</h2>
+
+<p>
+Nous allons maintenant créer le fichier de classe PHP <tt>Contact.PHP</tt>. Ce fichier est nécessaire parce que nous devons agir après la soumission du formulaire.
+</p>
+
+<p>
+Notez les lignes dans le fichier gabarit. Elles indiquent que lorsque l'utilisateur soumet le formulaire, la méthode <tt>submitButtonClicked()</tt> doit être appelé. Ici, <tt>OnClick</tt> est le nom de l'évènement et la méthode correspondante doit être défini dans le fichier de classe PHP.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+  &lt;com:TButton Text="Submit" OnClick="submitButtonClicked" />
+</com:TTextHighlighter>
+
+<p>
+Nous écrirons donc le fichier de classe suivant :
+</p>
+
+<com:TTextHighlighter CssClass="source">
+<?PHP
+class Contact extends TPage
+{
+    /**
+     * Gestionnaire d'évènement pour OnClick (bouton submit).
+     * @param TButton le bouton qui a générer l'évènement
+     * @param TEventParameter les paramètres de l'évènement (null dans ce cas)    
+     */
+    public function submitButtonClicked($sender, $param)
+    {
+        if ($this->IsValid)  // vérifie que les validations sont Ok
+        {
+            // récupère le nom de l'utilisateur, son email et son commentaire
+            $name = $this->Name->Text;  
+            $email = $this->Email->Text;
+            $feedback = $this->Feedback->Text;
+            
+            // envoie un email à l'administrateur avec les informations 
+            $this->mailFeedback($name, $email, $feedback);
+        }
+    }
+    
+    protected function mailFeedback($name, $email, $feedback)
+    {
+        // implémentation de l'envoi de l'email
+    }
+}
+?>
+</com:TTextHighlighter>
+
+<p>
+Le code précédent est largement explicite. En fait, nous avons juste montré le principe d'un gestionnaire d'évènement. Dans le gestionnaire d'évènement <tt>submitButtonClicked()</tt>, nous récupérons les éléments saisies par l'utilisateur. Par exemple, <tt>$this->Name->Text</tt> retourne la valeur de la propriété <tt>Text</tt> du contrôle <tt>Name</tt> qui est un contrôle permettant la saisie du nom de l'utilisateur.
+</p>
+
+<com:InfoBox>
+Le nom de la classe héritant de TPage doit être le même que le nom du fichier. C'est aussi une nécessité pour écrire n'importe quelle classe de composant PRADO.
+</com:InfoBox>
+
+<h2>Test</h2>
+
+<p>
+Notre nouvelle page <tt>Contact</tt> peut être testée en naviguant à l'URL <tt>http://hostname/blog/index.PHP?page=Contact</tt>. Si vous cliquez sur le bouton "envoyer" sans avoir saisi de données, vous verrez apparaitre des messages d'erreurs à côté des champs de saisie. Si vous entrez toutes les informations nécessaires, la méthode <tt>mailFeedback()</tt> sera appelée.
+</p>
+
+<img src="<%~ output.gif %>" class="output" />
+
+<p>
+Une amélioration possible à notre page serait d'afficher un message de confirmation après que l'utilisateur ai envoyé le formulaire. Il serait aussi envisageable de rediriger le navigateur vers une adresse différente si toutes les informations ont été saisies correctement. Nous laisserons aux lecteurs la mise en place de ces fonctionnalités.
+</p>
+
+<com:InfoBox>
+Chaque validateur représente une règle de validation. Un champ de saisie unique peut être associé à un ou plusieurs validateurs. Les validateurs effectuent les vérifications aussi bien du côté client que du côté serveur. Côté client (navigateur), les validations sont effectuées grâce à du javascript, côté serveur, elles sont effectuées en PHP. Les validations côté client peuvent être désactivées tandis que celles côté serveur ne peuvent l'être. Ceci permet de s'assurer que les règles de validation sont toujours appliquées.
+</com:InfoBox>
+
+</com:TContent>

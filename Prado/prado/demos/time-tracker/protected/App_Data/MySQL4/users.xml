@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+
+<resultMap id="time-tracker-user" class="TimeTrackerUser" GroupBy="Name">
+	<result property="Name" column="Name" />
+	<result property="EmailAddress" column="EmailAddress" />
+	<result property="Roles" Type="array" resultMapping="user-roles-result" />
+</resultMap>
+
+<resultMap id="user-roles-result">
+	<result column="role" />
+</resultMap>
+
+<!--
+<select id="GetUserByName" parameterClass="string" resultMap="TimeTrackerUser">
+	SELECT 
+		users.Username as Name,
+		users.EmailAddress as EmailAddress,
+		user_roles.RoleType as role
+	FROM
+		users
+		LEFT JOIN user_roles ON users.Username = user_roles.UserID
+	WHERE
+		Username = #value#
+	AND 
+		Disabled = 0
+</select>
+-->
+
+<select id="UsernameExists" parameterClass="string" resultClass="boolean">
+	SELECT COUNT(Username) FROM users WHERE Username = #value#
+</select>
+
+<select id="GetUserByName" parameterClass="string" resultMap="time-tracker-user">
+	SELECT 
+		users.Username as Name,
+		users.EmailAddress as EmailAddress,
+		user_roles.RoleType as role
+	FROM
+		users
+		LEFT JOIN user_roles ON users.Username = user_roles.UserID
+	WHERE
+		Username = #value#
+	AND 
+		Disabled = 0
+</select>
+    
+<select id="GetAllUsers" resultMap="time-tracker-user">
+	SELECT
+		users.Username as Name,
+		users.EmailAddress as EmailAddress,
+		user_roles.RoleType as role
+	FROM
+		users
+		LEFT JOIN user_roles ON users.Username = user_roles.UserID
+	WHERE
+		Disabled = 0
+</select>
+
+<select id="ValidateUser" resultClass="boolean">
+	SELECT 
+		count(Username)
+	FROM
+		users
+	WHERE
+		username = #username# AND password = #password#
+	AND
+		Disabled = 0
+</select>
+
+<insert id="AddNewUser" parameterClass="array">
+	INSERT INTO 
+		users (Username, Password, EmailAddress)
+	VALUES
+		(#user.Name#, #password#, #user.EmailAddress#)
+</insert>
+
+<update id="DeleteUserByName">
+	UPDATE users SET Disabled = 1  WHERE username = #value#
+</update>
+
+<insert id="RegisterAutoSignon" parameterClass="array">
+	INSERT INTO 
+		signon (SessionToken, Username, LastSignOnDate)
+	VALUES
+		(#token#, #username#, NOW())
+</insert>
+
+<select id="ValidateAutoSignon" resultMap="time-tracker-user">
+	SELECT
+		users.Username as Name,
+		users.EmailAddress as EmailAddress,
+		user_roles.RoleType as role
+	FROM
+		users LEFT JOIN user_roles ON users.Username = user_roles.UserID,
+		signon
+	WHERE
+		users.Username = signon.Username
+		AND signon.SessionToken = #value#
+		AND users.Disabled = 0
+</select>
+
+<update id="UpdateSignon">
+	UPDATE signon SET LastSignOnDate = NOW() 
+	WHERE SessionToken = #value#
+</update>
+
+<delete id="DeleteUserRoles" parameterClass="TimeTrackerUser">
+	DELETE FROM user_roles WHERE UserID = #Name#
+</delete>
+
+<update id="AddUserRole" parameterClass="array">
+	INSERT INTO user_roles (UserID, RoleType)
+	VALUES(#username#, #role#)
+</update>
+
+<update id="UpdateUserDetails" parameterClass="TimeTrackerUser">
+	UPDATE users 
+	SET EmailAddress = #EmailAddress#
+	WHERE Username = #Name#
+</update>
+
+<update id="UpdateUserDetailsAndPassword" parameterClass="array">
+	UPDATE users 
+	SET EmailAddress = #user.EmailAddress#, Password=#password#
+	WHERE Username = #user.Name#
+</update>
+
+<delete id="DeleteAutoSignon">
+	DELETE FROM signon WHERE Username = #value#
+</delete>
+
+<delete id="DeleteAllSignon">
+	DELETE FROM signon
+</delete>
+
+</sqlMap>

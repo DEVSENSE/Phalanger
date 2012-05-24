@@ -1,0 +1,186 @@
+<com:TContent ID="body">
+
+<h1>TTextBox Samples</h1>
+
+<h2>SingeLine Text Boxes</h2>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Text box with default settings:
+</td><td class="sampleaction">
+<com:TTextBox />
+</td></tr>
+
+<tr><td class="samplenote">
+Text box with customized color, font, columns, maximum length:
+</td><td class="sampleaction">
+<com:TTextBox
+	Text="text"
+	ForeColor="yellow"
+	BackColor="blue"
+	Font.Size="14pt"
+	Columns="4"
+	MaxLength="6"
+/>
+</td></tr>
+
+<tr><td class="samplenote">
+Text box with vCard support:
+</td><td class="sampleaction">
+First Name: <com:TTextBox AutoCompleteType="FirstName" />
+Last Name: <com:TTextBox AutoCompleteType="LastName" />
+</td></tr>
+
+<tr><td class="samplenote">
+Disabled text box:
+</td><td class="sampleaction">
+<com:TTextBox Text="disabled" Enabled="false" />
+</td></tr>
+
+<tr><td class="samplenote">
+Read-only text box:
+</td><td class="sampleaction">
+<com:TTextBox Text="read only" ReadOnly="true" />
+</td></tr>
+
+<tr><td class="samplenote">
+Auto postback text box not causing validation:
+</td><td class="sampleaction">
+<com:TTextBox
+	Text="change me"
+	AutoPostBack="true"
+	CausesValidation="false"
+	OnTextChanged="textChanged" />
+</td></tr>
+
+<tr><td class="samplenote">
+Auto postback text box causing validation:
+</td><td class="sampleaction">
+<com:TTextBox ID="TextBox3"
+	Width="300px"
+	AutoPostBack="true"
+	ValidationGroup="Group1"
+	Text="change me to 'test' and see" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox3"
+	ErrorMessage="You must enter a value not equal to 'test'."
+	InitialValue="test"
+	ValidationGroup="Group1" />
+</td></tr>
+
+<tr><td class="samplenote">
+Text box's behavior upon postback:
+</td><td class="sampleaction">
+<com:TTextBox ID="TextBox1" Text="text" />
+<com:TButton
+	Text="Submit"
+	OnClick="submitText" />
+</td></tr>
+
+<tr><td class="samplenote">
+Safety feature (cross-site scripting prevention):
+</td><td class="sampleaction">
+<com:TTextBox
+	ID="TextBox2"
+	AutoPostBack="true"
+	Text="<a href=javascript:xxx>test</a>"
+	Width="200px"/>
+<b>SafeText:</b>
+<com:TLabel ID="Output"
+	BackColor="silver"
+	Text=<%#$this->TextBox2->SafeText%> />
+</td></tr>
+
+</table>
+
+<h2>Password Text Boxes</h2>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Password with default setting
+</td>
+<td class="sampleaction">
+<com:TTextBox TextMode="Password" /> <com:TButton ID="PassButton1" Text="submit" />
+</td></tr>
+
+<tr><td class="samplenote">
+Password with PersistPasswor set true
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="Password2" TextMode="Password" PersistPassword="true" /> 
+<com:TButton ID="PassButton2" Text="submit" />
+</td></tr>
+</table>
+
+
+<h2>MultiLine Text Boxes</h2>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Text box with default settings:
+</td><td class="sampleaction">
+<com:TTextBox TextMode="MultiLine" />
+</td></tr>
+
+<tr><td class="samplenote">
+Text box with customized dimensions, font and content:
+</td><td class="sampleaction">
+<com:TTextBox TextMode="MultiLine" Rows="6" Columns="60" Font.Italic="true">
+  <prop:Text>
+This is a multiline text box.
+In HTML, it is displayed as a textarea.
+  </prop:Text>
+</com:TTextBox>
+</td></tr>
+
+<tr><td class="samplenote">
+Disabled text box:
+</td><td class="sampleaction">
+<com:TTextBox
+	TextMode="MultiLine"
+	Text="disabled"
+	Enabled="false" />
+</td></tr>
+
+<tr><td class="samplenote">
+Read-only text box with text-wrapping disabled:
+</td><td class="sampleaction">
+<com:TTextBox
+	TextMode="MultiLine"
+	Text="This is a read-only text box with text-wrapping disabled."
+	ReadOnly="true"
+	Wrap="false"/>
+</td></tr>
+
+<tr><td class="samplenote">
+Auto postback text box not causing validation:
+</td><td class="sampleaction">
+<com:TTextBox
+	TextMode="MultiLine"
+	Text="change me"
+	AutoPostBack="true"
+	CausesValidation="false"
+	OnTextChanged="textChanged" />
+</td></tr>
+
+<tr><td class="samplenote">
+Auto postback text box causing validation:
+</td><td class="sampleaction">
+<com:TTextBox ID="MultiTextBox3"
+	TextMode="MultiLine"
+	AutoPostBack="true"
+	ValidationGroup="Group2"
+	Text="change me to 'demo' and see" />
+<com:TRequiredFieldValidator
+	ControlToValidate="MultiTextBox3"
+	ErrorMessage="You must enter a value not equal to 'demo'."
+	InitialValue="demo"
+	ValidationGroup="Group2" />
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1812 2007-03-31 13:19:58Z xue $</div></com:TContent>

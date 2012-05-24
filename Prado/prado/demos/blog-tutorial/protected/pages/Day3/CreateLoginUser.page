@@ -1,0 +1,163 @@
+<com:TContent ID="Main">
+
+<h1>Creating <tt>LoginUser</tt> Page</h1>
+
+<p>
+The <tt>LoginUser</tt> page displays a login form and authenticates a user who tries to login. As described in <a href="?page=Day3.Auth">authentication and authorization</a>, the user's browser is automatically redirected to the <tt>LoginUser</tt> page when the user is attempting to access a privileged page, such as a user admin page.
+</p>
+
+<p>
+The workflow of <tt>LoginUser</tt> is very similar to the <a href="?page=Day1.CreateContact">Contact</a> page:
+</p>
+<ol>
+<li>When a user accesses the <tt>LoginUser</tt> page, a login form is displayed;</li>
+<li>The user fills in the username and password and clicks on the "login" button;</li>
+<li>The <tt>LoginUser</tt> receives the "login" event and triggers the authentication sequence;</li>
+<li>If the user enters correct username and password, the system assigns him a valid identity and redirects his browser to the desired privileged page; If not, a "password invalid" message is displayed.
+</ol>
+
+<p>
+We create two files <tt>protected/pages/users/LoginUser.page</tt> and <tt>protected/pages/users/LoginUser.php</tt> to save the page template and page class, respectively.
+</p>
+
+<h2>Creating Page Template</h2>
+
+<p>
+Below we show the template for <tt>LoginUser</tt>. As we see, the page mainly contains a text box for collecting username and a text box for password. The username input is required, which is ensured by the <tt>TRequiredFieldValidator</tt>. The correctness of the password input is ensured by the <a href="http://www.pradosoft.com/demos/quickstart/index.php?page=Controls.Validation">TCustomValidator</a> which invokes the page's <tt>validateUser()</tt> method when validation is performed. The page also has "login" button which invokes the page's <tt>loginButtonClicked()</tt> when it is clicked.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ Title="My Blog - Login" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Login</h1>
+
+<span>Username:</span>
+&lt;com:TRequiredFieldValidator
+    ControlToValidate="Username"
+    ErrorMessage="Please provide your username."
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Username" />
+
+<br/>
+<span>Password:</span>
+&lt;com:TCustomValidator
+    ControlToValidate="Password"
+    ErrorMessage="Your entered an invalid password."
+    Display="Dynamic"
+    OnServerValidate="validateUser" />
+<br/>
+&lt;com:TTextBox ID="Password" TextMode="Password" />
+
+<br/>
+&lt;com:TButton Text="Login" OnClick="loginButtonClicked" />
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+<h2>Creating Page Class</h2>
+
+<p>
+Like the <a href="?page=Day1.CreateContact">Contact</a> page, the <tt>LoginUser</tt> page also needs a class file which mainly contains the implementation of event handlers attached in the page template. Here, we need to implement two methods: <tt>validateUser()</tt> and <tt>loginButtonClicked()</tt>. In <tt>validateUser()</tt>, we use the <a href="?page=Day3.Auth">auth manager</a> to verify if the username and password are valid. If valid, the auth manager will automatically create a user session with appropriate user identity information.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class LoginUser extends TPage
+{
+    /**
+     * Validates whether the username and password are correct.
+     * This method responds to the TCustomValidator's OnServerValidate event.
+     * @param mixed event sender
+     * @param mixed event parameter
+     */
+    public function validateUser($sender,$param)
+    {
+        $authManager=$this->Application->getModule('auth');
+        if(!$authManager->login($this->Username->Text,$this->Password->Text))
+            $param->IsValid=false;  // tell the validator that validation fails
+    }
+
+    /**
+     * Redirects the user's browser to appropriate URL if login succeeds.
+     * This method responds to the login button's OnClick event.
+     * @param mixed event sender
+     * @param mixed event parameter
+     */
+    public function loginButtonClicked($sender,$param)
+    {
+        if($this->Page->IsValid)  // all validations succeed
+        {
+            // obtain the URL of the privileged page that the user wanted to visit originally
+            $url=$this->Application->getModule('auth')->ReturnUrl;
+            if(empty($url))  // the user accesses the login page directly
+                $url=$this->Service->DefaultPageUrl;
+            $this->Response->redirect($url);
+        }
+    }
+}
+</com:TTextHighlighter>
+
+
+<h2>Testing</h2>
+
+<p>
+So we have created the <tt>LoginUser</tt> page. We can test it by visiting the URL <tt>http://hostname/blog/index.php?page=users.LoginUser</tt>. Remember in the <a href="?page=Day2.CreateDB">Creating Database</a> subsection, we already created two user accounts (username/password): <tt>admin/demo</tt> and <tt>demo/demo</tt>. We can use them to test our login page.
+</p>
+
+<img src="<%~ output.gif %>" class="output"/>
+
+<h2>Adding Login/Logout Links to Master</h2>
+
+<p>
+To provide a direct way for users to login and logout, we modify the <tt>MainLayout</tt> master control a bit. In particular, we add a "login" hyperlink which links to the <tt>LoginUser</tt> page. We also add a "logout" link button which logs out a user when it is clicked.
+</p>
+
+<p>
+We modify the footer section of the <tt>MainLayout</tt>'s template as follows. The visibility of "login" and "logout" is determined according to user's status. If the user is not logged in yet, i.e., <tt>$this->User->IsGuest</tt> is true, the "login" link is visible while the "logout" link is not; and vice versa.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<div id="footer">
+&lt;com:THyperLink Text="Login"
+    NavigateUrl="&lt;%= $this->Service->constructUrl('users.LoginUser') %>"
+    Visible="&lt;%= $this->User->IsGuest %>" />
+
+&lt;com:TLinkButton Text="Logout"
+    OnClick="logoutButtonClicked"
+    Visible="&lt;%= !$this->User->IsGuest %>"
+	CausesValidation="false" />
+
+<br/>
+&lt;%= PRADO::poweredByPrado() %>
+</div>
+</com:TTextHighlighter>
+
+<p>
+Since the "logout" button attaches its <tt>OnClick</tt> event with a method called <tt>logoutButtonClicked()</tt>, we need to modify the class file of <tt>MainLayout</tt> as well.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class MainLayout extends TTemplateControl
+{
+    /**
+     * Logs out a user.
+     * This method responds to the "logout" button's OnClick event.
+     * @param mixed event sender
+     * @param mixed event parameter
+     */
+    public function logoutButtonClicked($sender,$param)
+    {
+        $this->Application->getModule('auth')->logout();
+        $url=$this->Service->constructUrl($this->Service->DefaultPage);
+        $this->Response->redirect($url);
+    }
+}
+</com:TTextHighlighter>
+
+<p>
+Now if we visit any page of our blog system, we should see either a link at the bottom of the page. The link displays "Login" if we have not logged in yet and "Logout" if we have logged in. If we click on "Logout", the browser will be redirected to the homepage and "Login" is displayed meaning we have logged out.
+</p>
+
+</com:TContent>

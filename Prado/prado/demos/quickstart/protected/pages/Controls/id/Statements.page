@@ -1,0 +1,40 @@
+<com:TContent ID="body" >
+
+<h1 id="4301">TStatements</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TStatements" />
+
+<p id="500310" class="block-content">
+<tt>TStatements</tt> mengevaluasi rangkaian pernyataan PHP dan menampilkan konten yang disajikan oleh pernyataan. Untuk menetapkan pernyataan PHP yang dievaluasi, setel properti <tt>Statements</tt>. Sebagai contoh, tag komponen berikut menampilkan waktu saat ini pada halaman Web,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_500111">
+&lt;com:TStatements&gt;
+  &lt;prop:Statements&gt;
+  setlocale(LC_ALL, 'nl_NL');
+  echo strftime("%A %e %B %Y",time());
+  &lt;/prop:Statements&gt;
+&lt;/com:TStatements&gt;
+</com:TTextHighlighter>
+
+<p id="500311" class="block-content">
+Catatan, <tt>TStatements</tt> mengevaluasi pernyataan PHP selama menyajikan masa hidup kontrol. Tidak seperti <tt>TExpression</tt>, <tt>TStatements</tt> hanya menampilkan konten 'echoed' di dalam pernyataan.
+</p>
+
+<p id="500312" class="block-content">
+Konteks pernyataan dalam kontrol <tt>TStatements</tt> adalah kontrol itu sendiri. Yakni, <tt>$this</tt> mewakili obyek kontrol jika ia ada dalam pernyataan. Sebagai contoh, tag pernyataan berikut akan menampilkan judul halaman berisi kontrol <tt>TStatements</tt>.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_500112">
+&lt;com:TStatements&gt;
+  &lt;prop:Statements&gt;
+  $page=$this->Page;
+  echo $page->Title;
+  &lt;/prop:Statements&gt;
+&lt;/com:TStatements&gt;
+</com:TTextHighlighter>
+
+<p id="500313" class="block-content">
+Harap berhati-hati, karena <tt>TStatements</tt> membolehkan eksekusi kode PHP bebas, secara umum anda jangan menggunakannya untuk mengevaluasi kode PHP yang dikirimkan oleh pengguna aplikasi anda.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TStatements.Home" />
+
+<div class="last-modified">$Id: Statements.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

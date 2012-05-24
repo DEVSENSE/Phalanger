@@ -1,0 +1,29 @@
+<com:TContent ID="body" >
+<h1 id="301">Installing PRADO</h1>
+<div id="install-info" class="block-content">
+<p id="30018">
+Su usted esta viendo esta pagina desde su explorador Web, usted ha ya realizado la instalación.
+</p>
+<p id="30019">
+Los requerimientos minimos por PRADO, son que el servidor Web soporte PHP version 5. PRADO ha sido probado con el servidor Web Apache en las plataformas Windows y Linux. Existen muchas probabilidades de que tambien pueda correr en otras plataformas con otros servidores Webs siempre y cuando estos soporten PHP 5.
+</p>
+</div>
+
+<div id="install-steps" class="block-content">
+<p id="30020">
+La instalacion de PRADO, consiste principalmente en descargarlo y descomprimirlo.
+</p>
+<ol>
+<li>Ingrese en <a href="http://www.pradosoft.com/">pradosoft.com</a> para obtener la ultima version de  PRADO.</li>
+<li>Descomprima el archivo de la ultima publicacion de PRADO en una carpeta o directorio accesible via Web (Web-accessible).
+</ol>
+</div>
+<div id="install-after" class="block-content">
+<p id="30021">
+Su instalacion de PRADO esta lista y usted puede comenzar a probarlo con las aplicaciones de demostraciones incluidas en la pulicacion de prado a travez de la URL <tt>http://web-server-address/prado/demos/</tt>. Aqui asumimos que PRADO esta descomprimido en la subcarpeta <tt>prado</tt> que se ecnuentra debajo de <tt>DocumentRoot</tt> del servidor Web.
+</p>
+<p id="30022">
+Si encuentra algun problema con las aplicaciones demostrativa de PRADO, utilice por favor el script de chequeo de requerimientos que viene con PRADO , accesible desde <tt>http://web-server-address/prado/requirements/index.php</tt>, para comprobar primeramente si la configuracion de su server cumple con las condiciones requeridas por PRADO.
+</p>
+</div>
+<div class="last-modified">$Id: Installation.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

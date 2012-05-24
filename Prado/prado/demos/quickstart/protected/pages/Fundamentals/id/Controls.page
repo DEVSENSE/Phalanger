@@ -1,0 +1,51 @@
+<com:TContent ID="body" >
+<h1 id="801">Kontrol</h1>
+<p id="120128" class="block-content">
+Kontrol adalah turunan dari kelas <tt>TControl</tt> atau asal sub kelasnya. Kontrol adalah komponen yang didefinisikan sebagai tambahan pada antarmuka pengguna. Kelas basis <tt>TControl</tt> mendefinisikan hubungan leluhur-anak diantara kontrol yang mencerminkan pengurungan hubungan diantara elemen antarmuka pengguna.
+</p>
+
+<h2 id="802">Susunan Kontrol</h2>
+<p id="120129" class="block-content">
+Kontrol dikaitkan satu sama lain melalui hubungan leluhur-anak. Setiap kontrol leluhur dapat memiliki beberapa kontrol anak. Kontrol leluhur bertugas terhadap transisi keadaan dari kontrol anaknya. Hasil dari kontrol anak biasanya dipakai untuk mengatur penampilan kontrol leluhur. Hubungan leluhur-anak membawa kontrol bersama ke dalam susunan kontrol. Halaman ada di akar dari susunan yang penampilannya di berikan kepada pengguna-akhir.
+</p>
+<p id="120130" class="block-content">
+Hubungan leluhur-anak biasanya dilakukan oleh kerangka kerja melalui <a href="?page=Configurations.Templates1">template</a>. Dalam kode, Anda dapat menetapkan kontrol secara eksplisit sebagai anak dari yang lainnya menggunakan salah satu metode berikut,
+<com:TTextHighlighter CssClass="source block-content" id="code_120067">
+$parent->Controls->add($child);
+$parent->Controls[]=$child;
+</com:TTextHighlighter>
+di mana properti <tt>Controls</tt> merujuk ke koleksi kontrol anak dari leluhur.
+</p>
+
+<h2 id="803">Identifikasi Kontrol</h2>
+<p id="120131" class="block-content">
+Setiap kontrol mempunyai properti <tt>ID</tt> yang dapat secara unik dapat mengidentifikasi dirinya sendiri diantara kontrol keluarganya. Sebagai tambahan, setiap kontrol mempunyai <tt>UniqueID</tt> dan <tt>ClientID</tt> yang dapat dipakai untuk mengidentifikasi kontrol secara global dalam susunan di mana kontrol berada. <tt>UniqueID</tt> dan <tt>ClientID</tt> sangat mirip. Pembentuk dipakai oleh kerangka kerja guna menentukan lokasi dari kontrol terkait dalam susunan, sementara yang kedua sebagian besar dipakai pada sisi klien sebagai ID tag HTML. Secara umum, Anda tidak boleh bergantung pada bentuk eksplisit <tt>UniqueID</tt> atau <tt>ClientID</tt>.
+</p>
+
+<h2 id="804">Wadah Penamaan</h2>
+<p id="120132" class="block-content">
+Setiap kontrol mempunyai wadah penamaan yang mana kontrol membuat ruang nama (namespace) unik untuk membedakan antara kontrol dengan  <tt>ID</tt> yang sama. Sebagai contoh, kontrol <tt>TRepeater</tt> membuat multipel item masing-masing mempunyai kontrol anak dengan <tt>ID</tt> yang sama. Untuk membedakan kontrol anak ini, setiap item bertindak sebagai wadah penamaan. Oleh karena itu, kontrol anak dapat diidentifikasi secara unik menggunakan wadah penamaan <tt>ID</tt> bersama dengan <tt>ID</tt>-nya sendiri. Seperti yang mungkin sudah Anda mengerti, <tt>UniqueID</tt> dan <tt>ClientID</tt> bergantung pada wadah penamaan.
+</p>
+<p id="120133" class="block-content">
+Kontrol dapat bertindak sebagai wadah penamaan jika ia menerapkan antarmuka <tt>INamingContainer</tt>.
+</p>
+
+<h2 id="805">ViewState dan ControlState</h2>
+<p id="120134" class="block-content">
+HTTP adalah protokol tidak berkondisi, berarti ia tidak menyediakan fungsionalitas untuk mendukung interaksi berlanjut antara pengguna dan server. Setiap permintaan dianggap sebagai diskrit dan berdiri sendiri dari yang lainnya. Aplikasi Web, sering perlu untuk mengetahui apa yang telah dilakukan pengguna dalam permintaan sebelumnya. Selanjutnya orang memperkenalkan sesi guna membantu mengingat informasi kondisi seperti itu.
+</p>
+<p id="120135" class="block-content">
+PRADO meminjam konsep viewstate dan controlstate dari Microsoft ASP.NET guna menyediakan tambahan mekanisme pemrograman berkondisi. Penyimpanan nilai dalam viewstate atau controlstate mungkin tersedia untuk permintaan berikutnya jika permintaan baru dari submisi (disebut postback) ke halamanyang sama oleh pengguna yang sama. Perbedaan antara viewstate dan controlstate adalah bahwa pembentuk dapat dimatikan saat yang kemudian tidak bisa.
+</p>
+<p id="120136" class="block-content">
+Viewstate dan controlstate diterapkan dalam <tt>TControl</tt>. Biasanya dipakai untuk mendefinisikan berbagai properti kontrol. Untuk menyimpan dan mengambil nilai dari viewstate atau controlstate, gunakan metode berikut,
+<com:TTextHighlighter CssClass="source block-content" id="code_120068">
+$this->getViewState('Name',$defaultValue);
+$this->setViewState('Name',$value,$defaultValue);
+$this->getControlState('Name',$defaultValue);
+$this->setControlState('Name',$value,$defaultValue);
+</com:TTextHighlighter>
+di mana <tt>$this</tt> merujuk ke turunan kontrol, <tt>Name</tt> merujuk ke kunci yang mengidentifikasi nilai pasti, <tt>$defaultValue</tt> adalah opsional. Ketika mengambil nilai dari viewstate atau controlstate, jika kunci terkait tidak ada, nilai standar akan diberikan.
+</p>
+
+<div class="last-modified">$Id: Controls.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

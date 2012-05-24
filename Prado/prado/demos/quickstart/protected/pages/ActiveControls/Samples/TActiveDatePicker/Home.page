@@ -1,0 +1,17 @@
+<com:TContent ID="body">
+
+<h1>TActiveDatePicker Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+	<td class="samplenote">Default TActiveDatePicker triggering a callback to a label</td>
+	<td class="sampleaction">
+		<com:TActiveDatePicker ID="date1" OnCallback="dateChanged"/>
+		<com:TActiveLabel ID="label1" />
+	</td>
+</tr>
+	
+</table>
+
+<div class="last-modified">$Id: Home.page 2961 2011-06-02 19:27:21Z ctrlaltca@gmail.com $</div></com:TContent>

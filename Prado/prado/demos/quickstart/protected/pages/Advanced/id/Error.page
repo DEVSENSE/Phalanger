@@ -1,0 +1,77 @@
+<com:TContent ID="body" >
+
+<h1 id="6301">Penanganan Kesalahan dan Laporan</h1>
+<p id="800666" class="block-content">
+PRADO menyediakan kerangka kerja penanganan kesalahan dan laporan lengkap berdasarkan pada mekanisme eksepsi dari PHP 5.
+</p>
+
+<h2 id="6302">Kelas Eksepsi</h2>
+<p id="800667" class="block-content">
+Kesalahan yang terjadi dalam aplikasi PRADO dapat diklasifikasikan ke dalam tiga kategori: kesalahan yang disebabkan oleh penguraian naskah PHP, kode yang salah (seperti memanggil fungsi yang tidak didefinisikan, menyetel properti yang tidak dikenal), dan yang disebabkan oleh pemakaian yang tidak benar pada aplikasi Web oleh pengguna klien (seperti mencoba untuk mengakses halaman terbatas). PRADO tidak dapat berhadapan dengan kesalahan kategori pertama karena tidak dapat ditangkap dalam kode PHP. PRADO menyediakan sebuah hirarki eksepsi untuk berhadapan dengan kategori kedua dan ketiga.
+</p>
+<p id="800668" class="block-content">
+Semua kesalahan dalam aplikasi PRADO digambarkan sebagai eksepsi. Basis kelas untuk seluruh eksepsi PRADO adalah <tt>TException</tt>. Ia menyediakan fungsionalitas internasionalisasi pesan bagi semua eksepsi sistem. Pesan kesalahan dapat diterjemahkan ke dalam bahasa yang berbeda tergantung pada preferensi bahasa browser pengguna.
+</p>
+<p id="800669" class="block-content">
+Eksepsi muncul karena pemakaian yang tidak benar dari kerangka kerja PRADO yang diturunkan dari <tt>TSystemException</tt>, yang bisa berupa salah satu dari kelas eksepsi berikut:
+</p>
+<ul id="u1" class="block-content">
+<li><tt>TConfigurationException</tt> - konfigurasi salah, seperti kesalahan dalam konfigurasi aplikasi, template kontrol, dll.</li>
+<li><tt>TInvalidDataValueException</tt> - nilai data tidak benar atau tidak diharapkan.</li>
+<li><tt>TInvalidDataTypeException</tt> - tipe data tidak benar atau tidak diharapkan.</li>
+<li><tt>TInvalidDataFormatException</tt> - format data tidak benar.</li>
+<li><tt>TInvalidOperationException</tt> - permintaan operasi tidak benar.</li>
+<li><tt>TPhpErrorException</tt> - kesalahan PHP dapat ditangkap, peringatan, perhatian, dll.</li>
+<li><tt>TSecurityException</tt> - kesalahan terkait dengan keamanan.</li>
+<li><tt>TIOException</tt> - kesalahan operasi IO, seperti kegagalan membuka file.</li>
+<li><tt>TDBException</tt> - kesalahan terkait dengan operasi database.</li>
+<li><tt>TNotSupportedException</tt> - kesalahan disebabkan oleh permintaan dari fitur yang tidak didukung.</li>
+<li><tt>THttpException</tt> - kesalahan untuk ditampilkan ke pengguna klien Web.</li>
+</ul>
+<p id="800670" class="block-content">
+Kesalahan karena pemakaian yang salah dari aplikasi Web oleh pengguna klien diturunkan dari <tt>TApplicationException</tt>.
+</p>
+
+<h2 id="6303">Memunculkan Eksepsi</h2>
+<p id="800671" class="block-content">
+Memunculkan eksepsi dalam PRADO tidak berbeda dengan memunculkan eksepsi normal PJHP. Satu hal yang sama adalah untuk memunculkan eksepsi yang benar. Secara umum, eksepsi yang ditujukan untuk ditampilkan ke pengguna aplikasi harus menggunakan <tt>THttpException</tt>, sementara eksepsi yang ditampilkan bagi para pengembang harus menggunakan kelas eksepsi lain.
+</p>
+
+<h2 id="6304">Penangkapan Kesalahan dan Pelaporan</h2>
+<p id="800672" class="block-content">
+Eksepsi muncul selama menjalankan aplikasi PRADO ditangkap oleh modul <tt>System.Exceptions.TErrorHandler</tt>. Template output berbeda dipakai untuk menampilkan eksepsi yang ditangkap. <tt>THttpException</tt> dianggap berisi pesan kesalahan yang ditujukan untuk aplikasi pengguna akhir dan kemudian menggunakan grup template khusus. Untuk semua eksepsi lainnya, template umum ditampilkan seperti berikut dipakai untuk menyajikan eksepsi.
+</p>
+<a href="<%~ exception2.gif %>" target="_blank"><img src="<%~ exception.gif %>" alt="exception page" style="border:0px"/></a>
+
+<h2 id="6305">Mengkustomisasi Tampilan Kesalahan</h2>
+<p id="800673" class="block-content">
+Para pengembang dapat mengkustomisasi penyajian pesan kesalahan. Standarnya, semua template output kesalahan disimpan dalam <tt>framework/Exceptions/templates</tt>. Lokasi dapat diubah dengan mengkonfigurasi <tt>TErrorHandler</tt> dalam konfigurasi aplikasi,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_800226">
+&lt;module id="error"
+    class="TErrorHandler"
+    ErrorTemplatePath="Application.ErrorTemplates" /&gt;
+</com:TTextHighlighter>
+<p id="800674" class="block-content">
+<tt>THttpException</tt> menggunakan satu set template yang dibedakan berdasarkan pada nilai properti <tt>StatusCode</tt> yang berbeda dari <tt>THttpException</tt>. <tt>StatusCode</tt> memiliki arti yang sama seperti kode status dalam protokol HTTP. Sebagai contoh, kode status yang sama dengan 404 berarti URL yang diminta tidak ditemukan pada server. File template output menggunakan konvensi penamaan berikut:
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_800227">
+    error<status code>-<language code>.html
+</com:TTextHighlighter>
+<p id="800675" class="block-content">
+di mana <tt>status code</tt> merujuk ke nilai properti <tt>StatusCode</tt> dari <tt>THttpException</tt>, dan <tt>kode bahasa</tt> harus bahasa yang benar seperti misalnya <tt>en</tt>, <tt>zh</tt>, <tt>fr</tt>, dll. Ketika <tt>THttpException</tt> muncul, PRADO akan memilih template yang sesuai untuk menampilkan pesan eksepsi. Pertama PRADO akan mencari file template yang namanya berisi kode status dan yang bahasanya lebih disukai oleh jendela browser klien. Jika template seperti itu tidak ada, ia akan mencari template yang memiliki kode status yang sama tapi tanpa kode bahasa.
+</p>
+<p id="800676" class="block-content">
+Konvensi penamaan untuk file template yang dipakai bagi semua eksepsi adalah sebagai berikut,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_800228">
+    exception-<language code>.html
+</com:TTextHighlighter>
+<p id="800677" class="block-content">
+Sekali lagi, jika bahasa yang diinginkan tidak ditemukan, sebaliknya PRADO akan mencoba menggunakan <tt>exception.html</tt>.
+</p>
+<div class="note">
+<b class="tip">PERHATIAN:</b> Ketika menyimpan file template, pastikan file disimpan menggunakan pengkodean UTF-8. Pada Windows, Anda bisa menggunakan <tt>Notepad.exe</tt> untuk melakukan penyimpanan tersebut.
+</div>
+
+<div class="last-modified">$Id: Error.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

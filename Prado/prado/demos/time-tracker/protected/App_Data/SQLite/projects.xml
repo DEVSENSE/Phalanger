@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+
+<resultMap id="project-result" class="ProjectRecord">
+	<result property="ID" column="ProjectID" type="integer"/>
+	<result property="Name" column="Name" />
+	<result property="Description" column="Description" />
+	<result property="DateCreated" column="CreationDate" typeHandler="DateTime" />
+	<result property="EstimateDuration" column="EstimateDuration" type="float" />
+	<result property="CompletionDate" column="CompletionDate" typeHandler="DateTime" />
+	<result property="CreatorUserName" column="CreatorID" />
+	<result property="ManagerUserName" column="ManagerID" />
+	<result property="ActualDuration" column="ActualDuration" type="float" />
+</resultMap>
+
+<select id="ProjectNameExists" resultClass="boolean">
+	SELECT COUNT(Name) FROM projects WHERE Name = #value#
+</select>
+
+<insert id="CreateNewProject" parameterClass="ProjectRecord">
+	INSERT INTO projects
+	(Name, Description, CreationDate, EstimateDuration, CompletionDate, CreatorID, ManagerID)
+	VALUES
+	(#Name#, #Description#, strftime('%s', 'now'), #EstimateDuration#,
+		#CompletionDate, typeHandler=DateTime#,
+		#CreatorUserName#, #ManagerUserName#)
+	<selectKey property="ID" type="post" resultClass="int">
+		select LAST_INSERT_ROWID() as value
+    </selectKey>
+</insert>
+
+<select id="GetProjectByID" parameterClass="integer" resultMap="project-result">
+	SELECT
+		projects.ProjectID as ProjectID,
+		projects.Name as Name,
+		projects.Description as Description,
+		projects.CreationDate as CreationDate,
+		projects.EstimateDuration as EstimateDuration,
+		projects.CompletionDate as CompletionDate,
+		projects.CreatorID as CreatorID,
+		projects.ManagerID as ManagerID,
+		SUM(time_entry.Duration) as ActualDuration
+	FROM projects
+		LEFT JOIN categories ON projects.ProjectID = categories.ProjectID
+		LEFT JOIN time_entry ON categories.CategoryID = time_entry.CategoryID
+	WHERE
+			projects.ProjectID = #value#
+		AND Disabled = 0
+	GROUP BY
+		projects.ProjectID
+	ORDER BY
+		projects.Name
+</select>
+
+<select id="GetAllProjects" resultMap="project-result">
+	SELECT
+		projects.ProjectID as ProjectID,
+		projects.Name as Name,
+		projects.Description as Description,
+		projects.CreationDate as CreationDate,
+		projects.EstimateDuration as EstimateDuration,
+		projects.CompletionDate as CompletionDate,
+		projects.CreatorID as CreatorID,
+		projects.ManagerID as ManagerID,
+		SUM(time_entry.Duration) as ActualDuration
+	FROM projects
+		LEFT JOIN categories ON projects.ProjectID = categories.ProjectID
+		LEFT JOIN time_entry ON categories.CategoryID = time_entry.CategoryID
+	WHERE
+		Disabled = 0
+	GROUP BY
+		projects.ProjectID
+	ORDER BY
+		projects.ProjectID ASC
+</select>
+
+<select id="GetAllProjectsOrdered" resultMap="project-result" extends="GetAllProjects">
+	ORDER BY $sort$ $order$
+</select>
+
+<select id="GetProjectsByManagerName" resultMap="project-result">
+	SELECT
+		projects.ProjectID as ProjectID,
+		projects.Name as Name,
+		projects.Description as Description,
+		projects.CreationDate as CreationDate,
+		projects.EstimateDuration as EstimateDuration,
+		projects.CompletionDate as CompletionDate,
+		projects.CreatorID as CreatorID,
+		projects.ManagerID as ManagerID,
+		SUM(time_entry.Duration) as ActualDuration
+	FROM projects
+		LEFT JOIN categories ON projects.ProjectID = categories.ProjectID
+		LEFT JOIN time_entry ON categories.CategoryID = time_entry.CategoryID
+	WHERE
+			Disabled = 0
+		AND projects.ManagerID = #value#
+	GROUP BY
+		projects.ProjectID
+	ORDER BY
+		projects.Name
+</select>
+
+<select id="GetProjectsByUserName" resultMap="project-result">
+	SELECT
+		projects.ProjectID as ProjectID,
+		projects.Name as Name,
+		projects.Description as Description,
+		projects.CreationDate as CreationDate,
+		projects.EstimateDuration as EstimateDuration,
+		projects.CompletionDate as CompletionDate,
+		projects.CreatorID as CreatorID,
+		projects.ManagerID as ManagerID,
+		SUM(time_entry.Duration) as ActualDuration
+	FROM projects
+		LEFT JOIN categories ON projects.ProjectID = categories.ProjectID
+		LEFT JOIN time_entry ON categories.CategoryID = time_entry.CategoryID,
+		project_members
+	WHERE
+			project_members.ProjectID = projects.ProjectID
+		AND project_members.UserID = #value#
+		AND projects.Disabled = 0
+	GROUP BY
+		projects.ProjectID
+	ORDER BY
+		projects.Name
+</select>
+
+<update id="DeleteProject" parameterClass="integer">
+	UPDATE projects SET Disabled = 1 WHERE ProjectID = #value#
+</update>
+
+<select id="GetProjectMembers" parameterClass="integer">
+	SELECT UserID FROM project_members WHERE ProjectID = #value#
+	ORDER BY UserID
+</select>
+
+<insert id="AddUserToProject" parameterClass="array">
+	INSERT INTO project_members (UserID, ProjectID)
+	VALUES(#username#, #project#)
+</insert>
+
+<delete id="RemoveUserFromProject" parameterClass="array">
+	DELETE FROM project_members WHERE ProjectID = #project# AND UserID = #username#
+</delete>
+
+<update id="UpdateProject" parameterClass="ProjectRecord">
+	UPDATE projects
+	SET
+		CompletionDate = #CompletionDate, typeHandler=DateTime#,
+		Description = #Description#,
+		EstimateDuration = #EstimateDuration#,
+		ManagerId =#ManagerUserName#,
+		Name = #Name#
+	WHERE
+		ProjectID = #ID#
+</update>
+
+</sqlMap>

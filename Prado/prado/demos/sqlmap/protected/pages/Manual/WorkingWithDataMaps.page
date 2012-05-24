@@ -1,0 +1,129 @@
+<com:TContent ID="body">
+
+<h1>Working With Data Maps</h1>
+
+<p>If you want to know how to configure and install SQLMap, 
+see the <a href="?page=Manual.Installing">Installation</a> and 
+<a href="?page=Manual.Configuring">Configuration</a>. 
+But if you want to know how SQLMap really
+works, continue from here.</p>
+
+<p>The Data Map definition file is where the interesting stuff happens. Here, you
+define how your application interacts with your database. As mentioned, the
+Data Map definition is an XML descriptor file. By using a service routine
+provided by SQLMap, the XML descriptors are rendered into a client object (or
+Mapper). To access your Data Maps, your application calls the client object
+and passes in the name of the statement you need.</p>
+
+<p>The real work of using SQLMap is not so much in the application code, but in
+the XML descriptors that SQLMap renders. Instead of monkeying with application
+source code, you monkey with XML descriptors instead. The benefit is that the
+XML descriptors are much better suited to the task of mapping your object
+properties to database entities. At least, that's our own experience with our
+own applications. Of course, your mileage may vary.</p>
+
+<h1>What's in a Data Map definition file, anyway?</h1>
+
+<p>If you read the <a href="?page=Tutorial.TestFirst">Tutorial</a>, you've already 
+seen some simple Data Map examples like the one below.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<?xml version="1.0" encoding="UTF-8" ?>
+  <sqlMap namespace="LineItem">
+    <insert id="InsertLineItem" parameterClass="LineItem">
+      INSERT INTO [LinesItem]
+        (Order_Id, LineItem_LineNum, Item_Id, LineItem_Quantity, LineItem_UnitPrice)
+      VALUES
+       (#Order.Id#, #LineNumber#, #Item.Id#, #Quantity#, #Item.ListPrice#)
+    </insert>
+</sqlMap>
+</com:TTextHighlighter>
+
+<p>This map takes some properties from a <tt>LineItem</tt> instance and merges the
+values into the SQL statement. The value-add is that our SQL in separated from
+our program code, and we can pass our <tt>LineItem</tt> instance directly to a
+library method:</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+TMapper::instance()->insert("InsertLineItem",$lineItem);
+</com:TTextHighlighter>
+<p>No fuss, no muss.</p>
+
+<div class="info"><b class="tip">Info:</b>
+<b>A Quick Glance at Inline Parameters</b>
+<p>
+Say we have a mapped statement element that looks like this:</p>
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="InsertProduct">
+  insert into Products (Product_Id, Product_Description)
+  values (#Id#, #Description#);
+</statement>
+</com:TTextHighlighter>
+
+<p>The inline parameters here are <tt>#Id#</tt> and <tt>#Description#</tt>. Let's
+also say that we have an object with the properties <tt>Id</tt> and
+<tt>Description</tt>. If we set the object properties to 5 and "dog",
+respectively, and passed the object to the mapped statement, we'd end up with
+a runtime query that looked like this:
+<com:TTextHighlighter Language="sql" CssClass="source">
+insert into Products (Product_Id, Product_Description) values (5, 'dog');
+</com:TTextHighlighter>
+See <a href="?page=Manual.InlineParameterMaps">inline parameters</a> for further details.
+</div>
+
+<p>But, what if you wanted some ice cream with that pie? And maybe a cherry on
+top? What if we wanted to cache the result of the select? Or, what if we
+didn't want to use SQL aliasing or named parameters. (Say, because we were
+using pre-existing SQL that we didn't want to touch.)
+The following example shows a Data Map that specifies a cache, and uses a
+<tt>&lt;parameterMap&gt;</tt> and a <tt>&lt;resultMap&gt;</tt> to keep our SQL pristine.
+</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<?xml version="1.0" encoding="UTF-8" ?>
+  <sqlMap namespace="Product">
+
+    <cacheModel id="productCache" type="LRU">
+      <flushInterval hours="24"/>
+      <property name="CacheSize" value="1000" />
+    </cacheModel>
+
+    <resultMap id="productResult" class="Product">
+      <result property="Id" column="Product_Id"/>
+      <result property="Description" column="Product_Description"/>
+    </resultMap>
+
+    <select id="GetProduct" parameterMap="productParam" cacheModel="productCache">
+      select * from Products where Product_Id = ?
+    </select>
+
+    <parameterMap id="productParam" class="Product">
+      <parameter property="Id"/>
+    </parameterMap>
+
+</sqlMap>
+</com:TTextHighlighter>
+
+<p>In the above example, <tt>&lt;parameterMap&gt;</tt> maps the SQL "?" to the
+product <tt>Id</tt> property. The <tt>&lt;resultMap&gt;</tt> maps the columns to our object
+properties. The <tt>&lt;cacheModel&gt;</tt> keeps the result of the last one thousand of
+these queries in active memory for up to 24 hours.</p>
+
+<p>The above example is longer and more complex than
+the previous example, but considering what you get in return, it seems
+like a fair trade. (A bargain even.)</p>
+
+<p>Many agile developers would start with something like
+the first example and add features like caching later. If you changed
+the Data Map from the first example to the second example, you
+would not have to touch your application source code at all. You can start
+simple and add complexity only when it is needed.</p>
+
+<p>A single Data Map definition file can contain as many Cache Models, Result Maps, 
+Parameter Maps, and Mapped Statements (including stored
+procedures), as you like. Everything is loaded into the same configuration, so
+you can define elements in one Data Map and then use them in another. Use
+discretion and organize the statements and maps appropriately for your
+application by finding some logical way to group them.</p>
+
+</com:TContent>

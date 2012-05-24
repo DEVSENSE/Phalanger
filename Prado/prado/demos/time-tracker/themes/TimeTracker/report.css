@@ -1,0 +1,156 @@
+.project-report label, .resource-report label
+{
+	font-size: 0.9em;
+}
+
+.project-report .projects
+{
+	width: 20em;
+	height: 15em;
+}
+
+.project-report .buttons
+{
+	margin: 2em;
+}
+
+.project-report table, .resource-report table
+{
+	border-collapse: collapse;
+	empty-cells: hide;
+}
+
+.project-report table th, .resource-report table th
+{
+	padding: 0.25em;
+	font-size: 0.9em;
+	white-space: nowrap;
+}
+
+.project-report td, .resource-report td
+{
+	border: 1px solid #ccc;
+	padding: 0.25em;
+}
+
+.project-report .est-hour, .project-report .hours, .resource-report .hours
+{
+	text-align: right;
+}
+
+.project-report .hours
+{
+	width: 6em;
+}
+
+.project-report td.sub-table
+{
+	padding: 0;
+	border-right: 0 none;
+	border-left: 0 none;
+}
+
+.project-report td.left-filler
+{
+	border-right: 0 none;
+}
+
+.project-report td.right-filler
+{
+	border-left: 0 none;
+}
+
+.project-report .username
+{
+	text-align: center;
+}
+
+
+.project-report table.project
+{
+	margin-bottom: 3em;
+}
+
+.project-report td.sub-table table
+{
+	margin: 1em 0;
+}
+
+.project-report .completion, .resource-report .date
+{
+	text-align: center;
+}
+
+.resource-report h2
+{
+		background-color: #D2E8E8;
+	font-size: 0.8em;
+	color: #4169E1;
+	padding: 0.65em;
+	text-align: center;
+	background-image: url(bar.png);
+	background-repeat: repeat-x;
+	background-position: center;
+}
+
+.resource-report select.resource, .resource-report select.projects
+{
+	width: 15em;
+	height: 17em;
+}
+
+.resource-report .step1, .resource-report .step2, .resource-report .step3
+{
+	float: left;
+	width: 32%;
+	margin-right: 0.25em;
+}
+
+.resource-report .buttons
+{
+	background-color: #D2E8E8;
+	background-image: url(bar.png);
+	background-repeat: repeat-x;
+	background-position: center;
+	padding: 0.65em;
+	margin-top: 2em;
+}
+
+.resource-report .date-to
+{
+	margin-top: 0.5em;
+}
+
+.resource-report .summary
+{
+	text-align: left;
+	padding-left: 5em;
+}
+
+.resource-report .date-from, .resource-report .date-to
+{
+	padding-left: 1em;
+}
+
+.resource-report .resource strong.hours
+{
+	margin-left: 1em;
+}
+
+.resource-report .resource
+{
+	
+	margin-bottom: 2em;
+	padding: 0.5em;
+}
+
+
+.resource-report .date-range h3, .resource-report .date-range h4
+{
+	display: inline;
+}
+
+.resource-report .date-range h3.end
+{
+	margin-left: 2em;
+}

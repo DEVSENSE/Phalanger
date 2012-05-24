@@ -1,0 +1,43 @@
+<com:TContent ID="body" >
+
+<h1 id="3801">TMultiView</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TMultiView" />
+
+<p id="430287" class="block-content">
+<tt>TMultiView</tt> bertindak sebagai penampung grup kontrol <tt>TView</tt>, yang dapat diambil oleh properti <tt>Views</tt>. Setiap tampilan berisi kontrol anak. <tt>TMultiView</tt> menentukan tampilan mana dan kontrol anaknya yang terlihat. Kapan saja hanya satu tampilan terlihat (disebut <i>aktif</i>). untuk mengaktifkan tampilan, setel <tt>ActiveView</tt> atau <tt>ActiveViewIndex</tt>. Catatan, standarnya tidak ada tampilan yang aktif.
+</p>
+<p id="430288" class="block-content">
+Untuk menambah tampilan ke <tt>TMultiView</tt>, manipulasi koleksi <tt>Views</tt> atau tambah ia dalam template seperti berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_430109">
+&lt;com:TMultiView&gt;
+   &lt;com:TView&gt;
+      view 1 content
+   &lt;/com:TView&gt;
+   &lt;com:TView&gt;
+      view 2 content
+   &lt;/com:TView&gt;
+&lt;/com:TMultiView&gt;
+</com:TTextHighlighter>
+
+<p id="430289" class="block-content">
+<tt>TMultiView</tt> merespon event perintah berikut untuk mengatur penampakan tampilannya.
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>NextView</tt> : beralih ke tampilan berikutnya (dengan memperhatikan tampilan aktif saat ini).
+  <li><tt>PreviousView</tt> : beralih ke tampilan sebelumnya (dengan memperhatikan tampilan aktif saat ini).
+  <li><tt>SwitchViewID</tt> : beralih ke tampilan sesuai path ID. Path ID diambil dari parameter perintah.
+  <li><tt>SwitchViewIndex</tt> : beralih ke tampilan sesuai indeks berbasis-nol dalam koleksi <tt>Views</tt>. Indeks diambil dari parameter perintah.
+</ul>
+
+<p id="430290" class="block-content">
+Setelah postback, jika indeks tampilan aktif diubah, <tt>TMultiView</tt> akan memunculkan event <tt>OnActiveViewChanged</tt>.
+</p>
+
+<p id="430291" class="block-content">
+<a href="?page=Fundamentals.Samples.Hangman.Home">Permainan Hangman</a> adalah penggunaan umum dari <tt>TMultiView</tt>. Contoh berikut memperlihatkan kegunaan lain dari <tt>TMultiView</tt>.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TMultiView.Home" />
+
+<div class="last-modified">$Id: MultiView.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

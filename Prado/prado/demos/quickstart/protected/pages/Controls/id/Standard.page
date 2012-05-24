@@ -1,0 +1,151 @@
+<com:TContent ID="body" >
+
+<h1>Kontrol Standar</h1>
+<p>* tutorial untuk kontrol ini belum lengkap.</p>
+<ul id="u1" class="block-content">
+  <li>
+  <a href="?page=Controls.Button">TButton</a> mewakili tombol klik pada halaman Web, dipakai terutama sebagai pemicu postback halaman.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Captcha">TCaptcha</a> menampilkan CAPTCHA untuk menjaga spammers dari pendaftaran untuk akun online tertentu.
+  </li>
+
+  <li>
+  <a href="?page=Controls.CheckBox">TCheckBox</a> mewakili kotak centang pada halaman Web, bisa digunakan untuk mengumpulkan dua-kondisi input pengguna.
+  </li>
+
+  <li>
+  <a href="?page=Controls.ClientScript">TClientScript</a> menambahkan kode javascript ke halaman.
+  </li>
+
+  <li>
+  <a href="?page=Controls.ClientScriptLoader">TClientScriptLoader</a> mengambil pustaka javascript kustom.
+  </li>
+
+  <li>*
+  <a href="?page=Controls.ColorPicker">TColorPicker</a> mewakili field input yang mengambil nilai warna via dialog warna.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Conditional">TConditional</a> menampilkan konten terkaiit ke hasil true atau false dari sebuah ekspresi PHP.
+  </li>
+
+  <li>
+  <a href="?page=Controls.DatePicker">TDatePicker</a> mewakili field input yang mengambil nilai tanggal via dialog kalender.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Expression">TExpression</a> menerima ekspresi PHP dan menampilkan hasil evaluasi pada halaman Web.
+  </li>
+
+  <li>
+  <a href="?page=Controls.FileUpload">TFileUpload</a> mewakili field upload file, membolehkan pengguna mengirimkan file ke server.
+  </li>
+
+  <li>*
+  <a href="?page=Controls.Head">THead</a> mewakili elemen &lt;head&gt; pada halaman Web HTML. Diperlukan oleh halaman PRADO agar bisa memakai tema.
+  </li>
+
+  <li>
+  <a href="?page=Controls.HiddenField">THiddenField</a> mewakili field input tersembunyi pada halaman Web.
+  </li>
+
+  <li>
+  <a href="?page=Controls.HtmlArea">THtmlArea</a> mewakili field input teks WYSIWYG yang mengambil input pengguna dalam format HTML.
+  </li>
+
+  <li>
+  <a href="?page=Controls.HyperLink">THyperLink</a> mewakili hyperlink pada halaman Web.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Image">TImage</a> mewakili gambar pada halaman Web.
+  </li>
+
+  <li>
+  <a href="?page=Controls.ImageButton">TImageButton</a> mewakili tombol klik yang memiliki gambar sebagai latar belakang, dipakai untuk memicu postback halaman.
+  </li>
+
+  <li>
+  <a href="?page=Controls.ImageMap">TImageMap</a> mewakili gambar pada halaman Web dengan bagian titik yang bisa diklik.
+  </li>
+
+  <li>
+  <a href="?page=Controls.InlineFrame">TInlineFrame</a> mewakili elemen &lt;iframe&gt; HTML pada halaman Web.
+  </li>
+
+  <li>
+  <a href="?page=Controls.JavascriptLogger">TJavascriptLogger</a> mewakili pencatat pada halaman Web yang bisa mencatat berbagai informasi JavaScript.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Keyboard">TKeyboard</a> menampilkan keyboard virtual bagi pengguna untuk memasukan input ke dalam kotak teks.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Label">TLabel</a> mewakili label pada halaman Web. Label bisa dikustomisasi via berbagai atribut CSS.
+  </li>
+
+  <li>
+  <a href="?page=Controls.LinkButton">TLinkButton</a> mewakili hyperlink yang bisa melakukan postbacks halaman.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Literal">TLiteral</a> mewakili teks statis tanpa tag HTML yang mengelilinginya pada halaman Web.
+  </li>
+
+  <li>
+  <a href="?page=Controls.MultiView">TMultiView</a> mewakili tempat untuk grup kontrol <tt>TView</tt>, masing-masing adalah tempat untuk kontrol lainnya. Kapan saja, sebanyak-banyaknya satu <tt>TView</tt> yang terlihat.
+  </li>
+
+  <li>
+  <a href="?page=Controls.OutputCache">TOutputCache</a> menghidupkan bagian cache atas output halaman dan dapat meningkatkan waktu respon halaman secara signifikan.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Pager">TPager</a> membuatUI yang membolehkan pengguna untuk menetapkan halaman mana data ditampilkan secara interaktif dalam kontrol data-bound.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Panel">TPanel</a> mewakili tempat untuk kontrol lain pada halaman Web. Dalam HTML, ia ditampilkan sebagai elemen &lt;div&gt;.
+  </li>
+
+  <li>
+  <a href="?page=Controls.PlaceHolder">TPlaceHolder</a> memesan tempat pada template kontrol. Ia menyisipkan konten body-nya di tempat itu.
+  </li>
+
+  <li>
+  <a href="?page=Controls.RadioButton">TRadioButton</a> mewakili tombol radio pada halaman Web. Dipakai terutama dalam sebuah grup di mana pengguna membuat pilihan.
+  </li>
+
+  <li>
+  <a href="?page=Controls.SafeHtml">TSafeHtml</a> menampilkan konten body dengan kepastian bahwa konten tidak berisi kode yang membahayakan (seperti <a href="?page=Advanced.Security">XSS</a>).
+  </li>
+
+  <li>
+  <a href="?page=Controls.Slider">TSlider</a> mewakili sebuah kontrol Slider
+  </li>
+  
+  <li>
+  <a href="?page=Controls.Statements">TStatements</a> menerima beberapa pernyataan PHP dan menampilkan output standarnya pada halaman Web.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Table">TTable</a> mewakili tabel HTML pada halaman Web. Dipakai bersama dengan <tt>TTableRow</tt> dan <tt>TTableCell</tt>.
+  </li>
+
+  <li>
+  <a href="?page=Controls.TextBox">TTextBox</a> mewakili field input teks pada halaman Web. Ia bisa mengumpulkan satu-baris, multi-baris atau input teks sandi dari pengguna.
+  </li>
+
+  <li>
+  <a href="?page=Controls.TextHighlighter">TTextHighlighter</a> menerangi konten body berdasarkan penerang sintaks, seperti PHP, XML, PRADO, dll.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Wizard">TWizard</a> mewakili formulir multi-langkah yang bisas mengambil input pengguna langkah demi langkah. Mirip dengan bimbingan instalasi Windows.
+  </li>
+</ul>
+
+<div class="last-modified">$Id: Standard.page 1846 2007-04-07 10:35:16Z wei $</div></com:TContent>

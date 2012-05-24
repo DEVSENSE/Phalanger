@@ -1,0 +1,29 @@
+<com:TContent ID="body" >
+<h1 id="301">Instalacja PRADO</h1>
+<div id="install-info" class="block-content">
+<p id="30018">
+Jeśli widzisz tą stronę z poziomu własnego serwera, zakończyłeś właśnie instalację.
+</p>
+<p id="30019">
+Minimalne wymagania PRADO to serwer internetowy wspierający PHP5. PRADO zostało przetestowane na serwerze Apache na Windowsie oraz Linuxie. Jest wielce prawdopodobne, że może również działać na innych platformach z innymi serwerami internetowymi dopóki wspierają one PHP5.
+</p>
+</div>
+
+<div id="install-steps" class="block-content">
+<p id="30020">
+Instalacja PRADO składa się głównie z jego pobrania oraz rozpakowania.
+</p>
+<ol>
+<li>Przejdź do strony <a href="http://www.pradosoft.com/">pradosoft.com</a> aby pobrać ostatnią wersję PRADO.</li>
+<li>Rozpakuj plik PRADO zawierający jego ostatnie wydanie do katalogu znajdującego się na serwerze.
+</ol>
+</div>
+<div id="install-after" class="block-content">
+<p id="30021">
+Twoja instalacja PRADO jest zakończona i możesz zacząć zabawę z aplikacjami demo zawartymi w PRADO znajdującymi się pod adresem <tt>http://adres-serwera/prado/demos/</tt>. Tutaj zakładamy, że PRADO jest rozpakowane do  katalogu <tt>prado</tt> w <tt>katalogu głównym</tt> serwera.
+</p>
+<p id="30022">
+Jeśli spotkasz się z jakimkolwiek problemem w aplikacjach demo, proszę użyj skryptu sprawdzającego wymagania do korzystania z PRADO dostępnego poprzez <tt>http://adres-serwera/prado/requirements/index.php</tt>, aby najpierw sprawdzić czy Twoja konfiguracja serwera spełnia wszystkie warunki wymagane przez PRADO.
+</p>
+</div>
+<div class="last-modified">$Id: Installation.page 170, 2007-02-17 14:58:00Z aztech $</div></com:TContent>

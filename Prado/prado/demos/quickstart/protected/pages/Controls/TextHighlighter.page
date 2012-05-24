@@ -1,0 +1,26 @@
+<com:TContent ID="body" >
+
+<h1 id="4601">TTextHighlighter</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TTextHighlighter" />
+
+<p id="530316" class="block-content">
+<tt>TTextHighlighter</tt> does syntax highlighting for its body content, including both static text and the rendering results of its child controls. The text being highlighted follows the syntax of the specified <tt>Language</tt>, which can be 'php' (default), 'prado', 'css', 'html', etc. Here, 'prado' stands for the syntax of PRADO control templates.
+</p>
+<p id="530317" class="block-content">
+If line numbers are desired in front of each line, set <tt>ShowLineNumbers</tt> to true.
+</p>
+<p id="530318" class="block-content">
+To use <tt>TTextHighlighter</tt>, simply enclose the contents to be syntax highlighted within the body of a <tt>TTextHighlighter</tt> control. The following example highlights a piece of PHP code,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_530113">
+&lt;com:TTextHighlighter ShowLineNumbers="true"&gt;
+<?php
+$str = 'one|two|three|four';
+print_r(explode('|', $str, 2)); // will output an array
+?>
+&lt;/com:TTextHighlighter&gt;
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="Controls.Samples.TTextHighlighter.Home" />
+
+<div class="last-modified">$Id: TextHighlighter.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,96 @@
+/* Base CSS Class for the slider */
+.Slider
+{
+	position: relative;
+	margin: 10px;
+	padding: 0;
+	background-color: Gainsboro;
+	border: 1px outset;
+}
+
+/* Class for horizontal slider */
+.HorizontalSlider
+{
+	width: 210px;
+	height: 14px;
+	text-align: left;
+}
+
+/* Class for vertical slider */
+.VerticalSlider
+{
+	height: 210px;
+	width: 14px;
+}
+
+/* Class for Track */
+.Track
+{
+	border-style: inset;
+	outline-color: invert;
+	outline-style: none;
+	outline-width: 1px;
+	border-width: 1px;
+	position: absolute;
+	background-color: lightBlue;
+}
+
+/* Horizontal Track */
+.HorizontalSlider .Track 
+{	
+	
+	height: 3px;
+	top: 5px;
+	width: 97%;
+	left: 1%;
+}
+
+/* Vertical Track */
+.VerticalSlider .Track
+{
+	height: 97%;
+	width: 3px;
+	left: 5px;
+	top: 1%;
+}
+
+/* Class for the progress indicator */
+.Progress
+{
+	background-color: red;
+}
+
+/* Horizontal one, take 100% of track (parent) height*/
+.HorizontalSlider .Progress
+{
+	height: 100%;
+}
+
+/* Vertical progress indicator, take 100% of track width*/
+.VerticalSlider .Progress
+{
+	width: 100%
+}
+
+/* Class for handle */
+.Handle {
+	border: 0px none;
+	position: relative;
+	cursor: move;
+}
+
+/* Horizontal slider handle */
+.HorizontalSlider .Handle
+{
+	width: 31px;
+	height: 14px;
+	background: transparent url("TSliderHandleHorizontal.png") no-repeat scroll center;
+}
+
+/* Vertical slider handle */
+.VerticalSlider .Handle
+{
+	width: 14px;
+	height: 31px;
+	background: transparent url("TSliderHandleVertical.png") no-repeat scroll center;
+}

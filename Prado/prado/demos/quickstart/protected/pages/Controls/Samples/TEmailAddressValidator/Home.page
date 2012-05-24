@@ -1,0 +1,57 @@
+<com:TContent ID="body">
+
+<h1>TEmailAddressValidator Samples</h1>
+<p><strong>Note:</strong> TEmailAddressValidator will start
+to validate only if the input is not empty.</p>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Email address validator with default settings:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox1" Text="a"/>
+<com:TEmailAddressValidator
+	ValidationGroup="Group1"
+	ControlToValidate="TextBox1"
+	Text="Invalid email address." />
+<com:TButton Text="Submit" ValidationGroup="Group1" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Email address validator with client-side validation disabled:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox2" Text="b"/>
+<com:TEmailAddressValidator
+	ValidationGroup="Group2"
+	EnableClientScript="false"
+	ControlToValidate="TextBox2"
+	Text="Invalid email address." />
+<com:TButton Text="Submit" ValidationGroup="Group2" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Email address validator with focus-on-error enabled and dynamic display:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox3" Text="c"/>
+<com:TEmailAddressValidator
+	ValidationGroup="Group3"
+	ControlToValidate="TextBox3"
+	FocusOnError="true"
+	Display="Dynamic"
+	Text="Invalid email address." />
+<com:TButton Text="Submit" ValidationGroup="Group3" />
+</td>
+</tr>
+
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

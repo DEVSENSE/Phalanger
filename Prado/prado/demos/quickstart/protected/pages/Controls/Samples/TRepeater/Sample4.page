@@ -1,0 +1,27 @@
+<com:TContent ID="body">
+
+<h1>TRepeater Sample 4</h1>
+
+<p>Please enter the URL of your favorite websites in the following:</p>
+<com:TRepeater ID="Repeater"
+	OnItemCreated="itemCreated"
+	ItemRenderer="TTextBox"
+	/>
+
+<br/>
+
+<com:TButton Text="Submit" OnClick="buttonClicked" />
+
+<br/><br/>
+
+<com:TLabel Text="You have entered the following URLs:" 
+	Visible="<%= $this->IsPostBack %>" />
+<br/>
+
+<com:TRepeater ID="Repeater2"
+	OnItemCreated="itemCreated"
+	ItemRenderer="THyperLink"
+	/>
+
+
+<div class="last-modified">$Id: Sample4.page 1688 2007-02-09 22:48:31Z xue $</div></com:TContent>

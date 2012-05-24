@@ -1,0 +1,102 @@
+<com:TContent ID="Main">
+
+<h1>Authentication and Authorization</h1>
+
+<p>
+Before we set off to implement the user pages, we need to do some work to enable <a href="http://www.pradosoft.com/demos/quickstart/index.php?page=Advanced.Auth">authentication and authorization</a>.
+</p>
+
+<p>
+We add two new modules to the application configuration as follows:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<modules>
+    ...TDataSourceConfig and TActiveRecordConfig modules...
+
+    <module id="auth"
+      class="System.Security.TAuthManager"
+      UserManager="users" 
+      LoginPage="users.LoginUser" />
+
+    <module id="users"
+      class="System.Security.TDbUserManager"
+      UserClass="Application.BlogUser" />    
+</modules>
+</com:TTextHighlighter>
+
+<p>
+The <a href="http://www.pradosoft.com/docs/classdoc/TAuthManager">TAuthManager</a> module manages the whole authentication and authorization workflow. It uses the <tt>users</tt> module as its user manager (see below). By specifying the <tt>LoginPage</tt> property, we inform the auth manager to redirect user's browser to the <tt>LoginUser</tt> page when an authorization fails. We will describe how to create <tt>LoginUser</tt> in the next subsection.
+</p>
+
+<p>
+The <tt>user</tt> module is of class <a href="http://www.pradosoft.com/docs/classdoc/TDbUserManager">TDbUserManager</a> which is responsible to verify the validity of a user and keep basic user data in the PHP session. The <tt>UserClass</tt> property is initialized as <tt>Application.BlogUser</tt>, which indicates the user manager would look for a <tt>BlogUser</tt> class under the directory <tt>protected</tt> (remember the alias <tt>Application</tt> refers to the <tt>protected</tt> directory) and use it to keep user's session data.
+</p>
+
+<p>
+As we will see in later sections, in controls and pages, we can use <tt>$this->User</tt> to obtain the <tt>BlogUser</tt> object which contains the information of the user currently accessing the system.
+</p>
+
+<p>
+Below is the implementation detail of <tt>BlogUser</tt>. Notice <a href="http://www.pradosoft.com/demos/quickstart/index.php?page=Database.ActiveRecord">Active Record</a> is used to perform DB query. For example, we use <tt>UserRecord::finder()->findByPk($username)</tt> to look for the primary key specified by <tt>$username</tt> in the <tt>users</tt> table.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+// Include TDbUserManager.php file which defines TDbUser
+Prado::using('System.Security.TDbUserManager');
+
+/**
+ * BlogUser Class.
+ * BlogUser represents the user data that needs to be kept in session.
+ * Default implementation keeps username and role information.
+ */
+class BlogUser extends TDbUser
+{
+    /**
+     * Creates a BlogUser object based on the specified username.
+     * This method is required by TDbUser. It checks the database
+     * to see if the specified username is there. If so, a BlogUser
+     * object is created and initialized.
+     * @param string the specified username
+     * @return BlogUser the user object, null if username is invalid.
+     */
+    public function createUser($username)
+    {
+        // use UserRecord Active Record to look for the specified username
+        $userRecord=UserRecord::finder()->findByPk($username);
+        if($userRecord instanceof UserRecord) // if found
+        {
+            $user=new BlogUser($this->Manager);
+            $user->Name=$username;  // set username
+            $user->Roles=($userRecord->role==1?'admin':'user'); // set role
+            $user->IsGuest=false;   // the user is not a guest
+            return $user;
+        }
+        else
+            return null;
+    }
+
+    /**
+     * Checks if the specified (username, password) is valid.
+     * This method is required by TDbUser.
+     * @param string username
+     * @param string password
+     * @return boolean whether the username and password are valid.
+     */
+    public function validateUser($username,$password)
+    {
+        // use UserRecord Active Record to look for the (username, password) pair.
+        return UserRecord::finder()->findBy_username_AND_password($username,$password)!==null;
+    }
+
+    /**
+     * @return boolean whether this user is an administrator.
+     */
+    public function getIsAdmin()
+    {
+        return $this->isInRole('admin');
+    }
+}
+</com:TTextHighlighter>
+
+</com:TContent>

@@ -1,0 +1,25 @@
+<com:TContent ID="Main">
+
+<h2>
+<com:TLiteral Text="<%= $this->Post->title %>" />
+</h2>
+
+<com:TControl Visible="<%= $this->canEdit() %>">
+	<a href="<%= $this->Service->constructUrl('posts.EditPost',array('id'=>$this->Post->post_id))%>">Edit</a> |
+	<com:TLinkButton Text="Delete"
+		OnClick="deletePost"
+		Attributes.onclick="javascript:if(!confirm('Are you sure?')) return false;" />
+</com:TControl>
+
+<p>
+Author:
+<com:TLiteral Text="<%= $this->Post->author->username %>" /><br/>
+Time:
+<com:TLiteral Text="<%= date('m/d/Y h:m:sa', $this->Post->create_time) %>" />
+</p>
+
+<p>
+<com:TLiteral Text="<%= $this->Post->content %>" />
+</p>
+
+</com:TContent>

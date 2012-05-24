@@ -1,0 +1,23 @@
+<com:TContent ID="body" >
+
+<h1 id="901">Pages</h1>
+<p id="130137" class="block-content">
+Pages are top-most controls that have no parent. The presentation of pages are directly displayed to end-users. Users access pages by sending  page service requests.
+</p>
+<p id="130138" class="block-content">
+Each page must have a <a href="?page=Configurations.Templates1">template</a> file. The file name suffix must be <tt>.page</tt>. The file name (without suffix) is the page name. PRADO will try to locate a page class file under the directory containing the page template file. Such a page class file must have the same file name (suffixed with <tt>.php</tt>) as the template file. If the class file is not found, the page will take class <tt>TPage</tt>.
+</p>
+
+<h2 id="902">PostBack</h2>
+<p id="130139" class="block-content">
+A form submission is called <i>postback</i> if the submission is made to the page containing the form. Postback can be considered an event happened on the client side, raised by the user. PRADO will try to identify which control on the server side is responsible for a postback event. If one is determined, for example, a <tt>TButton</tt>, we call it the postback event sender which will translate the postback event into some specific server-side event (e.g. <tt>OnClick</tt> and <tt>OnCommand</tt> events for <tt>TButton</tt>).
+
+</p>
+
+<h2 id="903">Page Lifecycles</h2>
+<p id="130140" class="block-content">
+Understanding the page lifecycles is crucial to grasp PRADO programming. Page lifecycles refer to the state transitions of a page when serving this page to end-users. They can be depicted in the following statechart,
+<img src="<%~lifecycles.gif %>" />
+</p>
+
+<div class="last-modified">$Id: Pages.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,124 @@
+/* $Id: style.css 1866 2007-04-14 05:02:29Z wei $ */
+body
+{
+	font-family: Cambria, Georgia, "Times New Roman", Times, serif;
+}
+
+.pager
+{
+	display: block;
+	border-top: 1px solid #ccc;
+	padding: 1em;
+}
+
+.pager span, .pager a
+{
+	border: 1px solid #ccc;
+	padding: 0.3em 0.7em;
+	font-weight: bold;
+}
+
+.pager a
+{
+	background-color: #E0FFFF;
+	border-color: #87CEFA;
+}
+
+.pager a:hover
+{
+	background-color: White;
+}
+
+
+.item, .item-header
+{
+	border-top: 1px dashed #B0C4DE;
+	padding: 0.5em;
+	clear: both;
+}
+
+.item-header
+{
+	border-top: 0 none;
+	font-weight: bold;
+}
+
+.item_1
+{
+	background-color: #F0F8FF;
+}
+
+.field_0, .field
+{
+	padding: 0.2em;
+	float: left;
+	width: 150px;
+}
+
+.field_0
+{
+	width: 40px;
+	text-align: center;
+}
+
+.auxilary-button
+{
+	padding: 1em;
+}
+
+.edit-inputs label
+{
+	width: 150px;
+	float: left;
+	text-align: right;
+	padding: 0 0.5em;
+	font-weight: bold;
+}
+
+
+.item-input label
+{
+	float: none;
+	font-weight: normal;
+}
+
+
+.edit-page-buttons
+{
+	padding-left: 120px;
+	padding-top: 20px;
+}
+
+.edit-item
+{
+	padding: 0.4em;
+}
+
+.edit-inputs .scaffold_input
+{
+	width: 250px;
+	border: 1px solid Highlight;
+	padding: 0.2em;
+}
+
+.edit-inputs .multiline-textbox
+{
+	width: 500px;
+	height: 100px;
+}
+
+.edit-inputs .input_0 .scaffold_input
+{
+	width: 50px;
+}
+
+.edit-inputs .required
+{
+	font-weight: bold;
+	padding: 0.2em;
+}
+.edit-inputs .required-input, .edit-inputs .required-input2 .required-input3 .required-input4
+{
+	border: 1px solid red;
+	background-color: #FFF5EE;
+}

@@ -1,0 +1,182 @@
+﻿<com:TContent ID="Main">
+
+<h1>Partager les modèles de gabarit</h1>
+
+<p>
+Dans cette section, nous allons utiliser la fonctionnalité <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.MasterContent">gabarit principal/contenu</a> de PRADO pour partager une mise en page commune sur tout notre site. Les mises en page communes font référence aux parties qui sont identiques ou presque pour un ensemble de pages. Par exemple, dans notre outil de blog, toutes les pages partagent le même entête, pied de page et la même barre latérale contenant les liens. La solution la plus radicale est de répéter sur chaque page les parties communes. Par contre, cette approche est une source d'erreurs et difficile à maintenir. La fonctionnalité <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.MasterContent">gabarit principal/contenu</a> nous permets de traiter les parties communes comme un contrôle qui centralise la logique applicative et la présentation de chaque page.
+</p>
+
+<com:InfoBox>
+Il est aussi possible de partager les parties communes grâce à <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">l'inclusion de gabarits</a>, un peu comme l'inclusion de fichier php. L'inconvénient de l'inclusion de gabarits est que l'on ne peut pas partager la logique applicative.
+</com:InfoBox>
+
+
+<h2>Création du gabarit principal</h2>
+
+<p>
+Nous allons maintenant créer le gabarit principal <tt>MainLayout</tt> qui représente les parties communes partagées par toutes nos pages. Le contrôle <tt>MainLayout</tt> est un contrôle de gabarit qui hérite de <tt>TTemplateControl</tt>. Il a besoin d'un fichier de gabarit <tt>MainLayout.tpl</tt> et d'un fichier de classe <tt>MainLayout.php</tt> situés dans le même dossier. Pour faciliter la maintenance, nous allons créer le nouveau dossier <tt>protected/layouts</tt> pour les accueillir.
+</p>
+
+<img src="<%~ directories3.gif %>" class="output" />
+
+<p>
+Pour le moment, <tt>MainLayout</tt> contient seulement un entête simple et un pied de page, comme décrit ci-après. Plus tard, nous ajouterons une barre latérale. Les lecteurs sont encouragés à ajouter des fonctionnalités.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<html>
+&lt;com:THead />
+<body>
+&lt;com:TForm>
+<div id="page">
+
+<div id="header">
+<h1>Mon blog PRADO</h1>
+</div>
+
+<div id="main">
+&lt;com:TContentPlaceHolder ID="Main" />
+</div>
+
+<div id="footer">
+&lt;%= PRADO::poweredByPrado() %>
+</div>
+
+</div>
+&lt;/com:TForm>
+</body>
+</html>
+</com:TTextHighlighter>
+
+<p>
+Ci-dessus, le contenu du fichier de gabarit <tt>MainLayout.tpl</tt>. Trois nouvelles balises sont utilisées.
+</p>
+
+<ul>
+<li><tt>&lt;com:TContentPlaceHolder&gt;</tt> represente un contrôle <a href="http://www.pradosoft.com/docs/classdoc/TContentPlaceHolder">TContentPlaceHolder</a>. Il définit l'emplacement dans le gabarit où le contenu sera inséré. Dans notre cas, le contenu proviendra des pages qui utiliseront notre gabarit principal.</li>
+<li><tt>&lt;com:THead&gt;</tt> représente un contrôle <a href="http://www.pradosoft.com/docs/classdoc/THead">THead</a> qui correspond à la balise &lt;head&gt; d'un document HTML. Ceci permet à PRADO de manipuler la balise &lt;head&gt; comme un composant (ie: définir le titre de la page, ajouter des feuilles de styles CSS.)</li>
+<li><tt>&lt;%= %&gt;</tt> est une <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates2#et">balise de configuration</a>. Elle affiche le résultat de l'évaluation de l'expression à l'endroit où elle se situe.</li>
+</ul>
+
+
+<p>
+Le fichier de classe  <tt>MainLayout.php</tt> est très simple :
+</p>
+
+<com:TTextHighlighter CssClass="source">
+<?php
+class MainLayout extends TTemplateControl
+{
+}
+?>
+</com:TTextHighlighter>
+
+<com:InfoBox>
+L'extension des fichiers de gabarit est <tt>.page</tt>, tandis que pour les gabarits autres que les pages c'est <tt>.tpl</tt>. Ceci permet de différencier les pages des autres contrôles. Les deux utilisent la même <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">syntaxe de gabarit</a>. Pour les pages, le fichier de classe est optionnel (par défaut hérite de <tt>TPage</tt>), tandis que pour les contrôles, les fichiers de classes sont obligatoires. Comme pour Java, le nom de la classe doit être le même que le nom du fichier de classe. Faites attention à la casse sur les systèmes Linux/Unix.
+</com:InfoBox>
+
+<h2>Utilisation du gabarit principal</h2>
+<p>
+Pour utiliser notre gabarit principal nouvellement créé, nous allons modifier nos fichiers <tt>Home.page</tt> et <tt>Contact.page</tt>. En particulier, nous devons supprimer les entêtes et pied de page parce que le gabarit principal a la responsabilité de les afficher ; par ailleurs, nous devons indiquer aux deux pages que leur gabarit principal est <tt>MainLayout</tt>.
+</p>
+
+<p>
+Ci-dessous, le contenu de <tt>Contact.page</tt> après les modifications :
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ MasterClass="Application.layouts.MainLayout" Title="Mon blog - Contact" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Contact</h1>
+<p>Veuillez remplir le formulaire suivant pour me laisser vos impressions au sujet de mon blog. Merci !</p>
+
+...champs de saisie et validateurs pour le nom d'utilisateur...
+
+...champs de saisie et validateurs pour l'email...
+
+...champs de saisie et validateurs pour le commentaire...
+
+&lt;com:TButton Text="Envoyer" OnClick="submitButtonClicked" />
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+<p>
+Le contenu entre les balises <tt>&lt;com:TContent&gt;</tt> sera inséré dans l'emplacement réservé par <tt>&lt;com:TContentPlaceHolder&gt;</tt> dans le gabarit principal.
+</p>
+
+<com:InfoBox>
+Il est possible d'avoir plusieurs <tt>TContentPlaceHolder</tt> dans un gabarit principal et plusieurs <tt>TContent</tt> dans un fichier de contenu. Ils sont associés par leurs propriétés <tt>ID</tt>. Il est aussi possible de définir un contenu comme étant le gabarit principal d'un autre contenu, ceci en plaçant une balise <tt>TContentPlaceHolder</tt> à l'endroit désiré. Ceci est appelé <i>gabarits principaux imbriqués</i>
+</com:InfoBox>
+
+<p>
+A côté de la balise <tt>&lt;com:TContent&gt;</tt>, nous avons vu une nouvelle balise <tt>&lt;%@ %&gt;</tt>, qui est dénommé une <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1#tct">balise de contrôle de gabarit</a>. Elle contient des paires nom-valeur utilisées pour initialiser les propriétés correspondantes du propriétaire de gabarit, dans notre cas, la page <tt>Contact</tt>.
+</p>
+
+<p>
+En définissant la propriété <tt>MasterClass</tt> comme étant de type <tt>Application.layouts.MainLayout</tt>, nous avons indiqué à la page <tt>Contact</tt> d'utiliser <tt>MainLayout</tt> comme gabarit principal. Ici, nous avons utilisé un <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">espace de noms</a> pour nous référer à la classe <tt>MainLayout</tt>.
+</p>
+
+<com:InfoBox>
+Les espaces de noms sont largement utilisés en programmation PRADO. Ils sont utilisés conjointement avec les <a href="http://www.pradosoft.com/demos/quickstart/index.php?page=Fundamentals.Components">alias de chemins</a>. PRADO définit deux alias de chemins: <tt>System</tt> fait référence au dossier <tt>framework</tt> de l'installation PRADO, et <tt>Application</tt> fait référence au dossier <tt>protected</tt>.
+L'espace de noms <tt>Application.layouts.MainLayout</tt> peut ainsi être traduit par <tt>protected/layouts/MainLayout</tt> ce qui est précisément le nom du fichier (sans l'extension <tt>.php</tt>) de la classe <tt>MainLayout</tt>.
+</com:InfoBox>
+
+
+<h2>Autres possibilités pour spécifier le gabarit principal</h2>
+
+<p>
+Il y a plusieurs alternatives pour spécifier le gabarit principal.
+</p>
+
+<p>
+Vous pouvez définir le gabarit principal comme ci-dessous pour pouvoir en changer dynamiquement.
+</p>
+
+<com:TTextHighlighter CssClass="source">
+<?php
+class Contact extends TPage
+{
+    public function onPreInit($param)
+    {
+        parent::onPreInit($param);
+        $this->MasterClass='Path.To.NewLayout';
+    }
+
+    // ...
+}
+?>
+</com:TTextHighlighter>
+
+<p>
+Ci-dessus, nous indiquons d'utiliser le gabarit principal <tt>MasterClass</tt> dans la méthode <tt>onPreInit()</tt> qui est héritée de <tt>TPage</tt>. Cette méthode est appelé par PRADO juste après que l'instance de la page soit créée. Nous pouvons ainsi déclarer au moment où la page est requise quel gabarit principal utiliser. Par exemple, quand la page est requise par un utilisateur enregistré, nous pouvons utiliser le gabarit A, et le gabarit B si l'utilisateur qui demande la page est un invité.
+</p>
+
+<p>
+Nous pouvons aussi spécifier quel gabarit principal utiliser dans le fichier de <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.AppConfig">configuration de l'application</a> ou encore dans le fichier de <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.PageConfig">configuration de la page</a>. Ci-dessous, le fichier de configuration de l'application modifié pour notre blog.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<application id="blog" mode="Debug">
+  <!-- configuration for available services -->
+  <services>
+    <service id="page" class="TPageService" DefaultPage="Home">
+      <!-- initial properties set for all pages -->
+      <pages MasterClass="Application.layouts.MainLayout" />
+    </service>
+  </services>
+</application>
+</com:TTextHighlighter>
+
+<p>
+En faisant cela, nous évitons de définir le gabarit principal dans chaque page. Si nous décidons d'utiliser un autre gabarit principal, il nous suffit de changer le fichier de configuration de l'application. Pour cette raison, dans notre blog, nous utiliserons cette approche.
+</p>
+
+<com:InfoBox>
+Il y a un ordre qui permet de savoir quel fichier gabarit principal utiliser s'il est spécifié à plusieurs endroits. En particulier <tt>onPreInit()</tt> est prioritaire au fichier de configuration de la page qui est lui même prioritaire au fichier de configuration de l'application. Ainsi, si vous spécifiez <tt>MainLayout</tt> dans le fichier de configuration de l'application/page et que vous spécifiez <tt>SpecialLayout</tt> dans <tt>Contact.page</tt>, ce sera le dernier qui sera pris en compte.
+</com:InfoBox>
+
+</com:TContent>

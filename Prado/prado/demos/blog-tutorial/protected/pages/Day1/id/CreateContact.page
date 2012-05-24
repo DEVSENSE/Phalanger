@@ -1,0 +1,204 @@
+<com:TContent ID="Main">
+
+<h1>Membuat Halaman Kontak</h1>
+
+<p>
+Kita telah membuat halaman standar <tt>Home.page</tt> menggunakan <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">piranti baris perintah PRADO</a>. Halaman relatif statis karena ia tidak berisi konten dinamis. Dalam bagian ini, kita akan membuat halaman interaktif bernama <tt>Contact</tt>.
+</p>
+
+<p>
+Kegunaan dari halaman <tt>Contact</tt> adalah untuk mengumpulkan umpan balik dari para pengguna sistem blog kita. Untuk melaksanakan tujuan ini, kita merencanakan untuk menyajikan para pengguna dengan sebuah formulir umpan balik yang harus diisi. Dalam formulir ini, kita akan mengharuskan para pengguna untuk menyediakan namanya, alamat email, dan konten umpan balik. Setelah formulir diisi dan dikirimkan, email yang berisi umpan balik akan dikirimkan ke administrator situs.
+</p>
+
+<p>
+Untuk membuat halaman <tt>Contact</tt>, kita memerluka dua file di bawah direktori <tt>pages</tt>: file template halaman <tt>Contact.page</tt> dan file kelas halaman <tt>Contact.php</tt>.
+</p>
+
+<img src="<%~ directories2.gif %>" class="output" />
+
+<com:InfoBox>
+<a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">Halaman</a> harus berupa file <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">template</a> (berekstensi <tt>.page</tt>) atau file kelas, atau keduanya:
+</p>
+
+<ul>
+<li>Hanya template-halaman yang biasanya berupa sebuah halaman sengan konten statis, seperti homepage yang sudah kita buat;</li>
+<li>Hanya file kelas halaman yang menghasilkan konten murni berdasarkan eksekusi metode kelas;</li>
+<li>Sebuah halaman dengan template dan kelasnya mengkombinasikan keunggulan keduanya: ia menggunakan template untuk memudahkan mengatur tata letak halaman dan menggunakan kelas untuk menyertakan logika yang menghasilkan konten dinamis.</li>
+</ul>
+</com:InfoBox>
+
+
+<h2>Membuat Template Halaman</h2>
+
+<p>
+Pertama kita membuat file template untuk halaman <tt>Contact</tt>.
+</p>
+
+<p>
+Kita menggunakan template untuk menghatur tata letak penyajian terhadap formulir umpan balik. Dalam template, kita menggunakan <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.TextBox">kotak teks</a> untuk mengumpulkan nama pengguna, email dan umpan balik. Dan kita menggunakan <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Validation">validator</a> guna memastikan bahwa pengguna menyediakan semua informasi ini sebelum mengirimkan formulir umpan balik. Seluruh template adalah sebagai berikut,
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<html>
+<head><title>My Blog - Contact</title></head>
+<body>
+<h1>Contact</h1>
+<p>Please fill out the following form to let me know your feedback on my blog. Thanks!</p>
+
+&lt;com:TForm> 
+
+<span>Your Name:</span>
+&lt;com:TRequiredFieldValidator ControlToValidate="Name"
+    ErrorMessage="Please provide your name." 
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Name" />
+
+<br/>
+<span>Your Email:</span>
+&lt;com:TRequiredFieldValidator ControlToValidate="Email"
+    ErrorMessage="Please provide your email address." 
+    Display="Dynamic" />
+&lt;com:TEmailAddressValidator ControlToValidate="Email"
+    ErrorMessage="You entered an invalid email address." 
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Email" />
+
+<br/>
+<span>Feedback:</span>
+&lt;com:TRequiredFieldValidator ControlToValidate="Feedback"
+    ErrorMessage="Please provide your feedback." 
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Feedback" 
+    TextMode="MultiLine" 
+    Rows="10"
+    Columns="40" />
+
+<br/>
+&lt;com:TButton Text="Submit" OnClick="submitButtonClicked" />
+
+&lt;/com:TForm>
+
+</body>
+</html>
+</com:TTextHighlighter>
+
+<p>
+Seperti kita lihat bahwa template terlihat sangat mirip dengan halaman HTML normal. Perbedaan utamanya adalah bahwa template berisi beberapa tag <tt>&lt;com:&gt;</tt>. Setap tag <tt>&lt;com:&gt;</tt> merujuk ke sebuah <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Controls">kontrol</a> yang propertinya diinisialisasi dengan pasangan nama-nilai dalam tag. Sebagai contoh, <tt>&lt;com:TButton&gt;</tt> merujuk ke kontrol <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Button">TButton</a> guna menampilkan sebuah tombol di mana pengguna dapat di klik pengguna untuk mengirimkan formulir umpan balik. Untuk sintaks lengkap template, silahkan rujuk <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">Tutorial Cepat</a>.
+</p>
+
+<com:InfoBox>
+PRADO menyediakan kontrol untuk setiap tipe input HTML. Sebagai contoh, <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.TextBox">TTextBox</a> menampilkan field input teks, <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.List">TDropDownList</a> menampilkan kotak kombo. Setiap kontrol adalah sebuah komponen yang dapat diakses dalam kode sebagai obyek dengan properti yang bisa dikonfigurasi.
+</com:InfoBox>
+
+<p>
+Selain kontrol <tt>TTextBox</tt>, template juga menggunakan banyak kontrol validator yang memastikan input pengguna memuaskan aturan validasi spesifik. Sebagai contoh, untuk memastikan alamat email sah yang dilengkapi, kita menggunakan dua validator untuk memvalidasi kotak teks "email", seperti ditampilkan dalam kode berikut:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<span>Your Email:</span>
+&lt;com:TRequiredFieldValidator 
+    ControlToValidate="Email"
+    ErrorMessage="Please provide your email address." 
+    Display="Dynamic" />
+&lt;com:TEmailAddressValidator 
+    ControlToValidate="Email"
+    ErrorMessage="You entered an invalid email address." 
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Email" />
+<br/>
+</com:TTextHighlighter>
+
+<p>
+Di bawah ini kita meringkas kontrol yang dipakai dalam template halaman:
+</p>
+
+<ul>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TForm">TForm</a> menampilkan sebuah formulir HTML. Setiap kontrol input harus dikurung di dalamnya. Dan yang terpenting, paling banyak satu <tt>TForm</tt> boleh muncul dalam sebuah halaman.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TTextBox">TTextBox</a> menampilkan kotak teks untuk mengumpulkan input teks pengguna.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TRequiredFieldValidator">TRequiredFieldValidator</a> memastikan bahwa kotak teks terkait tidak kosong saat umpan balik dikirimkan.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TEmailAddressValidator">TEmailAddressValidator</a> memastikan bahwa kotak teks berisi alamat email yang <i>benar</i> saat umpan balik dikirimkan.</li>
+</ul>
+
+<com:TipBox>
+Menulis template dengan editor teks biasa dapat membosankan dan tidak intuitif untuk para desainer. Untuk memudahkan situasi ini, PRADO telah menyertakan dalam rilis ekstensi Adobe Dreamweaver yang mendukung pelengkapan-otomatis tag PRADO (misalnya menyertakan nama kontrol, nama properti, nama event, dll) dalam Dreamweaver.
+</com:TipBox>
+
+
+<h2>Membuat Kelas Halaman</h2>
+
+<p>
+Sekarang kita membuat kelas halaman <tt>Contact.php</tt>. Alasan kita membutuhkan kelas halaman adalah karena kita perlu merespon umpan balik yang dikirimkan oleh pengguna.
+
+<p>
+Perhatikan dalam template kita mempunyai baris berikut. Template secara esensi menyatakan bahwa saat pengguna mengklik tombol, ia harus memanggil metode <tt>submitButtonClicked()</tt>. Di sini <tt>OnClick</tt> adalah nama dari event yang diklik pengguna, dan metode harus didefinisikan dalam kelas halaman.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+  &lt;com:TButton Text="Submit" OnClick="submitButtonClicked" />
+</com:TTextHighlighter>
+
+<p>
+Selanjutnya kita menuliskan kelas halaman seperti berikut:
+</p>
+
+<com:TTextHighlighter CssClass="source">
+<?php
+class Contact extends TPage
+{
+    /**
+     * Pengendali event untuk event OnClick pada tombol submit.
+     * @param TButton tombol yang memicu event
+     * @param TEventParameter parameter event (null di sini)    
+     */
+    public function submitButtonClicked($sender, $param)
+    {
+        if ($this->IsValid)  // memeriksa apakan validasi input berhasil
+        {
+            // mendapatkan nama pengguna, email, umpan balik dari kotak teks
+            $name = $this->Name->Text;  
+            $email = $this->Email->Text;
+            $feedback = $this->Feedback->Text;
+            
+            // mengirimkan email ke administrator dengan informasi di atas
+            $this->mailFeedback($name, $email, $feedback);
+        }
+    }
+    
+    protected function mailFeedback($name, $email, $feedback)
+    {
+        // implementasi pengiriman email umpan balik
+    }
+}
+?>
+</com:TTextHighlighter>
+
+<p>
+Kode di atas sebagian besar cukup jelas. Kenyataannya, kami hanya menampilkan skema pemrograman pengendalian-event. Dalam pengendali event <tt>submitButtonClicked()</tt>, kita mengambil input pengguna. Sebagai contoh, <tt>$this->Name->Text</tt> mengembalikan nilai properti <tt>Text</tt> dari kontrol <tt>Name</tt> yang merupakan kotak teks yang mengumpulkan informasi nama pengguna.
+</p>
+
+<com:InfoBox>
+Nama kelas halaman harus sama seperti nama file. Ini juga persyaratan untuk penulisan komponen kelas PRADO.
+</com:InfoBox>
+
+
+<h2>Pengujian</h2>
+
+<p>
+<tt>Contact</tt> yang baru saja kita buat dapat kita uji dengan URL <tt>http://hostname/blog/index.php?page=Contact</tt>. Jika kita mengklik pada tombol submit tanpa memasukan informasi apapun, kita akan melihat pesan kesalahan muncil di sebelah kotak teks terkait. Jika kita memasukan semua informasi yang diperlukan, metode <tt>mailFeedback()</tt> akan dipanggil.
+</p>
+
+<img src="<%~ output.gif %>" class="output" />
+
+<p>
+Peningkatan berikutnya terhadap halaman ini adalah untuk menampilkan beberapa pesan konfirmasi pada halaman setelah pengguna mengirimkan umpan balik. Dan kemungkinan, browser akan dialihkan ke halaman lain jika pengiriman berhasil. Kita akan membiarkan tugas ini bagi para pembaca kita.
+</p>
+
+<com:InfoBox>
+Setiap validator mewakili aturan validasi. Satu kontrol input dapat dikaitkan dengan satu atau multipel validator. Validator melakukan validasi pada sisi klien dan sisi server. Pada sisi klien, yaitu browser, validasi dikerjakan dmenggunakan javascript; pada sisi server, validasi dikerjakan dengan menggunakan kode PHP. Validasi sisi-klien dapat dimatikan, sementara validasi sisi-server tidak bisa. Ini memastikan input pengguna selalu diperiksa oleh aturan validasi yang dietapkan.
+</com:InfoBox>
+
+</com:TContent>

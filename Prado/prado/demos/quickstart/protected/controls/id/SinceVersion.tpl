@@ -1,0 +1,1 @@
+<p class="since-version">Tersedia mulai dari Prado versi <strong><%= $this->Version %></strong> dan selanjutnya.</p>

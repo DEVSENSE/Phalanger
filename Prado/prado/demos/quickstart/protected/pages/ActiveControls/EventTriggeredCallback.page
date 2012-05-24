@@ -1,0 +1,15 @@
+<com:TContent ID="body" >
+
+<h1 id="202023">TEventTriggeredCallback</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TEventTriggeredCallback" />
+
+<p class="block-content">
+<tt>TEventTriggeredCallback</tt> triggers a new callback request when a particular <tt>EventName</tt>
+on a control with ID given by <tt>ControlID</tt> is raised.
+The default action of the event on the client-side can be prevented when
+<tt>PreventDefaultAction</tt> is set to true.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TEventTriggeredCallback.Home" />
+
+<div class="last-modified">$Id: EventTriggeredCallback.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

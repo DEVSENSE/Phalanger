@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="4501">TTextBox</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TTextBox" />
+
+<p id="520315" class="block-content">
+<tt>TTextBox</tt> menampilkan kotak teks pada halaman Web. Konten dalam kotak teks ditentukan oleh properti <tt>Text</tt>. Anda dapat membuat teks <tt>SingleLine</tt>, a <tt>MultiLine</tt>, atau <tt>Kata sandi</tt> dengan menyetel properti <tt>TextMode</tt>. Properti <tt>Rows</tt> dan <tt>Columns</tt> menetapkan dimensinya. Jika <tt>AutoPostBack</tt> adalah true, perubahan konten dalam kotak teks dan kemudian memindahkan fokur keluar darinya akan menyebabkan aksi postback.
+</p>
+<com:RunBar PagePath="Controls.Samples.TTextBox.Home" />
+
+<div class="last-modified">$Id: TextBox.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,99 @@
+<com:TContent ID="body" >
+<h1 id="1601">Template: Bagian II</h1>
+
+<a name="dct"></a>
+<h2 id="1602">Tag Konten Dinamis</h2>
+<p id="190181" class="block-content">
+Tag konten dinamis diperkenalkan sebagai jalan pintas ke beberapa <a href="?page=Configurations.Templates1#ct">tag komponen</a> yang umum dipakai. Tag-tag ini sebagian besar dipakai untuk menyajikan konten yang dihasilkan dari evaluasi beberapa ekspresi atau pernyataan PHP. Ini termasuk <a href="#et">tag ekspresi</a>, <a href="#st">tag pernyataan</a>, <a href="#dt">tag databind</a>, <a href="#pt">parameter tags</a>, <a href="#at">tag asset</a> dan <a href="#lot">tag lokalisasi</a>.
+</p>
+
+<a name="et"></a>
+<h3 id="1603">Tag Ekspresi</h3>
+<p id="190182" class="block-content">
+Tag ekspresi mewakili ekspresi PHP yang dievaluasi saat kontrol template dalam tahap <tt>PreRender</tt>. Hasil evaluasi ekspresi disisipkan di tempat di mana tag berada dalam template. Konteks (yaitu <tt>$this</tt>) dari ekspresi adalah kontrol yang memilik template.
+</p>
+<p id="190183" class="block-content">
+Format tag ekspresi adalah sebagai berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190079">
+&lt;%= PhpExpression %&gt;
+</com:TTextHighlighter>
+<p id="190184" class="block-content">
+Sebagai contoh, tag ekspresi berikut akan menampilkan judul halaman saat ini di tempat,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190080">
+&lt;%= $this-&gt;Title %&gt;
+</com:TTextHighlighter>
+
+<a name="st"></a>
+<h3 id="1604">Tag Pernyataan</h3>
+<p id="190185" class="block-content">
+Tag pernyataan mirip dengan tag ekspresi, kecuali bahwa tag pernyataan berisi pernyataan PHP daripada ekspresi. Output dari pernyataan PHP (menggunakan contoh <tt>echo</tt> atau <tt>print</tt> dalam PHP) ditampilkan di tempat di mana tag pernyataan berada dalam template. Konteks (yaitu <tt>$this</tt>) dari pernyataan  adalah kontrol yang memiliki template. Format tag pernyataan adalah sebagai berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190081">
+&lt;%%
+Pernyataan PHP
+%&gt;
+</com:TTextHighlighter>
+<p id="190186" class="block-content">
+Contoh berikut menampilkan waktu saat ini dalam bahasa Belanda di tempat,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190082">
+&lt;%%
+setlocale(LC_ALL, 'nl_NL');
+echo strftime("%A %e %B %Y",time());
+%&gt;
+</com:TTextHighlighter>
+
+<a name="dt"></a>
+<h3 id="1605">Tag Databind</h3>
+<p id="190187" class="block-content">
+Tag databind mirip dengan tag ekspresi, kecuali bahwa ekspresi dievaluasi hanya ketika panggilan <tt>dataBind()</tt> diterapkan pada kontrol yang mewakili tag databind. Konteks (yaitu <tt>$this</tt>) dari ekspresi databind adalah kontrol yang memiliki template. Format tag databind adalah sebagai berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190083">
+&lt;%# PhpExpression %&gt;
+</com:TTextHighlighter>
+
+<a name="pt"></a>
+<h3 id="1606">Tag Parameter</h3>
+<p id="190188" class="block-content">
+Tag parameter dipakai untuk menyisipkan parameter aplikasi di tempat di mana ia muncul dalam template. Format tag parameter adalah sebagai berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190084">
+&lt;%$ ParameterName %&gt;
+</com:TTextHighlighter>
+<p id="190189" class="block-content">
+Catatan, parameter aplikasi biasanya didefinisikan konfigurasi aplikasi atau konfigurasi direktori halaman. Parameter dievaluasi saat template diberi contoh.
+</p>
+
+<a name="at"></a>
+<h3 id="1607">Tag Asset</h3>
+<p id="190190" class="block-content">
+Tag asset dipakai untuk mempublikasikan file pribadi dan menampilkan URL terkait. Sebagai contoh, jika Anda mempunyai file gambar yang tidak bisa diakses Web dan Anda ingin menjadikannya terlihat bagi pengguna-akhir, Anda dapat menggunakan tag asset untuk mempublikasikan file ini dan menampilkan URL ke pengguna-akhir agar mereka dapat mengambil gambar yang dipublikasikan.
+</p>
+<p id="190191" class="block-content">
+Format tag asset adalah sebagai berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190085">
+&lt;%~ LocalFileName %&gt;
+</com:TTextHighlighter>
+<p id="190192" class="block-content">
+di mana <tt>LocalFileName</tt> merujuk ke path file yang relatif ke direktori yang berisi file template saat ini. Path file bisa berupa file tunggal atau sebuah direktori. Jika direktori, konten dalam seluruh direktori akan dibuat dapat diakses oleh pengguna-akhir.
+</p>
+<p id="190193" class="block-content">
+HARAP SANGAT BERHATI-HATI ketika Anda menggunakan tag asset karena ia dapat memperlihatkan ke pengguna-akhir file yang tidak ingin Anda perlihatkan kepada mereka.
+</p>
+
+<a name="lot"></a>
+<h3 id="1608">Tag Lokalisasi</h3>
+<p id="190194" class="block-content">
+Tag lokalisasi mewakili teks yang dilokalisasi. Formatnya adalah sebagai berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_190086">
+&lt;%[string]%&gt;
+</com:TTextHighlighter>
+<p id="190195" class="block-content">
+di mana <tt>string</tt> akan diterjemahkan ke bahasa berbeda tergantung pada preferensi bahasa pengguna-akhir. Tag lokalisasi sebenarnya adalah jalan pintas ke fungsi panggil <tt>Prado::localize(string)</tt>.
+</p>
+
+<div class="last-modified">$Id: Templates2.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

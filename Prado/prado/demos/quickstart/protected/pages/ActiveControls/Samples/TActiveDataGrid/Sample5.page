@@ -1,0 +1,25 @@
+<com:TContent ID="body">
+
+<h1>TActiveDataGrid Sample 5</h1>
+<h2>Paging</h2>
+
+<div style="width:500px">
+<com:TActiveDataGrid
+	ID="DataGrid"
+	AllowPaging="true"
+	PageSize="5"
+	PagerStyle.Mode="Numeric"
+	PagerStyle.HorizontalAlign="Right"
+	Width="100%"
+	CellPadding="2"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="#E6ECFF"
+	OnPageIndexChanged="changePage"
+	OnPagerCreated="pagerCreated"
+	/>
+</div>
+
+<div class="last-modified">$Id: Sample5.page 2955 2011-06-02 09:30:55Z ctrlaltca@gmail.com $</div></com:TContent>

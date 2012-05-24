@@ -1,0 +1,46 @@
+<com:TContent ID="body">
+
+<h1>TActiveLinkButton Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Link button with only body content:
+</td><td class="sampleaction">
+<com:TActiveLinkButton>
+body content
+</com:TActiveLinkButton>
+</td></tr>
+
+<tr><td class="samplenote">
+A click link button:
+</td><td class="sampleaction">
+<com:TActiveLinkButton Text="click me" OnClick="buttonClicked" />
+</td></tr>
+
+<tr><td class="samplenote">
+A callback link button:
+</td><td class="sampleaction">
+<com:TActiveLinkButton
+	Text="click me"
+	OnCallback="buttonClicked"
+	ActiveControl.CallbackParameter="value"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A button causing validation:
+</td><td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	Display="Dynamic"
+	ErrorMessage="input required in the textbox"
+	ValidationGroup="Group"
+	/>
+<com:TActiveLinkButton Text="submit" ValidationGroup="Group" />
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2948 2011-06-01 21:29:36Z ctrlaltca@gmail.com $</div></com:TContent>

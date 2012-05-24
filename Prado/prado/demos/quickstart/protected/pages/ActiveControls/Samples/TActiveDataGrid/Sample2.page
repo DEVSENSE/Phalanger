@@ -1,0 +1,64 @@
+<com:TContent ID="body">
+
+<h1>TActiveDataGrid Sample 2</h1>
+<h2>Using Manually Specified Columns</h2>
+
+<com:TActiveDataGrid
+	Width="700px"
+	CellPadding="2"
+	ID="DataGrid"
+	AutoGenerateColumns="false"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="#E6ECFF">
+
+	<com:TActiveHyperLinkColumn
+		HeaderText="Book Title"
+		DataTextField="title"
+		DataNavigateUrlField="ISBN"
+		DataNavigateUrlFormatString="http://www.amazon.com/gp/product/%s"
+		Target="_blank"
+		/>
+	<com:TActiveBoundColumn
+		HeaderText="Publisher"
+		DataField="publisher"
+		/>
+	<com:TActiveBoundColumn
+		ItemStyle.HorizontalAlign="Right"
+		ItemStyle.Wrap="false"
+		ItemStyle.Font.Italic="false"
+		ItemStyle.ForeColor="green"
+		HeaderText="Price"
+		DataField="price"
+		DataFormatString="$%.2f"
+		/>
+	<com:TActiveCheckBoxColumn
+		HeaderText="In-stock"
+		HeaderStyle.Wrap="false"
+		DataField="instock"
+		/>
+	<com:TActiveTemplateColumn>
+		<prop:HeaderTemplate>Rating</prop:HeaderTemplate>
+		<prop:ItemTemplate>
+		<img src="images/star<%#$this->Parent->DataItem['rating']%>.gif" alt="" />
+		</prop:ItemTemplate>
+	</com:TActiveTemplateColumn>
+</com:TActiveDataGrid>
+
+<com:TPanel GroupingText="Column Visibility" Width="200px">
+
+<com:TActiveCheckBoxList
+     AutoPostBack="true"
+     OnSelectedIndexChanged="toggleColumnVisibility">
+    <com:TListItem Text="Book Title" Selected="true" />
+    <com:TListItem Text="Publisher" Selected="true" />
+    <com:TListItem Text="Price" Selected="true" />
+    <com:TListItem Text="In-stock" Selected="true" />
+    <com:TListItem Text="Rating" Selected="true" />
+</com:TActiveCheckBoxList>
+
+</com:TPanel>
+
+<div class="last-modified">$Id: Sample2.page 2955 2011-06-02 09:30:55Z ctrlaltca@gmail.com $</div></com:TContent>

@@ -1,0 +1,135 @@
+<com:TContent ID="body" >
+
+<h1 id="5501">Collections</h1>
+<p id="710529" class="block-content">
+Collection is a basic data structure in programming. In traditional PHP programming, array is used widely to represent collection data structure. A PHP array is a mix of cardinal-indexed array and hash table.
+</p>
+<p id="710530" class="block-content">
+To enable object-oriented manipulation of collections, PRADO provides a set of powerful collection classes. Among them, the <tt>TList</tt> and <tt>TMap</tt> are the most fundamental and usually serve as the base classes for other collection classes. Since many PRADO components have properties that are of collection type, it is very important for developers to master the usage of PRADO collection classes.
+</p>
+
+<h2 id="5502">Using <tt>TList</tt></h2>
+<p id="710531" class="block-content">
+A <tt>TList</tt> object represents a cardinal-indexed array, i.e., an array (object) with the index 0, 1, 2, ...
+</p>
+<p id="710532" class="block-content">
+<tt>TList</tt> may be used like a PHP array. For example,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code1">
+$list=new TList; // create a list object
+...
+$item=$list[$index];  // read the item at the specified index
+$list[]=$item;  // append the item at the end
+$list[$index]=$item; // replace the item at the specified index
+unset($list[$index]); // remove the item at $index
+if(isset($list[$index])) // test if the list has an item at $index
+foreach($list as $index=>$item) // traverse each item in the list
+</com:TTextHighlighter>
+
+<p id="710533" class="block-content">
+To obtain the number of items in the list, use the <tt>Count</tt> property. Note, do not use <tt>count($list)</tt>, as it always returns 1.
+</p>
+
+<p id="710534" class="block-content">
+In addition, <tt>TList</tt> implements a few commonly used convenient methods for manipulating the data in a list. These include
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>clear()</tt>: removes all items in the list.</li>
+  <li><tt>contains()</tt>: tests if the list contains the specified item.</li>
+  <li><tt>indexOf()</tt>: obtains the zero-based index of the specified item in the list.</li>
+  <li><tt>toArray()</tt>: returns an array representation of the items in the list.</li>
+  <li><tt>copyFrom()</tt>: populates the list with data from an array or traversable object (including <tt>TList</tt>). Existing items will be removed first.</li>
+  <li><tt>mergeWith()</tt>: appends the list with data from an array or traversable object (including <tt>TList</tt>).</li>
+</ul>
+
+<h3 id="5504">Using <tt>TList</tt>-based component properties</h3>
+<p id="710535" class="block-content">
+As aforementioned, many PRADO component properties are based on <tt>TList</tt> or <tt>TList</tt>-derived collection classes. These properties all share the above usages.
+</p>
+<p id="710536" class="block-content">
+For example, <tt>TControl</tt> (the base class for all PRADO controls) has a property called <tt>Controls</tt> which represents the collection of child controls. The type of <tt>Controls</tt> is <tt>TControlCollection</tt> which extends <tt>TList</tt>. Therefore, to append a new child control, we can use the following,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code2">
+$control->Controls[]=$newControl;
+</com:TTextHighlighter>
+<p id="710537" class="block-content">
+To traverse through the child controls, we can use,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code3">
+foreach($control->Controls as $childControl) ...
+</com:TTextHighlighter>
+<p id="710538" class="block-content">
+Another example is the <tt>Items</tt> property, available in list controls, <tt>TRepeater</tt>, <tt>TDataList</tt> and <tt>TDataGrid</tt>. In these controls, the ancestor class of <tt>Items</tt> is <tt>TList</tt>.
+</p>
+
+<h3 id="5505">Extending <tt>TList</tt></h3>
+<p id="710539" class="block-content">
+Often, we want to extend <tt>TList</tt> to perform additional operations for each addition or removal of an item. The only methods that the child class needs to override are <tt>insertAt()</tt> and <tt>removeAt()</tt>. For example, to ensure the list only contains items that are of <tt>TControl</tt> type, we can override <tt>insertAt()</tt> as follows,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code4">
+public function insertAt($index,$item)
+{
+    if($item instanceof TControl)
+        parent::insertAt($index,$item)
+    else
+        throw new Exception('TControl required.');
+}
+</com:TTextHighlighter>
+
+
+<h2 id="5503">Using <tt>TMap</tt></h2>
+<p id="710540" class="block-content">
+A <tt>TMap</tt> object represents a hash table (or we say string-indexed array).
+</p>
+<p id="710541" class="block-content">
+Similar to <tt>TList</tt>, <tt>TMap</tt> may be used like an array,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code5">
+$map=new TMap; // create a map object
+...
+$map[$key]=$value; // add a key-value pair
+unset($map[$key]); // remove the value with the specified key
+if(isset($map[$key])) // if the map contains the key
+foreach($map as $key=>$value) // traverse the items in the map
+</com:TTextHighlighter>
+<p id="710542" class="block-content">
+The <tt>Count</tt> property gives the number of items in the map while the <tt>Keys</tt> property returns a list of keys used in the map.
+</p>
+
+<p id="710543" class="block-content">
+The following methods are provided by <tt>TMap</tt> for convenience,
+</p>
+<ul id="u2" class="block-content">
+  <li><tt>clear()</tt>: removes all items in the map.</li>
+  <li><tt>contains()</tt>: tests if the map contains the specified key.</li>
+  <li><tt>toArray()</tt>: returns an array representation of the items in the map.</li>
+  <li><tt>copyFrom()</tt>: populates the map with data from an array or traversable object (including <tt>TMap</tt>). Existing items will be removed first.</li>
+  <li><tt>mergeWith()</tt>: appends the map with data from an array or traversable object (including <tt>TMap</tt>).</li>
+</ul>
+
+<h3 id="5506">Using of <tt>TAttributeCollection</tt></h3>
+<p id="710544" class="block-content">
+<tt>TAttributeCollection</tt> is a special class extending from <tt>TMap</tt>. It is mainly used by the <tt>Attributes</tt> property of <tt>TControl</tt>.
+</p>
+Besides the normal functionalities provided by <tt>TMap</tt>, <tt>TAttributeCollection</tt> allows you to get and set collection items like getting and setting properties. For example,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code6">
+$collection->Label='value'; // equivalent to: $collection['Label']='value';
+echo $collection->Label; // equivalent to: echo $collection['Label'];
+</com:TTextHighlighter>
+<p id="710545" class="block-content">
+Note, in the above <tt>$collection</tt> does NOT have a <tt>Label</tt> property.
+</p>
+<p id="710546" class="block-content">
+Unlike <tt>TMap</tt>, keys in <tt>TAttributeCollection</tt> are case-insensitive. Therefore, <tt>$collection->Label</tt> is equivalent to <tt>$collection->LABEL</tt>.
+</p>
+<p id="710547" class="block-content">
+Because of the above new features, when dealing with the <tt>Attributes</tt> property of controls, we may take advantage of the subproperty concept and configure control attribute values in a template as follows,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code7">
+&lt;com:TButton Attributes.onclick="if(!confirm('Are you sure?')) return false;" .../&gt;
+</com:TTextHighlighter>
+<p id="710548" class="block-content">
+which adds an attribute named <tt>onclick</tt> to the <tt>TButton</tt> control.
+</p>
+<div class="last-modified">$Id: Collections.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,348 @@
+<com:TContent ID="body" >
+<!-- $Id: Home.page 1650 2007-01-24 06:55:32Z wei $ -->
+<h1 id="128031">Kontrol Aktif (kontrol AJAX-dihidupkan)</h1>
+<p id="640423" class="block-content">Lihat <a href="?page=ActiveControls.Introduction">Pengenalan</a>
+untuk tinjauan cepat terhadap konsep di belakang kontrol aktif (kontrol AJAX-dihidupkan).
+Banyak kontrol aktif memiliki properti
+<a href="?page=ActiveControls.BaseActiveControl">ActiveControl</a> dan
+sub-properti <a href="?page=ActiveControls.CallbackClientSide">ClientSide</a>
+yang menyediakan banyak properti untuk mengkustomisasi kontrol. Properti
+<a href="?page=TCallbackClientScript">CallbackClient</a> dari kelas
+<tt>TPage</tt> menyediakan metode untuk memutakhirkan dan mengubah konten sisi-klien
+saat permintaan callback. Kontrol aktif bergantung pada koleksi
+<a href="?page=ActiveControl.ClientSideJavascript">kelas javascript</a>.
+</p>
+
+<p id="640424" class="block-content">Untuk demo cepat atas kontrol aktif, coba kontrol <a href="?page=ActiveControls.ActiveButton">
+TActiveButton</a>. Lihat juga bagian akhir dari tutorial <a href="?page=Tutorial.CurrencyConverter">Pengubah Kurs</a> untuk contoh lebih mendalam.
+</p>
+
+<p id="640425" class="block-content">* tutorial untuk kontrol ini belum lengkap.</p>
+
+<h2 id="128032">Kontrol Aktif Standar</h2>
+<ul id="u1" class="block-content">
+  <li>
+  <a href="?page=ActiveControls.ActiveButton">TActiveButton</a>
+  mewakili tombol klik pada halaman Web. Ia dapat dipakai untuk memicu permintaan callback.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveCheckBox">TActiveCheckBox</a>
+  mewakili kotak centang pada halaman Web. Ia dapat dipakai untuk mengoleksi input dua-kondisi pengguna 
+  serta memicu permintaan callback.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveCustomValidator">TActiveCustomValidator</a>
+  memvalidasi kontrol tertentu menggunakan permintaan callback.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveHyperLink">TActiveHyperLink</a>
+  mewakili hiperlink pada halaman Web.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveImage">TActiveImage</a>
+  mewakili gambar pada halaman Web.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveImageButton">TActiveImageButton</a>
+  mewakili tombol klik yang mempunyai gambar sebagai latar belakangnya.
+  Ia bisa dipakai untuk memicu permintaan callback.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveLabel">TActiveLabel</a>
+	mewakili label pada halam Web.
+	Label dapat dikustomisasi melalui berbagai atribut CSS.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveLinkButton">TActiveLinkButton</a>
+	mewakili hiperlink yang bisa melalukan permintaan callback.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
+  mewakili penampung untuk kontrol lain pada halaman Web. Dalam HTML,
+  ia ditampilkan sebagai elemen &lt;div&gt;. Kontrol pabel dapat
+  diganti selama permintaan callback.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
+  mewakili tombol radio pada halaman Web.
+  Dipakai terutama dalam sebuah grup di mana pengguna bisa memilih. Ini
+  dapat digunakan untuk melakukan permintaan callback.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a>
+	mewakili field input teks pada halaman Web.
+	Ia bisa mengoleksi satu-baris, multi-baris atau input teks sandi dari pengguna.
+	Ia bisa dipakai untuk melakukan permintaan callback.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
+  	opsi callback seperti pengendali event sisi-klien <tt>OnLoading</tt>.
+  </li>
+
+</ul>
+
+<h2 id="128033">Kontrol List Aktif</h2>
+<ul id="u2" class="block-content">
+  <li>
+  * <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
+  menampilkan daftar kotak centang pada halaman Web dan setiap kotak centang
+  	dapat memicu permintaan callback.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveDropDownList">TActiveDropDownList</a>
+  menampilkan kotak daftar dropdown yang membolehkan para pengguna untuk memilih
+  satu opsi dari beberapa yang telah ditetapkan. Dapat dipakai untuk melakukan
+  permintaan callback.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveListBox">TActiveListBox</a>
+  menampilkan kotak daftar yang membolehkan satu pilihan atau multipel. Dapat
+  dipakai untuk melakukan permintaan callback.
+  </li>
+
+  <li>
+  * <a href="?page=ActiveControls.ActiveRadioButtonList">TActiveRadioButtonList</a>
+  mirip dengan TActiveCheckBoxList dalam setiap aspek kecuali bahwa setiap
+  TActiveRadioButtonList menampilkan sebuah grup tombol radio. Setiap tombol radio
+  dapat melakukan permintaan callback.
+  </li>
+</ul>
+
+<h2 id="128034">Kontrol Aktif Diperluas</h2>
+
+
+<ul id="u3" class="block-content">
+	<li>
+	* <a href="?page=ActiveControls.AutoComplete">TAutoComplete</a>
+	memperluas TActiveTextBox untuk menawarkan saran pelengkapan teks.
+	</li>
+
+	<li>
+	* <a href="?page=ActiveControls.Callback">TCallback</a>
+	kontrol generik yang dapat melakukan permintaan callback.
+	</li>
+
+	<li>
+	* <a href="?page=ActiveControls.EventTriggeredCallback">TEventTriggeredCallback</a>
+	memicu permintaan callback berdasarkan event DOM HTML.
+	</li>
+
+	<li>
+	* <a href="?page=ActiveControls.InPlaceTextBox">TInPlaceTextBox</a>
+	mewakili label yang dapat diedit dengen mengklik.
+	</li>
+
+	<li>
+	* <a href="?page=ActiveControls.TimeTriggeredCallback">TTimeTriggeredCallback</a>
+	memicu permintaan callback berdasarkan waktu yang belalu.
+	</li>
+
+	<li>
+	* <a href="?page=ActiveControls.ValueTriggeredCallback">TValueTriggeredCallback</a>
+	mengawasi (menggunakan timer) atribut elemen HTML dan memicu permintaan callback
+	ketika nilai atribut berubah.
+	</li>
+
+</ul>
+
+<h2 id="128035">Kemampuan Kontrol Aktif</h2>
+<p id="640426" class="block-content">Tabel berikut memperlihatkan Kontrol Aktif yang dapat memicu event callback dan menentukan apakah kontrol akan memunculkan event PostBack atau tidak jika Javascript dimatikan pada browser sisi-klien.</p>
+<!-- tabular: align=|l|l|l|, width=(0.35 0.25 0.25) -->
+<table class="tabular">
+	<tr>
+		<th>Nama Kontrol</th>
+		<th>Memicu Callback</th>
+		<th>Kembali ke PostBack</th>
+  </tr>
+  <tr><td>
+  		<a href="?page=ActiveControls.ActiveButton">TActiveButton</a>
+  	</td>
+  	<td>Ya</td>
+  	<td>Ya</td>
+  </tr>
+
+  <tr><td>
+  	<a href="?page=ActiveControls.ActiveCheckBox">TActiveCheckBox</a>
+  	</td>
+  	<td>Ya</td>
+  	<td>Ya</td>
+  </tr>
+
+  <tr><td>
+  	<a href="?page=ActiveControls.ActiveCustomValidator">TActiveCustomValidator</a>
+  	</td>
+  	<td>Ya</td>
+  	<td>Ya</td>
+  </tr>
+
+  <tr><td>
+  	<a href="?page=ActiveControls.ActiveHyperLink">TActiveHyperLink</a>
+  	</td>
+  	<td>Tidak</td><td>Ya</td>
+  </tr>
+
+  <tr><td>
+  	<a href="?page=ActiveControls.ActiveImage">TActiveImage</a>
+  </td>
+  <td>Tidak</td><td>Ya</td>
+  </tr>
+
+  <tr><td>
+  	<a href="?page=ActiveControls.ActiveImageButton">TActiveImageButton</a>
+	</td>
+	<td>Ya</td><td>Ya</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveLabel">TActiveLabel</a>
+	</td>
+	<td>Tidak</td><td>Ya</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveLinkButton">TActiveLinkButton</a>
+	</td>
+	<td>Ya</td><td>Tidak</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
+  </td>
+  <td>Tidak</td><td>Ya</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
+  </td>
+  <td>Ya</td><td>Ya</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a>
+	</td>
+	<td>Ya</td><td>Ya</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
+	</td>
+	<td>Tidak</td><td>N/A</td>
+  </tr>
+
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
+  </td>
+  <td>Ya</td><td>Ya</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveDropDownList">TActiveDropDownList</a>
+  </td>
+  <td>Ya</td><td>Ya</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveListBox">TActiveListBox</a>
+  </td>
+  <td>Ya</td><td>Ya</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveRadioButtonList">TActiveRadioButtonList</a>
+  </td>
+  <td>Ya</td><td>Ya</td>
+  </tr>
+
+  <tr><td>
+	<a href="?page=ActiveControls.AutoComplete">TAutoComplete</a>
+  </td>
+  <td>Ya</td>
+  <td>Tidak</td>
+  </tr>
+
+  <tr><td>
+	<a href="?page=ActiveControls.Callback">TCallback</a>
+  </td>
+  <td>Ya</td><td>Tidak</td>
+  </tr>
+
+  <tr><td>
+	<a href="?page=ActiveControls.EventTriggeredCallback">TEventTriggeredCallback</a>
+  </td>
+  <td>Ya</td><td>Tidak</td>
+  </tr>
+
+ <tr><td>
+	<a href="?page=ActiveControls.InPlaceTextBox">TInPlaceTextBox</a>
+  </td>
+  <td>Ya</td><td>Tidak</td>
+  </tr>
+
+ <tr><td>
+	<a href="?page=ActiveControls.TimeTriggeredCallback">TTimeTriggeredCallback</a>
+	</td>
+	<td>Ya</td><td>Tidak</td>
+  </tr>
+
+  <tr><td>
+	<a href="?page=ActiveControls.ValueTriggeredCallback">TValueTriggeredCallback</a>
+	</td>
+	<td>Ya</td><td>Tidak</td>
+  </tr>
+</table>
+
+<h2 id="128036">Kelas Infrastruktur Kontrol Aktif</h2>
+<p id="640427" class="block-content">Kelas berikut menyediakan kelas infrastruktur dasar yang diperlukan guna merealisasikan kontrol aktif.</p>
+<ul id="u4" class="block-content">
+	<li>
+	* <a href="?page=ActiveControls.ActiveControlAdapter">TActiveControlAdapter</a>
+	melacak nilai viewstate dari kontrol dan memutakhirkan perbedaan pada atribut elemen HTML sisi-klien.
+	</li>
+
+	<li>
+	* <a href="?page=ActiveControls.ActiveListControlAdapter">TActiveListControlAdapter</a>
+	membolehkan kontrol list yang diadaptasi untuk mengubah pilihan pada sisi-klien selama permintaan callback.
+	</li>
+
+	<li>
+	* <a href="?page=ActiveControls.ActivePageAdapter">TActivePageAdapter</a>
+	memroses masa-hidup halaman untuk permintaan callback.
+	</li>
+
+	<li>
+	* <a href="?page=ActiveControls.BaseActiveControl">TBaseActiveControl</a>
+	metode dan opsi kontrol aktif umum.
+	</li>
+
+	<li>
+	* <a href="?page=ActiveControls.CallbackClientScript">TCallbackClientScript</a>
+	metode untuk memanipulasi elemen HTML sisi-klien, juga termasuk metode untuk memanggil Efek javascript pada elemen HTML.
+	</li>
+
+	<li>
+	* <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a>
+	opsi permintaan callback sisi-klien, dan pengendali event sisi-klien.
+	</li>
+
+	<li>
+	* <a href="?page=ActiveControls.CallbackResponseAdapter">TCallbackResponseAdapter</a>
+	respon HTTP untuk permintaan callback.
+	</li>
+
+</ul>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="4101">TRadioButton</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRadioButton" />
+
+<p id="480307" class="block-content">
+<tt>TRadioButton</tt> is similar to <tt>TCheckBox</tt> in every aspect, except that <tt>TRadioButton</tt> displays a radio button on a Web page. The radio button can belong to a specific group specified by <tt>GroupName</tt> such that only one radio button within that group can be selected at most.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRadioButton.Home" />
+
+<div class="last-modified">$Id: RadioButton.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

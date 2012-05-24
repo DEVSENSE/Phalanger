@@ -1,0 +1,29 @@
+<com:TContent ID="body" >
+
+<h1>TKeyboard</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TKeyboard" />
+
+<p>
+<tt>TKeyboard</tt> menampilkan keyboard virtual yang dapat diklik pengguna untuk memasukan input dalam kotak teks terkait. Ini membantu mengurangi hacking perekaman.
+</p>
+
+<p>
+Untuk menggunakan TKeyboard, tulis template seperti berikut:
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TTextBox ID="PasswordInput" />
+&lt;com:TKeyboard ForControl="PasswordInput" />
+</com:TTextHighlighter>
+
+<p>
+Kontrol TKeyboard dikaitkan dengan kontrol <tt>TTextBox</tt> dengan menetapkan 
+<tt>ForControl</tt> menjadi ID dari kontrol tersebut. Ketika kotak teks dalam fokus, keyboard virtual akan muncull dan ketika kotak teks kehilangan fokus, keyboard akan sembunyi secara otomatis. Setel <tt>AutoHide</tt> ke false untuk membiarkan keyboard tetap tampil.
+</p>
+
+<p>
+Penampilan keyboard juga bisa diubah dengan menetapkan file CSS terkustomisasi melalui <tt>CssUrl</tt>. Standarnya nama kelas CSS untuk keyboard adalah 'Keyboard'. Ini juga bisa diubah dengan menetapkan <tt>KeyboardCssClass</tt>
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TKeyboard.Home" />
+
+<div class="last-modified">$Id: Keyboard.page 2159 2007-08-27 21:23:33Z xue $</div></com:TContent>

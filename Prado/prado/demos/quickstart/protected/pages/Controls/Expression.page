@@ -1,0 +1,23 @@
+<com:TContent ID="body" >
+
+<h1 id="2401">TExpression</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TExpression" />
+
+<p id="290254" class="block-content">
+<tt>TExpression</tt> evaluates a PHP expression and displays the evaluation result. To specify the expression to be evaluated, set the <tt>Expression</tt> property. Note, <tt>TExpression</tt> evaluates the expression during the rendering control lifecycle.
+</p>
+
+<p id="290255" class="block-content">
+The context of the expression in a <tt>TExpression</tt> control is the control itself. That is, <tt>$this</tt> represents the control object if it is present in the expression. For example, the following template tag will display the title of the page containing the <tt>TExpression</tt> control.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_290104">
+&lt;com:TExpression Expression="$this->Page->Title" /&gt;
+</com:TTextHighlighter>
+
+<p id="290256" class="block-content">
+Be aware, since <tt>TExpression</tt> allows execution of arbitrary PHP code, in general you should not use it to evaluate expressions submitted by your application users.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TExpression.Home" />
+
+<div class="last-modified">$Id: Expression.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

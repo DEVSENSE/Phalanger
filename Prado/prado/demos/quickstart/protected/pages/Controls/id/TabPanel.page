@@ -1,0 +1,55 @@
+<com:TContent ID="body" >
+
+<h1>TTabPanel</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TTabPanel" />
+
+<p>
+<tt>TTabPanel</tt> menampilkan panel bertab. Para pengguna dapat mengklik pada bar tab untuk beralih diantara tampilan tab yang berbeda. Setiap tampilan tab adalah panel independen yang dapat berisi konten bebas.
+</p>
+
+<p>
+Kontrol <tt>TTabPanel</tt> terdiri dari satu atau beberapa kontrol <tt>TTabView</tt> yang mewakili tampilan tab yang mungkin. Kapan saja, hanya satu tampilan tab terlihat (aktif), yang ditetapkan oleh setiap properti berikut:
+</p>
+
+<ul>
+<li><tt>ActiveViewIndex</tt> - indeks integer berbasis-nol pada tampilan dalam koleksi view.</li>
+<li><tt>ActiveViewID</tt> - ID teks pada tampilan yang telihat.</li>
+<li><tt>ActiveView</tt> - turunan tampilan yang terlihat.</li>
+</ul>
+
+<p>
+Jika <tt>ActiveViewIndex</tt> dan <tt>ActiveViewID</tt> keduanya disetel, yang kedua diambil lebih dahulu.
+</p>
+
+<p>
+<tt>TTabPanel</tt> menggunakan CSS untuk menetapkan penampilan bat tab dan panel. Standarnya, file CSS yang disertakan akan diterbitkan berisi CSS standar untuk <tt>TTabPanel</tt>. Anda juga dapat menggunakan file CSS sendiri dengan menetapkan properti <tt>CssUrl</tt>. Properti berikut menetapkan kelas CSS yang dipakai untuk elemen div dalam <tt>TTabPanel</tt>:
+</p>
+
+<ul>
+<li><tt>CssClass</tt> - nama kelas CSS untuk elemen div terluar (standarnya 'tab-panel');</li>
+<li><tt>TabCssClass</tt> - nama kelas CSS untuk tab non aktif elemen div (standarnya 'tab-normal');</li>
+<li><tt>ActiveTabCssClass</tt> - nama kelas CSS untuk tab aktif elemen div (standarnya 'tab-active');</li>
+<li><tt>ViewCssClass</tt> - kelas CSS untuk elemen div menutupi tampilan konten (standarnya 'tab-view');</li>
+</ul>
+
+<p>
+Untuk menggunakan TTabPanel, tulis template seperti berikut:
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source">
+ &lt;com:TTabPanel>
+   &lt;com:TTabView Caption="View 1">
+     content for view 1
+   &lt;/com:TTabView>
+   &lt;com:TTabView Caption="View 2">
+     content for view 2
+   &lt;/com:TTabView>
+   &lt;com:TTabView Caption="View 3">
+     content for view 3
+   &lt;/com:TTabView>
+ &lt;/com:TTabPanel>
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="Controls.Samples.TTabPanel.Home" />
+
+<div class="last-modified">$Id: TabPanel.page 2075 2007-07-25 15:43:06Z xue $</div></com:TContent>

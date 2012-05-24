@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="4401">TTable</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TTable" />
+
+<p id="510314" class="block-content">
+<tt>TTable</tt> menampilkan tabel HTML pada halaman. ia dipakai bersama dengan <tt>TTableRow</tt> dan <tt>TTableCell</tt> untuk membolehkan memanipulasi tabel HTML secara programatis. Baris dari tabel disimpan dalam properti <tt>Rows</tt>. Anda dapat menyetel tabel cellspacing dan cellpadding masing-masing melalui properti <tt>CellSpacing</tt> dan <tt>CellPadding</tt>. Judul tabel dapat ditetapkan melalui <tt>Caption</tt> di mana penjajarannya ditetapkan dengan <tt>CaptionAlign</tt>. Properti <tt>GridLines</tt> menunjukan bagaimana tabel harus menampikan bingkainya, dan <tt>BackImageUrl</tt> membolehkan tabel untuk memiliki gambar latar belakang.
+</p>
+<com:RunBar PagePath="Controls.Samples.TTable.Home" />
+
+<div class="last-modified">$Id: Table.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

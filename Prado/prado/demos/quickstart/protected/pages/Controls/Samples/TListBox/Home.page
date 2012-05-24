@@ -1,0 +1,274 @@
+<com:TContent ID="body">
+
+<h1>TListBox Samples</h1>
+
+<h2>List Boxes in Single Selection Mode</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+List box with default settings:
+</td>
+<td class="sampleaction">
+<com:TListBox />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+List box with initial items:
+</td>
+<td class="sampleaction">
+<com:TListBox>
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TListBox>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+List box with customized row number, color and font:
+</td>
+<td class="sampleaction">
+<com:TListBox Rows="3" ForeColor="blue" Font.Size="14pt">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TListBox>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Disabled list box:
+</td>
+<td class="sampleaction">
+<com:TListBox Enabled="false">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TListBox>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Auto postback list box:
+</td>
+<td class="sampleaction">
+<com:TListBox
+	AutoPostBack="true"
+	OnSelectedIndexChanged="selectionChanged">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TListBox>
+<com:TLabel ID="SelectionResult" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+List box's behavior upon postback:
+</td>
+<td class="sampleaction">
+<com:TListBox ID="ListBox1">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TListBox>
+<com:TButton Text="Submit" OnClick="buttonClicked"/>
+<com:TLabel ID="SelectionResult2" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+
+<h2>List Boxes in Multiple Selection Mode</h2>
+<i>Use Ctrl + Mouse Click to change selection</i>
+<br/>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+List box with default settings:
+</td>
+<td class="sampleaction">
+<com:TListBox SelectionMode="Multiple" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+List box with initial items:
+</td>
+<td class="sampleaction">
+<com:TListBox SelectionMode="Multiple">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+</com:TListBox>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+List box's behavior upon postback:
+</td>
+<td class="sampleaction">
+<com:TListBox ID="ListBox2" SelectionMode="Multiple">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+</com:TListBox>
+<com:TButton Text="Submit" OnClick="buttonClicked2" />
+<br/>
+<com:TLabel ID="MultiSelectionResult2" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Auto postback list box:
+</td>
+<td class="sampleaction">
+<com:TListBox AutoPostBack="true"
+	SelectionMode="Multiple"
+	OnSelectedIndexChanged="multiSelectionChanged">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" Selected="true" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" Selected="true" />
+</com:TListBox>
+<com:TLabel ID="MultiSelectionResult" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+<h2>List Boxes with DataBinding</h2>
+<i>Use Ctrl + Mouse Click to change selection</i>
+<br/>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Databind to an integer-indexed array:
+</td>
+<td class="sampleaction">
+<com:TListBox ID="DBListBox1"
+	AutoPostBack="true"
+	SelectionMode="Multiple"
+	OnSelectedIndexChanged="DBListBox1Changed" />
+<com:TLabel ID="DBListBox1Result" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Databind to an associative array:
+</td>
+<td class="sampleaction">
+<com:TListBox ID="DBListBox2"
+	AutoPostBack="true"
+	SelectionMode="Multiple"
+	OnSelectedIndexChanged="DBListBox2Changed" />
+<com:TLabel ID="DBListBox2Result" ForeColor="red" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Databind with DataTextField and DataValueField specified:
+</td>
+<td class="sampleaction">
+<com:TListBox ID="DBListBox3"
+	AutoPostBack="true"
+	SelectionMode="Multiple"
+	DataTextField="name"
+	DataValueField="id"
+	OnSelectedIndexChanged="DBListBox3Changed" />
+<com:TLabel ID="DBListBox3Result" ForeColor="red" />
+</td>
+</tr>
+
+</table>
+
+
+<h2>List Boxes with Validation</h2>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+List box is being validated:
+</td>
+<td class="sampleaction">
+<com:TListBox ID="VListBox1">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TListBox>
+<com:TRequiredFieldValidator
+	ControlToValidate="VListBox1"
+	ErrorMessage="You must make a selection"
+	Display="Dynamic"
+	ValidationGroup="Group1"
+	/>
+<com:TButton Text="Submit" ValidationGroup="Group1" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+List box causing validation:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	ErrorMessage="You must enter a value"
+	Display="Dynamic"
+	ValidationGroup="Group2"
+	/>
+<com:TListBox
+	ID="VListBox2"
+	AutoPostBack="true"
+	ValidationGroup="Group2">
+  <com:TListItem Text="Agree" />
+  <com:TListItem Text="Disagree" />
+</com:TListBox>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+List box with option groups:
+</td>
+<td class="sampleaction">
+<com:TListBox>
+  <com:TListItem Value="value 1" Text="item 1" Attributes.Group="group 1"/>
+  <com:TListItem Value="value 2" Text="item 2" Attributes.Group="group 1"/>
+  <com:TListItem Value="value 3" Text="item 3" Attributes.Group="group 2"/>
+  <com:TListItem Value="value 4" Text="item 4" Attributes.Group="group 2"/>
+</com:TListBox>
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

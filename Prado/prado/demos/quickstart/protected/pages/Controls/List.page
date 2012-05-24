@@ -1,0 +1,111 @@
+<com:TContent ID="body" >
+
+<h1 id="4801">List Controls</h1>
+<p id="550329" class="block-content">
+List controls covered in this section all inherit directly or indirectly from <tt>TListControl</tt>. Therefore, they share the same set of commonly used properties, including,
+</p>
+<ul id="u1" class="block-content">
+<li><tt>Items</tt> - list of items in the control. The items are of type <tt>TListItem</tt>. The item list can be populated via databinding or specified in templates like the following:
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_550115">
+&lt;com:TListBox&gt;
+  &lt;com:TListItem Text="text 1" Value="value 1" /&gt;
+  &lt;com:TListItem Text="text 2" Value="value 2" Selected="true" /&gt;
+  &lt;com:TListItem Text="text 3" Value="value 3" /&gt;
+&lt;/com:TListBox&gt;
+</com:TTextHighlighter>
+</li>
+<li><tt>SelectedIndex</tt> - the zero-based index of the first selected item in the item list.</li>
+<li><tt>SelectedIndices</tt> - the indices of all selected items.</li>
+<li><tt>SelectedItem</tt> - the first selected item in the item list.</li>
+<li><tt>SelectedValue</tt> - the value of the first selected item in the item list.</li>
+<li><tt>AutoPostBack</tt> - whether changing the selection of the control should trigger postback.</li>
+<li><tt>CausesValidation</tt> - whether validation should be performed when postback is triggered by the list control.</li>
+</ul>
+
+<p id="550330" class="block-content">
+Since <tt>TListControl</tt> inherits from <tt>TDataBoundControl</tt>, these list controls also share a common operation known as <tt>databinding</tt>. The <tt>Items</tt> can be populated from preexisting data specified by <tt>DataSource</tt> or <tt>DataSourceID</tt>. A function call to <tt>dataBind()</tt> will cause the data population. For list controls, data can be specified in the following two kinds of format:
+</p>
+<ul id="u2" class="block-content">
+  <li>one-dimensional array or objects implementing <tt>ITraversable</tt> :  array keys will be used as list item values, and array values will be used as list item texts. For example
+<com:TTextHighlighter CssClass="source block-content" id="code_550116">
+$listbox->DataSource=array(
+	'key 1'=>'item 1',
+	'key 2'=>'item 2',
+	'key 3'=>'item 3');
+$listbox->dataBind();
+</com:TTextHighlighter>
+</li>
+  <li>tabular (two-dimensional) data : each row of data populates a single list item. The list item value is specified by the data member indexed with <tt>DataValueField</tt>, and the list item text by <tt>DataTextField</tt>. For example,
+<com:TTextHighlighter CssClass="source block-content" id="code_550117">
+$listbox->DataTextField='name';
+$listbox->DataValueField='id';
+$listbox->DataSource=array(
+	array('id'=>'001','name'=>'John','age'=>31),
+	array('id'=>'002','name'=>'Mary','age'=>30),
+	array('id'=>'003','name'=>'Cary','age'=>20));
+$listbox->dataBind();
+</com:TTextHighlighter>
+</li>
+</ul>
+
+<h2 id="4802">TListBox</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TListBox" />
+<p id="550331" class="block-content">
+<tt>TListBox</tt> displays a list box that allows single or multiple selection. Set the property <tt>SelectionMode</tt> as <tt>Single</tt> to make a single selection list box, and <tt>Multiple</tt> a multiple selection list box. The number of rows displayed in the box is specified via the <tt>Rows</tt> property value.
+</p>
+<com:RunBar PagePath="Controls.Samples.TListBox.Home" />
+
+<h2 id="4803">TDropDownList</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TDropDownList" />
+<p id="550332" class="block-content">
+<tt>TDropDownList</tt> displays a dropdown list box that allows users to select a single option from a few prespecified ones.
+</p>
+<p class="block-content">
+Since v3.1.1, <tt>TDropDownList</tt> starts to support prompt text (something like 'Please select:' as the first list item). To use this feature, set either <tt>PromptText</tt> or <tt>PromptValue</tt>, or both. If the user chooses the prompt item, the dropdown list will be unselected.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDropDownList.Home" />
+
+<h2 id="4804">TCheckBoxList</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TCheckBoxList" />
+<p id="550333" class="block-content">
+<tt>TCheckBoxList</tt> displays a list of checkboxes on a Web page. The alignment of the text besides each checkbox can be specified <tt>TextAlign</tt>. The layout of the checkboxes can be controlled by the following properties:
+</p>
+<ul id="u3" class="block-content">
+  <li><tt>RepeatLayout</tt> - can be either <tt>Table</tt> or <tt>Flow</tt>. A <tt>Table</tt> uses HTML table cells to organize the checkboxes, while a <tt>Flow</tt> uses HTML span tags and breaks for the organization. With <tt>Table</tt> layout, you can set <tt>CellPadding</tt> and <tt>CellSpacing</tt>.</li>
+  <li><tt>RepeatColumns</tt> - how many columns the checkboxes should be displayed in.</li>
+  <li><tt>RepeatDirection</tt> - how to traverse the checkboxes, in a horizontal way or a vertical way (because the checkboxes are displayed in a matrix-like layout).</li>
+</ul>
+
+<com:RunBar PagePath="Controls.Samples.TCheckBoxList.Home" />
+
+<h2 id="4805">TRadioButtonList</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRadioButtonList" />
+<p id="550334" class="block-content">
+<tt>TRadioButtonList</tt> is similar to <tt>TCheckBoxList</tt> in every aspect except that each <tt>TRadioButtonList</tt> displays a group of radiobuttons. Only one of the radiobuttions can be selected (<tt>TCheckBoxList</tt> allows multiple selections.)
+</p>
+<com:RunBar PagePath="Controls.Samples.TRadioButtonList.Home" />
+
+<h2 id="4806">TBulletedList</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TBulletedList" />
+<p id="550335" class="block-content">
+<tt>TBulletedList</tt> displays items in a bullet format on a Web page. The style of the bullets can be specified by <tt>BulletStyle</tt>. When the style is <tt>CustomImage</tt>, the bullets are displayed as images, which is specified by <tt>BulletImageUrl</tt>.
+</p>
+<p id="550336" class="block-content">
+<tt>TBulletedList</tt> displays the item texts in three different modes,
+</p>
+<ul id="u4" class="block-content">
+  <li><tt>Text</tt> - the item texts are displayed as static texts;</li>
+  <li><tt>HyperLink</tt> - each item is displayed as a hyperlink whose URL is given by the item value, and <tt>Target</tt> property can be used to specify the target browser window;</li>
+  <li><tt>LinkButton</tt> - each item is displayed as a link button which posts back to the page if a user clicks on that, and the event <tt>OnClick</tt> will be raised under such a circumstance.</li>
+</ul>
+
+<com:RunBar PagePath="Controls.Samples.TBulletedList.Home" />
+
+<h2 id="130001">TRatingList</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRatingList" />
+
+<p class="block-content">
+This is an EXPERIMENTAL class that displays clickable images that represent a TRadioButtonList.
+</p>
+
+<div class="last-modified">$Id: List.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

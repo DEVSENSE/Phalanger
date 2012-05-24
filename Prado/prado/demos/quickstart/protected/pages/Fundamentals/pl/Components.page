@@ -1,0 +1,128 @@
+<com:TContent ID="body" >
+<h1 id="701">Komponenty</h1>
+<p id="110113" class="block-content">
+Komponent jest instancją klasy lub klasy potomnej <tt>TComponent</tt>. Klasa bazowa <tt>TComponent</tt> implementuje mechanizm właściwości oraz zdarzeń kompomentu.
+</p>
+
+<h2 id="702">Właściwości komponentu (ang. component properties)</h2>
+<p id="110114" class="block-content">
+Właściwość kompoenentu może być postrzegana jako publiczna zmienna opsiującą określoną cechę/właściwość komponentu, taką jak kolor tła, rozmiar czcionki, itp. Właściwość jest definiowana poprzez istnienie metody getter i/lub setter w klasie. Na przykład w <tt>TControl</tt> definiujemy właściwość <tt>ID</tt> komponentu używając następujących funkcji typu getter i setter,
+<com:TTextHighlighter CssClass="source block-content" id="code_110056">
+class TControl extends TComponent {
+    public function getID() {
+        ...
+    }
+    public function setID($value) {
+        ...
+    }
+}
+</com:TTextHighlighter>
+</p>
+<p id="110115" class="block-content">
+Aby pobrać lub ustawić właściwość <tt>ID</tt>, postępuj jak poniżej (tak jakbyś miał do czynienia ze zmienną):
+<com:TTextHighlighter CssClass="source block-content" id="code_110057">
+$id = $component->ID;
+$component->ID = $id;
+</com:TTextHighlighter>
+Jest to równoznaczne z następującym zapisem:
+<com:TTextHighlighter CssClass="source block-content" id="code_110058">
+$id = $component->getID();
+$component->setID( $id );
+</com:TTextHighlighter>
+</p>
+<p id="110116" class="block-content">
+Właściwość jest "tylko do odczytu" jeśli posiada metodę getter a nie posiada metody setter. Odkąd nazwy metod w PHP nie są zależne od wielkiej bądź małej litery, właściwości również są niewrażliwe na wielkość liter. Klasa kompomentu dziedziny wszystkie właściwości rodzica.
+</p>
+
+<h3 id="706">Subwłaściwości (ang. subproperties)</h3>
+<p id="110117" class="block-content">
+Subwłaściwość jest właściwością właściwości typu obiektowego. Dla przykładu <tt>TWebControl</tt> posiada właściwość <tt>Font</tt>, która jest typu <tt>TFont</tt>. Wtedy właściwość <tt>Name</tt> właściwości <tt>Font</tt> jest subwłaściwością w stosunku do <tt>TWebControl</tt>.
+</p>
+<p id="110118" class="block-content">
+Aby pobrać lub ustawić subwłaściwość <tt>Name</tt> należy użyć następującej metody:
+<com:TTextHighlighter CssClass="source block-content" id="code_110059">
+$name = $component-&gt;getSubProperty('Font.Name');
+$component->setSubProperty('Font.Name', $name);
+</com:TTextHighlighter>
+Jest to równoznaczne z następującym zapisem:
+<com:TTextHighlighter CssClass="source block-content" id="code_110060">
+$name = $component->getFont()->getName();
+$component-&gt;getFont()-&gt;setName( $name );
+</com:TTextHighlighter>
+
+
+</p>
+
+<h2 id="703">Zdarzenia komponentu</h2>
+<p id="110119" class="block-content">
+Zdarzenia komponentu są specjalnymi właściwościami, które pobierają nazwy metod jako swoje wartości. Przypisując (ustawiając) metodę do zdarzenia (will hook up the method ) do miejsca gdzie zdarzenie jest wywoływane. Dzięki temu zachowanie komponentu może zostać zmodyfikowane w sposób, który nie był przewidziany podczas fazy dewelopowania komponentu.
+</p>
+<p id="110120" class="block-content">
+Zdarzenie komponentu jest definiowane poprzez istnienie metody, której nazwa zaczyna się przedrostkiem <tt>on</tt>. Nazwa zdarzenia jest nazwą metody i z tego powodu jest niewrażliwa na wielkość liter. Na przykład w komponencie <tt>TButton</tt> mamy:
+<com:TTextHighlighter CssClass="source block-content" id="code_110061">
+class TButton extends TWebControl {
+    public function onClick( $param ) {
+        ...
+    }
+}
+</com:TTextHighlighter>
+W ten sposób definiujemy metodę o nazwie <tt>OnClick</tt> a uchwyt do zdarzenia przez nią definiowanego może być przypisany w jeden z następujących sposobów:
+<com:TTextHighlighter CssClass="source block-content" id="code_110062">
+$button->OnClick = $callback;
+$button->OnClick->add( $callback );
+$button->OnClick[] = $callback;
+$button->attachEventHandler( 'OnClick' , $callback );
+</com:TTextHighlighter>
+gdzie <tt>$callback</tt> odnosi się do poprawnej funkcji typu callback w PHP (np. nazwy funkcji, metody klasy <tt>array($object,'method')</tt>, itp.)
+</p>
+
+<h2 id="704">Przestrzenie nazw (ang. namespaces)</h2>
+<p id="110121" class="block-content">
+Przestrzeń nazw odnosi się do logicznego pogrupowania nazwy klas w taki sposób, że moga być one odróżniane od innych klas, których nazwy są identyczne. Ponieważ PHP nie wspiera przestrzeni nazw sam w sobie, nie można stworzyć instancji dwóch klas, które mają tą samoą nazwę ale różne definicje. Aby odróżniać się od klas użytkowników wszystkie klasy PRADO posiadają prefix 'T' (oznaczający 'Type' - z angielskiego: typ). Zachęcamy do nazywania własnych klas w ten sposób. W odróznieniu można dodawać prefiksy klas zaczynające się dowolną inną literą (lub grupą liter).
+</p>
+<p id="110122" class="block-content">
+Przestrzeń nazw w PRADO jest postrzegana jako folder zawierający jednen lub więcej plików klas. Poprzez poprzedzania nazwy klasy przestrzenią nazw klasa może zostać określona jednoznacznie. Każda przestrzeń nazw jest w PRADO określona w następujący sposób:
+<div class="source">
+PathAlias.Dir1.Dir2
+</div>
+gdzie <tt>PathAlias</tt> jest aliasem jakiegoś katalogu, gdzie <tt>Dir1</tt> i <tt>Dir2</tt> są podkatalogami tego katalogu. Klasa o nazwie <tt>MyClass</tt> zdefiniowana w <tt>Dir2</tt> jest fully qualified poprzez <tt>PathAlias.Dir1.Dir2.MyClass</tt>.
+</p>
+<p id="110123" class="block-content">
+By używać przestrzeni nazw w kodzie, napisz:
+<com:TTextHighlighter CssClass="source block-content" id="code_110063">
+Prado::using('PathAlias.Dir1.Dir2.*');
+</com:TTextHighlighter>
+co spowoduje dołączenie katalogu wskazywanego przez <tt>PathAlias.Dir1.Dir2</tt> do ścieżek include w PHP, dzięki czemu instancje klas zdefiniowanych w podanym katalogu mogą zostać utworzone bez podawania pełnej przestrzeni nazw. Możesz również zainkludować pojedyńczą definicję klasy poprzez
+<com:TTextHighlighter CssClass="source block-content" id="code_110064">
+Prado::using('PathAlias.Dir1.Dir2.MyClass');
+</com:TTextHighlighter>
+co spowoduje zainkludowanie pliku klasy <tt>MyClass</tt> jeśli nie została ona jeszcze zdefiniowana.
+</p>
+<p id="110124" class="block-content">
+Aby zobaczyć więcej informacji o definiowaniu aliasów zobacz sekcję <a href="?page=Configurations.AppConfig">konfigurowanie aplikacji</a>.
+</p>
+
+<h2 id="705">Tworzenie instancji komponentu</h2>
+<p id="110125" class="block-content">
+Tworzenie instancji komponentu oznacza tworzenie instancji klasy komponentu. Rozróżniamy dwa typy instancji komponentu: statyczną i dynamiczną. Utworzone komponenty nazywane są odpowiednio komponentami statycznymi i dynamicznymi.
+</p>
+
+<h3 id="707">Dynamiczne tworzenie instancji komponentów</h3>
+<p id="110126" class="block-content">
+Dynamiczne tworzenie instancji komponentów oznacza tworzenie instancji komponentu w kodzie PHP. Wygląda to identycznie jak zwyczajne tworznie komponentów w PHP. Komponent może zostać dynamicznie utworzony w jeden z poniższych sposobów w PHP:
+<com:TTextHighlighter CssClass="source block-content" id="code_110065">
+$component = new ComponentClassName;
+$component = Prado::createComponent('ComponentType');
+</com:TTextHighlighter>
+gdzie <tt>ComponentType</tt> wskazuje na nazwę klasy lub nazwę typu w formacie przestrzeni nazw (np. <tt>System.Web.UI.TControl</tt>). Drugi sposób został wprowadzony aby wypełnić brak wsparcia dla przestrzeni nazw w PHP.
+</p>
+
+<h3 id="708">Statyczne tworzenie instancji komponentów</h3>
+<p id="110127" class="block-content">
+Statyczne tworzenie instancji komponentów odnosi się do tworznenia komponentów poprzez <a href="?page=Configurations.Overview">konfigurację</a>. Proces tworzenia odbywa się po stronie frameworku. Na przykład w <a href="?page=Configurations.AppConfig">konfiguracji aplikacji</a> można skonfigurować moduł, który zostanie załadowany podczas uruchamiania aplikacji. Zatem moduł jest statycznym komponentem stworzonym przez framework. Statyczne tworzenie instancji jest często wspólnie używane w <a href="?page=Configurations.Templates1">szablonach</a>. Każdy tag komponentu w szablonie określa komponent, który będzie automatycznie stworzony przez framework, kiedy szablon będzie ładowany. Na przykład w szablonie strony następujący tag doprowadzi do stworzenia komponentu <tt>TButton</tt> na stronie:
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_110066">
+&lt;com:TButton Text="Register" /&gt;
+</com:TTextHighlighter>
+</p>
+
+<div class="last-modified">$Id: Components.page 2349 2008-01-01 17:54:32Z aztech $</div></com:TContent>

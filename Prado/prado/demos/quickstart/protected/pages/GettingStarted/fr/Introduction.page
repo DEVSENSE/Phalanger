@@ -1,0 +1,19 @@
+<com:TContent ID="body" >
+<h1 id="101">Bienvenue sur le tutorial de démarrage rapide de PRADO</h1>
+<div id="intro" class="block-content">
+<p id="10001">
+Ce tutorial est destiné à vous aider rapidement à créer votre propre application Web basée sur PRADO version 3.X.
+</p>
+<p id="10002">
+Vous pouvez vous réferrer aux ressouces suivantes si vous trouvez que ce tutorial ne correspond pas à vos besoins.
+</p>
+</div>
+<ul class="block-content" id="intro-links">
+  <li><a href="http://www.pradosoft.com/docs/classdoc/">PRADO Classes</a></li>
+  <li><a href="http://www.pradosoft.com/docs/manual/">PRADO API Documentation</a></li>
+  <li><a href="http://www.pradosoft.com/forum/">PRADO Forum</a></li>
+  <li><a href="http://www.pradosoft.com/wiki/">PRADO Wiki</a></li>
+  <li><a href="http://trac.pradosoft.com/prado/">PRADO Trac</a></li>
+</ul>
+
+<div class="last-modified">$Id: Introduction.page 2154 2007-08-27 06:52:02Z tof $</div></com:TContent>

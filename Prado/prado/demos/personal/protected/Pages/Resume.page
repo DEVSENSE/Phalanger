@@ -1,0 +1,80 @@
+<com:TContent ID="sidebar">
+<table border="0" cellpadding="0" cellspacing="0" class="photo-frame" id="photo">
+	<tr>
+		<td class="topx--"></td>
+		<td class="top-x-"></td>
+		<td class="top--x"></td>
+	</tr>
+	<tr>
+		<td class="midx--"></td>
+		<td><img src="<%=$this->Page->Theme->BaseUrl.'/images/resume-photo.jpg'%>" class="photo_198" style="border:4px solid white" alt="Resume Photo"/></td>
+
+		<td class="mid--x"></td>
+	</tr>
+	<tr>
+		<td class="botx--"></td>
+		<td class="bot-x-"></td>
+		<td class="bot--x"></td>
+	</tr>
+</table>
+</com:TContent>
+
+<com:TContent ID="content">
+
+<h3>Your Name Here</h3>
+
+<p>resume 1/23/04</p>
+<p>555-555-1212 fax<br />
+555-555-1212 voice<br />
+someone@example.com<br />
+www.example.com<br />
+City, State &nbsp;Country</p>
+
+<p><a href="#"><img src="<%=$this->Page->Theme->BaseUrl.'/images/button-dwn_res.gif'%>" alt="download resume in word format" style="border-width:0px;" /></a></p>
+<h4>Objective</h4>
+<p class="first">Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+<h4>Experience</h4>
+<p class="first">1999 - 2004&nbsp; Lorem ipsum dolor sit amet, consectetuer adipiscing elit.<br />
+	Sed diam nonummy nibh euismod </p>
+
+<ul>
+	<li>Ttincidunt ut laoreet dolore magna aliquam erat volutpat. </li>
+	<li>Ut wisi enim ad minim veniam, quis nostrud exercitation consequat. </li>
+	<li>Duis autem veleum iriure dolor in hendrerit in vel willum.</li>
+</ul>
+<p>1995 - 1999 &nbsp; Lorem ipsum dolor sit amet, consectetuer adipiscing elit.<br />
+
+	Sed diam nonummy nibh euismod </p>
+<ul>
+	<li>Ttincidunt ut laoreet dolore magna aliquam erat volutpat. </li>
+	<li>Ut wisi enim ad minim veniam, quis nostrud exercitation consequat. </li>
+	<li>Duis autem veleum iriure dolor in hendrerit in vel willum.</li>
+</ul>
+<p>1993 - 1995 &nbsp; Lorem ipsum dolor sit amet, consectetuer adipiscing elit.<br />
+
+	Sed diam nonummy nibh euismod </p>
+<ul>
+	<li>Ttincidunt ut laoreet dolore magna aliquam erat volutpat. </li>
+	<li>Ut wisi enim ad minim veniam, quis nostrud exercitation consequat. </li>
+	<li>Duis autem veleum iriure dolor in hendrerit in vel willum.</li>
+</ul>
+<p>1987 - 1993 &nbsp; Lorem ipsum dolor sit amet, consectetuer adipiscing elit.<br />
+
+	Sed diam nonummy nibh euismod </p>
+<ul>
+	<li>Ttincidunt ut laoreet dolore magna aliquam erat volutpat. </li>
+	<li>Ut wisi enim ad minim veniam, quis nostrud exercitation consequat. </li>
+	<li>Duis autem veleum iriure dolor in hendrerit in vel willum.</li>
+</ul>
+<h4>Education</h4>
+
+<p class="first">1984 - 1987 &nbsp; Lorem ipsum dolor sit amet, consectetuer adipiscing elit.<br />
+Sed diam nonummy nibh euismod </p>
+<ul>
+	<li>Ttincidunt ut laoreet dolore magna aliquam erat volutpat. </li>
+	<li>Ut wisi enim ad minim veniam, quis nostrud exercitation consequat.</li>
+</ul>
+
+<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
+
+</com:TContent>

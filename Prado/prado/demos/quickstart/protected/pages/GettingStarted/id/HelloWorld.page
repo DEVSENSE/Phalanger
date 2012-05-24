@@ -1,0 +1,82 @@
+<com:TContent ID="body" >
+<h1 id="401">Aplikasi PRADO Pertama Saya</h1>
+<div id="hello1"  class="block-content">
+<p id="50034">
+Dalam seksi ini, kami membimbing Anda melalui pembuatan aplikasi PRADO pertama Anda, aplikasi terkenal "Hello World".
+</p>
+<p id="50035">
+"Hello World" barangkali adalah aplikasi PRADO <i>interaktif</i> paling sederhana yang bisa Anda buat. Ia menampilkan kepada pengguna-akhir sebuah halaman dengan tombol kirim yang judulnya adalah <tt>Click Me</tt>. Setelah pengguna mengklik tombol, judulnya diubah ke <tt>Hello World</tt>.
+</p>
+<p id="50036">
+Ada banyak pendekatan yang dapat mencapai tujuan di atas. Seseorang dapat mengirim halaman ke server, menentukan variabel POST, dan membuat halaman baru dengan judul tombol yang dimutakhirkan. Atau seseorang cukup menggunakan JavaScript untuk memutakhirkan judul tombol setelah event klien <tt>onclick</tt>.
+</p>
+</div>
+<p id="50037" class="block-content">
+PRADO mempromosikan pemrograman Web berbasis-komponen dan kendali-event. Tombol disajikan oleh obyek <tt>TButton</tt>. Ia melapisi judul tombol sebagai properti <tt>Text</tt> dan mengaitkan tindakan klik pengguna dengan event sisi-server <tt>OnClick</tt>. Untuk merespon klik pengguna pada tombol, seseorang cukup perlu menyertakan fungsi ke event <tt>OnClick</tt> tombol. Di dalam fungsi, properti tombol <tt>Text</tt> diubah sebagai "Hello World". Diagram berikut menampilkan urutan di atas,
+<img src="<%~sequence.gif%>" class="figure"/>
+</p>
+<p id="50038" class="block-content">
+Aplikasi PRADO kita terdiri dari tiga file, <tt>index.php</tt>, <tt>Home.page</tt> dan <tt>Home.php</tt>, yang diatur sebagai berikut,
+<img src="<%~directory.gif%>" class="figure"/>
+
+di mana setiap direktori dijelaskan sebagai berikut. Catatan, struktur direktori di atas bisa dikustomisasi. Sebagai contoh, seseorang dapat memindahkan direktori <tt>protected</tt> ke luar direktori Web. Anda akan mengetahui bagaimana melakukan ini setelah Anda melewati tutorial ini.
+</p>
+<ul id="dir-struct" class="block-content">
+<li><tt>assets</tt> - direktori yang menyimpan file pribadi yang dipublikasikan. Lihat seksi <a href="?page=Advanced.Assets">assets</a> untuk lebih jelasnya. Direktori ini harus bisa ditulisi oleh proses server Web.</li>
+<li><tt>protected</tt> - path basis aplikasi yang menyimpan data aplikasi dan file naskah pribadi. Direktori ini harus dikonfigurasi tidak bisa diakses terhadap pengguna-akhir.</li>
+<li><tt>runtime</tt> - path penyimpan runtime aplikasi. Direktori ini dipakai oleh PRADO untuk menyimpan informasi runtime aplikasi, seperti kondisi aplikasi, data di-cache, dll. Direktori ini harus bisa ditulisi oleh proses server Web.</li>
+<li><tt>pages</tt> - path basis yang menyimpan semua halaman PRADO.</li>
+</ul>
+
+<div class="tip">
+<b class="tip">Tip:</b>Anda juga dapat menggunakan <tt>framework/prado-cli.php</tt>
+<a href="?page=GettingStarted.CommandLine">naskah baris perintah</a>
+untuk membuat struktur direktori Prado. Sebagai contoh, ketik perintah
+<tt>php path/to/prado-cli.php -c helloworld</tt> dalam direktori di mana Anda ingin membuat proyek <tt>helloworld</tt>.
+</div>
+
+<p id="50040">
+Ketiga file yang kita pakai dijelaskan sebagai berikut.
+</p>
+<ul id="file-list" class="block-content">
+<li><tt>index.php</tt> - naskah entri dari aplikasi PRADO. File ini dibutuhkan oleh semua aplikasi PRADO dan satu-satunya file naskah yang secara langsung bisa diakses oleh pengguna-akhir. Konten dalam <tt>index.php</tt> sebagian besar terdiri dari tiga baris berikut,
+<com:TTextHighlighter CssClass="source block-content" id="code_50003">
+require_once('path/to/prado.php');  // sertakan naskah prado
+$application=new TApplication;      // buat turunan aplikasi PRADO
+$application->run();                // jalankan aplikasi
+</com:TTextHighlighter>
+</li>
+<li><tt>Home.page</tt> - template untuk setiap halaman standar saat pengguna tidak secara eksplisit menetapkan halaman yang diminta. Sebuah template menetapkan penyajian tata letak komponen. Dalam contoh ini, kita gunakan dua komponen, <tt>TForm</tt> dan <tt>TButton</tt>, masing-masing terkait ke tag HTML &lt;form&gt; dan &lt;input&gt;. Template berisi konten berikut,
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_50004">
+<html>
+  <body>
+    &lt;com:TForm&gt;
+      &lt;com:TButton Text="Click me" OnClick="buttonClicked" /&gt;
+    &lt;/com:TForm&gt;
+  </body>
+</html>
+</com:TTextHighlighter>
+</li>
+<li><tt>Home.php</tt> - Kelas halaman untuk halaman <tt>Home</tt>. Ia terutama berisi metode yang terkait dengan event tombol <tt>OnClick</tt>.
+<com:TTextHighlighter CssClass="source block-content" id="code_50005">
+class Home extends TPage
+{
+    public function buttonClicked($sender,$param)
+    {
+        // $sender refers to the button component
+        $sender->Text="Hello World!";
+    }
+}
+</com:TTextHighlighter>
+</li>
+</ul>
+<div id="hello-end" class="block-content">
+<p id="50041">
+Aplikasi sekarang siap dan dapat diakses melalui: <tt>http://Web-server-address/helloworld/index.php</tt>, menganggap <tt>helloworld</tt> adalah direktori di bawah Web <tt>DocumentRoot</tt>. Coba untuk mengubah <tt>TButton</tt> dalam <tt>Home.page</tt> ke <tt>TLinkButton</tt> dan lihat apa yang terjadi.
+</p>
+<p id="50042">
+Kode sumber lengkap dari demo ini dapat ditemukan pada rilis PRADO. Anda juga dapat mencoba <a href="http://www.pradosoft.com/demos/helloworld/">demo online</a>.
+</p>
+</div>
+
+<div class="last-modified">$Id: HelloWorld.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

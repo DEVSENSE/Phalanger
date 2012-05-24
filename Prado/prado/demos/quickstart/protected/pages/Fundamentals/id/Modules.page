@@ -1,0 +1,50 @@
+<com:TContent ID="body" >
+
+<h1 id="1001">Modul</h1>
+<p id="140141" class="block-content">
+Modul adalah turunan dari kelas yang menerapkan antarmuka <tt>IModule</tt>. Umumnya sebuah modul didesain untuk fungsionalitas tertentu yang dapat disertakan ke dalam aplikasi PRADO dan berbagi dengan semua komponen dalam aplikasi.
+</p>
+<p id="140142" class="block-content">
+PRADO menggunakan konfigurasi untuk menetapkan apakah mengambil sebuah modul, mengambil modul jenis apa, dan bagaimana untuk menginisialisasi modul yang diambilnya. Para pengembang dapat mengganti modul inti dengan implementasinya sendiri melalui konfigurasi aplikasi, atau mereka dapat menulis modul baru guna menyediakan fungsionalitas tambahan. Sebagai contoh, modul dapat dikembangkan untuk menyediakan logika database umum pada satu atau beberapa halaman. Untuk lebih jelasnya, silahkan lihat <a href="?page=Configurations.Overview">konfigurasi</a>.
+</p>
+<p id="140143" class="block-content">
+Ada tiga modul inti yang diambil secara standar kapan saja aplikasi dijalankan. Ketiganya adalah <a href="#request">modul permintaan</a>, <a href="#response">modul respon</a>, dan <a href="#error">modul pengendali kesalahan</a>. Sebagai tambahan, <a href="#session">modul sesi</a> diambil saat ia digunakan dalam aplikasi. PRADO menyediakan implementasi standar untuk semua modul ini. <a href="#custom">Modul kustom</a> dapat dikonfigurasi atau dikembangkan guna mengganti atau menambah modul inti ini.
+</p>
+
+<a name="request"></a>
+<h2 id="1002">Modul Permintaan</h2>
+<p id="140144" class="block-content">
+Modul permintaan menyediakan penyimpanan dan skema akses untuk permintaan pengguna yang dikirim melalui HTTP. Permintaan pengguna datang dari beberapa sumber, termasuk URL, data post, data sesi, data cookie, dll. Data ini semuanya dapat diakses melalui modul permintaan. Standarnya PRADO menggunakan <tt>THttpRequest</tt> sebagai modul permintaan. Modul permintaan dapat diakses melalui properti <tt>Request</tt> dari aplikasi dan kontrol.
+</p>
+
+<a name="response"></a>
+<h2 id="1003">Modul Respon</h2>
+<p id="140145" class="block-content">
+Modul respon menerapkan mekanisme untuk mengirimkan output ke pengguna klien. Modul respon dapat dikonfigurasi guna mengontrol bagaimana output di-cache pada sisi klien. Standarnya PRADO menggunakan <tt>THttpResponse</tt> sebagai modul respon. Modul respon dapat diakses melalui properti <tt>Response</tt> dari aplikasi dan kontrol.
+</p>
+
+<a name="session"></a>
+<h2 id="1004">Modul Sesi</h2>
+<p id="140146" class="block-content">
+Modul sesi melapisi fungsionalitas terkait dengan penanganan sesi pengguna. Modul sesi secara otomatis diambil saat aplikasi menggunakan sesi. Standarnya PRADO menggunakan <tt>THttpSession</tt> sebagai modul sesi, yang merupakan pelapis sederhana dari fungsi sesi yang disediakan oleh PHP. Modul sesi dapat diakses melalui properti <tt>Session</tt> dari aplikasi dan kontrol.
+</p>
+
+<a name="error"></a>
+<h2 id="1005">Modul Pengendali Kesalahan</h2>
+<p id="140147" class="block-content">
+Modul pengendali kesalahan dipakai untuk menangkap dan memproses semua kondisi kesalahan dalam sebuah aplikasi. PRADO menggunakan <tt>TErrorHandler</tt> sebagai modul pengendali kesalahan. Ia menangkap semua peringatan PHP, perhatian dan eksepsi, dan ditampilkan dalam bentuk yang tepat bagi pengguna-akhir. Modul pengendali kesalahan dapat diakses melalui properti <tt>ErrorHandler</tt> dari turunan aplikasi.
+</p>
+
+<a name="custom"></a>
+<h2 id="1006">Modul Kustom</h2>
+<p id="140148" class="block-content">
+PRADO dirilis dengan beberapa modul lebih disamping yang inti. Ini termasuk modul cache (<tt>TSqliteCache</tt> dan <tt>TMemCache</tt>), modul manajemen pengguna (<tt>TUserManager</tt>), modul otentikasi dan otorisasi (<tt>TAuthManager</tt>), dll.
+</p>
+<p id="140149" class="block-content">
+Ketika <tt>TPageService</tt> diminta, ia juga mengambil modul tertentu untuk layanan halaman, termasuk manajer asset (<tt>TAssetManager</tt>), manajer template (<tt>TTemplateManager</tt>), manajer tema/skin (<tt>TThemeManager</tt>).
+</p>
+<p id="140150" class="block-content">
+Modul kustom dan modul inti semuanya dapat dikonfigurasi melalui <a href="?page=Configurations.Overview">konfigurasi</a>.
+</p>
+
+<div class="last-modified">$Id: Modules.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,88 @@
+<com:TContent ID="body" >
+
+<h1 id="6401">Performance Tuning</h1>
+<p id="810678" class="block-content">
+Performance of Web applications is affected by many factors. Database access, file system operations, network bandwidth are all potential affecting factors. PRADO tries in every effort to reduce the performance impact caused by the framework.
+</p>
+
+<h2 id="6402">Caching</h2>
+<p id="810679" class="block-content">
+PRADO provides a generic caching technique used by in several core parts of the framework. For example, when caching is enabled, <tt>TTemplateManager</tt> will save parsed templates in cache and reuse them in the following requests, which saves time for parsing templates. The <tt>TThemeManager</tt> adopts the similar strategy to deal with theme parsing.
+</p>
+<p id="810680" class="block-content">
+Enabling caching is very easy. Simply add the cache module in the application configuration, and PRADO takes care of the rest.
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_810229">
+&lt;modules&gt;
+    &lt;module id="cache" class="System.Caching.TSqliteCache" /&gt;
+&lt;/modules&gt;
+</com:TTextHighlighter>
+
+<p id="810681" class="block-content">
+Developers can also take advantage of the caching technique in their applications. The <tt>Cache</tt> property of <tt>TApplication</tt> returns the plugged-in cache module when it is available. To save and retrieve a data item in cache, use the following commands,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_810230">
+if($application->Cache) {
+    // saves data item in cache
+    $application->Cache->set($keyName,$dataItem);
+    // retrieves data item from cache
+    $dataItem=$application->Cache->get($keyName);
+}
+</com:TTextHighlighter>
+<p id="810682" class="block-content">
+where <tt>$keyName</tt> should be a string that uniquely identifies the data item stored in cache.
+</p>
+
+<p id="840059" class="block-content">
+Since v3.1.0, a new control called <a href="?page=Controls.OutputCache">TOutputCache</a> has been introduced. This control allows users to selectively cache parts of a page's output. When used appropriately, this technique can significant improve pages' performance because the underlying controls are not created at all if the cached versions are hit.
+</p>
+
+<h2 id="6403">Using <tt>pradolite.php</tt></h2>
+<p id="810683" class="block-content">
+Including many PHP script files may impact application performance significantly. PRADO classes are stored in different files and when  processing a page request, it may require including tens of class files.To alleviate this problem, in each PRADO release, a file named <tt>pradolite.php</tt> is also included. The file is a merge of all core PRADO class files with comments being stripped off and message logging removed.
+</p>
+<p id="810684" class="block-content">
+To use <tt>pradolite.php</tt>, in your application entry script, replace the inclusion of <tt>prado.php</tt> with <tt>pradolite.php</tt>.
+</p>
+
+<h2 id="6404">Changing Application Mode</h2>
+<p id="810685" class="block-content">
+Application mode also affects application performance. A PRADO application can be in one of the following modes: <tt>Off</tt>, <tt>Debug</tt>, <tt>Normal</tt> and <tt>Performance</tt>. The <tt>Debug</tt> mode should mainly be used during application development, while <tt>Normal</tt> mode is usually used in early stage after an application is deployed to ensure everything works correctly. After the application is proved to work stably for some period, the mode can be switched to <tt>Performance</tt> to further improve the performance.
+</p>
+<p id="810686" class="block-content">
+The difference between <tt>Debug</tt>, <tt>Normal</tt> and <tt>Performance</tt> modes is that under <tt>Debug</tt> mode, application logs will contain debug information, and under <tt>Performance</tt> mode, timestamp checking is not performed for cached templates and published assets. Therefore, under <tt>Performance</tt> mode, application may not run properly if templates or assets are modified. Since <tt>Performance</tt> mode is mainly used when an application is stable, change of templates or assets are not likely.
+</p>
+<p id="810687" class="block-content">
+To switch application mode, configure it in application configuration:
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_810231">
+&lt;application Mode="Performance" &gt;
+    ......
+&lt;/application &gt;
+</com:TTextHighlighter>
+
+<h2 id="6405">Reducing Page Size</h2>
+<p id="810688" class="block-content">
+By default, PRADO stores page state in hidden fields of the HTML output. The page state could be very large in size if complex controls, such as <tt>TDataGrid</tt>, is used. To reduce the size of the network transmitted page size, two strategies can be used.
+</p>
+<p id="810689" class="block-content">
+First, you may disable viewstate by setting <tt>EnableViewState</tt> to false for the page or some controls on the page if they do not need user interactions. Viewstate is mainly used to keep track of page state when a user interacts with that page/control.
+</p>
+<p id="810690" class="block-content">
+Second, you may use a different page state storage. For example, page state may be stored in session, which essentially stores page state on the server side and thus saves the network transmission time. The <tt>StatePersisterClass</tt> property of the page determines which state persistence class to use. By default, it uses <tt>System.Web.UI.TPageStatePersister</tt> to store persistent state in hidden fields. You may modify this property to a persister class of your own, as long as the new persister class implements the <tt>IPageStatePersister</tt> interface. You may configure this property in several places, such as application configuration or page configuration using &lt;pages&gt; or &lt;page&gt; tags,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_810232">
+&lt;pages StatePersisterClass="MyPersister1" ... &gt;
+    &lt;page ID="SpecialPage" StatePersisterClass="MyPersister2" ... /&gt;
+&lt;/pages&gt;
+</com:TTextHighlighter>
+<p id="810691" class="block-content">
+Note, in the above the <tt>SpecialPage</tt> will use <tt>MyPersister2</tt> as its persister class, while the rest pages will use <tt>MyPersister1</tt>. Therefore, you can have different state persister strategies for different pages.
+</p>
+
+<h2 id="6406">Other Techniques</h2>
+<p id="810692" class="block-content">
+Server caching techniques are proven to be very effective in improving the performance of PRADO applications. For example, we have observed that by using Zend Optimizer, the RPS (request per second) of a PRADO application can be increased by more than ten times. Of course, this is at the cost of stale output, while PRADO's caching techniques always ensure the correctness of the output.
+</p>
+
+<div class="last-modified">$Id: Performance.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>

@@ -1,0 +1,46 @@
+<com:TContent ID="body" >
+
+<h1 id="88025">TOutputCache</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TOutputCache" />
+
+<p id="440292" class="block-content">
+<tt>TOutputCache</tt> enables caching a portion of a Web page, also known as partial caching. The content being cached are HTML page source coming from static texts on a PRADO template or rendered by one or several controls on the template. When the cached content is used, controls generating the content are no longer created for the page hierarchy and thus significant savings in page processing time can be achieved. The side-effect, as you might already find out, is that the content displayed may be stale if the cached version is shown to the users.
+</p>
+
+<p id="440293" class="block-content">
+To use <tt>TOutputCache</tt>, simply enclose the content to be cached within the <tt>TOutputCache</tt> component tag on a template (either page or non-page control template), e.g.,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_440110">
+&lt;com:TOutputCache&gt;
+   content to be cached
+&lt;/com:TOutputCache&gt;
+</com:TTextHighlighter>
+<p id="440294" class="block-content">
+where content to be cached can be static text and/or template tags. If the latter, the rendering results of the template tags will be cached. You can place one or several <tt>TOutputCache</tt> on a single template and they can be nested. 
+</p>
+
+<div class="note"><b class="tip">Note:</b>
+<tt>TOutputCache</tt> stores cached content via PRADO cache modules (e.g. <tt>TSqliteCache</tt>) and thus requires at least one cache module loaded when the application runs.
+</div>
+
+<p id="440295" class="block-content">
+The validity of the cached content is determined based on two factors: the <tt>Duration</tt> and the cache dependency. The former specifies the number of seconds that the data can remain valid in cache (defaults to 60s), while the latter specifies conditions that the cached data depends on. If a dependency changes (e.g. relevant data in DB are updated), the cached data will be invalidated and discarded.
+</p>
+
+<p id="440296" class="block-content">
+There are two ways to specify cache dependency. One may write event handlers to respond to the <tt>OnCheckDependency</tt> event and set the event parameter's <tt>IsValid</tt> property to indicate whether the cached data remains valid or not. One can also extend <tt>TOutputCache</tt> and override its <tt>getCacheDependency()</tt> method.
+</p>
+
+<p id="440297" class="block-content">
+The content fetched from cache may be variated with respect to some parameters. <tt>TOutputCache</tt> supports variation with respect to request parameters, which is specified by <tt>VaryByParam</tt> property. If a specified request parameter is different, a different version of cached content is used. This is extremely useful if a page's content may be variated according to some GET parameters. The content being cached may also be variated with user sessions if <tt>VaryBySession</tt> is set true. To variate the cached content by other factors, override <tt>calculateCacheKey()</tt> method.
+</p>
+
+<p id="440298" class="block-content">
+Output caches can be nested. An outer cache takes precedence over an inner cache in determining the validity of cached contents. This means, if the content cached by the inner cache expires or is invalidated, while that by the outer cache not, the outer cached content will be used.
+</p>
+
+<p id="440299" class="block-content">
+By default, <tt>TOutputCache</tt> is effective only for non-postback page requests and when a cache module is enabled. Do not attempt to address child controls of <tt>TOutputCache</tt> when the cached content is currently being used. Use <tt>ContentCached</tt> property to determine whether the content is cached or not.
+</p>
+
+<div class="last-modified">$Id: OutputCache.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,25 @@
+<com:TContent ID="body">
+
+<h1>Reset Validation using Javascript</h1>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Validator with default settings:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox1" />
+<com:TRequiredFieldValidator
+	ValidationGroup="Group1"
+	ControlToValidate="TextBox1"
+	Text="Field required." />
+<com:TButton Text="Submit" ValidationGroup="Group1" />
+
+<a href="javascript: Prado.Validation.reset('Group1')">Reset Validation</a>
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

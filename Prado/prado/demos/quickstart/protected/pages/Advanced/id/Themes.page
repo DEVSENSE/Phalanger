@@ -1,0 +1,60 @@
+<com:TContent ID="body" >
+
+<h1 id="5901">Tema dan Skin</h1>
+
+<h2 id="5902">Pengenalan</h2>
+<p id="760596" class="block-content">
+Tema dalam PRADO menyediakan cara bagi para pengembang untuk menyediakan tampilan konsisten melintasi seluruh aplikasi web. Tema berisi daftar nilai awal untuk properti dari berbagai tipe kontrol. Ketika menerapkan tema ke sebuah halaman, semua kontrol dalam halaman tersebut akan menerima nilai properti awal terkait dari tema. Ini membolehkan tema untuk berinteraksi dengan seti properti yang banyak dari berbagai kontrol PRADO, berarti bahwa tema bisa dipakai untuk menetapkan jangkauan besar dari properti penyajian yang tidak bisa dilakukan metode tema lain (misaslnya CSS). Sebagai contoh, tema bisa dipakai untuk menetapkan ukuran standar halaman dari semua grid data melintasi aplikasi dengan menetapkan nilai standar untuk properti <tt>PageSize</tt> dari kontrol <tt>TDataGrid</tt>.
+</p>
+
+<h2 id="5903">Memahami Tema</h2>
+<p id="760597" class="block-content">
+Tema adalah sebuah direktori yang terdiri dari file skin, file javascript dan file CSS. Setiap file javascript atau CSS yang berada dalam tema akan diregistrasi dengan halaman yang menerapkan tema. Skin adalah set nilai properti awal untuk tipe kontrol tertentu. Tipe kontrol dapat memiliki satu atau beberapa skin, masing-masing diidentifikasi dengan <tt>SkinID</tt> unik. Ketika menerapkan tema ke sebuah halaman, skin diterapkan ke kontrol jika tipe kontrol dan nilai <tt>SkinID</tt> keduanya sama dengan ada dalam skin. Catatan, jika skin memiliki nilai <tt>SkinID</tt> kosong, ia akan menerapkannya ke semua kontrol dari tipe tertentu yang <tt>SkinID</tt>-nya tidak disetel atau kosong. File skin terdiri dari satu atau beberapa skin, untuk satu atau beberapa tipe kontrol. Tema adalah gabungan dari skin yang didefinisikan dalam semua file skin.
+</p>
+
+<h2 id="5904">Menggunakan Tema</h2>
+<p id="760598" class="block-content">
+Untuk menggunakan sebuah tema, Anda perlu menyetel properti <tt>Theme</tt> dari halaman dengan nama tema, yaitu nama direktori tema. Anda dapat menyetelnya dalam <a href="?page=Configurations.PageConfig">konfigurasi halaman</a> atau dalam konstruktor atau metode <tt>onPreInit()</tt> dari halaman. Anda tidak bisa menyetel properti setelah <tt>onPreInit()</tt> karena saat itu, kontrol anak dari halaman sudah dibuat (skin harus diterapkan ke kontrol setelah kontrol tersebut dibuat.)
+</p>
+<p id="760599" class="block-content">
+Untuk menggunakan skin tertentu dalam tema untuk sebuah kontrol, setel properti <tt>SkinID</tt> dari kontrol dalam template seperti berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_760194">
+&lt;com:TButton SkinID="Blue" ... /&gt;
+</com:TTextHighlighter>
+<p id="760600" class="block-content">
+Ini akan menerapkan skin 'Blue' ke tombol. Catatan, nilai properti awal yang ditetapkan oleh skin 'Blue' akan mengganti setiap nilai properti tombol. Gunakan tema  stylesheet jika Anda tidak ingi diganti. Untuk menggunakan tema stylesheet, setel properti <tt>StyleSheetTheme</tt> dari halaman daripada <tt>Theme</tt> (Anda bisa memiliki keduanya <tt>StyleSheetTheme</tt> dan <tt>Theme</tt>).
+</p>
+<p id="760601" class="block-content">
+Untuk menggunakan file Javascript dan file CSS yang berada dalam sebuah tema, kontrol <tt>THead</tt> harus ditempatkan pada template halaman. Ini dikarenakan tema akan meregistrasi file itu dengan halaman dan <tt>THead</tt> adalah tempat yang tepat untuk menempatkan mengambil file tersebut.
+</p>
+<p id="760602" class="block-content">
+Dimungkinkan untuk menetapkan tipe media dari file CSS yang berisikan sebuah tema. Standarnya, file CSS berlaku untuk semua tipe media. Jika file CSS bernama seperti <tt>mystyle.print.css</tt>, ia akan diterapkan hanya pada tipe media <tt>print</tt>. Sebagai contoh lain, <tt>mystyle.screen.css</tt> hanya berlaku untuk media <tt>screen</tt>, dan <tt>mystyle.css</tt> berlaku bagi semua tipe media.
+</p>
+
+<h2 id="5905">Penyimpanan Tema</h2>
+<p id="760603" class="block-content">
+Semua tema standarnya harus ditempatkan di bawah direktori <tt>[AppEntryPath]/themes</tt>, di mana <tt>AppEntryPath</tt> merujuk ke direktori yang berisi naskah entri aplikasi. Jika Anda ingin menggunakan direktori berbeda, konfigurasi properti <tt>BasePath</tt> dan <tt>BaseUrl</tt> dari modul <tt>System.Web.UI.TThemeManager</tt> dalam konfigurasi aplikasi,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_760195">
+&lt;service id="page" class="TPageService"&gt;
+    &lt;modules&gt;
+        &lt;module id="theme"
+                class="System.Web.UI.TThemeManager"
+                BasePath="mythemes"
+                BaseUrl="mythemes" /&gt;
+    &lt;/modules&gt;
+&lt;/service&gt;
+</com:TTextHighlighter>
+
+<h2 id="5906">Membuat Tema</h2>
+<p id="760604" class="block-content">
+Membuat sebuah tema melibatkan pembuatan direktori tema dan penulisan file skin (dan kemungkinan file Javascript serta CSS). Nama file skin harus diakhiri dengan <tt>.skin</tt>. Format file skin adalah sama seperti file template kontrol. Karena file skin tidak mendefinisikan penyajian hubungan leluhur-aak diantara kontrolnya, Anda tidak bisa menempatkan tag komponen di dalam yang lainnya. Dan setiap teks statis antara tag komponen diabaikan. Untuk mendefinisikan skin 'Blue' seperti telah disebutkan di atas untuk <tt>TButton</tt>, tulis yang berikut dalam file skin,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_760196">
+&lt;com:TButton SkinID="Blue" BackColor="blue" /&gt;
+</com:TTextHighlighter>
+<p id="760605" class="block-content">
+Seperti sudah disebutan di atas, Anda dapat menyimpan beberapa skin dalam satu file skin, atau memisahkannya ke dalam beberapa file. Strategi yang umum digunakan adalah bahwa setiap file skin hanya berisi skin untuk satu tipe kontrol. Sebagai contoh, <tt>Button.skin</tt> akan berisi skin hanya untuk tipe kontrol <tt>TButton</tt>.
+</p>
+<div class="last-modified">$Id: Themes.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="2901">THyperLink</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.THyperLink" />
+
+<p id="340268" class="block-content">
+<tt>THyperLink</tt> menampilkan hiperlink pada halaman. URL hiperlink ditetapkan melalui properti <tt>NavigateUrl</tt>, dan teks link melalui properti <tt>Text</tt>. Target link ditetapkan melalui properti <tt>Target</tt>. Memungkinkan juga untuk menampilkan sebuah gambar dengan menyetel properti <tt>ImageUrl</tt>. Dalam hal ini, <tt>Text</tt> ditampilkan sebagai teks alternatif dari gambar. Jika <tt>ImageUrl</tt> dan <tt>Text</tt> keduanya kosong, konten ditutupi di dalam tag kontrol akan disajikan.
+</p>
+<com:RunBar PagePath="Controls.Samples.THyperLink.Home" />
+
+<div class="last-modified">$Id: HyperLink.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

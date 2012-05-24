@@ -1,0 +1,158 @@
+<html>
+<head>
+<title>3rd-Party Project List</title>
+</head>
+<body>
+<h1>3rd-Party Project List</h1>
+<p>
+PRADO makes use of several 3rd-party projects. Please read carefully about
+their license terms if you are using PRADO components that depend on these
+projects.
+</p>
+<table border="1">
+<tr>
+  <th>Directory</th>
+  <th>Project Name</th>
+  <th>License</th>
+  <th>Related PRADO Component</th>
+  <th>Memo</th>
+</tr>
+
+<tr>
+  <td><a href="TextHighlighter">Text_Highlighter</a></td>
+  <td><a href="http://pear.php.net/package/Text_Highlighter/">Text_Highlighter - Generic Syntax Highlighter</a> (v0.7.0 beta)</td>
+  <td><a href="http://www.php.net/license/3_01.txt">The PHP License</a></td>
+  <td>System.Web.UI.WebControls.TTextHighlighter</td>
+  <td>Modified many PHP files to make them workable in PHP 5 strict mode and removed their PEAR dependency. Added PRADO syntax file.</td>
+</tr>
+<tr>
+  <td><a href="SafeHtml">SafeHtml</a></td>
+  <td><a href="http://pixel-apes.com/safehtml/">SafeHTML</a> (v1.3.7)</td>
+  <td><a href="SafeHtml/license.txt">BSD License (3 Clause)</a></td>
+  <td>System.Web.UI.WebControls.TSafeHtml</td>
+  <td>TSafeHtml removes malicious javascript code from its rendered output.</td>
+</tr>
+<tr>
+  <td><a href="TinyMCE">TinyMCE</a></td>
+  <td><a href="http://tinymce.moxiecode.com/">TinyMCE Javascript Content Editor</a> (v2.1)</td>
+  <td><a href="tiny_mce/license.txt">GNU LIBRARY GENERAL PUBLIC LICENSE</a></td>
+  <td>System.Web.UI.WebControls.THtmlArea</td>
+  <td>TinyMCE is a powerful WYSIWYG editor control for web browsers such as MSIE or Mozilla that enables the user to edit HTML contents in a more user friendly way.</td>
+</tr>
+<tr>
+  <td>N.A.</td>
+  <td>Tar.php</td>
+  <td><a href="http://www.php.net/license/3_0.txt">PHP License 3.0</a></td>
+  <td>System.IO.TTarFileExtractor</td>
+  <td>TTarFileExtractor is based on Tar.php whose author is Vincent Blavet.</td>
+</tr>
+<tr>
+	<td><a href="../I18N/core/data">../I18N/core/data</a></td>
+	<td><a href="http://icu.sourceforge.net/">International Components for Unicode (Locale Data)</a></td>
+	<td><a href="http://dev.icu-project.org/cgi-bin/viewcvs.cgi/*checkout*/icu/license.html">BSD???</a></td>
+	<td>System.I18N.core.*</td>
+	<td>The ICU data http://dev.icu-project.org/cgi-bin/viewcvs.cgi/icu/source/data/locales/ are PHP serialized.</td>
+</tr>
+<tr>
+	<td><a href="../I18N/core/util.php">../I18N/core/util.php</a></td>
+	<td><a href="http://pear.php.net/package/DB">PEAR :: Package :: DB</a></td>
+	<td><a href="http://www.php.net/license/3_0.txt">PHP License 3.0</a></td>
+	<td>N.A.</td>
+	<td>The parseDSN() function from DB.php file.</td>
+</tr>
+<tr>
+	<td><a href="../I18N/core/TCache_Lite.php">../I18N/core/TCache_Lite.php</a></td>
+	<td><a href="http://pear.php.net/package/Cache_Lite">PEAR :: Package :: Cache_Lite</a></td>
+	<td><a href="http://www.gnu.org/licenses/lgpl.html">LGPL</a></td>
+	<td>N.A.</td>
+	<td>Cache_Lite class was renamed as TCache_Lite for packaging purposes.</td>
+</tr>
+<tr>
+	<td><a href="../I18N/core/Gettext">../I18N/core/Gettext</a></td>
+	<td><a href="http://pear.php.net/package/File_Gettext">PEAR :: Package :: File_Gettext</a></td>
+	<td><a href="http://www.php.net/license/3_0.txt">PHP License 3.0</a></td>
+	<td>N.A.</td>
+	<td>File_Gettext, File::Gettext::MO, and File::Gettext::PO</td>
+</tr>
+
+<tr>
+	<td><a href="../Web/Javascripts/TJSON.php">../Web/Javascripts/TJSON.php</a></td>
+	<td><a href="http://pear.php.net/pepr/pepr-proposal-show.php?id=198">Service_JSON proposal</a></td>
+	<td><a href="http://www.opensource.org/licenses/bsd-license.php">BSD</a></td>
+	<td>N.A.</td>
+	<td>JSON encoder/decoder by Michal Migurski, Matt Knapp and Brett Stimmerman</td>
+</tr>
+
+<tr>
+	<td>Rico Color is used in the <a href="../web/Javascripts/prado/colorpicker/colorpicker.js">colorpicker.js</a></td>
+	<td><a href="http://openrico.org/">Rico</a></td>
+	<td><a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License v2</a></td>
+	<td>N.A.</td>
+	<td>Rico Javascript Library (not yet utilized in Prado)</td>
+</tr>
+<tr>
+	<td><a href="../Web/Javascripts/prototype/">../Web/Javascripts/prototype</a></td>
+	<td><a href="http://dev.rubyonrails.org/browser/spinoffs/prototype">Prototype javascript library</a></td>
+	<td><a href="../Web/Javascripts/prototype/LICENSE">The Prototype License (MIT based)</a></td>
+	<td>N.A.</td>
+	<td>Core of Prado javascript library.</td>
+</tr>
+<tr>
+	<td><a href="../Web/Javascripts/prado/logger/logger.js">../Web/Javascripts/prado/logger/logger.js</a></td>
+	<td><a href="http://web.archive.org/web/20060512041505/gleepglop.com/javascripts/logger/">http://web.archive.org/web/20060512041505/gleepglop.com/javascripts/logger/</a> <a href="http://slayeroffice.com">http://slayeroffice.com</a></td>
+	<td>None</td>
+	<td>TJavascriptLogger</td>
+	<td>Javascript logger by Corey Johnson. Object Tree by S.G. Chipman.</td>
+</tr>
+
+<tr>
+	<td><a href="../../demos/quickstart/protected/index/Zend">../../demos/quickstart/protected/index/Zend</a></td>
+	<td><a href="http://framework.zend.com">Zend Framework</a></td>
+	<td><a href="../../demos/quickstart/protected/index/Zend/LICENSE.txt">BSD</a></td>
+	<td>Quickstart tutorial indexing and search is provided the Zend Lucene search implementation.</td>
+	<td>This product includes the Zend Framework, freely available at
+     http://www.zend.com</td>
+</tr>
+
+<tr>
+	<td><a href="adodb">adodb</a></td>
+	<td><a href="http://adodb.sourceforge.net/">ADOdb Database Abstraction Library for PHP</a></td>
+	<td><a href="adodb/license.txt">Dual licensed using BSD and LGPL.</a></td>
+	<td>Provides one database access abstraction layer.</td>
+	<td>Slightly modified to work nicely with E_STRICT in php 5.</td>
+</tr>
+
+<tr>
+	<td><a href="Markdown">Markdown</a></td>
+	<td><a href="http://www.michelf.com/projects/php-markdown/">PHP Markdown</a></td>
+	<td><a href="Markdown/License.text">BSD</a></td>
+	<td>System.Web.UI.WebControls.TMarkdown</td>
+	<td>PHP5 class implementation of the PHP Markdown.</td>
+</tr>
+
+<tr>
+	<td><a href="../Util">../Util</a></td>
+	<td><a href="http://phplens.com/phpeverywhere/adodb_date_library">ADOdb Date Time Library</a></td>
+	<td><a href="http://phplens.com/phpeverywhere/adodb_date_library">BSD</a></td>
+	<td>System.Util.TDateTimeStamp</td>
+	<td>TimeStamp support for dates outside the 1970-2038.</td>
+</tr>
+
+<tr>
+	<td><a href="3rdParty/PhpShell">3rdParty/PhpShell</a></td>
+	<td><a href="http://pear.php.net/package/PHP_Shell">PHP_Shell</a></td>
+	<td><a href="http://www.opensource.org/licenses/mit-license.php">MIT</a></td>
+	<td>An interactive PHP Shell</td>
+	<td>Available throught the prado-cli.php script.</td>
+</tr>
+<tr>
+	<td><a href="FirePHPCore">3rdParty/FirePHPCore</a></td>
+	<td><a href="http://www.firephp.org/">FirePHPCore</a></td>
+	<td><a href="FirePHPCore/LICENSE">BSD</a></td>
+	<td>FirePHP enables you to log to your Firebug Console using a simple PHP method call.</td>
+	<td>Available throught TFirePhpLogRoute</td>
+</tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+<com:TContent ID="body" >
+
+<h1 id="5401">Writing New Controls</h1>
+<p id="660428" class="block-content">
+Writing new controls is often desired by advanced programmers, because they want to reuse the code that they write for dealing with complex presentation and user interactions.
+</p>
+<p id="660429" class="block-content">
+In general, there are two ways of writing new controls: composition of existing controls and extending existing controls. They all require that the new control inherit from <tt>TControl</tt> or its child classes.
+</p>
+
+<h2 id="5402">Composition of Existing Controls</h2>
+<p id="660430" class="block-content">
+Composition is the easiest way of creating new controls. It mainly involves instantiating existing controls, configuring them and making them the constituent components. The properties of the constituent components are exposed through <a href="?page=Fundamentals.Components">subproperties</a>.
+</p>
+<p id="660431" class="block-content">
+One can compose a new control in two ways. One is to extend <tt>TCompositeControl</tt> and override the <tt>TControl::createChildControls()</tt> method. The other is to extend <tt>TTemplateControl</tt> (or its child classes) and write a control template. The latter is easier to use and can organize the layout constituent components more intuitively, while the former is more efficient because it does not require parsing of the template.
+</p>
+<p id="660432" class="block-content">
+As an example, we show how to create a labeled textbox called <tt>LabeledTextBox</tt> using the above two approaches. A labeled textbox displays a label besides a textbox. We want reuse the PRADO provided <tt>TLabel</tt> and <tt>TTextBox</tt> to accomplish this task.
+</p>
+
+<h3 id="5404">Composition by Writing Templates</h3>
+<p id="660433" class="block-content">
+We need two files: a control class file named <tt>LabeledTextBox.php</tt> and a control template file named <tt>LabeledTextBox.tpl</tt>. Both must reside under the same directory.
+</p>
+<p id="660434" class="block-content">
+Like creating a PRADO page, we can easily write down the content in the control template file.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_660129">
+&lt;com:TLabel ID="Label" ForControl="TextBox" /&gt;
+&lt;com:TTextBox ID="TextBox" /&gt;
+</com:TTextHighlighter>
+<p id="660435" class="block-content">
+The above template specifies a <tt>TLabel</tt> control named <tt>Label</tt> and a <tt>TTextBox</tt> control named <tt>TextBox</tt>. We would to expose these two controls. This can be done by defining a property for each control in the <tt>LabeledTextBox</tt> class file. For example, we can define a <tt>Label</tt> property as follows,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_660130">
+class LabeledTextBox extends TTemplateControl {
+    public function getLabel() {
+        $this->ensureChildControls();
+        return $this->getRegisteredObject('Label');
+    }
+}
+</com:TTextHighlighter>
+<p id="660436" class="block-content">
+In the above, the method call to <tt>ensureChildControls()</tt> ensures that both the label and the textbox controls are created (from template) when the <tt>Label</tt> property is accessed. The <tt>TextBox</tt> property can be implemented similarly.
+</p>
+<com:RunBar PagePath="Controls.Samples.LabeledTextBox1.Home" />
+
+<h3 id="5405">Composition by Overriding <tt>createChildControls()</tt></h3>
+<p id="660437" class="block-content">
+For a composite control as simple as <tt>LabeledTextBox</tt>, it is better to create it by extending <tt>TCompositeControl</tt> and overriding the <tt>createChildControls()</tt> method, because it does not use templates and thus saves template parsing time.
+</p>
+<p id="660438" class="block-content">
+Complete code for <tt>LabeledTextBox</tt> is shown as follows,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_660131">
+class LabeledTextBox extends TCompositeControl {
+    private $_label;
+    private $_textbox;
+    public function createChildControls() {
+        $this->_label=new TLabel;
+        $this->_label->setID('Label');
+        // add the label as a child of LabeledTextBox
+        $this->getControls()->add($this->_label);
+        $this->_textbox=new TTextBox;
+        $this->_textbox->setID('TextBox');
+        $this->_label->setForControl('TextBox');
+        // add the textbox as a child of LabeledTextBox
+        $this->getControls()->add($this->_textbox);
+    }
+    public function getLabel() {
+        $this->ensureChildControls();
+        return $this->_label;
+    }
+    public function getTextBox() {
+        $this->ensureChildControls();
+        return $this->_textbox;
+    }
+}
+</com:TTextHighlighter>
+<com:RunBar PagePath="Controls.Samples.LabeledTextBox2.Home" />
+
+<h3 id="5406">Using <tt>LabeledTextBox</tt></h3>
+<p id="660439" class="block-content">
+To use <tt>LabeledTextBox</tt> control, first we need to include the corresponding class file. Then in a page template, we can write lines like the following,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_660132">
+&lt;com:LabeledTextBox ID="Input" Label.Text="Username" /&gt;
+</com:TTextHighlighter>
+<p id="660440" class="block-content">
+In the above, <tt>Label.Text</tt> is a subproperty of <tt>LabeledTextBox</tt>, which refers to the <tt>Text</tt> property of the <tt>Label</tt> property. For other details of using <tt>LabeledTextBox</tt>, see the above online examples.
+</p>
+
+<h2 id="5403">Extending Existing Controls</h2>
+<p id="660441" class="block-content">
+Extending existing controls is the same as conventional class inheritance. It allows developers to customize existing control classes by overriding their properties, methods, events, or creating new ones.
+</p>
+<p id="660442" class="block-content">
+The difficulty of the task depends on how much an existing class needs to be customized. For example, a simple task could be to customize <tt>TLabel</tt> control, so that it displays a red label by default. This would merely involves setting the <tt>ForeColor</tt> property to <tt>"red"</tt> in the constructor. A difficult task would be to create controls that provide completely innovative functionalities. Usually, this requires the new controls extend from "low level" control classes, such as <tt>TControl</tt> or <tt>TWebControl</tt>.
+</p>
+<p id="660443" class="block-content">
+In this section, we mainly introduce the base control classes <tt>TControl</tt> and <tt>TWebControl</tt>, showing how they can be customized. We also introduce how to write controls with specific functionalities, such as loading post data, raising post data and databinding with data source.
+</p>
+
+<h3 id="5407">Extending <tt>TControl</tt></h3>
+<p id="660444" class="block-content">
+<tt>TControl</tt> is the base class of all control classes. Two methods are of the most importance for derived control classes:
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>addParsedObject()</tt> - this method is invoked for each component or text string enclosed within the component tag specifying the control in a template. By default, the enclosed components and text strings are added into the <tt>Controls</tt> collection of the control. Derived controls may override this method to do special processing about the enclosed content. For example, <tt>TListControl</tt> only accepts <tt>TListItem</tt> components to be enclosed within its component tag, and these components are added into the <tt>Items</tt> collection of <tt>TListControl</tt>.
+  <li><tt>render()</tt> - this method renders the control. By default, it renders items in the <tt>Controls</tt> collection. Derived controls may override this method to give customized presentation.</li>
+</ul>
+Other important properties and methods include:
+<ul id="u2" class="block-content">
+  <li><tt>ID</tt> - a string uniquely identifying the control among all controls of the same naming container. An automatic ID will be generated if the ID property is not set explicitly.</li>
+  <li><tt>UnqiueID</tt> - a fully qualified ID uniquely identifying the control among all controls on the current page hierarchy. It can be used to locate a control in the page hierarchy by calling <tt>TControl::findControl()</tt> method. User input controls often use it as the value of the name attribute of the HTML input element.</li>
+  <li><tt>ClientID</tt> - similar to <tt>UniqueID</tt>, except that it is mainly used for presentation and is commonly used as HTML element id attribute value. Do not rely on the explicit format of <tt>ClientID</tt>.</li>
+  <li><tt>Enabled</tt> - whether this control is enabled. Note, in some cases, if one of the control's ancestor controls is disabled, the control should also be treated as disabled, even if its <tt>Enabled</tt> property is true.</li>
+  <li><tt>Parent</tt> - parent control of this control. The parent control is in charge of whether to render this control and where to place the rendered result.</li>
+  <li><tt>Page</tt> - the page containing this control.</li>
+  <li><tt>Controls</tt> - collection of all child controls, including static texts between them. It can be used like an array, as it implements <tt>Traversable</tt> interface. To add a child to the control, simply insert it into the <tt>Controls</tt> collection at appropriate position.</li>
+  <li><tt>Attributes</tt> - collection of custom attributes. This is useful for allowing users to specify attributes of the output HTML elements that are not covered by control properties.</li>
+  <li><tt>getViewState()</tt> and <tt>setViewState()</tt> - these methods are commonly used for defining properties that are stored in viewstate.</li>
+  <li><tt>saveState()</tt> and <tt>loadState()</tt> - these two methods can be overriden to provide last step state saving and loading.</li>
+  <li>Control lifecycles - Like pages, controls also have lifecycles. Each control undergoes the following lifecycles in order: constructor, <tt>onInit()</tt>, <tt>onLoad()</tt>, <tt>onPreRender()</tt>, <tt>render()</tt>, and <tt>onUnload</tt>. More details can be found in the <a href="?page=Fundamentals.Pages">page</a> section.</li>
+</ul>
+
+<h3 id="5408">Extending <tt>TWebControl</tt></h3>
+<p id="660445" class="block-content">
+<tt>TWebControl</tt> is mainly used as a base class for controls representing HTML elements. It provides a set of properties that are common among HTML elements. It breaks the <tt>TControl::render()</tt> into the following methods that are more suitable for rendering an HTML element:
+</p>
+<ul id="u3" class="block-content">
+  <li><tt>addAttributesToRender()</tt> - adds attributes for the HTML element to be rendered. This method is often overridden by derived classes as they usually have different attributes to be rendered.</li>
+  <li><tt>renderBeginTag()</tt> - renders the opening HTML tag.</li>
+  <li><tt>renderContents()</tt> - renders the content enclosed within the HTML element. By default, it displays the items in the <tt>Controls</tt> collection of the control. Derived classes may override this method to render customized contents.</li>
+  <li><tt>renderEndTag()</tt> - renders the closing HTML tag.</li>
+</ul>
+<p id="660446" class="block-content">
+When rendering the openning HTML tag, <tt>TWebControl</tt> calls <tt>getTagName()</tt> to obtain the tag name. Derived classes may override this method to render different tag names.
+</p>
+
+<h3 id="5409">Creating Controls with Special Functionalities</h3>
+<p id="660447" class="block-content">
+If a control wants to respond to client-side events and translate them into server side events (called postback events), such as <tt>TButton</tt>, it has to implement the <tt>IPostBackEventHandler</tt> interface.
+</p>
+<p id="660448" class="block-content">
+If a control wants to be able to load post data, such as <tt>TTextBox</tt>, it has to implement the <tt>IPostBackDataHandler</tt> interface.
+</p>
+<p id="660449" class="block-content">
+If a control wants to get data from some external data source, it can extend <tt>TDataBoundControl</tt>. <tt>TDataBoundControl</tt> implements the basic properties and methods that are needed for populating data via databinding. In fact, controls like <tt>TListControl</tt>, <tt>TRepeater</tt> are <tt>TDataGrid</tt> are all derived from it.
+</p>
+<div class="last-modified">$Id: NewControl.page 1741 2007-03-05 16:05:43Z xue $</div></com:TContent>

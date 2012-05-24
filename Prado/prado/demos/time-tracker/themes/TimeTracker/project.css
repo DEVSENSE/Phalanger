@@ -1,0 +1,144 @@
+fieldset.project label, fieldset.project p
+{
+	font-size: 0.9em;
+}
+
+.projectInfo
+{
+	width: 49%;
+	float: left;
+}
+
+.projectMembers
+{
+	width: 50%;
+	float: left;
+	margin-left: 0.3em;
+}
+
+fieldset.project h2
+{
+	background-color: #D2E8E8;
+	font-size: 0.8em;
+	color: #4169E1;
+	padding: 0.65em;
+	text-align: center;
+	background-image: url(bar.png);
+	background-repeat: repeat-x;
+	background-position: center;
+}
+
+.projectInfo div, .projectMembers div, .projectCategory div
+{
+	margin: 0.7em 0;
+}
+
+.projectInfo div input, .projectInfo div.manager select, 
+.projectCategory .categoryName input
+{
+	width: 15em;
+}
+
+.projectInfo .estimateHours input, 
+.projectCategory .abbrev input,
+.projectCategory .duration input
+{
+	width: 4em;
+}
+
+.projectInfo .description textarea
+{
+	width: 17em;
+	height: 10em;
+}
+
+.projectMembers select
+{
+	width: 15em;
+	height: 17em;
+}
+
+.projectCategory
+{
+	float: left;
+	display: block;
+}
+
+.actions
+{
+
+	margin-top: 1em;
+	clear: both;
+	width: 100%;
+	text-align: center;
+}
+
+.actions .buttons
+{
+	background-color: #D2E8E8;
+	background-image: url(bar.png);
+	background-repeat: repeat-x;
+	background-position: center;
+	padding: 0.65em;
+}
+
+.actions .buttons input
+{
+	padding: 0.15em 1em;
+}
+
+.actions .buttons input.save
+{
+	padding: 0.15em 2.5em;
+}
+
+
+
+fieldset.project .validator
+{
+	display: block;
+}
+
+fieldset.project .categoryName
+{
+	width: 50%;
+	border: 1px solid red;
+}
+
+fieldset.project td.abbrev, 
+fieldset.project td.duration,
+fieldset.project td.edit
+{
+	width: 20%;
+	border: 1px solid red;
+} 
+
+
+.fromProject select
+{
+	width: 15em;
+}
+
+fieldset.project .projectCategory table
+{
+	border-collapse: collapse;
+	width: 100%;
+}
+
+fieldset.project .projectCategory table th, fieldset.project td.edit
+{
+	white-space: nowrap;
+	text-align: left;
+	padding: 0.2em;
+}
+
+fieldset.project .projectCategory table th
+{
+	font-size: 0.9em;
+}
+
+fieldset.project .projectCategory table td
+{
+	border: 1px solid #6495ED;
+	padding: 0.2em;
+}

@@ -1,0 +1,24 @@
+<com:TContent ID="body" >
+
+<h1 id="3301">TInlineFrame</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TInlineFrame" />
+
+<p id="380274" class="block-content">
+<tt>TInlineFrame</tt> menampilkan sebuah bingkai inline (&lt;iframe&gt;) pada halaman Web. Lokasi konten bingkai ditetapkan oleh properti <tt>FrameUrl</tt>.
+</p>
+<p id="380275" class="block-content">
+Penampilan <tt>TInlineFrame</tt> dapat dikustomisai dengan properti berikut, sebagai tambahan terhadap apa yang diturunkan dari <tt>TWebControl</tt>.
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>Align</tt> - penjajaran pada bingkai.</li>
+  <li><tt>DescriptionUrl</tt> - URI dari penjelasan panjang pada konten bingkai.</li>
+  <li><tt>MarginWidth</tt> dan <tt>MarginHeight</tt> - jumlah pixel masing-masing untuk digunakan sebagai batas kiri/kanan dan atas/bawah..</li>
+  <li><tt>ScrollBars</tt> - apakah scrollbar disediakan untuk bingkai inline. Standarnya adalah <tt>Auto</tt>, berarti scroll bar muncul bila diperlukan. Menyetelnya sebagai <tt>None</tt> atau <tt>Both</tt> untuk secara eksplisit to menyembunyikan atau menampilkan scroll bars.</li>
+</ul>
+
+<p id="380276" class="block-content">
+Contoh berikut memperlihatkan <tt>TInlineFrame</tt> dengan setelan properti berbeda. Google homepage dipakai sebagai konten bingkai.
+</p>
+<com:RunBar PagePath="Controls.Samples.TInlineFrame.Home" />
+
+<div class="last-modified">$Id: InlineFrame.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

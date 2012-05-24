@@ -1,0 +1,144 @@
+﻿<com:TContent ID="Main">
+
+<h1>Création de la page d'administration des utilisateurs <tt>AdminUser</tt></h1>
+
+<p>
+La page <tt>AdminUser</tt> affiche la liste de tous les comptes utilisateurs, ainsi l'administrateur peut effectuer les tâches de maintenance. Par simplification, les tâches administratives pour notre blog seront la mise à jour des utilisateurs et la suppression.
+</p>
+
+
+<p>
+Nous allons lister les utilisateurs dans une table HTML. Chaque ligne correspondra à un compte utilisateur, les colonnes suivantes seront affichées:
+</p>
+
+<ul>
+<li>Pseudo - affiche le pseudo de l'utilisateur. Dans chaque cellule un lien sera affiché qui nous dirigera vers la page <a href="?page=Day3.CreateEditUser">EditUser</a>.</li>
+<li>Email - affiche l'email.</li>
+<li>Administrateur - indique si le compte est celui d'un administrateur.</li>
+<li>Commande - affiche une colonne de bouton "supprimer". En cliquant sur un de ces boutons, la suppression du compte sera effectuée.</li>
+</ul>
+
+<p>
+Nous créons deux fichiers <tt>protected/pages/users/AdminUser.page</tt> et <tt>protected/pages/users/AdminUser.php</tt> qui contiendront respectivement le gabarit et la classe.
+</p>
+
+<h2>Création du gabarit</h2>
+<p>
+Nous allons utiliser un contrôle <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.DataGrid">TDataGrid</a> pour afficher les données. Suivant l'analyse précédente, nous allons configurer quatre colonnes:
+</p>
+
+<ul>
+<li><a href="http://www.pradosoft.com/docs/classdoc/THyperLinkColumn">THyperLinkColumn</a> affiche le pseudo. L'URL sera construite suivant les instructions de la propriété <tt>DataNavigateUrlFormatString</tt>.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TBoundColumn">TBoundColumn</a> affiche l'email.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TCheckBoxColumn">TCheckBoxColumn</a> utilise des cases à cocher pour indiquer si le compte est un compte administrateur.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TButtonColumn">TButtonColumn</a> affiche un bouton "Supprimer".</li>
+</ul>
+
+
+<p>Le gabarit complet est affiché ci-après:</p>
+
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ Title="Mon Blog - Administration des comptes utilisateurs" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Administration des comptes utilisateurs</h1>
+
+<a href="&lt;%= $this->Service->constructUrl('users.NewUser')%>">Créer un nouvel utilisateur</a>
+<br/>
+
+&lt;com:TDataGrid ID="UserGrid"
+    DataKeyField="username"
+    AutoGenerateColumns="false"
+    OnDeleteCommand="deleteButtonClicked">
+
+    &lt;com:THyperLinkColumn
+        HeaderText="Pseudo"
+        DataTextField="username"
+        DataNavigateUrlField="username">
+        &lt;prop:DataNavigateUrlFormatString>#
+          $this->Service->constructUrl('users.EditUser',array('username'=>{0}))
+        &lt;/prop:DataNavigateUrlFormatString>
+    &lt;/com:THyperLinkColumn>
+
+    &lt;com:TBoundColumn
+        HeaderText="Email"
+        DataField="email" />
+
+    &lt;com:TCheckBoxColumn
+        HeaderText="Administrateur"
+        DataField="role" />
+
+    &lt;com:TButtonColumn
+        HeaderText="Commande"
+        Text="Supprimer"
+        ButtonType="PushButton"
+        CommandName="delete" />
+
+&lt;/com:TDataGrid>
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+
+<h2>Création du fichier de classe</h2>
+
+
+<p>
+Dans le gabarit précédent, le bouton <tt>OnDeleteCommand</tt> déclenche l'évènement <tt>deleteButtonClicked()</tt> que nous devons implémenter dans le fichier de classe. De plus, la grille de données doit être renseignée avec les informations utilisateurs lorsque la page est initialisée. Nous écrivons donc notre fichier de classe comme ci-dessous :
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class AdminUser extends TPage
+{
+    /**
+     * Remplis la grille avec la liste des utilisateurs.
+     * Cette méthode est appelée lors de l'initialisation de la page.
+     * @param mixed param : paramètres de l'évènement
+     */
+    public function onInit($param)
+    {
+        parent::onInit($param);
+        // lit tout les comptes utilisateurs
+        $this->UserGrid->DataSource=UserRecord::finder()->findAll();
+        // et les associes à la grille
+        $this->UserGrid->dataBind();
+    }
+
+    /**
+     * Supprime un compte utilisateur.
+     * Cette méthode répond à l'évènement OnDeleteCommand.
+     * @param mixed sender : celui qui a généré l'évènement
+     * @param mixed param : paramètres de l'évènement
+     */
+    public function deleteButtonClicked($sender,$param)
+    {
+        // récupère l'identifiant du bouton sur lequel on a cliqué
+        $item=$param->Item;
+        // récupère auprès de la grille la clé primaire correspondante à l'identifiant
+        $username=$this->UserGrid->DataKeys[$item->ItemIndex];
+        // supprime le compte utilisateur en utilisant la clé primaire
+        UserRecord::finder()->deleteByPk($username);
+    }
+}
+</com:TTextHighlighter>
+
+<p>
+Dans le code précédent, la méthode <tt>deleteButtonClicked()</tt> est appelée quand on clique sur le bouton "Supprimer". Pour savoir à quelle ligne appartenait le bouton, nous utilisons la propriété <tt>Item.ItemIndex</tt> du paramètre de l'évènement. Avec cet index, nous recherchons quelle est la clé primaire de la ligne grâce à la propriété <tt>DataKeys</tt>.
+Dans le code précédent, la méthode <tt>deleteButtonClicked()</tt> est appelée quand on clique sur le bouton "Supprimer". Pour savoir à quelle ligne appartenait le bouton, nous utilisons la propriété <tt>Item.ItemIndex</tt> du paramètre de l'évènement. Avec cet index, nous recherchons quelle est la clé primaire de la ligne grâce à la propriété <tt>DataKeys</tt>.
+</p>
+
+<com:TipBox>
+Tous les <a href="http://www.pradosoft.com/docs/classdoc/TDataBoundControl">contrôles liés</a> sont basé sur le même modèle. C'est à dire, définition de la propriété <tt>DataSource</tt> pour savoir d'où proviennent les données et appel à la méthode <tt>dataBind()</tt> pour effectivement lier les données au contrôle.
+</com:TipBox>
+
+<h2>Test</h2>
+<!-- <h2>Testing</h2> -->
+<p>
+Pour tester notre page <tt>AdminUser</tt>, nous naviguons à l'adresse <tt>http://hostname/blog/index.php?page=users.AdminUser</tt>. Il peut vous être demandé de vous connecter en tant qu'administrateur auparavant si ce n'est déjà fait. Le résultat suivant apparaitra.
+</p>
+
+<img src="<%~ output3.gif %>" class="output" />
+
+</com:TContent>

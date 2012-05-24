@@ -1,0 +1,31 @@
+<com:TContent ID="body">
+
+<h1>TActiveTextBox Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+An active textbox being set as the result of a callback:
+</td><td class="sampleaction">
+<com:TActiveTextBox Text="Sample content" ID="txt1"
+/>
+
+<com:TActiveButton
+	Text="click me"
+	OnClick="buttonClicked"
+/>
+</td></tr>
+
+<tr><td class="samplenote">
+An active textbox with AutoPostBack="true"; Pressing Enter/Return, the textbox contents will be set on the label.
+Note that text needs to be properly escaped to avoid html injections:
+</td><td class="sampleaction">
+<com:TActiveTextBox ID="txt2" AutoPostBack="true" OnTextChanged="textChanged"
+/>
+<com:TActiveLabel Text="" ID="label2"
+/>
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2946 2011-06-01 21:01:57Z ctrlaltca@gmail.com $</div></com:TContent>

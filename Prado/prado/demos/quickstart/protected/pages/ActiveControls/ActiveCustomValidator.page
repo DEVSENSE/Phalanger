@@ -1,0 +1,23 @@
+<com:TContent ID="body">
+<!-- $Id: ActiveCustomValidator.page 1650 2007-01-24 06:55:32Z wei $ -->
+<h1 id="126030">TActiveCustomValidator</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveCustomValidator" />
+
+<p id="630421" class="block-content">Performs custom validation using only server-side <tt>OnServerValidate</tt>
+ validation event. The client-side uses callbacks to raise
+ <tt>onServerValidate</tt> event. The <tt>ClientValidationFunction</tt> property
+ is disabled and will throw an exception if trying to set this property.
+</p>
+
+<p id="630422" class="block-content"> Beware that the <tt>onServerValidate</tt> may be
+raised when the control to validate on the client side
+changes value, that is, the server validation may be called many times.
+
+After the callback or postback, the {@link onServerValidate onServerValidate}
+is raised once more. The <tt>IsCallback</tt> property of the <tt>TPage</tt> class
+will be true when validation is made during a callback request.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveCustomValidator.Home" />
+
+<div class="last-modified">$Id: ActiveCustomValidator.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

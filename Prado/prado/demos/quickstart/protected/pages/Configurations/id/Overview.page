@@ -1,0 +1,10 @@
+<com:TContent ID="body" >
+<h1 id="1401">Tinjauan Konfigurasi</h1>
+<p id="170164" class="block-content">
+PRADO menggunakan konfigurasi untuk merekat komponen bersama ke dalam halaman dan aplikasi. Ada <a href="?page=Configurations.AppConfig">konfigurasi aplikasi</a>, <a href="?page=Configurations.PageConfig">konfigurasi halaman</a>, dan <a href="?page=Configurations.Templates1">template</a>.
+</p>
+<p id="170165" class="block-content">
+Konfigurasi aplikasi dan halaman adalah opsional jika nilai standar yang dipakai. Template sebagian besar digunakan oleh halaman dan kontrol template. Ini juga opsional.
+</p>
+
+<div class="last-modified">$Id: Overview.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

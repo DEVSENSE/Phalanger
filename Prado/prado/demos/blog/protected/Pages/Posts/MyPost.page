@@ -1,0 +1,48 @@
+<%@ Title="My Posts" %>
+
+<com:TContent ID="Main">
+
+<h2>My Posts</h2>
+
+<com:TDataGrid ID="PostGrid"
+	AutoGenerateColumns="false"
+	CssClass="grid"
+	HeaderStyle.CssClass="grid-header"
+	ItemStyle.CssClass="grid-row1"
+	AlternatingItemStyle.CssClass="grid-row2"
+	AllowPaging="true"
+	AllowCustomPaging="true"
+	PageSize="20"
+	PagerStyle.CssClass="grid-pager"
+	PagerStyle.Mode="Numeric"
+	OnPageIndexChanged="changePage"
+	OnPagerCreated="pagerCreated"
+	>
+	<com:THyperLinkColumn
+		HeaderText="Title"
+		DataNavigateUrlField="ID"
+		DataNavigateUrlFormatString="#$this->Service->constructUrl('Posts.ViewPost',array('id'=>{0}))"
+		DataTextField="Title"
+		/>
+	<com:TBoundColumn
+		HeaderText="Status"
+		DataField="Status"
+		DataFormatString="#{0}===0?'Published':({0}===1?'Draft':({0}===2?'Pending':'Sticky'))"
+		ItemStyle.Width="70px"
+		/>
+	<com:TBoundColumn
+		HeaderText="Comments"
+		DataField="CommentCount"
+		ItemStyle.HorizontalAlign="Center"
+		ItemStyle.Width="80px"
+		/>
+	<com:TBoundColumn
+		HeaderText="Time"
+		DataField="CreateTime"
+		DataFormatString="#date('M j, Y',{0})"
+		ItemStyle.Wrap="false"
+		ItemStyle.Width="90px"
+		/>
+</com:TDataGrid>
+
+</com:TContent>

@@ -1,0 +1,170 @@
+<com:TContent ID="body">
+
+<h1>Exploring the SQLMap PHP DataMapper API through the <tt>TSqlMapper</tt></h1>
+<p>The <tt>TSqlMapper</tt> instance acts as a facade to provide access the rest of
+the DataMapper framework. The DataMapper API methods are shown below.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+/* Query API */
+public function queryForObject($statementName, $parameter=null, $result=null);
+public function queryForList($statementName, $parameter=null, $result=null,
+                                   $skip=-1, $max=-1);
+public function queryForPagedList($statementName, $parameter=null, $pageSize=10, $page=0);
+public function queryForMap($statementName, $parameter=null,
+                                   $keyProperty=null, $valueProperty=null);
+public function insert($statementName, $parameter=null)
+public function update($statementName, $parameter=null)
+public function delete($statementName, $parameter=null)
+
+/* Connection API */
+public function openConnection()
+public function closeConnection()
+
+/* Transaction API */
+public function beginTransaction()
+public function commitTransaction()
+public function rollBackTransaction()
+</com:TTextHighlighter>
+
+<p>Note that each of the API methods accept the name of the Mapped Statement as
+the first parameter. The <tt>statementName</tt> parameter corresponds to the
+<tt>id</tt> of the Mapped Statement in the Data Map definition. 
+In each case, a <tt>parameterObject</tt> also may be
+passed. The following sections describe how the API methods work.</p>
+
+<h2>Insert, Update, Delete</h2>
+<com:TTextHighlighter Language="php" CssClass="source">
+public function insert($statementName, $parameter=null)
+public function update($statementName, $parameter=null)
+public function delete($statementName, $parameter=null)
+</com:TTextHighlighter>
+
+<p>If a Mapped Statement uses one of the <tt>&lt;insert&gt;</tt>, <tt>&lt;update&gt;</tt>, or
+<tt>&lt;delete&gt;</tt> statement-types, then it should use the corresponding API
+method. The <tt>&lt;insert&gt;</tt> element supports a nested <tt>&lt;selectKey&gt;</tt> element
+for generating primary keys. If the
+<tt>&lt;selectKey&gt;</tt> stanza is used, then <tt>insert</tt> returns the generated key;
+otherwise a null object is returned. Both the <tt>update</tt> and <tt>delete</tt>
+methods return the number of rows affected by the statement.
+</p>
+
+<h2>QueryForObject</h2>
+<com:TTextHighlighter Language="php" CssClass="source">
+public function queryForObject($statementName, $parameter=null, $result=null);
+</com:TTextHighlighter>
+
+<p>If a Mapped Statement is expected to select a single row, then call it using
+<tt>queryForObject</tt>. Since the Mapped Statement definition specifies the
+result class expected, the framework can both create and populate the result
+class for you. Alternatively, if you need to manage the result object
+yourself, say because it is being populated by more than one statement, you
+can use the alternate form and pass your <tt>$resultObject</tt> as the third
+parameter.</p>
+
+<h2>QueryForList</h2>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+public function queryForList($statementName, $parameter=null, $result=null,
+                                    $skip=-1, $max=-1);
+</com:TTextHighlighter>
+
+<p>If a Mapped Statement is expected to select multiple rows, then call it using
+<tt>queryForList</tt>. Each entry in the list will be an result object populated
+from the corresponding row of the query result. If you need to manage the
+<tt>$resultObject</tt> yourself, then it can be passed as the third parameter. If
+you need to obtain a partial result, the fourth parameter <tt>$skip</tt> and
+fifth parameter <tt>$max</tt> allow you to skip a number of records (the starting
+point) and the maximum number to return.</p>
+
+<h2>QueryForPagedList</h2>
+<com:TTextHighlighter Language="php" CssClass="source">
+ public function queryForPagedList($statementName, $parameter=null, $pageSize=10, $page);
+</com:TTextHighlighter>
+
+<p>We live in an age of information overflow. A database query often returns more
+hits than users want to see at once, and our requirements may say that we need
+to offer a long list of results a "page" at a time. If the query returns
+1000 hits, we might need to present the hits to the user in sets of fifty, and
+let them move back and forth between the sets. Since this is such a common
+requirement, the framework provides a convenience method.</p>
+
+<p>The <tt>TSqlMapPagedList</tt> interface includes methods for navigating through
+pages (<tt>nextPage()</tt>, <tt>previousPage()</tt>, <tt>gotoPage($pageIndex)</tt>) and
+also checking the status of the page (<tt>getIsFirstPage()</tt>,
+<tt>getIsMiddlePage()</tt>, <tt>getIsLastPage()</tt>, <tt>getIsNextPageAvailable()</tt>,
+<tt>getIsPreviousPageAvailable()</tt>, <tt>getCurrentPageIndex()</tt>,
+<tt>getPageSize()</tt>). The total number of records available is not accessible
+from the <tt>TSqlMapPagedList</tt> interface, unless a virtual count is defined
+using <tt>setVirtualCount($value)</tt>, this should be easily accomplished by
+simply executing a second statement that counts the expected results.</p>
+
+<div class="tip"><b class="tip">Tip:</b>
+The <tt>queryForPagedList</tt> method is convenient, but note that a larger set
+(up to 3 times the page size) will first be returned by the database provider
+and the smaller set extracted by the framework. The higher the page size, the
+larger set that will be returned and thrown away. For very large sets, you may
+want to use a stored procedure or your own query that uses <tt>$skip</tt> and
+<tt>$max</tt> as parameters in <tt>queryForList</tt>.
+</div>
+
+<div class="tip"><b class="tip">Tip:</b>
+The <tt>$page</tt> parameter was introduced in 3.1.3. Before there was an additional
+query to always fetch the data for page 0 on object creation. Since this 
+might be a problem in performance critical situations with 3.1.2, you might be better 
+of also using <tt>queryForList</tt> with <tt>$skip</tt> and <tt>$max</tt> instead.
+</div>
+
+
+<h2>QueryForMap</h2>
+<com:TTextHighlighter Language="php" CssClass="source">
+public function queryForMap($statementName, $parameter=null,
+                                    $keyProperty=null, $valueProperty=null);
+</com:TTextHighlighter>
+
+<p>The <tt>queryForList</tt> methods return the result objects within a <tt>TList</tt> or
+array instance. Alternatively, the <tt>queryForMap</tt> returns a TMap or
+associative array instance. The value of each entry is one of the result
+objects. The key to each entry is indicated by the <tt>$keyProperty</tt>
+parameter. This is the name of the one of the properties of the result object,
+the value of which is used as the key for each entry. For example, If you
+needed a set of <tt>Employee</tt> objects, you might want them returned as a
+<tt>TMap</tt> keyed by each object's <tt>EmployeeNumber</tt> property.</p>
+
+<p>If you don't need the entire result object in your result, you can add the
+<tt>$valueProperty</tt> parameter to indicate which result object property should
+be the value of an entry. For example, you might just want the
+<tt>EmployeeName</tt> keyed by <tt>EmployeeNumber</tt>.</p>
+
+<h2>Transaction</h2>
+<p>The DataMapper API includes methods to demarcate transactional boundaries. A
+transaction can be started, committed and/or rolled back. You can call the
+transaction methods from the <tt>TSqlMapper</tt> instance.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+// Begin a transactional session using Adodb transaction API
+public function beginTransaction()
+
+// Commit a transaction, uses Adodb transaction API
+public function commitTransaction()
+
+// RollBack a transaction, uses Adodb transaction API
+public void RollBackTransaction()
+</com:TTextHighlighter>
+
+<p>Using transactions example.</p>
+<com:TTextHighlighter Language="php" CssClass="source">
+try
+{
+    $sqlMap->beginTransaction();
+    $item = $sqlMap->queryForObject("getItem", $itemId);
+    $item->setDescription($newDescription);
+    $sqlMap->update("updateItem", $item);
+    $sqlMap->commitTransaction();
+}
+catch
+{
+    $sqlMap->rollBackTransaction();
+}
+</com:TTextHighlighter>
+
+</com:TContent>

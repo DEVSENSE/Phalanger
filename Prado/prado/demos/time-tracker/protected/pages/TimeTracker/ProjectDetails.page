@@ -1,0 +1,104 @@
+<com:TContent ID="Main">
+<h2>Project Details</h2>
+
+<fieldset class="project"><legend>Project Configuration</legend>
+  <p>Define the project and specify which users will be part of the project. 
+  	 Then add categories to the project to help keep track of specific areas of 
+  	 product. Press the <tt>SAVE</tt> button at the bottom for your configuration 
+  	 to take effect.</p>
+  <div class="projectInfo">
+  	<h2>Project Information</h2>
+  	<div class="projectName">
+  	<com:TLabel ForControl="projectName" Text="Project Name"/>
+  	<span class="required">*</span><br />
+  	<com:TTextBox ID="projectName" />
+  	<com:TRequiredFieldValidator
+  		ControlToValidate="projectName"
+  		Display="None"
+  		CssClass="validator"
+  		ValidationGroup="project-edit"
+  		ControlCssClass="required-input"
+  		ErrorMessage="Please enter a project name."/>
+  		
+  	</div>
+  	<div class="manager">
+  	<com:TLabel ForControl="manager" Text="Project Manager" />
+  	<span class="required">*</span><br />
+  	<com:TDropDownList ID="manager" />
+  	</div>
+  	<div class="completionDate">
+  	<com:TLabel ForControl="completionDate" Text="Estimated complete date:"/>
+  	<span class="required">*</span><br />
+  	<com:TDatePicker ID="completionDate" InputMode="DropDownList" />
+  	</div>
+  	<div class="estimateHours">
+  	<com:TLabel ForControl="estimateHours" Text="Estimated Duration (in hours):"/>
+  	<span class="required">*</span><br />
+  	<com:TTextBox ID="estimateHours" />
+  	<com:TRequiredFieldValidator
+  		ControlToValidate="estimateHours"
+  		Display="None"
+  		CssClass="validator"
+  		ValidationGroup="project-edit"
+  		ControlCssClass="required-input"
+  		ErrorMessage="Please enter the project duration." />
+  	<com:TRangeValidator 
+  		ControlToValidate="estimateHours"
+  		DataType="Float"
+  		MinValue="0"
+  		MaxValue="9999"
+  		CssClass="validator"
+  		Display="None"
+  		ValidationGroup="project-edit"
+  		ControlCssClass="required-input1"
+  		ErrorMessage="Duration must be between 0 and 9999" />
+  	</div>
+  	<div class="description">
+  	<com:TLabel ForControl="description" Text="Description:" /><br />
+  	<com:TTextBox ID="description" TextMode="MultiLine" />
+  	</div>
+  </div>
+  
+  <div class="projectMembers">
+  	<h2>Specify Project Members</h2>
+  	<p>Select a resource. Use ctrl+click to select multiple resources at once:</p>
+  	<com:TListBox ID="members" SelectionMode="Multiple" />
+  </div> 
+  
+  <com:TPanel CssClass="projectCategory" ID="projectCategoryColumn">
+  	<h2>Define Project Categories for Project Management</h2>
+  	  	
+	<p>Categories can be added in two ways. You can <strong>ADD</strong> a category 
+  	by specifying name, abbreviation, and duration - 
+  	the amount of hours that may be charged under the category. Or, 
+  	You can <strong>COPY</strong> categories that already have been defined in 
+  	another project to this project. </p>
+  	  	  	
+	<com:Application.pages.TimeTracker.CategoryDataList ID="categories" />
+	
+	<div class="fromProject">
+		<com:TLabel ForControl="projectList" Text="Add categories from another project:" />
+		<com:TDropDownList ID="projectList" />
+		<com:TButton Text="Copy" OnClick="copyButton_clicked" />
+	</div>
+
+  </com:TPanel>
+  
+  <div class="actions">
+  
+    <com:TValidationSummary AutoUpdate="false" ValidationGroup="project-edit" />
+  	<p>Press the <tt>SAVE</tt> button for your configuration to take effect.
+  	<com:TPlaceHolder Visible=<%= $this->deleteButton->Visible %>>
+  	Press the <tt>DELETE</tt> button to delete the current project.
+  	</com:TPlaceHolder>
+  	</p>
+  	<div class="buttons">
+  	<com:TButton Text="Save" CssClass="save"
+  		OnClick="saveButton_clicked" ValidationGroup="project-edit"/>
+  	<com:TButton ID="deleteButton" Text="Delete" OnClick="deleteButton_clicked"
+  		Attributes.onclick="if(!confirm('Are you sure?')) return false;" />
+  	</div>
+  </div>
+ </fieldset>
+
+</com:TContent>

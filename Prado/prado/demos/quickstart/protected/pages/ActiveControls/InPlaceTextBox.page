@@ -1,0 +1,42 @@
+<com:TContent ID="body" >
+
+<h1 id="204024">TInPlaceTextBox</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TInPlaceTextBox" />
+
+<p class="block-content">
+<tt>TInPlaceTextBox</tt> is a component rendered as a label and allows its
+contents to be edited by changing the label to a textbox when
+the label is clicked or when another control or html element with
+ID given by <tt>EditTriggerControlID</tt> is clicked.
+</p>
+
+<p class="block-content">
+If the <tt>OnLoadingText</tt> event is handled, a callback request is
+made when the label is clicked, while the request is being made the
+textbox is disabled from editing. The <tt>OnLoadingText</tt> event allows
+you to update the content of the textbox before the client is allowed
+to edit the content. After the callback request returns successfully,
+the textbox is enabled and the contents is then allowed to be edited.
+</p>
+
+<p class="block-content">
+Once the textbox loses focus, if <tt>AutoPostBack</tt>
+is true and the textbox content has changed, a callback request is made and
+the <tt>OnTextChanged</tt> event is raised like that of the TActiveTextBox.
+During the request, the textbox is disabled.
+</p>
+
+<p class="block-content">
+After the callback request returns sucessfully, the textbox is enabled.
+If the <tt>AutoHideTextBox</tt> property is true, then
+the textbox will be hidden and the label is then shown.
+</p>
+
+<p class="block-content">
+Since 3.1.2, you can set the <tt>ReadOnly</tt> property to make
+the control not editable. This property can be also changed on callback
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TInPlaceTextBox.Home" />
+
+<div class="last-modified">$Id: InPlaceTextBox.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

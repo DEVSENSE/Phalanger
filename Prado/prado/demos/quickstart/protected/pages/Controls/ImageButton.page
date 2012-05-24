@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="3001">TImageButton</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TImageButton" />
+
+<p id="350269" class="block-content">
+<tt>TImageButton</tt> is also similar to <tt>TButton</tt>, except that <tt>TImageButton</tt> displays the button as an image. The image is specified via <tt>ImageUrl</tt>, and the alternate text is specified by <tt>Text</tt>. In addition, it is possible to obtain the coordinate of the point where the image is clicked. The coordinate information is contained in the event parameter of the <tt>OnClick</tt> event (not <tt>OnCommand</tt>).
+</p>
+<com:RunBar PagePath="Controls.Samples.TImageButton.Home" />
+
+<div class="last-modified">$Id: ImageButton.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

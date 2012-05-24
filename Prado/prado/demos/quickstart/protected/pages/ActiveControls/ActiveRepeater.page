@@ -1,0 +1,24 @@
+<com:TContent ID="body" >
+
+<h1 id="184016">TActiveRepeater</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveRepeater" />
+
+<p class="block-content">
+<tt>TActiveRepeater</tt> represents a data bound and updatable repeater control which is the
+active counterpart to the original <tt>TRepeater</tt> control.
+</p>
+
+<p class="block-content">
+This component can be used in the same way as the regular repeater, the only
+difference is that the active repeater uses callbacks instead of postbacks
+for interaction.
+</p>
+
+<p class="block-content">
+Please refer to the original documentation of <a href="?page=Controls.Repeater">TRepeater</a> for usage.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveRepeater.Home" />
+
+
+<div class="last-modified">$Id: ActiveRepeater.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

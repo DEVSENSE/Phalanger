@@ -1,0 +1,128 @@
+<com:TContent ID="body" >
+<h1 id="701">Components</h1>
+<p id="110113" class="block-content">
+A component is an instance of <tt>TComponent</tt> or its child class. The base class <tt>TComponent</tt> implements the mechanism of component properties and events.
+</p>
+
+<h2 id="702">Component Properties</h2>
+<p id="110114" class="block-content">
+A component property can be viewed as a public variable describing a specific aspect of the component, such as the background color, the font size, etc. A property is defined by the existence of a getter and/or a setter method in the component class. For example, in <tt>TControl</tt>, we define its <tt>ID</tt> property using the following getter and setter methods,
+<com:TTextHighlighter CssClass="source block-content" id="code_110056">
+class TControl extends TComponent {
+    public function getID() {
+        ...
+    }
+    public function setID($value) {
+        ...
+    }
+}
+</com:TTextHighlighter>
+</p>
+<p id="110115" class="block-content">
+To get or set the <tt>ID</tt> property, do as follows, just like working with a variable,
+<com:TTextHighlighter CssClass="source block-content" id="code_110057">
+$id = $component->ID;
+$component->ID = $id;
+</com:TTextHighlighter>
+This is equivalent to the following,
+<com:TTextHighlighter CssClass="source block-content" id="code_110058">
+$id = $component->getID();
+$component->setID( $id );
+</com:TTextHighlighter>
+</p>
+<p id="110116" class="block-content">
+A property is read-only if it has a getter method but no setter method. Since PHP method names are case-insensitive, property names are also case-insensitive. A component class inherits all its ancestor classes' properties.
+</p>
+
+<h3 id="706">Subproperties</h3>
+<p id="110117" class="block-content">
+A subproperty is a property of some object-typed property. For example, <tt>TWebControl</tt> has a <tt>Font</tt> property which is of <tt>TFont</tt> type. Then the <tt>Name</tt> property of <tt>Font</tt> is referred to as a subproperty (with respect to <tt>TWebControl</tt>).
+</p>
+<p id="110118" class="block-content">
+To get or set the <tt>Name</tt> subproperty, use the following method,
+<com:TTextHighlighter CssClass="source block-content" id="code_110059">
+$name = $component-&gt;getSubProperty('Font.Name');
+$component->setSubProperty('Font.Name', $name);
+</com:TTextHighlighter>
+This is equivalent to the following,
+<com:TTextHighlighter CssClass="source block-content" id="code_110060">
+$name = $component->getFont()->getName();
+$component-&gt;getFont()-&gt;setName( $name );
+</com:TTextHighlighter>
+
+
+</p>
+
+<h2 id="703">Component Events</h2>
+<p id="110119" class="block-content">
+Component events are special properties that take method names as their values. Attaching (setting) a method to an event will hook up the method to the places at which the event is raised. Therefore, the behavior of a component can be modified in a way that may not be foreseen during the development of the component.
+</p>
+<p id="110120" class="block-content">
+A component event is defined by the existence of a method whose name starts with the word <tt>on</tt>. The event name is the method name and is thus case-insensitve. For example, in <tt>TButton</tt>, we have
+<com:TTextHighlighter CssClass="source block-content" id="code_110061">
+class TButton extends TWebControl {
+    public function onClick( $param ) {
+        ...
+    }
+}
+</com:TTextHighlighter>
+This defines an event named <tt>OnClick</tt>, and a handler can be attached to the event using one of the following ways,
+<com:TTextHighlighter CssClass="source block-content" id="code_110062">
+$button->OnClick = $callback;
+$button->OnClick->add( $callback );
+$button->OnClick[] = $callback;
+$button->attachEventHandler( 'OnClick' , $callback );
+</com:TTextHighlighter>
+where <tt>$callback</tt> refers to a valid PHP callback (e.g. a function name, a class method <tt>array($object,'method')</tt>, etc.)
+</p>
+
+<h2 id="704">Namespaces</h2>
+<p id="110121" class="block-content">
+A namespace refers to a logical grouping of some class names so that they can be differentiated from other class names even if their names are the same. Since PHP does not support namespace intrinsically, you cannot create instances of two classes who have the same name but with different definitions. To differentiate from user defined classes, all PRADO classes are prefixed with a letter 'T' (meaning 'Type'). Users are advised not to name their classes like this. Instead, they may prefix their class names with any other letter(s).
+</p>
+<p id="110122" class="block-content">
+A namespace in PRADO is considered as a directory containing one or several class files. A class may be specified without ambiguity using such a namespace followed by the class name. Each namespace in PRADO is specified in the following format,
+<div class="source">
+PathAlias.Dir1.Dir2
+</div>
+where <tt>PathAlias</tt> is an alias of some directory, while <tt>Dir1</tt> and <tt>Dir2</tt> are subdirectories under that directory. A class named <tt>MyClass</tt> defined under <tt>Dir2</tt> may now be fully qualified as <tt>PathAlias.Dir1.Dir2.MyClass</tt>.
+</p>
+<p id="110123" class="block-content">
+To use a namespace in code, do as follows,
+<com:TTextHighlighter CssClass="source block-content" id="code_110063">
+Prado::using('PathAlias.Dir1.Dir2.*');
+</com:TTextHighlighter>
+which appends the directory referred to by <tt>PathAlias.Dir1.Dir2</tt> into PHP include path so that classes defined under that directory may be instantiated without the namespace prefix. You may also include an individual class definition by
+<com:TTextHighlighter CssClass="source block-content" id="code_110064">
+Prado::using('PathAlias.Dir1.Dir2.MyClass');
+</com:TTextHighlighter>
+which will include the class file if <tt>MyClass</tt> is not defined.
+</p>
+<p id="110124" class="block-content">
+For more details about defining path aliases, see <a href="?page=Configurations.AppConfig">application configuration</a> section.
+</p>
+
+<h2 id="705">Component Instantiation</h2>
+<p id="110125" class="block-content">
+Component instantiation means creating instances of component classes. There are two types of component instantation: static instantiation and dynamic instantiation. The created components are called static components and dynamic components, respectively.
+</p>
+
+<h3 id="707">Dynamic Component Instantiation</h3>
+<p id="110126" class="block-content">
+Dynamic component instantiation means creating component instances in PHP code. It is the same as the commonly referred object creation in PHP. A component can be dynamically created using one of the following two methods in PHP,
+<com:TTextHighlighter CssClass="source block-content" id="code_110065">
+$component = new ComponentClassName;
+$component = Prado::createComponent('ComponentType');
+</com:TTextHighlighter>
+where <tt>ComponentType</tt> refers to a class name or a type name in namespace format (e.g. <tt>System.Web.UI.TControl</tt>). The second approach is introduced to compensate for the lack of namespace support in PHP.
+</p>
+
+<h3 id="708">Static Component Instantiation</h3>
+<p id="110127" class="block-content">
+Static component instantiation is about creating components via <a href="?page=Configurations.Overview">configurations</a>. The actual creation work is done by the PRADO framework. For example, in an <a href="?page=Configurations.AppConfig">application configuration</a>, one can configure a module to be loaded when the application runs. The module is thus a static component created by the framework. Static component instantiation is more commonly used in <a href="?page=Configurations.Templates1">templates</a>. Every component tag in a template specifies a component that will be automatically created by the framework when the template is loaded. For example, in a page template, the following tag will lead to the creation of a <tt>TButton</tt> component on the page,
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_110066">
+&lt;com:TButton Text="Register" /&gt;
+</com:TTextHighlighter>
+</p>
+
+<div class="last-modified">$Id: Components.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

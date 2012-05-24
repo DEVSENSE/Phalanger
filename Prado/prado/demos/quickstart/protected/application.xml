@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="QuickStart" Mode="Debug">
+  <paths>
+    <using namespace="Application.controls.*" />
+    <using namespace="System.I18N.*" />
+    <using namespace="System.Web.UI.ActiveControls.*"/>
+  </paths>
+
+  <modules>
+    <!-- uncomment the following to enable caching
+    <module id="cache" class="System.Caching.TSqliteCache" />
+    -->
+    <!-- uncomment the following to enable logging to file
+    <module id="log" class="System.Util.TLogRouter">
+      <route class="TFileLogRoute" />
+    </module>
+    -->
+   <module id="quickstart_search"
+    	class="Application.index.ZendSearch"
+    	IndexDataDirectory="Application.index.quickstart" />
+
+	<module id="globalization" class="Application.QuickStartGlobalization" Charset="UTF-8"/>
+  </modules>
+  <services>
+    <service id="page" class="TPageService" DefaultPage="GettingStarted.Introduction" />
+  </services>
+
+  <parameters>
+		<parameter id="languages" value="('en'=>'English','es'=>'Español','fr'=>'Français', 'id'=>'Indonesian', 'zh' => '中文（简体）', 'pl'=>'Polski', 'ja'=>'日本語')" />
+  </parameters>
+
+</application>

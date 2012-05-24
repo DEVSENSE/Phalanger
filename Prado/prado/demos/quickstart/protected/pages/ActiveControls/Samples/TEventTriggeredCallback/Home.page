@@ -1,0 +1,18 @@
+<com:TContent ID="body">
+
+<h1>TEventTriggeredCallback Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+  A callback will be executed when the textbox receives and loses focus
+</td><td class="sampleaction">
+  <com:TTextBox ID="txt1" />
+  <com:TEventTriggeredCallback ControlID="txt1" EventName="focus" OnCallback="txtFocused" />
+  <com:TEventTriggeredCallback ControlID="txt1" EventName="blur" OnCallback="txtBlurred" />
+  <com:TActiveLabel ID="label1" />
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2960 2011-06-02 17:44:51Z ctrlaltca@gmail.com $</div></com:TContent>

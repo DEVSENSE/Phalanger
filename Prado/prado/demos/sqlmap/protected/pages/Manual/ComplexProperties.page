@@ -1,0 +1,247 @@
+<com:TContent ID="body">
+<h1>Complex Properties</h1>
+<p>In a relational database, one table will often refer to another. Likewise,
+some of your business objects may include another object or list of objects.
+Types that nest other types are called "complex types". You may not want a
+statement to return a simple type, but a fully-formed complex type.</p>
+
+<p>In the database, a related column is usually represented via a 1:1
+relationship, or a 1:M relationship where the class that holds the complex
+property is from the "many side" of the relationship and the property itself
+is from the "one side" of the relationship. The column returned from the
+database will not be the property we want; it is a key to be used in another
+query.</p>
+
+<p>From the framework's perspective, the problem is not so much loading a complex
+type, but loading each "complex property". To solve this problem, you can
+specify in the Result Map a statement to run to load a given property. In
+the following example, the "category" property of the
+"select-product-result" element is a complex property.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<resultMap id="select-product-result" class="product">
+    <result property="id" column="PRD_ID"/>
+    <result property="description" column="PRD_DESCRIPTION"/>
+    <result property="category" column="PRD_CAT_ID" select="selectCategory"/>
+</resultMap>
+
+<resultMap id="select-category-result" class="category">
+    <result property="id" column="CAT_ID"/>
+    <result property="description" column="CAT_DESCRIPTION"/>
+</resultMap>
+
+<select id="selectProduct" parameterClass="int" resultMap="select-product-result">
+   select * from PRODUCT where PRD_ID = #value#
+</select>
+
+<select id="selectCategory" parameterClass="int" resultMap="select-category-result">
+   select * from CATEGORY where CAT_ID = #value#
+</select>
+</com:TTextHighlighter>
+
+<p>In the above example, the framework will use the "selectCategory"
+statement to populate the "category" property. The value of each category is
+passed to the "selectCategory" statement, and the object returned is set to
+the category property. When the process completes, each Product instance will
+have the the appropriate category object instance set.</p>
+
+<h1>Avoiding N+1 Selects (1:1)</h1>
+<p>A problem with the above example may be that whenever you load a
+Product, two statements execute: one for the Product and one for the Category.
+For a single Product, this issue may seem trivial. But if you load 10
+products, then 11 statements execute. For 100 Products, instead of one
+statement product statement executing, a total of 101 statements execute. The
+number of statements executing for the above example will always be
+N+1: 100+1=101.</p>
+
+<p>One way to mitigate the problem is to cache the "selectCategory" statement.
+We might have a hundred products, but there might only be five categories.
+Instead of running a SQL query or stored procedure, the framework will return
+the category object from it cache. A 101 statements would still run, but they
+would not be hitting the database. See <a href="?page=Manual.CacheModels">Cache Models</a> 
+more details about caches.</p>
+
+<p>Another solution is to use a standard SQL join to return the columns you need
+from the another table. A join can bring all the columns we need over from the
+database in a single query. When you have a nested object, you can reference
+nested properties using a dotted notation, like "category.description".</p>
+
+<p>The following example solves the same problem as the previous 
+example, but uses a join instead of nested properties.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">  
+<resultMap id="select-product-result" class="product">
+    <result property="id" column="PRD_ID"/>
+    <result property="description" column="PRD_DESCRIPTION"/>
+    <result property="category" resultMapping="Category.CategoryResult" />
+</resultMap>
+
+<statement id="selectProduct" parameterClass="int" resultMap="select-product-result">
+    select *
+    from PRODUCT, CATEGORY
+    where PRD_CAT_ID=CAT_ID
+    and PRD_ID = #value#
+</statement>
+</com:TTextHighlighter>
+
+<div class="info"><b class="tip">Lazy Loading vs. Joins (1:1):</b>
+<p>It's important to note that using a join is not always better. If you are in a
+situation where it is rare to access the related object (e.g. the category
+property of the Product class) then it might actually be faster to avoid the
+join and the unnecessary loading of all category properties. This is
+especially true for database designs that involve outer joins or nullable
+and/or non-indexed columns. In these situations it might be better to use the
+sub-select solution with lazy loading enabled. The general rule of thumb is:
+use the join if you're more likely going to access the associated properties
+than not. Otherwise, only use it if lazy loading is not an option.</p>
+
+<p>If you're having trouble deciding which way to go, don't worry. No matter
+which way you go, you can always change it without impacting your application
+source code. The two examples above result in
+exactly the same object graph and are loaded using the exact same method call
+from the application. The only consideration is that if you were to enable
+caching, then the using the separate select (not the join) solution could
+result in a cached instance being returned. But more often than not, that
+won't cause a problem (your application shouldn't be dependent on instance
+level equality i.e. "<tt>===</tt>").</p>
+</div>
+
+<h1>Complex Collection Properties</h1>
+<p>It is also possible to load properties that represent lists of complex
+objects. In the database the data would be represented by a M:M relationship,
+or a 1:M relationship where the class containing the list is on the "one
+side" of the relationship and the objects in the list are on the "many
+side"". To load a <tt>TList</tt> of objects, there is no change to the statement
+(see example above). The only difference required to cause the SQLMap
+DataMapper framework to load the property as a <tt>TList</tt> is that the property
+on the business object must be of type <tt>TList</tt>. For example, if a Category
+has a <tt>TList</tt> of Product instances, the mapping would look like this
+(assuming Category has a property called "ProductList" of <tt>TList</tt>.):</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source"> 
+<resultMap id="select-category-result" class="Category">
+    <result property="Id" column="CAT_ID"/>
+    <result property="Description" column="CAT_DESCRIPTION"/>
+    <result property="ProductList" column="CAT_ID" select="selectProductsByCatId"/>
+</resultMap>
+
+<resultMap id="select-product-result" class="Product">
+    <result property="Id" column="PRD_ID"/>
+    <result property="Description" column="PRD_DESCRIPTION"/>
+</resultMap>
+
+<statement id="selectCategory" parameterClass="int"
+            resultMap="select-category-result">
+    select * from CATEGORY where CAT_ID = #value#
+</statement>
+
+<statement id="selectProductsByCatId" parameterClass="int"
+          resultMap="select-product-result">
+   select * from PRODUCT where PRD_CAT_ID = #value#
+</statement>
+</com:TTextHighlighter> 
+
+<h1>Avoiding N+1 Select Lists (1:M and M:N)</h1>
+<p>This is similar to the 1:1 situation above, but is of even greater concern due
+to the potentially large amount of data involved. The problem with the
+solution above is that whenever you load a Category, two SQL statements are
+actually being run (one for the Category and one for the list of associated
+Products). This problem seems trivial when loading a single Category, but if
+you were to run a query that loaded ten (10) Categories, a separate query
+would be run for each Category to load its associated list of Products. This
+results in eleven (11) queries total: one for the list of Categories and one
+for each Category returned to load each related list of Products (N+1 or in
+this case 10+1=11). To make this situation worse, we're dealing with
+potentially large lists of data.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source"> 
+<resultMap id="select-category-result" class="Category">
+    <result property="Id" column="CAT_ID"/>
+    <result property="Description" column="CAT_DESCRIPTION"/>
+    <result property="ProductList" column="CAT_ID" select="selectProductsByCatId"/>
+</resultMap>
+
+<resultMap id="select-product-result" class="Product">
+    <result property="Id" column="PRD_ID"/>
+    <result property="Description" column="PRD_DESCRIPTION"/>
+</resultMap>
+
+<!-- This statement executes 1 time -->
+<statement id="selectCategory" parameterClass="int"
+            resultMap="select-category-result">
+    select * from CATEGORY where CAT_ID = #value#
+</statement>
+
+<!-- This statement executes N times (once for each category returned above)
+     and returns a list of Products (1:M) -->
+<statement id="selectProductsByCatId" parameterClass="int"
+            resultMap="select-product-result">
+    select * from PRODUCT where PRD_CAT_ID = #value#
+</statement>
+</com:TTextHighlighter> 
+
+<h2>1:N and M:N Solution?</h2>
+<p>
+One way to avoid multiple SQL queries is to use Joins in the query
+together with the <tt>groupBy</tt> attribute in <tt>&lt;resultMap&gt;</tt> and
+the <tt>resultMapping</tt> attribute of <tt>&lt;result&gt;</tt>. 
+The following example selects all the categories and the corresponding
+products using 1 query.
+</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source"> 
+<resultMap id="select-category-result" class="Category" groupBy="CAT_ID">
+    <result property="Id" column="CAT_ID"/>
+    <result property="Description" column="CAT_DESCRIPTION"/>
+    <result property="ProductList" resultMapping="select-product-result"/>
+</resultMap>
+ 
+<resultMap id="select-product-result" class="Product">
+    <result property="Id" column="PRD_ID"/>
+    <result property="Description" column="PRD_DESCRIPTION"/>
+</resultMap>
+ 
+<!-- This statement executes 1 time -->
+<statement id="selectCategory" parameterClass="int"
+            resultMap="select-category-result">
+    select 
+            CATEGORY.CAT_ID as CAT_ID,
+            CATEGORY.CAT_DESCRIPTION as CAT_DESCRIPTION,
+            PRODUCT.PRD_ID as PRD_ID,
+            PRODUCT.PRD_DESCRIPTION as PRD_DESCRIPTION
+     from CATEGORY 
+        left join PRODUCT on
+            PRODUCT.PRD_CAT_ID = CATEGORY.CAT_ID
+</statement>
+</com:TTextHighlighter> 
+
+<p>In the above example, the <tt>groupBy</tt> attribute is set
+to the column of that specifies the Category ID. All the rows
+with the same <tt>CAT_ID</tt> will be considered as a collection
+for the <tt>ProductList</tt> property.</p>
+ 
+<div class="info"><b>Lazy Loading vs. Joins (1:M and M:N):</b>
+<p>As with the 1:1 situation described previously, it's important to note that
+using a join is not always better. This is even more true for collection
+properties than it was for individual value properties due to the greater
+amount of data. If you are in a situation where it is rare to access the
+related object (e.g. the ProductList property of the Category class) then it
+might actually be faster to avoid the join and the unnecessary loading of the
+list of products. This is especially true for database designs that involve
+outer joins or nullable and/or non-indexed columns. In these situations it
+might be better to use the sub-select solution with the lazy loading. The
+general rule of thumb is: use the join if you're more likely going to access
+the associated properties than not. Otherwise, only use it if lazy loading is
+not an option.</p>
+
+<p>As mentioned earlier, if you're having trouble deciding which way to go, don't
+worry. No matter which way you go, you can always change it without impacting
+your PHP code. The two examples above would result in exactly the same object
+graph and are loaded using the exact same method call. The only consideration
+is that if you were to enable caching, then the using the separate select (not
+the join) solution could result in a cached instance being returned. But more
+often than not, that won't cause a problem (your application should not be
+dependent on instance level equality i.e. "<tt>===</tt>").</p>
+</div>
+
+</com:TContent>

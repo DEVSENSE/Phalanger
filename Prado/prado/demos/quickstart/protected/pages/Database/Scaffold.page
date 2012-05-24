@@ -1,0 +1,152 @@
+<com:TContent ID="body" >
+<!-- $Id: Scaffold.page 1902 2007-05-07 04:17:37Z wei $ -->
+<h1 id="144022">Active Record Scaffold Views</h1>
+<com:SinceVersion Version="3.1b" />
+<p id="720048" class="block-content"><a href="?page=Database.ActiveRecord">Active Record</a> classes can be used together with 
+<com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldListView" Text="TScaffoldListView"/>
+and
+<com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldEditView" Text="TScaffoldEditView"/>
+( <com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldView" Text="TScaffoldView"/>
+links both <tt>TScaffoldListView</tt> and <tt>TScaffoldEditView</tt>) to create 
+<i>simple</i> Create/Read/Update/Delete (CRUD) web applications.</p>
+
+<p id="720049" class="block-content">The scaffold views are intended to assist in prototyping web application, 
+they are not designed to be as customiziable as more complex components such as
+<a href="?page=Controls.DataGrid">TDataGrid</a>. The scaffold views provide
+the following builtin functionality:
+</p>
+
+<ul>
+	<li>Listing of all active record items.</li>
+	<li>Searching records.</li>
+	<li>Paging and sorting.</li>
+	<li>Deleting an item.</li>
+	<li>Inserting a new item.</li>
+	<li>Updating an existing item.</li>
+	<li>Validates required fields and basic data types.</li>
+	<li>Presents specialized controls such as date pickers.</li>
+</ul>
+
+<p id="720050" class="block-content">Scaffold views are dependent on Active Records and currently supports
+the following databases: Mysql, Sqlite and Postgres SQL. Support for other databases
+can be considered when there are sufficient demand.</p>
+
+<h2 id="144023">Setting up a Scaffold View</h2>
+<p id="720051" class="block-content">To use the scaffold view, we first define an <a href="?page=Database.ActiveRecord">Active Record</a> 
+class that represents a table or view in the database. Consider the following
+Active Record class that corresponds to the <tt>users</tt>
+table as defined in the <a href="?page=Database.ActiveRecord">Active Record</a> quickstart page.
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_720188">
+class UserRecord extends TActiveRecord
+{
+    const TABLE='users';
+	
+    public $username;
+    public $email;
+}
+</com:TTextHighlighter>
+
+<p id="720052" class="block-content">The scaffold view classes are in the <tt>System.Data.ActiveRecord.Scaffold.*</tt>
+<a href="?page=Fundamentals.Components#704">namespace</a>. 
+This <a href="?page=Fundamentals.Components#704">namespace</a> can be "imported" in the 
+<a href="?page=Configurations.AppConfig">Application Configuration</a>
+using the <tt>application.xml</tt> file or through the php code using the <tt>Prado::using()</tt>
+method. To start using the 
+<com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldView" Text="TScaffoldView"/>
+simply set the <tt>RecordClass</tt> property value equal to an Active Record
+class name.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_720189">
+&lt;com:TScaffoldView RecordClass="UserRecord" /&gt;
+</com:TTextHighlighter>
+
+<p id="720053" class="block-content">The above code will list the current records in the <tt>users</tt> table. 
+Each record can be edited by clicking on the "edit" button and deleted by
+clicking on the "delete" button. A new record can be added by clicking on the 
+"Add new record" button, enter some data (notice the automatic validation of required fields and data types), and click the "save" button. 
+Specifying search terms in the search textbox to find particular records. Finally, the
+record list can be sorted for each column by changing the sorting column and order. 
+</p>
+
+<p id="720054" class="block-content">The <tt>TScaffoldView</tt> is a template control composed of other scaffold controls.
+The following properties gives access to these composite controls.</p>
+<ul>
+	<li><b><tt>ListView</tt></b> -- the <tt>TScaffoldListView</tt> displaying the record list. </li>
+	<li><b><tt>EditView</tt></b> -- the <tt>TScaffoldEditView</tt> that renders the inputs for editing and adding records.</li> 
+	<li><b><tt>SearchControl</tt></b> -- the <tt>TScaffoldSearch</tt> responsible to the search user interface.</li>
+</ul>
+<p id="720055" class="block-content">
+ All these composite controls can be customized as we shall see below.
+</p>
+
+<h2 id="144024">TScaffoldListView</h2>
+
+<p id="720056" class="block-content">A list of Active Records can be displayed using the <tt>TScaffoldListView</tt>
+with the following useful properties.</p>
+<ul>
+	<li><b><tt>Header</tt></b> -- a <a href="?page=Controls.Repeater">TRepeater</a> 
+displaying the Active Record property/field names. </li>
+	<li><b><tt>Sort</tt></b> -- a <a href="?page=Controls.List">TDropDownList</a> displaying the combination 
+of properties and its possible ordering. </li>
+	<li><b><tt>Pager</tt></b> -- a <a href="?page=Controls.Pager">TPager</a> control displaying
+the links and/or buttons that navigate to different pages in the Active Record data.</li>
+	<li><b><tt>List</tt></b> -- a <a href="?page=Controls.Repeater">TRepeater</a> that renders a row of Active Record data.</li>
+</ul>
+
+<p id="720057" class="block-content">Custom rendering of the each Active Record can be achieved by specifying 
+the <tt>ItemTemplate</tt> and/or <tt>AlternatingItemTemplate</tt> property of the <tt>List</tt>
+repeater. 
+The <tt>TScaffoldListView</tt> will listen for two command events named "delete" and
+"edit". A "delete" command will delete a the record for the row where the "delete" command originates. 
+An "edit" command will push the record data to be edited by a 
+<tt>TScaffoldEditView</tt> with ID specified by the <tt>EditViewID</tt> property.
+The following example lists the usernames only with bold formatting.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_720190">
+&lt;com:TScaffoldListView RecordClass="UserRecord" &gt;
+    &lt;prop:List.ItemTemplate&gt;
+        &lt;strong>&lt;%# $this->Data->username %>&lt;/strong&gt;
+    &lt;/prop:List.ItemTemplate&gt;
+&lt;/com:TScaffoldListView&gt;
+</com:TTextHighlighter>
+
+<div class="info"><b class="note">Info:</b>
+For the <tt>TScaffoldView</tt> the list view can be accessed throught the <tt>ListView</tt> property of a <tt>TScaffoldView</tt>.
+Thus, the subproperty <tt>ListView.List.ItemTemplate</tt> on <tt>TScaffoldView</tt>
+is equivalent to the <tt>List.ItemTemplate</tt> subproperty of <tt>TScaffoldListView</tt> in the above example.
+</div>
+
+<p id="720058" class="block-content">The <tt>SearchCondition</tt> property and
+<tt>SearchParameters</tt> property (takes array values) can be
+specified to customize the records to be shown. The <tt>SearchCondition</tt>
+will be used as the <tt>Condition</tt> property of <tt>TActiveRecordCriteria</tt>
+and the <tt>SearchParameters</tt> property corresponds to
+<tt>Parameters</tt> property of <tt>TActiveRecordCriteria</tt>.</p>
+
+<h2 id="144025">TScaffoldEditView</h2>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_720191">
+&lt;com:TScaffoldEditView RecordPk="user1" RecordClass="UserRecord" /&gt;
+</com:TTextHighlighter>
+
+<h2 id="144026">Combining list + edit views</h2>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_720192">
+&lt;com:TScaffoldEditView ID="edit_view" RecordClass="UserRecord" /&gt;
+&lt;com:TScaffoldListView EditViewID="edit_view" RecordClass="UserRecord" /&gt;
+</com:TTextHighlighter>
+
+<h2 id="144027">Customizing the TScaffoldView</h2>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_720193">
+&lt;com:TScaffoldView RecordClass="UserRecord" &gt;
+    &lt;prop:ListView.List.ItemTemplate&gt;
+        &lt;%# $this->DataItem->username %&gt;
+        &lt;com:TLinkButton Text="Edit" CommandName="edit" /&gt;
+    &lt;/prop:ListView.List.ItemTemplate&gt;
+&lt;/com:TScaffoldView/&gt;
+</com:TTextHighlighter>
+
+<div class="last-modified">$Id: Scaffold.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>

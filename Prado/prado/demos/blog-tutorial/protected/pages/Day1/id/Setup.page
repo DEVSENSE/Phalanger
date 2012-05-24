@@ -1,0 +1,164 @@
+<com:TContent ID="Main">
+
+<h1>Persiapan Awal</h1>
+
+<p>
+Kita mulai dengan menyiapkan direktori dan file yang diperlukan oleh kebanyakan aplikasi PRADO. Kita menggunakan <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">piranti baris perintah PRADO</a> untuk melaksanakan tujuan ini.
+</p>
+
+<p>
+Anggap <tt>blog</tt> adalah nama direktori untuk menampung seluruh sistem blog, dan URL untuk mengakses folder ini adalah <tt>http://hostname/blog/</tt> (ganti <tt>hostname</tt> dengan nama host sebenarnya).
+</p>
+
+<p>
+Di bawah direktori <tt>blog</tt>, kita menjalankan <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">piranti baris perintah PRADO</a> dengan perintah berikut (ganti <tt>path/ke</tt> dengan path sebenarnya ke instalasi kerangka kerja PRADO):
+</p>
+<com:TTextHighlighter CssClass="source cli">
+php path/ke/prado-cli.php -c .
+</com:TTextHighlighter>
+
+<p>
+Menjalankan perintah di atas akan membuat direktori dan file berikut:
+</p>
+
+<img src="<%~ directories.gif %>" class="output" />
+
+<p>
+Sekarang kita mempunyai kerangka aplikasi PRADO yang dapat diakses melalui URL <tt>http://hostname/blog/index.php</tt> yang menampilkan halaman Web dengan tulisan "Welcome to PRADO".
+</p>
+
+<p>
+Sangat bermanfaat mempelajari lebih rinci mengenai direktori dan file yang baru saja kita buat.
+</p>
+
+
+<h2>File Awal</h2>
+
+<h3>Naskah Entri</h3>
+
+<p>
+Setiap aplikasi PRADO mempunyai naskah entri, sering dinamakan sebagai <tt>index.php</tt>. Dalam kebanyakan kasus, ia hanya naskah PHP yang secara langsung dapat diakses oleh pengguna Web. Ini mengurangi resiko terhadap ijin para pengguna Web untuk menjalankan naskah yang tidak diinginkan pada server.
+</p>
+
+<p>
+Kegunaan utama dari naskah entri adalah untuk mengawali aplikasi PRADO dan membiarkan ia menangani permintaan pengguna. Naskah entri biasanya berisi pernyataan PHP berikut,
+</p>
+
+<com:TTextHighlighter CssClass="source">
+<?php
+// sertakan prado.php yang berisi kelas PRADO dasar
+require_once('path/to/prado.php');
+// buat turunan aplikasi PRADO
+$application = new TApplication;
+// jalankan aplikasi dan tangani permintaan pengguna
+$application->run();
+?>
+</com:TTextHighlighter>
+
+<com:InfoBox>
+Nama naskah entri tidak harus <tt>index.php</tt>. Ia dapat berupa nama apa saja selama server Web dapat mengatakan bahwa naskah adalah naskah PHP 5. Sebagai contoh, pada beberapa lingkungan hosting berbagi, seseorang mungkin perlu untuk menamai naskah sebagai <tt>index.php5</tt> agar ia bisa ditangani dengan benar oleh server the Web.
+</com:InfoBox>
+
+<h3>Konfigurasi Aplikasi</h3>
+<p>
+File XML <i>opsional</i> <tt>application.xml</tt> berisi <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.AppConfig">konfigurasi aplikasi</a>. Kegunaan utamanya adalah untuk mengkustomisasi dalam cara yang bisa mengkonfigurasi turunan aplikasi yang dibuat dalam naskah entri. Sevagai contoh, kita dapat menghidupkan fitur <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Logging">pencatatan</a> untuk sistem blog kita dengan bantuan konfigurasi aplikasi.
+</p>
+
+<p>
+File <tt>application.xml</tt> yang sekarang kita miliki hampir kosong. Sebenarnya kita dapat menghapusnya dengan aman karena aplikasi pada saat ini hanya menggunakan seting standar PRADO. Seiring kita ke depan, kita akan merujuk kembali secara kontan dan menampilkan bagaimana untuk mengkonfigurasi aplikasi kita dalam <tt>application.xml</tt>.
+</p>
+
+
+<h3>Homepage</h3>
+
+<p>
+Homepage (juga disebut halaman standar) <tt>Home.page</tt> adalah satu-satunya <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">halaman</a> yang dibuat oleh piranti baris perintah PRADO. Berisi konten dalam file ini yang muncul dalam browser saat mengunjungi URL <tt>http://hostname/blog/index.php</tt>.
+</p>
+
+<p>
+Konen dalam file <tt>Home.page</tt> menggunakan <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">format template PRADO</a>, yang kebanyakan mirip HTML dengan beberapa tag spesifik-PRADO. Sebagai contoh, dalam <tt>Home.page</tt> kita melihat konten murni HTML berikut:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<html>
+<head>
+  <title>Welcome to PRADO</title>
+</head>
+<body>
+<h1>Welcome to PRADO!</h1>
+</body>
+</html>
+</com:TTextHighlighter>
+
+
+<h2>Direktori Awal</h2>
+
+<h3>Direktori <tt>protected</tt></h3>
+
+<p>
+Direktori <tt>protected</tt>, juga dikenal sebagai <i>path basis aplikasi</i>, adalah direktori akar yang menampung halaman, template, konfigurasi, data, dll. Nama <tt>protected</tt> menunjukan bahwa direktori ini harus disembunyikan dari para pengguna Web, karena file di bawah direktori ini berisi data sensitif.
+</p>
+
+<p>
+Server Web berbeda mempunyai berbeda terhadap "melindungi" direktori. Untuk sever httpd Apache, cara termudah adalah untuk menempatkan file bernama <tt>.htaccess</tt> di bawah direktori dengan isi <tt>deny from all</tt>.
+</p>
+
+
+<h3>Direktori <tt>protected/runtime</tt> dan <tt>assets</tt></h3>
+
+<p>
+Direktori <tt>protected/runtime</tt> dan <tt>assets</tt> adalah dua direktori yang harus disetel bisa ditulisi oleh proses server Web. Direktori <tt>runtime</tt> menyimpan data sensitif (misalnya konfigurasi aplikasi yang diuraikan) yang dibuat saat menjalankan aplikasi PRADO, karena direktori <tt>assets</tt> menyimpan sumber daya yang dipublikasikan (misalnya file gambar, file javascript).
+</p>
+
+<com:InfoBox>
+Aman untuk menghapus file dan direktori di bawah <tt>protected/runtime</tt> dan <tt>assets</tt>. Sebenarnya para pengembang direkomendasikan untuk melakukan pekerjaan pembersihan ini ketika mereka memutakhirkan instalasi PRADO.
+</com:InfoBox>
+
+
+<h3>Direktori <tt>pages</tt></h3>
+
+<p>
+Direktori <tt>pages</tt> adalah <i>akar direktori halaman</i> yang menampung seluruh <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">halaman</a> dalam sebuah aplikasi PRADO. Ini mirip analogi terhadap direktori <tt>htdocs</tt> pada server Web httpd Apache.
+</p>
+
+<p>
+Kita sudah melihat bagaimana cara mengakses homepage. Untuk mengakses halaman yang ditempatkan di bawah <tt>pages</tt>, menggunakan URL <tt>http://hostname/blog/index.php?page=path.ke.NamaHalaman</tt>. Berdasarkan URL ini, PRADO akan melihar halaman bernama <tt>NamaHalaman</tt> di bawah direktori <tt>pages/path/ke</tt>. URL yang kita pakai untuk mengakses homepage sebelumnya sama dengan <tt>http://hostname/blog/index.php?page=Home</tt>.
+</p>
+
+
+<h2>Kustomisasi</h2>
+
+<p>
+Dimungkinkan untuk mengkustomisasi nama dan lokasi terhadap file dan direktori yang dijelaskan di atas.
+</p>
+
+<p>
+Sebagai contoh, untuk meningkatkan keamanan, seseorang mungkin ingin memindahkan seluruh direktori <tt>protected</tt> ke tempat lain yang bukan folder Web. Untuk melakukannya, gunakan pernyataan PHP berikut untuk membuat turunan aplikasi dalam naskah entri:
+</p>
+
+<com:TTextHighlighter CssClass="source">
+$application = new TApplication( 'path/ke/protected' );
+</com:TTextHighlighter>
+
+<p>
+Untuk membuat lokasi akar direktori halaman dan mengubah nama homepage, seseorang dapat menetapkannya dalam konfigurasi aplikasi <tt>application.xml</tt> sebagai berikut:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<application id="blog" mode="Debug">
+  <services>
+    <service id="page" 
+           class="TPageService" 
+           BasePath="path.to.pages"
+           DefaultPage="NewHome"
+           />
+  </services>
+</application>
+</com:TTextHighlighter>
+
+<p>
+Setelah Anda mempelajari lebih jauh mengenai PRADO, Anda akan melihat bahwa PRADO adalah kerangka kerja fleksibel yang membolehkan Anda untuk mengkustomisasi hampir setiap aspeknya. Kami akan menjelaskan lebih lanjut teknik kustomisasi setelah kita melanjutkan tutorial kita.
+</p>
+
+</com:TContent>

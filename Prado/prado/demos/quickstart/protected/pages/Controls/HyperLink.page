@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="2901">THyperLink</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.THyperLink" />
+
+<p id="340268" class="block-content">
+<tt>THyperLink</tt> displays a hyperlink on a page. The hyperlink URL is specified via the <tt>NavigateUrl</tt> property, and link text is via the <tt>Text</tt> property. The link target is specified via the <tt>Target</tt> property. It is also possible to display an image by setting the <tt>ImageUrl</tt> property. In this case, <tt>Text</tt> is displayed as the alternate text of the image. If both <tt>ImageUrl</tt> and <tt>Text</tt> are empty, the content enclosed within the control tag will be rendered.
+</p>
+<com:RunBar PagePath="Controls.Samples.THyperLink.Home" />
+
+<div class="last-modified">$Id: HyperLink.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

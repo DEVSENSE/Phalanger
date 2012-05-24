@@ -1,0 +1,64 @@
+<com:TContent ID="body" >
+
+<h1 id="2301">TDatePicker</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TDatePicker" />
+
+<p id="280245" class="block-content"><tt>TDatePicker</tt> menampilkan kotak teks untuk keperluan input tanggal.
+Ketika kotak teks menerima fokus, kalender akan muncul dan pengguna dapat mengambil tanggal darinya yang akan secara otomatis dimasukan ke dalam kotak teks. Format tanggal string yang ditampilkan dalam kotak teks ditentukan oleh properti <tt>DateFormat</tt>. Format yang benar adalah kombinasi dari token berikut:
+
+<com:TTextHighlighter Language="text" CssClass="source block-content" id="code_280103">
+Karakter       Pola Format (en-US)   
+---------------------------------------------------------------------
+ d              digit hari
+ dd             digit hari diisi misalnya 01, 02
+ M              digit bulan
+ MM             digit bulan diisi
+ MMM            singkatan nama bulan yang dilokalisasi, misalnya Mar, Apr
+ MMMM           nama bulan yang dilokalisasi, misalnya March, April
+ yy             2 digit tahun
+ yyyy           4 digit tahun
+---------------------------------------------------------------------
+</com:TTextHighlighter>
+
+<p id="280246" class="block-content">
+Tanggal pada pengambil tanggal bisa disetel menggunakan properti <tt>Date</tt> atau <tt>Timestamp</tt>. Nilai properti <tt>Date</tt> harus dalam format yang sama seperti pola yang ditetapkan dalam properti <tt>DateFormat</tt>. Properti <tt>Timestamp</tt> hanya menerima integer seperti cap waktu Unix.
+</p>
+
+<p id="280247" class="block-content">
+TDatePicker mempunyai tiga <tt>Mode</tt> untuk menampilkan tampilan pengambil tanggal.</p>
+ <ul id="u1" class="block-content">
+ 	<li><tt>Basic</tt> - Hanya menampilkan input teks, memfokuskan pada input menampilkan pengambil tanggal.</li>
+	<li><tt>Button</tt> - Menampilkan tombol disebelah input teks, mengklik pada tombol tampilkan tanggal, teks tombol dapat diubah dengan properti <tt>ButtonText</tt>.</li>
+	<li><tt>ImageButton</tt> - Menampilkan gambar di sebelah input teks, mengklik pada gambar pengambil tanggal, sumber gambar bisa diubah melalui properti <tt>ImageUrl</tt>.</li>
+ </ul>
+
+<p id="280248" class="block-content">Properti <tt>CssClass</tt> dapat dipakai untuk mengganti nama kelas CSS untuk panel pengambil tanggal. Properti <tt>CalendarStyle</tt> mengubah gaya kalender secara keseluruhan.
+Nilai <tt>CalendarStyle</tt> berikut tersedia:</p>
+	<ul id="u2" class="block-content">
+		<li><tt>default</tt> - gaya standar kalender.</li>
+	</ul>
+
+<p id="280249" class="block-content">Properti <tt>InputMode</tt> bisa disetel ke "TextBox" atau "DropDownList" dengan standar sebagai "TextBox". Dalam mode <tt>DropDownList</tt>, sebagai tambahan pada tampilan pengambil tanggal, tiga daftar drop down (hari, bulan dan tahun) disajikan untuk memilih tanggal.
+Ketika <tt>InputMode</tt> sama dengan "DropDownList", urutan dan penampilan tanggal, bulan, dan tahun akan bergantung pada pola yang ditetapkan dalam properti <tt>DateFormat</tt>.
+</p>
+
+<p id="280250" class="block-content">Tampilan pengambil tanggal dapat disembunyikan dengan menetapkan <tt>ShowCalendar</tt> ke false. Banyak teks pada tampilan pengambil tanggal dapat diubah ke bahasa berbeda menggunakan properti <tt>Culture</tt>.
+</p>
+
+<p id="280251" class="block-content">Batas tahun pengambil kalender dapat disetel menggunakan properti <tt>FromYear</tt> dan <tt>UpToYear</tt> di mana
+<tt>FromYear</tt> adalah tahun awal dan <tt>UpToYear</tt> adalah tahun terakhir yang dapat dipilih.
+Awal hari pada seminggu bisa diubah dengan properti <tt>FirstDayOfWeek</tt>, dengan 0 sebagai Minggu, 1 sebagai Senin, dst.
+</p>
+
+<p id="280252" class="block-content"><b>Catatan 1:</b> Jika <tt>InputMode</tt> adalah "TextBox", <tt>DateFormat</tt> <b>TIDAK</b> boleh berisi pola <code>MMM</code> atau <code>MMMM</code>. Pengurai sisi-server tidak akan bisa menentukan tanggal yang benar jika <code>MMM</code> atau <code>MMMM</code> dipakai. Ketika <tt>InputMode</tt> sama dengan "DropDownList", seluruh pola dapat dipergunakan.</p>
+
+<p id="280253" class="block-content"><b>Catatan 2:</b> Ketika <tt>TDatePicker</tt> dipakai bersama dengan validator, properti <tt>DateFormat</tt> pada validator harus sama dengan 
+<tt>DateFormat</tt> pada <tt>TDatePicker</tt> <b>DAN</b> harus disetel <tt>DataType</tt>="Date" pada validator guna memastikan validasi yang benar. Lihat
+<a href="?page=Controls.Validation#TCompareValidator">TCompareValidator</a>,
+<a href="?page=Controls.Validation#TDataTypeValidator">TDataTypeValidator</a> dan
+<a href="?page=Controls.Validation#TRangeValidator">TRangeValidator</a>
+untuk lebih jelasnya.</p>
+
+<com:RunBar PagePath="Controls.Samples.TDatePicker.Home" />
+
+<div class="last-modified">$Id: DatePicker.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

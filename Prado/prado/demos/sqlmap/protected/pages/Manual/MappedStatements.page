@@ -1,0 +1,173 @@
+<com:TContent ID="body">
+
+<h1>Mapped Statements</h1>
+<p>Mapped Statements can hold any SQL statement and can use Parameter Maps and
+Result Maps for input and output. (A stored procedure is a specialized form of
+a statement. </p>
+
+<p>If the case is simple, the Mapped Statement can reference the parameter and
+result classes directly. Mapped Statements support caching through reference
+to a Cache Model element. The following example shows the syntax for a
+statement element.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="statement.name"
+  [parameterMap="parameterMap.name"]
+  [parameterClass="class.name"]
+  [resultMap="resultMap.name"]
+  [resultClass="class.name"]
+  [listClass="class.name"]
+  [cacheModel="cache.name"]
+>
+  select * from Products where Product_Id = [?|#propertyName#]
+  order by [$simpleDynamic$]
+</statement>
+</com:TTextHighlighter>
+
+<p>The <tt>[bracketed]</tt> parts are optional, and some
+options are mutually exclusive. It is perfectly legal to have a Mapped
+Statement as simple as shown by the following example.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="InsertTestProduct" >
+  insert into Products (Product_Id, Product_Description) values (1, "Shih Tzu")
+</statement>
+</com:TTextHighlighter>
+
+<p>The above example is obviously unlikely, unless you are running a
+test. But it does shows that you can use SQLMap to execute arbitrary SQL
+statements. More likely, you will use the object mapping features with
+<a href="?page=Manual.ParameterMap">Parameter Maps</a> and 
+<a href="?page=Manual.ResultMaps">Result Maps</a> since that's where the magic happens.</p>
+
+<h2>Statement Types</h2>
+<p>The <tt>&lt;statement&gt;</tt> element is a general "catch all" element that can be
+used for any type of SQL statement. Generally it is a good idea to use one of
+the more specific statement-type elements. The more specific elements provided
+better error-checking and even more functionality. (For example, the insert
+statement can return a database-generated key.) The following table
+summarizes the statement-type elements and their supported attributes and
+features. </p>
+
+<!-- tabular: align=|l|l|l|l|, width=(0.2 0.2 0.2 0.2) --> 
+<table class="tabular">
+	<tr>
+		<th>Statement Element</th>
+		<th>Attribute</th>
+		<th>Child Elements</th>
+		<th>Methods</th>
+	</tr>
+	<tr>
+		<td><tt>&lt;statement&gt;</tt></td>
+		<td>
+			<tt>id</tt><br />
+			<tt>parameterClass</tt><br />
+			<tt>resultClass</tt><br />
+			<tt>listClass</tt><br />
+			<tt>parameterMap</tt><br />
+			<tt>resultMap</tt><br />
+			<tt>cacheModel</tt>
+		</td>
+		<td>None</td>
+		<td>
+	      	<tt>Insert</tt><br /> 
+	      	<tt>Update</tt><br /> 
+	      	<tt>Delete</tt><br /> 
+	      	All query methods
+	    </td>
+	</tr>
+	
+	<tr>
+		<td><tt>&lt;insert&gt;</tt></td>
+		<td>
+			<tt>id</tt><br />
+			<tt>parameterClass</tt><br />
+			<tt>parameterMap</tt>
+		</td>
+		<td>     
+			<tt>&lt;selectKey&gt;</tt><br />
+     		<tt>&lt;generate&gt;</tt>
+		</td>
+		<td>
+	      	<tt>Insert</tt><br /> 
+	      	<tt>Update</tt><br /> 
+	      	<tt>Delete</tt> 
+	    </td>
+	</tr>
+
+	<tr>
+		<td><tt>&lt;update&gt;</tt></td>
+		<td>
+			<tt>id</tt><br />
+			<tt>parameterClass</tt><br />
+			<tt>parameterMap</tt><br />
+			<tt>extends</tt>
+		</td>
+		<td><tt>&lt;generate&gt;</tt></td>
+		<td>
+	      	<tt>Insert</tt><br /> 
+	      	<tt>Update</tt><br /> 
+	      	<tt>Delete</tt>
+	    </td>
+	</tr>
+
+	<tr>
+		<td><tt>&lt;delete&gt;</tt></td>
+		<td>
+			<tt>id</tt><br />
+			<tt>parameterClass</tt><br />
+			<tt>parameterMap</tt><br />
+			<tt>extends</tt>
+		</td>
+		<td><tt>&lt;generate&gt;</tt></td>
+		<td>
+	      	<tt>Insert</tt><br /> 
+	      	<tt>Update</tt><br /> 
+	      	<tt>Delete</tt>
+	    </td>
+	</tr>
+
+	<tr>
+		<td><tt>&lt;select&gt;</tt></td>
+		<td>
+			<tt>id</tt><br />
+			<tt>parameterClass</tt><br />
+			<tt>resultClass</tt><br />
+			<tt>listClass</tt><br />
+			<tt>parameterMap</tt><br />
+			<tt>resultMap</tt><br />
+			<tt>cacheModel</tt><br />
+			<tt>extends</tt>
+		</td>
+		<td><tt>&lt;generate&gt;</tt></td>
+		<td>
+	      	All query methods
+	    </td>
+	</tr>			
+
+	<tr>
+		<td><tt>&lt;procedure&gt;</tt></td>
+		<td>
+			<tt>id</tt><br />
+			<tt>parameterClass</tt><br />
+			<tt>resultClass</tt><br />
+			<tt>listClass</tt><br />
+			<tt>parameterMap</tt><br />
+			<tt>resultMap</tt><br />
+			<tt>cacheModel</tt>
+		</td>
+		<td>None</td>
+		<td>
+	      	<tt>Insert</tt><br /> 
+	      	<tt>Update</tt><br /> 
+	      	<tt>Delete</tt><br /> 
+	      	All query methods
+	    </td>
+	</tr>	
+</table>
+
+<h2>Stored Procedures</h2>
+
+<p>TODO</p>
+
+</com:TContent>

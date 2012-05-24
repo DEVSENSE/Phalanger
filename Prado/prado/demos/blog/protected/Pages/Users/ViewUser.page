@@ -1,0 +1,40 @@
+<%@ Title="View User Profile" %>
+
+<com:TContent ID="Main">
+
+<h2>User Profile</h2>
+
+<table class="profile-table">
+<tr>
+  <td class="profile-table-label">Username</td>
+  <td class="profile-table-value"><%= $this->Profile->Name %></td>
+</tr>
+<tr>
+  <td class="profile-table-label">Full name</td>
+  <td class="profile-table-value"><%= htmlentities($this->Profile->FullName,ENT_QUOTES,'UTF-8') %></td>
+</tr>
+<tr>
+  <td class="profile-table-label">Email</td>
+  <td class="profile-table-value"><%= $this->Profile->Email %></td>
+</tr>
+<tr>
+  <td class="profile-table-label">Role</td>
+  <td class="profile-table-value"><%= $this->Profile->Role===0? 'Normal user':'Administrator' %></td>
+</tr>
+<tr>
+  <td class="profile-table-label">Website</td>
+  <td class="profile-table-value"><%= htmlentities($this->Profile->Website,ENT_QUOTES,'UTF-8') %></td>
+</tr>
+<tr>
+  <td class="profile-table-label">Member since</td>
+  <td class="profile-table-value"><%= date('l, F j, Y',$this->Profile->CreateTime) %></td>
+</tr>
+</table>
+<br/>
+<com:THyperLink
+	Text="Update"
+	NavigateUrl=<%= $this->Service->constructUrl('Users.EditUser',array('id'=>$this->Profile->ID)) %>
+	Visible=<%= $this->User->IsAdmin || $this->Profile->ID===$this->User->ID %>
+	CssClass="link-button" />
+
+</com:TContent>

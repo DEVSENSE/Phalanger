@@ -1,0 +1,334 @@
+<com:TContent ID="body" >
+<h1 id="6501">Pengenalan Javascript</h1>
+Bimbingan ini berdasarkan pada <a href="http://www.sergiopereira.com/articles/advjs.html">
+Bimbingan cepat bagi tur JavaScript tingkat lanjut dengan beberapa fitur OO</a> oleh Sergio Pereira.
+
+<h2 id="6502">Hey, Saya tidak tahu Anda bisa melakukannya</h2>
+<p id="820693" class="block-content">
+    Jika Anda adalah seorang pengembang web developer dan datang dari tempat yang sama seperti saya, Anda mungkin telah mengenal sedikit Javascript dalam halaman web Anda, terutama sebagai perekat UI.
+</p>
+<p id="820694" class="block-content">
+
+    Sampai saat ini, saya tahu bahwa Javascript mempunyai kemampuan OO daripada ketika saya dipekerjakan, tetapi saya tidak merasa perlu menggunakannya. Karena browser mulai mendukung set fitur Javascript dan DOM lebih distandarisasikan, itu menjadi semangat untuk menulis kode yang lebih fungsional dan kompleks untuk dijalankan pada klien. Itu membantu kelahiran fenomena AJAX.
+</p>
+<p id="820695" class="block-content">
+    Saat kita mulai mempelajari apa yang diperlukan untuk menulis aplikasi AJAX yang baik, kita mulai memperhatikan bahwa Javascript yang kita pakai benar-benar berada di puncak gunung es.
+    Sekarang kita melihat Javascript dipakai melampaui pekerjaan UI sehari-hari yang sederhana seperti validasi input dan tugas-tugas kecil. Kode klien sekarang jauh lebih maju dan berlapis, lebih mirip aplikasi desktop sebenarnya atau klien tebal dari klien-server. Kita melihat librari kelas, model obyek, hirarki, pola, dan banyak hal lain yang dapat kita pakai hanya dalam kode di dalam server.
+</p>
+<p id="820696" class="block-content">
+    Dalam banyak cata kita dapat mengatakan bahwa dengan tiba-tiba palang ditaruh lebih tinggi dari sebelumnya. Ia mengambil palang pintu lebih ahli menulis aplikasi untuk Web baru dan kita perlu mengingkatkan keahlian Javascript kita agar bisa sampai ke sana.
+    Jika Anda mencoba untuk menggunakan banyak librari javascript yang ada di luar sana, seperti
+    <a href="http://prototype.conio.net/">Prototipe.js</a>,
+    <a href="http://script.aculo.us/">Scriptaculous</a>,
+    <a href="http://moofx.mad4milk.net/">moo.fx</a>,
+    <a href="http://bennolan.com/behaviour/">Perilaku</a>,
+    <a href="http://developer.yahoo.net/yui/">YUI</a>,
+    dan lain-lain, Anda secara kebetulan akan menemukan diri Anda sendiri sedang membaca kode JS. Mungkin dikarenakan Anda ingin mempelajari bagaimana mereka melakukannya, atau karena Anda penasaran, atau lebih sering karena itulah satu-satunya cara untuk memahami bagaimana untuk memakainya, karena dokumentasi nampaknya tidak banyak ditujukan terutama terhadap librari ini. Apapun kasusnya, Anda akan menghadapi teknik kung-fu yang akan menjadi asing dan menakutkan jika Anda belum melihat itu sebelumnya.
+</p>
+
+<p id="820697" class="block-content">
+    Kegunaan dari artikel ini tepatnya menjelaskan tipe konstruksi yang banyak dari kita belum terbiasa dengannya.
+</p>
+
+
+<h2 id="6503">JSON (JavaScript Object Notation)</h2>
+<p id="820698" class="block-content">
+    JavaScript Object Notation (<a href="http://www.json.org/">JSON</a>,) adalah salah satu dari isu baru yang muncul sekitar tema AJAX. JSON, cukup dikatakan suatu cara mendeklarasikan obyek dalam Javascript. Mari kita lihat contoh segera dan perhatikan bagaimana kemudahannya.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820233">
+var myPet = { color: 'black', leg_count: 4, communicate: function(repeatCount){
+for(i=0;i&lt;repeatCount;i++) alert('Woof!');} };
+</com:TTextHighlighter>
+
+<p id="820699" class="block-content">
+    Mari kita tambahkan sedikit pembentukan agar terlihat lebih mirip bagaimana kita biasa menemukannya di sana:
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820234">
+var myPet =
+{
+    color: 'black',
+    legCount: 4,
+    communicate: function(repeatCount)
+    {
+        for(i=0;i&lt;repeatCount;i++)
+            alert('Woof!');
+    }
+};
+</com:TTextHighlighter>
+<p id="820700" class="block-content">
+    Di sini kita membuat referensi ke obyek dengan dua properti (<tt>color</tt>
+    dan <tt>legCount</tt>) serta metode (<tt>communicate</tt>.)
+    Tidak sulit untuk memahami bahwa properti obyek dan metode didefinisikan sebagai daftar dipisahkan koma. Masing-masing anggota diperkenalkan dengan nama, diikuti oleh titik dua dan kemudian definisi. Dalam hal properti, ini cukup mudah, hanya nilai properti. Metode yang dibuat dengan penempatan fungsi anonim, yang akan kami jelaskan lebih baik di bawah baris.
+    Setelah obyek dibuat dan ditempatkan ke variabel <tt>myPet</tt>, kita dapat menggunakanya seperti ini:
+</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820235">
+alert('my pet is ' + myPet.color);
+alert('my pet has ' + myPet.legCount + ' legs');
+//jika Anda anjing, mengonggong tiga kali:
+myPet.communicate(3);
+</com:TTextHighlighter>
+<p id="820701" class="block-content">
+    Anda akan melihat JSON banyak dipakai di mana saja dalam JS baru-baru ini, sebagai argumen bagi fungsi, sebagai nilai hasil, sebagai respon server (dalam string,) dll.
+</p>
+
+<h2 id="6504">Apa yang Anda maksud? Fungsi juga adalah sebuah obyek?</h2>
+<p id="820702" class="block-content">
+    Ini mungkin tidak biasa bagi para pengembang yang tidak pernah memikirkan tentang itu, tapi dalam fungsi JS adalah sebuah obyek. Anda bisa mengirimkan sebuah fungsi sebagai argumen terhadap fungsi lain sama seperti Anda mengirimkan sebuah string, misalnya. Ini sering dipakai dan siap digunakan.
+</p>
+
+<p id="820703" class="block-content">
+    Lihat pada contoh ini. Kami akan mengirimkan fungsi ke fungsi lain yang akan memakainya.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820236">
+var myDog =
+{
+    bark: function()
+    {
+        alert('Woof!');
+    }
+};
+
+var myCat =
+{
+    meow: function()
+    {
+        alert('I am a lazy cat. I will not meow for you.');
+    }
+};
+
+function annoyThePet(petFunction)
+{
+    //let's see what the pet can do
+    petFunction();
+}
+
+//ganggu anjing:
+annoyThePet(myDog.bark);
+//ganggu kucing:
+annoyThePet(myCat.meow);
+</com:TTextHighlighter>
+<p id="820704" class="block-content">
+    Catatan bahwa kami mengirimkan myDog.bark dan myCat.meow tanpa menambahkan tanda kurung <tt>"()"</tt> kepadanya. Jika kita melakukan itu kita tidak mengirimkan fungsi, sebaliknya kita akan memanggil metode dan mengirimkan nilai hasilnya, <tt>tidak terdefinisi</tt> dalam kedua kasus di sini.
+</p>
+
+<p id="820705" class="block-content">
+    Jika Anda ingin membuat kucing malas mulai mengeong, Anda dapat dengan mudah melakukan ini:
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820237">
+myCat.meow = myDog.bark;
+myCat.meow(); //alerts 'Woof!'
+</com:TTextHighlighter>
+
+<h2 id="6505">Arrays, items, and object members</h2>
+<p id="820706" class="block-content">
+    Dua baris berikut dalam JS melakukan hal yang sama.
+</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820238">
+var a = new Array();
+var b = [];
+</com:TTextHighlighter>
+<p id="820707" class="block-content">
+    Karena saya yakin Anda sudah mengetahuinya, anda dapat mengakses item individual dalam sebuah array menggunakan tanda kurung kotak:
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820239">
+var a = ['first', 'second', 'third'];
+var v1 = a[0];
+var v2 = a[1];
+var v3 = a[2];
+</com:TTextHighlighter>
+<p id="820708" class="block-content">
+
+    Tetapi Anda tidak dibatasi pada indeks numerik. Anda bisa mengakses banyak obyek JS dengan menggunakan namanya, dalam sebuah string. Contoh berikut membuat obyek kosong, dan menambah beberapa anggotanya dengan nama.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820240">
+var obj = {}; //baru, obyek kosong
+obj['member_1'] = 'this is the member value';
+obj['flag_2'] = false;
+obj['some_function'] = function(){ /* lakukan sesuatu */};
+</com:TTextHighlighter>
+<p id="820709" class="block-content">
+    Kode di atas mempunyai pengaruh yang sama seperti berikut:
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820241">
+var obj =
+{
+    member_1:'this is the member value',
+    flag_2: false,
+    some_function: function(){ /* lakukan sesuatu */}
+};
+</com:TTextHighlighter>
+
+<p id="820710" class="block-content">
+    Dalam banyak cara, ide obyek dan array asosiatif (hashes) dalam JS tidak dibedakan. Dua baris berikut melakukan hal yang sama juga.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820242">
+obj.some_function();
+obj['some_function']();
+</com:TTextHighlighter>
+
+
+<h2 id="6506">Cukup tentang obyek, boleh saya memiliki kelas sekarang?</h2>
+<p id="820711" class="block-content">
+
+    Kekuatan besar dari bahasa pemrograman obyek berasal dari pemakaian kelas. Saya tidak berpikir telah menebak bagaimana kelas didefinisikan dalam JS hanya menggunakan pengalaman saya sebelumnya dengan bahasa lainnya. Nilailah bagi diri Anda sendiri.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820243">
+//mendefinisikan kelas baru bernama Pet
+var Pet = function(petName, age)
+{
+    this.name = petName;
+    this.age = age;
+};
+
+//mari kita membuat obyek dari kelas Pet
+var famousDog = new Pet('Santa\'s Little Helper', 15);
+alert('This pet is called ' + famousDog.name);
+</com:TTextHighlighter>
+<p id="820712" class="block-content">
+    Mari kita lihat bagaimana kita menambahkan metode pada kelas <tt>Pet</tt> kita. Kita akan menggunakan properti <tt>prototype</tt> yang dimiliki oleh semua kelas. Properti <tt>prototype</tt> adalah sebuah obyek yang berisi semua anggota yang merupakan obyek yang akan dimiliki oleh kelas.
+    Bahkan kelas JS standarnya, seperti <tt>String</tt>, <tt>Number</tt>,
+    dan <tt>Date</tt> mempunyai obyek <tt>prototype</tt> yang bisa kita tambah metode serta propertinya dan menjadikan setiap obyek dari kelas itu secara otomatis mendapatkan anggota baru ini.
+</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820244">
+Pet.prototype.communicate = function()
+{
+    alert('I do not know what I should say, but my name is ' + this.name);
+};
+</com:TTextHighlighter>
+<p id="820713" class="block-content">
+    Itulah saatnya librari seperti <a href="http://www.sergiopereira.com/articles/prototype.js.html">prototype.js</a> siap digunakan. Jika kita menggunakan prototype.js, kita dapat membuat kode kita lebih bersih (setidaknya menurut saya.)
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820245">
+var Pet = Class.create();
+Pet.prototype =
+{
+    //'constructor' kita
+    initialize: function(petName, age)
+    {
+        this.name = petName;
+        this.age = age;
+    },
+
+    communicate: function()
+    {
+        alert('I do not know what I should say, but my name is ' + this.name);
+    }
+};
+</com:TTextHighlighter>
+
+<h2 id="6507">Fungsi sebagai argumen, pola yang menarik</h2>
+<p id="820714" class="block-content">
+    Jika Anda tidak pernah bekerja dengan bahasa yang mendukung klosur Anda akan mendapatkan idion berikut terlalu busuk.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820246">
+var myArray = ['first', 'second', 'third'];
+myArray.each( function(item, index)
+{
+    alert('The item in the position #' + index + ' is:' + item);
+});
+</com:TTextHighlighter>
+<p id="820715" class="block-content">
+
+    Wah! Mari kita jelaskan apa yang terjadi di sini sebelum Anda memutuskan saya telah pergi terlalu jauh dan beralih ke artikel yang lebih baik dari yang ini.
+</p>
+<p id="820716" class="block-content">
+    Pertama, dalam contoh di atas kita menggunakan librari prototype.js, yang menambahkan setiap fungsi ke kelas array. Setiap fungsi menerima satu argumen yang adalah obyek fungsi. Fungsi ini, silah berganti akan dipanggil sekali untuk setiap item dalam array, mengirimkan dua argumen saat dipanggil, item dan indeks untuk item saat ini. Mari kita panggil fungsi ini sebagai fungsi pengulang kita.
+    Kita juga dapat menulis kode seperti ini.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820247">
+function myIterator(item, index)
+{
+    alert('The item in the position #' + index + ' is:' + item);
+}
+
+var myArray = ['first', 'second', 'third'];
+myArray.each( myIterator );
+</com:TTextHighlighter>
+<p id="820717" class="block-content">
+    Tapi ketika kita tidak ingin melakukan seperti semua anak sekolah, bukan?
+    Lebih serius, bagaimanapun juga, format terakhir ini lebih sederhana untuk dimengerti karena kita memasuki kode mencari fungsi myIterator. Adalah baik untuk memiliki logaika fungsi iterator di sana dalam tempat yang sama ia dipanggil. Juga, dalam hal ini, kitak tidak memerlukan fungsi iterator di manapun juga dalam kode kita, maka kita dapat mengubahnya ke dalam fungsi anonim tanpa hukuman.
+</p>
+
+<h2 id="6508"><tt>this</tt> ini tapi kadang-kadang juga <tt>this</tt> itu</h2>
+<p id="820718" class="block-content">
+
+    Salah satu masalah yang paling umum yang kita miliki dengan JS adalah saat kita mulai menulis kode kita, itulah kegunaan dari kata kunci <tt>this</tt>. Ini benar-benar menjadi tripwire.
+</p>
+<p id="820719" class="block-content">
+    Seperti disebutkan sebelumnya, sebuah fungsi juga adalah sebuah obyek dalam JS, dan adakalanya kita tidak memperhatikan bahwa kita mengirimkan sebuah fungsi.
+</p>
+<p id="820720" class="block-content">
+    Ambil potongan kode ini sebagai contoh.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820248">
+function buttonClicked()
+{
+    alert('button ' + this.id + ' was clicked');
+}
+
+var myButton = document.getElementById('someButtonID');
+var myButton2 = document.getElementById('someOtherButtonID');
+myButton.onclick = buttonClicked;
+myButton2.onclick = buttonClicked;
+</com:TTextHighlighter>
+<p id="820721" class="block-content">
+    Karena fungsi buttonClicked didefinisikan di luar obyek manapun kita cenderung berpikir kata kunci <tt>this</tt> akan berisi referensi ke
+    obyek <tt>window</tt> atau <tt>document</tt> (menganggap kode ini ada di tengah halaman HTML yang dilihat dalam browser.)
+</p>
+
+<p id="820722" class="block-content">
+    Tapi saat kita menjalankan kode ini kita melihat ia bekerja seperti yang dimaksudkan dan menampilkan <tt>id</tt> dari tombol yang diklik. Apa yang terjadi di sini adalah bahwa kita membuat metode onclick dari setiap tombol yang berisi referensi obyek <tt>buttonClicked</tt>, mengganti apapun yang ada di sana sebelumnya. Sekarang kapan saja tombol diklik, browser akan menjalankan sesuatu mirip dengan baris berikut.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820249">
+myButton.onclick();
+</com:TTextHighlighter>
+<p id="820723" class="block-content">
+
+    Itu tidak membingungkan sama sekali bukan? Tapi lihat apa yang terjadi, Anda mulai memiliki obyek lain yang berhadapan dengannya dan Anda ingin betindak pada obyek ini terhadap event seperti klik tombol.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820250">
+var myHelper =
+{
+    formFields: [ ],
+    emptyAllFields: function()
+    {
+        for(i=0; i < this.formFields.length; i++)
+        {
+            var elementID = this.formFields[i];
+            var field = document.getElementById(elementID);
+            field.value = '';
+        }
+    }
+};
+
+//beritahu kita ingin bekerja dengan field formulir yang mana
+myHelper.formFields.push('txtName');
+myHelper.formFields.push('txtEmail');
+myHelper.formFields.push('txtAddress');
+
+//membersihkan kotak teks:
+myHelper.emptyAllFields();
+
+var clearButton = document.getElementById('btnClear');
+clearButton.onclick = myHelper.emptyAllFields;
+</com:TTextHighlighter>
+<p id="820724" class="block-content">
+    Anda pikir bagus, sekarang saya dapat mengklik tombol Clear pada halaman saya dan tiga kotak teks itu akan dikosongkan. Kemudian Anda mencoba mengklik tombol hanya untuk mendapatkan kesalahan runtime. Kesalahan akan terkait dengan
+    (tebak apa?) kata kunci <tt>this</tt>.
+    Masalahnya adalah bahwa <tt>this.formFields</tt> tidak didefinisikan jika
+    <tt>this</tt> berisi sebuah referensi ke tombol, tepatnya itulah apa yang terjadi. Satu solusi cepat adalah menulis ulang baris kode terakhir.
+</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_820251">
+clearButton.onclick = function()
+{
+    myHelper.emptyAllFields();
+};
+</com:TTextHighlighter>
+<p id="820725" class="block-content">
+    Cara itu kita membuat fungsi baru yang memanggil metode penolong di dalam konteks obyek penolong.
+</p>
+<div class="last-modified">$Id: Scripts.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

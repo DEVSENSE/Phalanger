@@ -1,0 +1,336 @@
+<com:TContent ID="body" >
+
+<h1 id="6201">Internasionalisasi (I18N) dan Lokalisasi (L10N)</h1>
+<p id="790625" class="block-content">Banyak aplikasi web dibangun dengan PHP tidak memikirkan internasionlisasi saat ia pertama kali ditulis. Itu mungkin dikarenakan tidak dimaksudkan untuk digunakan dalam bahasa dan kultur. Internasionalisasi adalah aspek penting karena meningkatkan adopsi Internet dalam banyak negara yang berbicara non-Ingris. Proses internasionalisasi dan lokalisasi akan menghadapi kesulitan. Di bawah adalah beberapa petunjuk umum untuk menginternasionalisasi aplikasi yang sudah ada.</p>
+
+<h2 id="6203">Pisahkan data sensitif kultur/lokal</h2>
+
+<p id="790626" class="block-content">Identifikasi dan pisahkan data yang beragam dengan kultur. Yang paling jelas adalah teks/string/pesan. Tipe lain dari data juga harus dipertimbangkan. Daftar berikut mengkategorikan beberapa contoh data sensitif kultur
+</p>
+
+<ul id="u1" class="block-content">
+    <li> String, Pesan, Teks, dalam unit relatif kecil (misalnya prasa, kalimat, paragraf, tapi tidak teks lengkap dari buku).</li>
+    <li> Label pada tombol.</li>
+    <li> File bantuan, unit besar teks, teks statis.</li>
+    <li> Suara.</li>
+    <li> Warna.</li>
+    <li> Grafik,Ikon.</li>
+    <li> Tanggal, Jam.</li>
+    <li> Angka, Kurs, Pengukuran.</li>
+    <li> Nomor Telepon.</li>
+    <li> Penghargaan dan titel personal.</li>
+    <li> Alamat pos.</li>
+    <li> Tata letak halaman.</li>
+</ul>
+
+<p id="790627" class="block-content">Bila memungkinkan semua ragam teks harus diisolasi dan disimpan dalam format persisten. Teks ini termasuk, pesan kesalahan aplikasi, string ditulis tangan dalam file PHP, email, teks statis HTML, dan teks pada elemen formulir (misalnya tombol).</p>
+
+<h2 id="6204">Konfigurasi</h2>
+<p id="790628" class="block-content">Untuk menghidupkan fitur lokalisasi dalam PRADO, Anda perlu menambahkan beberapa opsi konfigurasi dalam <a href="?page=Configurations.AppConfig">konfigurasi aplikasi</a> Anda.
+Pertama Anda perlu menyertakan namespace <tt>System.I18N.*</tt> ke path Anda.
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_790203">
+<paths>
+    <using namespace="System.I18N.*" />
+</paths>
+</com:TTextHighlighter>
+
+<p id="790629" class="block-content">Kemudian, jika Anda ingin menerjemahkan beberapa teks dalam aplikasi Anda, perlu ditambahkan sumber data pesan terjemahan.</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_790204">
+<module id="globalization" class="TGlobalization">
+    <translation type="XLIFF"
+        source="MyApp.messages"
+        marker="@@"
+        autosave="true" cache="true" />
+</module>
+</com:TTextHighlighter>
+
+<p id="790630" class="block-content">Di mana <tt>source</tt> dalam <tt>translation</tt> adalah path titik ke direktori di mana Anda akan menyimpan katalog pesan terjemahan. Atribut <tt>autosave</tt> jika dihidupkan, menyimpan pesan tidak diterjemahkan kembali ke dalam katalog pesasn.
+Dengan menghidupkan <tt>cache</tt>, pesan yang diterjemahkan disimpan dalam direktori aplikasi <tt>runtime/i18n</tt>.
+Nilai <tt>marker</tt> dipakai untuk mengelilingi teks yang tidak diterjemahkan.
+</p>
+
+<p id="790631" class="block-content">Dengan konfigurasi lengkap, sekarang kita dapat mulai melokalisasi aplikasi Anda. Jika Anda menghidupkan <tt>autosave</tt>, setelah menjalankan aplikasi Anda dengan beberapa aktivitas lokalisasi (misalnya menterjemahkan beberapa teks), Anda akan melihat sebuah direktori dan <tt>messages.xml</tt> dibuat di dalam direktori <tt>source</tt>.</p>
+
+<h2 id="6205">Apa yang harus dilakukan dengan <tt>messages.xml</tt>?</h2>
+<p id="790632" class="block-content">File katalog pesan terjemahan, jika menggunakan <tt>type="XLIFF"</tt>, adalah format intechange XML pesan terjemahan distandarisasi. Anda bisa mengedit file XML menggunakan editor yang mampu menangani UTF-8. Format dari XML adalah sesuatu mirip seperti berikut ini.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_790205">
+<?xml version="1.0"?>
+<xliff version="1.0">
+    <file original="I18N Example IndexPage"
+          source-language="EN"
+          datatype="plaintext"
+          date="2005-01-24T11:07:53Z">
+        <body>
+
+<trans-unit id="1">
+<source>Hello world.</source>
+<target>Hi World!!!</target>
+</trans-unit>
+
+        </body>
+    </file>
+</xliff>
+</com:TTextHighlighter>
+
+Setiap pesan terjemahan dilapisi dengan tag <tt>trans-unit</tt>, di mana <tt>source</tt> adalah pesan asli, dan <tt>target</tt> adalah pesan yang diterjemahkan. Editor seperti <a href="http://www.heartsome.net/EN/xlfedit.html">Heartsome XLIFF Translation Editor</a> dapat membantu mengedit file XML ini.
+
+
+<h2 id="6206">Menyetel dan Mengubah Kultur</h2>
+<p id="790633" class="block-content">Sekali globalisasi dihidupkan, Anda dapat mengakses setelan globalisasi, seperti <tt>Culture</tt>, <tt>Charset</tt>, dll, menggunakan </p>
+<com:TTextHighlighter CssClass="source block-content" id="code_790206">
+$globalization = $this->getApplication()->getGlobalization();
+echo $globalization->Culture;
+$globalization->Charset= "GB-2312"; //ubah charset
+</com:TTextHighlighter>
+
+<p id="790634" class="block-content">Anda juga mengubah cara kultur ditentukan dengan mengubah atribut <tt>class</tt> dalam konfigurasi modul. Sebagai contoh, untuk menyetel kultur yang tergantung pada setelan browser, Anda bisa menggunakan kelas <tt>TGlobalizationAutoDetect</tt>.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_790207">
+<module id="globalization" class="TGlobalizationAutoDetect">
+   ...
+</module>
+</com:TTextHighlighter>
+
+<p id="790635" class="block-content">Anda juga bisa menyediakan kelas globalisasi sendiri untuk mengubah bagaimana kultur aplikasi ditetapkan.
+Terakhir, Anda dapat mengubah setelan globalisasi dengan basis halaman demi halaman menggunakan <a href="?page=Configurations.Templates1#tct">tag kontrol template</a>. Sebagai contoh, mengubah <tt>Culture</tt> ke "zh".</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_790208">
+&lt;%@ Application.Globalization.Culture="zh" %&gt;
+</com:TTextHighlighter>
+
+<h2 id="6207">Melokalisir aplikasi PRADO Anda</h2>
+Ada dua area dalam aplikasi Anda yang mungkin membutuhkan lokalisasi pesan atau string, dalam kode PHP dan dalam template. Untuk melokalisasi string di dalam PHP, gunakan fungsi <tt>localize</tt> yang dijelaskan di bawah. Untuk melokalisasi teks dalam template, gunakan komponen <a href="#ttranslate">TTranslate</a>.
+<h2 id="6208">Menggunakan fungsi <tt>localize</tt> untuk mennerjemahkan teks dalam PHP</h2>
+
+<p id="790636" class="block-content">Fungsi <tt>localize</tt> mencari string yang diterjemahkan yang sama dengan aslinya dari sumber terjemahan Anda. Pertama, Anda perlu mencari semua teks dikode langsung dalam PHP yang ditampilkan atau dikirimkan ke pengguna akhir. Contoh berikut melokalisasi teks <tt>$sender</tt> (menganggap, katakanlah, sender adalah sebuah tombol). Kode asli sebelum lokalisasi adalah sebagai berikut.
+<com:TTextHighlighter CssClass="source block-content" id="code_790209">
+function clickMe($sender,$param)
+{
+  $sender->Text="Hello, world!";
+}
+</com:TTextHighlighter>
+
+<p id="790637" class="block-content">Pesan dikodekan langsung "Hello, world!" dilokalisasi menggunakan fungsi <tt>localize</tt>. </p>
+<com:TTextHighlighter CssClass="source block-content" id="code_790210">
+function clickMe($sender,$param)
+{
+  $sender->Text=Prado::localize("Hello, world!");
+}
+</com:TTextHighlighter>
+
+<h2 id="6209">Pesan Gabungan</h2>
+
+<p id="790638" class="block-content">Pesan gabungan dapat berisi data variabel. Sebagai contoh, dalam pesan "There are 12 users online.", integer 12 dapat berubah tergantung pada beberapa data dalam aplikasi Anda. Ini sulit diterjemahkan karena posisi dari data variabel mungkin berbeda untuk bahasa yang berbeda. Seabgai tambahan, bahasa yang berbeda memiliki aturannya sendiri untuk bentuk jamak (jika ada) dan/atau pembilang. Contoh berikut tidak mudah untuk diterjemahkan, karena struktur kalimat sudah tetap dengan dikodekan langsung data variabel dengan pesan.</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_790211">
+$num_users = 12;
+$message = "There are " . $num_users . " users online.";
+</com:TTextHighlighter>
+
+Masalah ini bisa dipecahkan menggunakan fungsi <tt>localize</tt> dengan penempatan string. Sebagai contoh, string <tt>$message</tt> di atas dapat dibentuk seperti berikut.
+<com:TTextHighlighter CssClass="source block-content" id="code_790212">
+$num_users = 12;
+$message = Prado::localize("There are {num_users} users online.", array('num_users'=>$num_users));
+</com:TTextHighlighter>
+<p id="790639" class="block-content">Di mana parameter kedua dalam <tt>localize</tt> mengambil array asosiatif dengan kunci sebagai penempatan yang dicari dalam teks dan menggantinya dengan nilai terkait.
+Fungsi <tt>localize</tt> tidak memecahkan masalah lokalisasi bahasa yang memiliki bentuk jamak, solusinya adalah menggunakan <a href="#choice-format">TChoiceFormat</a>.</p>
+
+<p id="790640" class="block-content">The following sample demonstrates the basics of localization in PRADO.</p>
+<com:RunBar PagePath="Advanced.Samples.I18N.Home" />
+
+<h1 id="6202">Komponen I18N</h1>
+<a name="ttranslate"></a>
+<h2 id="6210">TTranslate</h2>
+<p id="790641" class="block-content">Pesan dan string bisa dilokalisasi dalam PHP atau dalam template.
+Untuk menerjemahkan pesan atau string dalam template, gunakan <tt>TTranslate</tt>.</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_790213">
+&lt;com:TTranslate&gt;Hello World&lt;/com:TTranslate&gt;
+&lt;com:TTranslate Text="Goodbye" /&gt;
+</com:TTextHighlighter>
+
+<p id="790642" class="block-content"><tt>TTranslate</tt> juga dapat melakukan penempatan string. Properti <tt>Parameters</tt> bisa digunakan untuk menambah pasangan nama nilai untuk penempatan. Substring dalam terjemahan dikurung dengan "{" dan "}" yang dianggap sebagai nama parameter selama pencarian penempatan. Contoh berikut akan menempatkan substring "{time}" dengan nilai atribut parameter "<tt>Parameters.time=&lt;%= time() %&gt;</tt>".
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_790214">
+&lt;com:TTranslate Parameters.time=&lt;%= time() %&gt; &gt;
+The time is {time}.
+&lt;/com:TTranslate&gt;
+</com:TTextHighlighter>
+
+<p id="790643" class="block-content">Kependekan dari <tt>TTranslate</tt> juga disediakan menggunakan sintaks berikut.</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_790215">
+&lt;%[string]%&gt;
+</com:TTextHighlighter>
+<p id="790644" class="block-content">di mana string akan diterjemahkan ke bahasa berbeda berdasarkan preferensi bahasa pengguna akhir. Sintaks ini bisa dipakai dengan nilai atribut juga.</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_790216">
+&lt;com:TLabel Text="&lt;%[ Hello World! ]%&gt;" /&gt;
+</com:TTextHighlighter>
+
+<h2 id="6211">TDateFormat</h2>
+<p id="790645" class="block-content">Memformat tanggal dan jam dilokalisasi adalah pekerjaan langsung.</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_790217">
+&lt;com:TDateFormat Value="12/01/2005" /&gt;
+</com:TTextHighlighter>
+
+<p id="790646" class="block-content">Properti <tt>Pattern</tt> menerima 4 predefininisi pola tanggal dilokalisasi dan 4 predefininisi pola jam dilokalisasi.</p>
+<ul id="u2" class="block-content">
+	<li><tt>fulldate</tt></li>
+	<li><tt>longdate</tt></li>
+	<li><tt>mediumdate</tt></li>
+	<li><tt>shortdate</tt></li>
+	<li><tt>fulltime</tt></li>
+	<li><tt>longtime</tt></li>
+	<li><tt>mediumtime</tt></li>
+	<li><tt>shorttime</tt></li>
+</ul>
+<p id="p1" class="block-content">
+Predefinisi bisa dipakai dalam setiap kombinasi. Jika menggunakan pola predefinisi gabungan, pola pertama harus tanggal, diikuti oleh spasi, dan terakhir pola jam. Sebagai contoh, pola tanggal lengkap dengan pola jam pendek. Aktual uruta dari tanggal-jam dan pola aktual akan ditentukan secara otomatis dari data lokal yang ditetapkan oleh properti <tt>Culture</tt>.</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_790218">
+&lt;com:TDateFormat Pattern="fulldate shorttime" /&gt;
+</com:TTextHighlighter>
+
+<p id="790647" class="block-content">Anda dapat menetapkan pola kustom menggunakan sub-pola berikut.
+Format tanggal/jam ditetapkan dalam arti pola waktu string. Dalam pola ini, semua huruf ASCII disimpan sebagai huruf pola, yang ditetapkan sebagai berikut:
+<com:TTextHighlighter Language="text" CssClass="source block-content" id="code_790219">
+ Simbol   Arti                    Penyajian           Contoh 
+------   ----                    ---------           ------ 
+ G        tanda abad              (Teks)              AD
+ y        tahun                   (Angka)             1996
+ M        bulan dalam tahun       (Teks &amp; Angka)      July &amp; 07
+ d        hari dalam bulan        (Angka)             10
+ h        jam dalam am/pm (1~12)  (Angka)             12
+ H        jam dalam hari (0~23)   (Angka)             0
+ m        menit dalam jam         (Angka)             30
+ s        detik dalam menit       (Angka)             55
+ E        hari dalam minggu       (Teks)              Tuesday
+ D        hari dalam tahun        (Angka)             189
+ F        hari minggu dalam bulan (Angka)             2 (2nd Wed in July)
+ w        minggu dalam tahun      (Angka)             27
+ W        minggu dalam bulan      (Angka)             2
+ a        tanda am/pm             (Teks)              PM
+ k        jam dalam hari (1~24)   (Angka)             24
+ K        jam dalam am/pm (0~11)  (Angka)             0
+ z        zona waktu              (Jam)               Pacific Standard Time
+ '        tanda kutip teks        (Delimiter)         'Date='
+ ''       tanda kutip tunggal     (Literal)           'o''clock'
+</com:TTextHighlighter>
+</p>
+
+<p id="790648" class="block-content">Jumlah pola huruf menentukan format.</p>
+
+<p id="790649" class="block-content">(Teks): 4 huruf menggunakan bentuk lengkap, kurang dari 4 menggunakan bentuk pendek atau singkatan
+jika ada. (misalnya "EEEE" menghasilkan "Monday", "EEE" menghasilkan "Mon")</p>
+
+<p id="790650" class="block-content">(Angka): jumlah digit minimum. Angka lebih pendek adalah diisi-nol ke jumlah ini (misalnya jika "m" menghasilkan "6", "mm" menghasilkan "06"). Tahun ditangani secara khusus; yakni jika jumlah 'y' adalah 2, Tahun akan dipotong 2 digit. (misalnya jika "yyyy" menghasilkan "1997", "yy" menghasilkan "97".)
+ Tidak seperti field lain, pecahan detik dipadatkan pada sisi kanan dengan nol.</p>
+
+<p id="790651" class="block-content">(Teks dan Angka): 3 atau lebih, pakai teks, sebaliknya pakai angka. (misalnya
+"M" menghasilkan "1", "MM" menghasilkan "01", "MMM" menghasilkan "Jan", and "MMMM"
+menghasilkan "January".)</p>
+
+<p id="790652" class="block-content">Setiap karakter dalam pola yang tidak dalam jangkauan ['a'..'z']
+dan ['A'..'Z'] akan diperlakukan sebagai teks bertanda kutip. Contohnya, karakter seperti
+':', '.', ' ', dan '@' akan muncul dalam hasil teks waktu
+meskipun tidak dikurung dalam tanda kutip tunggal.</p>
+
+<p id="790653" class="block-content">Contoh menggunakan lokal US:
+
+<com:TTextHighlighter Language="text" CssClass="source block-content" id="code_790220">
+Pola Formasi                           Hasil 
+------------                           -----  
+"yyyy.MM.dd G 'at' HH:mm:ss"      -&gt;&gt;  1996.07.10 AD at 15:08:56
+"EEE, MMM d, ''yy"                -&gt;&gt;  Wed, Jul 10, '96
+"h:mm a"                          -&gt;&gt;  12:08 PM
+"hh 'o''clock' a, z"              -&gt;&gt;  12 o'clock PM, Pacific Daylight Time
+"K:mm a"                          -&gt;&gt;  0:00 PM
+"yyyy.MMMM.dd G hh:mm a"          -&gt;&gt;  1996.July.10 AD 12:08 PM
+</com:TTextHighlighter>
+</p>
+
+<p id="790654" class="block-content">Jika properti <tt>Value</tt> tidak ditetapkan, tanggal dan jam saat ini yang dipakai.</p>
+
+<h2 id="6212">TNumberFormat</h2>
+<p id="790655" class="block-content">Kerangka kerja Internasionalisasi PRADO menyediakan pembentukan kurs lokal dan pembentukan angka. Harap dicatat bahwa komponen <tt>TNumberFormat</tt> hanya menyediakan pembentukan, saat ini ia tidak melakukan konversi atau pertukaran.</p>
+
+<p id="790656" class="block-content">Numbers can be formatted as currency, percentage, decimal or scientific
+numbers by specifying the <tt>Type</tt> attribute. The valid types are:</p>
+<ul id="u3" class="block-content">
+	<li><tt>currency</tt></li>
+	<li><tt>percentage</tt></li>
+	<li><tt>decimal</tt></li>
+	<li><tt>scientific</tt></li>
+</ul>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_790221">
+&lt;com:TNumberFormat Type="currency" Value="100" /&gt;
+</com:TTextHighlighter>
+
+<p id="790657" class="block-content">Properti <tt>Culture</tt> dan <tt>Currency</tt> dapat ditetapkan untuk membentuk angka spesifik lokal. </p>
+
+<p id="790658" class="block-content">Jika seseorang dari US ingin melihat gambar penjualan dari sebuah toko dalam bahasa Jerman (katakanlah menggunakan kurs EURO), diformat menggunakan kurs jerman, Anda perlu untuk menggunakan atribut <tt>Culture="de_DE"</tt> guna memperoleh kurs yang benar, misalnya 100,00$. Pemisah desimal dan pengelompokan kemudian juga dari lokal <tt>de_DE</tt>. Ini dapat menimbulkan beberapa kebingungan karena orang dari US memakai "," (koma) sebagai pemisah ribuan. Oleh karena itu, atribut <tt>Currency</tt> tersedia agar output dari hasil contoh berikut menghasilkan $100.00
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_790222">
+&lt;com:TNumberFormat Type="currency"
+          Culture="en_US" Currency="EUR" Value="100" /&gt;
+</com:TTextHighlighter>
+</p>
+
+<p id="790659" class="block-content">Properti <tt>Pattern</tt> menetapkan jumlah digit, posisi pengelompokan ribuan, jumlah titik desimal dan posisi desimal. Karakter aktual yang dipakai untuk menyajikan titik desimal dan titik ribuan adalah spesifik kultur dan akan berubah secara otomatis berdasarkan properti <tt>Culture</tt>. Karakter <tt>Pattern</tt> yang benar adalah:</p>
+<ul id="u6" class="block-content">
+	<li><tt># (kris)</tt> - mewakili digit opsional</li>
+	<li><tt>0 (nol)</tt> - mewakili digit mandatori, nol di kiri terisi</li>
+	<li><tt>. (berhenti)</tt> - posisi titik desimal (hanya 1 titik desimal dibolehkan)</li>
+	<li><tt>, (koma)</tt> - pemisahan titik ribuan (sampai 2 koma dibolehkan)</li>
+</ul>
+<p id="p2" class="block-content">
+Sebagai contoh, anggap <tt>Value="1234567.12345"</tt> dan dengan
+<tt>Culture="en_US"</tt> (yang menggunakan "," untuk titik pemisah ribuan dan "." untuk pemisah desimal).
+</p>
+<com:TTextHighlighter Language="text" CssClass="source block-content" id="code_790223">
+Pola                      Output
+----                      ------
+##,###.00               -&gt;&gt;  1,234,567.12
+##,###.##               -&gt;&gt;  1,234,567.12345
+##,##.0000              -&gt;&gt;  1,23,45,67.1235
+##,###,##.0             -&gt;&gt;  12,345,67.1
+000,000,000.0           -&gt;&gt;  001,234,567.1
+</com:TTextHighlighter>
+</p>
+
+<h2 id="6213">TTranslateParameter</h2>
+<p id="790660" class="block-content">Pesan gabungan, misalnya penempatan string, bisa dilakukan dengan <tt>TTranslateParameter</tt>.
+Dalam contoh berikut, string "{greeting}" dan "{name}" masing-masing akan diganti dengan nilai "Hello" dan "World". Penempatan string harus dikurung dengan "{" dan "}". Parameter selanjutnya diterjemahkan dengan menggunakans <tt>TTranslate</tt>.
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_790224">
+&lt;com:TTranslate&gt;
+  {greeting} {name}!
+  &lt;com:TTranslateParameter Key="name">World&lt;/com:TTranslateParameter&gt;
+  &lt;com:TTranslateParameter Key="greeting">Hello&lt;/com:TTranslateParameter&gt;
+&lt;/com:TTranslate&gt;
+</com:TTextHighlighter>
+
+
+<a name="choice-format"></a>
+<h2 id="6214">TChoiceFormat</h2>
+
+<p id="790661" class="block-content">Menggunakan fungsi <tt>localize</tt> atau komponen <tt>TTranslate</tt> untuk menerjemahkan pesan tidak memberitahu penerjemah kardinalitas dari data yang diminta untuk menentukan struktur jamak yang benar yang dipakai. Ia hanya memberitahunya bahwa ada data tersedia, data dapat berupa apa saja. Selanjutnya, penerjemah tidak akan bisa menentukan dengan memperhatikan penempatan data plural yang benar, struktur bahasa atau prasa yang dipakai. Misalnya dalam bahasa Inggris, untuk menerjemahkan kalimat, "There are {number} of apples.", hasil terjemahan akan berbeda tergantung pada <tt>jumlah</tt> apel.</p>
+
+<p id="790662" class="block-content">Komponen <tt>TChoiceFormat</tt> melakukan pilihan terjemahan pesan/string. Contoh berikut mendemonstrasikan terjemahan pesan 2 pilihan sederhana.</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_790225">
+&lt;com:TChoiceFormat Value="1"/&gt;[1] One Apple. |[2] Two Apples&lt;/com:TChoiceFormat&gt;
+</com:TTextHighlighter>
+
+<p id="790663" class="block-content">Dalam contoh di atas, <tt>Value</tt> "1" (satu), kemudian string yang diterjemahkan adalah "One Apple". Jika <tt>Value</tt> adalah "2", maka ia akan menampilkan "Two Apples".</p>
+
+<p id="790664" class="block-content">Pilihan pesan/string dipisashkan oleh pipa "|" diikuti oleh set notasi dari formulir.</p>
+<ul id="u7" class="block-content">
+    <li><tt>[1,2]</tt> -- menerima nilai antara 1 dan 2, inklusif.</li>
+    <li><tt>(1,2)</tt> -- menerima nilai antara 1 dan 2, kecuali 1 dan 2.</li>
+    <li><tt>{1,2,3,4}</tt> -- hanya nilai yang didefinisikan dalam set yang diterima.</li>
+    <li><tt>[-Inf,0)</tt> -- menerima nilai lebih besar dari atau sama dengan infinitif negatif dan kurang dari 0</li>
+</ul>
+
+<p id="790665" class="block-content">Setiap kombinasi tidak-kosong dari kurung kotak dan bulat dapat diterima.
+String yang dipilih untuk tampilan tergantung pada properti <tt>Value</tt>. <tt>Value</tt> dievaluiasi untuk setiap set-nya sampai <tt>Value</tt> ditemukan milik set tertentu.</p>
+
+
+<div class="last-modified">$Id: I18N.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

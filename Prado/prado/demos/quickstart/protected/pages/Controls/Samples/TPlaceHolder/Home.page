@@ -1,0 +1,11 @@
+<com:TContent ID="body">
+
+<h1>TPlaceHolder Sample</h1>
+
+<p>
+This sample shows how to insert <com:TPlaceHolder ID="PlaceHolder1" />
+at a place that is reserved on a template. The dynamic content can be
+either static texts or controls.
+</p>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

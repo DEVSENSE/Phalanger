@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+
+<insert id="AddNewTimeEntry" parameterClass="TimeEntryRecord">
+	INSERT INTO time_entry(
+		EntryCreated,
+		Duration,
+		Description,
+		CategoryID,
+		EntryDate,
+		CreatorID,
+		UserID
+	)
+	VALUES(
+		strftime('%s', 'now'),
+		#Duration#,
+		#Description#,
+		#Category.ID#,
+		#ReportDate, typeHandler=DateTime#,
+		#CreatorUserName#,
+		#Username#
+	)
+  <selectKey property="ID" type="post" resultClass="int">
+		select LAST_INSERT_ROWID() as value
+  </selectKey>
+</insert>
+
+<resultMap id="time-entry-result" class="TimeEntryRecord">
+	<result property="ID" column="EntryID" type="integer" />
+	<result property="DateCreated" column="EntryCreated" typeHandler="DateTime" />
+	<result property="Duration" column="Duration" type="float" />
+	<result property="Description" column="Description" />
+	<result property="Category" column="CategoryID" />
+	<result property="ReportDate" column="EntryDate" typeHandler="DateTime" />
+	<result property="CreatorUserName" column="CreatorID" />
+	<result property="Username" column="UserID" />
+</resultMap>
+
+<resultMap id="time-entry-category-result" class="TimeEntryRecord">
+	<result property="ID" column="EntryID" type="integer" />
+	<result property="DateCreated" column="EntryCreated" typeHandler="DateTime" />
+	<result property="Duration" column="Duration" type="float" />
+	<result property="Description" column="Description" />
+	<result property="Category" resultMapping="entry-category" />
+	<result property="ReportDate" column="EntryDate" typeHandler="DateTime" />
+	<result property="CreatorUserName" column="CreatorID" />
+	<result property="Username" column="UserID" />
+</resultMap>
+
+<resultMap id="entry-category" class="CategoryRecord">
+	<result property="ID" column="CategoryID" />
+	<result property="Name" column="CategoryName" />
+</resultMap>
+
+<select id="GetTimeEntryByID" resultMap="time-entry-result">
+	SELECT
+		*
+	FROM
+		time_entry
+	WHERE
+		EntryID = #value#
+</select>
+
+<delete id="DeleteTimeEntry" parameterClass="integer">
+	DELETE FROM time_entry WHERE EntryID = #value#
+</delete>
+
+<select id="GetAllTimeEntriesByProjectIdAndUser" resultMap="time-entry-category-result">
+	SELECT
+		time_entry.EntryID as EntryID,
+		time_entry.EntryCreated as EntryCreated,
+		time_entry.Duration as Duration,
+		time_entry.Description as Description,
+		time_entry.EntryDate as EntryDate,
+		time_entry.CreatorID as CreatorID,
+		time_entry.UserID as UserID,
+		time_entry.CategoryID as CategoryID,
+		categories.Name as CategoryName
+	FROM
+		time_entry, categories
+	WHERE
+			time_entry.UserID = #username#
+		AND time_entry.CategoryID = categories.CategoryID
+		AND categories.ProjectID = #project#
+	ORDER BY
+		EntryID ASC
+</select>
+
+<update id="UpdateTimeEntry" parameterClass="TimeEntryRecord">
+	UPDATE time_entry SET
+		Duration = #Duration#,
+		Description = #Description#,
+		CategoryID = #Category.ID#,
+		EntryDate = #ReportDate, typeHandler=DateTime#,
+		UserID = #Username#
+	WHERE
+		EntryID = #ID#
+</update>
+
+</sqlMap>

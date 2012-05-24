@@ -1,0 +1,115 @@
+<com:TContent ID="body" >
+
+<h1 id="5101">TDataList</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TDataList" />
+
+<p id="580362" class="block-content">
+TDataList represents a data bound and updatable list control. Like <tt>TRepeater</tt>, TDataList displays its content repeatedly based on the data fetched from <tt>DataSource</tt>. The repeated contents in TDataList are called items, which are controls and can be accessed through <tt>Items</tt>. When <tt>dataBind()</tt> is invoked, TDataList creates an item for each row of data and binds the data row to the item. Optionally, a TDataList can have a header, a footer and/or separators between items.
+</p>
+
+<p id="580363" class="block-content">
+TDataList differs from TRepeater in that it introduces the concept of item state and allows applying different styles to items in different states. In addition, TDataList supports tiling the repeated items in various ways.
+</p>
+
+<p id="580364" class="block-content">
+The layout of the repeated contents in TDataList are specified by inline templates. TDataList items, header, footer, etc. are being instantiated with the corresponding templates when data is being bound to the repeater.
+</p>
+
+<p id="580365" class="block-content">
+Since v3.1.0, the layout can also be by renderers. A renderer is a control class that can be instantiated as datalist items, header, etc. A renderer can thus be viewed as an external template (in fact, it can also be non-templated controls). For more details, see the explanation about renderer in the <a href="?page=Controls.Repeater">TRepeater tutorial</a>.
+</p>
+
+<p id="580366" class="block-content">
+The following properties are used to specify different types of template and renderer for a datalist. If a content type is defined with both a template and a renderer, the latter takes precedence.
+</p>
+
+<ul id="u5" class="block-content">
+<li><tt>ItemTemplate</tt>, <tt>ItemRenderer</tt>: for each repeated row of data</li>
+<li><tt>AlternatingItemTemplate</tt>, <tt>AlternatingItemRenderer</tt>: for each alternating row of data. If not set, <tt>ItemTemplate</tt> or <tt>ItemRenderer</tt> will be used instead.</li>
+<li><tt>HeaderTemplate</tt>, <tt>HeaderRenderer</tt>: for the datalist header.</li>
+<li><tt>FooterTemplate</tt>, <tt>FooterRenderer</tt>: for the datalist footer.</li>
+<li><tt>SeparatorTemplate</tt>, <tt>SeparatorRenderer</tt>: for content to be displayed between items.</li>
+<li><tt>EmptyTemplate</tt>, <tt>EmptyRenderer</tt>: used when data bound to the datalist is empty.</li>
+<li><tt>EditItemTemplate</tt>, <tt>EditItemRenderer</tt>: for the row being editted.</li>
+<li><tt>SelectedItemTemplate</tt>, <tt>SelectedItemRenderer</tt>: for the row being selected.</li>
+</ul>
+
+<p id="580367" class="block-content">
+When <tt>dataBind()</tt> is called, TDataList undergoes the following lifecycles for each row of data:
+</p>
+
+<ol id="u6" class="block-content">
+<li>create item based on templates or renderers</li>
+<li>set the row of data to the item</li>
+<li>raise an <tt>OnItemCreated</tt> event</li>
+<li>add the item as a child control</li>
+<li>call <tt>dataBind()</tt> of the item</li>
+<li>raise an <tt>OnItemDataBound</tt> event</li>
+</ol>
+
+<p id="580368" class="block-content">
+TDataList raises an <tt>OnItemCommand</tt> whenever a button control within some datalist item raises an <tt>OnCommand</tt> event. Therefore, you can handle all sorts of <tt>OnCommand</tt> event in a central place by writing an event handler for <tt>OnItemCommand</tt>. An additional event is raised if the <tt>OnCommand</tt> event has one of the following command names (case-insensitive):
+</p>
+
+<ul id="u7" class="block-content">
+<li><tt>edit</tt> - user wants to edit an item. <tt>OnEditCommand</tt> event will be raised.</li>
+<li><tt>update</tt> - user wants to save the change to an item. <tt>OnUpdateCommand</tt> event will be raised.</li>
+<li><tt>select</tt> - user selects an item. <tt>OnSelectedIndexChanged</tt> event will be raised.</li>
+<li><tt>delete</tt> - user deletes an item. <tt>OnDeleteCommand</tt> event will be raised.</li>
+<li><tt>cancel</tt> - user cancels previously editting action. <tt>OnCancelCommand</tt> event will be raised.</li>
+</ul>
+
+<p id="580369" class="block-content">
+TDataList provides a few properties to support tiling the items. The number of columns used to display the data items is specified via <tt>RepeatColumns</tt> property, while the <tt>RepeatDirection</tt> governs the order of the items being rendered. The layout of the data items in the list is specified via <tt>RepeatLayout</tt>, which takes one of the following values:
+</p>
+
+<ul id="u8" class="block-content">
+<li><tt>Table</tt> (default) - items are organized using HTML table and cells. When using this layout, one can set <tt>CellPadding</tt> and <tt>CellSpacing</tt> to adjust the cellpadding and cellspacing of the table, and <tt>Caption</tt> and  <tt>CaptionAlign</tt> to add a table caption with the specified alignment.</li>
+<li><tt>Flow</tt> - items are organized using HTML spans and breaks.</li>
+<li><tt>Raw</tt> - TDataList does not generate any HTML tags to do the tiling.</li>
+</ul>
+
+<p id="580370" class="block-content">
+Items in TDataList can be in one of the three states: being browsed, being editted and being selected. To change the state of a particular item, set <tt>SelectedItemIndex</tt> or <tt>EditItemIndex</tt>. The former will change the indicated item to selected mode, which will cause the item to use <tt>SelectedItemTemplate</tt> or <tt>SelectedItemRenderer</tt> for presentation. The latter will change the indicated item to edit mode and to use corresponding template or renderer. Note, if an item is in edit mode, then selecting this item will have no effect.
+</p>
+
+<p id="580371" class="block-content">
+Different styles may be applied to items in different status. The style application is performed in a hierarchical way: Style in higher hierarchy will inherit from styles in lower hierarchy. Starting from the lowest hierarchy, the item styles include:
+</p>
+
+<ul id="u9" class="block-content">
+<li>item's own style</li>
+<li><tt>ItemStyle</tt></li>
+<li><tt>AlternatingItemStyle</tt></li>
+<li><tt>SelectedItemStyle</tt></li>
+<li><tt>EditItemStyle</tt></li>
+</ul>
+
+<p id="580372" class="block-content">
+Therefore, if background color is set as red in <tt>ItemStyle</tt>, <tt>EditItemStyle</tt> will also have red background color unless it is set to a different value explicitly.
+</p>
+
+<p id="580373" class="block-content">
+When a page containing a datalist is post back, the datalist will restore automatically all its contents, including items, header, footer and separators. However, the data row associated with each item will not be recovered and  become null. To access the data, use one of the following ways:
+</p>
+
+<ul id="u10" class="block-content">
+<li>Use <tt>DataKeys</tt> to obtain the data key associated with the specified repeater item and use the key to fetch the corresponding data from some persistent storage such as DB. </li>
+<li>Save the whole dataset in viewstate, which will restore the dataset automatically upon postback. Be aware though, if the size of your dataset is big, your page size will become big. Some complex data may also have serializing problem if saved in viewstate.</li>
+</ul>
+<p id="580374" class="block-content">
+The following example shows how to use TDataList to display tabular data, with different layout and styles.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataList.Sample1" />
+<p id="580375" class="block-content">
+A common use of TDataList is for maintaining tabular data, including browsing, editing, deleting data items. This is enabled by the command events and various item templates of TDataList.
+</p>
+<p id="580376" class="block-content">
+The following example displays a computer product information. Users can add new products, modify or delete existing ones. In order to locate the data item for updating or deleting, <tt>DataKeys</tt> property is used.
+</p>
+<p id="580377" class="block-content">
+Be aware, for simplicity, this application does not do any input validation. In real applications, make sure user inputs are valid before saving them into databases.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataList.Sample2" />
+
+<div class="last-modified">$Id: DataList.page 2955 2011-06-02 09:30:55Z ctrlaltca@gmail.com $</div></com:TContent>

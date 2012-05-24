@@ -1,0 +1,18 @@
+<com:TContent ID="body">
+
+<h1>TRepeater Sample 5</h1>
+
+<com:TRepeater ID="Repeater"
+    ItemRenderer="Application.pages.Controls.Samples.TRepeater.RegionDisplay">
+
+<prop:HeaderTemplate>
+<table cellspacing="1" style="border:1px solid silver">
+</prop:HeaderTemplate>
+
+<prop:FooterTemplate>
+</table>
+</prop:FooterTemplate>
+
+</com:TRepeater>
+
+<div class="last-modified">$Id: $</div></com:TContent>

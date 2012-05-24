@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+
+<com:THead Title="PRADO QuickStart Source View">
+<meta http-equiv="content-language" content="en"/>
+</com:THead>
+
+<body>
+<com:TForm>
+<div id="sourceList">
+<table border="0">
+<com:TRepeater ID="SourceList">
+<prop:ItemTemplate>
+<tr>
+  <td align="right"><%# $this->DataItem['type']%>:</td>
+  <td><a href="<%# $this->DataItem['active']?'':$this->DataItem['url']%>"><%# $this->DataItem['name']%></a></td>
+</tr>
+</prop:ItemTemplate>
+</com:TRepeater>
+</table>
+<com:TCheckBox ID="showNumbers" Text="Show Line Numbers" Checked="true" AutoPostBack="true" />
+</div>
+<div id="sourceView">
+<h3 style="text-align:center"><%= $this->FilePath %></h3>
+<com:TTextHighlighter ID="Highlighter" ShowLineNumbers=<%= $this->showNumbers->Checked %> CssClass="source">
+<com:TLiteral ID="SourceView" />
+</com:TTextHighlighter>
+</div>
+</com:TForm>
+</body>
+</html>

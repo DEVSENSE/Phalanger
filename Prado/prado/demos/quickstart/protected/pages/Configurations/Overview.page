@@ -1,0 +1,10 @@
+<com:TContent ID="body" >
+<h1 id="1401">Configuration Overview</h1>
+<p id="170164" class="block-content">
+PRADO uses configurations to glue together components into pages and applications. There are <a href="?page=Configurations.AppConfig">application configurations</a>, <a href="?page=Configurations.PageConfig">page configurations</a>, and <a href="?page=Configurations.Templates1">templates</a>.
+</p>
+<p id="170165" class="block-content">
+Application and page configurations are optional if default values are used. Templates are mainly used by pages and template controls. They are optional, too.
+</p>
+
+<div class="last-modified">$Id: Overview.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

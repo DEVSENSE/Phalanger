@@ -1,0 +1,91 @@
+<com:TContent ID="body" >
+<h1 id="6801">Javascript in PRADO, Questions and Answers</h1>
+<h2 id="6802">How do I include the Javascript libraries distributed with Prado?</h2>
+<p id="880060" class="block-content">The javascript libraries distributed with Prado can be found in the
+<tt>framework/Web/Javascripts/source</tt> directory. The <tt>packages.php</tt>
+file in that directory defines a list of available package names available
+to be loaded. They can be loaded as follows.
+</p>
+<ul id="u1" class="block-content"><li>Adding libraries in the template
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_850268">
+&lt;com:TClientScript PradoScripts="effects" /&gt;
+</com:TTextHighlighter>
+    </li>
+    <li>Adding libraries in PHP code
+    <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_850269">
+$this->getPage()->getClientScript()->registerPradoScript("effects");
+    </com:TTextHighlighter>
+    </li>
+</ul>
+The available packaged libraries included in Prado are
+<ul id="u2" class="block-content">
+    <li><tt>prado</tt> : basic PRADO javascript framework based on Prototype</li>
+    <li><tt>effects</tt> : visual effects from script.aculo.us</li>
+    <li><tt>ajax</tt> : ajax and callback related based on Prototype</li>
+    <li><tt>validator</tt> : validation</li>
+    <li><tt>logger</tt> : javascript logger and object browser</li>
+    <li><tt>datepicker</tt> : datepicker</li>
+    <li><tt>colorpicker</tt> : colorpicker</li>
+</ul>
+
+<p id="850761" class="block-content">The dependencies for each library are automatically resolved. Components
+that require a particular library will also automatically load the necessary libraries.
+For example, if you add a <tt>TDatePicker</tt> component on the page, the <tt>datepicker</tt>
+and its dependencies will be automatically included on the page.</p>
+
+<p id="850762" class="block-content">See <a href="?page=Controls.ClientScript">TClientScript</a> for options of adding
+	your custom Javascript code to the page.</p>
+
+<h2 id="176028">Publishing Javascript Libraries as Assets</h2>
+<com:SinceVersion Version="3.1b" />
+<p class="block-content">Use <a href="?page=Controls.ClientScriptLoader">TClientScriptLoader</a> to publish and combine multiple existing javascript files (e.g. javascript libraries distributed with Prado or otherwise)
+as packages.</p> For greater control on what and when to publish, use the 
+<tt>registerJavascriptPackages($base, $packages, $debug=null, $gzip=true)</tt>
+method in the <tt>TClientScriptManager</tt> class, which an instance can be obtained
+using <tt>$this->getPage()->getClientScript()</tt> or its equivalents.
+For example, if multiple controls will use the same set of javascript libraries,
+write a class to handle the registration of packages required by those controls.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class MyJavascriptLib extends TComponent
+{
+    private $_packages=array(); //keep track of all registrations
+
+    private $_manager;
+
+    protected function __construct(TPage $owner)
+    {
+        $this->_manager = $owner->getClientScript();
+        $owner->onPreRenderComplete = array($this, 'registerScriptLoader');
+    }
+
+    public static function registerPackage(TControl $control, $name)
+    {
+        static $instance;
+        if($instance===null)
+            $instance=new self($control->getPage());
+        $instance->_packages[$name]=true;
+    }
+
+    protected function registerScriptLoader()
+    {
+        $dir = dirname(__FILE__).'/myscripts'; //contains my javascript files
+        $scripts = array_keys($this->_packages);
+        $url = $this->_manager->registerJavascriptPackages($dir, $scripts);
+        $this->_manager->registerScriptFile($url,$url);
+    }
+}
+
+// example control class using the javascript packages
+class TestComp extends TControl
+{
+    public function onPreRender($param)
+    {
+        parent::onPreRender($param);
+        MyJavascriptLib::registerPackage($this,'package1');
+    }
+}
+</com:TTextHighlighter>
+
+
+<div class="last-modified">$Id: Scripts3.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>

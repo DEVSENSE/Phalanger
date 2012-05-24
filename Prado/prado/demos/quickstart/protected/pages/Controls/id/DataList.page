@@ -1,0 +1,113 @@
+<com:TContent ID="body" >
+
+<h1 id="5101">TDataList</h1>
+<p id="580362" class="block-content">
+TDataList mewakili ikatan data dan kontrol list yang bisa dimutakhirkan. Seperti <tt>TRepeater</tt>, TDataList menampilkan kontennya secara berulang berdasarkan data yang diambil dari <tt>DataSource</tt>. Kontek yang diulang dalam TDataList disebut item, yang adalah kontrol dan bisa diakses melalui <tt>Items</tt>. Ketika <tt>dataBind()</tt> dipanggil, TDataList membuat sebuah item untuk setiap baris data dan mengikat baris data ke item. Secara opsional, TDataList dapat mempunyai header, footer dan/atau pemisah antara item.
+</p>
+
+<p id="580363" class="block-content">
+TDataList berbeda dari TRepeater yakni memperkenalkan konsep kondisi item dan membolehkan menerapkan gaya berbeda ke item dalam kondisi berbeda. Sebagai tambahan, TDataList mendukung pengotakan item berulang dalam berbagai cara.
+</p>
+
+<p id="580364" class="block-content">
+Tata letak dari konten yang diulang dalam TDataList ditetapkan dengan template inline. Item TDataList, header, footer, dll. diturunkan dengan template terkait saat data sedang diikat ke pengulang.
+</p>
+
+<p id="580365" class="block-content">
+Sejak v3.1.0, tata letak juga dapat berupa penyaji. Penyaji adalah kelas kontrol yang dapat diturunkan sebagai item datalist, header, dll. Penyaji dapat dilihat sebagai template eksternal (sebenarnya, ia juga merupakan kontrol  tanpa-template). Untuk lebih jelasnya, lihat penjelasan mengenai penyaji dalam <a href="?page=Controls.Repeater">Tutorial TRepeater</a>.
+</p>
+
+<p id="580366" class="block-content">
+Properti berikut dipakai untuk menetapkan tipe template dan penyaji datalist. Jika tipe konten didefinisikan dengan template dan penyaji, maka penyaji diambil lebih dulu.
+</p>
+
+<ul id="u5" class="block-content">
+<li><tt>ItemTemplate</tt>, <tt>ItemRenderer</tt>: untuk setiap baris data yang diulang</li>
+<li><tt>AlternatingItemTemplate</tt>, <tt>AlternatingItemRenderer</tt>: untuk setiap pergantian baris data. Jika tidak disetel, <tt>ItemTemplate</tt> atau <tt>ItemRenderer</tt> yang akan dipakai.</li>
+<li><tt>HeaderTemplate</tt>, <tt>HeaderRenderer</tt>: untuk header datalist.</li>
+<li><tt>FooterTemplate</tt>, <tt>FooterRenderer</tt>: untuk footer datalist.</li>
+<li><tt>SeparatorTemplate</tt>, <tt>SeparatorRenderer</tt>: untuk konten yang ditampilkan diantara item.</li>
+<li><tt>EmptyTemplate</tt>, <tt>EmptyRenderer</tt>: dipakai saat data yang terikat ke datalist kosong.</li>
+<li><tt>EditItemTemplate</tt>, <tt>EditItemRenderer</tt>: untuk baris yang sedang diedit.</li>
+<li><tt>SelectedItemTemplate</tt>, <tt>SelectedItemRenderer</tt>: untuk baris yang sedang dipilih.</li>
+</ul>
+
+<p id="580367" class="block-content">
+Ketika <tt>dataBind()</tt> dipanggil, TDataList menjalani masa hidup seperti berikut untuk setiap baris data:
+</p>
+
+<ol id="u6" class="block-content">
+<li>buat item berdasarkan template atau penyaji</li>
+<li>setel baris data ke item</li>
+<li>munculkan event <tt>OnItemCreated</tt></li>
+<li>tambah item sebagai kontrol anak</li>
+<li>panggil <tt>dataBind()</tt> pada item</li>
+<li>munculkan event <tt>OnItemDataBound</tt></li>
+</ol>
+
+<p id="580368" class="block-content">
+TDataList memunculkan <tt>OnItemCommand</tt> kapan saja kontrol tombol di dalam beberapa item datalist memunculkan event <tt>OnCommand</tt>. Oleh karena itu, anda bisa menangani semua event <tt>OnCommand</tt> di satu tempat dengan menulis pengendali event untuk event <tt>OnItemCommand</tt>. Event tambahan dimunculkan jika event <tt>OnCommand</tt> memiliki salah satu dari nama perintah berikut (tidak sensitif-huruf):
+</p>
+
+<ul id="u7" class="block-content">
+<li><tt>edit</tt> - pengguna ingin mengedit item. Event <tt>OnEditCommand</tt> akan dimunculkan.</li>
+<li><tt>update</tt> - pengguna ingin menyimpan perubahan terhadap item. Event <tt>OnUpdateCommand</tt> akan dimunculkan.</li>
+<li><tt>select</tt> - pengguna memilih item. Event <tt>OnSelectedIndexChanged</tt> akan dimunculkan.</li>
+<li><tt>delete</tt> - pengguna menghapus item. Event <tt>OnDeleteCommand</tt> akan dimunculkan.</li>
+<li><tt>cancel</tt> - pengguna membatalkan aksi pengeditan sebelumnya. Event <tt>OnCancelCommand</tt> akan dimunculkan.</li>
+</ul>
+
+<p id="580369" class="block-content">
+TDataList menyediakan beberapa properti untuk mendukung pengotakan item. Jumlah kolom yang digunakan untuk menampilkan item data dietapkan melalui properti <tt>RepeatColumns</tt>, sementara <tt>RepeatDirection</tt> mengatur urutan item yang sedang disajikan. Tata letak item data dalam daftar ditetapkan melalui <tt>RepeatLayout</tt>, yang mengambil salah satu dari nilai berikut:
+</p>
+
+<ul id="u8" class="block-content">
+<li><tt>Table</tt> (default) - item diatur menggunakan tabel HTML dan sel. Ketika menggunakan tata letak ini, seseorang dapat menyetel <tt>CellPadding</tt> dan <tt>CellSpacing</tt> untuk menyesuaikan cellpadding dan cellspacing pada tabel, dan <tt>Caption</tt> serta  <tt>CaptionAlign</tt> untuk menambahkan judul tabel dengan penjajaran yang ditetapkan.</li>
+<li><tt>Flow</tt> - item diatur menggunakan span dan break HTML.</li>
+<li><tt>Raw</tt> - TDataList tidak membuat tag HTML apapun untuk melakukan kotak-kotak.</li>
+</ul>
+
+<p id="580370" class="block-content">
+Item dalam TDataList dapat berupa salah satu dari tiga keadaan: sedang dilihat, sedang diedit dan sedang dipilih. Untuk mengubah keadaan item tertentu, setel <tt>SelectedItemIndex</tt> atau <tt>EditItemIndex</tt>. Former akan mengubah item yang ditunjuk ke mode yang dipilih, yang akan menyebabkan item menggunakan <tt>SelectedItemTemplate</tt> atau <tt>SelectedItemRenderer</tt> dalam penyajiannya. Yang terakhir akan mengubah item yang ditunjuk ke mode edit dan menggunakan template atau penyaji terkait. Catatan, jika sebuah item dalam mode edit, maka memilih item ini tidak akan berpengaruh.
+</p>
+
+<p id="580371" class="block-content">
+Gaya berbeda dapat diterapkan ke item dalam status yang berbeda. Gaya aplikasi dilakukan dalam cara hirarkis: Gaya dalam hirarki lebih tinggi akan diturunkan dari hirarki lebih rendah. Dimulai dari hirarki paling rendah, gaya item termasuk:
+</p>
+
+<ul id="u9" class="block-content">
+<li>gaya item sendiri</li>
+<li><tt>ItemStyle</tt></li>
+<li><tt>AlternatingItemStyle</tt></li>
+<li><tt>SelectedItemStyle</tt></li>
+<li><tt>EditItemStyle</tt></li>
+</ul>
+
+<p id="580372" class="block-content">
+Oleh karena itu, jika warna latar belakang disetel sebagai merah dalam <tt>ItemStyle</tt>, <tt>EditItemStyle</tt> juga akan mempunyai warna latar belakang merah keciali ia disetel ke nilai berbeda secara eksplisit.
+</p>
+
+<p id="580373" class="block-content">
+Ketika halaman yang berisi datalist adalah post back, datalist akan mengembalikan secara otomatis seluruh kontennya, termasuk item,  header, footer dan pemisah. Akan tetapi, baris data terkait dengan setiap item tidak akan ditemukan kembali dan menjadi null. Untuk mengakses data, gunakan salah satu cara berikut:
+</p>
+
+<ul id="u10" class="block-content">
+<li>Gunakan <tt>DataKeys</tt> untuk memperoleh kunci data terkait dengan item pengulang (repeater) yang ditetapkan dan gunakan kunci untuk mengambil data terkait dari beberapa penyimpanan persisten seperti misalnya DB. </li>
+<li>Simpan seluruh dataset dalam kondisi tampilan, yang akan mengembalikan  dataset secara otomatis setelah postback. Bagaimanapun juga, harap berhati-hati jika ukuran dataset anda besar, ukuran halaman akan menjadi besar. Beberapa data kompleks mungkin juga mempunyai masalah serialisasi jika disimpan dalam kondisi tampilan.</li>
+</ul>
+<p id="580374" class="block-content">
+Contoh berikut memperlihatkan bagaimana menggunakan TDataList guna menampilkan data tabular, dengan tata letak dan gaya yang berbeda.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataList.Sample1" />
+<p id="580375" class="block-content">
+Pemakaian umum dari TDataList adalah untuk memanipulasi data tabular, termasuk melihat, mengedit, meghapus item data. Ini dihidupkan dengan event perintah dan berbagai template item pada TDataList.
+</p>
+<p id="580376" class="block-content">
+Contoh berikut menampilkan informasi produk komputer. Para pengguna dapat menambah produk baru, memodifikasi atau menghapus produk yang sudah ada. Agar bisa mencari item data untuk pemutakhiran atau penghapusan, properti  <tt>DataKeys</tt> yang digunakan.
+</p>
+<p id="580377" class="block-content">
+Harap berhati-hati, untuk kemudahan, aplikasi ini tidak melakukan validasi input apapun. Dalam aplikasi sebenarnya, pastikan input divalidasi sebelum menyimpannya ke dalam database.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataList.Sample2" />
+
+<div class="last-modified">$Id: DataList.page 1687 2007-02-09 21:34:53Z xue $</div></com:TContent>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="Dummy" Mode="Debug">
+  <paths>
+    <using namespace="Application.common.*" />
+    <using namespace="System.I18N.*" />
+  </paths>
+  <modules>
+	<module id="globalization" class="Application.common.BlogTutorialGlobalization" Charset="UTF-8"/>
+  </modules>
+  <services>
+    <service id="page" class="TPageService" DefaultPage="Overview">
+      <pages MasterClass="Application.layout.MainLayout" Theme="PradoSoft" />
+    </service>
+  </services>
+  <parameters>
+	<parameter id="languages" value="('en'=>'English', 'fr'=>'Français', 'id'=>'Indonesian')" />
+  </parameters>
+</application>

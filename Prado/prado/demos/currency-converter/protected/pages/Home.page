@@ -1,0 +1,51 @@
+<%@ Theme="Basic" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
+<com:THead Title="Currency Converter" />
+<body>
+<com:TForm>
+    <fieldset>
+        <legend>Currency Converter</legend>
+        <div class="rate-field">
+            <com:TLabel ForControl="currencyRate" Text="Exchange Rate per $1:" />
+            <com:TTextBox ID="currencyRate" />
+			<com:TRequiredFieldValidator
+				ControlToValidate="currencyRate"
+				Display="Dynamic"
+				ErrorMessage="Please enter a currency rate." />
+			<com:TCompareValidator
+				ControlToValidate="currencyRate"
+				DataType="Float"
+				ValueToCompare="0"
+				Operator="GreaterThan"
+				Display="Dynamic"
+				ErrorMessage="Please enter a positive currency rate." />
+        </div>
+        <div class="dollar-field">
+            <com:TLabel ForControl="dollars" Text="Dollars to Convert:" />
+            <com:TTextBox ID="dollars" />
+			<com:TRequiredFieldValidator
+				ControlToValidate="dollars"
+				Display="Dynamic"
+				ErrorMessage="Please enter the amount you wish to calculate." />
+			<com:TDataTypeValidator
+				ControlToValidate="dollars"
+				DataType="Float"
+				Display="Dynamic"
+				ErrorMessage="Please enter a number." />
+        </div>
+        <div class="total-field">
+            <span class="total-label">Amount in Other Currency:</span>
+            <com:TActiveLabel ID="total" CssClass="result" />
+        </div>
+        <div class="convert-button">
+            <com:TActiveButton Text="Convert" OnClick="convert_clicked" >
+			    <prop:ClientSide.OnLoading>
+			        $('<%= $this->total->ClientID %>').innerHTML = "calculating..."
+			    </prop:ClientSide.OnLoading>
+			</com:TActiveButton>
+        </div>
+    </fieldset>
+</com:TForm>
+</body>
+</html>

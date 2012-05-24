@@ -1,0 +1,36 @@
+<com:TContent ID="body" >
+
+<h1 id="8005">新機能</h1>
+
+<p id="40005" class="block-content">
+このページは、以下バージョンの PRADO に含まれる新機能の概要を紹介するページです。
+</p>
+
+<h2 id="8006">バージョン 3.1.0</h2>
+<ul>
+
+<li>AJAXサポート<br />
+全てのコントロールにて Ajaxが有効になりました。（アクティブコントロール - active controls）<br />
+アクティブコントロールは、通常のコントロールととても似た作りになっています。<br />
+使用方法の詳細はチュートリアル <a href="?page=ActiveControls.Home">アクティブコントロール</a> をご覧下さい。</li>
+
+<li>データベース連携サポートの完成 </li>
+<li>新しいコントロール/モジュール/サービスを追加<br />
+<a href="?page=Services.SoapService">TSoapService</a>, <a href="?page=Controls.OutputCache">TOutputCache</a>, TSessionPageStatePersister, TFeedService, TJsonService, cache dependency classes, TXmlTransform.
+</li>
+
+<li>データコントロールの描画エンジンを改善<br />
+データコントロールにて、アイテムテンプレートを再利用して描画するよう改善しました。<br />
+<tt>TRepeater</tt>, <tt>TDataList</tt>, <tt>TDataGrid</tt> などのコントロールでの構成がクリアなコードになりました。<br />
+チュートリアルが更新されているので、詳細はチュートリアル　<a href="?page=Controls.Repeater"><tt>TRepeater</tt></a>, <a href="?page=Controls.DataList"><tt>TDataList</tt></a>, <a href="?page=Controls.DataGrid"><tt>TDataGrid</tt></a> をご覧下さい。</li>
+
+<li>アプリケーション構造ファイルにて外部ファイル設定をサポート<br />
+<a href="?page=Configurations.AppConfig">アプリケーション構造</a>を外部ファイルにも定義できるようになり、<a href="?page=Configurations.Templates1">テンプレート</a>での定義など柔軟なアプリケーション定義ができるようになりました</li>
+
+<li>TDbUserManager / TDbUser によるシンプルなユーザー認証<br />
+<a href="?page=Advanced.Auth">認証</a>処理時のユーザーアカウントをデータベースに簡単に保存できるようになりました。</li>
+
+</ul>
+
+<div class="last-modified">$Id: NewFeatures.page * 2007-06-03 18:35:00Z Shinya.K $</div>
+</com:TContent>

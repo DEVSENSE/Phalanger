@@ -1,0 +1,249 @@
+<com:TContent ID="body">
+
+<h1>DataMapper Configuration Elements</h1>
+
+<p>Sometimes the values we use in an XML configuration file occur in more than
+one element. Often, there are values that change when we move the application
+from one server to another. To help you manage configuration values, you can
+specify a standard properties file (with name=value entries) as part of a
+DataMapper configuration. Each named value in the properties file becomes a
+shell variable that can be used in the DataMapper configuration file and your
+Data Map definition files.
+</p>
+
+<h2><tt>&lt;properties&gt;</tt> attributes</h2>
+<p>The <tt>&lt;properties&gt;</tt> element can accept one <tt>resource</tt> attribute to
+specify the location of the properties file.</p>
+
+<!-- tabular: align=|l|l|, width=(0.2 0.7) --> 
+<table class="tabular">
+	<tr>
+		<th>Attribute</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td><tt>resource</tt></td>
+		<td>Specify the properties file to be loaded from the directory relative 
+		to the current file.
+		Example: <tt>resource="properties.config"</tt>
+		</td>
+	</tr>
+</table>
+<p>
+For example, if the "<tt>properties.config</tt>" file contains</p>
+<com:TTextHighlighter Language="xml" CssClass="source">
+<?xml version="1.0" encoding="utf-8" ?>
+<settings>
+  <add key="username" value="albert" />
+</settings>
+</com:TTextHighlighter>
+
+<p>then all elements in the DataMapper configuration can use the variable
+<tt>${username}</tt> to insert the value "albert". For example:</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<provider ConnectionString="mysql://${username}:..." ... />
+</com:TTextHighlighter>
+
+<div class="tip"><b class="tip">Tip:</b>
+Properties are handy during building, testing, and deployment by making it
+easy to reconfigure your application for multiple environments.
+</div>
+
+<h2><tt>&lt;property&gt;</tt> element and attributes</h2>
+<p>You can also specify more than one properties file or add property keys and
+values directly into your <tt>SqlMap.config</tt> file by using <tt>&lt;property&gt;</tt>
+elements.</p> 
+
+<!-- tabular: align=|l|l|, width=(0.2 0.7) --> 
+<table class="tabular">
+	<tr>
+		<th>Attribute</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td><tt>resource</tt></td>
+		<td>Specify the properties file to be loaded from the directory relative 
+		to the current file.
+		Example: <tt>resource="properties.config"</tt>
+		</td>
+	</tr>
+	<tr>
+		<td><tt>key</tt></td>
+		<td>Defines a property key (variable) name.
+		Example: <tt>key="username"</tt>
+		</td>
+	</tr>	
+	<tr>
+		<td><tt>value</tt></td>
+		<td> Defines a value that will be used by the DataMapper in place of the
+   the specified property key/variable.
+		Example: <tt>value="mydbuser"</tt>
+		</td>
+	</tr>	
+</table>
+<p>For example:</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<properties>
+ <property resource="myProperties.config"/>
+ <property resource="anotherProperties.config"/>
+ <property key="host" value="ibatis.com" />
+</properties>
+</com:TTextHighlighter>
+
+<h2>The <tt>&lt;typeHandler&gt;</tt> Element</h2>
+<p>The <tt>&lt;typeHandler&gt;</tt> element allows for the configuration and use of a
+Custom Type Handler (see the Custom Type Handler section). This extends the
+DataMapper's capabilities in handling types that are specific to your database
+provider, are not handled by your database provider, or just happen to be a
+part of your application design.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<typeHandler type="date" callback="TDateTimeHandler"/>
+</com:TTextHighlighter>
+
+<p>The <tt>&lt;typeHandler&gt;</tt> element has three attributes:</p>
+<!-- tabular: align=|l|l|, width=(0.2 0.7) --> 
+<table class="tabular">
+	<tr>
+		<th>Attribute</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td><tt>type</tt></td>
+		<td>Refers to the name of the type to handle.
+		Example: <tt>type="date"</tt>
+		</td>
+	</tr>
+	<tr>
+		<td><tt>dbType</tt></td>
+		<td>Indicates the provider dbType to handle.
+		Example: <tt>dbType="Varchar2"</tt>
+		</td>
+	</tr>	
+	<tr>
+		<td><tt>callback</tt></td>
+		<td> The custom type handler class name.
+		Example: <tt>callback="TDateTimeHandler"</tt>
+		</td>
+	</tr>	
+</table>
+
+<h2>The <tt>&lt;provider&gt;</tt> element and attribute</h2>
+
+<p>The <tt>&lt;provider&gt;</tt> element encloses a <tt>&lt;datasource&gt;</tt> that configure the
+database system for use by the framework.</p>
+
+<!-- tabular: align=|l|l|, width=(0.2 0.7) --> 
+<table class="tabular">
+	<tr>
+		<th>Attribute</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td><tt>class</tt></td>
+		<td>The database provider class that extends
+    <tt>TDatabaseProvider</tt>.
+		Example: <tt>class="TAdodbProvider"</tt>
+		</td>
+	</tr>
+</table>
+
+<h2>The <tt>&lt;datasource&gt;</tt> element and attributes</h2>
+<p>The <tt>&lt;datasource&gt;</tt> element specifies the connection string.
+The following example shows a <tt>&lt;datasource&gt;</tt> element for a MySql connection.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<!-- The ${properties} are defined in an external file, -->
+<!-- but the values could also be coded inline. -->
+
+<!-- Connecting to a MySQL database -->
+<provider class="TAdodbProvider" >
+  <datasource
+    ConnectionString="mysql://${username}:${password}@${host}/${database}" />
+</provider>
+</com:TTextHighlighter>
+
+<!-- tabular: align=|l|l|, width=(0.2 0.7) --> 
+<table class="tabular">
+	<tr>
+		<th>Attribute</th>
+		<th>Description</th>
+	</tr>
+	<tr>
+		<td><tt>connectionString</tt></td>
+		<td>Data Source Name (DSN) connection string.
+		Example: <tt>connectionString="mysql://root:pwd@localhost/mydb"</tt>
+		</td>
+	</tr>
+	<tr>
+		<td><tt>driver</tt></td>
+		<td> Database driver name (mysql, sqlite, etc.).
+		Example: <tt>driver="mysql"</tt>
+		</td>
+	</tr>	
+	<tr>
+		<td><tt>host</tt></td>
+		<td>DB host name/IP (and port number) in the format <tt>host[:port]</tt>.
+		Example: <tt>host="localhost"</tt>
+		</td>
+	</tr>	
+	<tr>
+		<td><tt>username</tt></td>
+		<td>Database connection username.</td>
+	</tr>	
+	<tr>
+		<td><tt>password</tt></td>
+		<td>Database connection password.</td>
+	</tr>	
+	<tr>
+		<td><tt>database</tt></td>
+		<td>Database name to use in the connection.</td>
+	</tr>	
+</table>
+
+<div class="tip"><b class="tip">Tip:</b>
+   Use Data Source Name (DSN) connection string or specify the
+   necessary individual connection parameters.
+</div>
+
+<h2>The <tt>&lt;sqlMap&gt;</tt> Element</h2>
+<p>On a daily basis, most of your work will be with the Data Maps, which are
+covered in <a href="?page=Manual.WorkingWithDataMaps">Working with Data Maps</a>. 
+The Data Maps define the actual SQL
+statements or stored procedures used by your application. The parameter and
+result objects are also defined as part of the Data Map. As your application
+grows, you may have several varieties of Data Map. To help you keep your Data
+Maps organized, you can create any number of Data Map definition files and
+incorporate them by reference in the DataMapper configuration. All of the
+definition files used by a DataMapper instance must be listed in the
+configuration file.</p>
+
+The following example shows <tt>&lt;sqlMap&gt;</tt> elements for loading a set of
+<a href="?page=Manual.WorkingWithDataMaps">Data Map definitions</a>. 
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<!-- Relative path from the directory of the
+     current file using a property variable -->
+<sqlMap resource="${root}/Maps/Account.xml"/>
+<sqlMap resource="${root}/Maps/Category.xml"/>
+<sqlMap resource="${root}/Maps/Product.xml"/>
+
+<!-- Full file path with a property variable -->
+<sqlMap resource="/${projectdir}/MyApp/Maps/Account.xml"/>
+<sqlMap resource="/${projectdir}/MyApp/Maps/Category.xml"/>
+<sqlMap resource="/${projectdir}/MyApp/Maps/Product.xml"/>
+</com:TTextHighlighter>
+
+<div class="tip"><b class="tip">Tip:</b>
+Since the application root directory location differs by project type
+(Windows, Web, or library), it is best to use a properties variable to
+indicate the relative path when using the <tt>&lt;sqlMap&gt;</tt> <tt>resource</tt>
+attribute. Having a variable defined in a properties file makes it easy to
+change the path to all your Data Mapper configuration resources in one
+location (note the <tt>${projectdir}</tt> and <tt>${root}</tt> variables in the
+example above).
+</div>
+
+</com:TContent>

@@ -1,0 +1,232 @@
+body
+{
+	background-image: url(right_back.png);
+	background-position: right;
+	background-repeat: repeat-y;
+}
+
+.languages
+{
+	margin-right: 80px !important;
+}
+
+div#content
+{
+	padding-right: 75px;
+}
+
+.block-content
+{
+	border-bottom: 1px dashed white;
+	border-top: 1px dashed white;
+	border-right: 1px solid white;
+	background-color: White;
+	position: relative;
+	z-index: 0;
+	display: block;
+}
+
+div.block-content
+{
+	margin-top: 0 !important;
+}
+
+.block-hover
+{
+	border-bottom: 1px dashed #0cf;
+	border-top: 1px dashed #0cf;
+	border-right-color: #0cf;
+	border-right-style: solid;
+	background-color: #F9FCFF;
+	padding-right: 9px;
+	margin-right: -9px;
+}
+
+div.block-hover
+{
+	border-bottom: 1px dashed #0cf !important;
+	border-top: 1px dashed #0cf !important;
+	border-right-color: #0cf !important;
+	border-right-style: solid !important;
+	background-color: #F9FCFF !important;
+	padding-right: 9px !important;
+	margin-right: -9px !important;
+}
+
+.block-comment-tag
+{
+	width: 51px;
+	float: right;
+	margin-right: -60px;
+	text-align: center;
+	color: #6495ED;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.block-comment-tag-ie
+{
+	width: 60px;
+	float: right;
+	margin-right: -69px;
+	text-align: center;
+	color: #6495ED;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.block-comment-tag div
+{
+	padding-top: 4px;
+	background-image: url(tag.gif);
+	background-repeat: no-repeat;
+	height: 26px;
+}
+
+.block-comment-tag-ie div
+{
+	padding-top: 4px;
+	background-image: url(tag.gif);
+	background-repeat: no-repeat;
+	height: 26px;
+	background-position: 9px 0px;
+}
+
+#user-comments
+{
+	border: 1px solid #B3CC8B;
+	padding: 10px;
+	background-color: #E5EDD7;
+/*	position: absolute;
+	margin-right: 80px; */
+	z-index: 100;
+}
+
+#comment-list, #add-comment
+{
+/*	height: 320px;*/
+	background-color: White;
+	padding: 10px;
+	clear: both;
+	border-top: 10px solid white;
+	margin-top: -3px;
+}
+
+#comment-list
+{
+/*	overflow: auto;*/
+}
+
+#comment-nav, #comment-nav li
+{
+	display: inline;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#comment-nav
+{
+	display: block;
+	height: 26px;
+}
+
+#comment-nav li a
+{
+	float: left;
+	padding: 0.4em 1.5em;
+	color: #9BB190;
+	text-decoration: none;
+	font-weight: bold;
+	background-color: #ECF0EA;
+	margin-right: 5px;
+}
+
+#comment-nav li a.active
+{
+	color: #556B2F;
+	background-color: White;
+}
+
+#user-comments .right-tab
+{
+	text-decoration: none;
+	padding: 0.4em 1em;
+	float:right;
+	color: #556B2F;
+	background-color: White;
+	margin-top: -1.95em;
+}
+
+#comment-list .comment, #comment-list-edit .comment
+{
+	margin-bottom: 2em;
+}
+
+#comment-list .comment span, #comment-list-edit .comment span
+{
+	font-size: 0.85em;
+	border-bottom: 1px dotted #ccc;
+	padding: 0.2em;
+	display: block;
+}
+
+#comment-list .comment div, #comment-list-edit .comment div
+{
+
+	padding: 0.5em;
+}
+
+#add-comment label
+{
+	font-weight: bold;
+}
+#add-comment .hint
+{
+	font-size: 0.8em;
+	font-weight: normal;
+}
+
+#add-comment .username input
+{
+	width: 180px
+}
+
+#add-comment .content
+{
+	margin-top: 0.5em;
+}
+
+#add-comment .content textarea
+{
+	width: 95%;
+	height: 180px;
+}
+
+
+#add-comment .submit
+{
+	border-top: 1px solid #ccc;
+	margin-top: 1em;
+	padding: 1em;
+}
+
+#add-comment .submit input
+{
+	width: 130px;
+}
+
+
+#modal-background
+{
+	background-color: #556B2F;
+	position: absolute;
+	z-index: 0;
+	filter: Alpha(Opacity=50);
+}
+
+#comment-list .source-link, #comment-list-edit .source-link
+{
+	float: right;
+	margin-top: -1.5em;
+}

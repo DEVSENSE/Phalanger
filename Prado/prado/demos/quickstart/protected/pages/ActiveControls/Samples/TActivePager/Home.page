@@ -1,0 +1,103 @@
+<com:TContent ID="body">
+
+<h1>TActivePager Sample</h1>
+<p>
+The following sample displays three different pagers associated with a single TDataList control. The datalist control is enabled with custom paging, which allows it to read only one page of data each time. This is typical in DB-driven applications.
+</p>
+
+<div>
+Go to page:
+<com:TActivePager ID="Pager"
+	ControlToPaginate="DataList"
+	PageButtonCount="3"
+	Mode="Numeric"
+	OnPageIndexChanged="pageChanged"
+	OnCallBack="RenderCallback"
+	>
+		<prop:ClientSide.OnLoading>
+			Element.show('wait')
+		</prop:ClientSide.OnLoading>
+		<prop:ClientSide.OnComplete>
+			Element.hide('wait')
+		</prop:ClientSide.OnComplete>
+</com:TActivePager>
+<span id="wait" style="display: none;color: red">Please Wait...</span>
+</div>
+<com:TActivePanel id="TActivePanel" ActiveControl.EnableUpdate="true">
+<com:TDataList
+     ID="DataList"
+     AllowPaging="true"
+     AllowCustomPaging="true"
+	 PageSize="2"
+     EnableViewState="true"
+     RepeatColumns="2"
+     RepeatDirection="Vertical"
+     ItemStyle.Font.Italic="true"
+     ItemStyle.BackColor="#BFCFFF"
+     HeaderStyle.BackColor="black"
+     HeaderStyle.ForeColor="white"
+     FooterStyle.BackColor="gray"
+     AlternatingItemStyle.BackColor="#E6ECFF">
+
+<prop:HeaderTemplate>
+<div style="font-weight:bold; text-align:center;">Computer Parts</div>
+</prop:HeaderTemplate>
+
+<prop:FooterTemplate>
+<div style="font-weight:bold; text-align:center;">
+Total <%# $this->Parent->PageCount %> pages.
+</div>
+</prop:FooterTemplate>
+
+<prop:ItemTemplate>
+<table border="0" width="300">
+<tr>
+  <th>ID</th><th>Name</th><th>Quantity</th><th>Price</th>
+</tr>
+<tr>
+  <td align="right"><com:TLiteral Text=<%#$this->DataItem['id'] %> /></td>
+  <td align="right"><com:TLiteral Text=<%#$this->DataItem['name'] %> /></td>
+  <td align="right"><com:TLiteral Text=<%#$this->DataItem['quantity'] %> /></td>
+  <td align="right">$<com:TLiteral Text=<%#$this->DataItem['price'] %> /></td>
+</tr>
+</table>
+</prop:ItemTemplate>
+
+</com:TDataList>
+</com:TActivePanel>
+
+<com:TActivePager ID="Pager2"
+	ControlToPaginate="DataList"
+	FirstPageText="9"
+	LastPageText=":"
+	Mode="NextPrev"
+	NextPageText="4"
+	PrevPageText="3"
+	Font.Name="Webdings"
+	OnPageIndexChanged="pageChanged"
+	OnCallBack="RenderCallback"
+>
+<prop:ClientSide.OnLoading>
+			Element.show('wait')
+		</prop:ClientSide.OnLoading>
+		<prop:ClientSide.OnComplete>
+			Element.hide('wait')
+		</prop:ClientSide.OnComplete>
+</com:TActivePager>
+<br/>
+Choose page:
+<com:TActivePager ID="Pager3"
+	ControlToPaginate="DataList"
+	Mode="DropDownList"
+	OnPageIndexChanged="pageChanged"
+	OnCallBack="RenderCallback"
+>
+<prop:ClientSide.OnLoading>
+			Element.show('wait')
+		</prop:ClientSide.OnLoading>
+		<prop:ClientSide.OnComplete>
+			Element.hide('wait')
+		</prop:ClientSide.OnComplete>
+</com:TActivePager>
+<com:TJavascriptLogger/>
+<div class="last-modified">$Id$</div></com:TContent>

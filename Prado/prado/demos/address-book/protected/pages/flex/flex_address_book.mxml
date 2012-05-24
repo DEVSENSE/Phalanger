@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * @author Wei Zhuo <weizho[at]gmail[dot]com>
+ * @version $Id$
+ * @since 3.1
+-->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+	backgroundColor="white"
+	backgroundGradientAlphas="0"
+	backgroundGradientColors="0" 
+	layout="vertical" creationComplete="initApp()">
+	<mx:states>
+		<mx:State name="details">
+			<mx:AddChild relativeTo="{hbox1}" position="lastChild">
+				<mx:Form>
+					<mx:FormItem label="Name:">
+						<mx:TextInput id="_username" text="{list1.selectedItem.username}"/>
+					</mx:FormItem>
+					<mx:FormItem label="Phone:">
+						<mx:TextInput id="_phone" text="{list1.selectedItem.phone}" />
+						<mx:Button id="saveButton" label="Save" click="doSave()" />
+					</mx:FormItem>
+				</mx:Form>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+	
+	<mx:PhoneNumberValidator id="val1" source="{_phone}" property="text" />
+	<mx:StringValidator id="val2" source="{_username}" property="text"
+		minLength="3" maxLength="20" />
+	
+	<mx:WebService id="addrSrv" fault="dataError(event)">
+		<mx:operation name="saveAddress" result="addrSrv.getAllAddress()" />
+		<mx:operation name="deleteAddress" result="addrSrv.getAllAddress()" />
+	</mx:WebService>
+
+	<mx:Script>
+		<![CDATA[
+			import mx.validators.Validator;
+			import mx.utils.ArrayUtil;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			
+			[Bindable]
+			private var addressList:ArrayCollection;			
+						
+			private function initApp():void
+			{
+				addrSrv.loadWSDL(getAddressBookWsdl());
+				addrSrv.getAllAddress();
+			}
+			
+			private function getAddressBookWsdl():String
+			{
+				var appUrl:Object=application.parameters.wsdl;
+				if(appUrl!=null)  // running in PRADO page
+					return appUrl.toString();
+				else  // running in static html for debugging.
+					return "http://127.0.0.1/prado-trunk/demos/address-book/index.php?soap=address-book.wsdl";				
+			}
+			
+			private function dataError(event:FaultEvent):void
+			{
+				Alert.show(event.fault.faultString,"Data Communication Error");
+			}
+
+			private function doSave():void
+			{
+				if(Validator.validateAll([val1, val2]).length == 0)
+				{
+					var data:Object = new Object;
+					data.id = list1.selectedItem != null ? list1.selectedItem.id : -1;
+					data.username = _username.text;
+					data.phone = _phone.text;
+					addrSrv.saveAddress(data);
+					currentState='';
+				}
+			}
+			
+			private function doDelete():void
+			{
+				addrSrv.deleteAddress(list1.selectedItem.id);
+				currentState='';
+			}			
+		]]>
+	</mx:Script>
+		
+	<mx:Panel layout="vertical" title="Prado Address Book" id="panel1" resizeEffect="Resize">
+		<mx:HBox id="hbox1">
+			<mx:DataGrid id="list1" dataProvider="{addrSrv.getAllAddress.lastResult}" 
+				width="350" click="if(list1.selectedIndex >= 0) currentState='details'">
+				<mx:columns>
+					<mx:DataGridColumn headerText="Name" width="175" dataField="username"/>
+					<mx:DataGridColumn headerText="Phone" dataField="phone"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:HBox>
+		<mx:ControlBar id="controlbar1">
+			<mx:Button label="New" click="list1.selectedIndex=-1; currentState='details'" id="button2"/>
+			<mx:Button label="Delete" enabled="{list1.selectedIndex >= 0}" click="doDelete()" id="button3"/>
+		</mx:ControlBar>
+	</mx:Panel>
+	
+</mx:Application>

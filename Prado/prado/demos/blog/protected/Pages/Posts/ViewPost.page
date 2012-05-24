@@ -1,0 +1,120 @@
+<com:TContent ID="Main">
+
+<div class="post">
+<div class="post-title">
+<%= htmlentities($this->CurrentPost->Title,ENT_QUOTES,'UTF-8') %>
+</div>
+<div class="post-time">
+<com:TLabel
+	ID="Status"
+	ForeColor="red"
+	Text=<%= $this->CurrentPost->Status===PostRecord::STATUS_DRAFT?'[Draft]':'[Pending approval]'%> />
+<%= date('l, F j, Y \a\t h:i:s a',$this->CurrentPost->CreateTime) %>
+by
+<%= '<a href="' . $this->Service->constructUrl('Users.ViewUser',array('id'=>$this->CurrentPost->AuthorID)) . '">' . $this->CurrentPost->AuthorName . '</a>' %>
+<%= $this->CanEditPost ? '| <a href="' . $this->Service->constructUrl('Posts.EditPost',array('id'=>$this->CurrentPost->ID)) . '">Edit</a> | ' : '';
+%>
+<com:TLinkButton
+	Text="Delete"
+	OnClick="deleteButtonClicked"
+	Visible=<%= $this->CanEditPost %>
+	Attributes.onclick="if(!confirm('Are you sure to delete this post? This will also delete all related comments.')) return false;"
+	/>
+</div>
+<div class="post-content">
+<%= $this->CurrentPost->Content %>
+</div>
+<div class="post-footer">
+<com:TRepeater ID="CategoryList" EnableViewState="false">
+	<prop:ItemTemplate>
+	[
+	<a href="<%# $this->Service->constructUrl('Posts.ListPost',array('cat'=>$this->DataItem->ID)) %>"><%# $this->DataItem->Name %></a>
+	]
+	</prop:ItemTemplate>
+</com:TRepeater>
+</div>
+</div>
+
+<div class="comments">
+<a name="comments"></a>
+<h3>Comments</h3>
+
+<com:TRepeater ID="CommentList" OnItemCommand="repeaterItemCommand">
+	<prop:ItemTemplate>
+<div class="comment">
+<div class="comment-header">
+<a name="c<%# $this->DataItem->ID %>"></a>
+<com:TLinkButton
+	Text="Delete"
+	Attributes.onclick="if(!confirm('Are you sure to delete this comment?')) return false;"
+	CommandParameter=<%# $this->DataItem->ID %>
+	Visible=<%= $this->Page->CanEditPost %> Style="float:right"/>
+<%# date('F j, Y \a\t h:i:s a',$this->DataItem->CreateTime) %>
+by
+<%# $this->DataItem->AuthorWebsite==='' ?
+		htmlentities($this->DataItem->AuthorName,ENT_QUOTES,'UTF-8') :
+		'<a href="' . htmlentities($this->DataItem->AuthorWebsite) . '">' . htmlentities($this->DataItem->AuthorName,ENT_QUOTES,'UTF-8') . '</a>' %>
+</div>
+<div class="comment-content">
+<%# nl2br(htmlentities($this->DataItem->Content,ENT_QUOTES,'UTF-8')) %>
+</div>
+</div>
+	</prop:ItemTemplate>
+</com:TRepeater>
+
+<h4>Leave your comment</h4>
+
+<span class="input-label">Name</span>
+<com:TRequiredFieldValidator
+	ControlToValidate="CommentAuthor"
+	ValidationGroup="comment""
+	Display="Dynamic"
+	Text="...is required"
+	ControlCssClass="input-error1" />
+<br/>
+<com:TTextBox ID="CommentAuthor" />
+<br/>
+
+<span class="input-label">Email address</span>
+<com:TRequiredFieldValidator
+	ControlToValidate="CommentEmail"
+	ValidationGroup="comment""
+	Display="Dynamic"
+	Text="...is required"
+	ControlCssClass="input-error1" />
+<com:TEmailAddressValidator
+	ControlToValidate="CommentEmail"
+	ValidationGroup="comment"
+	Display="Dynamic"
+	Text="*"
+	ErrorMessage="You entered an invalid email address."
+	ControlCssClass="input-error2" />
+<br/>
+<com:TTextBox ID="CommentEmail" />
+<br/>
+
+<span class="input-label">Personal website</span>
+<br/>
+<com:TTextBox ID="CommentWebsite" Columns="70"/>
+<br/>
+
+<span class="input-label">Comment</span>
+<com:TRequiredFieldValidator
+	ControlToValidate="CommentContent"
+	ValidationGroup="comment"
+	Display="Dynamic"
+	Text="...is required"
+	ControlCssClass="input-error1" />
+<br/>
+<com:TTextBox ID="CommentContent" TextMode="MultiLine" Columns="55" Rows="10"/>
+<br/>
+<br/>
+
+<com:TLinkButton
+	Text="Submit"
+	ValidationGroup="comment"
+	CssClass="link-button"
+	OnClick="submitCommentButtonClicked" />
+
+</div>
+</com:TContent>

@@ -1,0 +1,17 @@
+<com:TContent ID="body">
+
+<h1>TDataGrid Sample 1</h1>
+<h2>Using Automatically Generated Columns</h2>
+
+<com:TDataGrid
+	ID="DataGrid"
+	EnableViewState="false"
+	CellPadding="2"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="#E6ECFF"
+	/>
+
+<div class="last-modified">$Id: Sample1.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

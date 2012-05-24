@@ -1,0 +1,96 @@
+<com:TContent ID="body" >
+
+<h1 id="6601">Developer Notes for prototype.js</h1>
+This guide is based on the <a href="http://www.sergiopereira.com/articles/prototype.js.html">
+Developer Notes for prototype.js</a> by Sergio Pereira.
+
+<h2 id="6603">What is that?</h2>
+<p id="830726" class="block-content">
+In case you haven't already used it, <a href="http://prototype.conio.net">prototype.js</a> is a
+    JavaScript library written by <a href="http://www.conio.net">Sam Stephenson</a>.
+    This amazingly well thought and well written piece of <b>standards-compliant</b> code takes a lot of
+    the burden associated with creating rich, highly interactive web pages that characterize the Web 2.0 off your back.
+</p>
+
+<p id="830727" class="block-content">
+    If you tried to use this library recently, you probably noticed that documentation is not one
+    of its strongest points. As many other developers before me, I got my head around prototype.js by
+    reading the source code and experimenting with it. I thought it would be nice to take notes while
+    I learned and share with everybody else.
+</p>
+<p id="830728" class="block-content">
+    As you read the examples and the reference, developers familiar with the Ruby
+    programming language will notice an intentional similarity between Ruby's
+    built-in classes and many of the extensions implemented by this library.
+</p>
+
+
+<h2 id="6604">Using the <tt>$()</tt> function</h2>
+<p id="830729" class="block-content">
+    The <tt>$()</tt> function is a handy shortcut to the all-too-frequent <tt>document.getElementById()</tt> function
+    of the DOM. Like the DOM function, this one returns the element that has the id passed as an argument.
+</p>
+
+<p id="830730" class="block-content">
+    Unlike the DOM function, though, this one goes further. You can pass more than one id and
+    <tt>$()</tt> will return an <tt>Array</tt> object with
+    all the requested elements. The example below should illustrate this.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_830252">
+&lt;com:TClientScript UsingClientScripts="prado" /&gt;
+<div id="myDiv">
+    <p id="830731" class="block-content">This is a paragraph</p>
+</div>
+
+<div id="myOtherDiv">
+    <p id="830732" class="block-content">This is another paragraph</p>
+</div>
+
+<input type="button" value=Test1 onclick="test1();" />
+<input type="button" value=Test2 onclick="test2();" />
+
+<script type="text/javascript">
+/*<![CDATA[*/
+function test1()
+{
+    var d = $('myDiv');
+    alert(d.innerHTML);
+}
+
+function test2()
+{
+    var divs = $('myDiv','myOtherDiv');
+    for(i=0; i<divs.length; i++)
+    {
+        alert(divs[i].innerHTML);
+    }
+}
+/*]]>*/
+</script>
+</com:TTextHighlighter>
+<p id="830733" class="block-content">
+    Another nice thing about this function is that you can pass either the <tt>id</tt> string or the element object itself,
+    which makes this function very useful when creating other functions that can also take either form of argument.
+</p>
+
+<h2 id="6605">Using the <tt>$F()</tt> function</h2>
+
+<p id="830734" class="block-content">
+    The <tt>$F()</tt> function is a another welcome shortcut. It returns the value of any field input control,
+    like text boxes or drop-down lists. The function can take as argument either the element <tt>id</tt> or the element object itself.
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_830253">
+<input type="text" id="userName" value="Joe Doe" />
+<input type="button" value=Test3 onclick="test3();" />
+
+<script type="text/javascript">
+/*<![CDATA[*/
+function test3()
+{
+    alert($F('userName'));
+}
+/*]]>*/
+</script>
+</com:TTextHighlighter>
+
+<div class="last-modified">$Id: Scripts1.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

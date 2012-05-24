@@ -1,0 +1,30 @@
+<com:TContent ID="body" >
+
+<h1 id="192018">TCallbackClientScript</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TCallbackClientScript" />
+
+<p class="block-content">
+The <tt>TCallbackClientScript</tt> class provides corresponding methods that can be
+executed on the client-side (i.e. the browser client that is viewing
+the page) during a callback response.
+For a complete list of available client side methods, consult the
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TCallbackClientScript" />
+</p>
+
+<p class="block-content">
+The available methods includes setting/clicking input elements, changing Css
+styles, hiding/showing elements, and adding visual effects to elements on the
+page. The client-side methods can be access through the <tt>CallbackClient</tt>
+property available in <tt>TPage</tt>.
+</p>
+
+<p class="block-content">
+For example, to hide "$myTextBox" element during callback response, do:
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content">
+$this->getPage()->getCallbackClient()->hide($myTextBox);
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="ActiveControls.Samples.TCallbackClientScript.Home" />
+
+<div class="last-modified">$Id: CallbackClientSide.page -1   $</div></com:TContent>

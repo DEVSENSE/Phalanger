@@ -1,0 +1,37 @@
+<com:TContent ID="body">
+
+<h1>TColorPicker Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+	<td class="samplenote">Default TColorPicker, Mode="Basic"</td>
+	<td class="sampleaction">
+		<com:TColorPicker />
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">Mode="Simple"<br />pre-selected red color</td>
+	<td class="sampleaction">
+		<com:TColorPicker Mode="Simple" Text="#FF0000"/>
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">Mode="Full"</td>
+	<td class="sampleaction">
+		<com:TColorPicker Mode="Full"/>
+	</td>
+</tr>
+
+<tr>
+	<td class="samplenote">Disabled color picker panel: ShowColorPicker="false"</td>
+	<td class="sampleaction">
+		<com:TColorPicker ShowColorPicker="false"/>
+	</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

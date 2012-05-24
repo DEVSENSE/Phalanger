@@ -1,0 +1,178 @@
+<com:TContent ID="Main">
+
+<h1>Creating Active Record Classes</h1>
+
+<p>
+We need to create two <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> classes, <tt>UserRecord</tt> and <tt>PostRecord</tt>, to represent data records in the <tt>users</tt> and <tt>posts</tt> tables, respectively. Active Record classes must extend from the base class <tt>ActiveRecord</tt>, and must define property names that matches with the field names of the corresponding table.
+</p>
+
+<p>
+To better organize our directories, we create a new directory <tt>protected/database</tt> to hold the class files. We also modify our application configuration by inserting the following lines. It is equivalent to adding the directory <tt>protected/database</tt> to PHP include_path, which allows us to use the classes without explicitly including them.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<paths>
+  <using namespace="Application.database.*" />
+</paths>
+</com:TTextHighlighter>
+
+<p>
+Instead of writing the classes manually, we will use the <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a> again to generate the classes for us.
+</p>
+
+<p>
+Under the <tt>blog</tt> directory, run the following command to enter into the interactive mode of the command line tool:
+</p>
+
+<com:TTextHighlighter CssClass="source cli" Language="text">
+php path/to/prado-cli.php shell .
+</com:TTextHighlighter>
+
+<p>
+We should see
+</p>
+
+<com:TTextHighlighter CssClass="source cli" Language="text">
+Command line tools for Prado 3.1.0.
+** Loaded PRADO appplication in directory "protected".
+PHP-Shell - Version 0.3.1
+(c) 2006, Jan Kneschke <jan@kneschke.de>
+
+>> use '?' to open the inline help
+
+>>
+</com:TTextHighlighter>
+
+<p>
+At the prompt, enter the following two commands to create <tt>UserRecord</tt> and <tt>PostRecord</tt> classes:
+</p>
+
+<com:TTextHighlighter CssClass="source cli" Language="text">
+>> generate users Application.database.UserRecord
+
+>> generate posts Application.database.PostRecord
+</com:TTextHighlighter>
+
+<p>
+Here we used the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">namespace format</a> again to specify the classes to be created. The path <tt>Application.database.UserRecord</tt> indicates that we want the <tt>UserRecord</tt> class file to be <tt>protected/database/UserRecord.php</tt>.
+</p>
+
+<p>
+We should see the following directory structure with two new files under <tt>protected/database</tt>:
+</p>
+
+<img src="<%~ directories2.gif %>" class="output" />
+
+<p>
+If we check the <tt>PostRecord</tt> class file, we should see the following content.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class PostRecord extends TActiveRecord
+{
+    const TABLE='posts';
+    public $post_id;
+    public $author_id;
+    public $create_time;
+    public $title;
+    public $content;
+    public $status;
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+
+<p>
+As we see, for each field in the <tt>posts</tt> table, the class has a corresponding data member. The constant <tt>TABLE</tt> specifies the table name for the <tt>PostRecord</tt>. The static method <tt>finder()</tt> allows us to perform query and retrieve post data in terms of <tt>PostRecord</tt> objects.
+</p>
+
+<p>
+We can use the command line tool to do some testing with our newly created Active Record classes. Still in the interactive mode of the command line tool, we enter a PHP statement and should see the following. Interested readers may try some other PHP statements, such as <tt>UserRecord::finder()->findAll()</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source cli" Language="text">
+>> PostRecord::finder()->findAll()
+array
+(
+    [0] => PostRecord#1
+    (
+        [post_id] => '1'
+        [author_id] => 'admin'
+        [create_time] => '1175708482'
+        [title] => 'first post'
+        [content] => 'this is my first post'
+        [status] => '0'
+        [TActiveRecord:_readOnly] => false
+        [TActiveRecord:_connection] => null
+        [TComponent:_e] => array()
+    )
+)
+</com:TTextHighlighter>
+
+<h1>Relationship Between Posts and Users</h1>
+<p>
+Recall that there was a foreign key relationship between the <tt>users</tt> and <tt>posts</tt> table. The entity-relationship diagram is shown below for convienence.
+</p>
+
+<img src="<%~ ER.gif %>" class="output" />
+
+<p>
+From the entity-relationship diagram above, we see that the <tt>posts</tt> table contains a field named <tt>author_id</tt>. This <tt>author_id</tt> field is a foreign key to the reference table <tt>users</tt>. In particular, the values in the  <tt>author_id</tt> field should be of that from the <tt>users</tt> table's <tt>username</tt> field. One of the consequence of this relationship, thinking in terms of objects, is that each "post" belongs to an "author" and one "author" may have many "posts".
+</p>
+
+<p>
+We can model the relationship between <tt>posts</tt> and <tt>users</tt> table in Active Record by modifying the <tt>PostRecord</tt> and <tt>UserRecord</tt> classes as follows.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class PostRecord extends TActiveRecord
+{
+    //... properties and methods as before
+
+    public $author; //holds an UserRecord
+
+    public static $RELATIONS=array
+    (
+        'author' => array(self::BELONGS_TO, 'UserRecord'),
+    );
+}
+</com:TTextHighlighter>
+
+<p>
+The static <tt>$RELATIONS</tt> property of <tt>PostRecord</tt> defines that the property <tt>$author</tt> belongs to an <tt>UserRecord</tt>. In <tt>array(self::BELONGS_TO, 'UserRecord')</tt>, the first element defines the relationship type, in this case <tt>self::BELONGS_TO</tt>. The second element is the name of related record, in this case an <tt>UserRecord</tt>. The <tt>UserRecord</tt> is defined similarly below, the difference is that, the user record has many <tt>PostRecord</tt>s.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class UserRecord extends TActiveRecord
+{
+    //... properties and methods as before
+
+    public $posts=array(); //holds an array of PostRecord
+
+    public static $RELATIONS=array
+    (
+        'posts' => array(self::HAS_MANY, 'PostRecord'),
+    );
+}
+</com:TTextHighlighter>
+
+<p>
+An array of <tt>UserRecord</tt> with and its corresponding posts may be fetched as follows.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+$users = UserRecord::finder()->withPosts()->findAll();
+</com:TTextHighlighter>
+
+<com:TipBox>
+The method <tt>withXXX()</tt> (where XXX is the relationship property name, in this case, <tt>Posts</tt>) fetches the corresponding <tt>PostRecords</tt> using a second query (not by using a join). The <tt>withXXX()</tt> method accepts the same arguments as other finder methods of TActiveRecord, e.g. <tt>withPosts('status = ?', 0)</tt>.
+</com:TipBox>
+
+<p>
+Further detailed documentation can be found in the quickstart <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a> docs.
+</p>
+
+</com:TContent>

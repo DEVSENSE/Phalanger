@@ -1,0 +1,135 @@
+﻿<com:TContent ID="Main">
+
+<h1>Création de la page détail d'un message <tt>ReadPost</tt></h1>
+
+<p>
+La page <tt>ReadPost</tt> affiche le détail d'un message. Pour les utilisateurs autorisés, un lien sera disponible permettant de modifier ou de supprimer le message.
+</p>
+
+<p>
+Nous créons deux fichiers <tt>protected/pages/posts/ReadPost.page</tt> et <tt>protected/pages/posts/ReadPost.php</tt> qui contiendront respectivement notre gabarit et notre classe.
+</p>
+
+<h2>Création du gabarit</h2>
+<p>
+Le gabarit de <tt>ReadPost</tt> est très proche du gabarit de <tt>PostRenderer</tt>, chacun d'eux affiche le détail d'un message. La différence est que la page <tt>ReadPost</tt> doit afficher deux boutons, permettant aux utilisateurs autorisés de modifier ou supprimer le message.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;com:TContent ID="Main">
+
+<h2>
+&lt;com:TLiteral Text="&lt;%= $this->Post->title %>" />
+</h2>
+
+&lt;com:TControl Visible="&lt;%= $this->canEdit() %>">
+	<a href="&lt;%= $this->Service->constructUrl('posts.EditPost',array('id'=>$this->Post->post_id))%>">Modifier</a> |
+	&lt;com:TLinkButton Text="Supprimer"
+		OnClick="deletePost"
+		Attributes.onclick="javascript:if(!confirm('Etes vous sûr ?')) return false;" />
+&lt;/com:TControl>
+
+<p>
+Auteur:
+&lt;com:TLiteral Text="&lt;%= $this->Post->author->username %>" /><br/>
+Heure:
+&lt;com:TLiteral Text="&lt;%= date('m/d/Y h:m:sa', $this->Post->create_time) %>" />
+</p>
+
+<p>
+&lt;com:TLiteral Text="&lt;%= $this->Post->content %>" />
+</p>
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+<p>
+Plusieurs expressions PHP sont utilisées dans le gabarit. L'expression <tt>$this->Post</tt> fait référence à la propriété définie dans la classe de <tt>ReadPost</tt>. Elle représente l'objet <tt>PostRecord</tt> correspondant au message actuel.
+</p>
+
+<com:InfoBox>
+Même si nous utilisons régulièrement des expressions dans nos gabarits, nous n'en abusons pas. Une des règles principales pour savoir si l'on doit utiliser une expression est <i>l'expression doit être une propriété ou une simple mise en forme d'une propriété</i>. En suivant cette ligne de conduite, nous nous assurons d'une bonne séparation entre le contenu et la présentation, sans perdre en flexibilité.
+</com:InfoBox>
+
+<p>
+Nous pouvons aussi remarquer dans le gabarit précédent, que, nos deux boutons sont entourés d'un <tt>TControl</tt> dont la propriété 'visible' est déterminée par l'expression <tt>$this->canEdit()</tt>. Pour le bouton <tt>Supprimer</tt>, nous utilisons une boite de dialogue javascript pour confirmer la suppression du message.
+Nous pouvons aussi remarquer dans le gabarit précédent, que, nos deux boutons sont entourés d'un <tt>TControl</tt> dont la propriété 'visible' est déterminée par l'expression <tt>$this->canEdit()</tt>. Pour le bouton <tt>Supprimer</tt>, nous utilisons une boite de dialogue javascript pour confirmer la suppression du message.
+</p>
+
+<com:InfoBox>
+Tous les contrôles PRADO, ont une propriété très utile <tt>Attributes</tt> qui accepte n'importe quelle paire de valeurs (nom-valeur). La plupart des contrôles PRADO répercutent directement ces informations dans la balise HTML. Par exemple, dans le bouton <tt>Supprimer</tt> nous définissons <tt>onclick</tt> qui est directement reporté dans la balise <tt>&lt;a&gt;</tt> sous forme d'un attribut <tt>onclick</tt>.
+</com:InfoBox>
+
+<h2>Création du fichier de classe</h2>
+
+<p>
+Dans le gabarit précédent, nous voyons que notre classe doit implémenter le gestionnaire d'évènement <tt>deletePost()</tt> (attaché à l'évènement <tt>Onclick</tt> de notre bouton <tt>Supprimer</tt>). Nous devons aussi lire les données du message dont l'ID est passé par un paramètre GET.</p>
+
+<com:InfoBox>
+Nous implémentons la fonctionnalité suppression dans le classe <tt>ReadPost</tt> parce qu'il est classique de faire ainsi. Quand l'utilisateur clique sur le bouton <tt>Supprimer</tt>, une boite de dialogue demande confirmation de la suppression. Si l'utilisateur confirme, l'évènement <tt>OnClick</tt> du bouton <tt>Supprimer</tt> est déclenché.
+</com:InfoBox>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class ReadPost extends TPage
+{
+	private $_post;
+	/**
+	 * lis les données du message.
+	 * cette méthode est appelée lors de l'initialisation de la page
+	 * @param mixed param : paramètres de l'évènement
+	 */
+	public function onInit($param)
+	{
+		parent::onInit($param);
+		// id du message passé par un paramètre GET
+		$postID=(int)$this->Request['id'];
+		// lis le message ainsi que les données correspondantes à l'auteur
+		$this->_post=PostRecord::finder()->withAuthor()->findByPk($postID);
+		if($this->_post===null)  // si l'id du message est invalide
+			throw new THttpException(500, 'Impossible de trouver le message demandé.');
+		// défini le titre de la page comme étant celui du message
+		$this->Title=$this->_post->title;
+	}
+
+	/**
+	 * @return PostRecord retourne l'objet PostRecord correspondant au message
+	 */
+	public function getPost()
+	{
+		return $this->_post;
+	}
+
+	/**
+	 * supprime le message actuellement visualisé
+	 * cette méthode est appelée par l'évènement OnClick du bouton "Supprimer"
+	 */
+	public function deletePost($sender,$param)
+	{
+		// seul l'auteur ou un administrateur peuvent supprimer le message
+		if(!$this->canEdit())
+			throw new THttpException('Nous n'êtes pas autorisé à effectuer cette action.');
+		// le supprime de la base de données
+		$this->_post->delete();
+		// redirige le navigateur vers la page d'accueil
+		$this->Response->redirect($this->Service->DefaultPageUrl);
+	}
+
+	/**
+	 * @return boolean infiquant si le message peut être modifier ou supprimer par l'utilisateur actuel
+	 */
+	public function canEdit()
+	{
+		// seul l'auteur ou un administrateur peuvent modifier/supprimer le message
+		return $this->User->Name===$this->Post->author_id || $this->User->IsAdmin;
+	}
+}
+</com:TTextHighlighter>
+
+<h2>Test</h2>
+<p>
+Pour tester notre page <tt>ReadPost</tt>, allons à l'URL <tt>http://hostname/blog/index.php</tt> et cliquons sur le titre du seul message affiché. Notre navigateur devrait afficher le résultat suivant avec l'URL <tt>http://hostname/blog/index.php?page=ReadPost&id=1</tt>. Notez que si vous n'êtes pas connecté, les deux boutons ne sont pas visibles.
+</p>
+
+<img src="<%~ output2.gif %>" class="output" />
+
+</com:TContent>

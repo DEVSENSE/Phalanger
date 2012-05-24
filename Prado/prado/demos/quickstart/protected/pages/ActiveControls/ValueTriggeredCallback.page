@@ -1,0 +1,18 @@
+<com:TContent ID="body" >
+
+<h1 id="208026">TValueTriggeredCallback</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TValueTriggeredCallback" />
+
+<p class="block-content">
+<tt>TValueTriggeredCallback</tt> observes the value with <tt>PropertyName</tt> of a
+control with <tt>ControlID</tt>. Changes to the observed
+property value will trigger a new callback request. The property value is checked
+for changes every <tt>Interval</tt> seconds.
+A <tt>DecayRate</tt> can be set to increase the polling
+interval linearly if no changes are observed. Once a change is
+observed, the polling interval is reset to the original value.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TValueTriggeredCallback.Home" />
+
+<div class="last-modified">$Id: ValueTriggeredCallback.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

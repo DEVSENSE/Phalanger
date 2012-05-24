@@ -1,0 +1,164 @@
+<com:TContent ID="body" >
+
+<h1 id="134038">Layanan SOAP</h1>
+
+<p id="670450" class="block-content">
+SOAP membentuk lapisan dasar dari tumpukan layanan Web. Ia menyediakan cara yang rapi agar aplikasi PHP saling berkomunikasi atau dengan aplikasi yang ditulis dalam bahasa lain. PRADO menyediakan <tt>TSoapService</tt> yang membuat pengembagan aplikasi server SOAP menjadi tugas yang sangat mudah.
+</p>
+
+<p id="670451" class="block-content">
+Untuk menggunakan <tt>TSoapService</tt>, konfigurasi itu dalam spesifikasi aplikasi seperti berikut:
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_670133">
+<services>
+  <service id="soap" class="System.Web.Services.TSoapService">
+    <soap id="stockquote" provider="path.to.StockQuote" />
+    <!--
+    <soap...other soap service... />
+    -->
+  </service>
+</services>
+</com:TTextHighlighter>
+<p id="670452" class="block-content">
+Contoh menetapkan penyedia layanan SOAP bernama <tt>stockquote</tt> yang mengimplementasikan metode SOAP <tt>getPrice</tt> dalam kelas penyedia <tt>StockQuote</tt>,
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_670134">
+class StockQuote
+{
+	/**
+	 * @param string $symbol the symbol of the stock
+	 * @return float the stock price
+	 * @soapmethod
+	 */
+	public function getPrice($symbol)
+	{
+		....return stock price for $symbol
+	}
+}
+</com:TTextHighlighter>
+
+<div class="note"><b class="tip">Catatan:</b>
+<tt>TSoapService</tt> didasarkan pada <a href="http://www.php.net/manual/en/ref.soap.php">ekstensi SOAP PHP</a> dan memerlukan ekstensi terinstalasi.
+</div>
+
+<p id="670453" class="block-content">
+Dengan kode sederhana di atas, kita sudah menyelesaikan layanan SOAP sederhana yang membolehkan aplikasi lain untuk meng-query harga dari stok tertentu. Sebagai contoh, umumnya klien SOAP bisa ditulis seperti berikut guna mendapatkan harga stok atas IBM,
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_670135">
+$client=new SoapClient('http://path/to/index.php?soap=stockquote.wsdl');
+echo $client->getPrice('IBM');
+</com:TTextHighlighter>
+
+<p id="670454" class="block-content">
+Perhatikan URL yang digunakan untuk membentuk <tt>SoapClient</tt> (kelas disediakan oleh ekstensi SOAP PHP). Ini adalah URL untuk <a href="http://en.wikipedia.org/wiki/WSDL">WSDL</a> yang menjelaskan protokol komunikasi untuk layanan SOAP yang baru kita implementasikan. WSDL sering kali terlalu rumit untuk ditulis secara manual. Kebetulan, <tt>TSoapService</tt> bisa membuat ini bagi kita menggunakan generator WSDL. Secara umum, URL untuk membuat WSDL secara otomatis dalam PRADO mempunyai format berikut:
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_670136">
+http://path/to/index.php?SoapServiceID=SoapProviderID.wsdl
+</com:TTextHighlighter>
+
+<p id="670455" class="block-content">
+Agar generator WSDL membuat WSDL untuk layanan SOAP, kelas penyedia perlu untuk mengikuti sintaks tertentu. Dalam keadaan tertentu, untuk metode yang akan diperlihatkan sebagai metode SOAP, kata kunci <tt>@soapmethod</tt> harus muncul dalam komentar phpdoc terhadap metode dengan baris berikut yang menetapkan parameter metode dan nilai hasil:
+</p>
+<ul id="u1" class="block-content">
+<li>parameter: <tt>@param parameter-type $parameter-name description</tt></li>
+<li>return value: <tt>@return value-type description</tt></li>
+</ul>
+<p id="670456" class="block-content">
+Parameter yang benar dan tipe hasil termasuk: <tt>string</tt>, <tt>int</tt>, <tt>boolean</tt>, <tt>float</tt>, <tt>array</tt>, <tt>mixed</tt>, dll. Anda dapat juga menetapkan nama kelas sebagai tipe, yang menterjemahkan ke dalam tipe SOAP kompleks. Sebagai contoh, untuk tipe kompleks <tt>Contact</tt>
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_670137">
+/**
+ * Memperluas TComponent untuk menyediakan metode pengambil/penentu properti
+ */
+class Contact {
+    /**
+     * @var string $name
+     * @soapproperty
+     */
+    public $name;
+
+    /**
+     * @var Address $address
+     * @soapproperty
+     */
+    private $_address;
+
+    public function setAddress($value) {
+        $this->_address=$value;
+    }
+
+    public function getAddress() {
+        if($this->_address===null)
+            $this->_address=new Address;
+        return $this->_address;
+    }
+}
+
+class Address{
+    /**
+     * @var string $city
+     * @soapproperty
+     */
+    public $city;
+}
+
+class ContactManager {
+    /**
+     * @return Contact[] an array of contacts
+     * @soapmethod
+     */
+    function getAllContacts() {
+        return array(new Contact);
+    }
+
+    /**
+     * @return Contact one contact
+     * @soapmethod
+     */
+    function getContact($name) {
+        return new Contact;
+    }
+}
+</com:TTextHighlighter>
+<p id="670457" class="block-content">Untuk obyek soap kompleks, properti obyek ditetapkan dengan kata kunci <tt>@soapproperty</tt> dalam phpdocs. Selanjutnya, nama tipe properti harus ditetapkan sebagai <tt>@var type $name</tt> di mana <tt>type</tt> adalah tipe apapun yang benar seperti telah disebutkan sebelumnya dan <tt>$name</tt> akan mendefinisikan properti <tt>name</tt> (catatan bahwa jika kelas Anda adalah TComponent, Anda bisa menyediakan properti pengambil/penentu).
+</p>
+<p id="670458" class="block-content">
+Sebuah array dari obyek yang kompleks juga bisa dihasilkan dengan menambahkan pasangan yang dilindungi kurung kotak setelah nama tipe. Sebagai contoh, untuk menghasilkan array dari tipe <tt>Contact</tt>, kita mendefinisikan <tt>@return Contact[] ...</tt>.
+</p>
+
+<div class="tip"><b class="note">Tip:</b>
+Piranti sangat berguna untuk menguji layanan web Anda adalah piranti bebas 
+<a href="http://www.gotdotnet.com/Community/UserSamples/Details.aspx?SampleGuid=65a1d4ea-0f7a-41bd-8494-e916ebc4159c">WebServiceStudio 2.0</a>. Ia bisa memanggil webmethods secara interaktif. Pengguna dapat menyediakan sebuah titik akhir WSDL. Pada saat mengklik tombol Get piranti mengambil WSDL, membuat proxy .NET dari WSDL dan menampilkan daftar metode yang tersedia. Pengguna bisa memilih setiap metode dan menyediakan parameter input yang diplerukan.
+Piranti membutuhkan MS .NET runtime terinstalasi.
+
+<p id="690008" class="block-content">Piranti semacam itu tersedia untuk Mac OS X Tiger dari 
+<a href="http://www.ditchnet.org/soapclient/">http://www.ditchnet.org/soapclient/</a>
+</p>
+</div>
+
+<p id="670459" class="block-content">
+<tt>TSoapService</tt> bisa dikonfigurasi dan dikustomisasi dalam beberapa cara. Dalam contoh di atas, elemen <tt>&lt;soap&gt;</tt> sebenarnya menetapkan sebuah layanan SOAP menggunakan implementasi standar <tt>TSoapServer</tt>. Atribut dalam <tt>&lt;soap&gt;</tt> dikirimkan ke <tt>TSoapServer</tt> sebagai nilai properti awalnya. Sebagai contoh, atribut <tt>provider</tt> menginisialisasi properti <tt>Provider</tt> dari <tt>TSoapServer</tt>. Dengan menyetel <tt>SessionPersistent</tt> menjadi true dalam elemen <tt>&lt;soap&gt;</tt>, turunan penyedia akan sama di dalam sesi pengguna. Anda bisa mengembangkan kelas server SOAP sendiri dan menggunakannya dengan menetapkan atribut <tt>class</tt> dari <tt>&lt;soap&gt;</tt>.
+</p>
+
+<p id="670460" class="block-content">Standarnya, server SOAP PHP akan membuat obyek dari tipe <tt>StdClass</tt> ketika obyek diterima dari klien. Server soap bisa dikonfigurasi untuk secara otomatis membuat obyek dari obyek tipe tertentu diterima sebagai parameter metode. Sebagai contoh, jika kita mempunyai sebuah metode Soap yang menerima obyek <tt>Contact</tt> sebagai parameter.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_670138">
+/**
+ * @param Contact $contact
+ * @return boolean true if saved, false otherwise
+ * @soapmethod
+ */
+ function save(Contact $contact)
+ {
+	return true
+ }
+</com:TTextHighlighter>
+Untuk melakukan ini, kita perlu menyetel properti <tt>ClassMaps</tt> dari
+<tt>TSoapServer</tt> dalam tag <tt>&lt;soap&gt;</tt> sebagai nama kelas string dipisahkan koma yang kita inginkan secara otomatis dikonversi.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_670139">
+<soap id="contact-manager" provider="path.to.ContactManager"
+	ClassMaps="Contact, Address"/>
+</com:TTextHighlighter>
+</p>
+
+<div class="last-modified">$Id: SoapService.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>

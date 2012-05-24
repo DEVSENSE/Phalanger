@@ -1,0 +1,96 @@
+<com:TContent ID="body">
+
+<h1>Implicit Result Maps</h1>
+<p>If the columns returned by a SQL statement match the result object, you may
+not need an explicit Result Map. If you have control over the relational
+schema, you might be able to name the columns so they also work as property
+names. In the following example, the column names and property names
+already match, so a result map is not needed.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="selectProduct" resultClass="Product">
+  select
+    id,
+    description
+  from PRODUCT
+  where id = #value#
+</statement>
+</com:TTextHighlighter>
+
+<p>Another way to skip a result map is to use column aliasing to make the column
+names match the properties names, as shown in the following example.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="selectProduct" resultClass="Product">
+  select
+  PRD_ID as id,
+  PRD_DESCRIPTION as description
+  from PRODUCT
+  where PRD_ID = #value#
+</statement>
+</com:TTextHighlighter>
+
+<p>Of course, these techniques will not work if you need to specify a column
+type, a null value, or any other property attributes.</p>
+
+<h1>Primitive Results (i.e. String, Integer, Boolean)</h1>
+<p>Many times, we don't need to return an object with multiple properties. We
+just need a string, integer, boolean, and so forth. If you don't need to
+populate an object, SQLMap can return one of the primitive types instead. If
+you just need the value, you can use a primitive type as a result class, as
+shown in following example.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<select id="selectProductCount" resultClass="integer">
+  select count(1)
+  from PRODUCT
+</select>
+</com:TTextHighlighter>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<resultMap id="select-product-result" resultClass="string">
+  <result property="value" column="PRD_DESCRIPTION"/>
+</resultMap>
+</com:TTextHighlighter>
+
+<h1>Maps with ResultMaps</h1>
+<p>Instead of a rich object, sometimes all you might need is a simple key/value
+list of the data, where each property is an entry on the list. If so, Result
+Maps can populate an array instance as easily as property objects. The syntax
+for using an array is identical to the rich object syntax. As shown in following example, 
+only the result object changes.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<resultMap id="select-product-result" class="array">
+  <result property="id" column="PRD_ID"/>
+  <result property="code" column="PRD_CODE"/>
+  <result property="description" column="PRD_DESCRIPTION"/>
+  <result property="suggestedPrice" column="PRD_SUGGESTED_PRICE"/>
+</resultMap>
+</com:TTextHighlighter>
+
+<p>In the above example, an array instance would be created for each row
+in the result set and populated with the Product data. The property name
+attributes, like <tt>id</tt>, <tt>code</tt>, and so forth, would be the key of the
+entry, and the value of the mapped columns would be the value of the entry.</p>
+
+<p>As shown in the following example, you can also use an implicit Result
+Map with an array type.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="selectProductCount" resultClass="array">
+  select * from PRODUCT
+</statement>
+</com:TTextHighlighter>
+
+<p>What set of entries is returned by the above example depends on what
+columns are in the result set. If the set of column changes (because columns
+are added or removed), the new set of entries would automatically be returned.</p>
+
+<div class="note"><b class="tip">Note:</b>
+Certain providers may return column names in upper case or lower case format.
+When accessing values with such a provider, you will have to pass the key name
+in the expected case.
+</div>
+
+</com:TContent>

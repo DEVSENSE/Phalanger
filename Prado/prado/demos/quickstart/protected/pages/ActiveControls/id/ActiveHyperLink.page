@@ -1,0 +1,15 @@
+<com:TContent ID="body">
+<!-- $Id: ActiveHyperLink.page 1650 2007-01-24 06:55:32Z wei $ -->
+<h1 id="ActiveHyperLink">TActiveHyperLink</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveHyperLink" />
+
+<p>
+Kontrol aktif selain komponen <a href=?page=Controls.HyperLink">THyperLink</a>.
+Saat permintaan callback, perubahan terhadap properti <tt>Text</tt>, <tt>ImageUrl</tt>,
+<tt>NavigateUrl</tt> dan <tt>Target</tt> pada sisi server juga akan
+mengubah atribut serta konten terkait di sisi-klien.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveHyperLink.Home" />
+
+<div class="last-modified">$Id: ActiveHyperLink.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

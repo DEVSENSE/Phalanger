@@ -1,0 +1,142 @@
+<com:TContent ID="Main">
+
+<h1>Creating <tt>NewPost</tt> Page</h1>
+
+<p>
+The <tt>NewPost</tt> page is provided to authenticated users for creating new blog posts. It needs to display a form that collects the information about the new post, including the post title and the post body content.
+</p>
+
+<p>
+Because <tt>NewPost</tt> can only be accessed by authenticated users, we add a page configuration file <tt>config.xml</tt> under the directory <tt>protected/pages/posts</tt>. The configuration specifies that authenticated users can access <tt>NewPost</tt> and <tt>EditPost</tt> which is to be introduced in the next section. All other users only have access to <tt>ListPost</tt> and <tt>ReadPost</tt>. 
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <authorization>
+    <allow pages="NewPost,EditPost" users="@" />
+    <allow pages="ListPost,ReadPost" />
+    <deny users="*" />
+  </authorization>
+</configuration>
+</com:TTextHighlighter>
+
+<com:TipBox>
+It's always a good idea to start with a <tt>deny="*"</tt> catch all rule at the bottom and then step by step grant access to pages with additional rules.
+</com:TipBox>
+
+<p>
+As the number of our pages expands, we would like to modify <tt>MainLayout</tt> so that in the footer of our blog pages there are links to various pages, including the homepage, the <a href="?page=Day3.CreateNewUser">NewUser</a> page (visible to the administrator only), and the upcoming <tt>NewPost</tt> page (visible to authenticated users only).
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<div id="footer">
+&lt;com:THyperLink Text="Home"
+	NavigateUrl="&lt;%= $this->Service->DefaultPageUrl %>" />
+
+&lt;com:THyperLink Text="New Post"
+	NavigateUrl="&lt;%= $this->Service->constructUrl('posts.NewPost') %>"
+	Visible="&lt;%= !$this->User->IsGuest %>" />
+
+&lt;com:THyperLink Text="New User"
+	NavigateUrl="&lt;%= $this->Service->constructUrl('users.NewUser') %>"
+	Visible="&lt;%= $this->User->IsAdmin %>" />
+...other links...
+</div>
+</com:TTextHighlighter>
+
+<p>
+We now create two files <tt>protected/pages/posts/NewPost.page</tt> and <tt>protected/pages/posts/NewPost.php</tt> to save the page template and page class, respectively.
+</p>
+
+<h2>Creating Page Template</h2>
+<p>
+The <tt>NewPost</tt> page template contains a <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.TextBox">TTextBox</a> to collect the post title and a <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.HtmlArea">THtmlArea</a> to collect the post content. The latter is a WYSIWYG HTML editor. To ensure the user input is valid, we associate validators with these input controls.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ Title="My Blog - New Post" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Create New Post</h1>
+
+<span>Title:</span>
+&lt;com:TRequiredFieldValidator
+	ControlToValidate="TitleEdit"
+	ErrorMessage="Please provide a title."
+	Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="TitleEdit" Columns="50" />
+
+<br/>
+<span>Content:</span>
+&lt;com:TRequiredFieldValidator
+	ControlToValidate="ContentEdit"
+	ErrorMessage="Please provide content."
+	Display="Dynamic" />
+<br/>
+&lt;com:THtmlArea ID="ContentEdit" />
+
+<br/>
+&lt;com:TButton Text="Create" OnClick="createButtonClicked" />
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+
+<h2>Creating Page Class</h2>
+
+<p>
+From the above page template, we see that we mainly need to write a page class that implements the event handler: <tt>createButtonClicked()</tt> (attached to the <tt>Create</tt> button's <tt>OnClick</tt> event).
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class NewPost extends TPage
+{
+	/**
+	 * Creates a new post if all inputs are valid.
+	 * This method responds to the OnClick event of the "create" button.
+	 * @param mixed event sender
+	 * @param mixed event parameter
+	 */
+	public function createButtonClicked($sender,$param)
+	{
+		if($this->IsValid)  // when all validations succeed
+		{
+			// populates a PostRecord object with user inputs
+			$postRecord=new PostRecord;
+			// using SafeText instead of Text avoids Cross Site Scripting attack
+			$postRecord->title=$this->TitleEdit->SafeText;
+			$postRecord->content=$this->ContentEdit->SafeText;
+			$postRecord->author_id=$this->User->Name;
+			$postRecord->create_time=time();
+			$postRecord->status=0;
+
+			// saves to the database via Active Record mechanism
+			$postRecord->save();
+
+			// redirects the browser to the newly created post page
+			$url=$this->Service->constructUrl('posts.ReadPost',array('id'=>$postRecord->post_id));
+			$this->Response->redirect($url);
+		}
+	}
+}
+</com:TTextHighlighter>
+
+<h2>Testing</h2>
+<p>
+To test the <tt>NewPost</tt> page, login first and click on the <tt>New Post</tt> link button in the footer of the homepage. Our browser will display the following result with the URL <tt>http://hostname/blog/index.php?page=NewPost</tt>.
+</p>
+
+<com:InfoBox>
+When you visit the <tt>NewPost</tt> page for the first time, you may notice that it takes several seconds for the page to be displayed. This is because PRADO needs to unpack and publish the javascript code and images for the <tt>THtmlArea</tt> control used in the page. This is done once and for all.
+</com:InfoBox>
+
+<com:TipBox>
+To test the pagination feature that we developed for the <a href="?page=Day4.CreateListPost">ListPost</a> page, we can create five or more posts and see what happens to the homepage. The pager in <tt>ListPost</tt> displays five posts each page.
+</com:TipBox>
+
+<img src="<%~ output3.gif %>" class="output" />
+
+</com:TContent>

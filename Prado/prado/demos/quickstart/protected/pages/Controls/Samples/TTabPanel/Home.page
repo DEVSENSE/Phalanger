@@ -1,0 +1,44 @@
+<com:TContent ID="body">
+<h1>TTabPanel Samples</h1>
+
+<com:TTabPanel ActiveViewID="View2">
+
+  <com:TTabView ID="View1" Caption="View 1" Height="200px">
+    <h2>View 1</h2>
+    <p>
+    This shows a nested tab panel. To ensure the proper display, we explicitly
+    set the height of the outer view to be 200px.
+    </p>
+	<com:TTabPanel ActiveViewIndex="1"
+			Width="50%"
+			TabStyle.BorderColor="red"
+			ActiveTabStyle.BorderColor="red"
+			ViewStyle.BorderColor="red">
+	  <com:TTabView ID="View11" Caption="View 11">
+	   This is view 11.
+	  </com:TTabView>
+	  <com:TTabView ID="View21" Caption="View 12" Text="This is view 12" />
+	 </com:TTabPanel>
+  </com:TTabView>
+
+  <com:TTabView ID="View2" Caption="View 2">
+    <h2>View 2</h2>
+    <p>Please choose a color:</p>
+    <com:TDropDownList ID="DropDownList">
+      <com:TListItem Value="Red" />
+      <com:TListItem Value="Blue" />
+      <com:TListItem Value="Green" />
+    </com:TDropDownList>
+  </com:TTabView>
+
+  <com:TTabView Caption="View 3">
+    <h2>View 3</h2>
+    <p>
+    Click on the following button to see if we keep your input after postback.
+    </p>
+    <com:TButton Text="Submit" />
+  </com:TTabView>
+</com:TTabPanel>
+
+<div class="last-modified">$Id: Home.page 2078 2007-07-25 17:17:46Z xue $</div>
+</com:TContent>

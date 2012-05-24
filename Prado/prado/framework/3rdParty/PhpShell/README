@@ -1,0 +1,86 @@
+A interactive PHP Shell
+=======================
+
+The more I work with other languages like python and ruby I like their way how they
+work on problems. While PHP is very forgiving on errors, it is weak on the debugging
+side. It was missing a simple to use interactive shell for years. Python and Ruby have
+their ipython and iruby shell which give you a direct way to interact with the objects.
+No need to write a script and execute it afterwards.
+
+
+Starting the Shell
+------------------
+
+Starting with PHP_Shell 0.2.1 starting the shell is done by calling the shell-wrappers:
+
+$ php-shell.sh
+
+or on Windows
+
+> php-shell.bat
+
+Write your own wrapper
+----------------------
+
+Sometimes you want to write your own shell where you provide your own defaults, colours and
+error-handlers.
+
+<?php
+    error_reporting(E_ALL);
+
+    require "php-shell-cmd.php";
+?>
+
+and execute it with:
+
+$ php -q php-shell.php
+
+Inline Help
+-----------
+
+PHP-Shell - Version 0.2.0, with readline() support
+(c) 2006, Jan Kneschke <jan@kneschke.de>
+released under the terms of the PHP License 2.0
+
+>> use '?' to open the inline help
+
+>> ?
+"inline help for the PHP-shell
+
+  >> ?
+    print this help
+  >> ? <topic>
+    get the doccomment for a class, method, property or function
+  >> p <var>
+    execute a verbose print (if implemented)
+  >> quit
+    leave shell
+"
+>> ? PHP_Shell
+
+Shell Colours
+-------------
+
+The shell supports colours to seperate Exceptions from normal output of your 
+functions. To enable the colours you can to set:
+
+>> :set background=dark
+
+By default the colour-schemes 'plain' (the default), 'light' and 'dark' are
+defined.
+
+You can also register your own colour schemes:
+
+>> $__shell->registerColourScheme( 'custom', array(
+..   "default" => PHP_SHELL::C_LIGHT_RED, /* colour of the prompt */
+..   "value" => PHP_SHELL::C_BLACK, /* colour of a return value  */
+..   "exception" => PHP_SHELL::C_RED, /* colour of a exception  */
+.. ))
+
+Alternatives
+------------
+
+- http://david.acz.org/phpa/
+- http://www.hping.org/phpinteractive/
+- the embedded interactive php-shell: $ php -a 
+

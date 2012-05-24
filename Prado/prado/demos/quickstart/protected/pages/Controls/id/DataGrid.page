@@ -1,0 +1,185 @@
+<com:TContent ID="body" >
+
+<h1 id="5201">TDataGrid</h1>
+
+<p id="590373" class="block-content">
+TDatagrid adalah kontrol penting dalam membangun aplikasi Web yang kompleks. Ia menampilkan data dalam format tabular dengan baris (juga disebut item) dan kolom. Baris dibuat dengan sel, sementara kolom mengatur bagaimana sel harus ditampilkan berdasarkan kaitannya dengan kolom. Data yang ditetapkan melalui <tt>DataSource</tt> atau <tt>DataSourceID</tt> terikat pada baris dan mengisi kontek ke sel.
+</p>
+<p id="590374" class="block-content">
+TDataGrid sangat interaktif. Para pengguna dapat mengurut data sepanjang kolom yang ditetapkan, mengendalikannya melalui halaman data yang berbeda, dan melakukan aksi, seperti mengedit dan menghapus, pada baris data.
+</p>
+<p id="590375" class="block-content">
+Baris TDataGrid dapat diakses melalui properti <tt>Items</tt>. Baris (item) bisa berupa salah satu dari beberapa mode: browse, mengedit dab memilih, yang mempengaruhi bagaimana sel dalam bariis ditampilkan. Untuk mengubah mode item, modifikasi <tt>EditItemIndex</tt> atau <tt>SelectedItemIndex</tt>. Catatan, jika item dalam mode edit, maka memilih item ini tidak terpengaruh.
+</p>
+
+<h2 id="5202">Kolom</h2>
+<p id="590376" class="block-content">
+Kolom pada data grid menentukan bagaimana sel terkait ditampilkan. Sebagai contoh, sel yang dikaitkan dengan <tt>TBoundColumn</tt> ditampilkan secara berbeda tergantung dari modenya. Sebuah sel ditampilkan sebagai teks statis jika sel dalam mode browse, kotak teks jika dalam mode edit, dan seterusnya.
+</p>
+<p id="590377" class="block-content">
+PRADO menyediakan lima tipe kolom:
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>TBoundColumn</tt> menghubungkan sel dengan field data dan menampilkan sel berdasarkan modenya.</li>
+  <li><tt>TLiteralColumn</tt> menghubungkan sel dengan field data spesifik dan menampilkan sel dengan teks statis.</li>
+  <li><tt>TCheckBoxColumn</tt> menghubungkan sel dengan field data spesifik dan menampilkan kotak centang dalam setiap sel yang kondisi centangnya ditentukan oleh nilai field data.</li>
+  <li><tt>TDropDownListColumn</tt> menghubungkan sel dengan field data spesifik dan menampilkan sel berdasarkan modenya. Jika dalam mode edit, sel akan ditampilkan dengan <tt>TDropDownList</tt>.</li>
+  <li><tt>THyperLinkColumn</tt> menampilkan hiperlink dalam sel yang URL dan judulnya bisa berupa secara statis ditetapkan atau terikat ke beberapa field data.</li>
+  <li><tt>TEditCommandColumn</tt> menampilkan tombol perintah  edit/update/cancel dalam sel untuk menyatakan item yang berada di dalamnya.</li>
+  <li><tt>TButtonColumn</tt> menampilkan tombol perintah dalam sel.</li>
+  <li><tt>TTemplateColumn</tt> menampilkan sel berdasarkan pada template berbeda yang didefinisikan untuknya.</li>
+</ul>
+
+<h2 id="5203">Gaya Item</h2>
+<p id="590378" class="block-content">
+TDataGrid mendefinisikan gaya yang diterapkan pada itemnya. Sebagai contoh, <tt>AlternatingItemStyle</tt> diterapkan untuk mengganti item (item 2, 4, 6, dll.) Melalui properti ini, seseorang dapat menyetel field gaya CSS atau kelas CSS untuk item-item tersebut.
+</p>
+<p id="590379" class="block-content">
+Gaya item diterapkan dalam cara hirarkis. Gaya dalam hirarki lebih tinggi akan diturunkan dari gaya dalam hirarki lebih rendah. Mulai dari hirarki terendah, gaya item termasuk gaya item itu sendiri, <tt>ItemStyle</tt>, <tt>AlternatingItemStyle</tt>, <tt>SelectedItemStyle</tt>, dan <tt>EditItemStyle</tt>. Oleh karena itu, jika warna latar belakang disetel merah dalam <tt>ItemStyle</tt>, <tt>EditItemStyle</tt> juga akan memiliki warna latar belakang merah, kecuali dinyatakan secara eksplisit ke nilai yang berbeda.
+</p>
+
+<h2 id="5204">Event</h2>
+<p id="590380" class="block-content">
+TDataGrid menyediakan beberapa event untuk menjembatani manipulasi item datanya,
+</p>
+<ul id="u2" class="block-content">
+  <li><tt>OnItemCreated</tt> - muncul setiap kali item baru saja dibuat. Ketika event muncul, data dan kontrol anak keduanya tersedia bagi item baru.</li>
+  <li><tt>OnItemDataBound</tt> - muncul setiap kali item selesai menyatukan data. Ketika event muncul, data dan kontrol anak keduanya tersedia untuk item, dan item telah selesai menyatukan data dari dirinya sendiri dan seluruh kontrol anaknya.</li>
+  <li><tt>OnItemCommand</tt> - muncul ketika kontrol anak pada beberapa item (seperti <tt>TButton</tt>) memunculkan event <tt>OnCommand</tt>.</li>
+  <li>command events - muncul saat event kontrol anak <tt>OnCommand</tt> mempunyai nama perintah spesifik,
+    <ul>
+      <li><tt>OnSelectedIndexChanged</tt> - jika nama perintah adalah  <tt>select</tt>.</li>
+      <li><tt>OnEditCommand</tt> - jika nama perintah adalah  <tt>edit</tt>.</li>
+      <li><tt>OnDeleteCommand</tt> - jika nama perintah adalah  <tt>delete</tt>.</li>
+      <li><tt>OnUpdateCommand</tt> - jika nama perintah adalah  <tt>update</tt>.</li>
+      <li><tt>OnCancelCommand</tt> - jika nama perintah adalah  <tt>cancel</tt>.</li>
+      <li><tt>OnSortCommand</tt> - jika nama perintah adalah  <tt>sort</tt>.</li>
+      <li><tt>OnPageIndexChanged</tt> - jika nama perintah adalah  <tt>page</tt>.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="5205">Menggunakan TDataGrid</h2>
+
+<h3 id="5210">Kolom yang Dibuat Secara Otomatis</h3>
+<p id="590381" class="block-content">
+TDataGrid standarnya akan membuat sebuah daftar kolom berdasarkan struktur data terikat. TDataGrid akan membaca baris pertama data, menguraikan nama field dari baris, dan mengkonstruksi kolom untuks setiap field. Setiap field adalah tipe <tt>TBoundColumn</tt>.
+</p>
+<p id="590382" class="block-content">
+Contoh berikut menampilkan daftar informasi produk komputer menggunakan  TDataGrid. Kolom secara otomatis dibuat. Perhatikan bagaimana gaya item ditetapkan dan diturunkan. Data dipopulasi ke dalam datagrid menggunakan kode berikut yang umum diantara kebanyakan aplikasi datagrid,
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_590121">
+public function onLoad($param) {
+    parent::onLoad($param);
+    if(!$this->IsPostBack) {
+        $this->DataGrid->DataSource=$this->Data;
+        $this->DataGrid->dataBind();
+    }
+}
+</com:TTextHighlighter>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample1" />
+
+<h3 id="5211">Kolom Ditetapkan secara Manual</h3>
+<p id="590383" class="block-content">
+Menggunakan kolom yang dibuat secara otomatis memberikan cara cepat melihat data tabular. Dalam aplikasi sebenarnya, kolom yang dibuat secara otomatis sering tidak mencukupi karena para pengembang tidak memiliki cara mengkustomisasi penampilannya. Kolom yang dibuat secara manual jauh lebih diinginkan.
+</p>
+<p id="590384" class="block-content">
+Untuk menetapkan kolom secara manual, setel <tt>AutoGenerateColumns</tt> ke false, dan tetapkan kolom dalam template seperti berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_590122">
+&lt;com:TDataGrid ...&gt;
+  &lt;com:TBoundColumn DataField="name" .../&gt;
+  &lt;com:TBoundColumn DataField="price" .../&gt;
+  &lt;com:TEditCommandColumn ...&gt;
+  ...
+&lt;/com:TDataGrid&gt;
+</com:TTextHighlighter>
+<p id="590385" class="block-content">
+Catatan, jika <tt>AutoGenerateColumns</tt> adalah true dan di sana ditetapkan kolom secara manual, kolom yang dibuat secara otomatis akan diterapkan ke kolom yang ditetapkan secara manual. Catat juga, properti <tt>Columns</tt> datagrid hanya berisi kolom yang ditetapkan secara manual dan bukan yang secara otomatis dibuat.
+</p>
+<p id="590386" class="block-content">
+Contoh berikut menggunakan kolom yang ditetapkan secara manual untuk memperlihatkan daftar informasi buku,
+</p>
+<ul id="u4" class="block-content">
+  <li>Book title - ditampilkan sebagai hiperlink mengarah ke halaman buku amazon.com terkait. <tt>THyperLinkColumn</tt> dipakai.</li>
+  <li>Publisher - ditampilkan sebagai bagian teks menggunakan <tt>TBoundColumn</tt>.</li>
+  <li>Price - ditampilkan sebagai bagian teks menggunakan <tt>TBoundColumn</tt> dengan output berformat string dan gaya dikustomisasi.</li>
+  <li>In-stock or not - ditampilkan sebagai kotak centang menggunakan <tt>TCheckBoxColumn</tt>.</li>
+  <li>Rating - ditampilkan sebagai gambar menggunakan <tt>TTemplateColumn</tt> yang membolehkan kebebasan maksimum dalam menetapkan konten sel.</li>
+</ul>
+<p id="590387" class="block-content">Perhatikan bagaimana gaya item (baris) dan kolom bekerja sama untuk mempengaruhi penampilan sel dalam datagrid.</p>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample2" />
+
+
+<h2 id="5206">Berinteraksi dengan TDataGrid</h2>
+<p id="590388" class="block-content">
+Selain kaya fungsionalitas penyajian data seperti didemonstrasikan dalam bagian sebelumnya, TDataGrid juga sangat interaktif bagi pengguna. Pemakaian impor TDataGrid adalah mengedit atau menghapus baris data. <tt>TBoundColumn</tt> dapat menyesuaikan penyajian sel terkait berdasarkan mode item datagrid. Ketika item dalam mode browse, sel ditampilkan dengan teks statis; ketika item ditampilkan dalam mode edit, kotak teks ditampilkan untuk menampung input pengguna. TDataGrid menyediakan <tt>TEditCommandColumn</tt> untuk mengalihkan mode item. Sebagai tambahan, <tt>TButtonColumn</tt> menawarkan kepada para pengembang fleksibilitas dari pembuatan tombol bebas untuk berbagai interaksi pengguna.
+</p>
+<p id="590389" class="block-content">
+Contoh berikut memperlihatkan bagaimana untuk membuat tabel informasi buku sebelumnya menjadi interaktif. Ia membolehkan pengguna untuk mengedit dan menghapus item buku dari tabel. Dua kolom tambahan dipakai dalam contoh untuk membolehkan interaksi para penggunak dengan datagrid: <tt>TEditCommandColumn</tt> dan <tt>TButtonColumn</tt>. Sebagai tambahan,
+<tt>TDropDownListColumn</tt> mengganti <tt>TTemplateColumn</tt> sebelumnya untuk membolehkan pengguna memilih peringkat dari daftar dropdown. Catatan, Ini juga memungkinkan untuk menggunakan <tt>TTemplateColumn</tt> guna menyelesaikan tugas yang sama.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample3" />
+
+<h2 id="5207">Pengurutan</h2>
+<p id="590390" class="block-content">
+TDataGrid mendukung pengurutan itemnya yang terkait dengan kolom tertentu. Untuk menghidupkan pengurutan, setel <tt>AllowSorting</tt> ke true. Ini akan mengubah header kolom menjadi tombol yang bisa diklik jika properti <tt>SortExpression</tt> tidak kosong. Ketika para pengguna mengklik pada tombol header, event <tt>OnSortCommand</tt> akan dimunculkan. Para pengembang dapat menulis pengendali guna merespon perintah pengurutan dan mengurut data berdasarkan <tt>SortExpression</tt> yang ditetapkan dalam kolom terkait.
+</p>
+<p id="590391" class="block-content">
+Contoh berikut mengubah datagrid dalam <a href="?page=Controls.Samples.TDataGrid.Sample2">Contoh 2</a> menjadi yang bisa diurutkan. Para pengguna dapat mengklik pada tombol link yang ditampilkan dalam setiap kolom, dan data akan diurut dalam urutan membesar sepanjang kolom tersebut.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample4" />
+
+<h2 id="5208">Lembaran</h2>
+<p id="590392" class="block-content">
+Ketika berhadapan dengan dataset besar, lembaran sangat membantu dalam mengurangi ukuran halaman dan kompleksitasnya. TDataGrid disertai lembaran yang membolehkan para pengguna menetapkan di halaman mana data ingin mereka lihat. Lembaran bisa dikustomisasi melalui <tt>PagerStyle</tt>. Sebagai contoh, <tt>PagerStyle.Visible</tt> menentukan apakah lembaran terlihat atau tidak; <tt>PagerStyle.Position</tt> menunjukan di mana lembaran ditampilkan; dan <tt>PagerStyle.Mode</tt> menetapkan tipe lembaran apa yang ditampilkan, numerik atau kata berikutnya-sebelumnya.
+</p>
+<p id="590393" class="block-content">
+Untuk menghidupkan lembaran, setel <tt>AllowPaging</tt> ke true. Jumlah baris data yang ditampilkan dalam halaman ditetapkan oleh <tt>PageSize</tt>, sementara indeks (berbasis-nol) pada halaman yang saat ini terlihat bagi para pengguna adalah dengan <tt>CurrentPageIndex</tt>. Ketika para pengguna mengklik pada tombol lembar, TDataGrid memunculkan event <tt>OnPageIndexChanged</tt>. Biasanya, pengendali event ditulis seperti berikut,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_590123">
+public function pageIndexChanged($sender,$param) {
+    $this->DataGrid->CurrentPageIndex=$param->NewPageIndex;
+    $this->DataGrid->DataSource=$this->Data;
+    $this->DataGrid->dataBind();
+}
+</com:TTextHighlighter>
+<p id="590394" class="block-content">
+Contoh berikut menghidupkan fungsionalitas lembar dari datagrid yang ditampilkan dalam <a href="?page=Controls.Samples.TDataGrid.Sample1">Contoh 1</a>. Dalam contoh ini, anda dapat menyetel berbagai gaya lembar secara interaktif untuk melihat bagaimana pengaruh tampilan lembar halaman.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample5" />
+
+<h3 id="5212">Lembar Kustom</h3>
+<p id="590395" class="block-content">
+Fungsionalitas lembar halaman yang ditampilkan di atas memerlukan pengambilan seluruh data ke dalam memori, meskipun hanya sebagian darinya ditampilkan dalam sebuah halaman. Untuk dataset besar, ini tidak efisien dan mungkin tidak selalu layak. TDataGrid menyediakan lembar kustom untuk memecahkan masalah ini. Lembar kustom hanya memerlukan sebagian data untuk ditampilkan kepada pengguna akhir.
+</p>
+<p id="590396" class="block-content">
+Untuk menghidupkan lembat kustom, setel <tt>AllowPaging</tt> dan <tt>AllowCustomPaging</tt> ke true. Beritahu TDataGrid jumlah item data (baris) yang tersedia dengan menyetel <tt>VirtualItemCount</tt>. Dan merespon ke event <tt>OnPageIndexChanged</tt>. Dalam pengendali event, gunakan properti <tt>NewPageIndex</tt> atas parameter event untuk megnambil lembar baru data dari sumber data. Untuk MySQL database, ini bisa dikerjakan dengan menggunakan klausul <tt>LIMIT</tt> dalam pernyataan SQL select.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample6" />
+
+<h2 id="5209">Memperluas TDataGrid</h2>
+<p id="590397" class="block-content">
+Selain turunan kelas tradisional, kemampuan diperluas TDataGrid dikembangkan terutama melalui komponen kolom datagrid. Sebagai contoh, seseorang mungkin ingin menampilkan sebuah kolom bergambar. Dia dapat menggunakan <tt>TTemplateColumn</tt> untuk menyelesaikan tugas ini. Solusi yang lebih baik adalah mengembangkan komponen kolom gambar pekerjaan tersebut bisa dipakai ulang dengan mudah dalam proyek lain.
+</p>
+<p id="590398" class="block-content">
+Semua komponen kolom datagrid harus diturunkan dari <tt>TDataGridColumn</tt>. Metode utama yang perlu diganti adalah <tt>initializeCell()</tt> yang membuat konten untuk sel dalam kolom terkait. Karena setiap sel juga dalam sebuah item (baris) dan item dapat memiliki tipe berbeda (seperti <tt>Header</tt>, <tt>AltneratingItem</tt>, dll.), konten berbeda bisa dibuat berdasarkan tipe item. Untuk contoh kolom gambar, seseorang dapat membuat kontrol <tt>TImage</tt> di dalam sel dalam item dari tipe <tt>Item</tt> dan <tt>AlterantingItem</tt>.
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_590124">
+class ImageColumn extends TDataGridColumn {
+    ...
+    public function initializeCell($cell,$columnIndex,$itemType) {
+        parent::initializeCell($cell,$columnIndex,$itemType);
+        if($itemType==='Item' || $itemType==='AlternatingItem') {
+            $image=new TImage;
+            // ... kustomisasi gambar
+            $cell->Controls[]=$image;
+        }
+    }
+}
+</com:TTextHighlighter>
+<p id="590399" class="block-content">
+Dalam <tt>initializeCell()</tt>, jangan lupa untuk memanggil implementasi leluhur, karena ia menginisialisasi sel dalam item dari tipe <tt>Header</tt> dan <tt>Footer</tt>.
+</p>
+
+<div class="last-modified">$Id: DataGrid.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

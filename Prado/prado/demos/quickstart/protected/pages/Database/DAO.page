@@ -1,0 +1,164 @@
+<com:TContent ID="body" >
+<!-- $Id $ -->
+<h1 id="136039">Data Access Objects (DAO)</h1>
+<com:SinceVersion Version="3.1a" />
+<p id="680461" class="block-content">
+Data Access Objects (DAO) separates a data resource's client interface from its data access mechanisms. It adapts a specific data resource's access API to a generic client interface. As a result, data access mechanisms can be changed independently of the code that uses the data.
+</p>
+<p id="680462" class="block-content">
+Since version 3.1, PRADO starts to provide a DAO that is a thin wrap around <a href="http://www.php.net/manual/en/ref.pdo.php">PHP Data Objects (PDO)</a>. Although PDO has a nice feature set and good APIs, we choose to implement the PRADO DAO on top of PDO because the PRADO DAO classes are component classes and are thus configurable in a PRADO application. Users can use these DAO classes in a more PRADO-preferred way.
+</p>
+<div class="note"><b class="tip">Note:</b>
+Since the PRADO DAO is based on PDO, the PDO PHP extension needs to be installed. In addition, you need to install the corresponding PDO driver for the database to be used in your application. See more details in the <a href="http://www.php.net/manual/en/ref.pdo.php">PHP Manual</a>.
+</div>
+<p id="680463" class="block-content">
+The PRADO DAO mainly consists of the following four classes (in contrast to PDO which uses only two classes, <tt>PDO</tt> and <tt>PDOStatement</tt>):
+</p>
+<ul id="u1" class="block-content">
+<li><tt>TDbConnection</tt> - represents a connection to a database.</li>
+<li><tt>TDbCommand</tt> - represents an SQL statement to execute against a database.</li>
+<li><tt>TDbDataReader</tt> - represents a forward-only stream of rows from a query result set.</li>
+<li><tt>TDbTransaction</tt> - represents a DB transaction.</li>
+</ul>
+<p id="680464" class="block-content">
+In the following, we introduce the usage of PRADO DAO in different scenarios.
+</p>
+
+<h2 id="136040">Establishing Database Connection</h2>
+<p id="680465" class="block-content">
+To establish a database connection, one creates a <tt>TDbConnection</tt> instance and activate it. A data source name (DSN) is needed to specify the information required to connect to the database. The database username and password may need to be supplied to establish the connection.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680140">
+$connection=new TDbConnection($dsn,$username,$password);
+// call setAttribute() to pass in additional connection parameters
+// $connection->Persistent=true;  // use persistent connection
+$connection->Active=true;  // connection is established
+....
+$connection->Active=false;  // connection is closed
+</com:TTextHighlighter>
+<p id="680466" class="block-content">
+Complete specification of DSN may be found in the <a href="http://www.php.net/manual/en/ref.pdo.php#pdo.drivers">PDO documentation</a>. Below is a list of commonly used DSN formats:
+</p>
+<ul id="u2" class="block-content">
+<li>MySQL - <tt>mysql:host=localhost;dbname=test</tt></li>
+<li>SQLite - <tt>sqlite:/path/to/dbfile</tt></li>
+<li>ODBC - <tt>odbc:SAMPLE</tt>
+</ul>
+<p id="680467" class="block-content">
+In case any error occurs when establishing the connection (such as bad DSN or username/password), a <tt>TDbException</tt> will be raised.
+</p>
+
+<h2 id="136041">Executing SQL Statements</h2>
+<p id="680468" class="block-content">
+Once a database connection is established, SQL statements can be executed through <tt>TDbCommand</tt>. One creates a <tt>TDbCommand</tt> by calling <tt>TDbConnection.createCommand()</tt> with the specified SQL statement:
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680141">
+$command=$connection->createCommand($sqlStatement);
+// if needed, the SQL statement may be updated as follows:
+$command->Text=$newSqlStatement;
+</com:TTextHighlighter>
+
+<p id="680469" class="block-content">
+An SQL statement is executed via <tt>TDbCommand</tt> in one of the following two ways:
+</p>
+<ul id="u4" class="block-content">
+<li><tt>execute()</tt> - performs a non-query SQL statement, such as <tt>INSERT</tt>, <tt>UPDATE</tt> and <tt>DELETE</tt>. If successful, it returns the number of rows that are affected by the execution.</li>
+<li><tt>query()</tt> - performs an SQL statement that returns rows of data, such as <tt>SELECT</tt>. If successful, it returns a <tt>TDbDataReader</tt> instance from which one can fetch the resulting rows of data.
+</li>
+</ul>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680142">
+$affectedRowCount=$command->execute();  // execute the non-query SQL
+$dataReader=$command->query();          // execute a query SQL
+$row=$command->queryRow();              // execute a query SQL and return the first row of result
+$value=$command->queryScalar();         // execute a query SQL and return the first column value
+</com:TTextHighlighter>
+<p id="680470" class="block-content">
+In case an error occurs during the execution of SQL statements, a <tt>TDbException</tt> will be raised.
+</p>
+
+<h2 id="136042">Fetching Query Results</h2>
+<p id="680471" class="block-content">
+After <tt>TDbCommand.query()</tt> generates the <tt>TDbDataReader</tt> instance, one can retrieve rows of resulting data by calling <tt>TDbDataReader.read()</tt> repeatedly. One can also use <tt>TDbDataReader</tt> in PHP's <tt>foreach</tt> language construct to retrieve row by row.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680143">
+// calling read() repeatedly until it returns false
+while(($row=$dataReader->read())!==false) { ... }
+// using foreach to traverse through every row of data
+foreach($dataReader as $row) { ... }
+// retrieving all rows at once in a single array
+$rows=$dataReader->readAll();
+</com:TTextHighlighter>
+
+<h2 id="136043">Using Transactions</h2>
+<p id="680472" class="block-content">
+When an application executes a few queries, each reading and/or writing information in the database, it is important to be sure that the database is not left with only some of the queries carried out. A transaction, represented as a <tt>TDbTransaction</tt> instance in PRADO, may be initiated in this case:
+</p>
+<ul id="u5" class="block-content">
+<li>Begin the transaction.</li>
+<li>Execute queries one by one. Any updates to the database are not visible to the outside world.</li>
+<li>Commit the transaction. Updates become visible if the transaction is successful.</li>
+<li>If one of the queries fails, the entire transaction is rolled back.</li>
+</ul>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680144">
+$transaction=$connection->beginTransaction();
+try
+{
+    $connection->createCommand($sql1)->execute();
+    $connection->createCommand($sql2)->execute();
+    //.... other SQL executions
+    $transaction->commit();
+}
+catch(Exception $e) // an exception is raised if a query fails will be raised
+{
+    $transaction->rollBack();
+}
+</com:TTextHighlighter>
+
+
+<h2 id="136044">Binding Parameters</h2>
+<p id="680473" class="block-content">
+To avoid <a href="http://en.wikipedia.org/wiki/SQL_injection">SQL injection attacks</a> and to improve performance of executing repeatedly used SQL statements, one can "prepare" an SQL statement with optional parameter placeholders that are to be replaced with the actual parameters during the parameter binding process.
+</p>
+<p id="680474" class="block-content">
+The parameter placeholders can be either named (represented as unique tokens) or unnamed (represented as question marks). Call <tt>TDbCommand.bindParameter()</tt> or <tt>TDbCommand.bindValue()</tt> to replace these placeholders with the actual parameters. The parameters do not need to be quoted: the underlying database driver does it for you. Parameter binding must be done before the SQL statement is executed.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680145">
+// an SQL with two placeholders ":username" and ":email"
+$sql="INSERT INTO users(username, email) VALUES(:username,:email)";
+$command=$connection->createCommand($sql);
+// replace the placeholder ":username" with the actual username value
+$command->bindParameter(":username",$username,PDO::PARAM_STR);
+// replace the placeholder ":email" with the actual email value
+$command->bindParameter(":email",$email,PDO::PARAM_STR);
+$command->execute();
+// insert another row with a new set of parameters
+$command->bindParameter(":username",$username2,PDO::PARAM_STR);
+$command->bindParameter(":email",$email2,PDO::PARAM_STR);
+$command->execute();
+</com:TTextHighlighter>
+<p id="680475" class="block-content">
+The methods <tt>bindParameter()</tt> and <tt>bindValue()</tt> are very similar. The only difference is that the former binds a parameter with a PHP variable reference while the latter with a value. For parameters that represent large block of data memory, the former is preferred for performance consideration.
+</p>
+<p id="680476" class="block-content">
+For more details about binding parameters, see the <a href="http://www.php.net/manual/en/function.PDOStatement-bindParam.php">relevant PHP documentation</a>.
+</p>
+
+
+<h2 id="136045">Binding Columns</h2>
+<p id="680477" class="block-content">
+When fetching query results, one can also bind columns with PHP variables so that they are automatically populated with the latest data each time a row is fetched.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_680146">
+$sql="SELECT username, email FROM users";
+$dataReader=$connection->createCommand($sql)->query();
+// bind the 1st column (username) with the $username variable
+$dataReader->bindColumn(1,$username);
+// bind the 2nd column (email) with the $email variable
+$dataReader->bindColumn(2,$email);
+while($dataReader->read()!==false)
+{
+    // $username and $email contain the username and email in the current row
+}
+</com:TTextHighlighter>
+
+<div class="last-modified">$Id: DAO.page 2234 2007-09-23 14:27:54Z xue $</div></com:TContent>

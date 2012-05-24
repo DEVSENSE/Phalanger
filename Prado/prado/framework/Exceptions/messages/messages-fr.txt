@@ -1,0 +1,418 @@
+prado_application_singleton_required	= Il ne peut y avoir qu'une instance de : Prado.Application.
+prado_component_unknown					= Le type du composant '{0}' est inconnu. Cela peut être causé par l'erreur de syntaxe dans le fichier {0} : {1}
+prado_using_invalid						= Le namespace '{0}' n'est pas valide. Assurez-vous que '.*' a été ajouté si vous souhaitez utiliser un namespace qui fasse référence à ce dossier
+prado_alias_redefined					= L'alias '{0}' ne peut pas être redéfini.
+prado_alias_invalid						= L'alias '{0}' fait référence à un chemin de dossier non valide : '{1}'. Seul les dossiers existants peuvent être mis en alias.
+prado_aliasname_invalid					= L'alias '{0}' contient un caractère non autorisé : '.'.
+
+component_property_undefined			= La proriété de l'objet '{0}.{1}' n'est pas définie.
+component_property_readonly				= La proriété de l'objet '{0}.{1}' est en lecture seule.
+component_event_undefined				= L'événement de l'objet '{0}.{1}' n'est pas défini.
+component_eventhandler_invalid			= L'événement de l'objet '{0}.{1}' n'est pas rataché à un handler valide '{2}'.
+component_expression_invalid			= L'objet '{0}' essaye d'évaluer un expression invalide '{1}' : {2}.
+component_statements_invalid			= L'objet '{0}' essaye d'évaluer une déclaration PHP invalide '{1}' : {2}.
+
+propertyvalue_enumvalue_invalid			= La valeur '{0}' n'est pas une valeur possible pour l'énumération ({1}).
+
+list_index_invalid						= L'indice '{0}' est hors limite.
+list_item_inexistent					= L'élément ne peut être trouvé dans la liste.
+list_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
+list_readonly							= {0} est en lecture seule.
+
+map_addition_disallowed					= Le nouveau élément ne peut être ajouter dans la liste(map).
+map_item_unremovable					= L'élément ne peut être supprimé de la liste (map).
+map_data_not_iterable					= Data must be either an array or an object implementing Traversable interface.
+map_readonly							= {0} est en lecture seule.
+
+application_includefile_invalid			= Impossible de trouver les paramètres de configuration de l'application  {0}. Assurez-vous qu'il soit dans le bon espace d'adressage (namespace format) et que l'extension du fichier soit en ".xml".
+application_basepath_invalid			= Le dossier de base de l'application '{0}' n'existe pas ou n'est pas un répertoire.
+application_runtimepath_invalid			= Le dossier "runtime" de l'application '{0}' n'existe pas ou le serveur Web n'a pas les droits en écriture sur ce dossier.
+application_service_invalid				= Le service '{0}' doit implémenter l'interface "IService".
+application_service_unknown				= Le service '{0}' que vous demandez n'est pas défini.
+application_unavailable					= L'application n'est pas disponible actuellement.
+application_service_unavailable			= Le service '{0}' n'est pas disponible actuellement.
+application_moduleid_duplicated			= Le module d'ID '{0}' de l'application n'est pas unique.
+application_runtimepath_failed			= Impossible de créer le dossier "runtime" '{0}'. Assurez-vous que le dossier parent existe et qu'il est accessible en écriture par le serveur Web.
+
+appconfig_aliaspath_invalid				= Configuration de l'application : l'élement <alias id="{0}"> pointe vers un chemin invalide "{1}".
+appconfig_alias_invalid					= Confirugation de l'application : l'élement <alias> doit avoir un attribut "id" et un attribut "path".
+appconfig_alias_redefined				= Configuration de l'application : l'élement <alias id="{0}"> ne peut pas être redéfini.
+appconfig_using_invalid					= Configuration de l'application : l'élément <using> doit avoir un attribut "namespace".
+appconfig_moduleid_required				= Configuration de l'application : l'élément <module> doit avoir un attribut "id".
+appconfig_moduletype_required			= Configuration de l'application : l'élement <module id="{0}"> doit avoir un attribut "class".
+appconfig_serviceid_required			= Configuration de l'application : l'élément <service> doit avoir un attribut "id".
+appconfig_servicetype_required			= Configuration de l'application : l'élément <service id="{0}"> doit avoit un attribut "class".
+appconfig_parameterid_required			= Configuration de l'application : l'élément <parameter> doit avoir un attribut "id".
+appconfig_includefile_required			= Configuration de l'application : l'élément <include> doit avoir un attribut "file".
+
+securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey ne doit pas être vide.
+securitymanager_encryptionkey_invalid	= TSecurityManager.EncryptionKey ne doit pas être vide.
+securitymanager_mcryptextension_required = L'extension PHP Mcrypt est nécessaier pour utiliser les fonctions de cryptage de TSecurityManager.
+
+uri_format_invalid						= '{0}' n'est pas une URI valide.
+
+httprequest_separator_invalid			= THttpRequest.UrlParamSeparator ne peut contenir qu'un seul caractère.
+httprequest_urlmanager_inexist			= THttpRequest.UrlManager '{0}' ne pointe pas vers un momdule exitant.
+httprequest_urlmanager_invalid			= THttpRequest.UrlManager '{0}' doit pointer vers un module héritant de TUrlManager.
+
+httpcookiecollection_httpcookie_required = THttpCookieCollection n'accepte que des objets de type THttpCookie.
+
+httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput ne peut pas être modifié après que THttpResponse ait été initialisé.
+httpresponse_file_inexistent			= THttpResponse ne peut pas envoyer le fichier '{0}'. Ce fichier n'existe pas.
+
+httpsession_sessionid_unchangeable		= THttpSession.SessionID ne peut pas être modifié après que la session ait démarré.
+httpsession_sessionname_unchangeable	= THttpSession.SessionName ne peut pas être modifié après que la session ait démarré.
+httpsession_sessionname_invalid			= THttpSession.SessionName ne peut contenir que des caractères alphanumériques.
+httpsession_savepath_unchangeable		= THttpSession.SavePath ne peut pas être modifié après que la session ait démarré.
+httpsession_savepath_invalid			= THttpSession.SavePath '{0}' est invalide.
+httpsession_storage_unchangeable		= THttpSession.Storage ne peut pas être modifié après que la session ait démarré.
+httpsession_cookiemode_unchangeable		= THttpSession.CookieMode ne peut pas être modifié après que la session ait démarré.
+httpsession_autostart_unchangeable		= THttpSession.AutoStart ne peut pas être modifié après que le module de session ait été initialisé.
+httpsession_gcprobability_unchangeable	= THttpSession.GCProbability ne peut pas être modifié après que la session ait démarré.
+httpsession_gcprobability_invalid		= THttpSession.GCProbability doit être un entier compris entre 0 et 100.
+httpsession_transid_unchangeable		= THttpSession.UseTransparentSessionID ne peut pas être modifié après que la session ait démarré.
+httpsession_transid_cookieonly			= THttpSession.UseTransparentSessionID ne peut pas être utilisé quand THttpSession.CookieMode est fixé à "Only".
+httpsession_maxlifetime_unchangeable	= THttpSession.Timeout ne peut pas être modifié après que la session ait démarré.
+
+assetmanager_basepath_invalid			= TAssetManager.BasePath '{0}' est invalide. Vérifier qu'il est bien au format 'namespace' et qu'il pointe bien vers un répertoire accessible en écriture par le propriétaire du processus serveur Web
+assetmanager_basepath_unchangeable		= TAssetManager.BasePath ne peut pas être modifié après l'initialisation du module.
+assetmanager_baseurl_unchangeable		= TAssetManager.BaseUrl ne peut pas être modifié après l'initialisation du module.
+assetmanager_filepath_invalid			= TAssetManager essaye de publier un fichier invalide '{0}'.
+assetmanager_tarchecksum_invalid		= TAssetManager essaye de publier une archive 'tar' avec un checksum invalide '{0}'.
+assetmanager_tarfile_invalid			= TAssetManager essaye de publier une archive 'tar' invalide '{0}'.
+assetmanager_source_directory_invalid	= TAssetManager essaye de copier un répertoire invalide '{0}'.
+
+cache_primary_duplicated				= Un seul module au maximum de cache primaire est autorisé. {0} essaye de déclarer un autre module de cache primaire. 
+sqlitecache_extension_required			= TSqliteCache nécessite l'extension PHP SQLLite.
+sqlitecache_dbfile_required				= TSqliteCache.DbFile est nécessaire.
+sqlitecache_connection_failed			= Echec de la connexion à la base de données TSqliteCache. {0}.
+sqlitecache_table_creation_failed		= Echec de la créatin de la base de données TSqliteCache. {0}.
+sqlitecache_dbfile_unchangeable			= TSqliteCache.DbFile ne peut pas être modifié après l'initialisation du module.
+sqlitecache_dbfile_invalid				= TSqliteCache.DbFile est invalide. Vérifier qu'il est écrit au format 'Namespace'.
+
+memcache_extension_required				= TMemCache nécessite l'extension PHP memcache.
+memcache_connection_failed				= TMemCache ne peut pas se connecter au serveur memcache {0}:{1}.
+memcache_host_unchangeable				= TMemCache.Host ne peut pas être modifié après l'initialisation du module.
+memcache_port_unchangeable				= TMemCache.Port ne peut pas être modifié après l'initialisation du module.
+
+apccache_extension_required				= TAPCCache nécessite l'extension PHP APC.
+apccache_add_unsupported				= TAPCCache.add() n'est pas supporté.
+apccache_replace_unsupported			= TAPCCache.replace() n'est pas supporté.
+apccache_extension_not_enabled			= TAPCCache nécessite apc.enabled = 1 dans php.ini.
+apccache_extension_not_enabled_cli		= TAPCCache nécessite apc.enable_cli = 1 dans php.ini pour fonctionner en ligne de commande.
+
+errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' est invalide. Vérifier qu'il est écrit au format 'namespace' et qu'il pointe bien vers un répertoire valide
+
+pageservice_page_unknown				= La page '{0}' n'a pas été trouvée
+pageservice_pageclass_unknown			= La classe de la page '{0}' est inconnue.
+pageservice_basepath_invalid			= TPageService.BasePath '{0}' n'est pas un répertoire valide.
+pageservice_page_required				= Le nom de la page est requis.
+pageservice_defaultpage_unchangeable	= TPageService.DefaultPage ne peut pas être modifié après l'initialisation du service.
+pageservice_basepath_unchangeable		= TPageService.BasePath ne peut pas être modifié après l'initialisation du service.
+pageservice_pageclass_invalid			= La classe de la page {0} est invalide. Cela devrait être TPage ou un héritage de TPage.
+pageservice_includefile_invalid			= Impossible de trouver le fichier de configuration du service de page {0}. Verifier qu'il est au format 'namespace' et que l'extension du fichier est '.xml'.
+
+pageserviceconf_file_invalid			= Unable to open page directory configuration file '{0}'.
+pageserviceconf_aliaspath_invalid		= <alias id="{0}"> uses an invalid file path "{1}" in page directory configuration file '{2}'.
+pageserviceconf_alias_invalid			= <alias> element must have an "id" attribute and a "path" attribute in page directory configuration file '{0}'.
+pageserviceconf_using_invalid			= <using> element must have a "namespace" attribute in page directory configuration file '{0}'.
+pageserviceconf_module_invalid			= <module> element must have an "id" attribute in page directory configuration file '{0}'.
+pageserviceconf_moduletype_required		= <module id="{0}"> must have a "class" attribute in page directory configuration file '{1}'.
+pageserviceconf_parameter_invalid		= <parameter> element must have an "id" attribute in page directory configuration file '{0}'.
+pageserviceconf_page_invalid			= <page> element must have an "id" attribute in page directory configuration file '{0}'.
+pageserviceconf_includefile_required	= Page configuration <include> element must have a "file" attribute.
+
+template_closingtag_unexpected			= Unexpected closing tag '{0}' is found.
+template_closingtag_expected			= Closing tag '{0}' is expected.
+template_directive_nonunique			= Directive '<%@ ... %>' must appear at the beginning of the template and can appear at most once.
+template_comments_forbidden				= Template comments are not allowed within property tags.
+template_matching_unexpected			= Unexpected matching.
+template_property_unknown				= {0} has no property called '{1}'.
+template_event_unknown					= {0} has no event called '{1}'.
+template_property_readonly				= {0} has a read-only property '{1}'.
+template_event_forbidden				= {0} is a non-control component. No handler can be attached to its event '{1}' in a template.
+template_databind_forbidden				= {0} is a non-control component. Expressions cannot be bound to its property '{1}'.
+template_component_required				= '{0}' is not a component. Only components can appear in a template.
+template_format_invalid					= Invalid template syntax: {0}
+template_property_duplicated			= Property {0} is configured twice or more.
+template_eventhandler_invalid			= {0}.{1} can only accept a static string.
+template_controlid_invalid				= {0}.ID can only accept a static text string.
+template_controlskinid_invalid			= {0}.SkinID can only accept a static text string.
+template_content_unexpected				= Unexpected content is encountered when instantiating template: {0}.
+template_include_invalid				= Invalid template inclusion. Make sure {0} is a valid namespace pointing to an existing template file whose extension is .tpl.
+template_tag_unexpected					= Initialization for property {0} contains an unknown tag type {1}.
+
+xmldocument_file_read_failed			= TXmlDocument is unable to read file '{0}'.
+xmldocument_file_write_failed			= TXmlDocument is unable to write file '{0}'.
+
+xmlelementlist_xmlelement_required		= TXmlElementList can only accept TXmlElement objects.
+
+authorizationrule_action_invalid		= TAuthorizationRule.Action can only take 'allow' or 'deny' as the value.
+authorizationrule_verb_invalid			= TAuthorizationRule.Verb can only take 'get' or 'post' as the value.
+
+authorizationrulecollection_authorizationrule_required = TAuthorizationRuleCollection can only accept TAuthorizationRule objects.
+
+usermanager_userfile_invalid			= TUserManager.UserFile '{0}' is not a valid file.
+usermanager_userfile_unchangeable		= TUserManager.UserFile cannot be modified. The user module has been initialized already.
+
+authmanager_usermanager_required		= TAuthManager.UserManager must be assigned a value.
+authmanager_usermanager_inexistent		= TAuthManager.UserManager '{0}' does not refer to an ID of application module.
+authmanager_usermanager_invalid			= TAuthManager.UserManager '{0}' does not refer to a valid TUserManager application module.
+authmanager_usermanager_unchangeable	= TAuthManager.UserManager cannot be modified after the module is initialized.
+authmanager_session_required			= TAuthManager requires a session application module.
+
+thememanager_service_unavailable		= TThemeManager requires TPageService to be available. This error often occurs when you configure TThemeManager outside of the page service configuration.
+thememanager_basepath_invalid			= TThemeManager.BasePath '{0}' is not a valid path alias. Make sure you have defined this alias in configuration and it points to a valid directory.
+thememanager_basepath_invalid2			= TThemeManager.BasePath '{0}' is not a valid directory.
+thememanager_basepath_unchangeable		= TThemeManager.BasePath cannot be modified after the module is initialized.
+
+theme_baseurl_required					= TThemeManager.BasePath is required. By default, a directory named 'themes' under the directory containing the application entry script is assumed.
+theme_path_inexistent					= Theme path '{0}' does not exist.
+theme_control_nested					= Skin for control type '{0}' in theme '{1}' cannot be within another skin.
+theme_skinid_duplicated					= SkinID '{0}.{1}' is duplicated in theme '{2}'.
+theme_databind_forbidden				= Databind cannot be used in theme '{0}' for control skin '{1}.{2}' about property '{3}'.
+theme_property_readonly					= Skin is being applied to a read-only control property '{0}.{1}'.
+theme_property_undefined				= Skin is being applied to an inexistent control property '{0}.{1}'.
+theme_tag_unexpected					= Initialization for property {0} contains an unknown tag type {1}.
+
+control_object_reregistered				= Duplicated object ID '{0}' found.
+control_id_invalid						= {0}.ID '{1}' is invalid. Only alphanumeric and underline characters are allowed. The first character must be an alphabetic or underline character.
+control_skinid_unchangeable				= {0}.SkinID cannot be modified after a skin has been applied to the control or the child controls have been created.
+control_enabletheming_unchangeable		= {0}.EnableTheming cannot be modified after the child controls have been created.
+control_stylesheet_applied				= StyleSheet skin has already been applied to {0}.
+control_id_nonunique					= {0}.ID '{1}' is not unique among all controls under the same naming container.
+
+templatecontrol_mastercontrol_invalid	= Master control must be of type TTemplateControl or a child class.
+templatecontrol_mastercontrol_required	= Control '{0}' requires a master control since the control uses TContent.
+templatecontrol_contentid_duplicated	= TContent ID '{0}' is duplicated.
+templatecontrol_placeholderid_duplicated= TContentPlaceHolder ID '{0}' is duplicated.
+templatecontrol_directive_invalid		= {0}.{1} can only accept a static text string through a template directive.
+templatecontrol_placeholder_inexistent	= TContent '{0}' does not have a matching TContentPlaceHolder.
+
+page_form_duplicated					= A page can contain at most one TForm. Use regular HTML form tags for the rest forms.
+page_isvalid_unknown					= TPage.IsValid has not been evaluated yet.
+page_postbackcontrol_invalid			= Unable to determine postback control '{0}'.
+page_control_outofform					= {0} '{1}' must be enclosed within TForm.
+page_head_duplicated					= A page can contain at most one THead.
+page_statepersister_invalid				= Page state persister must implement IPageStatePersister interface.
+
+csmanager_pradoscript_invalid			= Unknown Prado script library name '{0}'.
+csmanager_invalid_packages				= Unkownn packages '{1}' for javascript packages defined in '{0}'. Valid packages are '{2}'.
+
+contentplaceholder_id_required			= TContentPlaceHolder must have an ID.
+
+content_id_required						= TContent must have an ID.
+
+controlcollection_control_required		= TControlList can only accept strings or TControl objects.
+
+webcontrol_accesskey_invalid			= {0}.AccessKey '{1}' is invalid. It must be a single character only.
+webcontrol_style_invalid				= {0}.Style must take string value only.
+
+listcontrol_selection_invalid			= {0} has an invalid selection that is set before performing databinding.
+listcontrol_selectedindex_invalid		= {0}.SelectedIndex has an invalid value {1}.
+listcontrol_selectedvalue_invalid		= {0}.SelectedValue has an invalid value '{1}'.
+listcontrol_expression_invalid			= {0} is evaluating an invalid expression '{1}' : {2}
+listcontrol_multiselect_unsupported		= {0} does not support multiselection.
+
+label_associatedcontrol_invalid			= TLabel.AssociatedControl '{0}' cannot be found.
+
+hiddenfield_focus_unsupported			= THiddenField does not support setting input focus.
+hiddenfield_theming_unsupported			= THiddenField does not support theming.
+hiddenfield_skinid_unsupported			= THiddenField does not support control skin.
+
+panel_defaultbutton_invalid				= TPanel.DefaultButton '{0}' does not refer to an existing button control.
+
+tablestyle_cellpadding_invalid			= TTableStyle.CellPadding must take an integer equal to or greater than -1.
+tablestyle_cellspacing_invalid			= TTableStyle.CellSpacing must take an integer equal to or greater than -1.
+
+pagestatepersister_pagestate_corrupted	= Page state is corrupted.
+
+sessionpagestatepersister_pagestate_corrupted = Page state is corrupted.
+sessionpagestatepersister_historysize_invalid = TSessionPageStatePersister.History must be an integer greater than 0.
+
+listitemcollection_item_invalid			= TListItemCollection can only take strings or TListItem objects.
+
+dropdownlist_selectedindices_unsupported= TDropDownList.SelectedIndices is read-only.
+
+bulletedlist_autopostback_unsupported	= TBulletedList.AutoPostBack is read-only.
+bulletedlist_selectedindex_unsupported	= TBulletedList.SelectedIndex is read-only.
+bulletedlist_selectedindices_unsupported= TBulletedList.SelectedIndices is read-only.
+bulletedlist_selectedvalue_unsupported	= TBulletedList.SelectedValue is read-only.
+
+radiobuttonlist_selectedindices_unsupported	= TRadioButtonList.SelectedIndices is read-only.
+
+logrouter_configfile_invalid			= TLogRouter.ConfigFile '{0}' does not exist.
+logrouter_routeclass_required			= Class attribute is required in <route> configuration.
+logrouter_routetype_required			= Log route must be an instance of TLogRoute or its derived class.
+
+filelogroute_logpath_invalid			= TFileLogRoute.LogPath '{0}' must be a directory in namespace format and must be writable by the Web server process.
+filelogroute_maxfilesize_invalid		= TFileLogRoute.MaxFileSize must be greater than 0.
+filelogroute_maxlogfiles_invalid		= TFileLogRoute.MaxLogFiles must be greater than 0.
+
+emaillogroute_sentfrom_required			= TEmailLogRoute.SentFrom cannot be empty.
+
+repeatinfo_repeatcolumns_invalid		= TRepeatInfo.RepeatColumns must be no less than 0.
+
+basevalidator_controltovalidate_invalid = {0}.ControlToValidate is empty or contains an invalid control ID path.
+basevalidator_validatable_required		= {0}.ControlToValidate must point to a control implementing IValidatable interface.
+basevalidator_forcontrol_unsupported	= {0}.ForControl is not supported.
+
+comparevalidator_controltocompare_invalid = TCompareValidator.ControlToCompare contains an invalid control ID path.
+
+listcontrolvalidator_invalid_control	= {0}.ControlToValidate contains an invalid TListControl ID path, "{1}" is a {2}.
+
+repeater_template_required				= TRepeater.{0} requires a template instance implementing ITemplate interface.
+repeater_itemtype_unknown				= Unknow repeater item type {0}.
+repeateritemcollection_item_invalid		= TRepeaterItemCollection can only accept objects that are instance of TControl or its descendant class.
+
+datalist_template_required				= TDataList.{0} requires a template instance implementing ITemplate interface.
+datalistitemcollection_datalistitem_required = TDataListItemCollection can only accept TDataListItem objects.
+
+datagrid_template_required				= TDataGrid.{0} requires a template instance implementing ITemplate interface.
+templatecolumn_template_required		= TTemplateColumn.{0} requires a template instance implementing ITemplate interface.
+datagrid_currentpageindex_invalid		= TDataGrid.CurrentPageIndex must be no less than 0.
+datagrid_pagesize_invalid				= TDataGrid.PageSize must be greater than 0.
+datagrid_virtualitemcount_invalid		= TDataGrid.VirtualItemCount must be no less than 0.
+datagriditemcollection_datagriditem_required = TDataGridItemCollection can only accept TDataGridItem objects.
+datagridcolumncollection_datagridcolumn_required = TDataGridColumnCollection can only accept TDataGridColumn objects.
+datagridpagerstyle_pagebuttoncount_invalid = TDataGridPagerStyle.PageButtonCount must be greater than 0.
+
+datafieldaccessor_data_invalid			= TDataFieldAccessor is trying to evaluate a field value of an invalid data. Make sure the data is an array, TMap, TList, or object that contains the specified field '{0}'.
+datafieldaccessor_datafield_invalid		= TDataFieldAccessor is trying to evaluate data value of an unknown field '{0}'.
+
+tablerowcollection_tablerow_required	= TTableRowCollection can only accept TTableRow objects.
+
+tablecellcollection_tablerow_required	= TTableCellCollection can only accept TTableCell objects.
+
+multiview_view_required					= TMultiView can only accept TView as child.
+multiview_activeviewindex_invalid		= TMultiView.ActiveViewIndex has an invalid index '{0}'.
+multiview_view_inexistent				= TMultiView cannot find the specified view.
+multiview_viewid_invalid				= TMultiView cannot find the view '{0}' to switch to.
+
+viewcollection_view_required			= TViewCollection can only accept TView as its element.
+
+view_visible_readonly					= TView.Visible is read-only. Use TView.Active to toggle its visibility.
+
+wizard_step_invalid						= The step to be activated cannot be found in wizard step collection.
+wizard_command_invalid					= Invalid wizard navigation command '{0}'.
+
+table_tablesection_outoforder			= TTable table sections must be in the order of: Header, Body and Footer.
+
+completewizardstep_steptype_readonly	= TCompleteWizardStep.StepType is read-only.
+
+wizardstepcollection_wizardstep_required = TWizardStepCollection can only accept objects of TWizardStep or its derived classes.
+
+texthighlighter_stylesheet_invalid		= Unable to find the stylesheet file for TTextHighlighter.
+
+hotspotcollection_hotspot_required		= THotSpotCollection can only accept instance of THotSpot or its derived classes.
+
+htmlarea_textmode_readonly				= THtmlArea.TextMode is read-only.
+htmlarea_tarfile_invalid				= THtmlArea is unable to locate the TinyMCE tar file.
+
+parametermodule_parameterfile_unchangeable = TParameterModule.ParameterFile is not changeable because the module is already initialized.
+parametermodule_parameterfile_invalid	= TParameterModule.ParameterFile '{0}' is invalid. Make sure it is in namespace format and the file extension is '.xml'.
+parametermodule_parameterid_required	= Parameter element must have 'id' attribute.
+
+datagridcolumn_id_invalid				= {0}.ID '{1}' is invalid. Only alphanumeric and underline characters are allowed. The first character must be an alphabetic or underline character.
+datagridcolumn_expression_invalid		= {0} is evaluating an invalid expression '{1}' : {2}
+
+outputcache_cachemoduleid_invalid		= TOutputCache.CacheModuleID is set with an invalid cache module ID {0}. Either the module does not exist or does not implement ICache interface.
+outputcache_duration_invalid			= {0}.Duration must be an integer no less than 0.
+
+stack_data_not_iterable					= TStack can only fetch data from an array or a traversable object.
+stack_empty								= TStack is empty.
+
+queue_data_not_iterable					= TQueue can only fetch data from an array or a traversable object.
+queue_empty								= TQueue is empty.
+
+pager_pagebuttoncount_invalid			= TPager.PageButtonCount must be an integer no less than 1.
+pager_currentpageindex_invalid			= TPager.CurrentPageIndex is out of range.
+pager_pagecount_invalid					= TPager.PageCount cannot be smaller than 0.
+pager_controltopaginate_invalid			= TPager.ControlToPaginate {0} must be a valid ID path pointing to a TDataBoundControl-derived control.
+
+databoundcontrol_pagesize_invalid		= {0}.PageSize must be an integer no smaller than 1.
+databoundcontrol_virtualitemcount_invalid = {0}.VirtualItemCount must be an integer no smaller than 0.
+databoundcontrol_currentpageindex_invalid = {0}.CurrentPageIndex is out of range.
+databoundcontrol_datasource_invalid		= {0}.DataSource is not valid.
+databoundcontrol_datasourceid_inexistent = databoundcontrol_datasourceid_inexistent.
+databoundcontrol_datasourceid_invalid	= databoundcontrol_datasourceid_invalid
+databoundcontrol_datamember_invalid		= databoundcontrol_datamember_invalid
+
+clientscript_invalid_file_position		= Invalid file position '{1}' for TClientScript control '{0}', must be 'Head', 'Here' or 'Begin'.
+clientscript_invalid_package_path		= Invalid PackagePath '{0}' for TClientScript control '{1}'.
+
+tdatepicker_autopostback_unsupported	= '{0}' does not support AutoPostBack.
+globalization_cache_path_failed			= Unable to create translation message cache path '{0}'. Make sure the parent directory exists and is writable by the Web process.
+globalization_source_path_failed		= Unable to create translation message path '{0}'. Make sure the parent directory exists and is writable by the Web process.
+callback_not_support_no_priority_state_update	= Callback request does not support unprioritized pagestate update.
+callback_invalid_callback_options		= '{1}' is not a valid TCallbackOptions control for Callback control '{0}'.
+callback_invalid_clientside_options		= Callback ClientSide property must be either a string that is the ID of a TCallbackOptions control or an instance of TCallbackClientSideOptions.=======
+callback_not_support_no_priority_state_update	= Callback request does not support unprioritized pagestate update.
+callback_invalid_handler				= Invalid callback handler, control {0} must implement ICallbackEventHandler.
+callback_invalid_target					= Invalid callback target, no such control with ID {0}.
+
+callback_interval_be_positive			= Interval for TCallbackTimer "{0}" must be strictly greater than zero seconds.
+callback_decay_be_not_negative			= Decay rate for TCallbackTimer "{0}" must be not negative.
+
+callback_no_autopostback				= Control "{0}" can not enable AutoPostBack.
+
+xmltransform_xslextension_required		= TXmlTransform requires the PHP's XSL extension.
+xmltransform_transformpath_invalid		= TXmlTransform.TransformPath '{0}' is invalid.
+xmltransform_documentpath_invalid		= TXmlTransform.DocumentPath '{0}' is invalid.
+xmltransform_transform_required			= Either TransformContent or TransformPath property must be set for TXmlTransform.
+
+ttriggeredcallback_invalid_controlid	= ControlID property for '{0}' must not be empty.
+tactivecustomvalidator_clientfunction_unsupported = {0} does not support client side validator function.
+
+dbconnection_open_failed				= TDbConnection failed to establish DB connection: {0}
+dbconnection_connection_inactive		= TDbConnection is inactive.
+dbconnection_unsupported_driver_charset	= Le pilote de base de données '{0}' ne supporte pas la modification du jeu de caractères.
+
+dbcommand_prepare_failed				= TDbCommand failed to prepare the SQL statement "{1}": {0}
+dbcommand_execute_failed				= TDbCommand failed to execute the SQL statement "{1}": {0}
+dbcommand_query_failed					= TDbCommand failed to execute the query SQL "{1}": {0}
+dbcommand_column_empty					= TDbCommand returned an empty result and could not obtain the scalar.
+dbdatareader_rewind_invalid				= TDbDataReader is a forward-only stream. It can only be traversed once.
+dbtransaction_transaction_inactive		= TDbTransaction is inactive.
+
+dbcommandbuilder_value_must_not_be_null	= Property {0} must not be null as defined by column '{2}' in table '{1}'.
+
+dbcommon_invalid_table_name				= Database table '{0}' not found. Error message: {1}.
+dbcommon_invalid_identifier_name        = Invalid database identifier name '{0}', see {1} for details.
+dbtableinfo_invalid_column_name			= Invalid column name '{0}' for database table '{1}'.
+dbmetadata_invalid_table_view			= Invalid table/view name '{0}', or that table/view '{0}' contains no accessible column/field definitions.
+dbmetadata_requires_php_version			= PHP version {1} or later is required for using {0} database.
+
+dbtablegateway_invalid_criteria			= Invalid criteria object, must be a string or instance of TSqlCriteria.
+dbtablegateway_no_primary_key_found		= Table '{0}' does not contain any primary key fields.
+dbtablegateway_missing_pk_values		= Missing primary key values in forming IN(key1, key2, ...) for table '{0}'.
+dbtablegateway_pk_value_count_mismatch	= Composite key value count mismatch in forming IN( (key1, key2, ..), (key3, key4, ..)) for table '{0}'.
+dbtablegateway_mismatch_args_exception	= TTableGateway finder method '{0}' expects {1} parameters but found only {2} parameters instead.
+dbtablegateway_mismatch_column_name		= In dynamic __call() method '{0}', no matching columns were found, valid columns for table '{2}' are '{1}'.
+dbtablegateway_invalid_table_info		= Table must be a string or an instanceof TDbTableInfo.
+
+directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} does not refer to a valid directory.
+cachedependencylist_cachedependency_required = Only objects implementing ICacheDependency can be added into TCacheDependencyList.
+
+soapservice_configfile_invalid			= TSoapService.ConfigFile '{0}' does not exist. Note, it has to be specified in a namespace format and the file extension must be '.xml'.
+soapservice_request_invalid				= SOAP server '{0}' not found.
+soapservice_serverid_required			= <soap> element must have 'id' attribute.
+soapservice_serverid_duplicated			= SOAP server ID '{0}' is duplicated.
+soapserver_id_invalid					= Invalid SOAP server ID '{0}'. It should not end with '.wsdl'.
+soapserver_version_invalid				= Invalid SOAP version '{0}'. It must be either '1.1' or '1.2'.
+
+dbusermanager_userclass_required		= TDbUserManager.UserClass is required.
+dbusermanager_userclass_invalid			= TDbUserManager.UserClass '{0}' is not a valid user class. The class must extend TDbUser.
+dbusermanager_connectionid_invalid		= TDbUserManager.ConnectionID '{0}' does not point to a valid TDataSourceConfig module.
+dbusermanager_connectionid_required		= TDbUserManager.ConnectionID is required.
+
+feedservice_id_required					= TFeedService requires 'id' attribute in its feed elements.
+feedservice_feedtype_invalid			= The class feed '{0}' must implement IFeedContentProvider interface.
+feedservice_class_required				= TFeedService requires 'class' attribute in its feed elements.
+feedservice_feed_unknown				= Unknown feed '{0}' requested.
+
+tactivetablecell_control_outoftable		= {0} '{1}' must be enclosed within a TTableRow control.
+tactivetablecell_control_notincollection = {0} '{1}' no member of the TTableCellCollection of the parent TTableRow control.
+
+tactivetablerow_control_outoftable		= {0} '{1}' must be enclosed within a TTable control.
+tactivetablerow_control_notincollection = {0} '{1}' no member of the TTableRowCollection of the parent TTable control.

@@ -1,0 +1,27 @@
+<com:TContent ID="body" >
+
+<h1 id="2501">TFileUpload</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TFileUpload" />
+
+<p id="300257" class="block-content">
+<tt>TFileUpload</tt> displays a file upload field on a Web page. Upon postback, the text entered into the field will be treated as the (local) name of the file that is uploaded to the server.
+</p>
+<p id="300258" class="block-content">
+<tt>TFileUpload</tt> raises an <tt>OnFileUpload</tt> event when it is post back. The property <tt>HasFile</tt> indicates whether the file upload is successful or not. If successful, the uploaded file may be saved on the server by calling <tt>saveAs()</tt> method.
+</p>
+<p id="300259" class="block-content">
+The following properties give the information about the uploaded file:
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>FileName</tt> - the original client-side file name without directory information.</li>
+  <li><tt>FileType</tt> - the MIME type of the uploaded file.</li>
+  <li><tt>FileSize</tt> - the file size in bytes.</li>
+  <li><tt>LocalName</tt> - the absolute file path of the uploaded file on the server. Note, this file will be deleted after the current page request is completed. Call <tt>saveAs()</tt> to save the uploaded file.</li>
+</ul>
+<p id="300260" class="block-content">
+If the file upload is unsuccessful, the property <tt>ErrorCode</tt> gives the error code describing the cause of failure. See <a href="http://www.php.net/manual/en/features.file-upload.errors.php">PHP documentation</a> for a complete explanation of the possible error codes.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TFileUpload.Home" />
+
+<div class="last-modified">$Id: FileUpload.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,152 @@
+<com:TContent ID="body" >
+
+<h1 id="5401">Menulis Kontrol Baru</h1>
+<p id="660428" class="block-content">
+Menulis kontrol baru sering diinginkan oleh para pemrogram tingkat lanjut, karena mereka ingin menggunakan ulang kode yang mereka tulis untuk menghadapi penyajian yang komples serta interaksi pengguna.
+</p>
+<p id="660429" class="block-content">
+Secara umum, ada dua cara penulisan kontrol baru: komposisi kontrol yang sudah ada dan memperluas kontrol yang sudah ada. Semuanya memerlukan kontrol baru tersebut berasal dari <tt>TControl</tt> atau kelas anaknya.
+</p>
+
+<h2 id="5402">Komposisi Kontrol yang Sudah Ada</h2>
+<p id="660430" class="block-content">
+Komposisi adalah cara termudah membuat kontrol baru. Ia melibatkan terutama penurunan kontrol yang sudah ada, mengkonfigurasinya dan menjadikannya unsur komponen. Properti dari unsur komponen diperlihatkan melalui <a href="?page=Fundamentals.Components">subproperti</a>.
+</p>
+<p id="660431" class="block-content">
+Seseorang dapat menciptakan sebuah kontrol baru dalam dua cara. Pertama adalah memperluas <tt>TCompositeControl</tt> dan mengganti metode <tt>TControl::createChildControls()</tt>. Kedua adalah memperluas <tt>TTemplateControl</tt> (atau kelas anaknya) dan menulis template kontrol. Yang terakhir lebih mudah digunakan dan bisa mengatur tata letak unsur komponen lebih intuitif, sementara pembentuk lebih efisien karena ia tidak perlu menguraikan template.
+</p>
+<p id="660432" class="block-content">
+Sebagai contoh, kami memperlihatkan bagaimana untuk membuat kotak teks berlabel yang disebut <tt>LabeledTextBox</tt> menggunakan dua pendekatan di atas. Kotak teks berlabel menampilkan label disamping kotak teks. Kami ingin menggunakan ulang <tt>TLabel</tt> dan <tt>TTextBox</tt> yang disediakan PRADO untuk menyelesaikan tugas ini.
+</p>
+
+<h3 id="5404">Komposisi dengan Menulis Template</h3>
+<p id="660433" class="block-content">
+Kita memerlukan dua file: sebuah file kelas kontrol bernama <tt>LabeledTextBox.php</tt> dan file template kontrol bernama <tt>LabeledTextBox.tpl</tt>. Keduanya harus berada di bawah direktori yang sama.
+</p>
+<p id="660434" class="block-content">
+Seperti membuat halaman PRADO, kita dapat dengan mudah menuliskan konten dalam file template kontrol.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_660129">
+&lt;com:TLabel ID="Label" ForControl="TextBox" /&gt;
+&lt;com:TTextBox ID="TextBox" /&gt;
+</com:TTextHighlighter>
+<p id="660435" class="block-content">
+Template di atas menetapkan kontrol <tt>TLabel</tt> bernama <tt>Label</tt> dan kontrol <tt>TTextBox</tt> bernama <tt>TextBox</tt>. Kita ingin memperlihatkan kedua kontrol ini. Ini bisa dikerjakan dengan mendefinisikan properti untuk masing-masing kontrol dalam file kelas <tt>LabeledTextBox</tt>. Sebagai contoh, kita dapat mendefinisikan proper <tt>Label</tt> seperti berikut,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_660130">
+class LabeledTextBox extends TTemplateControl {
+    public function getLabel() {
+        $this->ensureChildControls();
+        return $this->getRegisteredObject('Label');
+    }
+}
+</com:TTextHighlighter>
+<p id="660436" class="block-content">
+Dalam contoh di atas, metode memanggil <tt>ensureChildControls()</tt> memastikan bahwa kontrol label dan kotak teks sudah dibuat (dari template) ketika properti <tt>Label</tt> diakses. Properti <tt>TextBox</tt> dapat diimplementasikan dengan cara yang sama.
+</p>
+<com:RunBar PagePath="Controls.Samples.LabeledTextBox1.Home" />
+
+<h3 id="5405">Komposisi dengan Penggantian <tt>createChildControls()</tt></h3>
+<p id="660437" class="block-content">
+Untuk kontrol gabungan sesederhana <tt>LabeledTextBox</tt>, lebih baik membuatnya dengan memperluas <tt>TCompositeControl</tt> dan mengganti metode <tt>createChildControls()</tt>, karena ia tidak menggunakan template dan menghemat waktu penguraian template.
+</p>
+<p id="660438" class="block-content">
+Kode lengkap untuk <tt>LabeledTextBox</tt> ditampilkan sebagai berikut,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_660131">
+class LabeledTextBox extends TCompositeControl {
+    private $_label;
+    private $_textbox;
+    public function createChildControls() {
+        $this->_label=new TLabel;
+        $this->_label->setID('Label');
+        // tambah label sebagai anak dari LabeledTextBox
+        $this->getControls()->add($this->_label);
+        $this->_textbox=new TTextBox;
+        $this->_textbox->setID('TextBox');
+        $this->_label->setForControl('TextBox');
+        // tambah textbox sebagai anak dari LabeledTextBox
+        $this->getControls()->add($this->_textbox);
+    }
+    public function getLabel() {
+        $this->ensureChildControls();
+        return $this->_label;
+    }
+    public function getTextBox() {
+        $this->ensureChildControls();
+        return $this->_textbox;
+    }
+}
+</com:TTextHighlighter>
+<com:RunBar PagePath="Controls.Samples.LabeledTextBox2.Home" />
+
+<h3 id="5406">Menggunakan <tt>LabeledTextBox</tt></h3>
+<p id="660439" class="block-content">
+Untuk menggunakan kontrol <tt>LabeledTextBox</tt>, pertama kita perlu menyertakan file kelas terkait. Kemudian dalam template halaman, kita dapat menuliskan baris seperti berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_660132">
+&lt;com:LabeledTextBox ID="Input" Label.Text="Username" /&gt;
+</com:TTextHighlighter>
+<p id="660440" class="block-content">
+Dalam contoh di atas, <tt>Label.Text</tt> adalah subproperti dari <tt>LabeledTextBox</tt>, yang merujuk ke properti <tt>Text</tt> dari properti <tt>Label</tt>. Untuk lebih jelasnya atas pemakaian <tt>LabeledTextBox</tt>, lihat contoh online di atas.
+</p>
+
+<h2 id="5403">Memperluas Kontrol yang Sudah Ada</h2>
+<p id="660441" class="block-content">
+Memperluas kontrol yang sudah ada sama seperti penurunan kelas konvensional. Ia membolehkan para pengembang untuk mengkustomisasi kelas kontrol yang sudah ada dengan mengganti propertinya, metodenya, event, atau membuat yang baru.
+</p>
+<p id="660442" class="block-content">
+Kesulitan tugas tergantung pada seberapa banyak kelas yang sudah ada dikustomisasi. Sebagai contoh, tugas sederhana bisa mengkustomisasi kontrol <tt>TLabel</tt>, agar ia menampilkan label merah sercara standarnya. Ini akan melibatkan setelan properti <tt>ForeColor</tt> ke <tt>"red"</tt> dalam konstruktornya. Tugas yang sulit adalah membuat kontrol yang menyediakan fungsional inovatif secara lengkap. Biasanya, ini memerlukan perluasan kontrol dari kelas kontrol "tingkat rendah", seperti misalnya <tt>TControl</tt> atau <tt>TWebControl</tt>.
+</p>
+<p id="660443" class="block-content">
+Dalam bagian ini, sebagian besar kami memperkenalkan basis kelas kontrol <tt>TControl</tt> dan <tt>TWebControl</tt>, memperlihatkan bagaimana mereka bisa dikustomisasi. Kami juga memperkenalkan bagaimana untuk menulis kontrol dengan fungsionalitas khusus, seperti mengambil data post, memunculkan data post dan penyatuan data dengan sumber data.
+</p>
+
+<h3 id="5407">Memperluas <tt>TControl</tt></h3>
+<p id="660444" class="block-content">
+<tt>TControl</tt> adalah basis kelas dari semua kelas kontrol. Dua metode adalah yang paling penting untuk kelas kontrol turunannya:
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>addParsedObject()</tt> - metode ini diminta oleh setiap komponen ata string teks yang dikurung di dalam tag komponen yang menetapkan kontrol dalam sebuah template. Standarnya, komponen dan string teks yang dikurung ditambahkan ke dalam koleksi <tt>Controls</tt> dari kontrol. Kontrol turunannya dapat mengganti metode ini untuk melakukan proses khusus mengenai konten yang dikurung tersebut. Sebagai contoh, <tt>TListControl</tt> hanya menerima komponen <tt>TListItem</tt> dikurung di dalam tag komponennya, dan komponen ini ditambahkan ke koleksi <tt>Items</tt> dari <tt>TListControl</tt>.
+  <li><tt>render()</tt> - metode ini menyajikan kontrol. Standarnya menyajikan item-item dalam koleksi <tt>Controls</tt>. Kontrol turunannya dapat mengganti metode ini guna memberikan penyajian yang dikustomisasi.</li>
+</ul>
+Properti dan metode penting lainnya termasuk:
+<ul id="u2" class="block-content">
+  <li><tt>ID</tt> - string yang secara unik mengidentifikasi kontrol diantara semua kontrol dari tempat penamaan yang sama. ID otomatis akan dibuat jika properti ID tidak disetel secara eksplisit.</li>
+  <li><tt>UnqiueID</tt> - ID unik lengkap yang mengidentifikasi kontrol diantara semua kontrol pada hirarki halaman saat ini. Ia dapat digunakan untuk mencari kontrol dalam hirarki halaman dengan memanggil metode <tt>TControl::findControl()</tt>. Kontrol input pengguna sering memakainya sebagai nilai dari atribut yang sama dari elemen input HTML.</li>
+  <li><tt>ClientID</tt> - mirip dengan <tt>UniqueID</tt>, kecuali bahwa ia dipakai terutama untuk penyajian dan umumnya digunakan sebagai nilai atribut id elemen HTML. Jangan bergantung pada format eksplisit <tt>ClientID</tt>.</li>
+  <li><tt>Enabled</tt> - apakah kontrol ini dihidupkan atau tidak. Catatan, dalam beberapa kasus, jika salah satu kontrol leluhurnya dimatikan, kontrol juga diperlakukan sebagai dimatikan, meskipun properti <tt>Enabled</tt> adalah true.</li>
+  <li><tt>Parent</tt> - kontrol leluhur dari kontrol ini. Kontrol leluhur memegang kendali apakah menyajikan kontrol ini atau tidak dan di mana menempatkan hasil yang disajikan.</li>
+  <li><tt>Page</tt> - halaman yang berisi kontrol ini.</li>
+  <li><tt>Controls</tt> - koleksi dari semua kontrol anak, termasuk teks statis diantaranya. Ia dapat dipakai seperti sebuah array, karena ia mengimplementasikan antarmuka <tt>Traversable</tt>. Untuk menambah anak ke kontrol, cukup sisipkan ia ke dalam koleksi <tt>Controls</tt> di posisi yang sesuai.</li>
+  <li><tt>Attributes</tt> - koleksi dari atribut kustom. Ini berguna untuk membolehkan para pengguna untuk menetapkan atribut dari elemen output HTML yang tidak tercakup oleh properti kontrol.</li>
+  <li><tt>getViewState()</tt> dan <tt>setViewState()</tt> - metode ini umum dipakai untuk mendefinisikan properti yang disimpan dalam kondisi tampilan.</li>
+  <li><tt>saveState()</tt> dan <tt>loadState()</tt> - kedua metode ini bisa diganti untuk menyediakan langkah terakhir kondisi penyimpanan dan pengambilan.</li>
+  <li>Control lifecycles - Seperti halaman, kontrol juga mempunyai masa hidup. Setiap kontrol menjalani masa hidupnya dalam urutan berikut: constructor, <tt>onInit()</tt>, <tt>onLoad()</tt>, <tt>onPreRender()</tt>, <tt>render()</tt>, dan <tt>onUnload</tt>. Lebih jelasnya dapat ditemukan dalam seksi <a href="?page=Fundamentals.Pages">halaman</a>.</li>
+</ul>
+
+<h3 id="5408">Memperluas <tt>TWebControl</tt></h3>
+<p id="660445" class="block-content">
+<tt>TWebControl</tt> dipakai terutama sebagai basis kelas untuk kontrol yang menyajikan elemen HTML. Ia menyediakan satu set properti yang umum diantara elemen HTML. Ia memisahkan <tt>TControl::render()</tt> ke dalam metode berikut yang lebih cocok untuk menyajikan elemen HTML:
+</p>
+<ul id="u3" class="block-content">
+  <li><tt>addAttributesToRender()</tt> - menambah atribut untuk elemen HTML yang disajikan. Metode ini sering diganti dengan kelas tutunannya karena biasanya memiliki atribut berbeda yang disajikan.</li>
+  <li><tt>renderBeginTag()</tt> - menyajikan tag HTML pembuka.</li>
+  <li><tt>renderContents()</tt> - menyajikan konten dikurung di dalam elemen HTML. Standarnya menampilkan item-item dalam koleksi <tt>Controls</tt>  daru kontrol. kelas turunannya dapat mengganti metode ini guna menyajikan konten yang dikustomisasi.</li>
+  <li><tt>renderEndTag()</tt> - menyajikan tag HTML penutup.</li>
+</ul>
+<p id="660446" class="block-content">
+Ketika menyajikan tag HTML pembuka, <tt>TWebControl</tt> memanggil <tt>getTagName()</tt> untuk mendapatkan nama tag. kelas turunannya dapat mengganti metode ini guna menyajikan nama tag yang berbeda.
+</p>
+
+<h3 id="5409">Membuat Kontrol dengan Fungsional Khusus</h3>
+<p id="660447" class="block-content">
+Jika sebuah kontrol ingin merespon event sisi-klien dan menterjemahkannya ke dalam event sisi server (disebut event postback), seperti <tt>TButton</tt>, ia harus mengimplementasikan antarmuka <tt>IPostBackEventHandler</tt>.
+</p>
+<p id="660448" class="block-content">
+Jika kontrol ingin bisa mengambil data post, seperti <tt>TTextBox</tt>, ia harus mengimplementasikan antarmuka <tt>IPostBackDataHandler</tt>.
+</p>
+<p id="660449" class="block-content">
+Jika kontrol ingin mendapatkan data dari beberapa sumber data eksternal, ia harus memperluas <tt>TDataBoundControl</tt>. <tt>TDataBoundControl</tt> mengimplementasikan properti dasar yang diperlukan untuk mempopulasi data melalui databinding. Kenyataanya, kontrol seperti <tt>TListControl</tt>, <tt>TRepeater</tt> adalah <tt>TDataGrid</tt> semua berasal darinya.
+</p>
+<div class="last-modified">$Id: NewControl.page 1741 2007-03-05 16:05:43Z xue $</div></com:TContent>

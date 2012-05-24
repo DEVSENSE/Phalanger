@@ -1,0 +1,172 @@
+<com:TContent ID="body" >
+
+<h1 id="2101">URL Mapping (Friendly URLs)</h1>
+
+<com:DocLink ClassPath="System.Web.TUrlMapping" />
+
+<p id="230222" class="block-content">
+The TUrlMapping module allows PRADO to construct and recognize friendly URLs
+based on specific patterns.
+</p>
+
+<p id="230223" class="block-content">
+TUrlMapping consists of a list of URL patterns which are used to match
+against the currently requested URL. The first matching pattern will then
+be used to decompose the URL into request parameters (accessible via
+<tt>$this->Request['paramname']</tt>). The patterns can also be used to
+construct customized URLs. In this case, the parameters in an applied
+pattern will be replaced with the corresponding GET variable values.
+</p>
+
+<p id="230224" class="block-content">
+To use <tt>TUrlMapping</tt>, one must set the <tt>UrlManager</tt> property of the <tt>THttpRequest</tt> module as the <tt>TUrlMapping</tt> module ID. See following for an example,
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_230098">
+<modules>
+    <module id="request" class="THttpRequest" UrlManager="friendly-url" />
+    <module id="friendly-url" class="System.Web.TUrlMapping">
+        <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/" parameters.id="\d+" />
+        <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/" parameters.time="\d{6}" />
+        <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/" parameters.cat="\d+" />
+    </module>
+</modules>
+</com:TTextHighlighter>
+</p>
+
+<p id="230225" class="block-content">
+The above example is part of the application configuration of the <tt>blog</tt> demo in the PRADO release. It enables recognition of the following URL formats:
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>/index.php/post/123</tt> is recognized as <tt>/index.php?page=Posts.ViewPost&amp;id=123</tt></li>
+  <li><tt>/index.php/archive/200605</tt> is recognized as <tt>/index.php?page=Posts.ListPost&amp;time=200605</tt></li>
+  <li><tt>/index.php/category/2</tt> is recognized as <tt>/index.php?page=Posts.ListPost&amp;cat=2</tt></li>
+</ul>
+
+<p id="230226" class="block-content">
+The <tt>ServiceParameter</tt> and <tt>ServiceID</tt> (the default ID is 'page')
+set the service parameter and service ID, respectively, of the <a href="?page=Fundamentals.Modules">Request module</a>. The service parameter for the <tt>TPageService</tt> service is the Page class name, e.g., for an URL "index.php?page=Home", "page" is the service ID and the service parameter is "Home". Other services may use the service parameter and ID differently. See <a href="?page=Fundamentals.Services">Services</a> for further details.
+</p>
+
+<div class="info"><b class="tip">Info:</b>
+The <tt>TUrlMapping</tt> must be configured before the
+<a href="?page=Fundamentals.Modules">request module</a> resolves the request.
+This means delcaring the <tt>TUrlMapping</tt> outside of the
+<tt>&lt;services&gt;</tt> element in the <a href="?page=Configurations.AppConfig">application configuration</a>.
+Specifying the mappings in the per directory <tt>config.xml</tt> is not supported.
+</div>
+
+<h2 id="46023">Specifying URL Patterns</h2>
+<p id="230227" class="block-content">
+<tt>TUrlMapping</tt> enables recognition of customized URL formats based on a list prespecified of URL patterns. Each pattern is specified in a <tt>&lt;url&gt;</tt> tag.
+</p>
+
+<p id="230228" class="block-content">
+The <tt>Pattern</tt> and <tt>Parameters</tt> attribute
+values are regular expression patterns that
+determine the mapping criteria. The <tt>Pattern</tt> property takes
+a regular expression with parameter names enclosed between a left brace '<tt>{</tt>'
+and a right brace '<tt>}</tt>'. The patterns for each parameter can be set
+using <tt>Parameters</tt> attribute collection.
+For example,
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_230099">
+<url ServiceParameter="ArticleView" pattern="articles/{year}/{month}/{day}"
+     parameters.year="\d{4}" parameters.month="\d{2}" parameters.day="\d+" />
+</com:TTextHighlighter>
+</p>
+The example is equivalent to the following regular expression (it uses the "named group" feature in regular expressions available in PHP):
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_230100">
+<url ServiceParameter="ArticleView"
+     RegularExpression="/articles\/(?P<year>\d{4})\/(?P<month>\d{2})\/(?P<day>\d+)/u" />
+</com:TTextHighlighter>
+<p id="230229" class="block-content">
+In the above example, the pattern contains 3 parameters named "<tt>year</tt>",
+"<tt>month</tt>" and "<tt>day</tt>". The pattern for these parameters are,
+respectively, "<tt>\d{4}</tt>" (4 digits), "<tt>\d{2}</tt>" (2 digits)
+and "<tt>\d+</tt>" (1 or more digits).
+Essentially, the <tt>Parameters</tt> attribute name and values are used
+ as substrings in replacing the placeholders in the <tt>Pattern</tt> string
+to form a complete regular expression string.
+</p>
+
+<div class="note"><b class="tip">Note:</b> If you intended to use the <tt>RegularExpression</tt>
+property you need to escape the slash in regular expressions.
+</div>
+
+<p id="230230" class="block-content">Following from the above pattern example,
+an URL <tt>http://example.com/index.php/articles/2006/07/21</tt> will be matched
+and valid.  However, <tt>http://example.com/index.php/articles/2006/07/hello</tt> is not
+valid since the <tt>day</tt> parameter pattern is not satisfied.
+In the default <tt>TUrlMappingPattern</tt> class, the pattern is matched against the
+<b>PATH_INFO</b> part of the URL only. For example, only the <tt>/articles/2006/07/21</tt>
+portion of the URL is considered.
+</p>
+
+<p id="230231" class="block-content">
+The mapped request URL is equivalent to <tt>index.php?page=ArticleView&amp;year=2006&amp;month=07&amp;day=21</tt>.
+The request parameter values are available through the standard <tt>Request</tt>
+object. For example, <tt>$this->Request['year']</tt>.
+</p>
+
+<p id="230232" class="block-content">The URL mapping are evaluated in order they are placed and only the first pattern that matches
+ the URL will be used. Cascaded mapping can be achieved by placing the URL mappings
+ in particular order. For example, placing the most specific mappings first.
+</p>
+
+<p class="block-content">Since version 3.1.4, Prado also provides wildcard patterns to use friendly URLs 
+for a bunch of pages in a directory with a single rule. Therefore you can use the <tt>{*}</tt> wildcard
+in your pattern to let Prado know, where to find the ServiceID in your request URL. You can also specify
+parameters with these patterns if a lot of pages share common parameters.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source block-content">
+<url ServiceParameter="Posts.*" pattern="posts/{*}/{id}" parameters.id="\d+" />
+<url ServiceParameter="Posts.*" pattern="posts/{*}" />
+<url ServiceParameter="Static.Info.*" pattern="info/{*}" />
+</com:TTextHighlighter>
+
+<p class="block-content">With these rules, any of the following URLs will be recognized:
+<ul id="u1" class="block-content">
+  <li><tt>/index.php/post/ViewPost/123</tt> is recognized as <tt>/index.php?page=Posts.ViewPost&amp;id=123</tt></li>
+  <li><tt>/index.php/post/ListPost/123</tt> is recognized as <tt>/index.php?page=Posts.ListPost&amp;id=123</tt></li>
+  <li><tt>/index.php/post/ListPost/123</tt> is recognized as <tt>/index.php?page=Posts.ListPost&amp;id=123</tt></li>
+  <li><tt>/index.php/post/MyPost</tt> is recognized as <tt>/index.php?page=Posts.MyPost</tt></li>
+  <li><tt>/index.php/info/Conditions</tt> is recognized as <tt>/index.php?page=Static.Info.Conditions</tt></li>
+  <li><tt>/index.php/info/About</tt> is recognized as <tt>/index.php?page=Static.Info.About</tt></li>
+</ul>
+</p>
+
+<p id="250001" class="block-content">As above, put more specific rules before more common rules as the first matching rule will be used.</p>
+
+<p id="250002" class="block-content">To make configuration of friendly URLs for multiple pages even easier, you can also use <tt>UrlFormat="Path"</tt> 
+in combination with wildcard patterns. In fact, this feature only is available in combination with wildcard rules:</P>
+
+<com:TTextHighlighter Language="xml" CssClass="source block-content">
+<url ServiceParameter="user.admin.*" pattern="admin/{*}" UrlFormat="Path"/>
+<url ServiceParameter="*" pattern="{*}" UrlFormat="Path" />
+</com:TTextHighlighter>
+
+<p class="block-content">Parameters will get appended to the specified patterns as name/value pairs, separated by a "/". 
+(You can change the separator character with <tt>UrlParamSeparator</tt>.)
+<ul id="u1" class="block-content">
+  <li><tt>/index.php/list/cat/15/month/12</tt> is recognized as <tt>/index.php?page=list&amp;cat=15&amp;month=12</tt></li>
+  <li><tt>/index.php/edit/id/12</tt> is recognized as <tt>/index.php?page=list&amp;id=12</tt></li>
+  <li><tt>/index.php/show/name/foo</tt> is recognized as <tt>/index.php?page=show&amp;name=foo</tt></li>
+  <li><tt>/index.php/admin/edit/id/12</tt> is recognized as <tt>/index.php?page=user.admin.edit&amp;id=12</tt></li>
+</ul>
+</p>
+
+<h2 id="46024">Constructing Customized URLs</h2>
+<p id="230233" class="block-content">
+Since version 3.1.1, <tt>TUrlMapping</tt> starts to support constructing customized URLs based on the provided patterns. To enable this feature, set <tt>TUrlMapping.EnableCustomUrl</tt> to true. When <tt>THttpRequest.constrcutUrl()</tt> is invoked, the actual URL construction work will be delegated to a matching <tt>TUrlMappingPattern</tt> instance. It replaces the parameters in the pattern with the corresponding GET variables passed to <tt>constructUrl()</tt>.
+</p>
+
+<p id="230234" class="block-content">
+A matching pattern is one whose <tt>ServiceID</tt> and <tt>ServiceParameter</tt> properties are the same as those passed to <tt>constructUrl()</tt> and whose named parameters are found in the GET variables. For example, <tt>constructUrl('Posts.ListPost',array('cat'=>2))</tt> will use the third pattern in the above example.
+<p id="250003" class="block-content">
+
+<p id="230235" class="block-content">
+By default, <tt>TUrlMapping</tt> will construct URLs prefixed with the currently requesting PHP script path, such as <tt><b>/path/to/index.php</b>/article/3</tt>. Users may change this behavior by explicitly specifying the URL prefix through its <tt>UrlPrefix</tt> property. For example, if the Web server configuration treats <tt>index.php</tt> as the default script, we can set <tt>UrlPrefix</tt> as <tt>/path/to</tt> and the constructed URL will look like <tt>/path/to/article/3</tt>.
+</p>
+
+<div class="note"><b class="tip">Note:</b> If you use <tt>constructUrl()</tt> with string parameters that contain slashes ("/") they will get encoded to %2F. By default most Apache installations give a "404 Not found" if a URL contains a %2F. You can add <tt>AllowEncodedSlashes On</tt> to your <tt>VirtualHost</tt> configuration to resolve this. (Available since Apache 2.0.46).
+</div>
+
+<div class="last-modified">$Id: UrlMapping.page 2923 2011-05-22 14:43:11Z ctrlaltca@gmail.com $</div></com:TContent>

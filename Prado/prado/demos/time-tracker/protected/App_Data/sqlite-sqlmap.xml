@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMapConfig>
+
+	<typeHandler type="TimeTrackerUser" class="TimeTrackerUserTypeHandler"/>
+	<typeHandler type="DateTime" class="DateTimeTypeHandler" />
+
+	<connection class="TDbConnection"
+		ConnectionString="sqlite:protected/App_Data/SQLite/time-tracker.db" />
+
+	<sqlMap resource="SQLite/users.xml"/>
+	<sqlMap resource="SQLite/projects.xml"/>
+	<sqlMap resource="SQLite/category.xml" />
+	<sqlMap resource="SQLite/time-entry.xml" />
+	<sqlMap resource="SQLite/reports.xml" />
+
+</sqlMapConfig>

@@ -1,0 +1,34 @@
+<com:TContent ID="body" >
+
+<h1 id="1101">Services</h1>
+<p id="150151" class="block-content">
+A service is an instance of a class implementing the <tt>IService</tt> interface. Each kind of service processes a specific type of user requests. For example, the page service responds to users' requests for PRADO pages.
+</p>
+<p id="150152" class="block-content">
+A service is uniquely identified by its <tt>ID</tt> property. By default when <tt>THttpRequest</tt> is used as the <a href="?page=Fundamentals.Modules#request">request module</a>, GET variable names are used to identify which service a user is requesting. If a GET variable name is equal to some service <tt>ID</tt>, the request is considered for that service, and the value of the GET variable is passed as the service parameter. For page service, the name of the GET variable must be <tt>page</tt>. For example, the following URL requests for the <tt>Fundamentals.Services</tt> page,
+<com:TTextHighlighter Language="none" CssClass="source block-content" id="code_150069">
+http://hostname/index.php?page=Fundamentals.Services
+</com:TTextHighlighter>
+</p>
+<p id="150153" class="block-content">
+Developers may implement additional services for their applications. To make a service available, configure it in <a href="?page=Configurations.AppConfig">application configurations</a>.
+</p>
+
+<h2 id="1102">Page Service</h2>
+<p id="150154" class="block-content">
+PRADO implements <tt>TPageService</tt> to process users' page requests. Pages are stored under a directory specified by the <tt>BasePath</tt> property of the page service. The property defaults to <tt>pages</tt> directory under the application base path. You may change this default by configuring the service in the application configuration.
+</p>
+<p id="150155" class="block-content">
+Pages may be organized into subdirectories under the <tt>BasePath</tt>. In each directory, there may be a page configuration file named <tt>config.xml</tt>, which contains configurations effective only when a page under that directory or a sub-directory is requested. For more details, see the <a href="?page=Configurations.PageConfig">page configuration</a> section.
+</p>
+<p id="150156" class="block-content">
+Service parameter for the page service refers to the page being requested. A parameter like <tt>Fundamentals.Services</tt> refers to the <tt>Services</tt> page under the <tt>&lt;BasePath&gt;/Fundamentals</tt> directory. If such a parameter is absent in a request, a default page named <tt>Home</tt> is assumed. Using <tt>THttpRequest</tt> as the request module (default), the following URLs will request for <tt>Home</tt>, <tt>About</tt> and <tt>Register</tt> pages, respectively,
+<com:TTextHighlighter Language="none" CssClass="source block-content" id="code_150070">
+http://hostname/index.php
+http://hostname/index.php?page=About
+http://hostname/index.php?page=Users.Register
+</com:TTextHighlighter>
+where the first example takes advantage of the fact that the page service is the default service and <tt>Home</tt> is the default page.
+</p>
+
+<div class="last-modified">$Id: Services.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,25 @@
+<com:TContent ID="body" >
+
+<h1 id="4201">TSafeHtml</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TSafeHtml" />
+
+<p id="490308" class="block-content">
+<tt>TSafeHtml</tt> is a control that strips down all potentially dangerous HTML content. It is mainly a wrapper of the <a href="http://pixel-apes.com/safehtml/">SafeHTML</a> project. According to the SafeHTML project, it tries to safeguard the following situations when the string is to be displayed to end-users:
+</p>
+<ul id="u1" class="block-content">
+  <li>Opening tag without its closing tag</li>
+  <li>closing tag without its opening tag
+  <li>any of these tags: base, basefont, head, html, body, applet, object, iframe, frame, frameset, script, layer, ilayer, embed, bgsound, link, meta, style, title, blink, xml, etc.</li>
+  <li>any of these attributes: on*, data*, dynsrc</li>
+  <li>javascript:/vbscript:/about: etc. protocols</li>
+  <li>expression/behavior etc. in styles</li>
+  <li>any other active content.</li>
+</ul>
+
+<p id="490309" class="block-content">
+To use <tt>TSafeHtml</tt>, simply enclose the content to be secured within the <tt>TSafeHtml</tt> component tag in a template. The content may consist of both static text and PRADO controls. If the latter, the rendering result of the controls will be secured.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TSafeHtml.Home" />
+
+<div class="last-modified">$Id: SafeHtml.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

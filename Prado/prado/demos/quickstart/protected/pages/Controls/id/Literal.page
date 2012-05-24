@@ -1,0 +1,25 @@
+<com:TContent ID="body" >
+
+<h1 id="3701">TLiteral</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TLiteral" />
+
+<p id="420283" class="block-content">
+<tt>TLiteral</tt> menampilkan teks statis pada halaman Web. <tt>TLiteral</tt> mirip dengan kontrol <tt>TLabel</tt>, kecuali bahwa <tt>TLiteral</tt>
+ * Kontrol tidak memiliki properti style, seperti <tt>BackColor</tt>, <tt>Font</tt>, dll.
+</p>
+
+<p id="420284" class="block-content">
+Teks yang ditampilkan oleh <tt>TLiteral</tt> bisa dikontrol secara programatis dengan menyetel properti <tt>Text</tt>. Teks yang ditampilkan mungkin  HTML-dikodekan jika <tt>Encode</tt> adalah true (nilai standarnya false).
+</p>
+
+<p id="420285" class="block-content">
+<tt>TLiteral</tt> akan menyajikan konten yang dikurung dalam tag komponen  jika <tt>Text</tt> kosong.
+</p>
+
+<p id="420286" class="block-content">
+Harap berhati-hati jika <tt>Encode</tt> adalah false, pastikan <tt>Text</tt> tidak berisi karakter yang tidak diinginkan yang dapat menjadikan keamanan mudah ditembus.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TLiteral.Home" />
+
+<div class="last-modified">$Id: Literal.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,73 @@
+<com:TContent ID="body">
+<h1>TCallbackClientSide Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A callback button with attached client side options:
+</td><td class="sampleaction">
+<com:TActiveButton
+	Text="click me"
+	OnCallback="buttonCallback"
+>
+	<prop:ClientSide
+	  OnLoading="$('callback_status2').hide(); new Effect.BlindDown('callback_status', { duration: 1 });"
+	  OnComplete="new Effect.BlindUp('callback_status', { duration: 1 }); $('callback_status2').show();"
+	/>
+</com:TActiveButton>
+<div id="callback_status" style="display:none;">please wait 5 seconds for the callback to complete...</div>
+<div id="callback_status2" style="display:none;">callback completed!</div>
+</td></tr>
+
+<tr><td class="samplenote">
+A callback button logging all callback events (5 seconds delay):
+</td><td class="sampleaction">
+<com:TActiveButton
+	Text="click me"
+	OnCallback="buttonCallback"
+>
+	<prop:ClientSide
+		onPreDispatch   = "new Insertion.Bottom('<%= $this->label1->ClientID %>', '<br/>onPreDispatch');"
+		onUninitialized = "new Insertion.Bottom('<%= $this->label1->ClientID %>', '<br/>onUninitialized');"
+		onLoading       = "new Insertion.Bottom('<%= $this->label1->ClientID %>', '<br/>onLoading');"
+		onLoaded        = "new Insertion.Bottom('<%= $this->label1->ClientID %>', '<br/>onLoaded');"
+		onInteractive   = "new Insertion.Bottom('<%= $this->label1->ClientID %>', '<br/>onInteractive');"
+		onComplete      = "new Insertion.Bottom('<%= $this->label1->ClientID %>', '<br/>onComplete');"
+		onSuccess       = "new Insertion.Bottom('<%= $this->label1->ClientID %>', '<br/>onSuccess');"
+		onFailure       = "new Insertion.Bottom('<%= $this->label1->ClientID %>', '<br/>onFailure');"
+		onException     = "new Insertion.Bottom('<%= $this->label1->ClientID %>', '<br/>onException');"
+	/>
+</com:TActiveButton>
+<br/><com:TLabel ID="label1" ForeColor="Red" Text="waiting for button click.." />
+</td></tr>
+
+<tr><td class="samplenote">
+A callback with RequestTimeout="3000" (3 seconds). Since the callback will take 5 seconds to complete, the clientside will timeout.
+This will cause a "missing page state" error; note that the callback is not considered failed, since no
+connection error has occured.
+</td><td class="sampleaction">
+<com:TActiveButton
+	Text="click me"
+	OnCallback="buttonCallback"
+>
+	<prop:ClientSide
+		onPreDispatch   = "new Insertion.Bottom('<%= $this->label2->ClientID %>', '<br/>onPreDispatch');"
+		onUninitialized = "new Insertion.Bottom('<%= $this->label2->ClientID %>', '<br/>onUninitialized');"
+		onLoading       = "new Insertion.Bottom('<%= $this->label2->ClientID %>', '<br/>onLoading');"
+		onLoaded        = "new Insertion.Bottom('<%= $this->label2->ClientID %>', '<br/>onLoaded');"
+		onInteractive   = "new Insertion.Bottom('<%= $this->label2->ClientID %>', '<br/>onInteractive');"
+		onComplete      = "new Insertion.Bottom('<%= $this->label2->ClientID %>', '<br/>onComplete');"
+		onSuccess       = "new Insertion.Bottom('<%= $this->label2->ClientID %>', '<br/>onSuccess');"
+		onFailure       = "new Insertion.Bottom('<%= $this->label2->ClientID %>', '<br/>onFailure');"
+		onException     = "new Insertion.Bottom('<%= $this->label2->ClientID %>', '<br/>onException');"
+		RequestTimeOut  = "3000"
+	/>
+</com:TActiveButton>
+<br/><com:TLabel ID="label2" ForeColor="Red" Text="waiting for button click.." />
+</td></tr>
+
+</table>
+
+<com:TJavascriptLogger />
+
+<div class="last-modified">$Id: Home.page -1   $</div></com:TContent>

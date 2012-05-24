@@ -1,0 +1,55 @@
+<com:TContent ID="body">
+
+<h1>TDataGrid Sample 4</h1>
+<h2>Sorting with TDataGrid</h2>
+
+<com:TDataGrid
+	Width="700px"
+	CellPadding="2"
+	ID="DataGrid"
+	AutoGenerateColumns="false"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="#E6ECFF"
+	AllowSorting="true"
+	OnSortCommand="sortDataGrid">
+
+	<com:THyperLinkColumn
+		SortExpression="title"
+		HeaderText="Book Title"
+		DataTextField="title"
+		DataNavigateUrlField="ISBN"
+		DataNavigateUrlFormatString="http://www.amazon.com/gp/product/%s"
+		Target="_blank"
+		/>
+	<com:TBoundColumn
+		SortExpression="publisher"
+		HeaderText="Publisher"
+		DataField="publisher"
+		/>
+	<com:TBoundColumn
+		SortExpression="price"
+		ItemStyle.HorizontalAlign="Right"
+		ItemStyle.Wrap="false"
+		ItemStyle.Font.Italic="false"
+		ItemStyle.ForeColor="green"
+		HeaderText="Price"
+		DataField="price"
+		DataFormatString="$%.2f"
+		/>
+	<com:TCheckBoxColumn
+		SortExpression="instock"
+		HeaderText="In-stock"
+		HeaderStyle.Wrap="false"
+		DataField="instock"
+		/>
+	<com:TTemplateColumn HeaderText="Rating" SortExpression="rating">
+		<prop:ItemTemplate>
+		<img src="images/star<%#$this->NamingContainer->DataItem['rating']%>.gif" alt="" />
+		</prop:ItemTemplate>
+	</com:TTemplateColumn>
+</com:TDataGrid>
+
+<div class="last-modified">$Id: Sample4.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

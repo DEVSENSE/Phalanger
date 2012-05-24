@@ -1,0 +1,17 @@
+<com:TContent ID="body" >
+
+<h1 id="152011">TActiveImageButton</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveImageButton" />
+
+<p class="block-content">
+<tt>TActiveImageButton</tt> is the active counterpart of <tt>TImageButton</tt>.
+When a <tt>TActiveImageButton</tt> is clicked, rather than a normal post back request a callback request is initiated.
+The<tt>OnCallback</tt> event is raised during a callback request and it is raised <b>after</b> the <tt>OnClick</tt> event.
+</p>
+
+<p class="block-content">
+<tt>TActiveImageButton</tt> is similar to <tt>TActiveButton</tt>, except that <tt>TActiveImageButton</tt> displays the button as an image. The image is specified via <tt>ImageUrl</tt>, and the alternate text is specified by <tt>Text</tt>. In addition, it is possible to obtain the coordinate of the point where the image is clicked. The coordinate information is contained in the event parameter of the <tt>OnClick</tt> event (not <tt>OnCallback</tt>).
+</p>
+<com:RunBar PagePath="ActiveControls.Samples.TActiveImageButton.Home" />
+
+<div class="last-modified">$Id: ActiveImageButton.page 2954 2011-06-01 23:01:03Z ctrlaltca@gmail.com $</div></com:TContent>

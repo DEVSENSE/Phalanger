@@ -1,0 +1,93 @@
+<com:TContent ID="body">
+
+<h1>TCheckBox Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A checkbox with customized text alignment, color and font:
+</td><td class="sampleaction">
+<com:TCheckBox
+	Text="checkbox"
+	TextAlign="Left"
+	ForeColor="silver"
+	BackColor="green"
+	Font.Size="14pt"
+/>
+</td></tr>
+
+<tr><td class="samplenote">
+A checkbox with label and input attributes:
+</td><td class="sampleaction">
+<com:TCheckBox
+	Text="click me"
+	InputAttributes.value="value"
+	LabelAttributes.style="color:red"
+/>
+</td></tr>
+
+<tr><td class="samplenote">
+An auto postback checkbox:
+</td><td class="sampleaction">
+<com:TCheckBox
+	AutoPostBack="true"
+	Text="click me"
+	OnCheckedChanged="checkboxClicked"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A checkbox causing validation on a textbox:
+</td><td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	Display="Dynamic"
+	ErrorMessage="input required in the textbox"
+	ValidationGroup="Group"
+	/>
+<com:TCheckBox
+	Text="submit"
+	AutoPostBack="true"
+	ValidationGroup="Group"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A checkbox validated by a required field validator:
+</td><td class="sampleaction">
+<com:TCheckBox
+	ID="CheckBox"
+	Text="Consent"
+	ValidationGroup="Group2"
+	/>
+<com:TButton Text="Submit" ValidationGroup="Group2" />
+<com:TRequiredFieldValidator
+	ControlToValidate="CheckBox"
+	Display="Dynamic"
+	ErrorMessage="You must consent."
+	ValidationGroup="Group2"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A checkbox validated by a required field validator using AutoPostBack:
+</td><td class="sampleaction">
+<com:TCheckBox
+	ID="CheckBox2"
+	Text="Agree"
+	Checked="true"
+	AutoPostBack="true"
+	ValidationGroup="Group3"
+	/>
+<com:TRequiredFieldValidator
+	ControlToValidate="CheckBox2"
+	Display="Dynamic"
+	ErrorMessage="You must agree."
+	ValidationGroup="Group3"
+	/>
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

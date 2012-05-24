@@ -1,0 +1,61 @@
+<com:TContent ID="body">
+
+<h2>Nonlinear Wizard Navigation Sample</h2>
+
+<p>
+In the following survey, if you are a college student, you will be asked which major you are in. Otherwise, the question is skipped to your favorite sport. This demo also shows unidrectional navigation.
+</p>
+
+<com:TWizard ID="Wizard3"
+		BackColor="#FFFBD6"
+		Width="300px"
+		HeaderText="A Mini Survey"
+		ShowSideBar="false"
+		HeaderStyle.BackColor="PaleGoldenrod"
+		HeaderStyle.HorizontalAlign="Center"
+		NavigationStyle.HorizontalAlign="Center"
+		OnNextButtonClick="wizard3NextStep"
+		OnCompleteButtonClick="wizard3Completed" >
+
+  <com:TWizardStep Title="Background" AllowReturn="false">
+    <b><%= $this->Title %></b>
+    <br/><br/>
+    <com:TCheckBox ID="StudentCheckBox" Text="I am a college student." />
+    <br/><br/>
+  </com:TWizardStep>
+
+  <com:TWizardStep Title="Major" AllowReturn="false">
+    <b><%= $this->Title %></b>
+    <br/><br/>
+    My major is
+      <com:TDropDownList ID="DropDownList11">
+        <com:TListItem Value="Computer Science" />
+        <com:TListItem Value="Chemistry" />
+        <com:TListItem Value="Mathematics" />
+        <com:TListItem Value="Others" />
+      </com:TDropDownList>
+    <br/><br/>
+  </com:TWizardStep>
+
+  <com:TWizardStep Title="Hobbies" AllowReturn="false">
+    <b><%= $this->Title %></b>
+    <br/><br/>
+    My favorite Sport is
+      <com:TDropDownList ID="DropDownList22">
+        <com:TListItem Value="Baseball" />
+        <com:TListItem Value="Football" />
+        <com:TListItem Value="Tennis" />
+      </com:TDropDownList>
+    <br/><br/>
+  </com:TWizardStep>
+
+  <com:TWizardStep Title="Summary" StepType="Complete">
+    <h3>Thank you for taking this survey!</h3>
+    <p>
+    <com:TLabel ID="Wizard3Result" />
+    </p>
+  </com:TWizardStep>
+
+</com:TWizard>
+
+<div class="last-modified">$Id: Sample3.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

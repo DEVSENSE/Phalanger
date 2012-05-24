@@ -1,0 +1,60 @@
+<com:TContent ID="body" >
+
+<h1 id="5901">Themes and Skins</h1>
+
+<h2 id="5902">Introduction</h2>
+<p id="760596" class="block-content">
+Themes in PRADO provide a way for developers to provide a consistent look-and-feel across an entire web application. A theme contains a list of initial values for properties of various control types. When applying a theme to a page, all controls on that page will receive the corresponding initial property values from the theme. This allows themes to interact with the rich property sets of the various PRADO controls, meaning that themes can be used to specify a large range of presentational properties that other theming methods (e.g. CSS) cannot. For example, themes could be used to specify the default page size of all data grids across an application by specifying a default value for the <tt>PageSize</tt> property of the <tt>TDataGrid</tt> control.
+</p>
+
+<h2 id="5903">Understanding Themes</h2>
+<p id="760597" class="block-content">
+A theme is a directory consists of skin files, javascript files and CSS files. Any javascript or CSS files contained in a theme will be registered with the page that the theme is applied to. A skin is a set of initial property values for a particular control type. A control type may have one or several skins, each identified by a unique <tt>SkinID</tt>. When applying a theme to a page, a skin is applied to a control if the control type and the <tt>SkinID</tt> value both match to those of the skin. Note, if a skin has an empty <tt>SkinID</tt> value, it will apply to all controls of the particular type whose <tt>SkinID</tt> is not set or empty. A skin file consists of one or several skins, for one or several control types. A theme is the union of skins defined in all skin files.
+</p>
+
+<h2 id="5904">Using Themes</h2>
+<p id="760598" class="block-content">
+To use a theme, you need to set the <tt>Theme</tt> property of the page with the theme name, which is the theme directory name. You may set it in either <a href="?page=Configurations.PageConfig">page configurations</a> or in the constructor or <tt>onPreInit()</tt> method of the page. You cannot set the property after <tt>onPreInit()</tt> because by that time, child controls of the page are already created (skins must be applied to controls right after they are created.)
+</p>
+<p id="760599" class="block-content">
+To use a particular skin in the theme for a control, set <tt>SkinID</tt> property of the control in template like following,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_760194">
+&lt;com:TButton SkinID="Blue" ... /&gt;
+</com:TTextHighlighter>
+<p id="760600" class="block-content">
+This will apply the 'Blue' skin to the button. Note, the initial property values specified by the 'Blue' skin will overwrite any existing property values of the button. Use stylesheet theme if you do not want them to be overwritten. To use stylesheet theme, set the <tt>StyleSheetTheme</tt> property of the page instead of <tt>Theme</tt> (you can have both <tt>StyleSheetTheme</tt> and <tt>Theme</tt>).
+</p>
+<p id="760601" class="block-content">
+To use the Javascript files and CSS files contained in a theme, a <tt>THead</tt> control must be placed on the page template. This is because the theme will register those files with the page and <tt>THead</tt> is the right place to load those files.
+</p>
+<p id="760602" class="block-content">
+It is possible to specify media types of CSS files contained in a theme. By default, a CSS file applies to all media types. If the CSS file is named like <tt>mystyle.print.css</tt>, it will be applied only to <tt>print</tt> media type. As another example, <tt>mystyle.screen.css</tt> applies to <tt>screen</tt> media only, and <tt>mystyle.css</tt> applies to all media types.
+</p>
+
+<h2 id="5905">Theme Storage</h2>
+<p id="760603" class="block-content">
+All themes by default must be placed under the <tt>[AppEntryPath]/themes</tt> directory, where <tt>AppEntryPath</tt> refers to the directory containing the application entry script. If you want to use a different directory, configure the <tt>BasePath</tt> and <tt>BaseUrl</tt> properties of the <tt>System.Web.UI.TThemeManager</tt> module in application configuration,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_760195">
+&lt;service id="page" class="TPageService"&gt;
+    &lt;modules&gt;
+        &lt;module id="theme"
+                class="System.Web.UI.TThemeManager"
+                BasePath="mythemes"
+                BaseUrl="mythemes" /&gt;
+    &lt;/modules&gt;
+&lt;/service&gt;
+</com:TTextHighlighter>
+
+<h2 id="5906">Creating Themes</h2>
+<p id="760604" class="block-content">
+Creating a theme involves creating the theme directory and writing skin files (and possibly Javascript and CSS files). The name of skin files must be terminated with <tt>.skin</tt>. The format of skin files are the same as that of control template files. Since skin files do not define parent-child presentational relationship among controls, you cannot place a component tag within another. And any static texts between component tags are discarded. To define the aforementioned 'Blue' skin for <tt>TButton</tt>, write the following in a skin file,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_760196">
+&lt;com:TButton SkinID="Blue" BackColor="blue" /&gt;
+</com:TTextHighlighter>
+<p id="760605" class="block-content">
+As aforementioned, you can put several skins within a single skin file, or split them into several files. A commonly used strategy is that each skin file only contains skins for one type of controls. For example, <tt>Button.skin</tt> would contain skins only for the <tt>TButton</tt> control type.
+</p>
+<div class="last-modified">$Id: Themes.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

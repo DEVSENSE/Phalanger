@@ -1,0 +1,24 @@
+<com:TContent ID="body" >
+
+<h1 id="162015">TActivePanel</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActivePanel" />
+
+<p class="block-content">
+
+<tt>TActivePanel</tt> is the <tt>TPanel</tt> active control counterpart.
+<tt>TActivePanel</tt> allows the client-side panel contents to be updated during a
+callback response using the <tt>render</tt> method.
+Example: Assume $param is an instance of <tt>TCallbackEventParameter</tt> attached to
+the <tt>OnCallback</tt> event of a <tt>TCallback</tt> with ID "callback1", and
+"panel1" is the ID of a <tt>TActivePanel</tt>.
+
+<com:TTextHighlighter Language="text" CssClass="source block-content">
+function callback1_requested($sender, $param)
+{
+	   $this->panel1->render($param->getNewWriter());
+}
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActivePanel.Home" />
+
+<div class="last-modified">$Id: ActivePanel.page 2954 2011-06-01 23:01:03Z ctrlaltca@gmail.com $</div></com:TContent>

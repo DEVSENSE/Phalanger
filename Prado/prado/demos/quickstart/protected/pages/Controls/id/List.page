@@ -1,0 +1,99 @@
+<com:TContent ID="body" >
+
+<h1 id="4801">Kontrol Daftar</h1>
+<p id="550329" class="block-content">
+Kontrol Daftar yang tercakup pada seksi ini semuanya diturunkan secara langsung atau tidak langsung dari <tt>TListControl</tt>. Oleh karena itu akan berbagi set properti yang sama dan umum dipakai, termasuk,
+</p>
+<ul id="u1" class="block-content">
+<li><tt>Items</tt> - daftar item dalam kontrol. Item adalah tipe <tt>TListItem</tt>. Daftar item bisa dipopulasikan melalui penyatuan data atau ditetapkan dalam template seperti berikut:
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_550115">
+&lt;com:TListBox&gt;
+  &lt;com:TListItem Text="text 1" Value="value 1" /&gt;
+  &lt;com:TListItem Text="text 2" Value="value 2" Selected="true" /&gt;
+  &lt;com:TListItem Text="text 3" Value="value 3" /&gt;
+&lt;/com:TListBox&gt;
+</com:TTextHighlighter>
+</li>
+<li><tt>SelectedIndex</tt> - indeks berbasis-nol pada item yang dipilih dalam daftar item.</li>
+<li><tt>SelectedIndices</tt> - indeks dari semua item yang dipilih.</li>
+<li><tt>SelectedItem</tt> - item yang pertama dipilih dalam daftar item.</li>
+<li><tt>SelectedValue</tt> - nilai dari item pertama yang dipilih dalam daftar item.</li>
+<li><tt>AutoPostBack</tt> - apakah perubahan pilihan pada kontrol memicu postback atau tidak.</li>
+<li><tt>CausesValidation</tt> - apakah validasi harus dilakukan saat postback dipicu oleh kontrol daftar.</li>
+</ul>
+
+<p id="550330" class="block-content">
+Karena <tt>TListControl</tt> berasal dari <tt>TDataBoundControl</tt>, kontrol daftar ini juga berbagi operasi umum yang sama yang dikenal sebagai <tt>databinding</tt> atau penyatuan data. <tt>Items</tt> dapat dipopulasikan dari data yang sudah ada dan ditetapkan oleh <tt>DataSource</tt> atau <tt>DataSourceID</tt>. Fungsi yang memanggil <tt>dataBind()</tt> akan menyebabkan populasi data. Untuk kontrol daftar, data bisa ditetapkan dalam dua jenis format berikut:
+</p>
+<ul id="u2" class="block-content">
+  <li>array satu-dimensi atau obyek yang mengimplementasikan  <tt>ITraversable</tt> :  kunci array akan dipakai sebagai nilai item daftar, dan nilai array akan dipakai sebagai teks item daftar. Sebagai contoh
+<com:TTextHighlighter CssClass="source block-content" id="code_550116">
+$listbox->DataSource=array(
+	'key 1'=>'item 1',
+	'key 2'=>'item 2',
+	'key 3'=>'item 3');
+$listbox->dataBind();
+</com:TTextHighlighter>
+</li>
+  <li>data tabular (dua-dimensi): setiap baris mempopulasi satu item daftar. Nilai item daftar ditetapkan oleh anggota yang diindeks dengan  <tt>DataValueField</tt>, dan teks item daftar dengan <tt>DataTextField</tt>. Sebagai contoh,
+<com:TTextHighlighter CssClass="source block-content" id="code_550117">
+$listbox->DataTextField='name';
+$listbox->DataValueField='id';
+$listbox->DataSource=array(
+	array('id'=>'001','name'=>'John','age'=>31),
+	array('id'=>'002','name'=>'Mary','age'=>30),
+	array('id'=>'003','name'=>'Cary','age'=>20));
+$listbox->dataBind();
+</com:TTextHighlighter>
+</li>
+</ul>
+
+<h2 id="4802">TListBox</h2>
+<p id="550331" class="block-content">
+<tt>TListBox</tt> menampilkan kotak daftar yang membolehkan satu atau multipel pilihan. Setel properti <tt>SelectionMode</tt> sebagai <tt>Single</tt> untuk menjadikan kotak daftar pilihan tunggal, dan <tt>Multiple</tt> untuk kotak daftar pilihan multipel. Jumlah baris ditampilkan dalam kotak ditetapkan melalui nilai properti <tt>Rows</tt>.
+</p>
+<com:RunBar PagePath="Controls.Samples.TListBox.Home" />
+
+<h2 id="4803">TDropDownList</h2>
+<p id="550332" class="block-content">
+<tt>TDropDownList</tt> menampilkan kotak daftar dropdown yang membolehkan pengguna untuk memilih opsi tunggal dari beberapa yang telah ditetapkan.
+</p>
+<p class="block-content">
+Sejak v3.1.1, <tt>TDropDownList</tt> mulai mendukung teks pertanyaan (seperti 'Please select:' sebagai item list pertama). Untuk menggunakan fitur ini, setel baik <tt>PromptText</tt> ataupun <tt>PromptValue</tt>, atau keduanya. Jika pengguna memilih item pertanyaan, dropdown list tidak akan dipilih.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDropDownList.Home" />
+
+<h2 id="4804">TCheckBoxList</h2>
+<p id="550333" class="block-content">
+<tt>TCheckBoxList</tt> menampilkan sebuah daftar kotak centang pada halaman Web. Penjajaran teks selain setiap kotak centang dapat ditetapkan dengan <tt>TextAlign</tt>. Tata letak kotak centang bisa dikontrol oleh properti berikut:
+</p>
+<ul id="u3" class="block-content">
+  <li><tt>RepeatLayout</tt> - berupa <tt>Table</tt> atau <tt>Flow</tt>. <tt>Table</tt> menggunakan sel tabel HTML untuk mengatur kotak centang, sementara <tt>Flow</tt> mengunakan tag span dan break HTML untuk pengaturannya. Dengan tata letak <tt>Table</tt>, anda bisa menyetel <tt>CellPadding</tt> dan <tt>CellSpacing</tt>.</li>
+  <li><tt>RepeatColumns</tt> - berapa banyak kolom kotak centang akan ditampilkan.</li>
+  <li><tt>RepeatDirection</tt> - ke mana menjelajahi kotak centang, dalam cara horisontal (karena kotak centang ditampilkan dalam tata letak mirip-matriks).</li>
+</ul>
+
+<com:RunBar PagePath="Controls.Samples.TCheckBoxList.Home" />
+
+<h2 id="4805">TRadioButtonList</h2>
+<p id="550334" class="block-content">
+<tt>TRadioButtonList</tt> mirip dengan <tt>TCheckBoxList</tt> dalam setiap aspek kecuali bahwa setiap <tt>TRadioButtonList</tt> menampilkan sebuah grup tombol radio. Hanya satu tombol radio dapat dipilih, (<tt>TCheckBoxList</tt> membolehkan pilihan multipel).
+</p>
+<com:RunBar PagePath="Controls.Samples.TRadioButtonList.Home" />
+
+<h2 id="4806">TBulletedList</h2>
+<p id="550335" class="block-content">
+<tt>TBulletedList</tt> menampilkan item dalam format bulat pada halaman Web. Gaya bulat dapat ditetapkan dengan <tt>BulletStyle</tt>. Ketika gaya adalah <tt>CustomImage</tt>, tanda bulat ditampilkan sebagai gambar, yang ditetapkan dengan <tt>BulletImageUrl</tt>.
+</p>
+<p id="550336" class="block-content">
+<tt>TBulletedList</tt> menampilkan teks item dalam tiga mode berbeda,
+</p>
+<ul id="u4" class="block-content">
+  <li><tt>Text</tt> - teks item ditampilkan sebagai teks statis;</li>
+  <li><tt>HyperLink</tt> - setiap item ditampilkan sebagai hiperlink yang URL-nya diberikan oleh nilai item, dan properti <tt>Target</tt> bisa dipakai untuk menetapkan jendela browser;</li>
+  <li><tt>LinkButton</tt> - setiap item ditampilkan sebagai tombol link yang melakukan posts back pada halaman jika pengguna mengkliknya, dan event <tt>OnClick</tt> akan dimunculkan di bawah keadaan demikian.</li>
+</ul>
+
+<com:RunBar PagePath="Controls.Samples.TBulletedList.Home" />
+
+<div class="last-modified">$Id: List.page 2256 2007-09-28 02:04:47Z xue $</div></com:TContent>

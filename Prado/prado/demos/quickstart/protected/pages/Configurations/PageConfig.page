@@ -1,0 +1,47 @@
+<com:TContent ID="body" >
+
+<h1 id="1901">Page Configurations</h1>
+<p id="220217" class="block-content">
+Page configurations are mainly used by <tt>TPageService</tt> to modify or append the application configuration. As the name indicates, a page configuration is associated with a directory storing some page files. It is stored as an XML file named <tt>config.xml</tt>.
+</p>
+<p id="220218" class="block-content">
+When a user requests a page stored under <tt>&lt;BasePath&gt;/dir1/dir2</tt>, the <tt>TPageService</tt> will try to parse and load <tt>config.xml</tt> files under <tt>&lt;BasePath&gt;</tt>, <tt>&lt;BasePath&gt;/dir1</tt> and <tt>&lt;BasePath&gt;/dir1/dir2</tt>. Paths, modules, and parameters specified in these configuration files will be appended or merged into the existing application configuration. Here <tt>&lt;BasePath&gt;</tt> is as defined in <a href="?page=Fundamentals.Services">page service</a>.
+</p>
+<p id="220219" class="block-content">
+The format of a page configuration file is as follows,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_220097">
+<configuration>
+  <paths>
+    <alias id="AliasID" path="AliasPath" />
+    <using namespace="Namespace" />
+  </paths>
+  <modules>
+    <module id="ModuleID" class="ModuleClass"  PropertyName="PropertyValue" ... />
+  </modules>
+  <parameters>
+    <parameter id="ParameterID" class="ParameterClass" PropertyName="PropertyValue" ... />
+  </parameters>
+  <include file="path.to.extconfig" when="PHP expression" />
+  <authorization>
+    <allow pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="get" />
+    <deny pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="post" />
+  </authorization>
+  <pages PropertyName="PropertyValue" ...>
+    <page id="PageID" PropertyName="PropertyValue" ... />
+  </pages>
+</configuration>
+</com:TTextHighlighter>
+<p id="220220" class="block-content">
+The <tt>&lt;paths&gt;</tt>, <tt>&lt;modules&gt;</tt>, <tt>&lt;parameters&gt;</tt> and <tt>&lt;include&gt;</tt> are similar to those in an application configuration. The <tt>&lt;authorization&gt;</tt> element specifies the authorization rules that apply to the current page directory and all its subdirectories. For more details, see <a href="?page=Advanced.Auth">authentication and authorization</a> section. The <tt>&lt;pages&gt;</tt> element specifies the initial values for the properties of pages. Each <tt>&lt;page&gt;</tt> element specifies the initial property values for a particular page identified by the <tt>id</tt> attribute. Initial property values given in the <tt>&lt;pages&gt;</tt> element apply to all pages in the current directory and all its subdirectories.
+</p>
+<p id="220221" class="block-content">
+Complete specification of page configurations can be found in the <a href="<%~../../../../../docs/specs/config.dtd%>">DTD</a> and <a href="<%~../../../../../docs/specs/config.xsd%>">XSD</a> files.
+</p>
+
+<com:SinceVersion Version="3.1.1" />
+<p class="block-content">
+Since version 3.1.1, the <tt>id</tt> attribute in the &lt;page&gt; element can be a relative page path pointing to a page in the subdirectory of the directory containing the page configuration. For example, <tt>id="admin.Home"</tt> refers to the <tt>Home</tt> page under the <tt>admin</tt> directory. The <tt>id</tt> attribute can also contain wildcard '*' to match all pages under the specified directory. For example, <tt>id="admin.*"</tt> refers to all pages under the <tt>admin</tt> directory and its subdirectories. This enhancement allows developers to centralize their page configurations (e.g. put all page initializations in the aplication configuration or the root page configuration.)
+</p>
+
+<div class="last-modified">$Id: PageConfig.page 2214 2007-09-11 13:01:29Z xue $</div></com:TContent>

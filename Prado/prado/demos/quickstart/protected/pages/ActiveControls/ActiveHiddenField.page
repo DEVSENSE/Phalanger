@@ -1,0 +1,12 @@
+<com:TContent ID="body" >
+
+<h1 id="160013">TActiveHiddenField</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveHiddenField" />
+
+<p class="block-content">
+<tt>TActiveHiddenField</tt> is the active control counterpart of <tt>THiddenField</tt> component.
+It displays a hidden input field on a Web page. The value of the input field can be accessed and changed
+on callback via the <tt>Value</tt> property.
+</p>
+
+<div class="last-modified">$Id: ActiveHiddenField.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

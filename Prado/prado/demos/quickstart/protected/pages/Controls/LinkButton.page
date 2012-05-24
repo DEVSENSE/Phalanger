@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="3601">TLinkButton</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TLinkButton" />
+
+<p id="410282" class="block-content">
+<tt>TLinkButton</tt> is similar to <tt>TButton</tt> in every aspect except that <tt>TLinkButton</tt> is displayed as a hyperlink. The link text is determined by its <tt>Text</tt> property. If the <tt>Text</tt> property is empty, then the body content of the button is displayed (therefore, you can enclose a &lt;img&gt; tag within the button body and get an image button.
+</p>
+<com:RunBar PagePath="Controls.Samples.TLinkButton.Home" />
+
+<div class="last-modified">$Id: LinkButton.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

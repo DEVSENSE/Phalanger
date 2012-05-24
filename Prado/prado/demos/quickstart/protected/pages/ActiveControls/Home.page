@@ -1,0 +1,465 @@
+<com:TContent ID="body" >
+<!-- $Id: Home.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $ -->
+<h1 id="128031">Active Controls (AJAX enabled Controls)</h1>
+<p id="640423" class="block-content">See the <a href="?page=ActiveControls.Introduction">Introduction</a>
+for a quick overview of the concept behind active controls (AJAX enabled controls).
+Most active controls have a property of
+<a href="?page=ActiveControls.BaseActiveControl">ActiveControl</a> and
+a sub-property <a href="?page=ActiveControls.CallbackClientSide">ClientSide</a>
+that provides many properties to customize the controls. The
+<a href="?page=TCallbackClientScript">CallbackClient</a> property of the
+<tt>TPage</tt> class provides many methods to update and alter the client-side content
+during a callback request. Active controls is reliant on a collection
+of <a href="?page=ActiveControl.ClientSideJavascript">javascript classes</a>.
+</p>
+
+<p id="640424" class="block-content">For a quick demo of active controls, try the <a href="?page=ActiveControls.ActiveButton">
+TActiveButton</a> control. See also the later part of the <a href="?page=Tutorial.CurrencyConverter">Currency Converter</a> tutorial for a more in depth example.
+</p>
+
+<h2 id="128032">Standard Active Controls</h2>
+<ul id="u1" class="block-content">
+  <li>
+  <a href="?page=ActiveControls.ActiveButton">TActiveButton</a>
+  represents a click button on a Web page. It can be used to trigger a callback request.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveCheckBox">TActiveCheckBox</a>
+  represents a checkbox on a Web page. It can be used to collect two-state user input
+  and can trigger a callback request.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveCustomValidator">TActiveCustomValidator</a>
+  validates a particular control using a callback request.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveDatePicker">TActiveDatePicker</a>
+  adds a date picker that permits the suer to choose a date.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveFileUpload">TActiveFileUpload</a>
+  displays a file upload field on a page and uses an iframe to permit handling of the
+  file upload in a callback.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveHiddenField">TActiveHiddenField</a>
+  displays a hidden input field that can be changed upon callback.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveHyperLink">TActiveHyperLink</a>
+  represents a hyperlink on a Web page.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveImage">TActiveImage</a>
+  represents an image on a Web page.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveImageButton">TActiveImageButton</a>
+  represents a click button that has an image as the background.
+  It is can be used to trigger a callback request.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveLabel">TActiveLabel</a>
+  represents a label on a Web page.
+  The label can be customized via various CSS attributes.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveLinkButton">TActiveLinkButton</a>
+  represents a hyperlink that can perform a callback request.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveMultiView">TActiveMultiView</a>
+  represents a container for a group of TView controls, each of which is container for other controls.
+  At any time, at most one TView is visible. It's the active counterpart of TMultiView.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
+  represents a container for other controls on a Web page. In HTML,
+  it is displayed as a &lt;div&gt; element. The panel's contents
+  can be replaced during a callback request.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActivePager">TActivePager</a>
+  generates UI that allows users to interactively specify which page of
+  data to be displayed in a data-bound control.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
+  represents a radiobutton on a Web page.
+  It is mainly used in a group from which users make a choice. It can
+  be used to perform a callback request.
+  </li>
+
+  <li>
+  <a href="">TActiveRatingList</a>
+  is an EXPERIMENTAL class that displays clickable images that represent a TRadioButtonList.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a>
+  represents a text input field on a Web page.
+  It can collect single-line, multi-line or password text input from users.
+  It can be used to perform a callback request.
+  </li>
+
+</ul>
+
+<h2 id="128033">Active List Controls</h2>
+<ul id="u2" class="block-content">
+  <li>
+  <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
+  displays a list of checkboxes on a Web page and each checkbox
+  can trigger a callback request.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveDropDownList">TActiveDropDownList</a>
+  displays a dropdown list box that allows users to select a
+  single option from a few prespecified ones. It can be used
+  to perform a callback request.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveListBox">TActiveListBox</a>
+  displays a list box that allows single or multiple selection. It can be used
+  to perform a callback request.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveRadioButtonList">TActiveRadioButtonList</a>
+  is similar to TActiveCheckBoxList in every aspect except that each
+  TActiveRadioButtonList displays a group of radiobuttons. Each radio button
+  can perform a callback request.
+  </li>
+</ul>
+
+<h2 id="134001">Active Data Controls</h2>
+<ul id="u2" class="block-content">
+  <li>
+  <a href="?page=ActiveControls.ActiveDataList">TActiveDataList</a>
+  is used to display or modify a list of data items. It is the
+  active counterpart to the original TDataList control.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveDataGrid">TActiveDataGrid</a>
+  displays data in a tabular format with rows and columns. It is the
+  active counterpart to the original TDataGrid control.
+  </li>
+
+  <li>
+  <a href="?page=ActiveControls.ActiveRepeater">TActiveRepeater</a>
+  displays its content defined in templates repeatedly based on the given data.
+  It is the active counterpart to the original TRepeater control.
+  </li>
+</ul>
+
+<h2 id="128034">Extended Active Controls</h2>
+
+
+<ul id="u3" class="block-content">
+	<li>
+	<a href="?page=ActiveControls.AutoComplete">TAutoComplete</a>
+	extends TActiveTextBox to offer text completion suggestions.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.Callback">TCallback</a>
+	a generic control that can perform callback requests.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.EventTriggeredCallback">TEventTriggeredCallback</a>
+	triggers a callback request based on HTML DOM events.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.InPlaceTextBox">TInPlaceTextBox</a>
+	represents a label that can be edited by clicked.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.TimeTriggeredCallback">TTimeTriggeredCallback</a>
+	triggers a callback request based on time elapsed.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.ValueTriggeredCallback">TValueTriggeredCallback</a>
+	monitors (using a timer) an attribute of an HTML element and triggers a callback request
+	when the attribute value changes.
+	</li>
+	
+	<li>
+	<a href="?page=ActiveControls.DragDrop">TDropContainer &amp; TDraggable</a> represents drag and drop containers. 
+	The former will make its child controls "draggable" while the latter will raise a callback when a draggable
+	control is dropped on it.
+	</li>
+
+</ul>
+
+<h2 id="128035">Active Control Abilities</h2>
+<p id="640426" class="block-content">The following table shows the Active Controls that can trigger a
+callback event and whether the control will raise a PostBack event
+if Javascript was disabled on the client's browser.</p>
+<!-- tabular: align=|l|l|l|, width=(0.35 0.25 0.25) -->
+<table class="tabular">
+	<tr>
+		<th>Control Name</th>
+		<th>Triggers Callback</th>
+		<th>Falls back to PostBack</th>
+  </tr>
+  <tr><td>
+  		<a href="?page=ActiveControls.ActiveButton">TActiveButton</a>
+  	</td>
+  	<td>Yes</td>
+  	<td>Yes</td>
+  </tr>
+
+  <tr><td>
+  	<a href="?page=ActiveControls.ActiveCheckBox">TActiveCheckBox</a>
+  	</td>
+  	<td>Yes</td>
+  	<td>Yes</td>
+  </tr>
+
+  <tr><td>
+  	<a href="?page=ActiveControls.ActiveCustomValidator">TActiveCustomValidator</a>
+  	</td>
+  	<td>Yes</td>
+  	<td>Yes</td>
+  </tr>
+
+  <tr><td>
+  	<a href="?page=ActiveControls.ActiveHyperLink">TActiveHyperLink</a>
+  	</td>
+  	<td>No</td><td>Yes</td>
+  </tr>
+
+  <tr><td>
+  	<a href="?page=ActiveControls.ActiveImage">TActiveImage</a>
+  </td>
+  <td>No</td><td>Yes</td>
+  </tr>
+
+  <tr><td>
+  	<a href="?page=ActiveControls.ActiveImageButton">TActiveImageButton</a>
+	</td>
+	<td>Yes</td><td>Yes</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveLabel">TActiveLabel</a>
+	</td>
+	<td>No</td><td>Yes</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveLinkButton">TActiveLinkButton</a>
+	</td>
+	<td>Yes</td><td>No</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActivePanel">TActivePanel</a>
+  </td>
+  <td>No</td><td>Yes</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveRadioButton">TActiveRadioButton</a>
+  </td>
+  <td>Yes</td><td>Yes</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveTextBox">TActiveTextBox</a>
+	</td>
+	<td>Yes</td><td>Yes</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
+	</td>
+	<td>No</td><td>N/A</td>
+  </tr>
+
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveCheckBoxList">TActiveCheckBoxList</a>
+  </td>
+  <td>Yes</td><td>Yes</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveDropDownList">TActiveDropDownList</a>
+  </td>
+  <td>Yes</td><td>Yes</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveListBox">TActiveListBox</a>
+  </td>
+  <td>Yes</td><td>Yes</td>
+  </tr>
+
+  <tr><td>
+  <a href="?page=ActiveControls.ActiveRadioButtonList">TActiveRadioButtonList</a>
+  </td>
+  <td>Yes</td><td>Yes</td>
+  </tr>
+
+  <tr><td>
+	<a href="?page=ActiveControls.AutoComplete">TAutoComplete</a>
+  </td>
+  <td>Yes</td>
+  <td>No</td>
+  </tr>
+
+  <tr><td>
+	<a href="?page=ActiveControls.Callback">TCallback</a>
+  </td>
+  <td>Yes</td><td>No</td>
+  </tr>
+
+  <tr><td>
+	<a href="?page=ActiveControls.EventTriggeredCallback">TEventTriggeredCallback</a>
+  </td>
+  <td>Yes</td><td>No</td>
+  </tr>
+
+ <tr><td>
+	<a href="?page=ActiveControls.InPlaceTextBox">TInPlaceTextBox</a>
+  </td>
+  <td>Yes</td><td>No</td>
+  </tr>
+
+ <tr><td>
+	<a href="?page=ActiveControls.TimeTriggeredCallback">TTimeTriggeredCallback</a>
+	</td>
+	<td>Yes</td><td>No</td>
+  </tr>
+
+  <tr><td>
+	<a href="?page=ActiveControls.ValueTriggeredCallback">TValueTriggeredCallback</a>
+	</td>
+	<td>Yes</td><td>No</td>
+  </tr>
+  
+  <tr><td>
+  	<a href="?page=ActiveControls.DragDrop">TDropContainer</a>
+  	</td>
+  	<td>Yes</td><td>No</td>
+  </tr>
+
+  <tr><td>
+  	<a href="?page=ActiveControls.DragDrop">TDraggable</a>
+  	</td>
+  	<td>No</td><td>No</td>
+  </tr>
+
+  
+</table>
+
+<h2 id="128036">Active Control Basic Infrastructure Classes</h2>
+<p id="640427" class="block-content">The following classes provide the basic infrastructure classes required to
+realize the active controls. They can be useful to develop new active controls, but Prado users tipically don't need
+to use them.</p>
+<ul id="u4" class="block-content">
+	<li>
+	<h3 id="210028">TActiveControlAdapter</h3>
+	<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveControlAdapter" />
+	<p class="block-content">
+		<tt>TActiveControlAdapter</tt> customizes the parent TControl class for active control classes.
+		It tracks changes in the viewstate values of the control and update
+		differences of the client-side HTML element attributes.
+	</p>
+	</li>
+
+	<li>
+	<h3 id="210029">TActiveListControlAdapter</h3>
+	<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveListControlAdapter" />
+	<p class="block-content">
+		<tt>TActiveListControlAdapter</tt> allows the adapted list controls to change the selections
+		on the client-side during a callback request.
+	</p>
+	</li>
+
+	<li>
+	<h3 id="210030">TActivePageAdapter</h3>
+	<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActivePageAdapter" />
+	<p class="block-content">
+		<tt>TActivePageAdapter</tt> process the page life-cycle for callback requests.
+	</p>
+	</li>
+
+	<li>
+	<h3 id="210031">TBaseActiveControl</h3>
+	<com:DocLink ClassPath="System.Web.UI.ActiveControls.TBaseActiveControl" />
+	<p class="block-content">
+		<tt>TBaseActiveControl</tt> class provided additional basic properties common for every
+		active control. An instance of <tt>TBaseActiveControl</tt> or its decendent
+		<tt>TBaseActiveCallbackControl</tt> is created by <tt>TActiveControlAdapter::getBaseActiveControl()</tt>
+		method.
+		The <tt>EnableUpdate</tt> property determines wether the active
+		control is allowed to update the contents of the client-side when the callback
+		response returns.
+	</p>
+	</li>
+
+	<li>
+	<h3 id="210032">TCallbackResponseAdapter</h3>
+	<com:DocLink ClassPath="System.Web.UI.ActiveControls.TCallbackResponseAdapter" />
+	<p class="block-content">
+		<tt>TCallbackResponseAdapter</tt> alters the <tt>THttpResponse</tt>'s outputs.
+		A <tt>TCallbackResponseWriter</tt> is used instead of the <tt>TTextWrite</tt> when
+		<tt>createHtmlWriter</tt> is called. Each call to createHtmlWriter will create
+		a new <tt>TCallbackResponseWriter</tt>. When <tt>flushContent()</tt> is called each
+		instance of <tt>TCallbackResponseWriter</tt>'s content is flushed.
+		The callback response data can be set using the <tt>ResponseData</tt> property.
+	</p>
+	</li>
+
+</ul>
+
+<h2 id="210027">Active Control Infrastructure Advanced Classes</h2>
+<p class="block-content">The following classes provide advanced properties and events needed to realize the active controls.
+A Prado user can use them to customize active controls behaviour and interact directly with the client side during a callback.
+</p>
+<ul class="block-content">
+	<li>
+	<a href="?page=ActiveControls.CallbackClientScript">TCallbackClientScript</a>
+	methods to manipulate the client-side HTML elements, also includes methods
+	to invoke javascript Effects on HTML elements.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a>
+	is used to specify client-side callback request options and client-side event handlers.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.CallbackEventParameter">TCallbackEventParameter</a>
+	provides the parameter passed during the callback request.
+	</li>
+
+	<li>
+	<a href="?page=ActiveControls.CallbackOptions">TCallbackOptions</a>
+	allows a common set of callback client-side options to be attached to one or more active controls.
+	</li>
+</ul>
+
+<div class="last-modified">$Id: Home.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

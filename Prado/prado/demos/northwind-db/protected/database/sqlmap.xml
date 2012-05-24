@@ -1,0 +1,107 @@
+<sqlmap>
+
+	<select id="order-subtotal">
+		SELECT 
+			"Order Details".OrderID as OrderID, 
+			Sum(("Order Details".UnitPrice*Quantity*(1-Discount)/100)*100) AS Subtotal 
+		FROM "Order Details" 
+		GROUP BY "Order Details".OrderID
+	</select>
+
+	<!-- Show all the Cities we ship to or where a supplier is located -->
+	<select id="all-cities">
+		SELECT City FROM SUPPLIERS
+		Union
+		SELECT ShipCity FROM ORDERS
+	</select>
+
+	<!-- Find Suppliers that supply the categories such as 'Produce', 'Seafood', 'Condiments' -->
+	<select id="suppliers-with" parameterClass="array">
+		SELECT SupplierID, COUNT(P.CategoryID)
+		FROM (SELECT DISTINCT SupplierID, CategoryID FROM Products) P
+		INNER Join Categories C on C.CategoryID = P.CategoryID
+		WHERE CategoryName IN ('Produce', 'Seafood', 'Condiments')
+		GROUP BY SupplierID
+		HAVING COUNT(P.CategoryID) = 
+			(SELECT COUNT(CategoryID) 
+				from Categories 
+				WHERE CategoryName 
+				IN ('Produce', 'Seafood', 'Condiments'))
+	</select>
+
+	<!-- Show Cities we ship to that also have a supplier located there -->
+	<select id="supplier-cities">
+		SELECT DISTINCT ShipCity FROM ORDERS
+		WHERE EXISTS (SELECT 1 from SUPPLIERS WHERE ShipCity = City)
+	</select>
+
+	<!-- Show Cities we ship to that do not have a supplier located there -->
+	<select id="shipping-cities">
+		SELECT DISTINCT ShipCity FROM ORDERS
+		WHERE NOT EXISTS (SELECT 1 from SUPPLIERS WHERE ShipCity = City)
+	</select>
+
+	<!-- Show all possible Supplier Product Combinations -->
+	<select id="supplier-products">
+		SELECT * FROM Suppliers S CROSS Join Products
+	</select>
+
+	<!-- Products over a certain unit price -->
+	<select id="products-with-price">
+	<![CDATA[
+		SELECT
+			p.ProductName,
+			c.CategoryName,
+			p.UnitPrice
+		FROM Products p
+			INNER JOIN Categories c ON
+				c.CategoryID = p.CategoryID
+		WHERE p.UnitPrice < #value#
+		ORDER BY CategoryName ASC, UnitPrice ASC, ProductName ASC
+	]]>
+	</select>
+
+	<!-- employee's manager's name and number of subordinates (if the employee has a manager) -->
+	<select id="employee-subordinates">
+		SELECT 
+			Employee.LastName, 
+			Employee.FirstName, 
+			Employee.NumberOfSubordinates,
+			Manager.LastName as ManagerLastName, 
+			Manager.FirstName as ManagerFirstName, 
+			Manager.NumberOfSubordinates as ManagerNumberOfSubordinates
+		FROM EmployeeSubordinatesReport Employee
+			LEFT JOIN EmployeeSubordinatesReport Manager ON
+				Employee.ReportsTo = Manager.EmployeeID
+	</select>
+
+	<select id="pivot-test">
+		SELECT
+			o.customerID, 
+			c.CompanyName, 
+			p.productName, 
+			sum(od.quantity) as Qty 
+		FROM orders o 
+			INNER JOIN
+				[order details] od on o.orderID = od.orderID 
+			INNER JOIN
+				Products p on od.ProductID = p.ProductID 
+			INNER JOIN
+				Customers c  on o.CustomerID = c.CustomerID 
+		GROUP BY
+			o.customerID, c.CompanyName, p.ProductName
+	</select>
+
+	<select id="employee-sales">
+		SELECT 
+			e.firstName,
+			c.CompanyName, 
+			COUNT(o.orderID)
+		FROM Employees e
+			JOIN Orders o ON e.employeeID=o.employeeID
+			JOIN Customers c ON c.customerID=o.customerID
+		GROUP BY e.firstName, c.CompanyName
+		ORDER BY e.firstName, c.CompanyName
+	</select>
+
+</sqlmap>

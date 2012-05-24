@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+
+  <modules>
+  	<module id="users" class="ChatUserManager" />
+    <module id="auth" class="TAuthManager" UserManager="users" LoginPage="Login" />
+  </modules>
+
+  <authorization>
+	<allow pages="Login" users="?" />
+    <allow roles="normal" />
+    <deny users="*" />
+  </authorization>
+
+</configuration>

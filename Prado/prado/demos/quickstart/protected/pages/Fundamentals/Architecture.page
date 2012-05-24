@@ -1,0 +1,13 @@
+<com:TContent ID="body" >
+<h1 id="601">Architecture</h1>
+
+<p id="100111" class="block-content">
+PRADO is primarily a presentational framework, although it is not limited to be so. The framework focuses on making Web programming, which deals most of the time with user interactions, to be component-based and event-driven so that developers can be more productive. The following class tree depicts some of the major classes provided by PRADO,
+</p>
+<img src="<%~classtree.gif%>" />
+
+<p id="100112" class="block-content">
+When a PRADO application is processing a page request, its static object diagram can be shown as follows,
+</p>
+<img src="<%~objectdiagram.gif%>" />
+<div class="last-modified">$Id: Architecture.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

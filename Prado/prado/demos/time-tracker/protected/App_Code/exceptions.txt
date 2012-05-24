@@ -1,0 +1,7 @@
+timetracker_user_readonly_id 	= Time tracker user ID is read-only.
+invalid_creator_and_manager		= Unable to find time tracker usernames '{1}' and '{2}' for project '{0}'.
+project_exists					= Project '{0}' already exists.
+daomanager_connection_required	= An TSqlMapper connection is required by Dao Manager.
+daomanager_undefined_connection	= Connection '{0}' for Dao Manager is undefined.
+daomanager_invalid_connection	= Connection '{0}' does not appear to ba a TSqlMapper in Dao Manager.
+daomanager_undefined_dao		= Dao class '{0}' is not registered.

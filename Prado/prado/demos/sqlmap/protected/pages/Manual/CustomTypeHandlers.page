@@ -1,0 +1,114 @@
+<com:TContent ID="body">
+
+<h1>Custom Type Handlers</h1>
+<p>A custom type handler allows you to extend the DataMapper's capabilities in
+handling types that are specific to your database provider, not handled by
+your database provider, or just happen to be part of your application design.
+The SQLMap for PHP DataMapper provides an interface,
+<tt>ITypeHandlerCallback</tt>, for you to use in implementing your custom type
+handler.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+interface ITypeHandlerCallback
+{
+    public function getParameter($object);
+
+    public function getResult($string);
+
+    public function createNewInstance();
+}
+</com:TTextHighlighter>
+
+<p>The <tt>getParameter</tt> method allows you to process a <tt>&lt;statement&gt;</tt>
+parameter's value before it is added as an parameter. This enables you to do
+any necessary type conversion and clean-up before the DataMapper gets to work.</p>
+
+<p>The <tt>getResult</tt> method allows you to process a database result value right
+after it has been retrieved by the DataMapper and before it is used in your
+<tt>resultClass</tt>, <tt>resultMap</tt>, or <tt>listClass</tt>.</p>
+
+<p>The <tt>createNewInstance</tt> method allows the DataMapper to create new instance
+of a particular type handled by this callback.</p>
+
+<p>One scenario where custom type handlers are useful are the when you want to
+use date time values in the database. First, consider a very basic TDateTime
+class.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+class TDateTime
+{
+    private $_datetime;
+
+    public function __construct($datetime=null)
+    {
+        if(!is_null($datetime))
+            $this->setDatetime($datetime);
+    }
+
+    public function getTimestamp()
+    {
+        return strtotime($this->getDatetime());
+    }
+
+    public function getDateTime()
+    {
+        return $this->_datetime;
+    }
+
+    public function setDateTime($value)
+    {
+        $this->_datetime = $value;
+    }
+}
+</com:TTextHighlighter>
+
+<p>We can use a custom type handler to intercept result and parameter mapping
+that uses the say "data" as one of its property type. The handler can be
+written as follows.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+class TDateTimeHandler implements ITypeHandlerCallback
+{
+    public function getResult($string)
+    {
+        return new TDateTime($string);
+    }
+
+    public function getParameter($parameter)
+    {
+        if($parameter instanceof TDateTime)
+            return $parameter->getTimestamp();
+        else
+            return $parameter;
+    }
+
+    public function createNewInstance()
+    {
+        return new TDateTime;
+    }
+}
+</com:TTextHighlighter>
+
+<p>With our custom type handler we can use the handler in our SqlMaps. To do
+that, we specify it as a basic <tt>&lt;typeHandler&gt;</tt> for all <tt>date</tt> types
+mapped in our SqlMap files</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+[Our SqlMap.config]
+
+<typeHandlers>
+ <typeHandler type="date" callback="TDateTimeHandler"/>
+</typeHandlers>
+
+
+[One of our SqlMap.xml files]
+ <parameterMap id="boc-params">
+  <parameter property="releasedDate" type="date"/>
+ </parameterMap>
+
+ <resultMap id="boc-result"  class="BudgetObjectCode">
+  <result property="releasedDate" column="BOC_DATE" type="date"/>
+ </resultMap>
+</com:TTextHighlighter>
+
+</com:TContent>

@@ -1,0 +1,35 @@
+<com:TContent ID="body" >
+
+<h1 id="2201">TColorPicker</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TColorPicker" />
+
+<p class="block-content">
+<tt>TColorPicker</tt> displays a text box for color input purpose.
+Next to the textbox there's a button filled with the current chosen color.
+Users can write a color name directly in the text box as an hex triplet (also known as HTML notation, eg: #FF00FF).
+<br/>Alternatively, if the <tt>ShowColorPicker</tt> property is enabled (it is by default), users can click the button
+to have a color picker UI appear. A color chan be chosen directly by clicking on the color picker.
+</p>
+
+<p class="block-content">
+TColorPicker has three different color picker UI <tt>Mode</tt>s:</p>
+ <ul id="u1" class="block-content">
+ 	<li><tt>Simple</tt> - Grid with 12 simple colors.</li>
+	<li><tt>Basic</tt> - Grid with the most common 70 colors. This is the default mode.</li>
+	<li><tt>Full</tt> - Full-featured color picker.</li>
+ </ul>
+
+<p class="block-content">The <tt>CssClass</tt> property can be used to override the CSS class name
+for the color picker panel. The <tt>ColorStyle</tt> property changes the overall color picker style.
+The following <tt>ColorStyle</tt> values are available:</p>
+	<ul id="u2" class="block-content">
+		<li><tt>default</tt> - The default color picker style.</li>
+	</ul>
+
+<p class="block-content">If the <tt>Mode</tt> property is set to <tt>Full</tt>, the color picker panel will
+display an "Ok" and "Cancel" buttons. You can customize the button labels setting the <tt>OKButtonText</tt>
+and <tt>CancelButtonText</tt> properties.</p>
+
+<com:RunBar PagePath="Controls.Samples.TColorPicker.Home" />
+
+<div class="last-modified">$Id: ColorPicker.page 2942 2011-06-01 19:49:56Z ctrlaltca@gmail.com $</div></com:TContent>

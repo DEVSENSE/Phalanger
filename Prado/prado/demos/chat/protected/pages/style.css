@@ -1,0 +1,82 @@
+body
+{
+	width: 700px;
+	margin: 2em auto;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+h1
+{
+	font-size: 1.5em;
+	color: #444;
+}
+
+.login
+{
+	width: 500px;
+	margin: 1em auto;
+}
+
+.login .username
+{
+	margin: 1em;
+}
+
+.login .login-button
+{
+	padding-left: 7em;
+}
+
+.messages
+{
+	width: 500px;
+	height: 300px;
+	float: left;	
+	border: 1px solid ButtonFace;
+	overflow: auto;
+}
+
+.messages .message
+{
+	margin: 0.4em 1em;
+	font-size: 0.85em;
+}
+
+.user-list
+{
+	margin-left: 2px;
+	float: left;
+	width: 180px;
+	height: 300px;
+	border: 1px solid ButtonFace;
+	overflow: auto;
+	font-size: 0.85em;
+}
+
+.message-input
+{
+	float: left;
+}
+
+.message-input textarea
+{
+	margin-top: 3px;
+	padding: 0.4em 0.2em;			
+	width: 493px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 0.85em;
+	height: 40px;
+}
+
+.send-button
+{
+	margin: 0.5em;
+}
+
+#footer
+{
+	clear: both;
+	font-size: 0.7em;
+	text-align: center;
+	padding-top: 50px;
+}

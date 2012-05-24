@@ -1,0 +1,61 @@
+<%@ Title="My Blog - Edit User" %>
+
+<com:TContent ID="Main">
+ 
+<h1>Edit User</h1>
+
+<span>Username:</span>
+<com:TLabel ID="Username" />
+
+<br/>
+<span>Password:</span>
+<br/>
+<com:TTextBox ID="Password" TextMode="Password" />
+
+<br/>
+<span>Re-type Password:</span>
+<com:TCompareValidator
+	ControlToValidate="Password"
+	ControlToCompare="Password2"
+	ErrorMessage="Your password entries did not match."
+	Display="Dynamic" />
+<br/>
+<com:TTextBox ID="Password2" TextMode="Password" />
+
+<br/>
+<span>Email Address:</span>
+<com:TRequiredFieldValidator
+	ControlToValidate="Email"
+	ErrorMessage="Please provide your email address."
+	Display="Dynamic" />
+<com:TEmailAddressValidator
+	ControlToValidate="Email"
+	ErrorMessage="You entered an invalid email address."
+	Display="Dynamic" />
+<br/>
+<com:TTextBox ID="Email" />
+
+<com:TControl Visible="<%= $this->User->IsAdmin %>">
+<br/>
+<span>Role:</span>
+<br/>
+<com:TDropDownList ID="Role">
+	<com:TListItem Text="Normal User" Value="0" />
+	<com:TListItem Text="Administrator" Value="1" />
+</com:TDropDownList>
+</com:TControl>
+
+<br/>
+<span>First Name:</span>
+<br/>
+<com:TTextBox ID="FirstName" />
+
+<br/>
+<span>Last Name:</span>
+<br/>
+<com:TTextBox ID="LastName" />
+
+<br/>
+<com:TButton Text="Save" OnClick="saveButtonClicked" />
+
+</com:TContent>

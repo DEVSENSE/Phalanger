@@ -1,0 +1,238 @@
+<com:TContent ID="body">
+<h1>Test First!</h1>
+
+<p>Let's say that our most important client has a database and one of the tables
+in the database is a list of people. Our client tells us:</p>
+
+<p>"We would like to use a web application to display the people in this table
+and to add, edit, and delete individual records."</p>
+
+<p>Not a complicated story, but it will cover the CRUD most developers want to
+learn first. :) Let's start with the people table that the client mentioned.
+Since we're keeping it simple, we'll say it's a table in an Access database.
+The table definition is shown as:</p>
+
+<com:TTextHighlighter Language="sql" CssClass="source">
+Name              Type            Size
+PER_ID            Long Integer      4
+PER_FIRST_NAME    Text             40
+PER_LAST_NAME     Text             40
+PER_BIRTH_DATE    Date/Time         8
+PER_WEIGHT_KG     Double            8
+PER_HEIGHT_M      Double            8
+</com:TTextHighlighter>
+
+<div class="tip"><b class="tip">Tip:</b>
+    This example is bundled with a SQLite database file "Data/test.db"
+    that contains the <tt>Person</tt> table and some data, ready to use.
+</div>
+
+<p>The first thing our story says is that client would like to display a list of
+people. The following example shows our test for that.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+&lt;?php
+class PersonTest extends UnitTestCase
+{
+    function testPersonList()
+    {
+        //try it
+        $people = TMapper::instance()->queryForList("SelectAll");
+
+        //test it
+        $this->assertNotNull($people, "Person list is not returned");
+        $this->assertTrue($people->getCount() > 0, "Person list is empty");
+        $person = $people[0];
+        $this->assertNotNull($person, "Person not returned");
+    }
+}
+?&gt;
+</com:TTextHighlighter>
+
+<p>Well, the example sure looks easy enough! We ask a method to "select all", and
+it returns a list of person objects. But, what code do we need to write to
+pass this test?</p>
+
+<div class="note"><b class="tip">Note:</b>
+    Save the <tt>PersonTest.php</tt> into a <tt>tests</tt> directory. 
+    The unit tests are written for the <a href="http://simpletest.sf.net">SimpleTest Unit Testing framework</a>.
+</div>
+
+<p>Now, to setup the testing framework, suppose you have the <tt>SimpleTest</tt>
+framework installed. Then we need to create an entry file to run the tests.
+See the <tt>SimpleTest</tt> documentation for further details on setting up tests.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+&lt;?php
+require_once('../tests/simpletest/unit_tester.php');
+require_once('../tests/simpletest/reporter.php');
+require_once('../SQLMap/TMapper.php');
+require_once('Models/Person.php');
+
+//supress strict warnings from Adodb.
+error_reporting(E_ALL);
+
+$test = new GroupTest('All tests');
+$test->addTestFile('Tests/PersonTest.php'); $test->run(new HtmlReporter());
+?&gt;
+</com:TTextHighlighter>
+
+<p>To run the tests, point your browser to the "<tt>run_test.php</tt>" script file
+served from your web server.</p>
+
+<p>Let's see. The test uses a list of person objects. We could start with a blank
+object, just to satisfy the test, and add the display properties later. But
+let's be naughty and skip a step. Our fully-formed person object is shown in
+the following example</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+&lt;?php
+class Person
+{
+    public $ID = -1;
+    public $FirstName;
+    public $LastName;
+    public $WeightInKilograms = 0.0;
+    public $HeightInMeters = 0.0;
+
+    private $_birthDate;
+
+    //setters and getter for BirthDate
+    public function getBirthDate()
+    {
+        return $this->_birthDate;
+    }
+
+    public function setBirthDate($value)
+    {
+        $this->_birthDate = $value;
+    }
+}
+?&gt;
+</com:TTextHighlighter>
+
+<p>OK, that was fun! The <tt>$this->assertXXX(...)</tt> methods are built into
+<tt>UnitTestCase</tt> class. So to run the unit test example, we just need the
+<tt>TMapper</tt> object and <tt>queryForList</tt> method. Wonderfully, the SQLMap
+DataMapper framework has a <tt>TMapper</tt>class built into it that will work just
+fine for for us to use in this tutorial, so we don't need to write that
+either.</p>
+
+<p>When the <tt>TMapper-&gt;instance()</tt> method is called, an instance of the SQLMap
+<tt>TSqlMapper</tt> class is returned that has various methods available such as
+<tt>queryForList</tt>. In this example, the SQLMap <tt>TSqlMapper-&gt;queryForList()</tt>
+method executes our SQL statement (or stored procedure) and returns the result
+as a list. Each row in the result becomes an entry in the list. Along with
+<tt>queryForList()</tt>, there are also <tt>delete()</tt>, <tt>insert()</tt>,
+<tt>queryForObject()</tt>, <tt>queryForPagedList()</tt> and a few other methods in the
+<a href="?page=Manual.DataMapperAPI">SQLMap API</a>. 
+
+<p>Looking at unit test example, we see that the <tt>queryForList()</tt> method
+takes the name of the statement we want to run. OK. Easy enough. But where
+does SQLMap get the "SelectAll" statement? Some systems try to generate SQL
+statements for you, but SQLMap specializes in data mapping, not code
+generation. It's our job (or the job of our database administrator) to craft
+the SQL or provide a stored procedure. We then describe the statement in an
+XML element, like the one shown the following where
+we use XML elements to map a database statement to an application object.
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMap>
+    <select id="SelectAll" resultClass="Person">
+        SELECT
+            per_id as ID,
+            per_first_name as FirstName,
+            per_last_name as LastName,
+            per_birth_date as BirthDate,
+            per_weight_kg as WeightInKilograms,
+            per_height_m as HeightInMeters
+        FROM
+            person
+    </select>
+</sqlMap>
+</com:TTextHighlighter>
+
+<p>The SQLMap mapping documents can hold several sets of related elements, like
+those shown in the unit test case example. We can also have as many mapping
+documents as we need to help organize our code. Additionally, having multiple
+mapping documents is handy when several developers are working on the project
+at once.</p>
+
+<p>So, the framework gets the SQL code for the query from the mapping, and plugs
+it into a prepared statement. But, how does SQLMap know where to find the
+table's datasource?</p>
+
+<p>Surprise! More XML! You can define a configuration file for each datasource
+your application uses. The following code shows a configuration file named "<tt>sqlmap.config</tt>" for
+our SQLite database.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMapConfig>
+    <provider class="TAdodbProvider">
+        <datasource driver="sqlite" host="Data/test.db" />
+    </provider>
+    <sqlMaps>
+        <sqlMap resource="Data/person.xml"/>
+    </sqlMaps>
+</sqlMapConfig>
+</com:TTextHighlighter>
+
+<p>The <tt>&lt;provider&gt;</tt> specifies the database provider class, in this case
+<tt>TAdodbProvider</tt> using the Adodb library. The <tt>&lt;datasource&gt;</tt> tag
+specifies the database connection details. In this case, for an SQLite
+database, we just need the driver name, and the host that points to the actual
+SQLite database file.</p>
+
+<p>The last part of the configuration file ("sqlMaps") is where we list our
+mapping documents, like the one shown back in the previous code sample. We can
+list as many documents as we need here, and they will all be read when the
+configuration is parsed.</p>
+
+<p>OK, so how does the configuration get parsed?</p>
+
+<p>Look back at the unit test case example. The heart of the code is the call to the
+"<tt>TMapper</tt>" object (under the remark "try it"). The <tt>TMapper</tt> object
+is a singleton that handles the instantiation and configuration of an SQLMap
+<tt>TSqlMapper</tt> object, which provides a facade to the SQLMap DataMapper
+framework API.</p>
+
+<p>The first time that the <tt>TMapper</tt> is called, it reads in the
+<tt>sqlmap.config</tt> file and associated mapping documents to create an instance
+of the <tt>TSqlMapper</tt> class. On subsequent calls, it reuses the
+<tt>TSqlMapper</tt> object so that the configuration is not re-read.</p>
+
+<p>The framework comes bundled with a default <tt>TMapper</tt> class for you to use
+immediately to get access to the SQLMap client <tt>TSqlMapper</tt> object. If you want to use a
+different name other than <tt>sqlmap.config</tt> at the default location for the
+configuration file, or need to use more than one database and have one
+TSqlMapper per database, you can also write your own class to mimic the role of
+the Mapper class view by copying and modifying the standard version.</p>
+
+<div class="tip"><b class="tip">Tip:</b>
+    You can also call <tt>TMapper::configure('/path/to/your/sqlmap.config')</tt>
+    to configure the <tt>TMapper</tt> for a specific configuration file.
+</div>
+
+<p>If we put this all together into a solution, we can "green bar" our test. At
+this point you should have the following files.</p>
+<com:TTextHighlighter Language="code" CssClass="source">
+Data/person.xml             % Mapping file.
+Data/test.db                % SQLite database file.
+
+Models/Person.php           % Person class file.
+
+Tests/PersonTest.php        % Unit test case for Person mapping.
+
+run_tests.php               % Unit test entry point.
+sqlmap.config               % SQLMap configuration file.
+</com:TTextHighlighter>
+
+<p>Run the tests by pointing your browser URL to the "<tt>run_tests.php</tt>" server
+file.</p>
+
+<img src=<%~ example1.png %> class="figure" />
+<div class="caption"><b>Figure 2:</b> Green Bar!</div>
+
+</com:TContent>

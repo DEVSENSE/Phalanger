@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="blog" mode="Debug">
+  <paths>
+    <using namespace="Application.Common.*" />
+  </paths>
+  <!-- modules configured and loaded for all services -->
+  <modules>
+    <!-- Remove this comment mark to enable PATH url format
+    <module id="request" class="THttpRequest" UrlFormat="Path" />
+    -->
+    <module id="cache" class="System.Caching.TSqliteCache" />
+    <module class="Application.Common.BlogErrorHandler" />
+    <module id="log" class="System.Util.TLogRouter">
+      <route class="TFileLogRoute" Categories="BlogApplication" />
+    </module>
+    <module class="System.Util.TParameterModule" ParameterFile="Application.Data.Settings" />
+
+    <!-- use TUrlMapping to map URL patterns to particular requests -->
+    <module id="friendly-url" class="System.Web.TUrlMapping">
+      <url ServiceParameter="Posts.ViewPost" pattern="post/{id}/?" parameters.id="\d+" />
+      <url ServiceParameter="Posts.ListPost" pattern="archive/{time}/?" parameters.time="\d{6}" />
+      <url ServiceParameter="Posts.ListPost" pattern="category/{cat}/?" parameters.cat="\d+" />
+    </module>
+  </modules>
+  <services>
+    <!-- page service -->
+    <service id="page" class="TPageService" BasePath="Application.Pages" DefaultPage="Posts.ListPost">
+      <!-- modules configured and loaded when page service is requested -->
+      <modules>
+        <!-- user manager module -->
+        <module id="users" class="Application.Common.BlogUserManager" />
+        <!-- auth manager module -->
+        <module id="auth" class="System.Security.TAuthManager" UserManager="users" LoginPage="Posts.ListPost" />
+        <module id="data" class="Application.Common.BlogDataModule" />
+      </modules>
+	  <pages MasterClass="Application.Layouts.MainLayout" Theme="Basic" />
+    </service>
+  </services>
+</application>

@@ -1,0 +1,73 @@
+<%@ Title="My Blog - New User" %>
+
+<com:TContent ID="Main">
+ 
+<h1>Create New User</h1>
+
+<span>Username:</span>
+<com:TRequiredFieldValidator 
+	ControlToValidate="Username"
+	ErrorMessage="Please provide a username." 
+	Display="Dynamic" />
+<com:TCustomValidator
+	ControlToValidate="Username"
+	ErrorMessage="Sorry, your username is taken by someone else. Please choose another username."
+	OnServerValidate="checkUsername"
+	Display="Dynamic" />
+<br/>
+<com:TTextBox ID="Username" />
+
+<br/>
+<span>Password:</span>
+<com:TRequiredFieldValidator 
+	ControlToValidate="Password"
+	ErrorMessage="Please provide a password." 
+	Display="Dynamic" />
+<br/>
+<com:TTextBox ID="Password" TextMode="Password" />
+
+<br/>
+<span>Re-type Password:</span>
+<com:TCompareValidator
+	ControlToValidate="Password"
+	ControlToCompare="Password2"
+	ErrorMessage="Your password entries did not match."
+	Display="Dynamic" />
+<br/>
+<com:TTextBox ID="Password2" TextMode="Password" />
+
+<br/>
+<span>Email Address:</span>
+<com:TRequiredFieldValidator
+	ControlToValidate="Email"
+	ErrorMessage="Please provide your email address."
+	Display="Dynamic" />
+<com:TEmailAddressValidator
+	ControlToValidate="Email"
+	ErrorMessage="You entered an invalid email address."
+	Display="Dynamic" />
+<br/>
+<com:TTextBox ID="Email" />
+
+<br/>
+<span>Role:</span>
+<br/>
+<com:TDropDownList ID="Role">
+	<com:TListItem Text="Normal User" Value="0" />
+	<com:TListItem Text="Administrator" Value="1" />
+</com:TDropDownList>
+
+<br/>
+<span>First Name:</span>
+<br/>
+<com:TTextBox ID="FirstName" />
+
+<br/>
+<span>Last Name:</span>
+<br/>
+<com:TTextBox ID="LastName" />
+
+<br/>
+<com:TButton Text="Create" OnClick="createButtonClicked" />
+
+</com:TContent>

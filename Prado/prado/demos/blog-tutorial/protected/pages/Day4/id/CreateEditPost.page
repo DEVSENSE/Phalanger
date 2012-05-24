@@ -1,0 +1,133 @@
+<com:TContent ID="Main">
+
+<h1>Membuat Halaman <tt>EditPost</tt></h1>
+
+<p>
+Halaman <tt>EditPost</tt> disediakan bagi para pembuat dan administrator untuk mengedit tulisan blog yang sudah ada. Seperti halaman <a href="?page=Day4.CreateNewPost">NewPost</a> , ia menampilkan sebuah formulir untuk mengumpulkan perubahan terhadap judul dan konten tulisan.
+</p>
+
+<p>
+Kita membuat dua file <tt>protected/pages/posts/EditPost.page</tt> dan <tt>protected/pages/posts/EditPost.php</tt> masing-masing untuk menyimpan template halaman dan kelas halaman.
+</p>
+
+<h2>Membuat Template Halaman</h2>
+<p>
+Template halaman <tt>EditPost</tt> sangat mirip dengan template <tt>NewPost</tt>. Hanya judul halaman dan tombol yang berbeda.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ Title="My Blog - Edit Post" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Edit Post</h1>
+
+<span>Title:</span>
+&lt;com:TRequiredFieldValidator
+	ControlToValidate="TitleEdit"
+	ErrorMessage="Please provide a title."
+	Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="TitleEdit" Columns="50" />
+
+<br/>
+<span>Content:</span>
+&lt;com:TRequiredFieldValidator
+	ControlToValidate="ContentEdit"
+	ErrorMessage="Please provide content."
+	Display="Dynamic" />
+<br/>
+&lt;com:THtmlArea ID="ContentEdit" />
+
+<br/>
+&lt;com:TButton Text="Save" OnClick="saveButtonClicked" />
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+
+<h2>Membuat Kelas Halaman</h2>
+
+<p>
+Kelas halaman <tt>EditPage</tt> lebih kompleks dibanding <tt>NewPage</tt> karena ia perlu mengambil data tulisan yang ditetapkan terlebih dulu. Ia juga perlu melakukan pemeriksaan otorisasi tambahan. Ada kalanya ia perlu memastikan bahwa tulisan hanya bisa diedit oleh pembuat atau administrator. Pemeriksaan otorisasi sudah disediakan oleh PRADO.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class EditPost extends TPage
+{
+	/**
+	 * Menginisialisasi input dengan data tulisan yang sudah ada.
+	 * Metode ini dipanggil oleh kerangka kerja saat halaman diinisialisasi.
+	 * @param parameter event campuran
+	 */
+	public function onInit($param)
+	{
+		parent::onInit($param);
+		// Menambil data pengguna yang sudah ada. Ini sama dengan:
+		// $postRecord=$this->getPost();
+		$postRecord=$this->Post;
+		// Pemeriksaan otorisasi: hanya pembuat atau administrator dapat mengedit tulisan
+		if($postRecord->author_id!==$this->User->Name && !$this->User->IsAdmin)
+			throw new THttpException(500,'You are not allowed to edit this post.');
+
+		if(!$this->IsPostBack)  // jika halaman pertama kali diminta
+		{
+			// Mempopulasikan kontrol input dengan data tulisan yang sudah ada
+			$this->TitleEdit->Text=$postRecord->title;
+			$this->ContentEdit->Text=$postRecord->content;
+		}
+	}
+
+	/**
+	 * Menyimpan tulisan jika semua input sudah benar.
+	 * Metode ini merespon event OnClick pada tombol "Save".
+	 * @param pengirim event campuran
+	 * @param parameter event campuran
+	 */
+	public function saveButtonClicked($sender,$param)
+	{
+		if($this->IsValid)  // jika semua validasi sukses
+		{
+			// Mengambil data pengguna yang sudah ada. Ini sama dengan:
+			// $postRecord=$this->getPost();
+			$postRecord=$this->Post;
+
+			// Mengambil data input
+			$postRecord->title=$this->TitleEdit->SafeText;
+			$postRecord->content=$this->ContentEdit->SafeText;
+
+			// menyimpan ke database via mekanisme Rekaman Aktif
+			$postRecord->save();
+
+			// mengalihkan browser ke halaman ReadPost
+			$url=$this->Service->constructUrl('posts.ReadPost',array('id'=>$postRecord->post_id));
+			$this->Response->redirect($url);
+		}
+	}
+
+	/**
+	 * Mengembalikan data tulisan yang akan diedit.
+	 * @return PostRecord data tulisan yang akan diedit.
+	 * @throws THttpException jika data tulisan tidak ada.
+	 */
+	protected function getPost()
+	{
+		// ID tulisan yang diedit dikirimkan via parameter GET 'id'
+		$postID=(int)$this->Request['id'];
+		// gunakan Rekaman Aktif untuk mencari ID tulisan tertentu
+		$postRecord=PostRecord::finder()->findByPk($postID);
+		if($postRecord===null)
+			throw new THttpException(500,'Post is not found.');
+		return $postRecord;
+	}
+}
+</com:TTextHighlighter>
+
+<h2>Pengujian</h2>
+<p>
+Untuk menguji halaman <tt>EditPost</tt>, masuk lebih dulu dan kemudian kunjungi URL berikut: <tt>http://hostname/blog/index.php?page=EditPost&id=1</tt>. URL ini juga bisa dijangkau dengan mengklik link <tt>Edit</tt> pada halaman rician tulisan.
+</p>
+
+<img src="<%~ output4.gif %>" class="output" />
+
+</com:TContent>

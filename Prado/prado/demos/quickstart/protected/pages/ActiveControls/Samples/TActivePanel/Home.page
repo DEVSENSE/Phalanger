@@ -1,0 +1,24 @@
+<com:TContent ID="body">
+
+<h1>TActivePanel Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Active panel updated on callback:
+</td><td class="sampleaction">
+<com:TActivePanel ID="panel1" BackColor="#CCFFCC" DefaultButton="button1" Width="400px">
+This is panel content
+<br/>a checkbox: <com:TCheckBox ID="check1"/>
+<br/>a textbox: <com:TTextBox ID="txt1"/>
+<br/>a label: <com:TLabel ID="label1"/>
+<br/><com:TActiveButton ID="button1" Text="click me" OnCallback="buttonClicked" />
+<br/>
+When you press the button, the panel contents will change. Note that out of the
+panel and the button, all the other controls are not active but gets updated
+anyway since they are placed inside the active panel.
+</com:TActivePanel>
+</td></tr>
+</table>
+<com:TJavascriptLogger />
+<div class="last-modified">$Id: Home.page 2952 2011-06-01 22:05:09Z ctrlaltca@gmail.com $</div></com:TContent>

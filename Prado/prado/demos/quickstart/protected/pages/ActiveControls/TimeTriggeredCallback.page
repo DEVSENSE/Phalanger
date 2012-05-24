@@ -1,0 +1,16 @@
+<com:TContent ID="body" >
+
+<h1 id="206025">TTimeTriggeredCallback</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TTimeTriggeredCallback" />
+
+<p class="block-content">
+<tt>TTimeTriggeredCallback</tt> sends callback request every <tt>Interval</tt> seconds.
+Upon each callback request, the <tt>OnCallback</tt> event is raised.
+The timer can be started by calling <tt>startTimer()</tt> and stopped using
+<tt>stopTimer()</tt>. The timer can be automatically started when
+<tt>StartTimerOnLoad</tt> is true.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TTimeTriggeredCallback.Home" />
+
+<div class="last-modified">$Id: TimeTriggeredCallback.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

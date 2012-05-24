@@ -1,0 +1,66 @@
+
+# TSqlMapManager.php
+sqlmap_contains_no_statement			= Unable to find SQLMap statement '{0}'.
+sqlmap_already_contains_statement		= Duplicate SQLMap statement found, '{0}' already exists.
+sqlmap_contains_no_result_map			= Unable to find SQLMap result map '{0}'.
+sqlmap_already_contains_result_map		= Duplicate SQLMap result map found, '{0}' already exists.
+sqlmap_contains_no_parameter_map		= Unable to find SQLMap parameter map '{0}'.
+sqlmap_already_contains_parameter_map	= Duplicate SQLMap parameter map found, '{0}' already exists.
+sqlmap_cache_model_already_exists		= This SQLMap already contains cache model '{0}'.
+sqlmap_unable_to_find_cache_model		= Unable to find cache model '{0}' in this SQLMap.
+
+# TTypeHandlerFactory.php
+sqlmap_dbtype_handler_not_found			= Type handler for dbType='{0}' not found.
+sqlmap_type_handler_class_not_found		= Type handler class '{0}' not found.
+sqlmap_unable_to_find_class				= Unable to find class '{0}'.
+
+# TSqlMapXmlConfig.php
+sqlmap_node_class_undef					= Missing attribute 'class' in tag '{0}' in configuration file '{1}'.
+sqlmap_unable_to_find_parent_result_map	= Unable to find parent SQLMap result map named '{2}' in file {1} near '{0}'.
+sqlmap_undefined_discriminator			= The <discriminator> tag not found in ResultMap '{0}' for sub-map '{2}' in file '{1}'.
+sqlmap_unable_to_find_parent_sql		= Unable to find parent sql statement extension '{0}' near '{2}' in file {1}.
+sqlmap_invalid_property					= Invalid property '{0}' for class '{1}' for tag '{2}' in configuration file '{3}'.
+
+
+# TInlineParameterMapParser.php
+sqlmap_undefined_property_inline_map	= Invalid attribute '{0}' in '{3}' for inline parameter in statement '{2}' in file {1}.
+
+# TSqlMapCacheModel.php
+sqlmap_unable_to_find_implemenation		= Unable to find cache implementation class '{0}'.
+
+# TResultProperty.php
+sqlmap_error_in_result_property_from_handler	= For result map '{0}', error in getting result from type handler '{2}', with value '{1}'.
+
+# TParameterMap.php
+sqlmap_index_must_be_string_or_int		= Invalid index '{0}', must be an integes or string to get a SqlMap parameter map property.
+sqlmap_unable_to_get_property_for_parameter = Unable to find property '{1}' in object '{2}' for parameter map '{0}'.
+sqlmap_error_in_parameter_from_handler	= For parameter map '{0}', error in getting parameter from type handler '{2}' with value '{1}': '{3}'.
+
+# MISC
+sqlmap_type_handler_class_undef			= Unable to find type handler class named '{1}' in sqlmap configuration file '{0}'.
+sqlmap_type_handler_callback_undef		= Attributes 'type' and 'callback' must be defined in typeHandler tag in configuration file '{0}'.
+
+sqlmap_undefined_attribute				= {0} attribute '{1}' is not defined for {2} in file {3}.
+sqlmap_unable_to_find_parent_parameter_map	= Unable to find parent parameter map extension '{0}' in file {1}.
+sqlmap_unable_to_find_result_mapping	= Unable to resolve SQLMap result mapping '{0}' in Result Map '{2}' using configuration file {1}.
+
+sqlmap_undefined_input_property			= Undefined array index '{0}' in retrieving property in SQLMap parameter map '{1}'.
+sqlmap_can_not_instantiate				= Type handler '{0}' can not create new objects.
+sqlmap_cannot_execute_query_for_map		= SQLMap statement class {0} can not query for map in statement '{1}'.
+sqlmap_cannot_execute_update			= SQLMap statement class {0} can not execute update query in statement '{1}'.
+sqlmap_cannot_execute_insert			= SQLMap statement class {0} can not execute insert in statement '{1}'.
+sqlmap_cannot_execute_query_for_list	= SQLMap statement class {0} can not query for list in statement '{1}'.
+sqlmap_cannot_execute_query_for_object	= SQLMap statement class {0} can not query for object in statement '{1}'.
+sqlmap_execution_error_no_record		= No record set found in executing statement '{0}': '{1}'.
+sqlmap_unable_to_create_new_instance	= Unable to create a new instance of '{0}' using type hander '{1}' for SQLMap statement with ID '{2}'.
+sqlmap_invalid_property_type			= Invalid object type, must be 'Object', unable to set property in path '{0}'.
+
+sqlmap_unable_to_find_config			= Unable to find SQLMap configuration file '{0}'.
+sqlmap_unable_to_find_groupby			= Unable to find data in result set with column '{0}' in result map with ID '{1}'.
+sqlmap_invalid_lazyload_list			= Invalid type to lazy load, must specify a valid ListClass in statement '{0}'.
+sqlmap_unable_to_find_resource			= 'Unable to find SQLMap configuration file '{0}'.
+sqlmap_query_execution_error			= Error in executing SQLMap statement '{0}' : '{1}'.
+sqlmap_invalid_delegate					= Invalid callback row delegate '{1}' in mapped statement '{0}'.
+sqlmap_invalid_prado_cache				= Unable to find Prado cache module for SQLMap cache '{0}'.
+
+sqlmap_non_groupby_array_list_type		= Expecting GroupBy property in result map '{0}' since {1}::{2} is an array or TList type.

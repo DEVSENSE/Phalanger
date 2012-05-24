@@ -1,0 +1,39 @@
+<com:TContent ID="body">
+
+<h2>A Single-Step Wizard</h2>
+
+<com:TWizard ID="Wizard1"
+		BackColor="#FFFBD6"
+		Width="400px"
+		SideBarStyle.Width="120px"
+        HeaderText="Please let us know your preference"
+		OnCompleteButtonClick="wizardCompleted" >
+
+  <com:TWizardStep Title="Step 1">
+    <h3>Wizard Step 1</h3>
+    <p>
+    Your favorite color:
+    <com:TDropDownList ID="DropDownList1">
+      <com:TListItem Value="Red" />
+      <com:TListItem Value="Blue" />
+      <com:TListItem Value="Green" />
+      <com:TListItem Value="Purple" />
+      <com:TListItem Value="Black" />
+      <com:TListItem Value="Yellow" />
+      <com:TListItem Value="Orange" />
+      <com:TListItem Value="Pink" />
+      <com:TListItem Value="Cyan" />
+    </com:TDropDownList>
+    </p>
+  </com:TWizardStep>
+
+  <com:TWizardStep Title="Step 2" StepType="Complete">
+    <h3>Wizard Step 2</h3>
+    <p>
+    <com:TLabel ID="Result" />
+    </p>
+  </com:TWizardStep>
+
+</com:TWizard>
+
+<div class="last-modified">$Id: Sample1.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

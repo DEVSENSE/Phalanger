@@ -1,0 +1,80 @@
+div.Keyboard
+{
+    -moz-background-clip: -moz-initial;
+    -moz-background-origin: -moz-initial;
+    -moz-background-inline-policy: -moz-initial;
+    -moz-user-select: none;
+
+    display: block;
+    position: absolute;
+    border: 1px solid #698977;
+    background-color: #DDDDDD;
+    z-index: 1000 !important;
+    visibility: hidden;
+    padding: 4px 4px 4px 4px;
+    text-align: center;
+}
+
+div.Keyboard div.Line
+{
+    width: 267px;
+    height: 18px;
+}
+
+div.Keyboard div.Key
+{
+    width: 17px;
+    height: 17px;
+    margin: 1px 0px 0px 1px;
+    overflow: hidden;
+    float: left;
+    display: inline;
+}
+
+div.Keyboard div.Key div.Key1,
+div.Keyboard div.Key div.Key2
+{
+    overflow: hidden;
+    border: 1px solid #A5A5A5;
+    background-color: #F7F7F7;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #556C5F;
+    font-weight: normal;
+    text-align: center;
+    line-height: 15px;
+    vertical-align: middle;
+    display: block;
+    cursor: pointer;
+}
+
+div.Keyboard div.Key div.Hover
+{
+    color: #E02C03;
+    border-color: #E0431D;
+}
+
+div.Keyboard div.Key div.Active
+{
+    color: #FFFFFF;
+    background-color: #E0431D;
+}
+
+div.Keyboard.Shift div.Key div.Key1,
+div.Keyboard.Caps div.L div.Key1,
+div.Keyboard.Off div.Key div.Key2
+{
+    display: none;
+}
+
+div.Keyboard.Caps div.L div.Key2
+{
+    display: block;
+}
+
+div.Keyboard div.Bksp {width: 31px;}
+div.Keyboard div.Exit {width: 33px;}
+div.Keyboard div.Caps {width: 33px;}
+div.Keyboard div.\\ {width: 24px;}
+div.Keyboard div.Del {width: 24px;}
+div.Keyboard div.Shift {width: 42px;}

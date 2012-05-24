@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+    <modules>
+        <module id="theme"
+                class="System.Web.UI.TThemeManager"
+                BasePath="Quickstart.themes"
+                BaseUrl="../quickstart/themes" />
+    </modules>
+  <pages MasterClass="Application.pages.Manual.Layout" Theme="PradoSoft" />
+</configuration>

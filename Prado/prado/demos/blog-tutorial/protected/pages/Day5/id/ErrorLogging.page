@@ -1,0 +1,159 @@
+<com:TContent ID="Main">
+
+<h1>Penanganan Kesalahan dan Pencatatan</h1>
+
+<p>
+Jika kita mencoba mengakses URL <tt>http://hostname/blog/index.php?page=EditPost&id=100</tt>, kita akan melihat halaman kesalahan berikut karena tulisan dengan ID 100 belum ada dalam sistem blog kita. Kita ingin mengkustomisasi halaman kesalahan ini agar ia terlihat lebih konsisten dengan tata letak halaman blog lain. Kita juga ingin mencatat jenis kesalahan ini untuk mempelajari kebiasaan pengguna. Dalam bagian ini, kita akan melaksanakan dua tugas ini.
+</p>
+
+<img src="<%~ output2.gif %>" class="output" />
+
+<com:InfoBox>
+Tugas penting dalam aplikasi Web adalah <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Error">penanganan kesalahan</a> yang sering dikaitkan dengan <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Logging">pencatatan</a>. Ada dua jenis kesalahan yang bisa terjadi dalam aplikasi PRADO: yang disebabkan oleh para pengembang dan yang disebabkan oleh pengguna-akhir. Pembentuk harus dipecahkan sebelum aplikasi dijadikan tahap produksi, sementara yang terakhir biasanya di dalam lingkup desain awal dan harus ditangani dengan baik (misalnya mencatat kesalahan dan menampilkan halaman khusus yang menginstruksikan pengguna-akhir apa yang harus dilakukan selanjutnya). PRADO mengimplementasikan kerangka kerja yang fleksibel serta bertenaga untuk menangani kesalahan dan pencatatan.
+</com:InfoBox>
+
+
+<h2>Mengkustomisasi Penanganan Kesalahan</h2>
+
+<p>
+PRADO secara implisit mengambil modul <tt>TErrorHandler</tt> untuk menangani kesalahan. Kita ingin mengkustomisasi modul ini agar sistem blog kita dapat menampilkan halaman terkustomisasi untuk kesalahan yang disebabkan oleh pengguna-akhir. Selanjutnya memodifikasi konfigurasi aplikasi seperti berikut:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+......
+<modules>
+    ......
+    <module class="Application.BlogErrorHandler" />
+    ......
+</modules>
+......
+</com:TTextHighlighter>
+
+<p>
+Kelas <tt>BlogErrorHandler</tt> seperti ditetapkan di atas adalah modul pengendali kesalahan baru as yang akan dibuat berikutnya. Ia memperluas dan mengganti modul standar <tt>TErrorHandler</tt>.
+</p>
+
+<p>
+Kita membuat sebuah file bernama <tt>protected/BlogErrorHandler.php</tt> seperti berikut. Kelas <tt>BlogErrorHandler</tt> mengganti dua metode <tt>TErrorHandler</tt>:
+</p>
+<ul>
+  <li><tt>getErrorTemplate()</tt> - metode ini mengembalikan string template yang dipakai untuk menampilkan kesalahan pengguna tertentu.</li>
+  <li><tt>handleExternalError()</tt> - metode ini dipanggil saat kesalahan pengguna terjadi dan menampilkan kesalahannya.</li>
+</ul>
+<com:TTextHighlighter CssClass="source" Language="php">
+Prado::using('System.Exceptions.TErrorHandler');
+Prado::using('Application.BlogException');
+
+class BlogErrorHandler extends TErrorHandler
+{
+	/**
+	 * Mengambil template yang dipakai untuk menampilkan eksepsi eksternal.
+	 * Metode ini mengganti implementasi leluhurnya.
+	 */
+	protected function getErrorTemplate($statusCode,$exception)
+	{
+		// gunakan template sendiri untuk BlogException
+		if($exception instanceof BlogException)
+		{
+			// ddapatkan path file template kesalahan: protected/error.html
+			$templateFile=Prado::getPathOfNamespace('Application.error','.html');
+			return file_get_contents($templateFile);
+		}
+		else // sebaliknya gunakan template yang didefinisikan oleh PRADO
+			return parent::getErrorTemplate($statusCode,$exception);
+	}
+
+	/**
+	 * Menangani kesalahan eksternal yang disebabkan oleh pengguna-akhir.
+	 * Metode ini mengganti implementasi leluhurnya.
+	 * Ini dipanggil oleh PRADO saat eksepsi eksternal dikeluarkan.
+	 */
+	protected function handleExternalError($statusCode,$exception)
+	{
+		// catat kesalahan (hanya untuk BlogException)
+		if($exception instanceof BlogException)
+			Prado::log($exception->getErrorMessage(),TLogger::ERROR,'BlogApplication');
+		// panggil implementasi leluhur untuk menampilkan kesalahan
+		parent::handleExternalError($statusCode,$exception);
+	}
+}
+</com:TTextHighlighter>
+
+<p>
+Dalam kode di atas, kita menetapkan bahwa saat <tt>BlogException</tt> dikeluarkan, kita menggunakan template baru <tt>protected/error.html</tt> untuk menampilkan kesalahan. Oleh karena itu, kita perlu membuat kelas <tt>BlogException</tt> dan mengganti semua <tt>THttpException</tt> yang ada dalam kode kita (seperti misalnya <a href="?page=Day3.CreateEditUser">EditUser</a> dan halaman <a href="?page=Day4.CreateReadPost">ReadPost</a>). Kita juga perlu membuat template kesalahan <tt>protected/error.html</tt>. Kelas <tt>BlogException</tt> memperluas <tt>THttpException</tt> dan kosong. File kelas disimpan sebagai <tt>protected/BlogException.php</tt>.
+
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class BlogException extends THttpException
+{
+}
+</com:TTextHighlighter>
+
+<p>
+Di bawah ini konten dalam template kesalahan kita <tt>protected/error.html</tt>. Catatan, template bukan template PRADO karena ia hanya mengenal jumlah token yang sangat terbatas, seperti <tt>%%ErrorMessage%%</tt>, <tt>%%ServerAdmin%%</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<html>
+<head>
+<title>%%ErrorMessage%%</title>
+</head>
+<body>
+<div id="page">
+<div id="header">
+<h1>My PRADO Blog</h1>
+</div>
+<div id="main">
+<p style="color:red">%%ErrorMessage%%</p>
+<p>
+The above error happened when the server was processing your request.
+</p>
+<p>
+If you think this is a server error, please contact the <a href="mailto:%%ServerAdmin%%">webmaster</a>.
+</p>
+</div>
+</body>
+</html>
+</com:TTextHighlighter>
+
+
+<h2>Mencatat Kesalahan</h2>
+
+<p>
+Dalam metode <tt>handleExternalError()</tt> pada  <tt>BlogErrorHandler</tt>, kita memanggil <tt>Prado::log()</tt> untuk mencatat kesalahan jika tipenya adalah <tt>BlogException</tt>. Kesalahan dicatat dalam memori. Untuk menyimpan catatan ke dalam medium permanen seperti file atau database, kita perlu menghidupkan rute pencatatan kesalahan yang sesuai. Ini dikerjakan dalam konfigurasi aplikasi seperti berikut:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+......
+<modules>
+    ......
+    <module id="log" class="System.Util.TLogRouter">
+        <route class="TFileLogRoute" Categories="BlogApplication" />
+    </module>
+    ......
+</modules>
+......
+</com:TTextHighlighter>
+
+<p>
+Dalam konfigurasi di atas, kita menambahkan rute log yang menyimpan catatan ke dalam sebuah file. Kita juga menetapkan filter kategori sebagai <tt>BlogApplication</tt> agar hanya mencatat pesan pada kategori yang dipilih yang disimpan. Ini membantu mengurangi ukuran file catatan dan juga meningkatkan pembacaannya.
+</p>
+
+<h2>Pengujian</h2>
+<p>
+Untuk melihat bagaimana sistem blog kita merespon permintaan tidak benar dari pengguna, kita menguji URL <tt>http://hostname/blog/index.php?page=posts.ReadPost&id=100</tt>. Kita akan melihat halaman kesalahan berikut yang berbeda dari apa yang telah kita lihat sebelumnya.
+</p>
+
+<img src="<%~ output3.gif %>" class="output" />
+
+<p>
+Jika kita mencari di bawah direktori <tt>protected/runtime</tt>, kita akan menemukan file bernama <tt>prado.log</tt>. Ini adalah file log yang baru dikonfigurasi untuk menyimpan pesan kesalahan. File dapat berisi konten seperti berikut,
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+Jun 28 22:15:27 [Error] [BlogApplication] Unable to find the specified post.
+Jun 29 08:42:57 [Error] [BlogApplication] Unable to find the specified post.
+</com:TTextHighlighter>
+
+</com:TContent>

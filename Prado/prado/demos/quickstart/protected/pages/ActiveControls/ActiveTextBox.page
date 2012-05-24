@@ -1,0 +1,15 @@
+<com:TContent ID="body" >
+
+<h1 id="166017">TActiveTextBox</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveTextBox" />
+
+<p class="block-content">
+<tt>TActiveTextBox</tt> is the active control counterpart of <tt>TTextBox</tt> component.
+<tt>TActiveTextBox</tt> allows the <tt>Text</tt> property of the textbox to
+be changed during callback. When <tt>AutoPostBack</tt> property
+is true, changes to the textbox contents will perform a callback request causing
+<tt>OnTextChanged</tt> to be fired first followed by <tt>OnCallback</tt> event.
+</p>
+<com:RunBar PagePath="ActiveControls.Samples.TActiveTextBox.Home" />
+
+<div class="last-modified">$Id: ActiveTextBox.page 2954 2011-06-01 23:01:03Z ctrlaltca@gmail.com $</div></com:TContent>

@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+	<title>Welcome</title>
+	<style type="text/css">
+		table {
+			border-collapse:collapse;
+		}
+		
+		td, th {
+			border:1px solid black;
+			padding: 10px;
+		}
+		
+		th {
+			text-align:left;
+		}		
+	</style>
+</head>
+<body>
+	<h1>Time Tracker Starter Kit</h1>
+	<p>
+		Welcome to your new <strong>Time Tracker</strong> sample application. The key features are:</p>
+	<ul>
+		<li><strong>Projects.</strong> Define project information like due dates, hours to complete,
+			project resources, and more.</li>
+		<li><strong>Track Time.</strong> Track time spent each day by category and project.</li>
+		<li><strong>Reports.</strong> Generate progress and team resource reports across multiple projects.</li>
+	</ul>
+	<p>
+		The <a href="index.php">Time Tracker site is ready to run!</a> No changes are needed.</p>
+		
+	<hr />
+		
+	<h2>Site Members and Roles</h2>
+	<p>
+		Your Time Tracker Web site allows visitors to register as members and then log in.
+		Members have specific privileges defined by roles such as administrator or guest.
+		Each Time Tracker Web site defines site-specific roles.
+		The following table describes what features are available to visitors in different roles.</p>
+	<table>
+		<tr>
+			<th>Visitor</th>
+			<th>Privileges</th>
+			<th>Default Login</th>
+		</tr>
+		<tr>
+			<td>
+				Not logged in</td>
+			<td>
+				No privileges.</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>Logged in</td>
+			<td>
+				No privileges. All members must be associated at least with the role <strong>Consultant</strong>.</td>
+			<td>N/A</td> 
+		</tr>
+		<tr>
+			<td>Logged in as <br />
+				<strong>Consultant</strong></td>
+			<td>May log time entries only.</td>
+			<td>username: <tt>consultant</tt><br />
+				password: <tt>consultant</tt></td>
+		</tr>
+		<tr>
+			<td>
+				Logged in as<br />
+				<strong>Project Manager</strong></td>
+			<td>
+				May additionally edit all projects and view reports.</td>
+			<td>username: <tt>manager</tt><br />
+				password: <tt>manager</tt></td>
+		</tr>
+		<tr>
+			<td>
+				Logged in as<br />
+				<strong>Project Administrator</strong></td>
+			<td>
+				May additionally view the list of all users.</td>
+			<td>username: <tt>admin</tt><br />
+				password: <tt>admin</tt></td>
+		</tr>
+	</table>
+	<p>
+		Be sure to create a user name for yourself and assign yourself to a role (such as administrator) that can manage the site.</p>
+	<p>
+		Visitors can register by clicking the <strong>Create new </strong>user link on the home page.
+		New members are activated automatically, and are assigned to a role as specified in the <tt>application.xml</tt> file.
+		You can manage users (for example, assign them to a role) when login as administrator.
+	</p>		
+	<hr />
+	
+	<h2>Projects and Time Entries</h2>
+	<h3>To add a project and categories</h3>
+	<ol>
+		<li>Log in to the site as a member in the role <strong>Project Manager</strong> or <strong>Project Administrator</strong>.</li>
+		<li>Click the <strong>Projects</strong> tab and then click <strong>Create New Project</strong>.</li>
+		<li>Specify a project name, project manager, estimated complete date, estimated duration, and description.</li>
+		<li>Under <strong>Specify Project Members</strong>, select a resource. You must select at least one resource. </li>
+		<li>Click <strong>Save</strong>. A category pane is displayed on the right.</li>
+		<li>Specify a category name, category abbreviation, and duration.</li>
+		<li>Click <strong>Add</strong>. The new category is displayed in the categories list. </li>
+		<li>Repeat steps 6 and 7 to create additional categories.</li>
+	</ol>
+	<h3>Log a Time Entry</h3>
+	<ol>
+		<li>Log in to the site as a consultant (member in the role <strong>Consultant</strong>).</li>
+		<li>Click the <strong>Log</strong> tab.</li>
+		<li>Under <strong>Log your hours</strong>, choose a project and a category and fill in the day, hours, and description.</li>
+		<li>Make sure the correct consultant is selected in the <strong>Time Sheet For</strong> list. </li>
+		<li>Click <strong>Add Entry</strong>.</li>
+	</ol>
+
+	<hr />
+	
+	<h2>Reports</h2>
+	<h3>To create a project report</h3>
+	<ol>
+		<li>Log in to the site as a member in the role <strong>Project Manager</strong> or <strong>Project Administrator</strong>.</li>
+		<li>Click the <strong>Reports</strong> tab and then click <strong>Project Reports</strong>. </li>
+		<li>Under <strong>Select a project</strong>,<strong> </strong>choose one or more projects.</li>
+		<li>Click <strong>Generate Report</strong>.</li>
+	</ol>
+	<h3>To create a resource report</h3>
+	<ol>
+		<li>Log in to the site as a member in the role <strong>Project Manager</strong> or <strong>Project Administrator</strong>.</li>
+		<li>Click the <strong>Reports</strong> tab and then click <strong>Resources Report</strong>. </li>
+		<li>Select one or more projects, select one or more resources, and then specify a date range. </li>
+		<li>Click <strong>Generate Report</strong>.</li>
+	</ol>
+	
+	
+</body>
+</html>

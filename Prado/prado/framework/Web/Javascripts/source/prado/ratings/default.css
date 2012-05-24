@@ -1,0 +1,29 @@
+.TRatingList_default
+{
+	border-collapse: collapse;
+}
+.TRatingList_default input, .TRatingList_default label
+{
+	display: none;
+}
+.TRatingList_default td
+{
+	width: 17px;
+	height: 18px;
+	background-image: url(default_blank.gif);
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+.TRatingList_default td.rating_selected
+{
+	background-image: url(default_selected.gif);
+}
+
+.TRatingList_default td.rating_hover
+{
+	background-image: url(default_hover.gif);
+}
+.TRatingList_default td.rating_half
+{
+	background-image: url(default_half.gif);
+}

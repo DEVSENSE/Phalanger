@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="4101">TRadioButton</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRadioButton" />
+
+<p id="480307" class="block-content">
+<tt>TRadioButton</tt> mirip dengan <tt>TCheckBox</tt> dalam setiap aspek, kecuali bahwa <tt>TRadioButton</tt> menampilkan tombol radio pada halaman Web. Tombol radio dapat dimiliki oleh grup yang ditetapkan oleh <tt>GroupName</tt> dengan demikian hanya satu tombol radio yang bisa dipilih.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRadioButton.Home" />
+
+<div class="last-modified">$Id: RadioButton.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,55 @@
+<com:TContent ID="body">
+
+<h1>TActiveDataGrid Sample 4</h1>
+<h2>Sorting with TActiveDataGrid</h2>
+
+<com:TActiveDataGrid
+	Width="700px"
+	CellPadding="2"
+	ID="DataGrid"
+	AutoGenerateColumns="false"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="#E6ECFF"
+	AllowSorting="true"
+	OnSortCommand="sortDataGrid">
+
+	<com:TActiveHyperLinkColumn
+		SortExpression="title"
+		HeaderText="Book Title"
+		DataTextField="title"
+		DataNavigateUrlField="ISBN"
+		DataNavigateUrlFormatString="http://www.amazon.com/gp/product/%s"
+		Target="_blank"
+		/>
+	<com:TActiveBoundColumn
+		SortExpression="publisher"
+		HeaderText="Publisher"
+		DataField="publisher"
+		/>
+	<com:TActiveBoundColumn
+		SortExpression="price"
+		ItemStyle.HorizontalAlign="Right"
+		ItemStyle.Wrap="false"
+		ItemStyle.Font.Italic="false"
+		ItemStyle.ForeColor="green"
+		HeaderText="Price"
+		DataField="price"
+		DataFormatString="$%.2f"
+		/>
+	<com:TActiveCheckBoxColumn
+		SortExpression="instock"
+		HeaderText="In-stock"
+		HeaderStyle.Wrap="false"
+		DataField="instock"
+		/>
+	<com:TActiveTemplateColumn HeaderText="Rating" SortExpression="rating">
+		<prop:ItemTemplate>
+		<img src="images/star<%#$this->NamingContainer->DataItem['rating']%>.gif" alt="" />
+		</prop:ItemTemplate>
+	</com:TActiveTemplateColumn>
+</com:TActiveDataGrid>
+
+<div class="last-modified">$Id: Sample4.page 2955 2011-06-02 09:30:55Z ctrlaltca@gmail.com $</div></com:TContent>

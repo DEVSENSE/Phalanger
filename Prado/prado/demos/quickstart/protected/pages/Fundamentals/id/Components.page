@@ -1,0 +1,128 @@
+<com:TContent ID="body" >
+<h1 id="701">Komponen</h1>
+<p id="110113" class="block-content">
+Komponen adalah turunan dari <tt>TComponent</tt> atau kelas anaknya. Basis kelas <tt>TComponent</tt> menerapkan mekanisme properti dan event komponen.
+</p>
+
+<h2 id="702">Properti Komponen</h2>
+<p id="110114" class="block-content">
+Properti komponen dapat dilihat sebagai variabel public yang menjelaskan aspek tertentu dari komponen seperti warna latar belakang, besar font, dll. Properti didefinisikan dengan keberadaan metode penyetel dan/atau pengambil dalam kelas komponen. Sebagai contoh, dalam <tt>TControl</tt>, kami mendefinisikan properti <tt>ID</tt> menggunakan metode pengambil dan penyetel berikut,
+<com:TTextHighlighter CssClass="source block-content" id="code_110056">
+class TControl extends TComponent {
+    public function getID() {
+        ...
+    }
+    public function setID($value) {
+        ...
+    }
+}
+</com:TTextHighlighter>
+</p>
+<p id="110115" class="block-content">
+Untuk mendapatkan atau menetapkan properti <tt>ID</tt>, lakukan seperti berikut, seperti bekerja dengan sebuah variabel,
+<com:TTextHighlighter CssClass="source block-content" id="code_110057">
+$id = $component->ID;
+$component->ID = $id;
+</com:TTextHighlighter>
+Ini sama dengan yang berikut,
+<com:TTextHighlighter CssClass="source block-content" id="code_110058">
+$id = $component->getID();
+$component->setID( $id );
+</com:TTextHighlighter>
+</p>
+<p id="110116" class="block-content">
+Properti hanya-baca jika metode pengambil tetapi tidak untuk metode penyetel. Karena nama metode PHP adalah sensitif-huruf, nama properti juga sensitif-huruf. Kelas komponen mewariskan seluruh properti kelas leluhurnya.
+</p>
+
+<h3 id="706">Subproperti</h3>
+<p id="110117" class="block-content">
+Subproperti adalah properti dari beberapa properti tipe-obyek. Sebagai contoh, <tt>TWebControl</tt> mempunyai properti <tt>Font</tt> yang merupakan tipe <tt>TFont</tt>. Kemudian properti <tt>Name</tt> dari <tt>Font</tt> dirujuk sebagai subproperti (dengan memperhatikan <tt>TWebControl</tt>).
+</p>
+<p id="110118" class="block-content">
+Untuk mendapatkan atau menentukan subproperti <tt>Name</tt>, gunakan metode beriktu,
+<com:TTextHighlighter CssClass="source block-content" id="code_110059">
+$name = $component-&gt;getSubProperty('Font.Name');
+$component->setSubProperty('Font.Name', $name);
+</com:TTextHighlighter>
+Ini sama dengan yang berikut,
+<com:TTextHighlighter CssClass="source block-content" id="code_110060">
+$name = $component->getFont()->getName();
+$component-&gt;getFont()-&gt;setName( $name );
+</com:TTextHighlighter>
+
+
+</p>
+
+<h2 id="703">Event Komponen</h2>
+<p id="110119" class="block-content">
+Event komponen adalah properti khusus yang mengambil nama metode sebagai nilainya. Melampirkan (setelan) metode ke sebuah event akan menancapkan metode ke tempat di mana event dimunculkan. Oleh karena itu, perilaku komponen bisa diubah dalam cara yang tidak terlihat selama pengembangan komponen.
+</p>
+<p id="110120" class="block-content">
+Event komponen didefinisikan dengan keberadaan metode yang namanya dimulai dengan kata <tt>on</tt>. Nama event adalah nama metode dan sensitif-huruf. Sebagai contoh, dalam <tt>TButton</tt>, kita mempunyai
+<com:TTextHighlighter CssClass="source block-content" id="code_110061">
+class TButton extends TWebControl {
+    public function onClick( $param ) {
+        ...
+    }
+}
+</com:TTextHighlighter>
+Ini mendefinisikan event bernama <tt>OnClick</tt>, dan pengendali dapat dilampirkan ke event menggunakan salah satu cara berikut,
+<com:TTextHighlighter CssClass="source block-content" id="code_110062">
+$button->OnClick = $callback;
+$button->OnClick->add( $callback );
+$button->OnClick[] = $callback;
+$button->attachEventHandler( 'OnClick' , $callback );
+</com:TTextHighlighter>
+di mana <tt>$callback</tt> merujuk ke callback PHP yang benar (misalnya nama fungsi, metode kelas <tt>array($object,'method')</tt>, dll).
+</p>
+
+<h2 id="704">Namespace</h2>
+<p id="110121" class="block-content">
+Namespace merujuk ke pengelompokan logis dari beberapa nama kelas agar dapat dibedakan dari nama kelas lain meskipun jika namanya sama. Karena PHP pada hakekatnya tidak mendukung namespace, Anda tidak bisa membuat turunan dari dua kelas yang mempunyai nama sama tapi dengan definisi berbeda. Untuk membedakan dari kelas didefinisikan pengguna, semua kelas PRADO diawali dengan huruf 'T' (berarti 'Type'). Para pengguna disarankan untuk tidak menamai kelasnya seperti ini. Sebaiknya mengawali nama kelasnya dengan huruf yang lainnya.
+</p>
+<p id="110122" class="block-content">
+Namespace dalam PRADO dianggap sebagai direktori yang berisi satu atau beberapa file kelas. Sebuah kelas dapat ditetapkan tanpa dwimakna menggunakan namespace demikian diikuti oleh nama kelas. Setiap namespace dalam PRADO ditetapkan dalam format berikut,
+<div class="source">
+PathAlias.Dir1.Dir2
+</div>
+di mana <tt>PathAlias</tt> adalah alias dari beberapa direktori, sementara <tt>Dir1</tt> dan <tt>Dir2</tt> adalah subdirektori di bawah direktori itu. Kelas yang benama <tt>MyClass</tt> didefinisikan di bawah <tt>Dir2</tt> sekarang berkualifikasi lengkap sebagai <tt>PathAlias.Dir1.Dir2.MyClass</tt>.
+</p>
+<p id="110123" class="block-content">
+Untuk menggunakan namespace dalam kode, lakukan seperti berikut,
+<com:TTextHighlighter CssClass="source block-content" id="code_110063">
+Prado::using('PathAlias.Dir1.Dir2.*');
+</com:TTextHighlighter>
+menambah direktori yang dirujuk oleh <tt>PathAlias.Dir1.Dir2</tt> ke dalam path include PHP agar kelas itu didefinisikan di bawah direktori itu dapat diturunkan tanpa prefiks namespace. Anda juga dapat menyertakan definisi kelas individual dengan
+<com:TTextHighlighter CssClass="source block-content" id="code_110064">
+Prado::using('PathAlias.Dir1.Dir2.MyClass');
+</com:TTextHighlighter>
+yang akan menyertakan file kelas jika <tt>MyClass</tt> tidak didefinisikan.
+</p>
+<p id="110124" class="block-content">
+Untuk lebih jelasnya mengenai mendefinisikan alias path, lihat seksi <a href="?page=Configurations.AppConfig">konfigurasi aplikasi</a>.
+</p>
+
+<h2 id="705">Penurunan Komponen</h2>
+<p id="110125" class="block-content">
+Penurunan komponen berarti membuat turunan dari kelas komponen. Ada dua tipe penurunan komponen: penurunan statis dan dinamis. Komponen yang dibuat masing-masing disebut komponen statis dan komponen dinamis.
+</p>
+
+<h3 id="707">Penurunan Komponen Dinamis</h3>
+<p id="110126" class="block-content">
+Penurunan komponen dinamis berarti membuat turunan komponen dalam kode PHP. Itu sama dengan apa yang umum dirujuk pembuatan obyek dalam PHP. Sebuah komponen dapat dibuat secara dinamis menggunakan salah satu dari dua metode berikut dalam PHP,
+<com:TTextHighlighter CssClass="source block-content" id="code_110065">
+$component = new ComponentClassName;
+$component = Prado::createComponent('ComponentType');
+</com:TTextHighlighter>
+di mana <tt>ComponentType</tt> merujuk ke nama kelas atau nama tipe dalam format namespace (contoh <tt>System.Web.UI.TControl</tt>). Pendekatan kedua diperkenalkan guna mengimbangi kekurangan dukungan namespace dalam PHP.
+</p>
+
+<h3 id="708">Penurunan Komponen Statis</h3>
+<p id="110127" class="block-content">
+Penurunan komponen statis adalah mengenai pembuatan komponen melalui <a href="?page=Configurations.Overview">konfigurasi</a>. Pekerjaan pembuatan sebenarnya dilakukan oleh kerangka kerja PRADO. Sebagai contoh, dalam <a href="?page=Configurations.AppConfig">konfigurasi aplikasi</a>, seseorang dapat mengkonfigurasi sebuah modul untuk diambil ketika aplikasi dijalankan. Selanjutnya modul adalah komponen statis yang dibuat oleh kerangka kerja. Penurunan komponen statis lebih umum digunakan dalam <a href="?page=Configurations.Templates1">template</a>. Setiap tag komponen dalam sebuah template menetapkan komponen yang akan dibuat secara otomatis oleh kerangka kerja ketika template diambil. Sebagai contoh, dalam sebuah template halaman, tag berikut akan membawa ke pembuatan komponen <tt>TButton</tt> pada halaman,
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_110066">
+&lt;com:TButton Text="Register" /&gt;
+</com:TTextHighlighter>
+</p>
+
+<div class="last-modified">$Id: Components.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

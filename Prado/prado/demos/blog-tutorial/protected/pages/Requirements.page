@@ -1,0 +1,38 @@
+<com:TContent ID="Main">
+
+<h1>Requirement Analysis</h1>
+
+<p>
+This page lists the requirements for the blog system that we are going to develop in this tutorial using PRADO. We are not including some popular blog features here (e.g. commenting, posts organizing, calendar, etc.), because we want to keep our tutorial short enough and we believe these features are easy to be added after you finish reading this tutorial.
+</p>
+
+<p>
+In general, the blog system should allow users to read blogs and authenticated users to publish blogs. It should separate presentation and logic, and it should support changing themes.
+</p>
+
+<h2>User Management</h2>
+<ul>
+<li>The system shall allow authenticating and authorizing users.</li>
+<li>The system shall allow the administrator to list all user accounts.</li>
+<li>The system shall allow the administrator to create a new user account.</li>
+<li>The system shall allow the administrator or the account holder to update an existing account.</li>
+<li>The system shall allow the administrator to delete a user account.</li>
+</ul>
+
+<h2>Post Management</h2>
+<ul>
+<li>The system shall allow listing posts by their creation time in descending order with paging.</li>
+<li>The system shall allow viewing the detail of a selected post.</li>
+<li>The system shall allow creating a new post by an authenticated user.</li>
+<li>The system shall allow updating an existing post by its author or administrator.</li>
+<li>The system shall allow deleting an existing post by its author or administrator.</li>
+</ul>
+
+<h2>System Maintenance</h2>
+<ul>
+<li>The system shall be able to collect users' feedback.</li>
+<li>The system shall be flexible enough to allow adding new portlets in future.</li>
+<li>The system shall allow switching themes which define styles of the common UI elements.</li>
+</ul>
+
+</com:TContent>

@@ -1,0 +1,28 @@
+<com:TContent ID="body" >
+
+<h1 id="172014">TActiveListBox</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveListBox" />
+
+<p class="block-content">
+<tt>TActiveListBox</tt> is the active counterpart to the original <tt>TListBox</tt> control.
+</p>
+
+<p class="block-content">
+The <tt>AutoPostBack</tt> property is set to true by default.
+Thus, when a list item is clicked a <tt>OnCallback</tt> event is
+raised after <tt>OnSelectedIndexChanged</tt> event.
+</p>
+
+<p class="block-content">
+With <tt>ActiveControl.EnabledUpdate</tt>
+set to true (default is true), changes to the selection will be updated
+on the client side.
+</p>
+
+<p class="block-content">
+Please refer to the original documentation of <a href="?page=Controls.List">TListBox</a> for usage.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveListBox.Home" />
+
+<div class="last-modified">$Id: ActiveListBox.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

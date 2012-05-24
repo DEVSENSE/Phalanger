@@ -1,0 +1,79 @@
+<com:TContent ID="body" >
+
+<h1 id="5601">Security</h1>
+
+<h2 id="5602">Viewstate Protection</h2>
+<p id="730563" class="block-content">
+Viewstate lies at the heart of PRADO. Viewstate represents data that can be used to restore pages to the state that is last seen by end users before making the current request. By default, PRADO uses hidden fields to store viewstate information.
+</p>
+<p id="730564" class="block-content">
+It is extremely important to ensure that viewstate is not tampered by end users. Without protection, malicious users may inject harmful code into viewstate and unwanted instructions may be performed when page state is being restored on server side.
+</p>
+<p id="730565" class="block-content">
+To prevent viewstate from being tampered, PRADO enforces viewstate HMAC (Keyed-Hashing for Message Authentication) check before restoring viewstate. Such a check can detect if the viewstate has been tampered or not by end users. Should the viewstate is modified, PRADO will stop restoring the viewstate and return an error message.
+</p>
+<p id="730566" class="block-content">
+HMAC check requires a private key that should be secret to end users. Developers can either manually specify a key or let PRADO automatically generate a key. Manually specified key is useful when the application runs on a server farm. To do so, configure <tt>TSecurityManager</tt> in application configuration,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_730186">
+&lt;modules&gt;
+    &lt;module id="security"
+        class="TSecurityManager"
+        ValidationKey="my private key" /&gt;
+&lt;/modules&gt;
+</com:TTextHighlighter>
+<p id="730567" class="block-content">
+HMAC check does not prevent end users from reading the viewstate content. An added security measure is to encrypt the viewstate information so that end users cannot decipher it. To enable viewstate encryption, set the <tt>EnableStateEncryption</tt> of pages to true. This can be done in <a href="?page=Configurations.PageConfig">page configurations</a> or in page code. Note, encrypting viewstate may degrade the application performance. A better strategy is to store viewstate on the server side, rather than the default hidden field.
+</p>
+
+<h2 id="5603">Cross Site Scripting Prevention</h2>
+<p id="730568" class="block-content">
+Cross site scripting (also known as XSS) occurs when a web application gathers malicious data from a user. Often attackers will inject JavaScript, VBScript, ActiveX, HTML, or Flash into a vulnerable application to fool other application users and gather data from them. For example, a poorly design forum system may display user input in forum posts without any checking. An attacker can then inject a piece of malicious JavaScript code into a post so that when other users read this post, the JavaScript runs unexpectedly on their computers.
+</p>
+<p id="730569" class="block-content">
+One of the most important measures to prevent XSS attacks is to check user input before displaying them. One can do HTML-encoding with the user input to achieve this goal. However, in some situations, HTML-encoding may not be preferable because it disables all HTML tags.
+</p>
+<p id="730570" class="block-content">
+PRADO incorporates the work of <a href="http://pixel-apes.com/safehtml/">SafeHTML</a> and provides developers with a useful component called <tt>TSafeHtml</tt>. By enclosing content within a <tt>TSafeHtml</tt> component tag, the enclosed content are ensured to be safe to end users. In addition, the commonly used <tt>TTextBox</tt> has a <tt>SafeText</tt> property which contains user input that are ensured to be safe if displayed directly to end users.
+</p>
+
+<h2 id="5604">Cookie Attack Prevention</h2>
+<p id="730571" class="block-content">
+Protecting cookies from being attacked is of extreme important, as session IDs are commonly stored in cookies. If one gets hold of a session ID, he essentially owns all relevant session information.
+</p>
+<p id="730572" class="block-content">
+There are several countermeasures to prevent cookies from being attacked.
+</p>
+<ul id="u1" class="block-content">
+  <li>An application can use SSL to create a secure communication channel and only pass the authentication cookie over an HTTPS connection. Attackers are thus unable to decipher the contents in the transferred cookies.</li>
+  <li>Expire sessions appropriately, including all cookies and session tokens, to reduce the likelihood of being attacked.</li>
+  <li>Prevent cross-site scripting (XSS) which causes arbitrary code to run in a user's browser and expose his cookies.</li>
+  <li>Validate cookie data and detect if they are altered.</li>
+</ul>
+<p id="730573" class="block-content">
+PRADO implements a cookie validation scheme that prevents cookies from being modified. In particular, it does HMAC check for the cookie values if cookie validation is enable.
+</p>
+<p id="730574" class="block-content">
+Cookie validation is disabled by default. To enable it, configure the <tt>THttpRequest</tt> module as follows,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_730187">
+<modules>
+  <module id="request" class="THttpRequest" EnableCookieValidation="true" />
+</modules>
+</com:TTextHighlighter>
+<p id="730575" class="block-content">
+To make use of cookie validation scheme provided by PRADO, you also need to retrieve cookies through the <tt>Cookies</tt> collection of <tt>THttpRequest</tt> by using the following PHP statements,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_730188">
+foreach($this->Request->Cookies as $cookie)
+    // $cookie is of type THttpCookie
+</com:TTextHighlighter>
+<p id="730576" class="block-content">
+To send cookie data encoded with validation information, create new <tt>THttpCookie</tt> objects and add them to the <tt>Cookies</tt> collection of <tt>THttpResponse</tt>,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_730189">
+$cookie=new THttpCookie($name,$value);
+$this->Response->Cookies[]=$cookie;
+</com:TTextHighlighter>
+
+<div class="last-modified">$Id: Security.page 1741 2007-03-05 16:05:43Z xue $</div></com:TContent>

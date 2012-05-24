@@ -1,0 +1,185 @@
+<com:TContent ID="Main">
+
+<h1>Creating <tt>ListPost</tt> Page</h1>
+
+<p>
+The <tt>ListPost</tt> page shows the latest blog posts in a list. If there are too many posts, they will be displayed in several pages.
+</p>
+
+<p>
+Before we proceed with the implementation, we would like to point our homepage to the upcoming <tt>ListPage</tt> page, because we want the users to see latest posts when they hit the website. To do so, we modify the application configuration <tt>protected/application.xml</tt> as follows,
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+......
+<services>
+  <service id="page" class="TPageService" DefaultPage="posts.ListPost">
+    <pages MasterClass="Application.layouts.MainLayout" />
+  </service>
+</services>
+</com:TTextHighlighter>
+
+<p>
+We now create the template and class files for the <tt>ListPost</tt> page: <tt>protected/pages/posts/ListPost.page</tt> and <tt>protected/pages/posts/ListPost.php</tt>.
+</p>
+
+<h2>Creating Page Template</h2>
+<p>
+Based on the functionality requirement of the <tt>ListPost</tt> page, we will use two controls in the page template:
+</p>
+<ul>
+<li><a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Repeater">TRepeater</a>: this control is mainly used to display a list of data items. The presentation of the each data item can be specified via an inline template or an external template control (the approach we will use here).</li>
+<li><a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Pager">TPager</a>: this control is used to paginate a list of data items. It interacts with end-users to determine which page of data to be displayed in a <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.List">list control</a> (e.g. <tt>TListBox</tt>) or <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Data">data control</a> (e.g. <tt>TRepeater</tt>).</li>
+</ul>
+
+<p>
+Below is the content in the page template:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ Title="My Blog" %>
+
+&lt;com:TContent ID="Main">
+
+&lt;com:TRepeater ID="Repeater"
+	ItemRenderer="Application.pages.posts.PostRenderer"
+	AllowPaging="true"
+	AllowCustomPaging="true"
+	PageSize="5"
+	/>
+
+&lt;com:TPager ControlToPaginate="Repeater" OnPageIndexChanged="pageChanged" />
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+<p>
+In the repeater, we specify that the repeated content is to be displayed using the item renderer <tt>PostRenderer</tt> which we will create soon after. In order for PRADO to find this class, we give the complete namespace path <tt>Application.pages.posts.PostRenderer</tt>, meaning the class file is <tt>protected/pages/posts/PostRenderer.php</tt>.
+</p>
+
+<p>
+We also set a few other properties of repeater to enable paging. And we set <tt>ControlToPaginate</tt> property of the pager so that it knows whose repeated content should be paginated.
+</p>
+
+
+<h2>Creating Page Class</h2>
+
+<p>
+From the above page template, we see that we need to write a page class that implements the event handler: <tt>pageChanged()</tt> (attached to the pager's <tt>OnPageIndexChanged</tt> event). We also need to populate post data into the repeater according to the current paging setting. The following is the complete source code of the page class:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class ListPost extends TPage
+{
+	/**
+	 * Initializes the repeater.
+	 * This method is invoked by the framework when initializing the page
+	 * @param mixed event parameter
+	 */
+	public function onInit($param)
+	{
+		parent::onInit($param);
+		if(!$this->IsPostBack)  // if the page is requested the first time
+		{
+			// get the total number of posts available
+			$this->Repeater->VirtualItemCount=PostRecord::finder()->count();
+			// populates post data into the repeater
+			$this->populateData();
+		}
+	}
+
+	/**
+	 * Event handler to the OnPageIndexChanged event of the pager.
+	 * This method is invoked when the user clicks on a page button
+	 * and thus changes the page of posts to display.
+	 */
+	public function pageChanged($sender,$param)
+	{
+		// change the current page index to the new one
+		$this->Repeater->CurrentPageIndex=$param->NewPageIndex;
+		// re-populate data into the repeater
+		$this->populateData();
+	}
+
+	/**
+	 * Determines which page of posts to be displayed and
+	 * populates the repeater with the fetched data.
+	 */
+	protected function populateData()
+	{
+		$offset=$this->Repeater->CurrentPageIndex*$this->Repeater->PageSize;
+		$limit=$this->Repeater->PageSize;
+		if($offset+$limit>$this->Repeater->VirtualItemCount)
+			$limit=$this->Repeater->VirtualItemCount-$offset;
+		$this->Repeater->DataSource=$this->getPosts($offset,$limit);
+		$this->Repeater->dataBind();
+	}
+
+	/**
+	 * Fetches posts from database with offset and limit.
+	 */
+	protected function getPosts($offset, $limit)
+	{
+		// Construts a query criteria
+		$criteria=new TActiveRecordCriteria;
+		$criteria->OrdersBy['create_time']='desc';
+		$criteria->Limit=$limit;
+		$criteria->Offset=$offset;
+		// query for the posts with the above criteria and with author information
+		return PostRecord::finder()->withAuthor()->findAll($criteria);
+	}
+}
+</com:TTextHighlighter>
+
+<h2>Creating <tt>PostRenderer</tt></h2>
+
+<p>
+We still need to create the item renderer class <tt>PostRenderer</tt>. It defines how each post should be displayed in the repeater. We create it as a template control which allows to specify the post presentation using our flexible template syntax. The template and the class files are saved as <tt>PostRenderer.tpl</tt> and <tt>PostRenderer.php</tt> files under the <tt>protected/pages/posts</tt> directory, respectively.
+</p>
+
+<h3>Creating Renderer Template</h3>
+<p>
+The renderer template specifies the presentation of various fields in a post, including title, author name, post time and content. We link the post title to the <tt>ReadPost</tt> which shows more details of the selected post.
+</p>
+<p>
+The expression <tt>$this->Data</tt> refers to the data item passed to the repeater. In our case, it is a <tt>PostRecord</tt> object. Notice how we retrieve the author name of a post by <tt>$this->Data->author->username</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<div class="post-box">
+<h3>
+&lt;com:THyperLink Text="&lt;%# $this->Data->title %>"
+	NavigateUrl="&lt;%# $this->Service->constructUrl('posts.ReadPost',array('id'=>$this->Data->post_id)) %>" />
+</h3>
+
+<p>
+Author:
+&lt;com:TLiteral Text="&lt;%# $this->Data->author->username %>" /><br/>
+Time:
+&lt;com:TLiteral Text="&lt;%# date('m/d/Y h:m:sa', $this->Data->create_time) %>" />
+</p>
+
+<p>
+&lt;com:TLiteral Text="&lt;%# $this->Data->content %>" />
+</p>
+</div>
+</com:TTextHighlighter>
+
+<h3>Creating Renderer Class</h3>
+<p>
+The renderer class is very simple. It extends from <tt>TRepeaterItemRenderer</tt> and contains no other code.
+</p>
+<com:TTextHighlighter CssClass="source" Language="php">
+class PostRenderer extends TRepeaterItemRenderer
+{
+}
+</com:TTextHighlighter>
+
+<h2>Testing</h2>
+<p>
+To test the <tt>ListPost</tt> page, visit the URL <tt>http://hostname/blog/index.php</tt> (remember we have set <tt>ListPost</tt> as our new homepage). We shall expect to see the following result. Since we only have one post at the moment, the pager will not show up. Later when we finish <tt>NewPost</tt>, we can add more posts and come back to test the paging again.
+</p>
+
+<img src="<%~ output.gif %>" class="output" />
+
+</com:TContent>

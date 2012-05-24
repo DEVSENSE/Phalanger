@@ -1,0 +1,55 @@
+<com:TContent ID="body" >
+
+<h1 id="106004">TTabPanel</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TTabPanel" />
+
+<p id="530004" class="block-content">
+<tt>TTabPanel</tt> displays a tabbed panel. Users can click on the tab bar to switching among different tab views. Each tab view is an independent panel that can contain arbitrary content.
+</p>
+
+<p id="530005" class="block-content">
+A <tt>TTabPanel</tt> control consists of one or several <tt>TTabView</tt> controls representing the possible tab views. At any time, only one tab view is visible (active), which is specified by any of the following properties:
+</p>
+
+<ul>
+<li><tt>ActiveViewIndex</tt> - the zero-based integer index of the view in the view collection.</li>
+<li><tt>ActiveViewID</tt> - the text ID of the visible view.</li>
+<li><tt>ActiveView</tt> - the visible view instance.</li>
+</ul>
+
+<p id="530006" class="block-content">
+If both <tt>ActiveViewIndex</tt> and <tt>ActiveViewID</tt> are set, the latter takes precedence.
+</p>
+
+<p id="530007" class="block-content">
+<tt>TTabPanel</tt> uses CSS to specify the appearance of the tab bar and panel. By default, an embedded CSS file will be published which contains the default CSS for <tt>TTabPanel</tt>. You may also use your own CSS file by specifying the <tt>CssUrl</tt> property. The following properties specify the CSS classes used for elements in a <tt>TTabPanel</tt>:
+</p>
+
+<ul>
+<li><tt>CssClass</tt> - the CSS class name for the outer-most div element (defaults to 'tab-panel');</li>
+<li><tt>TabCssClass</tt> - the CSS class name for nonactive tab div elements (defaults to 'tab-normal');</li>
+<li><tt>ActiveTabCssClass</tt> - the CSS class name for the active tab div element (defaults to 'tab-active');</li>
+<li><tt>ViewCssClass</tt> - the CSS class for the div element enclosing view content (defaults to 'tab-view');</li>
+</ul>
+
+<p id="530008" class="block-content">
+To use TTabPanel, write a template like following:
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_530117">
+ &lt;com:TTabPanel>
+   &lt;com:TTabView Caption="View 1">
+     content for view 1
+   &lt;/com:TTabView>
+   &lt;com:TTabView Caption="View 2">
+     content for view 2
+   &lt;/com:TTabView>
+   &lt;com:TTabView Caption="View 3">
+     content for view 3
+   &lt;/com:TTabView>
+ &lt;/com:TTabPanel>
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="Controls.Samples.TTabPanel.Home" />
+
+<div class="last-modified">$Id: TabPanel.page 2926 2011-05-25 09:34:54Z ctrlaltca@gmail.com $</div></com:TContent>

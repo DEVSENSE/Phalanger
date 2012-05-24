@@ -1,0 +1,42 @@
+<com:TContent ID="body" >
+
+<h1 id="2601">THead</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.THead" />
+
+<p id="310261" class="block-content">
+<tt>THead</tt> displays a head element on a page. It displays the content
+enclosed in its body and the page title set by the <tt>Title</tt> property.
+</p>
+
+<p class="block-content">
+In addition, stylesheets and JavaScripts registered via
+<ul>
+  <li><tt>TClientScriptManager::registerStyleSheet</tt>,</li>
+  <li><tt>TClientScriptManager::registerStyleSheetFile</tt>,</li>
+  <li><tt>TClientScriptManager::registerHeadJavaScript</tt> and</li>
+  <li><tt>TClientScriptManager::registerHeadJavaScriptFile</tt></li>
+</ul>
+will also be displayed in the head.</p>
+
+<p class="block-content">
+THead also manages and displays meta tags through its <tt>MetaTags</tt>
+property. You can add a meta object to the collection in code dynamically,
+or add it in template using the following syntax
+</p>
+
+<com:TTextHighlighter Language="text" CssClass="source block-content">
+&lt;com:THead&gt;
+  &lt;com:TMetaTag HttpEquiv="Pragma" Content="no-cache" /&gt;
+  &lt;com:TMetaTag Name="keywords" Content="Prado" /&gt;
+&lt;/com:THead&gt;
+</com:TTextHighlighter>
+
+<p class="block-content">
+Note, <tt>TPage</tt> has a property <tt>Head</tt> that refers to
+the <tt>THead</tt> control currently on the page. A page can have at most one <tt>THead</tt>
+control. Although not required, it is recommended to place a <tt>THead</tt> on your page.
+Without a <tt>THead</tt> on the page, stylesheets and javascripts in the current page
+theme will not be rendered.
+</p>
+
+<div class="last-modified">$Id: Head.page 2943 2011-06-01 20:01:35Z ctrlaltca@gmail.com $</div></com:TContent>

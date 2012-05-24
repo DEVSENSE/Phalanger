@@ -1,0 +1,159 @@
+<com:TContent ID="Main">
+
+<h1>Error Handling and Logging</h1>
+
+<p>
+If we try to access the URL <tt>http://hostname/blog/index.php?page=EditPost&id=100</tt>, we will see the following error page because the post with ID 100 does not exist in our blog system yet. We would like to customize this error page so that it looks more consistent with the other blog pages in layout. We also want to log this kind of errors to study user behaviors. In this section, we will accomplish these two tasks.
+</p>
+
+<img src="<%~ output2.gif %>" class="output" />
+
+<com:InfoBox>
+An important task in a Web application is <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Error">error handling</a> which is often associated <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Logging">logging</a>. There are two types of errors that may occur in a PRADO application: those caused by developers and those by end-users. The former should be resolved before the application is put into production, while the latter are usually within the initial design scope and should be handled nicely (e.g. log the error and display a special page instructing the end-user what to do next.) PRADO implements a very flexible yet powerful framework for error handling and logging.
+</com:InfoBox>
+
+
+<h2>Customizing Error Handling</h2>
+
+<p>
+PRADO implicitly loads a <tt>TErrorHandler</tt> module to handle errors. We would like to customize this module so that our blog system can display a customized page for errors caused by end-users. We thus modify the application configuration as follows:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+......
+<modules>
+    ......
+    <module class="Application.BlogErrorHandler" />
+    ......
+</modules>
+......
+</com:TTextHighlighter>
+
+<p>
+The class <tt>BlogErrorHandler</tt> as specified in the above is a new error handler module that we will create next. It extends and replaces the default <tt>TErrorHandler</tt> module.
+</p>
+
+<p>
+We create a file named <tt>protected/BlogErrorHandler.php</tt> as follows. The class <tt>BlogErrorHandler</tt> overrides two methods of <tt>TErrorHandler</tt>:
+</p>
+<ul>
+  <li><tt>getErrorTemplate()</tt> - this method returns the template string used for displaying a particular user error.</li>
+  <li><tt>handleExternalError()</tt> - this method is invoked when a user error occurs and displays the error.</li>
+</ul>
+<com:TTextHighlighter CssClass="source" Language="php">
+Prado::using('System.Exceptions.TErrorHandler');
+Prado::using('Application.BlogException');
+
+class BlogErrorHandler extends TErrorHandler
+{
+	/**
+	 * Retrieves the template used for displaying external exceptions.
+	 * This method overrides the parent implementation.
+	 */
+	protected function getErrorTemplate($statusCode,$exception)
+	{
+		// use our own template for BlogException
+		if($exception instanceof BlogException)
+		{
+			// get the path of the error template file: protected/error.html
+			$templateFile=Prado::getPathOfNamespace('Application.error','.html');
+			return file_get_contents($templateFile);
+		}
+		else // otherwise use the template defined by PRADO
+			return parent::getErrorTemplate($statusCode,$exception);
+	}
+
+	/**
+	 * Handles external error caused by end-users.
+	 * This method overrides the parent implementation.
+	 * It is invoked by PRADO when an external exception is thrown.
+	 */
+	protected function handleExternalError($statusCode,$exception)
+	{
+		// log the error (only for BlogException)
+		if($exception instanceof BlogException)
+			Prado::log($exception->getErrorMessage(),TLogger::ERROR,'BlogApplication');
+		// call parent implementation to display the error
+		parent::handleExternalError($statusCode,$exception);
+	}
+}
+</com:TTextHighlighter>
+
+<p>
+In the above, we specify that when a <tt>BlogException</tt> is thrown, we use a new template <tt>protected/error.html</tt> to display the error. Therefore, we need to create the <tt>BlogException</tt> class and replace all the occurances of <tt>THttpException</tt> in our code (such as <a href="?page=Day3.CreateEditUser">EditUser</a> and <a href="?page=Day4.CreateReadPost">ReadPost</a> pages). We also need to create the error template <tt>protected/error.html</tt>. The <tt>BlogException</tt> class extends <tt>THttpException</tt> and is empty. The class file is saved as <tt>protected/BlogException.php</tt>.
+
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class BlogException extends THttpException
+{
+}
+</com:TTextHighlighter>
+
+<p>
+Below is the content in our error template <tt>protected/error.html</tt>. Note, the template is not a PRADO template because it only recognizes very limited number of tokens, such as <tt>%%ErrorMessage%%</tt>, <tt>%%ServerAdmin%%</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<html>
+<head>
+<title>%%ErrorMessage%%</title>
+</head>
+<body>
+<div id="page">
+<div id="header">
+<h1>My PRADO Blog</h1>
+</div>
+<div id="main">
+<p style="color:red">%%ErrorMessage%%</p>
+<p>
+The above error happened when the server was processing your request.
+</p>
+<p>
+If you think this is a server error, please contact the <a href="mailto:%%ServerAdmin%%">webmaster</a>.
+</p>
+</div>
+</body>
+</html>
+</com:TTextHighlighter>
+
+
+<h2>Logging Errors</h2>
+
+<p>
+In the <tt>handleExternalError()</tt> method of  <tt>BlogErrorHandler</tt>, we invoke <tt>Prado::log()</tt> to log the error if it is of type <tt>BlogException</tt>. The error is logged in memory. To save the logs into permanent medium such as file or database, we need to enable appropriate error logging routes. This is done in the application configuration as follows:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+......
+<modules>
+    ......
+    <module id="log" class="System.Util.TLogRouter">
+        <route class="TFileLogRoute" Categories="BlogApplication" />
+    </module>
+    ......
+</modules>
+......
+</com:TTextHighlighter>
+
+<p>
+In the above, we add a log route that saves logs into a file. We also specify the category filter as <tt>BlogApplication</tt> such that only the log messages of the selected categories are saved. This helps reduce the size of the log file and also improves its readability.
+</p>
+
+<h2>Testing</h2>
+<p>
+To see how our blog systems reponds to an invalid user request, we test the URL <tt>http://hostname/blog/index.php?page=posts.ReadPost&id=100</tt>. We shall see the following error page which is different from what we saw earlier on.
+</p>
+
+<img src="<%~ output3.gif %>" class="output" />
+
+<p>
+If we search under the directory <tt>protected/runtime</tt>, we will find a file named <tt>prado.log</tt>. This is the log file that we just configured to save the error messages. The file may contain contents like the following,
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="text">
+Jun 28 22:15:27 [Error] [BlogApplication] Unable to find the specified post.
+Jun 29 08:42:57 [Error] [BlogApplication] Unable to find the specified post.
+</com:TTextHighlighter>
+
+</com:TContent>

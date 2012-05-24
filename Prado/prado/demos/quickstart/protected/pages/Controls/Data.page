@@ -1,0 +1,19 @@
+<com:TContent ID="body" >
+
+<h1 id="5001">Data Controls</h1>
+
+<ul id="u1" class="block-content">
+  <li>
+  <a href="?page=Controls.DataList">TDataList</a> is used to display or modify a list of data items.
+  </li>
+
+  <li>
+  <a href="?page=Controls.DataGrid">TDataGrid</a> displays data in a tabular format with rows and columns.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Repeater">TRepeater</a> displays its content defined in templates repeatedly based on the given data.
+  </li>
+</ul>
+
+<div class="last-modified">$Id: Data.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

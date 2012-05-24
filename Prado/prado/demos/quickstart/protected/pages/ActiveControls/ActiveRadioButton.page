@@ -1,0 +1,20 @@
+<com:TContent ID="body" >
+
+<h1 id="164016">TRadioButton</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveRadioButton" />
+
+<p class="block-content">
+<tt>TActiveRadioButton</tt> is the active control counter part to <tt>TRadioButton</tt>.
+The <tt>AutoPostBack</tt> property is set to true by default. Thus, when the radio button is clicked a
+<tt>OnCallback</tt> event is raise after <tt>OnCheckedChanged</tt> event.
+</p>
+
+<p class="block-content">
+The <tt>Text</tt> and <tt>Checked</tt> properties can be changed during a callback.
+The <tt>GroupName</tt> property may <b>NOT</b> be changed during callback because the client-side
+<tt>name</tt> attribute is read-only and can not be changed using javascript.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveRadioButton.Home" />
+
+<div class="last-modified">$Id: ActiveRadioButton.page 2954 2011-06-01 23:01:03Z ctrlaltca@gmail.com $</div></com:TContent>

@@ -1,0 +1,157 @@
+<com:TContent ID="body">
+
+<h1>The SQL</h1>
+<p>If you are not using stored procedures, the most important part of a
+statement-type element is the SQL. You can use any SQL statement that is valid
+for your database system. Since SQLMap passes the SQL through to a standard
+libraries (Adodb for PHP), you can use any statement with SQLMap that you
+could use without SQLMap. You can use whatever functions your database system
+supports, and even send multiple statements, so long as your driver or
+provider supports them.</p>
+
+
+<h2>Escaping XML symbols</h2>
+<p>Because you are combining SQL and XML in a
+single document, conflicts can occur. The most common conflict is the
+greater-than and less-than symbols (&gt;&lt;). SQL statements use these symbols as
+operators, but they are reserved symbols in XML. A simple solution is to
+escape the SQL statements that uses XML reserved symbols within a CDATA
+element. The following example demonstrates this.
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="SelectPersonsByAge" parameterClass="int" resultClass="Person">
+  <![CDATA[
+     SELECT * FROM PERSON WHERE AGE > #value#
+  ]]>
+</statement>
+</com:TTextHighlighter>
+
+<h2>Auto-Generated Keys</h2>
+<p>Many database systems support auto-generation of primary key fields, as a
+vendor extension. Some vendors pre-generate keys (e.g. Oracle), some vendors
+post-generate keys (e.g. MS-SQL Server and MySQL). In either case, you can
+obtain a pre-generated key using a <tt>&lt;selectKey&gt;</tt> stanza within an
+<tt>&lt;insert&gt;</tt> element. The following example shows an <tt>&lt;insert&gt;</tt>
+statement for either approach.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<!-- Oracle SEQUENCE Example using .NET 1.1 System.Data.OracleClient -->
+<insert id="insertProduct-ORACLE" parameterClass="product">
+  <selectKey resultClass="int" type="pre" property="Id" >
+     SELECT STOCKIDSEQUENCE.NEXTVAL AS VALUE FROM DUAL
+  </selectKey>
+  insert into PRODUCT (PRD_ID,PRD_DESCRIPTION) values (#id#,#description#)
+</insert>
+
+<!-- Microsoft SQL Server IDENTITY Column Example -->
+<insert id="insertProduct-MS-SQL" parameterClass="product">
+  insert into PRODUCT (PRD_DESCRIPTION)
+  values (#description#)
+ <selectKey resultClass="int" type="post" property="id" >
+   select @@IDENTITY as value
+ </selectKey>
+</insert>
+
+<!-- MySQL Example -->
+<insert id="insertProduct-MYSQL" parameterClass="product">
+  insert into PRODUCT (PRD_DESCRIPTION)
+  values (#description#)
+ <selectKey resultClass="int" type="post" property="id" >
+   select LAST_INSERT_ID() as value
+ </selectKey>
+</insert>
+</com:TTextHighlighter>
+
+<h2><tt>&lt;generate&gt;</tt> tag</h2>
+<p>You can use SQLMap to execute any SQL statement your application requires.
+When the requirements for a statement are simple and obvious, you may not even
+need to write a SQL statement at all. The <tt>&lt;generate&gt;</tt> tag can be used to
+create simple SQL statements automatically, based on a <tt>&lt;parameterMap&gt;</tt>
+element. The four CRUD statement types (insert, select, update, and delete)
+are supported. For a select, you can select all or select by a key (or keys).
+The following example shows an example of generating the usual array of
+CRUD statements.</p>
+
+<div class="note"><b class="tip">Important:</b>
+The intended use of the <tt>&lt;generate&gt;</tt> tag is to save developers the trouble
+of coding mundane SQL statements (and only mundane statements). It is not
+meant as a object-to-relational mapping tool. There are many frameworks that
+provide extensive object-to-relational mapping features. The <tt>&lt;generate&gt;</tt>
+tag is not a replacement for any of those. When the <tt>&lt;generate&gt;</tt> tag does
+not suit your needs, use a conventional statement instead.
+</div>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+  <parameterMap id="insert-generate-params">
+    <parameter property="Name" column="Category_Name"/>
+    <parameter property="Guid" column="Category_Guid" dbType="UniqueIdentifier"/>
+  </parameterMap>
+
+  <parameterMap id="update-generate-params" extends="insert-generate-params">
+    <parameter property="Id" column="Category_Id" />
+  </parameterMap>
+
+  <parameterMap id="delete-generate-params">
+    <parameter property="Id" column="Category_Id" />
+    <parameter property="Name" column="Category_Name"/>
+  </parameterMap>
+
+  <parameterMap id="select-generate-params">
+    <parameter property="Id" column="Category_Id" />
+    <parameter property="Name" column="Category_Name"/>
+    <parameter property="Guid" column="Category_Guid" dbType="UniqueIdentifier"/>
+  </parameterMap>
+
+  <update id="UpdateCategoryGenerate" parameterMap="update-generate-params">
+    <generate table="Categories" by="Category_Id"/>
+  </update>
+
+  <delete id="DeleteCategoryGenerate" parameterMap="delete-generate-params">
+    <generate table="Categories" by="Category_Id, Category_Name"/>
+  </delete>
+
+  <select id="SelectByPKCategoryGenerate" resultClass="Category" 
+  		  parameterClass="Category" parameterMap="select-generate-params">
+    <generate table="Categories" by="Category_Id"/>
+  </select>
+
+  <select id="SelectAllCategoryGenerate" resultClass="Category"
+          parameterMap="select-generate-params">
+    <generate table="Categories" />
+  </select>
+
+  <insert id="InsertCategoryGenerate" parameterMap="insert-generate-params">
+    <selectKey property="Id" type="post" resultClass="int">
+      select @@IDENTITY as value
+    </selectKey>
+    <generate table="Categories" />
+  </insert>
+</com:TTextHighlighter>
+
+<p>The tag generates ANSI SQL, which should work with any compliant database.
+Special types, such as blobs, are not supported, and vendor-specific types are
+also not supported. But, the generate tag does keep the simple things simple.</p>
+
+<div class="note"><b class="tip">Note:</b>
+The SQL is generated when the DataMapper instance is built and can be cached
+afterward, so there is no performance impact at execution time.
+</div>
+
+<p>The generate tag supports two attributes.</p>
+
+<!-- tabular: align=|l|l|l|, width=(0.2 0.4 0.2) --> 
+<table class="tabular">
+	<tr><th>Attribute</th><th>Description</th><th>Required</th></tr>
+	<tr>
+		<td><tt>table</tt></td>
+		<td>specifies the table name to use in the SQL statement</td>
+		<td>yes</td>
+	</tr>
+	<tr>
+		<td><tt>by</tt></td>
+		<td>specifies the columns to use in a WHERE clause</td>
+		<td>no</td>
+	</tr>
+</table>
+
+</com:TContent>

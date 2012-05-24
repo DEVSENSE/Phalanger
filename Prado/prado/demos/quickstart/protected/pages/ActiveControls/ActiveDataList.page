@@ -1,0 +1,23 @@
+<com:TContent ID="body" >
+
+<h1 id="150003">TActiveDataList</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveDataList" />
+
+<p class="block-content">
+<tt>TActiveDataList</tt> represents a data bound and updatable list control which is the
+active counterpart to the original <tt>TDataList</tt> control.
+</p>
+
+<p class="block-content">
+This component can be used in the same way as the regular datalist, the only
+difference is that the active datalist uses callbacks instead of postbacks
+for interaction.
+</p>
+
+<p class="block-content">
+Please refer to the original documentation of <a href="?page=Controls.DataList">TDataList</a> for usage.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveDataList.Home" />
+
+<div class="last-modified">$Id: ActiveDataList.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

@@ -1,0 +1,25 @@
+<com:TContent ID="body" >
+
+<h1 id="3701">TLiteral</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TLiteral" />
+
+<p id="420283" class="block-content">
+<tt>TLiteral</tt> displays a static text on a Web page. <tt>TLiteral</tt> is similar to the <tt>TLabel</tt> control, except that the <tt>TLiteral</tt>
+ * control has no style properties, such as <tt>BackColor</tt>, <tt>Font</tt>, etc.
+</p>
+
+<p id="420284" class="block-content">
+The text displayed by <tt>TLiteral</tt> can be programmatically controlled by setting the <tt>Text</tt> property. The text displayed may be HTML-encoded if the <tt>Encode</tt> is true (the default value is false).
+</p>
+
+<p id="420285" class="block-content">
+<tt>TLiteral</tt> will render the contents enclosed within its component tag if <tt>Text</tt> is empty.
+</p>
+
+<p id="420286" class="block-content">
+Be aware, if <tt>Encode</tt> is false, make sure <tt>Text</tt> does not contain unwanted characters that may bring security vulnerabilities.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TLiteral.Home" />
+
+<div class="last-modified">$Id: Literal.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

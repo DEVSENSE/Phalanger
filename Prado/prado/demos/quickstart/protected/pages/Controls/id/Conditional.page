@@ -1,0 +1,36 @@
+<com:TContent ID="body" >
+
+<h1>TConditional</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TConditional" />
+
+<p class="block-content">
+<tt>TConditional</tt> menampilkan konten terkai berdasarkan hasil evaluasi ekspresi PHP yang ditetapkan via <tt>Kondisi</tt>.
+Jika hasil adalah true, ia menurunkan template <tt>TrueTemplate</tt>;
+sebaliknua, template <tt>FalseTemplate</tt> yang diturunkan.
+Ekspresi PHP dievaluasi sebelum tahap <tt>onInit</tt> atas masa hidup kontrol.
+</p>
+
+<p class="block-content">
+Karena <tt>TConditional</tt> mengevaluasi <tt>Kondisi</tt> di tahap awal, direkomendasikan anda menyetel <tt>Condition</tt> hanya dalam template dan ekspresi tidak boleh merujuk ke obyek yang tersedia nanti atau setelah masa hidup <tt>onInit</tt>.
+</p>
+
+<p>
+<tt>TConditional</tt> sangat ringan. Ia menurunkan <tt>TrueTemplate</tt>
+<tt>FalseTemplate</tt>, tapi tidak keduanya sekaligus. Dan kondisi dievaluasi hanya sekali.
+Penggunaan umum dari TConditional diperlihatkan seperti berikut:
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TConditional Condition="$this->User->IsGuest">
+	&lt;prop:TrueTemplate>
+		<a href="path/to/login">Login</a>
+	&lt;/prop:TrueTemplate>
+	&lt;prop:FalseTemplate>
+		<a href="path/to/logout">Logout</a>
+	&lt;/prop:FalseTemplate>
+&lt;/com:TConditional>
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="Controls.Samples.TConditional.Home" />
+
+<div class="last-modified">$Id: Conditional.page 2236 2007-09-24 16:03:13Z xue $</div></com:TContent>

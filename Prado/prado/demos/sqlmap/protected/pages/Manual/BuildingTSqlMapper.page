@@ -1,0 +1,73 @@
+<com:TContent ID="body">
+<h1>Using SQLMap PHP DataMapper</h1>
+<p>The SQLMap DataMapper API provides four core functions:</p>
+<ol>
+  <li>build a <tt>TSqlMapper</tt> instance from a configuration file or cache</li>
+  <li>execute an update query (including insert and delete)</li>
+  <li>execute a select query for a single object</li>
+  <li>execute a select query for a list of objects</li>
+</ol>
+
+<p>The API also provides support for retrieving paginated lists and managing
+transactions.</p>
+
+<h1>Building a <tt>TSqlMapper</tt> instance</h1>
+<p>An XML document is a wonderful tool for describing a database configuration
+, but you can't execute XML. In order to use the
+SQLMap configuration and definitions in your PHP application, you need a class
+you can call.</p>
+
+<p>The framework provides service methods that you can call which read the
+configuration file (and any of its definition files) and builds a
+<tt>TSqlMapper</tt> object. The <tt>TSqlMapper</tt> object provides access to the rest
+of the framework. The following example shows a singleton <tt>TMapper</tt> that is
+similar to the one bundled with the framework.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+require_once('/path/to/SQLMap/TSqlMapper.php');
+class TMapper
+{
+    private static $_mapper;
+
+    public static function configure($configFile)
+    {
+        if(is_null(self::$_mapper))
+        {
+            $builder = new TDomSqlMapBuilder();
+            self::$_mapper = $builder->configure($configFile);
+        }
+        return self::$_mapper;
+    }
+
+    public static function instance()
+    {
+        return self::$_mapper;
+    }
+}
+</com:TTextHighlighter>
+
+<p>To obtain the <tt>TSqlMapper</tt> instance, first configure the mapper once.</p>
+<com:TTextHighlighter Language="php" CssClass="source">
+TMapper::configure('path/to/sqlmap.config');
+</com:TTextHighlighter>
+
+<p>The <tt>TDomSqlMapBuilder</tt> object will go throught the the <tt>sqlmap.config</tt>
+file and build a <tt>TSqlMapper</tt> instance. To use <tt>TSqlMapper</tt> in your
+application, specify one of the <tt>TSqlMapper</tt> methods. Here's an example:</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+$list = TMapper::instance()->queryForList("PermitNoForYearList", $values);
+</com:TTextHighlighter>
+
+<h2>Multiple Databases</h2>
+<p>If you need access to more than one database from the same application, create
+a DataMapper configuration file for that database and another Mapper class to
+go with it.</p>
+
+<h2><tt>TDomSqlMapBuilder</tt> Configuration Options</h2>
+<p>If you find that you already have loaded your DataMapper configuration
+information as a <tt>SimpleXMLElement</tt> instance within your application, the
+<tt>TDomSqlMapBuilder</tt> provides <tt>Configure</tt> overloads for those types as
+well.</p>
+
+</com:TContent>

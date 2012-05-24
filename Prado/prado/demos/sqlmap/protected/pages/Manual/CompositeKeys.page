@@ -1,0 +1,53 @@
+<com:TContent ID="body">
+
+<h1>Composite Keys or Multiple Complex Parameters Properties</h1>
+<p>You might have noticed that in the above examples there is only a single key
+being used as specified in the <tt>resultMap</tt> by the <tt>column</tt> attribute.
+This would suggest that only a single column can be associated to a related
+mapped statement. However, there is an alternate syntax that allows multiple
+columns to be passed to the related mapped statement. This comes in handy for
+situations where a composite key relationship exists, or even if you simply
+want to use a parameter of some name other than <tt>#value#</tt>. The alternate
+syntax for the column attribute is simply <tt>param1=column1, param2=column2, ... , 
+paramN=columnN</tt>. Consider the example below where the PAYMENT table
+is keyed by both Customer ID and Order ID:</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<resultMap id="select-order-result" class="order">
+    <result property="id" column="ORD_ID"/>
+    <result property="customerId" column="ORD_CST_ID"/>
+    ...
+    <result property="payments" column="{itemId=ORD_ID, custId=ORD_CST_ID}"
+      select="selectOrderPayments"/>
+</resultMap>
+
+<statement id="selectOrderPayments" resultMap="select-payment-result">
+    select * from PAYMENT
+    where PAY_ORD_ID = #itemId#
+    and PAY_CST_ID = #custId#
+</statement>
+</com:TTextHighlighter>
+
+<p>Optionally you can just specify the column names as long as they're in the
+same order as the parameters. For example:</p>
+<com:TTextHighlighter Language="xml" CssClass="source">
+{ORD_ID, ORD_CST_ID}
+</com:TTextHighlighter>
+
+<div class="note"><b>Important!</b>
+<p>Currently the SQLMap DataMapper framework does not automatically resolve
+circular relationships. Be aware of this when implementing parent/child
+relationships (trees). An easy work around is to simply define a second result
+map for one of the cases that does not load the parent object (or vice versa),
+or use a join as described in the "N+1 avoidance" solutions.</p>
+</div>
+
+<div class="info"><b class="tip">Info:</b>
+Result Map names are always local to the Data Map definition file that they
+are defined in. You can refer to a Result Map in another Data Map definition
+file by prefixing the name of the Result Map with the namespace of the SqlMap
+set in the <tt>&lt;sqlMap&gt;</tt> root element.
+</div>
+
+
+</com:TContent>

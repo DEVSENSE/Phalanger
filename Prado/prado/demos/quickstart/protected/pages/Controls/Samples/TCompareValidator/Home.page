@@ -1,0 +1,76 @@
+<com:TContent ID="body">
+
+<h1>TCompareValidator Samples</h1>
+<p><strong>Note:</strong> TCompareValidator will start
+to validate only if both inputs are not empty.</p>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Compare validator with default settings:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox1" Text="a1" />
+<com:TTextBox ID="TextBox11" Text="a2"/>
+<com:TCompareValidator
+	ValidationGroup="Group1"
+	ControlToValidate="TextBox1"
+	ControlToCompare="TextBox11"
+	Text="The two textboxes must have the same value." />
+<com:TButton Text="Submit" ValidationGroup="Group1" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Compare validator with client-side validation disabled:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox2" Text="b1"/>
+<com:TTextBox ID="TextBox22" Text="b2" />
+<com:TCompareValidator
+	ValidationGroup="Group2"
+	EnableClientScript="false"
+	ControlToValidate="TextBox2"
+	ControlToCompare="TextBox22"
+	Text="The two textboxes must have the same value." />
+<com:TButton Text="Submit" ValidationGroup="Group2" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Comparing with a constant value:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox3" Text="a" />
+<com:TCompareValidator
+	ValidationGroup="Group3"
+	ControlToValidate="TextBox3"
+	ValueToCompare="test"
+	Text="You must enter 'test'." />
+<com:TButton Text="Submit" ValidationGroup="Group3" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Comparing with an integer:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox4" Text="0" />
+<com:TCompareValidator
+	ValidationGroup="Group4"
+	ControlToValidate="TextBox4"
+	ValueToCompare="100"
+	DataType="Integer"
+	Operator="GreaterThan"
+	Text="You must enter an integer greater than 100." />
+<com:TButton Text="Submit" ValidationGroup="Group4" />
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

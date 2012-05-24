@@ -1,0 +1,51 @@
+<com:TContent ID="body">
+
+<h1>TButton Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Button with customized color, font and width:
+</td><td class="sampleaction">
+<com:TButton
+	Text="text"
+	Width="200px"
+	ForeColor="silver"
+	BackColor="black"
+	Font.Size="14pt"
+/>
+</td></tr>
+
+<tr><td class="samplenote">
+A click button:
+</td><td class="sampleaction">
+<com:TButton Text="click me" OnClick="buttonClicked" />
+</td></tr>
+
+<tr><td class="samplenote">
+A command button:
+</td><td class="sampleaction">
+<com:TButton
+	Text="click me"
+	OnCommand="buttonClicked"
+	CommandName="test"
+	CommandParameter="value"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A button causing validation:
+</td><td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	Display="Dynamic"
+	ErrorMessage="input required in the textbox"
+	ValidationGroup="Group"
+	/>
+<com:TButton Text="submit" ValidationGroup="Group" />
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

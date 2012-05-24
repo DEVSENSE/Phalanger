@@ -1,0 +1,55 @@
+<com:TContent ID="body">
+<h1>Cookbook sample</h1>
+
+<h2>Executing Update (insert, update, delete)</h2>
+<com:TTextHighlighter Language="php" CssClass="source">
+$product = new Product();
+$product->setId(1);
+$product->setDescription('Shih Tzui');
+
+$key = $sqlMap->insert('insertProduct', $product);
+</com:TTextHighlighter>
+
+<h2>Executing Query for Object (select)</h2>
+<com:TTextHighlighter Language="php" CssClass="source">
+$key = 1;
+$product = $sqlMap->queryForObject ('getProduct', $key);
+</com:TTextHighlighter>
+
+
+<h2>Executing Query for Object (select) With Preallocated Result Object</h2>
+<com:TTextHighlighter Language="php" CssClass="source">
+$customer = new Customer();
+
+$sqlMap->beginTransaction();
+
+$sqlMap->queryForObject('getCust', $parameter, $customer);
+$sqlMap->queryForObject('getAddr', $parameter, $customer);
+$sqlMap->commitTransaction();
+</com:TTextHighlighter>
+
+<h2>Executing Query for List (select)</h2>
+<com:TTextHighlighter Language="php" CssClass="source">
+$list = $sqlMap->queryForList ('getProductList');
+</com:TTextHighlighter>
+
+<h2>Executing Query for List (select) With Result Boundaries</h2>
+<com:TTextHighlighter Language="php" CssClass="source">
+$list = $sqlMap->queryForList ('getProductList', $key, null, 0, 40);
+</com:TTextHighlighter>
+
+<h2>Executing Query for Paginated List (select)</h2>
+<com:TTextHighlighter Language="php" CssClass="source">
+$list = $sqlMap->queryForPagedList ('getProductList', null, 10);
+$list->nextPage();
+$list->previousPage();
+</com:TTextHighlighter>
+
+<h2>Executing Query for Map</h2>
+<com:TTextHighlighter Language="php" CssClass="source">
+ $map = $sqlMap->QueryForMap('getProductList', null, 'productCode');
+ $product = $map['EST-93'];
+</com:TTextHighlighter>
+
+
+</com:TContent>

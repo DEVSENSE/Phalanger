@@ -1,0 +1,22 @@
+<com:TContent ID="body">
+<!-- $Id: Home.page 1650 2007-01-24 06:55:32Z wei $ -->
+<h1>TActiveCustomValidator Samples (AJAX)</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Custom validator using callbacks:
+</td><td class="sampleaction">
+<com:TTextBox ID="textbox1" />
+<com:TActiveCustomValidator
+	ID="validator1"
+	ControlToValidate="textbox1"
+	ErrorMessage="Please enter 'Prado'"
+	OnServerValidate="validator1_onvalidate" />
+<com:TButton ID="button1" Text="Submit!" />
+</td></tr>
+</table>
+
+<com:TJavascriptLogger />
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

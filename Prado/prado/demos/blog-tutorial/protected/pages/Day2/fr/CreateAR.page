@@ -1,0 +1,177 @@
+﻿<com:TContent ID="Main">
+
+<h1>Création des classes Active Record</h1>
+
+<p>
+Nous avons besoin de définir deux classes <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a>, <tt>UserRecord</tt> et <tt>PostRecord</tt>, qui représentent respectivement les tables <tt>users</tt> et <tt>posts</tt>. Les classes Active Record doivent hériter de la classe <tt>ActiveRecord</tt>, et doivent définir les propriétés qui correspondent aux champs de la table correspondante.
+</p>
+
+<p>
+Pour une meilleure organisation de notre arborescence, nous créons un nouveau dossier <tt>protected/database</tt> qui contiendra nos deux classes. Nous modifions notre fichier de configuration de l'application en y insérant les lignes suivantes. Ceci est équivalent à inclure le dossier <tt>protected/database</tt> à notre chemin d'inclusion de PHP (<tt>include_path</tt>). Cela nous permet d'utiliser nos classes sans avoir besoin de les inclure explicitement.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<paths>
+  <using namespace="Application.database.*" />
+</paths>
+</com:TTextHighlighter>
+
+<p>
+Au lieu de créer nos classes manuellement, nous allons utiliser les <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">outils en ligne de commande de PRADO</a> pour qu'il nous génère les classes.
+</p>
+
+<p>
+Dans le dossier <tt>blog</tt>, lancer la commande suivante pour entrer dans le mode interactif de l'outil en ligne de commande:
+</p>
+
+<com:TTextHighlighter CssClass="source cli">
+php path/to/prado-cli.php shell .
+</com:TTextHighlighter>
+
+<p>
+Vous devriez voir
+</p>
+
+<com:TTextHighlighter CssClass="source cli" Language="text">
+Command line tools for Prado 3.1.0.
+** Loaded PRADO appplication in directory "protected".
+PHP-Shell - Version 0.3.1
+(c) 2006, Jan Kneschke <jan@kneschke.de>
+
+>> use '?' to open the inline help
+
+>>
+</com:TTextHighlighter>
+
+<p>
+A l'invite de commande, entrer les deux commandes suivantes pour créer les classes <tt>UserRecord</tt> et <tt>PostRecord</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source cli" Language="text">
+>> generate users Application.database.UserRecord
+
+>> generate posts Application.database.PostRecord
+</com:TTextHighlighter>
+
+<p>
+Ici, nous avons utilisés les <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">espaces de noms</a> pour indiquer où les classes seront créées. Le chemin <tt>Application.database.UserRecord</tt> indique que nous désirons que la classe soit insérée dans <tt>protected/database/UserRecord.php</tt>.
+</p>
+
+<p>
+Nous devrions voir l'arborescence suivante ainsi que nos deux nouveaux fichiers dans le dossier <tt>protected/database</tt>:
+</p>
+
+<img src="<%~ directories2.gif %>" class="output" />
+
+<p>
+Si vous consultez le fichier <tt>PostRecord</tt>, vous devriez voir le contenu suivant:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class PostRecord extends TActiveRecord
+{
+    const TABLE='posts';
+    public $post_id;
+    public $author_id;
+    public $create_time;
+    public $title;
+    public $content;
+    public $status;
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+
+<p>
+Comme vous pouvez le constater, pour chaque champs de la table <tt>posts</tt>, la classe déclare un membre correspondant. La constante <tt>TABLE</tt> indique le nom de la table que gère la classe <tt>PostRecord</tt>. La méthode statique <tt>finder()</tt> permet d'effectuer des requêtes et de lire les données sous forme d'objets <tt>PostRecord</tt>.
+</p>
+<p>
+Vous pouvez utiliser l'outil en ligne de commande pour tester nos nouvelles classes. En restant dans le mode interactif de l'outil en ligne de commande, vous pouvez saisir les commandes PHP et voir ce qui suit. Vous pouvez tester des commandes telles que <tt>UserRecord::finder()->findAll()</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source cli" Language="text">
+>> PostRecord::finder()->findAll()
+array
+(
+    [0] => PostRecord#1
+    (
+        [post_id] => '1'
+        [author_id] => 'admin'
+        [create_time] => '1175708482'
+        [title] => 'first post'
+        [content] => 'this is my first post'
+        [status] => '0'
+        [TActiveRecord:_readOnly] => false
+        [TActiveRecord:_connection] => null
+        [TComponent:_e] => array()
+    )
+)
+</com:TTextHighlighter>
+
+<h1>Relations entre Posts et Users</h1>
+<p>
+Rappellez-vous qu'il y a une relation entre les tables <tt>users</tt> et <tt>posts</tt>. Le diagramme des relations est indiqué ci-après.
+</p>
+
+<img src="<%~ ER.gif %>" class="output" />
+
+<p>
+A partir de ce diagramme, nous voyons que la table <tt>posts</tt> contient un champ <tt>author_id</tt>. Le champ <tt>author_id</tt> est une clé étrangère qui référence la table <tt>users</tt>. En particulier, les valeurs du champ <tt>author_id</tt> doivent apparaitre dans dans le champ <tt>username</tt> de la table <tt>users</tt>. Une des conséquences de cette relation, en réfléchissant orienté objet, est que chaque "post" repose sur un "author" et qu'un "author" peut avoir plusieurs "posts".
+</p>
+
+<p>
+Nous pouvons modéliser les relations entre <tt>posts</tt> and <tt>users</tt> dans nos classes <tt>PostRecord</tt> and <tt>UserRecord</tt> en les modifiant comme ci-dessous :
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class PostRecord extends TActiveRecord
+{
+    //... propriétés et méthodes comme précédemment
+
+    public $author; //contient un objet UserRecord
+
+    public static $RELATIONS=array
+    (
+        'author' => array(self::BELONGS_TO, 'UserRecord'),
+    );
+}
+</com:TTextHighlighter>
+
+<p>
+La propriété statique <tt>$RELATIONS</tt> de la classe <tt>PostRecord</tt> définit que la propriété <tt>$author</tt> fait référence à un <tt>UserRecord</tt>. Dans le tableau : <tt>array(self::BELONGS_TO, 'UserRecord')</tt>, le premier élément défini le type de relation, dans notre cas, <tt>self::BELONGS_TO</tt>. Le deuxième élément est le nom de l'objet en relation, dans notre cas <tt>UserRecord</tt>. La classe <tt>UserRecord</tt> est définie comme ci-dessous, la différence est que chaque objet <tt>UserRecord</tt> contient plusieurs <tt>PostRecord</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class UserRecord extends TActiveRecord
+{
+    //... propriétés et méthodes comme précédemment
+
+    public $posts=array(); //contient un tableau de PostRecord
+
+    public static $RELATIONS=array
+    (
+        'posts' => array(self::HAS_MANY, 'PostRecord'),
+    );
+}
+</com:TTextHighlighter>
+
+<p>
+Un tableau de <tt>UserRecord</tt> ainsi que les messages correspondants peuvent être lu de la manière suivante :
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+$users = UserRecord::finder()->withPosts()->findAll();
+</com:TTextHighlighter>
+
+<com:TipBox>
+La méthode <tt>withXXX()</tt> (avec XXX qui est le nom de la propriété de la relation, dans notre cas <tt>Posts</tt>) lit les données correspondantes de <tt>PostRecords</tt> en utilisant une deuxième requête (mais pas en utilisant une jointure). La méthode <tt>withXXX()</tt> accepte les mêmes arguments que les autres méthodes <tt>finder</tt> de l'objet Active record, ie : <tt>withPosts('status = ?', 0)</tt>.
+</com:TipBox>
+
+<p>
+Plus d'informations sont disponibles dans le manuel de démarrage rapide <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Active Record</a>.
+</p>
+
+</com:TContent>

@@ -1,0 +1,42 @@
+﻿<com:TContent ID="Main">
+
+<h1>Vue d'ensemble de la gestion des utilisateurs</h1>
+<!-- <h1>User Management Overview</h1> -->
+
+<p>
+Dans cette section, nous allons créer les pages concernant la gestion des utilisateurs. En particulier, nous allons implémenter les fonctionnalités suivantes: connexion/déconnexion des utilisateurs, création d'un utilisateur, mise à jour/suppression des utilisateurs.
+</p>
+<!-- <p>
+In this section, we create pages that are related with user management. In particular, we implement these required features: user login/logout, creating new user account and updating/deleting user accounts.
+</p> -->
+
+<p>
+En accord avec les buts à atteindre, nous devons créer les pages suivantes. Pour une meilleure organisation de notre code, ces pages seront créées dans le dossier <tt>protected/pages/users</tt>.
+</p>
+<!-- <p>
+According to the requirements, we need to create the following pages. To better organize our code, these user-related pages will be created under a new directory <tt>protected/pages/users</tt>.
+</p> -->
+
+<ul>
+  <li><tt>LoginUser</tt> affiche le formulaire de connexion.</li>
+  <li><tt>NewUser</tt> pour la création d'un compte utilisateur.</li>
+  <li><tt>EditUser</tt> permet à un utilisateur enregistré de mettre à jour son profil.</li>
+  <li><tt>AdminUser</tt> permet à l'administrateur de gérer les comptes utilisateurs, y compris la gestion des droits d'accès et la suppression d'un compte.</li>
+</ul>
+<!-- <ul>
+  <li><tt>LoginUser</tt> displays a login form to login a user.</li>
+  <li><tt>NewUser</tt> creates a new user account.</li>
+  <li><tt>EditUser</tt> allows a registered user to update his profile.</li>
+  <li><tt>AdminUser</tt> allows the administrator to manage the user accounts, including setting permission level and deleting a user account.</li>
+</ul> -->
+
+<p>
+Après avoir fini cette section, nous devrions obtenir l'arborescence suivante :
+</p>
+<!-- <p>
+After finishing this section, we shall expect to see the following directories and files:
+</p> -->
+
+<img src="<%~ directories.gif %>" class="output" />
+
+</com:TContent>

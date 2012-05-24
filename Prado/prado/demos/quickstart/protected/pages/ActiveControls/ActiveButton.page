@@ -1,0 +1,94 @@
+<com:TContent ID="body">
+<!-- $Id: ActiveButton.page 1817 2007-03-31 23:36:00Z wei $ -->
+<h1 id="122026">TActiveButton</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveButton" />
+
+<p id="610410" class="block-content"><tt>TActiveButton</tt> is the active control counter part to
+<a href="?page=Controls.Button">TButton</a>.
+When a <tt>TActiveButton</tt> is clicked, rather than a normal post back request a
+callback request is initiated. The <tt>OnCallback</tt> event is raised
+during a callback request and it is raise <strong>after</strong>
+the <tt>OnClick</tt> event.
+</p>
+
+<p id="610411" class="block-content">When the <tt>ActiveControl.EnableUpdate</tt> property is true,
+changing the <tt>Text</tt> property during a callback request will update
+the button's caption on the client-side.</p>
+
+<p id="610412" class="block-content">Since the <tt>OnCallback</tt> event is raised only during a callback request,
+the <tt>OnCallback</tt> event handler can be used to handle logic specifically
+related to callback requests. The <tt>OnClick</tt> event handler is raised
+when ever the button is clicked, even if javascript is disabled.</p>
+
+<p id="610413" class="block-content">The following example the use of both the <tt>OnClick</tt> and <tt>OnCallback</tt>
+events of an <tt>TActiveButton</tt>.</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveButton.Home" />
+
+<h2 id="122027">TActiveButton Class Diagram</h2>
+<p id="610414" class="block-content">The class diagram for <tt>TActiveButton</tt> is illustrated in the figure below.
+Most active control that can perform callback request have a similar structure.
+</p>
+
+<img src=<%~ TActiveButtonClass.png %> class="figure"
+	alt="TActiveButton class diagram" title="TActiveButton class diagram" />
+
+<p id="610415" class="block-content"><tt>TActiveButton</tt> is an extension of <a href="?page=Controls.Button">TButton</a>
+and implements two additional interfaces <tt>ICallbackEventHandler</tt> and
+<tt>IActiveControl</tt>. The <tt>TActiveButton</tt> contains an instance of
+<a href="?page=ActiveControls.BaseActiveControl">TBaseActiveCallbackControl</a>
+available through the <tt>ActiveControl</tt> property of <tt>TActiveButton</tt>.
+The following example set the callback parameter of the <tt>TActiveButton</tt> when
+a callback request is dispatched.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code1">
+&lt;com:TActiveButton
+	Text="Click Me"
+	OnCallback="button_callback"
+	ActiveControl.CallbackParameter="value" /&gt;
+</com:TTextHighlighter>
+<p id="610416" class="block-content">In the <tt>OnCallback</tt> event handler method, the <tt>CallbackParameter</tt>
+is available in the <tt>$param</tt> object.</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code2">
+public function button_callback($sender, $param)
+{
+	echo $param->CallbackParameter; //outputs "value"
+}
+</com:TTextHighlighter>
+
+<h2 id="122028">Adding Client Side Behaviour</h2>
+
+<p id="610417" class="block-content">With in the <tt>ActiveControl</tt> property is an instance of
+<a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> available
+as a property <tt>ClientSide</tt> of <tt>TActiveButton</tt>.
+The <tt>ClientSide</tt> property contains sub-properties, such as <tt>RequestTimeOut</tt>,
+and client-side javascript event handler, such as <tt>OnLoading</tt>,
+that are used by the client-side when making a callback request.
+The following example demonstrates the toggling of a "loading" indicator
+when the client-side is making a callback request.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code3">
+&lt;com:TClientScript PradoScripts="effects" /&gt;
+<span id="callback_status">Loading...</span>
+
+&lt;com:TActiveButton
+	Text="Click Me"
+	OnCallback="button_callback"
+	ActiveControl.CallbackParameter="value" &gt;
+	&lt;prop:ClientSide
+		OnLoading="Element.show('callback_status')"
+		OnComplete="Element.hide('callback_status')" /&gt;
+&lt;/com:TActiveButton&gt;
+</com:TTextHighlighter>
+
+<p id="610418" class="block-content">The example loads the "effects" javascript library using the
+<a href="?page=Controls.ClientScript">TClientScript</a> component.
+The <tt>ClientSide.OnLoading</tt> property value contains
+javascript statement that uses the "effects" library to show the "Loading..."
+span tag. Similarly, <tt>ClientSide.OnComplete</tt> property
+value contains the javascript statement that hides the "Loading..." span tag.
+See <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> for
+further details on client-side property details.
+</p>
+<div class="last-modified">$Id: ActiveButton.page 1817 2007-03-31 23:36:00Z wei $</div></com:TContent>

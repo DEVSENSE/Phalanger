@@ -1,0 +1,137 @@
+<com:TContent ID="Main">
+
+<h1>Membuat Halaman <tt>AdminUser</tt></h1>
+
+<p>
+Halaman <tt>AdminUser</tt> menampilkan semua akun pengguna dalam sebuah daftar agar administrator dapat melakukan beberapa pekerjaan administratif. Demi kemudahan, pekerjaan administratif sistem blog kita mendukung termasuk mengedit dan menghapus akun pengguna.
+</p>
+
+<p>
+Kita akan menampilkan daftar pengguna dalam sebuah tabel. Setiap baris tabel mewakili satu akun pengguna, dan kolom berikut ditampilkan:
+</p>
+<ul>
+<li>Username - menampilkan nama pengguna. Dalam setiap sel sebuah hiperlink ditampilkan membawa ke halaman <a href="?page=Day3.CreateEditUser">EditUser</a> terkait.</li>
+<li>Email - menampilkan email.</li>
+<li>Administrator - menampilkan apakah akun pengguna adalah aturan administrator.</li>
+<li>Command - menampilkan kolom dengan tombol "Delete". Mengklik pada setiap tombol akan mengakibatkan penghapusan akun pengguna terkait.</li>
+</ul>
+
+<p>
+Kita membuat dua file <tt>protected/pages/users/AdminUser.page</tt> dan <tt>protected/pages/users/AdminUser.php</tt> masing-masing untuk menyimpan template halaman dan kelas halaman.
+</p>
+
+<h2>Membuat Template Halaman</h2>
+<p>
+Kita menggunakan <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.DataGrid">TDataGrid</a> untuk menampilkan akun pengguna. Berdasarkan pada analisis di atas, kita mengkonfigurasi empat kolom berikut:
+</p>
+<ul>
+<li><a href="http://www.pradosoft.com/docs/classdoc/THyperLinkColumn">THyperLinkColumn</a> menampilkan kolom nama pengguna. URL dibentuk berdasarkan pada ekstensi PHP yang ditetapkan dalam properti <tt>DataNavigateUrlFormatString</tt>.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TBoundColumn">TBoundColumn</a> menampilkan kolom email.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TCheckBoxColumn">TCheckBoxColumn</a> menggunakan kotak centang untuk menunjukan apakah akun pengguna adalah aturan administrator.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TButtonColumn">TButtonColumn</a> menampilkan kolom dengan tombol "Delete".</li>
+</ul>
+
+<p>Template halaman lengkap ditampilkan seperti berikut:</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ Title="My Blog - Manage User Accounts" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Manage User Accounts</h1>
+
+<a href="&lt;%= $this->Service->constructUrl('users.NewUser')%>">Create New User</a>
+<br/>
+
+&lt;com:TDataGrid ID="UserGrid"
+    DataKeyField="username"
+    AutoGenerateColumns="false"
+    OnDeleteCommand="deleteButtonClicked">
+
+    &lt;com:THyperLinkColumn
+        HeaderText="Username"
+        DataTextField="username"
+        DataNavigateUrlField="username">
+        &lt;prop:DataNavigateUrlFormatString>#
+          $this->Service->constructUrl('users.EditUser',array('username'=>{0}))
+        &lt;/prop:DataNavigateUrlFormatString>
+    &lt;/com:THyperLinkColumn>
+
+    &lt;com:TBoundColumn
+        HeaderText="Email"
+        DataField="email" />
+
+    &lt;com:TCheckBoxColumn
+        HeaderText="Administrator"
+        DataField="role" />
+
+    &lt;com:TButtonColumn
+        HeaderText="Command"
+        Text="Delete"
+        ButtonType="PushButton"
+        CommandName="delete" />
+
+&lt;/com:TDataGrid>
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+
+<h2>Membuat Kelas Halaman</h2>
+
+<p>
+Dalam template halaman di atas, event <tt>OnDeleteCommand</tt> datagrid dengan metode <tt>deleteButtonClicked()</tt> akan kita implementasikan dalam kelas halaman. Sebagai tambahan, datagrid perlu dipopulasi dengan data akun pengguna saat halaman diinisialisasi. Oleh karena itu, kita menulis kelas halaman seperti berikut:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class AdminUser extends TPage
+{
+    /**
+     * Mempopulai datagrid dengan daftar pengguna.
+     * Metode ini dipanggil oleh kerangka kerja saat inisialisasi halaman
+     * @param mixed event parameter
+     */
+    public function onInit($param)
+    {
+        parent::onInit($param);
+        // ambil semua informasi data akun
+        $this->UserGrid->DataSource=UserRecord::finder()->findAll();
+        // mengikat data ke komponen antarmua
+        $this->UserGrid->dataBind();
+    }
+
+    /**
+     * Menghapus rekaman pengguna yang ditetapkan.
+     * Metode ini merespon ke event OnDeleteCommand pada datagrid.
+     * @param TDataGrid pengirim event
+     * @param TDataGridCommandEventParameter parameter event
+     */
+    public function deleteButtonClicked($sender,$param)
+    {
+        // dapatkan item datagrid yang berisi tombol hapus yang diklik
+        $item=$param->Item;
+        // dapatkan kunci primer terkait ke item datagrid
+        $username=$this->UserGrid->DataKeys[$item->ItemIndex];
+        // menghapus rekaman pengguna dengan kunci primer nama pengguna
+        UserRecord::finder()->deleteByPk($username);
+    }
+}
+</com:TTextHighlighter>
+
+<p>
+Dalam kode di atas, metode <tt>deleteButtonClicked()</tt> dipanggil kapan saja tombol "Delete" diklik. untuk menentukan baris mana pada tombol yang diklik, kita memeriksa properti <tt>Item.ItemIndex</tt> pada parameter event. Untuk selanjutnya mengidentifikasi akun pengguna mana yang akan dihapus, kita mengambil nilai kunci primer (username) melalui properti <tt>DataKeys</tt> pada DataGrid.
+</p>
+
+<com:TipBox>
+Semua kontrol <a href="http://www.pradosoft.com/docs/classdoc/TDataBoundControl">data-bound</a> mempunyai pola penggunaan yang sama. Yaitu, Setel properti <tt>DataSource</tt> dengan data dan panggil metode <tt>dataBind()</tt> untuk mengikat data ke struktur internal kontrol.
+</com:TipBox>
+
+
+<h2>Pengujian</h2>
+<p>
+Untuk menguji halaman <tt>AdminUser</tt>, kunjungi URL <tt>http://hostname/blog/index.php?page=users.AdminUser</tt>. Anda mungkin perlu masuk sebagai administrator lebih dahulu jika Anda belum melakukannya. Kita akan melihat hasil seperti berikut.
+</p>
+
+<img src="<%~ output3.gif %>" class="output" />
+
+</com:TContent>

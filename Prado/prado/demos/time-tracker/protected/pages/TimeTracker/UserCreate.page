@@ -1,0 +1,87 @@
+<com:TContent ID="Main">
+<h2>Create New User</h2>
+
+<fieldset class="signup"><legend>User Details</legend>
+<com:TWizard ID="CreateUserWizard"
+	UseDefaultLayout="false"
+	NavigationStyle.CssClass="wizardNav"
+	OnNextButtonClick="userWizardNextStep"
+	OnCompleteButtonClick="createNewUser"
+	ShowSideBar="false" >
+  <com:TWizardStep>
+		<h4>Sign Up for Your New Account</h4>
+		<div class="username">
+			<com:TLabel ForControl="username" Text="User Name:" />
+			<span class="required">*</span>
+			<com:TTextBox ID="username" />
+		<com:TRequiredFieldValidator
+			ControlToValidate="username"
+			Display="Dynamic"
+			ErrorMessage="Please enter your username."
+			ControlCssClass="required-field" />
+	  	<com:TCustomValidator
+			ControlToValidate="username"
+			Display="Dynamic"
+			OnServerValidate="checkUsername" />	
+		</div>
+		<div class="password">
+			<com:TLabel ForControl="password" Text="Password:" />
+			<span class="required">*</span>
+			<com:TTextBox ID="password" TextMode="Password" />
+		<com:TRequiredFieldValidator
+			ControlToValidate="password"
+			Display="Dynamic"
+			ErrorMessage="Please enter your password (6 or more characters)."
+			ControlCssClass="required-field" />	
+		<com:TRegularExpressionValidator
+			ControlToValidate="password"
+			Display="Dynamic"
+			RegularExpression="\w{6,}"
+			ErrorMessage="Please enter 6 or more characters."
+			ControlCssClass="required-field" />			
+		</div>	
+		<div class="password">
+			<com:TLabel ForControl="password2" Text="Confirm Password:" />
+			<span class="required">*</span>
+			<com:TTextBox ID="password2" TextMode="Password" />
+		<com:TCompareValidator
+			ControlToValidate="password"
+			ControlToCompare="password2"
+			ErrorMessage="The Password and Confirmation Password must match."
+			ControlCssClass="required-field" />		
+		</div>	
+		<div class="email">
+			<com:TLabel ForControl="email" Text="E-Mail Address:" />
+			<span class="required">*</span>
+			<com:TTextBox ID="email" Style="width:20em"/>
+		<com:TRequiredFieldValidator
+			ControlToValidate="email"
+			Display="Dynamic"
+			ErrorMessage="Please enter your E-Mail address."
+			ControlCssClass="required-field" />			
+		<com:TEmailAddressValidator
+			ControlToValidate="email"
+			Display="Dynamic"
+			ErrorMessage="E-Mail address does not seem to be valid."
+			ControlCssClass="required-field" />		
+		</div>
+	</com:TWizardStep>
+	<com:TWizardStep>
+		<com:TLabel ForControl="role" Text="New User Role:" />
+		<span class="required">*</span>
+		<com:TDropDownList ID="role">
+			<com:TListItem Text="Administrator" Value="admin,manager,consultant" />
+			<com:TListItem Text="Manager" Value="manager,consultant" />
+			<com:TListItem Text="Consultant" Value="consultant" />
+		</com:TDropDownList>		
+	</com:TWizardStep>
+	<com:TWizardStep StepType="Complete">
+		New account has been successfully created.
+		<com:TPanel Visible=<%= !$this->User->isInRole('admin') %> CssClass="wizardNav">
+			<com:TButton Text="Continue" OnClick="wizardCompleted"/>
+		</com:TPanel>
+	</com:TWizardStep>
+</com:TWizard>
+</fieldset>
+
+</com:TContent>

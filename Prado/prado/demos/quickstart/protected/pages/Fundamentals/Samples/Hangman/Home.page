@@ -1,0 +1,70 @@
+<%@ Title="Hangman Game" %>
+<com:TContent ID="body">
+
+<h1>Hangman Game</h1>
+
+<com:TMultiView ID="GameMultiView">
+
+<com:TView ID="IntroView">
+<p>This is the game of Hangman. You must guess a word, a letter at a time.
+If you make too many mistakes, you lose the game!</p>
+<com:TRadioButtonList ID="LevelSelection">
+  <com:TListItem Value="10" Text="Easy game; you are allowed 10 misses."/>
+  <com:TListItem Value="5" Text="Medium game; you are allowed 5 misses."/>
+  <com:TListItem Value="3" Text="Hard game; you are allowed 3 misses."/>
+</com:TRadioButtonList>
+<com:TButton Text="Play!" OnClick="selectLevel" />
+<com:TLabel ID="LevelError" Text="You must choose a difficulty level!" ForeColor="red" Visible="false" />
+</com:TView>
+
+<com:TView ID="GuessView">
+<h2>Please make a guess</h2>
+<h3 style="letter-spacing: 4px;"><%= $this->Page->GuessWord %></h3>
+<p>You have made <%=$this->Page->Misses %> bad guesses
+out of a maximum of <%= $this->Page->Level %>.</p>
+<p>Guess:
+<com:TLinkButton ID="GuessA" Text="A" OnClick="guessWord" />
+<com:TLinkButton ID="GuessB" Text="B" OnClick="guessWord" />
+<com:TLinkButton ID="GuessC" Text="C" OnClick="guessWord" />
+<com:TLinkButton ID="GuessD" Text="D" OnClick="guessWord" />
+<com:TLinkButton ID="GuessE" Text="E" OnClick="guessWord" />
+<com:TLinkButton ID="GuessF" Text="F" OnClick="guessWord" />
+<com:TLinkButton ID="GuessG" Text="G" OnClick="guessWord" />
+<com:TLinkButton ID="GuessH" Text="H" OnClick="guessWord" />
+<com:TLinkButton ID="GuessI" Text="I" OnClick="guessWord" />
+<com:TLinkButton ID="GuessJ" Text="J" OnClick="guessWord" />
+<com:TLinkButton ID="GuessK" Text="K" OnClick="guessWord" />
+<com:TLinkButton ID="GuessL" Text="L" OnClick="guessWord" />
+<com:TLinkButton ID="GuessM" Text="M" OnClick="guessWord" />
+<com:TLinkButton ID="GuessN" Text="N" OnClick="guessWord" />
+<com:TLinkButton ID="GuessO" Text="O" OnClick="guessWord" />
+<com:TLinkButton ID="GuessP" Text="P" OnClick="guessWord" />
+<com:TLinkButton ID="GuessQ" Text="Q" OnClick="guessWord" />
+<com:TLinkButton ID="GuessR" Text="R" OnClick="guessWord" />
+<com:TLinkButton ID="GuessS" Text="S" OnClick="guessWord" />
+<com:TLinkButton ID="GuessT" Text="T" OnClick="guessWord" />
+<com:TLinkButton ID="GuessU" Text="U" OnClick="guessWord" />
+<com:TLinkButton ID="GuessV" Text="V" OnClick="guessWord" />
+<com:TLinkButton ID="GuessW" Text="W" OnClick="guessWord" />
+<com:TLinkButton ID="GuessX" Text="X" OnClick="guessWord" />
+<com:TLinkButton ID="GuessY" Text="Y" OnClick="guessWord" />
+<com:TLinkButton ID="GuessZ" Text="Z" OnClick="guessWord" />
+</p>
+<p><com:TLinkButton Text="Give up?" OnClick="giveUp" /></p>
+</com:TView>
+
+<com:TView ID="WinView">
+<h2>You Win!</h2>
+<p>The word was: <%= $this->Page->Word %>.</p>
+<p><com:TLinkButton Text="Start Again" OnClick="startAgain" /></p>
+</com:TView>
+
+<com:TView ID="LoseView">
+<h2>You Lose!</h2>
+<p>The word was: <%= $this->Page->Word %>.</p>
+<p><com:TLinkButton Text="Start Again" OnClick="startAgain" /></p>
+</com:TView>
+
+</com:TMultiView>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

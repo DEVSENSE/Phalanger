@@ -1,0 +1,7 @@
+<%@ Title="Welcome to PRADO" %>
+
+<com:TContent ID="Main">
+
+<h1>Welcome to PRADO!</h1>
+
+</com:TContent>

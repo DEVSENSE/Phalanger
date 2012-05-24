@@ -1,0 +1,25 @@
+<com:TContent ID="body" >
+
+<h1 id="901">Strony (ang. pages)</h1>
+<p id="130137" class="block-content">
+Strony są najwyżej umiejscowionymi w hierarchi kontrolkamki, które nie posiadają rodzica.
+Prezentacja strony jest bezpośrednio wyświetlana użytkownikowi końcowemu. Użytkownicy posiadają dostęp do strony poprzez wysłanie żądanie do serwisu strony (ang. sending page service requests).
+</p>
+<p id="130138" class="block-content">
+Każda strona musi posiadać plik <a href="?page=Configurations.Templates1">szablonu</a>. Musi posiadać on rozszerzenie <tt>.page</tt>. Nazwa pliku (bez rozszerzenia) jest nazwą strony. PRADO będzie próbować znaleźć plik klasy strony w  katalogu zawierającym szablon strony. Taki plik klasy strony musi posiadać tą samą nazwę (z rozszerzeniem <tt>.php</tt>) jak plik szablonu. Jeśli klasa nie zostanie znaleziona, strona skorzysta z klasy <tt>TPage</tt>.
+</p>
+
+<h2 id="902">PostBack</h2>
+<p id="130139" class="block-content">
+Wysłanie formularza jest nazywane <i>postback</i> jeśli wysłanie następuje do strony zawierającej formularz. Postback może być postrzegany jako zdarzenie po stronie klienta, wywoływane przez użytkownika. PRADO będzie próbowało zidentyfikować, która kontrolka po stronie serwera jest odpowiedzialna za zdarzenie postblack. Jeśli znajdzie taką, np. przykład <tt>TButton</tt>, nazywać ją będziemy senderem zdarzenia postback, który przetłumaczy zdarzenie postback na pewne specyficzne zdarzenia po stronie serwera (np. zdarzenia <tt>OnClick</tt> i <tt>OnCommand</tt> dla <tt>TButton</tt>).
+
+</p>
+
+<h2 id="903">Cykl życia strony (ang. page lifecycles)</h2>
+<p id="130140" class="block-content">
+Zrozumienie cyklu życia strony jest kluczowe by zrozumieć istotę programowania w PRADO.
+Cykl życia strony odwołuje się do stanów przejściowych strony, gdy jest ona dostarczana użytkownikowi końcowemu. Może on (cykl) być przedstawiony za pomocą następującej tablicy stanów:
+<img src="<%~lifecycles.gif %>" />
+</p>
+
+<div class="last-modified">$Id: Pages.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,50 @@
+<com:TContent ID="body" >
+
+<h1 id="1001">Modules</h1>
+<p id="140141" class="block-content">
+A module is an instance of a class implementing the <tt>IModule</tt> interface. A module is commonly designed to provide specific functionality that may be plugged into a PRADO application and shared by all components in the application.
+</p>
+<p id="140142" class="block-content">
+PRADO uses configurations to specify whether to load a module, load what kind of modules, and how to initialize the loaded modules. Developers may replace the core modules with their own implementations via application configuration, or they may write new modules to provide additional functionalities. For example, a module may be developed to provide common database logic for one or several pages. For more details, please see the <a href="?page=Configurations.Overview">configurations</a>.
+</p>
+<p id="140143" class="block-content">
+There are three core modules that are loaded by default whenever an application runs. They are <a href="#request">request module</a>, <a href="#response">response module</a>, and <a href="#error">error handler module</a>. In addition, <a href="#session">session module</a> is loaded when it is used in the application. PRADO provides default implementation for all these modules. <a href="#custom">Custom modules</a> may be configured or developed to override or supplement these core modules.
+</p>
+
+<a name="request"></a>
+<h2 id="1002">Request Module</h2>
+<p id="140144" class="block-content">
+Request module represents provides storage and access scheme for user request sent via HTTP. User request data comes from several sources, including URL, post data, session data, cookie data, etc. These data can all be accessed via the request module. By default, PRADO uses <tt>THttpRequest</tt> as request module. The request module can be accessed via the <tt>Request</tt> property of application and controls.
+</p>
+
+<a name="response"></a>
+<h2 id="1003">Response Module</h2>
+<p id="140145" class="block-content">
+Response module implements the mechanism for sending output to client users. Response module may be configured to control how output are cached on the client side. It may also be used to send cookies back to the client side. By default, PRADO uses <tt>THttpResponse</tt> as response module. The response module can be accessed via the <tt>Response</tt> property of application and controls.
+</p>
+
+<a name="session"></a>
+<h2 id="1004">Session Module</h2>
+<p id="140146" class="block-content">
+Session module encapsulates the functionalities related with user session handling. Session module is automatically loaded when an application uses session. By default, PRADO uses <tt>THttpSession</tt> as session module, which is a simple wrapper of the session functions provided by PHP. The session module can be accessed via the <tt>Session</tt> property of application and controls.
+</p>
+
+<a name="error"></a>
+<h2 id="1005">Error Handler Module</h2>
+<p id="140147" class="block-content">
+Error handler module is used to capture and process all error conditions in an application. PRADO uses <tt>TErrorHandler</tt> as error handler module. It captures all PHP warnings, notices and exceptions, and displays in an appropriate form to end-users. The error handler module can be accessed via the <tt>ErrorHandler</tt> property of the application instance.
+</p>
+
+<a name="custom"></a>
+<h2 id="1006">Custom Modules</h2>
+<p id="140148" class="block-content">
+PRADO is released with a few more modules besides the core ones. They include caching modules (<tt>TSqliteCache</tt> and <tt>TMemCache</tt>), user management module (<tt>TUserManager</tt>), authentication and authorization module (<tt>TAuthManager</tt>), etc.
+</p>
+<p id="140149" class="block-content">
+When <tt>TPageService</tt> is requested, it also loads modules specific for page service, including asset manager (<tt>TAssetManager</tt>), template manager (<tt>TTemplateManager</tt>), theme/skin manager (<tt>TThemeManager</tt>).
+</p>
+<p id="140150" class="block-content">
+Custom modules and core modules are all configurable via <a href="?page=Configurations.Overview">configurations</a>.
+</p>
+
+<div class="last-modified">$Id: Modules.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

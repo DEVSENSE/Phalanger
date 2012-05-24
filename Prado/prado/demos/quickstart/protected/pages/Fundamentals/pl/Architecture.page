@@ -1,0 +1,15 @@
+<com:TContent ID="body" >
+<h1 id="601">Architektura</h1>
+
+<p id="100111" class="block-content">
+Prado jest przede wszystkim frameworkiem służącym do prezentacji, mimo to nie jest on ograniczony jedynie do ten funkcjonalności. 
+Framework skupia się na programowaniu webowym, które w większości czasu ma do czynienia z interakcją z użytkownikiem, bazując na programowaniu sterowanym zdarzeniami (ang. event driven) oraz bazującym na komponentach (ang. component based), 
+tak by deweloper był bardziej produktywny. Następujące drzewko klas pokazuje główne klasy dostarczanych przez PRADO.    
+</p>
+<img src="<%~classtree.gif%>" />
+
+<p id="100112" class="block-content">
+Kiedy PRADO przetwarza żądanie strony, jego diagram obiektów statycznych wygląda następująco.
+</p>
+<img src="<%~objectdiagram.gif%>" />
+<div class="last-modified">$Id: Architecture.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

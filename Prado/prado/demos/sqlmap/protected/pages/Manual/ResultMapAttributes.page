@@ -1,0 +1,132 @@
+<com:TContent ID="body">
+
+<h1>Result Map  Attributes</h1>
+<p>The <tt>&lt;resultMap&gt;</tt> element accepts three attributes: <tt>id</tt> (required),
+<tt>class</tt> (optional), and <tt>extends</tt> (optional).</p>
+
+<h2><tt>id</tt> attribute</h2>
+<p>The required <tt>id</tt> attribute provides a unique identifier for the
+<tt>&lt;resultMap&gt;</tt> within this Data Map.</p>
+
+<h2><tt>class</tt> attribute</h2>
+<p>The optional <tt>class</tt> attribute specifies an object class to use with this
+<tt>&lt;resultMap&gt;</tt>. The full classname must be specified. Any class can be used.</p>
+
+<div class="note"><b class="tip">Note:</b>
+As with parameter classes, the result class must be a PHP class object or
+array instance.
+</div>
+
+<h2><tt>extends</tt> attribute</h2>
+<p>The optional <tt>extends</tt> attribute allows the result map to inherit all of
+the properties of the "parent" <tt>resultMap</tt> that it extends.</p>
+
+<h1><tt>&lt;result&gt;</tt> Element attributes</h1>
+
+<p>The <tt>&lt;resultMap&gt;</tt> element holds one or more <tt>&lt;result&gt;</tt> child elements
+that map SQL result sets to object properties.</p>
+
+<h2><tt>property</tt> attribute</h2>
+<p>The <tt>property</tt> attribute is the name of a property of the result object
+that will be returned by the Mapped Statement. The name can be used more than
+once depending on the number of times it is needed to populate the results.</p>
+
+<h2><tt>column</tt> attribute</h2>
+<p>The <tt>column</tt> attribute value is the name of the column in the result set
+from which the value will be used to populate the property.</p>
+
+<h2><tt>columnIndex</tt> attribute</h2>
+<p>The <tt>columnIndex</tt> attribute value is the index of the column in the
+ResultSet from which the value will be used to populate the object property.
+This is not likely needed in 99\% of applications and sacrifices
+maintainability and readability for speed. Some providers may not realize any
+performance benefit, while others will speed up dramatically.</p>
+
+<h2><tt>dbType</tt> attribute</h2>
+<p>The <tt>dbType</tt> attribute is used to explicitly specify the database column
+type of the ResultSet column that will be used to populate the object
+property. Although Result Maps do not have the same difficulties with null
+values, specifying the type can be useful for certain mapping types such as
+Date properties. Because an application language has one Date value type and
+SQL databases may have many (usually at least 3), specifying the date may
+become necessary in some cases to ensure that dates (or other types) are set
+correctly. Similarly, String types may be populated by a <tt>VarChar</tt>,
+<tt>Char</tt> or <tt>CLOB</tt>, so specifying the type might be needed in those cases
+too.</p>
+
+<h2><tt>type</tt> attribute</h2>
+<p>The <tt>type</tt> attribute is used to explicitly specify the property type of the
+parameter to be set. If the attribute <tt>type</tt> is not set and the framework
+cannot otherwise determine the type, the type is assumed to be <tt>StdObject</tt>.</p>
+
+<h2><tt>resultMapping</tt> attribute</h2>
+<p>The <tt>resultMapping</tt> attribute can be set to the name of another
+<tt>resultMap</tt> used to fill the property. If the <tt>resultMap</tt> is in an other
+mapping file, you must specified the fully qualified name as :</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+resultMapping="[namespace.sqlMap.]resultMappingId"
+
+resultMapping="Newspaper"
+<!--resultMapping with a fully qualified name.-->
+resultMapping="LineItem.LineItem"
+</com:TTextHighlighter>
+
+<h2><tt>nullValue</tt> attribute</h2>
+<p>The <tt>nullValue</tt> attribute can be set to any valid value (based on property
+type). The <tt>nullValue</tt> attribute is used to specify an outgoing null value
+replacement. What this means is that when the value is detected in the object
+property, a NULL will be written to the database (the opposite behavior of an
+inbound null value replacement). This allows you to use a "magic" null
+number in your application for types that do not support null values (such as
+int, double, float). When these types of properties contain a matching null
+value (say, -9999), a NULL will be written to the database instead of the
+value.</p>
+
+<p>If your database has a NULLABLE column, but you want your application to
+represent NULL with a constant value, you can specify it in the Result Map as
+shown in the following example.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<resultMap id="get-product-result" class="product">
+  <result property="id" column="PRD_ID"/>
+  <result property="description" column="PRD_DESCRIPTION"/>
+  <result property="subCode" column="PRD_SUB_CODE" nullValue="-9999"/>
+</resultMap>
+</com:TTextHighlighter>
+
+<p>In the above example, <tt>PRD_SUB_CODE</tt> is read as <tt>NULL</tt>, then the
+<tt>subCode</tt> property will be set to the value of -9999. This allows you to
+use a primitive type to represent a <tt>NULLABLE</tt> column in the database. Remember
+that if you want this to work for queries as well as updates/inserts, you must
+also specify the <tt>nullValue</tt> in the <a href="?page=ParameterMaps">Parameter Map</a>.
+</p>
+
+<h2><tt>select</tt> attribute</h2>
+<p>The <tt>select</tt> attribute is used to describe a relationship between objects
+and to automatically load complex (i.e. user defined) property types. The
+value of the statement property must be the name of another mapped statement.
+The value of the database column (the column attribute) that is defined in the
+same property element as this statement attribute will be passed to the
+related mapped statement as the parameter. More information about supported
+primitive types and complex property mappings/relationships is discussed later
+in this document. The <tt>lazyLoad</tt> attribute can be specified with the
+<tt>select</tt>.</p>
+
+<h2><tt>lazyLoad</tt> attribute</h2>
+<p>Use the <tt>lazyLoad</tt> attribute with the <tt>select</tt> attribute to indicate
+whether or not the select statement's results should be lazy loaded. This can
+provide a performance boost by delaying the loading of the select statement's
+results until they are needed/accessed.</p>
+
+<h2><tt>typeHandler</tt> attribute</h2>
+<p>The <tt>typeHandler</tt> attribute allows the use of a 
+<a href="?page=Manual.CustomTypeHandlers">Custom Type Handler</a>. 
+This allows you to extend
+the DataMapper's capabilities in handling types that are specific to your
+database provider, are not handled by your database provider, or just happen
+to be a part of your application design. You can create custom type handlers
+to deal with storing and retrieving booleans from your database for example.
+</p>
+
+</com:TContent>

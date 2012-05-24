@@ -1,0 +1,253 @@
+<com:TContent ID="body" >
+<h1 id="6701">DOM Events and Javascript</h1>
+
+<h2 id="6702">Basic event handling</h2>
+
+<p id="840735" class="block-content">The syntax for working with events looks like the code below.</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840254">
+Event.observe(element, name, observer, [useCapture]);
+</com:TTextHighlighter>
+
+<p id="840736" class="block-content">Assuming for a moment that we want to observe when a link was clicked,
+we could do the following:</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840255">
+// &lt;a id="clicker" href="http://foo.com"&gt;Click me&lt;/a&gt;
+Event.observe('clicker', 'click', function(event)
+{
+    alert('clicked!');
+});
+</com:TTextHighlighter>
+
+<p id="840737" class="block-content">If we wanted to get the element that fired the event, we'd do this:</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840256">
+Event.observe('clicker', 'click', function(event)
+{
+    alert(Event.element(event));
+});
+</com:TTextHighlighter>
+
+<h2 id="6703">Observing keystrokes</h2>
+
+<p id="840738" class="block-content">If we wanted to observe keystrokes for the entire document, we could do the following:</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840257">
+Event.observe(document, 'keypress', function(event)
+{
+    if(Event.keyCode(event) == Event.KEY_TAB)
+        alert('Tab Pressed');
+});
+</com:TTextHighlighter>
+
+<p id="840739" class="block-content">And lets say we wanted to keep track of what has been typed :</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840258">
+Event.observe('search', 'keypress', function(event)
+{
+    Element.update('search-results', $F(Event.element(event)));
+});
+</com:TTextHighlighter>
+
+<p id="840740" class="block-content">Prototype defines properties inside the event object for some
+of the more common keys, so feel free to dig around in Prototype to
+see which ones those are.</p>
+
+<p id="840741" class="block-content">A final note on keypress events; If you'd like to detect a
+left click you can use <tt>Event.isLeftClick(event)</tt>.</p>
+
+<h2 id="6704">Getting the coordinates of the mouse pointer</h2>
+
+<p id="840742" class="block-content">Drag and drop, dynamic element resizing, games, and
+much more all require the ability to track the X and Y location of
+the mouse. Prototype makes this fairly simple. The code below tracks
+the X and Y position of the mouse and spits out those values into
+an input box named mouse.</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840259">
+Event.observe(document, 'mousemove', function(event)
+{
+    $('mouse').value = "X: " + Event.pointerX(event) +
+                       "px Y: " + Event.pointerY(event) + "px";
+});
+</com:TTextHighlighter>
+
+<p id="840743" class="block-content">If we wanted to observe the mouse location when it was
+hovering over a certain element, we'd just change the document argument to
+the id or element that was relevant.</p>
+
+<h2 id="6705">Stopping Propagation</h2>
+
+<p id="840744" class="block-content"><tt>Event.stop(event)</tt> will stop the propagation of an event .</p>
+
+<h2 id="6706">Events, Binding, and Objects</h2>
+
+<p id="840745" class="block-content">Everything has been fairly straight forward so far, but things
+start getting a little trickier when you need to work with events in
+and object-oriented environment. You have to deal with binding and funky
+looking syntax that might take a moment to get your head around.</p>
+
+<p id="840746" class="block-content">Lets look at some code so you can get a better understanding of what I'm talking about.</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840260">
+EventDispenser = Class.create();
+EventDispenser.prototype =
+{
+  initialize: function(list)
+  {
+    this.list = list;
+
+    // Observe clicks on our list items
+    $$(this.list + " li").each(function(item)
+    {
+        Event.observe(item, 'click', this.showTagName.bindEvent(this));
+    }.bind(this));
+
+    // Observe when a key on the keyboard is pressed.
+    // In the observer, we check for
+    // the tab key and alert a message if it is pressed.
+    Event.observe(document, 'keypress', this.onKeyPress.bindEvent(this));
+
+    // Observe our fake live search box.  When a user types
+    // something into the box, the observer will take that
+    // value(-1) and update our search-results div with it.
+    Event.observe('search', 'keypress', this.onSearch.bindEvent(this));
+
+    Event.observe(document, 'mousemove', this.onMouseMove.bindEvent(this));
+  },
+
+  // Arbitrary functions to respond to events
+  showTagName: function(event)
+  {
+    alert(Event.element(event).tagName);
+  },
+
+  onKeyPress: function(event)
+  {
+    var code = event.keyCode;
+    if(code == Event.KEY_TAB)
+        alert('Tab key was pressed');
+  },
+
+  onSearch: function(event)
+  {
+    Element.update('search-results', $F(Event.element(event)));
+  },
+
+  onMouseMove: function(event)
+  {
+    $('mouse').value = "X: " + Event.pointerX(event) +
+                "px Y: " + Event.pointerY(event) + "px";
+  }
+}
+</com:TTextHighlighter>
+<p id="840747" class="block-content">Whoa! What's going on here? Well, we've defined our a
+custom class <tt>EventDispenser</tt>. We're going to be using this class
+to setup events for our document. Most of this code is a
+rewrite of the code we looked at earlier except this time, we
+are working from inside an object.</p>
+
+<p id="840748" class="block-content">Looking at the <tt>initialize</tt> method, we can really see how
+things are different now. Take a look at the code below:</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840261">
+// Observe clicks on our list items
+$$(this.list + " li").each(function(item)
+{
+    Event.observe(item, 'click', this.showTagName.bindEvent(this));
+}.bind(this));
+</com:TTextHighlighter>
+
+<p id="840749" class="block-content">We've got iterators, binding and all sorts of stuff going on.
+Lets break down what this chunk of code is doing.</p>
+
+<p id="840750" class="block-content">First we are hunting for a collection of elements based on
+it's CSS selector. This uses the Prototype selector function <tt>$$()</tt>.
+After we've found the list items we are dealing with we send
+those into an each iteration where we will add our observers.</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840262">
+Event.observe(item, 'click', this.showTagName.bindEvent(this));
+</com:TTextHighlighter>
+
+<p id="840751" class="block-content">Now looking at the code above, you'll notice the <tt>bindEvent</tt> function.
+This takes the method before it <tt>showTagName</tt> and treats it as the
+method that will be triggered when, in this case,
+someone clicks one of our list items.</p>
+
+<p id="840752" class="block-content">You'll also notice we pass this as an argument to the <tt>bindEvent</tt> function.
+This simply allows us to reference the object in context <tt>EventDispenser</tt>
+inside our function <tt>showTagName(event)</tt>. If the <tt>showTagName</tt> function
+requires additional parameters, you can attach them to the later parameters of <tt>bindEvent</tt>. For example</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840263">
+this.showTagName.bindEvent(this, param1, param2);
+
+//where the showTagName function is defined as
+showTime : function (event, param1, param2) { ... }
+</com:TTextHighlighter>
+
+<p id="840753" class="block-content">Moving on, you'll see <tt>bind(this)</tt> attached to our iterator function.
+This really has nothing to do with events, it is only here to allow me to
+use <tt>this</tt> inside the iterator. If we did not use <tt>bind(this)</tt>, I could not
+reference the method <tt>showTagName</tt> inside the iterator.</p>
+
+<p id="840754" class="block-content">Ok, so we'll move on to looking at our methods that actually get
+called when an event occurs. Since we've been dealing with <tt>showTagName</tt>, lets look at it.</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840264">
+showTagName: function(event)
+{
+    alert(Event.element(event).tagName);
+}
+</com:TTextHighlighter>
+
+<p id="840755" class="block-content">As you can see, this function accepts one argument--the event.
+In order for us to get the element which fired the event we need to
+pass that argument to <tt>Event.element</tt>. Now we can manipulate it at will.</p>
+
+<p id="840756" class="block-content">This covers the most confusing parts of our code. The text above is also
+relevant to the remaining parts of our code. If there is anything about
+this you don't understand, feel free to ask questions in the forum.</p>
+
+<h2 id="6707">Removing Event Listeners</h2>
+
+<p id="840757" class="block-content">This one threw me for a loop the first time I tried to use it.
+I tried something similar to what I did in the <tt>Event.observe</tt>
+call with the exception of using <tt>stopObserving</tt>, but nothing seemed
+to change. In other words, the code below does <b>NOT</b> work.</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840265">
+$$(this.list + " li").each(function(item)
+{
+    Event.stopObserving(item, 'click', this.showTagName);
+}.bind(this));
+</com:TTextHighlighter>
+
+<p id="840758" class="block-content">What's the deal here? The reason this does not work is because there
+is no pointer to the observer. This means that when we passed <tt>this.showTagName</tt>
+in the <tt>Event.observe</tt> method before hand, we passed it as an
+anonymous function. We can't reference an anonymous function
+because it simply does not have a pointer.</p>
+
+<p id="840759" class="block-content">So how do we get the job done? All we need to do is give the
+observing function a pointer, or the jargon free version: Set a variable
+that points to <tt>this.showTagName</tt>. Ok, lets change our code a bit.</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840266">
+this.showTagObserver = this.showTagName.bindEvent(this);
+
+// Observe clicks on our list items
+$$(this.list + " li").each(function(item)
+{
+    Event.observe(item, 'click', this.showTagObserver);
+}.bind(this));
+</com:TTextHighlighter>
+
+<p id="840760" class="block-content">Now we can remove the event listeners from our list like this:</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_840267">
+$$(this.list + " li").each(function(item)
+{
+    Event.stopObserving(item, 'click', this.showTagObserver);
+}.bind(this));
+</com:TTextHighlighter>
+
+<div class="last-modified">$Id: Scripts2.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

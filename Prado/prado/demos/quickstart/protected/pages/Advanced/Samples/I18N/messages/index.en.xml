@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<xliff version="1.0">
+<!-- @author $Author: weizhuo $ -->
+<!-- @version $Id: index.en.xml 1398 2006-09-08 19:31:03Z xue $ -->
+<file orginal="I18N Example IndexPage" source-language="EN" datatype="plaintext" date="2005-01-09T13:52:21Z">
+<body>
+
+<trans-unit id="1">
+<source>Hello</source>
+<target/>
+</trans-unit>
+
+<trans-unit id="2">
+<source>Goodbye</source>
+<target>bye</target>
+</trans-unit>
+
+<trans-unit id="3">
+<source>World</source>
+<target>world</target>
+</trans-unit>
+
+<trans-unit id="4">
+<source>{greeting} {name}!, The unix-time is "{time}".</source>
+<target/>
+</trans-unit>
+</body>
+</file>
+</xliff>

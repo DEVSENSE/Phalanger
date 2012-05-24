@@ -1,0 +1,131 @@
+<com:TContent ID="body" >
+<!-- $Id: Scaffold.page 1902 2007-05-07 04:17:37Z wei $ -->
+<h1 id="144022">Tampilan Scaffold Rekaman Aktif</h1>
+<com:SinceVersion Version="3.1b" />
+<p id="720048" class="block-content">Kelas <a href="?page=Database.ActiveRecord">Rekaman Aktif</a> dapat digunakan dengan 
+<com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldListView" Text="TScaffoldListView"/>
+dan
+<com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldEditView" Text="TScaffoldEditView"/>
+( <com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldView" Text="TScaffoldView"/>
+mengaitkan <tt>TScaffoldListView</tt> dan <tt>TScaffoldEditView</tt>) untuk membuat aplikasi web Create/Read/Update/Delete (CRUD) <i>sederhana</i>.</p>
+
+<p id="720049" class="block-content">Tampilan scaffold dimaksudkan untuk membantu dalam membuat prototipe aplikasi web, tidak didesain sebagai yang bisa dikustomisasi atau serumit komponen misalnya 
+<a href="?page=Controls.DataGrid">TDataGrid</a>. Tampilan scaffold menyediakan fungsionalitas builtin:
+</p>
+
+<ul>
+	<li>Mendaftar semua item rekaman aktif.</li>
+	<li>Mencari rekaman.</li>
+	<li>Memilah halaman dan mengurut.</li>
+	<li>Menghapus item.</li>
+	<li>Menyisipkan item baru.</li>
+	<li>Memutakhirkan item yang ada.</li>
+	<li>Memvalidasi field dan tipe data dasar yang diperlukan.</li>
+	<li>Menyajikan kontrol khusus seperti pengambil tanggal.</li>
+</ul>
+
+<p id="720050" class="block-content">Tampilan Scaffold berdiri sendiri pada Rekaman Aktif dan saat ini mendukung database: Mysql, Sqlite dan Postgres SQL. Dukungan untuk database lain dapat diputuskan bila ada permintaan yang cukup.</p>
+
+<h2 id="144023">Menyiapkan Tampilan Scaffold</h2>
+<p id="720051" class="block-content">Untuk menggunakan tampilan scaffold, pertama kita mendefinisikan kelas <a href="?page=Database.ActiveRecord">Rekaman Aktif</a> yang mewakili tabel atau view dalam database. Tetapkan kelas Rekaman Aktif berikut yang berkaitan dengan tabel <tt>users</tt>
+seperti didefinisikan dalam halaman <a href="?page=Database.ActiveRecord">Rekaman Aktif</a>.
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_720188">
+class UserRecord extends TActiveRecord
+{
+    const TABLE='users';
+	
+    public $username;
+    public $email;
+}
+</com:TTextHighlighter>
+
+<p id="720052" class="block-content">Kelas tampilan scaffold ada di <tt>System.Data.ActiveRecord.Scaffold.*</tt>
+<a href="?page=Fundamentals.Components#704">namespace</a>. 
+<a href="?page=Fundamentals.Components#704">namespace</a> ini bisa diimpor ke 
+<a href="?page=Configurations.AppConfig">Konfigurasi Aplikasi</a>
+menggunakan file <tt>application.xml</tt> atau melalui kode php menggunakan metode <tt>Prado::using()</tt>. Untuk mulai menggunakan
+<com:DocLink ClassPath="System.Data.ActiveRecord.Scaffold.TScaffoldView" Text="TScaffoldView"/>
+cukup setel nilai properti <tt>RecordClass</tt> sama dengan nama kelas Rekaman Aktif.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_720189">
+&lt;com:TScaffoldView RecordClass="UserRecord" /&gt;
+</com:TTextHighlighter>
+
+<p id="720053" class="block-content">Kode di atas akan mendaftar rekaman saat ini dalam tabel <tt>users</tt>. 
+Setiap rekaman dapat diedit dengan mengklik tombol "edit" dan dihapus dengan mengklik tombol "delete". Rekaman baru bisa ditambahkan dengan mengklik pada tombol "Add new record", masukkan beberapa data (perhatikan validasi otomatis terhadap field dan tipe data yang diperlukan), dan klik tombol "save". 
+Menetapkan batas pencarian dalam kotak teks cari guna menemukan rekaman tertentu. Akhirnya, daftar rekaman bisa disimpan pada setiap kolom dengan mengubah kolom pengurutan serta urutan. 
+</p>
+
+<p id="720054" class="block-content"><tt>TScaffoldView</tt> adalah kontrol template yang dibuat dari kontrol scaffold lainnya.
+Properti berikut memberikan akses ke kontrol gabungan ini.</p>
+<ul>
+	<li><b><tt>ListView</tt></b> -- <tt>TScaffoldListView</tt> menampilkan daftar rekaman. </li>
+	<li><b><tt>EditView</tt></b> -- <tt>TScaffoldEditView</tt> yang menyajikan input untuk mengedit dan menambah rekaman.</li> 
+	<li><b><tt>SearchControl</tt></b> -- <tt>TScaffoldSearch</tt> bertanggung jawab atas pencarian antarmuka pengguna.</li>
+</ul>
+<p id="720055" class="block-content">
+ Semua kontrol gabungan ini bisa dikustomisasi seperti yang akan kita lihat di bawah.
+</p>
+
+<h2 id="144024">TScaffoldListView</h2>
+
+<p id="720056" class="block-content">Daftar Rekaman Aktif dapat ditampilkan menggunakan <tt>TScaffoldListView</tt> dengan properti berguna berikut.</p>
+<ul>
+	<li><b><tt>Header</tt></b> -- <a href="?page=Controls.Repeater">TRepeater</a> menampilkan properti/nama field Rekaman Aktif. </li>
+	<li><b><tt>Sort</tt></b> -- <a href="?page=Controls.List">TDropDownList</a> menampilkan kombinasi properti dan kemungkinan urutannya. </li>
+	<li><b><tt>Pager</tt></b> -- kontrol <a href="?page=Controls.Pager">TPager</a> menampilkan link dan/atau tombol yang menavigasi ke halaman berbeda dalam data Rekaman Aktif.</li>
+	<li><b><tt>List</tt></b> -- <a href="?page=Controls.Repeater">TRepeater</a> yang menyajikan baris data Rekaman Aktif.</li>
+</ul>
+
+<p id="720057" class="block-content">Penyajian kustom dari Rekaman Aktif dapat dicapai dengan menetapkan properti <tt>ItemTemplate</tt> dan/atau <tt>AlternatingItemTemplate</tt> dari pengulang <tt>List</tt>. 
+<tt>TScaffoldListView</tt> akan mendengarkan dua event perintah bernama "delete" dan "edit". Perintah "delete" akan menghapus rekaman untuk baris di mana perintah "delete" berasal. 
+Perintah "edit" akan memaksa data rekaman untuk diedit oleh
+<tt>TScaffoldEditView</tt> dengan ID yang ditetapkan dengan properti <tt>EditViewID</tt>.
+Contoh berikut mendaftar nama pengguna hanya dengan format tebal.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_720190">
+&lt;com:TScaffoldListView RecordClass="UserRecord" &gt;
+    &lt;prop:List.ItemTemplate&gt;
+        &lt;strong>&lt;%# $this->Data->username %>&lt;/strong&gt;
+    &lt;/prop:List.ItemTemplate&gt;
+&lt;/com:TScaffoldListView&gt;
+</com:TTextHighlighter>
+
+<div class="info"><b class="note">Info:</b>
+Untuk <tt>TScaffoldView</tt>, tampilan daftar dapat diakses melalui properti <tt>ListView</tt> dari <tt>TScaffoldView</tt>.
+Selanjutnya, subproperti <tt>ListView.List.ItemTemplate</tt> pada <tt>TScaffoldView</tt>
+adalah sama dengan subproperti <tt>List.ItemTemplate</tt> dari <tt>TScaffoldListView</tt> dalam contoh di atas.
+</div>
+
+<p id="720058" class="block-content">Properti <tt>SearchCondition</tt> dan properti <tt>SearchParameters</tt> (mengambil nilai array) bisa ditetapkan untuk mengkustomisasi rekaman yang ditampilkan. <tt>SearchCondition</tt>
+akan dipakai sebagai properti <tt>Condition</tt> dari <tt>TActiveRecordCriteria</tt>
+dan properti <tt>SearchParameters</tt> berkaitan dengan properti
+<tt>Parameters</tt> dari <tt>TActiveRecordCriteria</tt>.</p>
+
+<h2 id="144025">TScaffoldEditView</h2>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_720191">
+&lt;com:TScaffoldEditView RecordPk="user1" RecordClass="UserRecord" /&gt;
+</com:TTextHighlighter>
+
+<h2 id="144026">Menggabungkan tampilan daftar + edit</h2>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_720192">
+&lt;com:TScaffoldEditView ID="edit_view" RecordClass="UserRecord" /&gt;
+&lt;com:TScaffoldListView EditViewID="edit_view" RecordClass="UserRecord" /&gt;
+</com:TTextHighlighter>
+
+<h2 id="144027">Mengkustomisasi TScaffoldView</h2>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_720193">
+&lt;com:TScaffoldView RecordClass="UserRecord" &gt;
+    &lt;prop:ListView.List.ItemTemplate&gt;
+        &lt;%# $this->DataItem->username %&gt;
+        &lt;com:TLinkButton Text="Edit" CommandName="edit" /&gt;
+    &lt;/prop:ListView.List.ItemTemplate&gt;
+&lt;/com:TScaffoldView/&gt;
+</com:TTextHighlighter>
+
+<div class="last-modified">$Id: Scaffold.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>

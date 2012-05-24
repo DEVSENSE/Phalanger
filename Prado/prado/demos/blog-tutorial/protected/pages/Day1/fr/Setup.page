@@ -1,0 +1,161 @@
+﻿<com:TContent ID="Main">
+
+<h1>Installation</h1>
+
+<p>
+Nous commencerons par la mise en place de la structure des dossiers et fichiers requis par la plupart des applications développées avec PRADO. Nous allons utiliser <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">les outils en ligne de commande</a> pour atteindre ce but.
+</p>
+
+<p>Nous partons du principe que le nom du dossier qui contiendra l'application est <tt>blog</tt> et que l'URL qui permet d'accéder à ce dossier est : <tt>http://hostname/blog/</tt> (remplacer <tt>hostname</tt> par le nom de votre serveur).
+</p>
+
+<p>A l'intérieur du dossier blog, nous utilisons <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">les outils en ligne de commande</a> avec comme commande (remplacer <tt>path/to</tt> par le chemin d'installation du framework PRADO):
+</p>
+<com:TTextHighlighter CssClass="source cli">
+php path/to/prado-cli.php -c .
+</com:TTextHighlighter>
+
+<p>
+L'utilisation de cette commande permet de créer la structure de dossier et fichiers suivante:
+</p>
+
+<img src="<%~ directories.gif %>" class="output" />
+
+<p>
+Nous avons dorénavant, un squellette d'application PRADO accessible par l'URL <tt>http://hostname/blog/index.php</tt> et qui affiche une page contenant le message "Welcome to PRADO".
+</p>
+
+<p>
+Il est de notre intérêt d'en apprendre plus à propos des dossiers et fichiers que nous venons de créer.
+</p>
+
+<h2>Les fichiers initiaux</h2>
+
+<h3>Le script principal de l'application</h3>
+
+<p>
+Toutes les applications PRADO ont un point d'entrée, habituellement nommé <tt>index.php</tt>. Dans la plupart des cas, c'est le seul script qui est directement accessible par les utilisateurs. Cela réduit les risques que les utilisateurs puissent lancer des scripts serveur auquels ils ne devraient pas avoir accès.
+</p>
+
+<p>
+Le but principal de ce script est d'initialiser l'environnement PRADO et de gérer toutes les requêtes utilisateurs. Ce script contient habituellement les commandes PHP suivantes,
+</p>
+
+<com:TTextHighlighter CssClass="source">
+<?php
+// include prado.php which contains basic PRADO classes
+require_once('path/to/prado.php');
+// create a PRADO application instance
+$application = new TApplication;
+// run the application and handle user requests
+$application->run();
+?>
+</com:TTextHighlighter>
+
+<com:InfoBox>
+Le nom du script ne doit pas être obligatoirement <tt>index.php</tt>. Il peut porter n'importe quel nom à partir du moment ou le serveur peut l'interpréter comme étant un script PHP5. Par exemple, sur certains hébergements mutualisés, le script devra porter le nom <tt>index.php5</tt>, ce qui permettra au serveur Web de le traiter correctement. 
+</com:InfoBox>
+
+<h3>Le fichier de configuration de l'application</h3>
+<p>
+Le fichier optionnel XML <tt>application.xml</tt> contient la <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.AppConfig">configuration de l'application</a>. Son but principal est de permettre de configurer l'application qui sera créée par le script principal. Par exemple, nous pouvons activer le système de <a href="http://www.pradosoft.com/demos/quickstart/?page=Advanced.Logging">log</a> pour notre application par le biais du fichier de configuration.
+</p>
+
+<p>
+Le fichier <tt>application.xml</tt> est pour le moment presque vide. De ce fait, nous pouvons le supprimer parce que l'application n'utilise pour le moment que des fonctionnalités de base. Au fur et à mesure que nous avancerons, nous ferons référence régulièrement au fichier <tt>application.xml</tt> et vous expliquerons comment configurer l'application.
+</p>
+
+
+<h3>La page d'accueil</h3>
+
+<p>
+La page d'accueil <tt>Home.page</tt> (aussi dénommée page par défaut) est la seule <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">page</a> créée par les outils en ligne de commande de PRADO. C'est le contenu de ce fichier qui est affiché quand l'utilisateur navigue à l'adresse  <tt>http://hostname/blog/index.php</tt>.
+</p>
+
+<p>
+Le contenu du fichier <tt>Home.page</tt> respecte le <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">format de template</a> qui pour la plupart du temps est du code HTML agrémenté de quelques balises spécifiques à PRADO. Par exemple, dans <tt>Home.page</tt> nous voyons du code HTML pur :
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<html>
+<head>
+  <title>Welcome to PRADO</title>
+</head>
+<body>
+<h1>Welcome to PRADO!</h1>
+</body>
+</html>
+</com:TTextHighlighter>
+
+
+<h2>Les dossiers initiaux</h2>
+
+<h3>Le dossier <tt>protected</tt></h3>
+
+<p>
+Le dossier <tt>protected</tt>, aussi connu sous le nom <i>chemin de base de l'application</i>, est le dossier racine qui contient les pages, les gabarits, les fichiers de configuration, les données, etc. Le nom <tt>protected</tt> indique que ce dossier doit être masqué des personnes qui consultent le site, ceci parce que les fichiers dans ce dossier contiennent la plupart du temps des données sensibles.
+</p>
+
+<p>
+Les différents serveurs Web ont différents moyens de "protéger" un dossier. Pour Apache, le moyen le plus simple est de créer dans le dossier un fichier nommé .htaccess avec le contenu <tt>deny from all</tt>.
+</p>
+
+
+<h3>Les dossiers <tt>protected/runtime</tt> et <tt>assets</tt></h3>
+
+<p>
+Les dossiers <tt>protected/runtime</tt> et <tt>assets</tt> sont deux dossiers qui doivent avoir l'autorisation "en écriture" pour le serveur Web. Le dossier <tt>runtime</tt> contient des données sensibles (ie: fichier de configuration déjà analysé) générées à l'exécution de PRADO tandis que le dossier <tt>assets</tt> contient les ressources qui doivent être publiques (ie: les images, les fichiers javascript).
+</p>
+
+<com:InfoBox>
+Il n'y a aucun souci à supprimer les dossiers et les fichiers contenus dans <tt>protected/runtime</tt> et <tt>assets</tt>. Il est recommandé aux développeurs de nettoyer ces dossiers lors d'une mise à jour de PRADO.
+</com:InfoBox>
+
+
+<h3>Le dossier <tt>pages</tt></h3>
+
+<p>
+The <tt>pages</tt> directory is the <i>root page directory</i> holding all <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">pages</a> in a PRADO application. It bears an analogy to the <tt>htdocs</tt> directory for the Apache httpd Web server.
+</p>
+
+<p>
+Nous avons déjà vu comment accéder la page d'accueil. Pour accéder à n'importe quelle page situé dans le dossier <tt>pages</tt>, il faut utiliser l'URL suivante <tt>http://hostname/blog/index.php?page=chemin.vers.NomdelaPage</tt>. En fonction de cette URL, PRADO recherche une page dénommée <tt>NomdelaPage</tt> dans le dossier <tt>pages/chemin/vers</tt>. L'URL que nous avons utilisée précédemment pour accéder à la page d'accueil correspond à <tt>http://hostname/blog/index.php?page=Home</tt>.
+
+
+<h2>Personnalisation</h2>
+
+<p>
+Il est tout à fait possible de personnaliser le nom et l'emplacement des fichiers et dossiers décrit précédemment.
+</p>
+
+<p>
+Par exemple, pour améliorer la sécurité, certains pourraient désirer déplacer la totalité du dossier <tt>protected</tt> à un emplacement inaccessible par le Web. Pour faire cela, utilisez la commande PHP suivante pour initialiser l'instance de l'application PRADO dans le script principal :
+</p>
+
+<com:TTextHighlighter CssClass="source">
+$application = new TApplication( 'path/to/protected' );
+</com:TTextHighlighter>
+
+<p>
+Pour changer l'emplacement du dossier racine des pages et le nom de la page d'accueil, il est possible de modifier le fichier de configuration <tt>application.xml</tt> de cette manière :
+</p>
+
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<application id="blog" mode="Debug">
+  <services>
+    <service id="page" 
+           class="TPageService" 
+           BasePath="path.to.pages"
+           DefaultPage="NewHome"
+           />
+  </services>
+</application>
+</com:TTextHighlighter>
+
+<p>
+En avançant dans l'apprentissage de PRADO, vous verrez que PRADO est très souple et qu'il est possible de personnaliser la plupart des comportements de base. Nous décrirons d'autres techniques au fur et à mesure de ce tutoriel.
+</p>
+
+</com:TContent>

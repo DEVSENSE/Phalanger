@@ -1,0 +1,49 @@
+<com:TContent ID="body">
+
+<h1>TActiveImageButton Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A click image button showing the click location:
+</td><td class="sampleaction">
+<com:TActiveImageButton
+	ImageUrl=<%~ hello_world.gif %>
+	Text="hello world"
+	OnClick="buttonClicked"
+	/>
+<com:TActiveLabel ID="Result" />
+</td></tr>
+
+<tr><td class="samplenote">
+A callback image button:
+</td><td class="sampleaction">
+<com:TActiveImageButton
+	ImageUrl=<%~ hello_world.gif %>
+	Text="hello world"
+	OnCallback="buttonClicked"
+	ActiveControl.CallbackParameter="value"
+	/>
+<com:TActiveLabel ID="Result2" />
+</td></tr>
+
+<tr><td class="samplenote">
+An image button causing validation:
+</td><td class="sampleaction">
+<com:TActiveTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	Display="Dynamic"
+	ErrorMessage="input required in the textbox"
+	ValidationGroup="Group"
+	/>
+<com:TActiveImageButton
+	ImageUrl=<%~ hello_world.gif %>
+	Text="hello world"
+	ValidationGroup="Group"
+	/>
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2945 2011-06-01 20:48:19Z ctrlaltca@gmail.com $</div></com:TContent>

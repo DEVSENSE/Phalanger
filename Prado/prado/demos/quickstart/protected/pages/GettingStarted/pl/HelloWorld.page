@@ -1,0 +1,82 @@
+<com:TContent ID="body" >
+<h1 id="401">Moja pierwsza aplikacja w PRADO</h1>
+<div id="hello1"  class="block-content">
+<p id="50034">
+W tej sekcji, przeprowadzimy Cię przez proces tworzenia Twojej pierwszej aplikcaji w PRADO, słynną aplikację "Witaj świecie" (ang. "Hello World").
+</p>
+<p id="50035">
+"Witaj świecie" prawdopodobnie jest najprostszą <i>interaktywną</i> aplikacją w PRADO, którą możesz stworzyć. Wyświetla ona użytkownikowu końcowemu stronę z przyciskiem, którego napis to <tt>Kliknij mnie</tt> (ang. Click Me). Po tym jak użytkownik kliknie na przycisk, jego napis zmienia się na <tt>Witaj świecie</tt>.
+</p>
+<p id="50036">
+Jest wiele dróg aby osiągnąć ten cel. Można przesłać (ang. <i>submit</i>) stronę do serwera, sprawdzić zmienną POST i wygenerować nową stronę z przyciskiem ze zaktualizowanym napisem. Można też przez proste użycie JavaScript zaktualizować napis podczas zdarzenia <tt>OnClick</tt> po stronie klienta.
+</p>
+</div>
+<p id="50037" class="block-content">
+PRADO promuje programowanie sterowane zdarzeniami i bazujące na komponentach. Przycisk jest reprezentowany przez obiekt <tt>TButton</tt>. Hermetyzuje on napis na przycisku jako właściwość <tt>Text</tt> przycisku oraz wiąże akcję naciśnięcia przez użytkownika przycisku ze zdarzeniem po stronie serwera <tt>OnClick</tt>. Aby odpowiedzieć na naciśnięcie przez użytkownika przycisku, należy po prostu przypisać funkcję do zdarzenia <tt>OnClick</tt> przycisku. Wewnątrz funkcji, właściwość <tt>Text</tt> przycisku jest zmodyfikowana na "Witaj świecie". Poniższy diagram pokazuje powyższą sekwencję.
+<img src="<%~sequence.gif%>" class="figure"/>
+</p>
+<p id="50038" class="block-content">
+Nasza aplikacja PRADO składa się z trzech plików <tt>index.php</tt>, <tt>Home.page</tt> and <tt>Home.php</tt>, które są zorganizowane w poniższy sposób,
+<img src="<%~directory.gif%>" class="figure"/>
+
+gdzie każdy katalog należy rozumieć następująco. Zauważ, że powyższa struktura katalogów jest rozszerzalna. Na przykład, można przenieść katalog <tt>protected</tt> poza katalog WWW. Będziesz wiedział jak tego dokonać, jeśli przejdziesz przez ten przewodnik.
+</p>
+<ul id="dir-struct" class="block-content">
+<li><tt>assets</tt> - katalog zawierający upublicznione prywatne pliki. Zobacz sekcję <a href="?page=Advanced.Assets">assets</a> by dowiedzieć się więcej. Katalog ten musi być zapisywalny przez proces serwera.</li>
+<li><tt>protected</tt> - podstawowa ścieżka aplikacji zawierająca dane aplikacji oraz prywatne skrypty plików. Katalog ten powinien być skonfigurowany jako niedostępny dla użytkownika końcowego.</li>
+<li><tt>runtime</tt> -  składująca uruchomieniowa ścieżka aplikacji (ang. <i>application runtime storage path</i>) przechowuje informacje rurchomieniowe aplikacji, takie jak stan aplikacji, keszowane dane, itp. Katalog ten musi być zapisywalny przez proces serwera.</li>
+<li><tt>pages</tt> - podstawowa ścieżka przechowująca wszystkie strony PRADO.</li>
+</ul>
+
+<div class="tip">
+<b class="tip">Podpowiedż:</b>Możesz również użyć <tt>framework/prado-cli.php</tt>
+<a href="?page=GettingStarted.CommandLine">narzędzia linii poleceń</a>
+aby stworzyć strukturę katalogów dla projektu w PRADO. Na przykład, wpisz komendę
+<tt>php ścieżka/do/prado-cli.php -c helloworld</tt> w katalogu gdzie chcesz stworzyć projekt <tt>helloworld</tt> (witaj świecie).
+</div>
+
+<p id="50040">
+Trzy pliki, krórych potrzebujemy, kolejno oznaczają
+</p>
+<ul id="file-list" class="block-content">
+<li><tt>index.php</tt> - skrypt wejściowy aplikacji PRADO. Ten plik jest wymagany prez wszyskie aplikacje PRADO i jest jedynym skryptem, który jest bezpośrednio dostępny przez użytkownika końcowego. Zawartość <tt>index.php</tt> przeważnie zawiera następujące trzy linie,
+<com:TTextHighlighter CssClass="source block-content" id="code_50003">
+require_once('path/to/prado.php');  // załącz skrypt PRADO
+$application=new TApplication;      // utwórz instancję aplikacji PRADO
+$application->run();                // uruchom aplikację
+</com:TTextHighlighter>
+</li>
+<li><tt>Home.page</tt> - szablon dla domyślnej strony, zwracany gdy użytkownik nie wybierze jawnie żadnej strony. Szablon określa warstwę prezentacji komponentów. W tym przykładzie, używamy dwóch komponentów, <tt>TForm</tt> oraz <tt>TButton</tt>, które odpowiadają odpowiednio znacznikom HTML &lt;form&gt; oraz &lt;input&gt;. Szablon posiada następującą treść
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_50004">
+<html>
+  <body>
+    &lt;com:TForm&gt;
+      &lt;com:TButton Text="Kliknij mnie" OnClick="buttonClicked" /&gt;
+    &lt;/com:TForm&gt;
+  </body>
+</html>
+</com:TTextHighlighter>
+</li>
+<li><tt>Home.php</tt> - klasa strony dla strony głównej <tt>Home</tt>. Zawieta przeważnie  metody odpowiadające na zdarzenia<tt>OnClick</tt> przycisku.
+<com:TTextHighlighter CssClass="source block-content" id="code_50005">
+class Home extends TPage
+{
+    public function buttonClicked($sender,$param)
+    {
+        // $sender wskazuje na komponent przycisku
+        $sender->Text="Witaj świecie!";
+    }
+}
+</com:TTextHighlighter>
+</li>
+</ul>
+<div id="hello-end" class="block-content">
+<p id="50041">
+Aplikacja jest teraz gotowa i jest dostępna poprzez adres <tt>http://adres-serwera/helloworld/index.php</tt>, zakładając, że <tt>helloworld</tt> znajduje się bezpośrenio w <tt>KataloguGłównymDokumentó</tt> serwera (ang. <i>DocumentRoot</i>). Spróbuj zmienić <tt>TButton</tt> w <tt>Home.page</tt> na <tt>TLinkButton</tt> i zobacz co się stanie.
+</p>
+<p id="50042">
+Kompletne źródło kodu dla tego demo można znaleźć w wydaniu PRADO. Możesz również spróbować <a href="http://www.pradosoft.com/demos/helloworld/">demo online</a>.
+</p>
+</div>
+
+<div class="last-modified">$Id: HelloWorld.page 1704 2007-02-17 18:10:32Z aztech $</div></com:TContent>

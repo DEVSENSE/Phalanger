@@ -1,0 +1,27 @@
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+PRADO is an event-driven and component-based framework
+for Web application development in PHP 5.
+
+Components following the PRADO protocol are highly
+configurable and reusable. Properties defining
+the basic features of a component can be configured 
+in specifications, templates or code. 
+New components can be developed by either inheriting
+an existing component class or composing several
+components together. The work of using a component 
+amounts to placing the component tag on the page template, 
+configuring component properties, and writing handler 
+functions to respond to component events.
+
+PRADO shares many similarities with ASP.NET and other
+RAD tools for Windows GUI development, such as Borland Delphi.
+In particular, it supports event-driven programming,
+viewstate maintenance, javascript, template, form validations, etc.

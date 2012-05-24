@@ -1,0 +1,84 @@
+<com:TContent ID="body" >
+<h1 id="6801">Javascript dalam PRADO, Pertanyaan dan Jawaban</h1>
+<h2 id="6802">Bagaimana saya menyertakan librari Javascript yang didistribusikan dengan Prado?</h2>
+<p id="880060" class="block-content">Librari javascript yang didistribusikan dengan Prado dapat ditemukan dalam direktori
+<tt>framework/Web/Javascripts/source</tt>. File <tt>packages.php</tt>
+dalam direktori itu mendefinisikan daftar nama paket yang tersedia yang diambil. Itu bisa diambil seperti berikut.
+</p>
+<ul id="u1" class="block-content"><li>Menambahkan librari dalam template
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_850268">
+&lt;com:TClientScript PradoScripts="effects" /&gt;
+</com:TTextHighlighter>
+    </li>
+    <li>Menambahkan librari dalam kode PHP
+    <com:TTextHighlighter Language="php" CssClass="source block-content" id="code_850269">
+$this->getPage()->getClientScript()->registerPradoScript("effects");
+    </com:TTextHighlighter>
+    </li>
+</ul>
+Paket librari yang tersedia disertakan dalam Prado adalah
+<ul id="u2" class="block-content">
+    <li><tt>prado</tt> : javascript dasar kerangka kerja PRADO berdasarkan Prototype</li>
+    <li><tt>effects</tt> : efek visual dari script.aculo.us</li>
+    <li><tt>ajax</tt> : terkait ajax dan callback bedasarkan Prototype</li>
+    <li><tt>validator</tt> : validasi</li>
+    <li><tt>logger</tt> : pencatat javascript dan browser obyek</li>
+    <li><tt>datepicker</tt> : datepicker</li>
+    <li><tt>colorpicker</tt> : colorpicker</li>
+</ul>
+
+<p id="850761" class="block-content">Ketergantungan masing-masing librari secara otomatis dipecahkan. Komponen yang memerlukan libari tertentu juga akan secara otomatis mengambil librari yang diperlukan.
+Sebagai contoh, jika Anda menambah komponen <tt>TDatePicker</tt> pada halaman, <tt>datepicker</tt> dan dependensinya akan secara otomatis disertakan pada halaman.</p>
+
+<p id="850762" class="block-content">Lihat <a href="?page=Controls.ClientScript">TClientScript</a> untuk opsi penambahan kode Javascript kustom Anda ke halaman.</p>
+
+<h2 id="176028">Menerbitkan Librari Javascript sebagai Assets</h2>
+<com:SinceVersion Version="3.1b" />
+<p class="block-content">Gunakan <a href="?page=Controls.ClientScriptLoader">TClientScriptLoader</a> untuk menerbitkan dan menggabung file javascript yang sudah ada (misalnya librari javascript yang didistribusikan dengan Prado atau sebaliknya) sebagai paket.</p> Untuk kontrol yang lebih besar pada apa dan kapan untuk menerbitkan, gunakan metode
+<tt>registerJavascriptPackages($base, $packages, $debug=null, $gzip=true)</tt>
+dalam kelas <tt>TClientScriptManager</tt>, yang turunannya bisa diperoleh dengan <tt>$this->getPage()->getClientScript()</tt> atau persamaannya.
+Sebagai contoh, jika multipel kontrol akan memakai set librari javascript yang sama, tulis sebuah kelas untuk menangani registrasi paket yang diperlukan oleh kontrol tersebut.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+class MyJavascriptLib extends TComponent
+{
+    private $_packages=array(); //perlihara seluruh registrasi
+
+    private $_manager;
+
+    protected function __construct(TPage $owner)
+    {
+        $this->_manager = $owner->getClientScript();
+        $owner->onPreRenderComplete = array($this, 'registerScriptLoader');
+    }
+
+    public static function registerPackage(TControl $control, $name)
+    {
+        static $instance;
+        if($instance===null)
+            $instance=new self($control->getPage());
+        $instance->_packages[$name]=true;
+    }
+
+    protected function registerScriptLoader()
+    {
+        $dir = dirname(__FILE__).'/myscripts'; //berisi file javascript
+        $scripts = array_keys($this->_packages);
+        $url = $this->_manager->registerJavascriptPackages($dir, $scripts);
+        $this->_manager->registerScriptFile($url,$url);
+    }
+}
+
+// contoh kelas kontrol menggunakan paket javascript
+class TestComp extends TControl
+{
+    public function onPreRender($param)
+    {
+        parent::onPreRender($param);
+        MyJavascriptLib::registerPackage($this,'package1');
+    }
+}
+</com:TTextHighlighter>
+
+
+<div class="last-modified">$Id: Scripts3.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>

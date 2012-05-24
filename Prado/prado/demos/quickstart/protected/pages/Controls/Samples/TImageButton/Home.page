@@ -1,0 +1,50 @@
+<com:TContent ID="body">
+
+<h1>TImageButton Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A click image button showing the click location:
+</td><td class="sampleaction">
+<com:TImageButton
+	ImageUrl=<%~ hello_world.gif %>
+	Text="hello world"
+	OnClick="buttonClicked"
+	/>
+<com:TLabel ID="Result" />
+</td></tr>
+
+<tr><td class="samplenote">
+A command image button:
+</td><td class="sampleaction">
+<com:TImageButton
+	ImageUrl=<%~ hello_world.gif %>
+	Text="hello world"
+	OnCommand="buttonClicked"
+	CommandName="test"
+	CommandParameter="value"
+	/>
+<com:TLabel ID="Result2" />
+</td></tr>
+
+<tr><td class="samplenote">
+An image button causing validation:
+</td><td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	Display="Dynamic"
+	ErrorMessage="input required in the textbox"
+	ValidationGroup="Group"
+	/>
+<com:TImageButton
+	ImageUrl=<%~ hello_world.gif %>
+	Text="hello world"
+	ValidationGroup="Group"
+	/>
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

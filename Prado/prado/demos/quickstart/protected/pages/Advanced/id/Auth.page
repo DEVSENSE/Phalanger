@@ -1,0 +1,170 @@
+<com:TContent ID="body" >
+
+<h1 id="5501">Otentikasi dan Otorisasi</h1>
+<p id="720549" class="block-content">
+Otentikasi adalah proses verifikasi apakah seseorang yang mengaku siapa dirinya. Biasanya menyangkut nama pengguna dan kata sandi, tapi bisa menyertakan metode lain dari mendemonstrasikan identitas, seperti kartu pintar, sidik jari, dll.
+</p>
+<p id="720550" class="block-content">
+Otorisasi adalah mendapatkan keterangan jika orang yang sekali teridentifikasi, diijinkan untuk memanipulasi sumber daya tertentu. Ini biasanya ditentukan dengan menyelidiki apakah orang itu memiliki aturan akses tertentu terhadap sumber daya atau tidak.
+</p>
+
+<h2 id="5502">Bagaimana Kerangka Kerja Otentikasi PRADO Bekerja</h2>
+<p id="720551" class="block-content">
+PRADO menyediakan kerangka kerja otentikasi/otorisasi yang dapat diperluas. Seperti dijelaskan dalam <a href="?page=Fundamentals.Applications">masa hidup aplikasi</a>, <tt>TApplication</tt> menyimpan beberapa masa hidup untuk modul yang bertanggung jawab terhadap otentikasi dan otorisasi. PRADO menyediakan modul <tt>TAuthManager</tt> untuk keperluan tersebut. Para pengembang dapat memasukan modul otentikasinya sendiri dengan mudah. <tt>TAuthManager</tt> didesain untuk dipakai bersama dengan modul <tt>TUserManager</tt>, yang menerapkan datbase pengguna hanya-baca.
+</p>
+<p id="720552" class="block-content">
+Ketika sebuah permintaan halaman terjadi, <tt>TAuthManager</tt> akan mencoba untuk mengembalikan informasi pengguna dari sesi. Jika tidak ada informasi pengguna yang ditemukan, pengguna dianggap sebagai pengguna anonim atau tamu. Guna menjembatani verifikasi identitas pengguna, <tt>TAuthManager</tt> menyediakan dua metode yang umum dipakai: <tt>login()</tt> dan <tt>logout()</tt>. Pengguna dimasukan (diverifikasi) jika entitas nama pengguna serta kata sandinya sama dengan rekaman dalam database pengguna yang diatur oleh <tt>TUserManager</tt>. Pengguna dikeluarkan jika informasi pengguna dihapus dari sesi dan dia perlu masuk lagi jika dia membuat permintaan baru terhadap halaman.
+</p>
+<p id="720553" class="block-content">
+Selama masa hidup aplikasi <tt>Otorisasi</tt>, yang terjadi setelah masa hidup <tt>Otentikasi</tt>, <tt>TAuthManager</tt> akan memverifikasi apakah pengguna saat ini mempunyai akses ke halaman yang diminta berdasarkan set aturan otorisasi. Otorisasi adalah berbasis-aturan, misalnya seorang pengguna memiliki akses ke sebuah halaman jika 1) halaman secara ekplisit menyatakan bahwa pengguna mempunyai akses; 2) atau pengguna adalah aturan tertentu yang memiliki akses ke halaman. Jika pengguna tidak mempunyai akses ke halaman, <tt>TAuthManager</tt> akan mengalihkan browser pengguna ke halaman masuk yang ditetapkan oleh properti <tt>LoginPage</tt>.
+</p>
+
+<h2 id="5503">Menggunakan Kerangka Kerja Otentikasi PRADO</h2>
+<p id="720554" class="block-content">
+Untuk menghidupkan kerangka kerja otentikasi PRADO, tambahkan modul <tt>TAuthManager</tt> dan modul <tt>TUserManager</tt> ke <a href="?page=Configurations.AppConfig">konfigurasi aplikasi</a>,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code1">
+&lt;service id="page" class="TPageService"&gt;
+  &lt;modules&gt;
+    &lt;module id="auth" class="System.Security.TAuthManager"
+               UserManager="users" LoginPage="UserLogin" /&gt;
+    &lt;module id="users" class="System.Security.TUserManager"
+               PasswordMode="Clear"&gt;
+      &lt;user name="demo" password="demo" /&gt;
+      &lt;user name="admin" password="admin" /&gt;
+    &lt;/module&gt;
+  &lt;/modules&gt;
+&lt;/service&gt;
+</com:TTextHighlighter>
+<p id="720555" class="block-content">
+Di atas, properti <tt>UserManager</tt> dari <tt>TAuthManager</tt> disetel ke modul <tt>users</tt> yang adalah <tt>TUserManager</tt>. Para pengembang dapat menggantinya dengan modul manajemen pengguna yang berasal dari <tt>TUserManager</tt>.
+</p>
+<p id="720556" class="block-content">
+Aturan otorisasi untuk halaman ditetapkan dalam <a href="?page=Configurations.PageConfig">konfigurasi halaman</a> seperti berikut,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code2">
+&lt;authorization&gt;
+    &lt;allow pages="PageID1,PageID2"
+              users="User1,User2"
+              roles="Role1" /&gt;
+    &lt;deny pages="PageID1,PageID2"
+              users="?"
+              verb="post" /&gt;
+&lt;/authorization&gt;
+</com:TTextHighlighter>
+<p id="720557" class="block-content">
+Aturan otorisasi bisa berupa aturan <tt>allow</tt> atau aturan <tt>deny</tt>. Setiap aturan terdiri dari empat properti opsional:
+</p>
+<ul id="u1" class="block-content">
+<li><tt>pages</tt> - daftar nama halaman dipisahkan koma yang menerapkan aturan ini. Jika kosong atau tidak disetel, aturan ini akan berlaku ke semua halaman di bawah direktori saat ini dan seluruh subdirektorinya secara rekursif.</li>
+<li><tt>users</tt> - daftar nama pengguna yang menerapkan aturan dipisahkan koma di mana aturan ini berlaku. Karakter * menunjukan semua pengguna termasuk pengguna anonim/tamu. Karakter ? menunjukan pengguna anonim/tamu . Dan karakter @ menunjukan pengguna terotentikasi (tersedia sejak v3.1).</li>
+<li><tt>roles</tt> - daftar aturan pengguna yang menerapkan aturan ini.</li>
+<li><tt>verb</tt> - metode akses halaman yang memberlakukan aturan ini. Ia bisa berupa <tt>get</tt> atau <tt>post</tt>. Jika kosong atau tidak disetel, aturan berlaku untuk kedua metode tersebut.</li>
+</ul>
+
+<p id="720558" class="block-content">
+Ketika permintaan halaman sedang diproses, daftar aturan otorisassi menjadi tersedia. Akan tetapi, hanya aturan <i>efektif yang pertama</i> <i>menyamai</i> pengguna saat ini akan menyajikan hasil otorisasi.
+</p>
+<ul id="u2" class="block-content">
+<li>Aturan diurut dari bawah-ke atas, misalnya aturan yang berisi dalam konfigurasi dari folder halaman saat ini menjadi yang pertama. Aturan dalam konfigurasi dari folder halaman leluhurnya menjadi yang berikutnya.</li>
+<li>Sebuah aturan efektif jika halaman saat ini dalam halaman yang didaftarkan pada aturan DAN aksi pengguna saat ini (<tt>get</tt> atau <tt>post</tt>) dalam aksi terdaftar.</li>
+<li>Sebuah aturan sama terjadi jika nama pengguna saat ini ada dalam daftar nama pengguna pada aturan <i>efektif</i> ATAU jika aturan pengguna ada dalam aturan terdaftar yang mengaturnya.</li>
+<li>Jika tidak ada aturan yang sama, pengguna diotorisasi.</li>
+</ul>
+<p id="720559" class="block-content">
+Dalam contoh di atas, pengguna anonim akan ditolak atas penulisan ke <tt>PageID1</tt> dan <tt>PageID2</tt>, sementara <tt>User1</tt> dan <tt>User2</tt> dan semua pengguna aturan <tt>Role1</tt> bisa mengakses dua halaman (baik metode <tt>get</tt> maupun <tt>post</tt>).
+</p>
+<com:SinceVersion Version="3.1.1" />
+<p class="block-content">
+Sejak versi 3.1.1, atribut <tt>pages</tt> dalam aturan otorisasi dapat mengambil path halaman relatif dengan '*'. Sebagai contoh, <tt>pages="admin.Home"</tt> merujuk ke halaman <tt>Home</tt> di bawah direktori <tt>admin</tt>, dan <tt>pages="admin.*"</tt> akan merujuk ke seluruh halaman di bawah direktori <tt>admin</tt> dan subdirektorinya.
+</p>
+
+<p class="block-content">
+Juga diperkenalkan dalam versi 3.1.1 adalah aturan IP. Ini ditetapkan oleh atribut baru <tt>ip</tt> dalam aturan otorisasi. Aturan IP dipakai untuk menentukan apakah aturan otorisasi berlaku ke pengguna-akhir berdasarkan alamat IP-nya. Seseorang dapat mendaftar beberapa IP sekaligus, dipisahkan dengan koma ','. Wildcard '*' dapat dipakai dalam aturan. Sebagai contoh, <tt>ip="192.168.0.2, 192.168.1.*"</tt> berarti aturan berlaku untuk para pengguna yang alamat IP-nya 192.168.0.2 atau 192.168.1.*. Yang kedua sama dengan setiap host dalam subnet 192.168.1.
+</p>
+
+<h2 id="5504">Menggunakan <tt>TUserManager</tt></h2>
+<p id="720560" class="block-content">
+Seperti telah disebutkan di atas, <tt>TUserManager</tt> menerapkan database pengguna hanya-baca. Informasi pengguna ditetapkan baik dalam konfigurasi aplikasi ataupun file XML eksternal.
+</p>
+<p id="720561" class="block-content">
+Kita telah melihat contoh di atas yang menggunakan dua pengguna ditetapkan dalam konfigurasi aplikasi. Sintaks lengkap atas penetapan pengguna dan informasi aturan adalah sebagai berikut,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code3">
+&lt;user name="demo" password="demo" roles="demo,admin" /&gt;
+&lt;role name="admin" users="demo,demo2" /&gt;
+</com:TTextHighlighter>
+<p id="720562" class="block-content">
+di mana atribut <tt>roles</tt> dalam elemen <tt>user</tt> adalah opsional. Aturan pengguna dapat ditetapkan baik dalam elemen <tt>user</tt> ataupun dalam elemen <tt>role</tt> terpisah.
+</p>
+
+<h2 id="5505">Menggunakan <tt>TDbUserManager</tt></h2>
+<p id="720563" class="block-content">
+<tt>TDbUserManager</tt> diperkenalkan dalam v3.1.0. Tujuan utamanya adalah untuk menyederhanakan tugas pengaturan akun pengguna yang disimpan dalam sebuah database. Ini membutuhkan para pengembang untuk menulis kelas pengguna yang mewakili informasi yang diperlukan untuk akun pengguna. Kelas pengguna harus diperluas dari <tt>TDbUser</tt>.
+</p>
+<p id="720564" class="block-content">
+Untuk menggunakan <tt>TDbUserManager</tt>, konfigurasi itu dalam konfigurasi aplikasi seperti berikut:
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code4">
+<module id="db"
+     class="System.Data.TDataSourceConfig" ..../>
+<module id="users"
+     class="System.Security.TDbUserManager"
+     UserClass="Path.To.MyUserClass"
+     ConnectionID="db" />
+<module id="auth"
+     class="System.Security.TAuthManager"
+     UserManager="users" LoginPage="Path.To.LoginPage" />
+</com:TTextHighlighter>
+
+</p>
+<p id="720565" class="block-content">
+Dalam contoh di atas, <tt>UserClass</tt> menetapkan bahwa kelas akan dipakai untuk membuat turunan pengguna. Kelas harus diperluas dari <tt>TDbUser</tt>. <tt>ConnectionID</tt> merujuk ke ID dari modul <tt>TDataSourceConfig</tt> yang menetapkan bagaimana untuk melakukan koneksi database guna mendapatkan informasi penggunanya.
+</p>
+<p id="720566" class="block-content">
+Kelas pengguna harus menerapkan dua metode abstrak dalam <tt>TDbUser</tt>: <tt>validateUser()</tt> dan <tt>createUser()</tt>. Karena informasi akun pengguna disimpan dalam sebuah database, kelas pengguna dapat menggunakan properti <tt>DbConnection</tt>-nya untuk menjangkau database.
+</p>
+<com:SinceVersion Version="3.1.1" />
+<p id="720567" class="block-content">
+Sejak versi 3.1.1, <tt>TAuthManager</tt> menyediakan dukungan guna membolehkan mengingat yang masuk dengan menyetel <tt>AllowAutoLogin</tt> menjadi true. Oleh karena itu, <tt>TDbUser</tt> menambahkan dua metode untuk memfasilitasi implementasi fitur ini. Dalam keadaan tertentu, dua metode baru diperkenalkan: <tt>createUserFromCookie()</tt> dan <tt>saveUserToCookie()</tt>. Para pengembang harus mengimplementasikan dua metode ini jika mengingat yang sudah masuk diperlukan. Di bawah ini adalah contoh implementasi:
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code5">
+public function createUserFromCookie($cookie)
+{
+	if(($data=$cookie->Value)!=='')
+	{
+		$application=Prado::getApplication();
+		if(($data=$application->SecurityManager->validateData($data))!==false)
+		{
+			$data=unserialize($data);
+			if(is_array($data) && count($data)===3)
+			{
+				list($username,$address,$token)=$data;
+				$sql='SELECT passcode FROM user WHERE LOWER(username)=:username';
+				$command=$this->DbConnection->createCommand($sql);
+				$command->bindValue(':username',strtolower($username));
+				if($token===$command->queryScalar() && $token!==false && $address=$application->Request->UserHostAddress)
+					return $this->createUser($username);
+			}
+		}
+	}
+	return null;
+}
+
+public function saveUserToCookie($cookie)
+{
+	$application=Prado::getApplication();
+	$username=strtolower($this->Name);
+	$address=$application->Request->UserHostAddress;
+	$sql='SELECT passcode FROM user WHERE LOWER(username)=:username';
+	$command=$this->DbConnection->createCommand($sql);
+	$command->bindValue(':username',strtolower($username));
+	$token=$command->queryScalar();
+	$data=array($username,$address,$token);
+	$data=serialize($data);
+	$data=$application->SecurityManager->hashData($data);
+	$cookie->setValue($data);
+}
+</com:TTextHighlighter>
+
+<div class="last-modified">$Id: Auth.page 2245 2007-09-26 13:22:02Z xue $</div></com:TContent>

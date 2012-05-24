@@ -1,0 +1,133 @@
+<com:TContent ID="Main">
+
+<h1>Creating <tt>EditPost</tt> Page</h1>
+
+<p>
+The <tt>EditPost</tt> page is provided to authors and the administrator to edit existing blog posts. Like the <a href="?page=Day4.CreateNewPost">NewPost</a> page, it displays a form to collect the change to the title and content of a post.
+</p>
+
+<p>
+We create two files <tt>protected/pages/posts/EditPost.page</tt> and <tt>protected/pages/posts/EditPost.php</tt> to save the page template and page class, respectively.
+</p>
+
+<h2>Creating Page Template</h2>
+<p>
+The <tt>EditPost</tt> page template is very similar to the <tt>NewPost</tt> template. Only the page title and the button caption are different.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ Title="My Blog - Edit Post" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Edit Post</h1>
+
+<span>Title:</span>
+&lt;com:TRequiredFieldValidator
+	ControlToValidate="TitleEdit"
+	ErrorMessage="Please provide a title."
+	Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="TitleEdit" Columns="50" />
+
+<br/>
+<span>Content:</span>
+&lt;com:TRequiredFieldValidator
+	ControlToValidate="ContentEdit"
+	ErrorMessage="Please provide content."
+	Display="Dynamic" />
+<br/>
+&lt;com:THtmlArea ID="ContentEdit" />
+
+<br/>
+&lt;com:TButton Text="Save" OnClick="saveButtonClicked" />
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+
+<h2>Creating Page Class</h2>
+
+<p>
+The <tt>EditPage</tt> page class is slightly complex than <tt>NewPage</tt> because it needs to load the specified post data first. It also needs to perform additional authorization check. In particular, it needs to ensure that a post can only be editted by the author or the administrator. Such authorization check is not provided by PRADO itself.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class EditPost extends TPage
+{
+	/**
+	 * Initializes the inputs with existing post data.
+	 * This method is invoked by the framework when the page is being initialized.
+	 * @param mixed event parameter
+	 */
+	public function onInit($param)
+	{
+		parent::onInit($param);
+		// Retrieves the existing user data. This is equivalent to:
+		// $postRecord=$this->getPost();
+		$postRecord=$this->Post;
+		// Authorization check: only the author or the administrator can edit the post
+		if($postRecord->author_id!==$this->User->Name && !$this->User->IsAdmin)
+			throw new THttpException(500,'You are not allowed to edit this post.');
+
+		if(!$this->IsPostBack)  // if the page is initially requested
+		{
+			// Populates the input controls with the existing post data
+			$this->TitleEdit->Text=$postRecord->title;
+			$this->ContentEdit->Text=$postRecord->content;
+		}
+	}
+
+	/**
+	 * Saves the post if all inputs are valid.
+	 * This method responds to the OnClick event of the "Save" button.
+	 * @param mixed event sender
+	 * @param mixed event parameter
+	 */
+	public function saveButtonClicked($sender,$param)
+	{
+		if($this->IsValid)  // when all validations succeed
+		{
+			// Retrieves the existing user data. This is equivalent to:
+			// $postRecord=$this->getPost();
+			$postRecord=$this->Post;
+
+			// Fetches the input data
+			$postRecord->title=$this->TitleEdit->SafeText;
+			$postRecord->content=$this->ContentEdit->SafeText;
+
+			// saves to the database via Active Record mechanism
+			$postRecord->save();
+
+			// redirects the browser to the ReadPost page
+			$url=$this->Service->constructUrl('posts.ReadPost',array('id'=>$postRecord->post_id));
+			$this->Response->redirect($url);
+		}
+	}
+
+	/**
+	 * Returns the post data to be editted.
+	 * @return PostRecord the post data to be editted.
+	 * @throws THttpException if the post data is not found.
+	 */
+	protected function getPost()
+	{
+		// the ID of the post to be editted is passed via GET parameter 'id'
+		$postID=(int)$this->Request['id'];
+		// use Active Record to look for the specified post ID
+		$postRecord=PostRecord::finder()->findByPk($postID);
+		if($postRecord===null)
+			throw new THttpException(500,'Post is not found.');
+		return $postRecord;
+	}
+}
+</com:TTextHighlighter>
+
+<h2>Testing</h2>
+<p>
+To test the <tt>EditPost</tt> page, login first and visit the following URL: <tt>http://hostname/blog/index.php?page=EditPost&id=1</tt>. This URL can also be reached by clicking on the <tt>Edit</tt> link on a post detail page.
+</p>
+
+<img src="<%~ output4.gif %>" class="output" />
+
+</com:TContent>

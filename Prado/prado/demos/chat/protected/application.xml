@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application id="Chat" Mode="Debug">
+
+  <paths>
+	<using namespace="Application.App_Code.*" />
+	<using namespace="System.Data.*" />
+	<using namespace="System.Data.ActiveRecord.*" />
+	<using namespace="System.Security.*" />
+	<using namespace="System.Web.UI.ActiveControls.*" />
+  </paths>
+
+  <modules>
+	<!-- active record database connection configuration -->
+<!--	<module class="TActiveRecordConfig" EnableCache="true"
+		Database.ConnectionString="mysql:host=localhost;dbname=prado_chat"
+		Database.Username="prado"
+		Database.Password="prado" />
+-->
+  	<module class="TActiveRecordConfig" EnableCache="true"
+		Database.ConnectionString="sqlite:protected/App_Code/chat.db" />
+
+  </modules>
+ 
+</application>

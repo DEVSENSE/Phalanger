@@ -1,0 +1,27 @@
+<%@ Title="My Blog - New Post" %>
+
+<com:TContent ID="Main">
+
+<h1>Create New Post</h1>
+
+<span>Title:</span>
+<com:TRequiredFieldValidator
+	ControlToValidate="TitleEdit"
+	ErrorMessage="Please provide a title."
+	Display="Dynamic" />
+<br/>
+<com:TTextBox ID="TitleEdit" Columns="50" />
+
+<br/>
+<span>Content:</span>
+<com:TRequiredFieldValidator
+	ControlToValidate="ContentEdit"
+	ErrorMessage="Please provide content."
+	Display="Dynamic" />
+<br/>
+<com:THtmlArea ID="ContentEdit" />
+
+<br/>
+<com:TButton Text="Create" OnClick="createButtonClicked" />
+
+</com:TContent>

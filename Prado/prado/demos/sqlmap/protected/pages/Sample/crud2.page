@@ -1,0 +1,36 @@
+<!doctype html public "-//W3C//DTD XHTML 1.0 Strict//EN" 
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<title>Person</title>
+</head>
+
+<body>
+
+<com:TForm>
+	<h1>Person List</h1>
+	<com:TDataGrid id="personList" 
+			DataKeyField="ID"
+			AutoGenerateColumns="False"
+			OnEditCommand="editPerson"
+			OnUpdateCommand="updatePerson"
+			OnCancelCommand="refreshList"
+			OnDeleteCommand="deletePerson">
+		<com:TBoundColumn DataField="FirstName" HeaderText="First Name" />
+		<com:TBoundColumn DataField="LastName" HeaderText="Last Name" />
+		<com:TBoundColumn DataField="HeightInMeters" HeaderText="Height" />
+		<com:TBoundColumn DataField="WeightInKilograms" HeaderText="Weight" />
+
+		<com:TEditCommandColumn
+				HeaderText="Edit"
+				UpdateText="Save" />
+		<com:TButtonColumn
+				HeaderText="Delete"
+				Text="Delete"
+				CommandName="delete"/>
+	</com:TDataGrid>
+	<com:TButton Text="Add" OnClick="addNewPerson" />
+</com:TForm>
+</body>
+</html>

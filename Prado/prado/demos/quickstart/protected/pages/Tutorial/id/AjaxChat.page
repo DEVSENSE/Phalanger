@@ -1,0 +1,686 @@
+<com:TContent ID="body">
+	<h1 id="18008">Membangun Aplikasi Obrolan AJAX</h1>
+	<com:RequiresVersion Version="3.1a" />
+	<p id="90081" class="block-content">Tutorial ini memperkenalkan kerangka kerja aplikasi web Prado
+	<a href="?page=Database.ActiveRecord">ActiveRecord</a>
+	dan <a href="?page=ActiveControls.Home">Kontrol Aktif</a> untuk membangun aplikasi web Chat. Diasumsikan bahwa Anda sudah terbiasa dengan PHP dan akan telah mengakses server web yang dapat melayani naskah PHP5.
+	Aplikasi chat dasar ini akan memanfaatkan ide/komponen berikut dalam Prado.
+	</p>
+	<ul id="u1" class="block-content">
+		<li>Membangun kelas kustom Manajer Pengguna.</li>
+		<li>Mengotentikasi dan menambahkan pengguna ke database.</li>
+		<li>Menggunakan ActiveRecord untuk berinteraksi dengan database.</li>
+		<li>Menggunakan Kontrol Aktif dan callbacks untuk menerapkan antarmuka pengguna.</li>
+		<li>Memisahkan logika aplikasi dan alur aplikasi.</li>
+	</ul>
+
+	<p id="90082" class="block-content">Dalam tutorial ini Anda akan membangun sebuah aplikasi web Chat AJAX yang membolehkan
+		multipel pengguna untuk berkomunikasi melalui web browser mereka.
+		Aplikasi terdiri dari dua halaman: halaman masuk yang menanyakan pada
+		pengguna untuk memasukkan nama panggilannya dan halaman aplikasi chat utama.
+		Anda dapat mencoba aplikasi <a href="../chat/index.php">secara lokal</a> atau di
+		<a href="http://www.pradosoft.com/demos/chat/">Pradosoft.com</a>.
+		Aplikasi chat utama ditampilkan di bawah ini.
+		<img src=<%~ chat1.png %> class="figure" />
+	</p>
+
+	<h1 id="18009">Download, Instalasi dan Buat Aplikasi Baru</h1>
+	<p id="90083" class="block-content">Langkah download dan instalasi mirip dengan
+	<a href="?page=Tutorial.CurrencyConverter#download">Tutorial pengubah kurs</a>.
+	Untuk membuat aplikasi, kita menjalankan dari baris perintah berikut.
+	Lihat <a href="?page=GettingStarted.CommandLine">Piranti Baris Perintah</a>
+		untuk lebih jelasnya.
+<com:TTextHighlighter Language="text" CssClass="source block-content" id="code_90027">
+php prado/framework/prado-cli.php -c chat
+</com:TTextHighlighter>
+	</p>
+
+	<p id="90084" class="block-content">Perintah di atas membuat struktur direktori yang diperlukan dan file minimal (termasuk "index.php" dan "Home.page") untuk menjalankan aplikasi web Prado.
+		Sekarang Anda dapat mengarahkan URL browser Anda ke server web untuk melayani
+		naskah <tt>index.php</tt> dalam direktori <tt>chat</tt>.
+		Anda seharusnya melihat pesan "Welcome to Prado!"
+	</p>
+
+	<h1 id="18010">Otentikasi dan Otorisasi</h1>
+	<p id="90085" class="block-content">Tugas pertama untuk aplikasi ini adalah memastikan bahwa setiap pengguna
+	dari aplikasi chat memiliki nama pengguna (dipilih oleh pengguna)
+	unik. Untuk melaksanakan ini, kita akan mengamankan halaman aplikasi chat utama
+	untuk menolak akses bagai pengguna anonim. Pertama, mari kita membuat halaman <tt>Login</tt>
+	dengan kode berikut. Kita simpan <tt>Login.php</tt> dan <tt>Login.page</tt>
+	dalam direktori <tt>chat/protected/pages/</tt> (di sana harus ada file <tt>Home.page</tt>
+	yang dibuat oleh piranti baris perintah).
+	</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90028">
+&lt;?php
+class Login extends TPage
+{
+}
+?&gt;
+</com:TTextHighlighter>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_90029">
+<!doctype html public "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Prado Chat Demo Login</title>
+</head>
+<body>
+&lt;com:TForm&gt;
+    <h1 class="login">Prado Chat Demo Login</h1>
+    <fieldset class="login">
+        <legend>Please enter your name:</legend>
+        <div class="username">
+            &lt;com:TLabel ForControl="username" Text="Username:" /&gt;
+            &lt;com:TTextBox ID="username" MaxLength="20" /&gt;
+            &lt;com:TRequiredFieldValidator
+                ControlToValidate="username"
+                Display="Dynamic"
+                ErrorMessage="Please provide a username." /&gt;
+        </div>
+        <div class="login-button">
+            &lt;com:TButton Text="Login" /&gt;
+        </div>
+&lt;/com:TForm&gt;
+</body>
+</html>
+</com:TTextHighlighter>
+	<p id="90086" class="block-content">Halaman login berisi
+	a <com:DocLink ClassPath="System.Web.UI.TForm" Text="TForm" />,
+	a <com:DocLink ClassPath="System.Web.UI.WebControls.TTextBox" Text="TTextBox" />,
+	a <com:DocLink ClassPath="System.Web.UI.WebControls.TRequiredFieldValidator" Text="TRequiredFieldValidator" />
+	dan <com:DocLink ClassPath="System.Web.UI.WebControls.TButton" Text="TButton" />. Halaman yang dihasilkan terlihat seperti berikut (setelah menerapkan beberapa style sheet).
+	<img src=<%~ chat2.png %> class="figure" />
+	Jika Anda mengklik pada tombol <tt>Login</tt> tanpa memasukan teks
+	apapun dalam kotak teks nama pengguna, pesan kesalahan ditampilkan. Ini dikarenakan <com:DocLink ClassPath="System.Web.UI.WebControls.TRequiredFieldValidator" Text="TRequiredFieldValidator" />
+	memerlukan pengguna untuk memasukan beberapa teks dalam kotak teks sebelum melanjutkan.
+	</p>
+<h2 id="18019">Mengamankan halaman <tt>Home</tt></h2>
+<p id="90087" class="block-content">Sekarang kita menginginkan bahwa jika pengguna mencoba untuk mengakses halaman aplikasi utama, <tt>Home.page</tt>, sebelum masuk, pengguna diberi <tt>Login.page</tt> lebih dulu. Kita menambahkan file konfigurasi <tt>chat/protected/application.xml</tt> untuk mengimpor beberapa kelas yang harus kita pakai nanti.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_90030">
+<?xml version="1.0" encoding="utf-8"?>
+<application id="Chat" Mode="Debug">
+  <paths>
+    <using namespace="System.Data.*" />
+    <using namespace="System.Data.ActiveRecord.*" />
+    <using namespace="System.Security.*" />
+    <using namespace="System.Web.UI.ActiveControls.*" />
+  </paths>
+</application>
+</com:TTextHighlighter>
+Selanjutnya, kita menambahkan file konfigurasi <tt>chat/protected/pages/config.xml</tt> guna mengamankan direktori <tt>pages</tt>.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_90031">
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <modules>
+    <module id="users" class="TUserManager" />
+    <module id="auth" class="TAuthManager" UserManager="users" LoginPage="Login" />
+  </modules>
+  <authorization>
+    <allow pages="Login" users="?" />
+    <allow roles="normal" />
+    <deny users="*" />
+  </authorization>
+</configuration>
+</com:TTextHighlighter>
+Kita menyiapkan otentikasi menggunakan kelas standar seperti dijelaskan dalam
+<a href="?page=Advanced.Auth">tutorial cepat otentikasi/otorisasi</a>.
+Dalam definisi otorisasi, kita membolehkan pengguna anonim untuk mengakses halaman <tt>Login</tt> (pengguna anonim dietapkan dengan the <tt>?</tt> tanda tanya).
+Kita membolehkan setiap pengguna dengan aturan yang sama dengan "normal" (didefinisikan nanti) untuk mengakses semua halaman, yakni halaman <tt>Login</tt> dan <tt>Home</tt>.
+Terakhir, kita menolak semua pengguna tanpa aturan apapun untuk mengakses setiap halaman. Aturan otorisasi dijalankan pada basis sama pertama kali.
+</p>
+
+<p id="90088" class="block-content">Jika Anda mencoba untuk mengakses halaman <tt>Home</tt> dengan mengarahkan browser Anda ke
+<tt>index.php</tt> Anda akan dialihkan ke halaman <tt>Login</tt>.
+</p>
+
+<h1 id="18011">Rekaman Aktif untuk tabel <tt>chat_users</tt></h1>
+<p id="90089" class="block-content">Kelas <com:DocLink ClassPath="System.Secutity.TUserManager" Text="TUserManager" />
+hanya menyediakan daftar pengguna hanya-baca. Kita perlu untuk bisa menambah atau memasukan pengguna baru secara dinamis. Maka kita perlu untuk membuat kelas manajer pengguna kita sendiri.
+Pertama, kita menyiapkan database dengan tabel <tt>chat_users</tt> dan membuat sebuah ActiveRecord yang dapat bekerja pada tabel <tt>chat_users</tt> dengan mudah. Untuk demo, kita menggunakan <tt>sqlite</tt> sebagai database kita guna kemudahan menditribusikandemo. Demo dapat diperluas dengan mudah untuk memakai database lain seperti MySQL atau Postgres SQL.
+Kita mendefinisikan tabel <tt>chat_users</tt> sebagai berikut.
+<com:TTextHighlighter Language="text" CssClass="source block-content" id="code_90032">
+CREATE TABLE chat_users
+(
+	username VARCHAR(20) NOT NULL PRIMARY KEY,
+	last_activity INTEGER NOT NULL DEFAULT "0"
+);
+</com:TTextHighlighter>
+Selanjutnya kita mendefinisikan kelas <tt>ChatUserRecord</tt> dan menyimpannya sebagai <tt>chat/protected/App_Code/ChatUserRecord.php</tt> (Anda perlu untuk membuat direktori <tt>App_Code</tt> juga). Kita juga menyimpan file database sqlite sebagai <tt>App_Code/chat.db</tt>.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90033">
+class ChatUserRecord extends TActiveRecord
+{
+    const TABLE='chat_users';
+
+    public $username;
+    public $last_activity;
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+Sebelum menggunakan kelas <tt>ChatUserRecord</tt> kita perlu mengkonfigurasi koneksi database standar agar ActiveRecord berfungsi. Dalam <tt>chat/protected/application.xml</tt>
+kita mengimpor kelas dari direktori <tt>App_Code</tt> dan menambahkan
+<a href="?page=Database.ActiveRecord">modul konfigurasi ActiveRecord</a>.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_90034">
+<?xml version="1.0" encoding="utf-8"?>
+<application id="Chat" Mode="Debug">
+  <paths>
+    <using namespace="Application.App_Code.*" />
+    <using namespace="System.Data.*" />
+    <using namespace="System.Data.ActiveRecord.*" />
+    <using namespace="System.Security.*" />
+    <using namespace="System.Web.UI.ActiveControls.*" />
+  </paths>
+  <modules>
+    <module class="TActiveRecordConfig" EnableCache="true"
+        Database.ConnectionString="sqlite:protected/App_Code/chat.db" />
+  </modules>
+</application>
+</com:TTextHighlighter>
+</p>
+
+<h2 id="18020">Kelas Manajer Pengguna Kustom</h2>
+<p id="90090" class="block-content">Untuk menerapkan modul kelas kustom manajer pengguna kita cukup memperluas kelas <tt>TModule</tt> dan menerapkan antarmuka <tt>IUserManager</tt>. Metode <tt>getGuestName()</tt>, <tt>getUser()</tt> dan <tt>validateUser()</tt> diperlukan oleh antarmuka <tt>IUserManager</tt>.
+Kita menyimpan kelas manajer pengguna kustom sebagai <tt>App_Code/ChatUserManager.php</tt>.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90035">
+class ChatUserManager extends TModule implements IUserManager
+{
+    public function getGuestName()
+    {
+        return 'Guest';
+    }
+
+    public function getUser($username=null)
+    {
+        $user=new TUser($this);
+        $user->setIsGuest(true);
+        if($username !== null && $this->usernameExists($username))
+        {
+            $user->setIsGuest(false);
+            $user->setName($username);
+            $user->setRoles(array('normal'));
+        }
+        return $user;
+    }
+
+    public function addNewUser($username)
+    {
+        $user = new ChatUserRecord();
+        $user->username = $username;
+        $user->save();
+    }
+
+    public function usernameExists($username)
+    {
+        $finder = ChatUserRecord::finder();
+        $record = $finder->findByUsername($username);
+        return $record instanceof ChatUserRecord;
+    }
+
+    public function validateUser($username,$password)
+    {
+        return $this->usernameExists($username);
+    }
+}
+</com:TTextHighlighter>
+<p id="90091" class="block-content">
+Metode <tt>getGuestName()</tt>
+mengembalikan nama untuk pengguna tamu dan tidak dipakai dalam aplikasi kita.
+Metode <tt>getUser()</tt> mengembalikan obyek <tt>TUser</tt> jika nama pengguna ada dalam database, obyek <tt>TUser</tt> disetel dengan aturan "normal"
+yang terkait ke aturan <tt>&lt;otorisasi&gt;</tt> yang didefinisikan dalam file
+<tt>config.xml</tt> kita. </p>
+
+<p id="90092" class="block-content">Metode <tt>addNewUser()</tt> dan <tt>usernameExists()</tt>
+menggunakan ActiveRecord terkait dengan tabel <tt>chat_users</tt> masing-masing untuk menambah pengguna baru dan untuk memeriksa apakah nama pengguna sudah ada atau belum.
+</p>
+
+<p id="90093" class="block-content">Hal berikutnya yang dilakukan adalah mengubah konfigurasi <tt>config.xml</tt> untuk menggunakan kelas manajer pengguna kustom baru kita. Kita cukup mengubah konfigurasi <tt>&lt;module&gt;</tt>
+dengan <tt>id="users"</tt>.</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_90036">
+<module id="users" class="ChatUserManager" />
+</com:TTextHighlighter>
+
+<h1 id="18012">Otentikasi</h1>
+<p id="90094" class="block-content">Untuk melakukan otentikasi, kita menginginkan pengguna untuk memasukkan nama pengguna unik. Kita menambahkan
+<com:DocLink ClassPath="System.Web.UI.WebControls.TCustomValidator" Text="TCustomValidator" />
+untuk memvalidasi keunikan nama pengguna dan menambahkan pengendali event <tt>OnClick</tt> untuk tombol login.</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_90037">
+&lt;com:TCustomValidator
+    ControlToValidate="username"
+    Display="Dynamic"
+    OnServerValidate="checkUsername"
+    ErrorMessage="The username is already taken." /&gt;
+
+...
+
+&lt;com:TButton Text="Login" OnClick="createNewUser" /&gt;
+</com:TTextHighlighter>
+Dalam file <tt>Login.php</tt>, kita menambahkan 2 metode berikut.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90038">
+function checkUsername($sender, $param)
+{
+    $manager = $this->Application->Modules['users'];
+    if($manager->usernameExists($this->username->Text))
+        $param->IsValid = false;
+}
+
+function createNewUser($sender, $param)
+{
+    if($this->Page->IsValid)
+    {
+        $manager = $this->Application->Modules['users'];
+        $manager->addNewUser($this->username->Text);
+
+        //do manual login
+        $user = $manager->getUser($this->username->Text);
+        $auth = $this->Application->Modules['auth'];
+        $auth->updateSessionUser($user);
+        $this->Application->User = $user;
+
+        $url = $this->Service->constructUrl($this->Service->DefaultPage);
+        $this->Response->redirect($url);
+    }
+}
+</com:TTextHighlighter>
+Metode <tt>checkUserName()</tt> menggunakan kelas <tt>ChatUserManager</tt>
+(ingat bahwa dalam konfigurasi <tt>config.xml</tt> kita menyetel ID dari kelas manajer pengguna kustom sebagai "users") untuk memvalidasi nama pengguna belum dipakai.
+</p>
+<p id="90095" class="block-content">
+Dalam metode <tt>createNewUser</tt>, Ketika validasi lulus (yaitu ketika nama pengguna belum dipakai) kita menambahkan pengguna baru. Setelah itu kita melakukan proses login secara manual:</p> <ul id="u2" class="block-content">
+	<li>Pertama kita peroleh turunan <tt>TUser</tt> dari kelas manajer
+pengguna kita menggunakan metode <tt>$manager->getUser(...)</tt>.</li>
+	<li>Menggunakan <tt>TAuthManager</tt> kita menetapkan/memutakhirkan obyek pengguna dalam data sesi saat ini.</li>
+	<li>Kemudian kita menetapkan/memutakhirkan turunan <tt>APlikasi</tt> pengguna dengan obyek pengguna baru kita.</li>
+</ul>
+</p>
+<p id="finally" class="block-content">
+Akhirnya, kita mengalihkan klien ke halaman standar <tt>Home</tt>.
+</p>
+
+<h2 id="18021">Nilai Standar untuk ActiveRecord</h2>
+<p id="90096" class="block-content">Jika Anda mencoba untuk melakukan login sekarang, Anda akan menerima pesan kesalahan seperti
+"<i>Property '<tt>ChatUserRecord::$last_activity</tt>' must not be null as defined
+by column '<tt>last_activity</tt>' in table '<tt>chat_users</tt>'.</i>". Ini berarti bahwa nilai properti <tt>$last_activity</tt> adalah null dalam kolom terkait pada tabel dan memboleh nilai null atau menetapkan nilai standar dalam kelas <tt>ChatUserRecord</tt>. Kita akan mendemonstrasikannya nanti dengan mengubah <tt>ChatUserRecord</tt> dengan tambahan dari metode setelan pengambil/pengetap untuk properti <tt>last_activity</tt>.
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90039">
+private $_last_activity;
+
+public function getLast_Activity()
+{
+    if($this->_last_activity === null)
+        $this->_last_activity = time();
+    return $this->_last_activity;
+}
+
+public function setLast_Activity($value)
+{
+    $this->_last_activity = $value;
+}
+</com:TTextHighlighter>
+Catatan bahwa kita mengganti nama <tt>$last_activity</tt> menjadi <tt>$_last_activity</tt> (perhatikan garis bawah setelah tanda dolar).
+</p>
+
+<h1 id="18013">Aplikasi Chat Utama</h1>
+<p id="90097" class="block-content">Sekarang kita siap untuk membangun aplikasi chat utama. Kita menggunakan tata letak sederhana yang terdiri dari satu panel yang menampung pesan chat, satu panel untuk menampung daftar pengguna, area teks untuk pengguna memasukan pesan teks dan tombol untuk mengirimkan pesan.
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_90040">
+<!doctype html public "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Prado Chat Demo</title>
+<style>
+.messages
+{
+    width: 500px;
+    height: 300px;
+    float: left;
+    border: 1px solid ButtonFace;
+    overflow: auto;
+}
+.user-list
+{
+    margin-left: 2px;
+    float: left;
+    width: 180px;
+    height: 300px;
+    border: 1px solid ButtonFace;
+    overflow: auto;
+    font-size: 0.85em;
+}
+.message-input
+{
+    float: left;
+}
+
+.message-input textarea
+{
+    margin-top: 3px;
+    padding: 0.4em 0.2em;
+    width: 493px;
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-size: 0.85em;
+    height: 40px;
+}
+.send-button
+{
+    margin: 0.5em;
+}
+</style>
+</head>
+<body>
+&lt;com:TForm&gt;
+<h1 id="18014">Prado Chat Demo</h1>
+<div id="messages" class="messages">
+    &lt;com:TPlaceHolder ID="messageList" /&gt;
+</div>
+<div id="users" class="user-list">
+    &lt;com:TPlaceHolder ID="userList" /&gt;
+</div>
+<div class="message-input">
+    &lt;com:TActiveTextBox ID="userinput"
+        Columns="40" Rows="2" TextMode="MultiLine" /&gt;
+    &lt;com:TActiveButton ID="sendButton" CssClass="send-button"
+        Text="Send" /&gt;
+</div>
+&lt;/com:TForm&gt;
+&lt;com:TJavascriptLogger /&gt;
+</body>
+</html>
+</com:TTextHighlighter>
+Kita menambahkan dua komponen Kontrol Aktif: a
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveTextBox" Text="TActiveTextBox" />
+dan
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveButton" Text="TActiveButton" />.
+Kita juga menambahkan
+<com:DocLink ClassPath="System.Web.UI.WebControls.TJavascriptLogger" Text="TJavascriptLogger" />
+yang akan sangat berguna untuk mengerti bagaimana Kontrol Aktif bekerja.
+</p>
+
+<h2 id="18022">Menjelajah Kontrol Aktif</h2>
+<p id="90098" class="block-content">Kita sudah mempunyai beberapa kesenangan sebelum kita melanjutkan dengan penyiapan bufer chat. Kita ingin melihat bagaimana kita dapat memutakhirkan halaman saat ini ketika kita menerima sebuah pesan. Pertama, kita menambahkan sebuah tombol
+<tt>OnClick</tt> event handler for the <tt>Send</tt>.
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_90041">
+&lt;com:TActiveButton ID="sendButton" CssClass="send-button"
+	Text="Send" OnClick="processMessage"/&gt;
+</com:TTextHighlighter>
+Dan metode pengendali event terkait dalam kelas <tt>Home.php</tt> (kita perlu untuk membuat file baru ini juga).
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90042">
+class Home extends TPage
+{
+    function processMessage($sender, $param)
+    {
+        echo $this->userinput->Text;
+    }
+}
+</com:TTextHighlighter>
+Jika Anda sekarang mengetikan sesuatu dalam kotak teks aplikasi utama dan mengklik tombol kirim, Anda seharusnya melihat apapun yang Anda ketikan muncul dalam konsol <tt>TJavascriptLogger</tt>.
+</p>
+
+<p id="90099" class="block-content">Untuk menambah atau menambahkan beberapa konten ke panel daftar pesan, kita perlu memakai beberapa metode dalam kelas
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TCallbackClientScript" Text="TCallbackClientScript" />
+yang tersedia melalui properti <tt>CallbackClient</tt> property dari obyek <tt>TPage</tt> saat ini. Sebagai contoh, kita kita dapat melakukan
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90043">
+function processMessage($sender, $param)
+{
+    $this->CallbackClient->appendContent("messages", $this->userinput->Text);
+}
+</com:TTextHighlighter>
+Ini adalah satu cara untuk memutakhirkan beberapa bagian dari halaman yang sudah ada selama callback (AJAX style event) dan akan menjadi cara utama yang akan kita gunakan untuk menerapkan aplikasi chat.
+</p>
+
+<h1 id="18015">Rekaman Aktif untuk tabel <tt>chat_buffer</tt></h1>
+<p id="90100" class="block-content">Untuk mengirimkan pesan ke seluruh pengguna yang tersambung kita memerlukan bufer atau menyimpan pesan untuk setiap pengguna. Kita dapat menggunakan database untuk membufer pesan. Tabel
+<tt>chat_buffer</tt> didefinisikan sebagai berikut.
+<com:TTextHighlighter Language="text" CssClass="source block-content" id="code_90044">
+CREATE TABLE chat_buffer
+(
+	id INTEGER PRIMARY KEY,
+	for_user VARCHAR(20) NOT NULL,
+	from_user VARCHAR(20) NOT NULL,
+	message TEXT NOT NULL,
+	created_on INTEGER NOT NULL DEFAULT "0"
+);
+</com:TTextHighlighter>
+Kelas <tt>ChatBufferRecord</tt> terkait disimpan sebagai
+<tt>App_Code/ChatBufferRecord.php</tt>.
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90045">
+class ChatBufferRecord extends TActiveRecord
+{
+	const TABLE='chat_buffer';
+
+    public $id;
+    public $for_user;
+    public $from_user;
+    public $message;
+    private $_created_on;
+
+    public function getCreated_On()
+    {
+        if($this->_created_on === null)
+            $this->_created_on = time();
+        return $this->_created_on;
+    }
+
+    public function setCreated_On($value)
+    {
+        $this->_created_on = $value;
+    }
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+</p>
+
+<h1 id="18016">Logika Aplikasi Chat</h1>
+<p id="90101" class="block-content">Akhirnya kita tiba di kanal logika aplikasi chat. Pertama, kita perlu menyimpan pesan yang diterima ke dalam bufer chat untuk <b>semua</b> pengguna saat ini. Kita menambahkan logika ini dalam kelas <tt>ChatBufferRecord</tt>.
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90046">
+public function saveMessage()
+{
+    foreach(ChatUserRecord::finder()->findAll() as $user)
+    {
+        $message = new self;
+        $message->for_user = $user->username;
+        $message->from_user = $this->from_user;
+        $message->message = $this->message;
+        $message->save();
+        if($user->username == $this->from_user)
+        {
+            $user->last_activity = time(); //update the last activity;
+            $user->save();
+        }
+    }
+}
+</com:TTextHighlighter>
+Terlebih dahulu kita mencari semua pengguna saat ini menggunkan metode penemu <tt>ChatUserRecord</tt>. Kemudian kita gandakan pesan dan menyompannya ke dalam database. Sebagai tambahan, kita mutakhirkan cap waktu aktivitas terakhir pengirim pesan. Kode di atas memperlihatkan kesederhanaan dan keringkasan dari penggunaan ActiveRecords untuk desain database sederhana.
+</p>
+
+<p id="90102" class="block-content">Logika berikutnya adalah untuk mengambil pesan pengguna dari bufer.
+Kita cukup mengambil semua pesan untuk nama pengguna tertentu dan membentuk pesan itu secar benar (ingat untuk meng-escape output guna menghindari serangan Penaskahan Situs-Silang).
+Setelah kita ambil pesan, kita hapus pesan yang diambil dan pesan lainnya yang lebih lama yang mungkin tertinggal dalam bufer.
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90047">
+public function getUserMessages($user)
+{
+    $content = '';
+    foreach($this->findAll('for_user = ?', $user) as $message)
+        $content .= $this->formatMessage($message);
+    $this->deleteAll('for_user = ? OR created_on < ?',
+                          $user, time() - 300); //5 min inactivity
+    return $content;
+}
+
+protected function formatMessage($message)
+{
+    $user = htmlspecialchars($message->from_user);
+    $content = htmlspecialchars($message->message);
+    return "<div class=\"message\"><strong>{$user}:</strong>"
+                  ." <span>{$content}</span></div>";
+}
+</com:TTextHighlighter>
+
+Untuk mengambil daftar dari pengguna saat ini (terformat), kita menambahkan logika kelas ini
+<tt>ChatUserRecord</tt>. Kita menghapus setiap pengguna yang sudah tidak aktif untuk beberapa waktu.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90048">
+public function getUserList()
+{
+    $this->deleteAll('last_activity < ?', time()-300); //5 min inactivity
+    $content = '<ul>';
+    foreach($this->findAll() as $user)
+        $content .= '<li>'.htmlspecialchars($user->username).'</li>';
+    $content .= '</ul>';
+    return $content;
+}
+</com:TTextHighlighter>
+
+<div class="note"><b class="tip">Catatan:</b>
+Untuk kemudahan kita membentuk pesan dalam kelas Rekaman Aktif. Untuk aplikasi besar, tugas pembentukan pesan ini harus dilakukan menggunakan komponen Prado (contohnya menggunakan TRepeater dalam template atau komponen kustom).
+</div>
+</p>
+
+<h1 id="18017">Menyatukan Semuanya</h1>
+<p id="90103" class="block-content">Sekarang waktunya untuk menyatukan alur aplikasi secara keseluruhan. Dalam <tt>Home.php</tt> kita memutakhirkan tombol <tt>Send</tt> pengendali event <tt>OnClick</tt> untuk menggunakan logika aplikasi yang baru saja kita implementasikan.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90049">
+function processMessage($sender, $param)
+{
+    if(strlen($this->userinput->Text) > 0)
+    {
+        $record = new ChatBufferRecord();
+        $record->message = $this->userinput->Text;
+        $record->from_user = $this->Application->User->Name;
+        $record->saveMessage();
+
+        $this->userinput->Text = '';
+        $messages = $record->getUserMessages($this->Application->User->Name);
+        $this->CallbackClient->appendContent("messages", $messages);
+        $this->CallbackClient->focus($this->userinput);
+    }
+}
+</com:TTextHighlighter>
+Kita cukup menyimpan pesan ke bufer chat dan kemudian meminta semua pesan untuk pengguna saat ini dan memutakhirkan pesan sisi klien menggunakan respon callback
+(gaya AJAX).
+</p>
+
+<p id="90104" class="block-content">Pada titik ini aplikasi sebenarnya sudah berfungsi, cuma tidak bersahabat. Jika Anda membuka dua browser berbeda, Anda seharusnya bisa berkomunikasi diantara dua pengguna kapan saja tombol <tt>Send</tt> diklik.
+</p>
+
+<p id="90105" class="block-content">Bagian berikutnya barangkali lebih rumit dan mengakali daripada tugas lainnya. Kita perlu untuk meningkatkan pengalaman pengguna. Pertama, kita menginginkan daftar pengguna saat ini juga. Maka kita menambahkan metode berikut ke <tt>Home.php</tt>, kita dapat memanggil metode ini kapan saja beberapa event callback dimunculkan, misalnya saat tombol  <tt>Send</tt> diklik.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90050">
+protected function refreshUserList()
+{
+    $lastUpdate = $this->getViewState('userList','');
+    $users = ChatUserRecord::finder()->getUserList();
+    if($lastUpdate != $users)
+    {
+        $this->CallbackClient->update('users', $users);
+        $this->setViewstate('userList', $users);
+    }
+}
+</com:TTextHighlighter>
+</p>
+
+<p id="90106" class="block-content">Sebenarnya, kita menginginkan untuk secara
+periodik memutakhirkan pesan dan daftar pengguna saat pengguna baru bergabung
+dan pesan baru yang datang dari pengguna lainnya. Maka kita perlu untuk menyegarkan
+daftar pesan juga.</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90051">
+function processMessage($sender, $param)
+{
+    ...
+    $this->refreshUserList();
+    $this->refreshMessageList();
+    ...
+}
+
+protected function refreshMessageList()
+{
+    //refresh the message list
+    $finder = ChatBufferRecord::finder();
+    $content = $finder->getUserMessages($this->Application->User->Name);
+    if(strlen($content) > 0)
+    {
+        $anchor = (string)time();
+        $content .= "<a href=\"#\" id=\"{$anchor}\"> </a>";
+        $this->CallbackClient->appendContent("messages", $content);
+        $this->CallbackClient->focus($anchor);
+    }
+}
+</com:TTextHighlighter>
+Jangkar menggunakan <tt>time()</tt> sebagai ID untuk titik fokus agar saat daftar
+pesan pada sisi klien diperoleh sangat lama, metode fokus akan menggulung daftar
+pesan ke pesan terbaru (ini bekerja baik pada umumnya browser).
+</p>
+
+<p id="90107" class="block-content">Selanjutnya, kita perlu mengalihkan pengguna
+kembali ke halaman login jika pengguna tidak aktif untuk beberapa waktum
+katakanlah 5 menit, kita menambahkan pemeriksaan ini ke setiap tahap dari masa hidup
+halaman. Mari menambahkannya ke tahapan <tt>onLoad()</tt>.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90052">
+public function onLoad($param)
+{
+    $username = $this->Application->User->Name;
+    if(!$this->Application->Modules['users']->usernameExists($username))
+    {
+        $auth = $this->Application->Modules['auth'];
+        $auth->logout();
+
+        //redirect to login page.
+        $this->Response->Redirect($this->Service->ConstructUrl($auth->LoginPage));
+    }
+}
+</com:TTextHighlighter>
+</p>
+
+<h1 id="18018">Memperbaiki Pengalaman Pengguna</h1>
+<p id="90108" class="block-content">Beberapa rincian terakhir secara periodeik memeriksa
+pesan baru dan menyegarkan daftar pengguna. Kita bisa melakukan ini dengan menanyakan
+server menggunakan kontrol
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TTimeTriggeredCallback" Text="TTimeTriggeredCallback" />.
+Kita menambahkan tt>TTimeTriggeredCallback</tt> ke <tt>Home.page</tt> dan memanggil
+metode pengendali <tt>refresh</tt> yang didefinisikan dalam <tt>Home.php</tt>.
+Kita setel interval pertanyaan menjadi 2 detik.
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_90053">
+&lt;com:TTimeTriggeredCallback OnCallback="refresh"
+	Interval="2" StartTimerOnLoad="true" /&gt;
+</com:TTextHighlighter>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_90054">
+function refresh($sender, $param)
+{
+    $this->refreshUserList();
+    $this->refreshMessageList();
+}
+</com:TTextHighlighter>
+</p>
+
+<p id="90109" class="block-content">Langkah terakhir memerlukan kita untuk menggunakan beberapa javascript. Kita menginginkan bahwa saat pengguna mengetikan beberapa teks dalam area teks dan menekan tombol <tt>Enter</tt>, kita menginginkannya untuk mengirimkan pesan tanpa mengklik tombol <tt>Send</tt>. Kita menambahkan beberapa javascript ke
+<tt>Home.page</tt>.
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_90055">
+&lt;com:TClientScript&gt;
+Event.observe($("&lt;%= $this->userinput->ClientID %&gt;"), "keypress", function(ev)
+{
+    if(Event.keyCode(ev) == Event.KEY_RETURN)
+    {
+        if(Event.element(ev).value.length > 0)
+            new Prado.Callback("&lt;%= $this->sendButton->UniqueID %&gt;");
+        Event.stop(ev);
+    }
+});
+&lt;/com:TClientScript&gt;
+</com:TTextHighlighter>
+Rincian sehubungan dengan javascript bisa dilihat dalam seksi
+<a href="?page=Advanced.Scripts">Pengenalan Javascript</a> pada tutorial cepat.
+</p>
+
+<p id="90110" class="block-content">Ini melengkapi tutorial untuk membuat aplikasi chat web menggunakan kerangka kerja Prado. Diharapkan Anda menikmatinya.
+</p>
+
+<div class="last-modified">$Id: AjaxChat.page 1846 2007-04-07 10:35:16Z wei $</div></com:TContent>

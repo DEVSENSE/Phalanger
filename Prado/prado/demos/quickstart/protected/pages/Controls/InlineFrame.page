@@ -1,0 +1,24 @@
+<com:TContent ID="body" >
+
+<h1 id="3301">TInlineFrame</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TInlineFrame" />
+
+<p id="380274" class="block-content">
+<tt>TInlineFrame</tt> displays an inline frame (&lt;iframe&gt;) on a Web page. The location of the frame content is specified by the <tt>FrameUrl</tt> property.
+</p>
+<p id="380275" class="block-content">
+The appearance of a <tt>TInlineFrame</tt> may be customized with the following properties, in addition to those inherited from <tt>TWebControl</tt>.
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>Align</tt> - the alignment of the frame.</li>
+  <li><tt>DescriptionUrl</tt> - the URI of a long description of the frame's contents.</li>
+  <li><tt>MarginWidth</tt> and <tt>MarginHeight</tt> - the number of pixels to use as the left/right margins and top/bottom margins, respectively.</li>
+  <li><tt>ScrollBars</tt> - whether scrollbars are provided for the inline frame. By default, it is <tt>Auto</tt>, meaning the scroll bars appear as needed. Setting it as <tt>None</tt> or <tt>Both</tt> to explicitly hide or show the scroll bars.</li>
+</ul>
+
+<p id="380276" class="block-content">
+The following samples show <tt>TInlineFrame</tt> with different property settings. The Google homepage is used as the frame content.
+</p>
+<com:RunBar PagePath="Controls.Samples.TInlineFrame.Home" />
+
+<div class="last-modified">$Id: InlineFrame.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

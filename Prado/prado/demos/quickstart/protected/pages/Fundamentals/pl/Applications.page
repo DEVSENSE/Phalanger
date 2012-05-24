@@ -1,0 +1,58 @@
+<com:TContent ID="body" >
+
+<h1 id="1201">Aplikacja</h1>
+<p id="160157" class="block-content">
+Aplikacja jest instancją <tt>TApplication</tt> lub klasy po niej dziedziczącej. Zarządza modułami dostarczającymi różnorodne funkcjonalności i ładuje je w razie potrzeby. Dostarcza użytkownikowu końcowemu serwisy. 
+Jest centralnym miejscem do przechowywania różnych parametrów używanych w aplikacji. W aplikacji PRADO instancja aplikacji jest jedynym globalnie dostepnym obiektem poprzez wywołania funkcji <tt>Prado::getApplication()</tt>.
+</p>
+<p id="160158" class="block-content">
+Aplikacje są konfigurowane poprzez <a href="?page=Configurations.AppConfig">konfigurację aplikacji</a>. Są zazwyczaj tworzone w skrypcie wejściowym w podobny do następującego sposób,
+<com:TTextHighlighter CssClass="source block-content" id="code_160071">
+require_once('/path/to/prado.php');
+$application = new TApplication;
+$application->run();
+</com:TTextHighlighter>
+gdzie metoda <tt>run()</tt> rozpoczyna działanie aplikacji obsługującej żądania użytkownika.
+</p>
+
+<h2 id="1202">Organizacja folderów</h2>
+<p id="160159" class="block-content">
+Minimalna aplikacja PRADO zawiera dwa pliki: plik wejściowy i plik szablonu. Muszą być one zorganizowane w następujący sposób.
+<img src="<%~directory.gif%>" class="figure"/>
+</p>
+<ul id="u2" class="block-content">
+<li><tt>wwwroot</tt> - główny katalog serwera WWW lub jeden z podkatalogów.</li>
+<li><tt>index.php</tt> - skrypt wejściowy aplikacji PRADO.</li>
+<li><tt>assets</tt> - katalog przechowujący opublikowane pliki prywatne. Zobacz sekcję <a href="?page=Advanced.Assets">assets</a>.</li>
+<li><tt>protected</tt> - podstawowa ścieżka aplikacji zawierająca jej dane oraz prywatne pliki skryptów. Ten folder powinien być niedostepny z zewnątrz lub powinien znajdować się poza strukturą serwera WWW.</li>
+<li><tt>runtime</tt> - application runtime storage path. Ten folder jest używany przez PRADO do przechowywania informacji o wykonywanej aplikacji, takich jak stan aplikacji, kedzowane dane, itd.</li>
+<li><tt>pages</tt> - podstawowa ścieżka przechowująca wszystkie strony PRADO. Zobacz sekcję <a href="?page=Fundamentals.Services">serwisy</a>.</li>
+<li><tt>Home.page</tt> - domyślna strona zwracana gdy użytkownik nie poda jawnie żadanej strony. Jest to plik szablonu strony. Nazwa pliku bez rozszerzenia jest nazwą strony. Klasą strony jest klasa <tt>TPage</tt>. Jeśli znajduje się tam również plik klasy <tt>Home.php</tt>, klasą strony staje się <tt>Home</tt>.</li>
+</ul>
+
+<p id="160160" class="block-content">
+Produktywna aplikacja PRADO zazwyczaj potrzebuje więcej plików. Może ona zawierać plik konfiguracji aplikacji <tt>application.xml</tt> w podstawej ścieżce aplikacji <tt>protected</tt>. Strony mogą być zorganizowane w foldery, część z nich może zawierać pliki konfiguracji strony <tt>config.xml</tt>. Aby dowiedzieć się wiecej, zajrzyć do sekcji <a href="?page=Configurations.Overview">konfiguracji</a>.
+</p>
+
+<h2 id="1203">Osadzanie aplikacji</h2>
+<p id="160161" class="block-content">
+Osadzanie aplikacji PRADO zazwyczaj wiąże się z kopiowaniem folderów. Na przykład, aby osadzić powyższą minimalną wersję aplikacji na innym serwerze należy wykonać następujące kroki.
+</p>
+<ol>
+<li>Skopiuj zawartość z <tt>wwwroot</tt> do dostępnego poprzez WWW foldera na nowym serwerze.</li>
+<li>Zmodyfikuj skrypt wejściowy <tt>index.php</tt> tak by prawidłowo inkludował plik <tt>prado.php</tt>.</li>
+<li>Usuń całą zawartość z folderów <tt>assets</tt> i <tt>runtime</tt> i upewnij się, że oba umożliwiają zapis procesom serwera WWW.</li>
+</ol>
+
+<h2 id="1204">Cykle życia aplikacji</h2>
+<p id="160162" class="block-content">
+Tak jak cykle życia strony tak aplikacja również posiada cykle życia. Moduły aplikacji mogą rejestrować zdarzenia dla cykli życia. 
+Kiedy aplikacja znajduje się w konkretnym cyklu i wywołuje odpowiednie zdarzenie, zarejstrowana metoda modułu jest wywoływana automatycznie. 
+Moduły załaczone w oficjalnym wydaniu PRADO, takie jak <tt>TAuthManager</tt>, używają tego sposobu aby wyknać swoje zadania.
+</p>
+<p id="160163" class="block-content">
+Cykle życia aplikacji mogą zostać przedstawione następująco:
+</p>
+<img src="<%~applifecycles.gif%>" />
+
+<div class="last-modified">$Id: Applications.page 2344 2007-12-17 01:49:31Z aztech $</div></com:TContent>

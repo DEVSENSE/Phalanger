@@ -1,0 +1,28 @@
+<%@ Title="My Blog - Login" %>
+
+<com:TContent ID="Main">
+ 
+<h1>Login</h1>
+
+<span>Username:</span>
+<com:TRequiredFieldValidator 
+	ControlToValidate="Username"
+	ErrorMessage="Please provide your username." 
+	Display="Dynamic" />
+<br/>
+<com:TTextBox ID="Username" />
+
+<br/>
+<span>Password:</span>
+<com:TCustomValidator
+	ControlToValidate="Password"
+	ErrorMessage="Your entered an invalid password."
+	Display="Dynamic"
+	OnServerValidate="validateUser" />
+<br/>
+<com:TTextBox ID="Password" TextMode="Password" />
+
+<br/>
+<com:TButton Text="Login" OnClick="loginButtonClicked" />
+
+</com:TContent>

@@ -1,0 +1,48 @@
+<com:TContent ID="body" >
+
+<h1 id="8005">New Features</h1>
+
+<p id="40005" class="block-content">
+This page summarizes the main new features that are introduced in each PRADO release.
+</p>
+
+<h2 id="8001">Version 3.1.3</h2>
+<ul>
+<li>Added <a href="?page=ActiveControls.DragDrop">Drag and drop controls</a></li>
+<li>Added TActiveDatePicker control</li>
+</ul>
+
+<h2 id="8002">Version 3.1.2</h2>
+<ul>
+<li>Added a new active control <a href="?page=ActiveControls.ActivePager">TActivePager</a> that allows to paginate a databound control with an ajax callback.</li>
+<li>Added TFirebugLogRoute to send logs to the Firebug console</li>
+</ul>
+
+<h2 id="8003">Version 3.1.1</h2>
+<ul>
+<li>Added a new control <a href="?page=Controls.TabPanel">TTabPanel</a> that displays tabbed views.</li>
+<li>Added a new control <a href="?page=Controls.Keyboard">TKeyboard</a> that displays a virtual keyboard for text input.</li>
+<li>Added a new control <a href="?page=Controls.Captcha">TCaptcha</a> that displays a CAPTCHA to keep spammers from signing up for certain accounts online. A related validator <tt>TCaptchaValidator</tt> is also implemented.</li>
+<li>Added a new control <a href="?page=Controls.Slider">TSlider</a> that displays a slider which can be used for numeric input.</li>
+<li>Added a new control <a href="?page=Controls.Conditional">TConditional</a> that conditionally displays one of the two kinds of content.</li>
+<li>Added Oracle DB support to Active Record.</li>
+<li>Added support to TDataGrid to allow grouping consecutive cells with the same content.</li>
+<li>Added support to allow configuring page properties and authorization rules using <a href="?page=Configurations.PageConfig">relative page paths</a> in application and page configurations. Added support to allow <a href="?page=Advanced.Auth">authorization</a> based on remote host address.</li>
+<li>Added a new page state persister <tt>TCachePageStatePersister</tt>. It allows page state to be stored using a cache module (e.g. TMemCache, TDbCache, etc.)
+<li>Added support to the <a href="?page=Advanced.Auth">auth framework</a> to allow remembering login.</li>
+<li>Added support to display a prompt item in TDropDownList and TListBox (something like 'Please select:' as the first list item.)</li>
+<li>Added support to <a href="?page=Database.ActiveRecord">column mapping in Active Record</a>.</li>
+</ul>
+
+<h2 id="8006">Version 3.1.0</h2>
+<ul>
+<li>Added seamless AJAX support. A whole array of AJAX-enabled controls, called active controls, are introduced. The usage of these active controls is very similar to their non-AJAX counterparts, i.e., plug in and use. For more details, see the tutorial about <a href="?page=ActiveControls.Home">active controls</a>.</li>
+<li>Added complete database support. </li>
+<li>Added new controls, modules and services, including <a href="?page=Services.SoapService">TSoapService</a>, <a href="?page=Controls.OutputCache">TOutputCache</a>, TSessionPageStatePersister, TFeedService, TJsonService, cache dependency classes, TXmlTransform.</li>
+<li>Enhanced some data controls with renderers. Renderer enables reusing item templates that are commonly found in <tt>TRepeater</tt>, <tt>TDataList</tt> and <tt>TDataGrid</tt>, and makes the configuration on these controls much cleaner. For more details about renders, see the updated tutorials on <a href="?page=Controls.Repeater"><tt>TRepeater</tt></a>, <a href="?page=Controls.DataList"><tt>TDataList</tt></a> and <a href="?page=Controls.DataGrid"><tt>TDataGrid</tt></a>.</li>
+<li>Added support to allow <a href="?page=Configurations.AppConfig">including external application configurations</a>. Enhanced template syntax to facilitate <a href="?page=Configurations.Templates1">subproperty configuration</a>.</li>
+<li>Added TDbUserManager and TDbUser to simplify <a href="?page=Advanced.Auth">authentication and authorization</a> with user accounts stored in a database.</li>
+</ul>
+
+<div class="last-modified">$Id: NewFeatures.page 2923 2011-05-22 14:43:11Z ctrlaltca@gmail.com $</div>
+</com:TContent>

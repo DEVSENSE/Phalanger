@@ -1,0 +1,32 @@
+<com:TContent ID="body" >
+
+<h1 id="156011">TActiveDropDownList</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveDropDownList" />
+
+<p class="block-content">
+<tt>TActiveDropDownList</tt> is the active counterpart to the original <tt>TDropDownList</tt> control.
+</p>
+
+<p class="block-content">
+The <tt>AutoPostBack</tt> property is set to true by default.
+Thus, when the drop down list selection is changed the <tt>OnCallback</tt> event is
+raised after <tt>OnSelectedIndexChanged</tt> event.
+</p>
+
+<p class="block-content">
+With <tt>ActiveControl.EnabledUpdate</tt>
+set to true (default is true), changes to the selection, <b>after</b> OnLoad event has
+been raised, will be updated on the client side.
+</p>
+
+<p class="block-content">
+List items can be changed dynamically during a callback request.
+</p>
+
+<p class="block-content">
+Please refer to the original documentation of <a href="?page=Controls.List">TDropDownList</a> for usage.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveDropDownList.Home" />
+
+<div class="last-modified">$Id: ActiveDropDownList.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

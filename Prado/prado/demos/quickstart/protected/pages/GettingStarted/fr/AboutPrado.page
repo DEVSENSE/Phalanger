@@ -1,0 +1,71 @@
+<com:TContent ID="body" >
+<h1 id="201">Qu'est-ce que PRADO ?</h1>
+<p id="20003" class="block-content">
+PRADO est un framework de programmation évènementielle basé sur des composants pour développer des applications Web en PHP5. PRADO signifie <b>P</b>HP <b>R</b>apid <b>A</b>pplication <b>D</b>evelopment <b>O</b>bject-oriented.
+</p>
+<p id="20004" class="block-content">
+Le but principal de PRADO est la réutilisation maximale de code dans la programmation Web. Par réutilisation, cela ne se limite pas à son propre code mais aussi celui d'autres développeurs, de manière la plus aisée possible. Cela est très important car cela évite de réinventer la roue et peut donc réduire de façon significative le temps de développement. L'introduction du concept de composant provient de cela.
+</p>
+<p id="20005" class="block-content">
+Afin de parvenir au but ci-dessus, PRADO stipule un protocole d'écriture et d'utilisation des composants afin de construire des applications Web. Un composant est une brique logicielle qui peut être réutilisée avec quelques modifications. De nouveaux composants peuvent ainsi être construits en utilisant des composants existants.
+</p>
+<p id="20006" class="block-content">
+Afin de faciliter l'intéraction avec les composants, PRADO implémente une programmation évènementielle qui permet la délégation des comportements aux composants. Les actions des utilisateurs comme le click sur un bouton de type submit sont capturées comme des évènements serveurs. Des méthodes ou fonctions peuvent être attachées à ces évènements et lorsque l'évènement se produit, elles sont automatiquement invoquées afin de répondre à ces même évènements. Comparé à la traditionnelle programmation Web où les développeurs doivent utiliser les variables POST ou GET, la programmation évènementielle aide les développeurs à se consacrer à la logique et réduit de façon significative le code répétitif.
+</p>
+<p id="20007" class="block-content">
+Développer une application Web avec PRADO se résume à instancier des composants existants, les configurer en définissant leurs propriétés, leur affecter des fonctions répondants à ces mêmes évènements, et ainsi composer les pages de l'application. Cela est très similaire aux développants à l'aide de RAD, comme Borland Delphi et Microsoft Visual Basic, qui sont utilisés pour développer des applications GUI.
+</p>
+
+<h2 id="202">Pourquoi PRADO ?</h2>
+<p id="20008" class="block-content">
+PRADO est le plus souvent cité comme un framework unique. En fait, il est tellement unique qu'il peut changer votre programmation PHP en une tâche amusante. La liste suivante est un rapide résumé des principales fonctionnalités de PRADO,
+</p>
+<ul id="prado-features" class="block-content">
+<li>Réutilisation - Le code provenant du protocole de composant PRADO est réellement réutilisable. Cela bénéficie à l'équipe de développement dans le sens où ils peuvent réutiliser leur travail précédent afin de l'intégrer dans d'autres parties de façon aisée.</li>
+<li>Programmation évènementielle - Les actions de l'utilisateur, comme un click sur un bouton de type submit, sont capturées comme évènement serveur afin que le développeur se consacre principalement à la façon de gérer ces interactions.</li>
+<li>Intégration des équipes - La logique et la présentation sont séparées. Des thèmes peuvent être appliqués aux applications PRADO.</li>
+<li>Contrôles Web puissants - PRADO possède un large éventail de composants afin de gérer les interfaces Web. Des pages Web très interactives peuvent être crées avec peu de lignes de code. Par exemple, le seul composant "datagrid" (ou grille de données) permet de créer rapidement une page présentant un tableau paginé triable qui permet l'édition et la suppression de lignes de données.
+<li>Support robuste des base de données - Depuis la version 3.1, PRADO a été doté d'un support complet des base de données qui s'intègre totalement avec les autres parties du framework. Selon la complexité des objets métiers, votre choix pourra porter vers une simple couche d'accès PDA, vers les largements connus "Active Record" ou un mapping complet des objets métiers à travers un schéma SqlMap.</li>
+<li>Support de AJAX - Utiliser AJAX dans PRADO n'a jamais été aussi facile qu'avec les innovants "active controls" introduits depuis la version 3.1. Vous pouvez facilement créer une application intégrant de l'AJAX sans écrire une seule ligne de javascript. En fait, l'utilisation des "active controls" n'est pas différente des contrôles Web standards.</li>
+<li>Support I18N et L10N - PRADO intègre un support complet afin de contruire des applications dans plusieurs langues et plusieurs locales.</li>
+
+<li>Rendu XHTML - Les pages Web générées par PRADO sont "XHTML-compliant" et ainsi conformes aux standards W3C.</li>
+<li>Intégration de l'existant - PRADO est un framework généric se focalisant sur la couche de présentation. Cela n'empêche en rien les développeurs d'utiliser la plupart des bibliothèques existantes. Par exemple, on peut utiliser AdoDB ou Creole afin de gérer l'accès données dans son application PRADO.
+<li>Autres fonctionnalités - Puissante gestion des erreurs et/ou exceptions et enregistrement des messages; Cache générique et sélectif; Gestion des erreurs customisable et localisable; Authentification et authorisation extensible; Mesures de sésurité comme prévention des cross-site script (CSS), protection des cookies, etc...</li>
+</ul>
+
+<h2 id="203">Pour quelles applications PRADO est-il adapté ?</h2>
+<p id="20009" class="block-content">
+PRADO est le plus adapté pour des applications Web très interactives. Il peut être utilisé pour développer des systèmes simples comme un blog, ou complexes comme un système de gestion de contenu (CMS), ou une solution complète de e-commerce. Puisque PRADO est basé sur une programmation orientée objet à travers sa méthodologie de composants, il convient particulièrement bien pour le travail en équipe et le développement d'entreprise.
+</p>
+<p id="20011" class="block-content">
+PRADO intègre un système de cache complet qui peut aider les applications à tenir des charges de traffic élevées. Son architecture modulaire permet aux développeurs d'utiliser des modules de cache différents pour chaque besoin. Le cache peut s'effectuer sur toute ou partie d'une page Web.
+</p>
+
+<h2 id="204">Comment est PRADO comparé à d'autres Frameworks ?</h2>
+<p id="20012" class="block-content">
+PRADO est souvent cité comme un framework unique. Sa particularité est principalement liée à la gestion des composants et à la programmation évènementielle qu'il essaie de promouvoir. Bien que ce paradigme ne soit pas nouveau dans la programmation d'application GUI, PRADO est peut-être le premier framework PHP à l'intégrer.
+</p>
+<p id="20013" class="block-content">
+La plupart des frameworks PHP se focalise principalement sur la séparation des couches de présentation et de la logique en utilisant le design pattern MVC (Model-Vue-Contrôleur). PRADO atteint le même but en imposant que la logique se situe dans des classes et la présentation dans des templates. PRADO fait beaucoup plus sur d'autres aspects que le MVC. Il comble des manque dans la programmation PHP avec son modèle de composants Web riches, son support robuste des bases de données, sa gestion d'erreur flexible et beaucoup d'autre...
+</p>
+
+<h2>PRADO est-il assez stable ?</h2>
+<p>
+Oui. Le projet PRADO a débuté en août 2004. Beaucoup de tests unitaires ont été écrits et fréquemment éxecutés afin d'assurer sa qualité. Il a été utilisé par des milliers de développeurs et beaucoup d'applications sont basés sur celui-ci. Les bugs et les demandes de fonctionnalités sont gérées à travers le système TRAC, nous avons une grande communauté d'utilisateurs et une équipe de développement afin d'assurer que toutes les questions sont répondues en un temps record.
+</p>
+
+<h2 id="205">Histoire de PRADO</h2>
+<p id="20014" class="block-content">
+L'inspiration originale de PRADO vient de Apache Tapestry. Pendant le design et l'implémentation, j'ai emprunté beaucoup d'idées de Borland Delphi et Microsoft ASP.NET. La première version de PRADO a vue le jour en juin 2004 et était écrite en PHP4. Conduit par le concours de codage de Zend, j'ai réécrit PRADO en PHP5, qui est un changement majeur grâce au nouveau modèle objet fourni par PHP5. PRADO a remporté le grand prix du concours grâce aux votes du public ainsi que du jury.
+</p>
+<p id="20015" class="block-content">
+En août 2004, PRADO a commencé à être hébergé sur SourceForge en projet Open Source. Peu après, le site du projet <a href="http://www.xisc.com/">xisc.com</a> a été annoncé au public. Grâce au fantastique support de l'équipe de développement et des utilisateurs de PRADO, PRADO a évolué en version 2.0 mi 2005. Dans cette version, Wei Zhuo a contribué à PRADO avec le support I18N et L10N.
+</p>
+<p id="20016" class="block-content">
+En mai 2005, nous avons décidé de réécrire complètement le framework PRADO afin de résoudre quelques problèmes trouvés dans la version 2.0 et ajouter des fonctionnalités disponibles dans Microsoft ASP.NET 2.0. Après près d'un an de dur labeur et 50.000 lignes de nouveau code, la version 3.0 était finalement disponible en avril 2006.
+</p>
+<p id="20017" class="block-content">
+Au démarrage de la version 3.0, des efforts significatifs ont été fournis afin d'assurer la qualité et la stabilité de PRADO. Si PRADO v2.x et v1.x sont la preuve du concept, nous pouvons affirmer que PRADO v3.x est un projet qui est désormais adapté pour le développement d'applications métiers.
+</p>
+<div class="last-modified">$Id: AboutPrado.page 1698 2007-02-17 17:30:23Z mickymax $</div></com:TContent>

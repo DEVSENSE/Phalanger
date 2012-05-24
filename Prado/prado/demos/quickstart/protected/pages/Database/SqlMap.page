@@ -1,0 +1,266 @@
+<com:TContent ID="body">
+<!-- $Id $ -->
+
+<h1 id="140062">Data Mapper</h1>
+<com:SinceVersion Version="3.1a" />
+<p id="700505" class="block-content">Data Mappers moves data between objects and a database while keeping them
+    independent of each other and the mapper itself. If you started with
+    <a href="?page=Database.ActiveRecord">Active Records</a>, you may eventually
+     faced with more complex business
+    objects as your project progresses. When you build an object model with a
+     lot of business logic it's valuable to use these mechanisms to better organize
+     the data and the behavior that goes with it. Doing so leads to variant schemas;
+     that is, the object schema and the relational schema don't match up.
+</p>
+
+<p id="700506" class="block-content">The Data Mapper separates the in-memory objects from the database. Its responsibility
+    is to transfer data between the two and also to isolate them from each other.
+    With Data Mapper the in-memory objects needn't know even that there's a database
+    present; they need no SQL interface code, and certainly no knowledge of the
+     database schema. (The database schema is always ignorant of the objects that use it.)
+</p>
+
+<h2 id="140063">When to Use It</h2>
+<p id="700507" class="block-content">The primary occasion for using Data Mapper is when you want the database schema
+     and the object model to evolve independently. Data Mapper's primary benefit is
+     that when working on the business (or domain) objects you can ignore the database, both in
+     design and in the build and testing process. The domain objects have no idea
+     what the database structure is, because all the correspondence is done by the mappers.
+</p>
+
+<p id="700508" class="block-content">This helps you in the code because you can understand and work with the domain objects
+    without having to understand how they're stored in the database. You can modify the
+    business models or the database without having to alter either. With complicated
+    mappings, particularly those involving <b>existing databases</b>, this is very valuable.
+</p>
+
+<p id="700509" class="block-content">The price, of course, is the extra layer that you don't get with
+    <a href="?page=Database.ActiveRecord">Active Record</a>,
+    so the test for using these patterns is the complexity of the business logic.
+    If you have fairly simple business logic, an <a href="?page=Database.ActiveRecord">Active Record</a>
+    will probably work.
+    For more complicated logic a Data Mapper may be more suitable.
+</p>
+
+<h2 id="140064">SqlMap Data Mapper</h2>
+<p id="700510" class="block-content">The SqlMap DataMapper framework makes it easier to use a database with a PHP application.
+    SqlMap DataMapper couples objects with stored procedures or SQL statements using
+    a XML descriptor. Simplicity is the biggest advantage of the SqlMap DataMapper over
+    object relational mapping tools. To use SqlMap DataMapper you rely on your own objects,
+    XML, and SQL. There is little to learn that you don't already know.
+    With SqlMap DataMapper you have the full power of both SQL and stored procedures at
+    your fingertip
+</p>
+
+<p id="700511" class="block-content">
+    <img src=<%~ diagram.png %> alt="SqlMap Data Mapper Overview" id="fig:sqlmap.png" class="figure"/>
+
+    Here's a high level description of the work flow illustrated in the figure above.
+    Provide a parameter, either as an object or a primitive type. The parameter can be
+     used to set runtime values in your SQL statement or stored procedure. If a runtime value
+    is not needed, the parameter can be omitted.
+</p>
+<p id="700512" class="block-content">Execute the mapping by passing the parameter and the name you gave the statement or
+    procedure in your XML descriptor. This step is where the magic happens. The framework
+     will prepare the SQL statement or stored procedure, set any runtime values using your
+    parameter, execute the procedure or statement, and return the result.
+</p>
+
+<p id="700513" class="block-content">In the case of an update, the number of rows affected is returned. In the case of a
+     query, a single object, or a collection of objects is returned. Like the parameter,
+    the result object, or collection of objects, can be a plain-old object or a primitive PHP type.
+</p>
+
+<h2 id="140065">Setting up a database connection and initializing the SqlMap</h2>
+<p id="700514" class="block-content">
+    A database connection for SqlMap can be set as follows.
+    See <a href="?page=Database.DAO">Establishing Database Connection</a> for
+    futher details regarding creation of database connection in general.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700166">
+//create a connection and give it to the SqlMap manager.
+$dsn = 'pgsql:host=localhost;dbname=test'; //Postgres SQL
+$conn = new TDbConnection($dsn, 'dbuser','dbpass');
+$manager = new TSqlMapManager($conn);
+$manager->configureXml('my-sqlmap.xml');
+$sqlmap = $manager->getSqlMapGateway();
+</com:TTextHighlighter>
+</p>
+
+<p id="700515" class="block-content">
+    The <tt>TSqlMapManager</tt> is responsible for setting up the database connection
+    and configuring the SqlMap with given XML file(s). The <tt>configureXml()</tt>
+    method accepts a string that points to a SqlMap XML configuration file. Once
+    configured, call the <tt>getSqlMapGateway()</tt> method to obtain an instance
+    of the SqlMap gateway interface (use this object to insert/delete/find records).
+</p>
+
+<p id="700516" class="block-content">
+    SqlMap database connection can also be configured using a <tt>&lt;module&gt;</tt>
+    tag in the <a href="?page=Configurations.AppConfig">application.xml</a>
+    or <a href="?page=Configurations.PageConfig">config.xml</a> as follows.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_700167">
+<modules>
+  <module id="my-sqlmap" class="System.Data.SqlMap.TSqlMapConfig"
+        EnableCache="true" ConfigFile="my-sqlmap.xml" >
+    <database ConnectionString="pgsql:host=localhost;dbname=test"
+        Username="dbuser" Password="dbpass" />
+  </module>
+</modules>
+</com:TTextHighlighter>
+</p>
+
+<p id="700517" class="block-content">
+    The <tt>ConfigFile</tt> attribute should point to a SqlMap configuration file
+    (to be detailed later) either using absolute path, relative path or the
+    Prado's namespace dot notation path (must omit the ".xml" extension).
+
+    <div class="tip"><b class="note">Tip:</b>
+        The <tt>EnableCache</tt> attribute when set to "true" will cache the
+        parsed configuration. You must clear or disable the cache if you
+        make changes to your configuration file.
+        A <a href="?page=Advanced.Performance#6402">cache
+        module</a> must also be defined for the cache to function.
+    </div>
+</p>
+
+<p id="700518" class="block-content">To obtain the SqlMap gateway interface from the &lt;module&gt; configuration, simply
+    do, for example,
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700168">
+class MyPage extends TPage
+{
+    public function onLoad($param)
+    {
+        parent::onLoad($param);
+        $sqlmap = $this->Application->Modules['my-sqlmap']->Client;
+        $sqlmap->queryForObject(...); //query for some object
+    }
+}
+</com:TTextHighlighter>
+</p>
+
+<h2 id="140066">A quick example</h2>
+<p id="700519" class="block-content">Let us
+    consider the following "users" table that contains two columns named "username" and "email",
+    where "username" is also the primary key.
+<com:TTextHighlighter Language="sql" CssClass="source block-content" id="code_700169">
+CREATE TABLE users
+(
+    username VARCHAR( 20 ) NOT NULL ,
+    email VARCHAR( 200 ) ,
+    PRIMARY KEY ( username )
+);
+</com:TTextHighlighter>
+</p>
+<p id="700520" class="block-content">Next we define our plain <tt>User</tt> class as follows. Notice that
+    the <tt>User</tt> is very simple.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700170">
+class User
+{
+    public $username;
+    public $email;
+}
+</com:TTextHighlighter>
+</p>
+</p>
+
+<p id="700521" class="block-content">Next, we need to define a SqlMap XMl configuration file, lets name
+    the file as <tt>my-sqlmap.xml</tt>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_700171">
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMapConfig>
+    <select id="SelectUsers" resultClass="User">
+        SELECT username, email FROM users
+    </select>
+</sqlMapConfig>
+</com:TTextHighlighter>
+</p>
+<p id="700522" class="block-content">The &lt;select&gt; tag returns defines an SQL statement. The <tt>id</tt>
+    attribute will be used as the identifier for the query. The <tt>resultClass</tt>
+    attribute value is the name of the class the the objects to be returned.
+    We can now query the objects as follows:
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700172">
+//assume that $sqlmap is an TSqlMapGateway instance
+$userList = $sqlmap->queryForList("SelectUsers");
+
+//Or just one, if that's all you need:
+$user = $sqlmap->queryForObject("SelectUsers");
+</com:TTextHighlighter>
+</p>
+
+<p id="700523" class="block-content">The above example shows demonstrates only a fraction of the capabilities
+    of the SqlMap Data Mapper. Further details can be found in the
+    <a href="http://www.pradosoft.com/demo/sqlamp/">SqlMap Manual</a>.
+</p>
+
+<h2 id="140067">Combining SqlMap with Active Records</h2>
+<p id="700524" class="block-content">The above example may seem trival and it also seems that there is
+    alot work just to retrieve some data. However, notice that the <tt>User</tt>
+    class is totally unware of been stored in the database, and the database is
+    unware of the <tt>User</tt> class.
+</p>
+<p id="700525" class="block-content">
+    One of advantages of SqlMap is the
+    ability to map complex object relationship, collections from an existing
+    database. On the other hand, <a href="?page=Database.ActiveRecord">Active Record</a>
+    provide a very simple way
+    to interact with the underlying database but unable to do more complicated
+    relationship or collections. A good compromise is to use SqlMap to retrieve
+    complicated relationships and collections as Active Record objects and then using
+    these Active Records to do the updates, inserts and deletes.
+</p>
+<p id="700526" class="block-content">Continuing with the previous example, we change the definition of the
+    <tt>User</tt> class to become an Active Record.
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700173">
+class UserRecord extends TActiveRecord
+{
+	const TABLE='users'; //table name
+
+    public $username; //the column named "username" in the "users" table
+    public $email;
+
+    /**
+     * @return TActiveRecord active record finder instance
+     */
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+</p>
+
+<p id="700527" class="block-content">We also need to change the definition of the SqlMap XML configuration. We
+    just need to change the value of <tt>resultClass</tt> attribute to <tt>UserRecord</tt>.
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_700174">
+<?xml version="1.0" encoding="utf-8" ?>
+<sqlMapConfig>
+    <select id="SelectUsers" resultClass="UserRecord">
+        SELECT username, email FROM users
+    </select>
+</sqlMapConfig>
+</com:TTextHighlighter>
+</p>
+
+
+<p id="700528" class="block-content">The PHP code for retrieving the users remains the same, but SqlMap
+    returns Active Records instead, and we can take advantage of the Active Record methods.
+
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_700175">
+//assume that $sqlmap is an TSqlMapGateway instance
+$user = $sqlmap->queryForObject("SelectUsers");
+
+$user->email = 'test@example.com'; //change data
+$user->save(); //save it using Active Record
+</com:TTextHighlighter>
+</p>
+
+<h2 id="140068">References</h2>
+<ul id="u1" class="block-content">
+    <li>Fowler et. al. <i>Patterns of Enterprise Application Architecture</i>,
+    Addison Wesley, 2002.</li>
+    <li>iBatis Team. <i>iBatis Data Mapper</i>,
+    <a href="http://ibatis.apache.org">http://ibatis.apache.org</a>.</li>
+</ul>
+
+<div class="last-modified">$Id: SqlMap.page 2136 2007-08-20 12:09:02Z xue $</div></com:TContent>

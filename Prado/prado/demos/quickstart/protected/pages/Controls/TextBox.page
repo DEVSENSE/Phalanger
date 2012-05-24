@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="4501">TTextBox</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TTextBox" />
+
+<p id="520315" class="block-content">
+<tt>TTextBox</tt> displays a text box on a Web page. The content in the text box is determined by the <tt>Text</tt> property. You can create a <tt>SingleLine</tt>, a <tt>MultiLine</tt>, or a <tt>Password</tt> text box by setting the <tt>TextMode</tt> property. The <tt>Rows</tt> and <tt>Columns</tt> properties specify their dimensions. If <tt>AutoPostBack</tt> is true, changing the content in the text box and then moving the focus out of it will cause postback action.
+</p>
+<com:RunBar PagePath="Controls.Samples.TTextBox.Home" />
+
+<div class="last-modified">$Id: TextBox.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

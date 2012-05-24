@@ -1,0 +1,25 @@
+<com:TContent ID="body" >
+
+<h1 id="3101">TImageMap</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TImageMap" />
+
+<p id="360270" class="block-content">
+<tt>TImageMap</tt> Mewakili sebuah gambar pada halaman Web dengan bagian titik panas (hotspot) predefinisi yang dapat merespon secara berbeda saat pengguna mengkliknya. Tergantung pada <tt>HotSpotMode</tt> dari bagian hotspot, mengklik pada hotspot akan memicu postback atau mengendalikan URL yang ditetapkan.
+</p>
+<p id="360271" class="block-content">
+Setiap hotspot dijelaskan menggunakan obyek <tt>THotSpot</tt> dan dipelihara dalam koleksi <tt>HotSpots</tt> pada <tt>TImageMap</tt>. Sebuah hotspot dapat berupa lingkaran, persegi panjangn, poligon, dll.
+</p>
+<p id="360272" class="block-content">
+Hotspot dapat ditambahkan ke <tt>TImageMap</tt> melalui properti <tt>HotSpots</tt> atau dalam template seperti berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_360106">
+&lt;com:TImageMap ... &gt;
+  &lt;com:TCircleHotSpot ... /&gt;
+  &lt;com:TRectangleHotSpot ... /&gt;
+  &lt;com:TPolygonHotSpot ... /&gt;
+&lt;/com:TImageMap&gt;
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="Controls.Samples.TImageMap.Home" />
+
+<div class="last-modified">$Id: ImageMap.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

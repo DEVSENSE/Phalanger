@@ -1,0 +1,216 @@
+<com:TContent ID="body" >
+
+<h1 id="4901">Kontrol Validasi</h1>
+
+<p id="560337" class="block-content">
+Kontrol validasi disebut validator, melakukan validasi terhadap nilai data yang dimasukan-pengguna saat ia ditulis kembali ke server. Validasi dipicu oleh kontrol postback, seperti properti <tt>TButton</tt>, <tt>TLinkButton</tt> atau <tt>TTextBox</tt> (di bawah mode <tt>AutoPostBack</tt>) di mana properti <tt>CausesValidation</tt> adalah true.
+</p>
+
+<p id="560338" class="block-content">
+Validasi selalu dilakukan pada sisi server. Jika <tt>EnableClientScript</tt> adalah true dan browser klien mendukung JavaScript, validator juga dapat melakukan validasi sisi-klien. Validasi sisi-klien akan memvalidasi input pengguna sebelum ia mengirimkannya ke server. Data formulir tidak akan dikirmkan jika ada kesalahan terdeteksi. Ini menghindari informasi yang diperlukan untuk validasi sisi-server.
+</p>
+
+<p id="560339" class="block-content">
+Validator dengan berbagai set properti umum yang didefinisikan dalam basis kelas <tt>TBaseValidator</tt> dan didaftarkan sebagai berikut,
+</p>
+<ul id="u1" class="block-content">
+<li><tt>ControlToValidate</tt> menetapkan kontrol input yang divalidasi. Properti ini harus disetel ke path ID dari kontrol input. Path ID adalah ID titik-terkoneksi dari kontrol yang menjangkai dari tempat penamaan validator ke kontrol sasaran.</li>
+<li><tt>ErrorMessage</tt> menetapkan pesan kesalahan untuk ditampilkan seandainya validator terkait gagal.</li>
+<li><tt>Text</tt> mirip dengan <tt>ErrorMessage</tt>. Jika keduanya ada, <tt>Text</tt> diambil lebih dulu. Properti ini berguna saat dipakai bersama dengan <tt>TValidationSummary</tt>.</li>
+<li><tt>ValidationGroup</tt> menetapkan di grup mana validator berada. Validator hanya akan melakukan validasi jika postback saat ini dipicu oleh kontrol yang berada dalam grup yang sama.</li>
+<li><tt>EnableClientScript</tt> menetapkan apakah validasi harus dilakukan di sisi-klien atau server. Standarnya dihidupkan.</li>
+<li><tt>Display</tt> menetapkan bagaimana pesan kesalahan ditampilkan. Ia mengambil salah satu dari tiga nilai berikut ini:
+    <ul>
+    <li><tt>None</tt> - pesn kesalahan tidak akan ditampilkan meskipun validator gagal.</li>
+    <li><tt>Static</tt> - spasi untuk menampilkan pesan kesalahan disiapkan. Oleh karena itu, menampilkan pesan kesalahan tidak akan mengubah tata letak halaman anda yang sudah ada.</li>
+    <li><tt>Dynamic</tt> - spasi untuk menampilkanpesan kesalahan TIDAK disiapkan. Oleh karena itu, menampilkan pesan kesalahan akan menggeser tata letak halaman anda (biasanya ke bawah).</li>
+    </ul>
+</li>
+<li><tt>ControlCssClass</tt> - kelas CSS yang diterapkan ke kontrol yang sedang divalidasi seandainya validasi gagal.</li>
+<li><tt>FocusOnError</tt> - menyetel fokus di tempat validasi jika validasi gagal. Standarnya false.</li>
+<li><tt>FocusElementID</tt> - ID dari elemen HTML yang akan menerima fokus jika validasi gagal dan <tt>FocusOnError</tt> adalah true.</li>
+</ul>
+
+<h1 id="116008">Kontrol Validasi Prado</h1>
+<a name="TRequiredFieldValidator"></a>
+<h2 id="4902">TRequiredFieldValidator</h2>
+<p id="560340" class="block-content">
+TRequiredFieldValidator memastikan bahwa pengguna memasukan beberapa data dalam field input yang ditetapkan. Standarnya TRequiredFieldValidator akan memeriksa apakah input pengguna kosong atau tidak. Validasi gagal jika input kosong. Dengan menyetel <tt>InitialValue</tt>, validator dapat memeriksa apakah input pengguna berbeda dari <tt>InitialValue</tt>. Jika tidak, validasi gagal.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRequiredFieldValidator.Home" />
+
+<a name="TRegularExpressionValidator"></a>
+<h2 id="4903">TRegularExpressionValidator</h2>
+<p id="560341" class="block-content">
+TRegularExpressionValidator memverifikasi input pengguna terhadap pola reguler. Validasi gagal jika input tidak sama dengan pola. Ekspresi reguler bisa ditetapkan dengan properti <tt>RegularExpression</tt>. Beberapa ekspresi reguler yang umumnya dipakai termasuk:
+</p>
+<ul id="u2" class="block-content">
+<li>Setidaknya 6 karakter: <code>[\w]{6,}</code></li>
+<li>Nomor Telepon Jepang: <code>(0\d{1,4}-|\(0\d{1,4}\) ?)?\d{1,4}-\d{4}</code></li>
+<li>Kode Pos Jepang: <code>\d{3}(-(\d{4}|\d{2}))?</code></li>
+<li>Nomor Telepon P.R.C.: <code>(\(\d{3}\)|\d{3}-)?\d{8} </code></li>
+<li>Kode Pos P.R.C.: <code>\d{6}</code></li>
+<li>Nomor Keamanan Sosial P.R.C.: <code>\d{18}|\d{15}</code></li>
+<li>Nomor Telepon Amerika: <code>((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}</code></li>
+<li>Kode ZIP Amerika: <code>\d{5}(-\d{4})?</code></li>
+<li>Nomor Keamanan Sosial Amerika: <code>\d{3}-\d{2}-\d{4}</code></li>
+</ul>
+<p id="560342" class="block-content">
+Pola ekspresi reguler lebih jauh dapat ditemukan di Internet, misalnya
+<a href="http://regexlib.com/">http://regexlib.com/</a>.
+</p>
+<p id="560343" class="block-content">
+Catatan, TRegularExpressionValidator hanya memeriksa input pengguna yang tidak kosong. Gunakan TRequiredFieldValidator untuk memastikan input pengguna tidak kosong.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRegularExpressionValidator.Home" />
+
+<h2 id="TEmailAddressValidator">TEmailAddressValidator</h2>
+<p id="560344" class="block-content">
+TEmailAddressValidator memverifikasi bahwa input pengguna adalah alamat email yang benar. Validator menggunakan ekspresi reguler untuk memeriksa apakah input adalah format alamat email yang benar. Jika <tt>CheckMXRecord</tt> adalah true, validator juga akan memeriksa apakah rekaman MX yang diindikasikan dalam alamat email adalah benar, <tt>checkdnsrr()</tt> tersedia dalam PHP yang diinstalasi.
+</p>
+<p id="560345" class="block-content">
+Catatan, jika input yang divalidasi kosong, TEmailAddressValidator tidak akan melakukan validasi. Gunakan TRequiredFieldValidator untuk memastikan nilai tidak kosong.
+</p>
+<com:RunBar PagePath="Controls.Samples.TEmailAddressValidator.Home" />
+
+<a name="TCompareValidator"></a>
+<h2 id="4904">TCompareValidator</h2>
+<p id="560346" class="block-content">
+TCompareValidator membandingkan input pengguna dengan nilai konstan yang ditetapkan oleh <tt>ValueToCompare</tt>, atau input pengguna lain yang ditetapkan oleh <tt>ControlToCompare</tt>. Properti <tt>Operator</tt> menetapkan bagaimana untuk membandingkan nilai, yang menyertakan <tt>Equal</tt>, <tt>NotEqual</tt>, <tt>GreaterThan</tt>, <tt>GreaterThanEqual</tt>, <tt>LessThan</tt> dan <tt>LessThanEqual</tt>. Sebelum perbandingkan, nilai yang dibandingkan akan diubah ke tipe yang ditetapkan oleh <tt>DataType</tt> seperti didaftarkan sebagai berikut,
+</p>
+<ul id="u3" class="block-content">
+<li><tt>String</tt> - Tipe data string.</li>
+<li><tt>Integer</tt> - Tipe data integer signed 32-bit.</li>
+<li><tt>Float</tt> - Tipe data pecahan presisi-ganda.</li>
+<li><tt>Date</tt> - Tipe data tanggal. Format tanggal dapat ditetapkan dengan menyeting properti <tt>DateFormat</tt>, yang harus dikenal oleh <tt>TSimpleDateFormatter</tt>. Jika properti tidak disetel, sintaks tanggal GNU diasumsikan.</li>
+</ul>
+<p id="560347" class="block-content">
+Catatan, jika input yang sedang divalidasi kosong, TEmailAddressValidator tidak akan melakukan validasi. Gunakan TRequiredFieldValidator untuk memastikan nilai tidak kosong.
+</p>
+<p id="560348" class="block-content">
+<b>N.B.</b> Jika memvalidasi terhadap <a href="?page=Controls.DatePicker">TDatePicker</a> properti <tt>DataType</tt> harus sama dengan "Date" dan properti <tt>DateFormat</tt> pada validator harus sama dengan <tt>DateFormat</tt> pada <a href="?page=Controls.DatePicker">TDatePicker</a>.
+</p>
+<com:RunBar PagePath="Controls.Samples.TCompareValidator.Home" />
+
+<a name="TDataTypeValidator"></a>
+<h2 id="4905">TDataTypeValidator</h2>
+<p id="560349" class="block-content">
+TDataTypeValidator memverifiksai apakah data input adalah tipe spesifik sepeti ditunjukan oleh <tt>DataType</tt>. Tipe data dapat diperiksa kembali apakah sama seperti yang ada dalam TCompareValidator.
+</p>
+<p id="560350" class="block-content">
+<b>N.B.</b> Jika memvalidasi terhadap <a href="?page=Controls.DatePicker">TDatePicker</a> properti <tt>DataType</tt> harus sama dengan "Date" dan properti <tt>DateFormat</tt> pada validator harus sama dengan <tt>DateFormat</tt> pada <a href="?page=Controls.DatePicker">TDatePicker</a>.
+</p>
+
+
+<com:RunBar PagePath="Controls.Samples.TDataTypeValidator.Home" />
+
+<a name="TRangeValidator"></a>
+<h2 id="4906">TRangeValidator</h2>
+<p id="560351" class="block-content">
+TRangeValidator memverifikasi apakah nilai input di dalam jangkauan yang ditetapkan. TRangeValidator menggunakan properti kunci untuk melakukan validasinya. Properti <tt>MinValue</tt> dan properti <tt>MaxValue</tt> menetapkan nilai minimum dan maksimum dari jangkauan yang benar. Properti <tt>DataType</tt> menetapkan tipe data dari nilai yang sedang divalidasi. Pertama, nilai akan diubah ke dalam tipe yang ditetapkan dan kemudian dibandingkan dengan jangkauan yang benar. Tipe data bisa diperiksa apakah sama dengan yang ada dalam TCompareValidator.
+</p>
+
+<p id="range_strict" class="block-content">
+Jika properti <tt>StrictComparison</tt> disetel ke <tt>true</tt>, maka jangkauan dibandingkan semata-mata kurang dari <tt>MaxValue</tt> dan/atau lebih besar dari <tt>MinValue</tt>.
+</p>
+
+<p id="560352" class="block-content">
+<b>N.B.</b> Jika memvalidasi terhadap <a href="?page=Controls.DatePicker">TDatePicker</a> properti <tt>DataType</tt> harus sama dengan "Date" dan properti <tt>DateFormat</tt> pada validator harus sama dengan <tt>DateFormat</tt> pada <a href="?page=Controls.DatePicker">TDatePicker</a>.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TRangeValidator.Home" />
+
+<a name="TCustomValidator"></a>
+<h2 id="4907">TCustomValidator</h2>
+<p id="560353" class="block-content">
+TCustomValidator melakukan validasi didefinisikan-pengguna (baik sisi-server atau sisi-klien ataupun keduanya) pada kontrol input.
+</p>
+<p id="560354" class="block-content">
+Untuk membuat fungsi validasii sisi-server, sediakan pengendali untuk event <tt>OnServerValidate</tt> yang melakukan validasi. String data pada kontrol input untuk memvalidasi dapat diakses dengan parameter event properti <tt>Value</tt>. Hasil validasi harus disimpan dalam properti <tt>IsValid</tt> pada parameter.
+</p>
+<p id="560355" class="block-content">
+Untuk membuat fungsi validasi sisi-klien, tambahkan fungsi validasi javascript ke template halaman dan tempatkan namanya ke properti <tt>ClientValidationFunction</tt>. Fungsi harus memiliki tanda sebagai berikut:
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_560118">
+<script type="text/javascript">
+function ValidationFunctionName(sender, parameter)
+{
+    // if(parameter == ...)
+    //    return true;
+    // else
+    //    return false;
+}
+</script>
+</com:TTextHighlighter>
+<com:RunBar PagePath="Controls.Samples.TCustomValidator.Home" />
+
+<a name="TValidationSummary"></a>
+<h2 id="4908">TValidationSummary</h2>
+<p id="560356" class="block-content">
+TValidationSummary menampilkan ringkasan dari kesalahan inline validasi pada halaman Web, dalam kotak pesan, atau keduanya.
+</p>
+<p id="560357" class="block-content">
+Standarnya ringkasan validasi akan mengumpulkan <tt>ErrorMessage</tt> dari semua validator yang gagal pada halaman. Jika <tt>ValidationGroup</tt> tidak kosong, hanya validator itu yang dimiliki grup akan menampilkan pesan kesaslahannya dalam ringkasan.
+</p>
+<p id="560358" class="block-content">
+Ringkasan dapat ditampilkan sebagai daftar, daftar bertitik, atau satu paragraf berdasarkan properti <tt>DisplayMode</tt>. Pesan yang ditampilkan dapat diawali dengan <tt>HeaderText</tt>. Ringkasan dapat ditampilkan pada halaman Web atau kotak pesan JavaScript, masing-masing dengan menyetel properti <tt>ShowSummary</tt> dan <tt>ShowMessageBox</tt>. Catatan, yang terakhir hanya efektif saat <tt>EnableClientScript</tt> adalah true.
+</p>
+<com:RunBar PagePath="Controls.Samples.TValidationSummary.Home" />
+
+<h1 id="123123">Berinteraksi dengan Validator</h1>
+<h2 id="116009">Mereset atau Membersihkan Validator</h2>
+<p id="1212323">
+Validator bisa mereset pada sisi-klien menggunakan javascript dengan memanggil 
+<tt>Prado.Validation.reset(groupID)</tt> di mana <tt>groupID</tt> adalah nama pengelompokan. Jika <tt>groupID</tt> adalah null, maka validator tanpa pengelompokan yang dipakai.
+</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_560118a">
+<script type="text/javascript">
+function reset_validator()
+{
+    Prado.Validation.reset("group1");
+}
+</script>
+</com:TTextHighlighter>
+<com:RunBar PagePath="Controls.Samples.ResetValidation.Home" />
+
+<h2 id="5301">Validasi Kondisional Sisi Server dan Klien</h2>
+<p id="560359" class="block-content">
+	Semua validator berisi event berikut.
+	Event terkait untuk sisi klien tersedia sebagai sub-properti
+	dari properti <tt>ClientSide</tt> pada validator.
+</p>
+	<ul id="u4" class="block-content">
+		<li>Event <tt>OnValidate</tt> muncul sebelum fungsi validasi validator yang dipanggil.</li>
+		<li>Event <tt>OnValidationSuccess</tt> muncul setelah validator sukses memvalidasi kontrol.</li>
+		<li>Event <tt>OnValidationError</tt> muncul setelah validator gagal memvalidasi.</li>
+	</ul>
+
+<div class="note"><b class="tip">Catatan:</b>
+Untuk Prado sebelum versi 3.1 nama properti adalah <tt>OnError</tt> dan <tt>OnSuccess</tt>. Untuk Prado versi 3.1 dan berikutnya masing-masing <tt>OnValidationError</tt> dan <tt>OnValidationSuccess</tt>.
+</div>
+
+<p id="560360" class="block-content">Contoh berikut memunculkan pesan yang mengatakan "hello" saat validator gagal pada sisi-klien.
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_560119">
+&lt;com:TRequiredFieldValidator ... &gt;
+	&lt;prop:ClientSide.OnValidationError&gt;
+		alert("hello");
+	&lt;/prop:ClientSide.OnValidationError&gt;
+&lt;/com:TRequiredFieldValidator&gt;
+</com:TTextHighlighter>
+Hasil event fungsi callback sisi-klien adalah dalam bentuk seperti berikut.
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_560120">
+function onErrorHandler(sender, parameter)
+{
+	alert("hello");
+}
+</com:TTextHighlighter>
+di mana <tt>sender</tt> adalah vaidator sisi-klien saat ini dan <tt>parameter</tt> adalah kontrol yang memanggil validator.
+</p>
+<h3 id="5302">Contoh Validasi Kondisional</h3>
+<p id="560361" class="block-content">
+Contoh berikut memperlihatkan penggunaan event validator sisi-klien dan sisi server. Contoh mendemonstrasikan validasi kondisional. Catatan bahwa, kita perlu menuliskan kode untuk sisi server dan klien. Selanjutnya, pada sisi server, kita perlu menghidupkankembali validator kondisional agar kode javascript dihasilkan tanpa mempedulikan apapun (sebaliknya, validator sisi-klien tidak tersedia).
+<com:RunBar PagePath="Controls.Samples.TClientSideValidator.Home" />
+</p>
+
+<div class="last-modified">$Id: Validation.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>

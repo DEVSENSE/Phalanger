@@ -1,0 +1,61 @@
+<com:TContent ID="body" >
+
+<h1 id="6101">Pencatatan</h1>
+<p id="780615" class="block-content">
+PRADO menyediakan fungsionalitas sangat fleksibel dan bisa diperluas. Pesan yang dicatat dapat diklasifikasikan berdasarkan tingkat catatan dan kategori pesan. Menggunakan tingkat dan katkegori filter, pesan selanjutnya bisa dialihkan ke tujuan yang berbeda, seperti file, email, jendela browser, dll. Diagram berikut memperlihatkan arsitektur dasar dari mekanisme pencatatan PRADO,
+</p>
+<img src="<%~ logrouter.gif %>" alt="Pengalih catatan" />
+
+<h2 id="6102">Menggunakan Fungsi Pencatatan</h2>
+<p id="780616" class="block-content">
+Dua metode berikut disediakan untuk mencatat pesan dalam PRADO,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_780201">
+Prado::log($message, $logLevel, $category);
+Prado::trace($message, $category);
+</com:TTextHighlighter>
+<p id="780617" class="block-content">
+Perbedaan antara <tt>Prado::log()</tt> dan <tt>Prado::trace()</tt> adalah bahwa yang kedua memilih secara otomatis tingkat catatan berdasarkan mode aplikasi. Jika aplikasi dalam mode <tt>Debug</tt>, informasi pelacakan stack ditambahkan ke pesan. <tt>Prado::trace()</tt> dipakai secara luas dalam kode inti kerangka kerja PRADO.
+</p>
+
+<h2 id="6103">Pengalihan Pesan</h2>
+<p id="780618" class="block-content">
+Pesan yang dicatat menggunakan dua fungsi di atas dipelihara dalam memori. Untuk menggunakan pesan, para pengembang perlu mengalihkannya ke tujuan tertentu seperti file, email, atau jendela browser. Pengalihan pesan diatur oleh modul <tt>System.Util.TLogRouter</tt>. Ketika dimasukan ke dalam aplikasi, ia bisa mengalihkan pesan ke tujuan yang berbeda secara paralel. Saat ini PRADO menyediakan tiga jenis rute:
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>TFileLogRoute</tt> - pesan yang disaring disimpan dalam file log yang ditetapkan. Standarnya, file ini bernama <tt>prado.log</tt> di bawah direktori dari aplikasi. Perputaran file disediakan.</li>
+  <li><tt>TEmailLogRoute</tt> - pesan yang disaring dikirimkan ke alamat email yang ditetapkan sebelumnya.</li>
+  <li><tt>TBrowserLogRoute</tt> - pesan yang disaring ditambahkan ke akhir output halaman saat ini.</li>
+</ul>
+<p id="780619" class="block-content">
+Untuk menghidupkan pengalihan pesan, masukan dan konfigurasi modul <tt>TLogRouter</tt> dalam konfigurasi aplikasi,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_780202">
+&lt;module id="log" class="System.Util.TLogRouter"&gt;
+  &lt;route class="TBrowserLogRoute"
+      Levels="Info"
+      Categories="System.Web.UI.TPage, System.Web.UI.WebControls" /&gt;
+  &lt;route class="TFileLogRoute"
+      Levels="Warning, Error"
+      Categories="System.Web" /&gt;
+&lt;/module&gt;
+</com:TTextHighlighter>
+<p id="780620" class="block-content">
+Dalam contoh di atas, <tt>Levels</tt> dan <tt>Categories</tt> menetapkan log dan filter kategori untuk mengambil secara selektif pesan ke tujuan terkait.
+</p>
+
+<h2 id="6104">Penyaringan Pesan</h2>
+<p id="780621" class="block-content">
+Pesan bisa disaring berdasarkan tingkat catatan serta kategorinya. Setiap catatan pesan dikaitkan dengan tingkat dan kategori catatan. Dengan tingkat dan kategori, para pengembang dapat mengambil pesan secara selektif yang menarik bagi mereka.
+</p>
+<p id="780622" class="block-content">
+Tingkat catatan didefinisikan dalam <tt>System.Util.TLogger</tt> termasuk: <tt>DEBUG</tt>, <tt>INFO</tt>, <tt>NOTICE</tt>, <tt>WARNING</tt>, <tt>ERROR</tt>, <tt>ALERT</tt>, <tt>FATAL</tt>. Pesan bisa disaring berdasarkan kriteria tingkat catatan. Sebagai contoh, jika sebuah filter menetapkan tingkat <tt>WARNING</tt> dan <tt>ERROR</tt>, maka hanya pesan tersebut yakni <tt>WARNING</tt> and <tt>ERROR</tt> yang akan dikembalikan.
+</p>
+<p id="780623" class="block-content">
+Kategori pesan adalah hirarkis. Kategori yang namanya awalan dari yang lain disebut leluhur kategori atas kategori lainnya. Sebagai contoh, kategori <tt>System.Web</tt> adalah leluhur dari kategori <tt>System.Web.UI</tt> dan <tt>System.Web.UI.WebControls</tt>. Pesan bisa diambil secara selektif menggunakan filter kategori hirarkis tersebut. Sebagai contoh, jika filter kategori adalah <tt>System.Web</tt>, maka semua pesan dalam <tt>System.Web</tt> dikembalikan. Sebagai tambahan, pesan dalam kategori anak seperti <tt>System.Web.UI.WebControls</tt>, juga dikembalikan.
+</p>
+<p id="780624" class="block-content">
+Dengan ketentuan, pesan yang dicatat dalam kode inti PRADO dikategorikan berdasarkan namespace dari kelas terkait. Sebagai contoh, pesan yang dicatat dalam <tt>TPage</tt> akan menjadi kategori <tt>System.Web.UI.TPage</tt>.
+</p>
+
+<div class="last-modified">$Id: Logging.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

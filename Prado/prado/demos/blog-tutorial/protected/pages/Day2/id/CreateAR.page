@@ -1,0 +1,178 @@
+<com:TContent ID="Main">
+
+<h1>Membuat Kelas Rekaman Aktif</h1>
+
+<p>
+Kita perlu membuat dua kelas <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Rekaman Aktif</a>, <tt>UserRecord</tt> dan <tt>PostRecord</tt>, masing-masing untuk mewakili rekaman data dalam tabel <tt>users</tt> dan <tt>posts</tt>. Kelas Rekaman Aktif harus diperluas dari kelas basis <tt>ActiveRecord</tt>, dan harus mendefinisikan nama properti yang sama dengan nama field dari tabel terkait.
+</p>
+
+<p>
+Untuk mengatur lebih baik direktori, kita membuat direktori baru <tt>protected/database</tt> guna menampung file kelas. Kita juga memodifikasi konfigurasi aplikasi kita dengan menyisipkan baris berikut. Ini sama dengan menambahkan direktori <tt>protected/database</tt> ke PHP include_path, yang membolehkan kita untuk menggunakan kelas tanpa secara eksplisit menyertakannya.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<paths>
+  <using namespace="Application.database.*" />
+</paths>
+</com:TTextHighlighter>
+
+<p>
+Daripada menulis kelas secara manual, kita akan menggunakan <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">piranti baris perintah PRADO</a> lagi untuk membuat kelas bagi kita.
+</p>
+
+<p>
+Di bawah direktori <tt>blog</tt>, jalankan perintah berikut untuk masuk ke dalam mode interaktif pada piranti baris perintah:
+</p>
+
+<com:TTextHighlighter CssClass="source cli" Language="text">
+php path/ke/prado-cli.php shell .
+</com:TTextHighlighter>
+
+<p>
+Kita akan melihat
+</p>
+
+<com:TTextHighlighter CssClass="source cli" Language="text">
+Command line tools for Prado 3.1.0.
+** Loaded PRADO appplication in directory "protected".
+PHP-Shell - Version 0.3.1
+(c) 2006, Jan Kneschke <jan@kneschke.de>
+
+>> use '?' to open the inline help
+
+>>
+</com:TTextHighlighter>
+
+<p>
+Pada prompt, masukkan dua perintah berikut untuk membuat kelas <tt>UserRecord</tt> dan <tt>PostRecord</tt>:
+</p>
+
+<com:TTextHighlighter CssClass="source cli">
+>> generate users Application.database.UserRecord
+
+>> generate posts Application.database.PostRecord
+</com:TTextHighlighter>
+
+<p>
+Di sini kita menggunakan <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Components">format namespace</a> lagi untuk menetapkan kelas yang dibuat. Path <tt>Application.database.UserRecord</tt> menunjukan bahwa kita ingin file kelas <tt>UserRecord</tt> menjadi <tt>protected/database/UserRecord.php</tt>.
+</p>
+
+<p>
+Kita akan melihat struktur direktori berikut dengan dua file baru di bawah <tt>protected/database</tt>:
+</p>
+
+<img src="<%~ directories2.gif %>" class="output" />
+
+<p>
+Jika kita memeriksa file kelas <tt>PostRecord</tt>, kita akan melihat konten berikut.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class PostRecord extends TActiveRecord
+{
+    const TABLE='posts';
+    public $post_id;
+    public $author_id;
+    public $create_time;
+    public $title;
+    public $content;
+    public $status;
+
+    public static function finder($className=__CLASS__)
+    {
+        return parent::finder($className);
+    }
+}
+</com:TTextHighlighter>
+
+<p>
+Seperti kita lihat, untuk setiap field dalam tabel <tt>posts</tt>, kelas mempunyai anggota data terkait. Konstan <tt>TABLE</tt> menetapkan nama tabel untuk <tt>PostRecord</tt>. Metode statis <tt>finder()</tt> membolehkan kita melakukan query dan mengambil data tulisan dalam batasan obyek <tt>PostRecord</tt>.
+</p>
+
+<p>
+Kita dapat menggunakan piranti baris perintah untuk melakukan beberapa pengujian dengan kelas Rekaman Aktif yang baru saja kita buat. Masih dalam mode interaktif pada piranti baris perintah, kita memasukan pernyataan PHP dan seharusnya melihat kode berikut. Para pembaca yang tertarik dapat mencoba pernyataan PHP laninnya, seperti misalnya <tt>UserRecord::finder()->findAll()</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+>> PostRecord::finder()->findAll()
+array
+(
+    [0] => PostRecord#1
+    (
+        [post_id] => '1'
+        [author_id] => 'admin'
+        [create_time] => '1175708482'
+        [title] => 'first post'
+        [content] => 'this is my first post'
+        [status] => '0'
+        [TActiveRecord:_readOnly] => false
+        [TActiveRecord:_connection] => null
+        [TComponent:_e] => array()
+    )
+)
+</com:TTextHighlighter>
+
+<h1>Hubungan Antara Tulisan dan Pengguna</h1>
+<p>
+Mengingat bahwa ada hubungan kunci asing antara tabel <tt>users</tt> dan <tt>posts</tt>. Diagram hubungan-entitas ditampilkan di bawah ini demi kenyamanan.
+</p>
+
+<img src="<%~ ER.gif %>" class="output" />
+
+<p>
+Dari diagram hubungan-entitas di atas, kita merlihat bahwa tabel <tt>posts</tt> berisi field bernama <tt>author_id</tt>. Field <tt>author_id</tt> ini adalah kunci asing yang mereferensi tabel <tt>users</tt>. Dalam keadaan tertentu, nilai dalam field <tt>author_id</tt> seharusnya dari tabel <tt>users</tt> field <tt>username</tt>. Salah satu konsekuensi dari hubungan ini, dalam pola pikir obyek, adalah bahwa setiap "tulisan" milik "author" dan satu "author" dapat memiliki banyak "tulisan".
+</p>
+
+<p>
+Kita dapat membuat model hubungan antara tabel <tt>posts</tt> dan <tt>users</tt> dalam Rekaman Aktif dengan memodifikasi kelas <tt>PostRecord</tt> dan <tt>UserRecord</tt> seperti berikut.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class PostRecord extends TActiveRecord
+{
+    //... properti dan metode seperti sebelumnya
+
+    public $author; //menampung array UserRecord
+
+    public static $RELATIONS=array
+    (
+        'author' => array(self::BELONGS_TO, 'UserRecord'),
+    );
+}
+</com:TTextHighlighter>
+
+<p>
+Properti statis <tt>$RELATIONS</tt> pada <tt>PostRecord</tt> mendefinisikan bahwa properti <tt>$author</tt> dimiliki <tt>UserRecord</tt>. Dalam <tt>array(self::BELONGS_TO, 'UserRecord')</tt>, elemen pertama mendefinisikan tipe hubungan, dalam hal ini <tt>self::BELONGS_TO</tt>. Elemen kedua adalah nama pada rekaman terkait, dalam hal ini <tt>UserRecord</tt>. <tt>UserRecord</tt> didefinisikan sama di bawah ini, perbedaannya yaitu rekaman pengguna mempunyai banyak <tt>PostRecord</tt>.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class UserRecord extends TActiveRecord
+{
+    //... properti dan metode seperti seblumnya
+
+    public $posts=array(); //menampung array PostRecord
+
+    public static $RELATIONS=array
+    (
+        'posts' => array(self::HAS_MANY, 'PostRecord'),
+    );
+}
+</com:TTextHighlighter>
+
+<p>
+Sebuah array <tt>UserRecord</tt> dengan dan tulisan terkaitnya dapat diambil seperti berikut.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+$users = UserRecord::finder()->withPosts()->findAll();
+</com:TTextHighlighter>
+
+<com:TipBox>
+Metode <tt>withXXX()</tt> (di mana XXX adalah nama properti hubungan, dalam hal ini, <tt>Posts</tt>) mengambil <tt>PostRecords</tt> terkait menggunakan query kedua (tidak dengan menggunakan join). Metode <tt>withXXX()</tt> menerima argumen yang sama sebagai finder lain dari TActiveRecord, misalhnya <tt>withPosts('status = ?', 0)</tt>.
+</com:TipBox>
+
+<p>
+Dokumentasi lengkap selanjutnya dapat ditemukan dalam dokumen quickstart <a href="http://www.pradosoft.com/demos/quickstart/?page=Database.ActiveRecord">Rekaman Aktif</a>.
+</p>
+
+</com:TContent>

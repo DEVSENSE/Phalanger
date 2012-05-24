@@ -1,0 +1,150 @@
+<com:TContent ID="body">
+
+<h1>Inheritance Mapping</h1> 
+<p>The SQLMap PHP DataMapper supports the implementation
+of object-oriented inheritance (subclassing) in your object model. There are
+several developer options for mapping entity classes and subclasses to
+database results:</p>
+
+<p>You can use the most
+efficient mapping strategies from a SQL and query performance perspective when
+using the inheritance mappings of the DataMapper. To implement an inheritance
+mapping, the <tt>resultMap</tt> must define one or more columns in your query's
+resultset that will serve to identify which <tt>resultMap</tt> should be used to map
+each result record to a specific subclass. In many cases, you will use one
+column value for the DataMapper to use in identifying the proper resultMap and
+subclass. This column is known as a discriminator.</p>
+
+<p>For example, we have a table defined in a database that contains <tt>Document</tt>
+records. There are five table columns used to store Document IDs, Titles,
+Types, PageNumbers, and Cities. Perhaps this table belongs to a legacy
+database, and we need to create an application using this table with a domain
+model that defines a class hierarchy of different types of Documents. Or
+perhaps we are creating a new application and database and just want to
+persist the data found in a set of related classes into one table. In either
+case, the DataMapper's inheritance mapping feature can help.</p>
+
+<com:TTextHighlighter Language="sql" CssClass="source">
+CREATE TABLE Documents (
+    Document_ID int NOT NULL ,
+    Document_Title varchar(32) NULL ,
+    Document_Type varchar(32)  NULL ,
+    Document_PageNumber int NULL  ,
+    Document_City varchar(32)  NULL
+)
+</com:TTextHighlighter>
+
+<p>To illustrate this, let's take a look at a few example classes shown below
+that have a relationship through inheritance and whose properties can be
+persisted into our Documents table. First, we have a base Document class that
+has Id and Title properties. Next, we have a Book class that inherits from
+Document and contains an additional property called PageNumber. Last, we have
+a Newspaper class that also inherits from Document and contains a City
+property.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+class Document 
+{
+    public $ID = -1;
+    public $Title = '';
+}
+
+class Book extends Document
+{
+    public $PageNumber = -1;
+}
+
+class Newspaper extends Document 
+{
+    public $City = '';
+}
+</com:TTextHighlighter>
+
+<p>Now that we have our classes and database table, we can start working on our
+mappings. We can create one <tt>&lt;select&gt;</tt> statement that returns all columns in the
+table. To help the DataMapper discriminate between the different Document
+records, we're going to indicate that the <tt>Document_Type</tt> column holds values
+that will distinguish one record from another for mapping the results into our
+class hierarchy.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<select id="GetAllDocument" resultMap="document">
+   select
+     Document_Id, Document_Title, Document_Type,
+     Document_PageNumber, Document_City
+   from Documents
+   order by Document_Type, Document_Id
+</select>
+
+<resultMap id="document" class="Document">
+  <result property="Id" column="Document_ID"/>
+  <result property="Title" column="Document_Title"/>
+  <discriminator column="Document_Type" type="string"/>
+  <subMap value="Book" resultMapping="book"/>
+  <subMap value="Newspaper" resultMapping="newspaper"/>
+</resultMap>
+
+<resultMap id="book" class="Book" extends="document">
+  <property="PageNumber" column="Document_PageNumber"/>
+</resultMap>
+
+<resultMap id="newspaper" class="Newspaper"  extends="document">
+  <property="City" column="Document_City"/>
+</resultMap>
+</com:TTextHighlighter>
+
+<p>The DataMapper compares the data found in the discriminator column to the
+different <tt>&lt;submap&gt;</tt> values using the column value's string equivalence. Based
+on this string value, SQLMap DataMapper will use the resultMap named "<tt>Book</tt>" or
+"<tt>Newspaper</tt>" as defined in the <tt>&lt;submap&gt;</tt> elements or it will use the 
+"parent" resultMap "<tt>Document</tt>" if neither of the submap values satisfy the comparison.
+With these resultMaps, we can implement an object-oriented inheritance mapping
+to our database table.</p>
+
+<p>If you want to use custom logic, you can use the typeHandler attribute of the
+<tt>&lt;discriminator&gt;</tt> element to specify a custom type handler for the discriminator
+column.</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+  <resultMap id="document-custom-formula" class="Document">
+    <result property="Id" column="Document_ID"/>
+    <result property="Title" column="Document_Title"/>
+    <discriminator column="Document_Type" typeHandler="CustomInheritance"/>
+    <subMap value="Book" resultMapping="book"/>
+    <subMap value="Newspaper" resultMapping="newspaper"/>
+  </resultMap>
+</resultMaps>
+</com:TTextHighlighter>
+
+<p>The value of the <tt>typeHandler</tt> attribute specifies which of our classes
+implements the <tt>ITypeHandlerCallback</tt> interface. This interface furnishes a
+<tt>getResult</tt> method for coding custom logic to read the column result value and
+return a value for the DataMapper to use in its comparison to the resultMap's
+defined <tt>&lt;submap&gt;</tt> values.</p>
+
+<com:TTextHighlighter Language="php" CssClass="source">
+class CustomInheritance implements ITypeHandlerCallback 
+{
+    public function getResult($type)
+    {
+        if ($type=="Monograph" || $type=="Book")
+            return "Book";
+        else if ($type=="Tabloid" || $type=="Broadsheet" || $type=="Newspaper")
+            return "Newspaper";
+        else
+            return "Document";
+    }
+    
+    public function getParameter($object)
+    {
+        throw new Exception('unimplemented');
+    }
+    
+    public function createNewInstance()
+    {
+        throw new Exception('unimplemented');
+    }
+}
+</com:TTextHighlighter>
+
+</com:TContent>

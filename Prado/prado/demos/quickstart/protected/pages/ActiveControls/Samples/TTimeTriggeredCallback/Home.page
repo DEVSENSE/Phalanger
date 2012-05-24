@@ -1,0 +1,24 @@
+<com:TContent ID="body">
+
+<h1>TTimeTriggeredCallback Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A timer updating a label with the current time every 5 seconds:
+</td><td class="sampleaction">
+<com:TTimeTriggeredCallback ID="time1" Interval="5" OnCallback="timercallback" />
+<com:TActiveButton
+	Text="start timer"
+	OnClick="startClicked"
+/>
+<com:TActiveButton
+	Text="stop timer"
+	OnClick="stopClicked"
+/>
+<com:TActiveLabel ID="label1" />
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2960 2011-06-02 17:44:51Z ctrlaltca@gmail.com $</div></com:TContent>

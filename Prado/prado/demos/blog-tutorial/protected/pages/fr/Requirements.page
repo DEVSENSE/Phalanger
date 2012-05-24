@@ -1,0 +1,37 @@
+﻿<com:TContent ID="Main">
+
+<h1>Buts à atteindre</h1>
+<p>
+Cette page décrit les buts que nous allons nous fixer et développer avec PRADO. Nous n'allons pas mettre en place toutes les fonctionnalités d'un blog (ie : commentaires, organisation des messages, calendrier, etc.), parce que nous voulons garder ce tutoriel aussi court que possible et que nous espérons que ces fonctionnalités seront faciles à mettre en place après avoir fini ce tutoriel.
+</p>
+
+<p>
+En général, les blog permettent aux utilisateurs de lire les messages et aux utilisateurs authentifiés de publier des messages. L'outil doit séparer la logique applicative de la couche présentation et il doit supporter le changement de thèmes graphiques. 
+</p>
+
+<h2>Gestion des utilisateurs</h2>
+<ul>
+<li>L'outil doit permettre de gérer les utilisateurs et leurs droits.</li>
+<li>L'outil doit permettre à l'administrateur de lister tous les utilisateurs.</li>
+<li>L'outil doit permettre à l'administrateur de créer des nouveaux utilisateurs.</li>
+<li>L'outil doit permettre à l'administrateur ou au propriétaire du compte de modifier son profil.</li>
+<li>L'outil doit permettre à l'administrateur de supprimer un utilisateur.</li>
+</ul>
+
+<h2>Gestion des messages</h2>
+<ul>
+<li>L'outil doit permettre de lister les messages par ordre de date décroissante et d'en gérer la pagination.</li>
+<li>L'outil doit permettre de consulter le détail d'un message.</li>
+<li>L'outil doit permettre la création d'un nouveau message par un utilisateur authentifié.</li>
+<li>L'outil doit permettre la mise à jour d'un message par son auteur ou par l'administrateur.</li>
+<li>L'outil doit permettre la suppression d'un message par son auteur ou par l'administrateur.</li>
+</ul>
+
+<h2>Maintenance de l'outil</h2>
+<ul>
+<li>L'outil doit permettre de collecter les retours utilisateurs.</li>
+<li>L'outil doit être assez flexible pour permettre l'intégration ultérieure de nouveaux composants.</li>
+<li>L'outil doit permettre de changer le thème qui régit la présentation des composants.</li>
+</ul>
+
+</com:TContent>

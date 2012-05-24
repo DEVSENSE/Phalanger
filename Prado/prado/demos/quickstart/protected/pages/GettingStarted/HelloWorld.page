@@ -1,0 +1,83 @@
+<com:TContent ID="body" >
+<h1 id="401">My First PRADO Application</h1>
+<div id="hello1"  class="block-content">
+<p id="50034">
+In this section, we guide you through creating your first PRADO application, the famous "Hello World" application.
+</p>
+<p id="50035">
+"Hello World" perhaps is the simplest <i>interactive</i> PRADO application that you can create. It displays to end-users a page with a submit button whose caption is <tt>Click Me</tt>. After the user clicks on the button, its caption is changed to <tt>Hello World</tt>.
+</p>
+<p id="50036">
+There are many approaches that can achieve the above goal. One can submit the page to the server, examine the POST variable, and generate a new page with the button caption updated. Or one can simply use JavaScript to update the button caption upon its <tt>onclick</tt> client event.
+</p>
+</div>
+<p id="50037" class="block-content">
+PRADO promotes component-based and event-driven Web programming. The button is represented by a <tt>TButton</tt> object. It encapsulates the button caption as the <tt>Text</tt> property and associates the user button click action with a server-side <tt>OnClick</tt> event. To respond to the user clicking on the button, one simply needs to attach a function to the button's <tt>OnClick</tt> event. Within the function, the button's <tt>Text</tt> property is modified as "Hello World". The following diagram shows the above sequence,
+<img src="<%~sequence.gif%>" class="figure"/>
+</p>
+<p id="50038" class="block-content">
+Our PRADO application consists of three files, <tt>index.php</tt>, <tt>Home.page</tt> and <tt>Home.php</tt>, which are organized as follows,
+<img src="<%~directory.gif%>" class="figure"/>
+
+where each directory is explained as follows. Note, the above directory structure can be customized. For example, one can move the <tt>protected</tt> directory out of Web directories. You will know how to do this after you go through this tutorial.
+</p>
+<ul id="dir-struct" class="block-content">
+<li><tt>assets</tt> - directory storing published private files. See <a href="?page=Advanced.Assets">assets</a> section for more details. This directory must be writable by the Web server process.</li>
+<li><tt>protected</tt> - application base path storing application data and private script files. This directory should be configured as inaccessible to end-users.</li>
+<li><tt>runtime</tt> - application runtime storage path storing application runtime information, such as application state, cached data, etc. This directory must be writable by the Web server process.</li>
+<li><tt>pages</tt> - base path storing all PRADO pages.</li>
+</ul>
+
+<div class="tip">
+<b class="tip">Tip:</b>You may also use the <tt>framework/prado-cli.php</tt>
+<a href="?page=GettingStarted.CommandLine">command line script</a>
+to create the Prado project directory structure. For example, type the command
+<tt>php path/to/prado-cli.php -c helloworld</tt> in the directory
+where you want to create the <tt>helloworld</tt> project.
+</div>
+
+<p id="50040">
+The three files that we need are explained as follows.
+</p>
+<ul id="file-list" class="block-content">
+<li><tt>index.php</tt> - entry script of the PRADO application. This file is required by all PRADO applications and is the only script file that is directly accessible by end-users. Content in <tt>index.php</tt> mainly consists of the following three lines,
+<com:TTextHighlighter CssClass="source block-content" id="code_50003">
+require_once('path/to/prado.php');  // include the prado script
+$application=new TApplication;      // create a PRADO application instance
+$application->run();                // run the application
+</com:TTextHighlighter>
+</li>
+<li><tt>Home.page</tt> - template for the default page returned when users do not explicitly specify the page requested. A template specifies the presentational layout of components. In this example, we use two components, <tt>TForm</tt> and <tt>TButton</tt>, which correspond to the &lt;form&gt; and &lt;input&gt; HTML tags, respectively. The template contains the following content,
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_50004">
+<html>
+  <body>
+    &lt;com:TForm&gt;
+      &lt;com:TButton Text="Click me" OnClick="buttonClicked" /&gt;
+    &lt;/com:TForm&gt;
+  </body>
+</html>
+</com:TTextHighlighter>
+</li>
+<li><tt>Home.php</tt> - page class for the <tt>Home</tt> page. It mainly contains the method responding to the <tt>OnClick</tt> event of the button.
+<com:TTextHighlighter CssClass="source block-content" id="code_50005">
+class Home extends TPage
+{
+    public function buttonClicked($sender,$param)
+    {
+        // $sender refers to the button component
+        $sender->Text="Hello World!";
+    }
+}
+</com:TTextHighlighter>
+</li>
+</ul>
+<div id="hello-end" class="block-content">
+<p id="50041">
+The application is now ready and can be accessed via: <tt>http://Web-server-address/helloworld/index.php</tt>, assuming <tt>helloworld</tt> is directly under the Web <tt>DocumentRoot</tt>. Try to change <tt>TButton</tt> in <tt>Home.page</tt> to <tt>TLinkButton</tt> and see what happens.
+</p>
+<p id="50042">
+Complete source code of this demo can be found in the PRADO release. You can also try the <a href="http://www.pradosoft.com/demos/helloworld/">online demo</a>.
+</p>
+</div>
+
+<div class="last-modified">$Id: HelloWorld.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

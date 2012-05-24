@@ -1,0 +1,77 @@
+<com:TContent ID="body">
+<!-- $Id: Home.page 1650 2007-01-24 06:55:32Z wei $ -->
+<h1>TActiveCheckBox Samples (AJAX)</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+An active checkbox with <tt>OnCallback</tt>:
+</td><td class="sampleaction">
+<com:TActiveCheckBox
+	AutoPostBack="true"
+	Text="click me"
+	OnCheckedChanged="checkboxClicked"
+	OnCallback="checkboxCallback"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A checkbox causing validation on a textbox:
+</td><td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	Display="Dynamic"
+	ErrorMessage="input required in the textbox"
+	ValidationGroup="Group"
+	/>
+<com:TActiveCheckBox
+	Text="submit"
+	ValidationGroup="Group"
+	OnCheckedChanged="checkboxClicked"
+	OnCallback="checkboxCallback"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A checkbox validated by a required field validator:
+</td><td class="sampleaction">
+<com:TActiveCheckBox
+	ID="CheckBox"
+	Text="Consent"
+	AutoPostBack="false"
+	OnCheckedChanged="checkboxClicked"
+	ValidationGroup="Group2"
+	/>
+<com:TActiveButton Text="Submit" ValidationGroup="Group2" />
+<com:TRequiredFieldValidator
+	ControlToValidate="CheckBox"
+	Display="Dynamic"
+	ErrorMessage="You must consent."
+	ValidationGroup="Group2"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A checkbox validated by a required field validator:
+</td><td class="sampleaction">
+<com:TActiveCheckBox
+	ID="CheckBox2"
+	Text="Agree"
+	Checked="true"
+	OnCheckedChanged="checkboxClicked"
+	ValidationGroup="Group3"
+	/>
+<com:TRequiredFieldValidator
+	ControlToValidate="CheckBox2"
+	Display="Dynamic"
+	ErrorMessage="You must agree."
+	ValidationGroup="Group3"
+	/>
+</td></tr>
+
+</table>
+
+<com:TJavascriptLogger />
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

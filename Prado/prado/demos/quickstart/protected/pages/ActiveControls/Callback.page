@@ -1,0 +1,34 @@
+<com:TContent ID="body" >
+
+<h1 id="190017">TCallback</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TCallback" />
+
+<p class="block-content">
+<tt>TCallback</tt> provides a basic callback handler that can be invoked from the
+client side by using the javascript ojbect obtained from the
+<tt>ActiveControl.Javascript</tt> property.
+You can set the <tt>CallbackParameter</tt> property from javascript directly on
+the object returned by <tt>ActiveControl.Javascript</tt>.
+Once you are ready, you can call the <tt>dispatch()<tt> method on the object to
+execute the callback.
+The server-side event <tt>OnCallback</tt> is raised when a callback is requested made.
+</p>
+
+<p class="block-content">
+Example usage:
+</p>
+<com:TTextHighlighter Language="text" CssClass="source block-content" >
+&lt;com:TCallback ID="callback1" OnCallback="callback1_Requested" /&gt;
+&lt;script type="text/javascript"&gt;
+  function do_callback1()
+  {
+    var request = &lt;%= $this->callback1->ActiveControl->Javascript %&gt;;
+    request.dispatch();
+  }
+&lt;/script&gt;
+&lt;div onclick="do_callback1()">Click Me!&lt;/div&gt;
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="ActiveControls.Samples.TCallback.Home" />
+
+<div class="last-modified">$Id: Callback.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

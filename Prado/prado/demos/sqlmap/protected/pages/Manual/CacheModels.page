@@ -1,0 +1,113 @@
+<com:TContent ID="body">
+
+<h1>Cache Models</h1>
+<p>Some values in a database are know to change slower than others. To improve
+performance, many developers like to cache often-used data to avoid making
+unnecessary trips back to the database. SQLMap provides its own caching
+system, that you configure through a <tt>&lt;cacheModel&gt;</tt> element.
+</p>
+
+<p>The results from a query Mapped Statement can be cached simply by specifying
+the <tt>cacheModel</tt> parameter in the statement tag (seen above). A cache model
+is a configured cache that is defined within your DataMapper configuration
+file. Cache models are configured using the <tt>cacheModel</tt> element as
+follows:</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<cacheModel id="product-cache" implementation="LRU" >
+  <flushOnExecute  statement="insertProduct"/>
+  <flushOnExecute  statement="updateProduct"/>
+  <flushOnExecute  statement="deleteProduct"/>
+  <property name="CacheSize" value="100"/>
+</cacheModel>
+</com:TTextHighlighter>
+
+<p>The cache model above will create an instance of a cache named
+"product-cache" that uses a Least Recently Used (LRU) implementation. The
+value of the <tt>type</tt> attribute is either a class name, or an alias for one
+of the included implementations (see below). The cache will be flushed
+whenever the <tt>insertProduct</tt>, <tt>updateProduct</tt>, or <tt>deleteProduct</tt>
+mapped statements are executed. There can be any number of "flush on
+execute" elements specified for a cache. Some cache implementations may need
+additional properties, such as the "cache-size" property demonstrated above.
+In the case of the LRU cache, the size determines the number of entries to
+store in the cache. Once a cache model is configured, you can specify the
+cache model to be used by a mapped statement, for example:</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<statement id="getProductList" cacheModel="product-cache">
+  select * from PRODUCT where PRD_CAT_ID = #value#
+</statement>
+</com:TTextHighlighter>
+
+<h1>Cache Implementation</h1>
+<p>The cache model uses a pluggable framework for supporting different types of
+caches. The choice of cache is specified in the "implementation" attribute
+of the <tt>cacheModel</tt> element as discussed above. The class name specified
+must be an implementation of the <tt>ISqlMapCache</tt> interface, or one of the
+two aliases discussed below. Further configuration parameters can be passed to
+the implementation via the property elements contained within the body of the
+<tt>cacheModel</tt>. Currently there are 2 implementations included with the SQLMap PHP DataMapper.</p>
+
+<div class="info"><b class="tip">Info:</b>
+The cache implementations, LRU and FIFO cache below do not persist across
+requests. That is, once the request is complete, all cache data is lost.
+These caches are useful queries that results in the same repeated data during
+the current request.
+</div>
+
+<h2>Least Recently Used [LRU] Cache</h2> 
+<p>The LRU cache implementation uses
+an Least Recently Used algorithm to determines how objects are automatically
+removed from the cache. When the cache becomes over full, the object that was
+accessed least recently will be removed from the cache. This way, if there is
+a particular object that is often referred to, it will stay in the cache with
+the least chance of being removed. The LRU cache makes a good choice for
+applications that have patterns of usage where certain objects may be popular
+to one or more users over a longer period of time (e.g. navigating back and
+forth between paginated lists, popular search keys etc.).</p>
+
+<p>The LRU implementation is configured as follows:</p>
+<com:TTextHighlighter Language="xml" CssClass="source">
+<cacheModel id="product-cache"  implementation="LRU" >
+  <flushOnExecute  statement="insertProduct"/>
+  <flushOnExecute  statement="updateProduct"/>
+  <flushOnExecute  statement="deleteProduct"/>
+   <property name="CacheSize" value="100"/>
+</cacheModel>
+</com:TTextHighlighter>
+
+<p>Only a single property is recognized by the LRU cache implementation. This
+property, named <tt>CacheSize</tt> must be set to an integer value representing
+the maximum number of objects to hold in the cache at once. An important thing
+to remember here is that an object can be anything from a single string
+instance to an array of object. So take care not to store too much in your
+cache and risk running out of memory.</p>
+
+<h2>FIFO Cache</h2>
+<p>The FIFO cache implementation uses an First In First Out algorithm to
+determines how objects are automatically removed from the cache. When the
+cache becomes over full, the oldest object will be removed from the cache. The
+FIFO cache is good for usage patterns where a particular query will be
+referenced a few times in quick succession, but then possibly not for some
+time later.</p>
+
+<p>The FIFO implementation is configured as follows:</p>
+
+<com:TTextHighlighter Language="xml" CssClass="source">
+<cacheModel id="product-cache" implementation="FIFO" >
+  <flushOnExecute  statement="insertProduct"/>
+  <flushOnExecute  statement="updateProduct"/>
+  <flushOnExecute  statement="deleteProduct"/>
+  <property name="CacheSize" value="100"/>
+</cacheModel>
+</com:TTextHighlighter>
+
+<p>Only a single property is recognized by the FIFO cache implementation. This
+property, named <tt>CacheSize</tt> must be set to an integer value representing
+the maximum number of objects to hold in the cache at once. An important thing
+to remember here is that an object can be anything from a single String
+instance to an array of object. So take care not to store too much in your
+cache and risk running out of memory.</p>
+
+</com:TContent>

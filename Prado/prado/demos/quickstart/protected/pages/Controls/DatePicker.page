@@ -1,0 +1,81 @@
+<com:TContent ID="body" >
+
+<h1 id="2301">TDatePicker</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TDatePicker" />
+
+<p id="280245" class="block-content"><tt>TDatePicker</tt> displays a text box for date input purpose.
+When the text box receives focus, a calendar will pop up and users can
+pick up from it a date that will be automatically entered into the text box.
+The format of the date string displayed in the text box is determined by
+the <tt>DateFormat</tt> property. Valid formats are the combination of the
+following tokens:
+
+<com:TTextHighlighter Language="text" CssClass="source block-content" id="code_280103">
+Character      Format Pattern (en-US)
+---------------------------------------------------------------------
+ d              day digit
+ dd             padded day digit e.g. 01, 02
+ M              month digit
+ MM             padded month digit
+ MMM            localized abbreviated month names, e.g. Mar, Apr
+ MMMM           localized month name, e.g. March, April
+ yy             2 digit year
+ yyyy           4 digit year
+---------------------------------------------------------------------
+</com:TTextHighlighter>
+
+<p id="280246" class="block-content">
+The date of the date picker can be set using the <tt>Date</tt> or <tt>Timestamp</tt>
+properties. The <tt>Date</tt> property value must be in the same format as the pattern
+specified in the <tt>DateFormat</tt> property. The <tt>Timestamp</tt> property
+only accepts integers such as the Unix timestamp.
+</p>
+
+<p id="280247" class="block-content">
+TDatePicker has three <tt>Mode</tt> to show the date picker popup.</p>
+ <ul id="u1" class="block-content">
+ 	<li><tt>Basic</tt> - Only shows a text input, focusing on the input shows the date picker.</li>
+	<li><tt>Button</tt> - Shows a button next to the text input, clicking on the button shows the date, button text can be by the <tt>ButtonText</tt> property.</li>
+	<li><tt>ImageButton</tt> - Shows an image next to the text input, clicking on the image shows the date picker, image source can be change through the <tt>ImageUrl</tt> property.</li>
+ </ul>
+
+<p id="280248" class="block-content">The <tt>CssClass</tt> property can be used to override the CSS class name
+for the date picker panel. The <tt>CalendarStyle</tt> property changes the overall calendar style.
+The following <tt>CalendarStyle</tt> values are available:</p>
+	<ul id="u2" class="block-content">
+		<li><tt>default</tt> - The default calendar style.</li>
+	</ul>
+
+<p id="280249" class="block-content">The <tt>InputMode</tt> property can be set to "TextBox" or "DropDownList" with
+default as "TextBox". In <tt>DropDownList</tt> mode, in addition to the popup date picker, three
+drop down list (day, month and year) are presented to select the date .
+When <tt>InputMode</tt> equals "DropDownList", the order and appearance of the date, month, and year
+will depend on the pattern specified in <tt>DateFormat</tt> property.
+</p>
+
+<p id="280250" class="block-content">The popup date picker can be hidden by specifying <tt>ShowCalendar</tt> as false. Much of the
+text of the popup date picker can be changed to a different language using the <tt>Culture</tt> property.
+</p>
+
+<p id="280251" class="block-content">The calendar picker year limit can be set using the <tt>FromYear</tt> and <tt>UpToYear</tt> properties
+where <tt>FromYear</tt> is the starting year and <tt>UpToYear</tt> is the last year selectable.
+The starting day of the week can be changed by the <tt>FirstDayOfWeek</tt> property, with 0 as Sunday, 1 as Monday, etc.
+</p>
+
+<p id="280252" class="block-content"><b>Note 1:</b> If the <tt>InputMode</tt> is "TextBox", the <tt>DateFormat</tt> should
+only <b>NOT</b> contain <code>MMM</code> or <code>MMMM</code> patterns. The
+server side date parser will not be able to determine the correct date if <code>MMM</code> or
+<code>MMMM</code> are used. When <tt>InputMode</tt> equals "DropDownList", all patterns can be used.</p>
+
+<p id="280253" class="block-content"><b>Note 2:</b> When the <tt>TDatePicker</tt> is used together
+with a validator, the <tt>DateFormat</tt> property of the validator must be equal to
+the <tt>DateFormat</tt> of the <tt>TDatePicker</tt> <b>AND</b> must set <tt>DataType</tt>="Date"
+on the validator to ensure correct validation. See
+<a href="?page=Controls.Validation#TCompareValidator">TCompareValidator</a>,
+<a href="?page=Controls.Validation#TDataTypeValidator">TDataTypeValidator</a> and
+<a href="?page=Controls.Validation#TRangeValidator">TRangeValidator</a>
+for details.</p>
+
+<com:RunBar PagePath="Controls.Samples.TDatePicker.Home" />
+
+<div class="last-modified">$Id: DatePicker.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

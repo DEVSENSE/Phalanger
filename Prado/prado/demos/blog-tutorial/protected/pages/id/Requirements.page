@@ -1,0 +1,38 @@
+<com:TContent ID="Main">
+
+<h1>Analisis Persyaratan</h1>
+
+<p>
+Halaman ini menampilkan persyaratan untuk sistem blog yang akan kami kembangkan dalam tutorial ini menggunakan PRADO. Kami tidak menyertakan beberapa fitur blog populer di sini (misalnya mengkomentari, mengatur tulisan, kalender, dll), karena kami ingin menjaga tutorial cukup pendek dan kami percaya fitur-fitur ini mudah untuk ditambahkan setelah Anda selesai membaca tutorial ini.
+</p>
+
+<p>
+Secara umum, sistem blog harus membolehkan para pengguna untuk membaca blog dan pengguna terotentikasi mempublikasikan blog. Ini harus memisahkan penyajian dan logika, dan harus mendukung penggantian tema.
+</p>
+
+<h2>Manajemen Pengguna</h2>
+<ul>
+<li>Sistem harus membolehkan otentikasi dan otorisasi para pengguna.</li>
+<li>Sistem harus membolehkan administrator untul menampilkan seluruh akun pengguna.</li>
+<li>Sistem harus membolehkan administrator untuk membuat akun pengguna baru.</li>
+<li>Sistem harus membolehkan administrator atau pemegang akun untuk memutakhirkan akunnya yang sudah ada.</li>
+<li>Sistem harus membolehkan administrator untuk menghapus akun pengguna.</li>
+</ul>
+
+<h2>Manajemen Tulisan</h2>
+<ul>
+<li>Sistem harus membolehkan menampilkan tulisan dengan kriteria waktu pembuatannya dalam urutan mengecil dengan lembar halaman.</li>
+<li>Sistem harus membolehkan melihat rincian dari tulisan yang dipilih.</li>
+<li>Sistem harus membolehkan pembuatan tulisan baru oleh pengguna terotentikasi.</li>
+<li>Sistem harus membolehkan memutakhirkan tulisan yang sudah ada oleh pembuatnya atau  administrator.</li>
+<li>Sistem harus membolehkan penghapusan tulisan yang sudah ada oleh pembbuatnya atau  administrator.</li>
+</ul>
+
+<h2>Pemeliharan Sistem</h2>
+<ul>
+<li>Sistem harus bisa mengumpulkan masukan pengguna.</li>
+<li>Sistem harus cukup fleksibel untuk bisa menambahkan portlet baru di masa mendatang.</li>
+<li>Sistem harus membolehkan mengganti tema yang mendefinisikan gaya dari elemen UI umum.</li>
+</ul>
+
+</com:TContent>

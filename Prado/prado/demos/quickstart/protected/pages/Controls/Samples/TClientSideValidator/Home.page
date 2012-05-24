@@ -1,0 +1,36 @@
+<com:TContent ID="body">
+<h1>Conditional Validation (client-side + server side)</h1>
+
+<table class="sampletable">
+<tr>
+<td class="samplenote">
+Validator with default settings:<br />
+Check "optional" to validate both textboxes
+</td>
+<td class="sampleaction">
+		<com:TTextBox ID="text1" />
+		<com:TRequiredFieldValidator
+			ID="validator1"
+			ControlToValidate="text1"
+			ErrorMessage="*"
+			ControlCssClass="required"/>
+		<com:TTextBox ID="text2" />
+		<com:TRequiredFieldValidator
+			ID="validator2"
+			ControlToValidate="text2"
+			OnValidate="check_validate"
+			ErrorMessage="*"
+			ControlCssClass="required">
+		<prop:ClientSide.OnValidate>
+			sender.enabled = $('<%= $this->check1->ClientID %>').checked;
+		</prop:ClientSide.OnValidate>
+
+		</com:TRequiredFieldValidator>
+		<com:TCheckBox ID="check1" Text="Optional" />
+	<com:TButton ID="submit1" Text="Submit" />
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1784 2007-03-27 08:34:28Z wei $</div></com:TContent>

@@ -1,0 +1,86 @@
+<com:TContent ID="body" >
+<h1 id="201">&iquest;Que es PRADO?</h1>
+<p id="20003" class="block-content">
+PRADO es una capa de programación (framework) basada componentes y programación dirigida por eventos, para desarrollos de aplicaciones Web en PHP 5. Las siglas PRADO significan en espa&ntilde;ol Desarrollo Rapido de Aplicaciones con Programación Orientada a Objetos en PHP  (<b>P</b>HP <b>R</b>apid <b>A</b>pplication <b>D</b>evelopment <b>O</b>bject-oriented).
+</p>
+<p id="20004" class="block-content">
+El principal objetivo de PRADO es utilizar al máximo la reutilización en la programación Web. Por reusabilidad, queremos decir no solamente reutilizar el código propio, si no el de otros programadores de una manera fácil. Lo último dicho es más importante, ya que evita el esfuerzo de reinventar nuevamente la rueda y además posibilita disminuir notablemente los tiempos de desarrollos. La introducción  al concepto de componentes tiene este propósito.
+</p>
+<p id="20005" class="block-content">
+Para alcanzar el propósito mencionado, PRADO estipula un protocolo para escribir y usar componentes para construir una aplicación Web. Un componente es una pieza de programa que es autocontenido (self-contained)  y puede ser reutilizado con una mínima personalización del mismo. Nuevos componentes pueden ser creados por una simple composición de componentes existentes.
+</p>
+<p id="20006" class="block-content">
+Para facilitar la interacción con componentes, PRADO implementa el paradigma de la programación dirigida  por eventos (event-driven) que permite la delegación de comportamientos extensibles  a los componentes.
+Las actividades de los usuarios finales, tales como hacer clic en un botón de un formulario, son capturados como eventos en el lado del servidor (server events).
+Metodos o funciones deben ser enlazadas a dichos eventos de tal manera que cuando los eventos sucedan, estos son invocados automáticamente para responder a dicho evento. Comparado con la programación Web tradicional en la cual los desarrolladores tienen que tratar directamente (raw) con las variables de arreglo POST y GET, la programación dirigida por eventos ayuda a los desarrolladores enfocarse mejor en las necesidades lógicas y reducir significativamente el código de bajo nivel repetitivo (low-level repetitive coding).
+</p>
+<p id="20007" class="block-content">
+En resumen, desarrollar aplicaciones Web con PRADO principalmente involucra instantáneamente tipos de componentes predesarrollados, configurarlos mediante sus propiedades, responder a sus eventos escribiendo funciones manipuladoras de los mismos , y agrupándolos (composing them) dentro de paginas para la aplicación. Es muy similar al Kit de herramientas RAD de Borland Delphi y Microsoft Visual Basic, que son utilizadas para desarrollar aplicaciones (Interfaces Graficas  de Usuarios, GUI) de escritorio.
+</p>
+
+<h2 id="202">&iquest;Proque PRADO?</h2>
+<p id="20008" class="block-content">
+PRADO es comúnmente citado como una plataforma de programación (framework) única. En realidad es tan único que puede convertir una tediosa y aburrida tarea de programación en PHP en una tarea divertida (fun task). La siguiente lista es un pequeño resumen de las características principales de PRADO,
+</p>
+<ul id="prado-features" class="block-content">
+<li>
+Reutilización - Los codigos que se rigen por el protocolo basado en componentes de PRADO son altamente reutilizables. Esto beneficia a los equipos de desarrollo a largo plazo, ya que pueden reutilizar sus trabajos anteriores e integrar otras partes de trabajo con facilidad.</li>
+<li>
+Programación dirigida por eventos - Las actividades del usuario final, tales como como hacer clic en un botón de enviar, son capturadas como eventos del servidor permitiendo que los desarrolladores tengan un mejor enfoque en interacciones del usuario.</li>
+<li>Integración de equipo - La capa de presentacion y la capa logica son almacenados por separado. Las aplicaciones en PRADO pueden ser armadas por temas (themable).</li>
+<li>
+Controles webs Potentes - PRADO viene con un conjunto de poderosos componentes que se ocupan de interfaces de usuario Web. Altamente interactivo de páginas web se puede crear con unas pocas líneas de código. Por ejemplo, utilizando el componente DataGrid, se puede crear rápidamente una página que presenta una tabla de datos que permite la paginación, la clasificación, editar y eliminar filas de los datos.
+<li>
+Fuerte soporte de bases de datos - Desde la versión 3.1, PRADO ha sido equipada con total soporte de bases de datos escrita en forma nativa  y, por tanto, encaja con el resto del framework PRADO. De acuerdo a la complejidad de los objetos de negocio, se puede optar por utilizar la PDO simple, basada en el acceso a los datos, o el apmpliamente conocido Active Record, o el mapa completo de los objetos del negocio SqlMap.</li>
+<li>
+Soporte de AJAX sin fisuras - Uso de AJAX en PRADO nunca ha sido más fácil con su innovador Controles Activos (Active Controls) introducidos desde la versión 3.1. Puede escribir una  aplicación AJAX  sin escribir una sola línea de código javascript. De hecho, que la utilización de los Controles Activos, no es muy diferente a la utilizacion de componentes no-AJAX.</li>
+<li>
+Soporte de I18N y L10N - PRADO incluye soporte completo para crear aplicaciones con múltiples idiomas y la localización.</li>
+<li>
+Compatibilidad (compliance) XHTML - Las páginas Web generadas por PRADO son compatibles con XHTML.</li>
+<li>
+Albergar trabajos ya existentes - PRADO es un framework genérico, con especial atención a la capa de presentación. No excluye a desarrolladores que hacen uso de la mayoría de las actuales bibliotecas de clase o juegos (kits) de herramientas. Por ejemplo, uno puede usar ADOdb o Creole para tratar con base de datos en su aplicación PRADO.
+<li>
+Otras características - Potente manipulación de errores /excepciones  y registro de mensjes (message logging); cahe genérico y memoria caché de salida selectiva; manejo de errores personalizable y localizable; extensible autentificación y autorización; prevención de medidas de seguridad tales como cross-site script (XSS) , protección de cookies, etc.
+</li>
+</ul>
+
+<h2 id="203">¿Qué es adecuado para utilizar PRADO </h2>
+<p id="20009" class="block-content">
+PRADO es mejor adecuado para la creación de aplicaciones Web que tienen alta interactividdad con usuarios (user-interactive). Se puede utilizar para desarrollar sistemas tan simple como un blog o  para aquellos sistema tan complejo como un sistema de gestión de contenidos (CMS) o una completa solución de comercio electrónico. PRADO promueve la programación orientada a objetos a través de su metodología basada en componente , se ajusta muy bien para el trabajo en equipo y el desarrollo empresarial.
+</p>
+<p id="20011" class="block-content">
+PRADO viene con un conjunto completo de técnicas de caching que ayudan a acelerar las aplicaciones Web PRADO y acomodar el tráfico de alta exigencia. Su arquitectura modular permite a los desarrolladores el uso o icorporar (plug-in) diferentes módulos de caché  de memoria para diferentes necesidades. La salida de caché permite  elegir selectivamente el caché de las paginas webs generadas.
+</p>
+
+<h2 id="204">
+¿Cómo se PRADO en comparación con otros Frameworks?
+</h2>
+<p id="20012" class="block-content">
+PRADO es a menudo citado como un framework único. Su singularidad radica principalmente en el paradigma de la programacion basada en componentes (component-based) y dirigida a eventos (event-driven) que pretende promover. Aunque este paradigma de programación no es nuevo en programación de aplicaciones de escritorio y no en una nueva web de algunos lenguajes de programación, PRADO es quizás el primer framework PHP que lo lleva a cabo.
+</p>
+<p id="20013" class="block-content">
+La mayoría de frameworks de PHP principalmente se centra en separar la presentación y la lógica y promueve el patrón de diseño MVC (modelo-vista-controlador) . PRADO logra el mismo objetivo, naturalmente, al exigir que la lógica se almacena en las clases y la presentación en las plantillas. PRADO hace mucho más en otros aspectos distintos de MVC. Se llena de mucho espacio en blanco en la programación web en PHP, con su paradigma de programacion basada en componentes, la riqueza de su conjunto de controles Web, sus potente soporte de bases de datos, su flexible manejo de errores y registro de mensajes, y muchos otros.
+</p>
+
+<h2 id="4004">
+¿Es PRADO lo suficientemente estable?
+</h2>
+<p id="20004" class="block-content">
+Sí. PRADO inicialmente fue liberado en agosto de 2004. Muchas series de ensayos se han escrito y realizado con frecuencia para asegurar su calidad. Se ha utilizado por miles de desarrolladores y muchas aplicaciones Web se han desarrollado sobre la base de la misma. Bugs y peticiones se gestionan a través del sistema TRAC  y tenemos una gran comunidad de usuarios y el equipo de desarrollo para asegurar que todas las preguntas se respondan en forma oportuna.
+</p>
+
+<h2 id="205">Historia de PRADO</h2>
+<p id="20014" class="block-content">
+La propia inspiración original de PRADO vino de Apache Tapestry. Durante el diseño y la ejecución, me tome prestadas muchas ideas de Borland Delphi y Microsoft ASP.NET. La primera versión de PRADO salió en junio de 2004 y fue escrita en PHP 4. Impulsado por el concurso de codificación de Zend PHP 5 , re-escrbí PRADO en PHP 5, que resultó ser una sabia decisión, gracias al nuevo modelo de objetos proporcionados por PHP 5. PRADO ganó el gran premio en el concurso Zend, ganando el más alto de votos del público y los jueces del panel.
+</p>
+<p id="20015" class="block-content">
+En agosto de 2004, PRADO comenzó a ser alojado en SourceForge como un proyecto de código abierto. Poco después, el sitio del proyecto <a href="http://www.xisc.com/"> xisc.com </a> se anunció para el orden público. Con el fantástico apoyo del equipo de desarrolladores PRADO  y usuarios PRADO, PRADO evolucionado a la versión 2,0 a mediados de 2005. En esta versión, Wei Zhuo contribuyó en PRADO con el excelente I18N y L10N apoyo.
+</p>
+<p id="20016" class="block-content">
+En mayo de 2005, se decidió re-escribir por completo el framework PRADO para resolver algunas cuestiones fundamentales que se encuentran en la versión 2.0 y para ponerse al día con algunas geniales características disponibles en Microsoft ASP.NET 2.0. Después de casi un año de arduo trabajo con más de 50.000 líneas de nuevo código, la versión 3.0 fue finalmente puesta a disposición en abril de 2006.
+</p>
+<p id="20017" class="block-content">
+A partir de la versión 3.0, importantes esfuerzos se asignan a asegurar la calidad y la estabilidad de PRADO. Si decimos PRADO v2.x y v1.x son prueba de concepto de trabajo, podemos decir PRADO 3.x ha crecido a un proyecto que es adecuado para un negocio serio el desarrollo de aplicaciones.
+</p>
+<div class="last-modified">$Id: AboutPrado.page 1902 2007-05-07 04:17:37Z wei $</div></com:TContent>

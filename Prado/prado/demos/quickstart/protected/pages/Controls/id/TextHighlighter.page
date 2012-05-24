@@ -1,0 +1,26 @@
+<com:TContent ID="body" >
+
+<h1 id="4601">TTextHighlighter</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TTextHighlighter" />
+
+<p id="530316" class="block-content">
+<tt>TTextHighlighter</tt> melakukan penerangan sintaks untuk konten badannya, termasuk teks statis dan hasil penyajian dari kontrol anaknya. Teks yang sedang diterangi mengikuti sintaks <tt>Language</tt> yang ditetapkan, yang dapat berupa 'php' (standar), 'prado', 'css', 'html', dll. Di sini, 'prado' terdiri dari sintaks template kontrol PRADO.
+</p>
+<p id="530317" class="block-content">
+Jika nomor baris diinginkan di depan setiap baris, setel <tt>ShowLineNumbers</tt> ke true.
+</p>
+<p id="530318" class="block-content">
+Untuk menggunakan <tt>TTextHighlighter</tt>, cukup kurung konten yang sintaksnya akan diterangi di dalam badan pada kontrol <tt>TTextHighlighter</tt>. Contoh berikut menerangi bagian kode PHP,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_530113">
+&lt;com:TTextHighlighter ShowLineNumbers="true"&gt;
+<?php
+$str = 'one|two|three|four';
+print_r(explode('|', $str, 2)); // akan mengeluarkan array
+?>
+&lt;/com:TTextHighlighter&gt;
+</com:TTextHighlighter>
+
+<com:RunBar PagePath="Controls.Samples.TTextHighlighter.Home" />
+
+<div class="last-modified">$Id: TextHighlighter.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

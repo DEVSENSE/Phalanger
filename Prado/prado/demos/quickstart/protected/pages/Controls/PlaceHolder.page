@@ -1,0 +1,12 @@
+<com:TContent ID="body" >
+
+<h1 id="4001">TPlaceHolder</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TPlaceHolder" />
+
+<p id="470306" class="block-content">
+<tt>TPlaceHolder</tt> reserves a place on a template, where static texts or controls may be dynamically inserted.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TPlaceHolder.Home" />
+
+<div class="last-modified">$Id: PlaceHolder.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

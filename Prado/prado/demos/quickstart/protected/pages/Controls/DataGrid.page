@@ -1,0 +1,186 @@
+<com:TContent ID="body" >
+
+<h1 id="5201">TDataGrid</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TDataGrid" />
+
+<p id="590373" class="block-content">
+TDatagrid is an important control in building complex Web applications. It displays data in a tabular format with rows (also called items) and columns. A row is composed by cells, while columns govern how cells should be displayed according to their association with the columns. Data specified via <tt>DataSource</tt> or <tt>DataSourceID</tt> are bound to the rows and feed contents to cells.
+</p>
+<p id="590374" class="block-content">
+TDataGrid is highly interactive. Users can sort the data along specified columns, navigate through different pages of the data, and perform actions, such as editing and deleting, on rows of the data.
+</p>
+<p id="590375" class="block-content">
+Rows of TDataGrid can be accessed via its <tt>Items</tt> property. A row (item) can be in one of several modes: browsing, editing and selecting, which affects how cells in the row are displayed. To change an item's mode, modify <tt>EditItemIndex</tt> or <tt>SelectedItemIndex</tt>. Note, if an item is in edit mode, then selecting this item will have no effect.
+</p>
+
+<h2 id="5202">Columns</h2>
+<p id="590376" class="block-content">
+Columns of a data grid determine how the associated cells are displayed. For example, cells associated with a <tt>TBoundColumn</tt> are displayed differently according to their modes. A cell is displayed as a static text if the cell is in browsing mode, a text box if it is in editing mode, and so on.
+</p>
+<p id="590377" class="block-content">
+PRADO provides eight types of columns:
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>TBoundColumn</tt> associates cells with a specific field of data and displays the cells according to their modes.</li>
+  <li><tt>TLiteralColumn</tt> associates cells with a specific field of data and displays the cells with static texts.</li>
+  <li><tt>TCheckBoxColumn</tt> associates cells with a specific field of data and displays in each cell a checkbox whose check state is determined by the data field value.</li>
+  <li><tt>TDropDownListColumn</tt> associates cells with a specific field of data and displays the cells according to their modes. If in edit mode, a cell will be displayed with a <tt>TDropDownList</tt>.</li>
+  <li><tt>THyperLinkColumn</tt> displays in the cells a hyperlink whose caption and URL can be either statically specified or bound to some fields of data.</li>
+  <li><tt>TEditCommandColumn</tt> displays in the cells edit/update/cancel command buttons according to the state of the item that a cell resides in.</li>
+  <li><tt>TButtonColumn</tt> displays in the cells a command button.</li>
+  <li><tt>TTemplateColumn</tt> displays the cells according to different templates defined for it.</li>
+</ul>
+
+<h2 id="5203">Item Styles</h2>
+<p id="590378" class="block-content">
+TDataGrid defines different styles applied to its items. For example, <tt>AlternatingItemStyle</tt> is applied to alternating items (item 2, 4, 6, etc.) Through these properties, one can set CSS style fields or CSS classes for the items.
+</p>
+<p id="590379" class="block-content">
+Item styles are applied in a hierarchical way. Styles in higher hierarchy will inherit from styles in lower hierarchy. Starting from the lowest hierarchy, the item styles include item's own style, <tt>ItemStyle</tt>, <tt>AlternatingItemStyle</tt>, <tt>SelectedItemStyle</tt>, and <tt>EditItemStyle</tt>. Therefore, if background color is set as red in <tt>ItemStyle</tt>, <tt>EditItemStyle</tt> will also have red background color, unless it is explicitly set to a different value.
+</p>
+
+<h2 id="5204">Events</h2>
+<p id="590380" class="block-content">
+TDataGrid provides several events to facilitate manipulation of its items,
+</p>
+<ul id="u2" class="block-content">
+  <li><tt>OnItemCreated</tt> - raised each time an item is newly created. When the event is raised, data and child controls are both available for the new item.</li>
+  <li><tt>OnItemDataBound</tt> - raised each time an item just completes databinding. When the event is raised, data and child controls are both available for the item, and the item has finished databindings of itself and all its child controls.</li>
+  <li><tt>OnItemCommand</tt> - raised when a child control of some item (such as a <tt>TButton</tt>) raises an <tt>OnCommand</tt> event.</li>
+  <li>command events - raised when a child control's <tt>OnCommand</tt> event has a specific command name,
+    <ul>
+      <li><tt>OnSelectedIndexChanged</tt> - if the command name is <tt>select</tt>.</li>
+      <li><tt>OnEditCommand</tt> - if the command name is <tt>edit</tt>.</li>
+      <li><tt>OnDeleteCommand</tt> - if the command name is <tt>delete</tt>.</li>
+      <li><tt>OnUpdateCommand</tt> - if the command name is <tt>update</tt>.</li>
+      <li><tt>OnCancelCommand</tt> - if the command name is <tt>cancel</tt>.</li>
+      <li><tt>OnSortCommand</tt> - if the command name is <tt>sort</tt>.</li>
+      <li><tt>OnPageIndexChanged</tt> - if the command name is <tt>page</tt>.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="5205">Using TDataGrid</h2>
+
+<h3 id="5210">Automatically Generated Columns</h3>
+<p id="590381" class="block-content">
+TDataGrid by default will create a list of columns based on the structure of the bound data. TDataGrid will read the first row of the data, extract the field names of the row, and construct a column for each field. Each column is of type <tt>TBoundColumn</tt>.
+</p>
+<p id="590382" class="block-content">
+The following example displays a list of computer product information using a TDataGrid. Columns are automatically generated. Pay attention to how item styles are specified and inherited. The data are populated into the datagrid using the following code, which is common among most datagrid applications,
+</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code_590121">
+public function onLoad($param) {
+    parent::onLoad($param);
+    if(!$this->IsPostBack) {
+        $this->DataGrid->DataSource=$this->Data;
+        $this->DataGrid->dataBind();
+    }
+}
+</com:TTextHighlighter>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample1" />
+
+<h3 id="5211">Manually Specified Columns</h3>
+<p id="590383" class="block-content">
+Using automatically generated columns gives a quick way of browsing tabular data. In real applications, however, automatically generated columns are often not sufficient because developers have no way customizing their appearance. Manually specified columns are thus more desirable.
+</p>
+<p id="590384" class="block-content">
+To manually specify columns, set <tt>AutoGenerateColumns</tt> to false, and specify the columns in a template like the following,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_590122">
+&lt;com:TDataGrid ...&gt;
+  &lt;com:TBoundColumn DataField="name" .../&gt;
+  &lt;com:TBoundColumn DataField="price" .../&gt;
+  &lt;com:TEditCommandColumn ...&gt;
+  ...
+&lt;/com:TDataGrid&gt;
+</com:TTextHighlighter>
+<p id="590385" class="block-content">
+Note, if <tt>AutoGenerateColumns</tt> is true and there are manually specified columns, the automatically generated columns will be appended to the manually specified columns. Also note, the datagrid's <tt>Columns</tt> property contains only manually specified columns and no automatically generated ones.
+</p>
+<p id="590386" class="block-content">
+The following example uses manually specified columns to show a list of book information,
+</p>
+<ul id="u4" class="block-content">
+  <li>Book title - displayed as a hyperlink pointing to the corresponding amazon.com book page. <tt>THyperLinkColumn</tt> is used.</li>
+  <li>Publisher - displayed as a piece of text using <tt>TBoundColumn</tt>.</li>
+  <li>Price - displayed as a piece of text using <tt>TBoundColumn</tt> with output formatting string and customized styles.</li>
+  <li>In-stock or not - displayed as a checkbox using <tt>TCheckBoxColumn</tt>.</li>
+  <li>Rating - displayed as an image using <tt>TTemplateColumn</tt> which allows maximum freedom in specifying cell contents.</li>
+</ul>
+<p id="590387" class="block-content">Pay attention to how item (row) styles and column styles cooperate together to affect the appearance of the cells in the datagrid.</p>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample2" />
+
+
+<h2 id="5206">Interacting with TDataGrid</h2>
+<p id="590388" class="block-content">
+Besides the rich data presentation functionalities as demonstrated in previous section, TDataGrid is also highly user interactive. An import usage of TDataGrid is editing or deleting rows of data. The <tt>TBoundColumn</tt> can adjust the associated cell presentation according to the mode of datagrid items. When an item is in browsing mode, the cell is displayed with a static text; when the item is in editing mode, a textbox is displayed to collect user inputs. TDataGrid provides <tt>TEditCommandColumn</tt> for switching item modes. In addition, <tt>TButtonColumn</tt> offers developers the flexibility of creating arbitrary buttons for various user interactions.
+</p>
+<p id="590389" class="block-content">
+The following example shows how to make the previous book information table an interactive one. It allows users to edit and delete book items from the table. Two additional columns are used in the example to allow users interact with the datagrid: <tt>TEditCommandColumn</tt> and <tt>TButtonColumn</tt>. In addition,
+<tt>TDropDownListColumn</tt> replaces the previous <tt>TTemplateColumn</tt> to allow users to select a rating from a dropdown list. Note, it is also possible to use <tt>TTemplateColumn</tt> to achieve the same task.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample3" />
+
+<h2 id="5207">Sorting</h2>
+<p id="590390" class="block-content">
+TDataGrid supports sorting its items according to specific columns. To enable sorting, set <tt>AllowSorting</tt> to true. This will turn column headers into clickable buttons if their <tt>SortExpression</tt> property is not empty. When users click on the header buttons, an <tt>OnSortCommand</tt> event will be raised. Developers can write handlers to respond to the sort command and sort the data according to <tt>SortExpression</tt> which is specified in the corresponding column.
+</p>
+<p id="590391" class="block-content">
+The following example turns the datagrid in <a href="?page=Controls.Samples.TDataGrid.Sample2">Example 2</a> into a sortable one. Users can click on the link button displayed in the header of any column, and the data will be sorted in ascending order along that column.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample4" />
+
+<h2 id="5208">Paging</h2>
+<p id="590392" class="block-content">
+When dealing with large datasets, paging is helpful in reducing the page size and complexity. TDataGrid has an embedded pager that allows users to specify which page of data they want to see. The pager can be customized via <tt>PagerStyle</tt>. For example, <tt>PagerStyle.Visible</tt> determines whether the pager is visible or not; <tt>PagerStyle.Position</tt> indicates where the pager is displayed; and <tt>PagerStyle.Mode</tt> specifies what type of pager is displayed, a numeric one or a next-prev one.
+</p>
+<p id="590393" class="block-content">
+To enable paging, set <tt>AllowPaging</tt> to true. The number of rows of data displayed in a page is specified by <tt>PageSize</tt>, while the index (zero-based) of the page currently showing to users is by <tt>CurrentPageIndex</tt>. When users click on a pager button, TDataGrid raises <tt>OnPageIndexChanged</tt> event. Typically, the event handler is written as follows,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_590123">
+public function pageIndexChanged($sender,$param) {
+    $this->DataGrid->CurrentPageIndex=$param->NewPageIndex;
+    $this->DataGrid->DataSource=$this->Data;
+    $this->DataGrid->dataBind();
+}
+</com:TTextHighlighter>
+<p id="590394" class="block-content">
+The following example enables the paging functionality of the datagrid shown in <a href="?page=Controls.Samples.TDataGrid.Sample1">Example 1</a>. In this example, you can set various pager styles interactively to see how they affect the pager display.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample5" />
+
+<h3 id="5212">Custom Paging</h3>
+<p id="590395" class="block-content">
+The paging functionality shown above requires loading all data into memory, even though only a portion of them is displayed in a page. For large datasets, this is inefficient and may not always be feasible. TDataGrid provides custom paging to solve this problem. Custom paging only requires the portion of the data to be displayed to end users.
+</p>
+<p id="590396" class="block-content">
+To enable custom paging, set both <tt>AllowPaging</tt> and <tt>AllowCustomPaging</tt> to true. Notify TDataGrid the total number of data items (rows) available by setting <tt>VirtualItemCount</tt>. And respond to the <tt>OnPageIndexChanged</tt> event. In the event handler, use the <tt>NewPageIndex</tt> property of the event parameter to fetch the new page of data from data source. For MySQL database, this can be done by using <tt>LIMIT</tt> clause in an SQL select statement.
+</p>
+<com:RunBar PagePath="Controls.Samples.TDataGrid.Sample6" />
+
+<h2 id="5209">Extending TDataGrid</h2>
+<p id="590397" class="block-content">
+Besides traditional class inheritance, extensibility of TDataGrid is mainly through developing new datagrid column components. For example, one may want to display an image column. He may use <tt>TTemplateColumn</tt> to accomplish this task. A better solution is to develop an image column component so that the work can be reused easily in other projects.
+</p>
+<p id="590398" class="block-content">
+All datagrid column components must inherit from <tt>TDataGridColumn</tt>. The main method that needs to be overridden is <tt>initializeCell()</tt> which creates content for cells in the corresponding column. Since each cell is also in an item (row) and the item can have different types (such as <tt>Header</tt>, <tt>AltneratingItem</tt>, etc.), different content may be created according to the item type. For the image column example, one may want to create a <tt>TImage</tt> control within cells residing in items of <tt>Item</tt> and <tt>AlterantingItem</tt> types.
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_590124">
+class ImageColumn extends TDataGridColumn {
+    ...
+    public function initializeCell($cell,$columnIndex,$itemType) {
+        parent::initializeCell($cell,$columnIndex,$itemType);
+        if($itemType==='Item' || $itemType==='AlternatingItem') {
+            $image=new TImage;
+            // ... customization of the image
+            $cell->Controls[]=$image;
+        }
+    }
+}
+</com:TTextHighlighter>
+<p id="590399" class="block-content">
+In <tt>initializeCell()</tt>, remember to call the parent implementation, as it initializes cells in items of <tt>Header</tt> and <tt>Footer</tt> types.
+</p>
+
+<div class="last-modified">$Id: DataGrid.page 2955 2011-06-02 09:30:55Z ctrlaltca@gmail.com $</div></com:TContent>

@@ -1,0 +1,16 @@
+<com:TContent ID="body" >
+
+<h1 id="1301">Przykład: wisielec</h1>
+<p id="60043" class="block-content">
+Zobaczywszy prostą aplikację "Witaj Świecie" stworzymy teraz bardziej skomplikowaną aplikację "Wisielca".
+W tej grze gracz musi odgadnąć słowo podając litery w zadanym czasie. Jeśli odgadnie prawidłowo litera pojawi się w słowie. Gracz może tak długo kontynuować zgadywanie dopóki liczba pomyłek znajduje się w zdefiniwanym na początku zakresie. 
+Gracz wygrywa grę jeśli znajdzie słowo zanim przekroczy dozwoloną liczbę pomyłek, w przeciwnym przypadku przegrywa. 
+</p>
+<p id="60044" class="block-content">
+Aby ułatwić stowrzenie tej gry, pokażemy diagram zmiany stanów gry następująco 
+<br /><br />
+Ciąg dalszy nastąpi...
+</p>
+<com:RunBar PagePath="Fundamentals.Samples.Hangman.Home" />
+
+<div class="last-modified">$Id: Hangman.page 2342 2007-12-17 01:32:32Z aztech $</div></com:TContent>

@@ -1,0 +1,212 @@
+<com:TContent ID="Main">
+
+<h1>Creating <tt>EditUser</tt> Page</h1>
+
+<p>
+The <tt>EditUser</tt> page is very similar to the <a href="?page=Day3.CreateNewUser">NewUser</a>. The main difference is that when <tt>EditUser</tt> is initially requested, the input fields should be initialized with existing user information. Another slight difference is that <tt>EditUser</tt> can also be accessed by normal users.
+</p>
+
+<p>
+To determine which user account is to be editted, we use the following policy:
+</p>
+<ul>
+<li>If the current user is an administrator, he can edit any user account by specifying the account's username in a GET variable named 'username'. For example, <tt>http://hostname/blog/index.php?page=users.EditUser&username=demo</tt>.</li>
+<li>If the current user is an administrator and the URl does not contain 'username', the administrator himself's data is being updated.</li>
+<li>If the current user is a normal user, he can only edit his own account information, and he cannot modify his role data.</li>
+</ul>
+
+<p>
+We create two files <tt>protected/pages/users/EditUser.page</tt> and <tt>protected/pages/users/EditUser.php</tt> to save the page template and page class, respectively.
+</p>
+
+<h2>Creating Page Template</h2>
+<p>
+As you may have guessed, the page template <tt>EditUser</tt> is largely the same as that of <tt>NewUser</tt>. Besides the difference in page title and the caption of the submit button, there are three main differences.
+</p>
+<ul>
+<li>The "username" text box is replaced by a <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Label">TLabel</a> control because we do not allow modifying username;</li>
+<li>The validator for the "password" input is removed. This is because if the user does not provide a password during editting, it means the user does not want to change the password.</li>
+<li>The "role" input is surrounded with <tt>TControl</tt> whose visibility is toggled according to the role of the currently logged-in user. If the user is not an administrator, the "role" input will not be displayed because normal users are not allowed to modify their roles.</li>
+</ul>
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ Title="My Blog - Edit User" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Edit User</h1>
+
+<span>Username:</span>
+&lt;com:TLabel ID="Username" />
+
+<br/>
+<span>Password:</span>
+<br/>
+&lt;com:TTextBox ID="Password" TextMode="Password" />
+
+<br/>
+<span>Re-type Password:</span>
+&lt;com:TCompareValidator
+    ControlToValidate="Password"
+    ControlToCompare="Password2"
+    ErrorMessage="Your password entries did not match."
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Password2" TextMode="Password" />
+
+<br/>
+<span>Email Address:</span>
+&lt;com:TRequiredFieldValidator
+    ControlToValidate="Email"
+    ErrorMessage="Please provide your email address."
+    Display="Dynamic" />
+&lt;com:TEmailAddressValidator
+    ControlToValidate="Email"
+    ErrorMessage="You entered an invalid email address."
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Email" />
+
+&lt;com:TControl Visible="&lt;%= $this->User->IsAdmin %>">
+<br/>
+<span>Role:</span>
+<br/>
+&lt;com:TDropDownList ID="Role">
+    &lt;com:TListItem Text="Normal User" Value="0" />
+    &lt;com:TListItem Text="Administrator" Value="1" />
+&lt;/com:TDropDownList>
+&lt;/com:TControl>
+
+<br/>
+<span>First Name:</span>
+<br/>
+&lt;com:TTextBox ID="FirstName" />
+
+<br/>
+<span>Last Name:</span>
+<br/>
+&lt;com:TTextBox ID="LastName" />
+
+<br/>
+&lt;com:TButton Text="Save" OnClick="saveButtonClicked" />
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+
+<h2>Creating Page Class</h2>
+
+<p>
+Based on the above description and template, we need to write a page class that initializes the inputs with the existing user information. In addition, the page class also needs to implement the <tt>saveButtonClicked()</tt> method which is attached to the "save" button's <tt>OnClick</tt> event.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class EditUser extends TPage
+{
+    /**
+     * Initializes the inputs with existing user data.
+     * This method is invoked by the framework when the page is being initialized.
+     * @param mixed event parameter
+     */
+    public function onInit($param)
+    {
+        parent::onInit($param);
+        if(!$this->IsPostBack)  // if the page is initially requested
+        {
+            // Retrieves the existing user data. This is equivalent to:
+            // $userRecord=$this->getUserRecord();
+            $userRecord=$this->UserRecord;
+
+            // Populates the input controls with the existing user data
+            $this->Username->Text=$userRecord->username;
+            $this->Email->Text=$userRecord->email;
+            $this->Role->SelectedValue=$userRecord->role;
+            $this->FirstName->Text=$userRecord->first_name;
+            $this->LastName->Text=$userRecord->last_name;
+        }
+    }
+
+    /**
+     * Saves the user account if all inputs are valid.
+     * This method responds to the OnClick event of the "save" button.
+     * @param mixed event sender
+     * @param mixed event parameter
+     */
+    public function saveButtonClicked($sender,$param)
+    {
+        if($this->IsValid)  // when all validations succeed
+        {
+            // Retrieves the existing user data. This is equivalent to:
+            $userRecord=$this->UserRecord;
+
+            // Fetches the input data
+            $userRecord->username=$this->Username->Text;
+            // update password when the input is not empty
+            if(!empty($this->Password->Text))
+                $userRecord->password=$this->Password->Text;
+            $userRecord->email=$this->Email->Text;
+            // update the role if the current user is an administrator
+            if($this->User->IsAdmin)
+                $userRecord->role=(int)$this->Role->SelectedValue;
+            $userRecord->first_name=$this->FirstName->Text;
+            $userRecord->last_name=$this->LastName->Text;
+
+            // saves to the database via Active Record mechanism
+            $userRecord->save();
+
+            // redirects the browser to the homepage
+			$this->Response->redirect($this->Service->DefaultPageUrl);
+        }
+    }
+
+    /**
+     * Returns the user data to be editted.
+     * @return UserRecord the user data to be editted.
+     * @throws THttpException if the user data is not found.
+     */
+    protected function getUserRecord()
+    {
+        // the user to be editted is the currently logged-in user
+        $username=$this->User->Name;
+        // if the 'username' GET var is not empty and the current user
+        // is an administrator, we use the GET var value instead.
+        if($this->User->IsAdmin && $this->Request['username']!==null)
+            $username=$this->Request['username'];
+
+        // use Active Record to look for the specified username
+        $userRecord=UserRecord::finder()->findByPk($username);
+        if(!($userRecord instanceof UserRecord))
+            throw new THttpException(500,'Username is invalid.');
+        return $userRecord;
+    }
+}
+</com:TTextHighlighter>
+
+<com:TipBox>
+The <tt>onInit()</tt> method is invoked by PRADO during one of the <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">page lifecycles</a>. Other commonly overriden lifecycle methods include <tt>onPreInit()</tt>, <tt>onLoad()</tt> and <tt>onPreRender()</tt>.
+</com:TipBox>
+
+<h2>Adding Permission Check</h2>
+<p>
+To make the <tt>EditUser</tt> page also accessible by authenticated users (<tt>users="@"</tt>), we need to adjust the page configuration file <tt>protected/pages/users/config.xml</tt> accordingly.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <authorization>
+    <allow roles="admin"/>
+    <allow users="@" pages="EditUser"/>
+    <deny users="*"/>
+  </authorization>
+</configuration>
+</com:TTextHighlighter>
+
+
+<h2>Testing</h2>
+<p>
+To test the <tt>EditUser</tt> page, visit the URL <tt>http://hostname/blog/index.php?page=users.EditUser&username=demo</tt>. You may be required to login first if you have not done so. Try logging in with different accounts (e.g. admin/demo, demo/demo) and see how the page displays differently.
+</p>
+
+</com:TContent>

@@ -1,0 +1,125 @@
+<com:TContent ID="body">
+
+<h1>TDataList Sample 2</h1>
+
+<com:TDataList
+     ID="DataList"
+     DataKeyField="id"
+     OnEditCommand="editItem"
+     OnCancelCommand="cancelItem"
+     OnUpdateCommand="updateItem"
+     OnDeleteCommand="deleteItem"
+     OnSelectedIndexChanged="selectItem"
+     HeaderStyle.BackColor="black"
+     HeaderStyle.ForeColor="white"
+     ItemStyle.BackColor="#BFCFFF"
+     AlternatingItemStyle.BackColor="#E6ECFF"
+     EditItemStyle.BackColor="lightgreen"
+     SelectedItemStyle.BackColor="lightyellow">
+
+<prop:HeaderTemplate>
+<div style="font-weight:bold; text-align:center;">Computer Parts</div>
+</prop:HeaderTemplate>
+
+<prop:ItemTemplate>
+<table border="0" width="100%">
+<tr>
+  <td>
+  <com:TLinkButton
+       Text=<%#$this->DataItem['id']%>
+       CommandName="select"
+       />
+  <%#$this->DataItem['name']%>
+  </td>
+  <td align="right">
+  <com:TLinkButton
+       Text="Edit"
+       CommandName="edit"
+       />
+  <com:TLinkButton
+       Text="Delete"
+       CommandName="delete"
+       Attributes.onclick="if(!confirm('Are you sure?')) return false;"
+       />
+  </td>
+</tr>
+</table>
+</prop:ItemTemplate>
+
+<prop:SelectedItemTemplate>
+<table border="1" width="100%">
+<tr>
+  <th>ID</th><th>Name</th><th>Quantity</th><th>Price</th>
+</tr>
+<tr>
+  <td align="right"><%#$this->DataItem['id'] %></td>
+  <td align="right"><%#$this->DataItem['name'] %></td>
+  <td align="right"><%#$this->DataItem['quantity'] %></td>
+  <td align="right">$<%#$this->DataItem['price'] %></td>
+</tr>
+<tr>
+  <td colspan="4" align="right">
+  <com:TLinkButton
+       Text="Edit"
+       CommandName="edit"
+       />
+  <com:TLinkButton
+       Text="Delete"
+       CommandName="delete"
+       Attributes.onclick="if(!confirm('Are you sure?')) return false;"
+       />
+  </td>
+</tr>
+</table>
+</prop:SelectedItemTemplate>
+
+<prop:EditItemTemplate>
+<table border="0" width="100%">
+<tr>
+  <td align="right">ID</td>
+  <td><b><%#$this->DataItem['id']%></b></td>
+</tr>
+<tr>
+  <td align="right">Name</td>
+  <td><com:TTextBox
+           ID="ProductName"
+           Text=<%#$this->DataItem['name'] %>
+           />
+  </td>
+</tr>
+<tr>
+  <td align="right">Quantity</td>
+  <td><com:TTextBox
+           ID="ProductQuantity"
+           Text=<%#$this->DataItem['quantity'] %>
+           />
+  </td>
+</tr>
+<tr>
+  <td align="right">Price</td>
+  <td><com:TTextBox
+           ID="ProductPrice"
+           Text=<%#$this->DataItem['price'] %>
+           />
+  </td>
+</tr>
+<tr>
+  <td align="right">Imported</td>
+  <td><com:TCheckBox
+           ID="ProductImported"
+           Checked=<%#$this->DataItem['imported'] %>
+           />
+  </td>
+</tr>
+<tr>
+  <td colspan="2" align="right">
+    <com:TLinkButton Text="Save" CommandName="update" />
+    <com:TLinkButton Text="Cancel" CommandName="cancel" />
+  </td>
+</tr>
+</table>
+</prop:EditItemTemplate>
+
+</com:TDataList>
+
+<div class="last-modified">$Id: Sample2.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

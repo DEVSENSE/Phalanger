@@ -1,0 +1,21 @@
+<com:TContent ID="body" >
+<h1>欢迎使用PRADO快速教程</h1>
+
+<div id="intro" class="block-content">
+<p>
+本教程旨在帮助您快速掌握用PRADO v3.x构建Web应用。
+</p>
+<p>
+如果您觉得本教程没能满足您的需求，您也可以参考以下资源：
+</p>
+</div>
+<ul class="block-content" id="intro-links">
+  <li><a href="http://www.pradosoft.com/docs/classdoc/">PRADO类库文档</a></li>
+  <li><a href="http://www.pradosoft.com/docs/manual/">PRADO API文档</a></li>
+  <li><a href="http://www.pradosoft.com/forum/">PRADO论坛</a></li>
+  <li><a href="http://www.pradosoft.com/wiki/">PRADO Wiki</a></li>
+  <li><a href="http://trac.pradosoft.com/prado/">PRADO Trac</a></li>
+</ul>
+
+<div class="last-modified">$Id: $</div>
+</com:TContent>

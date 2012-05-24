@@ -1,0 +1,34 @@
+<com:TContent ID="body" >
+
+<h1 id="1101">Layanan</h1>
+<p id="150151" class="block-content">
+Layanan adalah turunan dari kelas yang menerapkan antarmuka <tt>IService</tt>. Setiap jenis layanan memproses tipe permintaan tertentu pengguna. Sebagai contoh, respon layanan halaman terhadap permintaan pengguna untuk halaman PRADO.
+</p>
+<p id="150152" class="block-content">
+Sebuah layanan diidentifikasi secara unik dengan properti <tt>ID</tt>-nya. Standarnya ketika <tt>THttpRequest</tt> dipakai sebagai <a href="?page=Fundamentals.Modules#request">modul permintaan</a>, nama variabel GET digunakan untuk mengidentifikasi layanan mana yang sedang diminta oleh pengguna. Jika nama variabel GET sama dengan beberapa <tt>ID</tt> layanan, permintaan dianggap untuk layanan itu, dan nilai dari variabel GET dikirimkan sebagai parameter layanan. Untuk layanan halaman, nama variabel GET harus <tt>page</tt>. Sebagai contoh, URKL berikut meminta halaman <tt>Fundamentals.Services</tt>,
+<com:TTextHighlighter Language="none" CssClass="source block-content" id="code_150069">
+http://hostname/index.php?page=Fundamentals.Services
+</com:TTextHighlighter>
+</p>
+<p id="150153" class="block-content">
+Para pengembang dapat menerapkan layanan tambahan untuk aplikasinya. Untuk menjadikan layanan agar tersedia, konfigurasi itu dalam <a href="?page=Configurations.AppConfig">konfigurasi aplikasi</a>.
+</p>
+
+<h2 id="1102">Layanan Halaman</h2>
+<p id="150154" class="block-content">
+PRADO menerapkan <tt>TPageService</tt> untuk melayani permintaan halaman pengguna. Halam disimpan di bawah direktori yang ditetapkan oleh properti <tt>BasePath</tt> dari layanan halaman. Properti standarnya ke direktori  <tt>pages</tt> di bawah path basis aplikasi. Anda boleh mengubah standar ini dengan mengkonfigurasi layanan dalam konfigurasi aplikasi.
+</p>
+<p id="150155" class="block-content">
+Halaman disusun ke dalam direktori di bawah <tt>BasePath</tt>. Dalam setiap direktori, di sana ada file konfigurasi bernama <tt>config.xml</tt>, yang berisi konfigurasi yang hanya efektif ketika halaman di bawah direktori atau sub direktori itu diminta. Untuk lebih jelasnya, lihat seksi <a href="?page=Configurations.PageConfig">konfigurasi halaman</a>.
+</p>
+<p id="150156" class="block-content">
+Parameter layanan untuk layanan halaman merujuk pada halaman yang sedang diminta. Parameter seperti <tt>Fundamentals.Services</tt> merujuk pada halaman <tt>Services</tt> di bawah direktori <tt>&lt;BasePath&gt;/Fundamentals</tt>. Jika parameter tersebut tidak ada dalam permintaan, dianggap sebagai halaman standar bernama <tt>Home</tt>. Menggunakan <tt>THttpRequest</tt> sebagai modul permintaan (default), URL berikut masing-masing akan meminta halaman  <tt>Home</tt>, <tt>About</tt> dan <tt>Register</tt>,
+<com:TTextHighlighter Language="none" CssClass="source block-content" id="code_150070">
+http://hostname/index.php
+http://hostname/index.php?page=About
+http://hostname/index.php?page=Users.Register
+</com:TTextHighlighter>
+di mana contoh pertama mengambiil keuntungan bahwa layanan halaman adalah layanan standar dan <tt>Home</tt> adalah halaman default.
+</p>
+
+<div class="last-modified">$Id: Services.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

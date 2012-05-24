@@ -1,0 +1,25 @@
+<com:TContent ID="body" >
+
+<h1>Nouvelles fonctionnalités</h1>
+
+<p>
+Cette page résume les principale fonctionnalités introduites dans chaque version de PRADO.
+</p>
+
+<h2>Version 3.1.0</h2>
+<ul>
+
+<li>Ajout d'un support d'AJAX. Un large panel de contrôles AJAX, appelés "active controls", est introduit. L'utilisation de ces contrôles est très similaires à leur homologue "non-AJAX". Pour plus de détails, voir le détail sur les <a href="?page=ActiveControls.Home">"active controls"</a>.</li>
+
+<li>Ajout d'un support complet de base de données.</li>
+<li>Ajout de nouveaux contrôles, modules et services, incluant <a href="?page=Services.SoapService">TSoapService</a>, <a href="?page=Controls.OutputCache">TOutputCache</a>, TSessionPageStatePersister, TFeedService, TJsonService, cache des dépendances entre les classes et TXmlTransform.
+</li>
+
+<li>Amélioration de certains contrôles de données avec des "renderers". Le "Renderer" permet la réutilisation des templates qui sont généralement trouvés dans les contrôles comme <tt>TRepeater</tt>, <tt>TDataList</tt> et <tt>TDataGrid</tt>, rendant ainsi la configuration de ces contrôles plus "propre". Pour plus de détails, consultez les tutoriaux mis à jour : <a href="?page=Controls.Repeater"><tt>TRepeater</tt></a>, <a href="?page=Controls.DataList"><tt>TDataList</tt></a> et <a href="?page=Controls.DataGrid"><tt>TDataGrid</tt></a>.</li>
+
+<li>Ajout du support des <a href="?page=Configurations.AppConfig">fichiers de configurations externes</a>. Amélioration de la syntaxe des templates afin de faciliter la <a href="?page=Configurations.Templates1">configuration des sous-propriétés</a>.</li>
+
+</ul>
+
+<div class="last-modified">$Id: NewFeatures.page 1695 2007-02-13 14:16:09Z xue $</div>
+</com:TContent>

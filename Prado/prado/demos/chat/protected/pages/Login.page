@@ -1,0 +1,35 @@
+<!doctype html public "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Prado Chat Demo Login</title>
+	<link rel="stylesheet" type="text/css" href="<%~ style.css %>" />
+</head>
+
+<body>
+
+<com:TForm>
+	<h1 class="login">Prado Chat Demo Login</h1>
+	<fieldset class="login">
+		<legend>Please enter your name:</legend>
+		<div class="username">
+			<com:TLabel ForControl="username" Text="Username:" />
+			<com:TTextBox ID="username" MaxLength="20" />
+			<com:TRequiredFieldValidator
+				ControlToValidate="username"
+				Display="Dynamic"
+				ErrorMessage="Please provide a username." />
+			<com:TCustomValidator
+				ControlToValidate="username"
+				Display="Dynamic"
+				OnServerValidate="checkUsername"
+				ErrorMessage="The username is already taken." />
+		</div>
+
+		<div class="login-button">
+			<com:TButton Text="Login" OnClick="createNewUser" />
+		</div>
+</com:TForm>
+
+</body>
+</html>

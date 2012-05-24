@@ -1,0 +1,16 @@
+<com:TContent ID="body" >
+
+<h1 id="150010">TActiveImage</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveImage" />
+
+<p class="block-content">
+<tt>TActiveImage</tt> is the active control counter part to <tt>TImage</tt>. <tt>TActiveImage</tt> displays an image on a page. The image is specified via the <tt>ImageUrl</tt> property which takes a relative or absolute URL to the image file. The alignment of the image displayed is set by the <tt>ImageAlign</tt> property. To set alternate text or long description of the image, use <tt>AlternateText</tt> or <tt>DescriptionUrl</tt>, respectively.
+</p>
+
+<p class="block-content">
+TActiveImage allows the <tt>AlternateText</tt>, <tt>ImageAlign</tt>, <tt>ImageUrl</tt>
+and <tt>DescriptionUrl</tt> to be updated during a callback request.
+</p>
+<com:RunBar PagePath="ActiveControls.Samples.TActiveImage.Home" />
+
+<div class="last-modified">$Id: ActiveImage.page 2954 2011-06-01 23:01:03Z ctrlaltca@gmail.com $</div></com:TContent>

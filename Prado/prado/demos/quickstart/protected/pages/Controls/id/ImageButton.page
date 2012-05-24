@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="3001">TImageButton</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TImageButton" />
+
+<p id="350269" class="block-content">
+<tt>TImageButton</tt> juga mirip dengan <tt>TButton</tt>, kecuali bahwa <tt>TImageButton</tt> menampilkan tombol sebagai sebuah gambar. Gambar ditetapkan melalui <tt>ImageUrl</tt>, dan teks alternatif ditetapkan oleh <tt>Text</tt>. Sebagai tambahan, dimungkinkan untuk mendapatkan informasi koordinat titik di mana gambar diklik. Informasi koordinat yang diisikan dalam parameter event <tt>OnClick</tt> (bukan <tt>OnCommand</tt>).
+</p>
+<com:RunBar PagePath="Controls.Samples.TImageButton.Home" />
+
+<div class="last-modified">$Id: ImageButton.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

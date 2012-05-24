@@ -1,0 +1,89 @@
+<com:TContent ID="body" >
+<h1 id="401">初めての PRADO アプリケーション</h1>
+<div id="hello1"  class="block-content">
+<p id="50034">
+ここでは、初めて PRADO アプリケーションを開発する人のために、定番の "Hello World" アプリケーションを解説します。
+</p>
+<p id="50035">
+"Hello World" を作る事は、最もシンプルで<i>インタラクティブ</i>な PRADO アプリケーションを作る事かもしれません。<br />
+このアプリケーションは、ページに <tt>Click Me</tt> と書いてある送信ボタンを配置してあります。<br />
+ユーザーがボタンをクリックすると、ボタン文字が <tt>Hello World</tt> に変わるというアプリケーションです。
+</p>
+<p id="50036">
+このアプリケーションには、複雑なアプリケーションを作る上で重要なアプローチがいくつかあります。<br />
+ひとつは、ページからサーバーに変数を送信して、その変数を利用して新しいページ（新しいボタン）を生成していることです。<br />
+またもう一つは、Javascript の <tt>onclick</tt> を意識することなく利用し、ボタン文字を変更する事ができるということです。  
+</p>
+</div>
+<p id="50037" class="block-content">
+PRADO ではコンポーネントベース、そしてイベントドリブンのウェブプログラミングを構築する事ができます。<br />
+ボタンは、<tt>TButton</tt> オブジェクトを使用します。
+<tt>TButton</tt> では <tt>Text</tt> プロパティがボタン文字となり、ユーザーのクリック動作をサーバーサイドの <tt>OnClick</tt> イベントに対応付けます。<br />
+<tt>Text</tt> プロパティを変更する内容を定義したメソッドを <tt>OnClick</tt> に対応付けるだけで、ボタンクリックのアクションを設定することができます。<br />
+以下にアプリケーションのシーケンスを示します。
+<img src="<%~sequence.gif%>" class="figure"/>
+</p>
+<p id="50038" class="block-content">
+このアプリケーションは3つのファイル <tt>index.php</tt>, <tt>Home.page</tt>, <tt>Home.php</tt> から構成されています。
+<img src="<%~directory.gif%>" class="figure"/>
+
+各ディレクトリ名は開発者によって変更する事が可能です。例えば <tt>protected</tt> ディレクトリはウェブサーバーにより公開されたディレクトリ以外の場所へ移動することができます。このチュートリアルを読む事で、その方法を修得する事ができます。
+</p>
+<ul id="dir-struct" class="block-content">
+<li><tt>assets</tt> - このディレクトリにはコンポーネントからファイルが展開されます。詳細は <a href="?page=Advanced.Assets">assets</a> に書かれていますのでご覧下さい。このディレクトリはウェブサーバープロセスから書き込み可能である事が必要となります。</li>
+<li><tt>protected</tt> - アプリケーションデータと開発したコードが保存されるディレクトリです。このディレクトリは閲覧者からのアクセスを禁止されているべきディレクトリです。</li>
+<li><tt>runtime</tt> - アプリケーション状態などのアプリケーション情報がキャッシュとして保存されるディレクトリです。このディレクトリはウェブサーバープロセスからの書き込みが可能でなければなりません。</li>
+<li><tt>pages</tt> - PRADO ページを保存するディレクトリです。</li>
+</ul>
+
+<div class="tip">
+<b class="tip">Tip:</b>PRADO プロジェクトディレクトリを作成するのに <tt>framework/prado-cli.php</tt>（<a href="?page=GettingStarted.CommandLine">コマンドラインスクリプト</a>）を使用することができます。<br />
+例えば、<tt>helloworld</tt> プロジェクトを作りたいディレクトリへ移動し、<tt>php path/to/prado-cli.php -c helloworld</tt> とコマンド入力する事で、<tt>helloworld</tt> プロジェクトディレクトリを作成する事ができます。
+</div>
+
+<p id="50040">
+アプリケーションの実行に必要な3つのファイルの内容は以下のとおりです。
+</p>
+<ul id="file-list" class="block-content">
+<li><tt>index.php</tt> - PRADO アプリケーションのエントリースクリプトです。このファイルは、PRADO アプリケーションでは必ず必要なファイルであり、唯一エンドユーザーが直接アクセスできるスクリプトファイルです。<tt>index.php</tt> の内容は主に以下の3つの項目からなっています。
+<com:TTextHighlighter CssClass="source block-content" id="code_50003">
+require_once('path/to/prado.php');  // PRADO スクリプトの読み込み
+$application=new TApplication;      // PRADO アプリケーションインスタンスの作成
+$application->run();                // アプリケーション実行
+</com:TTextHighlighter>
+</li>
+<li><tt>Home.page</tt> - エンドユーザーが明示的にページを指定しない場合にこのページテンプレートが呼び出されます。テンプレートファイルでは、コンポーネントのレイアウトを定義します。この例では、<tt>TForm</tt> と <tt>TButton</tt> を使用しており、それぞれ&lt;form&gt;  &lt;input&gt; のHTMLタグに対応しています。
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_50004">
+<html>
+  <body>
+    &lt;com:TForm&gt;
+      &lt;com:TButton Text="Click me" OnClick="buttonClicked" /&gt;
+    &lt;/com:TForm&gt;
+  </body>
+</html>
+</com:TTextHighlighter>
+</li>
+<li><tt>Home.php</tt> - <tt>Home</tt> テンプレートファイルのクラス定義ファイルです。ここではボタンの <tt>OnClick</tt> イベント内容の定義を行っています。
+<com:TTextHighlighter CssClass="source block-content" id="code_50005">
+class Home extends TPage
+{
+    public function buttonClicked($sender,$param)
+    {
+        // $sender refers to the button component
+        $sender->Text="Hello World!";
+    }
+}
+</com:TTextHighlighter>
+</li>
+</ul>
+<div id="hello-end" class="block-content">
+<p id="50041">
+アプリケーションファイルの準備ができたら、次のURLからアクセスすることができます。 <tt>http://Web-server-address/helloworld/index.php</tt><br />
+この例では<tt>ドキュメントルート</tt>配下に <tt>helloworld</tt> というディレクトリを配置しています。<tt>Home.page</tt> テンプレートファイル内の <tt>TButton</tt> を <tt>TLinkButton</tt> へ変更してみてどのようになるかも試してみてください。
+</p>
+<p id="50042">
+PRADO リリースアーカイブファイルにこのデモのソースを格納しています。また、<a href="http://www.pradosoft.com/demos/helloworld/">オンラインデモ</a>にて動作を確認する事ができます。
+</p>
+</div>
+
+<div class="last-modified">$Id: HelloWorld.page 1650 2007-06-04 00:38:00Z Shinya.K $</div></com:TContent>

@@ -1,0 +1,40 @@
+<com:TContent ID="body" >
+
+<h1 id="4301">TStatements</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TStatements" />
+
+<p id="500310" class="block-content">
+<tt>TStatements</tt> evaluates a sequence of PHP statements and displays the content rendered by the statements. To specify the PHP statements to be evaluated, set the <tt>Statements</tt> property. For example, the following component tag displays the current time on the Web page,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_500111">
+&lt;com:TStatements&gt;
+  &lt;prop:Statements&gt;
+  setlocale(LC_ALL, 'nl_NL');
+  echo strftime("%A %e %B %Y",time());
+  &lt;/prop:Statements&gt;
+&lt;/com:TStatements&gt;
+</com:TTextHighlighter>
+
+<p id="500311" class="block-content">
+Note, <tt>TStatements</tt> evaluates the PHP statements during the rendering control lifecycle. Unlike <tt>TExpression</tt>, <tt>TStatements</tt> only displays the content 'echoed' within the statements.
+</p>
+
+<p id="500312" class="block-content">
+The context of the statements in a <tt>TStatements</tt> control is the control itself. That is, <tt>$this</tt> represents the control object if it is present in the statements. For example, the following statement tag will display the title of the page containing the <tt>TStatements</tt> control.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_500112">
+&lt;com:TStatements&gt;
+  &lt;prop:Statements&gt;
+  $page=$this->Page;
+  echo $page->Title;
+  &lt;/prop:Statements&gt;
+&lt;/com:TStatements&gt;
+</com:TTextHighlighter>
+
+<p id="500313" class="block-content">
+Be aware, since <tt>TStatements</tt> allows execution of arbitrary PHP code, in general you should not use it to evaluate PHP code submitted by your application users.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TStatements.Home" />
+
+<div class="last-modified">$Id: Statements.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

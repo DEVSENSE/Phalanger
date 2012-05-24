@@ -1,0 +1,46 @@
+
+.loghours label, .timesheet label
+{
+	font-size: 0.9em;
+}
+
+.loghours div, .timesheet div
+{
+	margin-bottom: 0.7em;
+}
+.loghours .category select,
+.loghours .project select,
+.loghours .description textarea
+{
+	width: 14em;
+}
+
+.loghours .description textarea
+{
+	width: 95%;
+	height: 4em;	
+}
+
+.loghours .hours input
+{
+	width: 4em;
+	font-weight: bold;
+	text-align: center;
+}
+
+.loghours .project, .loghours .category, .loghours .day
+{
+	width: 12em;
+	float: left;
+}
+
+.loghours .addEntry input
+{
+	margin-top: 1em;
+	padding: 0.15em 2.5em;
+}
+
+.sheetfor
+{
+	width: 15em;
+}

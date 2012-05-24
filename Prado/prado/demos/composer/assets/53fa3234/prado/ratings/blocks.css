@@ -1,0 +1,29 @@
+.TRatingList_blocks
+{
+	border-collapse: collapse;
+}
+.TRatingList_blocks input, .TRatingList_blocks label
+{
+	display: none;
+}
+.TRatingList_blocks td
+{
+	width: 17px;
+	height: 18px;
+	background-image: url(blocks_blank.gif);
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+.TRatingList_blocks td.rating_selected
+{
+	background-image: url(blocks_selected.gif);
+}
+
+.TRatingList_blocks td.rating_hover
+{
+	background-image: url(blocks_hover.gif);
+}
+.TRatingList_blocks td.rating_half
+{
+	background-image: url(blocks_half.gif);
+}

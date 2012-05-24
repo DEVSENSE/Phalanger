@@ -1,0 +1,83 @@
+<com:TContent ID="body">
+
+<h1>TBulletedList Samples</h1>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Bulleted list with default settings:
+</td>
+<td class="sampleaction">
+<com:TBulletedList>
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TBulletedList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Bulleted list with customized color, font, bullet style:
+</td>
+<td class="sampleaction">
+<com:TBulletedList
+	BulletStyle="UpperRoman"
+	FirstBulletNumber="5"
+	BackColor="silver"
+	Font.Size="12pt">
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TBulletedList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Bulleted list with image bullets:
+</td>
+<td class="sampleaction">
+<com:TBulletedList BulletStyle="CustomImage" BulletImageUrl=<%~bullet.gif%> >
+  <com:TListItem Value="value 1" Text="item 1" />
+  <com:TListItem Value="value 2" Text="item 2" />
+  <com:TListItem Value="value 3" Text="item 3" />
+  <com:TListItem Value="value 4" Text="item 4" />
+</com:TBulletedList>
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Bulleted list of hyperlinks:
+</td>
+<td class="sampleaction">
+<com:TBulletedList DisplayMode="HyperLink" Target="_blank">
+  <com:TListItem Value="http://www.google.com/" Text="google" />
+  <com:TListItem Value="http://www.yahoo.com/" Text="yahoo" />
+  <com:TListItem Value="http://www.amazon.com/" Text="amazon" />
+</com:TBulletedList>
+</td>
+
+<tr>
+<td class="samplenote">
+Bulleted list of link buttons (click on them to see the result):
+</td>
+<td class="sampleaction">
+<com:TBulletedList DisplayMode="LinkButton" OnClick="buttonClicked">
+  <com:TListItem Value="http://www.google.com/" Text="google" />
+  <com:TListItem Value="http://www.yahoo.com/" Text="yahoo" />
+  <com:TListItem Value="http://www.amazon.com/" Text="amazon" />
+</com:TBulletedList>
+<com:TLabel ID="Result" ForeColor="red" />
+</td>
+
+</tr>
+
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

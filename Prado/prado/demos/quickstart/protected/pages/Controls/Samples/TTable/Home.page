@@ -1,0 +1,51 @@
+<com:TContent ID="body">
+
+<h1>TTable Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Table with default settings (looks empty):
+</td><td class="sampleaction">
+<com:TTable />
+</td></tr>
+
+<tr><td class="samplenote">
+Table with rows and customized font, background image, etc.:
+</td><td class="sampleaction">
+<com:TTable
+	GridLines="Both"
+	CellSpacing="0"
+	CellPadding="2"
+	BackImageUrl=<%~backimage.gif%>
+	Caption="This is table caption"
+	CaptionAlign="Bottom">
+  <com:TTableRow BackColor="gray" ForeColor="white">
+    <com:TTableHeaderCell>header cell 1</com:TTableHeaderCell>
+    <com:TTableHeaderCell>header cell 2</com:TTableHeaderCell>
+    <com:TTableHeaderCell>header cell 3</com:TTableHeaderCell>
+  </com:TTableRow>
+  <com:TTableRow HorizontalAlign="Right">
+    <com:TTableCell Text="text">cell 1</com:TTableCell>
+    <com:TTableCell>cell 2</com:TTableCell>
+    <com:TTableCell BackColor="red">cell 3</com:TTableCell>
+  </com:TTableRow>
+  <com:TTableRow>
+    <com:TTableCell ForeColor="red">cell 4</com:TTableCell>
+    <com:TTableCell ColumnSpan="2" HorizontalAlign="Center">
+    cell 5
+    </com:TTableCell>
+  </com:TTableRow>
+</com:TTable>
+</td></tr>
+
+<tr><td class="samplenote">
+A dynamically created table:
+</td><td class="sampleaction">
+<com:TTable ID="Table" />
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

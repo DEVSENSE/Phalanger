@@ -1,0 +1,142 @@
+<com:TContent ID="Main">
+
+<h1>Membuat Halaman <tt>NewPost</tt></h1>
+
+<p>
+Halaman <tt>NewPost</tt> disediakan untuk mengotentikasi pengguna untuk pembuatan tulisan blog baru. Ia perlu untuk menampilkan formulir yang mengumpulkan informasi mengenai tulisan baru, termasuk judul tulisan dan konten badan tulisan.
+</p>
+
+<p>
+Karena <tt>NewPost</tt> hanya bisa diakses oleh pengguna terotentikasi, kita menambahkan file konfigurasi <tt>config.xml</tt> di bawah direktori <tt>protected/pages/posts</tt>. Konfigurasi menetapkan bahwa para pengguna tidak bisa mengakses <tt>NewPost</tt> dan <tt>EditPost</tt> yang akan diperkenalkan dalam bagian berikutnya. Semua pengguna lainnya hanya memiliki akses ke <tt>ListPost</tt> dan <tt>ReadPost</tt>
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="xml">
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <authorization>
+    <deny pages="NewPost,EditPost" users="?" />
+    <allow pages="ListPost,ReadPost" />
+    <deny users="*" />
+  </authorization>
+</configuration>
+</com:TTextHighlighter>
+
+<com:TipBox>
+Selalu menjadi ide yang baik untuk memulai dengan <tt>deny="*"</tt> yang menampung semua aturan dari bawah dan secara bertahap memberikan akses ke halaman dengan aturan tambahan.
+</com:TipBox>
+
+<p>
+Karena jumlah halaman kita berkembang, kita ingin memodifikasi  <tt>MainLayout</tt> agar dalam footer pada halaman blog kita ada link ke berbagai halaman, termasuk homepage, halaman <a href="?page=Day3.CreateNewUser">NewUser</a> (hanya terlihat oleh administrator), dan halaman <tt>NewPost</tt> mendatang (hanya terlihat oleh pengguna terotentikasi).
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<div id="footer">
+&lt;com:THyperLink Text="Home"
+	NavigateUrl="&lt;%= $this->Service->DefaultPageUrl %>" />
+
+&lt;com:THyperLink Text="New Post"
+	NavigateUrl="&lt;%= $this->Service->constructUrl('posts.NewPost') %>"
+	Visible="&lt;%= !$this->User->IsGuest %>" />
+
+&lt;com:THyperLink Text="New User"
+	NavigateUrl="&lt;%= $this->Service->constructUrl('users.NewUser') %>"
+	Visible="&lt;%= $this->User->IsAdmin %>" />
+...other links...
+</div>
+</com:TTextHighlighter>
+
+<p>
+Sekarang kita membuat dua file <tt>protected/pages/posts/NewPost.page</tt> dan <tt>protected/pages/posts/NewPost.php</tt> masing-masing untuk menyimpan template halaman dan kelas halaman.
+</p>
+
+<h2>Membuat Template Halaman</h2>
+<p>
+Template halaman <tt>NewPost</tt> berisi <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.TextBox">TTextBox</a> untuk mengumpulkan judul tulisan dan <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.HtmlArea">THtmlArea</a> untuk mengumpulkan konten tulisan. Yang terakhir adalah editor HTML WYSIWYG. Guna memastikan bahwa input pengguna sudah benar, kita mengaitkan validator dengan kontrol input ini.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;%@ Title="My Blog - New Post" %>
+
+&lt;com:TContent ID="Main">
+
+<h1>Membuat Tulisan Baru</h1>
+
+<span>Title:</span>
+&lt;com:TRequiredFieldValidator
+	ControlToValidate="TitleEdit"
+	ErrorMessage="Please provide a title."
+	Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="TitleEdit" Columns="50" />
+
+<br/>
+<span>Content:</span>
+&lt;com:TRequiredFieldValidator
+	ControlToValidate="ContentEdit"
+	ErrorMessage="Please provide content."
+	Display="Dynamic" />
+<br/>
+&lt;com:THtmlArea ID="ContentEdit" />
+
+<br/>
+&lt;com:TButton Text="Create" OnClick="createButtonClicked" />
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+
+<h2>Membuat Kelas Halaman</h2>
+
+<p>
+Dari template halaman di atas, kita melihat bahwa sebagian besar kita perlu menulis sebuah kelas halaman yang mengimplementasikan pengendali event: <tt>createButtonClicked()</tt> (ditempelkan ke tombo <tt>Create</tt> dalam event <tt>OnClick</tt>).
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class NewPost extends TPage
+{
+	/**
+	 * Membuat tulisan baru jika semua input benar.
+	 * Metode ini merespon event OnClick pada tombol "create".
+	 * @param mixed event sender
+	 * @param mixed event parameter
+	 */
+	public function createButtonClicked($sender,$param)
+	{
+		if($this->IsValid)  // bila semua validasi sukses
+		{
+			// populasikan obyek PostRecord dengan input pengguna
+			$postRecord=new PostRecord;
+			// menggunakan SafeText datipada Text guna menghindari serangan Penaskahan Situs Silang
+			$postRecord->title=$this->TitleEdit->SafeText;
+			$postRecord->content=$this->ContentEdit->SafeText;
+			$postRecord->author_id=$this->User->Name;
+			$postRecord->create_time=time();
+			$postRecord->status=0;
+
+			// simpan ke database lewat mekanisme Rekaman Aktif
+			$postRecord->save();
+
+			// alihkan browser ke halaman tulisan yang baru dibuat
+			$url=$this->Service->constructUrl('posts.ReadPost',array('id'=>$postRecord->post_id));
+			$this->Response->redirect($url);
+		}
+	}
+}
+</com:TTextHighlighter>
+
+<h2>Pengujian</h2>
+<p>
+Untuk menguji halaman <tt>NewPost</tt>, masuk lebih dulu dan klik pada link tombol <tt>New Post</tt> dalam footer pada homepage. Browser kita akan menampilkan hasil berikut dengan URL <tt>http://hostname/blog/index.php?page=NewPost</tt>.
+</p>
+
+<com:InfoBox>
+Ketika Anda mengunjungi halaman <tt>NewPost</tt> untuk pertama kali, Anda bisa melihat bahwa diperlukan beberapa detik sebelum halaman ditampilkan. Ini dikarenakan PRADO perlu mengurai dan mempublikasikan kode javascript dan gambar untuk kontrol <tt>THtmlArea</tt> yang dipakai dalam halaman. Ini dikerjakan sekali dan untuk semuanya.
+</com:InfoBox>
+
+<com:TipBox>
+Untuk menguji fitur lembaran yang kita kembangkan untuk halaman <a href="?page=Day4.CreateListPost">ListPost</a>, kita dapat membuat lima atau lebih tulisan dan melihat apa yang terjadi pada homepage. Lembar dalam <tt>ListPost</tt> menampilkan lima tulisan setiap halamannya.
+</com:TipBox>
+
+<img src="<%~ output3.gif %>" class="output" />
+
+</com:TContent>

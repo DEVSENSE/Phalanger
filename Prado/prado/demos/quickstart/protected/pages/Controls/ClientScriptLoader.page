@@ -1,0 +1,123 @@
+<com:TContent ID="body" >
+
+<h1 id="62003">TClientScriptLoader</h1>
+
+<com:DocLink ClassPath="System.Web.UI.WebControls.TClientScriptLoader" />
+
+<com:SinceVersion Version="3.1b" />
+
+<p class="block-content">
+The <tt>TClientScriptLoader</tt> publish a collection of javascript files as assets.
+For example, suppose we have a directory name "<tt>mylib</tt>" in
+the <tt>protected/pages</tt> directory of our application.</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content">
+assets/
+protected/
+  pages/
+    mylib/
+       file1.js 
+       file2.js
+       file3.js
+       file4.js
+       packages.php
+</com:TTextHighlighter>
+
+<p class="block-content">The <tt>PackagePath</tt> property can be an existing asset directory
+or a namespace path to the directory containing javascript files.
+For example, to publish the javascript files in the <tt>mylib</tt>
+directory, we can specify the <tt>PackagePath</tt> as follows.
+The first tag <tt>TClientScriptLoader</tt> relies on the asset template tag and 
+assumes that the page template containing the <tt>TClientScriptLoader</tt> tag instance
+is in the <tt>protected/pages</tt> directory.
+The second <tt>TClientScriptLoader</tt> tag uses the namespace notation to 
+specify the path.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content">
+&lt;com:TClientScriptLoader PackagePath=&lt;%~ mylib %&gt; /&gt;
+&lt;com:TClientScriptLoader PackagePath="Application.pages.mylib" /&gt;
+</com:TTextHighlighter>
+
+<p class="block-content">
+When the files in the <tt>PackagePath</tt> are published as assets, a script loader
+ php file "<tt>clientscripts.php</tt>" is automatically copied 
+ to that asset directory.
+ The script loader, combines multiple javascript files and serve up as gzip if possible.
+</p>
+<h2 id="62004">Grouping Javascript Files</h2>
+<p class="block-content">
+Allowable scripts and script dependencies can be grouped by using a "<tt>packages.php</tt>" file
+with the following format. This "<tt>packages.php</tt>" is optional, if absent the file names
+without ".js" extension are used. The "<tt>packages.php</tt>" must be in the directory given by
+<tt>PackagePath</tt>.
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+&lt;?php
+ $packages = array(
+    'package1' => array('file1.js', 'file2.js'),
+    'package2' => array('file3.js', 'file4.js'));
+
+ $deps = array(
+    'package1' => array('package1'),
+    'package2' => array('package1', 'package2')); //package2 requires package1 first.
+
+ return array($packages,$deps); //must return $packages and $deps in an array
+?&gt;
+</com:TTextHighlighter>
+
+<p class="block-content">The first element of the array returned by the <tt>packages.php</tt> should
+contain an array of javascripts files relative to the <tt>packages.php</tt>
+that corresponds to a particular grouping. For example, in the above <tt>packages.php</tt>,
+the grouping '<tt>package1</tt>' combines two javascript files, namely, '<tt>file1.js</tt>'
+and '<tt>file2.js</tt>'.
+</p>
+
+<p class="block-content">The second element of the array returned by the <tt>packages.php</tt> should
+contain an array of grouping dependencies ordered in the way that the groups should be combined.
+For example, grouping '<tt>package1</tt>' only depends on the '<tt>package1</tt>' grouping files 
+(i.e. '<tt>file1.js</tt>' and '<tt>file2.js</tt>'). While '<tt>package2</tt>' depends
+on both '<tt>package1</tt>' and '<tt>package2</tt>' groupings. That is, '<tt>package2</tt>'
+will combine, in order, '<tt>file1.js</tt>', '<tt>file2.js</tt>', '<tt>file3.js</tt>', and '<tt>file4.js</tt>'.
+</p>
+
+<h2 id="62005">Loading Javascript Packages</h2>
+
+<p class="block-content">To load a particular javascript file or package, set the <tt>PackageScripts</tt> 
+property with value '<tt>package1</tt>' to load the '<tt>package1</tt>' scripts. 
+A maximum of 25 packages separated by commas is allowed.
+Dependencies of the packages are automatically resolved by the script loader php file.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content">
+&lt;com:TClientScriptLoader PackagePath=&lt;%~ mylib %&gt; PackageScripts="package2" /&gt;
+&lt;script type="text/javascript"&gt;
+ //javascript code utilizing javascript code loaded in 'package2' above
+&lt;/script&gt;
+</com:TTextHighlighter>
+
+<p id="310008" class="block-content">Each <tt>&lt;com:TClientScriptLoader&gt;</tt> generates an HTML <tt>&lt;script&gt;</tt>
+element to load the required javascript files.</p>
+
+<h2 id="62006">Removing Javascript Comments</h2>
+<p class="block-content">The <tt>DebugMode</tt> property when false
+removes comments and white spaces from the published javascript files. If
+the <tt>DebugMode</tt> property is not set, the debug mode is determined from the 
+<a href="?page=Advanced.Performance">application mode</a>.
+</p>
+<div class="note"><b class="note">Note:</b>
+If the <tt>DebugMode</tt> is false either explicitly or when the application mode is non-debug,
+then cache headers are also sent to inform the browser and proxies to cache the file.
+Moreover, the post-processed (comments removed and zipped) are saved in the assets
+directory for the next requests. That is, in non-debug mode the scripts are cached
+in the assets directory until they are deleted.
+</div>
+
+<h2 id="62007">Compressing Javascript with GZip</h2>
+<p class="block-content">
+The <tt>EnableGzip</tt> property (default is true) enables the
+published javascripts to be served as zipped if the browser and php server allows it.
+</p>
+<div class="last-modified">$Id: ClientScript.page 1650 2007-01-24 06:55:32Z wei $</div>
+
+</com:TContent>

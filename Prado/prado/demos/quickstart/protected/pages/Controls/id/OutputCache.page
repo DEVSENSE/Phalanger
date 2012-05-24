@@ -1,0 +1,46 @@
+<com:TContent ID="body" >
+
+<h1 id="88025">TOutputCache</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TOutputCache" />
+
+<p id="440292" class="block-content">
+<tt>TOutputCache</tt> menghidupkan cache sebagian dari halaman Web, juga dikenal sebagai partial caching. Konten yang sedang di-cache adalah sumber halaman HTML yang berasal dari teks statis pada template PRADO atau disajikan oleh satu atau beberapa kontrol pada template. Ketika konten yang di-cache dipakai, kontrol yang membuat konten tidak lagi dibuat untuk hirarki halaman dan selanjutnya penghematan secara signifikan waktu pemrosesan halaman dapat dicapai. Efek sampingnya, seperti yang sudah anda bayangkan adalah bahwa konten yang ditampilkan mungkin membosankan jika versi cache ditampilkan ke para pengguna.
+</p>
+
+<p id="440293" class="block-content">
+Untuk menggunakan <tt>TOutputCache</tt>, cukup kurung konten yang akan di-cache di dalam tag komponen <tt>TOutputCache</tt> pada template (baik template kontrol halaman ataupun non-halaman), misalnya
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_440110">
+&lt;com:TOutputCache&gt;
+   content to be cached
+&lt;/com:TOutputCache&gt;
+</com:TTextHighlighter>
+<p id="440294" class="block-content">
+di mana konten yang di-cache bisa berupa teks statis dan/atau tag template. Jika yang kedua, hasil penyajian dari tag template akan di-cache. Anda dapat menempatkan satu atau beberapa <tt>TOutputCache</tt> pada satu template dan ia dapat diulang-ulang. 
+</p>
+
+<div class="note"><b class="tip">Note:</b>
+<tt>TOutputCache</tt> menyimpan konten yang di-cache melalui modul cache PRADO (misalnya <tt>TSqliteCache</tt>) dan selanjutnya memerlukan setidaknya satu modul cache diambil saat aplikasi dijalankan.
+</div>
+
+<p id="440295" class="block-content">
+Validitas dari konten yang di-cache ditentukan berdasarkan dua faktor: <tt>Durasi</tt> dan ketergantungan cache. Pembentuk menetapkan jumlah detik data bisa tetap benar dalam cache (standarnya 60 detik), sementara yang kedua menetapkan kondisi data yang di-cache tergantung padanya. Jika ketergantungan berubah (misalnya data relevan dalam DB dimutakhirkan), data yang di-cache akan dibuat tidak benar dan diabaikan.
+</p>
+
+<p id="440296" class="block-content">
+Ada dua cara untuk menetapkan ketergantungan cache. Seseorang bisa menulis pengendali event guna merespon event <tt>OnCheckDependency</tt> dan menyetel properti parameter event <tt>IsValid</tt> untuk menunjukan apakah data yang di-cache tetap benar atau tidak. Seseorang juga bisa memperluas <tt>TOutputCache</tt> dan mengganti metode <tt>getCacheDependency()</tt>-nya.
+</p>
+
+<p id="440297" class="block-content">
+Konten yang diambil dari cache dapat bervariasi dengan memperhatikan beberapa parameter. <tt>TOutputCache</tt> mendukung variasi dengan memperhatikan parameter permintaan, yang ditetapkan oleh properti <tt>VaryByParam</tt>. Jika parameter permintaan yang ditetapkan berbeda, versi berbeda dari konten yang di-cache dipakai. Ini sangat berguna jika konten halaman mungkin divariasikan berdasarkan beberapa parameter GET. Konten yang sedang di-cache juga dapat divariasikan dengan sesi pengguna jika <tt>VaryBySession</tt> disetel true. Untuk memvariasikan konten yang di-cache oleh faktor lain, ganti metode <tt>calculateCacheKey()</tt>.
+</p>
+
+<p id="440298" class="block-content">
+Output cache bisa diulang. Cache terluar mengambil lebih dulu di atas cache terdalam dalam menentukan kebenaran konten yang di-cache. Ini berarti, jika konten yang di-cache oleh cache terdalam berakhir atau dibuat tidak benar, sementara yang terluar tidak, maka konten terluar yang di-cache akan dipakai.
+</p>
+
+<p id="440299" class="block-content">
+Standarnya, <tt>TOutputCache</tt> hanya efektif untuk permintaan halaman non-postback dan saat modul cache dihidupkan. Jangan mencoba untuk mengalamatkan kontrol anak pada <tt>TOutputCache</tt> saat konten yang di-cache saat ini sedang dipakai. Gunakan properti <tt>ContentCached</tt> untuk menentukan apakah konten di-cache atau tidak.
+</p>
+
+<div class="last-modified">$Id: OutputCache.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

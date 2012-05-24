@@ -1,0 +1,204 @@
+<com:TContent ID="Main">
+
+<h1>Creating Contact Page</h1>
+
+<p>
+We have created a default page <tt>Home.page</tt> using the <a href="http://www.pradosoft.com/demos/quickstart/?page=GettingStarted.CommandLine">PRADO command line tool</a>. The page is relatively static because it does not containt dynamic content. In this section, we will create an interactive page named <tt>Contact</tt>.
+</p>
+
+<p>
+The purpose of the <tt>Contact</tt> page is to collect feedback from Web users of our blog system. To achieve this goal, we plan to present users a feedback form to fill with. In this form, we will require users to provide their name, email address and feedback content. After the form is filled and submitted, an email containing the feedback will be sent to the site administrator.
+</p>
+
+<p>
+To create the <tt>Contact</tt> page, we need two files under the <tt>pages</tt> directory: the page template file <tt>Contact.page</tt> and the page class file <tt>Contact.php</tt>.
+</p>
+
+<img src="<%~ directories2.gif %>" class="output" />
+
+<com:InfoBox>
+A <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Pages">page</a> must have either a <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">template</a> file (extension <tt>.page</tt>) or a class file, or both:
+</p>
+
+<ul>
+<li>A template-only page is usually a page with static content, like the homepage we already created;</li>
+<li>A class-only page produces content purely based on the execution of the class methods;</li>
+<li>A page with both template and class combines the advantage of both: it uses template to easily organize the page layout and it uses class to contain necessary logic producing dynamic content.</li>
+</ul>
+</com:InfoBox>
+
+
+<h2>Creating Page Template</h2>
+
+<p>
+We first create the template file for the <tt>Contact</tt> page.
+</p>
+
+<p>
+We use template to organize the presentational layout of the feedback form. In the template, we use <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.TextBox">textboxes</a> to collect user's name, email and feedback. And we use <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Validation">validators</a> to ensure that the user provides all these information before submitting the feedback form. The whole template is as follows,
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<html>
+<head><title>My Blog - Contact</title></head>
+<body>
+<h1>Contact</h1>
+<p>Please fill out the following form to let me know your feedback on my blog. Thanks!</p>
+
+&lt;com:TForm> 
+
+<span>Your Name:</span>
+&lt;com:TRequiredFieldValidator ControlToValidate="Name"
+    ErrorMessage="Please provide your name." 
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Name" />
+
+<br/>
+<span>Your Email:</span>
+&lt;com:TRequiredFieldValidator ControlToValidate="Email"
+    ErrorMessage="Please provide your email address." 
+    Display="Dynamic" />
+&lt;com:TEmailAddressValidator ControlToValidate="Email"
+    ErrorMessage="You entered an invalid email address." 
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Email" />
+
+<br/>
+<span>Feedback:</span>
+&lt;com:TRequiredFieldValidator ControlToValidate="Feedback"
+    ErrorMessage="Please provide your feedback." 
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Feedback" 
+    TextMode="MultiLine" 
+    Rows="10"
+    Columns="40" />
+
+<br/>
+&lt;com:TButton Text="Submit" OnClick="submitButtonClicked" />
+
+&lt;/com:TForm>
+
+</body>
+</html>
+</com:TTextHighlighter>
+
+<p>
+As we can see that the template looks very similar to a normal HTML page. The main difference is that the template contains a few <tt>&lt;com:&gt;</tt> tags. Each <tt>&lt;com:&gt;</tt> tag refers to a <a href="http://www.pradosoft.com/demos/quickstart/?page=Fundamentals.Controls">control</a> whose properties are being initialized with name-value pairs in the tag. For example, the <tt>&lt;com:TButton&gt;</tt> refers to the <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.Button">TButton</a> control which displays a button that users can click on to submit the feedback form. For complete template syntax, please refer to the <a href="http://www.pradosoft.com/demos/quickstart/?page=Configurations.Templates1">Quickstart Tutorial</a>.
+</p>
+
+<com:InfoBox>
+PRADO provides a control for every type of HTML input. For example, <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.TextBox">TTextBox</a> displays a text input field, <a href="http://www.pradosoft.com/demos/quickstart/?page=Controls.List">TDropDownList</a> displays a combobox. Each control is a component that may be accessed in code as an object with configurable properties.
+</com:InfoBox>
+
+<p>
+Besides <tt>TTextBox</tt> controls, the template also uses many validator controls which ensure user's inputs satisfy specific validation rules. For example, to ensure a legitimate email address is provided, we use two validators to validate the "email" text box, as shown in the following:
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+<span>Your Email:</span>
+&lt;com:TRequiredFieldValidator 
+    ControlToValidate="Email"
+    ErrorMessage="Please provide your email address." 
+    Display="Dynamic" />
+&lt;com:TEmailAddressValidator 
+    ControlToValidate="Email"
+    ErrorMessage="You entered an invalid email address." 
+    Display="Dynamic" />
+<br/>
+&lt;com:TTextBox ID="Email" />
+<br/>
+</com:TTextHighlighter>
+
+<p>
+Below we summarize the controls that are used in the page template:
+</p>
+
+<ul>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TForm">TForm</a> displays an HTML form. Any input control must be enclosed within it. And most importantly, at most one <tt>TForm</tt> may appear in a page.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TTextBox">TTextBox</a> displays a text box to collect user text input.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TRequiredFieldValidator">TRequiredFieldValidator</a> ensures that the associated text box is not empty when the feedback is submitted.</li>
+<li><a href="http://www.pradosoft.com/docs/classdoc/TEmailAddressValidator">TEmailAddressValidator</a> ensures that the textbox contains a <i>valid</i> email address when the feedback is submitted.</li>
+</ul>
+
+<com:TipBox>
+Writing templates with plain text editors could be tedious and not intuitive for designers. To ease this situation, PRADO has included in the releases an Adobe Dreamweaver extension that supports auto-completing PRADO tags (e.g. including control names, property names, event names, etc.) in Dreamweaver.
+</com:TipBox>
+
+
+<h2>Creating Page Class</h2>
+
+<p>
+We now create the page class <tt>Contact.php</tt>. The reason we need a page class is because we need to respond to the feedback that the user submits.
+
+<p>
+Notice in the template we have the following line. The template essentially states that when a user clicks on the button, it should call the <tt>submitButtonClicked()</tt> method. Here <tt>OnClick</tt> is the name of the user click event, and the method must be defined in the page class.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+  &lt;com:TButton Text="Submit" OnClick="submitButtonClicked" />
+</com:TTextHighlighter>
+
+<p>
+We thus write down the page class as follows:
+</p>
+
+<com:TTextHighlighter CssClass="source">
+<?php
+class Contact extends TPage
+{
+    /**
+     * Event handler for the OnClick event of the submit button.
+     * @param TButton the button triggering the event
+     * @param TEventParameter event parameter (null here)    
+     */
+    public function submitButtonClicked($sender, $param)
+    {
+        if ($this->IsValid)  // check if input validation is successful
+        {
+            // obtain the user name, email, feedback from the textboxes
+            $name = $this->Name->Text;  
+            $email = $this->Email->Text;
+            $feedback = $this->Feedback->Text;
+            
+            // send an email to administrator with the above information
+            $this->mailFeedback($name, $email, $feedback);
+        }
+    }
+    
+    protected function mailFeedback($name, $email, $feedback)
+    {
+        // implementation of sending the feedback email
+    }
+}
+?>
+</com:TTextHighlighter>
+
+<p>
+The above code is largely self-explanatory. In fact, we just show the event-driven programming scheme. In the event handler <tt>submitButtonClicked()</tt>, we retrieve the user's input. For example, <tt>$this->Name->Text</tt> returns the <tt>Text</tt> property value of the <tt>Name</tt> control which is the textbox collecting user's name information.
+</p>
+
+<com:InfoBox>
+Page class name must be the same as the file name. This is also a requirement for writing any PRADO component class.
+</com:InfoBox>
+
+
+<h2>Testing</h2>
+
+<p>
+Our newly created <tt>Contact</tt> can be tested via the URL <tt>http://hostname/blog/index.php?page=Contact</tt>. If we click on the submit button without entering any information, we will see error messages appearing next to the corresponding textboxes. If we enter all required information, the method <tt>mailFeedback()</tt> will be invoked.
+</p>
+
+<img src="<%~ output.gif %>" class="output" />
+
+<p>
+A further enhancement to this page is to show some confirmation message on the page after the user submits feedback. And possibly, the browser may be redirected to another page if the submission is successful. We will leave these tasks to our readers.
+</p>
+
+<com:InfoBox>
+Each validator represents a validation rule. A single input control can be associated with one or multiple validators. Validators perform validation on both client side and server side. On the client side, namely the browser, validation is done using javascript; on the server side, validation is done using PHP code. Client-side validation can be turned off, while server-side validation cannot. This ensures user inputs are always checked by the specified validation rules.
+</com:InfoBox>
+
+</com:TContent>

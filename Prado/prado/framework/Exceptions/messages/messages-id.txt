@@ -1,0 +1,464 @@
+prado_application_singleton_required	= Prado.Application harus disetel hanya sekali.
+prado_component_unknown			= Tipe komponen '{0}' tidak dikenal. Ini bisa disebabkan oleh kesalahan penguraian dalam file kelas {0}: {1}
+prado_using_invalid			= '{0}' bukan namespace yang benar untuk dipakai. Pastikan '.*' ditambahkan jika anda ingin menggunakan namespace merujuk ke sebuah direktori.
+prado_alias_redefined			= Alias '{0}' tidak bisa didefinisikan ulang.
+prado_alias_invalid			= Alias '{0}' merujuk ke path '{1}' yang tidak benar. Hanya direktori yang sudah ada bisa dialiaskan.
+prado_aliasname_invalid			= Alias '{0}' berisi karakter tidak benar '.'.
+
+component_property_undefined		= Properti komponen '{0}.{1}' tidak didefinisikan.
+component_property_readonly		= Properti komponen '{0}.{1}' hanya-baca.
+component_event_undefined		= Event komponen '{0}.{1}' tidak didefinsikan.
+component_eventhandler_invalid			= Event komponen '{0}.{1}' dilampirkan dengan pengendali event tidak benar '{2}'.
+component_expression_invalid		= Komponen '{0}' mengevaluasi ekspresi yang tidak benar '{1}' : {2}.
+component_statements_invalid		= Komponen '{0}' mengevaluasi pernyataan PHP yang tidak benar '{1}' : {2}.
+
+propertyvalue_enumvalue_invalid		= Nilai '{0}' bukan nilai enumerasi yang benar ({1}).
+
+list_index_invalid			= Indeks '{0}' diluar jangkauan.
+list_item_inexistent			= Item tidak bisa ditemukan dalam daftar.
+list_data_not_iterable			= Data harus berupa array atau obyek yang mengimplementasikan antarmuka Traversable.
+list_readonly				= {0} hanya-baca.
+
+map_addition_disallowed			= Item baru tidak bisa ditambahkan ke peta.
+map_item_unremovable			= Item tidak bisas dihapus dari peta.
+map_data_not_iterable			= Data harus berupa array atau obyek yang mengimplementasikan antarmuka Traversable.
+map_readonly				= {0} hanya-baca.
+
+application_includefile_invalid		= Tidak bisa menemukan konfigurasi aplikasi {0}. Pastikan ia ada dalam format namespace dan file berakhir dengan ".xml".
+application_basepath_invalid		= Path basis aplikasi '{0}' tidak ada atau bukan sebuah direktori.
+application_runtimepath_invalid		= Path runtime aplikasi '{0}' tidak ada atau tidak bisa ditulis oleh proses server Web.
+application_service_invalid		= Layanan '{0}' harus mengimplementasikan antarmuka IService.
+application_service_unknown		= Layanan yang diminta '{0}' tidak didefinisikan.
+application_unavailable			= Aplikasi tidak tersedia saat ini.
+application_service_unavailable		= Layanan '{0}' tidak tersedia saat ini.
+application_moduleid_duplicated		= ID modul aplikasi '{0}' tidak unik.
+application_runtimepath_failed		= Tidak bisa membuat path runtime '{0}'. Pastikan direktori leluhur ada dan bisa ditulis oleh proses Web.
+
+appconfig_aliaspath_invalid		= Konfigurasi aplikasi <alias id="{0}"> menggunakan path file tidak benar "{1}".
+appconfig_alias_invalid			= Konfigurasi aplikasi elemen <alias> harus mempunyai atribut "id" dan atribut "path".
+appconfig_alias_redefined		= Konfigurasi aplikasi <alias id="{0}"> tidak bisa didefinisikan ulang.
+appconfig_using_invalid			= Konfigurasi aplikasi elemen <using> harus mempunyai atribut "namespace".
+appconfig_moduleid_required		= Konfigurasi aplikasi elemen <module> harus mempunyai atribut "id".
+appconfig_moduletype_required		= Konfigurasi aplikasi <module id="{0}"> harus mempunyai atribut "class".
+appconfig_serviceid_required		= Konfigurasi aplikasi elemen <service> harus mempunyai atribut "id".
+appconfig_servicetype_required		= Konfigurasi aplikasi <service id="{0}"> harus mempunyai atribut "class".
+appconfig_parameterid_required		= Konfigurasi aplikasi elemen <parameter> harus mempunyai atribut "id".
+appconfig_includefile_required		= Konfigurasi aplikasi elemen <include> harus mempunyai atribut "file".
+
+securitymanager_validationkey_invalid	= TSecurityManager.ValidationKey tidak boleh kosong.
+securitymanager_encryptionkey_invalid	= TSecurityManager.EncryptionKey tidak boleh kosong.
+securitymanager_mcryptextension_required = Ekstensy mcrypt PHP diperlukan agar bisa menggunakan fitur enkripsi TSecurityManager.
+
+uri_format_invalid			= '{0}' bukan URI yang benar.
+
+httprequest_separator_invalid		= THttpRequest.UrlParamSeparator hanya bisa berisi karakter tunggal.
+httprequest_urlmanager_inexist		= THttpRequest.UrlManager '{0}' tidak mengarah ke modul yang sudah ada.
+httprequest_urlmanager_invalid		= THttpRequest.UrlManager '{0}' harus mengarah ke modul yang diperluas dari TUrlManager.
+
+httpcookiecollection_httpcookie_required = THttpCookieCollection hanya bisa menerima obyek THttpCookie.
+
+httpresponse_bufferoutput_unchangeable	= THttpResponse.BufferOutput tidak bisa diubah setelah THttpResponse diinisialisasi.
+httpresponse_file_inexistent		= THttpResponse tidak bisa mengirimkan file '{0}'. File tidak ada.
+
+httpsession_sessionid_unchangeable	= THttpSession.SessionID tidak bisa diubah setelah sesi dimulai.
+httpsession_sessionname_unchangeable	= THttpSession.SessionName tidak bisa diubah setelah sesi dimulai.
+httpsession_sessionname_invalid		= THttpSession.SessionName harus berisi hanya karakter alfanumerik.
+httpsession_savepath_unchangeable	= THttpSession.SavePath tidak bisa diubah setelah sesi dimulai.
+httpsession_savepath_invalid		= THttpSession.SavePath '{0}' tidak benar.
+httpsession_storage_unchangeable	= THttpSession.Storage tidak bisa diubah setelah sesi dimulai.
+httpsession_cookiemode_unchangeable	= THttpSession.CookieMode tidak bisa diubah setelah sesi dimulai.
+httpsession_autostart_unchangeable	= THttpSession.AutoStart tidak bisa diubah setelah modul sesi diinisialisasi.
+httpsession_gcprobability_unchangeable	= THttpSession.GCProbability tidak bisa diubah setelah sesi dimulai.
+httpsession_gcprobability_invalid	= THttpSession.GCProbability harus integer antara 0 dan 100.
+httpsession_transid_unchangeable	= THttpSession.UseTransparentSessionID tidak bisa diubah setelah sesi dimulai.
+httpsession_transid_cookieonly			= THttpSession.UseTransparentSessionID cannot be set when THttpSession.CookieMode is set to Only.
+httpsession_maxlifetime_unchangeable	= THttpSession.Timeout tidak bisa diubah setelah sesi dimulai.
+
+assetmanager_basepath_invalid		= TAssetManager.BasePath '{0}' tidak benar. Pastikan ia dalam bentuk namespace dan mengarah ke direktori yang bisa ditulis oleh proses server Web.
+assetmanager_basepath_unchangeable	= TAssetManager.BasePath tidak bisa diubah setelah modul diinisialisasi.
+assetmanager_baseurl_unchangeable	= TAssetManager.BaseUrl tidak bisa diubah setelah modul diinisialisasi.
+assetmanager_filepath_invalid		= TAssetManager menerbitkan file yang tidak benar '{0}'.
+assetmanager_tarchecksum_invalid	= TAssetManager menerbitkan file tar dengan checksum '{0}' yang salah.
+assetmanager_tarfile_invalid		= TAssetManager menerbitkan file tar yang tidak benar '{0}'.
+assetmanager_source_directory_invalid	= TAssetManager meng-copy direktori '{0}' yang tidak benar.
+
+cache_primary_duplicated		= Paling banyak satu modul cache primer yang dibolehkan. {0} mencoba meregistrasi cache primer lain.
+sqlitecache_extension_required		= TSqliteCache memerlukan ekstensi SQLite PHP.
+sqlitecache_dbfile_required		= TSqliteCache.DbFile diperlukan.
+sqlitecache_connection_failed		= TSqliteCache koneksi database gagal. {0}.
+sqlitecache_table_creation_failed	= TSqliteCache gagal untuk membuat cache database. {0}.
+sqlitecache_dbfile_unchangeable		= TSqliteCache.DbFile tidak bisa diubah setelah modul diinisialisasi.
+sqlitecache_dbfile_invalid		= TSqliteCache.DbFile tidak benar. Pastikan ia ada dalam format namespace yang benar.
+
+memcache_extension_required		= TMemCache memerlukan ekstensi memcache PHP.
+memcache_connection_failed		= TMemCache gagal menghubungi server memcache {0}:{1}.
+memcache_host_unchangeable		= TMemCache.Host tidak bisa diubah setelah modul diinisialisasi.
+memcache_port_unchangeable		= TMemCache.Port tidak bisa diubah setelah modul diinisialisasi.
+
+apccache_extension_required		= TAPCCache memerlukan ekstensi APC PHP.
+apccache_add_unsupported		= TAPCCache.add() tidak didukung.
+apccache_replace_unsupported		= TAPCCache.replace() tidak didukung.
+apccache_extension_not_enabled		= TAPCCache memerlukan apc.enabled = 1 dalam php.ini agar bekerja.
+apccache_extension_not_enabled_cli	= TAPCCache memerlukan apc.enable_cli = 1 dalam php.ini agar bekerja dengan PHP dari baris perintah.
+
+errorhandler_errortemplatepath_invalid	= TErrorHandler.ErrorTemplatePath '{0}' tidak benar. Pastikan ia ada dalam bentuk namespace dan mengarah ke direktori yang berisi file template kesalahan.
+
+pageservice_page_unknown		= Halaman '{0}' Tidak Ditemukan
+pageservice_pageclass_unknown		= Kelas Halaman '{0}' tidak dikenal.
+pageservice_basepath_invalid		= TPageService.BasePath '{0}' bukan direktori yang benar.
+pageservice_page_required		= Nama Halaman Diperlukan
+pageservice_defaultpage_unchangeable	= TPageService.DefaultPage tidak bisa diubah setelah layanan diinisialisasi.
+pageservice_basepath_unchangeable	= TPageService.BasePath tidak bisa diubah setelah layanan diinisialisasi.
+pageservice_pageclass_invalid		= Kelas halaman {0} tidak benar. Ia harus berupa TPage atau diperluas dari TPage.
+pageservice_includefile_invalid		= Tidak bisa menemukan konfigurasi layanan {0}. Pastikan ia ada dalam format namespace dan file berakhir dengan ".xml".
+
+pageserviceconf_file_invalid		= Tidak bisa membuka file konfigurasi direktori halaman '{0}'.
+pageserviceconf_aliaspath_invalid	= <alias id="{0}"> menggunakan path file tidak benar "{1}" dalam file konfigurasi direktori halaman '{2}'.
+pageserviceconf_alias_invalid		= Elemen <alias> harus mempunyai atribut "id" dan atribut "path" dalam file konfigurasi direktori halaman '{0}'.
+pageserviceconf_using_invalid		= Elemen <using> harus mempunyai atribut "namespace" dalam file konfigurasi direktori halaman '{0}'.
+pageserviceconf_module_invalid		= Elemen <module> harus mempunyai atribut "id" dalam file konfigurasi direktori halaman '{0}'.
+pageserviceconf_moduletype_required	= <module id="{0}"> harus mempunyai atribut "class" dalam file konfigurasi direktori halaman '{1}'.
+pageserviceconf_parameter_invalid	= Elemen <parameter> harus mempunyai atribut "id" dalam file konfigurasi direktori halaman '{0}'.
+pageserviceconf_page_invalid		= Elemen <page> harus mempunyai atribut "id" dalam file konfigurasi direktori halaman '{0}'.
+pageserviceconf_includefile_required	= Konfigurasi halaman elemen <include> harus mempunyai atribut "file".
+
+template_closingtag_unexpected		= Tag penutup '{0}' yang tidak diharapkan ditemukan.
+template_closingtag_expected		= Tag penutup '{0}' diharapkan.
+template_directive_nonunique		= Direktif '<%@ ... %>' harus muncul di awal template dan bisa muncul paling banyak satu kali.
+template_comments_forbidden		= Komentar template tidak dibolehkan dalam tag properti.
+template_matching_unexpected		= Penyamaan tidak diharapkan.
+template_property_unknown		= {0} tidak memiliki properti bernama '{1}'.
+template_event_unknown			= {0} tidak memiliki event bernama '{1}'.
+template_property_readonly		= {0} memiliki properti hanya-baca '{1}'.
+template_event_forbidden		= {0} bukan kontrol komponen. Tidak ada pengendali yang dapat dilampirkan ke event '{1}' dalam template.
+template_databind_forbidden		= {0} bukan kontrol komponen. Ekspresi tidak bisa diikat ke propertinya '{1}'.
+template_component_required		= '{0}' bukan komponen. Hanya komponen yang dapat terlihat dalam template.
+template_format_invalid			= Sintaks template salah: {0}
+template_property_duplicated		= Properti {0} dikonfigurasi dua kali atau lebih.
+template_eventhandler_invalid		= {0}.{1} hanya bisa menerima string statis.
+template_controlid_invalid		= {0}.ID hanya bisa menerima string teks statis.
+template_controlskinid_invalid		= {0}.SkinID hanya bisa menerima string teks statis.
+template_content_unexpected		= Konten tidak diharapkan ditemukan saat menurunkan template: {0}.
+template_include_invalid		= Inklusi template tidak benar. Pastikan {0} adalah namespace yang benar mengarah ke file template yang sudah ada yang mempunyai ekstensi .tpl.
+template_tag_unexpected			= Inisialisasi properti {0} berisi tipe tag tidak dikenal {1}.
+
+xmldocument_file_read_failed		= TXmlDocument tidak bisa membaca file '{0}'.
+xmldocument_file_write_failed		= TXmlDocument tidak bisa menulis file '{0}'.
+
+xmlelementlist_xmlelement_required	= TXmlElementList hanya bisa menerima obyek TXmlElement.
+
+authorizationrule_action_invalid	= TAuthorizationRule.Action hanya bisa mengambil 'allow' atau 'deny' sebagai nilainya.
+authorizationrule_verb_invalid		= TAuthorizationRule.Verb hanya bisa mengambil 'get' atau 'post' sebagai nilainya.
+
+authorizationrulecollection_authorizationrule_required = TAuthorizationRuleCollection hanya bisa menerima obyek TAuthorizationRule.
+
+usermanager_userfile_invalid		= TUserManager.UserFile '{0}' bukan file yang benar.
+usermanager_userfile_unchangeable	= TUserManager.UserFile tidak bisa diubah. Modul pengguna sudah diinisialisasi.
+
+authmanager_usermanager_required	= TAuthManager.UserManager harus menempatkan nilai.
+authmanager_usermanager_inexistent	= TAuthManager.UserManager '{0}' tidak merujuk ke ID modul aplikasi.
+authmanager_usermanager_invalid		= TAuthManager.UserManager '{0}' tidak merujuk ke modul aplikasi TUserManager yang benar.
+authmanager_usermanager_unchangeable	= TAuthManager.UserManager tidak bisa diubah setelah modul diinisialisasi.
+authmanager_session_required		= TAuthManager memerlukan modul aplikasi sesi.
+
+thememanager_service_unavailable	= TThemeManager memerlukan ketersediaan TPageService. Kesalahan ini sering terjadi saat anda mengkonfigurasi TThemeManager di luar konfigurasi layanan halaman.
+thememanager_basepath_invalid		= TThemeManager.BasePath '{0}' bukan alias path yang benar. Pastikan anda telah mendefinisikan alias ini dalam konfigurasi dan mengarahkan ke direktori yang benar.
+thememanager_basepath_invalid2		= TThemeManager.BasePath '{0}' bukan direktori yang benar.
+thememanager_basepath_unchangeable	= TThemeManager.BasePath tidak bisa diubah setelah modul diinisialisasi.
+
+theme_baseurl_required			= TThemeManager.BasePath diperlukan. Standarnya direktori bernama 'themes' di bawah direktori berisi naskah entri aplikasi diasumsikan.
+theme_path_inexistent			= Path tema '{0}' tidak ada.
+theme_control_nested			= Skin untuk tipe kontrol '{0}' dalam tema '{1}' tidak bisa di dalam skin lain.
+theme_skinid_duplicated			= SkinID '{0}.{1}' diduplikasi dalam tema '{2}'.
+theme_databind_forbidden		= Databind tidak bisa dipakai dalam tema '{0}' untuk skin kontrol '{1}.{2}' mengenai properti '{3}'.
+theme_property_readonly			= Skin diterapkan ke properti kontrol hanya-baca '{0}.{1}'.
+theme_property_undefined		= Skin diterapkan ke properti kontrol yang tidak ada '{0}.{1}'.
+theme_tag_unexpected			= Inisialisasi properti {0} berisi tipe tag tidak dikenal {1}.
+
+control_object_reregistered		= Ditemukan duplikasi obyek ID '{0}'.
+control_id_invalid			= {0}.ID '{1}' tidak benar. Hanya alfanumerik dan karakter bergaris bawah dibolehkan. Karakter pertama harus alfabetikatau karakter garis bawah.
+control_skinid_unchangeable		= {0}.SkinID tidak bisa diubah setelah skin diterapkan ke kontrol atau kontrol anak sudah dibuat.
+control_enabletheming_unchangeable	= {0}.EnableTheming tidak bisa diubah setelah kontrol anak dibuat.
+control_stylesheet_applied		= StyleSheet skin sudah diterapkan ke {0}.
+control_id_nonunique			= {0}.ID '{1}' tidak unik diantara semua kontrol di bawah tempat penamaan yang sama.
+
+templatecontrol_mastercontrol_invalid	= Kontrol master harus bertipe TTemplateControl atau kelas anak.
+templatecontrol_mastercontrol_required	= Kontrol '{0}' memerlukan kontrol master karena kontrol menggunakan TContent.
+templatecontrol_contentid_duplicated	= TContent ID '{0}' duplikasi.
+templatecontrol_placeholderid_duplicated= TContentPlaceHolder ID '{0}' duplikasi.
+templatecontrol_directive_invalid	= {0}.{1} hanya menerima teks statis melalui direktif template.
+templatecontrol_placeholder_inexistent	= TContent '{0}' tidak mempunyai TContentPlaceHolder yang sama. 
+
+page_form_duplicated					= Halaman bisa berisi paling banyak satu TForm. Gunakan tag form HTML reguler untuk sisa form-nya.
+page_isvalid_unknown				= TPage.IsValid belum dievaluasi.
+page_postbackcontrol_invalid			= Tidak bisa menentukan kontrol postback '{0}'.
+page_control_outofform				= {0} '{1}' harus dikurung di dalam TForm.
+page_head_duplicated				= Halaman dapat berisi paling banyak satu THead.
+page_head_required				= Kontrol THead dibutuhkan dalam template halaman untuk menyajikan CSS dan JS dalam seksi head HTML.
+page_statepersister_invalid			= Persister kondisi halaman harus mengimplementasikan antarmuka IPageStatePersister.
+
+csmanager_pradoscript_invalid			= Nama librari naskah Prado '{0}' tidak dikenal.
+csmanager_invalid_packages			= Paket '{1}' tidak dikenal untuk paket javascript yang didefinisikan dalam '{0}'. Paket yang benar adalah '{2}'.
+
+contentplaceholder_id_required			= TContentPlaceHolder harus mempunyai ID.
+
+content_id_required				= TContent harus mempunyai ID.
+
+controlcollection_control_required		= TControlList hanya bisa menerima string atau obyek TControl.
+
+webcontrol_accesskey_invalid			= {0}.AccessKey '{1}' tidak benar. Ia harus berupa hanya karakter tunggal.
+webcontrol_style_invalid			= {0}.Style harus berisi hanya nilai string.
+
+listcontrol_selection_invalid			= {0} mempunyai pilihan tidak benar yang disetel sebelum melakukan penyatuan data.
+listcontrol_selectedindex_invalid		= {0}.SelectedIndex mempunyai nilai '{1}' yang tidak benar.
+listcontrol_selectedvalue_invalid		= {0}.SelectedValue mempunyai nilai '{1}' yang tidak benar.
+listcontrol_expression_invalid			= {0} mengevaluasi ekspresi yang tidak benar '{1}' : {2}
+listcontrol_multiselect_unsupported		= {0} tidak mendukung multi pilihan.
+
+label_associatedcontrol_invalid			= TLabel.AssociatedControl '{0}' tidak bisa ditemukan.
+
+hiddenfield_focus_unsupported			= THiddenField tidak mendukung setelan fokus input.
+hiddenfield_theming_unsupported			= THiddenField tidak mendukung tema.
+hiddenfield_skinid_unsupported			= THiddenField tidak mendukung skin kontrol.
+
+panel_defaultbutton_invalid				= TPanel.DefaultButton '{0}' tidak merujuk ke kontrol tombol yang sudah ada.
+
+tablestyle_cellpadding_invalid			= TTableStyle.CellPadding harus mengambil integer sama dengan atau lebih besar dari.
+tablestyle_cellspacing_invalid			= TTableStyle.CellSpacing harus mengambil integer sama dengan atau lebih besar dari -1.
+
+pagestatepersister_pagestate_corrupted	= Kondisi halaman rusak.
+
+sessionpagestatepersister_pagestate_corrupted = Kondisi halaman rusak.
+sessionpagestatepersister_historysize_invalid = TSessionPageStatePersister.History harus integer lebih besar dari 0.
+
+listitemcollection_item_invalid			= TListItemCollection hanya bisa mengambil strings atau obyek TListItem.
+
+dropdownlist_selectedindices_unsupported= TDropDownList.SelectedIndices hanya-baca.
+
+bulletedlist_autopostback_unsupported	= TBulletedList.AutoPostBack hanya-baca.
+bulletedlist_selectedindex_unsupported	= TBulletedList.SelectedIndex hanya-baca.
+bulletedlist_selectedindices_unsupported= TBulletedList.SelectedIndices hanya-baca.
+bulletedlist_selectedvalue_unsupported	= TBulletedList.SelectedValue hanya-baca.
+
+radiobuttonlist_selectedindices_unsupported	= TRadioButtonList.SelectedIndices hanya-baca.
+
+logrouter_configfile_invalid			= TLogRouter.ConfigFile '{0}' tidak ada.
+logrouter_routeclass_required			= Atribut Class diperlukan dalam konfigurasi <route>.
+logrouter_routetype_required			= Rute catatan harus turunan dari TLogRoute atau kelas turunannya.
+
+filelogroute_logpath_invalid			= TFileLogRoute.LogPath '{0}' harus berupa direktori dalam format namespace dan harus bisa ditulis oleh proses server Web.
+filelogroute_maxfilesize_invalid		= TFileLogRoute.MaxFileSize harus lebih besar dari 0.
+filelogroute_maxlogfiles_invalid		= TFileLogRoute.MaxLogFiles harus lebih besar dari 0.
+
+emaillogroute_sentfrom_required			= TEmailLogRoute.SentFrom tidak boleh kosong.
+
+repeatinfo_repeatcolumns_invalid		= TRepeatInfo.RepeatColumns tidak boleh kurang dari 0.
+
+basevalidator_controltovalidate_invalid = {0}.ControlToValidate kosong atau berisi path ID kontrol yang tidak benar.
+basevalidator_validatable_required		= {0}.ControlToValidate harus mengarah ke sebuah kontrol yang mengimplementasikan antarmuka IValidatable.
+basevalidator_forcontrol_unsupported	= {0}.ForControl tidak didukung.
+
+comparevalidator_controltocompare_invalid = TCompareValidator.ControlToCompare berisi path ID kontrol tidak benar.
+
+listcontrolvalidator_invalid_control	= {0}.ControlToValidate berisi path ID TListControl tidak benar, "{1}" adalah {2}.
+
+repeater_template_required				= TRepeater.{0} memerlukan turunan template yang mengimplementasikan antarmuka ITemplate.
+repeater_itemtype_unknown				= Tipe item repeater {0} tidak dikenal.
+repeateritemcollection_item_invalid		= TRepeaterItemCollection hanya bisa menerima obyek yang adalah turunan dari TControl atau kelas turunannya.
+
+datalist_template_required				= TDataList.{0} requires a template instance implementing ITemplate interface.
+datalistitemcollection_datalistitem_required = TDataListItemCollection hanya bisa menerima obyek TDataListItem.
+
+datagrid_template_required				= TDataGrid.{0} memerlukan turunan template yang mengimplementasikan antarmuka ITemplate.
+templatecolumn_template_required		= TTemplateColumn.{0} memerlukan turunan template yang mengimplementasikan antarmuka ITemplate.
+datagrid_currentpageindex_invalid		= TDataGrid.CurrentPageIndex harus tidak kurang dari0.
+datagrid_pagesize_invalid				= TDataGrid.PageSize harus lebih besar dari 0.
+datagrid_virtualitemcount_invalid		= TDataGrid.VirtualItemCount harus tidak kurang dari0.
+datagriditemcollection_datagriditem_required = TDataGridItemCollection hanya bisas menerima obyek TDataGridItem.
+datagridcolumncollection_datagridcolumn_required = TDataGridColumnCollection hanya bisa menerima obyek TDataGridColumn.
+datagridpagerstyle_pagebuttoncount_invalid = TDataGridPagerStyle.PageButtonCount harus lebih besar dari 0.
+
+datafieldaccessor_data_invalid			= TDataFieldAccessor mencoba untuk mengevaluasi nilai field dari data yang tidak benar. Pastikan data adalah sebuah array, TMap, TList, atau obyek yang berisi field yang ditetapkan '{0}'.
+datafieldaccessor_datafield_invalid		= TDataFieldAccessor mencoba untuk mengevaluasi nilai data dari field '{0}' yang tidak dikenal.
+
+tablerowcollection_tablerow_required	= TTableRowCollection hanya bisa menerima obyek TTableRow.
+
+tablecellcollection_tablerow_required	= TTableCellCollection hanya bisa menerima obyek TTableCell.
+
+multiview_view_required					= TMultiView hanya bisa menerima TView sebagai anak.
+multiview_activeviewindex_invalid		= TMultiView.ActiveViewIndex mempunyai indeks'{0}' yang tidak benar.
+multiview_view_inexistent			= TMultiView tidak bisa menemukan tampilan yang ditetapkan.
+multiview_viewid_invalid			= TMultiView tidak bisa menemukan tampilan '{0}' untu beralih ke sana.
+
+viewcollection_view_required			= TViewCollection hanya bisa menerima TView sebagai elemennya.
+
+view_visible_readonly				= TView.Visible hanya baca. Gunakan TView.Active untuk menghidup-matikan visibilitasnya.
+
+wizard_step_invalid				= Langkah yang diaktifkan tidak bisa ditemukan dalam koleksi langkah bimbingan.
+wizard_command_invalid				= Perintah navigasi bimbingan '{0}' tidak benar.
+
+table_tablesection_outoforder			= Seksi tabel TTable harus dalam urutan: Header, Body dan Footer.
+
+completewizardstep_steptype_readonly	= TCompleteWizardStep.StepType hanya-baca.
+
+wizardstepcollection_wizardstep_required = TWizardStepCollection hanya bisa menerima obyek dari TWizardStep atau kelas anaknya.
+
+texthighlighter_stylesheet_invalid		= Tidak bisa menemukan file stylesheet untuk TTextHighlighter.
+
+hotspotcollection_hotspot_required		= THotSpotCollection hanya bisa meneruma turunan dari THotSpot atau kelas anaknya.
+
+htmlarea_textmode_readonly			= THtmlArea.TextMode hanya-baca.
+htmlarea_tarfile_invalid			= THtmlArea tidak bisa mencari file tar TinyMCE.
+
+parametermodule_parameterfile_unchangeable = TParameterModule.ParameterFile tidak bisa diubah karena modul sudah diinisialisasi.
+parametermodule_parameterfile_invalid	= TParameterModule.ParameterFile '{0}' tidak benar. Pastikan ia ada dalam format namespace dan ekstensi file adalah '.xml'.
+parametermodule_parameterid_required	= Elemen parameter harus mempunyai atribut 'id'.
+
+datagridcolumn_id_invalid			= {0}.ID '{1}' tidak benar. Hanya alfanumerik dan karakter bergaris bawah yang dibolehkan. Karakter pertama harus alfabetik atau karakter garis bawah.
+datagridcolumn_expression_invalid		= {0} mengevaluasi ekspresi yang tidak benar '{1}' : {2}
+
+outputcache_cachemoduleid_invalid		= TOutputCache.CacheModuleID disetel dengan ID modul cacheID {0} yang tidak benar. Baik modul yang tidak ada ataupun tidak mengimplementasikan antarmuka ICache.
+outputcache_duration_invalid			= {0}.Duration harus integer tidak kurang dari 0.
+
+stack_data_not_iterable				= TStack hanya bisa mengambil data dari array atau obyek yang dapat dijelajahi.
+stack_empty					= TStack kosong.
+
+queue_data_not_iterable				= TQueue hanya bisa mengambil data dari array atau obyek yang dapat dijelajahi.
+queue_empty					= TQueue kosong.
+
+pager_pagebuttoncount_invalid			= TPager.PageButtonCount harus integer tidak kurang dari 1.
+pager_currentpageindex_invalid			= TPager.CurrentPageIndex diluar jangkauan.
+pager_pagecount_invalid				= TPager.PageCount tidak bisa lebih kecil dari 0.
+pager_controltopaginate_invalid			= TPager.ControlToPaginate {0} harus path ID yang merngarah ke kontrol turunan-TDataBoundControl.
+
+databoundcontrol_pagesize_invalid		= {0}.PageSize harus integer tidak lebih kecil dari 1.
+databoundcontrol_virtualitemcount_invalid = {0}.VirtualItemCount harus integer tidak lebih kecil dari 0.
+databoundcontrol_currentpageindex_invalid = {0}.CurrentPageIndex diluar jangkauan.
+databoundcontrol_datasource_invalid		= {0}.DataSource tidak benar.
+databoundcontrol_datasourceid_inexistent = databoundcontrol_datasourceid_inexistent.
+databoundcontrol_datasourceid_invalid	= databoundcontrol_datasourceid_invalid
+databoundcontrol_datamember_invalid		= databoundcontrol_datamember_invalid
+
+clientscript_invalid_file_position		= Posisi file '{1}' tidak benar untuk kontrol TClientScript '{0}', harus 'Head', 'Here' atau 'Begin'.
+clientscript_invalid_package_path		= PackagePath '{0}' tidak benar untuk kontrol TClientScript '{1}'.
+
+tdatepicker_autopostback_unsupported	= '{0}' tidak mendukung AutoPostBack.
+globalization_cache_path_failed			= Tidak bisa membuat path cache pesan terjemahan '{0}'. Pastikan direktori leluhur ada dan bisa ditulis oleh proses Web.
+globalization_source_path_failed		= Tidak bisa membuat path pesan terjemahan '{0}'. Pastikan direktori leluhur ada dan bisa ditulis oleh proses Web.
+callback_not_support_no_priority_state_update	= Permintaan callback tidak mendukung pemutakhiran kondisi halam yang tidak diprioritaskan.
+callback_invalid_callback_options		= '{1}' bukan kontrol TCallbackOptions yang benar untuk kontrol Callback '{0}'.
+callback_invalid_clientside_options		= Properti ClientSide Callback harus berupa string yakni ID dari kontrol TCallbackOptions atau turunan dari TCallbackClientSideOptions.=======
+callback_not_support_no_priority_state_update	= Permintaan callback tidak mendukung pemutakhiran kondisi halaman yang tidak diprioritaskan.
+callback_invalid_handler				= Pengendali callback tidak benar, kontrol {0} harus mengimplementasikan ICallbackEventHandler.
+callback_invalid_target					= Target callback tidak benar, tidak ada kontrol dengan ID {0}.
+
+callback_interval_be_positive			= Interval TCallbackTimer "{0}" harus tepat lebih besar dari nol detik.
+callback_decay_be_not_negative			= Rata-rata kekurangan TCallbackTimer "{0}" tidak boleh negatif.
+
+callback_no_autopostback				= Kontrol "{0}" tidak bisa menghidupkan AutoPostBack.
+
+xmltransform_xslextension_required		= TXmlTransform memerlukan ekstensi XSL PHP.
+xmltransform_transformpath_invalid		= TXmlTransform.TransformPath '{0}' tidak benar.
+xmltransform_documentpath_invalid		= TXmlTransform.DocumentPath '{0}' tidak benar.
+xmltransform_transform_required			= Baik properti TransformContent ataupun TransformPath harus disetel untuk TXmlTransform.
+
+ttriggeredcallback_invalid_controlid	= Properti ControlID '{0}' tidak boleh kosong.
+tactivecustomvalidator_clientfunction_unsupported = {0} tidak mendukung fungsi validator sisi klien.
+
+dbconnection_open_failed				= TDbConnection gagal untuk menyelesaikan koneksi DB: {0}
+dbconnection_connection_inactive		= TDbConnection tidak aktif.
+dbconnection_unsupported_driver_charset	= Database driver '{0}' doesn't support setting charset.
+
+dbcommand_prepare_failed				= TDbCommand gagal untuk menyiapkan pernyataan SQL "{1}": {0}
+dbcommand_execute_failed				= TDbCommand gagal untuk menjalankan pernyataan SQL "{1}": {0}
+dbcommand_query_failed					= TDbCommand gagal untuk menjalankan query SQL "{1}": {0}
+dbcommand_column_empty					= TDbCommand mengembalikan hasil kosong dan tidak bisa memperoleh skalar.
+dbdatareader_rewind_invalid				= TDbDataReader adalah stream hanya-maju. Ia hanya bisa sekali menjelajah.
+dbtransaction_transaction_inactive		= TDbTransaction tidak aktif.
+
+dbcommandbuilder_value_must_not_be_null	= Properti {0} tidak boleh null seperti didefinisikan oleh kolom '{2}' dalam tabel '{1}'.
+
+dbcommon_invalid_table_name				= Tabel database '{0}' tidak ditemukan. Pesan kesalahan: {1}.
+dbcommon_invalid_identifier_name        = Nama pengenal database '{0}' tidak benar, lihat {1} untuk lebih jelasnya.
+dbtableinfo_invalid_column_name			= Nama kolom '{0}' tidak benar untuk tabel database '{1}'.
+dbmetadata_invalid_table_view			= Nama table/view '{0}', atau  table/view '{0}' itu tidak berisi definisi kolom/field yang bisa diakses.
+dbmetadata_requires_php_version			= Versi PHP {1} atau yang terbaru diperlukan untuk menggunakan database {0}.
+
+dbtablegateway_invalid_criteria			= Obyek kriteria tidak benar, harus berupa string atau turunan dari TSqlCriteria.
+dbtablegateway_no_primary_key_found		= Tabel '{0}' tidak berisi field kunci primer manapun.
+dbtablegateway_missing_pk_values		= Nilai kunci primer tidak ada dalam bentuk IN(key1, key2, ...) untuk tabel '{0}'.
+dbtablegateway_pk_value_count_mismatch	= Jumlah nilai kunci gabungan tidak sama dalam bentuk IN( (key1, key2, ..), (key3, key4, ..)) untuk tabel '{0}'.
+dbtablegateway_mismatch_args_exception	= Metode finder TTableGateway '{0}' mengharapkan parameter {1} tapi sebaliknya hanya menemukan parameter {2}.
+dbtablegateway_mismatch_column_name		= Dalam metode dynamic __call() '{0}', tidak ada kolom yang ditemukan, kolom yang benar untuk tabel '{2}' adalah '{1}'.
+dbtablegateway_invalid_table_info		= Tabel harus string atau turunan dari TDbTableInfo.
+
+directorycachedependency_directory_invalid = TDirectoryCacheDependency.Directory {0} tidak merujuk ke direktori yang benar.
+cachedependencylist_cachedependency_required = Hanya obyek yang mengimplementasikan ICacheDependency yang dapat ditambahkan ke dalam TCacheDependencyList.
+
+soapservice_configfile_invalid			= TSoapService.ConfigFile '{0}' tidak ada. Catatan, ia harus ditetapkan dalam format namespace dan mempunyai ekstensi file '.xml'.
+soapservice_request_invalid				= Server SOAP '{0}' tidak ditemukan.
+soapservice_serverid_required			= Elemen <soap> harus memiliki atribut 'id'.
+soapservice_serverid_duplicated			= ID server SOAP '{0}' duplikasi.
+soapserver_id_invalid					= ID Server SOAP  '{0}'. Ia tidak boleh diakhiri dengan '.wsdl'.
+soapserver_version_invalid				= Versi SOAP tidak benar '{0}'. Ia harus berupa '1.1' atau '1.2'.
+
+dbusermanager_userclass_required		= TDbUserManager.UserClass diperlukan.
+dbusermanager_userclass_invalid			= TDbUserManager.UserClass '{0}' bukan kelas pengguna yang benar. Kelas harus memperluas TDbUser.
+dbusermanager_connectionid_invalid		= TDbUserManager.ConnectionID '{0}' tidak mengarah ke modul TDataSourceConfig yang benar.
+dbusermanager_connectionid_required		= TDbUserManager.ConnectionID diperlukan.
+
+feedservice_id_required					= TFeedService memerlukan atribut 'id' dalam elemen feed-nya.
+feedservice_feedtype_invalid			= Kelas feed '{0}' harus mengimplementasikan antarmuka IFeedContentProvider.
+feedservice_class_required				= TFeedService memerlukan atribut 'class' dalam elemen feed-nya.
+feedservice_feed_unknown				= Feed '{0}' yang diminta tidak dikenal.
+
+tabviewcollection_tabview_required		= TTabPanel hanya menerima TTabView sebagai anaknya.
+tabpanel_activeviewid_invalid			= TTabPanel.ActiveViewID mempunyai ID '{0}' yang tidak benar.
+tabpanel_activeviewindex_invalid		= TTabPanel.ActiveViewIndex mempunyai Indeks '{0}' yang tidak benar.
+tabpanel_view_inexistent				= TTabPanel tidak bisa menemukan tampilan yang ditetapkan.
+
+cachesession_cachemoduleid_required		= TCacheHttpSession.CacheModuleID diperlukan.
+cachesession_cachemodule_inexistent		= TCacheHttpSession.CacheModuleID '{0}' mengarah ke modul yang tidak ada.
+cachesession_cachemodule_invalid		= TCacheHttpSession.CacheModuleID '{0}' mengarah ke modul yang tidak mengimplementasikan antarmuka ICache.
+
+urlmapping_urlmappingpattern_required	= TUrlMapping can hanya berisi TUrlMappingPattern atau kelas anaknya.
+urlmapping_global_required			= TUrlMapping harus dikonfigurasi sebagai modul global.
+urlmapping_configfile_inexistent		= TUrlMapping.ConfigFile '{0}' bukan sebuah file.
+urlmapping_configfile_invalid			= TUrlMapping.ConfigFile '{0}' harus menunjuk ke file XML dalam format namespace.
+
+urlmappingpattern_serviceparameter_required = TUrlMappingPattern.ServiceParameter diperlukan untuk pola '{0}'.
+urlmapping_global_required			= TUrlMapping harus dikonfigurasi sebagai modul global.
+urlmapping_configfile_inexistent		= TUrlMapping.ConfigFile '{0}' bukan sebuah file.
+urlmapping_configfile_invalid			= TUrlMapping.ConfigFile '{0}' harus mengarah ke file XML file dalam format namespace.
+
+urlmappingpattern_serviceparameter_required = TUrlMappingPattern.ServiceParameter diperlukan untuk pola '{0}'.
+
+keyboard_forcontrol_required			= TKeyboard.ForControl tidak boleh kosong.
+keyboard_forcontrol_invalid			= TKeyboard.ForControl '{0}' tidak benar.
+
+captcha_tokenimagetheme_invalid			= TCaptcha.TokenImageTheme harus integer antara {0} dan {1}.
+captcha_tokenfontsize_invalid			= TCaptcha.TokenFontSize harus integer antara {0} dan {1}.
+captcha_mintokenlength_invalid			= TCaptcha.MinTokenLength harus integer antara {0} dan {1}.
+captcha_maxtokenlength_invalid			= TCaptcha.MaxTokenLength harus integer antara {0} dan {1}.
+captcha_tokenalphabet_invalid			= TCaptcha.TokenAlphabet harus berupa string yang terdiri dari setidaknya 2 karakter.
+captcha_privatekey_unknown				= TCaptcha.PrivateKey tidak dikenal. Pastikan bahwa direktori assets anda bisa ditulisi oleh proses server Web.
+captcha_gd2_required					= TCaptcha memerlukan ekstensi GD2 PHP.
+captcha_imagettftext_required			= TCaptcha memerlukan ekstensi GD2 PHP dengan dukungan font TrueType.
+captcha_imagepng_required				= TCaptcha memerlukan ekstensi GD2 PHP dengan dukungan format gambar PNG.
+
+slider_handle_class_invalid				= TSlider.HandleClass '{0}' bukan kelas pengguna yang benar. Kelas harus memperluas TSliderHandle.
+
+cachepagestatepersister_cachemoduleid_invalid = TCachePageStatePersister.CacheModuleID '{0}' tidak mengarah ke modul cache yang benar.
+cachepagestatepersister_cache_required  = TCachePageStatePersister memerlukan modul cache untuk diambil.
+cachepagestatepersister_timeout_invalid = TCachePageStatePersister.Timeout harus berupa integer tidak kurang dari nol.
+cachepagestatepersister_pagestate_corrupted = Kondisi halaman rusak.
+
+conditional_condition_invalid			= TConditional.Condition '{0}' bukan ekspresi PHP yang benar: {1}
+
+db_cachetable_inexistent				= TDbCache tidak bisa menemukan tabel DB '{0}' untuk menyimpan data yang di-cache.
+
+ar_data_invalid							= {0}.copyFrom() hanya bisa menggunakan obyek atay array sebagai parameter.
+ar_save_invalid							= Turunan {0} tidak bisa disimpan karena kondisi sudah dihapus ataupun tidak dikenal.
+ar_delete_invalid						= Turunan {0} tidak bisa dihapus karena ada rekaman baru atau rekaman sudah dihapus.
+
+datasource_dbconnection_invalid			= TDataSourceConfig.DbConnection '{0}' tidak benar. ia merujuk ke modul aplikasi yang benar.

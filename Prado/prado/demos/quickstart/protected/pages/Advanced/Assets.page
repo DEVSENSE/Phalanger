@@ -1,0 +1,69 @@
+<com:TContent ID="body" >
+
+<h1 id="5701">Assets</h1>
+<p id="740577" class="block-content">
+Assets are resource files (such as images, sounds, videos, CSS stylesheets, javascripts, etc.) that belong to specific component classes. Assets are meant to be provided to Web users. For better reusability and easier deployment of the corresponding component classes, assets should reside together with the component class files . For example, a toggle button may use two images, stored in file <tt>down.gif</tt> and <tt>up.gif</tt>, to show different toggle states. If we require the image files be stored under <tt>images</tt> directory under the Web server document root, it would be inconvenient for the users of the toggle button component, because each time they develop or deploy a new application, they would have to manually copy the image files to that specific directory. To eliminate this requirement, a directory relative to the component class file should be used for storing the image files. A common strategy is to use the directory containing the component class file to store the asset files.
+</p>
+<p id="740578" class="block-content">
+Because directories containing component class files are normally inaccessible by Web users, PRADO implements an asset publishing scheme to make available the assets to Web users. An asset, after being published, will have a URL by which Web users can retrieve the asset file.
+</p>
+
+<h2 id="5702">Asset Publishing</h2>
+<p id="740579" class="block-content">
+PRADO provides several methods for publishing assets or directories containing assets:
+</p>
+<ul id="u1" class="block-content">
+<li>In a template file, you can use <a href="?page=Configurations.Templates2#at">asset tags</a> to publish assets and obtain their URLs. Note, the assets must be relative to the directory containing the template file.</li>
+<li>In PHP code, you can call <tt>$object->publishAsset($assetPath)</tt> to publish an asset and obtain its URL. Here, <tt>$object</tt> refers to an instance of <tt>TApplicationComponent</tt> or derived class, and <tt>$assetPath</tt> is a file or directory relative to the directory containing the class file.</li>
+<li>If you want to publish an arbitrary asset, you need to call <tt>TAssetManager::publishFilePath($path)</tt>.</li>
+</ul>
+<p id="740580" class="block-content">
+BE AWARE: Be very careful with assets publishing, because it gives Web users access to files that were previously inaccessible to them. Make sure that you do not publish files that do not want Web users to see.
+</p>
+
+<h2 id="5703">Customization</h2>
+<p id="740581" class="block-content">
+Asset publishing is managed by the <tt>System.Web.TAssetManager</tt> module. By default, all published asset files are stored under the <tt>[AppEntryPath]/assets</tt> directory, where <tt>AppEntryPath</tt> refers to the directory containing the application entry script. Make sure the <tt>assets</tt> directory is writable by the Web server process. You may change this directory to another by configuring the <tt>BasePath</tt> and <tt>BaseUrl</tt> properties of the <tt>TAssetManager</tt> module in application configuration,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code1">
+&lt;modules&gt;
+    &lt;module id="asset"
+            class="System.Web.TAssetManager"
+            BasePath="Web.images"
+            BaseUrl="images" /&gt;
+&lt;/modules&gt;
+</com:TTextHighlighter>
+
+<h2 id="5704">Performance</h2>
+<p id="740582" class="block-content">
+PRADO uses caching techniques to ensure the efficiency of asset publishing. Publishing an asset essentially requires file copy operation, which is expensive. To save unnecessary file copy operations, <tt>System.Web.TAssetManager</tt> only publishes an asset when it has a newer file modification time than the published file. When an application runs under the <tt>Performance</tt> mode, such timestamp checking is also omitted.
+</p>
+<p id="740583" class="block-content">
+ADVISORY: Do not overuse asset publishing. The asset concept is mainly used to help better reuse and redistribute component classes. Normally, you should not use asset publishing for resources that are not bound to any component in an application. For example, you should not use asset publishing for images that are mainly used as design elements (e.g. logos, background images, etc.) Let Web server to directly serve these images will help improve the performance of your application.
+</p>
+
+<h2 id="5705">A Toggle Button Example</h2>
+<p id="740584" class="block-content">
+We now use the toggle button example to explain the usage of assets. The control uses two image files <tt>up.gif</tt> and <tt>down.gif</tt>, which are stored under the directory containing the control class file. When the button is in <tt>Up</tt> state, we would like to show the <tt>up.gif</tt> image. This can be done as follows,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code2">
+class ToggleButton extends TWebControl {
+    ...
+    protected function addAttributesToRender($writer) {
+        ...
+        if($this->getState()==='Up') {
+            $url=$this->getAsset('up.gif');
+            $writer->addAttribute('src',$url);
+        }
+        ...
+    }
+    ...
+}
+</com:TTextHighlighter>
+<p id="740585" class="block-content">
+In the above, the call <tt>$this->getAsset('up.gif')</tt> will publish the <tt>up.gif</tt> image file and return a URL for the published image file. The URL is then rendered as the <tt>src</tt> attribute of the HTML image tag.
+</p>
+<p id="740586" class="block-content">
+To redistribute <tt>ToggleButton</tt>, simply pack together the class file and the image files. Users of <tt>ToggleButton</tt> merely need to unpack the file, and they can use it right away, without worrying about where to copy the image files to.
+</p>
+<div class="last-modified">$Id: Assets.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

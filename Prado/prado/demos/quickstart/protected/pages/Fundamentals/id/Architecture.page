@@ -1,0 +1,13 @@
+<com:TContent ID="body" >
+<h1 id="601">Arsitektur</h1>
+
+<p id="100111" class="block-content">
+PRADO adalah kerangka kerja presentasi utama, meskipun tidak dibatasi demikian. Kerangka kerja terfokus pada pembuatan pemrograman Web, yang banyak berkaitan dengan interaksi pengguna, menjadi berbasis-komponen dan kendali-event agar pengembang itu bisa lebih produktif. Susunan kelas berikut menggambarkan beberapa kelas utama yang disediakan oleh PRADO,
+</p>
+<img src="<%~classtree.gif%>" />
+
+<p id="100112" class="block-content">
+Ketika aplikasi PRADO memproses permintaan halaman, diagram obyek statisnya dapat dilihat sebagai berikut,
+</p>
+<img src="<%~objectdiagram.gif%>" />
+<div class="last-modified">$Id: Architecture.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

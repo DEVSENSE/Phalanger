@@ -1,0 +1,100 @@
+<com:TContent ID="body" >
+
+<h1 id="4701">TWizard</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TWizard" />
+
+<h2 id="4702">Overview</h2>
+<p id="540319" class="block-content">
+<tt>TWizard</tt> is analogous to the installation wizard commonly used to install software on Windows. It splits a large form and presents the user with a series of smaller forms, called wizard steps, to complete. The following figure shows how a wizard is composed of when presented to users, where <tt>step content</tt> is the main content of a wizard step for users to complete, <tt>header</tt> refers to header content common to all steps, <tt>navigation</tt> contains buttons that allow users to navigate step by step, and <tt>side bar</tt> contains a list of hyperlinks by which users can reach to any step with one click. The visibility of the side bar can be toggled by setting <tt>ShowSideBar</tt>.
+</p>
+<img src="<%~wizard.gif%>" alt="components of wizard" />
+
+<p id="540320" class="block-content">
+By default, <tt>TWizard</tt> embeds the above components in an HTML table so that the side bar is displayed on the left while the rest on the right. If <tt>UseDefaultLayout</tt> is set to false, no HTML table will be used, and developers should use pure CSS techniques to position the wizard components. Note, each component is displayed as a &lt;div&gt; and the wizard itself is also a &lt;div&gt; that encloses its components' &lt;div&gt;.
+</p>
+
+<p id="540321" class="block-content">
+Wizard steps are represented by <tt>TWizardStep</tt> and are maintained in <tt>TWizard</tt> through its <tt>WizardSteps</tt> property. At any time, only one step is visible, which is determined by the <tt>ActiveStep</tt> property. The <tt>ActiveStepIndex</tt> property gives the index of the active step in the step collection. Clicking on navigation buttons can activate different wizard steps.
+</p>
+
+<p id="540322" class="block-content">
+Wizard steps are typically added to a wizard through template as follows,
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_540114">
+&lt;com:TWizard&gt;
+	&lt;com:TWizardStep Title="step 1" StepType="Start"&gt;
+	content in step 1, may contain other controls
+	&lt;/com:TWizardStep&gt;
+
+	&lt;com:TWizardStep Title="step 2" StepType="Step"&gt;
+	content in step 2, may contain other controls
+	&lt;/com:TWizardStep&gt;
+
+	&lt;com:TWizardStep Title="finish step" StepType="Finish"&gt;
+	content in finish step, may contain other controls
+	&lt;/com:TWizardStep&gt;
+&lt;/com:TWizard&gt;
+</com:TTextHighlighter>
+
+<p id="540323" class="block-content">
+In the above, <tt>StepType</tt> refers to the type of a wizard step, which can affect how the navigation appearance and behavior of the step. A wizard step can be of one of the following types:
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>Start</tt> - the first step in the wizard.</li>
+  <li><tt>Step</tt> - the internal steps in the wizard.</li>
+  <li><tt>Finish</tt> - the last step that allows user interaction.</li>
+  <li><tt>Complete</tt> - the step that shows a summary to user. In this step, both side bar and navigation panel are invisible. Thus, this step usually does not allow user interaction.</li>
+  <li><tt>Auto</tt> - the step type is determined by wizard automatically.</li>
+</ul>
+
+
+<h2 id="4703">Using TWizard</h2>
+
+<h3 id="4704">A Single-Step Wizard Sample</h3>
+<p id="540324" class="block-content">
+In this sample, we use wizard to collect user's preference of color. In the first step, the user is presented with a dropdown list from which he can choose his favorite color. In the second step, the complete step, his choice in the previous step is displayed. In real application, at this step the choice may be stored in database in the backend.
+</p>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample1" />
+
+<h3 id="4705">Customizing Wizard Styles</h3>
+<p id="540325" class="block-content">
+<tt>TWizard</tt> defines a whole set of properties for customization of appearance of its various components as shown in the above figure. In particular, the following properties are provided for style customization:
+</p>
+<ul id="u2" class="block-content">
+  <li>Header - <tt>HeaderStyle</tt>.</li>
+  <li>Step - <tt>StepStyle</tt>.</li>
+  <li>Navigation - <tt>NavigationStyle</tt>, <tt>StartNextButtonStyle</tt>, <tt>StepNextButtonStyle</tt>, <tt>StepPreviousButtonStyle</tt>, <tt>FinishPreviousButtonStyle</tt>, <tt>FinishCompleteButtonStyle</tt>, <tt>CancelButtonStyle</tt>.</li>
+  <li>Side bar - <tt>SideBarStyle</tt>, <tt>SideBarButtonStyle</tt>.</li>
+</ul>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample2" />
+
+<h3 id="4706">Customizing Wizard Navigation</h3>
+<p id="540326" class="block-content">
+Given a set of wizard steps, <tt>TWizard</tt> supports three different ways of navigation among them:
+</p>
+<ul id="u3" class="block-content">
+  <li>Bidirectional - Users can navigate forward and backward along a sequence of wizard steps. User input data is usually collected at the last step. This is also known as commit-at-the-end model. It is the default navigation way that <tt>TWizard</tt> supports.</li>
+  <li>Unidirectional - Users can navigate forward along a sequence of wizard steps. Backward move is not allowed. User input data is usually collected step by step. This is also known as command-as-you-go model. To disallow backward move to a specific step, set its <tt>AllowReturn</tt> property to false.</li>
+  <li>Nonlinear - User input in a step determines which step to go next. To do so, set <tt>ActiveStepIndex</tt> to the step that you want the user to go to. In this case, when a user clicks on the previous button in the navigation panel, the previous step that they visited (not the previous step in the sequential order) will become visible.</li>
+</ul>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample3" />
+
+<h3 id="4707">Using Templates in Wizard</h3>
+<p id="540327" class="block-content">
+<tt>TWizard</tt> supports more concrete control of its outlook through templates. In particular, it provides the following template properties that allow complete customization of the wizard's header, navigation and side bar.
+</p>
+<ul id="u4" class="block-content">
+  <li>Header - <tt>HeaderTemplate</tt>.</li>
+  <li>Navigation - <tt>StartNavigationTemplate</tt>, <tt>StepNavigationTemplate</tt>, <tt>FinishNavigationTemplate</tt>.</li>
+  <li>Side bar - <tt>SideBarTemplate</tt>.</li>
+</ul>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample4" />
+
+<h3 id="4708">Using Templated Wizard Steps</h3>
+<p id="540328" class="block-content">
+Wizard steps can also be templated. By using <tt>TTemplatedWizardStep</tt>, one can customize step content and navigation through its <tt>ContentTemplate</tt> and <tt>NavigationTemplate</tt> properties, respectively. This is useful for control developers to build specialized wizards, such as user registration, shopping carts, etc.
+</p>
+<com:RunBar PagePath="Controls.Samples.TWizard.Sample5" />
+
+<div class="last-modified">$Id: Wizard.page 2147 2007-08-23 17:39:00Z xue $</div></com:TContent>

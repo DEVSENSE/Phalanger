@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<application id="blog" mode="Normal">
+  <paths>
+    <using namespace="Application.database.*" />
+  </paths>
+
+  <!-- configurations for modules -->
+  <modules>
+    <module id="cache" class="System.Caching.TDbCache" />
+
+    <module class="Application.BlogErrorHandler" />
+
+    <module id="log" class="System.Util.TLogRouter">
+      <route class="TFileLogRoute" Categories="BlogApplication" />
+    </module>
+
+    <module id="db" class="System.Data.TDataSourceConfig">
+      <database ConnectionString="sqlite:protected/data/blog.db" />
+    </module>
+
+    <module
+      class="System.Data.ActiveRecord.TActiveRecordConfig"
+      ConnectionID="db" />
+
+    <module id="auth"
+      class="System.Security.TAuthManager"
+      UserManager="users"
+      LoginPage="users.LoginUser" />
+
+    <module id="users"
+      class="System.Security.TDbUserManager"
+      UserClass="Application.BlogUser" />
+
+  </modules>
+
+  <!-- configuration for available services -->
+  <services>
+    <service id="page" class="TPageService" DefaultPage="posts.ListPost">
+      <pages MasterClass="Application.layouts.MainLayout" Theme="Basic" />
+    </service>
+  </services>
+
+  <!-- application parameters
+  <parameters>
+    <parameter id="param1" value="value1" />
+    <parameter id="param2" value="value2" />
+  </parameters>
+  -->
+</application>

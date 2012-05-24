@@ -1,0 +1,40 @@
+<com:TContent ID="body" >
+
+<h1 id="3901">TActivePager</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TPager" />
+
+<p id="450300" class="block-content">
+<tt>TActivePager</tt> membuat halaman yang menyediakan UI untuk pengguna-akhir secara interaktif menetapkan halaman data mana yang di render dalam kontrol turunan <tt>TDataBoundControl</tt>, seperti <tt>TDataList</tt>, <tt>TRepeater</tt>, <tt>TCheckBoxList</tt>, dll. 
+Target kontrol data-bound ditetapkan dengan properti <tt>ControlToPaginate</tt>, yang harus berupa path ID dari kontrol target yang diambil dari kontainer penamaan halaman. Target-databound harus berada di dalam <tt>TActivePanel</tt> agar dapat di render ulang selama callback
+</p>
+
+<p id="450301" class="block-content">
+Catatan, kontrol target data-bound harus disetel true pada <tt>AllowPaging</tt>. Sebaliknya halaman tidak akan terlihat. Juga, dalam hal ketika hanya satu halaman data yang tersedia, halaman juga tidak akan terlihat.
+</p>
+
+<p id="450302" class="block-content">
+<tt>TActivePager</tt> dapat menampilkan salah satu dari tiga jenis antarmuka, ditetapkan melalui properti <tt>Mode</tt>:
+</p>
+<ul id="u1" class="block-content">
+<li><tt>NextPrev</tt> - tombol halaman berikutnya dan sebelumnya yang dihasilkan pada setiap halaman.</li>
+<li><tt>Numeric</tt> - daftar tombol indeks halaman yang dihasilkan.</li>
+<li><tt>DropDownList</tt> - daftar dropdown indeks halaman yang dihasilkan.</li>
+</ul>
+<p id="450303" class="block-content">
+Antar muka pengguna ini selanjutnya dikustomisasi dengan mengkonfigurasi properti berikut
+</p>
+<ul id="u2" class="block-content">
+<li><tt>NextPageText</tt> dan <tt>PrevPageText</tt> - label tombol halaman berikutnya/sebelumnya. Properti ini dipakai saat <tt>Mode</tt> halaman adalah <tt>NextPrev</tt> atau <tt>Numeric</tt>.</li>
+<li><tt>FirstPageText</tt> dan <tt>LastPageText</tt> - label tombol halaman pertama/terakhir. Jika kosong, tombol terkait tidak akan ditampilkan. Properti ini dipakai saat <tt>Mode</tt> halaman adalah <tt>NextPrev</tt> atau <tt>Numeric</tt>.</li>
+<li><tt>PageButtonCount</tt> - jumlah maksimum tombol indeks pada halaman. Properti ini dipakai saat <tt>Mode</tt> halaman adalah <tt>Numeric</tt>.</li>
+<li><tt>ButtonType</tt> - jenis tombol halaman, baik <tt>PushButton</tt> yang berarti tombol submisi formulir normal, ataupun <tt>LinkButton</tt> yang berarti tombol hiperlink.</li>
+</ul>
+
+<p id="450304" class="block-content">
+<tt>TActivePager</tt> memunculkan event <tt>OnPageIndexChanged</tt> ketika pengguna-akhir berinteraksi dengannya dan menetapkan halaman baru (misalnya dengan mengklik pada tombol halaman berikutnya yang akan membawa ke halaman berikutnya.) Para pengembang dapat menulis pengendali untuk merespon indeks halaman baru ini dan mendapatkan indeks halaman baru yang diinginkan dari properti parameter event <tt>NewPageIndex</tt>. Menggunakan indeks halaman baru ini, seseorang dapat memask halaman baru data ke kontrol data-bound terkait.
+Sebagai tambahan, <tt>TActivePager</tt> memunculkan <tt>OnCallback</tt> setelah <tt>OnPageIndexChanged</tt>.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActivePager.Home" />
+
+<div class="last-modified">$Id: Pager.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

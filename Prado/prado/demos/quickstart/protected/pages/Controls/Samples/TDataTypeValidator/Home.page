@@ -1,0 +1,58 @@
+<com:TContent ID="body">
+
+<h1>TDataTypeValidator Samples</h1>
+<p><strong>Note:</strong> TDataTypeValidator will start
+to validate only if both inputs are not empty.</p>
+
+<table class="sampletable">
+
+<tr>
+<td class="samplenote">
+Data type validator with default settings:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox1" Text="a" />
+<com:TDataTypeValidator
+	ValidationGroup="Group1"
+	ControlToValidate="TextBox1"
+	DataType="Float"
+	Text="You must enter a floating number." />
+<com:TButton Text="Submit" ValidationGroup="Group1" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Data type validator with client-side validation disabled:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox2" Text="a"/>
+<com:TDataTypeValidator
+	ValidationGroup="Group2"
+	EnableClientScript="false"
+	ControlToValidate="TextBox2"
+	DataType="Integer"
+	Text="You must enter an integer." />
+<com:TButton Text="Submit" ValidationGroup="Group2" />
+</td>
+</tr>
+
+<tr>
+<td class="samplenote">
+Validating a date input:
+</td>
+<td class="sampleaction">
+<com:TTextBox ID="TextBox3" Text="a" />
+<com:TDataTypeValidator
+	ValidationGroup="Group3"
+	ControlToValidate="TextBox3"
+	DataType="Date"
+	DateFormat="d/M/yyyy"
+	Text="You must enter a valid date (d/M/yyyy)." />
+<com:TButton Text="Submit" ValidationGroup="Group3" />
+</td>
+</tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

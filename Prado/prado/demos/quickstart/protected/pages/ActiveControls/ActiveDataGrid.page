@@ -1,0 +1,83 @@
+<com:TContent ID="body" >
+
+<h1 id="5201">TActiveDataGrid</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveDataGrid" />
+
+<p class="block-content">
+<tt>TActiveDataGrid</tt> represents a data bound and updatable grid control which is the
+active counterpart to the original <tt>TDataGrid</tt> control.
+</p>
+
+<p class="block-content">
+This component can be used in the same way as the regular datagrid, the only
+difference is that the active datagrid uses callbacks instead of postbacks
+for interaction.
+</p>
+
+<p class="block-content">
+PRADO provides eight new types of active columns that can be used inside <tt>TActiveDataGrid</tt>;
+they are the active counterpart of <tt>TDataGrid</tt>'s columns:
+</p>
+<ul class="block-content">
+  <li><tt>TActiveBoundColumn</tt> associates cells with a specific field of data and displays the cells according to their modes.</li>
+  <li><tt>TActiveLiteralColumn</tt> associates cells with a specific field of data and displays the cells with static texts.</li>
+  <li><tt>TActiveCheckBoxColumn</tt> associates cells with a specific field of data and displays in each cell a checkbox whose check state is determined by the data field value.</li>
+  <li><tt>TActiveDropDownListColumn</tt> associates cells with a specific field of data and displays the cells according to their modes. If in edit mode, a cell will be displayed with a <tt>TDropDownList</tt>.</li>
+  <li><tt>TActiveHyperLinkColumn</tt> displays in the cells a hyperlink whose caption and URL can be either statically specified or bound to some fields of data.</li>
+  <li><tt>TActiveEditCommandColumn</tt> displays in the cells edit/update/cancel command buttons according to the state of the item that a cell resides in.</li>
+  <li><tt>TActiveButtonColumn</tt> displays in the cells a command button.</li>
+  <li><tt>TActiveTemplateColumn</tt> displays the cells according to different templates defined for it.</li>
+</ul>
+
+<p class="block-content">
+Please refer to the original documentation of <a href="?page=Controls.DataGrid">TDataGrid</a> for basic usage.
+</p>
+
+
+<h2 id="152004">Columns</h2>
+
+<h3 id="152008">Automatically Generated Columns</h3>
+<p class="block-content">
+TDataGrid by default will create a list of columns based on the structure of the bound data. TDataGrid will read the first row of the data, extract the field names of the row, and construct a column for each field. Each column is of type <tt>TActiveBoundColumn</tt>. All of this happens in an ajax callback.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveDataGrid.Sample1" />
+
+<h3 id="152009">Manually Specified Columns</h3>
+<p  class="block-content">
+The following example uses manually specified columns to show a list of book information,
+</p>
+<ul id="u4" class="block-content">
+  <li>Book title - displayed as a hyperlink pointing to the corresponding amazon.com book page. <tt>TActiveHyperLinkColumn</tt> is used.</li>
+  <li>Publisher - displayed as a piece of text using <tt>TvBoundColumn</tt>.</li>
+  <li>Price - displayed as a piece of text using <tt>TActiveBoundColumn</tt> with output formatting string and customized styles.</li>
+  <li>In-stock or not - displayed as a checkbox using <tt>TActiveCheckBoxColumn</tt>.</li>
+  <li>Rating - displayed as an image using <tt>TActiveTemplateColumn</tt> which allows maximum freedom in specifying cell contents.</li>
+</ul>
+<p class="block-content">
+Each column can be shown or hidden in a callback.
+</p>
+<com:RunBar PagePath="ActiveControls.Samples.TActiveDataGrid.Sample2" />
+
+
+<h2 id="152005">Interacting with TActiveDataGrid</h2>
+<p class="block-content">
+The following example shows how to make the previous book information table an interactive one. It allows users to edit and delete book items from the table. Two additional columns are used in the example to allow users interact with the datagrid: <tt>TActiveEditCommandColumn</tt> and <tt>TActiveButtonColumn</tt>. In addition,
+<tt>TActiveDropDownListColumn</tt> replaces the previous <tt>TActiveTemplateColumn</tt> to allow users to select a rating from a dropdown list. Note, it is also possible to use <tt>TActiveTemplateColumn</tt> to achieve the same task.
+All the iteration is done using AJAX callbacks.
+</p>
+<com:RunBar PagePath="ActiveControls.Samples.TActiveDataGrid.Sample3" />
+
+<h2 id="152006">Sorting</h2>
+<p class="block-content">
+The following example turns the datagrid in <a href="?page=ActiveControls.Samples.TActiveDataGrid.Sample2">Example 2</a> into a sortable one. Users can click on the link button displayed in the header of any column, and the data will be sorted in ascending order along that column. The grid is sorted and rendered upon a callback request.
+</p>
+<com:RunBar PagePath="ActiveControls.Samples.TActiveDataGrid.Sample4" />
+
+<h2 id="152007">Paging</h2>
+<p class="block-content">
+The following example enables the paging functionality of the datagrid shown in <a href="?page=ActiveControls.Samples.TActiveDataGrid.Sample1">Example 1</a>. In this example, you move between the datagrid pages clicking on the pager links. The grid reacts to paging rendering itself as the result of a callback request. Note that you can't change the pager style upon callback.
+</p>
+<com:RunBar PagePath="ActiveControls.Samples.TActiveDataGrid.Sample5" />
+
+<div class="last-modified">$Id: ActiveDataGrid.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

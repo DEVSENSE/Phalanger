@@ -1,0 +1,57 @@
+<com:TContent ID="body" >
+
+<h1 id="5801">Master dan Konten</h1>
+<p id="750587" class="block-content">
+Halaman dalam aplikasi Web sering berbagi bagian yang sama. Sebagai contoh, semua halaman dari aplikasi tutorial berbagi bagian header dan footer yang sama. Jika kita menyimpan header dan footer secara berulang dalam setiap file sumber halaman, ia akan memusingkan pemeliharaan jika suatu saat kita menginginkan sesuatu pada header atau footer. Untuk memecahkan masalah ini, PRADO memperkenalkan konsep master dan konten. Ini terutama pola dekorator, dengan konten didekorasi oleh master.
+</p>
+<p id="750588" class="block-content">
+Master dan konten hanya berlaku ke kontrol template (kontrol memperluas <tt>TTemplateControl</tt> atau kelas anaknya). Kontrol template dapat mempunyai paling banyak satu kontrol master dan satu atau beberapa konten (masing-masing diwakili oleh kontrol <tt>TContent</tt>). Konten akan disisipkan ke dalam kontrol master di tempat yang disiapkan oleh kontrol <tt>TContentPlaceHolder</tt>. Dan penyajian kontrol template adalah <tt>TContentPlaceHolder</tt> yang disiapkan kontrol master diganti dengan <tt>TContent</tt>.
+</p>
+<p id="750589" class="block-content">
+Sebagai contoh, anggap kontrol template mempunyai template berikut:
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_750192">
+&lt;%@ MasterClass="MasterControl" %&gt;
+&lt;com:TContent ID="A" &gt;
+content A
+&lt;/com:TContent &gt;
+&lt;com:TContent ID="B" &gt;
+content B
+&lt;/com:TContent &gt;
+&lt;com:TContent ID="B" &gt;
+content B
+&lt;/com:TContent &gt;
+</com:TTextHighlighter>
+<p id="750590" class="block-content">
+yang menggunakan <tt>MasterControl</tt> sebagai kontrol masternya. Kontrol master mempunyai template berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_750193">
+other stuff
+&lt;com:TContentPlaceHolder ID="A" /&gt;
+other stuff
+&lt;com:TContentPlaceHolder ID="B" /&gt;
+other stuff
+&lt;com:TContentPlaceHolder ID="C" /&gt;
+other stuff
+</com:TTextHighlighter>
+<p id="750591" class="block-content">
+Kemudian, konten disisipkan ke dalam kontrol master berdasarkan diagram berikut, sementara hubungan leluhur-anak dapat dilihat dalam berikutnya. Catatan, kontrol template mengabaikan apapun dalam template selain konten, sementara kontrol master memelihara apapun dan mengganti tempat konten dengan konten berdasarkan ID yang sama.
+</p>
+<img src=<%~ mastercontent.gif %> alt="Master dan Konten" />
+<img src=<%~ pcrelation.gif %> alt="Hubungan leluhur-anak antara master dan konten" />
+
+<h2 id="6301">Master vs. Template Eksternal</h2>
+<p id="750592" class="block-content">
+Master sangat mirip dengan template eksternal yang diperkenalkan sejak versi 3.0.5. <a href="?page=Configurations.Templates1">Tag include</a> khusus dipakai untuk menyertakan file template eksternal ke dalam basis template.
+</p>
+<p id="750593" class="block-content">
+Baik template master maupun eksternal bisa dipakai untuk berbagi konten yang sama diantara halaman. Master adalah kontrol template yang berisi konten umum dan file kelasnya berisi logika terkait dengan master. Dilain pihak, template eksternal adalah file template murni tanpa file kelas apapun.
+</p>
+<p id="750594" class="block-content">
+Oleh karena itu, gunakan kontrol master jika konten umum harus dikaitkan dengan beberapa logika, seperti header halaman dengan kotak pencarian atau kotak  login. Kontrol master membolehkan Anda untuk menetapkan bagaimana konten umum harus berinteraksi dengan pengguna akhir. Jika Anda menggunakan template eksternal, Anda harus menyimpan logika yang diperlukan dalam halaman atau kelas kontrol yang memiliki basis template.
+</p>
+<p id="750595" class="block-content">
+Performansinya, template eksternal lebih ringan daripada master seperti berisi kontrol sendiri yang berparisipasi dalam masa hidup halaman, karena pembentuk hanya dipakai saat template sedang diuraikan.
+</p>
+
+<div class="last-modified">$Id: MasterContent.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,77 @@
+<com:TContent ID="body" >
+
+<h1 id="6301">Error Handling and Reporting</h1>
+<p id="800666" class="block-content">
+PRADO provides a complete error handling and reporting framework based on the PHP 5 exception mechanism.
+</p>
+
+<h2 id="6302">Exception Classes</h2>
+<p id="800667" class="block-content">
+Errors occur in a PRADO application may be classified into three categories: those caused by PHP script parsing, those caused by wrong code (such as calling an undefined function, setting an unknown property), and those caused by improper use of the Web application by client users (such as attempting to access restricted pages). PRADO is unable to deal with the first category of errors because they cannot be caught in PHP code. PRADO provides an exception hierarchy to deal with the second and third categories.
+</p>
+<p id="800668" class="block-content">
+All errors in PRADO applications are represented as exceptions. The base class for all PRADO exceptions is <tt>TException</tt>. It provides the message internationalization functionality to all system exceptions. An error message may be translated into different languages according to the user browser's language preference.
+</p>
+<p id="800669" class="block-content">
+Exceptions raised due to improper usage of the PRADO framework inherit from <tt>TSystemException</tt>, which can be one of the following exception classes:
+</p>
+<ul id="u1" class="block-content">
+<li><tt>TConfigurationException</tt> - improper configuration, such as error in application configuration, control templates, etc.</li>
+<li><tt>TInvalidDataValueException</tt> - data value is incorrect or unexpected.</li>
+<li><tt>TInvalidDataTypeException</tt> - data type is incorrect or unexpected.</li>
+<li><tt>TInvalidDataFormatException</tt> - format of data is incorrect.</li>
+<li><tt>TInvalidOperationException</tt> - invalid operation request.</li>
+<li><tt>TPhpErrorException</tt> - catchable PHP errors, warnings, notices, etc.</li>
+<li><tt>TSecurityException</tt> - errors related with security.</li>
+<li><tt>TIOException</tt> - IO operation error, such as file open failure.</li>
+<li><tt>TDBException</tt> - errors related with database operations.</li>
+<li><tt>TNotSupportedException</tt> - errors caused by requesting for unsupported feature.</li>
+<li><tt>THttpException</tt> - errors to be displayed to Web client users.</li>
+</ul>
+<p id="800670" class="block-content">
+Errors due to improper usage of the Web application by client users inherit from <tt>TApplicationException</tt>.
+</p>
+
+<h2 id="6303">Raising Exceptions</h2>
+<p id="800671" class="block-content">
+Raising exceptions in PRADO has no difference than raising a normal PHP exception. The only thing matters is to raise the right exception. In general, exceptions meant to be shown to application users should use <tt>THttpException</tt>, while exceptions shown to developers should use other exception classes.
+</p>
+
+<h2 id="6304">Error Capturing and Reporting</h2>
+<p id="800672" class="block-content">
+Exceptions raised during the runtime of PRADO applications are captured by <tt>System.Exceptions.TErrorHandler</tt> module. Different output templates are used to display the captured exceptions. <tt>THttpException</tt> is assumed to contain error messages that are meant for application end users and thus uses a specific group of templates. For all other exceptions, a common template shown as follows is used for presenting the exceptions.
+</p>
+<a href="<%~ exception2.gif %>" target="_blank"><img src="<%~ exception.gif %>" alt="exception page" style="border:0px"/></a>
+
+<h2 id="6305">Customizing Error Display</h2>
+<p id="800673" class="block-content">
+Developers can customize the presentation of exception messages. By default, all error output templates are stored under <tt>framework/Exceptions/templates</tt>. The location can be changed by configuring <tt>TErrorHandler</tt> in application configuration,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_800226">
+&lt;module id="error"
+    class="TErrorHandler"
+    ErrorTemplatePath="Application.ErrorTemplates" /&gt;
+</com:TTextHighlighter>
+<p id="800674" class="block-content">
+<tt>THttpException</tt> uses a set of templates that are differentiated according to different <tt>StatusCode</tt> property value of <tt>THttpException</tt>. <tt>StatusCode</tt> has the same meaning as the status code in HTTP protocol. For example, a status code equal to 404 means the requested URL is not found on the server. The <tt>StatusCode</tt> value is used to select which output template to use. The output template files use the following naming convention:
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_800227">
+    error<status code>-<language code>.html
+</com:TTextHighlighter>
+<p id="800675" class="block-content">
+where <tt>status code</tt> refers to the <tt>StatusCode</tt> property value of <tt>THttpException</tt>, and <tt>language code</tt> must be a valid language such as <tt>en</tt>, <tt>zh</tt>, <tt>fr</tt>, etc. When a <tt>THttpException</tt> is raised, PRADO will select an appropriate template for displaying the exception message. PRADO will first locate a template file whose name contains the status code and whose language is preferred by the client browser window. If such a template is not present, it will look for a template that has the same status code but without language code.
+</p>
+<p id="800676" class="block-content">
+The naming convention for the template files used for all other exceptions is as follows,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code_800228">
+    exception-<language code>.html
+</com:TTextHighlighter>
+<p id="800677" class="block-content">
+Again, if the preferred language is not found, PRADO will try to use <tt>exception.html</tt>, instead.
+</p>
+<div class="note">
+<b class="tip">CAUTION:</b> When saving a template file, please make sure the file is saved using UTF-8 encoding. On Windows, you may use <tt>Notepad.exe</tt> to accomplish such saving.
+</div>
+
+<div class="last-modified">$Id: Error.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

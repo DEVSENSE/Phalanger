@@ -1,0 +1,150 @@
+<%@ Title="Internationlization en PRADO "
+	Page.Application.Globalization.TranslationCatalogue="index" %>
+<com:TContent ID="body">
+<h1>Internationlization en PRADO </h1>
+<p> Esta versión parcial de programa muestra los componentes básicos disponibles en PRADO para el proceso de internacionalizar y de localizar aplicaciones del Web. Esta paginación utiliza modelos enterados múltiples del locale (o cultura) para mostrar la paginación localizada apropiada. Para visión una diversa versión localizada, cambie por favor sus configuraciones del lenguaje en su browser. </p>
+
+<p>
+ Su cultura actual es
+<%= $this->Page->CurrentCulture %>.
+<div class="links">
+ Versiones localizadas disponibles:
+	<com:LanguageList />
+</div>
+</p>
+
+<p>
+ Además de modelo enterado de la cultura. El texto se puede localizar usando muchas diversas fuentes de la traducción. PRADO proporciona al gettext, al envase de XML, de SQLite, y de MySQL para salvar traducciones del mensaje. El ejemplo en la conexión siguiente demuestra cómo el texto se puede localizar usando el componente de TTranslate. 
+<hr />
+<h2>Introducción </h2>
+<p> Que desarrolla y que los mantiene el multi-lenguaje sitios es un problema común para los reveladores del Web.</p>
+<dl>
+<dt><strong>Internacionalización (I18N)</strong></dt>
+<dd> Proceso de desarrollar un producto de una manera tal que trabaje con datos en diversos lenguajes y pueda ser adaptado a los varios mercados de blanco sin cambios de ingeniería. </dd>
+<dt><strong>Localización (L10N)</strong></dt>
+<dd> Proceso subsecuente de traducir y de adaptar un producto a las convenciones culturales de un mercado dado. </dd>
+</dl>
+<p> Las características siguientes son utilizadas por PRADO: </p>
+<ul id="u1" class="block-content">
+  <li>Traducción del texto </li>
+  <li>Traducción del atributo (todo) </li>
+  <li>Substitución de parámetro (con la traducción si es necesario) </li>
+  <li>Fecha, número y formato de la modernidad </li>
+  </ul>
+<h2>Ejemplos </h2>
+<h3>Fecha: modelo completo, cultura del en_GB </h3>
+<h4>Ejemplo: </h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TDateFormat ID="Time1" Pattern="full" Culture="en_GB"/&gt;
+</com:TTextHighlighter>
+<h4>Resultado: </h4>
+<com:TDateFormat ID="Time1" Pattern="full" Culture="en_GB"/> <br />
+<hr />
+
+<h3>Fecha: modelo corto </h3>
+<h4>Ejemplo: </h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TDateFormat ID="Time2" Pattern="short" /&gt;
+</com:TTextHighlighter>
+<h4>Resultado: </h4>
+<com:TDateFormat ID="Time2" Pattern="short" /> <br />
+<hr />
+
+<h3>Modelo del valor por defecto de la fecha del <%= $this->Page->CurrentCulture %> </h3>
+<h4>Ejemplo: </h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TDateFormat ID="Time3" Value="2004/12/06" /&gt;
+</com:TTextHighlighter>
+<h4>Resultado: </h4>
+<com:TDateFormat ID="Time3" Value="2004/12/06" /> <br />
+<hr />
+
+<h3>Formato del valor por defecto de la modernidad </h3>
+<h4>Ejemplo: </h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TNumberFormat Type="currency" Value="12.4" /&gt;
+</com:TTextHighlighter>
+<h4>Resultado: </h4>
+<com:TNumberFormat Type="currency" Value="12.4" /> <br />
+<hr />
+<h3>Modernidad, cultura del de_DE con el Euro </h3>
+<h4>Ejemplo: </h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TNumberFormat ID="Number2" Type="currency" Culture="de_DE" Currency="EUR"/&gt;
+</com:TTextHighlighter>
+<h4>Resultado: </h4>
+<com:TNumberFormat ID="Number2" Type="currency" Culture="de_DE" Currency="EUR"/> <br />
+
+<hr />
+
+<h3>Modernidad, formato de los E.E.U.U. con el Euro </h3>
+<h4>Ejemplo: </h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TNumberFormat Type="currency" Culture="en_US" Currency="EUR" Value="100" /&gt;
+</com:TTextHighlighter>
+<h4>Resultado: </h4>
+<com:TNumberFormat Type="currency" Culture="en_US" Currency="EUR" Value="100" /> <br />
+<hr />
+
+<h3>Ejemplos de la traducción </h3>
+<h4>Ejemplo: </h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TTranslate&gt;Hello&lt;/com:TTranslate&gt;
+</com:TTextHighlighter>
+<h4>Resultado: </h4>
+<com:TTranslate>Hello</com:TTranslate> <br />
+<h4>Ejemplo: </h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TTranslate Text="Goodbye" /&gt;
+</com:TTextHighlighter>
+<h4>Resultado: </h4>
+<com:TTranslate Text="Goodbye" /> <br />
+
+<hr />
+<h3>Using localization tag</h3>
+<h4>Example:</h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;%[ Goodbye ]%&gt;
+</com:TTextHighlighter>
+
+<h4>Result:</h4>
+<%[ Goodbye ]%>
+<br />
+
+<hr />
+<h3>Traducción usando un diverso catálogo </h3>
+<h4>Ejemplo: </h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TTranslate Text="Goodbye" Catalogue="tests" /&gt;
+</com:TTextHighlighter>
+<h4>Resultado: </h4>
+<com:TTranslate Text="Goodbye" Catalogue="tests" />
+<br />
+
+
+<hr />
+<h3>Traducción con la substitución de parámetro </h3>
+<h4>Ejemplo: </h4>
+<com:TTextHighlighter Language="prado" CssClass="source">
+&lt;com:TTranslate&gt;
+	{greeting} {name}!, The unix-time is "{time}". 
+	&lt;com:TTranslateParameter Key="name"&gt;
+		&lt;com:TTranslate Catalogue="tests" Text="World" /&gt;
+	&lt;/com:TTranslateParameter&gt;	
+	&lt;com:TTranslateParameter Key="greeting" Value="Hello" /&gt;
+	&lt;com:TTranslateParameter Key="time" Value="&lt;%= Time() %&gt;" /&gt;
+&lt;/com:TTranslate&gt;
+</com:TTextHighlighter>
+
+<h4>Resultado: </h4>
+
+<com:TTranslate>
+	{greeting} {name}!, The unix-time is "{time}". 
+	<com:TTranslateParameter Key="name">
+		<com:TTranslate Catalogue="tests" Text="World" />
+	</com:TTranslateParameter>	
+	<com:TTranslateParameter Key="greeting" Value="Hello" />
+	<com:TTranslateParameter Key="time" Value="<%= Time() %>" />
+</com:TTranslate>
+
+<div class="last-modified">$Id: Home.es.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

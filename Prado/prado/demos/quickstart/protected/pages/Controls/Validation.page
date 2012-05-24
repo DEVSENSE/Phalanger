@@ -1,0 +1,239 @@
+<com:TContent ID="body" >
+
+<h1 id="4901">Validation Controls</h1>
+
+<p id="560337" class="block-content">
+Validation controls, called validators, perform validation on user-entered data values when they are post back to the server. The validation is triggered by a postback control, such as a <tt>TButton</tt>, a <tt>TLinkButton</tt> or a <tt>TTextBox</tt> (under <tt>AutoPostBack</tt> mode) whose <tt>CausesValidation</tt> property is true.
+</p>
+
+<p id="560338" class="block-content">
+Validation is always performed on server side. If <tt>EnableClientScript</tt> is true and the client browser supports JavaScript, validators may also perform client-side validation. Client-side validation will validate user input before it is sent to the server. The form data will not be submitted if any error is detected. This avoids the round-trip of information necessary for server-side validation.
+</p>
+
+<p id="560339" class="block-content">
+Validators share a common set of properties, which are defined in the base class <tt>TBaseValidator</tt> class and listed as follows,
+</p>
+<ul id="u1" class="block-content">
+<li><tt>ControlToValidate</tt> specifies the input control to be validated. This property must be set to the ID path of an input control. An ID path is the dot-connected IDs of the controls reaching from the validator's naming container to the target control.</li>
+<li><tt>ErrorMessage</tt> specifies the error message to be displayed in case the corresponding validator fails.</li>
+<li><tt>Text</tt> is similar to <tt>ErrorMessage</tt>. If they are both present, <tt>Text</tt> takes precedence. This property is useful when used together with <tt>TValidationSummary</tt>.</li>
+<li><tt>ValidationGroup</tt> specifies which group the validator is in. The validator will perform validation only if the current postback is triggered by a control which is in the same group.</li>
+<li><tt>EnableClientScript</tt> specifies whether client-side validation should be performed. By default, it is enabled.</li>
+<li><tt>Display</tt> specifies how error messages are displayed. It takes one of the following three values:
+    <ul>
+    <li><tt>None</tt> - the error message will not be displayed even if the validator fails.</li>
+    <li><tt>Static</tt> - the space for displaying the error message is reserved. Therefore, showing up the error message will not change your existing page layout.</li>
+    <li><tt>Dynamic</tt> - the space for displaying the error message is NOT reserved. Therefore, showing up the error message will shift the layout of your page around (usually down).</li>
+    </ul>
+</li>
+<li><tt>ControlCssClass</tt> - the CSS class that is applied to the control being validated in case the validation fails.</li>
+<li><tt>FocusOnError</tt> - set focus at the validating place if the validation fails. Defaults to false.</li>
+<li><tt>FocusElementID</tt> - the ID of the HTML element that will receive focus if validation fails and <tt>FocusOnError</tt> is true.</li>
+</ul>
+
+<h1 id="116008">Prado Validation Controls</h1>
+<a name="TRequiredFieldValidator"></a>
+<h2 id="4902">TRequiredFieldValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRequiredFieldValidator" />
+
+<p id="560340" class="block-content">
+TRequiredFieldValidator ensures that the user enters some data in the specified input field. By default, TRequiredFieldValidator will check if the user input is empty or not. The validation fails if the input is empty. By setting <tt>InitialValue</tt>, the validator can check if the user input is different from <tt>InitialValue</tt>. If not, the validation fails.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRequiredFieldValidator.Home" />
+
+<a name="TRegularExpressionValidator"></a>
+<h2 id="4903">TRegularExpressionValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRegularExpressionValidator" />
+
+<p id="560341" class="block-content">
+TRegularExpressionValidator verifies the user input against a regular pattern. The validation fails if the input does not match the pattern. The regular expression can be specified by the <tt>RegularExpression</tt> property. Some commonly used regular expressions include:
+</p>
+<ul id="u2" class="block-content">
+<li>At least 6 characters: <code>[\w]{6,}</code></li>
+<li>Japanese Phone Number: <code>(0\d{1,4}-|\(0\d{1,4}\) ?)?\d{1,4}-\d{4}</code></li>
+<li>Japanese Postal Code: <code>\d{3}(-(\d{4}|\d{2}))?</code></li>
+<li>P.R.C. Phone Number: <code>(\(\d{3}\)|\d{3}-)?\d{8} </code></li>
+<li>P.R.C. Postal Code: <code>\d{6}</code></li>
+<li>P.R.C. Social Security Number: <code>\d{18}|\d{15}</code></li>
+<li>U.S. Phone Number: <code>((\(\d{3}\) ?)|(\d{3}-))?\d{3}-\d{4}</code></li>
+<li>U.S. ZIP Code: <code>\d{5}(-\d{4})?</code></li>
+<li>U.S. Social Security Number: <code>\d{3}-\d{2}-\d{4}</code></li>
+</ul>
+<p id="560342" class="block-content">
+More regular expression patterns can be found on the Internet, e.g.
+<a href="http://regexlib.com/">http://regexlib.com/</a>.
+</p>
+<p id="560343" class="block-content">
+Note, TRegularExpressionValidator only checks for nonempty user input. Use a TRequiredFieldValidator to ensure the user input is not empty.
+</p>
+<com:RunBar PagePath="Controls.Samples.TRegularExpressionValidator.Home" />
+
+<h2 id="TEmailAddressValidator">TEmailAddressValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TEmailAddressValidator" />
+
+<p id="560344" class="block-content">
+TEmailAddressValidator verifies that the user input is a valid email address. The validator uses a regular expression to check if the input is in a valid email address format. If <tt>CheckMXRecord</tt> is true, the validator will also check whether the MX record indicated by the email address is valid, provided <tt>checkdnsrr()</tt> is available in the installed PHP.
+</p>
+<p id="560345" class="block-content">
+Note, if the input being validated is empty, TEmailAddressValidator will not do validation. Use a TRequiredFieldValidator to ensure the value is not empty.
+</p>
+<com:RunBar PagePath="Controls.Samples.TEmailAddressValidator.Home" />
+
+<a name="TCompareValidator"></a>
+<h2 id="4904">TCompareValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TCompareValidator" />
+
+<p id="560346" class="block-content">
+TCompareValidator compares the user input with a constant value specified by <tt>ValueToCompare</tt>, or another user input specified by <tt>ControlToCompare</tt>. The <tt>Operator</tt> property specifies how to compare the values, which includes <tt>Equal</tt>, <tt>NotEqual</tt>, <tt>GreaterThan</tt>, <tt>GreaterThanEqual</tt>, <tt>LessThan</tt> and <tt>LessThanEqual</tt>. Before comparison, the values being compared will be converted to the type specified by <tt>DataType</tt> listed as follows,
+</p>
+<ul id="u3" class="block-content">
+<li><tt>String</tt> - A string data type.</li>
+<li><tt>Integer</tt> - A 32-bit signed integer data type.</li>
+<li><tt>Float</tt> - A double-precision floating point number data type.</li>
+<li><tt>Date</tt> - A date data type. The date format can be specified by setting <tt>DateFormat</tt> property, which must be recognizable by <tt>TSimpleDateFormatter</tt>. If the property is not set, the GNU date syntax is assumed.</li>
+</ul>
+<p id="560347" class="block-content">
+Note, if the input being validated is empty, TEmailAddressValidator will not do validation. Use a TRequiredFieldValidator to ensure the value is not empty.
+</p>
+<p id="560348" class="block-content">
+<b>N.B.</b> If validating against a <a href="?page=Controls.DatePicker">TDatePicker</a> the <tt>DataType</tt> must be equal to "Date" and the <tt>DateFormat</tt> property of the validator must be equal to the <tt>DateFormat</tt> of the <a href="?page=Controls.DatePicker">TDatePicker</a>.
+</p>
+<com:RunBar PagePath="Controls.Samples.TCompareValidator.Home" />
+
+<a name="TDataTypeValidator"></a>
+<h2 id="4905">TDataTypeValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TDataTypeValidator" />
+
+<p id="560349" class="block-content">
+TDataTypeValidator verifies if the input data is of specific type indicated by <tt>DataType</tt>. The data types that can be checked against are the same as those in TCompareValidator.
+</p>
+<p id="560350" class="block-content">
+<b>N.B.</b> If validating against a <a href="?page=Controls.DatePicker">TDatePicker</a> the <tt>DataType</tt> must be equal to "Date" and the <tt>DateFormat</tt> property of the validator must be equal to the <tt>DateFormat</tt> of the <a href="?page=Controls.DatePicker">TDatePicker</a>.
+</p>
+
+
+<com:RunBar PagePath="Controls.Samples.TDataTypeValidator.Home" />
+
+<a name="TRangeValidator"></a>
+<h2 id="4906">TRangeValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TRangeValidator" />
+
+<p id="560351" class="block-content">
+TRangeValidator verifies whether an input value is within a specified range. TRangeValidator uses three key properties to perform its validation. The <tt>MinValue</tt> and <tt>MaxValue</tt> properties specify the minimum and maximum values of the valid range. The <tt>DataType</tt> property specifies the data type of the value being validated. The value will be first converted into the specified type and then compare with the valid range. The data types that can be checked against are the same as those in TCompareValidator.
+</p>
+
+<p id="range_strict" class="block-content">
+If <tt>StrictComparison</tt> property is set to <tt>true</tt>, then the ranges
+are compared as strictly less than the <tt>MaxValue</tt> and/or strictly greater than the 
+<tt>MinValue</tt>.
+</p>
+
+<p id="560352" class="block-content">
+<b>N.B.</b> If validating against a <a href="?page=Controls.DatePicker">TDatePicker</a> the <tt>DataType</tt> must be equal to "Date" and the <tt>DateFormat</tt> property of the validator must be equal to the <tt>DateFormat</tt> of the <a href="?page=Controls.DatePicker">TDatePicker</a>.
+</p>
+
+<com:RunBar PagePath="Controls.Samples.TRangeValidator.Home" />
+
+<a name="TCustomValidator"></a>
+<h2 id="4907">TCustomValidator</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TCustomValidator" />
+
+<p id="560353" class="block-content">
+TCustomValidator performs user-defined validation (either server-side or client-side or both) on an input control.
+</p>
+<p id="560354" class="block-content">
+To create a server-side validation function, provide a handler for the <tt>OnServerValidate</tt> event that performs the validation. The data string of the input control to validate can be accessed by the event parameter's <tt>Value</tt> property. The result of the validation should be stored in the <tt>IsValid</tt> property of the parameter.
+</p>
+<p id="560355" class="block-content">
+To create a client-side validation function, add the client-side validation javascript function to the page template and assign its name to the <tt>ClientValidationFunction</tt> property. The function should have the following signature:
+</p>
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_560118">
+<script type="text/javascript">
+function ValidationFunctionName(sender, parameter)
+{
+    // if(parameter == ...)
+    //    return true;
+    // else
+    //    return false;
+}
+</script>
+</com:TTextHighlighter>
+<com:RunBar PagePath="Controls.Samples.TCustomValidator.Home" />
+
+<a name="TValidationSummary"></a>
+<h2 id="4908">TValidationSummary</h2>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TValidationSummary" />
+
+<p id="560356" class="block-content">
+TValidationSummary displays a summary of validation errors inline on a Web page, in a message box, or both.
+</p>
+<p id="560357" class="block-content">
+By default, a validation summary will collect <tt>ErrorMessage</tt> of all failed validators on the page. If <tt>ValidationGroup</tt> is not empty, only those validators who belong to the group will show their error messages in the summary.
+</p>
+<p id="560358" class="block-content">
+The summary can be displayed as a list, a bulleted list, or a single paragraph based on the <tt>DisplayMode</tt> property. The messages shown can be prefixed with <tt>HeaderText</tt>. The summary can be displayed on the Web page or in a JavaScript message box, by setting the <tt>ShowSummary</tt> and <tt>ShowMessageBox</tt> properties, respectively. Note, the latter is only effective when <tt>EnableClientScript</tt> is true.
+</p>
+<com:RunBar PagePath="Controls.Samples.TValidationSummary.Home" />
+
+<h1 id="123123">Interacting the Validators</h1>
+<h2 id="116009">Resetting or Clearing of Validators</h2>
+<p id="1212323">
+Validators can be reset on the client-side using javascript by calling the
+<tt>Prado.Validation.reset(groupID)</tt> where <tt>groupID</tt> is the validator
+grouping name. If <tt>groupID</tt> is null, then validators without grouping are used.
+</p>
+
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_560118a">
+<script type="text/javascript">
+function reset_validator()
+{
+    Prado.Validation.reset("group1");
+}
+</script>
+</com:TTextHighlighter>
+<com:RunBar PagePath="Controls.Samples.ResetValidation.Home" />
+
+<h2 id="5301">Client and Server Side Conditional Validation</h2>
+<p id="560359" class="block-content">
+	All validators contains the following events. 
+	The corresponding events for the client side is available as sub-properties
+	of the <tt>ClientSide</tt> property of the validator.
+</p>
+	<ul id="u4" class="block-content">
+		<li>The <tt>OnValidate</tt> event is raise before the validator validation functions are called.</li>
+		<li>The <tt>OnValidationSuccess</tt> event is raised after the validator has successfully validate the control.</li>
+		<li>The <tt>OnValidationError</tt> event is raised after the validator fails validation.</li>
+	</ul>
+
+<div class="note"><b class="tip">Note:</b>
+For Prado versions earlier than 3.1 the property names were <tt>OnError</tt> and <tt>OnSuccess</tt>. For Prado version 3.1 or later they are <tt>OnValidationError</tt> and <tt>OnValidationSuccess</tt>, respectively. 
+</div>
+
+<p id="560360" class="block-content">The following example pop-up a message saying "hello" when the validator fails on the client-side.
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_560119">
+&lt;com:TRequiredFieldValidator ... &gt;
+	&lt;prop:ClientSide.OnValidationError&gt;
+		alert("hello");
+	&lt;/prop:ClientSide.OnValidationError&gt;
+&lt;/com:TRequiredFieldValidator&gt;
+</com:TTextHighlighter>
+The resulting client-side event callback function is of the following form.
+<com:TTextHighlighter Language="javascript" CssClass="source block-content" id="code_560120">
+function onErrorHandler(sender, parameter)
+{
+	alert("hello");
+}
+</com:TTextHighlighter>
+Where <tt>sender</tt> is the current client-side validator and <tt>parameter</tt>
+is the control that invoked the validator.
+</p>
+<h3 id="5302">Conditional Validation Example</h3>
+<p id="560361" class="block-content">
+The following example show the use of client-side and server side validator events. The example
+demonstrates conditional validation. Notice that, we need to write code for both the
+server side and client-side. Moreover, on the server side, we need to re-enable the conditional
+validator so that its javascript code are produced no matter what (otherwise, the client-side validator is not available).
+<com:RunBar PagePath="Controls.Samples.TClientSideValidator.Home" />
+</p>
+
+<div class="last-modified">$Id: Validation.page 2961 2011-06-02 19:27:21Z ctrlaltca@gmail.com $</div></com:TContent>

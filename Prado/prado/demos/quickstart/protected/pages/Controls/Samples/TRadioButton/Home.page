@@ -1,0 +1,102 @@
+<com:TContent ID="body">
+
+<h1>TRadioButton Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A radiobutton with customized text alignment, color and font:
+</td><td class="sampleaction">
+<com:TRadioButton
+	Text="radiobutton"
+	TextAlign="Left"
+	ForeColor="silver"
+	BackColor="green"
+	Font.Size="14pt"
+/>
+</td></tr>
+
+<tr><td class="samplenote">
+A radiobutton with label and input attributes:
+</td><td class="sampleaction">
+<com:TRadioButton
+	Text="click me"
+	InputAttributes.value="value"
+	LabelAttributes.style="color:red"
+/>
+</td></tr>
+
+<tr><td class="samplenote">
+An auto postback radiobutton:
+</td><td class="sampleaction">
+<com:TRadioButton
+	AutoPostBack="true"
+	Text="click me"
+	OnCheckedChanged="radiobuttonClicked"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A radiobutton causing validation on a textbox:
+</td><td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	Display="Dynamic"
+	ErrorMessage="input required in the textbox"
+	ValidationGroup="Group"
+	/>
+<com:TRadioButton
+	Text="submit"
+	AutoPostBack="true"
+	ValidationGroup="Group"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A radiobutton validated by a required field validator:
+</td><td class="sampleaction">
+<com:TRadioButton
+	ID="RadioButton"
+	Text="Consent"
+	ValidationGroup="Group2"
+	/>
+<com:TButton Text="Submit" ValidationGroup="Group2" />
+<com:TRequiredFieldValidator
+	ControlToValidate="RadioButton"
+	Display="Dynamic"
+	ErrorMessage="You must consent."
+	ValidationGroup="Group2"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A radiobutton group:
+</td><td class="sampleaction">
+<com:TRadioButton
+	ID="Radio1"
+	GroupName="RadioGroup"
+	Text="Option 1"
+	/>
+<com:TRadioButton
+	ID="Radio2"
+	GroupName="RadioGroup"
+	Text="Option 2"
+	/>
+<com:TRadioButton
+	ID="Radio3"
+	GroupName="RadioGroup"
+	Text="Option 3"
+	/>
+<com:TRadioButton
+	ID="Radio4"
+	Text="Option 4 (in a different group)"
+	/>
+<br/>
+<com:TButton Text="Submit" OnClick="selectRadioButton" />
+<com:TLabel ID="Result" />
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

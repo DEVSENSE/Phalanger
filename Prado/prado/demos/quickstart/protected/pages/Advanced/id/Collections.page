@@ -1,0 +1,135 @@
+<com:TContent ID="body" >
+
+<h1 id="5501">Koleksi</h1>
+<p id="710529" class="block-content">
+Koleksi adalah struktur data dasar dalam pemrograman. Sebagai tambahan pada pemrograman PHP, array dipakai secara luas untuk mewakili koleksi struktur data. Array PHP adalah campuran dari array berindeks-kardinal dan tabel campuran.
+</p>
+<p id="710530" class="block-content">
+Untuk menghidupkan manipulasi obyek-terorientasi atas koleksi, PRADO menyediakan kelas koleksi yang bertenaga. Diantaranya, <tt>TList</tt> dan <tt>TMap</tt> adalah yang paling mendasar dan biasanya melayani sebagai basis kelas untuk kelas koleksi lainnya. Karena banyak komponen PRADO memiliki properti yang bertipe koleksi, penting bagi para pengembang untuk menguasai pemakaian kelas koleksi PRADO.
+</p>
+
+<h2 id="5502">Menggunakan <tt>TList</tt></h2>
+<p id="710531" class="block-content">
+Obyek <tt>TList</tt> mewakili array berindeks-kardinal, misalnya array (obyek) dengan indeks 0, 1, 2, ...
+</p>
+<p id="710532" class="block-content">
+<tt>TList</tt> bisa dipakai seperti array PHP. Sebagai contoh,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code1">
+$list=new TList; // buat obyek list
+...
+$item=$list[$index];  // baca item pada indeks yang ditetapkan
+$list[]=$item;  // tambah item di akhir
+$list[$index]=$item; // ganti item pada indeks yang ditetapkan
+unset($list[$index]); // hapus item di posisi $index
+if(isset($list[$index])) // uji apakah daftar memiliki item di posisi $index
+foreach($list as $index=>$item) // jelajahi setiap item dalam daftar
+</com:TTextHighlighter>
+
+<p id="710533" class="block-content">
+Untuk memperoleh jumlah item dalam daftar, gunakan properti <tt>Count</tt>. Catatan, jangan gunakan <tt>count($list)</tt>, karena ia selalu mengembalikan 1.
+</p>
+
+<p id="710534" class="block-content">
+Sebagai tambahan, <tt>TList</tt> menerapkan beberapa metode yang nyaman untuk dipakai secara umum guna memanipulasi data dalam sebuah daftar. Ini termasuk
+</p>
+<ul id="u1" class="block-content">
+  <li><tt>clear()</tt>: membersihkan seluruh item dalam daftar.</li>
+  <li><tt>contains()</tt>: menguji apakah daftar berisi item yang ditetapkan.</li>
+  <li><tt>indexOf()</tt>: mendapatkan indeks berbasis-nol dari item yang ditetapkan dalam daftar.</li>
+  <li><tt>toArray()</tt>: mengembalikan perwakilan array atas item dalam daftar.</li>
+  <li><tt>copyFrom()</tt>: mempopulasikan daftar dengan data dari array atau obyek yang bisa dijelajahi (termasuk <tt>TList</tt>). Item yang sudah ada akan dihapus terlebih dahulu.</li>
+  <li><tt>mergeWith()</tt>: menambahkan daftar dengan data dari array atau obyek yang bisa dijelajahi (termasuk <tt>TList</tt>).</li>
+</ul>
+
+<h3 id="5504">Menggunakan properti komponen berbasis-<tt>TList</tt></h3>
+<p id="710535" class="block-content">
+Seperti telah disebutkan di atas, banyak properti komponen PRADO didasarkan pada <tt>TList</tt> atau kelas koleksi berasal dari <tt>TList</tt>. Properti ini semuanya berbagi pemakaian tersebut di atas.
+</p>
+<p id="710536" class="block-content">
+Sebagai contoh, <tt>TControl</tt> (basis kelas untuk semua kontrol PRADO) mempunyai properti yang disebut <tt>Controls</tt> yang mewakili koleksi dari kontrol anak. Tipe <tt>Controls</tt> adalah <tt>TControlCollection</tt> yang memperluas <tt>TList</tt>. Oleh karena itu, untuk menambahkan kontrol anak baru, kita dapat menggunakan cara berikut,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code2">
+$control->Controls[]=$newControl;
+</com:TTextHighlighter>
+<p id="710537" class="block-content">
+Untuk menjelajahi melalui kontrol anak, kita bisa menggunakan,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code3">
+foreach($control->Controls as $childControl) ...
+</com:TTextHighlighter>
+<p id="710538" class="block-content">
+Controh lain adalah properti <tt>Items</tt>, tersedia dalam kontrol list, <tt>TRepeater</tt>, <tt>TDataList</tt> dan <tt>TDataGrid</tt>. Dalam kontrol ini, kelas leluhur dari <tt>Items</tt> adalah <tt>TList</tt>.
+</p>
+
+<h3 id="5505">Memperluas <tt>TList</tt></h3>
+<p id="710539" class="block-content">
+Seringkali kita ingin memperluas <tt>TList</tt> untuk melakukan operasi tambahan untuk setiap penambahan atau penghapusan sebuah item. Satu-satunya metode yang diperlukan kelas anak untuk mengganti adalah <tt>insertAt()</tt> dan <tt>removeAt()</tt>. Sebagai contoh, guna memastikan daftar hanya berisi item yang bertipe <tt>TControl</tt>, kita dapat mengganti <tt>insertAt()</tt> sebagai berikut,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code4">
+public function insertAt($index,$item)
+{
+    if($item instanceof TControl)
+        parent::insertAt($index,$item)
+    else
+        throw new Exception('TControl required.');
+}
+</com:TTextHighlighter>
+
+
+<h2 id="5503">Menggunakan <tt>TMap</tt></h2>
+<p id="710540" class="block-content">
+Obyek <tt>TMap</tt> mewakili tabel campuran (atau kami katakan array berindeks-string).
+</p>
+<p id="710541" class="block-content">
+Mirip dengan <tt>TList</tt>, <tt>TMap</tt> bisa dipakai layaknya sebuah array,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code5">
+$map=new TMap; // buat obyek map
+...
+$map[$key]=$value; // tambah pasangan kunci-nilai
+unset($map[$key]); // hapus nilai dengan kunci yang ditetapkan
+if(isset($map[$key])) // apakah map berisi kunci
+foreach($map as $key=>$value) // jelajahi item dalam map
+</com:TTextHighlighter>
+<p id="710542" class="block-content">
+Properti <tt>Count</tt> memberikan jumlah item dalam map sementara properti <tt>Keys</tt> mengembalikan daftar kunci yang dipakai dalam map.
+</p>
+
+<p id="710543" class="block-content">
+Metode berikut disediakan oleh <tt>TMap</tt> demi kenyamanan,
+</p>
+<ul id="u2" class="block-content">
+  <li><tt>clear()</tt>: menghapus semua item dalam map.</li>
+  <li><tt>contains()</tt>: menguji apakah map berisi kunci yang ditetapkan.</li>
+  <li><tt>toArray()</tt>: mengembalikan perwakilan array dari item dalam map.</li>
+  <li><tt>copyFrom()</tt>: mempopulasikan map dengan data dari array atau obyek yang bisa dijelajahi (termasuk <tt>TMap</tt>). Item yang sudah ada akan dihapus terlebih dulu.</li>
+  <li><tt>mergeWith()</tt>: menambahkan map dengan data dari array atau obyek yang bisa dijelajahi (termasuk <tt>TMap</tt>).</li>
+</ul>
+
+<h3 id="5506">Penggunaan <tt>TAttributeCollection</tt></h3>
+<p id="710544" class="block-content">
+<tt>TAttributeCollection</tt> adalah kelas khusus yang diperluas dari <tt>TMap</tt>. Ia dipakai terutama oleh properti <tt>Attributes</tt> dari <tt>TControl</tt>.
+</p>
+Selain fungsionalitas normal yang disediakan oleh <tt>TMap</tt>, <tt>TAttributeCollection</tt> membolehkan anda untuk mendapatkan dan menyetel item koleksi seperti mendapatkan dan menyetel properti. Sebagai contoh,
+</p>
+<com:TTextHighlighter CssClass="source block-content" id="code6">
+$collection->Label='value'; // sama dengan: $collection['Label']='value';
+echo $collection->Label; // sama dengan: echo $collection['Label'];
+</com:TTextHighlighter>
+<p id="710545" class="block-content">
+Catatan, dalam <tt>$collection</tt> di atas TIDAK mempunyai properti <tt>Label</tt>.
+</p>
+<p id="710546" class="block-content">
+Tidak seperti <tt>TMap</tt>, kunci dalam <tt>TAttributeCollection</tt> tidak sensitif huruf. Oleh karena itu <tt>$collection->Label</tt> sama dengan <tt>$collection->LABEL</tt>.
+</p>
+<p id="710547" class="block-content">
+Karena fitur baru di atas, ketika berhadapan dengan properti <tt>Attributes</tt> dari kontrol, kita dapat mengambil keuntungan dari konsep subproperti dan mengkonfigurasi nilai atribut kontrol dalam sebuah template seperti berikut,
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code7">
+&lt;com:TButton Attributes.onclick="if(!confirm('Are you sure?')) return false;" .../&gt;
+</com:TTextHighlighter>
+<p id="710548" class="block-content">
+yang menambahkan atribut bernama <tt>onclick</tt> ke kontrol <tt>TButton</tt>.
+</p>
+<div class="last-modified">$Id: Collections.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

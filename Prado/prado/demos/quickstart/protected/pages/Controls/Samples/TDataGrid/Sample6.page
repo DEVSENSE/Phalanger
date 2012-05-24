@@ -1,0 +1,26 @@
+<com:TContent ID="body">
+
+<h1>TDataGrid Sample 6</h1>
+<h2>Custom Paging</h2>
+
+<div style="width:500px">
+<com:TDataGrid
+	ID="DataGrid"
+	Width="100%"
+	AllowPaging="true"
+	AllowCustomPaging="true"
+	VirtualItemCount="19"
+	PageSize="5"
+	PagerStyle.Mode="Numeric"
+	PagerStyle.HorizontalAlign="Right"
+	CellPadding="2"
+	HeaderStyle.BackColor="black"
+	HeaderStyle.ForeColor="white"
+	ItemStyle.BackColor="#BFCFFF"
+	ItemStyle.Font.Italic="true"
+	AlternatingItemStyle.BackColor="#E6ECFF"
+	OnPageIndexChanged="changePage"
+	/>
+</div>
+
+<div class="last-modified">$Id: Sample6.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

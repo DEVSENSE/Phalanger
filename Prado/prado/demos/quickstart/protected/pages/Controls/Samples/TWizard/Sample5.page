@@ -1,0 +1,51 @@
+<com:TContent ID="body">
+
+<h2>Using Templated Wizard Steps</h2>
+
+<com:TWizard ID="Wizard1"
+		BackColor="#FFFBD6"
+		Width="400px"
+		SideBarStyle.Width="120px"
+        HeaderText="Please let us know your preference"
+		OnCompleteButtonClick="wizardCompleted" >
+
+  <com:TWizardStep Title="Step 1">
+    <p>
+    Your favorite color:
+    <com:TDropDownList ID="DropDownList1">
+      <com:TListItem Value="Red" />
+      <com:TListItem Value="Blue" />
+      <com:TListItem Value="Green" />
+      <com:TListItem Value="Purple" />
+      <com:TListItem Value="Black" />
+      <com:TListItem Value="Yellow" />
+      <com:TListItem Value="Orange" />
+      <com:TListItem Value="Pink" />
+      <com:TListItem Value="Cyan" />
+    </com:TDropDownList>
+    </p>
+  </com:TWizardStep>
+
+  <com:TTemplatedWizardStep ID="Step2" Title="Templated Step">
+    <prop:ContentTemplate>
+      <p>
+      Your favorite Sport:
+      <com:TDropDownList ID="DropDownList2">
+        <com:TListItem Value="Baseball" />
+        <com:TListItem Value="Football" />
+        <com:TListItem Value="Tennis" />
+      </com:TDropDownList>
+      </p>
+    </prop:ContentTemplate>
+  </com:TTemplatedWizardStep>
+
+  <com:TWizardStep Title="Complete" StepType="Complete">
+    <h3>Thank you for your answer!</h3>
+    <p>
+    <com:TLabel ID="Result1" /><br/><br/>
+    <com:TLabel ID="Result2" />
+    </p>
+  </com:TWizardStep>
+</com:TWizard>
+
+<div class="last-modified">$Id: Sample5.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

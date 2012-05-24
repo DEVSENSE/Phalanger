@@ -1,0 +1,49 @@
+<com:TContent ID="body">
+<!-- $Id: Home.page 1650 2007-01-24 06:55:32Z wei $ -->
+<h1>TActiveButton Samples (AJAX)</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+A click button with <tt>OnClick</tt> event handler:
+</td><td class="sampleaction">
+<com:TActiveButton
+	Text="click me"
+	OnClick="buttonClicked" />
+</td></tr>
+
+<tr><td class="samplenote">
+A command button with <tt>OnCallback</tt>:
+</td><td class="sampleaction">
+<com:TActiveButton
+	Text="click me"
+	OnCommand="buttonClicked"
+	CommandName="test"
+	ActiveControl.CallbackParameter="value"
+	CommandParameter="value"
+	OnCallback="buttonCallback"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A button causing validation with <tt>OnCallback</tt>:
+</td><td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	Display="Dynamic"
+	ErrorMessage="input required in the textbox"
+	ValidationGroup="Group"
+	/>
+<com:TActiveButton
+	Text="submit"
+	OnClick="buttonClicked"
+	OnCallback="buttonCallback"
+	ValidationGroup="Group" />
+</td></tr>
+
+</table>
+
+<com:TJavascriptLogger />
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

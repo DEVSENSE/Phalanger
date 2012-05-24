@@ -1,0 +1,58 @@
+<com:TContent ID="body">
+
+<h1>TLinkButton Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+Link button with customized color and font:
+</td><td class="sampleaction">
+<com:TLinkButton
+	Text="link button"
+	ForeColor="silver"
+	BackColor="black"
+	Font.Size="14pt"
+/>
+</td></tr>
+
+<tr><td class="samplenote">
+Link button with only body content:
+</td><td class="sampleaction">
+<com:TLinkButton>
+body content
+</com:TLinkButton>
+</td></tr>
+
+<tr><td class="samplenote">
+A click link button:
+</td><td class="sampleaction">
+<com:TLinkButton Text="click me" OnClick="buttonClicked" />
+</td></tr>
+
+<tr><td class="samplenote">
+A command link button:
+</td><td class="sampleaction">
+<com:TLinkButton
+	Text="click me"
+	OnCommand="buttonClicked"
+	CommandName="test"
+	CommandParameter="value"
+	/>
+</td></tr>
+
+<tr><td class="samplenote">
+A button causing validation:
+</td><td class="sampleaction">
+<com:TTextBox ID="TextBox" />
+<com:TRequiredFieldValidator
+	ControlToValidate="TextBox"
+	Display="Dynamic"
+	ErrorMessage="input required in the textbox"
+	ValidationGroup="Group"
+	/>
+<com:TLinkButton Text="submit" ValidationGroup="Group" />
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

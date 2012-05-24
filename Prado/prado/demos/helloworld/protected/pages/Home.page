@@ -1,0 +1,14 @@
+<html>
+
+<head>
+<title>Hello World Demo - Prado</title>
+</head>
+
+<body>
+
+<com:TForm>
+<com:TButton Text="Click me" OnClick="buttonClicked" />
+</com:TForm>
+
+</body>
+</html>

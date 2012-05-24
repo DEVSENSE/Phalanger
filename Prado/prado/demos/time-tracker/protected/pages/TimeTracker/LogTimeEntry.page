@@ -1,0 +1,77 @@
+<com:TContent ID="Main">
+<h2>Time Entry</h2>
+
+<div class="loghours">
+
+<fieldset>
+<legend>Log your hours</legend>
+<div class="project">
+<com:TLabel ForControl="projects" Text="Project:" />
+<span class="required">*</span><br />
+<com:TDropDownList ID="projects" AutoPostBack="true" OnSelectedIndexChanged="projects_Changed" />
+</div>
+
+<div class="category">
+<com:TLabel ForControl="category" Text="Category:" />
+<span class="required">*</span><br />
+<com:TDropDownList ID="category" />
+</div>
+
+<div class="day">
+<com:TLabel ForControl="day" Text="Day:" />
+<span class="required">*</span><br />
+<com:TDatePicker ID="day" InputMode="DropDownList" />
+</div>
+
+<div class="hours">
+<com:TLabel ForControl="hours" Text="Hours:" />
+<span class="required">*</span><br />
+<com:TTextBox ID="hours" />
+ 	<com:TRequiredFieldValidator
+  		ControlToValidate="hours"
+  		Display="None"
+  		CssClass="validator"
+  		ValidationGroup="hours-add"
+  		ControlCssClass="required-input"
+  		ErrorMessage="Please enter your work hours." />
+  	<com:TRangeValidator 
+  		ControlToValidate="hours"
+  		DataType="Float"
+  		MinValue="0"
+  		MaxValue="9999"
+  		CssClass="validator"
+  		Display="None"
+  		ValidationGroup="hours-add"
+  		ControlCssClass="required-input1"
+  		ErrorMessage="Hours must be between 0 and 9999" />
+  </div>
+
+<div class="description">
+<com:TLabel ForControl="description" Text="Description:" /><br/>
+<com:TTextBox ID="description" TextMode="MultiLine" />
+</div>
+
+<div class="addEntry">
+
+<com:TValidationSummary AutoUpdate="false" ValidationGroup="hours-add" />
+
+<com:TButton Text="Add Entry" ValidationGroup="hours-add" OnClick="AddNewEntry" />
+</div>
+
+</fieldset>
+
+</div>
+
+<div class="timesheet">
+<fieldset>
+<legend>Time Sheet For: 
+<com:TDropDownList ID="projectMembers" CssClass="sheetfor" 
+	AutoPostBack="True" OnSelectedIndexChanged="showTimeSheet" />
+</legend>
+
+<com:Application.pages.TimeTracker.TimeEntryList ID="entryList" />
+
+</fieldset>
+
+</div>
+</com:TContent>

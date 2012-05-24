@@ -1,0 +1,19 @@
+<com:TContent ID="body" >
+
+<h1 id="5001">Kontrol Data</h1>
+
+<ul id="u1" class="block-content">
+  <li>
+  <a href="?page=Controls.DataList">TDataList</a> dipakai untuk menampilkan atau memodifikasi daftar dari item data.
+  </li>
+
+  <li>
+  <a href="?page=Controls.DataGrid">TDataGrid</a> menampilkan data dalam format tabel dengan baris serta kolom.
+  </li>
+
+  <li>
+  <a href="?page=Controls.Repeater">TRepeater</a> menampilkan kontennya yang didefinisikan dalam template secara berulang berdasarkan pada data yang berikan.
+  </li>
+</ul>
+
+<div class="last-modified">$Id: Data.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

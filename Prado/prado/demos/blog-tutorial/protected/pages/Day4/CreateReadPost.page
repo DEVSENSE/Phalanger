@@ -1,0 +1,135 @@
+<com:TContent ID="Main">
+
+<h1>Creating <tt>ReadPost</tt> Page</h1>
+
+<p>
+The <tt>ReadPost</tt> page shows the detailed content of a blog post. For authorized users, it also shows link buttons that would allow them to edit or delete the post.
+</p>
+
+<p>
+We create two files <tt>protected/pages/posts/ReadPost.page</tt> and <tt>protected/pages/posts/ReadPost.php</tt> to save the page template and page class, respectively.
+</p>
+
+<h2>Creating Page Template</h2>
+<p>
+The <tt>ReadPost</tt> page template is very similar to the <tt>PostRenderer</tt> template, both presenting the content of a post. The difference is that <tt>ReadPost</tt> needs to display two link buttons when the current user is authorized to edit or delete the post.
+</p>
+
+<com:TTextHighlighter CssClass="source" Language="prado">
+&lt;com:TContent ID="Main">
+
+<h2>
+&lt;com:TLiteral Text="&lt;%= $this->Post->title %>" />
+</h2>
+
+&lt;com:TControl Visible="&lt;%= $this->canEdit() %>">
+	<a href="&lt;%= $this->Service->constructUrl('posts.EditPost',array('id'=>$this->Post->post_id))%>">Edit</a> |
+	&lt;com:TLinkButton Text="Delete"
+		OnClick="deletePost"
+		Attributes.onclick="javascript:if(!confirm('Are you sure?')) return false;" />
+&lt;/com:TControl>
+
+<p>
+Author:
+&lt;com:TLiteral Text="&lt;%= $this->Post->author->username %>" /><br/>
+Time:
+&lt;com:TLiteral Text="&lt;%= date('m/d/Y h:m:sa', $this->Post->create_time) %>" />
+</p>
+
+<p>
+&lt;com:TLiteral Text="&lt;%= $this->Post->content %>" />
+</p>
+
+&lt;/com:TContent>
+</com:TTextHighlighter>
+
+<p>
+Many PHP expressions are used in the above template. The expression <tt>$this->Post</tt> refers to a property defined in the <tt>ReadPost</tt> page class. It represents the <tt>PostRecord</tt> object corresponding to the post currently being viewed.
+</p>
+
+<com:InfoBox>
+Although we use expressions widely in templates, we do not overuse them. A major guideline in determining whether we should use an expression in a template is that <i>the expression should be a property or a simple presentational transformation of the property</i>. By following this guideline, we ensure content and presentation are well separated without losing sufficient flexibility.
+</com:InfoBox>
+
+<p>
+We also notice in the above template that two link buttons are enclosed within a <tt>TControl</tt> whose visibility is determined by the expression <tt>$this->canEdit()</tt>. For the <tt>Delete</tt> link button, we use javascript confirmation dialog to obtain user's confirmation when he clicks to delete the post.
+</p>
+
+<com:InfoBox>
+All PRADO controls have a very useful property named <tt>Attributes</tt> which can accept arbitrary name-value pairs. Most PRADO controls will render the name-value pairs in <tt>Attributes</tt> literally in the corresponding HTML tag. For example, in the <tt>Delete</tt> link button above, we define an <tt>onclick</tt> which is rendered as the <tt>onclick</tt> attribute in the resulting <tt>&lt;a&gt;</tt> tag.
+</com:InfoBox>
+
+
+<h2>Creating Page Class</h2>
+
+<p>
+From the above page template, we see that we need to write a page class that implements the event handler: <tt>deletePost()</tt> (attached to the <tt>Delete</tt> button's <tt>OnClick</tt> event). We also need to retrieve the post data specified by the post ID passed via the <tt>id</tt> GET parameter. </p>
+
+<com:InfoBox>
+We implement the post deletion feature in the <tt>ReadPost</tt> page because it is so natural to do so here. When the user clicks on the <tt>Delete</tt> button, a javascript confirmation dialog will pop up. If the user confirms it, the deletion will be carried in response to the <tt>OnClick</tt> event of the <tt>Delete</tt> button.
+</com:InfoBox>
+
+<com:TTextHighlighter CssClass="source" Language="php">
+class ReadPost extends TPage
+{
+	private $_post;
+	/**
+	 * Fetches the post data.
+	 * This method is invoked by the framework when initializing the page
+	 * @param mixed event parameter
+	 */
+	public function onInit($param)
+	{
+		parent::onInit($param);
+		// post id is passed via the 'id' GET parameter
+		$postID=(int)$this->Request['id'];
+		// retrieves PostRecord with author information filled in
+		$this->_post=PostRecord::finder()->withAuthor()->findByPk($postID);
+		if($this->_post===null)  // if post id is invalid
+			throw new THttpException(500,'Unable to find the specified post.');
+		// set the page title as the post title
+		$this->Title=$this->_post->title;
+	}
+
+	/**
+	 * @return PostRecord the PostRecord currently being viewed
+	 */
+	public function getPost()
+	{
+		return $this->_post;
+	}
+
+	/**
+	 * Deletes the post currently being viewed
+	 * This method is invoked when the user clicks on the "Delete" button
+	 */
+	public function deletePost($sender,$param)
+	{
+		// only the author or the administrator can delete a post
+		if(!$this->canEdit())
+			throw new THttpException('You are not allowed to perform this action.');
+		// delete it from DB
+		$this->_post->delete();
+		// redirect the browser to the homepage
+		$this->Response->redirect($this->Service->DefaultPageUrl);
+	}
+
+	/**
+	 * @return boolean whether the current user can edit/delete the post being viewed
+	 */
+	public function canEdit()
+	{
+		// only the author or the administrator can edit/delete a post
+		return $this->User->Name===$this->Post->author_id || $this->User->IsAdmin;
+	}
+}
+</com:TTextHighlighter>
+
+<h2>Testing</h2>
+<p>
+To test the <tt>ReadPost</tt> page, visit the URL <tt>http://hostname/blog/index.php</tt> and click on the title of the only post. Our browser will display the following result with the URL <tt>http://hostname/blog/index.php?page=ReadPost&id=1</tt>. Note, if we do not login, the two link buttons will be invisible.
+</p>
+
+<img src="<%~ output2.gif %>" class="output" />
+
+</com:TContent>

@@ -1,0 +1,33 @@
+<com:TContent ID="body" >
+
+<h1 id="158012">TActiveFileUpload</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveFileUpload" />
+
+<p class="block-content">
+<tt>TActiveFileUpload</tt> displays a file upload field on a page. Upon postback,
+the text entered into the field will be treated as the name of the file
+that will be uploaded to the server. The property <tt>HasFile</tt>
+indicates whether the file upload is successful. If successful, the file
+may be obtained by calling<tt>saveAs</tt> to save it at a specified place.
+You can use <tt>FileName</tt>, <tt>FileType</tt>,
+<tt>FileSize</tt> to get the original client-side file name,
+the file mime type, and the file size information. If the upload is not
+successful, <tt>ErrorCode</tt> contains the error code
+describing the cause of failure.
+</p>
+
+<p class="block-content">
+TActiveFileUpload raises <tt>OnFileUpload</tt> event if a file is uploaded
+(whether it succeeds or not).
+</p>
+
+<p class="block-content">
+TActiveFileUpload actually does a postback in a hidden IFrame, and then does a callback.
+This callback then raises the <tt>OnFileUpload</tt> event. After the postback
+a status icon is displayed; either a green checkmark if the upload is successful,
+or a red x if there was an error.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveFileUpload.Home" />
+
+<div class="last-modified">$Id: ActiveFileUpload.page 2962 2011-06-02 19:38:10Z ctrlaltca@gmail.com $</div></com:TContent>

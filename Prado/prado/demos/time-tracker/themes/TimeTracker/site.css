@@ -1,0 +1,263 @@
+html
+{
+	background: url(background.png) repeat-x top;
+	background-color: #eef;
+}
+body
+{
+	margin: 0 auto;
+	padding: 2em;
+	max-width: 60em;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4
+{
+	color: #6495ED;
+}
+
+div.main
+{
+
+	background-color: White;
+	padding: 30px 30px 200px 30px;
+	margin-top: 1.8em;
+	-moz-border-radius: 15px 15px 0 0;
+}
+
+
+h1.heading, h1 a
+{
+	color: white;
+	text-decoration: none;
+	margin: -1.2em 0 1em 0;
+	font-size: 1.25em;
+}
+
+h1.heading, h1 a:hover
+{
+	color: white;
+}
+
+h1.heading
+{
+	background-image: url(clock.gif);
+	background-repeat: no-repeat;
+	background-position: center left;
+	padding: 0px 0px 5px 70px;
+}
+
+
+h1 .subheading
+{
+	display: block;
+	font-size: 0.96em;
+	color: #E0FFFF;
+}
+
+.minheading
+{
+	text-align: right;
+	margin-top: -3.5em;
+}
+.minheading h2
+{
+	font-size: 0.9em;
+	display: inline;
+	padding-left: 1em;
+}
+
+.minheading .name
+{
+	color: white;
+	margin-right: 1em;
+}
+
+.minheading a
+{
+	color: white;
+}
+
+.minheading a:hover
+{
+	color: Yellow;
+}
+
+a
+{
+	color: #f61;
+}
+
+a:hover
+{
+	color: red;
+}
+
+/** menu **/
+
+.sitemap
+{
+	text-align: center;
+	margin-top: 1.5em;
+	margin-bottom: -1.5em;
+}
+
+ul.level1
+{
+
+}
+
+ul.level1, ul.level2
+{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+ul.level1 li
+{
+	display: inline;
+}
+ul.level1 li .menuitem
+{
+	padding: 0.3em 20px 0.3em 20px;
+	background-color: #B6CEF7;
+	cursor: pointer;
+	background-image: url(tabs.png);
+	background-repeat: repeat-x;
+	color: #f71;
+	font-weight: bold;
+	letter-spacing: 2px;
+	text-decoration: none;
+}
+
+ul.level1 li.active .menuitem
+{
+	background-color: White;
+	background-image: none;
+}
+
+ul.level1 li .menuitem img
+{
+	border: 0 none;
+	vertical-align: middle;
+	margin-top: -4px;
+}
+
+ul.level2
+{
+	display: none;
+}
+
+li.active ul.level2
+{
+	float: left;
+	display: block;
+	width: 95%;
+	margin: 1em 0 0 0;
+	padding-bottom: 1em;
+}
+
+li.active ul.level2 li a
+{
+	margin-left: 1em;
+	color: #f61;
+	text-decoration: none;
+	border-bottom:1px dashed #f61;
+}
+
+li.active ul.level2 li a:hover
+{
+	color: Red;
+}
+
+
+/** forms **/
+
+fieldset
+{
+	margin: 0;
+	border: 1px solid #6495ED;
+	padding: 1.5em;
+}
+
+fieldset legend
+{
+	font-weight: bold;
+	color: #4169E1;
+	padding: 0.5em;
+}
+
+fieldset.login label, fieldset.signup label
+{
+	float: left;
+	color: #708090;
+	width: 120px;
+	text-align: right;
+}
+
+fieldset.signup label
+{
+	width: 9em;
+}
+
+fieldset span.required
+{
+	font-size: 0.85em;
+	font-weight: bold;
+	color: Red;
+}
+
+fieldset.login div, fieldset.signup div
+{
+	padding: 0.25em;
+}
+
+fieldset.login .remember label
+{
+	float:none;
+	margin-left: 0.4em;
+}
+fieldset.login .remember input
+{
+	margin-left: 133px;
+}
+
+fieldset.login .signin input
+{
+	padding: 0.1em 2em;
+	margin-left: 133px;
+}
+
+fieldset.signup .wizardNav
+{
+	margin: 1em;
+	padding-left: 9em;
+}
+
+/** list */
+
+.row0
+{
+	background-color: #cdf;
+}
+
+.row1
+{
+	background-color: #eef;
+}
+
+
+.required-input, .required-input1, .required-input2
+{
+	border: 2px solid red;
+	background-color: #FFE4E1
+}
+
+.copyrights
+{
+	font-size: 0.8em;
+	text-align: center;
+	color: #708090;
+	margin-top: 2em;
+}

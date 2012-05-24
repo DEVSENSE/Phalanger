@@ -1,0 +1,57 @@
+<com:TContent ID="body">
+
+<h1>TCallback Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+An active label text being set as the result of a callback:
+</td><td class="sampleaction">
+
+<com:TCallback ID="callback1" OnCallback="callback1_Requested" />
+<script type="text/javascript">
+  function do_callback1()
+  {
+    var request = <%= $this->callback1->ActiveControl->Javascript %>;
+    request.dispatch();
+  }
+</script>
+<div onclick="do_callback1()" style="background-color:red;border: 1px solid black">Click Me!</div>
+<br/><com:TActiveLabel Text="This is a label" ID="label1"
+/>
+
+<br/><com:TActiveButton
+	Text="reset example"
+	OnClick="buttonClicked"
+/>
+</td></tr>
+
+<tr><td class="samplenote">
+A TCallback with a 3-items array as parameter.
+The first parameter is defined in the onclick() attribute of the red div;
+The second parameter is defined in the body of the javascript function;
+The third parameter is taken from the textbox;
+</td><td class="sampleaction">
+
+<com:TCallback ID="callback2" OnCallback="callback2_Requested" />
+<script type="text/javascript">
+  function do_callback2(param1)
+  {
+    var request = <%= $this->callback2->ActiveControl->Javascript %>;
+    var param2 = 'value 2';
+    var param3 = $('<%= $this->txt1->ClientID %>').value;
+    request.setCallbackParameter({'Param1':param1, 'Param2':param2, 'Param3':param3});
+    request.dispatch();
+  }
+</script>
+TextBox for third parameter: <com:TTextBox ID="txt1" text="value 3"/>
+<div onclick="do_callback2('value 1')" style="background-color:red;border: 1px solid black">Click Me!</div>
+<br/>Parameter 1 is <com:TActiveLabel Text="" ID="labelParam1" />
+<br/>Parameter 2 is <com:TActiveLabel Text="" ID="labelParam2" />
+<br/>Parameter 3 is <com:TActiveLabel Text="" ID="labelParam3" />
+</td></tr>
+
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2960 2011-06-02 17:44:51Z ctrlaltca@gmail.com $</div></com:TContent>

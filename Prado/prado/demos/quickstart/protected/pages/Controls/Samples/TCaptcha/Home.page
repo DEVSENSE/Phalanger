@@ -1,0 +1,32 @@
+<com:TContent ID="body">
+<h1>TCaptcha Samples</h1>
+
+<h2>Validating CAPTCHA</h2>
+<com:TCaptcha ID="Captcha" TokenImageTheme="5" />
+<com:TTextBox ID="Input" />
+<com:TButton Text="Regenerate" OnClick="regenerateToken" CausesValidation="false" />
+<com:TButton Id="SubmitButton" Text="Submit" OnClick="buttonClicked" />
+<com:TCaptchaValidator CaptchaControl="Captcha" ControlToValidate="Input" Text="You are challenged!" />
+
+<h2>Different Themes of TCaptcha</h2>
+
+<table border="1">
+<tr>
+<th>Theme</th><th>Image</th>
+</tr>
+<com:TRepeater ID="CaptchaList">
+  <prop:ItemTemplate>
+<tr>
+  <td>
+  <com:TLiteral Text="<%# $this->Data %>" />
+  </td>
+  <td>
+  <com:TCaptcha TokenImageTheme="<%# $this->Data %>" MaxTokenLength="5"/>
+  </td>
+</tr>
+  </prop:ItemTemplate>
+</com:TRepeater>
+</table>
+
+<div class="last-modified">$Id: Home.page 2182 2007-08-30 15:40:24Z xue $</div>
+</com:TContent>

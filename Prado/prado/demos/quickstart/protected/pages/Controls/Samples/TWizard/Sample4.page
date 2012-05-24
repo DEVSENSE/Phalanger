@@ -1,0 +1,85 @@
+<com:TContent ID="body">
+
+<h2>Customized Wizard Template Sample</h2>
+
+<com:TWizard ID="Wizard1"
+		BackColor="OldLace"
+		Width="400px"
+		SideBarStyle.Width="120px"
+		StepStyle.BackColor="#FFFBD6"
+		HeaderStyle.BackColor="Moccasin"
+		NavigationStyle.BackColor="PaleGoldenrod"
+		OnActiveStepChanged="wizardCompleted" >
+
+		<prop:HeaderTemplate>
+		<i>Header Template</i>
+		<br/>
+		<b>Step <%= $this->Parent->ActiveStepIndex+1 %> of 3</b>
+		</prop:HeaderTemplate>
+
+		<prop:SideBarTemplate>
+		<i>SideBar Template</i>
+		<br/>
+		<com:TDataList ID="SideBarList">
+				<prop:ItemTemplate>
+				<com:TButton ID="SideBarButton" />
+				</prop:ItemTemplate>
+				<prop:SelectedItemTemplate>
+				<com:TButton ID="SideBarButton" Font.Bold="true" />
+				</prop:SelectedItemTemplate>
+		</com:TDataList>
+		</prop:SideBarTemplate>
+
+		<prop:StartNavigationTemplate>
+		<com:TLinkButton CommandName="NextStep" Text="Next &gt;" />
+		<br/>
+		<i>Start Navigation Template</i>
+		</prop:StartNavigationTemplate>
+
+		<prop:StepNavigationTemplate>
+		<com:TLinkButton CausesValidation="False" CommandName="PreviousStep" Text="&lt; Previous" />
+		<com:TLinkButton CommandName="NextStep" Text="Next &gt;" />
+		<br/>
+		<i>Step Navigation Template</i>
+		</prop:StepNavigationTemplate>
+
+		<prop:FinishNavigationTemplate>
+		All navigation buttons are removed.
+		<br/>
+		<i>Step Navigation Template</i>
+		</prop:FinishNavigationTemplate>
+
+	<com:TWizardStep ID="WizardStep1" Title="Step 1">
+	<i>Wizard Step Content</i>
+	<br/><br/>
+	Your favorite color:
+	<com:TDropDownList ID="DropDownList1">
+	<com:TListItem Value="Red" />
+	<com:TListItem Value="Blue" />
+	<com:TListItem Value="Green" />
+	<com:TListItem Value="Purple" />
+	<com:TListItem Value="Black" />
+	<com:TListItem Value="Yellow" />
+	<com:TListItem Value="Orange" />
+	<com:TListItem Value="Pink" />
+	<com:TListItem Value="Cyan" />
+	</com:TDropDownList>
+	<br/><br/>
+	</com:TWizardStep>
+
+	<com:TWizardStep ID="WizardStep2" Title="Step 2">
+	<i>Wizard Step Content</i>
+	<br/><br/>
+	<com:TLabel ID="Result" />
+	<br/><br/>
+	</com:TWizardStep>
+
+	<com:TWizardStep ID="WizardStep3" Title="Step 3">
+	<i>Wizard Step Content</i>
+	<br/><br/>
+	Thank you for completing this survey.<br />
+	<br/><br/>
+	</com:TWizardStep>
+</com:TWizard>
+
+<div class="last-modified">$Id: Sample4.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

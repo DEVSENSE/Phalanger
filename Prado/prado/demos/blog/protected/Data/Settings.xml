@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+    <parameter id="SiteTitle" value="My Blog" />
+    <parameter id="SiteSubtitle" value="A Prado-driven weblog" />
+    <parameter id="SiteOwner" value="Prado User" />
+    <parameter id="AdminEmail" value="admin@example.com" />
+    <parameter id="MultipleUser" value="false" />
+    <parameter id="AccountApproval" value="false" />
+    <parameter id="PostPerPage" value="6" />
+    <parameter id="RecentComments" value="6" />
+    <parameter id="PostApproval" value="false" />
+    <parameter id="ThemeName" value="Winter" />
+</parameters>

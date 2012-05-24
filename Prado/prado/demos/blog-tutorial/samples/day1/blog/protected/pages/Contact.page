@@ -1,0 +1,47 @@
+<%@ Title="My Blog - Contact" %>
+ 
+<com:TContent ID="Main">
+ 
+<h1>Contact</h1>
+<p>Please fill out the following form to let me know your feedback on my blog. Thanks!</p>
+
+<span>Your Name:</span>
+<com:TRequiredFieldValidator ControlToValidate="Name"
+	ErrorMessage="Please provide your name." 
+	Display="Dynamic"
+	/>
+<br/>
+<com:TTextBox ID="Name" />
+
+<br/>
+
+<span>Your Email:</span>
+<com:TRequiredFieldValidator ControlToValidate="Email"
+	ErrorMessage="Please provide your email address." 
+	Display="Dynamic"
+	/>
+<com:TEmailAddressValidator ControlToValidate="Email"
+	ErrorMessage="You entered an invalid email address." 
+	Display="Dynamic"
+	/>
+<br/>
+<com:TTextBox ID="Email" />
+
+<br/>
+
+<span>Feedback:</span>
+<com:TRequiredFieldValidator ControlToValidate="Feedback"
+	ErrorMessage="Please provide your feedback." 
+	Display="Dynamic"
+	/>
+<br/>
+<com:TTextBox ID="Feedback" 
+	TextMode="MultiLine" 
+	Rows="10"
+	Columns="40" />
+
+<br/>
+
+<com:TButton Text="Submit" OnClick="submitButtonClicked" />
+
+</com:TContent>

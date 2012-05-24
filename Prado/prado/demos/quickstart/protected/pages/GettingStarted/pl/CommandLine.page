@@ -1,0 +1,101 @@
+<com:TContent ID="body" >
+<h1 id="501">Narzędzie linii poleceń</h1>
+<p id="70046" class="block-content">Opcjonalny plik skryptu PHP <tt>prado-cli.php</tt> PHP w folderze <tt>framework</tt>
+dostarcza narzędzia linii poleceń do wykonywania różnych monotonnych czynności w PRADO.
+<tt>Prado-cli.php</tt> może zostać użyte do stworzenia szkieletu projektu PRADO, zainicjowania testów oraz uzyskania dostępu do 
+interaktywnej powłoki PHP.
+</p>
+<h2 id="502">Wymagania</h2>
+<p id="70047" class="block-content">
+Aby używać narzędzia linii poleceń powinieneś użyć terminala, consoli komend lub opcji uruchom. Dodatkowo PHP musi mieć możliwość 
+wykonywania skryptów PHP z linii poleceń. 
+</p>
+
+<h2 id="503">Używanie</h2>
+<p id="70048" class="block-content">
+Wpisując <tt>php ścieżka/do/katalogu/framework/prado-cli.php</tt>, powinieneć zobaczyć następujace informacje. 
+Alternatywnie, jeśli nie używasz Windowsa możesz spróbować zamienić <tt>prado-cli.php</tt> na plik wykonywalny 
+i wywołać go jako skrypt.</p>
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70006">
+Command line tools for Prado 3.0.5.
+usage: php prado-cli.php action <parameter> [optional]
+example: php prado-cli.php -c mysite
+
+actions:
+  -c <directory>
+    Creates a Prado project skeleton for the given <directory>.
+
+  -t <directory>
+    Create test fixtures in the given <directory>.
+
+  shell [directory]
+    Runs a PHP interactive interpreter. Initializes the Prado
+    application in the given [directory].
+</com:TTextHighlighter>
+
+<p id="70049" class="block-content"><b>&lt;parameter&gt;</b> są wymaganymi parametrami a <b>[optional]</b>
+są parametrami opcjonalnymi. </p>
+
+<h2 id="504">Tworzenie szkieletu nowego projektu PRADO</h2>
+
+<p id="70050" class="block-content">Aby stworzyć szkielekt projektu Prado, wykonaj następujące czynności:</p>
+<ol>
+	<li>Przejdź do folderu gdzie chcesz utworzyć szkielet projektu.</li>
+	<li>Wpisz <tt>php ../prado/framework/prado-cli.php -c helloworld</tt>, gdzie
+	<tt>helloworld</tt> jest nazwą katalogu w której chcesz utworzyć pliki należace do szkieletu projektu.</li>
+	<li>Wpisz <tt>php ../prado/framework/prado-cli.php <b>-t</b> helloworld</tt> aby stworzyć wbudowany test dla projektu <tt>helloworld</tt> (Witaj Świecie).</li>
+</ol>
+
+<h2 id="505">Interaktywna powłoka</h2>
+<p id="70051" class="block-content">
+Interaktywna powłoka umożliwia Ci wykonywanie wyrażeń PHP z linii poleceń.
+Skrypt <tt>prado-cli.php</tt> może zostać użyty do uruchomienia powłoki i załadowania istniejącego projektu Prado. 
+Dla przykładu załadujmy projekt demo blogu. Zakładając, że twoja linia poleceń jest w katalogu żródłowym <tt>prado</tt> i wpiszesz...
+</p>
+<p id="70052" class="block-content">
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70007">
+$: php framework/prado-cli.php shell demos/blog
+</com:TTextHighlighter>
+jako rezultat powinieneś ujrzeć
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70008">
+Command line tools for Prado 3.0.5.
+** Loaded Prado application in directory "demos\blog\protected".
+PHP-Shell - Version 0.3.1
+(c) 2006, Jan Kneschke <jan@kneschke.de>
+
+>> use '?' to open the inline help
+
+>>
+</com:TTextHighlighter>
+Następnie pobierzemy instancję aplikacji blogu Prado a następnie z niej instancję modułu 
+ <tt>'data'</tt>. Zauważ, że <b>średnik</b> na koncu linii <b>wycisza wyjście</b>.
+
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70009">
+>> $app = Prado::getApplication();
+
+>> $db = $app->getModule('data');
+</com:TTextHighlighter>
+Na koniec będziemy chcieli użyć wybranego modułu aby zapytać o post o <tt>ID=1</tt>. Zauważ, że
+<b>pomijamy średnik</b> aby zobaczyć rezultat.
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70010">
+>> $db->queryPostByID(1)
+</com:TTextHighlighter>
+Nie powinien wystąpić żaden błąd i powinieneś zobaczyć następujący reziltat
+<com:TTextHighlighter Language="cli" CssClass="source block-content cli" id="code_70011">
+PostRecord#1
+(
+    [ID] => 1
+    [AuthorID] => 1
+    [AuthorName] => 'Prado User'
+    [CreateTime] => 1148819691
+    [ModifyTime] => 0
+    [Title] => 'Welcome to Prado Weblog'
+    [Content] => 'Congratulations! You have successfully installed Prado Blog --
+ a PRADO-driven weblog system. A default administrator account has been created.
+ Please login with <b>admin/prado</b> and update your password as soon as possible.'
+    [Status] => 0
+    [CommentCount] => 0
+)
+</com:TTextHighlighter>
+</p>
+<div class="last-modified">$Id: CommandLine.page 1927 2007-05-10 23:00:04Z aztech $</div></com:TContent>

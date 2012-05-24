@@ -1,0 +1,11 @@
+<com:TContent ID="body" >
+
+<h1 id="4401">TTable</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TTable" />
+
+<p id="510314" class="block-content">
+<tt>TTable</tt> displays an HTML table on a page. It is used together with <tt>TTableRow</tt> and <tt>TTableCell</tt> to allow programmatically manipulating HTML tables. The rows of the table is stored in <tt>Rows</tt> property. You may set the table cellspacing and cellpadding via the <tt>CellSpacing</tt> and <tt>CellPadding</tt> properties, respectively. The table caption can be specified via <tt>Caption</tt> whose alignment is specified by <tt>CaptionAlign</tt>. The <tt>GridLines</tt> property indicates how the table should display its borders, and the <tt>BackImageUrl</tt> allows the table to have a background image.
+</p>
+<com:RunBar PagePath="Controls.Samples.TTable.Home" />
+
+<div class="last-modified">$Id: Table.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

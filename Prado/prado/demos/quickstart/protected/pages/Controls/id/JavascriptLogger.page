@@ -1,0 +1,31 @@
+<com:TContent ID="body" >
+
+<h1 id="3401">TJavascriptLogger</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TJavascriptLogger" />
+
+<p id="390277" class="block-content">
+<tt>TJavascriptLogger</tt> menyediakan javascript pencatatan sisi-klien. Ini sebagian besar adalah pelapis dari Javascript yang dikembangkan di <a href="http://web.archive.org/web/20060512041505/gleepglop.com/javascripts/logger/">http://gleepglop.com/javascripts/logger/</a>.
+</p>
+
+<p id="390278" class="block-content">
+Untuk menggunakan <tt>TJavascriptLogger</tt>, cukup tempatkan tag komponen berikut pada template halaman.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code_390107">
+&lt;com:TJavascriptLogger /&gt;
+</com:TTextHighlighter>
+
+<p id="390279" class="block-content">
+Kemudian, Javascript sisi-klien dapat berisi pernyataan berikut. Ketika dieksekusi akan muncul dalam jendela pencatat.
+</p>
+<com:TTextHighlighter Language="js" CssClass="source block-content" id="code_390108">
+Logger.info('something happend');
+Logger.warn('A warning');
+Logger.error('This is an error');
+Logger.debug('debug information');
+</com:TTextHighlighter>
+
+<p id="390280" class="block-content">
+Untuk menghidup matikan penampakan pencatat dan konsol pada jendela browser, tekan ALT-D (atau CTRL-D pada OS X).
+</p>
+
+<div class="last-modified">$Id: JavascriptLogger.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

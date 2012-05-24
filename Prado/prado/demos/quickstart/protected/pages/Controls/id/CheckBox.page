@@ -1,0 +1,14 @@
+<com:TContent ID="body" >
+
+<h1 id="2101">TCheckBox</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TCheckBox" />
+
+<p id="250236" class="block-content">
+<tt>TCheckBox</tt> menampilkan kotak centang pada halaman  Web. Judul bisa ditetapkan melalui <tt>Text</tt> dan ditampilkan disamping kotak centang. Ia bisa muncul baik di sisi kanan atau kiri kotak centang, yang ditentukan oleh <tt>TextAlign</tt>. Selanjutnya anda dapat menetapkan atribut yang diterapkan ke teks dengan menggunakan <tt>LabelAttributes</tt>.
+</p>
+<p id="250237" class="block-content">
+Untuk menentukan apakah kotak centang dicentang atau tidak, uji properti <tt>Checked</tt>. Event <tt>CheckedChanged</tt> dimunculkan jika kondisi <tt>Checked</tt> berubah diantara pengiriman ke server. Jika <tt>AutoPostBack</tt> adalah true, mengubah kotak centang akan menyebabkan aksi postback. Dan jika <tt>CausesValidation</tt> juga true, setelah postback validasi akan dilakukan bagi validator di dalam <tt>ValidationGroup</tt> yang ditetapkan.
+</p>
+<com:RunBar PagePath="Controls.Samples.TCheckBox.Home" />
+
+<div class="last-modified">$Id: CheckBox.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

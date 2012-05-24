@@ -1,0 +1,94 @@
+<com:TContent ID="body" >
+
+<h1>TClientScriptLoader</h1>
+
+<com:DocLink ClassPath="System.Web.UI.WebControls.TClientScriptLoader" />
+
+<com:SinceVersion Version="3.1b" />
+
+<p class="block-content">
+<tt>TClientScriptLoader</tt> mempublikasikan koleksi file javascript sebagai assets. Contohnya, anggap kita mempunyai direktori bernama "<tt>mylib</tt>" dalam direktori <tt>protected/pages</tt> pada aplikasi kita.</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content">
+assets/
+protected/
+  pages/
+    mylib/
+       file1.js 
+       file2.js
+       file3.js
+       file4.js
+       packages.php
+</com:TTextHighlighter>
+
+<p class="block-content">Properti <tt>PackagePath</tt> bisa berupa direktori asset yang sudah ada atau path namespace ke direktori yang berisi file javascript. Sebagai contoh, untuk mempublikasikan file javascript dalam direktori <tt>mylib</tt>, kita dapat menetapkan <tt>PackagePath</tt> sebagai berikut.
+Tag pertama <tt>TClientScriptLoader</tt> tergantung pada tag template asset dan menganggap bahwa template halaman berisi turunan tag <tt>TClientScriptLoader</tt> ada dalam direktori <tt>protected/pages</tt>.
+Tag kedua <tt>TClientScriptLoader</tt> menggunakan notasi namespace ke untuk menetapkan path.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content">
+&lt;com:TClientScriptLoader PackagePath=&lt;%~ mylib %&gt; /&gt;
+&lt;com:TClientScriptLoader PackagePath="Application.pages.mylib" /&gt;
+</com:TTextHighlighter>
+
+<p class="block-content">
+Ketika file dalam <tt>PackagePath</tt> dipublikasikan sebagai asset, pengambil naskah file php "<tt>clientscripts.php</tt>" secara otomatis di-copiy ke direktori asset tersebut. Pengambil naskah, menggabungkan file javascript dan bertindak sebagai gzip jika memungkinkan.
+</p>
+<h2>Mengelompokan File Javascript</h2>
+<p class="block-content">
+Naskah yang dibolehkan dan naskah ketergantungan bisa dikelompokan dengan menggunakan file "<tt>packages.php</tt>" dengan format berikut. "<tt>packages.php</tt>" ini adalah opsional, jika tidak ada nama file tanpa ekstensi ".js" yang dipakai. "<tt>packages.php</tt>" harus berada dalam direktori yang diberikan oleh <tt>PackagePath</tt>.
+</p>
+
+<com:TTextHighlighter Language="php" CssClass="source block-content">
+&lt;?php
+ $packages = array(
+    'package1' => array('file1.js', 'file2.js'),
+    'package2' => array('file3.js', 'file4.js'));
+
+ $deps = array(
+    'package1' => array('package1'),
+    'package2' => array('package1', 'package2')); //package2 memerlukan package1 pertama.
+
+ return array($packages,$deps); //harus mengembalikan $packages dan $deps dalam array ?&gt;
+</com:TTextHighlighter>
+
+<p class="block-content">Elemen pertama dari array yang dihasilkan oleh <tt>packages.php</tt> harus berisi sebuah array file javascripts relatif ke <tt>packages.php</tt> yang mengaitkan pengelompokan tertentu. Sebagai contoh, dalam <tt>packages.php</tt> di atas, pengelompokan '<tt>package1</tt>' menggabungkan dua file javascript, yaitu '<tt>file1.js</tt>'
+dan '<tt>file2.js</tt>'.
+</p>
+
+<p class="block-content">Elemen kedua dari array yang dihasilkan oleh <tt>packages.php</tt> harus berisi array pengelompokan ketergantungan yang diurut dalam cara di mana grup harus digabungkan. Sebagai contoh, mengelompokan
+'<tt>package1</tt>' hanya bergantung pada file pengelompokan'<tt>package1</tt>' 
+(misalnya '<tt>file1.js</tt>' dan '<tt>file2.js</tt>'). Sementara <tt>package2</tt>' tergantung pada pepngelompokan '<tt>package1</tt>' dam '<tt>package2</tt>'. Yakni '<tt>package2</tt>' akan menggabung dengan urutan
+'<tt>file1.js</tt>', '<tt>file2.js</tt>', '<tt>file3.js</tt>', dan '<tt>file4.js</tt>'.
+</p>
+
+<h2>Mengambil Paket Javascript</h2>
+
+<p class="block-content">Untuk mengambil file javascript atau paket tertentu, setel properti <tt>PackageScripts</tt> dengan nilai '<tt>package1</tt>' guna mengambil naskah '<tt>package1</tt>'. Maksimum  25 paket dipisahkan dengan koma yang dibolehkan. Ketergantungan paket secara otomatis dipecahkan oleh file php pengambil naskah.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content">
+&lt;com:TClientScriptLoader PackagePath=&lt;%~ mylib %&gt; PackageScripts="package2" /&gt;
+&lt;script type="text/javascript"&gt;
+ //kode javascript memanfaatkan kode javascript yg diambil ke dalam 'package2' di atas &lt;/script&gt;
+</com:TTextHighlighter>
+
+<p>Setiap <tt>&lt;com:TClientScriptLoader&gt;</tt> membuat elemen HTML <tt>&lt;script&gt;</tt> untuk mengambil file javascript yang diperlukan.</p>
+
+<h2>Menghapus Komentar Javascript</h2>
+<p class="block-content">Properti <tt>DebugMode</tt> bila false menghapus komentar dan spasi dari file javascript yang dipublikasikan. Jika properti
+<tt>DebugMode</tt> tidak disetel, mode debug ditentukan dari
+<a href="?page=Advanced.Performance">mode aplikasi</a>.
+</p>
+<div class="note"><b class="note">Catatan:</b>
+Jika <tt>DebugMode</tt> adalah false baik secara eksplisit ataupun ketika mode aplikasi adalah non-debug, maka header cache juga dikirimkan untuk memberitahu
+browser dan proxy untuk melakukan cache file.
+Lebih lanjut, pasca proses (komentar dihapus dan di-zip) disimpan dalam direktori asset untuk permintaan berikutnya. Yaitu mode non-debug, naskah di-cache dalam direktori asset sampai ia dihapus.
+</div>
+
+<h2>Memadatkan Javascript dengan GZip</h2>
+<p class="block-content">
+Properti <tt>EnableGzip</tt> (standarnya true) membolehkan javascripts yang dipublikasikan untuk dilayani sebagai zipped jika browser dan server php mengijinkannya.
+</p>
+<div class="last-modified">$Id: ClientScript.page 1650 2007-01-24 06:55:32Z wei $</div>
+
+</com:TContent>

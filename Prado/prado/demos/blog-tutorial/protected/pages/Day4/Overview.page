@@ -1,0 +1,26 @@
+<com:TContent ID="Main">
+
+<h1>Post Management Overview</h1>
+
+<p>
+In this section, we create pages that are related with post management. In particular, we implement the CRUD (Create-Retrieve-Update-Delete) operations with respect to blog posts.
+</p>
+
+<p>
+According to the requirements, we need to create the following pages organized under a new directory <tt>protected/pages/posts</tt>.
+</p>
+
+<ul>
+  <li><tt>ListPost</tt> displays posts by their creation time in descending order.</li>
+  <li><tt>ReadPost</tt> displays the detail of a post.</li>
+  <li><tt>NewPost</tt> allows registered users to create a new post.</li>
+  <li><tt>EditPost</tt> allows the author or the administrator to edit an existing post.</li>
+</ul>
+
+<p>
+After finishing this section, we shall expect to see the following directories and files:
+</p>
+
+<img src="<%~ directories.gif %>" class="output" />
+
+</com:TContent>

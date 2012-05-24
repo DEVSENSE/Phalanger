@@ -1,0 +1,10 @@
+<com:TContent ID="body" >
+
+<h1 id="2601">THead</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.THead" />
+
+<p id="310261" class="block-content">
+TBD
+</p>
+
+<div class="last-modified">$Id: Head.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

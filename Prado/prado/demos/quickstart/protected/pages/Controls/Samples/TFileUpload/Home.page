@@ -1,0 +1,17 @@
+<com:TContent ID="body">
+
+<h1>TFileUpload Sample</h1>
+
+<p>
+Please choose a file to upload:
+</p>
+
+<com:TFileUpload OnFileUpload="fileUploaded" />
+
+<com:TButton Text="Upload" />
+
+<br/>
+
+<com:TLabel ID="Result" />
+
+<div class="last-modified">$Id: Home.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

@@ -1,0 +1,47 @@
+<com:TContent ID="body" >
+
+<h1 id="1901">Konfigurasi Halaman</h1>
+<p id="220217" class="block-content">
+Konfigurasi halaman sebagian besar dipakai oleh <tt>TPageService</tt> untuk memodifikasi atau menambahkan konfigurasi aplikasi. Seperti ditunjukan oleh namanya, konfigurasi halaman dikaitkan dengan direktori yang menyimpan beberapa file halaman. Ia disimpan sebagai file XML bernama <tt>config.xml</tt>.
+</p>
+<p id="220218" class="block-content">
+Ketika pengguna meminta halaman yang disimpan di bawah <tt>&lt;BasePath&gt;/dir1/dir2</tt>, <tt>TPageService</tt> akan mencoba untuk mengurai dan mengambil file <tt>config.xml</tt> di bawah <tt>&lt;BasePath&gt;</tt>, <tt>&lt;BasePath&gt;/dir1</tt> dan <tt>&lt;BasePath&gt;/dir1/dir2</tt>. Path, modul, dan parameter yang ditetapkan dalam file konfigurasi ini akan ditambahkan atau digabungkan ke dalam konfigurasi aplikasi yang sudah ada. Di sini <tt>&lt;BasePath&gt;</tt> seperti yang didefinisikan dalam <a href="?page=Fundamentals.Services">layanan halaman</a>.
+</p>
+<p id="220219" class="block-content">
+Format file konfigurasi halaman adalah sebagai berikut,
+</p>
+<com:TTextHighlighter Language="xml" CssClass="source block-content" id="code_220097">
+<configuration>
+  <paths>
+    <alias id="AliasID" path="AliasPath" />
+    <using namespace="Namespace" />
+  </paths>
+  <modules>
+    <module id="ModuleID" class="ModuleClass"  PropertyName="PropertyValue" ... />
+  </modules>
+  <parameters>
+    <parameter id="ParameterID" class="ParameterClass" PropertyName="PropertyValue" ... />
+  </parameters>
+  <include file="path.to.extconfig" when="PHP expression" />
+  <authorization>
+    <allow pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="get" />
+    <deny pages="PageID1,PageID2" users="User1,User2" roles="Role1,Role2" verb="post" />
+  </authorization>
+  <pages PropertyName="PropertyValue" ...>
+    <page id="PageID" PropertyName="PropertyValue" ... />
+  </pages>
+</configuration>
+</com:TTextHighlighter>
+<p id="220220" class="block-content">
+<tt>&lt;paths&gt;</tt>, <tt>&lt;modules&gt;</tt>, <tt>&lt;parameters&gt;</tt> dan <tt>&lt;include&gt;</tt> mirip dengan itu dalam konfigurasi aplikasi. Elemen <tt>&lt;authorization&gt;</tt> menetapkan aturan otorisasi yang berlaku pada direktori halaman saat ini dan seluruh subdirektorinya. Untuk lebih jelasnya, lihat seksi <a href="?page=Advanced.Auth">otentikasi dan otorisasi</a>. Elemen <tt>&lt;pages&gt;</tt> menetapkan nilai awal untuk properti halaman. Setiap elemen <tt>&lt;page&gt;</tt> menetapkan nilai awal untuk halaman tertentu yang diidentifikasi oleh atribut <tt>id</tt>. Nilai properti awal yang diberikan dalam elemen <tt>&lt;pages&gt;</tt> element berlaku untuk semua halaman dalam direktori dan subdirektori saat ini.
+</p>
+<p id="220221" class="block-content">
+Spesifikasi lengkap dari konfigurasi halaman dapat ditemukan dalam file <a href="<%~../../../../../../docs/specs/config.dtd%>">DTD</a> dan <a href="<%~../../../../../../docs/specs/config.xsd%>">XSD</a>.
+</p>
+
+<com:SinceVersion Version="3.1.1" />
+<p class="block-content">
+Sejak versi 3.1.1, atribut <tt>id</tt> dalam elemen &lt;page&gt; bisa berupa path halaman relatif yang mengarah ke halaman di dalam subdirektori pada direktori yang berisi konfigurasi halaman. Sebagai contoh, <tt>id="admin.Home"</tt> merujuk ke halaman <tt>Home</tt> di bawah direktori <tt>admin</tt>. Atribut <tt>id</tt> juga bisa berisi wildcard '*' untuk menemukan seluruh halaman di bawah direktori yang ditetapkan. Sebagai contoh, <tt>id="admin.*"</tt> merujuk ke seluruh halaman di bawah direktori <tt>admin</tt> dan subdirektorinya. Peningkatan ini membolehkan para pengembang untuk memusatkan konfigurasi halamannya (misalnya menyimpan semua inisialisasi semua halaman  dalam konfigurasi aplikasi atau konfigurasi akar halaman.)
+</p>
+
+<div class="last-modified">$Id: PageConfig.page 2214 2007-09-11 13:01:29Z xue $</div></com:TContent>

@@ -1,0 +1,78 @@
+<com:TContent ID="body">
+<!-- $Id: ActiveButton.page 1817 2007-03-31 23:36:00Z wei $ -->
+<h1 id="122026">TActiveButton</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveButton" />
+
+<p id="610410" class="block-content"><tt>TActiveButton</tt> adalah kontrol aktif selain
+<a href="?page=Controls.Button">TButton</a>.
+Ketika <tt>TActiveButton</tt> diklik pada permintaan postback normal, permintaan callback yang diinisiasi. Event <tt>OnCallback</tt> dimunculkan selama permintaan callback dan dimunculkan <strong>setelah</strong> event <tt>OnClick</tt>.
+</p>
+
+<p id="610411" class="block-content">Ketika properti <tt>ActiveControl.EnableUpdate</tt> adalah true,
+mengubah properti <tt>Text</tt> selama permintaan callback akan memutakhirkan 
+judul tombol pada sisi-klien.</p>
+
+<p id="610412" class="block-content">Karena event <tt>OnCallback</tt> hanya dimunculkan selama permintaan callback, pengendali event <tt>OnCallback</tt> bisa dipakai untuk menangani logika terutama yang terkait dengan permintaan callback. Pengendali event <tt>OnClick</tt> dimunculkan kapan saja tombol diklik, meskipun javascript dimatikan.</p>
+
+<p id="610413" class="block-content">Contoh berikut menggunakan kedua event  <tt>OnClick</tt> dan <tt>OnCallback</tt> dari <tt>TActiveButton</tt>.</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveButton.Home" />
+
+<h2 id="122027">Diagram Kelas TActiveButton</h2>
+<p id="610414" class="block-content">Diagram kelas untuk <tt>TActiveButton</tt> diilustrasikan dalam gambar berikut.
+Banyak kontrol aktif yang melakukan permintaan callback mempunyai struktur yang mirip.
+</p>
+
+<img src=<%~ TActiveButtonClass.png %> class="figure"
+	alt="TActiveButton class diagram" title="Diagram kelas TActiveButton" />
+
+<p id="610415" class="block-content"><tt>TActiveButton</tt> adalah ekstensi dari <a href="?page=Controls.Button">TButton</a> dan mengimplementasikan dua antarmuka tambahan <tt>ICallbackEventHandler</tt> dan
+<tt>IActiveControl</tt>. <tt>TActiveButton</tt> berisi turunan dari
+<a href="?page=ActiveControls.BaseActiveControl">TBaseActiveCallbackControl</a>
+yang tersedia melalui properti <tt>ActiveControl</tt> dari <tt>TActiveButton</tt>.
+Contoh berikut menyetel parameter callback atas <tt>TActiveButton</tt> saat
+permintaan callback ditampung.
+</p>
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code1">
+&lt;com:TActiveButton
+	Text="Click Me"
+	OnCallback="button_callback"
+	ActiveControl.CallbackParameter="value" /&gt;
+</com:TTextHighlighter>
+<p id="610416" class="block-content">Dalam metode pengendali event <tt>OnCallback</tt>, <tt>CallbackParameter</tt> tersedua di dalam obyek <tt>$param</tt>.</p>
+<com:TTextHighlighter Language="php" CssClass="source block-content" id="code2">
+public function button_callback($sender, $param)
+{
+	echo $param->CallbackParameter; //mengeluarkan "value"
+}
+</com:TTextHighlighter>
+
+<h2 id="122028">Menambah Perilaku Sisi Klien</h2>
+
+<p id="610417" class="block-content">Di dalam properti <tt>ActiveControl</tt> adalah turunan dari
+<a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> yang tersedia sebagai <tt>ClientSide</tt> dari <tt>TActiveButton</tt>.
+Properti <tt>ClientSide</tt> berisi sub-properti, serperti <tt>RequestTimeOut</tt>, dan pengendali event javascript sisi-klien, seperti <tt>OnLoading</tt>, dipakai oleh sisi-klien saat membuat permitaan callback.
+Contoh berikut mendemonstrasikan menghidup matikan indikator "loading" saat sisi-klien
+membuat permintaan callback.
+</p>
+
+<com:TTextHighlighter Language="prado" CssClass="source block-content" id="code3">
+&lt;com:TClientScript PradoScripts="effects" /&gt;
+<span id="callback_status">Loading...</span>
+
+&lt;com:TActiveButton
+	Text="Click Me"
+	OnCallback="button_callback"
+	ActiveControl.CallbackParameter="value" &gt;
+	&lt;prop:ClientSide
+		OnLoading="Element.show('callback_status')"
+		OnComplete="Element.hide('callback_status')" /&gt;
+&lt;/com:TActiveButton&gt;
+</com:TTextHighlighter>
+
+<p id="610418" class="block-content">Contoh ini mengambil librari javascript "effects" menggunakan komponen
+<a href="?page=Controls.ClientScript">TClientScript</a>.
+Nilai properti <tt>ClientSide.OnLoading</tt> berisi pernyataan javascript yang menggunakan librari "effects" untuk menampilkan tag span "Loading...". Hal yang mirip, nilai properti <tt>ClientSide.OnComplete</tt> berisi pernyataan javascript yang menyembunyikan tag span "Loading...".
+Lihat <a href="?page=ActiveControls.CallbackClientSide">TCallbackClientSide</a> untuk rincian lebih jelas pada detil properti sisi-klien.
+</p>
+<div class="last-modified">$Id: ActiveButton.page 1817 2007-03-31 23:36:00Z wei $</div></com:TContent>

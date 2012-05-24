@@ -1,0 +1,10 @@
+<com:TContent ID="body" >
+
+<h1 id="2201">TColorPicker</h1>
+<com:DocLink ClassPath="System.Web.UI.WebControls.TColorPicker" />
+
+<p id="270244" class="block-content">
+TBD
+</p>
+
+<div class="last-modified">$Id: ColorPicker.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

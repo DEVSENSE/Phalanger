@@ -1,0 +1,17 @@
+<com:TContent ID="body">
+
+<h1>TValueTriggeredCallback Samples</h1>
+
+<table class="sampletable">
+
+<tr><td class="samplenote">
+  A callback will be executed when the textbox text changes
+</td><td class="sampleaction">
+  <com:TTextBox ID="txt1" />
+  <com:TValueTriggeredCallback ControlID="txt1" PropertyName="value" OnCallback="checkTxtValue" />
+  <com:TActiveLabel ID="label1" />
+</td></tr>
+
+</table>
+
+<div class="last-modified">$Id: Home.page 2960 2011-06-02 17:44:51Z ctrlaltca@gmail.com $</div></com:TContent>

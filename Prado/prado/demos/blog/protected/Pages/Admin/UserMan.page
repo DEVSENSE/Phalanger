@@ -1,0 +1,97 @@
+<%@ Title="User Management" %>
+
+<com:TContent ID="Main">
+
+<h2>Administration Center</h2>
+
+<com:Application.Pages.Admin.AdminMenu />
+
+<com:TDataGrid ID="UserGrid"
+	AutoGenerateColumns="false"
+	DataKeyField="ID"
+	CssClass="grid"
+	HeaderStyle.CssClass="grid-header"
+	ItemStyle.CssClass="grid-row1"
+	SelectedItemStyle.CssClass="grid-row-selected"
+	AlternatingItemStyle.CssClass="grid-row2"
+	AllowPaging="true"
+	AllowCustomPaging="true"
+	PageSize="20"
+	PagerStyle.CssClass="grid-pager"
+	PagerStyle.Mode="Numeric"
+	OnPageIndexChanged="changePage"
+	OnPagerCreated="pagerCreated"
+	OnEditCommand="editItem"
+	OnUpdateCommand="saveItem"
+	OnCancelCommand="cancelItem"
+	>
+	<com:THyperLinkColumn
+		HeaderText="Name"
+		DataNavigateUrlField="ID"
+		DataNavigateUrlFormatString="#$this->Service->constructUrl('Users.ViewUser',array('id'=>{0}))"
+		DataTextField="Name"
+		/>
+	<com:TTemplateColumn
+		HeaderText="Role"
+		ItemStyle.HorizontalAlign="Center"
+		ItemStyle.Wrap="false"
+		ItemStyle.Width="50px" >
+		<prop:ItemTemplate>
+		<%#	$this->Parent->DataItem->Role===0 ?	'User' : 'Admin' %>
+		</prop:ItemTemplate>
+		<prop:EditItemTemplate>
+		<com:TDropDownList ID="UserRole" SelectedValue=<%# $this->Parent->DataItem->Role %> >
+			<com:TListItem Value="0" Text="User" />
+			<com:TListItem Value="1" Text="Admin" />
+		</com:TDropDownList>
+		</prop:EditItemTemplate>
+	</com:TTemplateColumn>
+	<com:TTemplateColumn
+		HeaderText="Status"
+		ItemStyle.HorizontalAlign="Center"
+		ItemStyle.Wrap="false"
+		ItemStyle.Width="70px" >
+		<prop:ItemTemplate>
+		<%#
+			$this->Parent->DataItem->Status===0 ?
+				'Normal' :
+				($this->Parent->DataItem->Status===1 ? 'Disabled' : 'Pending')
+		%>
+		</prop:ItemTemplate>
+		<prop:EditItemTemplate>
+		<com:TDropDownList ID="UserStatus" SelectedValue=<%# $this->Parent->DataItem->Status %> >
+			<com:TListItem Value="0" Text="Normal" />
+			<com:TListItem Value="1" Text="Disabled" />
+			<com:TListItem Value="2" Text="Pending" />
+		</com:TDropDownList>
+		</prop:EditItemTemplate>
+	</com:TTemplateColumn>
+	<com:TBoundColumn
+		HeaderText="Email"
+		DataField="Email"
+		ItemStyle.Wrap="false"
+		ItemStyle.Width="90px"
+		ReadOnly="true"	>
+		<prop:DataFormatString>#
+		'<a href="mailto:'.{0}.'">'.{0}.'</a>'
+		</prop:DataFormatString>
+	</com:TBoundColumn>
+	<com:TBoundColumn
+		HeaderText="Reg. Date"
+		DataField="CreateTime"
+		DataFormatString="#date('M j, Y',{0})"
+		ReadOnly="true"
+		ItemStyle.Wrap="false"
+		ItemStyle.Width="90px"
+		/>
+	<com:TEditCommandColumn
+		HeaderText="Command"
+		HeaderStyle.Width="80px"
+		UpdateText="Save"
+		ItemStyle.HorizontalAlign="Center"
+		ItemStyle.Wrap="false"
+		ItemStyle.Width="80px"
+		/>
+</com:TDataGrid>
+
+</com:TContent>

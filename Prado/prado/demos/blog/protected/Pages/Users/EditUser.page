@@ -1,0 +1,77 @@
+<%@ Title="Edit Profile" %>
+
+<com:TContent ID="Main">
+
+<h2>Update Profile: <com:TLabel ID="Username" /></h2>
+
+<com:TValidationSummary
+	Display="Dynamic"
+	ValidationGroup="user" />
+
+<span class="input-label">Full name</span>
+<br/>
+<com:TTextBox ID="FullName" />
+
+<br/>
+
+<span class="input-label">Password</span>
+<br/>
+<com:TTextBox ID="Password" TextMode="Password" />
+<com:TRegularExpressionValidator
+	ControlToValidate="Password"
+	ValidationGroup="user"
+	Display="Dynamic"
+	RegularExpression="[\w\.]{6,16}"
+	Text="*"
+	ErrorMessage="Your password must contain only letters, digits and underscores, and it must contain at least 6 and at most 16 characters."
+	ControlCssClass="input-error1" />
+
+<br/>
+
+<span class="input-label">Re-type Password</span>
+<br/>
+<com:TTextBox ID="Password2" TextMode="Password" />
+<com:TCompareValidator
+	ControlToValidate="Password"
+	ControlToCompare="Password2"
+	ValidationGroup="user"
+	Display="Dynamic"
+	Text="*"
+	ErrorMessage="Your password entries did not match."
+	ControlCssClass="input-error3" />
+
+<br/>
+
+<span class="input-label">Email Address</span>
+<br/>
+<com:TTextBox ID="Email" />
+<com:TRequiredFieldValidator
+	ControlToValidate="Email"
+	ValidationGroup="user"
+	Text="*"
+	ErrorMessage="Please provide your email address."
+	ControlCssClass="input-error1" />
+<com:TEmailAddressValidator
+	ControlToValidate="Email"
+	ValidationGroup="user"
+	Display="Dynamic"
+	Text="*"
+	ErrorMessage="You entered an invalid email address."
+	ControlCssClass="input-error2" />
+
+<br/>
+
+<span class="input-label">Personal Website</span>
+<br/>
+<com:TTextBox ID="Website" AutoTrim="true" Columns="40"/>
+
+<br/>
+<br/>
+
+<com:TLinkButton
+	Text="Save"
+	ValidationGroup="user"
+	CssClass="link-button"
+	OnClick="saveButtonClicked" />
+
+</com:TContent>

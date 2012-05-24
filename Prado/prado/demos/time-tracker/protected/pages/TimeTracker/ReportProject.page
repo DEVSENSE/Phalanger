@@ -1,0 +1,96 @@
+<com:TContent ID="Main">
+<h2>Project Reports</h2>
+
+<fieldset class="project-report">
+	<legend>Project Report</legend>
+<com:TMultiView ID="views" ActiveViewIndex="0">
+	<com:TView>
+		<com:TLabel ForControl="projectList" 
+			Text="Select a project. Use ctrl+click to select multiple projects at once: "/>
+		<span class="required">*</span><br />	
+		<com:TListBox ID="projectList" CssClass="projects" SelectionMode="Multiple" />
+		<com:TRequiredFieldValidator 
+			Style="display:block"
+			ControlToValidate="projectList"
+			ErrorMessage="Please select at least one project."
+			ControlCssClass="required-input" />
+		<div class="buttons">
+		<com:TButton Text="Generate Report" OnClick="generateReport_Clicked"/>
+		</div>		
+	</com:TView>
+	<com:TView>
+		<com:TRepeater ID="projects" onItemCreated="project_itemCreated" EnableViewState="false">
+		<prop:ItemTemplate>
+		<!-- project -->
+			<table class="project">
+				<tr>
+					<th class="name">Project Name</th>
+					<th class="est-hour">Est. Hours</th>
+					<th class="hours">Actual Hours</th>
+					<th class="completion">Est. Completion</th>
+				</tr>
+				<tr>
+					<td class="name"><%# h($this->DataItem->ProjectName) %></td>
+					<td class="est-hour"><%# h($this->DataItem->EstimateHours) %></td>
+					<td class="hours"><%# h($this->DataItem->ActualHours) %></td>
+					<td class="completion">
+						<com:System.I18N.TDateFormat 
+							Pattern="dd/MM/yyyy"
+							Value=<%# $this->DataItem->EstimateCompletion %> />
+					</td>
+				</tr>
+				
+			<com:TRepeater ID="category" onItemCreated="Page.category_itemCreated" EnableViewState="false">
+			<prop:HeaderTemplate>
+				<tr><td class="left-filler">&nbsp;</td><td colspan="2" class="sub-table">
+			</prop:HeaderTemplate>
+			<prop:FooterTemplate>
+				</td><td class="right-filler">&nbsp;</td></tr>
+			</prop:FooterTemplate>
+			<prop:ItemTemplate>			
+
+			<!-- category -->
+				<table class="category">
+					<tr>
+					<th class="category">Category</th>
+					<th class="est-hour">Est. Hours</th>
+					<th class="hours">Actual Hours</th>
+					</tr>
+					<tr>
+						<td class="category"><%# h($this->DataItem->CategoryName) %></td>
+						<td class="est-hour"><%# h($this->DataItem->EstimateHours) %></td>
+						<td class="hours"><%# h($this->DataItem->ActualHours) %></td>
+					</tr>
+					
+					
+				<com:TRepeater ID="members" EnableViewState="false">
+					<prop:ItemTemplate>
+					<!-- member -->				
+						<tr>
+							<td colspan="2" class="username">
+							<%# h($this->DataItem['username']) %>
+						</td>
+						<td class="hours">
+							<%# h($this->DataItem['hours']) %>
+						</td>
+						</tr>
+					<!-- //member -->
+					</prop:ItemTemplate>
+				</com:TRepeater>
+				
+				</table>		
+			<!-- //category -->
+								
+			</prop:ItemTemplate>
+			</com:TRepeater>
+							
+			</table>
+		<!-- //project -->
+		</prop:ItemTemplate>
+		</com:TRepeater>
+	</com:TView>
+</com:TMultiView>
+
+</fieldset>
+
+</com:TContent>

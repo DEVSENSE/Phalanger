@@ -1,0 +1,22 @@
+<com:TContent ID="body">
+<!-- $Id: ActiveCheckBox.page 1650 2007-01-24 06:55:32Z wei $ -->
+<h1 id="124029">TActiveCheckBox</h1>
+<com:DocLink ClassPath="System.Web.UI.ActiveControls.TActiveCheckBox" />
+
+<p id="620419" class="block-content">
+<tt>TActiveCheckBox</tt> adalah kontrol aktif selain 
+<a href="?page=Controls.CheckBox">TCheckbox</a>. Properti <tt>AutoPostBack</tt>
+ dari <tt>TActiveCheckBox</tt> standarnya disetel true.
+ Selanjutnya, saat kotak centang diklik, event <tt>OnCallback</tt> muncul setelah event <tt>OnCheckedChanged</tt>.
+ </p>
+
+ <p id="620420" class="block-content">
+ Properti <tt>Text</tt> dan <tt>Checked</tt> dari <tt>TActiveCheckBox</tt>
+ bisa diubah selama permintaan callback. Properti <tt>TextAlign</tt> dari
+ <tt>TActiveCheckBox</tt> <strong>tidak bisa</strong> diubah saat permintaan
+ callback.
+</p>
+
+<com:RunBar PagePath="ActiveControls.Samples.TActiveCheckBox.Home" />
+
+<div class="last-modified">$Id: ActiveCheckBox.page 1650 2007-01-24 06:55:32Z wei $</div></com:TContent>

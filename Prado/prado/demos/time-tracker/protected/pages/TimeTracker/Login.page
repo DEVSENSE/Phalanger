@@ -1,0 +1,40 @@
+<%@ Title="My Company - Time Tracker - Site Logon" %>
+<com:TContent ID="Main">
+<h2>Time Tracker Website Login</h2>
+
+<fieldset class="login"><legend>User Login</legend>
+  <div class="username">
+	<com:TLabel ForControl="username" Text="User Name:" />
+	<span class="required">*</span>
+	<com:TTextBox ID="username" />
+	<com:TRequiredFieldValidator
+		ControlToValidate="username"
+		ErrorMessage="Please enter your username."
+		ControlCssClass="required-field" />
+  </div>
+  <div class="password">
+  	<com:TLabel ForControl="password" Text="Password:" />
+  	<span class="required">*</span>
+  	<com:TTextBox ID="password" TextMode="Password" />
+	<com:TRequiredFieldValidator
+		ControlToValidate="password"
+		ErrorMessage="Please enter your password."
+		ControlCssClass="required-field" />
+  </div>
+  <div class="remember">
+  	<com:TCheckBox ID="remember" Text="Remember me next time" />
+  </div>
+  <com:TCustomValidator
+	ControlToValidate="password"
+	Display="Dynamic"
+	Text="Your login attempt was not successful. Please try again."
+	OnServerValidate="validateUser" />
+  <div class="signin">
+  	<com:TButton Text="Log In" OnClick="doLogin" />
+		<prop:tests asd />
+  </div>
+  <div class="create">
+  	<a href="?page=TimeTracker.UserCreate">Create New User</a>
+  </div>
+</fieldset>
+</com:TContent>
