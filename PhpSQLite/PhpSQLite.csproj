@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B7E4DD8D-A51F-42E5-8964-0774CDAE0F3F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PHP.Library.Data</RootNamespace>
+    <AssemblyName>PhpNetSQLite</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.80.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="PhpSQLiteDbConnection.cs" />
+    <Compile Include="PhpSQLiteDbResult.cs" />
+    <Compile Include="SQLite.cs" />
+    <Compile Include="SQLite.QueryResultKeys.cs" />
+    <Compile Include="SQLite.Status.cs" />
+    <Compile Include="SQLiteConnectionManager.cs" />
+    <Compile Include="SQLiteDatabase.cs" />
+    <Compile Include="SQLiteGlobalConfig.cs" />
+    <Compile Include="SQLiteLocalConfig.cs" />
+    <Compile Include="SQLiteConfiguration.cs" />
+    <Compile Include="SQLiteLibraryDescriptor.cs" />
+    <Compile Include="SQLiteResult.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Source\ClassLibrary\ClassLibrary.csproj">
+      <Project>{D515E8F4-357C-4CAF-87C1-97D64C5F865A}</Project>
+      <Name>ClassLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Source\Core\Core.csproj">
+      <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="lib\SQLite.Designer.dll" />
+    <Content Include="lib\SQLite.Designer.pdb" />
+    <Content Include="lib\System.Data.SQLite.dll" />
+    <Content Include="lib\System.Data.SQLite.Linq.dll" />
+    <Content Include="lib\System.Data.SQLite.Linq.pdb" />
+    <Content Include="lib\System.Data.SQLite.Linq.xml" />
+    <Content Include="lib\System.Data.SQLite.pdb" />
+    <Content Include="lib\System.Data.SQLite.xml" />
+    <Content Include="lib\x64\SQLite.Interop.dll" />
+    <Content Include="lib\x64\SQLite.Interop.pdb" />
+    <Content Include="lib\x86\SQLite.Interop.dll" />
+    <Content Include="lib\x86\SQLite.Interop.pdb" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

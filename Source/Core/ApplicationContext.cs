@@ -31,134 +31,134 @@ using System.Web;
 
 namespace PHP.Core
 {
-	[DebuggerNonUserCode]
-	public sealed partial class ApplicationContext
-	{
-		#region Properties
+    [DebuggerNonUserCode]
+    public sealed partial class ApplicationContext
+    {
+        #region Properties
 
-		/// <summary>
-		/// Whether full reflection of loaded libraries should be postponed until really needed.
-		/// Set to <B>false</B> by command line compiler (phpc) and web server manager as they both need
-		/// to compile source files. 
-		/// </summary>
-		public bool LazyFullReflection { get { return lazyFullReflection; } }
-		private bool lazyFullReflection;
+        /// <summary>
+        /// Whether full reflection of loaded libraries should be postponed until really needed.
+        /// Set to <B>false</B> by command line compiler (phpc) and web server manager as they both need
+        /// to compile source files. 
+        /// </summary>
+        public bool LazyFullReflection { get { return lazyFullReflection; } }
+        private bool lazyFullReflection;
 
         public Dictionary<string, DTypeDesc>/*!*/ Types { get { Debug.Assert(types != null); return types; } }
-		private readonly Dictionary<string, DTypeDesc> types;
+        private readonly Dictionary<string, DTypeDesc> types;
 
         public Dictionary<string, DRoutineDesc>/*!*/ Functions { get { Debug.Assert(functions != null); return functions; } }
-		private readonly Dictionary<string, DRoutineDesc> functions;
+        private readonly Dictionary<string, DRoutineDesc> functions;
 
-		public DualDictionary<string, DConstantDesc>/*!*/ Constants { get { Debug.Assert(constants != null); return constants; } }
-		private readonly DualDictionary<string, DConstantDesc> constants;
+        public DualDictionary<string, DConstantDesc>/*!*/ Constants { get { Debug.Assert(constants != null); return constants; } }
+        private readonly DualDictionary<string, DConstantDesc> constants;
 
-		/// <summary>
-		/// Associated assembly loader.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">Context is readonly.</exception>
-		public AssemblyLoader/*!*/ AssemblyLoader
-		{
-			get
-			{
-				Debug.Assert(assemblyLoader != null, "Empty application context doesn't have a loader.");
-				return assemblyLoader;
-			}
-		}
-		private readonly AssemblyLoader assemblyLoader;
+        /// <summary>
+        /// Associated assembly loader.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Context is readonly.</exception>
+        public AssemblyLoader/*!*/ AssemblyLoader
+        {
+            get
+            {
+                Debug.Assert(assemblyLoader != null, "Empty application context doesn't have a loader.");
+                return assemblyLoader;
+            }
+        }
+        private readonly AssemblyLoader assemblyLoader;
 
-		/// <summary>
-		/// Assembly builder where compiled pieces of eval'd code are stored.
-		/// </summary>
-		internal TransientAssemblyBuilder/*!*/ TransientAssemblyBuilder
-		{
-			get
-			{
-				if (transientAssemblyBuilder == null)
-					throw new InvalidOperationException();
+        /// <summary>
+        /// Assembly builder where compiled pieces of eval'd code are stored.
+        /// </summary>
+        internal TransientAssemblyBuilder/*!*/ TransientAssemblyBuilder
+        {
+            get
+            {
+                if (transientAssemblyBuilder == null)
+                    throw new InvalidOperationException();
 
-				return transientAssemblyBuilder;
-			}
-		}
-		private readonly TransientAssemblyBuilder transientAssemblyBuilder;
+                return transientAssemblyBuilder;
+            }
+        }
+        private readonly TransientAssemblyBuilder transientAssemblyBuilder;
 
-		public bool HasTransientAssemblyBuilder { get { return transientAssemblyBuilder != null; } }
+        public bool HasTransientAssemblyBuilder { get { return transientAssemblyBuilder != null; } }
 
         /// <summary>
         /// Delegate checking for script existance. Created lazily, valid across all the requests on this <see cref="ApplicationContext"/>.
         /// </summary>
         private Predicate<FullPath> fileExists = null;
 
-		#endregion
+        #endregion
 
-		#region Default Contexts
+        #region Default Contexts
 
-		private static object/*!*/ mutex = new object();
+        private static object/*!*/ mutex = new object();
 
-		/// <summary>
-		/// Default context.
-		/// </summary>
-		public static ApplicationContext/*!*/ Default
-		{
-			get
-			{
-				if (_defaultContext == null)
-					DefineDefaultContext(true, false, true);
-				return _defaultContext;
-			}
-		}
-		private static ApplicationContext _defaultContext; // lazy
+        /// <summary>
+        /// Default context.
+        /// </summary>
+        public static ApplicationContext/*!*/ Default
+        {
+            get
+            {
+                if (_defaultContext == null)
+                    DefineDefaultContext(true, false, true);
+                return _defaultContext;
+            }
+        }
+        private static ApplicationContext _defaultContext; // lazy
 
-		public static bool DefineDefaultContext(bool lazyFullReflection, bool reflectionOnly, bool createTransientBuilder)
-		{
-			bool created = false;
+        public static bool DefineDefaultContext(bool lazyFullReflection, bool reflectionOnly, bool createTransientBuilder)
+        {
+            bool created = false;
 
-			if (_defaultContext == null)
-			{
-				lock (mutex)
-				{
-					if (_defaultContext == null)
-					{
-						_defaultContext = new ApplicationContext(lazyFullReflection, reflectionOnly, createTransientBuilder);
-						created = true;
-					}
-				}
-			}
+            if (_defaultContext == null)
+            {
+                lock (mutex)
+                {
+                    if (_defaultContext == null)
+                    {
+                        _defaultContext = new ApplicationContext(lazyFullReflection, reflectionOnly, createTransientBuilder);
+                        created = true;
+                    }
+                }
+            }
 
-			return created;
-		}
+            return created;
+        }
 
-		internal static readonly ApplicationContext/*!*/ Empty = new ApplicationContext();
+        internal static readonly ApplicationContext/*!*/ Empty = new ApplicationContext();
 
-		#endregion
+        #endregion
 
-		#region Construction
+        #region Construction
 
-		private ApplicationContext()
-		{
-		}
+        private ApplicationContext()
+        {
+        }
 
-		public ApplicationContext(bool lazyFullReflection, bool reflectionOnly, bool createTransientBuilder)
-		{
-			this.lazyFullReflection = lazyFullReflection;
+        public ApplicationContext(bool lazyFullReflection, bool reflectionOnly, bool createTransientBuilder)
+        {
+            this.lazyFullReflection = lazyFullReflection;
 
-			this.assemblyLoader = new AssemblyLoader(this, reflectionOnly);
-			this.transientAssemblyBuilder = createTransientBuilder ? new TransientAssemblyBuilder(this) : null;
+            this.assemblyLoader = new AssemblyLoader(this, reflectionOnly);
+            this.transientAssemblyBuilder = createTransientBuilder ? new TransientAssemblyBuilder(this) : null;
 
-			this.types = new Dictionary<string, DTypeDesc>(StringComparer.OrdinalIgnoreCase);
-			this.functions = new Dictionary<string, DRoutineDesc>(StringComparer.OrdinalIgnoreCase);
-			this.constants = new DualDictionary<string, DConstantDesc>(null, StringComparer.OrdinalIgnoreCase);
+            this.types = new Dictionary<string, DTypeDesc>(StringComparer.OrdinalIgnoreCase);
+            this.functions = new Dictionary<string, DRoutineDesc>(StringComparer.OrdinalIgnoreCase);
+            this.constants = new DualDictionary<string, DConstantDesc>(null, StringComparer.OrdinalIgnoreCase);
 
 #if !SILVERLIGHT
             this.scriptLibraryDatabase = new ScriptLibraryDatabase(this);
 #endif
 
-			PopulateTables();
-		}
+            PopulateTables();
+        }
 
-		#endregion
+        #endregion
 
-		#region Initialization
+        #region Initialization
 
         private void PopulateTables()
         {
@@ -185,7 +185,7 @@ namespace PHP.Core
             addType(typeof(Library.EventClass<>));
             addType(typeof(Library.SPL.ArrayAccess));
             addType(typeof(Library.SPL.SplFixedArray));
-            
+
             addType(typeof(Library.SPL.Serializable));
             addType(typeof(Library.SPL.Countable));
             addType(typeof(Library.SPL.SplObjectStorage));
@@ -196,6 +196,7 @@ namespace PHP.Core
 
             // Reflection:
             AddExportMethod(addType(typeof(Library.SPL.Reflector)));
+            addType(typeof(Library.SPL.Reflection));
             addType(typeof(Library.SPL.ReflectionClass));
             addType(typeof(Library.SPL.ReflectionException));
 
@@ -213,7 +214,7 @@ namespace PHP.Core
             addType(typeof(Library.SPL.FilterIterator));
             addType(typeof(Library.SPL.RecursiveArrayIterator));
             addType(typeof(Library.SPL.RecursiveIteratorIterator));
-            
+
             // Exception:
             addType(typeof(Library.SPL.Exception));
             addType(typeof(Library.SPL.RuntimeException));
@@ -274,140 +275,140 @@ namespace PHP.Core
         #endregion
 
         internal void LoadModuleEntries(DModule/*!*/ module)
-		{
-			module.Reflect(!lazyFullReflection, types, functions, constants);
-		}
+        {
+            module.Reflect(!lazyFullReflection, types, functions, constants);
+        }
 
-		#endregion
+        #endregion
 
-		#region Libraries
+        #region Libraries
 
-		public List<DAssembly>/*!*/ GetLoadedAssemblies()
-		{
-			return assemblyLoader.GetLoadedAssemblies<DAssembly>();
-		}
+        public List<DAssembly>/*!*/ GetLoadedAssemblies()
+        {
+            return assemblyLoader.GetLoadedAssemblies<DAssembly>();
+        }
 
-		public IEnumerable<PhpLibraryAssembly>/*!*/ GetLoadedLibraries()
-		{
-			foreach (PhpLibraryAssembly library in assemblyLoader.GetLoadedAssemblies<PhpLibraryAssembly>())
-				yield return library;
-		}
+        public IEnumerable<PhpLibraryAssembly>/*!*/ GetLoadedLibraries()
+        {
+            foreach (PhpLibraryAssembly library in assemblyLoader.GetLoadedAssemblies<PhpLibraryAssembly>())
+                yield return library;
+        }
 
-		public IEnumerable<string>/*!*/ GetLoadedExtensions()
-		{
+        public IEnumerable<string>/*!*/ GetLoadedExtensions()
+        {
             //if (assemblyLoader.ReflectionOnly)
             //    throw new InvalidOperationException("Cannot retrieve list of extensions loaded for reflection only");
-			
-			foreach (PhpLibraryAssembly library in assemblyLoader.GetLoadedAssemblies<PhpLibraryAssembly>())
-			{
-				foreach (string name in library.ImplementedExtensions)
-					yield return name;
-			}
-		}
 
-		/// <summary>
-		/// Finds a library among currently loaded ones that implements an extension with a specified name.
-		/// </summary>
-		/// <param name="name">The name of the extension to look for.</param>
-		/// <returns>The library descriptor.</returns>
-		/// <remarks>Not thread-safe. Not available at compilation domain.</remarks>
-		public PhpLibraryDescriptor/*!*/ GetExtensionImplementor(string name)
-		{
-			if (assemblyLoader.ReflectionOnly)
-				throw new InvalidOperationException("Cannot retrieve list of extensions loaded for reflection only");
-			
-			foreach (PhpLibraryAssembly library in assemblyLoader.GetLoadedAssemblies<PhpLibraryAssembly>())
-			{
-				if (CollectionUtils.ContainsString(library.ImplementedExtensions, name, true))
-					return library.Descriptor;
-			}
+            foreach (PhpLibraryAssembly library in assemblyLoader.GetLoadedAssemblies<PhpLibraryAssembly>())
+            {
+                foreach (string name in library.ImplementedExtensions)
+                    yield return name;
+            }
+        }
 
-			return null;
-		}
+        /// <summary>
+        /// Finds a library among currently loaded ones that implements an extension with a specified name.
+        /// </summary>
+        /// <param name="name">The name of the extension to look for.</param>
+        /// <returns>The library descriptor.</returns>
+        /// <remarks>Not thread-safe. Not available at compilation domain.</remarks>
+        public PhpLibraryDescriptor/*!*/ GetExtensionImplementor(string name)
+        {
+            if (assemblyLoader.ReflectionOnly)
+                throw new InvalidOperationException("Cannot retrieve list of extensions loaded for reflection only");
 
-		#endregion
+            foreach (PhpLibraryAssembly library in assemblyLoader.GetLoadedAssemblies<PhpLibraryAssembly>())
+            {
+                if (CollectionUtils.ContainsString(library.ImplementedExtensions, name, true))
+                    return library.Descriptor;
+            }
 
-		#region Helpers
+            return null;
+        }
 
-		public DRoutine GetFunction(QualifiedName qualifiedName, ref string/*!*/ fullName)
-		{
-			if (fullName == null)
-				fullName = qualifiedName.ToString();
+        #endregion
 
-			DRoutineDesc desc;
-			return (functions.TryGetValue(fullName, out desc)) ? desc.Routine : null;
-		}
+        #region Helpers
 
-		public DType GetType(QualifiedName qualifiedName, ref string/*!*/ fullName)
-		{
-			if (fullName == null)
-				fullName = qualifiedName.ToString();
+        public DRoutine GetFunction(QualifiedName qualifiedName, ref string/*!*/ fullName)
+        {
+            if (fullName == null)
+                fullName = qualifiedName.ToString();
 
-			DTypeDesc desc;
-			return (types.TryGetValue(fullName, out desc)) ? desc.Type : null;
-		}
+            DRoutineDesc desc;
+            return (functions.TryGetValue(fullName, out desc)) ? desc.Routine : null;
+        }
 
-		public GlobalConstant GetConstant(QualifiedName qualifiedName, ref string/*!*/ fullName)
-		{
-			if (fullName == null)
-				fullName = qualifiedName.ToString();
+        public DType GetType(QualifiedName qualifiedName, ref string/*!*/ fullName)
+        {
+            if (fullName == null)
+                fullName = qualifiedName.ToString();
 
-			DConstantDesc desc;
-			return (constants.TryGetValue(fullName, out desc)) ? desc.GlobalConstant : null;
-		}
+            DTypeDesc desc;
+            return (types.TryGetValue(fullName, out desc)) ? desc.Type : null;
+        }
 
-		/// <summary>
-		/// Declares a PHP type globally. Replaces any previous declaration.
-		/// To be called from the compiled scripts before library loading; libraries should check for conflicts.
-		/// </summary>
-		[Emitted]
-		public void DeclareType(DTypeDesc/*!*/ typeDesc, string/*!*/ fullName)
-		{
-			types[fullName] = typeDesc;
-		}
+        public GlobalConstant GetConstant(QualifiedName qualifiedName, ref string/*!*/ fullName)
+        {
+            if (fullName == null)
+                fullName = qualifiedName.ToString();
 
-		/// <summary>
-		/// Declares a PHP type globally. Replaces any previous declaration.
-		/// To be called from the compiled scripts before library loading; libraries should check for conflicts.
-		/// </summary>
-		[Emitted]
-		public void DeclareType(RuntimeTypeHandle/*!*/ typeHandle, string/*!*/ fullName)
-		{
-			types[fullName] = DTypeDesc.Create(typeHandle);
-		}
+            DConstantDesc desc;
+            return (constants.TryGetValue(fullName, out desc)) ? desc.GlobalConstant : null;
+        }
 
-		/// <summary>
-		/// Declares a PHP function globally. Replaces any previous declaration.
-		/// To be called from the compiled scripts before library loading; libraries should check for conflicts.
-		/// </summary>
-		[Emitted]
-		public void DeclareFunction(RoutineDelegate/*!*/ arglessStub, string/*!*/ fullName, PhpMemberAttributes memberAttributes, MethodInfo argfull)
-		{
+        /// <summary>
+        /// Declares a PHP type globally. Replaces any previous declaration.
+        /// To be called from the compiled scripts before library loading; libraries should check for conflicts.
+        /// </summary>
+        [Emitted]
+        public void DeclareType(DTypeDesc/*!*/ typeDesc, string/*!*/ fullName)
+        {
+            types[fullName] = typeDesc;
+        }
+
+        /// <summary>
+        /// Declares a PHP type globally. Replaces any previous declaration.
+        /// To be called from the compiled scripts before library loading; libraries should check for conflicts.
+        /// </summary>
+        [Emitted]
+        public void DeclareType(RuntimeTypeHandle/*!*/ typeHandle, string/*!*/ fullName)
+        {
+            types[fullName] = DTypeDesc.Create(typeHandle);
+        }
+
+        /// <summary>
+        /// Declares a PHP function globally. Replaces any previous declaration.
+        /// To be called from the compiled scripts before library loading; libraries should check for conflicts.
+        /// </summary>
+        [Emitted]
+        public void DeclareFunction(RoutineDelegate/*!*/ arglessStub, string/*!*/ fullName, PhpMemberAttributes memberAttributes, MethodInfo argfull)
+        {
             var desc = new PhpRoutineDesc(memberAttributes, arglessStub, true);
-            
+
             if (argfull != null)    // only if we have the argfull
                 new PurePhpFunction(desc, fullName, argfull);   // writes desc.Member
 
             functions[fullName] = desc;
-		}
+        }
 
-		/// <summary>
-		/// Declares a PHP constant globally. Replaces any previous declaration.
-		/// To be called from the compiled scripts before library loading; libraries should check for conflicts.
-		/// </summary>
-		[Emitted]
-		public void DeclareConstant(string/*!*/ fullName, object value)
-		{
-			constants[fullName, false] = new DConstantDesc(UnknownModule.RuntimeModule, PhpMemberAttributes.None, value);
-		}
+        /// <summary>
+        /// Declares a PHP constant globally. Replaces any previous declaration.
+        /// To be called from the compiled scripts before library loading; libraries should check for conflicts.
+        /// </summary>
+        [Emitted]
+        public void DeclareConstant(string/*!*/ fullName, object value)
+        {
+            constants[fullName, false] = new DConstantDesc(UnknownModule.RuntimeModule, PhpMemberAttributes.None, value);
+        }
 
-		/// <summary>
-		/// Checkes whether a type is transient.
-		/// </summary>
-		public bool IsTransientRealType(Type/*!*/ realType)
-		{
-			return transientAssemblyBuilder.IsTransientRealType(realType);
-		}
+        /// <summary>
+        /// Checkes whether a type is transient.
+        /// </summary>
+        public bool IsTransientRealType(Type/*!*/ realType)
+        {
+            return transientAssemblyBuilder.IsTransientRealType(realType);
+        }
 
         /// <summary>
         /// Build the delegate checking if the given script specified by its FullPath exists on available locations.
@@ -450,145 +451,145 @@ namespace PHP.Core
             return this.fileExists;
         }
 
-		#endregion
-	}
+        #endregion
+    }
 
-	#region AssemblyLoader
+    #region AssemblyLoader
 
-	public sealed partial class AssemblyLoader
-	{
-		/// <summary>
-		/// The owning AC.
-		/// </summary>
-		private readonly ApplicationContext/*!*/ applicationContext;
+    public sealed partial class AssemblyLoader
+    {
+        /// <summary>
+        /// The owning AC.
+        /// </summary>
+        private readonly ApplicationContext/*!*/ applicationContext;
 
-		public bool ReflectionOnly { get { return reflectionOnly; } }
-		private readonly bool reflectionOnly;
+        public bool ReflectionOnly { get { return reflectionOnly; } }
+        private readonly bool reflectionOnly;
 
-		public bool ClrReflectionOnly { get { return clrReflectionOnly; } }
-		private readonly bool clrReflectionOnly;
-		
-		/// <summary>
-		/// Loaded assemblies. Contains all instances loaded by the loader. Synchronized.
-		/// </summary>
-		private readonly Dictionary<Assembly, DAssembly>/*!!*/ loadedAssemblies = new Dictionary<Assembly, DAssembly>();
+        public bool ClrReflectionOnly { get { return clrReflectionOnly; } }
+        private readonly bool clrReflectionOnly;
+
+        /// <summary>
+        /// Loaded assemblies. Contains all instances loaded by the loader. Synchronized.
+        /// </summary>
+        private readonly Dictionary<Assembly, DAssembly>/*!!*/ loadedAssemblies = new Dictionary<Assembly, DAssembly>();
 
 
-		internal AssemblyLoader(ApplicationContext/*!*/ applicationContext, bool reflectionOnly)
-		{
-			this.applicationContext = applicationContext;
-			this.reflectionOnly = reflectionOnly;
-			
-			// not supported yet:
-			this.clrReflectionOnly = false;
-		}
+        internal AssemblyLoader(ApplicationContext/*!*/ applicationContext, bool reflectionOnly)
+        {
+            this.applicationContext = applicationContext;
+            this.reflectionOnly = reflectionOnly;
 
-		internal Assembly LoadRealAssembly(string/*!*/ target)
-		{
+            // not supported yet:
+            this.clrReflectionOnly = false;
+        }
+
+        internal Assembly LoadRealAssembly(string/*!*/ target)
+        {
 #if SILVERLIGHT
 			return Assembly.Load(target);
 #else
-			return (clrReflectionOnly) ? Assembly.ReflectionOnlyLoad(target) : Assembly.Load(target);
+            return (clrReflectionOnly) ? Assembly.ReflectionOnlyLoad(target) : Assembly.Load(target);
 #endif
-		}
+        }
 
-		internal Assembly LoadRealAssemblyFrom(string/*!*/ target)
-		{
+        internal Assembly LoadRealAssemblyFrom(string/*!*/ target)
+        {
 #if SILVERLIGHT
 			return Assembly.LoadFrom(target);
 #else
-			return (clrReflectionOnly) ? Assembly.ReflectionOnlyLoadFrom(target) : Assembly.LoadFrom(target);
+            return (clrReflectionOnly) ? Assembly.ReflectionOnlyLoadFrom(target) : Assembly.LoadFrom(target);
 #endif
-		}
+        }
 
-		public List<T> GetLoadedAssemblies<T>()
-			where T : DAssembly
-		{
-			lock (this)
-			{
-				List<T> result = new List<T>(loadedAssemblies.Count);
+        public List<T> GetLoadedAssemblies<T>()
+            where T : DAssembly
+        {
+            lock (this)
+            {
+                List<T> result = new List<T>(loadedAssemblies.Count);
 
-				foreach (DAssembly loaded_assembly in loadedAssemblies.Values)
-				{
-					T assembly = loaded_assembly as T;
-					if (assembly != null)
-						result.Add(assembly);
-				}
+                foreach (DAssembly loaded_assembly in loadedAssemblies.Values)
+                {
+                    T assembly = loaded_assembly as T;
+                    if (assembly != null)
+                        result.Add(assembly);
+                }
 
-				return result;
-			}
-		}
+                return result;
+            }
+        }
 
-		/// <summary>
-		/// Loads a library assembly given its name and configuration node.
-		/// </summary>
-		/// <param name="assemblyName">Long assembly name (see <see cref="Assembly.Load"/>) or a <B>null</B> reference.</param>
-		/// <param name="assemblyUrl">Assembly file absolute URI or a <B>null</B> reference.</param>
-		/// <param name="config">Configuration node describing the assembly to load (or a <B>null</B> reference).</param>
-		/// <exception cref="ConfigurationErrorsException">An error occured while loading the library.</exception>
-		public DAssembly/*!*/ Load(string assemblyName, Uri assemblyUrl, LibraryConfigStore config)
-		{
-			if (assemblyName == null && assemblyUrl == null)
-				throw new ArgumentNullException("assemblyName");
+        /// <summary>
+        /// Loads a library assembly given its name and configuration node.
+        /// </summary>
+        /// <param name="assemblyName">Long assembly name (see <see cref="Assembly.Load"/>) or a <B>null</B> reference.</param>
+        /// <param name="assemblyUrl">Assembly file absolute URI or a <B>null</B> reference.</param>
+        /// <param name="config">Configuration node describing the assembly to load (or a <B>null</B> reference).</param>
+        /// <exception cref="ConfigurationErrorsException">An error occured while loading the library.</exception>
+        public DAssembly/*!*/ Load(string assemblyName, Uri assemblyUrl, LibraryConfigStore config)
+        {
+            if (assemblyName == null && assemblyUrl == null)
+                throw new ArgumentNullException("assemblyName");
 
-			if (assemblyUrl != null && !assemblyUrl.IsAbsoluteUri)
-				throw new ArgumentException("Absolute URL expected", "assemblyUrl");
+            if (assemblyUrl != null && !assemblyUrl.IsAbsoluteUri)
+                throw new ArgumentException("Absolute URL expected", "assemblyUrl");
 
-			string target = null;
+            string target = null;
 
-			try
-			{
-				if (assemblyName != null)
-				{
-					// load assembly by full name:
-					target = assemblyName;
+            try
+            {
+                if (assemblyName != null)
+                {
+                    // load assembly by full name:
+                    target = assemblyName;
 
-					return Load(LoadRealAssembly(target), config);
-				}
-				else
-				{
-					// load by URI:
-					target = HttpUtility.UrlDecode(assemblyUrl.AbsoluteUri);
+                    return Load(LoadRealAssembly(target), config);
+                }
+                else
+                {
+                    // load by URI:
+                    target = HttpUtility.UrlDecode(assemblyUrl.AbsoluteUri);
 
-					return Load(LoadRealAssemblyFrom(target), config);
-				}
-			}
-			catch (Exception e)
-			{
-				throw new ConfigurationErrorsException
-					(CoreResources.GetString("library_assembly_loading_failed", target) + " " + e.Message, e);
-			}
-		}
+                    return Load(LoadRealAssemblyFrom(target), config);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new ConfigurationErrorsException
+                    (CoreResources.GetString("library_assembly_loading_failed", target) + " " + e.Message, e);
+            }
+        }
 
-		public DAssembly/*!*/ Load(Assembly/*!*/ realAssembly, LibraryConfigStore config)
-		{
-			Debug.Assert(realAssembly != null);
+        public DAssembly/*!*/ Load(Assembly/*!*/ realAssembly, LibraryConfigStore config)
+        {
+            Debug.Assert(realAssembly != null);
 
-			DAssembly assembly;
+            DAssembly assembly;
 
-			lock (this)
-			{
-				if (loadedAssemblies.TryGetValue(realAssembly, out assembly))
-					return assembly;
+            lock (this)
+            {
+                if (loadedAssemblies.TryGetValue(realAssembly, out assembly))
+                    return assembly;
 
-				assembly = DAssembly.CreateNoLock(applicationContext, realAssembly, config);
+                assembly = DAssembly.CreateNoLock(applicationContext, realAssembly, config);
 
-				// load the members contained in the assembly to the global tables:
-				applicationContext.LoadModuleEntries(assembly.ExportModule);
+                // load the members contained in the assembly to the global tables:
+                applicationContext.LoadModuleEntries(assembly.ExportModule);
 
                 // add the assembly into loaded assemblies list now, so if LoadModuleEntries throws, assembly is not skipped within the next request!
                 loadedAssemblies.Add(realAssembly, assembly);
-			}
+            }
 
-			if (!reflectionOnly)
-				assembly.LoadCompileTimeReferencedAssemblies(this);
+            if (!reflectionOnly)
+                assembly.LoadCompileTimeReferencedAssemblies(this);
 
-			return assembly;
-		}
+            return assembly;
+        }
 
 
-	}
+    }
 
-	#endregion
+    #endregion
 
 }

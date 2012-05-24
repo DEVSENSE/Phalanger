@@ -15,6 +15,7 @@ using System.Runtime.Serialization;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 using PHP.Core;
 using PHP.Core.Reflection;
@@ -142,7 +143,7 @@ namespace PHP.Library.SPL
             }
 
             // preserve arguments on stack for New
-            
+
             // instantiate the object, checks whether typedesc is an abstract type:
             return Operators.New(self.typedesc, null, stack.Context, null);
         }
@@ -182,7 +183,7 @@ namespace PHP.Library.SPL
 
             // push arguments onto the stack:
             var array = PhpArray.AsPhpArray(arg);
-            
+
             if (array != null)
             {
                 var args = new object[array.Count];
@@ -232,6 +233,94 @@ namespace PHP.Library.SPL
         }
 
         #endregion
+
+        [ImplementsMethod]
+        public object hasMethod(ScriptContext/*!*/context, object argName)
+        {
+            try
+            {
+                Name name = new Name(System.Convert.ToString(argName));
+                var type = this.typedesc;
+                while (type != null)
+                {
+                    var method = type.GetMethod(name);
+                    if (method != null)
+                    {
+                        return true;
+                    }
+                    type = type.Base;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object hasMethod(object instance, PhpStack stack)
+        {
+            object args = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).hasMethod(stack.Context, args);
+        }
+
+        [ImplementsMethod]
+        public object hasConstant(ScriptContext/*!*/context, object argName)
+        {
+            try
+            {
+                VariableName name = new VariableName(System.Convert.ToString(argName));
+                var type = this.typedesc;
+                while (type != null)
+                {
+                    var Constant = type.GetConstant(name);
+                    if (Constant != null)
+                    {
+                        return true;
+                    }
+                    type = type.Base;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object hasConstant(object instance, PhpStack stack)
+        {
+            object args = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).hasConstant(stack.Context, args);
+        }
+
+        [ImplementsMethod]
+        [return: CastToFalse]
+        public object getFileName(ScriptContext/*!*/context)
+        {
+            int id;
+            string typename;
+            string src;
+            ReflectionUtils.ParseTypeId(this.typedesc.RealType.FullName, out id, out src, out typename);
+            if (string.IsNullOrEmpty(src))
+            {
+                return false;
+            }
+            PhpSourceFile srcFile = new PhpSourceFile(context.MainScriptFile.Root, new RelativePath(src));
+            return srcFile.FullPath.ToString();
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [return: CastToFalse]
+        public static object getFileName(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getFileName(stack.Context);
+        }
     }
 
 }
