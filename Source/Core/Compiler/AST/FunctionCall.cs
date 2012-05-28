@@ -820,7 +820,7 @@ namespace PHP.Core.AST
 		}
 
         /// <summary>
-        /// To avoid <see cref="StackOverflowException"/> due to long <see cref="isMemberOf"/> chain,
+        /// To avoid <see cref="StackOverflowException"/> due to long <see cref="VarLikeConstructUse.IsMemberOf"/> chain,
         /// we will avoid recursion, and divide the chain into smaller pieces.
         /// </summary>
         private void HandleLongChain(CodeGenerator/*!*/ codeGenerator)

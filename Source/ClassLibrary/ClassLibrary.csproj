@@ -271,6 +271,7 @@
     <Compile Include="Web.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="Resources\WindowsTZ.xml" />
     <EmbeddedResource Include="Strings.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>

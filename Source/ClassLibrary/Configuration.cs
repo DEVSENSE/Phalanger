@@ -95,7 +95,7 @@ namespace PHP.Library
 			/// <summary>
 			/// Default timezone used by time-zone functions.
 			/// </summary>
-			public TimeZone TimeZone = null;
+			public TimeZoneInfo TimeZone = null;
 
 			internal DateSection DeepCopy()
 			{
