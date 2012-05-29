@@ -1175,6 +1175,8 @@ namespace PHP.Core.Emit
 
         internal FieldBuilder/*!*/DefineInitializedData(string name, byte[] data, FieldAttributes attributes)
         {
+            // TODO: cache values, reuse existing PhpBytes or datafld
+            
             // regular function, we have a type builder:
             if (TypeBuilder != null)
                 return TypeBuilder.DefineInitializedData(name, data, attributes);
@@ -1197,8 +1199,6 @@ namespace PHP.Core.Emit
 		internal void EmitLoadPhpBytes(PhpBytes/*!*/ value)
 		{
             Debug.Assert(value != null);
-
-            // TODO: cache values, reuse existing PhpBytes or datafld
 
             // create array of bytes
             LdcI4(value.Length);

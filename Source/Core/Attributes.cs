@@ -265,9 +265,37 @@ namespace PHP.Core
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
 	public sealed class ImplementsTypeAttribute : Attribute
 	{
+        /// <summary>
+        /// If not <c>null</c>, defines the PHP type name instead of the reflected name.
+        /// </summary>
+        public readonly string PHPTypeName;
+
+        /// <summary>
+        /// Initialized new instance of <see cref="ImplementsTypeAttribute"/> specifying that
+        /// the type is visible in PHP code and the type is named using the reflected <see cref="Type.FullName"/>.
+        /// </summary>
 		public ImplementsTypeAttribute()
 		{
 		}
+
+        /// <summary>
+        /// Initialized new instance of <see cref="ImplementsTypeAttribute"/> with PHP type name specified.
+        /// </summary>
+        /// <param name="PHPTypeName">If not <c>null</c>, defines the PHP type name instead of the reflected name.</param>
+        /// <remarks>This overload is only valid within class library types.</remarks>
+        public ImplementsTypeAttribute(string PHPTypeName)
+        {
+            Debug.Assert(!string.IsNullOrWhiteSpace(PHPTypeName));
+            
+            this.PHPTypeName = PHPTypeName;
+        }
+
+        internal static ImplementsTypeAttribute Reflect(Type/*!*/type)
+        {
+            Debug.Assert(type != null);
+            var attrs = type.GetCustomAttributes(typeof(ImplementsTypeAttribute), false);
+            return (attrs != null && attrs.Length == 1) ? (ImplementsTypeAttribute)attrs[0] : null;
+        }
 	}
 
 	/// <summary>

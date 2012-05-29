@@ -145,7 +145,7 @@ namespace PHP.Library
                 return false;
             }
 
-            var dt = datetime as __DateTime;
+            var dt = datetime as __PHP__DateTime;
             if (dt == null)
             {
                 PhpException.InvalidArgumentType("datetime", "DateTime");
@@ -698,7 +698,7 @@ namespace PHP.Library
         /// </summary>
         [ImplementsFunction("timezone_offset_get")]
         [return: CastToFalse]
-        public static int TimeZoneOffsetGet(ScriptContext context, DateTimeZone timezone, __DateTime datetime)
+        public static int TimeZoneOffsetGet(ScriptContext context, DateTimeZone timezone, __PHP__DateTime datetime)
         {
             if (timezone == null)
                 return -1;

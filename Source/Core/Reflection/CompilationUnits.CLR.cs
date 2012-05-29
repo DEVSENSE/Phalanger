@@ -357,11 +357,11 @@ namespace PHP.Core.Reflection
 			mainHelper = scriptModule.MainHelper;
 
 			foreach (KeyValuePair<string, DTypeDesc> val in typesTmp)
-				types.Add(QualifiedName.FromClrNotation(val.Key, true), val.Value.Type);
+                types.Add(QualifiedName.FromClrNotation(val.Value.RealType), val.Value.Type);   // TODO: parse the val.Key
 			foreach (KeyValuePair<string, DConstantDesc> val in constantsTmp)
-				constants.Add(QualifiedName.FromClrNotation(val.Key, true), val.Value.GlobalConstant);
+                constants.Add(QualifiedName.FromClrNotation(val.Key, true), val.Value.GlobalConstant);// TODO: parse the val.Key
 			foreach (KeyValuePair<string, DRoutineDesc> val in functionsTmp)
-				functions.Add(QualifiedName.FromClrNotation(val.Key, true), val.Value.Routine);
+                functions.Add(QualifiedName.FromClrNotation(val.Key, true), val.Value.Routine);// TODO: parse the val.Key
 
 			state = States.Reflected;
 		}

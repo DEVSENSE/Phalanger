@@ -35,8 +35,8 @@ namespace PHP.Library
 #if !SILVERLIGHT
     [Serializable]
 #endif
-    [ImplementsType]
-    public class __DateTime : PhpObject // TODO: conflict with System.DateTime
+    [ImplementsType("DateTime")]
+    public class __PHP__DateTime : PhpObject
     {
         #region Constants
 
@@ -70,7 +70,7 @@ namespace PHP.Library
         /// For internal purposes only.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public __DateTime(ScriptContext context, bool newInstance)
+        public __PHP__DateTime(ScriptContext context, bool newInstance)
             : base(context, newInstance)
         { }
 
@@ -78,13 +78,13 @@ namespace PHP.Library
         /// For internal purposes only.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public __DateTime(ScriptContext context, DTypeDesc caller)
+        public __PHP__DateTime(ScriptContext context, DTypeDesc caller)
             : base(context, caller)
         { }
 
 #if !SILVERLIGHT
         /// <summary>Deserializing constructor.</summary>
-        protected __DateTime(SerializationInfo info, StreamingContext context)
+        protected __PHP__DateTime(SerializationInfo info, StreamingContext context)
             : base(info, context)
         { }
 #endif
@@ -142,7 +142,7 @@ namespace PHP.Library
             var arg1 = stack.PeekValueOptional(1);
             var arg2 = stack.PeekValueOptional(2);
             stack.RemoveFrame();
-            return ((__DateTime)instance).__construct(stack.Context, arg1, arg2);
+            return ((__PHP__DateTime)instance).__construct(stack.Context, arg1, arg2);
         }
 
         #endregion
@@ -209,7 +209,7 @@ namespace PHP.Library
 
         [ImplementsFunction("date_format")]
         [return: CastToFalse]
-        public static object DateFormat(__DateTime datetime, string format)
+        public static object DateFormat(__PHP__DateTime datetime, string format)
         {
             // TODO: format it properly
             return FormatDate(format, datetime.time, TimeZoneInfo.Utc);
@@ -242,7 +242,7 @@ namespace PHP.Library
         [return: CastToFalse]
         public static object DateCreate(ScriptContext/*!*/context, string time, DateTimeZone timezone)
         {
-            var dt = new __DateTime(context, true);
+            var dt = new __PHP__DateTime(context, true);
             dt.__construct(context, time, timezone);
             return dt;
         }
