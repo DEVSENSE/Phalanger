@@ -744,6 +744,11 @@ namespace PHP.Core.AST
         //    return routine == null || !routine.ReturnValueDeepCopyEmitted;  // true if Copy has to be emitted by parent expression ($a = func())
         //}
 
+        /// <summary>
+        /// Returns string representation of <see cref="fallbackQualifiedName"/> or <c>null</c> reference if the fallback name is not needed.
+        /// </summary>
+        private string fallbackFunctionName { get { return fallbackQualifiedName.HasValue ? fallbackQualifiedName.Value.ToString() : null; } }
+
         /// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
 		internal override PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator)
 		{
@@ -759,11 +764,32 @@ namespace PHP.Core.AST
 			}
 			else
 			{
+                if (alreadyEmittedPlace != null)
+                {
+                    // continuation of HandleLongChain,
+                    // this DirectFcnCall was already emitted
+                    // and the result was stored into local variable.
+                    codeGenerator.IL.Emit(OpCodes.Ldloc, alreadyEmittedPlace);
+                    result = PhpTypeCodeEnum.FromType(alreadyEmittedPlace.LocalType);
+                }
+                else
 				// this node actually represents a method call:
                 if (isMemberOf != null)
                 {
+                    // to avoid StackOverflowException due to long isMemberOf chain,
+                    // we will avoid recursion, and divide the chain into smaller pieces.
+                    HandleLongChain(codeGenerator);
+
                     if (routine == null)
-                        result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, qualifiedName.ToString(), null, null, callSignature, access);
+                    {
+                        //result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, qualifiedName.ToString(), null, null, callSignature, access);
+                        result = codeGenerator.CallSitesBuilder.EmitMethodCall(
+                            codeGenerator,
+                            Compiler.CodeGenerator.CallSitesBuilder.AccessToReturnType(access),
+                            isMemberOf, null,
+                            qualifiedName.ToString(), null,
+                            callSignature);
+                    }
                     else
                         result = routine.EmitCall(
                             codeGenerator, null, callSignature,
@@ -774,7 +800,7 @@ namespace PHP.Core.AST
                 {
                     // the node represents a function call:
                     result = routine.EmitCall(
-                        codeGenerator, fallbackQualifiedName.HasValue ? fallbackQualifiedName.Value.ToString() : null,
+                        codeGenerator, fallbackFunctionName,
                         callSignature, null, false, overloadIndex,
                         null, position, access, false);
                 }
@@ -792,6 +818,39 @@ namespace PHP.Core.AST
 
             return result;
 		}
+
+        /// <summary>
+        /// To avoid <see cref="StackOverflowException"/> due to long <see cref="VarLikeConstructUse.IsMemberOf"/> chain,
+        /// we will avoid recursion, and divide the chain into smaller pieces.
+        /// </summary>
+        private void HandleLongChain(CodeGenerator/*!*/ codeGenerator)
+        {
+            int length = 300;
+            VarLikeConstructUse p = this.isMemberOf;
+            while (p != null && length > 0)
+            {
+                if (p.GetType() == typeof(DirectFcnCall) && ((DirectFcnCall)p).alreadyEmittedPlace != null)
+                    return; // chain already divided here
+
+                p = p.IsMemberOf;
+                length--;
+            }
+
+            if (length == 0 && p != null && p.GetType() == typeof(DirectFcnCall))
+            {
+                var fcn = (DirectFcnCall)p;
+
+                var result = fcn.Emit(codeGenerator);
+                fcn.alreadyEmittedPlace = codeGenerator.IL.DeclareLocal(PhpTypeCodeEnum.ToType(result));
+                codeGenerator.IL.Emit(OpCodes.Stloc, fcn.alreadyEmittedPlace);
+            }
+        }
+
+        /// <summary>
+        /// Once function call is emitted into a local variable,
+        /// remember it to load it next time when <see cref="Emit"/> is called.
+        /// </summary>
+        private LocalBuilder alreadyEmittedPlace = null;
 
 		/// <summary>
 		/// Emits library function that can be inlined.

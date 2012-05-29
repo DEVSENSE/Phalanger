@@ -245,10 +245,45 @@ namespace PHP.Core.Compiler.CodeGenerator
         #region EmitMethodCall
 
         /// <summary>
+        /// Helper method, returns additional type arguments for delegate used by <see cref="EmitMethodCall"/>.
+        /// </summary>
+        private static IEnumerable<Type>/*!!*/MethodCallDelegateAdditionalArguments(bool staticCall, bool methodNameIsKnown, bool classContextIsKnown)
+        {
+            if (staticCall) yield return Types.DTypeDesc[0];
+            if (!classContextIsKnown) yield return Types.DTypeDesc[0];
+            if (!methodNameIsKnown) yield return Types.Object[0];
+        }
+
+        /// <summary>
+        /// Helper method, loads parameters onto evaluation stack.
+        /// </summary>
+        private static void EmitMethodCallParameters(PHP.Core.CodeGenerator/*!*/cg, CallSignature callSignature)
+        {
+            foreach (var t in callSignature.GenericParams) t.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors); // load DTypeDescs on the stack
+            foreach (var p in callSignature.Parameters) { cg.EmitBoxing(p.Emit(cg)); }  // load boxed args on the stack            
+        }
+
+        internal static Type/*!*/AccessToReturnType(AccessType access)
+        {
+            Debug.Assert(
+                  access == AccessType.None || access == AccessType.Read || access == AccessType.ReadRef || access == AccessType.ReadUnknown,
+                  "Unhandled access type.");
+
+            switch (access)
+            {
+                case AccessType.None: return Types.Void;
+                case AccessType.Read: return Types.Object[0];
+                case AccessType.ReadRef:
+                case AccessType.ReadUnknown: return Types.PhpReference[0];
+                default: throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
         /// Emit call of the instance/static method. This defines the call site and call it using given parameters.
         /// </summary>
         /// <param name="cg">Current code <see cref="CodeGenerator"/>.</param>
-        /// <param name="access">Current access of the method call.</param>
+        /// <param name="returnType">Return type of the method call determined by current access of the method call.</param>
         /// <param name="targetExpr">The method call instance expression (the target) if it is an instance method call.</param>
         /// <param name="targetType">The target type if it is a static method call.</param>
         /// <param name="methodFullName">If known at compile time, the method name. Otherwise <c>null</c>.</param>
@@ -256,49 +291,27 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// <param name="callSignature">The call signature of the method call.</param>
         /// <returns>The resulting value type code. This value will be pushed onto the evaluation stack.</returns>
         public PhpTypeCode EmitMethodCall(
-            PHP.Core.CodeGenerator/*!*/cg, AccessType access,
+            PHP.Core.CodeGenerator/*!*/cg, Type returnType,
             Expression/*!*/targetExpr, DType/*!*/targetType,
             string methodFullName, Expression methodNameExpr, CallSignature callSignature)
         {
-            Debug.Assert(methodFullName != null ^ methodNameExpr != null);
-
-            Debug.Assert(
-                access == AccessType.None || access == AccessType.Read || access == AccessType.ReadRef || access == AccessType.ReadUnknown,
-                "Unhandled access type.");
+            Debug.Assert(methodFullName != null ^ methodNameExpr != null);          
 
             //
             bool staticCall = (targetExpr == null); // we are going to emit static method call
-            bool methodNameIsKnown = (methodFullName != null);
-            bool classContextIsKnown = (this.classContextPlace != null);
-
-            //
-            // binder flags:
-            //
-            Type returnType = Types.Void;
-            switch (access)
-            {
-                case AccessType.Read: returnType = Types.Object[0]; break;
-                case AccessType.ReadRef:
-                case AccessType.ReadUnknown: returnType = Types.PhpReference[0]; break;
-            }
+            //bool methodNameIsKnown = (methodFullName != null);
+            //bool classContextIsKnown = (this.classContextPlace != null);
 
             //
             // define the call site:
             //
-
-            //
-            List<Type> additionalArgs = new List<Type>();
-            if (staticCall) additionalArgs.Add(Types.DTypeDesc[0]);
-            if (!classContextIsKnown) additionalArgs.Add(Types.DTypeDesc[0]);
-            if (!methodNameIsKnown) additionalArgs.Add(Types.Object[0]);
-
-            var delegateTypeArgs = MethodCallDelegateTypeArgs(
-                callSignature,
-                staticCall ? Types.DObject[0] : Types.Object[0],
-                additionalArgs.ToArray(),
-                returnType);
-
-            var delegateType = /*System.Linq.Expressions.Expression.*/delegateBuilder.GetDelegateType(delegateTypeArgs, callSitesCount);    // (J) do not create dynamic delegates in dynamic modules, so they can be referenced from non-transient assemblies
+            var delegateType = /*System.Linq.Expressions.Expression.*/delegateBuilder.GetDelegateType(
+                MethodCallDelegateTypeArgs(
+                    callSignature,
+                    staticCall ? Types.DObject[0] : Types.Object[0],
+                    MethodCallDelegateAdditionalArguments(staticCall, methodFullName != null, this.classContextPlace != null),
+                    returnType),
+                callSitesCount);    // (J) do not create dynamic delegates in dynamic modules, so they can be referenced from non-transient assemblies
 
             //
             var field = DefineCallSite(cg.IL, string.Format("call_{0}", methodFullName ?? "$"), delegateType, (il) =>
@@ -326,11 +339,10 @@ namespace PHP.Core.Compiler.CodeGenerator
             cg.IL.Emit(OpCodes.Ldsfld, field);
             if (staticCall) cg.EmitLoadSelf(); else EmitMethodTargetExpr(cg, targetExpr);
             cg.EmitLoadScriptContext();
-            foreach (var t in callSignature.GenericParams) t.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors); // load DTypeDescs on the stack
-            foreach (var p in callSignature.Parameters) { cg.EmitBoxing(p.Emit(cg)); }  // load boxed args on the stack
+            EmitMethodCallParameters(cg, callSignature);
             if (staticCall) targetType.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
-            if (!classContextIsKnown) cg.EmitLoadClassContext();
-            if (!methodNameIsKnown) cg.EmitName(methodFullName/*null*/, methodNameExpr, true);
+            if (/*!classContextIsKnown*/this.classContextPlace == null) cg.EmitLoadClassContext();
+            if (/*!methodNameIsKnown*/methodFullName == null) cg.EmitName(methodFullName/*null*/, methodNameExpr, true);
             
             cg.MarkTransientSequencePoint();
             cg.IL.Emit(OpCodes.Callvirt, delegateType.GetMethod("Invoke"));
@@ -370,7 +382,7 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// <param name="additionalArgs">Additional arguments added after the target expression.</param>
         /// <param name="returnType">The return value type.</param>
         /// <returns></returns>
-        private Type[]/*!*/MethodCallDelegateTypeArgs(CallSignature callSignature, Type/*!*/targetType, Type[] additionalArgs, Type/*!*/returnType)
+        private Type[]/*!*/MethodCallDelegateTypeArgs(CallSignature callSignature, Type/*!*/targetType, IEnumerable<Type> additionalArgs, Type/*!*/returnType)
         {
             List<Type> typeArgs = new List<Type>(callSignature.Parameters.Count + callSignature.GenericParams.Count + 6);
 

@@ -1506,7 +1506,7 @@ namespace PHP.Core
             {
                 Debug.Assert(fallbackRoutineFullname == null);
 
-                return this.CallSitesBuilder.EmitMethodCall(this, access, targetExpr, type, routineFullName, routineNameExpr, callSignature);
+                return this.CallSitesBuilder.EmitMethodCall(this, Compiler.CodeGenerator.CallSitesBuilder.AccessToReturnType(access), targetExpr, type, routineFullName, routineNameExpr, callSignature);
             }
             else if (targetExpr != null)
             {

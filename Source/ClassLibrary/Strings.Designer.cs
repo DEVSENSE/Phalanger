@@ -1501,6 +1501,26 @@ namespace PHP {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+        ///&lt;supplementalData&gt;
+        ///	&lt;windowsZones&gt;
+        ///		&lt;mapTimezones otherVersion=&quot;07dc0000&quot; typeVersion=&quot;2012a&quot;&gt;
+        ///
+        ///			&lt;!-- (UTC-12:00) International Date Line West --&gt;
+        ///			&lt;mapZone other=&quot;Dateline Standard Time&quot; territory=&quot;001&quot; type=&quot;Etc/GMT+12&quot;/&gt;
+        ///			&lt;mapZone other=&quot;Dateline Standard Time&quot; territory=&quot;ZZ&quot; type=&quot;Etc/GMT+12&quot;/&gt;
+        ///
+        ///			&lt;!-- (UTC-11:00) Coordinated Universal Time-11 --&gt;
+        ///			&lt;mapZone other=&quot;UTC-11&quot; territory=&quot;001&quot; type=&quot;Etc/GMT+11&quot;/&gt;
+        ///			&lt;mapZone other=&quot;UTC-11&quot; territory=&quot;AS&quot; type= [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string WindowsTZ {
+            get {
+                return ResourceManager.GetString("WindowsTZ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Word boundary must be single bracket expression.
         /// </summary>
         internal static string word_boundary_not_single_bracket_expr {

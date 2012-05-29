@@ -3574,31 +3574,31 @@ namespace PHP.Core
 
     #region Date and Time
 
-    /// <summary>
-    /// Fixes the strange behavior of <see cref="System.TimeZone"/> which translates between local and
-    /// UTC using current time zone, completely disregarding the current zone's UTC offset.
-    /// </summary>
-    public abstract class CustomTimeZoneBase : TimeZone
-    {
-        public override DateTime ToLocalTime(DateTime time)
-        {
-            TimeSpan offset = GetUtcOffset(time);
-            DateTime local = new DateTime((time + offset).Ticks, DateTimeKind.Local);
+    ///// <summary>
+    ///// Fixes the strange behavior of <see cref="System.TimeZone"/> which translates between local and
+    ///// UTC using current time zone, completely disregarding the current zone's UTC offset.
+    ///// </summary>
+    //public abstract class CustomTimeZoneBase : TimeZone
+    //{
+    //    public override DateTime ToLocalTime(DateTime time)
+    //    {
+    //        TimeSpan offset = GetUtcOffset(time);
+    //        DateTime local = new DateTime((time + offset).Ticks, DateTimeKind.Local);
 
-            // was the offset correct?
-            offset = GetUtcOffset(local);
-            if (local - offset != time)
-            {
-                return new DateTime((time + offset).Ticks, DateTimeKind.Local);
-            }
-            else return local;
-        }
+    //        // was the offset correct?
+    //        offset = GetUtcOffset(local);
+    //        if (local - offset != time)
+    //        {
+    //            return new DateTime((time + offset).Ticks, DateTimeKind.Local);
+    //        }
+    //        else return local;
+    //    }
 
-        public override DateTime ToUniversalTime(DateTime time)
-        {
-            return new DateTime((time - GetUtcOffset(time)).Ticks, DateTimeKind.Utc);
-        }
-    }
+    //    public override DateTime ToUniversalTime(DateTime time)
+    //    {
+    //        return new DateTime((time - GetUtcOffset(time)).Ticks, DateTimeKind.Utc);
+    //    }
+    //}
 
     /// <summary>
     /// Unix TimeStamp to DateTime conversion and vice versa
@@ -3607,60 +3607,55 @@ namespace PHP.Core
     {
         #region Nested Class: UtcTimeZone, GmtTimeZone
 
-        private sealed class _UtcTimeZone : CustomTimeZoneBase
-        {
-            public override string DaylightName { get { return "UTC"; } }
-            public override string StandardName { get { return "UTC"; } }
+        //private sealed class _UtcTimeZone : CustomTimeZoneBase
+        //{
+        //    public override string DaylightName { get { return "UTC"; } }
+        //    public override string StandardName { get { return "UTC"; } }
 
-            public override TimeSpan GetUtcOffset(DateTime time)
-            {
-                return new TimeSpan(0);
-            }
+        //    public override TimeSpan GetUtcOffset(DateTime time)
+        //    {
+        //        return new TimeSpan(0);
+        //    }
 
-            public override DaylightTime GetDaylightChanges(int year)
-            {
-                return new DaylightTime(new DateTime(0), new DateTime(0), new TimeSpan(0));
-            }
+        //    public override DaylightTime GetDaylightChanges(int year)
+        //    {
+        //        return new DaylightTime(new DateTime(0), new DateTime(0), new TimeSpan(0));
+        //    }
 
 
-        }
+        //}
 
-        private sealed class _GmtTimeZone : CustomTimeZoneBase
-        {
-            public override string DaylightName { get { return "GMT Daylight Time"; } }
-            public override string StandardName { get { return "GMT Standard Time"; } }
+        //private sealed class _GmtTimeZone : CustomTimeZoneBase
+        //{
+        //    public override string DaylightName { get { return "GMT Daylight Time"; } }
+        //    public override string StandardName { get { return "GMT Standard Time"; } }
 
-            public override TimeSpan GetUtcOffset(DateTime time)
-            {
-                return IsDaylightSavingTime(time) ? new TimeSpan(0, +1, 0, 0, 0) : new TimeSpan(0);
-            }
-            public override DaylightTime GetDaylightChanges(int year)
-            {
-                return new DaylightTime
-                (
-                  new DateTime(year, 3, 27, 1, 0, 0),
-                  new DateTime(year, 10, 30, 2, 0, 0),
-                  new TimeSpan(0, +1, 0, 0, 0)
-                );
-            }
-        }
+        //    public override TimeSpan GetUtcOffset(DateTime time)
+        //    {
+        //        return IsDaylightSavingTime(time) ? new TimeSpan(0, +1, 0, 0, 0) : new TimeSpan(0);
+        //    }
+        //    public override DaylightTime GetDaylightChanges(int year)
+        //    {
+        //        return new DaylightTime
+        //        (
+        //          new DateTime(year, 3, 27, 1, 0, 0),
+        //          new DateTime(year, 10, 30, 2, 0, 0),
+        //          new TimeSpan(0, +1, 0, 0, 0)
+        //        );
+        //    }
+        //}
 
         #endregion
 
         /// <summary>
         /// Time 0 in terms of Unix TimeStamp.
         /// </summary>
-        public static readonly DateTime UtcStartOfUnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0);
+        public static readonly DateTime/*!*/UtcStartOfUnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0);
 
         /// <summary>
-        /// Singleton representing UTC time zone.
+        /// UTC time zone.
         /// </summary>
-        public static readonly TimeZone UtcTimeZone = new _UtcTimeZone();
-
-        /// <summary>
-        /// Singleton representing GMT time zone (UTC + daylight savings).
-        /// </summary>
-        public static readonly TimeZone GmtTimeZone = new _GmtTimeZone();
+        public static TimeZoneInfo/*!*/UtcTimeZone { get { return TimeZoneInfo.Utc; } }
 
         /// <summary>
         /// Converts <see cref="DateTime"/> representing UTC time to UNIX timestamp.
@@ -3714,33 +3709,6 @@ namespace PHP.Core
               (TimeZone.IsDaylightSavingTime(src, src_dt) ? src_dt.Delta : TimeSpan.Zero);
         }
 #endif
-        /// <summary>
-        /// Gets zone offset not counting daylight bias.
-        /// </summary>
-        /// <param name="zone">Time zone.</param>
-        /// <returns>The offset.</returns>
-        public static TimeSpan GetStandardUtcOffset(TimeZone/*!*/ zone)
-        {
-            if (zone == null)
-                throw new ArgumentNullException("zone");
-
-#if SILVERLIGHT
-            if (zone is CurrentSystemTimeZone)
-                return TimeZoneInfo.Local.BaseUtcOffset;
-            else
-                throw new ArgumentNullException("Zone argument has to be CurrentSystemTimeZone type.");
-#else
-
-            DateTime now = DateTime.Now;
-            TimeSpan delta = zone.GetDaylightChanges(now.Year).Delta;
-            TimeSpan result = zone.GetUtcOffset(now);
-
-            // dst correction:
-            if (zone.IsDaylightSavingTime(now)) result -= delta;
-
-            return result;
-#endif
-        }
 
         /// <summary>
         /// Determine maximum of three given <see cref="DateTime"/> values.
@@ -3762,7 +3730,7 @@ namespace PHP.Core
 
             if (TimeZone_CurrentTimeZone == null)
                 TimeZone_CurrentTimeZone = typeof(TimeZone).GetField("currentTimeZone", BindingFlags.NonPublic | BindingFlags.Static);
-
+            
             Debug.Assert(TimeZone_CurrentTimeZone != null, "Missing private field of TimeZone class.");
             TimeZone_CurrentTimeZone.SetValue(null, zone);
         }

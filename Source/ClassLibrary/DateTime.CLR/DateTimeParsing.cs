@@ -148,8 +148,8 @@ namespace PHP.Library.StrToTime
 		{
 			error = null;
 
-			TimeZone zone = PhpTimeZone.CurrentTimeZone;
-			DateTime start = zone.ToLocalTime(utcStart);
+			var zone = PhpTimeZone.CurrentTimeZone;
+            DateTime start = TimeZoneInfo.ConvertTimeFromUtc(utcStart, zone);// zone.ToLocalTime(utcStart);
 
             // following operates on local time defined by the parsed info or by the current time zone //
 
@@ -206,7 +206,7 @@ namespace PHP.Library.StrToTime
 			}
 			else
 			{
-				result = zone.ToUniversalTime(result);
+                result = TimeZoneInfo.ConvertTimeToUtc(result, zone);// zone.ToUniversalTime(result);
 			}
 
 			error = null;
