@@ -52,6 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="index.tpl.html" />
+    <Content Include="pdo.tpl.html" />
     <Content Include="prado\demos\address-book\protected\application.xml" />
     <Content Include="prado\demos\address-book\protected\pages\flex\bin\AC_OETags.js" />
     <Content Include="prado\demos\address-book\protected\pages\flex\bin\flex_address_book-debug.html" />
@@ -528,7 +530,9 @@
     <Content Include="prado\requirements\template-id.html" />
     <Content Include="prado\requirements\template-zh.html" />
     <Content Include="prado\requirements\template.html" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -548,6 +552,7 @@
   <ItemGroup>
     <None Include="include\include.php" />
     <None Include="index.php" />
+    <None Include="pdo.php" />
     <None Include="prado\COPYRIGHT" />
     <None Include="prado\demos\address-book\index.php" />
     <None Include="prado\demos\address-book\protected\.htaccess" />
@@ -2227,6 +2232,7 @@
     <None Include="reflection.inc.php" />
     <None Include="reflection.php" />
     <None Include="sqlite.php" />
+    <None Include="tbs_class.php" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\PhalangerGit\Source\ClassLibrary\ClassLibrary.csproj">
@@ -2240,6 +2246,14 @@
     <ProjectReference Include="..\Source\Extensions\MSSql\Extension.MsSql.csproj">
       <Project>{2153C1DA-B1C5-4B6F-B6D9-272D6099FFC6}</Project>
       <Name>Extension.MsSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Source\Extensions\PDOSQLite\Extension.PDOSQLite.csproj">
+      <Project>{E736D942-D76C-46B6-B7F1-82E3068D46A8}</Project>
+      <Name>Extension.PDOSQLite</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Source\Extensions\PDO\Extension.PDO.csproj">
+      <Project>{A3D74786-1B4A-4967-853E-C98D74E6990B}</Project>
+      <Name>Extension.PDO</Name>
     </ProjectReference>
     <ProjectReference Include="..\Source\Extensions\SQLite\Extension.SQLite.csproj">
       <Project>{B7E4DD8D-A51F-42E5-8964-0774CDAE0F3F}</Project>

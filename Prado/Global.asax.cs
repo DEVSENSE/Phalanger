@@ -10,24 +10,23 @@ namespace TestApp
 {
     public class Global : System.Web.HttpApplication
     {
-
         protected void Application_Start(object sender, EventArgs e)
         {
-            //#if DEBUG
-            //            string dynPath = this.Server.MapPath("~/Dynamic");
-            //            string[] dynAsm = Directory.GetFiles(dynPath, "*.dll");
-            //            foreach (string asm in dynAsm)
-            //            {
-            //                try
-            //                {
-            //                    File.Delete(Path.Combine(dynPath, asm));
-            //                }
-            //                catch
-            //                {
+#if DEBUG
+            string dynPath = this.Server.MapPath("~/Dynamic");
+            string[] dynAsm = Directory.GetFiles(dynPath, "*.dll");
+            foreach (string asm in dynAsm)
+            {
+                try
+                {
+                    File.Delete(Path.Combine(dynPath, asm));
+                }
+                catch
+                {
 
-            //                }
-            //            }
-            //#endif
+                }
+            }
+#endif
         }
 
         protected void Session_Start(object sender, EventArgs e)

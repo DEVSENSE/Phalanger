@@ -321,28 +321,16 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
+        public object getStaticPropertyValue(ScriptContext/*!*/context, object argName)
+        {
+            return getStaticPropertyValue(context, argName, null);
+        }
+
+        [ImplementsMethod]
         public object getStaticPropertyValue(ScriptContext/*!*/context, object argName, object argDefault)
         {
             string name = PHP.Core.Convert.ObjectToString(argName);
-            var type = this.typedesc;
-            while (type != null)
-            {
-                foreach (var propName in type.Properties.Keys)
-                {
-                    if (propName.Value == name)
-                    {
-                        var prop = type.Properties[propName];
-                        if (prop.IsStatic)
-                        {
-                            var value = prop.Get(null);
-                            return value;
-                        }
-                    }
-                }
-                type = type.Base;
-            }
-            //TODO : better error generation
-            throw new System.Exception("Property not found");
+            return Operators.GetStaticProperty(this.typedesc, argName, this.TypeDesc, context, false);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -353,6 +341,43 @@ namespace PHP.Library.SPL
             stack.RemoveFrame();
             return ((ReflectionClass)instance).getStaticPropertyValue(stack.Context, argName, argDefault);
         }
+
+        #region getConstant
+        [ImplementsMethod]
+        public object getConstant(ScriptContext context, object argName)
+        {
+            string name = PHP.Core.Convert.ObjectToString(argName);
+            return Operators.GetClassConstant(this.typedesc, name, this.TypeDesc, context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getConstant(object instance, PhpStack stack)
+        {
+            object argName = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getConstant(stack.Context, argName);
+        }
+        #endregion
+
+        #region getConstants
+        public object getConstants(ScriptContext context)
+        {
+            PhpArray arr = new PhpArray();
+            foreach (VariableName name in this.typedesc.Constants.Keys)
+            {
+                object value = Operators.GetClassConstant(this.typedesc, name.Value, this.TypeDesc, context);
+                arr.Add(name.Value, value);
+            }
+            return arr;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getConstants(object instance, PhpStack stack)
+        {
+            object argName = stack.PeekValue(1);
+            return ((ReflectionClass)instance).getConstants(stack.Context);
+        }
+        #endregion
     }
 }
 

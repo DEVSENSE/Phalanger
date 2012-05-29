@@ -1,48 +1,54 @@
 ﻿<?php
 session_start();
 $sqlite = extension_loaded("sqlite") ? "" : "&nbsp;(does not work : missing sqlite)";
+
+require_once("prado/framework/prado.php");
+require_once("tbs_class.php");
+
+$tbs = new clsTinyButStrong();
+$tbs->LoadTemplate("index.tpl.html");
+
+////////////////////////////////////////////
+// PRADO
+$tbs->MergeField("prado_version", Prado::getVersion());
+$tbs->MergeField("prado_powered", Prado::poweredByPrado());
+
+$dir = scandir("prado/demos");
+$arr = array();
+function strip_dot_dirs($value)
+{
+    return $value != "." && $value != "..";
+}
+$dir = array_filter($dir, "strip_dot_dirs");
+foreach($dir as $name)
+{
+    $item = array("src"=>"prado/demos/$name/index.php", "txt"=>$name);
+    $arr[] = $item;
+}
+$tbs->MergeBlock("prado_demo", "array", $arr);
+
+// TBS
+$tbs->MergeField("tbs_version", $tbs->Version);
+
+// Phalanger
+ob_start() ;
+phpinfo() ;
+$pinfo = ob_get_contents();
+ob_end_clean();
+$tbs->MergeField("phpinfo", $pinfo);
+
+// End
+$tbs->Show(TBS_NOTHING);
+$html = $tbs->Source;
+
+$bom = chr(0xEF).chr(0xBB).chr(0xBF);
+if(strlen($html) >= strlen($bom))
+{
+    if(substr($html, 0, strlen($bom)) == $bom)
+    {
+        $html = substr($html, strlen($bom));
+    }
+}
+
+echo $html;
 ?>
-<html>
-<head>
-</head>
-<body>
-    <table>
-        <tr>
-            <td>
-            <fieldset>
-                <legend>Prado 3.1.10.r3017</legend>
-		        <a href="prado/index.html">index</a><br />
-		        <a href="prado/requirements/index.php">Requirements</a><br />
-                <ul>
-                    <li><a href="prado/demos/helloworld/index.php">Hello world !</a></li>
-                    <li><a href="prado/demos/composer/index.php">Composer</a>&nbsp;(code generation does not work : System.OutOfMemoryException)</li>
-                    <li><a href="prado/demos/chat/index.php">Chat</a><?php echo $sqlite; ?></li>
-                    <li><a href="prado/demos/quickstart/index.php?page=Controls.Standard">QuickStart, Standard controls</a></li>
-                </ul>
-            </fieldset>
-            </td>
-            <td>
-                <fieldset>
-                    <legend>Tests</legend>
-		            <a href="sqlite.php">SQLite</a><br />
-		            <a href="reflection.php">ReflectionClass</a><br />
-                </fieldset>
-            </td>
-        </tr>
-    </table>
-    <pre>
-    From C#, added in Global.asax.cs at Session_Start event. var_export is :
-<?php
-echo var_export($_SESSION, true).'<br />';
-?>
-	</pre>
-	<pre>
-	</pre>
-	<hr />
-<?php
-phpinfo();
-?>
-	<hr />
-	By MaitreDede :)
-</body>
-</html>

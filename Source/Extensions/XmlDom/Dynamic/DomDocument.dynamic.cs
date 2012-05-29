@@ -177,7 +177,7 @@ namespace PHP.Library.Xml
 			((DOMDocument)instance).substituteEntities = value;
 		}
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public object __construct(ScriptContext __context, 		[System.Runtime.InteropServices.OptionalAttribute()]
+		public virtual object __construct(ScriptContext __context, 		[System.Runtime.InteropServices.OptionalAttribute()]
 object version, 		[System.Runtime.InteropServices.OptionalAttribute()]
 object encoding)
 		{
@@ -914,8 +914,7 @@ object node)
 					PhpException.InvalidImplicitCast(source, "string", "loadHTML");
 					return null;
 				}
-			loadHTML(tmp1);
-			return null;
+			return loadHTML(tmp1);
 		}
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object loadHTML(object instance, PhpStack stack)
@@ -927,18 +926,17 @@ object node)
 			return ((DOMDocument)instance).loadHTML(stack.Context, arg1);
 		}
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public object loadHTMLFile(ScriptContext __context, object source)
+		public object loadHTMLFile(ScriptContext __context, object sourceFile)
 		{
 			
-			string tmp1 = PhpVariable.AsString(source);
+			string tmp1 = PhpVariable.AsString(sourceFile);
 			if (tmp1 == null)
 
 				{
-					PhpException.InvalidImplicitCast(source, "string", "loadHTMLFile");
+					PhpException.InvalidImplicitCast(sourceFile, "string", "loadHTMLFile");
 					return null;
 				}
-			loadHTMLFile(tmp1);
-			return null;
+			return loadHTMLFile(tmp1);
 		}
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object loadHTMLFile(object instance, PhpStack stack)
@@ -952,8 +950,7 @@ object node)
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object saveHTML(ScriptContext __context)
 		{
-			saveHTML();
-			return null;
+			return saveHTML();
 		}
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object saveHTML(object instance, PhpStack stack)
@@ -973,8 +970,7 @@ object node)
 					PhpException.InvalidImplicitCast(file, "string", "saveHTMLFile");
 					return null;
 				}
-			saveHTMLFile(tmp1);
-			return null;
+			return saveHTMLFile(tmp1);
 		}
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object saveHTMLFile(object instance, PhpStack stack)

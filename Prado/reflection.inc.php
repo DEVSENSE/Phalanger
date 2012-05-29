@@ -1,4 +1,10 @@
 ﻿<?php
+define("TEST_CLASS", "TestClass");
+
+if(!defined("TEST_CLASS"))
+{
+    die("Gna !");
+}
 
 class TestClass
 {

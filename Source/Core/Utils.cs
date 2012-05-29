@@ -2586,7 +2586,7 @@ namespace PHP.Core
             return (type.IsValueType) ? Activator.CreateInstance(type) : null;
         }
 
-        private static readonly Regex reg_paseTypeId = new Regex(@"\<(\^(?<id>\d+)|((?<src>.+)?\?(?<id>\d+)))\>(?<typename>.+)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+        private static readonly Regex reg_paseTypeId = new Regex(@"\<(\^(?<id>\d+)|((?<src>.+)?(\?(?<id>\d+))?))\>\.(?<typename>.+)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
         internal static void ParseTypeId(string name, out int id, out string srcFile, out string typename)
         {
             id = PHP.Core.Reflection.TransientAssembly.InvalidEvalId;
@@ -2596,7 +2596,10 @@ namespace PHP.Core
             Match m = reg_paseTypeId.Match(name);
             if (m.Success)
             {
-                id = Int32.Parse(m.Groups["id"].Value);
+                if (m.Groups["id"].Success)
+                {
+                    id = Int32.Parse(m.Groups["id"].Value);
+                }
                 if (m.Groups["src"].Success)
                 {
                     srcFile = m.Groups["src"].Value;

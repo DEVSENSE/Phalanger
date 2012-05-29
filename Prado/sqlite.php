@@ -29,7 +29,8 @@ SQLite test :
 <table>
     <tr>
         <th>Expected</th>
-        <th>Result</th>
+        <th>Result (static)</th>
+        <th>Result (class)</th>
     </tr>
     <tr>
         <td>
@@ -43,6 +44,23 @@ SQLite test :
         <td>
             <pre>
 <?php print_r($tables); ?>
+            </pre>
+        </td>
+        <td>
+            <pre>
+<?php
+
+$db = new SQLiteDatabase(":memory:");
+$db->exec("CREATE TABLE tA (a INT NOT NULL PRIMARY KEY)");
+$db->exec("CREATE TABLE tB (b INT NOT NULL PRIMARY KEY)");
+$q = $db->query("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name");
+$result = $q->fetch_all();
+foreach($result as $tot_table)
+{
+    $tables[] = $tot_table['name'];
+}
+print_r($tables);
+?>
             </pre>
         </td>
     </tr>

@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A3D74786-1B4A-4967-853E-C98D74E6990B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PHP.Library.Data</RootNamespace>
+    <AssemblyName>PhpNetPDO</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\Extensions.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="PDO.Const.cs" />
+    <Compile Include="PDO.cs" />
+    <Compile Include="PDOAttributeType.cs" />
+    <Compile Include="PDOConfiguration.cs" />
+    <Compile Include="PDOConnection.cs" />
+    <Compile Include="PDOException.cs" />
+    <Compile Include="PDOFetchType.cs" />
+    <Compile Include="PDOGlobalConfig.cs" />
+    <Compile Include="PDOLibraryDescriptor.cs" />
+    <Compile Include="PDOLocalConfig.cs" />
+    <Compile Include="PDOStatement.cs" />
+    <Compile Include="PDOStatics.cs" />
+    <Compile Include="PDOStatics.pdo_case_conversion.cs" />
+    <Compile Include="PDOStatics.pdo_cursor_type.cs" />
+    <Compile Include="PDOStatics.pdo_error_mode .cs" />
+    <Compile Include="PDOStatics.pdo_null_handling.cs" />
+    <Compile Include="PDOStatics.pdo_param_type.cs" />
+    <Compile Include="PDODriver.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Extensions.snk">
+      <Link>Extensions.snk</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ClassLibrary\ClassLibrary.csproj">
+      <Project>{D515E8F4-357C-4CAF-87C1-97D64C5F865A}</Project>
+      <Name>ClassLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\Core.csproj">
+      <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
