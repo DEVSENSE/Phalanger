@@ -1200,14 +1200,6 @@ namespace PHP.Core.Emit
 
             // TODO: cache values, reuse existing PhpBytes or datafld
 
-            //LocalBuilder array = EmitInitializedArray(typeof(byte), value.Length, delegate(ILEmitter _il, int i)
-            //    {
-            //        _il.LdcI4(value.Data[i]);
-            //    });
-            /*LocalBuilder array = *///EmitInitializedArray(value.Data);
-            //Emit(OpCodes.Ldtoken, )
-			/*Emit(OpCodes.Ldloc, array);*/
-
             // create array of bytes
             LdcI4(value.Length);
             Emit(OpCodes.Newarr, typeof(byte));
@@ -1215,7 +1207,7 @@ namespace PHP.Core.Emit
             if (value.Length > 0)   // not valid for zero-length byte arrays
             {
                 FieldBuilder datafld = this.DefineInitializedData(
-                        "<PhpBytes>" + System.Guid.NewGuid().ToString("B"),
+                        string.Concat("byte'", value.ReadonlyData.Length.ToString("x"), "'", value.ReadonlyData.GetHashCode().ToString()),
                         value.ReadonlyData,
                         FieldAttributes.Assembly | FieldAttributes.Static);
 
