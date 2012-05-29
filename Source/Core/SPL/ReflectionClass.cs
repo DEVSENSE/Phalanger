@@ -63,7 +63,7 @@ namespace PHP.Library.SPL
         {
             get
             {
-                return (typedesc != null) ? typedesc.MakeSimpleName() : null;
+                return (typedesc != null) ? typedesc.MakeFullName() : null;
             }
             //set   // DPhpFieldDesc.Set does not support properties properly yet
             //{

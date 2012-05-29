@@ -187,7 +187,8 @@ namespace PHP.Core.Reflection
 
             if (PhpType.IsPhpRealType(type))
             {
-                types[type.Name] = PhpTypeDesc.Create(type);
+                var dtype = PhpTypeDesc.Create(type);
+                types[dtype.MakeSimpleName()] = dtype;
             }
             
             // reflect even if it is PhpType to find global functions [ImplementsFunction] and constants [ImplementsConstant]

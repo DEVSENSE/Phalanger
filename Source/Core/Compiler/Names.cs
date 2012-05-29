@@ -491,7 +491,15 @@ namespace PHP.Core
             if (type.Assembly == typeof(ApplicationContext).Assembly)
                 return new QualifiedName(new Name(type.Name));  // ignore namespace in Core
             else
+            {
+                // handle PHP type with type name specified in the attribute:
+                var attr = ImplementsTypeAttribute.Reflect(type);
+                if (attr != null && attr.PHPTypeName != null)
+                    return new QualifiedName(new Name(attr.PHPTypeName));
+
+                // default behaviour:
                 return FromClrNotation(type.FullName, true);
+            }
         }
 
 		/// <summary>
