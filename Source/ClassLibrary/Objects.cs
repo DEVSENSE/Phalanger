@@ -543,16 +543,35 @@ namespace PHP.Library
 			return type != null && type.IsInterface;
 		}
 
+        /// <summary>
+        /// Returns the name of the class of which the object <paramref name="var"/> is an instance.
+        /// </summary>
+        /// <param name="caller">Current class context.</param>
+        /// <returns>Current class name.</returns>
+        [ImplementsFunction("get_class", FunctionImplOptions.NeedsClassContext)]
+        [return: CastToFalse]
+        public static string GetClass(DTypeDesc caller)
+        {
+            if (caller == null || caller.IsUnknown)
+                return null;
+
+            return caller.MakeFullName();
+        }
+
 		/// <summary>
 		/// Returns the name of the class of which the object <paramref name="var"/> is an instance.
 		/// </summary>
+        /// <param name="caller">Current class context.</param>
 		/// <param name="var">The object whose class is requested.</param>
-		/// <returns><paramref name="var"/>'s class name or <B>null</B> if <paramref name="var"/> is
+		/// <returns><paramref name="var"/>'s class name or current class name if <paramref name="var"/> is
 		/// <B>null</B>.</returns>
-		[ImplementsFunction("get_class")]
+		[ImplementsFunction("get_class", FunctionImplOptions.NeedsClassContext)]
 		[return: CastToFalse]
-		public static string GetClass(object var)
+		public static string GetClass(DTypeDesc caller, object var)
 		{
+            if (var == null)
+                return GetClass(caller);
+
 			DObject obj = var as DObject;
 			return (obj != null) ? obj.TypeName : null;
 		}
