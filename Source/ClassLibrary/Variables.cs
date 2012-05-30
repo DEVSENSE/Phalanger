@@ -106,26 +106,8 @@ namespace PHP.Library
 		/// <summary>
 		/// No file was uploaded.
 		/// </summary>
-		[ImplementsConstant("UPLOAD_ERR_NO_FILE")]
-		NoFile,
-
-        /// <summary>
-        /// Missing a temporary folder
-        /// </summary>
-        [ImplementsConstant("UPLOAD_ERR_NO_TMP_DIR")]
-        NoTempDirectory,
-
-        /// <summary>
-        /// Missing a temporary folder
-        /// </summary>
-        [ImplementsConstant("UPLOAD_ERR_CANT_WRITE")]
-        CantWrite,
-
-        /// <summary>
-        /// A PHP extension stopped the file upload
-        /// </summary>
-        [ImplementsConstant("UPLOAD_ERR_EXTENSION")]
-        ErrorExtension
+		[ImplementsConstant("UPLOAD_ERR_NOFILE")]
+		NoFile
 	}
 
 	#endregion
