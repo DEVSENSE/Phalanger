@@ -62,6 +62,8 @@ namespace PHP.Library
 
         internal System.DateTime time;
 
+        private TimeZoneInfo _timeZone;
+
         #endregion
 
         #region Construction
@@ -97,10 +99,9 @@ namespace PHP.Library
         [ImplementsMethod]
         public object __construct(ScriptContext/*!*/context, [Optional]object time, [Optional]object timezone)
         {
-            TimeZoneInfo tz;
             if (timezone == Arg.Default || timezone == null)
             {
-                tz = PhpTimeZone.CurrentTimeZone;
+                _timeZone = PhpTimeZone.CurrentTimeZone;
             }
             else
             {
@@ -108,15 +109,15 @@ namespace PHP.Library
                 if (datetimezone == null)
                 {
                     PhpException.InvalidArgumentType("timezone", "DateTimeZone");
-                    tz = PhpTimeZone.CurrentTimeZone;
+                    _timeZone = PhpTimeZone.CurrentTimeZone;
                 }
                 else
                 {
-                    tz = datetimezone.timezone;
+                    _timeZone = datetimezone.timezone;
                 }
             }
 
-            if (tz == null)
+            if (_timeZone == null)
             {
                 PhpException.InvalidArgument("timezone");
                 return null;
@@ -124,7 +125,7 @@ namespace PHP.Library
 
             var timestr = PHP.Core.Convert.ObjectToString(time);
             if (string.IsNullOrEmpty(timestr) || time == Arg.Default || timestr.EqualsOrdinalIgnoreCase("now"))
-                this.time = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, tz);
+                this.time = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             else
             {
                 throw new NotImplementedException();    // TODO
@@ -132,7 +133,7 @@ namespace PHP.Library
 
             this.date.Value = this.time.ToString("yyyy-mm-dd HH:mm:ss");
             this.timezone_type.Value = 3;
-            this.timezone.Value = tz.Id;
+            this.timezone.Value = _timeZone.Id;
 
             return null;
         }
@@ -144,6 +145,103 @@ namespace PHP.Library
             stack.RemoveFrame();
             return ((__PHP__DateTime)instance).__construct(stack.Context, arg1, arg2);
         }
+
+        [ImplementsMethod]
+        public object setTimeZone(ScriptContext/*!*/context, object timezone)
+        {
+            if (timezone == null)
+            {
+                PhpException.ArgumentNull("timezone");
+                return false;
+            }
+
+            var tz = timezone as DateTimeZone;
+            if (tz == null)
+            {
+                PhpException.InvalidArgumentType("timezone", "DateTimeZone");
+                return false;
+            }
+
+            this.time = TimeZoneInfo.ConvertTime(this.time, this._timeZone, tz.timezone);
+            this._timeZone = tz.timezone;
+
+            return this;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object setTimeZone(object instance, PhpStack stack)
+        {
+            var tz = stack.PeekValue(1);
+            stack.RemoveFrame();
+
+            return ((__PHP__DateTime)instance).setTimeZone(stack.Context, tz);
+        }
+
+        [ImplementsMethod]
+        public object format(ScriptContext/*!*/context, object format)
+        {
+            if (format == null)
+            {
+                PhpException.ArgumentNull("format");
+                return false;
+            }
+
+            string fm = format.ToString();
+            if (string.IsNullOrEmpty(fm))
+            {
+                return false;
+            }
+
+            fm = fm.Replace("d", "dd")
+                .Replace("j", "d")
+                .Replace("D", "ddd")
+                .Replace("l", "dddd")
+                .Replace("N", "") // day 1(mon)-7(sun)
+                .Replace("S", "") // suffix
+                .Replace("w", "") // day 0(sun)-6(sat)
+                .Replace("z", "") // day of year
+                .Replace("W", "") // week number
+                .Replace("M", "MMM")
+                .Replace("F", "MMMM")
+                .Replace("m", "MM")
+                .Replace("n", "M")
+                .Replace("t", "") // number of days in month
+                .Replace("L", "") // if leap year
+                .Replace("y", "yy")
+                .Replace("o", "yyyy")
+                .Replace("Y", "yyyy")
+                .Replace("a", "tt") // am or pm (outputs as AM or PM with tt)
+                .Replace("A", "tt") // AM or PM
+                .Replace("B", "") // swatch internet time
+                .Replace("g", "h")
+                .Replace("G", "H")
+                .Replace("h", "hh")
+                .Replace("H", "HH")
+                .Replace("i", "mm")
+                .Replace("s", "ss")
+                .Replace("u", "FFFFFF") // Microseconds (millionths)
+                .Replace("e", "") // time zone
+                .Replace("I", "") // daylight savings
+                .Replace("O", "") // diff to GMT as +0200
+                .Replace("P", "zzz") // digg to GMT as +02:00
+                .Replace("T", "") // time zone abbrev.
+                .Replace("Z", "") // time zone offset in s
+                .Replace("c", "s")
+                .Replace("r", "") // RFC 2822
+                .Replace("U", ""); // econds since the Unix Epoch
+
+            return this.time.ToString(fm);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object format(object instance, PhpStack stack)
+        {
+            var format = stack.PeekValue(1);
+            stack.RemoveFrame();
+
+            return ((__PHP__DateTime)instance).format(stack.Context, format);
+        }
+
 
         #endregion
     }
