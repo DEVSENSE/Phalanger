@@ -1219,7 +1219,7 @@ namespace PHP.Library
         [PureFunction]
         public static double Round(double x, int precision /*= 0*/, RoundMode mode /*= RoundMode.HalfUp*/)
         {
-            if (Double.IsInfinity(x) || Double.IsNaN(x))
+            if (Double.IsInfinity(x) || Double.IsNaN(x) || x == default(double))
                 return x;
 
             if (precision == 0)
