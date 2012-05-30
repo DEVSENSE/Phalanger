@@ -716,9 +716,9 @@ namespace PHP.Library
 
 		#endregion
 
-		#region strftime, gmstrftime
+        #region strftime, gmstrftime
 
-		/// <summary>
+        /// <summary>
 		/// Returns a string formatted according to the given format string using the current local time.
 		/// </summary>
 		/// <param name="format">Format of the string.</param>
