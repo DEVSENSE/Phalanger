@@ -344,7 +344,16 @@ namespace PHP.Library
             {
                 TimeZoneInfo tz;
                 if (!tzcache.TryGetValue(id, out tz))
-                    tzcache[id] = tz = TimeZoneInfo.FindSystemTimeZoneById(id);
+                {
+                    TimeZoneInfo winTZ = null;
+                    try
+                    {
+                        winTZ = TimeZoneInfo.FindSystemTimeZoneById(id);
+                    }
+                    catch { }
+
+                    tzcache[id] = tz = winTZ;   // null in case "id" is not defined in Windows registry (probably missing Windows Update)
+                }
 
                 return tz;
             };
@@ -362,13 +371,14 @@ namespace PHP.Library
                 var phpIds = tz.Attributes["type"].Value;
 
                 var windowsTZ = cachelookup(windowsId);
-                foreach (var phpTzName in phpIds.Split(' '))
-                {
-                    Debug.Assert(!string.IsNullOrWhiteSpace(phpTzName));
+                if (windowsTZ != null)  // TZ not defined in Windows registry, ignore such time zone // TODO: show a warning
+                    foreach (var phpTzName in phpIds.Split(' '))
+                    {
+                        Debug.Assert(!string.IsNullOrWhiteSpace(phpTzName));
 
-                    bool isAlias = !phpTzName.Contains('/') || phpTzName.Contains("GMT");   // whether to display such tz within timezone_identifiers_list()
-                    yield return new TimeZoneInfoItem(phpTzName, windowsTZ, null, isAlias);
-                }
+                        bool isAlias = !phpTzName.Contains('/') || phpTzName.Contains("GMT");   // whether to display such tz within timezone_identifiers_list()
+                        yield return new TimeZoneInfoItem(phpTzName, windowsTZ, null, isAlias);
+                    }
             }
 
             //
