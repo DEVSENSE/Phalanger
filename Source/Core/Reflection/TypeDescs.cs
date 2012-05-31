@@ -299,11 +299,11 @@ namespace PHP.Core.Reflection
 		}
 		protected Dictionary<VariableName, DConstantDesc> constants;
 
-		#endregion
+        #endregion
 
-		#region Construction
+        #region Construction
 
-		/// <summary>
+        /// <summary>
 		/// Used only by <see cref="GlobalTypeDesc"/>, <see cref="UnknownTypeDesc"/>, <see cref="GenericParameterDesc"/>.
 		/// </summary>
 		protected DTypeDesc()
@@ -505,98 +505,126 @@ namespace PHP.Core.Reflection
 
         #region Utility
 
+        /// <summary>
+        /// Name of the class excluding namespace name.
+        /// </summary>
         public string/*!*/ MakeSimpleName()
-		{
-			return QualifiedName.SubstringWithoutBackquoteAndHash(RealType.Name, 0, RealType.Name.Length);
-		}
-		
-		/// <summary>
-		/// To be used at run-time for error-reporting only (slow).
-		/// </summary>
-		public override string/*!*/ MakeFullName()
-		{
-			if (Member != null)
-				return Member.FullName;
+        {
+            if (simpleName == null)
+            {
+                if (this.Member != null && Member.FullName != null)
+                {
+                    int lastSeparator = this.Member.FullName.LastIndexOf(QualifiedName.Separator);
+                    simpleName = (lastSeparator == -1) ? this.Member.FullName : this.Member.FullName.Substring(lastSeparator + 1);
+                }
+                else
+                {
+                    simpleName = MakeSimpleName(RealType);
+                }
+            }
+            return simpleName;
+        }
+        private string simpleName = null;
 
-			return GetFullName(RealType, new StringBuilder()).ToString();
-		}
-		
-		/// <summary>
-		/// To be used at run-time for error-reporting only (slow).
-		/// </summary>
-		public override string/*!*/ MakeFullGenericName()
-		{
-			return GetFullGenericName(RealType, new StringBuilder()).ToString();
-		}
+        private static string/*!*/ MakeSimpleName(Type/*!*/realType)
+        {
+            var phpTypeAttr = ImplementsTypeAttribute.Reflect(realType);
+            if (phpTypeAttr != null && phpTypeAttr.PHPTypeName != null)
+                return phpTypeAttr.PHPTypeName;
+            else
+                return QualifiedName.SubstringWithoutBackquoteAndHash(realType.Name, 0, realType.Name.Length);
+        }
 
-		internal static StringBuilder/*!*/ GetFullGenericName(Type/*!*/ realType, StringBuilder/*!*/ result)
-		{
-			Debug.Assert(realType != null && result != null);
+        /// <summary>
+        /// Full name of the type, including namespace name. Uses PHP namespace separator.
+        /// </summary>
+        public override string/*!*/ MakeFullName()
+        {
+            if (Member != null)
+                return Member.FullName;
 
-			GetFullName(realType, result);
+            return GetFullName(RealType, new StringBuilder()).ToString();
+        }
 
-			if (!realType.IsGenericType)
-				return result;
+        /// <summary>
+        /// Full name of the type, including namespace name and generic parameters. Uses PHP namespace separator.
+        /// </summary>
+        public override string/*!*/ MakeFullGenericName()
+        {
+            return GetFullGenericName(RealType, new StringBuilder()).ToString();
+        }
 
-			ConstructedTypeDesc.GenericArgumentsToString(realType.GetGenericArguments(), result);
+        /// <summary>
+        /// Full name of the type, including namespace name and generic parameters. Uses PHP namespace separator.
+        /// </summary>
+        internal static StringBuilder/*!*/ GetFullGenericName(Type/*!*/ realType, StringBuilder/*!*/ result)
+        {
+            Debug.Assert(realType != null && result != null);
 
-			return result;
-		}
+            GetFullName(realType, result);
 
-		internal static StringBuilder/*!*/ GetFullName(Type/*!*/ realType, StringBuilder/*!*/ result)
-		{
-			Debug.Assert(realType != null && result != null);
+            if (!realType.IsGenericType)
+                return result;
 
-			// TODO: do this better
-			// proposed solution: RuntimeModule will convert lazily itself to a DModule 
-			// DModule will then implement its policy of naming conventions and unmangling methods
+            ConstructedTypeDesc.GenericArgumentsToString(realType.GetGenericArguments(), result);
 
-			// primitive types first:
-			string primitive_name = PrimitiveTypeDesc.GetPrimitiveName(realType);
-			if (primitive_name != null)
-				return result.Append(primitive_name);
+            return result;
+        }
 
-			// naming policy of PhpLibraryModule is PHP.Library.library_namespace.type_name#n`m:
-			// namespace is ignored
-			if (!String.IsNullOrEmpty(realType.Namespace) && !realType.Namespace.StartsWith(Namespaces.Library))
-			{
-				if (realType.Namespace[0] == '<')
-				{
-					// naming policy of ScriptModule is <coded_file_name>.user_namespace_clr.type_name#n`m:
-					int closing = realType.Namespace.IndexOf('>') + 2;
-					if (closing > 1 && closing < realType.Namespace.Length)
-					{
-						result.Append(realType.Namespace.Substring(closing).Replace('.', QualifiedName.Separator));
-						result.Append(QualifiedName.Separator);
-					}
-				}
-				else
-				{
-					// naming policy of Pure Module is user_namespace_clr.type_name#n`m:
-					result.Append(realType.Namespace.Replace('.', QualifiedName.Separator));
-					result.Append(QualifiedName.Separator);
-				}
-			}
+        internal static StringBuilder/*!*/ GetFullName(Type/*!*/ realType, StringBuilder/*!*/ result)
+        {
+            Debug.Assert(realType != null && result != null);
 
-			if (realType.DeclaringType != null)
-				GetNestedTypeNames(realType.DeclaringType, result);
+            // TODO: do this better
+            // proposed solution: RuntimeModule will convert lazily itself to a DModule 
+            // DModule will then implement its policy of naming conventions and unmangling methods
 
-			result.Append(QualifiedName.SubstringWithoutBackquoteAndHash(realType.Name, 0, realType.Name.Length));
+            // primitive types first:
+            string primitive_name = PrimitiveTypeDesc.GetPrimitiveName(realType);
+            if (primitive_name != null)
+                return result.Append(primitive_name);
 
-			return result;
-		}
-		
-		internal static void GetNestedTypeNames(Type/*!*/ type, StringBuilder/*!*/ result)
-		{
-			Debug.Assert(type != null && result != null);
+            // naming policy of PhpLibraryModule is PHP.Library.library_namespace.type_name#n`m:
+            // namespace is ignored
+            if (!String.IsNullOrEmpty(realType.Namespace) && !realType.Namespace.StartsWith(Namespaces.Library))
+            {
+                if (realType.Namespace[0] == '<')
+                {
+                    // naming policy of ScriptModule is <coded_file_name>.user_namespace_clr.type_name#n`m:
+                    int closing = realType.Namespace.IndexOf('>') + 2;
+                    if (closing > 1 && closing < realType.Namespace.Length)
+                    {
+                        result.Append(realType.Namespace.Substring(closing).Replace('.', QualifiedName.Separator));
+                        result.Append(QualifiedName.Separator);
+                    }
+                }
+                else
+                {
+                    // naming policy of Pure Module is user_namespace_clr.type_name#n`m:
+                    result.Append(realType.Namespace.Replace('.', QualifiedName.Separator));
+                    result.Append(QualifiedName.Separator);
+                }
+            }
 
-			// depth first:
-			if (type.DeclaringType != null)
-				GetNestedTypeNames(type.DeclaringType, result);
+            if (realType.DeclaringType != null)
+                GetNestedTypeNames(realType.DeclaringType, result);
 
-			result.Append(QualifiedName.SubstringWithoutBackquoteAndHash(type.Name, 0, type.Name.Length));
-			result.Append(QualifiedName.Separator);
-		}
+            result.Append(MakeSimpleName(realType));
+
+            return result;
+        }
+
+        internal static void GetNestedTypeNames(Type/*!*/ type, StringBuilder/*!*/ result)
+        {
+            Debug.Assert(type != null && result != null);
+
+            // depth first:
+            if (type.DeclaringType != null)
+                GetNestedTypeNames(type.DeclaringType, result);
+
+            result.Append(QualifiedName.SubstringWithoutBackquoteAndHash(type.Name, 0, type.Name.Length));
+            result.Append(QualifiedName.Separator);
+        }
 
 		/// <summary>
 		/// Determines whether this instance contains a given <see cref="DTypeDesc"/>
