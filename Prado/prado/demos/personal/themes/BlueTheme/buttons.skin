@@ -1,3 +1,0 @@
-<com:TButton BackColor="blue" ForeColor="red" Font.Size="18px" />
-<com:TButton SkinID="abc" BackColor="red" ForeColor="blue" />
-<com:TImageButton ImageUrl=<%~/icon_profile.gif%> />
