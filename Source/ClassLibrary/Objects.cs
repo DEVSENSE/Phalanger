@@ -544,7 +544,7 @@ namespace PHP.Library
 		}
 
         /// <summary>
-        /// Returns the name of the class of which the object <paramref name="var"/> is an instance.
+        /// Returns the name of the current class.
         /// </summary>
         /// <param name="caller">Current class context.</param>
         /// <returns>Current class name.</returns>
