@@ -20,6 +20,7 @@ using System.Globalization;
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Text.RegularExpressions;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
@@ -2121,7 +2122,7 @@ namespace PHP.Core
                 return new T[] { y };
 
             if (x.Length == 1)
-                return new T[] { x[0], y }; 
+                return new T[] { x[0], y };
 
             //
             T[] result = new T[x.Length + 1];
@@ -2584,6 +2585,28 @@ namespace PHP.Core
         {
             return (type.IsValueType) ? Activator.CreateInstance(type) : null;
         }
+
+        private static readonly Regex reg_paseTypeId = new Regex(@"\<(\^(?<id>\d+)|((?<src>.+)?(\?(?<id>\d+))?))\>\.(?<typename>.+)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+        internal static void ParseTypeId(string name, out int id, out string srcFile, out string typename)
+        {
+            id = PHP.Core.Reflection.TransientAssembly.InvalidEvalId;
+            srcFile = null;
+            typename = null;
+
+            Match m = reg_paseTypeId.Match(name);
+            if (m.Success)
+            {
+                if (m.Groups["id"].Success)
+                {
+                    id = Int32.Parse(m.Groups["id"].Value);
+                }
+                if (m.Groups["src"].Success)
+                {
+                    srcFile = m.Groups["src"].Value;
+                }
+                typename = m.Groups["typename"].Value;
+            }
+        }
     }
 
     #endregion
@@ -2678,7 +2701,7 @@ namespace PHP.Core
         /// Underlaying <see cref="StringComparer"/> selected for current environment (win/linux).
         /// </summary>
         public static StringComparer/*!*/StringComparer { get { return EqualityComparer.StringComparer; } }
-        
+
         public static readonly FullPath[]/*!*/ EmptyArray = new FullPath[0];
 
         /// <summary>
@@ -3281,7 +3304,7 @@ namespace PHP.Core
 
         private static string CombinePath(FullPath root, string path)
         {
-            if ( CultureInfo.InvariantCulture.TextInfo.ToLower((string)root).StartsWith("http://")) // we don't need Unicode characters to be lowercased properly // CurrentCulture is slow
+            if (CultureInfo.InvariantCulture.TextInfo.ToLower((string)root).StartsWith("http://")) // we don't need Unicode characters to be lowercased properly // CurrentCulture is slow
                 return System.IO.Path.Combine(root, path).Replace('\\', '/');
             else
                 return System.IO.Path.Combine(root, path);
