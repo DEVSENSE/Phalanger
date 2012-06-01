@@ -1,8 +1,0 @@
-<com:TContent ID="body">
-	<h1 id="22007">Buku Alamat Sederhana</h1>
-	<p id="110006" class="block-content">Tutorial ini memperkenalkan dasar penyambungan ke sebuah database
-	menggunakan <a href="?page=Database.ActiveRecord">ActiveRecord</a>
-	dan menggunakan <a href="?page=Database.Scaffold">Kerangka Rekaman Aktif</a> untuk secara cepat membangun sebuah buku alamat sederhana.
-	</p>
-
-</com:TContent>

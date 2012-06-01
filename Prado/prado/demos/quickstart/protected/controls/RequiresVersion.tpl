@@ -1,1 +1,0 @@
-<p class="requires-version">Requires Prado versions <strong><%= $this->Version %></strong> or later.</p>

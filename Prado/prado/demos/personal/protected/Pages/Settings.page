@@ -1,4 +1,0 @@
-<com:TContent ID="main" >
-Welcome, <com:TLabel Text=<%= $this->User->Name %> />!
-This page contains site settings accessible only to site admin.
-</com:TContent>
