@@ -32,6 +32,9 @@ namespace PHP.Library
 {
     #region DateTime
 
+    /// <summary>
+    /// Representation of date and time.
+    /// </summary>
 #if !SILVERLIGHT
     [Serializable]
 #endif
@@ -56,11 +59,20 @@ namespace PHP.Library
 
         #region Fields
 
-        public PhpReference date = new PhpSmartReference();
-        public PhpReference timezone_type = new PhpSmartReference();
-        public PhpReference timezone = new PhpSmartReference();
+        // dont see what these are for, no fields/props on php DateTime obj?
+        //public PhpReference date = new PhpSmartReference();
+        //public PhpReference timezone_type = new PhpSmartReference();
+        //public PhpReference timezone = new PhpSmartReference();
 
-        internal System.DateTime time;
+        /// <summary>
+        /// Get the date-time value, stored in UTC
+        /// </summary>
+        internal DateTime Time { get; private set; }
+
+        /// <summary>
+        /// Get the time zone for this DateTime object
+        /// </summary>
+        internal TimeZoneInfo TimeZone { get; private set; }
 
         #endregion
 
@@ -97,10 +109,9 @@ namespace PHP.Library
         [ImplementsMethod]
         public object __construct(ScriptContext/*!*/context, [Optional]object time, [Optional]object timezone)
         {
-            TimeZoneInfo tz;
             if (timezone == Arg.Default || timezone == null)
             {
-                tz = PhpTimeZone.CurrentTimeZone;
+                TimeZone = PhpTimeZone.CurrentTimeZone;
             }
             else
             {
@@ -108,15 +119,15 @@ namespace PHP.Library
                 if (datetimezone == null)
                 {
                     PhpException.InvalidArgumentType("timezone", "DateTimeZone");
-                    tz = PhpTimeZone.CurrentTimeZone;
+                    TimeZone = PhpTimeZone.CurrentTimeZone;
                 }
                 else
                 {
-                    tz = datetimezone.timezone;
+                    TimeZone = datetimezone.timezone;
                 }
             }
 
-            if (tz == null)
+            if (TimeZone == null)
             {
                 PhpException.InvalidArgument("timezone");
                 return null;
@@ -124,15 +135,17 @@ namespace PHP.Library
 
             var timestr = PHP.Core.Convert.ObjectToString(time);
             if (string.IsNullOrEmpty(timestr) || time == Arg.Default || timestr.EqualsOrdinalIgnoreCase("now"))
-                this.time = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, tz);
+            {
+                this.Time = DateTime.UtcNow;
+            }
             else
             {
                 throw new NotImplementedException();    // TODO
             }
 
-            this.date.Value = this.time.ToString("yyyy-mm-dd HH:mm:ss");
-            this.timezone_type.Value = 3;
-            this.timezone.Value = tz.Id;
+            //this.date.Value = this.Time.ToString("yyyy-mm-dd HH:mm:ss");
+            //this.timezone_type.Value = 3;
+            //this.timezone.Value = TimeZone.Id;
 
             return null;
         }
@@ -144,6 +157,64 @@ namespace PHP.Library
             stack.RemoveFrame();
             return ((__PHP__DateTime)instance).__construct(stack.Context, arg1, arg2);
         }
+
+        [ImplementsMethod]
+        public object setTimeZone(ScriptContext/*!*/context, object timezone)
+        {
+            if (timezone == null)
+            {
+                PhpException.ArgumentNull("timezone");
+                return false;
+            }
+
+            var tz = timezone as DateTimeZone;
+            if (tz == null)
+            {
+                PhpException.InvalidArgumentType("timezone", "DateTimeZone");
+                return false;
+            }
+
+            this.TimeZone = tz.timezone;
+
+            return this;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object setTimeZone(object instance, PhpStack stack)
+        {
+            var tz = stack.PeekValue(1);
+            stack.RemoveFrame();
+
+            return ((__PHP__DateTime)instance).setTimeZone(stack.Context, tz);
+        }
+
+        [ImplementsMethod]
+        public object format(ScriptContext/*!*/context, object format)
+        {
+            if (format == null)
+            {
+                PhpException.ArgumentNull("format");
+                return false;
+            }
+
+            string fm = format.ToString();
+            if (string.IsNullOrEmpty(fm))
+            {
+                return false;
+            }
+
+            return PhpDateTime.FormatDate(fm, this.Time, this.TimeZone);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object format(object instance, PhpStack stack)
+        {
+            var format = stack.PeekValue(1);
+            stack.RemoveFrame();
+
+            return ((__PHP__DateTime)instance).format(stack.Context, format);
+        }
+
 
         #endregion
     }
@@ -212,7 +283,7 @@ namespace PHP.Library
         public static object DateFormat(__PHP__DateTime datetime, string format)
         {
             // TODO: format it properly
-            return FormatDate(format, datetime.time, TimeZoneInfo.Utc);
+            return FormatDate(format, datetime.Time, datetime.TimeZone);
         }
 
         /// <summary>
@@ -407,254 +478,254 @@ namespace PHP.Library
 			}
 		}
 
-		private static string FormatDate(string format, DateTime utc, TimeZoneInfo/*!*/ zone)
-		{
+        internal static string FormatDate(string format, DateTime utc, TimeZoneInfo zone)
+        {
             Debug.Assert(zone != null);
 
-			if (format == null)
-				return String.Empty;
+            if (format == null)
+                return string.Empty;
 
             DateTime local = TimeZoneInfo.ConvertTimeFromUtc(utc, zone);
 
-			// here we are creating output string
-			StringBuilder result = new StringBuilder();
-			bool escape = false;
+            // here we are creating output string
+            StringBuilder result = new StringBuilder();
+            bool escape = false;
 
-			foreach (char ch in format)
-			{
-				if (escape)
-				{
-					result.Append(ch);
-					escape = false;
-					continue;
-				}
+            foreach (char ch in format)
+            {
+                if (escape)
+                {
+                    result.Append(ch);
+                    escape = false;
+                    continue;
+                }
 
-				switch (ch)
-				{
-					case 'a':
-						// Lowercase Ante meridiem and Post meridiem - am or pm
-						result.Append(local.ToString("tt", DateTimeFormatInfo.InvariantInfo).ToLower());
-						break;
+                switch (ch)
+                {
+                    case 'a':
+                        // Lowercase Ante meridiem and Post meridiem - am or pm
+                        result.Append(local.ToString("tt", DateTimeFormatInfo.InvariantInfo).ToLower());
+                        break;
 
-					case 'A':
-						// Uppercase Ante meridiem and Post meridiem - AM or PM 
-						result.Append(local.ToString("tt", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'A':
+                        // Uppercase Ante meridiem and Post meridiem - AM or PM 
+                        result.Append(local.ToString("tt", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'B':
-						// Swatch Beat (Internet Time) - 000 through 999 
-						result.AppendFormat("{0:000}", GetSwatchBeat(utc));
-						break;
+                    case 'B':
+                        // Swatch Beat (Internet Time) - 000 through 999 
+                        result.AppendFormat("{0:000}", GetSwatchBeat(utc));
+                        break;
 
-					case 'c':
-						{
-							// ISO 8601 date (added in PHP 5) 2004-02-12T15:19:21+00:00 
-							result.Append(local.ToString("yyyy-MM-dd'T'HH:mm:ss", DateTimeFormatInfo.InvariantInfo));
+                    case 'c':
+                        {
+                            // ISO 8601 date (added in PHP 5) 2004-02-12T15:19:21+00:00 
+                            result.Append(local.ToString("yyyy-MM-dd'T'HH:mm:ss", DateTimeFormatInfo.InvariantInfo));
 
-							TimeSpan offset = zone.GetUtcOffset(local);
+                            TimeSpan offset = zone.GetUtcOffset(local);
                             result.AppendFormat("{0}{1:00}:{2:00}", (offset.Ticks < 0) ? ""/*offset.Hours already < 0*/ : "+", offset.Hours, offset.Minutes);
-							break;
-						}
+                            break;
+                        }
 
-					case 'd':
-						// Day of the month, 2 digits with leading zeros - 01 to 31
-						result.Append(local.ToString("dd", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'd':
+                        // Day of the month, 2 digits with leading zeros - 01 to 31
+                        result.Append(local.ToString("dd", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'D':
-						// A textual representation of a day, three letters - Mon through Sun
-						result.Append(local.ToString("ddd", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'D':
+                        // A textual representation of a day, three letters - Mon through Sun
+                        result.Append(local.ToString("ddd", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'F':
-						// A full textual representation of a month, such as January or March - January through December 
-						result.Append(local.ToString("MMMM", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'F':
+                        // A full textual representation of a month, such as January or March - January through December 
+                        result.Append(local.ToString("MMMM", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'g':
-						// 12-hour format of an hour without leading zeros - 1 through 12
-						result.Append(local.ToString("%h", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'g':
+                        // 12-hour format of an hour without leading zeros - 1 through 12
+                        result.Append(local.ToString("%h", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'G':
-						// 24-hour format of an hour without leading zeros - 0 through 23
-						result.Append(local.ToString("%H", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'G':
+                        // 24-hour format of an hour without leading zeros - 0 through 23
+                        result.Append(local.ToString("%H", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'h':
-						// 12-hour format of an hour with leading zeros - 01 through 12
-						result.Append(local.ToString("hh", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'h':
+                        // 12-hour format of an hour with leading zeros - 01 through 12
+                        result.Append(local.ToString("hh", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'H':
-						// 24-hour format of an hour with leading zeros - 00 through 23
-						result.Append(local.ToString("HH", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'H':
+                        // 24-hour format of an hour with leading zeros - 00 through 23
+                        result.Append(local.ToString("HH", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'i':
-						// Minutes with leading zeros - 00 to 59
-						result.Append(local.ToString("mm", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'i':
+                        // Minutes with leading zeros - 00 to 59
+                        result.Append(local.ToString("mm", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'I':
-						// Whether or not the date is in daylights savings time - 1 if Daylight Savings Time, 0 otherwise.
-						result.Append(zone.IsDaylightSavingTime(local) ? "1" : "0");
-						break;
+                    case 'I':
+                        // Whether or not the date is in daylights savings time - 1 if Daylight Savings Time, 0 otherwise.
+                        result.Append(zone.IsDaylightSavingTime(local) ? "1" : "0");
+                        break;
 
-					case 'j':
-						// Day of the month without leading zeros - 1 to 31
-						result.Append(local.ToString("%d", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'j':
+                        // Day of the month without leading zeros - 1 to 31
+                        result.Append(local.ToString("%d", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'l':
-						// A full textual representation of the day of the week - Sunday through Saturday
-						result.Append(local.ToString("dddd", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'l':
+                        // A full textual representation of the day of the week - Sunday through Saturday
+                        result.Append(local.ToString("dddd", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'L':
-						// Whether it's a leap year - 1 if it is a leap year, 0 otherwise.
-						result.Append(DateTime.IsLeapYear(local.Year) ? "1" : "0");
-						break;
+                    case 'L':
+                        // Whether it's a leap year - 1 if it is a leap year, 0 otherwise.
+                        result.Append(DateTime.IsLeapYear(local.Year) ? "1" : "0");
+                        break;
 
-					case 'm':
-						// Numeric representation of a month, with leading zeros - 01 through 12
-						result.Append(local.ToString("MM", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'm':
+                        // Numeric representation of a month, with leading zeros - 01 through 12
+                        result.Append(local.ToString("MM", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'M':
-						// A short textual representation of a month, three letters - Jan through Dec
-						result.Append(local.ToString("MMM", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'M':
+                        // A short textual representation of a month, three letters - Jan through Dec
+                        result.Append(local.ToString("MMM", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'n':
-						// Numeric representation of a month, without leading zeros - 1 through 12
-						result.Append(local.ToString("%M", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'n':
+                        // Numeric representation of a month, without leading zeros - 1 through 12
+                        result.Append(local.ToString("%M", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'N':
-						// ISO-8601 numeric representation of the day of the week (added in PHP 5.1.0)
-						int day_of_week = (int)local.DayOfWeek;
-						result.Append(day_of_week == 0 ? 7 : day_of_week);
-						break;
+                    case 'N':
+                        // ISO-8601 numeric representation of the day of the week (added in PHP 5.1.0)
+                        int day_of_week = (int)local.DayOfWeek;
+                        result.Append(day_of_week == 0 ? 7 : day_of_week);
+                        break;
 
-					case 'o':
-						{
-							// ISO-8601 year number. This has the same value as Y, except that if the ISO
-							// week number (W) belongs to the previous or next year, that year is used instead.
-							// (added in PHP 5.1.0)
-							int week, year;
-							GetIsoWeekAndYear(local, out week, out year);
-							result.Append(year);
-							break;
-						}
+                    case 'o':
+                        {
+                            // ISO-8601 year number. This has the same value as Y, except that if the ISO
+                            // week number (W) belongs to the previous or next year, that year is used instead.
+                            // (added in PHP 5.1.0)
+                            int week, year;
+                            GetIsoWeekAndYear(local, out week, out year);
+                            result.Append(year);
+                            break;
+                        }
 
-					case 'O':
-						{
-							// Difference to Greenwich time (GMT) in hours Example: +0200
-							TimeSpan offset = zone.GetUtcOffset(local);
-							result.AppendFormat("{0}{1:00}{2:00}", (offset.Ticks < 0) ? "-" : "+", offset.Hours, offset.Minutes);
-							break;
-						}
+                    case 'O':
+                        {
+                            // Difference to Greenwich time (GMT) in hours Example: +0200
+                            TimeSpan offset = zone.GetUtcOffset(local);
+                            result.AppendFormat("{0}{1:00}{2:00}", (offset.Ticks < 0) ? "-" : "+", offset.Hours, offset.Minutes);
+                            break;
+                        }
 
-					case 'P':
-						{
-							// same as 'O' but with the extra colon between hours and minutes
-							// Difference to Greenwich time (GMT) in hours Example: +02:00
-							TimeSpan offset = zone.GetUtcOffset(local);
-							result.AppendFormat("{0}{1:00}:{2:00}", (offset.Ticks < 0) ? "-" : "+", offset.Hours, offset.Minutes);
-							break;
-						}
+                    case 'P':
+                        {
+                            // same as 'O' but with the extra colon between hours and minutes
+                            // Difference to Greenwich time (GMT) in hours Example: +02:00
+                            TimeSpan offset = zone.GetUtcOffset(local);
+                            result.AppendFormat("{0}{1:00}:{2:00}", (offset.Ticks < 0) ? "-" : "+", offset.Hours, offset.Minutes);
+                            break;
+                        }
 
-					case 'r':
-						// RFC 822 formatted date Example: Thu, 21 Dec 2000 16:01:07 +0200
-						result.Append(local.ToString("ddd, dd MMM yyyy H:mm:ss ", DateTimeFormatInfo.InvariantInfo));
-						goto case 'O';
+                    case 'r':
+                        // RFC 822 formatted date Example: Thu, 21 Dec 2000 16:01:07 +0200
+                        result.Append(local.ToString("ddd, dd MMM yyyy H:mm:ss ", DateTimeFormatInfo.InvariantInfo));
+                        goto case 'O';
 
-					case 's':
-						// Seconds, with leading zeros - 00 through 59
-						result.Append(local.ToString("ss", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 's':
+                        // Seconds, with leading zeros - 00 through 59
+                        result.Append(local.ToString("ss", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
                     case 'S':
                         result.Append(GetDayNumberSuffix(local.Day));
                         break;
 
-					case 't':
-						// Number of days in the given month 28 through 31
-						result.Append(DateTime.DaysInMonth(local.Year, local.Month));
-						break;
+                    case 't':
+                        // Number of days in the given month 28 through 31
+                        result.Append(DateTime.DaysInMonth(local.Year, local.Month));
+                        break;
 
-					case 'e':
-						// Timezone identifier (added in PHP 5.1.0)
-						result.Append(zone.StandardName);
-						break;
+                    case 'e':
+                        // Timezone identifier (added in PHP 5.1.0)
+                        result.Append(zone.StandardName);
+                        break;
 
-					case 'T':
-						// Timezone setting of this machine Examples: EST, MDT ...
-						result.Append(zone.IsDaylightSavingTime(local) ? zone.DaylightName : zone.StandardName);
-						break;
+                    case 'T':
+                        // Timezone setting of this machine Examples: EST, MDT ...
+                        result.Append(zone.IsDaylightSavingTime(local) ? zone.DaylightName : zone.StandardName);
+                        break;
 
-					case 'U':
-						// Seconds since the Unix Epoch (January 1 1970 00:00:00 GMT)
-						result.Append(DateTimeUtils.UtcToUnixTimeStamp(utc));
-						break;
+                    case 'U':
+                        // Seconds since the Unix Epoch (January 1 1970 00:00:00 GMT)
+                        result.Append(DateTimeUtils.UtcToUnixTimeStamp(utc));
+                        break;
 
                     case 'u':
                         // Microseconds (added in PHP 5.2.2)
                         result.Append((utc.Millisecond / 1000).ToString("D6"));
                         break;
 
-					case 'w':
-						// Numeric representation of the day of the week - 0 (for Sunday) through 6 (for Saturday)
-						result.Append((int)local.DayOfWeek);
-						break;
+                    case 'w':
+                        // Numeric representation of the day of the week - 0 (for Sunday) through 6 (for Saturday)
+                        result.Append((int)local.DayOfWeek);
+                        break;
 
-					case 'W':
-						{
-							// ISO-8601 week number of year, weeks starting on Monday (added in PHP 4.1.0) Example: 42 (the 42nd week in the year)
-							int week, year;
-							GetIsoWeekAndYear(local, out week, out year);
-							result.Append(week);
-							break;
-						}
+                    case 'W':
+                        {
+                            // ISO-8601 week number of year, weeks starting on Monday (added in PHP 4.1.0) Example: 42 (the 42nd week in the year)
+                            int week, year;
+                            GetIsoWeekAndYear(local, out week, out year);
+                            result.Append(week);
+                            break;
+                        }
 
-					case 'y':
-						// A two digit representation of a year Examples: 99 or 03
-						result.Append(local.ToString("yy", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'y':
+                        // A two digit representation of a year Examples: 99 or 03
+                        result.Append(local.ToString("yy", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'Y':
-						// A full numeric representation of a year, 4 digits Examples: 1999 or 2003
-						result.Append(local.ToString("yyyy", DateTimeFormatInfo.InvariantInfo));
-						break;
+                    case 'Y':
+                        // A full numeric representation of a year, 4 digits Examples: 1999 or 2003
+                        result.Append(local.ToString("yyyy", DateTimeFormatInfo.InvariantInfo));
+                        break;
 
-					case 'z':
-						// The day of the year starting from 0
-						result.Append(local.DayOfYear - 1);
-						break;
+                    case 'z':
+                        // The day of the year starting from 0
+                        result.Append(local.DayOfYear - 1);
+                        break;
 
-					case 'Z':
-						// TimeZone offset in seconds:
-						result.Append((int)zone.GetUtcOffset(local).TotalSeconds);
-						break;
+                    case 'Z':
+                        // TimeZone offset in seconds:
+                        result.Append((int)zone.GetUtcOffset(local).TotalSeconds);
+                        break;
 
-					case '\\':
-						// Escape char. Output next character directly to the result.
-						escape = true;
-						break;
+                    case '\\':
+                        // Escape char. Output next character directly to the result.
+                        escape = true;
+                        break;
 
-					default:
-						// unrecognized character, print it as-is.
-						result.Append(ch);
-						break;
-				}
-			}
+                    default:
+                        // unrecognized character, print it as-is.
+                        result.Append(ch);
+                        break;
+                }
+            }
 
-			if (escape)
-				result.Append('\\');
+            if (escape)
+                result.Append('\\');
 
-			return result.ToString();
-		}
+            return result.ToString();
+        }
 
 		/// <summary>
 		/// Converts a given <see cref="DateTime"/> to the ISO week of year number and ISO year number.
@@ -716,9 +787,9 @@ namespace PHP.Library
 
 		#endregion
 
-		#region strftime, gmstrftime
+        #region strftime, gmstrftime
 
-		/// <summary>
+        /// <summary>
 		/// Returns a string formatted according to the given format string using the current local time.
 		/// </summary>
 		/// <param name="format">Format of the string.</param>
@@ -2040,5 +2111,5 @@ namespace PHP.Library
 
 #endif
 		#endregion
-	}
+    }
 }
