@@ -34,6 +34,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\Extensions.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -54,6 +60,7 @@
     <Compile Include="PDOSQLiteLocalConfig.cs" />
     <Compile Include="SQLitePDOConnection.cs" />
     <Compile Include="SQLitePDODriver.cs" />
+    <Compile Include="SQLitePDOStatement.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ClassLibrary\ClassLibrary.csproj">

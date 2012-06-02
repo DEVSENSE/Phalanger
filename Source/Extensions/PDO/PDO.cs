@@ -5,6 +5,7 @@ using System.Text;
 using PHP.Core;
 using System.ComponentModel;
 using System.IO;
+using System.Data;
 
 namespace PHP.Library.Data
 {
@@ -12,7 +13,12 @@ namespace PHP.Library.Data
     public partial class PDO : PhpObject
     {
         private PDODriver m_driver;
-        private PDOConnection m_connection;
+        private IDbConnection m_con;
+        private IDbTransaction m_tx;
+
+        public PDODriver Driver { get { return this.m_driver; } }
+        public IDbTransaction Transaction { get { return this.m_tx; } }
+        public IDbConnection Connection { get { return this.m_con; } }
 
         #region Constructor
         /// <summary>
@@ -40,6 +46,27 @@ namespace PHP.Library.Data
             object argDriverOptions = stack.PeekReferenceOptional(4);
             stack.RemoveFrame();
             return ((PDO)instance).__construct(stack.Context, argDSN, argUsername, argPassword, argDriverOptions);
+        }
+
+        [PhpVisible]
+        [ImplementsMethod]
+        public object __construct(ScriptContext context, object argdsn)
+        {
+            return this.__construct(context, argdsn, null, null, null);
+        }
+
+        [PhpVisible]
+        [ImplementsMethod]
+        public object __construct(ScriptContext context, object argdsn, object argusername)
+        {
+            return this.__construct(context, argdsn, argusername, null, null);
+        }
+
+        [PhpVisible]
+        [ImplementsMethod]
+        public object __construct(ScriptContext context, object argdsn, object argusername, object argpassword)
+        {
+            return this.__construct(context, argdsn, argusername, argpassword, null);
         }
 
         [PhpVisible]
@@ -74,13 +101,22 @@ namespace PHP.Library.Data
                 {
                     throw new PDOException("Driver not found");
                 }
-                this.m_connection = this.m_driver.OpenConnection(context, items[1], username, password, argdriver_options);
+                this.m_con = this.m_driver.OpenConnection(context, items[1], username, password, argdriver_options);
             }
 
-            if (this.m_driver == null || this.m_connection == null)
+            if (this.m_driver == null || this.m_con == null)
             {
                 throw new PDOException("Invalid DSN");
             }
+
+            //Defaults
+            this.SetAttributeValueNoCheck(ATTR_AUTOCOMMIT, true);
+            this.SetAttributeValueNoCheck(ATTR_DEFAULT_FETCH_MODE, FETCH_BOTH);
+            this.SetAttributeValueNoCheck(ATTR_DRIVER_NAME, this.m_driver.Scheme);
+            this.SetAttributeValueNoCheck(ATTR_ORACLE_NULLS, NULL_NATURAL);
+            this.SetAttributeValueNoCheck(ATTR_STRINGIFY_FETCHES, false);
+            this.SetAttributeValueNoCheck(ATTR_TIMEOUT, 30000);
+
             return null;
         }
         #endregion
@@ -102,13 +138,35 @@ namespace PHP.Library.Data
         }
         #endregion
 
+        #region Attributes
+        private readonly Dictionary<int, object> m_attributes = new Dictionary<int, object>();
+
+        public bool SetAttribute(int att, object value)
+        {
+            if (this.m_driver.IsValidAttributeValue(att, value))
+            {
+                return this.SetAttributeValueNoCheck(att, value);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        internal bool SetAttributeValueNoCheck(int att, object value)
+        {
+            this.m_attributes[att] = value;
+            return true;
+        }
+        #endregion
+
         #region setAttribute
         [PhpVisible]
         [ImplementsMethod]
         public object setAttribute(ScriptContext context, object attribute, object value)
         {
             int attInt = PHP.Core.Convert.ObjectToInteger(attribute);
-            return this.m_connection.SetAttribute(attInt, value);
+            return this.SetAttribute(attInt, value);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -127,7 +185,16 @@ namespace PHP.Library.Data
         public object getAttribute(ScriptContext context, object attribute)
         {
             int attInt = PHP.Core.Convert.ObjectToInteger(attribute);
-            return this.m_connection.GetAttribute(attInt);
+            return this.GetAttribute(attInt, null);
+        }
+
+        public object GetAttribute(int attribute, object defaultValue)
+        {
+            if (this.m_attributes.ContainsKey(attribute))
+            {
+                return this.m_attributes[attribute];
+            }
+            return defaultValue;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -151,13 +218,13 @@ namespace PHP.Library.Data
         [ImplementsMethod]
         public object quote(ScriptContext context, object str, object parameter_type)
         {
-            PDOStatics.pdo_param_type pt = PDOStatics.pdo_param_type.PDO_PARAM_STR;
+            PDOParamType pt = PDOParamType.PDO_PARAM_STR;
             if (parameter_type != null)
             {
                 int ptInt = PHP.Core.Convert.ObjectToInteger(parameter_type);
-                if (Enum.IsDefined(typeof(PDOStatics.pdo_param_type), ptInt))
+                if (Enum.IsDefined(typeof(PDOParamType), ptInt))
                 {
-                    pt = (PDOStatics.pdo_param_type)ptInt;
+                    pt = (PDOParamType)ptInt;
                 }
             }
             return this.m_driver.Quote(context, PHP.Core.Convert.ObjectToString(str), pt);
@@ -176,6 +243,7 @@ namespace PHP.Library.Data
         #region query
         [PhpVisible]
         [ImplementsMethod]
+        [return: CastToFalse]
         public object query(ScriptContext context, object statement)
         {
             return this.query(context, statement, null, null, null);
@@ -183,6 +251,7 @@ namespace PHP.Library.Data
 
         [PhpVisible]
         [ImplementsMethod]
+        [return: CastToFalse]
         public object query(ScriptContext context, object statement, object fetch_to_mode)
         {
             return this.query(context, statement, fetch_to_mode, null, null);
@@ -190,6 +259,7 @@ namespace PHP.Library.Data
 
         [PhpVisible]
         [ImplementsMethod]
+        [return: CastToFalse]
         public object query(ScriptContext context, object statement, object fetch_to_mode, object fetch_to_dest)
         {
             return this.query(context, statement, fetch_to_mode, fetch_to_dest, null);
@@ -197,16 +267,24 @@ namespace PHP.Library.Data
 
         [PhpVisible]
         [ImplementsMethod]
+        [return: CastToFalse]
         public object query(ScriptContext context, object statement, object fetch_to_mode, object fetch_to_dest, object fetch_to_args)
         {
-            PDOStatement stmt = new PDOStatement(context, this.m_connection);
-            stmt.SetQuery(PHP.Core.Convert.ObjectToString(statement));
+            string query = PHP.Core.Convert.ObjectToString(statement);
+            PDOStatement stmt = this.m_driver.CreateStatement(context, this);
+            stmt.Init(query, null);
             if (fetch_to_mode != null)
             {
                 stmt.setFetchMode(context, fetch_to_mode, fetch_to_dest, fetch_to_args);
             }
-            stmt.ExecuteInternal();
-            return stmt;
+            if (stmt.ExecuteStatement())
+            {
+                return stmt;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -221,8 +299,107 @@ namespace PHP.Library.Data
         }
         #endregion
 
-        #region beginTransaction
+        #region prepare
+        [PhpVisible]
+        [ImplementsMethod]
+        public object prepare(ScriptContext context, object statement)
+        {
+            return this.prepare(context, statement, null);
+        }
+        [PhpVisible]
+        [ImplementsMethod]
+        public object prepare(ScriptContext context, object statement, object driver_options)
+        {
+            string query = PHP.Core.Convert.ObjectToString(statement);
+            Dictionary<int, object> options = new Dictionary<int, object>();
+            if (driver_options != null && driver_options is PhpArray)
+            {
+                PhpArray arr = (PhpArray)driver_options;
+                foreach (var key in arr.Keys)
+                {
+                    Debug.Assert(!key.IsInteger);
+                    int keyInt = key.Integer;
+                    options.Add(keyInt, arr[key]);
+                }
+            }
 
+            PDOStatement stmt = this.m_driver.CreateStatement(context, this);
+            stmt.Prepare(query, options);
+            return stmt;
+        }
+
+        public static object prepare(object instance, PhpStack stack)
+        {
+            object statement = stack.PeekValue(1);
+            object driver_options = stack.PeekValueOptional(2);
+            stack.RemoveFrame();
+            return ((PDO)instance).prepare(stack.Context, statement, driver_options);
+        }
+        #endregion
+
+        #region beginTransaction
+        [PhpVisible]
+        [ImplementsMethod]
+        public object beginTransaction(ScriptContext context)
+        {
+            if (this.m_tx != null)
+            {
+                return false;
+            }
+            this.m_tx = this.m_con.BeginTransaction();
+            return true;
+        }
+
+        public static object beginTransaction(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((PDO)instance).beginTransaction(stack.Context);
+        }
+        #endregion
+
+        #region commit
+        [PhpVisible]
+        [ImplementsMethod]
+        public object commit(ScriptContext context)
+        {
+            if (this.m_tx != null)
+            {
+                this.m_tx.Commit();
+                this.m_tx.Dispose();
+                this.m_tx = null;
+                return true;
+            }
+            return false;
+        }
+
+        public static object commit(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((PDO)instance).commit(stack.Context);
+        }
+        #endregion
+
+        #region rollback
+        [PhpVisible]
+        [ImplementsMethod]
+        public object rollback(ScriptContext context)
+        {
+            if (this.m_tx != null)
+            {
+                this.m_tx.Rollback();
+                this.m_tx.Dispose();
+                this.m_tx = null;
+                return true;
+            }
+            return false;
+
+        }
+
+        public static object rollback(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((PDO)instance).rollback(stack.Context);
+        }
         #endregion
     }
 }

@@ -272,6 +272,33 @@ namespace PHP.Core
             }
         }
 
+        public void AddMethodToType(DTypeDesc typedesc, PhpMemberAttributes attributes, string func_name, Func<object, PhpStack, object> callback)
+        {
+            Debug.Assert(typedesc != null);
+
+            var name = new Name(func_name);
+            var method_desc = new PhpRoutineDesc(typedesc, attributes);
+
+            if (!typedesc.Methods.ContainsKey(name))
+            {
+                typedesc.Methods.Add(name, method_desc);
+                if (method_desc.Member == null)
+                {
+                    PhpMethod method = new PhpMethod(name, (PhpRoutineDesc)method_desc, DummyArgFullCallback.Method, callback.Method);
+                    method.WriteUp(PhpRoutineSignature.FromArgfullInfo(method, DummyArgFullCallback.Method));
+                    method_desc.Member = method;
+                }
+            }
+        }
+
+        private static readonly Func<ScriptContext, object> DummyArgFullCallback = new Func<ScriptContext, object>(DummyArgFull);
+
+        [NeedsArgless()]
+        private static object DummyArgFull(ScriptContext context)
+        {
+            return null;
+        }
+
         #endregion
 
         internal void LoadModuleEntries(DModule/*!*/ module)
