@@ -127,7 +127,10 @@ namespace PHP.Core.Reflection
     {
         #region Members
 
-        internal const string TransientArglessName = "<~>";
+        /// <summary>
+        /// Characters separating <see cref="TransientModule.sourcePath"/> and <see cref="TransientModule.Id"/>.
+        /// </summary>
+        internal static readonly char[]/*!*/IdDelimiters = new[] { '^', '?' };
 
         public TransientCompilationUnit TransientCompilationUnit { get { return (TransientCompilationUnit)base.CompilationUnit; } }
 
@@ -164,7 +167,13 @@ namespace PHP.Core.Reflection
         {
             // <> ensures, the eval-id is removed from the name
             // '?'/'^' distinguish from the file path used by MSA and among regular and special names
-            return String.Concat("<", this.sourcePath, isSpecialName ? "^" : "?", this.Id.ToString(), ">.", name);
+            return String.Concat(
+                "<",
+                    this.sourcePath,
+                    isSpecialName ? IdDelimiters[0] : IdDelimiters[1],
+                    this.Id.ToString(),
+                ">.",
+                name);
         }
 
         private static int ParseEvalId(string/*!*/ name)

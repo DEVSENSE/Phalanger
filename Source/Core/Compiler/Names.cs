@@ -445,6 +445,9 @@ namespace PHP.Core
 
         #region CLR notation
 
+        internal const char VersionIndexDelimiter = '#';
+        internal const char GenericParamsDelimiter = '`';
+
         /// <summary>
 		/// Makes full CLR name from this instance. 
 		/// </summary>
@@ -468,13 +471,13 @@ namespace PHP.Core
 
 			if (versionIndex > 0)
 			{
-				result.Append('#');
+				result.Append(VersionIndexDelimiter);
 				result.Append(versionIndex);
 			}
 
 			if (genericParamCount > 0)
 			{
-				result.Append('`');
+				result.Append(GenericParamsDelimiter);
 				result.Append(genericParamCount);
 			}
 
@@ -551,7 +554,7 @@ namespace PHP.Core
 			}
 		}
 
-		private static char[] BackquoteAndHash = new char[] { '`', '#' };
+		private static char[] BackquoteAndHash = new char[] { GenericParamsDelimiter, VersionIndexDelimiter };
 
 		internal static string/*!*/ SubstringWithoutBackquoteAndHash(string/*!*/ fullName, int start, int length)
 		{
