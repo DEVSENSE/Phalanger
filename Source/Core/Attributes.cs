@@ -266,7 +266,7 @@ namespace PHP.Core
 	public sealed class ImplementsTypeAttribute : Attribute
 	{
         /// <summary>
-        /// If not <c>null</c>, defines the PHP type name instead of the reflected name.
+        /// If not <c>null</c>, defines the PHP type name instead of the reflected name. CLR notation of namespaces.
         /// </summary>
         public readonly string PHPTypeName;
 
@@ -281,11 +281,12 @@ namespace PHP.Core
         /// <summary>
         /// Initialized new instance of <see cref="ImplementsTypeAttribute"/> with PHP type name specified.
         /// </summary>
-        /// <param name="PHPTypeName">If not <c>null</c>, defines the PHP type name instead of the reflected name.</param>
+        /// <param name="PHPTypeName">If not <c>null</c>, defines the PHP type name instead of the reflected name. Uses CLR notation of namespaces.</param>
         /// <remarks>This overload is only valid within class library types.</remarks>
         public ImplementsTypeAttribute(string PHPTypeName)
         {
             Debug.Assert(!string.IsNullOrWhiteSpace(PHPTypeName));
+            Debug.Assert(!PHPTypeName.Contains(QualifiedName.Separator));
             
             this.PHPTypeName = PHPTypeName;
         }
