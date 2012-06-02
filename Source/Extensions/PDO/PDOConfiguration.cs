@@ -67,12 +67,12 @@ namespace PHP.Library.Data
         /// </summary>
         internal static void RegisterLegacyOptions()
         {
-            const string s = PDOLibraryDescriptor.ExtensionName;
-            GetSetRestoreDelegate d = new GetSetRestoreDelegate(GetSetRestore);
+            //const string s = PDOLibraryDescriptor.ExtensionName;
+            //GetSetRestoreDelegate d = new GetSetRestoreDelegate(GetSetRestore);
 
-            // local:
+            //// local:
 
-            // global:
+            //// global:
         }
 
         #endregion
