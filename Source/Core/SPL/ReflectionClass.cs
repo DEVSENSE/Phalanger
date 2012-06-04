@@ -16,6 +16,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 
 using PHP.Core;
 using PHP.Core.Reflection;
@@ -234,28 +235,18 @@ namespace PHP.Library.SPL
 
         #endregion
 
+        #region hasMethod, hasConstant
+
         [ImplementsMethod]
         public object hasMethod(ScriptContext/*!*/context, object argName)
         {
-            try
-            {
-                Name name = new Name(PHP.Core.Convert.ObjectToString(argName));
-                var type = this.typedesc;
-                while (type != null)
-                {
-                    var method = type.GetMethod(name);
-                    if (method != null)
-                    {
-                        return true;
-                    }
-                    type = type.Base;
-                }
-                return false;
-            }
-            catch
-            {
-                return false;
-            }
+            var name = new Name(PHP.Core.Convert.ObjectToString(argName));
+
+            for (var type = this.typedesc; type != null; type = type.Base)
+                if (type.Methods.ContainsKey(name))
+                    return true;;
+
+            return false;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -269,25 +260,13 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public object hasConstant(ScriptContext/*!*/context, object argName)
         {
-            try
-            {
-                VariableName name = new VariableName(PHP.Core.Convert.ObjectToString(argName));
-                var type = this.typedesc;
-                while (type != null)
-                {
-                    var Constant = type.GetConstant(name);
-                    if (Constant != null)
-                    {
-                        return true;
-                    }
-                    type = type.Base;
-                }
-                return false;
-            }
-            catch
-            {
-                return false;
-            }
+            var name = new VariableName(PHP.Core.Convert.ObjectToString(argName));
+
+            for (var type = this.typedesc; type != null; type = type.Base)
+                if (type.Constants.ContainsKey(name))
+                    return true;
+
+            return false;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -298,6 +277,10 @@ namespace PHP.Library.SPL
             return ((ReflectionClass)instance).hasConstant(stack.Context, args);
         }
 
+        #endregion
+
+        #region getFileName
+
         [ImplementsMethod]
         public object getFileName(ScriptContext/*!*/context)
         {
@@ -305,12 +288,12 @@ namespace PHP.Library.SPL
             string typename;
             string src;
             ReflectionUtils.ParseTypeId(this.typedesc.RealType.FullName, out id, out src, out typename);
-            if (string.IsNullOrEmpty(src))
-            {
+            if (src == null)
                 return false;
-            }
-            PhpSourceFile srcFile = new PhpSourceFile(context.MainScriptFile.Root, new RelativePath(src));
-            return srcFile.FullPath.ToString();
+
+            return System.IO.Path.Combine(
+                Configuration.Application.Compiler.SourceRoot.FullFileName,
+                src);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -320,14 +303,12 @@ namespace PHP.Library.SPL
             return ((ReflectionClass)instance).getFileName(stack.Context);
         }
 
-        [ImplementsMethod]
-        public object getStaticPropertyValue(ScriptContext/*!*/context, object argName)
-        {
-            return getStaticPropertyValue(context, argName, null);
-        }
+        #endregion
+
+        #region getStaticPropertyValue, getConstant, getConstants
 
         [ImplementsMethod]
-        public object getStaticPropertyValue(ScriptContext/*!*/context, object argName, object argDefault)
+        public object getStaticPropertyValue(ScriptContext/*!*/context, object argName, [Optional]object argDefault)
         {
             string name = PHP.Core.Convert.ObjectToString(argName);
             return Operators.GetStaticProperty(this.typedesc, argName, this.TypeDesc, context, false);
@@ -342,7 +323,6 @@ namespace PHP.Library.SPL
             return ((ReflectionClass)instance).getStaticPropertyValue(stack.Context, argName, argDefault);
         }
 
-        #region getConstant
         [ImplementsMethod]
         public object getConstant(ScriptContext context, object argName)
         {
@@ -357,17 +337,13 @@ namespace PHP.Library.SPL
             stack.RemoveFrame();
             return ((ReflectionClass)instance).getConstant(stack.Context, argName);
         }
-        #endregion
 
-        #region getConstants
         public object getConstants(ScriptContext context)
         {
-            PhpArray arr = new PhpArray();
-            foreach (VariableName name in this.typedesc.Constants.Keys)
-            {
-                object value = Operators.GetClassConstant(this.typedesc, name.Value, this.TypeDesc, context);
-                arr.Add(name.Value, value);
-            }
+            PhpArray arr = new PhpArray(this.typedesc.Constants.Count);
+            foreach (var c in this.typedesc.Constants)
+                arr.Add(c.Key.Value, c.Value.GetValue(context));
+            
             return arr;
         }
 
@@ -377,6 +353,7 @@ namespace PHP.Library.SPL
             object argName = stack.PeekValue(1);
             return ((ReflectionClass)instance).getConstants(stack.Context);
         }
+
         #endregion
     }
 }
