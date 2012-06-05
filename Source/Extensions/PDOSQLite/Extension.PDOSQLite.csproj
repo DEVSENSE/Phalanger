@@ -58,7 +58,6 @@
     <Compile Include="PDOSQLiteGlobalConfig.cs" />
     <Compile Include="PDOSQLiteLibraryDescriptor.cs" />
     <Compile Include="PDOSQLiteLocalConfig.cs" />
-    <Compile Include="SQLitePDOConnection.cs" />
     <Compile Include="SQLitePDODriver.cs" />
     <Compile Include="SQLitePDOStatement.cs" />
   </ItemGroup>
