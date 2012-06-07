@@ -224,8 +224,14 @@ namespace PHP.Core.AST
 		public Statement/*!*/ Statement { get { return statement; } internal set { statement = value; } }
 		private Statement/*!*/ statement;
 
-		public ConditionalStmt(Expression condition, Statement/*!*/ statement)
+        /// <summary>
+        /// The whole <see cref="ConditionalStmt"/> position.
+        /// </summary>
+        public readonly Position Position;
+
+		public ConditionalStmt(Position position, Expression condition, Statement/*!*/ statement)
 		{
+            this.Position = position;
 			this.condition = condition;
 			this.statement = statement;
 		}
