@@ -12,24 +12,6 @@ namespace PHP.Core.Binders
 
     //TODO:(MB) Implement IDynamicMetaObject provider to DObject
 
-
-    internal static class DynamicMetaObjectExtensions
-    {
-        public static DynamicMetaObject ToPhpDynamicMetaObject(this DynamicMetaObject obj)
-        {
-            if (Types.PhpReference[0] == obj.LimitType)
-                return new PhpReferenceDynamicMetaObject(obj);
-            else if (Types.PhpSmartReference[0] == obj.LimitType)
-                return new PhpSmartReferenceDynamicMetaObject(obj);
-            else if (typeof(ClrObject) == obj.LimitType)
-                return new ClrDynamicMetaObject(obj);
-            else if (typeof(IClrValue).IsAssignableFrom(obj.LimitType))
-                return new ClrValueDynamicMetaObject(obj);
-            else
-                return obj;
-        }
-    }
-
     internal class PhpReferenceDynamicMetaObject : DynamicMetaObject
     {
         //Restriction: (obj isinst PhpReference) && ( ref.Value.GetType() == |typeof(obj.Value)|)
@@ -101,8 +83,7 @@ namespace PHP.Core.Binders
              BindingRestrictions.GetTypeRestriction(dynamic.Expression, dynamic.LimitType),
              dynamic.Value
              )
-        {
-            Debug.Assert(typeof(IClrValue).IsAssignableFrom(dynamic.LimitType));
+        {   
         }
 
     }
