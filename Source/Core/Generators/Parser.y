@@ -997,7 +997,7 @@ non_empty_statement:
 		inner_statement_list_opt elseif_colon_list_opt else_colon_opt T_ENDIF ';' 
 		{ 
 			List<ConditionalStmt> conditions = (List<ConditionalStmt>)$8;
-			conditions[0] = new ConditionalStmt(Position.CombinePositions(@1, @7), (Expression)$3, new BlockStmt(@7, (List<Statement>)$7));
+			conditions[0] = new ConditionalStmt(Position.CombinePositions(@1, @11), (Expression)$3, new BlockStmt(@7, (List<Statement>)$7));
 			
 			// add else:
 			if ($9 != null)
