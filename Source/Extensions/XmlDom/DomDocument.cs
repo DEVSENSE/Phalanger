@@ -872,7 +872,7 @@ namespace PHP.Library.Xml
 		[PhpVisible]
 		public object loadHTMLFile(string sourceFile)
 		{
-            using (PhpStream stream = PhpStream.Open(sourceFile, "wt"))
+            using (PhpStream stream = PhpStream.Open(sourceFile, "rt"))
             {
                 if (stream == null) return false;
 
