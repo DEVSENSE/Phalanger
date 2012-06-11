@@ -15,6 +15,7 @@ namespace PHP.Library.Data
         private PDOException(ScriptContext context, PhpArray errorInfo)
             : base(context, true)
         {
+            this.m_errorInfo = errorInfo;
         }
 
         [PhpVisible]
