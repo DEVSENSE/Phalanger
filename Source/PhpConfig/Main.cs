@@ -81,7 +81,7 @@ namespace PHP
 						// option having format "/name"
 						currentOption = args[i].Substring(1).Trim();
 
-						switch (currentOption.ToLower())
+                        switch (currentOption.ToLowerInvariant())
 						{
 							case "phpnames":
 							case "phpnames+": phpNames = true; break;
