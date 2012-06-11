@@ -15,6 +15,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections;
 using PHP.Core.Reflection;
+using System.Runtime.Serialization;
 
 namespace PHP.Core
 {
@@ -22,7 +23,10 @@ namespace PHP.Core
 	/// String representation that uses <see cref="StringBuilder"/> internally to improve
     /// performance of modifications such as Append, Prepend and singe character change.
 	/// </summary>
-	public sealed class PhpString : IPhpVariable, IPhpObjectGraphNode, IComparable
+#if !SILVERLIGHT
+    [Serializable]
+#endif
+    public sealed class PhpString : IPhpVariable, IPhpObjectGraphNode, IComparable, ISerializable
 	{
         /// <summary>
         /// PhpStrings PHP type name (string).
@@ -442,7 +446,73 @@ namespace PHP.Core
         {
             return this.cow.Builder.Length;
         }
-	}
+
+        #region ISerializable (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+        /// Handles serialization and deserialization of <see cref="PhpString"/>.
+        /// </summary>
+        /// <remarks>Deserialization converts this object into <see cref="string"/>.</remarks>
+        [Serializable]
+        private class SerializationHelper : ISerializable, IDeserializationCallback, IObjectReference
+        {
+            /// <summary>
+            /// Name of value field within <see cref="SerializationInfo"/> containing serialized string.
+            /// </summary>
+            private const string InfoValueName = "Value";
+
+            /// <summary>
+            /// Deserialized string value.
+            /// </summary>
+            private readonly string value;
+
+            /// <summary>
+            /// Beginning of the deserialization.
+            /// </summary>
+            /// <param name="info"></param>
+            /// <param name="context"></param>
+            private SerializationHelper(SerializationInfo/*!*/info, StreamingContext context)
+            {
+                this.value = (string)info.GetValue(InfoValueName, typeof(string));
+            }
+
+            [System.Security.SecurityCritical]
+            internal static void GetObjectData(PhpString/*!*/instance, SerializationInfo info, StreamingContext context)
+            {
+                Debug.Assert(instance != null);
+                Debug.Assert(info != null);
+
+                info.SetType(typeof(SerializationHelper));
+                info.AddValue(InfoValueName, instance.ToString());
+            }
+
+            public void GetObjectData(SerializationInfo info, StreamingContext context)
+            {
+                // should never be called
+                throw new InvalidOperationException();
+            }
+
+            public object GetRealObject(StreamingContext context)
+            {
+                return this.value;
+            }
+
+            public virtual void OnDeserialization(object sender)
+            {
+                
+            }
+        }
+
+        [System.Security.SecurityCritical]
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            SerializationHelper.GetObjectData(this, info, context);
+        }
+
+#endif
+        #endregion
+    }
 
 	#region Array Proxy
 

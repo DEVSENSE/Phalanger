@@ -2138,11 +2138,11 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
       case 123: // non_empty_statement -> T_IF '(' expr ')' @7 statement elseif_list_opt else_opt 
 { 
 			List<ConditionalStmt> conditions = (List<ConditionalStmt>)value_stack.array[value_stack.top-2].yyval.Object;
-			conditions[0] = new ConditionalStmt((Expression)value_stack.array[value_stack.top-6].yyval.Object, (Statement)value_stack.array[value_stack.top-3].yyval.Object);
+			conditions[0] = new ConditionalStmt(Position.CombinePositions(value_stack.array[value_stack.top-8].yypos, value_stack.array[value_stack.top-3].yypos), (Expression)value_stack.array[value_stack.top-6].yyval.Object, (Statement)value_stack.array[value_stack.top-3].yyval.Object);
 			
 			// add else:
 			if (value_stack.array[value_stack.top-1].yyval.Object != null)
-				conditions.Add(new ConditionalStmt(null, (Statement)value_stack.array[value_stack.top-1].yyval.Object));
+				conditions.Add(new ConditionalStmt(value_stack.array[value_stack.top-1].yypos, null, (Statement)value_stack.array[value_stack.top-1].yyval.Object));
 			
 			yyval.Object = new IfStmt(yypos, conditions);
 			
@@ -2157,11 +2157,11 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
       case 125: // non_empty_statement -> T_IF '(' expr ')' ':' @8 inner_statement_list_opt elseif_colon_list_opt else_colon_opt T_ENDIF ';' 
 { 
 			List<ConditionalStmt> conditions = (List<ConditionalStmt>)value_stack.array[value_stack.top-4].yyval.Object;
-			conditions[0] = new ConditionalStmt((Expression)value_stack.array[value_stack.top-9].yyval.Object, new BlockStmt(value_stack.array[value_stack.top-5].yypos, (List<Statement>)value_stack.array[value_stack.top-5].yyval.Object));
+			conditions[0] = new ConditionalStmt(Position.CombinePositions(value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-1].yypos), (Expression)value_stack.array[value_stack.top-9].yyval.Object, new BlockStmt(value_stack.array[value_stack.top-5].yypos, (List<Statement>)value_stack.array[value_stack.top-5].yyval.Object));
 			
 			// add else:
 			if (value_stack.array[value_stack.top-3].yyval.Object != null)
-				conditions.Add(new ConditionalStmt(null, (Statement)value_stack.array[value_stack.top-3].yyval.Object));
+				conditions.Add(new ConditionalStmt(value_stack.array[value_stack.top-3].yypos, null, (Statement)value_stack.array[value_stack.top-3].yyval.Object));
 			
 			yyval.Object = new IfStmt(yypos, conditions);
 			
@@ -2368,7 +2368,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
       case 176: // elseif_list_opt -> elseif_list_opt T_ELSEIF '(' expr ')' statement 
 { 
 			yyval.Object = value_stack.array[value_stack.top-6].yyval.Object; 
-			ListAdd<ConditionalStmt>(yyval.Object, new ConditionalStmt((Expression)value_stack.array[value_stack.top-3].yyval.Object, (Statement)value_stack.array[value_stack.top-1].yyval.Object)); 
+			ListAdd<ConditionalStmt>(yyval.Object, new ConditionalStmt(Position.CombinePositions(value_stack.array[value_stack.top-5].yypos, value_stack.array[value_stack.top-1].yypos), (Expression)value_stack.array[value_stack.top-3].yyval.Object, (Statement)value_stack.array[value_stack.top-1].yyval.Object)); 
 		}
         return;
       case 177: // elseif_colon_list_opt -> 
@@ -2379,7 +2379,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
       case 178: // elseif_colon_list_opt -> elseif_colon_list_opt T_ELSEIF '(' expr ')' ':' inner_statement_list_opt 
 { 
 			yyval.Object = value_stack.array[value_stack.top-7].yyval.Object;
-			ListAdd<ConditionalStmt>(yyval.Object, new ConditionalStmt((Expression)value_stack.array[value_stack.top-4].yyval.Object, new BlockStmt(value_stack.array[value_stack.top-1].yypos, (List<Statement>)value_stack.array[value_stack.top-1].yyval.Object))); 
+			ListAdd<ConditionalStmt>(yyval.Object, new ConditionalStmt(Position.CombinePositions(value_stack.array[value_stack.top-6].yypos, value_stack.array[value_stack.top-1].yypos), (Expression)value_stack.array[value_stack.top-4].yyval.Object, new BlockStmt(value_stack.array[value_stack.top-1].yypos, (List<Statement>)value_stack.array[value_stack.top-1].yyval.Object))); 
 		}
         return;
       case 179: // else_opt -> 
