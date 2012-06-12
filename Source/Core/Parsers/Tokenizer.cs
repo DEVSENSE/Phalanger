@@ -131,7 +131,7 @@ namespace PHP.Core.Parsers
 
 		public static bool IsCharToken(Tokens token)
 		{
-			return (int)token > 0 && (int)token <= 255;
+			return (int)token > 0 && (int)token < (int)Toks.ERROR;
 		}
 
 		public new Tokens GetNextToken()

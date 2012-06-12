@@ -296,16 +296,15 @@ namespace PHP.Library
 		/// <returns><c>MailPriority</c> specified by header value.</returns>
 		private static MailPriority ExtractPriority(string p)
 		{
-			switch (p.Trim().ToLower())
+            switch (p.Trim().ToLowerInvariant())
 			{
 				case "high":
 					return MailPriority.High;
 				case "low":
 					return MailPriority.Low;
 				case "normal":
-					return MailPriority.Normal;
 				default:
-					goto case "normal";
+                    return MailPriority.Normal;
 			}
 		}
 

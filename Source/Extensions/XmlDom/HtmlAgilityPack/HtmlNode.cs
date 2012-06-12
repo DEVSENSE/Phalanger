@@ -582,7 +582,7 @@ namespace HtmlAgilityPack
                 throw new ArgumentNullException("name");
             }
 
-            object flag = ElementsFlags[name.ToLower()];
+            object flag = ElementsFlags[name.ToLowerInvariant()];
             if (flag == null)
             {
                 return false;
@@ -615,7 +615,7 @@ namespace HtmlAgilityPack
                 throw new ArgumentNullException("name");
             }
 
-            object flag = ElementsFlags[name.ToLower()];
+            object flag = ElementsFlags[name.ToLowerInvariant()];
             if (flag == null)
             {
                 return false;
@@ -635,7 +635,7 @@ namespace HtmlAgilityPack
                 throw new ArgumentNullException("name");
             }
 
-            object flag = ElementsFlags[name.ToLower()];
+            object flag = ElementsFlags[name.ToLowerInvariant()];
             if (flag == null)
             {
                 return false;
@@ -672,7 +672,7 @@ namespace HtmlAgilityPack
                 return true;
             }
 
-            object flag = ElementsFlags[name.ToLower()];
+            object flag = ElementsFlags[name.ToLowerInvariant()];
             if (flag == null)
             {
                 return false;

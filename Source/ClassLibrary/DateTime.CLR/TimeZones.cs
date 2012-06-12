@@ -607,13 +607,14 @@ namespace PHP.Library
             // simple binary search (not the Array.BinarySearch)
             var timezones = PhpTimeZone.timezones;
             int a = 0, b = timezones.Length - 1;
-            while (a < b)
+            while (a <= b)
             {
                 int x = (a + b) >> 1;
                 int comparison = StringComparer.OrdinalIgnoreCase.Compare(timezones[x].PhpName, phpName);
                 if (comparison == 0)
                     return timezones[x].Info;
-                else if (comparison < 0)
+                
+                if (comparison < 0)
                     a = x + 1;
                 else //if (comparison > 0)
                     b = x - 1;

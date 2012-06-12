@@ -1123,8 +1123,17 @@ namespace HtmlAgilityPack
 
                 if (!error)
                 {
-                    _lastnodes[_currentnode.Name] = prev._prevwithsamename;
-                    prev.CloseNode(_currentnode);
+                    if (_lastparentnode != null &&
+                        string.Equals(_currentnode.Name, "tr", StringComparison.OrdinalIgnoreCase) && !_currentnode._starttag &&
+                        string.Equals(_lastparentnode.Name, "table", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // special case, we are ignoring _currentnode (<table><tr></tr></tr>)
+                    }
+                    else
+                    {
+                        _lastnodes[_currentnode.Name] = prev._prevwithsamename;
+                        prev.CloseNode(_currentnode);
+                    }
                 }
             }
 

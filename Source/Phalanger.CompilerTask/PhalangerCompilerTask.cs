@@ -130,7 +130,7 @@ namespace PHP.VisualStudio.PhalangerTasks
 
 			// target type:
 			string assembly_extension;
-			switch (outputType.ToLower())
+            switch (outputType.ToLowerInvariant())
 			{
 				case "dll":
 				case "library":

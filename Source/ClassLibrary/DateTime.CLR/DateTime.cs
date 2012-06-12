@@ -504,7 +504,7 @@ namespace PHP.Library
                 {
                     case 'a':
                         // Lowercase Ante meridiem and Post meridiem - am or pm
-                        result.Append(local.ToString("tt", DateTimeFormatInfo.InvariantInfo).ToLower());
+                        result.Append(local.ToString("tt", DateTimeFormatInfo.InvariantInfo).ToLowerInvariant());
                         break;
 
                     case 'A':
