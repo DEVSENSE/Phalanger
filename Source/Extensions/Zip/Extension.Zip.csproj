@@ -49,11 +49,13 @@
     <Compile Include="FileHandleDataSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringDataSource.cs" />
+    <Compile Include="ZipArchive.Const.cs" />
     <Compile Include="ZipConfiguration.cs" />
     <Compile Include="ZipGlobalConfig.cs" />
     <Compile Include="ZipLibraryDescriptor.cs" />
     <Compile Include="ZipArchive.cs" />
     <Compile Include="ZipLocalConfig.cs" />
+    <Compile Include="ZipStatic.cs" />
     <Compile Include="ZipStreamWrapper.cs" />
     <None Include="..\Extensions.snk">
       <Link>Extensions.snk</Link>
