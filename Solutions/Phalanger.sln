@@ -52,9 +52,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.PDOSQLite", "..\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.SQLite", "..\Source\Extensions\SQLite\Extension.SQLite.csproj", "{B7E4DD8D-A51F-42E5-8964-0774CDAE0F3F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.Zip", "..\Source\Extensions\Zip\Extension.Zip.csproj", "{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.PDOSQLServer", "..\Source\Extensions\PDOSQLServer\Extension.PDOSQLServer.csproj", "{7445CDB5-09EE-4884-B606-B1D870E03B3B}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 16
+		SccNumberOfProjects = 18
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
@@ -112,6 +116,14 @@ Global
 		SccProjectTopLevelParentUniqueName15 = Phalanger.sln
 		SccProjectName15 = ../Source/Extensions/SQLite
 		SccLocalPath15 = ..\\Source\\Extensions\\SQLite
+		SccProjectUniqueName16 = ..\\Source\\Extensions\\Zip\\Extension.Zip.csproj
+		SccProjectTopLevelParentUniqueName16 = Phalanger.sln
+		SccProjectName16 = ../Source/Extensions/Zip
+		SccLocalPath16 = ..\\Source\\Extensions\\Zip
+		SccProjectUniqueName17 = ..\\Source\\Extensions\\PDOSQLServer\\Extension.PDOSQLServer.csproj
+		SccProjectTopLevelParentUniqueName17 = Phalanger.sln
+		SccProjectName17 = ../Source/Extensions/PDOSQLServer
+		SccLocalPath17 = ..\\Source\\Extensions\\PDOSQLServer
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -338,6 +350,36 @@ Global
 		{B7E4DD8D-A51F-42E5-8964-0774CDAE0F3F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B7E4DD8D-A51F-42E5-8964-0774CDAE0F3F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B7E4DD8D-A51F-42E5-8964-0774CDAE0F3F}.Release|Win32.ActiveCfg = Release|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.DebugNoGac|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.DebugNoGac|Any CPU.Build.0 = Debug|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.DebugNoGac|Win32.ActiveCfg = Debug|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60}.Release|Win32.ActiveCfg = Release|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.DebugNoGac|Any CPU.ActiveCfg = Debug|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.DebugNoGac|Any CPU.Build.0 = Debug|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.DebugNoGac|Win32.ActiveCfg = Debug|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -348,6 +390,8 @@ Global
 		{A3D74786-1B4A-4967-853E-C98D74E6990B} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
 		{E736D942-D76C-46B6-B7F1-82E3068D46A8} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
 		{B7E4DD8D-A51F-42E5-8964-0774CDAE0F3F} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
+		{EC3E5E89-7125-448F-BCBA-5F1FF8474B60} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
+		{7445CDB5-09EE-4884-B606-B1D870E03B3B} = {BBF40DB7-2CCE-4E82-98C9-F506E356CC08}
 		{79B2B824-23B8-45C3-ADE4-5BC8D593FC3F} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
 		{6BD6294C-D292-41DE-A40C-13202E921E2F} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}
 		{1FBEBAD2-F7C5-4F75-965C-45098F5A0A48} = {64A5B5CA-E0A5-4816-96EE-D574E4189E83}

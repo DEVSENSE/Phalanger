@@ -252,80 +252,8 @@ namespace PHP.Core
             Debug.Assert(typedesc != null);
             Debug.Assert(typedesc.RealType == typeof(Library.SPL.Reflector));
 
-            Func<ScriptContext, object> emptyargfull = (context) => null;
-
             // public static object export( ScriptContext context ){ return null; }
-            var name = new Name("export");
-            var method_desc = new PhpRoutineDesc(typedesc, PhpMemberAttributes.Public | PhpMemberAttributes.Static | PhpMemberAttributes.Abstract);
-
-            if (!typedesc.Methods.ContainsKey(name))
-            {
-                typedesc.Methods.Add(name, method_desc);
-
-                // assign member
-                if (method_desc.Member == null) // always null
-                {
-                    PhpMethod method = new PhpMethod(name, (PhpRoutineDesc)method_desc, emptyargfull.Method, null);
-                    method.WriteUp(PhpRoutineSignature.FromArgfullInfo(method, emptyargfull.Method));
-                    method_desc.Member = method;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Add at runtime a method to a type
-        /// </summary>
-        /// <param name="typedesc">Type to modify</param>
-        /// <param name="attributes">New method attributes</param>
-        /// <param name="func_name">Method name</param>
-        /// <param name="callback">Method body</param>
-        /// <remarks>Used by PDO_SQLITE</remarks>
-        public void AddMethodToType(DTypeDesc typedesc, PhpMemberAttributes attributes, string func_name, Func<object, PhpStack, object> callback)
-        {
-            Debug.Assert(typedesc != null);
-
-            var name = new Name(func_name);
-            var method_desc = new PhpRoutineDesc(typedesc, attributes);
-
-            if (!typedesc.Methods.ContainsKey(name))
-            {
-                typedesc.Methods.Add(name, method_desc);
-                if (method_desc.Member == null)
-                {
-                    PhpMethod method = new PhpMethod(name, (PhpRoutineDesc)method_desc, DummyArgFullCallback.Method, callback.Method);
-                    method.WriteUp(PhpRoutineSignature.FromArgfullInfo(method, DummyArgFullCallback.Method));
-                    method_desc.Member = method;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Add at runtime a constant to a type
-        /// </summary>
-        /// <param name="typedesc">Type to modify</param>
-        /// <param name="attributes">New const attributes</param>
-        /// <param name="const_name">Const name</param>
-        /// <param name="value">Const value</param>
-        /// <remarks>Used by PDO_MYSQL</remarks>
-        public void AddConstantToType(DTypeDesc typedesc, PhpMemberAttributes attributes, string const_name, object value)
-        {
-            Debug.Assert(typedesc != null);
-
-            VariableName name = new VariableName(const_name);
-            DConstantDesc const_desc = new DConstantDesc(typedesc, attributes, value);
-
-            if (!typedesc.Constants.ContainsKey(name))
-            {
-                typedesc.Constants.Add(name, const_desc);
-            }
-        }
-
-        private static readonly Func<ScriptContext, object> DummyArgFullCallback = new Func<ScriptContext, object>(DummyArgFull);
-
-        [NeedsArgless()]
-        private static object DummyArgFull(ScriptContext context)
-        {
-            return null;
+            AddMethodToType(typedesc, PhpMemberAttributes.Public | PhpMemberAttributes.Static | PhpMemberAttributes.Abstract, "export", null);
         }
 
         #endregion
@@ -505,6 +433,64 @@ namespace PHP.Core
             }
 
             return this.fileExists;
+        }
+
+        /// <summary>
+        /// Add at runtime a method to a type
+        /// </summary>
+        /// <param name="typedesc">Type to modify</param>
+        /// <param name="attributes">New method attributes</param>
+        /// <param name="func_name">Method name</param>
+        /// <param name="callback">Method body</param>
+        /// <remarks>Used by PDO_SQLITE</remarks>
+        public void AddMethodToType(DTypeDesc typedesc, PhpMemberAttributes attributes, string func_name, Func<object, PhpStack, object> callback)
+        {
+            Debug.Assert(typedesc != null);
+
+            var name = new Name(func_name);
+            var method_desc = new PhpRoutineDesc(typedesc, attributes);
+
+            if (!typedesc.Methods.ContainsKey(name))
+            {
+                typedesc.Methods.Add(name, method_desc);
+
+                // assign member:
+                if (method_desc.Member == null)
+                {
+                    Func<ScriptContext, object> dummyArgFullCallback = DummyArgFull;
+                    PhpMethod method = new PhpMethod(name, (PhpRoutineDesc)method_desc, dummyArgFullCallback.Method, (callback != null) ? callback.Method : null);
+                    method.WriteUp(PhpRoutineSignature.FromArgfullInfo(method, dummyArgFullCallback.Method));
+                    method_desc.Member = method;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Add at runtime a constant to a type
+        /// </summary>
+        /// <param name="typedesc">Type to modify</param>
+        /// <param name="attributes">New const attributes</param>
+        /// <param name="const_name">Const name</param>
+        /// <param name="value">Const value</param>
+        /// <remarks>Used by PDO_MYSQL</remarks>
+        public void AddConstantToType(DTypeDesc typedesc, PhpMemberAttributes attributes, string const_name, object value)
+        {
+            Debug.Assert(typedesc != null);
+
+            VariableName name = new VariableName(const_name);
+            DConstantDesc const_desc = new DConstantDesc(typedesc, attributes, value);
+
+            if (!typedesc.Constants.ContainsKey(name))
+            {
+                typedesc.Constants.Add(name, const_desc);
+            }
+        }
+
+        [NeedsArgless]
+        private static object DummyArgFull(ScriptContext context)
+        {
+            Debug.Fail("This function should not be called thru argfull!");
+            return null;
         }
 
         #endregion
