@@ -6,18 +6,60 @@ using PHP.Core;
 using System.ComponentModel;
 using System.IO;
 using System.Data;
+using System.Text.RegularExpressions;
 
 namespace PHP.Library.Data
 {
+    /// <summary>
+    /// The PDO class
+    /// </summary>
     [ImplementsType]
     public partial class PDO : PhpObject
     {
+        private static readonly Regex sm_regexDSNSplit;
+        /// <summary>
+        /// Static constructor
+        /// </summary>
+        static PDO()
+        {
+            sm_regexDSNSplit = new Regex(@"(?<Keyword>\w+)\s*=\s*(?<Value>.*)((?=\W$)|\z);?", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+        }
+
+        /// <summary>
+        /// Split DSN parameters
+        /// </summary>
+        /// <param name="dsn">DSN to split</param>
+        /// <returns>Values</returns>
+        public static System.Collections.Specialized.NameValueCollection SplitDsnParams(string dsn)
+        {
+            var arr = new System.Collections.Specialized.NameValueCollection();
+            Match m = sm_regexDSNSplit.Match(dsn);
+            while (m.Success)
+            {
+                string name = m.Groups["Keyword"].Value;
+                string value = m.Groups["Vaue"].Value;
+
+                arr.Add(name, value);
+                m = m.NextMatch();
+            }
+            return arr;
+        }
+
         private PDODriver m_driver;
         private IDbConnection m_con;
         private IDbTransaction m_tx;
 
+        /// <summary>
+        /// The driver instance
+        /// </summary>
         public PDODriver Driver { get { return this.m_driver; } }
+        /// <summary>
+        /// Current transaction
+        /// </summary>
         public IDbTransaction Transaction { get { return this.m_tx; } }
+        /// <summary>
+        /// Current connection
+        /// </summary>
         public IDbConnection Connection { get { return this.m_con; } }
 
         #region Constructor
@@ -99,14 +141,16 @@ namespace PHP.Library.Data
                 this.m_driver = PDOLibraryDescriptor.GetProvider(drvName);
                 if (this.m_driver == null)
                 {
-                    throw new PDOException("Driver not found");
+                    PDOException.Throw(context, "Driver not found", null, null, null);
+                    return null;
                 }
                 this.m_con = this.m_driver.OpenConnection(context, items[1], username, password, argdriver_options);
             }
 
             if (this.m_driver == null || this.m_con == null)
             {
-                throw new PDOException("Invalid DSN");
+                PDOException.Throw(context, "Invalid DSN", null, null, null);
+                return null;
             }
 
             //Defaults
@@ -324,7 +368,7 @@ namespace PHP.Library.Data
             }
 
             PDOStatement stmt = this.m_driver.CreateStatement(context, this);
-            stmt.Prepare(query, options);
+            stmt.Prepare(context, query, options);
             return stmt;
         }
 
@@ -399,6 +443,94 @@ namespace PHP.Library.Data
         {
             stack.RemoveFrame();
             return ((PDO)instance).rollback(stack.Context);
+        }
+        #endregion
+
+        #region errorCode
+        [ImplementsMethod, PhpVisible]
+        public object errorCode(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object errorCode(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((PDO)instance).errorCode(stack.Context);
+        }
+        #endregion
+
+        #region errorInfo
+        [ImplementsMethod, PhpVisible]
+        public object errorInfo(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object errorInfo(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((PDO)instance).errorInfo(stack.Context);
+        }
+        #endregion
+
+        #region exec
+        [ImplementsMethod, PhpVisible]
+        public object exec(ScriptContext context, object statement)
+        {
+            throw new NotImplementedException();
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object exec(object instance, PhpStack stack)
+        {
+            object statement = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((PDO)instance).exec(stack.Context, statement);
+        }
+        #endregion
+
+        #region inTransaction
+        [ImplementsMethod, PhpVisible]
+        public object inTransaction(ScriptContext context)
+        {
+            return this.Transaction != null;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object inTransaction(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((PDO)instance).inTransaction(stack.Context);
+        }
+        #endregion
+
+        #region lastInsertId
+        [ImplementsMethod, PhpVisible]
+        public object lastInsertId(ScriptContext context)
+        {
+            return this.getLastInsertId(context, null);
+        }
+
+        [ImplementsMethod, PhpVisible]
+        public object lastInsertId(ScriptContext context, object name)
+        {
+            return this.getLastInsertId(context, null);
+        }
+
+        private object getLastInsertId(ScriptContext context, string name)
+        {
+            return this.m_driver.GetLastInsertId(context, this, name);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object lastInsertId(object instance, PhpStack stack)
+        {
+            object name = stack.PeekValueOptional(1);
+            stack.RemoveFrame();
+            return ((PDO)instance).lastInsertId(stack.Context, name);
         }
         #endregion
     }

@@ -70,6 +70,7 @@
     <Compile Include="PDOStatement.PHP.cs" />
     <Compile Include="PDOStatics.cs" />
     <Compile Include="PDODriver.cs" />
+    <Compile Include="SQLSTATES.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Extensions.snk">

@@ -3,16 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using PHP.Core;
+using PHP.Library.SPL;
 
 namespace PHP.Library.Data
 {
-    //TODO
-    public class PDOException : Exception
+    [ImplementsType]
+    public class PDOException : RuntimeException
     {
-        public PDOException(string message)
-            : base(message)
-        {
+        private PhpArray m_errorInfo;
 
+        private PDOException(ScriptContext context, PhpArray errorInfo)
+            : base(context, true)
+        {
+            this.m_errorInfo = errorInfo;
+        }
+
+        [PhpVisible]
+        public PhpArray errorInfo { get { return this.m_errorInfo; } }
+
+        public static void Throw(ScriptContext context, string message, PhpArray errorInfo, object code, object previous)
+        {
+            PHP.Library.SPL.Exception.ThrowSplException(ctx => new PDOException(ctx, errorInfo), context, message, code, previous);
         }
     }
 }
