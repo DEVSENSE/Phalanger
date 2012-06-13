@@ -127,7 +127,7 @@ namespace PHP.Library
                 {
                     return
                         (_parseUrlRegEx) ??
-                        (_parseUrlRegEx = new Regex(@"^((?<scheme>[^:]+):(?<scheme_separator>/{0,2}))?((?<user>[^:@/?#\[\]]*)(:(?<pass>[^@/?#\[\]]*))?@)?(?<host>([^/:?#\[\]]+)|(\[[^\[\]]+\]))?(:(?<port>[0-9]*))?(?<path>(/?[^/\?#]+)*/?)(\?(?<query>[^#]+))?(#(?<fragment>.*))?$", 
+                        (_parseUrlRegEx = new Regex(@"^((?<scheme>[^:]+):(?<scheme_separator>/{0,2}))?((?<user>[^:@/?#\[\]]*)(:(?<pass>[^@/?#\[\]]*))?@)?(?<host>([^/:?#\[\]]+)|(\[[^\[\]]+\]))?(:(?<port>[0-9]*))?(?<path>/[^\?#]*)?(\?(?<query>[^#]+)?)?(#(?<fragment>.*))?$", 
 #if !SILVERLIGHT
                             RegexOptions.Compiled |
 #endif
