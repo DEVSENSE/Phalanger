@@ -272,6 +272,14 @@ namespace PHP.Core
             }
         }
 
+        /// <summary>
+        /// Add at runtime a method to a type
+        /// </summary>
+        /// <param name="typedesc">Type to modify</param>
+        /// <param name="attributes">New method attributes</param>
+        /// <param name="func_name">Method name</param>
+        /// <param name="callback">Method body</param>
+        /// <remarks>Used by PDO_SQLITE</remarks>
         public void AddMethodToType(DTypeDesc typedesc, PhpMemberAttributes attributes, string func_name, Func<object, PhpStack, object> callback)
         {
             Debug.Assert(typedesc != null);
@@ -288,6 +296,27 @@ namespace PHP.Core
                     method.WriteUp(PhpRoutineSignature.FromArgfullInfo(method, DummyArgFullCallback.Method));
                     method_desc.Member = method;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Add at runtime a constant to a type
+        /// </summary>
+        /// <param name="typedesc">Type to modify</param>
+        /// <param name="attributes">New const attributes</param>
+        /// <param name="const_name">Const name</param>
+        /// <param name="value">Const value</param>
+        /// <remarks>Used by PDO_MYSQL</remarks>
+        public void AddConstantToType(DTypeDesc typedesc, PhpMemberAttributes attributes, string const_name, object value)
+        {
+            Debug.Assert(typedesc != null);
+
+            VariableName name = new VariableName(const_name);
+            DConstantDesc const_desc = new DConstantDesc(typedesc, attributes, value);
+
+            if (!typedesc.Constants.ContainsKey(name))
+            {
+                typedesc.Constants.Add(name, const_desc);
             }
         }
 

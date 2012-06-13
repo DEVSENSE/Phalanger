@@ -26,5 +26,7 @@ namespace PHP.Library.Data
         }
 
         protected abstract bool IsValueValidForAttribute(int att, object value);
+
+        public abstract object GetLastInsertId(ScriptContext context, PDO pdo, string name);
     }
 }
