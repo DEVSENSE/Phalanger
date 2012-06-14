@@ -515,19 +515,12 @@ namespace PHP.Core
 			}
 		}
 
-        public static void ParseScriptLibraryAssemblyList(XmlNode/*!*/ node,
-            ParseScriptLibraryAssemblyCallback/*!*/ addCallback,
-            ParseScriptLibraryAssemblyCallback/*!*/ removeCallback,
-            Action<object>/*!*/ clearCallback)
+        internal static void ParseScriptLibraryAssemblyList(XmlNode/*!*/ node, ScriptLibraryDatabase/*!*/librares)
         {
             if (node == null)
                 throw new ArgumentNullException("node");
-            if (addCallback == null)
-                throw new ArgumentNullException("addCallback");
-            if (removeCallback == null)
-                throw new ArgumentNullException("removeCallback");
-            if (clearCallback == null)
-                throw new ArgumentNullException("clearCallback");
+            if (librares == null)
+                throw new ArgumentNullException("librares");
 
             foreach (XmlNode child in node.ChildNodes)
             {
@@ -542,7 +535,7 @@ namespace PHP.Core
                     Uri uri = null;
 
                     if (assemblyName == null && assemblyUrl == null)
-                        throw new ConfigurationErrorsException(CoreResources.GetString("missing_attribute", "assembly"), child);
+                        throw new ConfigurationErrorsException(string.Format(CoreResources.missing_attribute, "assembly"), child);
 
                     if (assemblyUrl != null)
                     {
@@ -557,13 +550,13 @@ namespace PHP.Core
                     }
 
                     if (child.Name == "add")
-                        addCallback(assemblyName, uri, libraryRoot);
+                        librares.AddLibrary(assemblyName, uri, assemblyUrl, libraryRoot);
                     else
-                        removeCallback(assemblyName, uri, libraryRoot);
+                        librares.RemoveLibrary(assemblyName, uri, assemblyUrl, libraryRoot);
                 }
                 else if (child.Name == "clear")
                 {
-                    clearCallback(null);
+                    librares.ClearLibraries();
                 }
                 else if (child.NodeType == XmlNodeType.Element)
                 {

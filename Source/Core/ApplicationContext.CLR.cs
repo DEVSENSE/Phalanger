@@ -252,6 +252,12 @@ namespace PHP.Core
             public string libraryRootPath;
 
             /// <summary>
+            /// Value of the <c>url</c> attribute to allow removing the library
+            /// by this value within the nested configuration.
+            /// </summary>
+            public string urlNodeValue;
+
+            /// <summary>
             /// Compares two ScriptLibraryConfigurationNode objects.
             /// </summary>
             /// <param name="obj"></param>
@@ -261,6 +267,9 @@ namespace PHP.Core
                 var node = obj as ScriptLibraryConfigurationNode;
                 if (node != null)
                 {
+                    if (string.Equals(node.urlNodeValue, this.urlNodeValue, StringComparison.Ordinal))
+                        return true;
+
                     if (node.assemblyName != null && this.assemblyName != null)
                         return AssemblyName.ReferenceMatchesDefinition(node.assemblyName, this.assemblyName);
 
@@ -285,36 +294,25 @@ namespace PHP.Core
         private List<ScriptLibraryConfigurationNode> libraries = null;
 
         /// <summary>
-        /// Check if the given library was already and returns its config.
+        /// Check if the given library was already and returns its index within <see cref="libraries"/>.
         /// </summary>
-        /// <param name="desc"></param>
-        /// <returns></returns>
-        private ScriptLibraryConfigurationNode FindAddedLibrary(ScriptLibraryConfigurationNode/*!*/ desc)
+        private int FindAddedLibrary(ScriptLibraryConfigurationNode/*!*/ desc)
         {
-            if (libraries != null)
-                foreach (var lib in libraries)
-                {
-                    if (lib.Equals(desc))
-                        return lib;
-                }
-
-            return null;
+            return libraries.IndexOf(desc);
         }
 
         /// <summary>
         /// Adds new library to the script library.
         /// </summary>
-        /// <param name="assemblyName"></param>
-        /// <param name="assemblyUrl"></param>
-        /// <param name="libraryRootPath"></param>
         /// <returns>True if library was added, false if the library was not added.</returns>
-        public bool AddLibrary(string assemblyName, Uri assemblyUrl, string libraryRootPath)
+        public bool AddLibrary(string assemblyName, Uri assemblyUrl, string urlNodeValue, string libraryRootPath)
         {
             return AddLibrary(
                 new ScriptLibraryDatabase.ScriptLibraryConfigurationNode()
                 {
                     assemblyUrl = assemblyUrl,
                     assemblyName = (assemblyName != null) ? new AssemblyName(assemblyName) : null,
+                    urlNodeValue = urlNodeValue,
                     libraryRootPath = libraryRootPath
                 });
         }
@@ -322,23 +320,22 @@ namespace PHP.Core
         /// <summary>
         /// Removes specified library from the list of libraries to be loaded lazily.
         /// </summary>
-        /// <param name="assemblyName"></param>
-        /// <param name="assemblyUrl"></param>
-        /// <param name="libraryRootPath"></param>
         /// <returns>True if library was removed.</returns>
-        public bool RemoveLibrary(string assemblyName, Uri assemblyUrl, string libraryRootPath)
+        public bool RemoveLibrary(string assemblyName, Uri assemblyUrl, string urlNodeValue, string libraryRootPath)
         {
             var existing = FindAddedLibrary(
                 new ScriptLibraryDatabase.ScriptLibraryConfigurationNode()
                 {
                     assemblyUrl = assemblyUrl,
                     assemblyName = (assemblyName != null) ? new AssemblyName(assemblyName) : null,
+                    urlNodeValue = urlNodeValue,
                     libraryRootPath = libraryRootPath
                 });
 
-            if (existing != null)
+            if (existing >= 0)
             {
-                return libraries.Remove(existing);
+                libraries.RemoveAt(existing);
+                return true;
             }
             else
             {
@@ -349,8 +346,7 @@ namespace PHP.Core
         /// <summary>
         /// Clear the list of libraries to be loaded lazily.
         /// </summary>
-        /// <param name="obj">Not used.</param>
-        public void ClearLibraries(object obj)
+        public void ClearLibraries()
         {
             libraries = null;
         }
@@ -365,11 +361,13 @@ namespace PHP.Core
             Debug.Assert(desc != null);
 
             if (libraries == null)
+            {
                 libraries = new List<ScriptLibraryConfigurationNode>();
+            }
             else
             {
                 // check for duplicity
-                if (FindAddedLibrary(desc) != null)
+                if (FindAddedLibrary(desc) >= 0)
                     return false;
             }
 

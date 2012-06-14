@@ -568,10 +568,7 @@ namespace PHP.Core
 							break;
 
                         case ConfigurationSectionHandler.NodeScriptLibrary:
-                            ConfigUtils.ParseScriptLibraryAssemblyList(node,
-                                applicationContext.ScriptLibraryDatabase.AddLibrary,
-                                applicationContext.ScriptLibraryDatabase.RemoveLibrary,
-                                applicationContext.ScriptLibraryDatabase.ClearLibraries);
+                            ConfigUtils.ParseScriptLibraryAssemblyList(node, applicationContext.ScriptLibraryDatabase);
                             break;
 
 						case ConfigurationSectionHandler.NodeCompiler:
@@ -2128,10 +2125,7 @@ namespace PHP.Core
             // and script library after that
             if (node_ScriptLibrary != null)
             {
-                ConfigUtils.ParseScriptLibraryAssemblyList(node_ScriptLibrary,
-                    applicationContext.ScriptLibraryDatabase.AddLibrary,
-                    applicationContext.ScriptLibraryDatabase.RemoveLibrary,
-                    applicationContext.ScriptLibraryDatabase.ClearLibraries);
+                ConfigUtils.ParseScriptLibraryAssemblyList(node_ScriptLibrary, applicationContext.ScriptLibraryDatabase);
             }
 
 			return result;
