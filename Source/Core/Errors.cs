@@ -868,16 +868,16 @@ namespace PHP.Core
             FormatErrorMessageText(error, ref message, ref caller);
 
             // error message
-            string ErrorFormatStringId =
+            string ErrorFormatString =
                 config.ErrorControl.HtmlMessages ?
-                (show_place ? "error_message_html_debug" : "error_message_html") :
-                (show_place ? "error_message_plain_debug" : "error_message_plain");
+                (show_place ? CoreResources.error_message_html_debug : CoreResources.error_message_html) :
+                (show_place ? CoreResources.error_message_plain_debug : CoreResources.error_message_plain);
 
 			if (show_place)
-                return CoreResources.GetString(ErrorFormatStringId,
+                return string.Format(ErrorFormatString,
 					error_str, caller, message, info.File, info.Line, info.Column);
 			else
-                return CoreResources.GetString(ErrorFormatStringId,
+                return string.Format(ErrorFormatString,
                     error_str, caller, message);
 		}
 
