@@ -407,7 +407,7 @@ namespace PHP.Core.Binders
                 // PhpRoutine (function or method)
                 if (method.Member is PhpRoutine)
                 {
-                    InvokePhpMethod(target, args, (PhpObject)target.Value, method.PhpRoutine, out restrictions, out invokeMethodExpr);
+                    InvokePhpMethod(target, args, method.PhpRoutine, out restrictions, out invokeMethodExpr);
                     return new DynamicMetaObject(invokeMethodExpr, restrictions.Merge(classContextRestrictions));
                 }
                 // ClrMethod
@@ -457,6 +457,7 @@ namespace PHP.Core.Binders
 
 #else
             // Old overload resolution
+            // TODO: in case of zero-parameters, we can call via ArgFull
             InvokeArgLess(target, scriptContext, method, realArgs, out restrictions, out invokeMethodExpr);
 #endif
         }
@@ -495,9 +496,11 @@ namespace PHP.Core.Binders
                                     Expression.Assign(
                                         Expression.Field(stack, Fields.PhpStack_AllowProtectedCall),
                                         Expression.Constant(true, Types.Bool[0])),
-                                    HandleResult(Expression.Call(Expression.Constant(method.ArglessStub, typeof(RoutineDelegate)), "Invoke", null,
-                                        target.Expression,
-                                        stack), method.ArglessStub.Method.ReturnType));
+                                    HandleResult(
+                                        Expression.Call(method.ArglessStubMethod,
+                                            target.Expression,
+                                            stack),
+                                        method.ArglessStubMethod.ReturnType));
 
             restrictions = target.Restrictions;
         }
@@ -532,7 +535,7 @@ namespace PHP.Core.Binders
                                                                 new DynamicMetaObject(Expression.Constant(ActualMethodName),BindingRestrictions.Empty),
                                                                 new DynamicMetaObject(argsArrayVariable, BindingRestrictions.Empty) };
             // what if method.PhpRoutine is null 
-            InvokePhpMethod(target, callerMethodArgs, (PhpObject)target.Value, method.PhpRoutine, out restrictions, out invokeMethodExpr);
+            InvokePhpMethod(target, callerMethodArgs, /*(PhpObject)target.Value, */method.PhpRoutine, out restrictions, out invokeMethodExpr);
 
 
             //Expression:
@@ -588,17 +591,34 @@ namespace PHP.Core.Binders
         /// <summary>
         /// This method binds rules for PhpMethod
         /// </summary>
-        /// <param name="target"></param>
-        /// <param name="args"></param>
-        /// <param name="targetObj"></param>
-        /// <param name="routine"></param>
-        /// <param name="restrictions"></param>
-        /// <param name="invokeMethodExpr"></param>
-        /// <returns></returns>
-        private void InvokePhpMethod(DynamicMetaObject/*!*/ target, DynamicMetaObject/*!*/[]/*!*/ args, PhpObject/*!*/ targetObj, PhpRoutine/*!*/ routine, out BindingRestrictions restrictions, out Expression invokeMethodExpr)
+        private void InvokePhpMethod(DynamicMetaObject/*!*/ target, DynamicMetaObject[]/*!!*/ args, /*object targetObj,*/ PhpRoutine/*!*/ routine, out BindingRestrictions restrictions, out Expression invokeMethodExpr)
         {
-            // Restriction: typeof(target) == |target.TypeDesc.RealType|
-            restrictions = BindingRestrictions.GetTypeRestriction(target.Expression, targetObj.TypeDesc.RealType); //TODO: it's sufficient to use typeof(targetObj), but this is faster                                                                                                                                                                
+            Debug.Assert(target != null && target.Value != null);
+            Debug.Assert(!(target.Value is IClrValue), "PhpRoutine should not be declared on CLR value type!");
+
+            /*if (target.Value is PhpObject)
+            {
+                // Restriction: typeof(target) == |target.TypeDesc.RealType|
+                var targetPhpObj = (PhpObject)target.Value;
+                Debug.Assert(targetPhpObj.TypeDesc.RealType == target.LimitType);
+                Debug.Assert(target.Value.GetType() == target.LimitType);
+                restrictions = BindingRestrictions.GetTypeRestriction(target.Expression, targetPhpObj.TypeDesc.RealType);
+            }
+            else*/
+            Debug.Assert(typeof(ClrObject).IsSealed);   // just to ensure following condition is correct
+            if (target.Value.GetType() == typeof(ClrObject))
+            {
+                target = new ClrDynamicMetaObject(target);  // unwrap the real object, get restrictions
+                restrictions = target.Restrictions;
+            }
+            else
+            {
+                Debug.Assert(target.Value.GetType() == target.LimitType);   // just for sure
+                Debug.Assert(!(target.Value is PhpObject) || ((PhpObject)target.Value).TypeDesc.RealType == target.LimitType);
+
+                restrictions = BindingRestrictions.GetTypeRestriction(target.Expression, target.LimitType);
+            }
+
             BindingRestrictions argumentsRestrictions;
             Expression[] arguments;
 

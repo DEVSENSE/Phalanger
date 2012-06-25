@@ -1396,7 +1396,7 @@ namespace PHP.Core.CodeDom
             Output.Write("\")");*/
             Output.Write(Keywords.TypeOf);
             Output.Write(WhiteSpace.Space);
-            Output.Write(e.Type.BaseType);
+            OutputType(e.Type);//Output.Write(e.Type.BaseType);
             Output.Write(WhiteSpace.Space);
         }
 
