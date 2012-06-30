@@ -129,9 +129,11 @@ namespace PHP.Core.Reflection
 
         /// <summary>
         /// Characters separating <see cref="TransientModule.sourcePath"/> and <see cref="TransientModule.Id"/>.
+        /// Character at <c>0</c> is for special names.
+        /// Character at <c>1</c> is for normal names.
         /// </summary>
         internal static readonly char[]/*!*/IdDelimiters = new[] { '^', '?' };
-
+        
         public TransientCompilationUnit TransientCompilationUnit { get { return (TransientCompilationUnit)base.CompilationUnit; } }
 
         public MainRoutineDelegate Main { get { return main; } }
@@ -193,7 +195,7 @@ namespace PHP.Core.Reflection
             if (method.DeclaringType != null && applicationContext.IsTransientRealType(method.DeclaringType))
                 return ParseEvalId(method.DeclaringType.Namespace);
 
-            if (method.Name.Length > 3 && method.Name[0] == '<' && (method.Name[1] == '?' || method.Name[1] == '*'))
+            if (method.Name.Length > 3 && method.Name[0] == '<' && method.Name.IndexOfAny(IdDelimiters, 1) != -1)
                 return ParseEvalId(method.Name);
 
             return TransientAssembly.InvalidEvalId;
@@ -201,7 +203,7 @@ namespace PHP.Core.Reflection
 
         internal static bool IsSpecialName(string/*!*/ name)
         {
-            return name.Length > 1 && name[0] == '<' && name[1] == '*';
+            return name.Length > 1 && name[0] == '<' && name.IndexOf(IdDelimiters[0], 1) != -1;
         }
 
         /// <summary>
