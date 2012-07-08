@@ -101,8 +101,34 @@ namespace PHP.Core
 	/// All declarations from included script have the same number.
 	/// </remarks>
 	public struct ShortPosition
-	{
-		public int Line;
+    {
+        #region Comparer
+
+        /// <summary>
+        /// Short position IEqualityComparer.
+        /// </summary>
+        private class Comparer : IEqualityComparer<ShortPosition>
+        {
+            public bool Equals(ShortPosition x, ShortPosition y)
+            {
+                return x.Line == y.Line && x.Column == y.Column;
+            }
+
+            public int GetHashCode(ShortPosition obj)
+            {
+                return obj.Line ^ obj.Column;
+            }
+        }
+
+        /// <summary>
+        /// Singleton instance of <see cref="IEqualityComparer&lt;ShortPosition&gt;"/>.
+        /// </summary>
+        public static IEqualityComparer<ShortPosition>/*!*/ComparerSingleton { get { return _comparerSingleton ?? (_comparerSingleton = new Comparer()); } }
+        private static Comparer _comparerSingleton;
+        
+        #endregion
+
+        public int Line;
 		public int Column;
 
 		/// <summary>
@@ -141,8 +167,8 @@ namespace PHP.Core
 		public bool IsValid
 		{
 			get { return Line != -1; }
-		}
-	}
+        }
+    }
 
 	#endregion
 

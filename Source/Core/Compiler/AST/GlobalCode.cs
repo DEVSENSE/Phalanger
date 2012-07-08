@@ -326,16 +326,12 @@ namespace PHP.Core.AST
 		private readonly List<GlobalConstantDecl>/*!*/ constants;
         public List<GlobalConstantDecl>/*!*/ Constants { get { return constants; } }
 
-		private string docComment;
-
-		public GlobalConstDeclList(Position position, List<GlobalConstantDecl>/*!*/ constants,
-	  List<CustomAttribute> attributes, string docComment)
+		public GlobalConstDeclList(Position position, List<GlobalConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
 			: base(position)
 		{
 			Debug.Assert(constants != null);
 
 			this.constants = constants;
-			this.docComment = docComment;
 			this.attributes = new CustomAttributes(attributes);
 		}
 
