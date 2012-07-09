@@ -159,6 +159,11 @@ namespace PHP.Core.Parsers
             public PhpMemberAttributes attr;
             public string docComment;
 
+            public TmpMemberInfo(PhpMemberAttributes attr, string docComment)
+            {
+                this.Update(attr, docComment);
+            }
+
             public TmpMemberInfo/*!*/Update(PhpMemberAttributes attr, string docComment)
             {
                 this.attr = attr;
@@ -171,7 +176,7 @@ namespace PHP.Core.Parsers
         /// <summary>
         /// Singleton; used to pass information from <c>member_modifier</c> together with doc comment.
         /// </summary>
-        private TmpMemberInfo TmpMemberInfoSingleton { get { return _tmpMemberInfoSingleton ?? (_tmpMemberInfoSingleton = new TmpMemberInfo()); } }
+        private TmpMemberInfo TmpMemberInfoSingleton { get { return _tmpMemberInfoSingleton ?? (_tmpMemberInfoSingleton = new TmpMemberInfo(PhpMemberAttributes.Public, null)); } }
         private TmpMemberInfo _tmpMemberInfoSingleton = null;
 
         #endregion
@@ -310,7 +315,7 @@ namespace PHP.Core.Parsers
 			reader = null;
 		}
 
-        //#region DocComments
+        #region DocComments
 
         ///// <summary>
         ///// Stack of PHPDoc content. Used internally during parsing.
@@ -333,20 +338,6 @@ namespace PHP.Core.Parsers
         //    docCommentStack.Push((string)comment);
         //}
 
-        protected override bool ErrorRecovery()
-        {
-            //if (this.next == (int)Tokens.T_DOC_COMMENT)
-            //{
-            //    // ignore T_DOC_COMMENT
-            //    this.next = this.Scanner.GetNextToken();
-            //    return true;
-            //}
-            //else
-            {
-                return base.ErrorRecovery();
-            }
-        }
-
         private void SetCommentSetHelper(object element, object doccomment)
         {
             Debug.Assert(element is LangElement);
@@ -358,7 +349,7 @@ namespace PHP.Core.Parsers
             }
         }
 
-        //#endregion
+        #endregion
 
 		#region Conditional Code, Scope
 

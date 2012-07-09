@@ -1415,12 +1415,12 @@ member_modifiers:
 ;
                    
 member_modifier:
-		T_PUBLIC			{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Public, (string)$1); }
-	|	T_PROTECTED			{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Protected, (string)$1); }		
-	|	T_PRIVATE			{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Private, (string)$1); }	
-	|	T_STATIC			{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Static, (string)$1); }	
-	|	T_ABSTRACT			{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Abstract, (string)$1); }		
-	|	T_FINAL				{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Final, (string)$1); }	
+		T_PUBLIC			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Public, (string)$1); }
+	|	T_PROTECTED			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Protected, (string)$1); }		
+	|	T_PRIVATE			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Private, (string)$1); }	
+	|	T_STATIC			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Static, (string)$1); }	
+	|	T_ABSTRACT			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Abstract, (string)$1); }		
+	|	T_FINAL				{ $$ = new TmpMemberInfo(PhpMemberAttributes.Final, (string)$1); }	
 ;
 
 property_declarator_list:

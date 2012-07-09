@@ -192,7 +192,7 @@ namespace PHP.Core.Parsers.GPPG
 		protected PositionType yypos;
 		protected bool yypos_valid;
 		
-		protected int next;
+		private int next;
 		private int current_state_index;
         //private State current_state { get { return this.states[current_state_index]; } }
 
@@ -401,7 +401,7 @@ namespace PHP.Core.Parsers.GPPG
 		}
 
 
-		protected virtual bool ErrorRecovery()
+		protected bool ErrorRecovery()
 		{
 			if (!recovering) // if not recovering from previous error
 				ReportError();
