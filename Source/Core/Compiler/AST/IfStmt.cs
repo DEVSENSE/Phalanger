@@ -225,11 +225,11 @@ namespace PHP.Core.AST
 		private Statement/*!*/ statement;
 
         /// <summary>
-        /// The whole <see cref="ConditionalStmt"/> position.
+        /// Beginning of <see cref="ConditionalStmt"/>.
         /// </summary>
-        public readonly Position Position;
+        public readonly ShortPosition Position;
 
-		public ConditionalStmt(Position position, Expression condition, Statement/*!*/ statement)
+		public ConditionalStmt(ShortPosition position, Expression condition, Statement/*!*/ statement)
 		{
             this.Position = position;
 			this.condition = condition;
