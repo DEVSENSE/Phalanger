@@ -1180,6 +1180,18 @@ namespace PHP.Core
             return string.Equals(self, str, StringComparison.OrdinalIgnoreCase);
         }
 
+        /// <summary>
+        /// Converts the specified character to uppercase.
+        /// Changes only characters between 'a' and 'z'.
+        /// </summary>
+        public static char ToUpperAsciiInvariant(this char c)
+        {
+            if ('a' <= c && c <= 'z')
+            {
+                c = (char)((int)c & -33);
+            }
+            return c;
+        }
 
         /// <summary>
         /// Returns last character of string or -1 if empty

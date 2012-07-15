@@ -1179,10 +1179,10 @@ namespace PHP.Core
 		/// Converts a string to integer value and double value and decides whether it represents a number as a whole.
 		/// </summary>
 		/// <param name="s">The string to convert.</param>
-		/// <param name="length">A maximal length of the substring to be parsed.</param>
-		/// <param name="p">
-		/// A position where to start parsing. Returns a position where the parsing ended
-		/// (the first character not visited).
+		/// <param name="limit">Maximum zero-based index within given <paramref name="s"/> to be proccessed.
+        /// Must be greater than or equal <c>0</c> and less than or equal to string length.</param>
+        /// <param name="from">
+		/// A position where to start parsing.
 		/// </param>
 		/// <param name="l">
 		/// Returns a position where long-integer-parsing ended 
@@ -1206,12 +1206,12 @@ namespace PHP.Core
 		/// The return value always includes one of NumberInfo.Integer, NumberInfo.LongInteger, NumberInfo.Double
 		/// and never NumberInfo.Unconvertible (as each string is convertible to a number).
 		/// </returns>
-        private static NumberInfo IsNumber(string s, int length, int p, out int l, out int d,
+        private static NumberInfo IsNumber(string s, int limit, int from, out int l, out int d,
             out int intValue, out long longValue, out double doubleValue)
         {
             if (string.IsNullOrEmpty(s))
             {
-                p = l = d = intValue = 0;
+                l = d = intValue = 0;
                 longValue = 0;
                 doubleValue = 0.0;
                 return NumberInfo.Integer;
@@ -1220,38 +1220,39 @@ namespace PHP.Core
             // invariant after return: 0 <= i <= l <= d <= p <= old(p) + length - 1.
             NumberInfo result = 0;
 
-            if (p < 0) p = 0;
-            if (length < 0 || length > s.Length - p) length = s.Length - p;
-            int limit = p + length;
+            Debug.Assert(from >= 0);
+            //if (from < 0) from = 0;
+
+            //Debug.Assert(length >= 0 && length <= s.Length - from);
+            //if (length < 0 || length > s.Length - from) length = s.Length - from;
+
+            Debug.Assert(limit >= from && limit <= s.Length);
+            //int limit = from + length;
 
             // long:
             longValue = 0;                      // long integer value of already read part of the string
             l = -1;                             // last position of an long integer part of the string
 
             // double:
-            int exponent = 0;                   // the value of exponent
-            double expBase = 10;                // sign of the exponent (equivalent to bases 10 and 0.1)
-            int e = -1;                         // position where the exponent has started by 'e', 'E', 'd', or 'D'
-
-            doubleValue = 0.0;                  // double value; initialized once <l> is assigned
-            long doubleFrac = 0;                // fraction part of parsed double; more precision than incremental and faster 
-            int doubleFracLength = 0;           // fraction part of double length, if < 0 we have to fallback to double behaviour
+            doubleValue = 0.0;                  // double value; initialized at the end
             d = -1;                             // last position where the double has ended
-
+            int e = -1;                         // position where the exponent has started by 'e', 'E', 'd', or 'D'
+            
             // common:
-            bool contains_digit = false;        // whether a digit is contained in the string
+            bool contains_digit = false;        // whether a digit is contained in the string (in the integral and fraction part of the nummber, not an exponent)
             bool sign = false;                  // whether a sign of whole number is minus
             int state = 0;                      // automaton state
-
+            int p = from;                       // current index within parsed string
+            
             // patterns and states:
-            // [:white:]*[+-]?0?[0-9]*[.]?[0-9]*([dDeE][+-]?[0-9]+)?
+            // [:white:]*[+-]?0?[0-9]*[.]?[0-9]*([eE][+-]?[0-9]+)?
             //  0000000   11  2  222   2   333    4444  55   666     
             // [:white:]*[+-]?0(x|X)[0-9A-Fa-f]*    // TODO: PHP does not resolve [+-] at the beginning, however Phalanger does
             //  0000000   11  2 777  888888888  
 
             while (p < limit)
             {
-                char c = s[p];
+                char c = s[p];  // TODO: *fixed, no range check
 
                 switch (state)
                 {
@@ -1288,6 +1289,7 @@ namespace PHP.Core
 
                             // ends reading (long) integer:
                             l = p;
+                            // doubleValue = 0.0; // already zeroed
 
                             // switch to decimals in next turn:
                             if (c == '.')
@@ -1302,6 +1304,8 @@ namespace PHP.Core
 
                     case 2: // expecting result
                         {
+                            Debug.Assert(l == -1, "Reading long.");
+
                             // a single leading zero:
                             if (c == '0' && !contains_digit)
                             {
@@ -1315,65 +1319,56 @@ namespace PHP.Core
                                 int num = (int)(c - '0');
                                 contains_digit = true;
 
-                                // if still reading a long integer (we may read a double only since integer has already overflown):
-                                if (l == -1)
+                                if (longValue < Int64.MaxValue / 10 || (longValue == Int64.MaxValue / 10 && num <= Int64.MaxValue % 10))
                                 {
-                                    if (longValue < Int64.MaxValue / 10 || (longValue == Int64.MaxValue / 10 && num <= Int64.MaxValue % 10))
-                                    {
-                                        longValue = longValue * 10 + num;
-                                    }
-                                    else
-                                    {
-                                        // we need double now:
-                                        doubleValue = unchecked((double)longValue);
-
-                                        // last long integer position:
-                                        l = p;
-
-                                        // fix for long.MinValue (which integral part cannot be hold as position long)
-                                        if (sign && num == -(Int64.MinValue % 10))
-                                        {
-                                            // parsed number is still valid long (Int64.MinValue)
-                                            ++l; // move the long position after this character
-                                            doubleValue = -(double)long.MinValue;   // sign will be applied later
-                                        }
-
-                                        longValue = sign ? Int64.MinValue : Int64.MaxValue;
-                                    }
+                                    // still fits long
+                                    longValue = longValue * 10 + num;
+                                    break;
                                 }
                                 else
                                 {
-                                    doubleValue = unchecked(doubleValue * 10.0 + (double)num);   // now we are updating just double, long is not big enought
-                                }
+                                    // long not big enough ...
 
-                                break;
+                                    // last long integer position:
+                                    l = p;
+                                    
+                                    // fix for long.MinValue (which integral part cannot be hold as position long)
+                                    if (sign && num == -(Int64.MinValue % 10))
+                                    {
+                                        // parsed number is still valid long (Int64.MinValue)
+                                        ++l; // move the long position after this character
+                                    }
+
+                                    longValue = sign ? Int64.MinValue : Int64.MaxValue;
+
+                                    // continue reading as double:
+                                    state = 3;   // => doubleValue will be initialized at the end
+                                    break;
+                                }
                             }
 
                             // ends reading (long) integer:
-                            if (l == -1)
-                            {
-                                // init doubleValue:
-                                doubleValue = unchecked((double)longValue);
 
-                                // last long integer position:
-                                if (sign) longValue *= -1;
-                                l = p;
-                            }
-
+                            // last long integer position:
+                            l = p;
+                            if (sign) longValue *= -1;
+                            
                             // switch to decimals in next turn:
                             if (c == '.')
                             {
-                                state = 3;
+                                state = 3;  // => doubleValue will be initialized at the end
                                 break;
                             }
 
                             // switch to exponent in next turn:
-                            if (c == 'd' || c == 'D' || c == 'e' || c == 'E')
+                            if ((c == 'e' || c == 'E') && contains_digit)
                             {
                                 e = p;
-                                state = 4;
+                                state = 4;  // => doubleValue will be initialized at the end
                                 break;
                             }
+
+                            doubleValue = unchecked((double)longValue);
 
                             // unexpected character:
                             goto Done;
@@ -1386,25 +1381,12 @@ namespace PHP.Core
                             // reading decimals:
                             if (c >= '0' && c <= '9')
                             {
-                                if (doubleFrac <= ((long.MaxValue - 9) / 10))   // long can still hold the fraction
-                                {
-                                    doubleFrac = doubleFrac * 10 + (c - '0');
-                                    ++doubleFracLength;
-                                }
-                                else
-                                {
-                                    // general behaviour?
-                                }
-
+                                contains_digit = true;
                                 break;
-
-                                //// general behaviour
-                                //doubleValue += (c - '0') / (div *= 10.0);
-                                //break;
                             }
 
                             // switch to exponent in next turn:
-                            if (c == 'd' || c == 'D' || c == 'e' || c == 'E')
+                            if ((c == 'e' || c == 'E') && contains_digit)
                             {
                                 e = p;
                                 state = 4;
@@ -1429,7 +1411,7 @@ namespace PHP.Core
                             // switch to exponent in next turn:
                             if (c == '-')
                             {
-                                expBase = 0.1;
+                                //expBase = 0.1;
                                 state = 5;
                                 break;
                             }
@@ -1455,21 +1437,7 @@ namespace PHP.Core
                         {
                             if (c >= '0' && c <= '9')
                             {
-                                // if exponent exceeds max{log(MaxValue),|log(Epsilon)|} < 400 then
-                                // the result is either infinity or zero, the first is excluded by the condition below;
-                                // if the result is zero, we can read arbitrarily long exponent:
-                                if (exponent > 400)
-                                    break;
-
-                                exponent = exponent * 10 + (int)(c - '0');
-
-                                // continues reading exponent if the total value is not infinite:
-                                if (exponent == 0 ||
-                                    unchecked
-                                    (   ((l == -1) ? (double)longValue : doubleValue)   // integral part
-                                        + ((doubleFrac > 0) ? ((double)doubleFrac / Math.Pow(10.0, (double)doubleFracLength)) : 0.0)    // frac part
-                                    ) * Math.Pow(expBase, exponent) != Double.PositiveInfinity) // exp
-                                    break;
+                                break;
                             }
 
                             // unexpected character:
@@ -1507,21 +1475,27 @@ namespace PHP.Core
                                     if (longValue < Int64.MaxValue / 16 || (longValue == Int64.MaxValue / 16 && num <= Int64.MaxValue % 16))
                                     {
                                         longValue = longValue * 16 + num;
+                                        break;
                                     }
                                     else
                                     {
-                                        doubleValue = unchecked((double)longValue);
-
                                         // last hexa long integer position:
-                                        l = p;
-                                        longValue = sign ? Int64.MinValue : Int64.MaxValue;
+                                        doubleValue = unchecked((double)longValue);
+                                        if (sign)
+                                        {
+                                            doubleValue = unchecked(-doubleValue);
+                                            longValue = Int64.MinValue;
+                                        }
+                                        else
+                                        {
+                                            longValue = Int64.MaxValue;
+                                        }
+                                        // fallback to double behaviour below...
                                     }
                                 }
-                                else
-                                {
-                                    doubleValue = unchecked(doubleValue * 16.0 + (double)num);
-                                    l = p;  // last position is advanced even the long is too long?
-                                }
+                                
+                                l = p;  // last position is advanced even the long is too long?
+                                doubleValue = unchecked(doubleValue * 16.0 + (double)num);
 
                                 break;
                             }
@@ -1534,20 +1508,30 @@ namespace PHP.Core
 
         Done:
 
-            // an exponent ends with 'e', 'd', 'E', 'D', '-', or '+':
+            // an exponent ends with 'e', 'E', '-', or '+':
             if (state == 4 || state == 5)
             {
                 Debug.Assert(l >= 0 && e >= 0, "Reading exponent of double.");
 
                 // shift back:
                 p = e;
+                state = 3;
             }
 
-            // if long/integer index hasn't stopped the sign hasn't been applied yet:
-            if (l == -1) { doubleValue = unchecked((double)longValue); if (sign) longValue = unchecked(-longValue); l = p; }
-            
-            // determine int/long type:
-            // try fit long into int:
+            // if long/integer index hasn't stopped:
+            // - the sign hasn't been applied yet
+            // - doubleValue hasn't been initialized yet
+            if (l == -1)
+            {
+                l = p;
+
+                if (sign)
+                    longValue = unchecked(-longValue);
+
+                doubleValue = unchecked((double)longValue);
+            }
+
+            // determine int/long type (try fit long into int):
             intValue = unchecked((int)longValue);
             if (intValue == longValue)
             {
@@ -1559,38 +1543,26 @@ namespace PHP.Core
                 intValue = (longValue < 0) ? int.MinValue : int.MaxValue;
             }
 
-            // if double index hasn't stopped neither the fraction, exponent nor sign have not been applied yet:
+            // double parsing states
+            if (state >= 3 && state <= 6)
+            {
+                Debug.Assert(p >= from);            // something was parsed
+                Debug.Assert(doubleValue == 0.0);   // doubleValue not changed yet
+
+                if (contains_digit) // otherwise 0.0
+                    ParseDouble((from == 0 && p == s.Length) ? s : s.Substring(from, p - from), sign, out doubleValue);
+            }
+
+            // if double index hasn't stopped:
             if (d == -1)
             {
-                // reconstruct fraction part
-                if (doubleFrac != 0)    // => doubleFracLength > 0
-                {
-                    switch (doubleFracLength)
-                    {
-                        case 0: Debug.Fail(); break;
-                        case 1: doubleValue += (double)doubleFrac * 0.1; break;
-                        case 2: doubleValue += (double)doubleFrac * 0.01; break;
-                        case 3: doubleValue += (double)doubleFrac * 0.001; break;
-                        case 4: doubleValue += (double)doubleFrac * 0.0001; break;
-                        case 5: doubleValue += (double)doubleFrac * 0.00001; break;
-                        case 6: doubleValue += (double)doubleFrac * 0.000001; break;
-                        case 7: doubleValue += (double)doubleFrac * 0.0000001; break;
-                        default: doubleValue += (double)doubleFrac / Math.Pow(10.0, (double)doubleFracLength); break;   // more precise than (X * 0.1^length)
-                    }
-                }
-
-                // apply an exponent:
-                if (exponent != 0)
-                    doubleValue *= Math.Pow(expBase, exponent);
-
                 // last double value position:
                 d = p;
             }
 
-            if (sign) doubleValue *= -1.0;
-
             // determine the double type comparing strictly d, l:
-            if (d > l) result = result & ~NumberInfo.TypeMask | NumberInfo.Double;  // remove Integer|LongInteger, add Double
+            if (d > l)
+                result = result & ~NumberInfo.TypeMask | NumberInfo.Double;  // remove Integer|LongInteger, add Double
 
             // the string is a number if it was entirely parsed and contains a digit:
             if (contains_digit && p == limit)
@@ -1598,6 +1570,29 @@ namespace PHP.Core
 
             //
             return result;
+        }
+
+        /// <summary>
+        /// Parses given string as a <see cref="Double"/>, using invariant culture and proper number styles.
+        /// </summary>
+        private static void ParseDouble(string str, bool sign, out double doubleValue)
+        {
+            Debug.Assert(str != null);
+
+            if (!double.TryParse(
+                str,
+                NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent | NumberStyles.AllowLeadingWhite,
+                CultureInfo.InvariantCulture,
+                out doubleValue))
+            {
+                // overflow: (the only other fail would be format exception which is not possible)
+//#if DEBUG
+//                try { double.Parse(str, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent | NumberStyles.AllowLeadingWhite, CultureInfo.InvariantCulture); }
+//                catch (OverflowException) { /* expected */ }
+//                catch { Debug.Fail("Unexpected double.Parse() exception!"); }
+//#endif
+                doubleValue = sign ? double.NegativeInfinity : double.PositiveInfinity;
+            }
         }
 
 		/// <summary>
@@ -1682,7 +1677,7 @@ namespace PHP.Core
 		public static NumberInfo StringToNumber(string str, out int intValue, out long longValue, out double doubleValue)
 		{
             int l, d;
-			return IsNumber(str, -1, 0, out l, out d, out intValue, out longValue, out doubleValue);
+			return IsNumber(str, (str != null) ? str.Length : 0, 0, out l, out d, out intValue, out longValue, out doubleValue);
 		}
 
 		/// <summary>
@@ -1695,7 +1690,7 @@ namespace PHP.Core
 			int ival, l, d;
 			double dval;
 			long lval;
-			IsNumber(str, -1, 0, out l, out d, out ival, out lval, out dval);
+            IsNumber(str, (str != null) ? str.Length : 0, 0, out l, out d, out ival, out lval, out dval);
 
 			return ival;
 		}
@@ -1710,7 +1705,7 @@ namespace PHP.Core
             int ival, l, d;
 			double dval;
 			long lval;
-			IsNumber(str, -1, 0, out l, out d, out ival, out lval, out dval);
+            IsNumber(str, (str != null) ? str.Length : 0, 0, out l, out d, out ival, out lval, out dval);
 
 			return lval;
 		}
@@ -1725,7 +1720,7 @@ namespace PHP.Core
             int ival, l, d;
 			double dval;
 			long lval;
-			IsNumber(str, -1, 0, out l, out d, out ival, out lval, out dval);
+            IsNumber(str, (str != null) ? str.Length : 0, 0, out l, out d, out ival, out lval, out dval);
 
 			return dval;
 		}
@@ -1742,11 +1737,11 @@ namespace PHP.Core
 		/// <returns>The integer stored in the <paramref name="str"/>.</returns>
 		public static long SubstringToLongInteger(string str, int length, ref int position)
 		{
-			int d;
+            int d;
 			int ival;
 			long lval;
 			double dval;
-            IsNumber(str, length, position, out position, out d, out ival, out lval, out dval);
+            IsNumber(str, position + length, position, out position, out d, out ival, out lval, out dval);
 
 			return lval;
 		}
@@ -1754,20 +1749,22 @@ namespace PHP.Core
 		/// <summary>
 		/// Converts a part of a string starting on a specified position to a double.
 		/// </summary>
-		/// <param name="str">The string to be parsed.</param>
+		/// <param name="str">The string to be parsed. Cannot be <c>null</c>.</param>
 		/// <param name="length">Maximal length of the substring to parse.</param>
 		/// <param name="position">
 		/// The position where to start. Points to the first character after the substring storing the double
 		/// when returned.
 		/// </param>
 		/// <returns>The double stored in the <paramref name="str"/>.</returns>
-		public static double SubstringToDouble(string str, int length, ref int position)
+		public static double SubstringToDouble(string/*!*/str, int length, ref int position)
 		{
+            Debug.Assert(str != null && position + length <= str.Length);
+
             int l;
 			int ival;
 			long lval;
 			double dval;
-            IsNumber(str, length, position, out l, out position, out ival, out lval, out dval);
+            IsNumber(str, position + length, position, out l, out position, out ival, out lval, out dval);
 
 			return dval;
 		}
@@ -2262,9 +2259,9 @@ namespace PHP.Core
 				new TestCase("10efd",                false,    2,  2,  2,  2,      10,      10,  10.0),
 				new TestCase("10d",                  false,    2,  2,  2,  2,      10,      10,  10.0),
 				new TestCase("10e",                  false,    2,  2,  2,  2,      10,      10,  10.0),
-				new TestCase("-.14",                 false,    4,  1,  1,  4,       0,       0, -0.14),
-				new TestCase(".14",                  false,    3,  0,  0,  3,       0,       0,  0.14),
-				new TestCase("+.e2",                 false,    4,  1,  1,  4,       0,       0,  0.0),
+				new TestCase("-.14",                  true,    4,  1,  1,  4,       0,       0, -0.14),
+				new TestCase(".14",                   true,    3,  0,  0,  3,       0,       0,  0.14),
+				new TestCase("+.e2",                 false,    4,  1,  1,  2,       0,       0,  0.0),
 				new TestCase("1e10xy",               false,    4,  1,  1,  4,       1,       1,  10000000000.0),
 				new TestCase("   ",                  false,    3,  3,  3,  3,       0,       0,  0.0),
 				new TestCase("     -",               false,    6,  6,  6,  6,       0,       0,  0.0),
@@ -2283,13 +2280,14 @@ namespace PHP.Core
 				new TestCase("+",                    false,    1,  1,  1,  1,       0,       0,  0.0),
 				new TestCase("",                     false,    0,  0,  0,  0,       0,       0,  0.0),
 				new TestCase(null,                   false,    0,  0,  0,  0,       0,       0,  0.0),
-				new TestCase("10e1111111111111111",  false,    6,  2,  2,  6,      10,      10,  Double.PositiveInfinity),
+				new TestCase("10e1111111111111111",   true,    6,  2,  2, 19,      10,      10,  Double.PositiveInfinity),
 				new TestCase("10e-1111111111111111",  true,   20,  2,  2, 20,      10,      10,  0.0),
 				new TestCase("0e-1111111111111111",   true,   19,  1,  1, 19,       0,       0,  0.0),
                 new TestCase("89.99",                 true,    5,  2,  2,  5,      89,      89,  89.99),
                 new TestCase("-12.3",                 true,    5,  3,  3,  5,     -12,     -12, -12.3),
-                new TestCase("0.12345678901234567890123456789",true,   31,  1,  1, 31,       0,       0,  0.12345678901234567890123456789),
-			    //new TestCase("0.00000000000034567890123456789",true,   31,  1,  1, 31,       0,       0,  0.00000000000034567890123456789),
+                new TestCase("0.12345678901234567890123456789",true,   31, 1,   1, 31,       0,       0,  0.12345678901234567890123456789),
+			    new TestCase("0.00000000000034567890123456789",true,   31, 1,   1, 31,       0,       0,  0.00000000000034567890123456789),
+                new TestCase("1.89",                  true,    4,  1,  1,  4,       1,       1,  1.89),
 			};
 
 			[Test]
@@ -2300,7 +2298,7 @@ namespace PHP.Core
 					int d, l, iv, p = 0;
 					double dv;
 					long lv;
-					Convert.NumberInfo info = Core.Convert.IsNumber(c.s, -1, p, out l, out d, out iv, out lv, out dv);
+					Convert.NumberInfo info = Core.Convert.IsNumber(c.s, (c.s != null) ? c.s.Length : 0, p, out l, out d, out iv, out lv, out dv);
 
 					Debug.Assert(c.isnum == ((info & Convert.NumberInfo.IsNumber) != 0));
 					//Debug.Assert(c.p == p);
