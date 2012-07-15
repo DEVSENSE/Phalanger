@@ -416,11 +416,11 @@ namespace PHP.Library
 		public static string RawUrlDecode(string str)
 		{
 			if (str == null) return null;
-            return HttpUtility.UrlDecode(str);//.Replace(' ','+');
+            return HttpUtility.UrlDecode(str.Replace("+", "%2B"));  // preserve '+'
         }
 
 		/// <summary>
-		/// Encodes a URL string keeping spaces in it.
+		/// Encodes a URL string keeping spaces in it. Spaces are encoded as '%20'.
 		/// </summary>  
 		/// <param name="str">The string to be encoded.</param>
 		/// <returns>The encoded string.</returns>
@@ -428,7 +428,7 @@ namespace PHP.Library
 		public static string RawUrlEncode(string str)
 		{
 			if (str == null) return null;
-            return UpperCaseEncodedChars(HttpUtility.UrlPathEncode(str));
+            return UpperCaseEncodedChars(HttpUtility.UrlEncode(str)).Replace("+", "%20");   // ' ' => '+' => '%20'
 		}
 
 		/// <summary>
@@ -441,7 +441,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Encodes a URL string.
+        /// Encodes a URL string. Spaces are encoded as '+'.
 		/// </summary>  
 		[ImplementsFunction("urlencode")]
 		public static string UrlEncode(string str)
