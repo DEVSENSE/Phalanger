@@ -5,5 +5,5 @@
 
 date_default_timezone_set("GMT");
 $d = date_create("2005-07-18 22:10:00 +0400");
-echo $d->format(date::RFC822), "\n";
+echo $d->format(DateTime::RFC822), "\n";
 ?>

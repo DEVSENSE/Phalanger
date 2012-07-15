@@ -140,7 +140,15 @@ namespace PHP.Library
             }
             else
             {
-                throw new NotImplementedException();    // TODO
+                var result = PhpDateTime.StringToTime(timestr);
+                if (result is int)
+                {
+                    this.Time = DateTimeUtils.UnixTimeStampToUtc((int)result);
+                }
+                else
+                {
+                    this.Time = DateTime.UtcNow;
+                }
             }
 
             //this.date.Value = this.Time.ToString("yyyy-mm-dd HH:mm:ss");
@@ -303,7 +311,7 @@ namespace PHP.Library
         [return: CastToFalse]
         public static object DateCreate(ScriptContext/*!*/context, string time)
         {
-            return DateCreate(context, time);
+            return DateCreate(context, time, null);
         }
 
         /// <summary>

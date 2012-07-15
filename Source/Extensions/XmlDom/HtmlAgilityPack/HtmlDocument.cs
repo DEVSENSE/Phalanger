@@ -7,7 +7,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.XPath;
-using System.Diagnostics;
+
+using PHP.Core; // StringUtils
 
 namespace HtmlAgilityPack
 {
@@ -363,7 +364,7 @@ namespace HtmlAgilityPack
             {
                 char a = str[stri];
                 char b = data[datai];
-                if (a != b && UpperCaseOrdinal(a) != UpperCaseOrdinal(b))
+                if (a != b && a.ToUpperAsciiInvariant() != b.ToUpperAsciiInvariant())
                     return false;
             }
 
@@ -371,13 +372,6 @@ namespace HtmlAgilityPack
         }
 
         //private static readonly Regex/*!*/htmlAmpRegex = new Regex("&(?!(amp;)|(lt;)|(gt;)|(quot;))", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-
-        private static char UpperCaseOrdinal(char c)
-        {
-            if (c >= 'a' && c <= 'z') return (char)(c - ('a' - 'A'));
-
-            return c;
-        }
 
         /// <summary>
         /// Determines if the specified character is considered as a whitespace character.
