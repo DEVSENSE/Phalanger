@@ -299,10 +299,6 @@
     <Compile Include="Conversions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DuckTyping\Enumerables.cs" />
-    <Compile Include="DuckTyping\Generator.CLR.cs" />
-    <Compile Include="DuckTyping\Multitypes.cs" />
-    <Compile Include="DuckTyping\Runtime.cs" />
     <Compile Include="DynamicCode.cs">
       <SubType>Code</SubType>
     </Compile>
