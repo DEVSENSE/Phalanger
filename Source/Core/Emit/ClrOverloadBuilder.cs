@@ -85,14 +85,14 @@ namespace PHP.Core.Emit
 	/// NoSuitableOverload()
 	/// </code></remarks>
 	[DebuggerNonUserCode]
-	internal sealed class ClrOverloadBuilder
+	public sealed class ClrOverloadBuilder
 	{
 		#region Fields and types
 
 		/// <summary>
 		/// A delegate used to load a parameter to evaluation stack.
 		/// </summary>
-		internal delegate object ParameterLoader(ILEmitter/*!*/ il, IPlace/*!*/ stack, IPlace/*!*/ parameter);
+		public delegate object ParameterLoader(ILEmitter/*!*/ il, IPlace/*!*/ stack, IPlace/*!*/ parameter);
 
 		private ILEmitter/*!*/ il;
 		private ClrMethod/*!*/ method;
@@ -1269,7 +1269,7 @@ namespace PHP.Core.Emit
 		/// <summary>
 		/// Converts a PHP value to the given CLR type (the caller is not interested in the success of the conversion).
 		/// </summary>
-		internal static void EmitConvertToClr(ILEmitter/*!*/ il, PhpTypeCode typeCode, Type/*!*/ formalType)
+		public static void EmitConvertToClr(ILEmitter/*!*/ il, PhpTypeCode typeCode, Type/*!*/ formalType)
 		{
 			EmitConvertToClr(il, typeCode, formalType, il.GetTemporaryLocal(typeof(ConversionStrictness), true));
 		}

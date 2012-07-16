@@ -1095,8 +1095,7 @@ namespace PHP.Core.AST
 		/// Item in the table of methods or a <B>null</B> reference if added to the type yet or an error occured while adding.
 		/// </summary>
 		private PhpMethod method = null;
-		internal PhpMethod Method { get { return method; } }
-
+		
 		public Position EntireDeclarationPosition { get { return entireDeclarationPosition; } }
 		private Position entireDeclarationPosition;
 
