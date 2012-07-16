@@ -276,8 +276,6 @@
     <Compile Include="Compiler\CodeGenerator\Stacks.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DuckTyping\Generator.CLR.cs" />
-    <Compile Include="DuckTyping\Runtime.cs" />
     <Compile Include="Compiler\Errors.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -302,21 +300,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DuckTyping\Enumerables.cs" />
+    <Compile Include="DuckTyping\Generator.CLR.cs" />
     <Compile Include="DuckTyping\Multitypes.cs" />
+    <Compile Include="DuckTyping\Runtime.cs" />
     <Compile Include="DynamicCode.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="EmbeddedDoc\DocAttribute.cs" />
-    <Compile Include="EmbeddedDoc\DocBlock.cs" />
-    <Compile Include="EmbeddedDoc\DocElement.cs" />
-    <Compile Include="EmbeddedDoc\DocExpression.cs" />
-    <Compile Include="EmbeddedDoc\DocResolver.cs" />
-    <Compile Include="EmbeddedDoc\DocVisitor.cs" />
-    <Compile Include="EmbeddedDoc\Generated\Lexer.cs" />
-    <Compile Include="EmbeddedDoc\Generated\Parser.cs" />
-    <Compile Include="EmbeddedDoc\Parsers\Lexer.cs" />
-    <Compile Include="EmbeddedDoc\Parsers\Parser.cs" />
-    <Compile Include="EmbeddedDoc\Parsers\Scanner.cs" />
     <Compile Include="Emit\AssemblyBuilders.CLR.cs" />
     <Compile Include="Emit\AssemblyBuilders.cs" />
     <Compile Include="Emit\ClrOverloadBuilder.cs" />
@@ -548,9 +537,8 @@
       <CustomToolNamespace>PHP.Core.Localizations</CustomToolNamespace>
     </EmbeddedResource>
     <None Include="Core.snk" />
-    <None Include="EmbeddedDoc\Generators\Lexer.lex" />
-    <None Include="EmbeddedDoc\Generators\Parser.y" />
     <None Include="Emit\AssemblyBuilders.cd" />
+    <None Include="Generators\Generate.cmd" />
     <None Include="Generators\Lexer.lex" />
     <None Include="Generators\Parser.y" />
     <None Include="Reflection\DAssembly.cd" />
@@ -590,27 +578,50 @@
     <PreBuildEvent>cd "$(SolutionDir).."
 Tools\UpdateFileVersionFromChangeset.cmd "$(ProjectDir)AssemblyInfo.cs"</PreBuildEvent>
     <PostBuildEvent>REM ECHO Uninstalling previous version from GAC ...
+
 REM "$(SolutionDir)..\Tools\gacutil" /u $(TargetName) 1&gt;nul
 
+
 REM ECHO Generating publisher policy assembly ...
+
 REM "$(SolutionDir)..\Tools\PolicyFileGen" "$(TargetPath)" "/out:$(TargetDir)policy.$(TargetName).config" 1&gt;nul
-REM "$(SolutionDir)..\Tools\al" "/link:$(TargetDir)policy.$(TargetName).config" "/out:$(TargetDir)policy.3.0.$(TargetFileName)" "/keyfile:REM $(ProjectDir)$(ProjectName).snk" /platform:anycpu 1&gt;nul
+
+REM "$(SolutionDir)..\Tools\al" "/link:$(TargetDir)policy.$(TargetName).config" "/out:$(TargetDir)policy.3.0.$(TargetFileName)" "/keyfile:(ProjectDir)$(ProjectName).snk" /platform:anycpu 1&gt;nul
+
+
 
 ECHO Copying output to the Deployment folder ...
+
+
 if $(ConfigurationName) == Release (
+
 xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
+
 "$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
+
 REM "$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetDir)policy.3.0.$(TargetFileName)" 1&gt;nul
 
+
 REM "$(SolutionDir)..\Deployment\Bin\PhpVerify" "$(TargetFileName)"
+
 )
+
+
 if $(ConfigurationName) == Debug (
+
 xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
+
 "$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
+
 REM "$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetDir)policy.3.0.$(TargetFileName)" 1&gt;nul
+
 )
+
+
 if $(ConfigurationName) == DebugNoGac (
+
 xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
+
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -179,7 +179,7 @@ namespace PHP.Core.Emit
 		#region Create, Save, etc..
 
 		public static PhpAssemblyBuilder/*!*/ Create(ApplicationContext/*!*/ applicationContext, AssemblyKinds kind,
-			bool pure, FullPath outPath, FullPath docPath, string duckPath, string duckNs, PhpSourceFile entryPoint, Version version,
+			bool pure, FullPath outPath, FullPath docPath, PhpSourceFile entryPoint, Version version,
 			StrongNameKeyPair key, Win32IconResource icon, ICollection<ResourceFileReference> resources, bool debug)
 		{
 			string out_dir = Path.GetDirectoryName(outPath);
@@ -190,16 +190,15 @@ namespace PHP.Core.Emit
 			assembly_name.Version = version;
 			assembly_name.KeyPair = key;
 
-			if (pure)
-			{
-				// This is primarilly supported for non-pure mode, but it could be extended..
-				if (duckPath != null)
-					throw new NotSupportedException("Generation of duck type interfaces isn't supported for pure assemblies!");
-				return new PureAssemblyBuilder(applicationContext, assembly_name, out_dir, out_file, kind, resources, debug, icon);
-			}
-			else
-				return new MultiScriptAssemblyBuilder(applicationContext, assembly_name, out_dir, out_file, 
-										duckPath, duckNs, kind, resources, debug, icon, entryPoint);
+            if (pure)
+            {
+                return new PureAssemblyBuilder(applicationContext, assembly_name, out_dir, out_file, kind, resources, debug, icon);
+            }
+            else
+            {
+                return new MultiScriptAssemblyBuilder(applicationContext, assembly_name, out_dir, out_file,
+                                        kind, resources, debug, icon, entryPoint);
+            }
 		}
 
 
@@ -492,12 +491,6 @@ namespace PHP.Core.Emit
 		public override bool IsPure { get { return false; } }
 		public ScriptAssembly/*!*/ ScriptAssembly { get { return (ScriptAssembly)assembly; } }
 
-		protected string DuckPath { get { return duckPath; } set { duckPath = value; } }
-		string duckPath;
-
-		protected string DuckNamespace { get { return duckNamespace; }  set { duckNamespace = value; } }
-		string duckNamespace;
-
 		protected ScriptAssemblyBuilder(ScriptAssembly/*!*/ assembly, AssemblyName assemblyName, string directory,
             string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug,
             bool saveOnlyAssembly, Win32IconResource icon)
@@ -509,11 +502,11 @@ namespace PHP.Core.Emit
 #if !SILVERLIGHT
 		public override bool Build(IEnumerable<PhpSourceFile>/*!!*/ sourceFiles, CompilationContext/*!*/ context)
 		{
-			return CompileScripts(sourceFiles, duckPath, duckNamespace, context);
+			return CompileScripts(sourceFiles, context);
 		}
 #endif
 
-		public static bool CompileScripts(IEnumerable<PhpSourceFile>/*!!*/ sourceFiles, string duckPath, string duckNamespace, CompilationContext/*!*/ context)
+		public static bool CompileScripts(IEnumerable<PhpSourceFile>/*!!*/ sourceFiles, CompilationContext/*!*/ context)
 		{
 			bool success = true;
 			InclusionGraphBuilder graph_builder = null;
@@ -528,11 +521,7 @@ namespace PHP.Core.Emit
 					success &= graph_builder.AnalyzeDfsTree(source_file);
 
 				if (success)
-				{
 					graph_builder.EmitAllUnits(new CodeGenerator(context));
-					if (duckPath != null)
-						graph_builder.GenerateDuckInterfaces(duckPath, duckNamespace);
-				}
 			}
 			catch (Exception)
 			{
@@ -713,20 +702,16 @@ namespace PHP.Core.Emit
 		/// <param name="assemblyName">Name of the assembly.</param>
 		/// <param name="directory">Directory where assembly will be stored.</param>
 		/// <param name="fileName">Name of the assembly file including an extension.</param>
-        /// <param name="duckPath"></param>
-        /// <param name="duckNs"></param>
-		/// <param name="kind">Assembly file kind.</param>
+        /// <param name="kind">Assembly file kind.</param>
 		/// <param name="debug">Whether to include debug information.</param>
 		/// <param name="entryPoint">Entry point.</param>
 		/// <param name="icon">Icon.</param>
         /// <param name="resources">Resources to embed</param>
 		public MultiScriptAssemblyBuilder(ApplicationContext/*!*/ applicationContext, AssemblyName assemblyName,
-            string directory, string fileName, string duckPath, string duckNs, AssemblyKinds kind, ICollection<ResourceFileReference> resources, 
+            string directory, string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources, 
 						bool debug, Win32IconResource icon, PhpSourceFile entryPoint)
 			: base(new MultiScriptAssembly(applicationContext), assemblyName, directory, fileName, kind,resources, debug, false, icon)
 		{
-			base.DuckNamespace = duckNs;
-			base.DuckPath = duckPath;
 			this.entryPoint = entryPoint;
 		}
 

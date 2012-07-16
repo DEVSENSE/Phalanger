@@ -19,7 +19,6 @@ using PHP.Core.Parsers;
 using PHP.Core.Emit;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using PHP.Core.EmbeddedDoc;
 using System.CodeDom.Compiler;
 using System.CodeDom;
 
@@ -236,30 +235,6 @@ namespace PHP.Core.Reflection
 			}
 		}
 
-		public void GenerateDuckInterfaces(string/*!*/ duckPath, string duckNamespace)
-		{
-			foreach (ScriptCompilationUnit unit in SelectNonReflectedUnits(nodes.Values))
-			{
-				DuckTypeGenerator.Instance.ProcessModule(unit.SourceUnit.Ast);
-			}
-
-			foreach (CodeCompileUnit unit in DuckTypeGenerator.Instance.GenerateCodeUnits(new FullPath(duckPath), duckNamespace))
-			{
-				string file = unit.UserData["ID"].ToString() + ".cs";
-				FullPath path = new FullPath(file, new FullPath(duckPath));
-
-				string dir = Path.GetDirectoryName(path);
-				if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-
-				CodeDomProvider provider = CodeDomProvider.CreateProvider("csharp");
-				using (StreamWriter wr = new StreamWriter(path.ToString()))
-				{
-					provider.GenerateCodeFromCompileUnit(unit, wr, new CodeGeneratorOptions());
-				}
-			}
-		}
-
-
 		/// <summary>
 		/// Selects only units that are in other than 'Reflected' state. This prevents us from 
 		/// trying to build 'Reflected' units (which is of course impossible)
@@ -270,8 +245,7 @@ namespace PHP.Core.Reflection
 			foreach (CompilationUnit unit in values)
 				if (unit.State != CompilationUnit.States.Reflected) yield return (ScriptCompilationUnit)unit;
 		}
-
-
+        
 		public void CleanAllUnits(CompilationContext/*!*/ context, bool successful)
 		{
 			foreach (CompilationUnit unit in nodes.Values)

@@ -108,19 +108,6 @@ namespace PHP.Core
 		private FullPath outPath;
 
 		/// <summary>
-		/// Full path (without file name) where the duck-typing interfaces are generated.
-		/// This is optional and can be 'null'.
-		/// </summary>
-		public string DuckPath { get { return duckPath; } set { duckPath = value; } }
-		private string duckPath;
-
-		/// <summary>
-		/// Namespace for the Duck-type generated interfaces (when DuckPath is specified)
-		/// </summary>
-		public string DuckNamespace { get { return duckNamespace; } set { duckNamespace = value; } }
-		private string duckNamespace;
-
-		/// <summary>
 		/// Full path to the documentation file that should be generated.
 		/// </summary>
 		public FullPath DocPath { get { return docPath; } set { docPath = value; } }
@@ -575,8 +562,6 @@ namespace PHP.Core
 			if (args == null)
 				throw new ArgumentException("args");
 
-			string duck_namespace = null;
-			string duck_path = null;
 			string option_out = null;
 			string option_entry_point = null;
 			List<string> source_paths = new List<string>();
@@ -610,16 +595,8 @@ namespace PHP.Core
 							currentOption = args[i].Substring(1, colon - 1).Trim();
 							currentValue = args[i].Substring(colon + 1).Trim();
 
-							switch (currentOption.ToLower())
+							switch (currentOption.ToLowerInvariant())
 							{
-								case "ducknamespace":
-									duck_namespace = currentValue;
-									break;
-
-								case "duckpath":
-									duck_path = currentValue;
-									break;
-
 								case "out":
 									option_out = currentValue;
 									break;
@@ -860,9 +837,6 @@ namespace PHP.Core
 				// target not specified => assume console application:
 				if (ps.Target == Targets.None) ps.Target = Targets.Console;
 
-				// Process the duck-type interface generation option
-				ProcessDuckPath(duck_path, duck_namespace);
-
 				// script source paths:
 				ProcessPaths(source_paths, source_dirs, skip_paths, config_paths);
 
@@ -906,23 +880,6 @@ namespace PHP.Core
 			args.RemoveAt(index);
 			args.InsertRange(index, arg_list);
 		}
-
-
-		/// <summary>
-		/// Process the option that specifies output directory for duck-typing interfaces
-		/// </summary>
-		private void ProcessDuckPath(string duck_path, string duck_namespace)
-		{
-			if (duck_path != null)
-			{
-				if (!Path.IsPathRooted(duck_path))
-					duck_path = Path.Combine(ps.SourceRoot, duck_path);
-				
-				ps.DuckPath = duck_path;
-				ps.DuckNamespace = duck_namespace;
-			}
-		}
-
 
 		/// <summary>
 		/// Checks whether there are files to be compiled and modifies their paths to make them absolute.
@@ -1046,8 +1003,7 @@ namespace PHP.Core
 				return PhpScript.CompiledWebAppAssemblyName;
 			}
 		}
-
-
+        
 		/// <summary>
 		/// Processes "out" option and sets <see cref="CompilationParameters.OutPath"/> accordingly.
 		/// </summary>
@@ -1298,10 +1254,6 @@ namespace PHP.Core
 			try
 			{
 				Directory.CreateDirectory(Path.GetDirectoryName(ps.OutPath));
-
-                //for duck type output
-				if (ps.DuckPath != null)
-					Directory.CreateDirectory(ps.DuckPath);
 			}
 			catch (Exception ex)
 			{
@@ -1336,7 +1288,7 @@ namespace PHP.Core
 			}
 
 			PhpAssemblyBuilder assembly_builder = PhpAssemblyBuilder.Create(applicationContext, kind, ps.Pure, ps.OutPath,
-				ps.DocPath, ps.DuckPath, ps.DuckNamespace, entry_point_file, ps.Version, ps.Key, ps.Icon, resource_files, config.Compiler.Debug);
+				ps.DocPath, entry_point_file, ps.Version, ps.Key, ps.Icon, resource_files, config.Compiler.Debug);
 
 			assembly_builder.IsMTA = ps.IsMTA;
 			
