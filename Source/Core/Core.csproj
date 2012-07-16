@@ -178,7 +178,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Compiler\AST\CallSignature.cs" />
-    <Compile Include="Compiler\AST\CommentSet.cs" />
     <Compile Include="Compiler\AST\ConcatEx.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -284,6 +283,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Compiler\Names.cs" />
+    <Compile Include="Compiler\PHPDocBlock.cs" />
     <Compile Include="Compiler\Statistics.cs">
       <SubType>Code</SubType>
     </Compile>

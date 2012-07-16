@@ -302,7 +302,7 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Represents a class or an interface declaration.
 	/// </summary>
-	public sealed class TypeDecl : Statement, IPhpCustomAttributeProvider, IDeclarationNode
+    public sealed class TypeDecl : Statement, IPhpCustomAttributeProvider, IDeclarationNode, IHasPhpDoc
 	{
 		#region Properties
 
@@ -945,7 +945,10 @@ namespace PHP.Core.AST
             visitor.VisitTypeDecl(this);
         }
 
-
+        /// <summary>
+        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public PHPDocBlock PHPDoc { get; set; }
     }
 
 	#endregion
@@ -1068,7 +1071,7 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Represents a method declaration.
 	/// </summary>
-    public sealed class MethodDecl : TypeMemberDecl, IPhpCustomAttributeProvider
+    public sealed class MethodDecl : TypeMemberDecl, IPhpCustomAttributeProvider, IHasPhpDoc
 	{
 		/// <summary>
 		/// Name of the method.
@@ -1374,7 +1377,10 @@ namespace PHP.Core.AST
             visitor.VisitMethodDecl(this);
         }
 
-
+        /// <summary>
+        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public PHPDocBlock PHPDoc { get; set; }
     }
 
 	#endregion
@@ -1388,7 +1394,7 @@ namespace PHP.Core.AST
 	/// Is derived from LangElement because we need position to report field_in_interface error.
 	/// Else we would have to test ClassType in every FieldDecl and not only in FildDeclList
 	/// </remarks>
-	public sealed class FieldDeclList : TypeMemberDecl, IPhpCustomAttributeProvider
+	public sealed class FieldDeclList : TypeMemberDecl, IPhpCustomAttributeProvider, IHasPhpDoc
 	{
 		private readonly List<FieldDecl>/*!*/ fields;
         /// <summary>List of fields in this list</summary>
@@ -1484,6 +1490,11 @@ namespace PHP.Core.AST
         {
             visitor.VisitFieldDeclList(this);
         }
+
+        /// <summary>
+        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public PHPDocBlock PHPDoc { get; set; }
 	}
 
 	/// <summary>
@@ -1601,7 +1612,7 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Represents a class constant declaration.
 	/// </summary>
-	public sealed class ConstDeclList : TypeMemberDecl, IPhpCustomAttributeProvider
+	public sealed class ConstDeclList : TypeMemberDecl, IPhpCustomAttributeProvider, IHasPhpDoc
 	{
 		private readonly List<ClassConstantDecl>/*!*/ constants;
         /// <summary>List of constants in this list</summary>
@@ -1690,6 +1701,11 @@ namespace PHP.Core.AST
         {
             visitor.VisitConstDeclList(this);
         }
+
+        /// <summary>
+        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public PHPDocBlock PHPDoc { get; set; }
 	}
 
 	public sealed class ClassConstantDecl : ConstantDecl

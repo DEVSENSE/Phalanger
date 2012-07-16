@@ -322,7 +322,7 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Represents a function declaration.
 	/// </summary>
-	public sealed class FunctionDecl : Statement, IPhpCustomAttributeProvider, IDeclarationNode
+	public sealed class FunctionDecl : Statement, IPhpCustomAttributeProvider, IDeclarationNode, IHasPhpDoc
 	{ 
 		internal override bool IsDeclaration { get { return true; } }
 
@@ -566,6 +566,11 @@ namespace PHP.Core.AST
         {
             visitor.VisitFunctionDecl(this);
         }
+
+        /// <summary>
+        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public PHPDocBlock PHPDoc { get; set; }
 	}
 
 	#endregion

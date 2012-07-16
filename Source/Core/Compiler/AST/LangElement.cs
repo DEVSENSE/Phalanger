@@ -30,76 +30,6 @@ namespace PHP.Core.AST
 
     #endregion
 
-    #region CustomAnnotations
-
-    /// <summary>
-	/// Represents a set of custom annotations of the <see cref="LangElement" />.
-	/// Each annotation is identified by a CLR Type.
-	/// </summary>
-	public class CustomAnnotations
-	{
-		private Dictionary<Type, object> annotations = new Dictionary<Type, object>();
-
-		internal CustomAnnotations()
-		{
-		}
-
-		/// <summary>
-		/// Gets an custom annotation.
-		/// </summary>
-		/// <typeparam name="T">Type identifying the annotation.</typeparam>
-		/// <returns>An annotation object. If there is no such annotation, default value of <typeparamref name="T"/> is returned.</returns>
-        /// <remarks>The behaviour of this function is different than Get() of collections in .NET. An exceptionm is not thrown if the element is not found, but the default value of T is returned.</remarks>
-		public T Get<T>()
-		{
-			T result;
-			TryGet<T>(out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Tries to get an custom annotation.
-		/// </summary>
-		/// <typeparam name="T">Type identifying the annotation.</typeparam>
-		/// <param name="annotation">An annotation object is stored here. If there is no such annotation, default value of <typeparamref name="T"/> is stored.</param>
-		/// <returns>True if there was annotation for given type, otherwise false.</returns>
-		public bool TryGet<T>(out T annotation)
-		{
-            object value;
-            if (annotations.TryGetValue(typeof(T), out value))
-            {
-                annotation = (T)value;
-                return true;
-            }
-            else
-            {
-                annotation = default(T);
-                return false;            
-            }
-		}
-
-		/// <summary>
-		/// Sets an custom annotation value.
-		/// </summary>
-		/// <typeparam name="T">Type identifying the annotation.</typeparam>
-		/// <param name="value">New value of a custom annotation.</param>
-		public void Set<T>(T value)
-		{
-            annotations[typeof(T)] = value;
-		}
-
-		/// <summary>
-		/// Removes an custom annotation binding.
-		/// </summary>
-		/// <typeparam name="T">Type identifying the annotation.</typeparam>
-		public void Remove<T>()
-		{
-			annotations.Remove(typeof(T));
-		}
-    }
-
-    #endregion
-
     /// <summary>
 	/// Base class for all AST nodes representing PHP language Elements - statements and expressions.
 	/// </summary>
@@ -118,18 +48,6 @@ namespace PHP.Core.AST
 		protected Position position;
 		
 		/// <summary>
-		/// Provides custom annotations which can be changed during the compilation. 
-		/// </summary>
-        public CustomAnnotations Annotations
-        {
-            get
-            {
-                return annotations ?? (annotations = new CustomAnnotations());
-            }
-        }
-		private CustomAnnotations annotations = null;
-
-        /// <summary>
         /// Initialize the LangElement.
         /// </summary>
         /// <param name="p">The position of the LangElement in the source code.</param>
@@ -144,5 +62,16 @@ namespace PHP.Core.AST
         /// <param name="visitor">Visitor.</param>
         public abstract void VisitMe(TreeVisitor/*!*/ visitor);
 	}
+
+    /// <summary>
+    /// Interface for elements that can hold an instance of <see cref="PHPDocBlock"/>.
+    /// </summary>
+    public interface IHasPhpDoc
+    {
+        /// <summary>
+        /// Associated <see cref="PHPDocBlock"/> instance or <c>null</c> reference if the element has no PHPDoc block.
+        /// </summary>
+        PHPDocBlock PHPDoc { get; set; }
+    }
 
 }
