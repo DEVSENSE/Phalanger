@@ -19,7 +19,7 @@ namespace PHP.Core
         public abstract class Element
         {
             /// <summary>
-            /// Every PHPDoc not starting with this character is ignored.
+            /// Every PHPDoc line not starting with this character is ignored.
             /// </summary>
             private const char PHPDocFirstChar = '*';
 
@@ -50,26 +50,11 @@ namespace PHP.Core
                 {
                     if (t.IsSealed && !t.IsAbstract && typeof(Element).IsAssignableFrom(t))
                     {
-                        var ctors = t.GetConstructors();
-                        Debug.Assert(ctors != null && ctors.Length == 1);
-                        var ctor = ctors[0];
-
-                        Func<string, string, Element> factory = null;
-                        var args = ctor.GetParameters();
-                        Debug.Assert(args != null && args.Length <= 2);
-
-                        // create function that creates the Element 't':
-                        if (args.Length == 0)
-                            factory = (tagName, line) => (Element)ctor.Invoke(null);
-                        else if (args.Length == 1)
-                            factory = (tagName, line) => (Element)ctor.Invoke(new object[]{line});
-                        else
-                            factory = (tagName, line) => (Element)ctor.Invoke(new object[]{tagName, line});
-                        
                         // add to the dictionary according to its Name:
                         var fld = t.GetField("Name");
                         if (fld != null)
                         {
+                            var factory = CreateElementFactory(t);
                             elementFactories.Add(TagNameHelper(fld), factory);
                         }
                         else
@@ -78,6 +63,7 @@ namespace PHP.Core
                             var f2 = t.GetField("Name2");
                             if (f1 != null && f2 != null)
                             {
+                                var factory = CreateElementFactory(t);
                                 elementFactories.Add(TagNameHelper(f1), factory);
                                 elementFactories.Add(TagNameHelper(f2), factory);
                             }
@@ -95,6 +81,35 @@ namespace PHP.Core
                 Debug.Assert(elementFactories.ContainsKey("@ignore"));
                 Debug.Assert(elementFactories.ContainsKey("@var"));
                 // ...
+            }
+
+            private static Func<string, string, Element>/*!*/CreateElementFactory(Type/*!*/elementType)
+            {
+                Debug.Assert(elementType != null && typeof(Element).IsAssignableFrom(elementType));
+
+                var ctors = elementType.GetConstructors();
+                Debug.Assert(ctors != null && ctors.Length == 1);
+                var ctor = ctors[0];
+
+                var args = ctor.GetParameters();
+                Debug.Assert(args != null && args.Length <= 2);
+
+                // create function that creates the Element 't':
+                if (args.Length == 0)
+                {
+                    return (tagName, line) => (Element)ctor.Invoke(null);
+                }
+                else if (args.Length == 1)
+                {
+                    Debug.Assert(args[0].Name == "line");
+                    return (tagName, line) => (Element)ctor.Invoke(new object[] { line });
+                }
+                else
+                {
+                    Debug.Assert(args[0].Name == "tagName");
+                    Debug.Assert(args[1].Name == "line");
+                    return (tagName, line) => (Element)ctor.Invoke(new object[] { tagName, line });
+                }
             }
 
             /// <summary>
@@ -1204,7 +1219,48 @@ namespace PHP.Core
                 return (access != null) ? access.Access : PhpMemberAttributes.Public;
             }
         }
-        
+
+        /// <summary>
+        /// Reconstructs PHPDoc block from parsed elements, including comment tags.
+        /// </summary>
+        public string PHPDocPreview
+        {
+            get
+            {
+                var result = new StringBuilder();
+                result.AppendLine("/**");
+
+                foreach (var element in this.Elements)
+                {
+                    var str = element.ToString();
+                    if (str == null) continue;
+
+                    foreach (var line in str.Split('\n'))
+                    {
+                        result.Append(" * ");
+                        result.AppendLine(line);
+                    }
+
+                }
+                result.Append(" */");
+
+                return result.ToString();
+            }
+        }
+
+        #endregion
+
+        #region ToString
+
+        /// <summary>
+        /// Returns whole reformatted PHPDoc content.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return PHPDocPreview;
+        }
+
         #endregion
     }
 }
