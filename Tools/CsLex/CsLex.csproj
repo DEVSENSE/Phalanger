@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{B238564F-595A-4449-9E7A-CC181AE6E966}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>CsLex</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <WarningLevel>4</WarningLevel>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Accept.cs" />
+    <Compile Include="CodeBlock.cs" />
+    <Compile Include="Error.cs" />
+    <Compile Include="Errors.cs" />
+    <Compile Include="Lex\Alloc.cs" />
+    <Compile Include="Lex\Anchor.cs" />
+    <Compile Include="Lex\BitSet.cs" />
+    <Compile Include="Lex\Bunch.cs" />
+    <Compile Include="Lex\CharSet.cs" />
+    <Compile Include="Lex\Dfa.cs" />
+    <Compile Include="Lex\DTrans.cs" />
+    <Compile Include="Lex\Emit.cs" />
+    <Compile Include="Lex\Gen.cs" />
+    <Compile Include="Lex\Input.cs" />
+    <Compile Include="Lex\Lex.cs" />
+    <Compile Include="Lex\MakeNfa.cs" />
+    <Compile Include="Lex\Minimize.cs" />
+    <Compile Include="Lex\Nfa.cs" />
+    <Compile Include="Lex\Nfa2Dfa.cs" />
+    <Compile Include="Lex\NfaPair.cs" />
+    <Compile Include="Lex\SimplifyNfa.cs" />
+    <Compile Include="Lex\Spec.cs" />
+    <Compile Include="Lex\Tokens.cs" />
+    <Compile Include="Lex\Utility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
