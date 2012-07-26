@@ -1031,9 +1031,7 @@ non_empty_statement:
 	|	T_ECHO expression_list ';'          { $$ = new EchoStmt(@$, (List<Expression>)$2); }
 	|	T_INLINE_HTML                       
 		{ 
-			List<Expression> list = new List<Expression>(1); 
-			list.Add(new StringLiteral(@$, (string)$1)); 
-			$$ = new EchoStmt(@$, list); 
+			$$ = new EchoStmt(@$, (string)$1); 
 		}
 	|	expression_statement { $$ = $1; }
 	  

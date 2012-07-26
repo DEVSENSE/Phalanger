@@ -32,12 +32,29 @@ namespace PHP.Core.AST
         /// <summary>Array of parameters - Expressions.</summary>
         public List<Expression> /*!*/ Parameters { get { return parameters; } }
 
+        /// <summary>
+        /// Returns <c>true</c> if this <see cref="EchoStmt"/> represents HTML code.
+        /// </summary>
+        public bool IsHtmlCode { get { return isHtmlCode; } }
+        private readonly bool isHtmlCode;
+
 		public EchoStmt(Position position, List<Expression>/*!*/ parameters)
 			: base(position)
 		{
 			Debug.Assert(parameters != null);
 			this.parameters = parameters;
+            this.isHtmlCode = false;
 		}
+
+        /// <summary>
+        /// Initializes new echo statement as a representation of HTML code.
+        /// </summary>
+        public EchoStmt(Position position, string htmlCode)
+            : base(position)
+        {
+            this.parameters = new List<Expression>(1) { new StringLiteral(position, htmlCode) };
+            this.isHtmlCode = true;
+        }
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Statement.Analyze"]/*'/>
 		internal override Statement Analyze(Analyzer/*!*/ analyzer)
