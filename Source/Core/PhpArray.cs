@@ -887,7 +887,7 @@ namespace PHP.Core
 		/// <param name="caller">Type <see cref="Reflection.DTypeDesc"/> of the caller (ignored).</param>
 		/// <returns>The dictionary enumerator.</returns>
 		/// <remarks>Used for internal purposes only!</remarks>
-        public IDictionaryEnumerator GetForeachEnumerator(bool keyed, bool aliasedValues, Reflection.DTypeDesc caller)
+        public virtual IDictionaryEnumerator GetForeachEnumerator(bool keyed, bool aliasedValues, Reflection.DTypeDesc caller)
         {
             if (aliasedValues)
                 return new ForeachEnumeratorAliased(this, keyed);
@@ -1632,47 +1632,20 @@ namespace PHP.Core
                 PhpReference ref_item = item as PhpReference;
                 if (ref_item != null) item = ref_item.Value;
 
-                // the item is already an array:
-                PhpArray array_item = item as PhpArray;
-                if (array_item != null) return array_item;
-
-                // an item is empty => creates a new array:
-                if (Operators.IsEmptyForEnsure(item))
+                // convert obj to array or wrap obj into new array if possible:
+                object new_item;
+                var wrappedarray = Operators.EnsureObjectIsArray(item, out new_item);
+                if (wrappedarray != null)
                 {
-                    array_item = new PhpArray();
-
-                    // if there was a reference then its value is replaced, 
-                    // the value of element is replaced otherwise:
-                    if (ref_item != null)
-                        ref_item.Value = array_item;
-                    else
-                        this[array_key] = array_item;
-
-                    return array_item;
+                    if (new_item != null)
+                    {
+                        // if there was a reference then its value is replaced, 
+                        // the value of element is replaced otherwise:
+                        if (ref_item != null) ref_item.Value = new_item;
+                        else this[array_key] = new_item;
+                    }
+                    return wrappedarray;
                 }
-
-
-                // checks an object behaving like an array:
-                DObject dobj = item as DObject;
-                if (dobj != null && dobj.RealObject is Library.SPL.ArrayAccess)
-                    return new Library.SPL.PhpArrayObject(dobj);
-
-                // checks whether the result is a string whose item can be read by the next operator:
-                string str_item = item as string;
-                if (str_item != null)
-                {
-                    PhpString phps = new PhpString(str_item);
-
-                    if (ref_item != null)
-                        ref_item.Value = phps;
-                    else
-                        this[array_key] = phps;
-
-                    return new PhpArrayString(phps);
-                }
-
-                if (item is PhpString || item is PhpBytes)
-                    return new PhpArrayString(item);
 
                 // error - the item is a scalar, a DObject:
                 PhpException.VariableMisusedAsArray(item, false);

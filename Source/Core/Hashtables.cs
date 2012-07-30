@@ -2792,6 +2792,20 @@ namespace PHP.Core
 
 		#region PHP Enumeration
 
+        /// <summary>
+        /// Throw an exception if this instance is not <see cref="PhpArray"/> or <see cref="PhpHashtable"/>.
+        /// This should avoid using features that are not available in special derived arrays yet.
+        /// </summary>
+        /// <exception cref="NotImplementedException">This instance does not support the operation yet. Method has to be marked as virtual, and functionality has to be implemented in derived type.</exception>
+        [Conditional("DEBUG")]
+        protected void ThrowIfNotPhpArrayHelper()
+        {
+            if (this.GetType() == typeof(PhpHashtable) || this.GetType() == typeof(PhpArray))
+                return;
+
+            throw new NotImplementedException();
+        }
+
 		/// <summary>
 		/// Retrieves a recursive enumerator of this instance.
 		/// </summary>
@@ -2800,6 +2814,7 @@ namespace PHP.Core
 		/// <returns>The <see cref="RecursiveEnumerator"/>.</returns>
 		public RecursiveEnumerator/*!*/ GetRecursiveEnumerator(bool followReferences, bool readOnly)
 		{
+            ThrowIfNotPhpArrayHelper();
             return new RecursiveEnumerator(this, followReferences, readOnly);
 		}
 
@@ -2814,11 +2829,13 @@ namespace PHP.Core
 
         public OrderedDictionary.Enumerator/*!*/ GetPhpEnumerator()
 		{
+            ThrowIfNotPhpArrayHelper();
             return new OrderedDictionary.Enumerator(this, true); //(IPhpEnumerator)table.GetEnumerator();
 		}
 
         public OrderedDictionary.Enumerator/*!*/ GetBaseEnumerator()
 		{
+            ThrowIfNotPhpArrayHelper();
             return new OrderedDictionary.Enumerator(this, true); //table.GetEnumerator();
 		}
 
@@ -2828,6 +2845,7 @@ namespace PHP.Core
         /// <returns></returns>
         public OrderedDictionary.FastEnumerator GetFastEnumerator()
         {
+            ThrowIfNotPhpArrayHelper();
             return table.GetFastEnumerator();
         }
 
@@ -2854,7 +2872,7 @@ namespace PHP.Core
 		#region ICollection Members
 
 		/// <summary>Retrieves the number of items in this instance.</summary>
-		public int Count { get { return table.Count; } }
+		public virtual int Count { get { return table.Count; } }
 
 		/// <summary>This property is always false.</summary>
 		public bool IsSynchronized { get { return false; } }
@@ -2973,7 +2991,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Removes all elements from this instance.
 		/// </summary>
-		public void Clear()
+		public virtual void Clear()
 		{
             this.EnsureWritable();
 
@@ -2988,7 +3006,7 @@ namespace PHP.Core
 		/// <exception cref="InvalidCastException">The <paramref name="key"/> is neither <see cref="int"/> nor <see cref="string"/>.</exception>
 		public bool Contains(object key)
 		{
-			return this.ContainsKey(new IntStringKey(key));
+            return this.ContainsKey(new IntStringKey(key));
 		}
 
 		/// <summary>
@@ -3000,6 +3018,7 @@ namespace PHP.Core
 		/// <exception cref="InvalidCastException">The <paramref name="key"/> is neither <see cref="int"/> nor not null <see cref="string"/>.</exception>
 		public void Add(object key, object value)
 		{
+            ThrowIfNotPhpArrayHelper();
 			this.Add(new IntStringKey(key), value);
 		}
 
@@ -3153,10 +3172,11 @@ namespace PHP.Core
 
 		public bool ContainsKey(IntStringKey key)
 		{
+            ThrowIfNotPhpArrayHelper();
 			return table.ContainsKey(key);
 		}
 
-		public bool Remove(IntStringKey key)
+		public virtual bool Remove(IntStringKey key)
 		{
             //if (key.Integer == this.nextNewIndex - 1)
             //{
@@ -3169,17 +3189,18 @@ namespace PHP.Core
 
 		public bool TryGetValue(IntStringKey key, out object value)
 		{
+            ThrowIfNotPhpArrayHelper();
 			return table.TryGetValue(key, out value);
 		}
 
 		public ICollection<IntStringKey>/*!*/ Keys
 		{
-			get { return table.Keys; }
+            get { ThrowIfNotPhpArrayHelper(); return table.Keys; }
 		}
 
 		public ICollection<object>/*!*/ Values
 		{
-			get { return table.Values; }
+            get { ThrowIfNotPhpArrayHelper(); return table.Values; }
 		}
 
 		#endregion
@@ -3188,6 +3209,8 @@ namespace PHP.Core
 
 		public void Add(KeyValuePair<IntStringKey, object> item)
 		{
+            ThrowIfNotPhpArrayHelper();
+
             this.EnsureWritable();
 
 			table.Add(item.Key, item.Value);
@@ -3207,6 +3230,8 @@ namespace PHP.Core
 
 		public bool Remove(KeyValuePair<IntStringKey, object> item)
 		{
+            ThrowIfNotPhpArrayHelper();
+
             this.EnsureWritable();
 
 			return ((ICollection<KeyValuePair<IntStringKey, object>>)table).Remove(item);
@@ -3540,6 +3565,7 @@ namespace PHP.Core
 		/// </summary>
         public void InplaceDeepCopy()
 		{
+            ThrowIfNotPhpArrayHelper();
             Debug.Assert(!this.table.IsShared);
             this.table._deep_copy_inplace();
 		}
@@ -3552,6 +3578,8 @@ namespace PHP.Core
 		/// <exception cref="ArgumentNullException"><paramref name="dst"/> is a <B>null</B> reference.</exception>
 		public void AddTo(PhpHashtable/*!*/dst, bool deepCopy)
 		{
+            ThrowIfNotPhpArrayHelper();
+
 			if (dst == null)
 				throw new ArgumentNullException("dst");
 

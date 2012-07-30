@@ -2898,6 +2898,9 @@ namespace PHP.Core.Reflection
         {
             if (instance == null) return null;
 
+            Debug.Assert(!PhpVariable.HasPrimitiveType(instance));
+            Debug.Assert(!(instance is DObject));
+
             ClrObject result;
 
             lock (cache)

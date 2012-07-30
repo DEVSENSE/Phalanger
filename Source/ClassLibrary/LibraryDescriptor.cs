@@ -73,6 +73,7 @@ namespace PHP.Library
 			// registers session handlers:
 			SessionHandlers.RegisterHandler(PhpSessionHandler.Default);
 			SessionHandlers.RegisterHandler(PhpUserSessionHandler.Default);
+            SessionHandlers.RegisterHandler(AspNetThruSessionHandler.Default);
 
 			// registers serializers:
 			Serializers.RegisterSerializer(PhpSerializer.Default);

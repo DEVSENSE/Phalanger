@@ -579,32 +579,13 @@ namespace PHP.Library.SPL
 		{
 			PhpReference ref_result = GetUserArrayItemRef(arrayAccess, key, ScriptContext.CurrentContext);
 
-			// is the result an array:
-			PhpArray result = ref_result.Value as PhpArray;
-			if (result != null) return result;
-
-			// checks an object behaving like an array:
-			DObject dobj = ref_result.Value as DObject;
-			if (dobj != null && dobj.RealObject is Library.SPL.ArrayAccess) return new Library.SPL.PhpArrayObject(dobj);
-
-			// is result empty => creates a new array and writes it back:
-			if (Operators.IsEmptyForEnsure(ref_result.Value))
-			{
-				ref_result.Value = result = new PhpArray();
-				return result;
-			}
-
-			// non-empty immutable string:
-			string str_value = ref_result.Value as string;
-			if (str_value != null)
-			{
-				ref_result.Value = new PhpString(str_value);
-				return new PhpArrayString(ref_result.Value);
-			}
-
-			// non-empty string:
-			if (ref_result.Value is PhpString || ref_result.Value is PhpBytes)
-				return new PhpArrayString(ref_result.Value);
+            object new_value;
+            var wrappedwarray = Operators.EnsureObjectIsArray(ref_result.Value, out new_value);
+            if (wrappedwarray != null)
+            {
+                if (new_value != null) ref_result.Value = new_value;
+                return wrappedwarray;
+            }
 
 			// the result is neither array nor object behaving like array:
 			PhpException.VariableMisusedAsArray(ref_result.Value, false);

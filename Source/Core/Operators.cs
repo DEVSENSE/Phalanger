@@ -3244,34 +3244,14 @@ namespace PHP.Core
             if (var != null && var.GetType() == typeof(PhpArray))
                 return (PhpArray)var;
 
-            if (IsEmptyForEnsure(var))
+            object new_var;
+            var wrappedarray = EnsureObjectIsArray(var, out new_var);
+            if (wrappedarray != null)
             {
-                PhpArray tmparray;
-                var = tmparray = new PhpArray();
-                return tmparray;
+                if (new_var != null) var = new_var;
+                return wrappedarray;
             }
-
-            // checks an object behaving like an array:
-            DObject dobj = var as DObject;
-            if (dobj != null && dobj.RealObject is Library.SPL.ArrayAccess)
-                return new Library.SPL.PhpArrayObject(dobj);
-
-            // immutable string:
-            if (var.GetType() == typeof(string))
-            {
-                PhpString phps = new PhpString((string)var);
-                var = phps;
-                return new PhpArrayString(phps);
-            }
-
-            // mutable string:
-            if (var.GetType() == typeof(PhpString) || var.GetType() == typeof(PhpBytes))
-                return new PhpArrayString(var);
-
-            // inherited PhpArray types:
-            PhpArray array = var as PhpArray;
-            if (array != null) return array;
-
+            
             // warnings - variable is a DObject, a scalar:
             PhpException.VariableMisusedAsArray(var, false);
             return null;
@@ -3412,44 +3392,18 @@ namespace PHP.Core
             }
             else value = PhpVariable.Dereference(propValue);
 
-            // if the property is PhpArray, nothing has to be done
-            result = value as PhpArray;
-            if (result != null) return result;
-
-            // checks an object behaving like an array:
-            DObject dobj = value as DObject;
-            if (dobj != null && dobj.RealObject is Library.SPL.ArrayAccess)
-                return new Library.SPL.PhpArrayObject(dobj);
-
-            // if the property is "empty"
-            if (IsEmptyForEnsure(value))
+            // try to wrap into PhpArray:
+            object new_value;
+            var wrappedarray = EnsureObjectIsArray(value, out new_value);
+            if (wrappedarray != null)
             {
-                // create a new PhpArray and update the reference
-                result = new PhpArray();
-                if (reference != null)
+                if (new_value != null)
                 {
-                    reference.Value = result;
-                    reference.IsSet = true;
+                    if (reference != null) reference.Value = new_value;
+                    else propValue = new_value;
                 }
-                else propValue = result;
-                return result;
+                return wrappedarray;
             }
-
-            // non-empty immutable string:
-            string str_value = value as string;
-            if (str_value != null)
-            {
-                PhpString str = new PhpString(str_value);
-
-                if (reference != null) reference.Value = str;
-                else propValue = str;
-
-                return new PhpArrayString(str);
-            }
-
-            // non-empty mutable string:
-            if (value is PhpString || value is PhpBytes)
-                return new PhpArrayString(value);
 
             // error - the property is a scalar or a PhpObject:
             PhpException.VariableMisusedAsArray(value, false);
@@ -3722,34 +3676,19 @@ namespace PHP.Core
             object property_value = property.Get(null);
             PhpReference property_value_ref = PhpVariable.Dereference(ref property_value);
 
-            // array:
-            PhpArray result = property_value as PhpArray;
-            if (result != null) return result;
-
-            // empty value:
-            if (IsEmptyForEnsure(property_value))
+            // convert obj to array or wrap obj into new array if possible:
+            object new_value;
+            var wrappedarray = EnsureObjectIsArray(property_value, out new_value);
+            if (wrappedarray != null)
             {
-                result = new PhpArray();
-                if (property_value_ref != null) property_value_ref.Value = result;
-                else property.Set(null, result);
+                if (new_value != null)
+                {
+                    if (property_value_ref != null) property_value_ref.Value = new_value;
+                    else property.Set(null, new_value);
+                }
 
-                return result;
+                return wrappedarray;
             }
-
-            // non-empty immutable string:
-            string str_value = property_value as string;
-            if (str_value != null)
-            {
-                PhpString php_str = new PhpString(str_value);
-                if (property_value_ref != null) property_value_ref.Value = php_str;
-                else property.Set(null, php_str);
-
-                return new PhpArrayString(php_str);
-            }
-
-            // non-empty mutable string:
-            if (property_value is PhpString || property_value is PhpBytes)
-                return new PhpArrayString(property_value);
 
             // error - the property is a scalar or a DObject:
             PhpException.VariableMisusedAsArray(property_value, false);
@@ -3802,6 +3741,61 @@ namespace PHP.Core
         }
 
         #endregion
+
+        /// <summary>
+        /// Wraps <c>null</c>, <see cref="string"/>, <see cref="PhpString"/>, <see cref="PhpBytes"/>, <c>EmptyForEnsure</c> and others into an instance assignable to <see cref="PhpArray"/>.
+        /// </summary>
+        /// <param name="obj">An object which has to be accessed as <see cref="PhpArray"/>.</param>
+        /// <param name="convertedobj">In case <paramref name="obj"/> was converted (upgraded, e.g. from read-only to read/write), contains an instance of new object.
+        /// Can be <c>null</c> reference if <paramref name="obj"/> was not changed.</param>
+        /// <remarks>Note <c>null</c> reference is converted to new instance of <see cref="PhpArray"/>.</remarks>
+        public static PhpArray EnsureObjectIsArray(object obj, out object convertedobj)
+        {
+            convertedobj = null;
+
+            // PhpArray instance already:
+            PhpArray arrayobj;
+            if ((arrayobj = obj as PhpArray) != null)
+                return arrayobj;
+
+            // empty variable:
+            if (IsEmptyForEnsure(obj))
+            {
+                PhpArray tmparray = new PhpArray();
+                convertedobj = tmparray;
+                return tmparray;
+            }
+
+            // ensure for optimizations below:
+            Debug.Assert(typeof(PhpString).IsSealed);
+            Debug.Assert(typeof(PhpBytes).IsSealed);
+
+            // non-empty immutable string:
+            if (obj.GetType() == typeof(string)) return new PhpArrayString(convertedobj = new PhpString((string)obj));
+
+            // non-empty mutable string:
+            if (obj.GetType() == typeof(PhpString)) return new PhpArrayString((PhpString)obj);
+            if (obj.GetType() == typeof(PhpBytes)) return new PhpArrayString((PhpBytes)obj);
+
+            // checks an object behaving like an array:
+            DObject dobj;
+            if ((dobj = obj as DObject) != null)
+            {
+                var realObject = dobj.RealObject;
+                if (realObject is Library.SPL.ArrayAccess)
+                    return new Library.SPL.PhpArrayObject(dobj);
+
+                // TODO: IList, IDictionary
+                if (realObject is IList)
+                    throw new NotImplementedException();
+
+                if (realObject is IDictionary)
+                    throw new NotImplementedException();
+            }
+
+            // obj cannot be accessed as an array:
+            return null;
+        }
 
         #endregion
 

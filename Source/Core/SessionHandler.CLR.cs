@@ -19,6 +19,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections;
 using System.Collections.Generic;
+using System.Web.Configuration;
 
 namespace PHP.Core
 {
@@ -96,6 +97,12 @@ namespace PHP.Core
 		/// <param name="httpContext">A current HTTP context. Can't be a <B>null</B> reference.</param>
 		internal protected abstract void Abandoning(ScriptContext context, HttpContext httpContext);
 
+        /// <summary>
+        /// Returns <c>true</c> iff this session handled is able to persist data after session id change.
+        /// </summary>
+        /// <remarks>E.g. ASP.NET session handler does not.</remarks>
+        public virtual bool AllowsSessionIdChange { get { return true; } }
+
 		/// <summary>
 		/// Keeps the object living forever.
 		/// </summary>
@@ -117,7 +124,19 @@ namespace PHP.Core
 	{
 		private AspNetSessionHandler() { }
 
-		public const string AspNetSessionName = "ASP.NET_SessionId";
+        #region AspNetSessionName
+
+        public static string AspNetSessionName { get { return _aspNetSessionNmame ?? (_aspNetSessionNmame = GetSessionIdCookieName()); } }
+        private static string _aspNetSessionNmame = null;
+
+        private static string GetSessionIdCookieName()
+        {
+            var section = WebConfigurationManager.GetSection("system.web/sessionState") as SessionStateSection;
+            return (section != null) ? section.CookieName : "ASP.NET_SessionId";
+        }
+
+        #endregion
+
 		public const string PhpNetSessionVars = "Phalanger.SessionVars";
 		internal const string DummySessionItem = "Phalanger_DummySessionKeepAliveItem(\uffff)";
 
@@ -224,6 +243,11 @@ namespace PHP.Core
 		{
 
 		}
+
+        /// <summary>
+        /// ASP.NET session handler won't persist data if session id has been changed. New session will be created.
+        /// </summary>
+        public override bool AllowsSessionIdChange { get { return false; } }
 
 		/// <summary>
 		/// Gets session cookie associated with a specified HTTP context.
