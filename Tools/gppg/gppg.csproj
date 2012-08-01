@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{462853ED-74F8-49FD-AD69-B098B93357E7}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>gppg</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <WarningLevel>4</WarningLevel>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="gpcc\CodeGenerator.cs" />
+    <Compile Include="gpcc\GPCG.cs" />
+    <Compile Include="gpcc\Grammar.cs" />
+    <Compile Include="gpcc\GrammarToken.cs" />
+    <Compile Include="gpcc\LALRGenerator.cs" />
+    <Compile Include="gpcc\LR0Generator.cs" />
+    <Compile Include="gpcc\NonTerminal.cs" />
+    <Compile Include="gpcc\Parser.cs" />
+    <Compile Include="gpcc\ParserAction.cs" />
+    <Compile Include="gpcc\Precedence.cs" />
+    <Compile Include="gpcc\PrecType.cs" />
+    <Compile Include="gpcc\Production.cs" />
+    <Compile Include="gpcc\ProductionItem.cs" />
+    <Compile Include="gpcc\Reduce.cs" />
+    <Compile Include="gpcc\Scanner.cs" />
+    <Compile Include="gpcc\SemanticAction.cs" />
+    <Compile Include="gpcc\Set.cs" />
+    <Compile Include="gpcc\Shift.cs" />
+    <Compile Include="gpcc\State.cs" />
+    <Compile Include="gpcc\Symbol.cs" />
+    <Compile Include="gpcc\Terminal.cs" />
+    <Compile Include="gpcc\Transition.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

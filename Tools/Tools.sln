@@ -16,9 +16,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionReplacer", "VersionR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsLex", "CsLex\CsLex.csproj", "{B238564F-595A-4449-9E7A-CC181AE6E966}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gppg", "gppg\gppg.csproj", "{462853ED-74F8-49FD-AD69-B098B93357E7}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 9
+		SccNumberOfProjects = 10
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
@@ -46,6 +48,9 @@ Global
 		SccProjectUniqueName8 = CsLex\\CsLex.csproj
 		SccProjectName8 = CsLex
 		SccLocalPath8 = CsLex
+		SccProjectUniqueName9 = gppg\\gppg.csproj
+		SccProjectName9 = gppg
+		SccLocalPath9 = gppg
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -148,6 +153,18 @@ Global
 		{B238564F-595A-4449-9E7A-CC181AE6E966}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B238564F-595A-4449-9E7A-CC181AE6E966}.Release|Win32.ActiveCfg = Release|Any CPU
 		{B238564F-595A-4449-9E7A-CC181AE6E966}.Release|x86.ActiveCfg = Release|Any CPU
+		{462853ED-74F8-49FD-AD69-B098B93357E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{462853ED-74F8-49FD-AD69-B098B93357E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{462853ED-74F8-49FD-AD69-B098B93357E7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{462853ED-74F8-49FD-AD69-B098B93357E7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{462853ED-74F8-49FD-AD69-B098B93357E7}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{462853ED-74F8-49FD-AD69-B098B93357E7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{462853ED-74F8-49FD-AD69-B098B93357E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{462853ED-74F8-49FD-AD69-B098B93357E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{462853ED-74F8-49FD-AD69-B098B93357E7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{462853ED-74F8-49FD-AD69-B098B93357E7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{462853ED-74F8-49FD-AD69-B098B93357E7}.Release|Win32.ActiveCfg = Release|Any CPU
+		{462853ED-74F8-49FD-AD69-B098B93357E7}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
