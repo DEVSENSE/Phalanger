@@ -1553,14 +1553,6 @@ namespace PHP.Core.AST
 			}
 		}
 
-#if !SILVERLIGHT
-		internal void WriteDocComment(Analyzer/*!*/ analyzer, XmlDocFileBuilder/*!*/ builder,
-			string/*!*/ prefix, string/*!*/ xmlComment)
-		{
-			builder.WriteField(String.Concat(prefix, ".", name), xmlComment);
-		}
-#endif
-
 		internal void Emit(CodeGenerator/*!*/ codeGenerator)
 		{
 			codeGenerator.InitializeField(field, initializer);

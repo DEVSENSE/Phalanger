@@ -370,13 +370,6 @@ namespace PHP.Core.AST
 			}
 		}
 
-#if !SILVERLIGHT
-		internal void AnalyzeDocComment(Analyzer/*!*/ analyzer, XmlDocFileBuilder/*!*/ builder)
-		{
-			// TODO
-		}
-#endif
-
 		internal override void Emit(CodeGenerator/*!*/ codeGenerator)
 		{
 			// TODO: initialization
