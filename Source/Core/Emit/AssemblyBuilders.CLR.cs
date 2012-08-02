@@ -50,6 +50,11 @@ namespace PHP.Core.Emit
 		public bool Debuggable { get { return debuggable; } }
 		private readonly bool debuggable;
 
+        /// <summary>
+        /// Whether saved assembly should be executed as 32-bit process on 64-bit environments.
+        /// </summary>
+        public bool Force32Bit { get; private set; }
+
 		public string/*!*/ Directory { get { return directory; } }
 		private readonly string/*!*/ directory;
 
@@ -87,11 +92,12 @@ namespace PHP.Core.Emit
 
 		protected PhpAssemblyBuilder(PhpAssembly/*!*/ assembly, AssemblyName assemblyName, string moduleName,
             string directory, string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug,
-            bool saveOnlyAssembly, Win32IconResource icon)
+            bool force32bit, bool saveOnlyAssembly, Win32IconResource icon)
 			: base(assembly)
 		{
 			this.kind = kind;
 			this.debuggable = debug;
+            this.Force32Bit = force32bit;
 			this.fileName = fileName;
 			this.directory = directory;
 			this.icon = icon;
@@ -180,7 +186,7 @@ namespace PHP.Core.Emit
 
 		public static PhpAssemblyBuilder/*!*/ Create(ApplicationContext/*!*/ applicationContext, AssemblyKinds kind,
 			bool pure, FullPath outPath, FullPath docPath, PhpSourceFile entryPoint, Version version,
-			StrongNameKeyPair key, Win32IconResource icon, ICollection<ResourceFileReference> resources, bool debug)
+            StrongNameKeyPair key, Win32IconResource icon, ICollection<ResourceFileReference> resources, bool debug, bool force32bit)
 		{
 			string out_dir = Path.GetDirectoryName(outPath);
 			string out_file = Path.GetFileName(outPath);
@@ -192,12 +198,13 @@ namespace PHP.Core.Emit
 
             if (pure)
             {
-                return new PureAssemblyBuilder(applicationContext, assembly_name, out_dir, out_file, kind, resources, debug, icon);
+                return new PureAssemblyBuilder(applicationContext, assembly_name, out_dir, out_file,
+                    kind, resources, debug, force32bit, icon);
             }
             else
             {
                 return new MultiScriptAssemblyBuilder(applicationContext, assembly_name, out_dir, out_file,
-                                        kind, resources, debug, icon, entryPoint);
+                    kind, resources, debug, force32bit, icon, entryPoint);
             }
 		}
 
@@ -247,7 +254,11 @@ namespace PHP.Core.Emit
                     if(icon != null)
                         icon.DefineIconResource(builder, res_file_path);
 
-                    builder.Save(fileName);
+                    builder.Save(
+                        fileName,
+                        (Force32Bit) ? (PortableExecutableKinds.ILOnly | PortableExecutableKinds.Required32Bit) : (PortableExecutableKinds.ILOnly),
+                        ImageFileMachine.I386);
+
                 } catch(IOException e) {
                     throw new CompilerException(FatalErrors.ErrorCreatingFile, e, Path.Combine(directory, fileName), e.Message);
                 }
@@ -390,9 +401,9 @@ namespace PHP.Core.Emit
 		public override bool IsPure { get { return true; } }
 
 		public PureAssemblyBuilder(ApplicationContext/*!*/ applicationContext, AssemblyName assemblyName,
-			string directory, string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug, Win32IconResource icon)
+            string directory, string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug, bool force32bit, Win32IconResource icon)
 			: base(new PureAssembly(applicationContext), assemblyName, PureAssembly.ModuleName, directory,
-					fileName, kind, resources, debug, false, icon)
+					fileName, kind, resources, debug, force32bit, false, icon)
 		{
 		}
 
@@ -493,8 +504,8 @@ namespace PHP.Core.Emit
 
 		protected ScriptAssemblyBuilder(ScriptAssembly/*!*/ assembly, AssemblyName assemblyName, string directory,
             string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug,
-            bool saveOnlyAssembly, Win32IconResource icon)
-			: base(assembly, assemblyName, ScriptAssembly.RealModuleName, directory, fileName, kind,resources, debug, saveOnlyAssembly, icon)
+            bool force32bit, bool saveOnlyAssembly, Win32IconResource icon)
+			: base(assembly, assemblyName, ScriptAssembly.RealModuleName, directory, fileName, kind,resources, debug, force32bit, saveOnlyAssembly, icon)
 		{
 
 		}
@@ -619,12 +630,13 @@ namespace PHP.Core.Emit
 		/// <param name="fileName">Name of the assembly file including an extension.</param>
 		/// <param name="kind">Assembly kind.</param>
 		/// <param name="debug">Whether to include debug information.</param>
+        /// <param name="force32bit">Whether to force 32bit execution of generated assembly.</param>
         /// <param name="saveOnlyAssembly">Whether to not load the assembly into memory.</param>
         /// <param name="icon">Icon resource or a <B>null</B> reference.</param>
         /// <param name="resources">Resources to embed</param>
 		public SingleScriptAssemblyBuilder(ApplicationContext/*!*/ applicationContext, AssemblyName assemblyName, string directory, string fileName,
-            AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug, bool saveOnlyAssembly, Win32IconResource icon)
-            : base(new SingleScriptAssembly(applicationContext), assemblyName, directory, fileName, kind, resources, debug, saveOnlyAssembly, icon)
+            AssemblyKinds kind, ICollection<ResourceFileReference> resources, bool debug, bool force32bit, bool saveOnlyAssembly, Win32IconResource icon)
+            : base(new SingleScriptAssembly(applicationContext), assemblyName, directory, fileName, kind, resources, debug, force32bit, saveOnlyAssembly, icon)
 		{
 		}
         /// <summary>
@@ -636,11 +648,12 @@ namespace PHP.Core.Emit
         /// <param name="fileName">Name of the assembly file including an extension.</param>
         /// <param name="kind">Assembly kind.</param>
         /// <param name="debug">Whether to include debug information.</param>
+        /// <param name="force32bit">Whether to force 32bit execution of generated assembly.</param>
         /// <param name="saveOnlyAssembly">Whether to not load the assembly into memory.</param>
         /// <param name="icon">Icon resource or a <B>null</B> reference.</param>
         public SingleScriptAssemblyBuilder(ApplicationContext/*!*/ applicationContext, AssemblyName assemblyName, string directory, string fileName,
-            AssemblyKinds kind, bool debug, bool saveOnlyAssembly, Win32IconResource icon)
-            : base(new SingleScriptAssembly(applicationContext), assemblyName, directory, fileName, kind, null, debug, saveOnlyAssembly, icon)
+            AssemblyKinds kind, bool debug, bool force32bit, bool saveOnlyAssembly, Win32IconResource icon)
+            : base(new SingleScriptAssembly(applicationContext), assemblyName, directory, fileName, kind, null, debug, force32bit, saveOnlyAssembly, icon)
         {
         }
 
@@ -704,16 +717,17 @@ namespace PHP.Core.Emit
 		/// <param name="fileName">Name of the assembly file including an extension.</param>
         /// <param name="kind">Assembly file kind.</param>
 		/// <param name="debug">Whether to include debug information.</param>
+        /// <param name="force32bit">Whether to force 32bit execution of generated assembly.</param>
 		/// <param name="entryPoint">Entry point.</param>
 		/// <param name="icon">Icon.</param>
         /// <param name="resources">Resources to embed</param>
-		public MultiScriptAssemblyBuilder(ApplicationContext/*!*/ applicationContext, AssemblyName assemblyName,
-            string directory, string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources, 
-						bool debug, Win32IconResource icon, PhpSourceFile entryPoint)
-			: base(new MultiScriptAssembly(applicationContext), assemblyName, directory, fileName, kind,resources, debug, false, icon)
-		{
-			this.entryPoint = entryPoint;
-		}
+        public MultiScriptAssemblyBuilder(ApplicationContext/*!*/ applicationContext, AssemblyName assemblyName,
+            string directory, string fileName, AssemblyKinds kind, ICollection<ResourceFileReference> resources,
+                        bool debug, bool force32bit, Win32IconResource icon, PhpSourceFile entryPoint)
+            : base(new MultiScriptAssembly(applicationContext), assemblyName, directory, fileName, kind, resources, debug, force32bit, false, icon)
+        {
+            this.entryPoint = entryPoint;
+        }
 
 		/// <summary>
 		/// Defines a new script belonging to the multiscript assembly builder.
