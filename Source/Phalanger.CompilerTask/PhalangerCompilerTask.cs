@@ -311,7 +311,7 @@ namespace PHP.VisualStudio.PhalangerTasks
                 ps.Key = null;
                 if (!string.IsNullOrEmpty(keyFile))
                 {
-                    using (FileStream file = new FileStream(new FullPath(keyFile, ps.SourceRoot), FileMode.Open))
+                    using (FileStream file = new FileStream(new FullPath(keyFile, ps.SourceRoot), FileMode.Open, FileAccess.Read))
                         ps.Key = new StrongNameKeyPair(file);
                 }
             }
