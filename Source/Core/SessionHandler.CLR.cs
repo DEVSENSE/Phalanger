@@ -206,15 +206,15 @@ namespace PHP.Core
 		{
 			HttpSessionState state = httpContext.Session;
 
-			// removes all items (some could be changed or removed in PHP):
-            // TODO: some session variables could be added in ASP.NET application
-			state.Clear();
-
 			if (state.Mode == SessionStateMode.InProc)
 			{
-				context.ReleaseArray(variables);
+                context.ReleaseArray(variables);
 
-				// populates session collection from variables:
+                // removes all items (some could be changed or removed in PHP):
+                // TODO: some session variables could be added in ASP.NET application
+                state.Clear();
+                
+                // populates session collection from variables:
 				foreach (KeyValuePair<IntStringKey, object> entry in variables)
 				{
 					// skips resources:
