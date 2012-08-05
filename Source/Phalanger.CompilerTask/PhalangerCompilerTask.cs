@@ -341,12 +341,21 @@ namespace PHP.VisualStudio.PhalangerTasks
 			{
                 foreach (ITaskItem assemblyReference in references/*referencedAssemblies*/)
                 {
-                    //string hintPath = assemblyReference.GetMetadata("HintPath");
-                    //if (!string.IsNullOrEmpty(hintPath) &&
-                    //    System.IO.File.Exists(assemblyReference.GetMetadata("HintPath")))
-                    //    ps.References.Add(hintPath);    // add the assembly reference by its file name
-                    //else
-                        ps.References.Add(assemblyReference.ItemSpec);
+                    // script library root:
+                    var scriptLibraryRoot = assemblyReference.GetMetadata("MSARoot");
+
+                    if (scriptLibraryRoot != null)
+                        scriptLibraryRoot = scriptLibraryRoot.Trim();
+
+                    if (string.IsNullOrEmpty(scriptLibraryRoot))
+                        scriptLibraryRoot = null;
+
+                    // add the reference to CompilationParameters:
+                    ps.References.Add(new CompilationParameters.ReferenceItem()
+                    {
+                        Reference = assemblyReference.ItemSpec,
+                        LibraryRoot = scriptLibraryRoot
+                    });
                 }
 			}
 

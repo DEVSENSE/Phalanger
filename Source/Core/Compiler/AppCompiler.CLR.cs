@@ -68,10 +68,23 @@ namespace PHP.Core
 	
 	[Serializable]
 	public sealed class CompilationParameters
-	{
-		#region Properties
-	
-		/// <summary>
+    {
+        #region Nested struct: ReferenceItem
+
+        /// <summary>
+        /// Represents referenced assembly.
+        /// </summary>
+        public struct ReferenceItem
+        {
+            public string Reference;
+            public string LibraryRoot;
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
 		/// Targets. Valid targets from command line are "dll", "console", "web" and "winexe" (in future versions).
 		/// </summary>
 		public Targets Target { get { return target; } set { target = value; } }
@@ -187,8 +200,8 @@ namespace PHP.Core
 		/// <summary>
 		/// Full paths to referenced assemblies.
 		/// </summary>
-		public List<string>/*!*/ References { get { return references; } }
-		private List<string>/*!*/ references = new List<string>();
+        public List<ReferenceItem>/*!*/ References { get { return references; } }
+        private List<ReferenceItem>/*!*/ references = new List<ReferenceItem>();
 
 		/// <summary>
 		/// Full paths to referenced resources.
@@ -695,7 +708,7 @@ namespace PHP.Core
 
 								case "reference":
 								case "r":
-									ps.References.Add(currentValue);
+                                    ps.References.Add(new CompilationParameters.ReferenceItem() { Reference = currentValue });
 									break;
 
 								case "resource":
