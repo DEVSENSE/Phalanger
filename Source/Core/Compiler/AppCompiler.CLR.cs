@@ -74,6 +74,7 @@ namespace PHP.Core
         /// <summary>
         /// Represents referenced assembly.
         /// </summary>
+        [Serializable]
         public struct ReferenceItem
         {
             public string Reference;
