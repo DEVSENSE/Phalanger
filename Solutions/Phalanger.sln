@@ -44,8 +44,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phalanger.CompilerTask", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testers.Unit", "..\Source\Testing\Unit\Testers.Unit.csproj", "{1F0323F9-DF73-4EE0-A9C1-C59464A96104}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.DynamicLight", "..\Source\Microsoft.DynamicLight\Microsoft.DynamicLight.csproj", "{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.PDO", "..\Source\Extensions\PDO\Extension.PDO.csproj", "{A3D74786-1B4A-4967-853E-C98D74E6990B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.PDOSQLite", "..\Source\Extensions\PDOSQLite\Extension.PDOSQLite.csproj", "{E736D942-D76C-46B6-B7F1-82E3068D46A8}"
@@ -60,7 +58,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Utils", "..\Source\Cor
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 19
+		SccNumberOfProjects = 18
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
@@ -103,32 +101,29 @@ Global
 		SccProjectUniqueName11 = ..\\Source\\Testing\\Unit\\Testers.Unit.csproj
 		SccProjectName11 = ../Source/Testing/Unit
 		SccLocalPath11 = ..\\Source\\Testing\\Unit
-		SccProjectUniqueName12 = ..\\Source\\Microsoft.DynamicLight\\Microsoft.DynamicLight.csproj
-		SccProjectName12 = ../Source/Microsoft.DynamicLight
-		SccLocalPath12 = ..\\Source\\Microsoft.DynamicLight
-		SccProjectUniqueName13 = ..\\Source\\Extensions\\PDO\\Extension.PDO.csproj
+		SccProjectUniqueName12 = ..\\Source\\Extensions\\PDO\\Extension.PDO.csproj
+		SccProjectTopLevelParentUniqueName12 = Phalanger.sln
+		SccProjectName12 = ../Source/Extensions/PDO
+		SccLocalPath12 = ..\\Source\\Extensions\\PDO
+		SccProjectUniqueName13 = ..\\Source\\Extensions\\PDOSQLite\\Extension.PDOSQLite.csproj
 		SccProjectTopLevelParentUniqueName13 = Phalanger.sln
-		SccProjectName13 = ../Source/Extensions/PDO
-		SccLocalPath13 = ..\\Source\\Extensions\\PDO
-		SccProjectUniqueName14 = ..\\Source\\Extensions\\PDOSQLite\\Extension.PDOSQLite.csproj
+		SccProjectName13 = ../Source/Extensions/PDOSQLite
+		SccLocalPath13 = ..\\Source\\Extensions\\PDOSQLite
+		SccProjectUniqueName14 = ..\\Source\\Extensions\\SQLite\\Extension.SQLite.csproj
 		SccProjectTopLevelParentUniqueName14 = Phalanger.sln
-		SccProjectName14 = ../Source/Extensions/PDOSQLite
-		SccLocalPath14 = ..\\Source\\Extensions\\PDOSQLite
-		SccProjectUniqueName15 = ..\\Source\\Extensions\\SQLite\\Extension.SQLite.csproj
+		SccProjectName14 = ../Source/Extensions/SQLite
+		SccLocalPath14 = ..\\Source\\Extensions\\SQLite
+		SccProjectUniqueName15 = ..\\Source\\Extensions\\Zip\\Extension.Zip.csproj
 		SccProjectTopLevelParentUniqueName15 = Phalanger.sln
-		SccProjectName15 = ../Source/Extensions/SQLite
-		SccLocalPath15 = ..\\Source\\Extensions\\SQLite
-		SccProjectUniqueName16 = ..\\Source\\Extensions\\Zip\\Extension.Zip.csproj
+		SccProjectName15 = ../Source/Extensions/Zip
+		SccLocalPath15 = ..\\Source\\Extensions\\Zip
+		SccProjectUniqueName16 = ..\\Source\\Extensions\\PDOSQLServer\\Extension.PDOSQLServer.csproj
 		SccProjectTopLevelParentUniqueName16 = Phalanger.sln
-		SccProjectName16 = ../Source/Extensions/Zip
-		SccLocalPath16 = ..\\Source\\Extensions\\Zip
-		SccProjectUniqueName17 = ..\\Source\\Extensions\\PDOSQLServer\\Extension.PDOSQLServer.csproj
-		SccProjectTopLevelParentUniqueName17 = Phalanger.sln
-		SccProjectName17 = ../Source/Extensions/PDOSQLServer
-		SccLocalPath17 = ..\\Source\\Extensions\\PDOSQLServer
-		SccProjectUniqueName18 = ..\\Source\\Core.Utils\\Core.Utils.csproj
-		SccProjectName18 = ../Source/Core.Utils
-		SccLocalPath18 = ..\\Source\\Core.Utils
+		SccProjectName16 = ../Source/Extensions/PDOSQLServer
+		SccLocalPath16 = ..\\Source\\Extensions\\PDOSQLServer
+		SccProjectUniqueName17 = ..\\Source\\Core.Utils\\Core.Utils.csproj
+		SccProjectName17 = ../Source/Core.Utils
+		SccLocalPath17 = ..\\Source\\Core.Utils
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -296,20 +291,6 @@ Global
 		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{1F0323F9-DF73-4EE0-A9C1-C59464A96104}.Release|Win32.ActiveCfg = Release|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.DebugNoGac|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.DebugNoGac|Any CPU.Build.0 = Debug|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.DebugNoGac|Win32.ActiveCfg = Debug|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{3F98FAAD-C939-433B-A2A1-EC04CFA4E579}.Release|Win32.ActiveCfg = Release|Any CPU
 		{A3D74786-1B4A-4967-853E-C98D74E6990B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A3D74786-1B4A-4967-853E-C98D74E6990B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3D74786-1B4A-4967-853E-C98D74E6990B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
