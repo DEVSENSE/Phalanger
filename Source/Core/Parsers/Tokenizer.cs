@@ -422,7 +422,6 @@ namespace PHP.Core.Parsers
 					case Tokens.T_RGENERIC:                     // :>
 					case Tokens.T_SEMI:                         // ;
 					case Tokens.T_COMMA:                        // ,
-					case Tokens.T_DOLLAR_OPEN_CURLY_BRACES:     // "${" in string - starts non-string code
 						tokenCategory = TokenCategory.Delimiter;
 						return token;
 
@@ -452,7 +451,8 @@ namespace PHP.Core.Parsers
                         tokenCategory = TokenCategory.String;
 						return token;
 
-					case Tokens.T_CURLY_OPEN:                   // "{$" in string
+                    case Tokens.T_DOLLAR_OPEN_CURLY_BRACES:     // "${" in string - starts non-string code
+                    case Tokens.T_CURLY_OPEN:                   // "{$" in string
 						tokenCategory = TokenCategory.StringCode;
 						return token;
 
@@ -494,9 +494,22 @@ namespace PHP.Core.Parsers
 					case Tokens.T_LBRACKET:                     // [
 					case Tokens.T_RBRACKET:                     // ]
 					case Tokens.T_LBRACE:                       // {
-					case Tokens.T_RBRACE:                       // }
-						tokenCategory = (inString) ? TokenCategory.String : TokenCategory.Delimiter;
-						return token;
+                        tokenCategory = (inString) ? TokenCategory.String : TokenCategory.Delimiter;
+                        return token;
+
+                    case Tokens.T_RBRACE:                       // }
+                        if (inString)
+                            // we are in string:
+                            tokenCategory = TokenCategory.String;
+                        else if (CurrentLexicalState == LexicalStates.ST_DOUBLE_QUOTES || CurrentLexicalState == LexicalStates.ST_BACKQUOTE || CurrentLexicalState == LexicalStates.ST_HEREDOC)
+                            // right brace can complete ${ or {$,
+                            // so we are returning from other state to string state:
+                            tokenCategory = TokenCategory.StringCode;
+                        else
+                            // part of script:
+                            tokenCategory = TokenCategory.Delimiter;
+
+                        return token;
 
 					case Tokens.T_STRING:                       // identifier
 						tokenCategory = (inString) ? (isCode ? TokenCategory.StringCode : TokenCategory.String) : TokenCategory.Identifier;
