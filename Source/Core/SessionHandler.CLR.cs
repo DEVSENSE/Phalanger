@@ -232,7 +232,7 @@ namespace PHP.Core
 				formatter.Serialize(stream, variables);
 
 				// add the serialized $_SESSION to ASP.NET session:
-				state.Add(PhpNetSessionVars, stream.ToArray());
+				state[PhpNetSessionVars] = stream.ToArray();
 			}
 		}
 
