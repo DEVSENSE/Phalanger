@@ -216,11 +216,11 @@ namespace PHP.Core
 		private Dictionary<string, CacheEntry> cache;
 		
 		private readonly ReaderWriterLockSlim/*!*/cacheLock = new ReaderWriterLockSlim();
-		
-		/// <summary> Source files watcher. </summary>
+
+        /// <summary>Source files watcher. Can be <c>null</c> reference if <c>WatchSourceChanges</c> is disabled.</summary>
 		private FileSystemWatcher watcher;
 
-		/// <summary> Searching for precompiled files in ASP.NET temporary files </summary>
+		/// <summary>Searching for precompiled files in ASP.NET temporary files.</summary>
 		private static Regex reFileStamp = new Regex(TemporaryFilesSearchPattern, RegexOptions.Compiled);
 
         /// <summary>
@@ -248,19 +248,27 @@ namespace PHP.Core
             // On Windows it's case-insensitive, because same file can be accessed with various cases
             cache = new Dictionary<string, CacheEntry>(100, FullPath.StringComparer);
 
-			watcher = new FileSystemWatcher();
+            if (Configuration.Application.Compiler.WatchSourceChanges &&
+                !Configuration.Application.Compiler.OnlyPrecompiledCode)
+            {
+                watcher = new FileSystemWatcher();
 
-			// TODO: multiple paths:
-			watcher.Path = Configuration.Application.Compiler.SourceRoot.ToString();
+                // TODO: multiple paths:
+                watcher.Path = Configuration.Application.Compiler.SourceRoot.ToString();
 
-			watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite;
-			watcher.IncludeSubdirectories = true;
+                watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite;
+                watcher.IncludeSubdirectories = true;
 
-			watcher.Changed += OnFileChanged;
-			watcher.Renamed += OnFileRenamed;
-            watcher.Deleted += OnFileChanged;
+                watcher.Changed += OnFileChanged;
+                watcher.Renamed += OnFileRenamed;
+                watcher.Deleted += OnFileChanged;
 
-			watcher.EnableRaisingEvents = false;
+                watcher.EnableRaisingEvents = false;
+            }
+            else
+            {
+                watcher = null;
+            }
 
             // look for "App_Code.compiled" file
             LoadAppCode(Path.Combine(HttpRuntime.CodegenDir, "App_Code.compiled"));
@@ -607,7 +615,7 @@ namespace PHP.Core
             if (TryGetCachedEntry(ns, out cache_entry))
             {
                 Debug.WriteLine("WSSM", "Cache hit.");
-                if (!Configuration.Application.Compiler.WatchSourceChanges || CheckEntryFileTime(ns, cache_entry))
+                if (CheckEntryFileTime(ns, cache_entry) || !Configuration.Application.Compiler.WatchSourceChanges)
                     return true;
             }
 
@@ -751,18 +759,24 @@ namespace PHP.Core
 		/// </summary>
 		private bool CheckEntryFileTime(string/*!*/ ns, CacheEntry entry)
 		{
-			if (entry.FileTimeChecked) return true;
+			if (entry.FileTimeChecked)
+                return true;
 
-            cacheLock.EnterWriteLock();
-			try
-			{
-				return CheckEntryFileTimeNoLock(ns, entry);
-			}
-			finally
-			{
-                cacheLock.ExitWriteLock();
-			}
+            return CheckEntryFileTimeInternal(ns, entry);
 		}
+
+        private bool CheckEntryFileTimeInternal(string/*!*/ ns, CacheEntry entry)
+        {
+            cacheLock.EnterWriteLock();
+            try
+            {
+                return CheckEntryFileTimeNoLock(ns, entry);
+            }
+            finally
+            {
+                cacheLock.ExitWriteLock();
+            }
+        }
 
 
 		private bool CheckEntryFileTimeNoLock(string/*!*/ ns, CacheEntry entry)
@@ -1093,28 +1107,41 @@ namespace PHP.Core
             // loads precompiled assembly if exists and not loaded yet:
             GetPrecompiledAssembly();
 
-            if (!watcher.EnableRaisingEvents)
+            // enables source code watcher if not enabled yet:
+            if (watcher != null && !watcher.EnableRaisingEvents)
+            {
                 Debug.WriteLine("WSSM", "Source code watcher is starting.");
 
-            // enables source code watcher if not enabled yet:
-            watcher.EnableRaisingEvents = true;
+                watcher.EnableRaisingEvents = true;
+            }
 
             string ns = ScriptModule.GetSubnamespace(sourceFile.RelativePath, false);
 
             CacheEntry cache_entry;
-            
-            // Load script from cache or from ASP.NET Temporary files
-            if (TryLoadCachedEntry(ns, sourceFile, out cache_entry))
-                return cache_entry.ScriptInfo;
 
-            lock (this)
+            if (Configuration.Application.Compiler.OnlyPrecompiledCode)
             {
-                // double checked lock, CompileScript should not be called on more threads
+                // Load script from cache (WebPages.dll)
                 if (TryGetCachedEntry(ns, out cache_entry))
                     return cache_entry.ScriptInfo;
-                                
-                Debug.WriteLine("WSSM", "Compile script '{0}'.", sourceFile.ToString());
-                return CompileScriptNoLock(ns, sourceFile, requestContext);
+                else
+                    return null;
+            }
+            else
+            {
+                // Load script from cache or from ASP.NET Temporary files
+                if (TryLoadCachedEntry(ns, sourceFile, out cache_entry))
+                    return cache_entry.ScriptInfo;
+
+                lock (this)
+                {
+                    // double checked lock, CompileScript should not be called on more threads
+                    if (TryGetCachedEntry(ns, out cache_entry))
+                        return cache_entry.ScriptInfo;
+
+                    Debug.WriteLine("WSSM", "Compile script '{0}'.", sourceFile.ToString());
+                    return CompileScriptNoLock(ns, sourceFile, requestContext);
+                }
             }
         }
 
@@ -1126,7 +1153,7 @@ namespace PHP.Core
 		/// <returns>The compiled script type.</returns>
 		private ScriptInfo CompileScriptNoLock(string ns, PhpSourceFile/*!*/ sourceFile, RequestContext/*!*/ requestContext)
 		{
-			Debug.Assert(sourceFile != null && requestContext != null);
+            Debug.Assert(sourceFile != null && requestContext != null);
 
 			CompilerConfiguration config = new CompilerConfiguration(Configuration.Application);
 			WebCompilationContext context = new WebCompilationContext(applicationContext, this, config, sourceFile.Directory, 

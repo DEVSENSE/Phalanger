@@ -700,8 +700,14 @@ namespace PHP.Core
 			/// <summary>
 			/// Whether to watch source code for changes. Applicable only on web applications.
 			/// </summary>
-			public bool WatchSourceChanges { get { return watchSourceChanges; } set { WatchSourceChanges = value; } }
+            public bool WatchSourceChanges { get { return watchSourceChanges; } }
 			private bool watchSourceChanges = true;
+
+            /// <summary>
+			/// Whether to allow SSAs. Otherwise Phalanger will ignore physical script files completely.
+			/// </summary>
+            public bool OnlyPrecompiledCode { get { return onlyPrecompiledCode; } }
+            private bool onlyPrecompiledCode = false;
 
 			/// <summary>
 			/// Paths searched for statically evaluated inclusion targets.
@@ -748,8 +754,6 @@ namespace PHP.Core
                 }
             }
             private List<string> forcedDynamicInclusionTranslatedFullPaths = null;
-
-
 
 			/// <summary>
 			/// List of regular expressions and replacements to use when converting include expressions.
@@ -986,10 +990,21 @@ namespace PHP.Core
 							if (HttpContext.Current == null)
 								throw new ConfigurationErrorsException(CoreResources.GetString("web_only_option"), node);
 
-							watchSourceChanges = value == "true";
-
+                            watchSourceChanges = value == "true" && !OnlyPrecompiledCode;   // OnlyPrecompiledCode => !WatchSourceChanges
+                            
 							return true;
 						}
+
+                    case "OnlyPrecompiledCode":
+                        {
+                            if (HttpContext.Current == null)
+                                throw new ConfigurationErrorsException(CoreResources.GetString("web_only_option"), node);
+
+                            onlyPrecompiledCode = value == "true";
+                            if (OnlyPrecompiledCode) watchSourceChanges = false;    // OnlyPrecompiledCode => !WatchSourceChanges
+
+                            return true;
+                        }
 
 					case "DisabledWarnings":
 						{
