@@ -841,6 +841,9 @@ namespace PHP.Core
 
 		public override string ToString()
 		{
+            if (this.namespaces.Length == 0)
+                return this.Name.Value;
+
 			return ToString(null, false);
 		}
 
