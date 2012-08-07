@@ -997,6 +997,10 @@ namespace PHP.Core
 
                     case "OnlyPrecompiledCode":
                         {
+                            // applicable only in run-time:
+                            if (Configuration.IsBuildTime)
+                                return true;
+
                             if (HttpContext.Current == null)
                                 throw new ConfigurationErrorsException(CoreResources.GetString("web_only_option"), node);
 
