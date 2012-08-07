@@ -45,6 +45,7 @@
         LanguageFeatures="$(LanguageFeatures)"
         DisabledWarnings="$(DisabledWarnings)"
         KeyFile="$(KeyFile)"
+        TreatWarningsAsErrors="$(TreatWarningsAsErrors)"
         ResourceFiles="@(ManifestResourceWithNoCulture);@(ManifestNonResxWithNoCultureOnDisk);@(CompiledLicenseFile)"
       />
   </Target>

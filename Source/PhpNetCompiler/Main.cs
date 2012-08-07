@@ -286,6 +286,7 @@ namespace PHP.Core
 
 				errorSink.DisabledGroups = compiler_config.Compiler.DisabledWarnings;
 				errorSink.DisabledWarnings = compiler_config.Compiler.DisabledWarningNumbers;
+                errorSink.TreatWarningsAsErrors = compiler_config.Compiler.TreatWarningsAsErrors;
 			
 				// initializes log:
 				Debug.ConsoleInitialize(Path.GetDirectoryName(p.Parameters.OutPath));
@@ -303,10 +304,13 @@ namespace PHP.Core
 				return false;
 			}
 
-			output.WriteLine();
-			output.WriteLine("Build complete -- {0} error{1}, {2} warning{3}.",
-				errorSink.ErrorCount + errorSink.FatalErrorCount, (errorSink.ErrorCount + errorSink.FatalErrorCount == 1) ? "" : "s",
-				errorSink.WarningCount, (errorSink.WarningCount == 1) ? "" : "s");
+            var errorscount = errorSink.ErrorCount + errorSink.FatalErrorCount;
+            var warningcount = errorSink.WarningCount + errorSink.WarningAsErrorCount;
+            
+            output.WriteLine();
+            output.WriteLine("Build complete -- {0} error{1}, {2} warning{3}.",
+                errorscount, (errorscount == 1) ? "" : "s",
+                warningcount, (warningcount == 1) ? "" : "s");
 
 			return !errorSink.AnyError;
 		}

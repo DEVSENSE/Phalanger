@@ -223,6 +223,11 @@ namespace PHP.Core
 			set { if (value == null) throw new ArgumentNullException("value"); disableWarningNumbers = value; } 
 		}
 		private int[]/*!*/ disableWarningNumbers = ArrayUtils.EmptyIntegers;
+
+        /// <summary>
+        /// Whether warnings will reported as errors, so they will cause compilation process to not finish.
+        /// </summary>
+        public bool TreatWarningsAsErrors { get; set; }
 	
 		#endregion
 	
@@ -272,6 +277,9 @@ namespace PHP.Core
 			compilerConfig.Compiler.DisabledWarnings |= disableWarnings;
 			compilerConfig.Compiler.DisabledWarnings &= ~enableWarnings;
             compilerConfig.Compiler.DisabledWarningNumbers = compilerConfig.Compiler.DisabledWarningNumbers.Concat(disableWarningNumbers).Distinct().ToArray();
+
+            // Treat Warnings as Errors
+            compilerConfig.Compiler.TreatWarningsAsErrors = this.TreatWarningsAsErrors;
 
 			// sets source root (overrides any config setting):
 			compilerConfig.Compiler.SourceRoot = new FullPath(sourceRoot);
@@ -1588,6 +1596,7 @@ namespace PHP.Core
 			{
 				errorSink.DisabledGroups = compiler_config.Compiler.DisabledWarnings;
 				errorSink.DisabledWarnings = compiler_config.Compiler.DisabledWarningNumbers;
+                errorSink.TreatWarningsAsErrors = compiler_config.Compiler.TreatWarningsAsErrors;
 			
 				// initializes log:
 				Debug.ConsoleInitialize(Path.GetDirectoryName(ps.OutPath));
