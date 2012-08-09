@@ -1127,7 +1127,8 @@ namespace PHP.Core
         /// <exception cref="InvalidOperationException">If currently caled function does not match <see cref="CalleeName"/>.</exception>
         public void ThrowIfNotArgsaware(string/*!*/routineName)
         {
-            if (CalleeName != routineName)
+            //if (CalleeName != routineName)
+            if (Top == 0)
                 throw new InvalidOperationException(string.Format(CoreResources.argsaware_routine_needs_args, routineName));
         }
 
