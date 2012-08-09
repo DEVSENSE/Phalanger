@@ -121,7 +121,7 @@ namespace PHP.Core.Binders
                 if (obj is ClrObject /*|| obj is IClrValue // IClrValue -> ClrValue<T> -> already in restriction */)
                 {
                     // ((DObject)target).RealType == <obj>.RealType
-                    restrictions.Merge(
+                    restrictions = restrictions.Merge(
                         BindingRestrictions.GetInstanceRestriction(
                             Expression.Property(Expression.Convert(target.Expression, Types.DObject[0]), Properties.DObject_RealType),
                             obj.RealType));
