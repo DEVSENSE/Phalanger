@@ -3224,8 +3224,7 @@ namespace PHP.Core
 
 		public void CopyTo(KeyValuePair<IntStringKey, object>[] array, int arrayIndex)
 		{
-			// TODO:
-			throw new NotImplementedException();
+            table.CopyTo(array, arrayIndex);
 		}
 
 		public bool Remove(KeyValuePair<IntStringKey, object> item)

@@ -26,6 +26,7 @@ namespace PHP.Core
 #if !SILVERLIGHT
     [Serializable]
 #endif
+    [DebuggerDisplay("{ToString()}", Type = PhpString.PhpTypeName)]
     public sealed class PhpString : IPhpVariable, IPhpObjectGraphNode, IComparable, ISerializable
 	{
         /// <summary>

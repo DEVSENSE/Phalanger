@@ -2648,8 +2648,18 @@ namespace PHP.Core
                 return;
             }
 
+            // object[]
+            var objects = array as object[];
+            if (objects != null)
+            {
+                using (var enumerator = GetFastEnumerator())
+                    while (enumerator.MoveNext())
+                        objects[index++] = enumerator.Current;
+                return;
+            }
+
             // otherwise
-            throw new ArgumentException();
+            throw new ArgumentException("array");
         }
         public bool IsSynchronized { get { return false; } }
         public object SyncRoot { get { return this; } }
