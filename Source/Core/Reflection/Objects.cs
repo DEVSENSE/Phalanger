@@ -3120,7 +3120,7 @@ namespace PHP.Core.Reflection
     /// <typeparam name="T"></typeparam>
     [Serializable]
     [DebuggerNonUserCode]
-    [DebuggerDisplay("{realValue}", Type = "{typeof(T),nq}")]
+    [DebuggerDisplay("{realValue}", Type = "{TypeName,nq}")]
     internal sealed class ClrValue<T> : DObject, IClrValue where T : struct
     {
         #region Fields and properties
