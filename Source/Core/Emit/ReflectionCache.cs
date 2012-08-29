@@ -71,8 +71,6 @@ namespace PHP.Core.Emit
         public static readonly Type[] CallSiteGeneric = new Type[] { typeof(CallSite<>) };
         public static readonly Type[] Action = new Type[] { typeof(Action) };
 
-        public static readonly Type[] BigInteger = new Type[] { typeof(System.Numerics.BigInteger) };
-        public static readonly Type[] Complex = new Type[] { typeof(System.Numerics.Complex) };
         public static readonly Type[] Float = new Type[] { typeof(float) };
 
 		// doublets:

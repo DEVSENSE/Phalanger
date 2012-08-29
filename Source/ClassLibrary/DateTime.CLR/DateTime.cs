@@ -105,6 +105,26 @@ namespace PHP.Library
 
         #region Methods
 
+        private static DateTime StrToTime(string timestr)
+        {
+            if (string.IsNullOrEmpty(timestr) || timestr.EqualsOrdinalIgnoreCase("now"))
+            {
+                return DateTime.UtcNow;
+            }
+            else
+            {
+                var result = PhpDateTime.StringToTime(timestr);
+                if (result is int)
+                {
+                    return DateTimeUtils.UnixTimeStampToUtc((int)result);
+                }
+                else
+                {
+                    return DateTime.UtcNow;
+                }
+            }
+        }
+
         // public __construct ([ string $time = "now" [, DateTimeZone $timezone = NULL ]] )
         [ImplementsMethod]
         public object __construct(ScriptContext/*!*/context, [Optional]object time, [Optional]object timezone)
@@ -133,23 +153,8 @@ namespace PHP.Library
                 return null;
             }
 
-            var timestr = PHP.Core.Convert.ObjectToString(time);
-            if (string.IsNullOrEmpty(timestr) || time == Arg.Default || timestr.EqualsOrdinalIgnoreCase("now"))
-            {
-                this.Time = DateTime.UtcNow;
-            }
-            else
-            {
-                var result = PhpDateTime.StringToTime(timestr);
-                if (result is int)
-                {
-                    this.Time = DateTimeUtils.UnixTimeStampToUtc((int)result);
-                }
-                else
-                {
-                    this.Time = DateTime.UtcNow;
-                }
-            }
+            var timestr = (time == Arg.Default) ? "now" : PHP.Core.Convert.ObjectToString(time);
+            this.Time = StrToTime(timestr);            
 
             //this.date.Value = this.Time.ToString("yyyy-mm-dd HH:mm:ss");
             //this.timezone_type.Value = 3;
@@ -223,6 +228,45 @@ namespace PHP.Library
             return ((__PHP__DateTime)instance).format(stack.Context, format);
         }
 
+        [ImplementsMethod]
+        public object getOffset(ScriptContext/*!*/context)
+        {
+            if (this.TimeZone == null)
+                return false;
+
+            return (int)this.TimeZone.BaseUtcOffset.TotalSeconds;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getOffset(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((__PHP__DateTime)instance).getOffset(stack.Context);
+        }
+
+        [ImplementsMethod]
+        public object modify(ScriptContext/*!*/context, object modify)
+        {
+            if (modify == null)
+            {
+                PhpException.ArgumentNull("modify");
+                return false;
+            }
+
+            string strtime = PHP.Core.Convert.ObjectToString(modify);
+            this.Time = StrToTime(strtime);
+
+            return this;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object modify(object instance, PhpStack stack)
+        {
+            var modify = stack.PeekValue(1);
+            stack.RemoveFrame();
+
+            return ((__PHP__DateTime)instance).modify(stack.Context, modify);
+        }
 
         #endregion
     }
@@ -284,7 +328,7 @@ namespace PHP.Library
 
 		#endregion
 
-        #region date_format, date_create
+        #region date_format, date_create, date_offset_get,  date_modify
 
         [ImplementsFunction("date_format")]
         [return: CastToFalse]
@@ -324,6 +368,35 @@ namespace PHP.Library
             var dt = new __PHP__DateTime(context, true);
             dt.__construct(context, time, timezone);
             return dt;
+        }
+
+        /// <summary>
+        /// Alias of DateTime::getOffset().
+        /// </summary>
+        [ImplementsFunction("date_offset_get")]
+        [return: CastToFalse]
+        public static int DateOffsetGet(__PHP__DateTime datetime)
+        {
+            if (datetime == null)
+            {
+                PhpException.ArgumentNull("datetime");
+                return -1;
+            }
+
+            if (datetime.TimeZone == null)
+                return -1;
+
+            return (int)datetime.TimeZone.BaseUtcOffset.TotalSeconds;
+        }
+
+        /// <summary>
+        /// Alias of DateTime::modify().
+        /// </summary>
+        [ImplementsFunction("date_modify")]
+        [return: CastToFalse]
+        public static __PHP__DateTime DateModify(ScriptContext/*!*/context, __PHP__DateTime datetime, string modify)
+        {
+            return datetime.modify(context, modify) as __PHP__DateTime;
         }
 
         #endregion
