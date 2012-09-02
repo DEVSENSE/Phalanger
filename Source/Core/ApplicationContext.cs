@@ -419,13 +419,16 @@ namespace PHP.Core
                     var msa = context.GetPrecompiledAssembly();
                     if (msa != null)
                         file_exists = file_exists.OrElse((path) => msa.ScriptExists(path));
-
-                    // 3. file system
-                    file_exists = file_exists.OrElse((path) => path.FileExists);
                 }
                 else
                 {
                     // on non-web application, only script library should be checked
+                }
+
+                if (Configuration.IsBuildTime || !Configuration.Application.Compiler.OnlyPrecompiledCode)
+                {
+                    // 3. file system
+                    file_exists = file_exists.OrElse((path) => path.FileExists);
                 }
 
                 // remember in ApplicationContext
