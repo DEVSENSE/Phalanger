@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using PHP.Core.Parsers;
 using PHP.Core.Reflection;
 using System.Reflection.Emit;
@@ -456,14 +457,25 @@ namespace PHP.Core.AST
 
 			// TODO: type conversions (in analysis during overload resolution?)
 
+            Type[] real_ctor_parameter_types = new Type[callSignature.Parameters.Count];
+
 			if (type is ClrType)
 			{
 				real_ctor = (ConstructorInfo)((ClrMethod.Overload)overload).Method;
+                var real_params = real_ctor.GetParameters();
+
+                for (int i = 0; i < real_ctor_parameter_types.Length; i++)
+                    real_ctor_parameter_types[i] = real_params[i].ParameterType;
 			}
 			else
 			{
 				Debug.Assert(type is PhpType);
 				real_ctor = ((PhpType)type).ClrConstructorInfos[0];
+                
+                // Do not try to call GetParameters(), all parameters are of type object,
+                // GetParameters() of not baked PhpType throws.
+                for (int i = 0; i < real_ctor_parameter_types.Length; i++)
+                    real_ctor_parameter_types[i] = PHP.Core.Emit.Types.Object[0];
 			}
 
 			// ctor args:
@@ -480,7 +492,7 @@ namespace PHP.Core.AST
 				}
 				else
 				{
-                    ctor_args[i] = ConvertToClr.ObjectToType( expr.Value, real_ctor.GetParameters()[i].ParameterType );
+                    ctor_args[i] = ConvertToClr.ObjectToType(expr.Value, real_ctor_parameter_types[i]);
 				}
 			}	
 
@@ -494,21 +506,24 @@ namespace PHP.Core.AST
 				object value = param.Expression.Value;
 
 				MemberInfo real_member = param.Property.RealMember;
-				FieldInfo real_field = real_member as FieldInfo;
+				FieldInfo real_field;
+                PropertyInfo real_property;
 
-				if (real_field != null)
+                if ((real_property = real_member as PropertyInfo) != null ||    // regular CLR property
+                    (param.Property is PhpField && (real_property = ((PhpField)param.Property).ExportedProperty) != null))  // or PHP property (real field below is PhpReference, we have to use its export stub)
+                {
+                    properties.Add(real_property);
+                    prop_values.Add(ConvertToClr.ObjectToType(value, real_property.PropertyType));
+                }
+				else if ((real_field = real_member as FieldInfo) != null)
 				{
 					fields.Add(real_field);
                     field_values.Add(ConvertToClr.ObjectToType(value, real_field.FieldType));
 				}
-				else
-				{
-                    PropertyInfo real_property = real_member as PropertyInfo;
-                    Debug.Assert(real_property != null);
-
-                    properties.Add(real_property);
-                    prop_values.Add(ConvertToClr.ObjectToType(value, real_property.PropertyType));
-				}
+                else
+                {
+                    Debug.Fail("Cannot resolve attribute named parameter!");
+                }
 			}
 
 			CustomAttributeBuilder builder = new CustomAttributeBuilder(real_ctor, ctor_args,

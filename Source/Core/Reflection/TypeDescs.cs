@@ -3253,13 +3253,12 @@ namespace PHP.Core.Reflection
 						{
 							MethodInfo iface_method = mapping.InterfaceMethods[i];
 
-							PhpMemberAttributes attrs = Enums.GetMemberAttributes(iface_method) |
-								PhpMemberAttributes.Final;
+							PhpMemberAttributes attrs = Enums.GetMemberAttributes(real_method) | PhpMemberAttributes.Final;
 
-							// reflect the method twice - under the iface method name and under the
-							// compound iface.method name
-							ReflectMethod(iface_method, new Name(iface_method.Name), attrs, declaringType, methods, null);
-							ReflectMethod(iface_method, new Name(iface_type.Name + "." + iface_method.Name), attrs, declaringType, methods, null);
+                            // reflect the method twice - under the iface method name and under the
+                            // compound iface.method name
+                            ReflectMethod(real_method, new Name(iface_method.Name), attrs, declaringType, methods, null);
+                            ReflectMethod(real_method, new Name(iface_type.Name + "." + iface_method.Name), attrs, declaringType, methods, null);
 						}
 					}
 				}
