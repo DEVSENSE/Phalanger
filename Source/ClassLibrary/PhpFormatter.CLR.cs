@@ -50,6 +50,7 @@ namespace PHP.Library
 			internal const char Array = 'a';
 			internal const char Object = 'O'; // instance of a class that does not implement SPL.Serializable
 			internal const char ObjectSer = 'C'; // instance of a class that implements SPL.Serializable
+            internal const char ClrObject = 'T';    // instance of CLR object, serialized using binary formatter
 
 			internal const char Reference = 'R'; // &-like reference
 			internal const char ObjectRef = 'r'; // same instance reference (PHP5 object semantics)
@@ -81,7 +82,8 @@ namespace PHP.Library
 			/// Maintains a sequence number for every <see cref="DObject"/> and <see cref="PhpReference"/>
 			/// that have already been serialized.
 			/// </summary>
-			private Dictionary<object, int> serializedRefs;
+            private Dictionary<object, int> serializedRefs { get { return _serializedRefs ?? (_serializedRefs = new Dictionary<object, int>()); } }
+			private Dictionary<object, int> _serializedRefs;
 
 			#endregion
 
@@ -99,7 +101,6 @@ namespace PHP.Library
 				Debug.Assert(context != null && writer != null);
 				this.context = context;
 				this.writer = writer;
-				serializedRefs = new Dictionary<object, int>();
 			}
 
 			#endregion
@@ -163,7 +164,7 @@ namespace PHP.Library
 								DObject obj = graph as DObject;
 								if (obj != null)
 								{
-									WriteObject(obj);
+                                    WriteObject(obj);
 									break;
 								}
 
@@ -346,6 +347,7 @@ namespace PHP.Library
 			/// Serializes a <see cref="DObject"/>.
 			/// </summary>
 			/// <param name="value">The object.</param>
+            /// <remarks>Avoids redundant serialization of the same object by using <see cref="serializedRefs"/>.</remarks>
 			private void WriteObject(DObject value)
 			{
 				int seq;
@@ -360,106 +362,79 @@ namespace PHP.Library
 				}
 				else
 				{
-                    byte[] binaryClassName;
-					serializedRefs.Add(value, sequenceNumber);
+                    serializedRefs.Add(value, sequenceNumber);
 
-					// determine class name
-					bool avoid_pic_name = false;
-					string class_name = null;
-					__PHP_Incomplete_Class pic = value as __PHP_Incomplete_Class;
-					if (pic != null)
-					{
-						if (pic.__PHP_Incomplete_Class_Name.IsSet)
-						{
-							avoid_pic_name = true;
-							class_name = pic.__PHP_Incomplete_Class_Name.Value as string;
-						}
-					}
-                    if (value is stdClass) class_name = stdClass.ClassName;
-					if (class_name == null) class_name = value.TypeName;
+                    //
+                    if (value.GetType() == typeof(ClrObject) || value is IClrValue)
+                        WriteClrObjectInternal(value.RealObject);
+                    else
+                        WritePhpObjectInternal(value);
+                }
+            }
 
-					// is the instance PHP5.1 Serializable?
-					if (value.RealObject is Library.SPL.Serializable)
-					{
-						context.Stack.AddFrame();
-						object res = PhpVariable.Dereference(value.InvokeMethod("serialize", null, context));
-						if (res == null)
-						{
-							// serialize returned NULL -> serialize the instance as NULL
-							WriteNull();
-							return;
-						}
+            /// <summary>
+            /// Serializes <see cref="DObject"/> using PHP serialization.
+            /// </summary>
+            /// <param name="value">The object.</param>
+            private void WritePhpObjectInternal(DObject/*!*/value)
+            {
+                byte[] binaryClassName;
 
-                        byte[] resdata = null;
+                // determine class name
+                bool avoid_pic_name = false;
+                string class_name = null;
+                __PHP_Incomplete_Class pic = value as __PHP_Incomplete_Class;
+                if (pic != null)
+                {
+                    if (pic.__PHP_Incomplete_Class_Name.IsSet)
+                    {
+                        avoid_pic_name = true;
+                        class_name = pic.__PHP_Incomplete_Class_Name.Value as string;
+                    }
+                }
+                if (value is stdClass) class_name = stdClass.ClassName;
+                if (class_name == null) class_name = value.TypeName;
 
-                        if (res is PhpString)
-                        {
-                            res = res.ToString();
-                        }
+                // is the instance PHP5.1 Serializable?
+                if (value.RealObject is Library.SPL.Serializable)
+                {
+                    context.Stack.AddFrame();
+                    object res = PhpVariable.Dereference(value.InvokeMethod("serialize", null, context));
+                    if (res == null)
+                    {
+                        // serialize returned NULL -> serialize the instance as NULL
+                        WriteNull();
+                        return;
+                    }
 
-                        if (res is string)
-                        {
-                            resdata = writer.Encoding.GetBytes((string)res);
-                        }
-                        else if (res is PhpBytes)
-                        {
-                            resdata = ((PhpBytes)res).ReadonlyData;
-                        }
+                    byte[] resdata = null;
 
-                        if (resdata == null)
-						{
-							// serialize did not return NULL nor a string -> throw an exception
-                            SPL.Exception.ThrowSplException(
-                                _ctx => new SPL.Exception(_ctx, true),
-                                context,
-                                string.Format(CoreResources.serialize_must_return_null_or_string, value.TypeName), 0, null);
-						}
+                    if (res is PhpString)
+                    {
+                        res = res.ToString();
+                    }
 
-						writer.Write(Tokens.ObjectSer);
-						writer.Write(Tokens.Colon);
+                    if (res is string)
+                    {
+                        resdata = writer.Encoding.GetBytes((string)res);
+                    }
+                    else if (res is PhpBytes)
+                    {
+                        resdata = ((PhpBytes)res).ReadonlyData;
+                    }
 
-                        binaryClassName = writer.Encoding.GetBytes(class_name);
+                    if (resdata == null)
+                    {
+                        // serialize did not return NULL nor a string -> throw an exception
+                        SPL.Exception.ThrowSplException(
+                            _ctx => new SPL.Exception(_ctx, true),
+                            context,
+                            string.Format(CoreResources.serialize_must_return_null_or_string, value.TypeName), 0, null);
+                    }
 
-						// write out class name
-                        writer.Write(binaryClassName.Length);
-						writer.Write(Tokens.Colon);
-						writer.Write(Tokens.Quote);
+                    writer.Write(Tokens.ObjectSer);
+                    writer.Write(Tokens.Colon);
 
-                        // flush the StreamWriter before accessing its underlying stream
-                        writer.Flush();
-
-                        writer.BaseStream.Write(binaryClassName, 0, binaryClassName.Length);
-						writer.Write(Tokens.Quote);
-						writer.Write(Tokens.Colon);
-
-						// write out the result of serialize
-                        writer.Write(resdata.Length);
-						writer.Write(Tokens.Colon);
-						writer.Write(Tokens.BraceOpen);
-
-                        // flush the StreamWriter before accessing its underlying stream
-                        writer.Flush();
-
-                        writer.BaseStream.Write(resdata, 0, resdata.Length);
-						writer.Write(Tokens.BraceClose);
-						return;
-					}
-
-					// try to call the __sleep method
-					bool sleep_called;
-					PhpArray ser_props = value.Sleep(ClassContext, context, out sleep_called);
-
-					if (sleep_called && ser_props == null)
-					{
-						// __sleep did not return an array -> serialize the instance as NULL
-						WriteNull();
-						return;
-					}
-
-					writer.Write(Tokens.Object);
-					writer.Write(Tokens.Colon);
-
-					// write out class name
                     binaryClassName = writer.Encoding.GetBytes(class_name);
 
                     // write out class name
@@ -472,21 +447,83 @@ namespace PHP.Library
 
                     writer.BaseStream.Write(binaryClassName, 0, binaryClassName.Length);
                     writer.Write(Tokens.Quote);
-					writer.Write(Tokens.Colon);
+                    writer.Write(Tokens.Colon);
 
-					// write out property count
-					if (ser_props != null) writer.Write(ser_props.Count);
-					else writer.Write(value.Count - (avoid_pic_name ? 1 : 0));
-					writer.Write(Tokens.Colon);
-					writer.Write(Tokens.BraceOpen);
+                    // write out the result of serialize
+                    writer.Write(resdata.Length);
+                    writer.Write(Tokens.Colon);
+                    writer.Write(Tokens.BraceOpen);
 
-					// write out properties
-					if (ser_props != null) WriteSleepResult(value, ser_props);
-					else WriteAllProperties(value, avoid_pic_name);
+                    // flush the StreamWriter before accessing its underlying stream
+                    writer.Flush();
 
-					writer.Write(Tokens.BraceClose);
-				}
-			}
+                    writer.BaseStream.Write(resdata, 0, resdata.Length);
+                    writer.Write(Tokens.BraceClose);
+                    return;
+                }
+
+                // try to call the __sleep method
+                bool sleep_called;
+                PhpArray ser_props = value.Sleep(ClassContext, context, out sleep_called);
+
+                if (sleep_called && ser_props == null)
+                {
+                    // __sleep did not return an array -> serialize the instance as NULL
+                    WriteNull();
+                    return;
+                }
+
+                writer.Write(Tokens.Object);
+                writer.Write(Tokens.Colon);
+
+                // write out class name
+                binaryClassName = writer.Encoding.GetBytes(class_name);
+
+                // write out class name
+                writer.Write(binaryClassName.Length);
+                writer.Write(Tokens.Colon);
+                writer.Write(Tokens.Quote);
+
+                // flush the StreamWriter before accessing its underlying stream
+                writer.Flush();
+
+                writer.BaseStream.Write(binaryClassName, 0, binaryClassName.Length);
+                writer.Write(Tokens.Quote);
+                writer.Write(Tokens.Colon);
+
+                // write out property count
+                if (ser_props != null) writer.Write(ser_props.Count);
+                else writer.Write(value.Count - (avoid_pic_name ? 1 : 0));
+                writer.Write(Tokens.Colon);
+                writer.Write(Tokens.BraceOpen);
+
+                // write out properties
+                if (ser_props != null) WriteSleepResult(value, ser_props);
+                else WriteAllProperties(value, avoid_pic_name);
+
+                writer.Write(Tokens.BraceClose);
+            }
+
+            /// <summary>
+            /// Serializes an object using .NET binary formatter.
+            /// </summary>
+            /// <param name="realObject">The object.</param>
+            private void WriteClrObjectInternal(object realObject)
+            {
+                writer.Write(Tokens.ClrObject);
+                writer.Write(Tokens.Colon);
+                writer.Write(Tokens.BraceOpen);
+
+                // flush the StreamWriter before accessing its underlying stream
+                writer.Flush();
+                
+                // serialize CLR object
+                var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                formatter.Serialize(writer.BaseStream, realObject);
+                
+                //
+                writer.Write(Tokens.BraceClose);
+            }
 
 			/// <summary>
 			/// Serializes properties whose names have been returned by <c>__sleep</c>.
@@ -977,6 +1014,7 @@ namespace PHP.Library
 					case Tokens.Array: ParseArray(); break;
 					case Tokens.Object: ParseObject(false); break;
 					case Tokens.ObjectSer: ParseObject(true); break;
+                    case Tokens.ClrObject: ParseClrObject(); break;
 					case Tokens.Reference: ParseReference(); break;
 					case Tokens.ObjectRef: ParseObjectRef(); break;
 
@@ -1350,6 +1388,36 @@ namespace PHP.Library
 
 				Consume(Tokens.BraceClose);
 			}
+
+            /// <summary>
+            /// Parses the <B>T</B> token.
+            /// </summary>
+            /// <remarks>Expects CLR object formatted using <see cref="System.Runtime.Serialization.Formatters.Binary.BinaryFormatter"/>.</remarks>
+            private void ParseClrObject()
+            {
+                // T,{DATA}
+
+                Consume(Tokens.Colon);
+                if (lookAhead != Tokens.BraceOpen)
+                    ThrowUnexpected();
+
+                var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                var obj = formatter.Deserialize(stream);
+                AddAtom(ClrObject.WrapDynamic(obj));
+
+                atoms.Add(false);       // !serializable
+                atoms.Add(delimiter);   // end
+
+                // restore lookAhead state:
+                int next = stream.ReadByte();
+                if (next == -1)
+                {
+                    endOfStream = true;
+                    lookAhead = (char)0;
+                }
+                else lookAhead = (char)next;
+                Consume(Tokens.BraceClose);
+            }
 
 			/// <summary>
 			/// Parses the <B>R</B> token.
