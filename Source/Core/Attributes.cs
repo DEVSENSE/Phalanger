@@ -1162,6 +1162,24 @@ namespace PHP.Core
         }
     }
 
+    /// <summary>
+    /// Attribute specifying that function contains usage of <c>static</c> (late static binding),
+    /// runtime should pass type used to call a static method into script context, so it can be used by late static binding.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
+    public class UsesLateStaticBindingAttribute : Attribute
+    {
+        /// <summary>
+        /// Determines if given <c>method</c> has [UsesLateStaticBinding] attribute set.
+        /// </summary>
+        /// <param name="method">The method to reflect from.</param>
+        /// <returns>True if the method is marked.</returns>
+        internal static bool IsSet(MethodInfo/*!*/method)
+        {
+            object[] attrs;
+            return (attrs = method.GetCustomAttributes(typeof(UsesLateStaticBindingAttribute), false)) != null && attrs.Length > 0;
+        }
+    }
 
 #if DEBUG
 

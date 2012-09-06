@@ -404,6 +404,12 @@ namespace PHP.Core
         private LinkedList<PhpCallback> splAutoloadFunctions;
 
         /// <summary>
+        /// Stack of <see cref="DTypeDesc"/> representing type used to call currently evaluated method.
+        /// </summary>
+        public Stack<DTypeDesc> CurrentLateStaticBinding { get { return _currentLateStaticBinding ?? (_currentLateStaticBinding = new Stack<DTypeDesc>()); } }
+        private Stack<DTypeDesc> _currentLateStaticBinding;
+
+        /// <summary>
         /// Get the value indicating if SPL autload functions are enabled. (If spl_autoload_register was used.)
         /// </summary>
         public bool IsSplAutoloadEnabled { get { return splAutoloadFunctions != null; } }
@@ -2642,6 +2648,31 @@ namespace PHP.Core
 
             // set the element on index id
             return (staticLocals[id - 1] = new PhpReference(value));
+        }
+
+        #endregion
+
+        #region Late Static Binding
+
+        /// <summary>
+        /// Remembers the type used to call a method. May be used within late static binding operation.
+        /// </summary>
+        /// <param name="typeDesc">Type used to call the method.</param>
+        [Emitted, EditorBrowsable(EditorBrowsableState.Never)]
+        public void PushLateStaticBindType(DTypeDesc/*!*/typeDesc)
+        {
+            Debug.Assert(typeDesc != null && !typeDesc.IsUnknown, "TypeDesc is not known!");
+            this.CurrentLateStaticBinding.Push(typeDesc);
+        }
+
+        /// <summary>
+        /// Forgets the type used to call a method.
+        /// </summary>
+        [Emitted, EditorBrowsable(EditorBrowsableState.Never)]
+        public void PopLateStaticBindType()
+        {
+            Debug.Assert(this.CurrentLateStaticBinding.Count > 0);
+            this.CurrentLateStaticBinding.Pop();
         }
 
         #endregion

@@ -1055,6 +1055,11 @@ namespace PHP.Core.Reflection
             if ((this.Properties & RoutineProperties.IsArgsAware) != 0)  // function requires PhpStack to be loaded
                 ReflectionUtils.SetCustomAttribute(argfull,
                     new CustomAttributeBuilder(typeof(NeedsArglessAttribute).GetConstructor(Type.EmptyTypes), ArrayUtils.EmptyObjects));
+
+            // [UsesLateStaticBindingAttribute] to mark the function if it needs type used to call method statically
+            if ((this.Properties & RoutineProperties.LateStaticBinding) != 0)  // function requires PhpStack to be loaded
+                ReflectionUtils.SetCustomAttribute(argfull,
+                    new CustomAttributeBuilder(typeof(UsesLateStaticBindingAttribute).GetConstructor(Type.EmptyTypes), ArrayUtils.EmptyObjects));
             
             // [PhpAbstract][PhpFinal] if needed
 			Enums.DefineCustomAttributes(MemberDesc.MemberAttributes, this.argfull);
@@ -1270,6 +1275,8 @@ namespace PHP.Core.Reflection
 			ILEmitter il = codeGenerator.IL;
 			bool args_aware = (Properties & RoutineProperties.IsArgsAware) != 0;
 
+            // TODO: <context>.PushLateStaticBindType(type);
+
 			// load the instance reference if we have one:
             // Just here we need RealObject if possible. When calling CLR method on $this,
             // Phalanger has "this.<proxy>" in "codeGenerator.SelfPlace". We need just "this".
@@ -1431,6 +1438,8 @@ namespace PHP.Core.Reflection
             // if the function needs to be called via argless stub, update the property
             if (NeedsArglessAttribute.IsSet(argfull))
                 this.Properties |= RoutineProperties.UseVarArgs;    // the function calls some arg-aware class-library function so it has to be called with PhpStack
+
+            Debug.Assert(!UsesLateStaticBindingAttribute.IsSet(argfull), "Function cannot use late static binding! Only methods can.");
 		}
 
 		#endregion
@@ -1640,6 +1649,9 @@ namespace PHP.Core.Reflection
             // if the function needs to be called via argless stub, update the properties
             if (NeedsArglessAttribute.IsSet(argfull))
                 this.Properties |= RoutineProperties.UseVarArgs;    // the function calls some arg-aware class-library function so it has to be called with PhpStack
+
+            if (UsesLateStaticBindingAttribute.IsSet(argfull))
+                this.Properties |= RoutineProperties.LateStaticBinding;    // this method uses late static binding
 		}
 
 		#endregion

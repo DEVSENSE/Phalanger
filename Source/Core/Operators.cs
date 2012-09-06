@@ -4633,6 +4633,10 @@ namespace PHP.Core
             // invoke the method
             object result;
 
+            bool usesLateStaticBinding = (method.KnownRoutine.Properties & RoutineProperties.LateStaticBinding) != 0;
+            if (usesLateStaticBinding)
+                context.PushLateStaticBindType(type);
+
             if (isCallStaticMethod)
             {
                 // __callStatic was found instead, not {methodName}
@@ -4645,27 +4649,30 @@ namespace PHP.Core
             }
             else
             {
-                try
-                {
+//                try
+//                {
                     result = method.Invoke(self, context.Stack, caller);
-                }
-                catch (NullReferenceException)
-                {
-                    if (self == null && !method.IsStatic)
-                    {   // $this was null, it is probably caused by accessing $this
-#if DEBUG
-                        throw;
-#else
-                    PhpException.ThisUsedOutOfObjectContext();
-                    result = null;
-#endif
-                    }
-                    else
-                    {
-                        throw;  // $this was not null, this should not be handled here
-                    }
-                }
+//                }
+//                catch (NullReferenceException)
+//                {
+//                    if (self == null && !method.IsStatic)
+//                    {   // $this was null, it is probably caused by accessing $this
+//#if DEBUG
+//                        throw;
+//#else
+//                    PhpException.ThisUsedOutOfObjectContext();
+//                    result = null;
+//#endif
+//                    }
+//                    else
+//                    {
+//                        throw;  // $this was not null, this should not be handled here
+//                    }
+//                }
             }
+
+            if (usesLateStaticBinding)
+                context.PopLateStaticBindType();
 
             return PhpVariable.MakeReference(PhpVariable.Copy(result, CopyReason.ReturnedByCopy));
         }
