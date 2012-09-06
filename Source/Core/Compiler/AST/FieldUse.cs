@@ -27,9 +27,9 @@ namespace PHP.Core.AST
 	/// </summary>
 	public abstract class StaticFieldUse : VariableUse
 	{
-		protected GenericQualifiedName typeName;
-        /// <summary>Name of type which's field is being accessed</summary>
-        public GenericQualifiedName TypeName { get { return typeName; } }
+		/// <summary>Name of type which's field is being accessed</summary>
+        public GenericQualifiedName TypeName { get { return typeRef.GenericQualifiedName; } }
+        protected TypeRef typeRef;
 		protected DType/*!*/ type;
 
 		/// <summary>
@@ -39,16 +39,24 @@ namespace PHP.Core.AST
 		internal AssignmentCallback assignmentCallback;
 
 		public StaticFieldUse(Position position, GenericQualifiedName typeName)
-			: base(position)
+			: this(position, DirectTypeRef.FromGenericQualifiedName(position, typeName))
 		{
-			this.typeName = typeName;
 		}
+
+        public StaticFieldUse(Position position, TypeRef typeRef)
+            : base(position)
+        {
+            Debug.Assert(typeRef != null);
+
+            this.typeRef = typeRef;
+        }
 
 		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
 		{
 			access = info.Access;
 
-			type = analyzer.ResolveTypeName(typeName, analyzer.CurrentType, analyzer.CurrentRoutine, position, false);
+            this.typeRef.Analyze(analyzer);
+            this.type = this.typeRef.ResolvedTypeOrUnknown;
 
 			analyzer.AnalyzeConstructedType(type);
 
@@ -181,11 +189,11 @@ namespace PHP.Core.AST
 		private DProperty property;
 		private bool runtimeVisibilityCheck;
 
-		public DirectStFldUse(Position position, GenericQualifiedName typeName, VariableName propertyName)
-			: base(position, typeName)
-		{
-			this.propertyName = propertyName;
-		}
+		public DirectStFldUse(Position position, TypeRef typeRef, VariableName propertyName)
+            : base(position, typeRef)
+        {
+            this.propertyName = propertyName;
+        }
 
 		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
 		{
@@ -235,7 +243,7 @@ namespace PHP.Core.AST
 				!property.DeclaringType.IsDefinite);
 
 			// we're only interested in a directly accessible property
-			return chain.EmitEnsureStaticProperty((runtimeVisibilityCheck) ? null : property, typeName, propertyName, chain.IsArrayItem);
+			return chain.EmitEnsureStaticProperty((runtimeVisibilityCheck) ? null : property, typeRef, propertyName, chain.IsArrayItem);
 		}
 
 		/// <summary>
@@ -261,7 +269,7 @@ namespace PHP.Core.AST
 			if (isMemberOf != null)
 				isMemberOf.DumpTo(visitor, output);
 
-			output.Write(typeName.ToString());
+            typeRef.DumpTo(visitor, output);
 			output.Write("::$");
 			output.Write(propertyName.ToString());
 			DumpAccess(output);
@@ -292,11 +300,11 @@ namespace PHP.Core.AST
             /// <summary>Expression that produces name of the field</summary>
         public Expression/*!*/ FieldNameExpr{get{return fieldNameExpr;}}
 
-		public IndirectStFldUse(Position position, GenericQualifiedName typeName, Expression/*!*/ fieldNameExpr)
-			: base(position, typeName)
-		{
-			this.fieldNameExpr = fieldNameExpr;
-		}
+		public IndirectStFldUse(Position position, TypeRef typeRef, Expression/*!*/ fieldNameExpr)
+            : base(position, typeRef)
+        {
+            this.fieldNameExpr = fieldNameExpr;
+        }
 
 		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
 		{
@@ -354,7 +362,7 @@ namespace PHP.Core.AST
 
 		internal override PhpTypeCode EmitEnsure(CodeGenerator/*!*/ codeGenerator, ChainBuilder chain)
 		{
-			return chain.EmitEnsureStaticProperty(typeName, null, fieldNameExpr, chain.IsArrayItem);
+			return chain.EmitEnsureStaticProperty(typeRef, null, fieldNameExpr, chain.IsArrayItem);
 		}
 
 		/// <summary>
@@ -378,7 +386,7 @@ namespace PHP.Core.AST
 
 		internal override void DumpTo(AstVisitor/*!*/ visitor, TextWriter/*!*/ output)
 		{
-			output.Write(typeName.ToString());
+            typeRef.DumpTo(visitor, output);			
 			output.Write("::{");
 			fieldNameExpr.DumpTo(visitor, output);
 			output.Write('}');

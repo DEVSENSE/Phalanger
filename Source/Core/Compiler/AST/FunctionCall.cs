@@ -986,22 +986,29 @@ namespace PHP.Core.AST
 
 	public abstract class StaticMtdCall : FunctionCall
 	{
-		protected GenericQualifiedName className;
-        public GenericQualifiedName ClassName { get { return className; } }
-		protected DType/*!*/ type;
+        public GenericQualifiedName ClassName { get { return typeRef.GenericQualifiedName; } }
+        protected readonly TypeRef/*!*/typeRef;
 
-		public StaticMtdCall(Position position, GenericQualifiedName className, List<ActualParam>/*!*/ parameters,
-	   List<TypeRef>/*!*/ genericParams)
-			: base(position, parameters, genericParams)
-		{
-			this.className = className;
+        protected DType/*!A*/type;
+        
+		public StaticMtdCall(Position position, GenericQualifiedName className, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+			: this(position, DirectTypeRef.FromGenericQualifiedName(position, className), parameters, genericParams)
+		{	
 		}
+
+        public StaticMtdCall(Position position, TypeRef typeRef, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+            : base(position, parameters, genericParams)
+        {
+            Debug.Assert(typeRef != null);
+
+            this.typeRef = typeRef;
+        }
 
 		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
 		{
 			base.Analyze(analyzer, info);
-
-            type = analyzer.ResolveTypeName(className, analyzer.CurrentType, analyzer.CurrentRoutine, position, false);
+            this.typeRef.Analyze(analyzer);
+            this.type = this.typeRef.ResolvedTypeOrUnknown;
 
 			// analyze constructed type (new constructed type cane be used here):
 			analyzer.AnalyzeConstructedType(type);
@@ -1029,7 +1036,7 @@ namespace PHP.Core.AST
 
 		public DirectStMtdCall(Position position, ClassConstUse/*!*/ classConstant, List<ActualParam>/*!*/ parameters,
 	  List<TypeRef>/*!*/ genericParams)
-			: base(position, classConstant.ClassName, parameters, genericParams)
+			: base(position, classConstant.TypeRef, parameters, genericParams)
 		{
 			this.methodName = new Name(classConstant.Name.Value);
 		}
@@ -1135,7 +1142,7 @@ namespace PHP.Core.AST
 				output.Write("->");
 			}
 
-			output.Write(className.ToString());
+            typeRef.DumpTo(visitor, output);
 			output.Write("::");
 			output.Write(methodName.ToString());
 			DumpArguments(visitor, output);
@@ -1205,7 +1212,7 @@ namespace PHP.Core.AST
 				output.Write("->");
 			}
 
-			output.Write(className.ToString());
+            typeRef.DumpTo(visitor, output);
 			output.Write("::");
 			output.Write('{');
 			methodNameVar.DumpTo(visitor, output);

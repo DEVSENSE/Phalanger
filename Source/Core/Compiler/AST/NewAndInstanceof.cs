@@ -11,6 +11,7 @@
 */
 
 using System;
+using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Reflection;
@@ -19,6 +20,7 @@ using System.Reflection.Emit;
 using PHP.Core.Emit;
 using PHP.Core.Parsers;
 using PHP.Core.Reflection;
+using System.IO;
 
 namespace PHP.Core.AST
 {
@@ -33,8 +35,32 @@ namespace PHP.Core.AST
 
 		public abstract DType ResolvedType { get; }
 
+        /// <summary>
+        /// <see cref="ResolvedType"/> or new instance of <see cref="UnknownType"/> if the type was not resolved.
+        /// </summary>
+        internal DType/*!A*/ResolvedTypeOrUnknown { get { return this.ResolvedType ?? new UnknownType(string.Empty, this); } }
+
 		public List<TypeRef>/*!*/ GenericParams { get { return genericParams; } }
 		protected readonly List<TypeRef>/*!*/ genericParams;
+
+        public GenericQualifiedName GenericQualifiedName
+        {
+            get
+            {
+                if (this.GenericParams.Count == 0)
+                {
+                    return new GenericQualifiedName(this.QualifiedName);
+                }
+                else
+                {
+                    object[] genericParamNames = new object[this.GenericParams.Count];
+                    for (int i = 0; i < genericParamNames.Length; i++)
+                        genericParamNames[i] = this.GenericParams[i].GenericQualifiedName;
+
+                    return new GenericQualifiedName(this.QualifiedName, genericParamNames); 
+                }
+            }
+        }
 
 		public TypeRef(Position position, List<TypeRef>/*!*/ genericParams)
 			: base(position)
@@ -44,7 +70,7 @@ namespace PHP.Core.AST
 			this.genericParams = genericParams;
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Resolves generic arguments.
 		/// </summary>
 		/// <returns><B>true</B> iff all arguments are resolvable to types or constructed types (none is variable).</returns>
@@ -57,6 +83,8 @@ namespace PHP.Core.AST
 
 			return result;
 		}
+
+        internal abstract QualifiedName QualifiedName { get; }
 
 		internal abstract void EmitLoadTypeDesc(CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags);
 
@@ -101,6 +129,11 @@ namespace PHP.Core.AST
 
 			return result;
 		}
+
+        internal virtual void DumpTo(AstVisitor/*!*/ visitor, TextWriter/*!*/ output)
+        {
+            output.Write(this.QualifiedName.ToString());
+        }
 	}
 
 	#endregion
@@ -145,6 +178,11 @@ namespace PHP.Core.AST
         {
             visitor.VisitPrimitiveTypeRef(this);
         }
+
+        internal override QualifiedName QualifiedName
+        {
+            get { return this.Type.QualifiedName; }
+        }
 	}
 
 	#endregion
@@ -162,6 +200,11 @@ namespace PHP.Core.AST
 		public override DType ResolvedType { get { return resolvedType; } }
 		private DType/*! after analysis */ resolvedType;
 
+        internal override QualifiedName QualifiedName
+        {
+            get { return this.ClassName; }
+        }
+
 		internal override object ToStaticTypeRef(ErrorSink/*!*/ errors, SourceUnit/*!*/ sourceUnit)
 		{
 			return new GenericQualifiedName(className, TypeRef.ToStaticTypeRefs(genericParams, errors, sourceUnit));
@@ -172,6 +215,23 @@ namespace PHP.Core.AST
 		{
 			this.className = className;
 		}
+
+        internal static DirectTypeRef/*!*/FromGenericQualifiedName(Position position, GenericQualifiedName genericQualifiedName)
+        {
+            var genericParams =
+                genericQualifiedName.GenericParams.Select<object, TypeRef>(obj =>
+                    {
+                        if (obj is PrimitiveType)
+                            return new PrimitiveTypeRef(Position.Invalid, (PrimitiveType)obj);
+
+                        if (obj is GenericQualifiedName)
+                            return FromGenericQualifiedName(Position.Invalid, (GenericQualifiedName)obj);
+
+                        return new PrimitiveTypeRef(Position.Invalid, PrimitiveType.Object);
+                    });
+
+            return new DirectTypeRef(position, genericQualifiedName.QualifiedName, genericParams.ToList());
+        }
 
 		#region Analysis
 
@@ -240,7 +300,12 @@ namespace PHP.Core.AST
         /// </summary>
         public VariableUse/*!*/ ClassNameVar { get { return this.classNameVar; } }
         private readonly VariableUse/*!*/ classNameVar;
-        
+
+        internal override QualifiedName QualifiedName
+        {
+            get { return new QualifiedName(Name.EmptyBaseName); }
+        }
+
 		public IndirectTypeRef(Position position, VariableUse/*!*/ classNameVar, List<TypeRef>/*!*/ genericParams)
 			: base(position, genericParams)
 		{
@@ -281,6 +346,13 @@ namespace PHP.Core.AST
 		}
 
 		#endregion
+
+        internal override void DumpTo(AstVisitor visitor, TextWriter output)
+        {
+            output.Write('{');
+            this.classNameVar.DumpTo(visitor, output);
+            output.Write('}');
+        }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.

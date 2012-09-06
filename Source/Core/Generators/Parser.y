@@ -1976,10 +1976,14 @@ global_constant:
 ;
 
 class_constant:
-	qualified_static_type_ref T_DOUBLE_COLON identifier 
-	{ 
-	  $$ = new ClassConstUse(@$, (GenericQualifiedName)$1, (string)$3); 
-	}
+		qualified_static_type_ref T_DOUBLE_COLON identifier 
+		{ 
+		  $$ = new ClassConstUse(@$, (GenericQualifiedName)$1, (string)$3); 
+		}
+	|	keyed_variable T_DOUBLE_COLON identifier
+		{
+			$$ = new ClassConstUse(@$, new IndirectTypeRef(@1, (VariableUse)$1, TypeRef.EmptyList), (string)$3); 
+		}
 ;
 
 scalar_expr:
@@ -2069,6 +2073,10 @@ chain_base:
 			$$ = $3;	// you know, in PHP ... whatever::$this means $this
 		else
 			$$ = CreateStaticFieldUse(@$, (GenericQualifiedName)$1, (CompoundVarUse)$3); 
+	  }	
+	|	keyed_variable T_DOUBLE_COLON keyed_variable 
+	  { 
+		$$ = CreateStaticFieldUse(@$, (CompoundVarUse)$1, (CompoundVarUse)$3); 
 	  }	
 ;
 
