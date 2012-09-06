@@ -2077,4 +2077,7 @@ non-infringement.
   <data name="instantiation_not_allowed" xml:space="preserve">
     <value>Instantiation of '{0}' is not allowed</value>
   </data>
+  <data name="static_used_out_of_class" xml:space="preserve">
+    <value>Cannot access static:: when no class scope is active</value>
+  </data>
 </root>

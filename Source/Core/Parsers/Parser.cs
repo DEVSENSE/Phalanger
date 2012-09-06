@@ -231,6 +231,7 @@ namespace PHP.Core.Parsers
         private readonly HashSet<string>/*!*/reservedTypeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             Name.SelfClassName.Value,
+            Name.StaticClassName.Value,
             Name.ParentClassName.Value,
             GlobalConstant.False.FullName,
             GlobalConstant.True.FullName,

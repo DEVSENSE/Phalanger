@@ -832,6 +832,7 @@ namespace PHP.Core.Reflection
 	public sealed class UnknownType : DType
 	{
 		public static readonly UnknownType UnknownSelf = new UnknownType(Name.SelfClassName.Value);
+        public static readonly UnknownType UnknownStatic = new UnknownType(Name.StaticClassName.Value);
 		public static readonly UnknownType UnknownParent = new UnknownType(Name.ParentClassName.Value);
 
 		public override bool IsComplete { get { return false; } }
@@ -1251,9 +1252,78 @@ namespace PHP.Core.Reflection
 
 	#endregion
 
-	#region GenericParameter
+    #region StaticType
 
-	/// <summary>
+    /// <summary>
+    /// Type representing <c>static</c> keyword (late static binding).
+    /// Used only during compilation.
+    /// </summary>
+    public sealed class StaticType : KnownType
+    {
+        public override bool IsComplete { get { return true; } }
+		public override bool IsUnknown { get { return true; } }
+		public override bool IsOpen { get { return false; } }
+		public override bool IsIdentityDefinite { get { return false; } }
+		public override bool ClrVerified { get { return false; } }
+
+		public override KnownRoutine Constructor { get { return null; } }
+
+        public static StaticType/*!*/Singleton { get { return _singleton ?? (_singleton = new StaticType()); } }
+        private static StaticType _singleton = null;
+
+        private StaticType()
+            : base(new UnknownTypeDesc(), new QualifiedName(Name.StaticClassName))
+        {
+		}
+
+		public override string GetFullName()
+		{
+            throw new NotSupportedException();
+		}
+
+		public override KnownRoutine GetConstructor()
+		{
+			return null; // default constructor (unknown)
+		}
+
+		#region Emission
+
+		internal override PhpTypeCode EmitNew(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType,
+		  DRoutine/*!*/ constructor, CallSignature callSignature, bool runtimeVisibilityCheck)
+		{
+			Debug.Assert(constructor.IsUnknown);
+			codeGenerator.EmitNewOperator(null, null, (DType)this, callSignature);
+			return PhpTypeCode.Object;
+		}
+
+		internal override void EmitInstanceOf(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType)
+		{
+			codeGenerator.EmitInstanceOfOperator(null, null, (DType)this);
+		}
+
+		internal override void EmitTypeOf(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType)
+		{
+			codeGenerator.EmitTypeOfOperator(null, null, (DType)this);
+		}
+
+		internal override void EmitLoadTypeDesc(CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags)
+		{
+            codeGenerator.EmitLoadStaticTypeDesc(flags);
+		}
+
+		internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)
+		{
+            throw new NotSupportedException();
+		}
+
+		#endregion
+    }
+
+    #endregion
+
+    #region GenericParameter
+
+    /// <summary>
 	/// Represents a type parameter of a generic type or method.
 	/// Created during pre-analysis.
 	/// </summary>

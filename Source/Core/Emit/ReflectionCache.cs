@@ -1311,7 +1311,7 @@ namespace PHP.Core.Emit
 	public static class Properties
 	{
 		static PropertyInfo _ImplementsConstantCase, _PhpReference_IsSet, _PhpReference_IsAliased,
-          _IDictionaryEnumerator_Key, _IDictionaryEnumerator_Value, _Type_TypeHandle, _DObject_RealObject, _DObject_RealType,
+          _IDictionaryEnumerator_Key, _IDictionaryEnumerator_Value, _Type_TypeHandle, _DObject_RealObject, _DObject_RealType, _DObject_TypeDesc,
           _ClrTypeDesc_Constructor, _ScriptContext_CurrentContext, _Assembly_Location, _InsideCaller, _Delegate_Method,
           _PhpArray_InplaceCopyOnReturn;
 
@@ -1327,6 +1327,7 @@ namespace PHP.Core.Emit
 		public static PropertyInfo DObject_RealObject { get { if (_DObject_RealObject == null) _DObject_RealObject = typeof(DObject).GetProperty("RealObject"); return _DObject_RealObject; } }
         public static PropertyInfo DObject_RealType { get { return _DObject_RealType ?? (_DObject_RealType = typeof(DObject).GetProperty("RealType")); } }
         public static PropertyInfo DObject_InsideCaller { get { if (_InsideCaller == null) _InsideCaller = typeof(DObject).GetProperty("insideCaller",BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance); return _InsideCaller; } }
+        public static PropertyInfo DObject_TypeDesc { get { return _DObject_TypeDesc ?? (_DObject_TypeDesc = typeof(DObject).GetProperty("TypeDesc", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)); } }
 
         public static PropertyInfo ClrTypeDesc_Constructor { get { if (_ClrTypeDesc_Constructor == null) _ClrTypeDesc_Constructor = typeof(ClrTypeDesc).GetProperty("Constructor"); return _ClrTypeDesc_Constructor; } }
 
