@@ -4632,15 +4632,12 @@ namespace PHP.Core
 
             // invoke the method
             object result;
-
-            bool usesLateStaticBinding = (method.KnownRoutine.Properties & RoutineProperties.LateStaticBinding) != 0;
-            if (usesLateStaticBinding)
-                context.PushLateStaticBindType(type);
-
+            var stack = context.Stack;
+            stack.LateStaticBindType = type;
+               
             if (isCallStaticMethod)
             {
                 // __callStatic was found instead, not {methodName}
-                var stack = context.Stack;
                 PhpArray args = stack.CollectFrame();   // get array with args, remove the previous stack
 
                 // original parameters are passed to __callStatic in an array as the second parameter
@@ -4651,7 +4648,7 @@ namespace PHP.Core
             {
 //                try
 //                {
-                    result = method.Invoke(self, context.Stack, caller);
+                    result = method.Invoke(self, stack, caller);
 //                }
 //                catch (NullReferenceException)
 //                {
@@ -4670,9 +4667,6 @@ namespace PHP.Core
 //                    }
 //                }
             }
-
-            if (usesLateStaticBinding)
-                context.PopLateStaticBindType();
 
             return PhpVariable.MakeReference(PhpVariable.Copy(result, CopyReason.ReturnedByCopy));
         }

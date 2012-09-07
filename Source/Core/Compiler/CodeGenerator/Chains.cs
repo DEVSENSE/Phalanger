@@ -817,7 +817,7 @@ namespace PHP.Core
 		/// type. Handles the case when field name is known at compile time (see <see cref="AST.DirectStFldUse"/>).
 		/// </summary>
 		/// <param name="property">The corresponding <see cref="DProperty"/> or <B>null</B>.</param>
-		/// <param name="className">The class name (identifier index).</param>
+        /// <param name="typeRef">The class type reference (identifier index).</param>
 		/// <param name="fieldName">The field name (identifier index).</param>
 		/// <param name="ensureArray">Whether to ensure that static field is an array (or an object).</param>
 		/// <remarks>

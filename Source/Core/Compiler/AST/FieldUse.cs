@@ -195,6 +195,11 @@ namespace PHP.Core.AST
             this.propertyName = propertyName;
         }
 
+        public DirectStFldUse(Position position, GenericQualifiedName qualifiedName, VariableName propertyName)
+            : base(position, DirectTypeRef.FromGenericQualifiedName(position, qualifiedName))
+        {
+        }
+
 		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
 		{
 			base.Analyze(analyzer, info);

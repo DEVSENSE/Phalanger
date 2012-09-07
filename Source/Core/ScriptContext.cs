@@ -2652,31 +2652,6 @@ namespace PHP.Core
 
         #endregion
 
-        #region Late Static Binding
-
-        /// <summary>
-        /// Remembers the type used to call a method. May be used within late static binding operation.
-        /// </summary>
-        /// <param name="typeDesc">Type used to call the method.</param>
-        [Emitted, EditorBrowsable(EditorBrowsableState.Never)]
-        public void PushLateStaticBindType(DTypeDesc/*!*/typeDesc)
-        {
-            Debug.Assert(typeDesc != null && !typeDesc.IsUnknown, "TypeDesc is not known!");
-            this.CurrentLateStaticBinding.Push(typeDesc);
-        }
-
-        /// <summary>
-        /// Forgets the type used to call a method.
-        /// </summary>
-        [Emitted, EditorBrowsable(EditorBrowsableState.Never)]
-        public void PopLateStaticBindType()
-        {
-            Debug.Assert(this.CurrentLateStaticBinding.Count > 0);
-            this.CurrentLateStaticBinding.Pop();
-        }
-
-        #endregion
-
         #region Initialization of requests and applications
 
         /// <summary>

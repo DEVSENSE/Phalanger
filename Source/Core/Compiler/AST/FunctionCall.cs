@@ -1123,7 +1123,7 @@ namespace PHP.Core.AST
 
 			// class context is unknown or the class is m-decl or completely unknown at compile-time -> call the operator			
 			PhpTypeCode result = method.EmitCall(codeGenerator, null, callSignature, instance, runtimeVisibilityCheck,
-				overloadIndex, type as ConstructedType, position, access, false/* TODO: __call must be called virtually */);
+				overloadIndex, type, position, access, false/* TODO: __call must be called virtually */);
 
             if (/*method == null || */!method.ReturnValueDeepCopyEmitted)   // (J) Emit Copy only if method is known (=> known PhpRoutine do not emit Copy on return value)
                 EmitReturnValueCopy(codeGenerator.IL, result);  // only if we are going to read the resulting value
