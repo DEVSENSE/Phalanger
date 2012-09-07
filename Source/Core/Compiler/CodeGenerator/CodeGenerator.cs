@@ -490,6 +490,10 @@ namespace PHP.Core
 			gc_context.SelfPlace = SelfPlace;
 			SelfPlace = new IndexedPlace(PlaceHolder.Argument, ScriptBuilder.ArgSelf);
 
+            // set late static bind place
+            gc_context.LateStaticBindTypePlace = LateStaticBindTypePlace;
+            LateStaticBindTypePlace = null;
+
 			// set Result place and return label
 			gc_context.ResultPlace = ResultPlace;
 			gc_context.ReturnLabel = ReturnLabel;
@@ -521,6 +525,7 @@ namespace PHP.Core
 			this.il = gc_context.IL;
 			this.ScriptContextPlace = gc_context.ScriptContextPlace;
 			this.TypeContextPlace = gc_context.ClassContextPlace;
+            this.LateStaticBindTypePlace = null;
 			this.SelfPlace = gc_context.SelfPlace;
 			this.ResultPlace = gc_context.ResultPlace;
 			this.ReturnLabel = gc_context.ReturnLabel;
@@ -612,10 +617,11 @@ namespace PHP.Core
 			fd_context.SelfPlace = this.SelfPlace;
 			this.SelfPlace = LiteralPlace.Null;
 
-			// set Result place
+            // set Result place
 			fd_context.ResultPlace = this.ResultPlace;
 			fd_context.ReturnLabel = this.ReturnLabel;
 			this.ResultPlace = null;
+            this.LateStaticBindTypePlace = null;
 
 			// set exception block nesting:
 			fd_context.ExceptionBlockNestingLevel = this.ExceptionBlockNestingLevel;
@@ -646,6 +652,7 @@ namespace PHP.Core
             this.il = fd_context.IL;
 			this.ScriptContextPlace = fd_context.ScriptContextPlace;
 			this.TypeContextPlace = fd_context.ClassContextPlace;
+            this.LateStaticBindTypePlace = fd_context.LateStaticBindTypePlace;
 			this.SelfPlace = fd_context.SelfPlace;
 			this.ResultPlace = fd_context.ResultPlace;
 			this.ReturnLabel = fd_context.ReturnLabel;
@@ -709,7 +716,9 @@ namespace PHP.Core
 			// set Result place
 			fd_context.ResultPlace = this.ResultPlace;
 			fd_context.ReturnLabel = this.ReturnLabel;
+            fd_context.LateStaticBindTypePlace = this.LateStaticBindTypePlace;
 			this.ResultPlace = null;
+            this.LateStaticBindTypePlace = null;
 
 			// set exception block nesting:
 			fd_context.ExceptionBlockNestingLevel = this.ExceptionBlockNestingLevel;
@@ -821,6 +830,7 @@ namespace PHP.Core
 			md_context.ClassContextPlace = TypeContextPlace;
 			md_context.ScriptContextPlace = ScriptContextPlace;
 			md_context.SelfPlace = SelfPlace;
+            md_context.LateStaticBindTypePlace = LateStaticBindTypePlace;
 
 			if (method.IsStatic)
 			{
@@ -846,6 +856,7 @@ namespace PHP.Core
 			md_context.ResultPlace = ResultPlace;
 			md_context.ReturnLabel = ReturnLabel;
 			ResultPlace = null;
+            LateStaticBindTypePlace = null;
 
 			// set exception block nesting:
 			md_context.ExceptionBlockNestingLevel = ExceptionBlockNestingLevel;
@@ -871,6 +882,7 @@ namespace PHP.Core
 			this.il = md_context.IL;
 			this.ScriptContextPlace = md_context.ScriptContextPlace;
 			this.TypeContextPlace = md_context.ClassContextPlace;
+            this.LateStaticBindTypePlace = md_context.LateStaticBindTypePlace;
 			this.SelfPlace = md_context.SelfPlace;
 			this.ResultPlace = md_context.ResultPlace;
 			this.ReturnLabel = md_context.ReturnLabel;
@@ -1687,6 +1699,7 @@ namespace PHP.Core
             }
             else
             {
+                // not handled yet
                 throw new NotImplementedException();
             }
         }
@@ -1838,6 +1851,9 @@ namespace PHP.Core
 
 			// initializes locals (from arguments or by empty value):
 			EmitArgfullArgsInitialization(routine);
+
+            // remember late static bind type from <stack>
+            EmitArgfullLateStaticBindTypeInitialization(routine);
 
             // custom body prolog emittion:
             PluginHandler.EmitBeforeBody(il, body);
@@ -2108,6 +2124,27 @@ namespace PHP.Core
 				index++;
 			}
 		}
+
+        /// <summary>
+        /// Stores late static binding type information if necessary.
+        /// </summary>
+        private void EmitArgfullLateStaticBindTypeInitialization(PhpRoutine/*!*/routine)
+        {
+            if (routine == null || !routine.IsMethod || !routine.IsStatic || !routine.UsesLateStaticBinding)
+                return;
+
+            // static method that has late static bind use:
+            Debug.Assert(this.LateStaticBindTypePlace == null);
+
+            // <context>.Stack.LateStaticBindType
+            this.EmitLoadScriptContext();
+            this.il.Emit(OpCodes.Ldfld, Fields.ScriptContext_Stack);
+            this.il.Emit(OpCodes.Ldfld, Fields.PhpStack_LateStaticBindType);
+
+            // DTypeDesc <loc_lsb> =
+            this.LateStaticBindTypePlace = new IndexedPlace(il.DeclareLocal(Types.DTypeDesc[0]));
+            this.LateStaticBindTypePlace.EmitStore(il);
+        }
 
 		/// <summary>
 		/// Emits non-reference argument deep copying.

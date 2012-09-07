@@ -235,6 +235,11 @@ namespace PHP.Core
 			/// </summary>
 			public IPlace SelfPlace;
 
+            /// <summary>
+            /// Place where calling type is stored.
+            /// </summary>
+            public IPlace LateStaticBindTypePlace;
+
 			/// <summary>
 			/// Place where result of the routine is stored when returning value from the routine.
 			/// </summary>
