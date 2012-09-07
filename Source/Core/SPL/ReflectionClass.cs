@@ -11,6 +11,7 @@
 */
 
 using System;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -107,7 +108,7 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
-        public object __construct(ScriptContext context, object arg)
+        public virtual object __construct(ScriptContext context, object arg)
         {
             DObject dobj;
 
@@ -160,7 +161,7 @@ namespace PHP.Library.SPL
         /// <returns>Returns a new instance of the class.</returns>
         [ImplementsMethod]
         [NeedsArgless]
-        public object newInstance(ScriptContext/*!*/context)
+        public virtual object newInstance(ScriptContext/*!*/context)
         {
             // this method should not be called, its argless should.
             throw new InvalidOperationException();
@@ -220,7 +221,7 @@ namespace PHP.Library.SPL
         /// Gets the class name.
         /// </summary>
         [ImplementsMethod]
-        public object getName(ScriptContext/*!*/context)
+        public virtual object getName(ScriptContext/*!*/context)
         {
             return this.name;
         }
@@ -236,7 +237,7 @@ namespace PHP.Library.SPL
         /// Checks if this class is defined in a namespace.
         /// </summary>
         [ImplementsMethod]
-        public object inNamespace(ScriptContext/*!*/context)
+        public virtual object inNamespace(ScriptContext/*!*/context)
         {
             var name = this.name;
             return name != null && name.IndexOf(QualifiedName.Separator) != -1;
@@ -253,7 +254,7 @@ namespace PHP.Library.SPL
         /// Gets the namespace name or an empty string if the class is not defined in a namespace.
         /// </summary>
         [ImplementsMethod]
-        public object getNamespaceName(ScriptContext/*!*/context)
+        public virtual object getNamespaceName(ScriptContext/*!*/context)
         {
             var name = this.name;
             int lastSeparatorIndex;
@@ -276,7 +277,7 @@ namespace PHP.Library.SPL
         /// Gets the short name of the class, the part without the namespace.
         /// </summary>
         [ImplementsMethod]
-        public object getShortName(ScriptContext/*!*/context)
+        public virtual object getShortName(ScriptContext/*!*/context)
         {
             var name = this.name;
             int lastSeparatorIndex;
@@ -299,7 +300,7 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
-        public object __toString(ScriptContext/*!*/context)
+        public virtual object __toString(ScriptContext/*!*/context)
         {
             throw new NotImplementedException();
         }
@@ -309,7 +310,7 @@ namespace PHP.Library.SPL
         #region hasMethod, hasConstant
 
         [ImplementsMethod]
-        public object hasMethod(ScriptContext/*!*/context, object argName)
+        public virtual object hasMethod(ScriptContext/*!*/context, object argName)
         {
             var name = new Name(PHP.Core.Convert.ObjectToString(argName));
 
@@ -329,7 +330,7 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
-        public object hasConstant(ScriptContext/*!*/context, object argName)
+        public virtual object hasConstant(ScriptContext/*!*/context, object argName)
         {
             var name = new VariableName(PHP.Core.Convert.ObjectToString(argName));
 
@@ -353,7 +354,7 @@ namespace PHP.Library.SPL
         #region getFileName
 
         [ImplementsMethod]
-        public object getFileName(ScriptContext/*!*/context)
+        public virtual object getFileName(ScriptContext/*!*/context)
         {
             int id;
             string typename;
@@ -379,7 +380,7 @@ namespace PHP.Library.SPL
         #region getStaticPropertyValue, getConstant, getConstants
 
         [ImplementsMethod]
-        public object getStaticPropertyValue(ScriptContext/*!*/context, object argName, [Optional]object argDefault)
+        public virtual object getStaticPropertyValue(ScriptContext/*!*/context, object argName, [Optional]object argDefault)
         {
             string name = PHP.Core.Convert.ObjectToString(argName);
             return Operators.GetStaticProperty(this.typedesc, argName, this.TypeDesc, context, false);
@@ -395,7 +396,7 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
-        public object getConstant(ScriptContext context, object argName)
+        public virtual object getConstant(ScriptContext context, object argName)
         {
             string name = PHP.Core.Convert.ObjectToString(argName);
             return Operators.GetClassConstant(this.typedesc, name, this.TypeDesc, context);
@@ -409,7 +410,7 @@ namespace PHP.Library.SPL
             return ((ReflectionClass)instance).getConstant(stack.Context, argName);
         }
 
-        public object getConstants(ScriptContext context)
+        public virtual object getConstants(ScriptContext context)
         {
             PhpArray arr = new PhpArray(this.typedesc.Constants.Count);
             foreach (var c in this.typedesc.Constants)
@@ -425,6 +426,45 @@ namespace PHP.Library.SPL
             return ((ReflectionClass)instance).getConstants(stack.Context);
         }
 
+        #endregion
+
+        #region getInterfaceNames, getParentClass
+
+        [ImplementsMethod]
+        public virtual object getInterfaceNames(ScriptContext/*!*/context)
+        {
+            if (typedesc == null)
+                return false;
+
+            return new PhpArray(typedesc.Interfaces.Select(x => x.MakeFullName()));
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getInterfaceNames(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getInterfaceNames(stack.Context);
+        }
+
+        [ImplementsMethod]
+        public virtual object getParentClass(ScriptContext/*!*/context)
+        {
+            if (typedesc == null || typedesc.Base == null)
+                return false;
+
+            // construct new ReflectionClass with resolved TypeDesc
+            return new ReflectionClass(context, true)
+            {
+                typedesc = this.typedesc.Base
+            };
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getParentClass(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getParentClass(stack.Context);
+        }
         #endregion
     }
 }

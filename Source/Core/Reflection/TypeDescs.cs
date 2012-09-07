@@ -2834,18 +2834,27 @@ namespace PHP.Core.Reflection
         protected override void ReflectInterfaces()
         {
             Type[] real_interfaces = RealType.GetInterfaces();
-
-            List<DTypeDesc> iface_list = new List<DTypeDesc>(real_interfaces.Length);
-
-            for (int i = 0; i < real_interfaces.Length; i++)
+            if (real_interfaces == null || real_interfaces.Length == 0)
             {
-                if (!IsRealInterfaceHidden(RealType, real_interfaces[i]))
-                {
-                    iface_list.Add(DTypeDesc.Create(real_interfaces[i]));
-                }
+                this.interfaces = DTypeDesc.EmptyArray;
             }
+            else
+            {
+                List<DTypeDesc> iface_list = null;
 
-            interfaces = iface_list.ToArray();
+                for (int i = 0; i < real_interfaces.Length; i++)
+                {
+                    if (!IsRealInterfaceHidden(RealType, real_interfaces[i]))
+                    {
+                        if (iface_list == null)
+                            iface_list = new List<DTypeDesc>(real_interfaces.Length - i);
+
+                        iface_list.Add(DTypeDesc.Create(real_interfaces[i]));
+                    }
+                }
+
+                interfaces = (iface_list != null) ? iface_list.ToArray() : DTypeDesc.EmptyArray;
+            }
         }
 
         protected override void ReflectMethods()
