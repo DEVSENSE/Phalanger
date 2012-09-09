@@ -429,6 +429,9 @@ namespace PHP.Library.SPL
                 PhpException.InvalidArgument("arg");
             }
 
+            if (routine == null)
+                PhpException.Throw(PhpError.Error, string.Format("Function {0}() does not exist", name));
+            
             return null;
         }
 
@@ -598,29 +601,33 @@ namespace PHP.Library.SPL
         {
             string methodnameStr = PhpVariable.AsString(methodname);
 
-            if (@class == null || string.IsNullOrEmpty(methodnameStr))
-                return false;
-
             this.dtype = null;
             this.method = null;
 
             DObject dobj;
-            string str;
-
+            
             if ((dobj = (@class as DObject)) != null)
             {
                 this.dtype = dobj.TypeDesc;
             }
-            else if ((str = PhpVariable.AsString(@class)) != null)
+            else
             {
-                this.dtype = context.ResolveType(str, null, null, null, ResolveTypeFlags.UseAutoload);
+                var str = PhpVariable.AsString(@class);
+                if (str != null)
+                    this.dtype = context.ResolveType(str, null, null, null, ResolveTypeFlags.UseAutoload);
+
+                if (this.dtype == null)
+                {
+                    PhpException.Throw(PhpError.Error, string.Format("Class {0} does not exist", str));
+                    return false;
+                }
             }
-
-            if (this.dtype == null)
-                return false;
-
+            
             if (this.dtype.GetMethod(new Name(methodnameStr), dtype, out this.method) == GetMemberResult.NotFound)
+            {
+                PhpException.Throw(PhpError.Error, string.Format("Method {0}::{1}() does not exist", dtype.MakeFullName(), methodnameStr));  
                 return false;
+            }
 
             return null;
         }

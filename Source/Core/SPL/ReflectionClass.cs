@@ -416,7 +416,7 @@ namespace PHP.Library.SPL
 
         #endregion
 
-        #region hasMethod, hasConstant
+        #region hasMethod, hasConstant, hasProperty
 
         [ImplementsMethod]
         public virtual object hasMethod(ScriptContext/*!*/context, object argName)
@@ -425,7 +425,7 @@ namespace PHP.Library.SPL
 
             for (var type = this.typedesc; type != null; type = type.Base)
                 if (type.Methods.ContainsKey(name))
-                    return true;;
+                    return true;
 
             return false;
         }
@@ -456,6 +456,29 @@ namespace PHP.Library.SPL
             object args = stack.PeekValue(1);
             stack.RemoveFrame();
             return ((ReflectionClass)instance).hasConstant(stack.Context, args);
+        }
+
+        [ImplementsMethod]
+        public virtual object hasProperty(ScriptContext/*!*/context, object argName)
+        {
+            if (this.typedesc == null)
+                return false;
+
+            var name = new VariableName(PHP.Core.Convert.ObjectToString(argName));
+
+            for (var type = this.typedesc; type != null; type = type.Base)
+                if (type.Properties.ContainsKey(name))
+                    return true;
+
+            return false;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object hasProperty(object instance, PhpStack stack)
+        {
+            object args = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).hasProperty(stack.Context, args);
         }
 
         #endregion
@@ -605,7 +628,7 @@ namespace PHP.Library.SPL
 
         #endregion
 
-        #region getConstructor, getMethods, getProperties
+        #region getConstructor, getMethods, getProperties, getProperty
 
         [ImplementsMethod]
         public virtual object getConstructor(ScriptContext/*!*/context)
@@ -694,7 +717,21 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual object getProperties(ScriptContext/*!*/context, object filter = null)
         {
-            throw new NotImplementedException();
+            if (typedesc == null)
+                return false;
+
+            PhpArray result = new PhpArray(typedesc.Properties.Count);
+
+            foreach (var prop in typedesc.Properties)
+            {
+                result.Add(new ReflectionProperty(context, true)
+                {
+                    dtype = prop.Value.DeclaringType,
+                    property = prop.Value,
+                });
+            }
+
+            return result;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -703,6 +740,60 @@ namespace PHP.Library.SPL
             var filter = stack.PeekValueOptional(1);
             stack.RemoveFrame();
             return ((ReflectionClass)instance).getProperties(stack.Context, filter);
+        }
+
+        [ImplementsMethod]
+        public virtual object getProperty(ScriptContext/*!*/context, object name)
+        {
+            if (typedesc == null)
+                return false;
+
+            DPropertyDesc prop;
+            var namestr = Core.Convert.ObjectToString(name);
+            if (typedesc.Properties.TryGetValue(new VariableName(namestr), out prop))
+            {
+                return new ReflectionProperty(context, true)
+                {
+                    dtype = prop.DeclaringType,
+                    property = prop,
+                };
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getProperty(object instance, PhpStack stack)
+        {
+            var name = stack.PeekValueOptional(1);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getProperty(stack.Context, name);
+        }
+
+        #endregion
+
+        #region getModifiers
+
+        [ImplementsMethod]
+        public virtual object/*int*/getModifiers(ScriptContext context)
+        {
+            if (typedesc == null)
+                return false;
+
+            int result = 0;
+
+            if (typedesc.IsAbstract) result |= IS_EXPLICIT_ABSTRACT;
+            if (typedesc.IsFinal) result |= IS_FINAL;
+            
+            return result;
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getModifiers(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getModifiers(stack.Context);
         }
 
         #endregion
