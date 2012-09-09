@@ -1803,6 +1803,44 @@ namespace PHP.Core
             foreach (T el in en) if (f(el)) yield return el;
         }
     }
+    
+    /// <summary>
+    /// Extension methods for <see cref="IList"/>.
+    /// </summary>
+    public static class ListUtils
+    {
+        /// <summary>
+        /// Searches for the specified object and returns the zero-based index of the first occurrence
+        /// within the entire <paramref name="list"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of list elements.</typeparam>
+        /// <param name="list">List to search in.</param>
+        /// <param name="item">Item to search for.</param>
+        /// <param name="comparer">Comparer to be used.</param>
+        /// <returns>The zero-based index of the first occurrence of <paramref name="item" /> within the entire <paramref name="list"/>, if found; otherwise, –1.</returns>
+        public static int IndexOf<T>(this IList<T>/*!*/list, T item, IEqualityComparer<T>/*!*/comparer)
+        {
+            Debug.Assert(list != null);
+            Debug.Assert(comparer != null);
+
+            for (int i = 0; i < list.Count; i++)
+                if (comparer.Equals(list[i], item))
+                    return i;
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Removes the last item from the list.
+        /// </summary>
+        /// <typeparam name="T">Type of list items.</typeparam>
+        /// <param name="list">LIst to remove from.</param>
+        /// <exception cref="ArgumentOutOfException"><paramref name="list"/> has no items.</exception>
+        public static void RemoveLast<T>(this IList<T>/*!*/list)
+        {
+            list.RemoveAt(list.Count - 1);
+        }
+    }
 
     #endregion
 
