@@ -1835,7 +1835,7 @@ namespace PHP.Core
         /// </summary>
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <param name="list">LIst to remove from.</param>
-        /// <exception cref="ArgumentOutOfException"><paramref name="list"/> has no items.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="list"/> has no items.</exception>
         public static void RemoveLast<T>(this IList<T>/*!*/list)
         {
             list.RemoveAt(list.Count - 1);
