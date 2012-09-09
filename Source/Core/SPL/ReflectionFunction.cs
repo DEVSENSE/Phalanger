@@ -437,7 +437,7 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public override object __toString(ScriptContext context)
         {
-            throw new NotImplementedException();
+            return string.Format("Function [ function {0} ] {}", this.name);
         }
         [EditorBrowsable(EditorBrowsableState.Never)]
         public new static object __toString(object instance, PhpStack stack)
@@ -629,7 +629,6 @@ namespace PHP.Library.SPL
 
         //public static string export ( string $class , string $name [, bool $return = false ] )
         
-        //public Closure getClosure ( string $object )
         [ImplementsMethod]
         public virtual object/*Closure*/getClosure(ScriptContext context, [Optional]object @object)
         {
@@ -937,7 +936,12 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public override object/*string*/__toString(ScriptContext context)
         {
-            throw new NotImplementedException();
+            if (method == null)
+                return false;
+
+            return string.Format("Method [ {0} method {1} ] {}",
+                (method.IsStatic ? "static " : string.Empty) + (method.IsPublic ? "public" : (method.IsProtected ? "protected" : "private")),
+                this.name);
         }
         [EditorBrowsable(EditorBrowsableState.Never)]
         public new static object __toString(object instance, PhpStack stack)
