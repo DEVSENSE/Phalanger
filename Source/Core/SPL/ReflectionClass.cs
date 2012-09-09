@@ -509,7 +509,7 @@ namespace PHP.Library.SPL
 
         #endregion
 
-        #region getStaticPropertyValue, getConstant, getConstants
+        #region getStaticPropertyValue, setStaticPropertyValue, getConstant, getConstants
 
         [ImplementsMethod]
         public virtual object getStaticPropertyValue(ScriptContext/*!*/context, object argName, [Optional]object argDefault)
@@ -525,6 +525,23 @@ namespace PHP.Library.SPL
             object argDefault = stack.PeekValueOptional(2);
             stack.RemoveFrame();
             return ((ReflectionClass)instance).getStaticPropertyValue(stack.Context, argName, argDefault);
+        }
+
+        [ImplementsMethod]
+        public virtual object setStaticPropertyValue(ScriptContext/*!*/context, object argName, object value)
+        {
+            string name = PHP.Core.Convert.ObjectToString(argName);
+            Operators.SetStaticProperty(this.typedesc, argName, value, null, context);
+            return null;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object setStaticPropertyValue(object instance, PhpStack stack)
+        {
+            object argName = stack.PeekValue(1);
+            object argValue = stack.PeekValue(2);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).setStaticPropertyValue(stack.Context, argName, argValue);
         }
 
         [ImplementsMethod]
@@ -628,7 +645,7 @@ namespace PHP.Library.SPL
 
         #endregion
 
-        #region getConstructor, getMethods, getProperties, getProperty
+        #region getConstructor, getMethods, getProperties, getProperty, getStaticProperties
 
         [ImplementsMethod]
         public virtual object getConstructor(ScriptContext/*!*/context)
@@ -712,6 +729,27 @@ namespace PHP.Library.SPL
             var filter = stack.PeekValueOptional(1);
             stack.RemoveFrame();
             return ((ReflectionClass)instance).getMethods(stack.Context, filter);
+        }
+
+        [ImplementsMethod]
+        public virtual object getStaticProperties(ScriptContext/*!*/context)
+        {
+            if (typedesc == null)
+                return false;
+
+            PhpArray result = new PhpArray();
+
+            foreach (var prop in typedesc.Properties.Where(x => x.Value.IsStatic))
+                result.Add(prop.Key.Value, prop.Value.Get(null));
+            
+            return result;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getStaticProperties(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getStaticProperties(stack.Context);
         }
 
         [ImplementsMethod]
