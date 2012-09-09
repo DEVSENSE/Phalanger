@@ -433,9 +433,16 @@ namespace PHP.Library.SPL
 
         #endregion
 
+        [ImplementsMethod]
         public override object __toString(ScriptContext context)
         {
             throw new NotImplementedException();
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new static object __toString(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionFunction)instance).__toString(stack.Context);
         }
 
         //public static string export ( string $name [, string $return ] )
@@ -514,11 +521,11 @@ namespace PHP.Library.SPL
         #region Constants
 
         public const int IS_STATIC = 1;
+        public const int IS_ABSTRACT = 2;
+        public const int IS_FINAL = 4;
         public const int IS_PUBLIC = 256;
         public const int IS_PROTECTED = 512;
         public const int IS_PRIVATE = 1024;
-        public const int IS_ABSTRACT = 2;
-        public const int IS_FINAL = 4;
 
         #endregion
 
@@ -565,9 +572,10 @@ namespace PHP.Library.SPL
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static object __construct(object instance, PhpStack stack)
         {
-            object argument = stack.PeekValue(1);
+            object @class = stack.PeekValue(1);
+            object methodname = stack.PeekValue(1);
             stack.RemoveFrame();
-            return ((ReflectionFunction)instance).__construct(stack.Context, argument);
+            return ((ReflectionMethod)instance).__construct(stack.Context, @class, methodname);
         }
 
         /// <summary>
@@ -609,7 +617,30 @@ namespace PHP.Library.SPL
 
         //public static string export ( string $class , string $name [, bool $return = false ] )
         //public Closure getClosure ( string $object )
-        //public int getModifiers ( void )
+        
+        [ImplementsMethod]
+        public virtual object/*int*/getModifiers(ScriptContext context)
+        {
+            if (method == null)
+                return false;
+
+            int result = 0;
+            
+            if (method.IsStatic) result |= IS_STATIC;
+            if (method.IsAbstract) result |= IS_ABSTRACT;
+            if (method.IsFinal) result |= IS_FINAL;
+            if (method.IsPublic) result |= IS_PUBLIC;
+            if (method.IsProtected) result |= IS_PROTECTED;
+            if (method.IsPrivate) result |= IS_PRIVATE;
+            
+            return result;
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getModifiers(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).getModifiers(stack.Context);
+        }
         
         /// <summary>
         /// Gets the method prototype (if there is one).
@@ -822,7 +853,6 @@ namespace PHP.Library.SPL
             return ((ReflectionMethod)instance).isStatic(stack.Context);
         }
 
-        //public void setAccessible ( bool $accessible )
         [ImplementsMethod]
         public virtual object/*bool*/setAccessible(ScriptContext context, object accessible)
         {
@@ -841,9 +871,16 @@ namespace PHP.Library.SPL
             return ((ReflectionMethod)instance).setAccessible(stack.Context, accessible);
         }
         
+        [ImplementsMethod]
         public override object/*string*/__toString(ScriptContext context)
         {
             throw new NotImplementedException();
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new static object __toString(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).__toString(stack.Context);
         }
     }
 

@@ -201,6 +201,7 @@ namespace PHP.Core
             addType(typeof(Library.SPL.ReflectionFunctionAbstract));
             addType(typeof(Library.SPL.ReflectionFunction));
             addType(typeof(Library.SPL.ReflectionMethod));
+            addType(typeof(Library.SPL.ReflectionProperty));
             addType(typeof(Library.SPL.ReflectionException));
 
             // Iterators:

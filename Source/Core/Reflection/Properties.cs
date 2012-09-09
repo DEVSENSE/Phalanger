@@ -418,18 +418,25 @@ namespace PHP.Core.Reflection
 
 		public override string MakeFullName()
 		{
-			// TODO:
-			// didn't work:
-			//return (_setterStub != null) ?
-			//    _setterStub.GetUserEntryPoint.Name.Substring("set_".Length) : _getterStub.GetUserEntryPoint.Name.Substring("get_".Length); 
-
-			// brute force:
-			foreach (KeyValuePair<VariableName, DPropertyDesc> pair in DeclaringType.Properties)
-			{
-				if (pair.Value == this) return pair.Key.ToString();
-			}
-			return "<Unknown>";
+            var knownProperty = this.Member as KnownProperty;
+            return (knownProperty != null) ? knownProperty.FullName : LookupFullName();
 		}
+
+        private string LookupFullName()
+        {
+            // TODO:
+            // didn't work:
+            //return (_setterStub != null) ?
+            //    _setterStub.GetUserEntryPoint.Name.Substring("set_".Length) : _getterStub.GetUserEntryPoint.Name.Substring("get_".Length); 
+
+            // brute force:
+            foreach (KeyValuePair<VariableName, DPropertyDesc> pair in DeclaringType.Properties)
+            {
+                if (pair.Value == this) return pair.Key.ToString();
+            }
+
+            return "<Unknown>";
+        }
 
 		public override string MakeFullGenericName()
 		{
