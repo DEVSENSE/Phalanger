@@ -225,10 +225,12 @@ namespace PHP.Core
             addType(typeof(Library.SPL.ErrorException));
             addType(typeof(Library.SPL.LogicException));
             addType(typeof(Library.SPL.InvalidArgumentException));
+            addType(typeof(Library.SPL.OutOfRangeException));
             addType(typeof(Library.SPL.BadFunctionCallException));
             addType(typeof(Library.SPL.BadMethodCallException));
             addType(typeof(Library.SPL.LengthException));
             addType(typeof(Library.SPL.RangeException));
+            addType(typeof(Library.SPL.OutOfBoundsException));
             addType(typeof(Library.SPL.OverflowException));
             addType(typeof(Library.SPL.UnderflowException));
             addType(typeof(Library.SPL.UnexpectedValueException));

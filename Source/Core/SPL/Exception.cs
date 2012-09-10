@@ -711,6 +711,45 @@ namespace PHP.Library.SPL
     }
 
     /// <summary>
+    /// Exception thrown when an illegal index was requested.
+    /// </summary>
+    [ImplementsType]
+#if !SILVERLIGHT
+    [Serializable]
+#endif
+    public class OutOfRangeException  : LogicException
+    {
+        #region Implementation Details
+
+        /// <summary>
+        /// Populates the provided <see cref="DTypeDesc"/> with this class's methods and properties.
+        /// </summary>
+        /// <param name="typeDesc">The type desc to populate.</param>
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        { }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public OutOfRangeException(ScriptContext context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public OutOfRangeException(ScriptContext context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+    }
+
+    /// <summary>
     /// Exception thrown if a callback refers to an undefined function or if some arguments are missing.
     /// </summary>
     [ImplementsType]
@@ -920,6 +959,45 @@ namespace PHP.Library.SPL
         }
 
 #endif
+        #endregion
+    }
+
+    /// <summary>
+    /// Exception thrown if a value is not a valid key.
+    /// </summary>
+    [ImplementsType]
+#if !SILVERLIGHT
+    [Serializable]
+#endif
+    public class OutOfBoundsException : RuntimeException
+    {
+        #region Implementation Details
+
+        /// <summary>
+        /// Populates the provided <see cref="DTypeDesc"/> with this class's methods and properties.
+        /// </summary>
+        /// <param name="typeDesc">The type desc to populate.</param>
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        { }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public OutOfBoundsException(ScriptContext context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public OutOfBoundsException(ScriptContext context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
         #endregion
     }
 
