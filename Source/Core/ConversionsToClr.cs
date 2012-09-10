@@ -400,6 +400,15 @@ namespace PHP.Core
 		[Emitted]
 		public static DateTime TryObjectToDateTime(object obj, out ConversionStrictness strictness)
 		{
+            // try wrapped DateTime:
+            var exactMatch = obj as Reflection.ClrValue<DateTime>;
+            if (exactMatch != null)
+            {
+                strictness = ConversionStrictness.ImplExactMatch;
+                return exactMatch.realValue;
+            }
+
+            // try obj -> String -> DateTime
 			string str = TryObjectToString(obj, out strictness);
 
 			if (strictness != ConversionStrictness.Failed)
