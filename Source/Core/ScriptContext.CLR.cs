@@ -240,6 +240,7 @@ namespace PHP.Core
             _constants.Add("PHALANGER", PhalangerVersion.Current, false);
             _constants.Add("PHP_VERSION", PhpVersion.Current, false);
             _constants.Add("PHP_OS", Environment.OSVersion.Platform == PlatformID.Win32NT ? "WINNT" : "WIN32", false); // TODO: GENERICS (Unix)
+            _constants.Add("PHP_SAPI", (System.Web.HttpContext.Current == null) ? "cli" : "isapi", false);
             _constants.Add("DIRECTORY_SEPARATOR", FullPath.DirectorySeparatorString, false);
             _constants.Add("PATH_SEPARATOR", Path.PathSeparator.ToString(), false);
 

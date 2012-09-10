@@ -250,7 +250,7 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public object valid(ScriptContext context)
         {
-            return (this.enumerator == null) ? false : !this.enumerator.AtEnd;
+            return this.enumerator != null && !this.enumerator.AtEnd;
         }
 
         [ImplementsMethod]

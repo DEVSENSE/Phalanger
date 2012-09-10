@@ -506,6 +506,7 @@ namespace PHP.Core
 			public bool MoveFirst()
 			{
                 current = head.Next;
+                starting = false;
 				return SkipDeletedForward() != head;
 			}
 
