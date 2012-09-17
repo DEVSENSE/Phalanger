@@ -1352,20 +1352,28 @@ namespace PHP.Core.CodeDom
             {
                 if (use is DirectFcnCall)
                 {
+                    string name = ((DirectFcnCall)use).QualifiedName.Name.Value;
+                    
                     if (use.IsMemberOf == null)
                     {
-                        throw new PhpToCodeDomNotSupportedException(Localizations.Strings.cdp_unsup_nonobj_func, use);
+                        //throw new PhpToCodeDomNotSupportedException(Localizations.Strings.cdp_unsup_nonobj_func, use);
                         /*CodeMethodInvokeExpression reti = new CodeMethodInvokeExpression();
                         reti.GetUserEntryPoint = new CodeMethodReferenceExpression();
                         reti.GetUserEntryPoint.TargetObject = new CodeTypeReferenceExpression("");
                         reti.GetUserEntryPoint.MethodName = ((DirectFcnCall)use).QualifiedName.Name.Value;
                         reti.Parameters.AddRange(TranslateParams(((DirectFcnCall)use).CallSignature.Parameters, method, IC));
                         return reti;*/
+
+                        CodeMethodInvokeExpression reti = new CodeMethodInvokeExpression(
+                            CurrentContext, "Call",
+                            new CodeExpression[] { new CodePrimitiveExpression(name) });
+
+                        reti.Parameters.AddRange(TranslateParams(((DirectFcnCall)use).CallSignature.Parameters, method, IC, null));
+                        return reti;
                     }
                     else
                     {
                         var target = TranslateVarLikeConstructUse(use.IsMemberOf, method, IC);
-                        string name = ((DirectFcnCall)use).QualifiedName.Name.Value;
                         MethodInfo cmethod = GetHintMethod(target, name, ((DirectFcnCall)use).CallSignature.Parameters.Count, method);
                         CodeMethodInvokeExpression ret = new CodeMethodInvokeExpression(
                             target, name,
