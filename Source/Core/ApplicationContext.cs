@@ -236,6 +236,12 @@ namespace PHP.Core
             addType(typeof(Library.SPL.UnexpectedValueException));
             addType(typeof(Library.SPL.DomainException));
 
+            // File system:
+            addType(typeof(Library.SPL.SplFileInfo));
+            addType(typeof(Library.SPL.DirectoryIterator));
+            addType(typeof(Library.SPL.FilesystemIterator));
+            addType(typeof(Library.SPL.RecursiveDirectoryIterator));
+
             // primitive constants
             constants.Add("TRUE", GlobalConstant.True.ConstantDesc, true);
             constants.Add("FALSE", GlobalConstant.False.ConstantDesc, true);
