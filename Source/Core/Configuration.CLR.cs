@@ -183,7 +183,7 @@ namespace PHP.Core
 					case "UserHandler": UserHandler = (value != String.Empty) ? new PhpCallback(value) : null; break;
 					case "UserExceptionHandler": UserExceptionHandler = (value != String.Empty) ? new PhpCallback(value) : null; break;
 					case "DisplayErrors": DisplayErrors = t; break;
-					case "LogFile": LogFile = value; break;
+					case "LogFile": LogFile = AbsolutizeLogFile(value, node); break;
 					case "EnableLogging": EnableLogging = t; break;
 					case "SysLog": SysLog = t; break;
 					case "ErrorPrependString": ErrorPrependString = value; break;
