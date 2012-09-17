@@ -2079,33 +2079,33 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Additional overload flags.
 		/// </summary>
-		[Flags]
-		public enum OverloadFlags : byte
-		{
-			/// <summary>
-			/// None.
-			/// </summary>
-			None = 0,
+        [Flags]
+        public enum OverloadFlags : byte
+        {
+            /// <summary>
+            /// None.
+            /// </summary>
+            None = 0,
 
-			/// <summary>
-			/// Needs local variables of caller
-			/// </summary>
-			NeedsVariables = 1,
+            /// <summary>
+            /// Needs local variables of caller
+            /// </summary>
+            NeedsVariables = 1,
 
-			/// <summary>
-			/// Needs $this reference of caller
-			/// </summary>
-			NeedsThisReference = 2,
+            /// <summary>
+            /// Needs $this reference of caller
+            /// </summary>
+            NeedsThisReference = 2,
 
-			NeedsNamingContext = 4,
+            NeedsNamingContext = 4,
 
             /// <summary>
             /// Needs DTypeDesc class context of the caller.
             /// </summary>
             NeedsClassContext = 8,
 
-			/// <summary>Overload has "params" array as its last argument.</summary>
-			IsVararg = 16,
+            /// <summary>Overload has "params" array as its last argument.</summary>
+            IsVararg = 16,
 
             /// <summary>
             /// The overload has the ScriptContext as the first parameter. It will be passed automatically.
@@ -2116,7 +2116,12 @@ namespace PHP.Core.Reflection
             /// Function is not supported.
             /// </summary>
             NotSupported = 64,
-		}
+            
+            /// <summary>
+            /// Needs DTypeDesc class context of the late static binding.
+            /// </summary>
+            NeedsLateStaticBind = 128,
+        }
 
 		public sealed class Overload : RoutineSignature
 		{
@@ -2209,6 +2214,12 @@ namespace PHP.Core.Reflection
                     flags |= OverloadFlags.NeedsClassContext;
                 }
 
+                if ((options & FunctionImplOptions.NeedsLateStaticBind) != 0)
+                {
+                    param_count--;
+                    flags |= OverloadFlags.NeedsLateStaticBind;
+                }
+
                 if ((options & FunctionImplOptions.NotSupported) != 0)
                 {
                     flags |= OverloadFlags.NotSupported;
@@ -2237,6 +2248,7 @@ namespace PHP.Core.Reflection
                     ((flags & OverloadFlags.NeedsThisReference) != 0 ? 1 : 0) + 
                     ((flags & OverloadFlags.NeedsVariables) != 0 ? 1 : 0) +
 					((flags & OverloadFlags.NeedsNamingContext) != 0 ? 1 : 0) +
+                    ((flags & OverloadFlags.NeedsLateStaticBind) != 0 ? 1 : 0) +
                     ((flags & OverloadFlags.NeedsClassContext) != 0 ? 1 : 0);
 			}
             
@@ -2324,6 +2336,9 @@ namespace PHP.Core.Reflection
 
 			if ((options & FunctionImplOptions.NeedsVariables) != 0)
 				result |= RoutineProperties.ContainsLocalsWorker;
+
+            if ((options & FunctionImplOptions.NeedsLateStaticBind) != 0)
+                result |= RoutineProperties.LateStaticBinding;
 
 			return result;
 		}
@@ -2489,6 +2504,12 @@ namespace PHP.Core.Reflection
                 class_context = codeGenerator.TypeContextPlace;
             }
 
+            // late static binding context
+            if ((options & FunctionImplOptions.NeedsLateStaticBind) != 0)
+            {
+                Debug.Assert(class_context == null, "NeedsClassContext and NeedsLateStaticBind cannot be used concurently!");
+                class_context = codeGenerator.LateStaticBindTypePlace;
+            }
 
 			OverloadsBuilder.ParameterLoader param_loader = new OverloadsBuilder.ParameterLoader(callSignature.EmitLibraryLoadArgument);
 			OverloadsBuilder.ParametersLoader opt_param_loader = new OverloadsBuilder.ParametersLoader(callSignature.EmitLibraryLoadOptArguments);

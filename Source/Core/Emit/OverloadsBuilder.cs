@@ -416,7 +416,7 @@ namespace PHP.Core.Emit
 			if ((flags & PhpLibraryFunction.OverloadFlags.NeedsNamingContext) == 0)
 				namingContext = null;
 
-            if ((flags & PhpLibraryFunction.OverloadFlags.NeedsClassContext) == 0)
+            if ((flags & (PhpLibraryFunction.OverloadFlags.NeedsClassContext | PhpLibraryFunction.OverloadFlags.NeedsLateStaticBind)) == 0)
                 classContext = null;
 
 			Label end_label = il.DefineLabel();

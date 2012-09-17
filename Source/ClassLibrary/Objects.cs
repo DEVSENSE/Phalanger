@@ -576,6 +576,16 @@ namespace PHP.Library
 			return (obj != null) ? obj.TypeName : null;
 		}
 
+        [ImplementsFunction("get_called_class", FunctionImplOptions.NeedsLateStaticBind)]
+		[return: CastToFalse]
+		public static string GetCalledClass(DTypeDesc caller)
+		{
+            if (caller == null || caller.IsUnknown)
+                return null;
+
+            return caller.MakeFullName();
+		}
+
 		/// <summary>
 		/// Gets the name of the class from which class given by <paramref name="classNameOrObject"/>
 		/// inherits.
