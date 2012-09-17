@@ -1931,16 +1931,13 @@ namespace PHP.Core
             if (value == null)
                 return;
 
-            PhpBytes bytes;
-
             if (value.GetType() == typeof(PhpBytes))
             {
-                if ((bytes = (PhpBytes)value).Length > 0)
-                    scriptcontext.binaryOutput.Write(bytes.ReadonlyData, 0, bytes.Length);
+                Echo((PhpBytes)value, scriptcontext);
             }
             else
             {
-                scriptcontext.output.Write(Convert.ObjectToString(value));
+                Echo(Convert.ObjectToString(value), scriptcontext);
             }
         }
 

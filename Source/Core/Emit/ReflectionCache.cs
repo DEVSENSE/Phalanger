@@ -380,15 +380,15 @@ namespace PHP.Core.Emit
             /// </summary>
             public struct EchoStatic
             {
-                static MethodInfo _bool, _double, _int, _longInt, _object, _string, _PhpBytes;
+                static MethodInfo _bool, _double, _int, _longInt, _object, _string, _phpBytes;
 
-                public static MethodInfo Bool { get { if (_bool == null)   _bool = _this.GetMethod("Echo", new Type[] { typeof(bool), typeof(PHP.Core.ScriptContext) }); return _bool; } }
-                public static MethodInfo Double { get { if (_double == null) _double = _this.GetMethod("Echo", new Type[] { typeof(double), typeof(PHP.Core.ScriptContext) }); return _double; } }
-                public static MethodInfo Int { get { if (_int == null)    _int = _this.GetMethod("Echo", new Type[] { typeof(int), typeof(PHP.Core.ScriptContext) }); return _int; } }
-                public static MethodInfo LongInt { get { if (_longInt == null)_longInt = _this.GetMethod("Echo", new Type[] { typeof(long), typeof(PHP.Core.ScriptContext) }); return _longInt; } }
-                public static MethodInfo Object { get { if (_object == null) _object = _this.GetMethod("Echo", new Type[] { typeof(object), typeof(PHP.Core.ScriptContext) }); return _object; } }
-                public static MethodInfo String { get { if (_string == null) _string = _this.GetMethod("Echo", new Type[] { typeof(string), typeof(PHP.Core.ScriptContext) }); return _string; } }
-                public static MethodInfo PhpBytes { get { if (_PhpBytes == null) _PhpBytes = _this.GetMethod("Echo", new Type[] { typeof(PHP.Core.PhpBytes), typeof(PHP.Core.ScriptContext) }); return _PhpBytes; } }
+                public static MethodInfo Bool { get { return _bool ?? (_bool = new Action<bool, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
+                public static MethodInfo Double { get { return _double ?? (_double = new Action<double, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
+                public static MethodInfo Int { get { return _int ?? (_int = new Action<int, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
+                public static MethodInfo LongInt { get { return _longInt ?? (_longInt = new Action<long, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
+                public static MethodInfo Object { get { return _object ?? (_object = new Action<object, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
+                public static MethodInfo String { get { return _string?? (_string = new Action<string, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
+                public static MethodInfo PhpBytes { get { return _phpBytes ?? (_phpBytes = new Action<PHP.Core.PhpBytes, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
             }
 
             static MethodInfo
