@@ -84,7 +84,7 @@ namespace PHP.Library.SPL
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static new object __construct(object instance, PhpStack stack)
+        public static object __construct(object instance, PhpStack stack)
         {
             var filename = stack.PeekValue(1);
             stack.RemoveFrame();
@@ -151,7 +151,7 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
-        public object __construct(ScriptContext/*!*/context, object path)
+        public virtual new object __construct(ScriptContext/*!*/context, object path)
         {
             throw new NotImplementedException();
         }
@@ -305,7 +305,7 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
-        public object __construct(ScriptContext/*!*/context, object/*string*/path , [Optional]object/*int*/flags /*= FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO | FilesystemIterator.SKIP_DOTS*/ )
+        public virtual object __construct(ScriptContext/*!*/context, object/*string*/path, [Optional]object/*int*/flags /*= FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO | FilesystemIterator.SKIP_DOTS*/ )
         {
             throw new NotImplementedException();
         }
@@ -348,7 +348,7 @@ namespace PHP.Library.SPL
         }
 
         [ImplementsMethod]
-        public object __construct(ScriptContext/*!*/context, object/*string*/path , [Optional]object/*int*/flags /*= FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO*/ )
+        public virtual new object __construct(ScriptContext/*!*/context, object/*string*/path , [Optional]object/*int*/flags /*= FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO*/ )
         {
             throw new NotImplementedException();
         }
