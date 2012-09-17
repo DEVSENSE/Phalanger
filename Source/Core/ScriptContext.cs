@@ -1933,9 +1933,9 @@ namespace PHP.Core
 
             PhpBytes bytes;
 
-            if ((bytes = value as PhpBytes) != null)
+            if (value.GetType() == typeof(PhpBytes))
             {
-                if (bytes.Length > 0)
+                if ((bytes = (PhpBytes)value).Length > 0)
                     scriptcontext.binaryOutput.Write(bytes.ReadonlyData, 0, bytes.Length);
             }
             else
