@@ -1290,7 +1290,7 @@ namespace PHP.Core.Reflection
 
         internal static void EmitGetterStub(ILEmitter/*!*/ il, PropertyInfo/*!*/ propertyInfo, Type/*!*/ declaringType)
         {
-            var getter = propertyInfo.GetGetMethod(/*false*/);
+            var getter = propertyInfo.GetGetMethod(true);
 
             if (getter == null)
             {
