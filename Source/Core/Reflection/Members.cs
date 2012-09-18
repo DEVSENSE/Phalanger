@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Reflection;
 using System.IO;
 using System.Diagnostics;
@@ -197,6 +198,31 @@ namespace PHP.Core.Reflection
 
 			return value;
 		}
+
+        /// <summary>
+        /// Determines lowest accessibility of all property accessors and other member attributes.
+        /// </summary>
+        public static PhpMemberAttributes GetPropertyAttributes(PropertyInfo/*!*/info)
+        {
+            var accessors = info.GetAccessors(true);
+            PhpMemberAttributes attributes = PhpMemberAttributes.None;
+            
+            // find lowest visibility in all property accessors:
+            for (int i = 0; i < accessors.Length; i++)
+            {
+                if (accessors[i].IsStatic)
+                    attributes |= PhpMemberAttributes.Static;
+
+                if (accessors[i].IsPrivate)
+                    attributes |= PhpMemberAttributes.Private;
+                else if (accessors[i].IsFamily)
+                    attributes |= PhpMemberAttributes.Protected;
+                //else if (accessors[i].IsPublic)
+                //    visibility |= PhpMemberAttributes.Public;
+            }
+
+            return attributes;
+        }
 
 		public static FieldAttributes ToFieldAttributes(PhpMemberAttributes value)
 		{
