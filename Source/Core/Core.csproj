@@ -470,12 +470,10 @@
     </Compile>
     <Compile Include="SPL\Closure.cs" />
     <Compile Include="SPL\Misc.cs" />
-    <Compile Include="SPL\SplObjectStorage.cs" />
     <Compile Include="SPL\Countable.cs" />
     <Compile Include="SPL\Exception.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SPL\FileSystem.cs" />
     <Compile Include="SPL\Iterators.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -491,6 +489,7 @@
     <Compile Include="SPL\Serializable.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SPL\SplObjectStorage.cs" />
     <Compile Include="StackTrace.cs">
       <SubType>Code</SubType>
     </Compile>
