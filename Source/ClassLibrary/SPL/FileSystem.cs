@@ -119,11 +119,16 @@ namespace PHP.Library.SPL
         //public int getCTime ( void )
         //public string getExtension ( void )
         //public SplFileInfo getFileInfo ([ string $class_name ] )
-        
+
+        protected static string getFilenameInternal(FileSystemInfo info)
+        {
+            return (info != null) ? Path.GetFileName(info.ToString()) : string.Empty;   // we need original path, including "." and ".."
+        }
+
         [ImplementsMethod]
         public virtual object/*string*/getFilename(ScriptContext context)
         {
-            return (this.fs_info != null) ? Path.GetFileName(this.fs_info.ToString()) : string.Empty;   // we need original path, including "." and ".."
+            return getFilenameInternal(this.fs_info);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -139,11 +144,17 @@ namespace PHP.Library.SPL
         //public int getMTime ( void )
         //public int getOwner ( void )
 
+        protected static string getPathInternal(FileSystemInfo/*!*/info)
+        {
+            Debug.Assert(info != null);
+            DirectoryInfo dir = info as DirectoryInfo ?? ((FileInfo)info).Directory;
+            return dir.FullName;
+        }
+
         [ImplementsMethod]
         public virtual object/*string*/getPath(ScriptContext context)
         {
-            DirectoryInfo dir = this.fs_info as DirectoryInfo ?? ((FileInfo)this.fs_info).Directory;
-            return dir.FullName;
+            return getPathInternal(this.fs_info);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -332,13 +343,22 @@ namespace PHP.Library.SPL
 
         #region Methods
 
-        [ImplementsMethod]
-        public virtual object/*bool*/isDot(ScriptContext context)
+        /// <summary>
+        /// Whether current entry represents "." or "..".
+        /// </summary>
+        protected bool isDotInternal()
         {
             string str;
             return
-                this.fs_info != null && (str = this.fs_info.ToString()).EndsWith(".", StringComparison.Ordinal) &&
+                this.dir_enumerator_key < 2 &&  // . and .. are first 2 entries
+                validInternal() && (str = this.dir_enumerator.Current.ToString()).EndsWith(".", StringComparison.Ordinal) &&
                 ((str = Path.GetFileName(str)) == ".." || str == ".");
+        }
+
+        [ImplementsMethod]
+        public virtual object/*bool*/isDot(ScriptContext context)
+        {
+            return isDotInternal();
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -347,6 +367,28 @@ namespace PHP.Library.SPL
             stack.RemoveFrame();
             return ((DirectoryIterator)instance).isDot(stack.Context);
         }
+
+        //public int getATime ( void )
+        //public string getBasename ([ string $suffix ] )
+        //public int getCTime ( void )
+        //public string getExtension ( void )
+        //public string getFilename ( void )
+        //public int getGroup ( void )
+        //public int getInode ( void )
+        //public int getMTime ( void )
+        //public int getOwner ( void )
+        //public string getPath ( void )
+        //public string getPathname ( void )
+        //public int getPerms ( void )
+        //public int getSize ( void )
+        //public string getType ( void )
+        //public bool isDir ( void )
+        //public bool isExecutable ( void )
+        //public bool isFile ( void )
+        //public bool isLink ( void )
+        //public bool isReadable ( void )
+        //public bool isWritable ( void )
+        //public string __toString ( void )
 
         #endregion
 
@@ -698,18 +740,41 @@ namespace PHP.Library.SPL
 
         #endregion
 
+        #region Methods
+
+
+
+        #endregion
+
         #region RecursiveIterator
 
         [ImplementsMethod]
         public virtual object getChildren(ScriptContext context)
         {
-            throw new NotImplementedException();
+            if (CurrentAsPathName)
+                return this.getPath(context);
+
+            if (validInternal())
+            {
+                return new RecursiveDirectoryIterator(context, true)
+                {
+                    fs_info = this.dir_enumerator.Current
+                };
+            }
+
+            return null;
+        }
+
+        public virtual object hasChildren(ScriptContext context)
+        {
+            return this.hasChildren(context, false);
         }
 
         [ImplementsMethod]
-        public virtual object hasChildren(ScriptContext context)
+        public virtual object hasChildren(ScriptContext context, [Optional]object allowLinks/*=false*/)
         {
-            throw new NotImplementedException();
+            //bool bAllowLinks = (allowLinks == null || allowLinks == Arg.Default) ? false : Core.Convert.ObjectToBoolean(allowLinks);
+            return this.validInternal() && !this.isDotInternal() && this.dir_enumerator.Current is DirectoryInfo;
         }
 
         #region Arglesses
@@ -724,8 +789,9 @@ namespace PHP.Library.SPL
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static object hasChildren(object instance, PhpStack stack)
         {
+            var allowLinks = stack.PeekValueOptional(1);
             stack.RemoveFrame();
-            return ((RecursiveDirectoryIterator)instance).hasChildren(stack.Context);
+            return ((RecursiveDirectoryIterator)instance).hasChildren(stack.Context, allowLinks);
         }
 
         #endregion
