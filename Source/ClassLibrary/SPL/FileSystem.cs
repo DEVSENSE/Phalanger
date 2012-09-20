@@ -21,7 +21,7 @@ namespace PHP.Library.SPL
         /// <summary>
         /// Internal file system entry.
         /// </summary>
-        protected FileSystemInfo fs_info = null;
+        internal FileSystemInfo fs_info = null;
 
         [PhpVisible]
         private string pathName { get { return getPathnameInternal(this.fs_info); } }
@@ -234,10 +234,15 @@ namespace PHP.Library.SPL
         //public void setFileClass ([ string $class_name ] )
         //public void setInfoClass ([ string $class_name ] )
         
+        /// <summary>
+        /// An alias for <c>getPathname</c>.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         [ImplementsMethod]
         public virtual object/*string*/__toString(ScriptContext context)
         {
-            return this.fs_info != null ? this.fs_info.ToString() : string.Empty;
+            return getPathnameInternal(this.fs_info);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -303,7 +308,7 @@ namespace PHP.Library.SPL
         /// <summary>
         /// Initializes <see cref="dir_enumerator"/>.
         /// </summary>
-        private void CreateEnumeratorInternal()
+        protected void CreateEnumeratorInternal()
         {
             var dir = this.fs_info as DirectoryInfo;
             if (dir != null)
@@ -485,13 +490,13 @@ namespace PHP.Library.SPL
         //public bool isExecutable ( void )
 
         [ImplementsMethod]
-        public virtual object/*bool*/isFile(ScriptContext context)
+        public override object/*bool*/isFile(ScriptContext context)
         {
             return validInternal() && this.dir_enumerator.Current is FileInfo;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object isFile(object instance, PhpStack stack)
+        public new static object isFile(object instance, PhpStack stack)
         {
             stack.RemoveFrame();
             return ((DirectoryIterator)instance).isFile(stack.Context);
@@ -500,7 +505,24 @@ namespace PHP.Library.SPL
         //public bool isLink ( void )
         //public bool isReadable ( void )
         //public bool isWritable ( void )
-        //public string __toString ( void )
+
+        /// <summary>
+        /// An alias for <c>getFilename</c>.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        [ImplementsMethod]
+        public override object/*string*/__toString(ScriptContext context)
+        {
+            return this.getFilename(context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new static object __toString(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((SplFileInfo)instance).__toString(stack.Context);
+        }
 
         #endregion
 
@@ -554,15 +576,7 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual object current(ScriptContext context)
         {
-            if (validInternal())
-            {
-                return new DirectoryIterator(context, true)
-                {
-                    fs_info = this.dir_enumerator.Current
-                };
-            }
-
-            return null;
+            return this;
         }
 
         #region Arglesses
@@ -666,6 +680,11 @@ namespace PHP.Library.SPL
     {
         #region Constants
 
+        /// <summary>
+        /// Default <see cref="flags"/>.
+        /// </summary>
+        private const int DefaultFlags = FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO | FilesystemIterator.SKIP_DOTS;
+
         public const int CURRENT_AS_PATHNAME = 32;
         public const int CURRENT_AS_FILEINFO = 0;
         public const int CURRENT_AS_SELF = 16;
@@ -719,8 +738,8 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual object __construct(ScriptContext/*!*/context, object/*string*/path, [Optional]object/*int*/flags /*= FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO | FilesystemIterator.SKIP_DOTS*/ )
         {
-            if (flags == Arg.Default)
-                this.flags = FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO | FilesystemIterator.SKIP_DOTS;
+            if (flags == Arg.Default || flags == null)
+                this.flags = DefaultFlags;
             else
                 this.flags = Core.Convert.ObjectToInteger(flags);
 
@@ -762,11 +781,11 @@ namespace PHP.Library.SPL
                 if (CurrentAsSelf)
                     return this;
                 else if (CurrentAsPathName)
-                    return dir_enumerator.Current.FullName;
+                    return getPathnameInternal(dir_enumerator.Current);
                 else //if (CurrentAsFileInfo)
-                    return new FilesystemIterator(context, true)
+                    return new SplFileInfo(context, true)
                     {
-                        fs_info = dir_enumerator.Current
+                        fs_info = dir_enumerator.Current,
                     };
             }
 
@@ -803,6 +822,11 @@ namespace PHP.Library.SPL
         #region Fields & Properties
 
         /// <summary>
+        /// Default <see cref="FilesystemIterator.flags"/>.
+        /// </summary>
+        private const int DefaultFlags = FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO;
+
+        /// <summary>
         /// Sub path used internally to track nesting of the iterator.
         /// </summary>
         private string sub_path = null;
@@ -811,7 +835,7 @@ namespace PHP.Library.SPL
         {
             get
             {
-                var fname = (this.dir_enumerator != null) ? this.dir_enumerator.Current.Name : null;
+                var fname = (this.dir_enumerator != null) ? getFilenameInternal(this.dir_enumerator.Current) : null;
                 if (this.sub_path != null)
                 {
                     return string.Concat(this.sub_path, Path.DirectorySeparatorChar.ToString(), fname);
@@ -849,10 +873,10 @@ namespace PHP.Library.SPL
         public virtual new object __construct(ScriptContext/*!*/context, object/*string*/path , [Optional]object/*int*/flags /*= FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO*/ )
         {
             // setup flags
-            if (flags == Arg.Default)
-                this.flags = FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO;
-            else
+            if (flags != Arg.Default && flags != null)
                 this.flags = Core.Convert.ObjectToInteger(flags);
+            else
+                this.flags = DefaultFlags;
 
             // init path and enumerator
             ConstructDirectoryIteratorInternal(context, path);
@@ -909,11 +933,14 @@ namespace PHP.Library.SPL
 
             if (validInternal())
             {
-                return new RecursiveDirectoryIterator(context, true)
+                var di = new RecursiveDirectoryIterator(context, true)
                 {
                     fs_info = this.dir_enumerator.Current,
                     sub_path = this.SubPathname,
+                    flags = DefaultFlags,
                 };
+                di.CreateEnumeratorInternal();
+                return di;
             }
 
             return null;
