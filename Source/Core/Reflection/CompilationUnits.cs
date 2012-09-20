@@ -402,15 +402,24 @@ namespace PHP.Core.Reflection
             if (bakedTypes != null)
                 foreach (var type in bakedTypes)
                 {
-                    var parent = type.Value.Base;
-                    if (parent is PhpTypeDesc && parent.RealType.Module != type.Value.RealType.Module)  // base type if from different module (external dependency)
-                        dependentTypes.Add(new KeyValuePair<string, DTypeDesc>(parent.MakeFullName(), parent));
+                    // add base as this type dependency:
+                    AddDependentType(type.Value, dependentTypes, type.Value.Base);
 
-                    // TODO: do the same for type.Value.Interfaces
+                    // do the same for type.Value.Interfaces
+                    var ifaces = type.Value.Interfaces;
+                    if (ifaces != null && ifaces.Length > 0)
+                        for (int i = 0; i < ifaces.Length; i++)
+                            AddDependentType(type.Value, dependentTypes, ifaces[i]);
                 }
 
             //
             module = assembly_builder.TransientAssembly.AddModule(module_builder, dependentTypes, sourceUnit.Code, descriptor);
+        }
+
+        private static void AddDependentType(PhpTypeDesc/*!*/selfType, List<KeyValuePair<string, DTypeDesc>>/*!*/dependentTypes, DTypeDesc dependentType)
+        {
+            if (dependentType != null && dependentType is PhpTypeDesc && dependentType.RealType.Module != selfType.RealType.Module)// base type if from different module (external dependency)
+                dependentTypes.Add(new KeyValuePair<string, DTypeDesc>(dependentType.MakeFullName(), dependentType));
         }
 
 		private void DefineBuilders()
