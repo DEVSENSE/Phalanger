@@ -196,7 +196,7 @@ namespace PHP.Core.AST
         }
 
         public DirectStFldUse(Position position, GenericQualifiedName qualifiedName, VariableName propertyName)
-            : base(position, DirectTypeRef.FromGenericQualifiedName(position, qualifiedName))
+            : this(position, DirectTypeRef.FromGenericQualifiedName(position, qualifiedName), propertyName)
         {
         }
 
