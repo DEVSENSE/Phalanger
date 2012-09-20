@@ -81,7 +81,7 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// A function uses arguments from <see cref="PhpStack"/>.
 		/// </summary>
-        IsArgsAware = ContainsIndirectFcnCall | ContainsEval | ContainsInclude | UseVarArgs | LateStaticBinding,
+        IsArgsAware = ContainsIndirectFcnCall | ContainsEval | ContainsInclude | UseVarArgs,
 
 		/// <summary>
 		/// A function local variable accesses can be optimized.
@@ -266,6 +266,11 @@ namespace PHP.Core.Reflection
         /// Whether the routine contains use of late static binding.
         /// </summary>
         public bool UsesLateStaticBinding { get { return (properties & RoutineProperties.LateStaticBinding) != 0; } }
+
+        /// <summary>
+        /// Whether the routine should be called via argless stub. (Needs PhpStack).
+        /// </summary>
+        public bool IsArgsAware { get { return (properties & RoutineProperties.IsArgsAware) != 0 || (IsStatic && UsesLateStaticBinding); } }
 
 		#region Construction
 
@@ -1278,8 +1283,7 @@ namespace PHP.Core.Reflection
             if (IsStatic) callVirt = false; // never call static method virtually
             
 			ILEmitter il = codeGenerator.IL;
-			bool args_aware = (Properties & RoutineProperties.IsArgsAware) != 0;
-            var constructedType = type as ConstructedType;
+			var constructedType = type as ConstructedType;
 
             // load the instance reference if we have one:
             // Just here we need RealObject if possible. When calling CLR method on $this,
@@ -1288,7 +1292,7 @@ namespace PHP.Core.Reflection
 
             // arg-full overload may not be present in the case of classes declared Class Library where
 			// we do not require the user to specify both overloads
-			if (args_aware || ArgFullInfo == null)
+			if (IsArgsAware || ArgFullInfo == null)
 			{
 				// args-aware routines //
                 Debug.Assert(callVirt == false, "Cannot call ArgLess stub virtually!");

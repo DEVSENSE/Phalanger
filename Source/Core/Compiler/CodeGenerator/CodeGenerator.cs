@@ -1878,7 +1878,7 @@ namespace PHP.Core
         /// <remarks>Emitted code is equivalent to <code>context.Stack.ThrowIfNotArgsaware(routine.Name.Value);</code></remarks>
         private void EmitArgsAwareCheck(PhpRoutine/*!*/ routine)
         {
-            if ((routine.Properties & RoutineProperties.IsArgsAware) != 0)
+            if (routine.IsArgsAware)
             {
                 //  <context>.Stack.ThrowIfNotArgsaware(routine.Name.Value)
                 this.EmitLoadScriptContext();   // <context>

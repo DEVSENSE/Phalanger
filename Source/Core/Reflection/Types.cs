@@ -3451,7 +3451,7 @@ namespace PHP.Core.Reflection
 						codeGenerator.EmitLoadScriptContext();
 						il.LdcI4(1);
 						il.Emit(OpCodes.Newobj, MakeConstructed(ShortConstructorInfo, constructedType));
-                        if (php_ctor.ArgFullInfo != null && (php_ctor.Properties & RoutineProperties.IsArgsAware) == 0)
+                        if (php_ctor.ArgFullInfo != null && !php_ctor.IsArgsAware)
                         {
                             // invoke the arg-full version of the constructor:
                             il.Emit(OpCodes.Dup);
