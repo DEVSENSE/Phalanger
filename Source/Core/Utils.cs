@@ -1218,6 +1218,33 @@ namespace PHP.Core
 
             return count;
         }
+
+        /// <summary>
+        /// Replaces specified portion of <see cref="StringBuilder"/> by <paramref name="replacement"/>.
+        /// </summary>
+        /// <param name="str"><see cref="StringBuilder"/> instance.</param>
+        /// <param name="startIndex">Where to start replacing.</param>
+        /// <param name="length">Amount of characters to replace.</param>
+        /// <param name="replacement">Replacement.</param>
+        /// <returns>Reference to <paramref name="str"/>.</returns>
+        public static StringBuilder/*!*/Replace(this StringBuilder/*!*/str, int startIndex, int length, string replacement)
+        {
+            if (string.IsNullOrEmpty(replacement))
+            {
+                str.Remove(startIndex, length);
+            }
+            else if (length == 1 && replacement.Length == 1)
+            {
+                str[startIndex] = replacement[0];
+            }
+            else
+            {
+                str.Remove(startIndex, length);
+                str.Insert(startIndex, replacement);
+            }
+
+            return str;
+        }
     }
 
     #endregion

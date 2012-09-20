@@ -1438,7 +1438,7 @@ namespace PHP.Library
         /// Compares objects according to the length of their string representation
         /// as the primary criteria and the alphabetical order as the secondary one.
         /// </summary>
-        internal class StringLengthComparer : IComparer<string>
+        private sealed class StringLengthComparer : IComparer<string>
         {
             /// <summary>
             /// Performs length and alphabetical comparability backwards (longer first).
@@ -1466,7 +1466,7 @@ namespace PHP.Library
         /// <exception cref="PhpException">Thrown if the <paramref name="replacePairs"/> argument is null.</exception>
         [ImplementsFunction("strtr")]
         [return: CastToFalse]
-        public static string Translate(string str, IDictionary replacePairs)
+        public static string Translate(string str, PhpArray replacePairs)
         {
             if (replacePairs == null)
             {
@@ -1477,43 +1477,58 @@ namespace PHP.Library
             if (string.IsNullOrEmpty(str))
                 return String.Empty;
 
-            // sort replacePairs according to the key length
+            // sort replacePairs according to the key length, longer first
+            var count = replacePairs.Count;
+            var sortedkeys = new string[count];
+            var sortedValues = new string[count];
 
-            // sort pairs by the key length, longer first
-            SortedList<string, string> list = new SortedList<string, string>(replacePairs.Count, new StringLengthComparer());
-            foreach (DictionaryEntry entry in replacePairs)
+            int i = 0;
+            var replacePairsEnum = replacePairs.GetFastEnumerator();
+            while (replacePairsEnum.MoveNext())
             {
-                string key = Core.Convert.ObjectToString(entry.Key);
-                string value = Core.Convert.ObjectToString(entry.Value);
+                string key = replacePairsEnum.CurrentKey.ToString();
+                string value = Core.Convert.ObjectToString(replacePairsEnum.CurrentValue);
 
                 if (key.Length == 0)
+                {
+                    // TODO: an exception ?
                     return null;
+                }
 
-                list.Add(key, value);
+                sortedkeys[i] = key;
+                sortedValues[i] = value;
+                i++;
             }
+            Array.Sort<string, string>(sortedkeys, sortedValues, new StringLengthComparer());   // perform quick sort, much faster than SortedList
 
+            // perform replacement
             StringBuilder result = new StringBuilder(str);
             StringBuilder temp = new StringBuilder(str);
             int length = str.Length;
             int[] offset = new int[length];
 
-            foreach (var item in list)
+            for (i = 0; i < sortedkeys.Length; i++)
             {
+                var key = sortedkeys[i];
                 int index = 0;
-                while ((index = temp.ToString().IndexOf(item.Key, index, StringComparison.Ordinal)) >= 0)   // ordinal search, because of exotic Unicode characters are find always at the beginning of the temp
+
+                while ((index = temp.ToString().IndexOf(key, index, StringComparison.Ordinal)) >= 0)   // ordinal search, because of exotic Unicode characters are find always at the beginning of the temp
                 {
+                    var value = sortedValues[i];
+                    var keyLength = key.Length;
+                    int replaceAtIndex = index + offset[index];
+
                     // replace occurrence in result
-                    result.Remove(index + offset[index], item.Key.Length);
-                    result.Insert(index + offset[index], item.Value);
+                    result.Replace(index + offset[index], keyLength, value);
 
                     // Pack the offset array (drop the items removed from temp)
-                    for (int j = index + item.Key.Length; j < offset.Length; j++)
-                        offset[j - item.Key.Length] = offset[j];
+                    for (int j = index + keyLength; j < offset.Length; j++)
+                        offset[j - keyLength] = offset[j];
 
                     // Ensure that we don't replace stuff that we already have worked on by
                     // removing the replaced substring from temp.
-                    temp.Remove(index, item.Key.Length);
-                    for (int j = index; j < length; j++) offset[j] += item.Value.Length;
+                    temp.Remove(index, keyLength);
+                    for (int j = index; j < length; j++) offset[j] += value.Length;
                 }
             }
 
