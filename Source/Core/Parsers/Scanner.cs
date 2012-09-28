@@ -550,6 +550,11 @@ namespace PHP.Core.Parsers
                             if (!lastDocCommentKeepTokens.Contains(token))
                                 lastDocComment = null;
                         }
+                        else
+                        {
+                            if (tokenSemantics.Object != null && lastDocCommentRememberTokens.Contains(token))
+                                tokenSemantics.Object = null;   // clear tokenSemantics.Object, as it should contain PHPDoc
+                        }
 
 						return token;
 				}
