@@ -1173,44 +1173,32 @@ namespace PHP.Core
 		/// <param name="data">Data to scan.</param>
 		/// <param name="from">Index of the first character to scan.</param>
 		/// <returns></returns>
-		private int FindEoln(object data, int from)
+		private static int FindEoln(object data, int from)
 		{
-			Debug.Assert(data != null);
-			if (this.IsText)
+            Debug.Assert(data != null);
+			//if (this.IsText)
+            if (data.GetType() == typeof(string))
 			{
-				string s = data as string;
-				Debug.Assert(s != null);
-				return s.IndexOf('\n', from);
+                return ((string)data).IndexOf('\n', from);
 			}
 			else
 			{
-				PhpBytes bin = data as PhpBytes;
-				Debug.Assert(bin != null);
-                return ArrayUtils.IndexOf(bin.ReadonlyData, (byte)'\n', from);
-				/*
-				for (int i = from; i < bin.Data.Length; i++)
-				{
-				  if (bin.Data[i] == '\n') return i;
-				}
-				return -1;
-				/**/
+                Debug.Assert(data is PhpBytes);
+                return ArrayUtils.IndexOf(((PhpBytes)data).ReadonlyData, (byte)'\n', from);
 			}
 		}
 
 		/// <summary>
-		/// Split a string or PhpBytes to "upto" bytes at left and the rest or null at right.
+        /// Split a <see cref="String"/> or <see cref="PhpBytes"/> to "upto" bytes at left and the rest or <c>null</c> at right.
 		/// </summary>
-		/// <param name="data"></param>
-		/// <param name="upto"></param>
-		/// <param name="left"></param>
-		/// <param name="right"></param>
-		private void SplitData(object data, int upto, out object left, out object right)
+		private static void SplitData(object data, int upto, out object left, out object right)
 		{
 			Debug.Assert(data != null);
 			Debug.Assert(upto >= 0);
-			if (this.IsText)
+			//if (this.IsText)
+            if (data.GetType() == typeof(string))
 			{
-				string s = data as string;
+                string s = (string)data;
 				Debug.Assert(s != null);
 				if (upto < s.Length - 1)
 				{
@@ -1225,8 +1213,8 @@ namespace PHP.Core
 			}
 			else
 			{
-				PhpBytes bin = data as PhpBytes;
-				Debug.Assert(bin != null);
+                Debug.Assert(data is PhpBytes);
+				PhpBytes bin = (PhpBytes)data;
 				if (upto < bin.Length - 1)
 				{
 					byte[] l = new byte[upto + 1], r = new byte[bin.Length - upto - 1];
@@ -1419,7 +1407,7 @@ namespace PHP.Core
 					SplitData(str, pos + ending.Length - 1, out left, out right);
 					Debug.Assert(left is string);
 					Debug.Assert(right is string);
-					int returnedLength = (right as string).Length;
+                    int returnedLength = ((string)right).Length;
 					if (this.IsBinary) right = AsBinary(right);
 
 					if (readBuffers.Count > 0)
@@ -1440,7 +1428,7 @@ namespace PHP.Core
 					}
 					// Update the offset as the data gets back.
 					readOffset -= returnedLength;
-					return left as string;
+					return (string)left;
 				}
 			}
 			// ReadLine now works on binary files too but only for the \n ending.

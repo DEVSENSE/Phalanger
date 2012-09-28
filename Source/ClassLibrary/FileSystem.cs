@@ -618,7 +618,14 @@ namespace PHP.Library
 			if (i == line.Length)
 			{
 				// do not add eoln to the field:
-				return (line[i - 1] == '\n') ? i - 1 : i;
+                int dec = 0;
+                if (line[i - 1] == '\n')
+                {
+                    dec++;
+                    if (i > 1 && line[i - 2] == '\r')
+                        dec++;
+                }
+                return i - dec;
 			}
 			else
 			{
