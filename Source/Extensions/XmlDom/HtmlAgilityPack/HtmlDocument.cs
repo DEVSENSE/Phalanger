@@ -257,30 +257,36 @@ namespace HtmlAgilityPack
         /// <returns>A string that is a valid XML name.</returns>
         public static string GetXmlName(string name)
         {
-            string xmlname = string.Empty;
+            var result = new StringBuilder(name.Length);
+
+            if (char.IsDigit(name[0]))
+                result.Append('_'); // prepend name starting with a number with '_' character
+
             for (int i = 0; i < name.Length; i++)
             {
+                char c = name[i];
+
                 // note: we are very limited here, too much?
-                if (((name[i] >= 'a') && (name[i] <= 'z')) ||
-                    ((name[i] >= '0') && (name[i] <= '9')) ||
-                    ((name[i] >= 'A') && (name[i] <= 'Z')) ||
-                    //					(name[i]==':') || (name[i]=='_') || (name[i]=='-') || (name[i]=='.')) // these are bads in fact
-                    (name[i] == '_') || (name[i] == '-') || (name[i] == '.'))
+                if ((c >= 'a' && c <= 'z') ||
+                    (c >= 'A' && c <= 'Z') ||
+                    (c >= '0' && c <= '9') ||
+                    //					(c==':') || (c=='_') || (c=='-') || (c=='.')) // these are bads in fact
+                    (c == '_') || (c == '-') || (c == '.'))
                 {
-                    xmlname += name[i];
+                    result.Append(c);
                 }
                 else
                 {
-                    byte[] bytes = Encoding.UTF8.GetBytes(new char[] { name[i] });
+                    byte[] bytes = Encoding.UTF8.GetBytes(new char[] { c });
                     for (int j = 0; j < bytes.Length; j++)
                     {
-                        xmlname += bytes[j].ToString("x2");
+                        result.Append(bytes[j].ToString("x2"));
                     }
-                    xmlname += "_";
+                    result.Append('_');
                 }
             }
 
-            return xmlname;
+            return result.ToString();
         }
 
         /// <summary>
