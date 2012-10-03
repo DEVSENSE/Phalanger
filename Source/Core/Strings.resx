@@ -2080,4 +2080,7 @@ non-infringement.
   <data name="static_used_out_of_class" xml:space="preserve">
     <value>Cannot access static:: when no class scope is active</value>
   </data>
+  <data name="nowdoc_expected" xml:space="preserve">
+    <value>Expecting constant value within heredoc.</value>
+  </data>
 </root>

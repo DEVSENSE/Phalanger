@@ -3977,6 +3977,15 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Expecting constant value within heredoc..
+        /// </summary>
+        public static string nowdoc_expected {
+            get {
+                return ResourceManager.GetString("nowdoc_expected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Object of class {0} could not be converted to {1}.
         /// </summary>
         public static string object_could_not_be_converted {
