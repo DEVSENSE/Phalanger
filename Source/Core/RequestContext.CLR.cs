@@ -24,6 +24,7 @@ using System.Runtime.Remoting.Messaging;
 
 using PHP.Core.Reflection;
 using PHP.Core.Emit;
+using System.Collections.Generic;
 
 namespace PHP.Core
 {
@@ -175,68 +176,48 @@ namespace PHP.Core
 		#region Temporary Per-Request Files
 
 		/// <summary>
-		/// Temp files counter.
+		/// A list of temporary files which was created during the request and should be deleted at its end.
 		/// </summary>
-		private int counter = 0;
-
-		/// <summary>
-		/// A list of temporary files which was created dureng the request and should be deleted at its end.
-		/// </summary>
-		internal ArrayList TemporaryFiles    // GENERICS: <string>
+		private List<string>/*!*/TemporaryFiles
 		{
 			get
 			{
-				if (temporaryFiles == null)
-					temporaryFiles = new ArrayList();
-				return temporaryFiles;
+                if (this._temporaryFiles == null)
+                    this._temporaryFiles = new List<string>();
+
+                return this._temporaryFiles;
 			}
 		}
-		private ArrayList temporaryFiles;
+        private List<string> _temporaryFiles;
 
 		/// <summary>
 		/// Silently deletes all temporary files.
 		/// </summary>
 		private void DeleteTemporaryFiles()
 		{
-			if (temporaryFiles != null)
+            if (this._temporaryFiles != null)
 			{
-				for (int i = 0; i < temporaryFiles.Count; i++)
+                for (int i = 0; i < this._temporaryFiles.Count; i++)
 				{
-					try
-					{
-						File.Delete((string)temporaryFiles[i]);
-					}
-					catch (Exception)
-					{
-					}
+                    try
+                    {
+                        File.Delete(this._temporaryFiles[i]);
+                    }
+                    catch { }
 				}
+
+                this._temporaryFiles = null;
 			}
-			temporaryFiles = null;
-			counter = 0;
 		}
 
 		/// <summary>
 		/// Adds temporary file to current handler's temp files list.
 		/// </summary>
 		/// <param name="path">A path to the file.</param>
-		internal static void AddTemporaryFile(string path)
+		internal void AddTemporaryFile(string path)
 		{
 			Debug.Assert(path != null);
-			CurrentContext.TemporaryFiles.Add(path.ToLower());
-		}
-
-		/// <summary>
-		/// Gets a temporary file name.
-		/// </summary>
-		/// <returns></returns>
-		internal static string GetTempFileName()
-		{
-			return String.Concat(
-					"php_",
-					HttpContext.Current.Timestamp.Ticks.ToString("x"),
-					"-",
-					CurrentContext.counter++,
-					".tmp");
+			this.TemporaryFiles.Add(path);
 		}
 
 		/// <summary>
@@ -250,7 +231,7 @@ namespace PHP.Core
 		public bool IsTemporaryFile(string path)
 		{
 			if (path == null) throw new ArgumentNullException("path");
-			return TemporaryFiles.Contains(path.ToLower());
+            return this._temporaryFiles != null && this._temporaryFiles.IndexOf(path, FullPath.StringComparer) >= 0;
 		}
 
 		/// <summary>
@@ -258,10 +239,22 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="path">A full path to the file.</param>
 		/// <exception cref="ArgumentNullException">Argument is a <B>null</B> reference.</exception>
-		public void RemoveTemporaryFile(string path)
+		public bool RemoveTemporaryFile(string path)
 		{
 			if (path == null) throw new ArgumentNullException("path");
-			TemporaryFiles.Remove(path.ToLower());
+            if (this._temporaryFiles == null)
+                return false;
+
+            var index = this._temporaryFiles.IndexOf(path, FullPath.StringComparer);
+            if (index >= 0)
+            {
+                this._temporaryFiles.RemoveAt(index);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
 		}
 
 		#endregion
