@@ -249,6 +249,11 @@ namespace HtmlAgilityPack
     public enum AttributeValueQuote
     {
         /// <summary>
+        /// Not an attribute.
+        /// </summary>
+        None,
+
+        /// <summary>
         /// A single quote mark '
         /// </summary>
         SingleQuote,
