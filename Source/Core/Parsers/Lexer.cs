@@ -303,6 +303,11 @@ namespace PHP.Core.Parsers
 			return new String(buffer, token_start, token_end - token_start);
 		}
 
+        public string GetTokenString(Parsers.Position position)
+        {
+            return new String(buffer, position.FirstOffset, position.LastOffset - position.FirstOffset + 1);
+        }
+
 		protected string GetTokenChunkString()
 		{
 			return new String(buffer, token_chunk_start, token_end - token_chunk_start);

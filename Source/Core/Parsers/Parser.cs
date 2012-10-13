@@ -1098,6 +1098,24 @@ namespace PHP.Core.Parsers
             return new ShortPosition(bodyPosition.FirstLine, bodyPosition.FirstColumn);
         }
 
+        /// <summary>
+        /// Handles token that is not valid PHP class/namespace name token in PHP,
+        /// but can be used from referenced C# library.
+        /// </summary>
+        /// <param name="position">Token position.</param>
+        /// <returns>Text of the token.</returns>
+        private string CSharpNameToken(Position position)
+        {
+            // get token string:
+            string token = this.scanner.GetTokenString(position);
+
+			// report syntax error if C# names are not allowed
+			if ((this.features & LanguageFeatures.CSharpTypeNames) == 0)
+                this.ErrorSink.Add(FatalErrors.SyntaxError, this.SourceUnit, position, CoreResources.GetString("unexpected_token", token));
+
+            //
+            return token;
+        }
 
 		#endregion
 	}

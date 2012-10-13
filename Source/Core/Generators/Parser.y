@@ -1907,16 +1907,17 @@ namespace_name_list:
 ;
 
 namespace_name_identifier:	// identifier + some keywords that should be used within qualified name (List, Array, ...)
-		class_identifier{ $$ = $1; }
-	|	T_LIST			{ $$ = $1.Object; }
-	|	T_BOOL_TYPE     { $$ = $1.Object; }
-	|	T_INT_TYPE      { $$ = $1.Object; }
-	|	T_INT64_TYPE    { $$ = $1.Object; }
-	|	T_DOUBLE_TYPE   { $$ = $1.Object; }
-	|	T_STRING_TYPE   { $$ = $1.Object; }
-	|	T_RESOURCE_TYPE { $$ = $1.Object; }
-	|	T_OBJECT_TYPE   { $$ = $1.Object; }
-	|	T_ARRAY         { $$ = $1.Object; }
+		class_identifier	{ $$ = $1; }
+	|	T_LIST				{ $$ = CSharpNameToken(@1); }
+	|	T_BOOL_TYPE			{ $$ = CSharpNameToken(@1); }
+	|	T_INT_TYPE			{ $$ = CSharpNameToken(@1); }
+	|	T_INT64_TYPE		{ $$ = CSharpNameToken(@1); }
+	|	T_DOUBLE_TYPE		{ $$ = CSharpNameToken(@1); }
+	|	T_STRING_TYPE		{ $$ = CSharpNameToken(@1); }
+	|	T_RESOURCE_TYPE		{ $$ = CSharpNameToken(@1); }
+	|	T_OBJECT_TYPE		{ $$ = CSharpNameToken(@1); }
+	|	T_ARRAY				{ $$ = CSharpNameToken(@1); }
+	|	T_ABSTRACT			{ $$ = CSharpNameToken(@1); }
 ;
 
 keyed_field_names_opt:

@@ -778,24 +778,32 @@ namespace PHP.Core
 								case "lang":
 								case "language":
 
-									switch (currentValue.ToUpper())
-									{
-										case "4":
-										case "PHP4":
-											ps.LanguageFeatures = Core.LanguageFeatures.Php4;
-											break;
+                                    Core.LanguageFeatures features = (LanguageFeatures)0;
+                                    foreach (var value in currentValue.ToLowerInvariant().Split(new char[]{'|'}, StringSplitOptions.RemoveEmptyEntries))
+                                        switch (value)
+                                        {
+                                            case "4":
+                                            case "PHP4":
+                                                features |= Core.LanguageFeatures.Php4;
+                                                break;
 
-										case "5":
-										case "PHP5":
-											ps.LanguageFeatures = Core.LanguageFeatures.Php5;
-											break;
+                                            case "5":
+                                            case "PHP5":
+                                                features |= Core.LanguageFeatures.Php5;
+                                                break;
 
-										case "PHP/CLR":
-										case "PHPCLR":
-										case "CLR":
-											ps.LanguageFeatures = Core.LanguageFeatures.PhpClr;
-											break;
-									}
+                                            case "PHP/CLR":
+                                            case "PHPCLR":
+                                            case "CLR":
+                                                features |= Core.LanguageFeatures.PhpClr;
+                                                break;
+                                            default:
+                                                features |= (LanguageFeatures)Enum.Parse(typeof(LanguageFeatures), value, true);
+                                                break;
+                                        }
+
+                                    if (features != 0)
+                                        ps.LanguageFeatures = features;
 
 									break;
 
