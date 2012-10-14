@@ -938,7 +938,7 @@ namespace PHP.Core
                 {
                     int separator = line.IndexOf(':');
                     if (separator <= 0) continue;
-                    string name = line.Substring(0, separator).Trim().ToLower();
+                    string name = line.Substring(0, separator).Trim().ToLowerInvariant();
                     string value = line.Substring(separator + 1, line.Length - separator - 1).Trim();
 
                     switch (name)
@@ -962,7 +962,10 @@ namespace PHP.Core
                             request.Expect = value;
                             break;
                         case "date":
-                            request.Date = System.Convert.ToDateTime(value);
+                            request.Headers["Date"] =
+                                DateTime.Parse(value, System.Globalization.CultureInfo.InvariantCulture)
+                                .ToUniversalTime()
+                                .ToString("R", System.Globalization.CultureInfo.InvariantCulture);
                             break;
                         case "host":
                             request.Host = value;
