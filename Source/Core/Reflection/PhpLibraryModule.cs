@@ -420,7 +420,7 @@ namespace PHP.Core.Reflection
 				// builds wrapper if it doesn't exist:
                 if (!IsDynamicWrapperUpToDate(real_assembly, wrapper_fullfile))
 				{
-                    Mutex mutex = new Mutex(false, String.Concat(@"Global\", wrapper_fullfile.Replace('\\', '/')));
+                    Mutex mutex = new Mutex(false, String.Concat(@"Global\", wrapper_fullfile.ToLowerInvariant().Replace('\\', '/').Replace(':', '+')));   // do not use \ and : characters, to not confuse Mutex with file system which may not be accessible in this moment
 					mutex.WaitOne();
 					try
 					{
