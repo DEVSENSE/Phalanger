@@ -1870,7 +1870,7 @@ namespace PHP.Core
                     output = value;
             }
         }
-        internal TextWriter output;
+        private TextWriter output;
 
         /// <summary>
         /// Stream where binary output will be sent.
