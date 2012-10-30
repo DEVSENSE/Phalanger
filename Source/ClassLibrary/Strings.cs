@@ -1226,9 +1226,11 @@ namespace PHP.Library
             int pos;                          // found separator's first character position
             PhpArray result = new PhpArray(); // creates integer-keyed array with default capacity
 
+            var/*!*/compareInfo = System.Globalization.CultureInfo.InvariantCulture.CompareInfo;
+
             while (--limit > 0)
             {
-                pos = str.IndexOf(separator, i, StringComparison.Ordinal);
+                pos = compareInfo.IndexOf(str, separator, i, str.Length - i, System.Globalization.CompareOptions.Ordinal);
 
                 if (pos < 0) break; // not found
 
