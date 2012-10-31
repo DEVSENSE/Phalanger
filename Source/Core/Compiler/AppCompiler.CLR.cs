@@ -779,7 +779,7 @@ namespace PHP.Core
 								case "language":
 
                                     Core.LanguageFeatures features = (LanguageFeatures)0;
-                                    foreach (var value in currentValue.ToLowerInvariant().Split(new char[]{'|'}, StringSplitOptions.RemoveEmptyEntries))
+                                    foreach (var value in currentValue.ToUpperInvariant().Split(new char[]{'|'}, StringSplitOptions.RemoveEmptyEntries))
                                         switch (value)
                                         {
                                             case "4":
