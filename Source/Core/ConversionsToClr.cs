@@ -423,7 +423,7 @@ namespace PHP.Core
 				try { result = DateTime.Parse(str); } catch { success = false; }
 				if (success)
 #endif
-				{ strictness = ConversionStrictness.ImplExactMatch; return result; }
+                { strictness = ConversionStrictness.ImplDomainChange; return result; }
 			}
 
 			strictness = ConversionStrictness.Failed;
