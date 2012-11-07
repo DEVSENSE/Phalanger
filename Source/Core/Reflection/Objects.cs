@@ -3095,12 +3095,18 @@ namespace PHP.Core.Reflection
 
         #region PHP Operators
 
+        /// <summary>
+        /// Overrides basic string conversion of CLR object by calling its <c>ToString</c> method.
+        /// </summary>
         public override string ToString(bool throwOnError, out bool success)
         {
             success = true;
             return this.realObject.ToString();
         }
 
+        /// <summary>
+        /// Overrides basic string conversion of CLR object by calling its <c>ToString</c> method.
+        /// </summary>
         public override PhpBytes ToPhpBytes()
         {
             return new PhpBytes(this.realObject.ToString());
@@ -3206,17 +3212,26 @@ namespace PHP.Core.Reflection
 
         #region PHP Operators
 
+        /// <summary>
+        /// Overrides basic string conversion of CLR object by calling its <c>ToString</c> method.
+        /// </summary>
         public override string ToString(bool throwOnError, out bool success)
         {
             success = true;
             return this.realValue.ToString();
         }
 
+        /// <summary>
+        /// Overrides basic string conversion of CLR object by calling its <c>ToString</c> method.
+        /// </summary>
         public override PhpBytes ToPhpBytes()
         {
             return new PhpBytes(this.realValue.ToString());
         }
 
+        /// <summary>
+        /// Overrides basic double cast of CLR object in case of <see cref="decimal"/> type.
+        /// </summary>
         public override double ToDouble()
         {
             if (typeof(T) == typeof(decimal))
