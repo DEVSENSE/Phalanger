@@ -1110,6 +1110,27 @@ namespace PHP.Core
 #if !SILVERLIGHT
 		protected PhpNetInternalException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 #endif
+
+        /// <summary>
+        /// Exception details. Contains also details of <see cref="InnerException"/> to pass this into event logs.
+        /// </summary>
+        public override string Message
+        {
+            get
+            {
+                StringBuilder result = new StringBuilder(base.Message);
+
+                //for (var ex = this.InnerException; ex != null; ex = ex.InnerException)
+                var ex = this.InnerException;
+                if (ex != null)
+                {
+                    result.AppendLine();
+                    result.AppendFormat("InnerException: {0}\nat {1}\n", ex.Message, ex.StackTrace);
+                }
+
+                return result.ToString();
+            }
+        }
 	}
 
 	/// <summary>
