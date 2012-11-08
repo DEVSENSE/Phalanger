@@ -268,6 +268,83 @@ namespace PHP.Library
             return ((__PHP__DateTime)instance).modify(stack.Context, modify);
         }
 
+        [ImplementsMethod]
+        public static object createFromFormat(ScriptContext/*!*/context, object format, object time, [Optional]object timezone)
+        {
+            // arguments
+            var tz = (timezone is DateTimeZone) ? ((DateTimeZone)timezone).timezone : PhpTimeZone.CurrentTimeZone;
+            string formatstr = PhpVariable.AsString(format);
+            string timestr = PhpVariable.AsString(time);
+            
+            if (formatstr == null)
+            {
+                PhpException.InvalidArgument("format");
+                return false;
+            }
+
+            if (timestr == null)
+            {
+                PhpException.InvalidArgument("time");
+                return false;
+            }
+
+            // create DateTime from format+time
+            int i = 0;  // position in <timestr>
+            foreach (var c in formatstr)
+            {
+                switch (c)
+                {
+                    //case 'd':
+                    //case 'j':
+                    //    var day = PHP.Library.StrToTime.DateInfo.ParseUnsignedInt(timestr, ref i, 2);
+                    //    // ... use day
+                    //    break;
+                    //case 'F':
+                    //case 'M':
+                    //    // parse  ...
+                    //    break;
+                    default:
+                        if (i < timestr.Length && timestr[i] == c)
+                        {
+                            // match
+                            i++;
+                        }
+                        else
+                        {
+                            // not match
+                            PhpException.InvalidArgument("time");   // time not matching format
+                            return false;
+                        }
+                        break;
+                }
+            }
+
+            if (i < timestr.Length)
+            {
+                PhpException.InvalidArgument("time");   // time not matching format
+                return false;
+            }
+
+            ////
+            //return new __PHP__DateTime(context, true)
+            //{
+            //     //Time = new DateTime(year, month, day, hour, minute, second, millisecond),
+            //     TimeZone = tz,
+            //};
+
+            throw new NotImplementedException();
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object createFromFormat(object instance, PhpStack stack)
+        {
+            var format = stack.PeekValue(1);
+            var time = stack.PeekValue(2);
+            var timezone = stack.PeekValueOptional(3);
+            stack.RemoveFrame();
+            return createFromFormat(stack.Context, format, time, timezone);
+        }
+
         #endregion
     }
 
@@ -368,6 +445,33 @@ namespace PHP.Library
             var dt = new __PHP__DateTime(context, true);
             dt.__construct(context, time, timezone);
             return dt;
+        }
+
+        /// <summary>
+        /// Returns new DateTime object formatted according to the specified format.
+        /// </summary>
+        /// <param name="format">The format that the passed in string should be in.</param>
+        /// <param name="time">String representing the time.</param>
+        /// <returns></returns>
+        [ImplementsFunction("date_create_from_format")]
+        [return: CastToFalse]
+        public static __PHP__DateTime DateCreateFromFormat(ScriptContext/*!*/context, string format, string time)
+        {
+            return __PHP__DateTime.createFromFormat(context, format, time, Arg.Default) as __PHP__DateTime;
+        }
+
+        /// <summary>
+        /// Returns new DateTime object formatted according to the specified format.
+        /// </summary>
+        /// <param name="format">The format that the passed in string should be in.</param>
+        /// <param name="time">String representing the time.</param>
+        /// <param name="timezone">A DateTimeZone object representing the desired time zone.</param>
+        /// <returns></returns>
+        [ImplementsFunction("date_create_from_format")]
+        [return:CastToFalse]
+        public static __PHP__DateTime DateCreateFromFormat(ScriptContext/*!*/context, string format, string time, DateTimeZone timezone)
+        {
+            return __PHP__DateTime.createFromFormat(context, format, time, timezone) as __PHP__DateTime;
         }
 
         /// <summary>
