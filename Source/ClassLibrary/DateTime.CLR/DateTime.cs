@@ -371,7 +371,7 @@ namespace PHP.Library
 		#region Constants
 
 		[ImplementsConstant("DATE_ATOM")]
-		public const string FormatAtom = @"Y-m-d\TH:i:sO";
+		public const string FormatAtom = @"Y-m-d\TH:i:sP";
 
 		[ImplementsConstant("DATE_COOKIE")]
 		public const string FormatCookie = @"D, d M Y H:i:s T";
@@ -813,7 +813,7 @@ namespace PHP.Library
                         {
                             // Difference to Greenwich time (GMT) in hours Example: +0200
                             TimeSpan offset = zone.GetUtcOffset(local);
-                            result.AppendFormat("{0}{1:00}{2:00}", (offset.Ticks < 0) ? "-" : "+", offset.Hours, offset.Minutes);
+                            result.AppendFormat("{0}{1:00}{2:00}", (offset.Ticks < 0) ? ""/*offset.Hours already < 0*/ : "+", offset.Hours, offset.Minutes);
                             break;
                         }
 
@@ -822,7 +822,7 @@ namespace PHP.Library
                             // same as 'O' but with the extra colon between hours and minutes
                             // Difference to Greenwich time (GMT) in hours Example: +02:00
                             TimeSpan offset = zone.GetUtcOffset(local);
-                            result.AppendFormat("{0}{1:00}:{2:00}", (offset.Ticks < 0) ? "-" : "+", offset.Hours, offset.Minutes);
+                            result.AppendFormat("{0}{1:00}:{2:00}", (offset.Ticks < 0) ? ""/*offset.Hours already < 0*/ : "+", offset.Hours, offset.Minutes);
                             break;
                         }
 
