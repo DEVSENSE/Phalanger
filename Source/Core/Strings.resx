@@ -2083,4 +2083,7 @@ non-infringement.
   <data name="nowdoc_expected" xml:space="preserve">
     <value>Expecting constant value within heredoc.</value>
   </data>
+  <data name="incomparable_objects_compared_exception" xml:space="preserve">
+    <value>Incomparable objects ({0} and {1}) have been compared</value>
+  </data>
 </root>

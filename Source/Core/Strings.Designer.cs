@@ -2517,6 +2517,15 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Incomparable objects ({0} and {1}) have been compared.
+        /// </summary>
+        public static string incomparable_objects_compared_exception {
+            get {
+                return ResourceManager.GetString("incomparable_objects_compared_exception", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Partial declarations of &apos;{0}&apos; must be all classes or all interfaces.
         /// </summary>
         public static string incompatible_partial_declarations {
