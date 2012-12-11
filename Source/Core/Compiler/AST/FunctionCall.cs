@@ -1176,12 +1176,21 @@ namespace PHP.Core.AST
         /// <summary>Expression that represents name of method</summary>
         public CompoundVarUse/*!*/ MethodNameVar { get { return methodNameVar; } }
 
-		public IndirectStMtdCall(Position position, GenericQualifiedName className, CompoundVarUse/*!*/ mtdNameVar,
-	  List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+		public IndirectStMtdCall(Position position,
+                                 GenericQualifiedName className, CompoundVarUse/*!*/ mtdNameVar,
+	                             List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
 			: base(position, className, parameters, genericParams)
 		{
 			this.methodNameVar = mtdNameVar;
 		}
+
+        public IndirectStMtdCall(Position position,
+                                 TypeRef/*!*/typeRef, CompoundVarUse/*!*/ mtdNameVar,
+                                 List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+            : base(position, typeRef, parameters, genericParams)
+        {
+            this.methodNameVar = mtdNameVar;
+        }
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Expression.Analyze"]/*'/>
 		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
