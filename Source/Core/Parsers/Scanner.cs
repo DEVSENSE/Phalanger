@@ -24,10 +24,51 @@ using PHP.Core.Reflection;
 
 namespace PHP.Core.Parsers
 {
-	public sealed class Scanner : Lexer, ITokenProvider<SemanticValueType, Position>
-	{
-		public ErrorSink/*!*/ ErrorSink { get { return errors; } }
+    #region ICommentsSink
+
+    /// <summary>
+    /// Sink for comment tokens and tokens not handled in parser.
+    /// These tokens are ignored by tokenizer, so they are not available in resulting AST.
+    /// By providing this interface as a part of <see cref="IReductionSink"/> implementation, implementers may handle additional language elements at token level.
+    /// </summary>
+    public interface ICommentsSink
+    {
+        void OnLineComment(Scanner/*!*/scanner, Parsers.Position position);
+        void OnComment(Scanner/*!*/scanner, Parsers.Position position);
+        void OnPhpDocComment(Scanner/*!*/scanner, Parsers.Position position);
+
+        void OnOpenTag(Scanner/*!*/scanner, Parsers.Position position);
+        void OnCloseTag(Scanner/*!*/scanner, Parsers.Position position);
+    }
+
+    #endregion
+
+    public sealed class Scanner : Lexer, ITokenProvider<SemanticValueType, Position>
+    {
+        #region Nested class: _NullCommentsSink
+
+        private sealed class _NullCommentsSink : ICommentsSink
+        {
+            #region ICommentsSink Members
+
+            public void OnLineComment(Scanner scanner, Parsers.Position position) { }
+            public void OnComment(Scanner scanner, Parsers.Position position) { }
+            public void OnPhpDocComment(Scanner scanner, Parsers.Position position) { }
+            public void OnOpenTag(Scanner scanner, Parsers.Position position) { }
+            public void OnCloseTag(Scanner scanner, Parsers.Position position) { }
+
+            #endregion
+        }
+
+        #endregion
+
+        public ErrorSink/*!*/ ErrorSink { get { return errors; } }
 		private readonly ErrorSink/*!*/ errors;
+
+        /// <summary>
+        /// Sink for comments.
+        /// </summary>
+        private readonly ICommentsSink/*!*/commentsSink;
 
 		public LanguageFeatures LanguageFeatures { get { return features; } }
 		private readonly LanguageFeatures features;
@@ -88,8 +129,10 @@ namespace PHP.Core.Parsers
 		private readonly Encoding encoding;
 		private bool pure;
 
+        private readonly Action/*!*/UpdateTokenPosition;
+
 		public Scanner(Parsers.Position initialPosition, TextReader/*!*/ reader, SourceUnit/*!*/ sourceUnit,
-			ErrorSink/*!*/ errors, LanguageFeatures features)
+			ErrorSink/*!*/ errors, ICommentsSink commentsSink, LanguageFeatures features)
 			: base(reader)
 		{
 			if (reader == null)
@@ -104,6 +147,7 @@ namespace PHP.Core.Parsers
 			this.offsetShift = initialPosition.FirstOffset;
 
 			this.errors = errors;
+            this.commentsSink = commentsSink ?? new _NullCommentsSink();
 			this.features = features;
 			this.sourceUnit = sourceUnit;
 
@@ -113,6 +157,10 @@ namespace PHP.Core.Parsers
 
 			AllowAspTags = (features & LanguageFeatures.AspTags) != 0;
 			AllowShortTags = (features & LanguageFeatures.ShortOpenTags) != 0;
+
+            this.UpdateTokenPosition = (this.columnShift == 0 && this.encoding.IsSingleByte) ?
+                new Action(this.UpdateTokenPosition_Optimized) :
+                new Action(this.UpdateTokenPosition_Default);
 		}
 
 		private void StoreEncapsedString()
@@ -134,10 +182,13 @@ namespace PHP.Core.Parsers
 			return encapsedStringBuffer.ToString(offset, length);
 		}
 
+        #region UpdateTokenPosition
+
         /// <summary>
         /// Updates <see cref="streamOffset"/> and <see cref="tokenPosition"/>.
         /// </summary>
-        private void UpdateTokenPosition()
+        /// <remarks>Assumes <see cref="columnShift"/> != <c>0</c> or <see cref="encoding"/> is not single byte encoding.</remarks>
+        private void UpdateTokenPosition_Default()
 		{
 			// update token position info:
 			int byte_length = base.GetTokenByteLength(encoding);
@@ -161,7 +212,32 @@ namespace PHP.Core.Parsers
 			streamOffset += byte_length;
 		}
 
-		public new Tokens GetNextToken()
+        /// <summary>
+        /// Updates <see cref="streamOffset"/> and <see cref="tokenPosition"/>.
+        /// </summary>
+        /// <remarks>Assumes <see cref="columnShift"/> == <c>0</c> and <see cref="encoding"/> is single byte encoding.</remarks>
+        private void UpdateTokenPosition_Optimized()
+        {
+            Debug.Assert(this.encoding.IsSingleByte);
+            Debug.Assert(this.columnShift == 0);
+
+            // update token position info:
+            int byte_length = base.GetTokenCharLength();    // assuming encoding is single byte encoding
+
+            tokenPosition.FirstOffset = offsetShift + streamOffset;
+            tokenPosition.FirstLine = lineShift + token_start_pos.Line;
+            tokenPosition.FirstColumn = token_start_pos.Column; // assuming columnShift is 0
+
+            tokenPosition.LastOffset = tokenPosition.FirstOffset + byte_length - 1;
+            tokenPosition.LastLine = lineShift + token_end_pos.Line;
+            tokenPosition.LastColumn = token_end_pos.Column; // assuming columnShift is 0
+
+            streamOffset += byte_length;
+        }
+
+        #endregion
+
+        public new Tokens GetNextToken()
 		{
 			for (; ; )
 			{
@@ -176,15 +252,15 @@ namespace PHP.Core.Parsers
 					#region Comments
 
                     // ignored tokens:
-                    case Tokens.T_WHITESPACE:
-                    case Tokens.T_COMMENT:
-                    case Tokens.T_LINE_COMMENT:
-                    case Tokens.T_OPEN_TAG:
-                        break;
+                    case Tokens.T_WHITESPACE: break;
+                    case Tokens.T_COMMENT: this.commentsSink.OnComment(this, this.tokenPosition); break;
+                    case Tokens.T_LINE_COMMENT: this.commentsSink.OnLineComment(this, this.tokenPosition); break;
+                    case Tokens.T_OPEN_TAG: this.commentsSink.OnOpenTag(this, this.tokenPosition); break;
 
                     case Tokens.T_DOC_COMMENT:
                         // remember token value to be used by the next token and skip the current:
                         lastDocComment = base.GetTokenString();
+                        this.commentsSink.OnPhpDocComment(this, this.tokenPosition);
                         break;
 
 					case Tokens.T_PRAGMA_FILE:
@@ -399,10 +475,12 @@ namespace PHP.Core.Parsers
 					#region Token Reinterpreting
 
 					case Tokens.T_OPEN_TAG_WITH_ECHO:
+                        this.commentsSink.OnOpenTag(this, this.tokenPosition);                        
 						token = Tokens.T_ECHO;
 						goto default;
 
 					case Tokens.T_CLOSE_TAG:
+                        this.commentsSink.OnCloseTag(this, this.tokenPosition);                        
 						token = Tokens.T_SEMI;
 						goto case Tokens.T_SEMI;
 
