@@ -29,7 +29,7 @@ namespace PHP.Core.Parsers
     /// <summary>
     /// Sink for comment tokens and tokens not handled in parser.
     /// These tokens are ignored by tokenizer, so they are not available in resulting AST.
-    /// By providing this interface as a part of <see cref="IReductionSink"/> implementation, implementers may handle additional language elements at token level.
+    /// By providing this interface as a part of <see cref="IReductionsSink"/> implementation, implementers may handle additional language elements at token level.
     /// </summary>
     public interface ICommentsSink
     {
