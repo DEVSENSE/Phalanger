@@ -324,7 +324,7 @@ using Pair = System.Tuple<object,object>;
 %type<Object> namespace_statement_list_opt            // List<Statement>
 %type<Object> namespace_statement                     // Statement
 %type<Object> function_declaration_statement          // FunctionDecl
-%type<Object> function_declaration_head				  // Tuple<List<CustomAttribute>,string,bool>!	// <attributes,doc_comment,is_ref>
+%type<Object> function_declaration_head				  // Tuple<List<CustomAttribute>,object,bool>!	// <attributes,doc_comment,is_ref>
 %type<Object> ref_opt_identifier					  // Tuple<bool,string>!	// <is_ref, func_name>
 %type<Object> class_declaration_statement             // TypeDecl
 %type<Object> class_identifier                        // String
@@ -447,7 +447,7 @@ using Pair = System.Tuple<object,object>;
 %type<Object> additional_catches
 
 %type<Object> lambda_function_expression				// LambdaFuncExpr!
-%type<Object> lambda_function_head_						// Tuple<PhpMemberAttributes,string,bool>!	// <static,doc_comment,is_ref>
+%type<Object> lambda_function_head_						// Tuple<PhpMemberAttributes,object,bool>!	// <static,doc_comment,is_ref>
 %type<Object> lambda_function_use_var					// FormalParam!
 %type<Object> lambda_function_use_var_list				// List<FormalParam>!
 %type<Object> lambda_function_use_vars					// List<FormalParam>
@@ -624,7 +624,7 @@ function_declaration_statement:
 		'{' inner_statement_list_opt '}'
 		{
 			var func_name = (string)$2;
-			var attrs_doc_ref = (Tuple<List<CustomAttribute>,string,bool>)$1;
+			var attrs_doc_ref = (Tuple<List<CustomAttribute>,object,bool>)$1;
 			
 			CheckTypeParameterNames((List<FormalTypeParam>)$3, func_name);
 			
@@ -644,10 +644,10 @@ function_declaration_statement:
 ;
 
 function_declaration_head:
-		T_FUNCTION					{ $$ = new Tuple<List<CustomAttribute>,string,bool>(null, (string)$1, false); }
-	|	attributes T_FUNCTION		{ $$ = new Tuple<List<CustomAttribute>,string,bool>((List<CustomAttribute>)$1, (string)$2, false); }
-	|	T_FUNCTION '&'				{ $$ = new Tuple<List<CustomAttribute>,string,bool>(null, (string)$1, true); }
-	|	attributes T_FUNCTION '&'	{ $$ = new Tuple<List<CustomAttribute>,string,bool>((List<CustomAttribute>)$1, (string)$2, true); }
+		T_FUNCTION					{ $$ = new Tuple<List<CustomAttribute>,object,bool>(null, $1, false); }
+	|	attributes T_FUNCTION		{ $$ = new Tuple<List<CustomAttribute>,object,bool>((List<CustomAttribute>)$1, $2, false); }
+	|	T_FUNCTION '&'				{ $$ = new Tuple<List<CustomAttribute>,object,bool>(null, $1, true); }
+	|	attributes T_FUNCTION '&'	{ $$ = new Tuple<List<CustomAttribute>,object,bool>((List<CustomAttribute>)$1, $2, true); }
 ;
 
 class_declaration_statement:
@@ -1383,7 +1383,7 @@ method_body:
 
 property_modifiers:
 		member_modifiers	{ $$ = $1; }
-	|	T_VAR				{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Public, (string)$1); }
+	|	T_VAR				{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Public, $1); }
 ;
 
 member_modifiers_opt:
@@ -1414,12 +1414,12 @@ member_modifiers:
 ;
                    
 member_modifier:
-		T_PUBLIC			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Public, (string)$1); }
-	|	T_PROTECTED			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Protected, (string)$1); }		
-	|	T_PRIVATE			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Private, (string)$1); }	
-	|	T_STATIC			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Static, (string)$1); }	
-	|	T_ABSTRACT			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Abstract, (string)$1); }		
-	|	T_FINAL				{ $$ = new TmpMemberInfo(PhpMemberAttributes.Final, (string)$1); }	
+		T_PUBLIC			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Public, $1); }
+	|	T_PROTECTED			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Protected, $1); }		
+	|	T_PRIVATE			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Private, $1); }	
+	|	T_STATIC			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Static, $1); }	
+	|	T_ABSTRACT			{ $$ = new TmpMemberInfo(PhpMemberAttributes.Abstract, $1); }		
+	|	T_FINAL				{ $$ = new TmpMemberInfo(PhpMemberAttributes.Final, $1); }	
 ;
 
 property_declarator_list:
@@ -1627,7 +1627,7 @@ lambda_function_expression:
 	}
 	'{' inner_statement_list_opt '}'
 	{
-		var static_doc_ref = (Tuple<PhpMemberAttributes,string,bool>)$1;
+		var static_doc_ref = (Tuple<PhpMemberAttributes,object,bool>)$1;
 
 		$$ = new LambdaFunctionExpr(sourceUnit,
             @1, @$, GetHeadingEnd(@3), GetBodyStart(@6),
@@ -1640,10 +1640,10 @@ lambda_function_expression:
 ;
 
 lambda_function_head_:
-		T_FUNCTION	'('				{ $$ = new Tuple<PhpMemberAttributes,string,bool>(PhpMemberAttributes.None, (string)$1, false); }
-	|	T_STATIC T_FUNCTION	'('		{ $$ = new Tuple<PhpMemberAttributes,string,bool>(PhpMemberAttributes.Static, (string)$2, false); }
-	|	T_FUNCTION '&' '('			{ $$ = new Tuple<PhpMemberAttributes,string,bool>(PhpMemberAttributes.None, (string)$1, true); }
-	|	T_STATIC T_FUNCTION '&' '('	{ $$ = new Tuple<PhpMemberAttributes,string,bool>(PhpMemberAttributes.Static, (string)$2, true); }
+		T_FUNCTION	'('				{ $$ = new Tuple<PhpMemberAttributes,object,bool>(PhpMemberAttributes.None, $1, false); }
+	|	T_STATIC T_FUNCTION	'('		{ $$ = new Tuple<PhpMemberAttributes,object,bool>(PhpMemberAttributes.Static, $2, false); }
+	|	T_FUNCTION '&' '('			{ $$ = new Tuple<PhpMemberAttributes,object,bool>(PhpMemberAttributes.None, $1, true); }
+	|	T_STATIC T_FUNCTION '&' '('	{ $$ = new Tuple<PhpMemberAttributes,object,bool>(PhpMemberAttributes.Static, $2, true); }
 ;
 
 lambda_function_use_vars:

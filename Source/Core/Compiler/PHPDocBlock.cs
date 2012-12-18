@@ -180,6 +180,9 @@ namespace PHP.Core
             /// </summary>
             /// <param name="line">Line to parse. Cannot be <c>null</c> reference.</param>
             /// <param name="next">Outputs new element that will follow current element. Parsing will continue using this element.</param>
+            /// <param name="lineIndex">Index of the line within PHPDoc token.</param>
+            /// <param name="startCharIndex">Gets index of first content character within <paramref name="line"/>.</param>
+            /// <param name="endCharIndex">Gets index of last content character within <paramref name="line"/>.</param>
             /// <returns>If the line can be parsed, method returns <c>true</c>.</returns>
             internal static bool TryParseLine(ref string/*!*/line, out Element next, int lineIndex, out int startCharIndex, out int endCharIndex)
             {

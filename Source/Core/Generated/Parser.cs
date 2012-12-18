@@ -1804,7 +1804,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
       case 44: // function_declaration_statement -> function_declaration_head identifier type_parameter_list_opt @3 '(' formal_parameter_list_opt ')' @4 '{' inner_statement_list_opt '}' 
 {
 			var func_name = (string)value_stack.array[value_stack.top-10].yyval.Object;
-			var attrs_doc_ref = (Tuple<List<CustomAttribute>,string,bool>)value_stack.array[value_stack.top-11].yyval.Object;
+			var attrs_doc_ref = (Tuple<List<CustomAttribute>,object,bool>)value_stack.array[value_stack.top-11].yyval.Object;
 			
 			CheckTypeParameterNames((List<FormalTypeParam>)value_stack.array[value_stack.top-9].yyval.Object, func_name);
 			
@@ -1823,16 +1823,16 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 		}
         return;
       case 45: // function_declaration_head -> T_FUNCTION 
-{ yyval.Object = new Tuple<List<CustomAttribute>,string,bool>(null, (string)value_stack.array[value_stack.top-1].yyval.Object, false); }
+{ yyval.Object = new Tuple<List<CustomAttribute>,object,bool>(null, value_stack.array[value_stack.top-1].yyval.Object, false); }
         return;
       case 46: // function_declaration_head -> attributes T_FUNCTION 
-{ yyval.Object = new Tuple<List<CustomAttribute>,string,bool>((List<CustomAttribute>)value_stack.array[value_stack.top-2].yyval.Object, (string)value_stack.array[value_stack.top-1].yyval.Object, false); }
+{ yyval.Object = new Tuple<List<CustomAttribute>,object,bool>((List<CustomAttribute>)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yyval.Object, false); }
         return;
       case 47: // function_declaration_head -> T_FUNCTION '&' 
-{ yyval.Object = new Tuple<List<CustomAttribute>,string,bool>(null, (string)value_stack.array[value_stack.top-2].yyval.Object, true); }
+{ yyval.Object = new Tuple<List<CustomAttribute>,object,bool>(null, value_stack.array[value_stack.top-2].yyval.Object, true); }
         return;
       case 48: // function_declaration_head -> attributes T_FUNCTION '&' 
-{ yyval.Object = new Tuple<List<CustomAttribute>,string,bool>((List<CustomAttribute>)value_stack.array[value_stack.top-3].yyval.Object, (string)value_stack.array[value_stack.top-2].yyval.Object, true); }
+{ yyval.Object = new Tuple<List<CustomAttribute>,object,bool>((List<CustomAttribute>)value_stack.array[value_stack.top-3].yyval.Object, value_stack.array[value_stack.top-2].yyval.Object, true); }
         return;
       case 49: // @5 -> 
 {
@@ -2584,7 +2584,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 222: // property_modifiers -> T_VAR 
-{ yyval.Object = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Public, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Public, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 223: // member_modifiers_opt -> 
 { yyval.Integer = (int)PhpMemberAttributes.Public; }
@@ -2614,22 +2614,22 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 		}
         return;
       case 227: // member_modifier -> T_PUBLIC 
-{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Public, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Public, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 228: // member_modifier -> T_PROTECTED 
-{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Protected, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Protected, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 229: // member_modifier -> T_PRIVATE 
-{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Private, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Private, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 230: // member_modifier -> T_STATIC 
-{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Static, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Static, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 231: // member_modifier -> T_ABSTRACT 
-{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Abstract, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Abstract, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 232: // member_modifier -> T_FINAL 
-{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Final, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Final, value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 233: // property_declarator_list -> property_declarator_list ',' property_declarator 
 { 
@@ -2950,7 +2950,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 324: // lambda_function_expression -> lambda_function_head_ formal_parameter_list_opt ')' lambda_function_use_vars @15 '{' inner_statement_list_opt '}' 
 {
-		var static_doc_ref = (Tuple<PhpMemberAttributes,string,bool>)value_stack.array[value_stack.top-8].yyval.Object;
+		var static_doc_ref = (Tuple<PhpMemberAttributes,object,bool>)value_stack.array[value_stack.top-8].yyval.Object;
 
 		yyval.Object = new LambdaFunctionExpr(sourceUnit,
             value_stack.array[value_stack.top-8].yypos, yypos, GetHeadingEnd(value_stack.array[value_stack.top-6].yypos), GetBodyStart(value_stack.array[value_stack.top-3].yypos),
@@ -2962,16 +2962,16 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 	}
         return;
       case 325: // lambda_function_head_ -> T_FUNCTION '(' 
-{ yyval.Object = new Tuple<PhpMemberAttributes,string,bool>(PhpMemberAttributes.None, (string)value_stack.array[value_stack.top-2].yyval.Object, false); }
+{ yyval.Object = new Tuple<PhpMemberAttributes,object,bool>(PhpMemberAttributes.None, value_stack.array[value_stack.top-2].yyval.Object, false); }
         return;
       case 326: // lambda_function_head_ -> T_STATIC T_FUNCTION '(' 
-{ yyval.Object = new Tuple<PhpMemberAttributes,string,bool>(PhpMemberAttributes.Static, (string)value_stack.array[value_stack.top-2].yyval.Object, false); }
+{ yyval.Object = new Tuple<PhpMemberAttributes,object,bool>(PhpMemberAttributes.Static, value_stack.array[value_stack.top-2].yyval.Object, false); }
         return;
       case 327: // lambda_function_head_ -> T_FUNCTION '&' '(' 
-{ yyval.Object = new Tuple<PhpMemberAttributes,string,bool>(PhpMemberAttributes.None, (string)value_stack.array[value_stack.top-3].yyval.Object, true); }
+{ yyval.Object = new Tuple<PhpMemberAttributes,object,bool>(PhpMemberAttributes.None, value_stack.array[value_stack.top-3].yyval.Object, true); }
         return;
       case 328: // lambda_function_head_ -> T_STATIC T_FUNCTION '&' '(' 
-{ yyval.Object = new Tuple<PhpMemberAttributes,string,bool>(PhpMemberAttributes.Static, (string)value_stack.array[value_stack.top-3].yyval.Object, true); }
+{ yyval.Object = new Tuple<PhpMemberAttributes,object,bool>(PhpMemberAttributes.Static, value_stack.array[value_stack.top-3].yyval.Object, true); }
         return;
       case 329: // lambda_function_use_vars -> 
 { yyval.Object = null; }
