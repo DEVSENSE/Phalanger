@@ -18,6 +18,13 @@ namespace PHP.Core
 
         public abstract class Element
         {
+            #region Constants
+
+            /// <summary>
+            /// String sequence starting the PHPDoc block on the first line.
+            /// </summary>
+            private const string PhpDocStartString = "/**";
+
             /// <summary>
             /// Every PHPDoc line not starting with this character is ignored.
             /// </summary>
@@ -32,6 +39,22 @@ namespace PHP.Core
             /// String representing new line between PHPDoc comment lines.
             /// </summary>
             protected const string NewLineString = "\n";
+
+            #endregion
+
+            #region Properties
+
+            /// <summary>
+            /// Element starting position within the source code.
+            /// </summary>
+            public ShortPosition StartPosition { get; internal set; }
+
+            /// <summary>
+            /// Element ending position within the source code.
+            /// </summary>
+            public ShortPosition EndPosition { get; internal set; }
+
+            #endregion
 
             #region Tags
 
@@ -147,6 +170,8 @@ namespace PHP.Core
 
             #endregion
 
+            #region Parsing
+
             /// <summary>
             /// Prepares given <paramref name="line"/>.
             /// 
@@ -156,15 +181,23 @@ namespace PHP.Core
             /// <param name="line">Line to parse. Cannot be <c>null</c> reference.</param>
             /// <param name="next">Outputs new element that will follow current element. Parsing will continue using this element.</param>
             /// <returns>If the line can be parsed, method returns <c>true</c>.</returns>
-            internal static bool TryParseLine(ref string/*!*/line, out Element next)
+            internal static bool TryParseLine(ref string/*!*/line, out Element next, int lineIndex, out int startCharIndex, out int endCharIndex)
             {
                 if (line == null)
                     throw new ArgumentNullException("line");
 
                 next = null;
+                startCharIndex = endCharIndex = 0;
 
                 int startIndex = 0;
                 while (startIndex < line.Length && char.IsWhiteSpace(line[startIndex])) startIndex++;   // skip whitespaces
+
+                // we souhldn't, but we allow first line to contain text after the /** sequence:
+                if (lineIndex == 0 && line.StartsWith(PhpDocStartString, StringComparison.Ordinal))
+                {
+                    startIndex = PhpDocStartString.Length - 1;  // jump to the '*' character
+                    Debug.Assert(line[startIndex] == PHPDocFirstChar);
+                }
 
                 // invalid PHPDoc line (not starting with '*'):
                 if (startIndex == line.Length || line[startIndex] != PHPDocFirstChar)
@@ -196,7 +229,9 @@ namespace PHP.Core
                 // TODO: handle "{@tag ...}" for @link, @see etc...
 
                 // check tags:
-                next = CreateElement(line);                    
+                next = CreateElement(line);
+                startCharIndex = startIndex;
+                endCharIndex = startIndex + line.Length;
 
                 // 
                 return true;
@@ -243,6 +278,8 @@ namespace PHP.Core
             /// Called when parsing of this element ended.
             /// </summary>
             internal virtual void OnEndParsing() { }
+
+            #endregion
         }
 
         /// <summary>
@@ -1221,6 +1258,11 @@ namespace PHP.Core
         private readonly string doccomment;
 
         /// <summary>
+        /// Position of the first character in the source code.
+        /// </summary>
+        private readonly ShortPosition startPosition;
+
+        /// <summary>
         /// Parsed data. Lazily initialized.
         /// </summary>
         private Element[] elements;
@@ -1245,9 +1287,12 @@ namespace PHP.Core
         /// <summary>
         /// Initializes new instance of <see cref="PHPDocBlock"/>.
         /// </summary>
-        public PHPDocBlock(string doccomment)
+        /// <param name="doccomment">PHPDoc token content.</param>
+        /// <param name="startPosition">Position of the first character.</param>
+        public PHPDocBlock(string doccomment, ShortPosition startPosition)
         {
             this.doccomment = doccomment;
+            this.startPosition = startPosition;
         }
 
         /// <summary>
@@ -1264,7 +1309,7 @@ namespace PHP.Core
                 // double-checked lock
                 if (this.elements == null)
                 {
-                    var elements = ParseNoLock(this.doccomment);
+                    var elements = ParseNoLock(this.doccomment, this.startPosition);
                     Debug.Assert(elements != null);
 
                     this.elements = elements.ToArray();
@@ -1275,25 +1320,46 @@ namespace PHP.Core
         /// <summary>
         /// Parses given <paramref name="doccomment"/> into a list of <see cref="Element"/> instances.
         /// </summary>
-        private static List<Element>/*!*/ParseNoLock(string doccomment)
+        /// <param name="doccomment">Content of the PHPDoc token.</param>
+        /// <param name="startPosition">Position of the first character of <paramref name="doccomment"/> withint the source code.</param>
+        private static List<Element>/*!*/ParseNoLock(string/*!*/doccomment, ShortPosition startPosition)
         {
             Debug.Assert(doccomment != null);
 
             var result = new List<Element>();
             var reader = new StringReader(doccomment);
+            int lineIndex = 0;
             string line;
             Element tmp;
             
-            Element current = new ShortDescriptionElement();
+            Element/*!*/current = new ShortDescriptionElement();
+            current.StartPosition = ShortPosition.Invalid;
             
             while ((line = reader.ReadLine()) != null)
             {
-                if (Element.TryParseLine(ref line, out tmp))    // validate the line, process tags
+                int startCharIndex, endCharIndex;
+                if (Element.TryParseLine(ref line, out tmp, lineIndex, out startCharIndex, out endCharIndex))    // validate the line, process tags
                 {
                     Debug.Assert(line != null);
+                    
+                    // determine position within the source code:
+                    int sourcePositionLine = lineIndex + startPosition.Line;
+                    if (lineIndex == 0)
+                    {
+                        startCharIndex += startPosition.Column;
+                        endCharIndex += startPosition.Column;
+                    }
 
+                    //
                     if (tmp == null)    // no new element created
+                    {
                         current.ParseLine(line, out tmp);       // pass the line into the current element
+                        current.EndPosition = new ShortPosition(sourcePositionLine, endCharIndex);   // update its end position
+
+                        // initialize start position of initial element
+                        if (current.GetType() == typeof(ShortDescriptionElement) && current.StartPosition.IsValid == false)
+                            current.StartPosition = new ShortPosition(sourcePositionLine, startCharIndex);
+                    }
 
                     if (tmp != null)    // new element created, it is already initialized with the current line
                     {
@@ -1303,9 +1369,14 @@ namespace PHP.Core
                             result.Add(current);
                         }
 
+                        tmp.StartPosition = new ShortPosition(sourcePositionLine, startCharIndex);   // initialize its start position
+                        tmp.EndPosition = new ShortPosition(sourcePositionLine, endCharIndex);       // update its end position
+
                         current = tmp;  // it is current element from now
                     }
                 }
+
+                lineIndex++;
             }
 
             // add the last found element
