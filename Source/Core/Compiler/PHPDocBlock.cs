@@ -1540,7 +1540,7 @@ namespace PHP.Core
         /// <returns></returns>
         public override string ToString()
         {
-            return PHPDocPreview;
+            return this.doccomment;
         }
 
         #endregion
