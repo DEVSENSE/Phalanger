@@ -360,6 +360,7 @@ using Pair = System.Tuple<object,object>;
 
 %type<Object> constant_inititalizer                   // Expression
 %type<Object> scalar_expr                             // Expression
+%type<Object> string_expr                             // Expression
 %type<Object> heredoc_expr							  // Expression
 %type<Object> for_statement                           // Statement
 %type<Object> foreach_statement                       // Statement
@@ -1957,6 +1958,7 @@ constant_inititalizer:
 	|	'+' constant_inititalizer	                { $$ = new UnaryEx(@$, Operations.Plus, (Expression)$2); }
 	|	'-' constant_inititalizer	                { $$ = new UnaryEx(@$, Operations.Minus, (Expression)$2); }
 	|	heredoc_expr { $$ = $1; if (!($1 is StringLiteral)) this.ErrorSink.Add(FatalErrors.SyntaxError, SourceUnit, @1, CoreResources.nowdoc_expected); }
+	|	string_expr { $$ = $1; if (!($1 is StringLiteral)) this.ErrorSink.Add(FatalErrors.SyntaxError, SourceUnit, @1, CoreResources.constant_value_neither_scalar_nor_null); }
 ;
 
 constant:
@@ -2001,14 +2003,18 @@ class_constant:
 scalar_expr:
 		constant		      { $$ = $1; }
 	|	T_STRING_VARNAME	{ $$ = new StringLiteral(@$, scanner.GetEncapsedString($1.Offset, $1.Integer)); }
-	|	'"'               { scanner.InUnicodeString = unicodeSemantics; } composite_string_opt '"' { $$ = CreateConcatExOrStringLiteral(@$, (List<Expression>)$3, false); }	
-	|	T_BINARY_DOUBLE   { scanner.InUnicodeString = unicodeSemantics; } composite_string_opt '"' { $$ = CreateConcatExOrStringLiteral(@$, (List<Expression>)$3, false); }
-	|	heredoc_expr	  { $$ = $1; }
+	|	string_expr			{ $$ = $1; }
+	|	heredoc_expr		{ $$ = $1; }
 ;
 
 heredoc_expr:
 		T_START_HEREDOC   { scanner.InUnicodeString = false; } composite_string_opt T_END_HEREDOC  { $$ = CreateConcatExOrStringLiteral(@$, (List<Expression>)$3, true); }
 	|	T_BINARY_HEREDOC  { scanner.InUnicodeString = false; } composite_string_opt T_END_HEREDOC  { $$ = CreateConcatExOrStringLiteral(@$, (List<Expression>)$3, true); }
+;
+
+string_expr:
+		'"'               { scanner.InUnicodeString = unicodeSemantics; } composite_string_opt '"' { $$ = CreateConcatExOrStringLiteral(@$, (List<Expression>)$3, false); }	
+	|	T_BINARY_DOUBLE   { scanner.InUnicodeString = unicodeSemantics; } composite_string_opt '"' { $$ = CreateConcatExOrStringLiteral(@$, (List<Expression>)$3, false); }
 ;
 
 writable_chain_list:
