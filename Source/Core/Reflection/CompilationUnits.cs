@@ -418,8 +418,38 @@ namespace PHP.Core.Reflection
 
         private static void AddDependentType(PhpTypeDesc/*!*/selfType, List<KeyValuePair<string, DTypeDesc>>/*!*/dependentTypes, DTypeDesc dependentType)
         {
-            if (dependentType != null && dependentType is PhpTypeDesc && dependentType.RealType.Module != selfType.RealType.Module)// base type if from different module (external dependency)
+            if (dependentType != null && dependentType is PhpTypeDesc && !IsSameCompilationUnit(selfType, dependentType))
                 dependentTypes.Add(new KeyValuePair<string, DTypeDesc>(dependentType.MakeFullName(), dependentType));
+        }
+
+        private static bool IsSameCompilationUnit(PhpTypeDesc/*!*/selfType, DTypeDesc dependentType)
+        {
+            Debug.Assert(selfType != null && dependentType != null);
+
+            if (object.ReferenceEquals(dependentType.RealType.Module, selfType.RealType.Module))
+            {
+                int selfTransientId, dependentTransientId;
+                string selfFileName, dependentFileName;
+                string selfTypeName, dependentTypeName;
+
+                ReflectionUtils.ParseTypeId(selfType.RealType, out selfTransientId, out selfFileName, out selfTypeName);
+                if (selfTransientId != PHP.Core.Reflection.TransientAssembly.InvalidEvalId) // always true, => TransientCompilationUnit
+                {
+                    ReflectionUtils.ParseTypeId(dependentType.RealType, out dependentTransientId, out dependentFileName, out dependentTypeName);
+                    // transient modules, must have same ids
+                    return selfTransientId == dependentTransientId;
+                }
+                else
+                {
+                    // same module, not transient modules
+                    return true;
+                }
+            }
+            else
+            {
+                // different modules => different units for sure
+                return false;
+            }
         }
 
 		private void DefineBuilders()
