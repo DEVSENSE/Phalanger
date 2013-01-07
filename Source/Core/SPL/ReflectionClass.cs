@@ -559,6 +559,7 @@ namespace PHP.Library.SPL
             return ((ReflectionClass)instance).getConstant(stack.Context, argName);
         }
 
+        [ImplementsMethod]
         public virtual object getConstants(ScriptContext context)
         {
             PhpArray arr = new PhpArray(this.typedesc.Constants.Count);
