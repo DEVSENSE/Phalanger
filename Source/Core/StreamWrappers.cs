@@ -423,7 +423,7 @@ namespace PHP.Core
             if ((fileMode == FileMode.Append) && (fileAccess == FileAccess.ReadWrite))
             {
                 // Note: .NET does not support the "a+" mode, use "r+" and Seek()
-                fileMode = FileMode.Open;
+                fileMode = FileMode.OpenOrCreate;
                 fileAccess = FileAccess.ReadWrite;
                 accessOptions |= StreamAccessOptions.SeekEnd;
             }

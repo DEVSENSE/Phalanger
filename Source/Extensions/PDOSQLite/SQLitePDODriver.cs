@@ -32,7 +32,9 @@ namespace PHP.Library.Data
 
         public override object Quote(ScriptContext context, object strobj, PDOParamType param_type)
         {
-            //From mysql extension
+            // From mysql extension
+            // in addition, resulting string is quoted as '...'
+
             if (strobj == null)
                 return string.Empty;
 
@@ -43,7 +45,8 @@ namespace PHP.Library.Data
                 if (strbytes.Length == 0) return strobj;
 
                 var bytes = strbytes.ReadonlyData;
-                List<byte>/*!*/result = new List<byte>(bytes.Length);
+                List<byte>/*!*/result = new List<byte>(bytes.Length + 2);
+                result.Add((byte)'\'');
                 for (int i = 0; i < bytes.Length; i++)
                 {
                     switch (bytes[i])
@@ -58,6 +61,7 @@ namespace PHP.Library.Data
                         default: result.Add(bytes[i]); break;
                     }
                 }
+                result.Add((byte)'\'');
 
                 return new PhpBytes(result.ToArray());
             }
@@ -66,6 +70,7 @@ namespace PHP.Library.Data
             string str = Core.Convert.ObjectToString(strobj);
 
             StringBuilder sb = new StringBuilder();
+            sb.Append('\'');
             for (int i = 0; i < str.Length; i++)
             {
                 char c = str[i];
@@ -81,6 +86,7 @@ namespace PHP.Library.Data
                     default: sb.Append(c); break;
                 }
             }
+            sb.Append('\'');
 
             return sb.ToString();
         }
