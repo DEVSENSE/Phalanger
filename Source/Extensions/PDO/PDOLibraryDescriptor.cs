@@ -51,7 +51,7 @@ namespace PHP.Library.Data
             return new ConfigContextBase(new PDOLocalConfig(), new PDOGlobalConfig());
         }
 
-        private static readonly Dictionary<string, PDODriver> m_providers = new Dictionary<string, PDODriver>();
+        private static readonly Dictionary<string, PDODriver> m_providers = new Dictionary<string, PDODriver>(StringComparer.Ordinal);
 
         public static void RegisterProvider(PDODriver driver)
         {

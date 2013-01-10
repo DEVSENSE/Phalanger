@@ -14,7 +14,7 @@ namespace PHP.Library.Data
     {
         public override string Scheme { get { return "sqlite"; } }
 
-        public override IDbConnection OpenConnection(ScriptContext context, string dsn_data, string username, string password, object argdriver_options)
+        public override PDOConnection OpenConnection(ScriptContext context, string dsn_data, string username, string password, object argdriver_options)
         {
             //Determine file path
             string filename = dsn_data.Replace('/', Path.DirectorySeparatorChar);
@@ -24,15 +24,8 @@ namespace PHP.Library.Data
             csb.DataSource = filePath;
             csb.Version = 3;
 
-            SQLiteConnection con = new SQLiteConnection(csb.ConnectionString);
-            Action clear = null;
-            clear = () =>
-            {
-                con.Dispose();
-                RequestContext.RequestEnd -= clear;
-            };
-            RequestContext.RequestEnd += clear;
-            con.Open();
+            var con = new PDOConnection(csb.ConnectionString, new SQLiteConnection(), "PDO sqllite connection");
+            con.Connect();
 
             return con;
         }

@@ -13,7 +13,7 @@ namespace PHP.Library.Data
 
         public override string Scheme { get { return "sqlsrv"; } }
 
-        public override IDbConnection OpenConnection(Core.ScriptContext context, string dsn_data, string username, string password, object argdriver_options)
+        public override PDOConnection OpenConnection(Core.ScriptContext context, string dsn_data, string username, string password, object argdriver_options)
         {
             throw new NotImplementedException();
         }

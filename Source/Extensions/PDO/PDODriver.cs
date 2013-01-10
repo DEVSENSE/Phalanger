@@ -10,7 +10,7 @@ namespace PHP.Library.Data
     public abstract class PDODriver
     {
         public abstract string Scheme { get; }
-        public abstract IDbConnection OpenConnection(ScriptContext context, string dsn_data, string username, string password, object argdriver_options);
+        public abstract PDOConnection OpenConnection(ScriptContext context, string dsn_data, string username, string password, object argdriver_options);
         public abstract object Quote(ScriptContext context, object strobj, PDOParamType param_type);
 
         public virtual string GetParameterName(string name)
