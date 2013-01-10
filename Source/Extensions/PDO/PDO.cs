@@ -236,26 +236,15 @@ namespace PHP.Library.Data
         #endregion
 
         #region quote
+        
         [PhpVisible]
         [ImplementsMethod]
-        public object quote(ScriptContext context, object str)
-        {
-            return quote(context, str, PARAM_STR);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        public object quote(ScriptContext context, object str, object parameter_type)
+        public object quote(ScriptContext context, object str, [Optional] object parameter_type)
         {
             PDOParamType pt = PDOParamType.PDO_PARAM_STR;
-            if (parameter_type != null)
-            {
-                int ptInt = PHP.Core.Convert.ObjectToInteger(parameter_type);
-                if (Enum.IsDefined(typeof(PDOParamType), ptInt))
-                {
-                    pt = (PDOParamType)ptInt;
-                }
-            }
+            if (parameter_type != null && parameter_type != Arg.Default)
+                pt = (PDOParamType)PHP.Core.Convert.ObjectToInteger(parameter_type);
+
             return this.m_driver.Quote(context, PHP.Core.Convert.ObjectToString(str), pt);
         }
 
@@ -270,42 +259,23 @@ namespace PHP.Library.Data
         #endregion
 
         #region query
+        
         [PhpVisible]
         [ImplementsMethod]
         [return: CastToFalse]
-        public object query(ScriptContext context, object statement)
-        {
-            return this.query(context, statement, null, null, null);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        [return: CastToFalse]
-        public object query(ScriptContext context, object statement, object fetch_to_mode)
-        {
-            return this.query(context, statement, fetch_to_mode, null, null);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        [return: CastToFalse]
-        public object query(ScriptContext context, object statement, object fetch_to_mode, object fetch_to_dest)
-        {
-            return this.query(context, statement, fetch_to_mode, fetch_to_dest, null);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        [return: CastToFalse]
-        public object query(ScriptContext context, object statement, object fetch_to_mode, object fetch_to_dest, object fetch_to_args)
+        public object query(ScriptContext context, object statement, [Optional] object fetch_to_mode, [Optional] object fetch_to_dest, [Optional] object fetch_to_args)
         {
             string query = PHP.Core.Convert.ObjectToString(statement);
             PDOStatement stmt = this.m_driver.CreateStatement(context, this);
+
             stmt.Init(query, null);
-            if (fetch_to_mode != null)
-            {
-                stmt.setFetchMode(context, fetch_to_mode, fetch_to_dest, fetch_to_args);
-            }
+
+            if (fetch_to_mode != null && fetch_to_mode != Arg.Default)
+                stmt.setFetchMode(context,
+                    fetch_to_mode,
+                    (fetch_to_dest != Arg.Default) ? fetch_to_dest : null,
+                    (fetch_to_args != Arg.Default) ? fetch_to_args : null);
+            
             if (stmt.ExecuteStatement())
             {
                 return stmt;
@@ -329,19 +299,14 @@ namespace PHP.Library.Data
         #endregion
 
         #region prepare
+        
         [PhpVisible]
         [ImplementsMethod]
-        public object prepare(ScriptContext context, object statement)
-        {
-            return this.prepare(context, statement, null);
-        }
-        [PhpVisible]
-        [ImplementsMethod]
-        public object prepare(ScriptContext context, object statement, object driver_options)
+        public object prepare(ScriptContext context, object statement, [Optional] object driver_options)
         {
             string query = PHP.Core.Convert.ObjectToString(statement);
             Dictionary<int, object> options = new Dictionary<int, object>();
-            if (driver_options != null && driver_options is PhpArray)
+            if (driver_options is PhpArray)
             {
                 PhpArray arr = (PhpArray)driver_options;
                 foreach (var key in arr.Keys)
@@ -493,14 +458,9 @@ namespace PHP.Library.Data
         #endregion
 
         #region lastInsertId
+        
         [ImplementsMethod, PhpVisible]
-        public object lastInsertId(ScriptContext context)
-        {
-            return this.getLastInsertId(context, null);
-        }
-
-        [ImplementsMethod, PhpVisible]
-        public object lastInsertId(ScriptContext context, object name)
+        public object lastInsertId(ScriptContext context, [Optional] object name)
         {
             return this.getLastInsertId(context, null);
         }

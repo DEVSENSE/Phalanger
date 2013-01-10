@@ -13,6 +13,11 @@ namespace PHP.Library.Data
         /// </summary>
         public IDbConnection/*!*/Connection { get { return this.connection; } }
 
+        /// <summary>
+        /// Pending DB data reader.
+        /// </summary>
+        public IDataReader PendingReader { get { return this.pendingReader; } set { this.pendingReader = value; } }
+
         public PDOConnection(string/*!*/ connectionString, IDbConnection/*!*/ connection, string/*!*/ name)
             : base(connectionString, connection, name)
         {

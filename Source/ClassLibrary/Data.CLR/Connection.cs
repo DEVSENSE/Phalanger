@@ -41,7 +41,7 @@ namespace PHP.Library.Data
 		/// <summary>
 		/// A result associated with this connection that possibly has not been closed yet.
 		/// </summary>
-		private IDataReader pendingReader;
+		protected IDataReader pendingReader;
 
 		/// <summary>
 		/// Last result resource.
