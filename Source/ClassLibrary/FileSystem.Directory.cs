@@ -284,7 +284,7 @@ namespace PHP.Library
 	/// Uses the PhpWrapper stream wrappers only to generate the list of contained files.
 	/// No actual resources to be released explicitly.
 	/// </summary>
-	internal class DirectoryListing : PhpResource
+	internal sealed class DirectoryListing : PhpResource
 	{
 		public DirectoryListing(string[] listing)
 			: base(DirectoryListingName)
@@ -301,6 +301,12 @@ namespace PHP.Library
 				// Invalid resource
 			}
 		}
+
+        protected override void FreeManaged()
+        {
+            if (object.ReferenceEquals(this, PhpDirectory.lastDirHandle))
+                PhpDirectory.lastDirHandle = null;
+        }
 
 		public readonly string[] Listing;
 		public readonly System.Collections.IEnumerator Enumerator;
@@ -392,6 +398,12 @@ namespace PHP.Library
 			return new Directory(directory);
 		}
 
+        /// <summary>
+        /// Last handle opened by <c>opendir</c>.
+        /// </summary>
+        [ThreadStatic]
+        internal static PhpResource lastDirHandle;
+
 		/// <summary>Returns a directory handle to be used in subsequent 
 		/// <c>readdir()</c>, <c>rewinddir()</c> and <c>closedir()</c> calls.</summary>
 		/// <remarks>
@@ -414,13 +426,25 @@ namespace PHP.Library
 		[return: CastToFalse]
 		public static PhpResource Open(string directory)
 		{
+            lastDirHandle = null;
+
 			StreamWrapper wrapper;
 			if (!PhpStream.ResolvePath(ref directory, out wrapper, CheckAccessMode.Directory, CheckAccessOptions.Empty))
 				return null;
 
 			string[] listing = wrapper.Listing(directory, 0, null);
-			return (listing != null) ? new DirectoryListing(listing) : null;
+			return (listing != null) ? (lastDirHandle = new DirectoryListing(listing)) : null;
 		}
+
+        /// <summary>
+        /// Reads an entry from a directory handle. Uses last handle opened by <c>opendir</c>.
+        /// </summary>
+        [ImplementsFunction("readdir")]
+        [return: CastToFalse]
+        public static string Read()
+        {
+            return Read(PhpDirectory.lastDirHandle);
+        }
 
 		/// <summary>
 		/// Reads an entry from a directory handle.
@@ -442,6 +466,15 @@ namespace PHP.Library
 				return null;
 		}
 
+        /// <summary>
+        /// Rewinds a directory handle. Uses last handle opened by <c>opendir</c>.
+        /// </summary>
+        [ImplementsFunction("rewinddir")]
+        public static void Rewind()
+        {
+            Rewind(PhpDirectory.lastDirHandle);
+        }
+
 		/// <summary>
 		/// Rewinds a directory handle.
         /// Function has no return value.
@@ -458,6 +491,15 @@ namespace PHP.Library
 			if (enumerator == null) return;
 			enumerator.Reset();
 		}
+
+        /// <summary>
+        /// Closes a directory handle. Uses last handle opened by <c>opendir</c>.
+		/// </summary>
+        [ImplementsFunction("closedir")]
+        public static void Close()
+        {
+            Close(PhpDirectory.lastDirHandle);
+        }
 
 		/// <summary>
 		/// Closes a directory handle.
