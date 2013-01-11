@@ -519,6 +519,13 @@ namespace PHP.Library.SPL
 
         #region ArrayObject
 
+        /// <summary>
+        /// Construct a new array object.
+        /// </summary>
+        /// <param name="context">Script Context. Cannot be null.</param>
+        /// <param name="input">Optional. The input parameter accepts an array or an Object.</param>
+        /// <param name="flags">Optional. Flags to control the behaviour of the ArrayObject object. See ArrayObject::setFlags().</param>
+        /// <param name="iterator_class">Optional. Specify the class that will be used for iteration of the ArrayObject object.</param>
         [ImplementsMethod]
         public virtual object __construct(ScriptContext/*!*/context, [Optional]object input, [Optional]object/*int*/flags/*= 0*/, [Optional]object/*string*/iterator_class/*= "ArrayIterator"*/ )
         {
@@ -539,6 +546,12 @@ namespace PHP.Library.SPL
         //public array exchangeArray ( mixed $input )
         //public array getArrayCopy ( void )
         
+        /// <summary>
+        /// Appends a new value as the last element.
+        /// </summary>
+        /// <param name="context">Script Context. Cannot be null.</param>
+        /// <param name="value">The value being appended.</param>
+        /// <remarks>This method cannot be called when the ArrayObject was constructed from an object. Use ArrayObject::offsetSet() instead.</remarks>
         [ImplementsMethod]
         public virtual object append(ScriptContext context, object value)
         {
@@ -553,6 +566,12 @@ namespace PHP.Library.SPL
             return ((ArrayObject)instance).append(stack.Context, value);
         }
 
+        /// <summary>
+        /// Exchange the current array with another array or object.
+        /// </summary>
+        /// <param name="context">Script Context. Cannot be null.</param>
+        /// <param name="input">The new array or object to exchange with the current array.</param>
+        /// <returns>Returns the old array.</returns>
         [ImplementsMethod]
         public virtual object exchangeArray(ScriptContext context, object input)
         {
@@ -567,8 +586,13 @@ namespace PHP.Library.SPL
             return ((ArrayObject)instance).exchangeArray(stack.Context, input);
         }
 
+        /// <summary>
+        /// Exports the ArrayObject to an array.
+        /// </summary>
+        /// <param name="context">Script Context. Cannot be null.</param>
+        /// <returns>Returns a copy of the array. When the ArrayObject refers to an object an array of the public properties of that object will be returned.</returns>
         [ImplementsMethod]
-        public virtual object getArrayCopy(ScriptContext context, object arg1)
+        public virtual object getArrayCopy(ScriptContext context)
         {
             throw new NotImplementedException();
         }
@@ -576,14 +600,18 @@ namespace PHP.Library.SPL
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static object getArrayCopy(object instance, PhpStack stack)
         {
-            var arg1 = stack.PeekValue(1);
             stack.RemoveFrame();
-            return ((ArrayObject)instance).getArrayCopy(stack.Context, arg1);
+            return ((ArrayObject)instance).getArrayCopy(stack.Context);
         }
 
         //public int getFlags ( void )
         //public void setFlags ( int $flags )
 
+        /// <summary>
+        /// Gets the behavior flags of the ArrayObject. See the ArrayObject::setFlags method for a list of the available flags.
+        /// </summary>
+        /// <param name="context">Script Context. Cannot be null.</param>
+        /// <returns>Returns the behavior flags of the ArrayObject.</returns>
         [ImplementsMethod]
         public virtual object getFlags(ScriptContext context)
         {
@@ -597,6 +625,11 @@ namespace PHP.Library.SPL
             return ((ArrayObject)instance).getFlags(stack.Context);
         }
 
+        /// <summary>
+        /// Set the flags that change the behavior of the ArrayObject.
+        /// </summary>
+        /// <param name="context">Script Context. Cannot be null.</param>
+        /// <param name="flags">The new ArrayObject behavior. It takes on either a bitmask, or named constants. Using named constants is strongly encouraged to ensure compatibility for future versions.</param>
         [ImplementsMethod]
         public virtual object setFlags(ScriptContext context, object/*int*/flags)
         {
@@ -614,6 +647,11 @@ namespace PHP.Library.SPL
         //public string getIteratorClass ( void )
         //public void setIteratorClass ( string $iterator_class )
 
+        /// <summary>
+        /// Gets the class name of the array iterator that is used by ArrayObject::getIterator().
+        /// </summary>
+        /// <param name="context">Script Context. Cannot be null.</param>
+        /// <returns>Returns the iterator class name that is used to iterate over this object.</returns>
         [ImplementsMethod]
         public virtual object getIteratorClass(ScriptContext context)
         {
@@ -627,6 +665,11 @@ namespace PHP.Library.SPL
             return ((ArrayObject)instance).getIteratorClass(stack.Context);
         }
 
+        /// <summary>
+        /// Sets the classname of the array iterator that is used by ArrayObject::getIterator().
+        /// </summary>
+        /// <param name="context">Script Context. Cannot be null.</param>
+        /// <param name="iterator_class">The classname of the array iterator to use when iterating over this object.</param>
         [ImplementsMethod]
         public virtual object setIteratorClass(ScriptContext context, object/*string*/iterator_class)
         {
@@ -646,6 +689,9 @@ namespace PHP.Library.SPL
         //public void natcasesort ( void )
         //public void natsort ( void )
         
+        /// <summary>
+        /// Sorts the entries such that the keys maintain their correlation with the entries they are associated with. This is used mainly when sorting associative arrays where the actual element order is significant.
+        /// </summary>
         [ImplementsMethod]
         public virtual object asort(ScriptContext context)
         {
@@ -659,6 +705,9 @@ namespace PHP.Library.SPL
             return ((ArrayObject)instance).asort(stack.Context);
         }
 
+        /// <summary>
+        /// Sorts the entries by key, maintaining key to entry correlations. This is useful mainly for associative arrays.
+        /// </summary>
         [ImplementsMethod]
         public virtual object ksort(ScriptContext context)
         {
@@ -672,6 +721,10 @@ namespace PHP.Library.SPL
             return ((ArrayObject)instance).ksort(stack.Context);
         }
 
+        /// <summary>
+        /// This method is a case insensitive version of ArrayObject::natsort.
+        /// This method implements a sort algorithm that orders alphanumeric strings in the way a human being would while maintaining key/value associations. This is described as a "natural ordering".
+        /// </summary>
         [ImplementsMethod]
         public virtual object natcasesort(ScriptContext context)
         {
@@ -685,6 +738,13 @@ namespace PHP.Library.SPL
             return ((ArrayObject)instance).natcasesort(stack.Context);
         }
 
+        /// <summary>
+        /// This method implements a sort algorithm that orders alphanumeric strings in
+        /// the way a human being would while maintaining key/value associations. This is
+        /// described as a "natural ordering". An example of the difference between this
+        /// algorithm and the regular computer string sorting algorithms (used in ArrayObject::asort)
+        /// method can be seen in the example below.
+        /// </summary>
         [ImplementsMethod]
         public virtual object natsort(ScriptContext context)
         {
@@ -701,6 +761,15 @@ namespace PHP.Library.SPL
         //public void uasort ( callable $cmp_function )
         //public void uksort ( callable $cmp_function )
 
+        /// <summary>
+        /// This function sorts the entries such that keys maintain their correlation with the entry that they are associated with, using a user-defined comparison function.
+        /// This is used mainly when sorting associative arrays where the actual element order is significant.
+        /// </summary>
+        /// <param name="context">Script Context. Cannot be null.</param>
+        /// <param name="cmp_function">Function cmp_function should accept two parameters
+        /// which will be filled by pairs of entries. The comparison function must return
+        /// an integer less than, equal to, or greater than zero if the first argument is
+        /// considered to be respectively less than, equal to, or greater than the second.</param>
         [ImplementsMethod]
         public virtual object uasort(ScriptContext context, object/*callable*/cmp_function)
         {
@@ -715,6 +784,15 @@ namespace PHP.Library.SPL
             return ((ArrayObject)instance).uasort(stack.Context, cmp_function);
         }
 
+        /// <summary>
+        /// This function sorts the keys of the entries using a user-supplied comparison function. The key to entry correlations will be maintained.
+        /// </summary>
+        /// <param name="context">Script Context. Cannot be null.</param>
+        /// <param name="cmp_function">The callback comparison function.
+        /// Function cmp_function should accept two parameters which will be filled by
+        /// pairs of entry keys. The comparison function must return an integer less than,
+        /// equal to, or greater than zero if the first argument is considered to be
+        /// respectively less than, equal to, or greater than the second.</param>
         [ImplementsMethod]
         public virtual object uksort(ScriptContext context, object/*callable*/cmp_function)
         {
