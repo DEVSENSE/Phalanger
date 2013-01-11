@@ -381,6 +381,9 @@ namespace PHP.Library.Data
         {
             if (this.m_tx != null)
             {
+                if (this.PDOConnection != null)
+                    this.PDOConnection.ClosePendingReader();
+
                 this.m_tx.Rollback();
                 this.m_tx.Dispose();
                 this.m_tx = null;

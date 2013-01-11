@@ -18,6 +18,11 @@ namespace PHP.Library.Data
         /// </summary>
         public IDataReader PendingReader { get { return this.pendingReader; } set { this.pendingReader = value; } }
 
+        /// <summary>
+        /// Last DB command. Used internally by PDO driver.
+        /// </summary>
+        public IDbCommand LastCommand { get; set; }
+
         public PDOConnection(string/*!*/ connectionString, IDbConnection/*!*/ connection, string/*!*/ name)
             : base(connectionString, connection, name)
         {
