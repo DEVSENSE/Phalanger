@@ -665,6 +665,9 @@ namespace PHP.Library
         [ImplementsFunction("unserialize", FunctionImplOptions.NeedsClassContext)]
         public static PhpReference Unserialize(PHP.Core.Reflection.DTypeDesc caller, PhpBytes bytes)
 		{
+            if (bytes == null)
+                return new PhpReference(false);
+
             LibraryConfiguration config = LibraryConfiguration.GetLocal(ScriptContext.CurrentContext);
 
             return config.Serialization.DefaultSerializer.Deserialize(bytes, caller);
