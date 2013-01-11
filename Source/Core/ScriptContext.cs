@@ -2447,7 +2447,7 @@ namespace PHP.Core
                     objectsToBeFinalized[i] = null;
 
                     DObject obj = null;
-                    if (reference.IsAlive)
+                    if (reference != null && reference.IsAlive)
                     {
                         try
                         {
