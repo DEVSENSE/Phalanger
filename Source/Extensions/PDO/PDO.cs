@@ -338,8 +338,7 @@ namespace PHP.Library.Data
             if (this.m_tx != null)
                 return false;
 
-            if (this.PDOConnection != null)
-                this.PDOConnection.ClosePendingReader();
+            this.PDOConnection.ClosePendingReader();
 
             this.m_tx = this.Connection.BeginTransaction();
             return true;
@@ -359,6 +358,8 @@ namespace PHP.Library.Data
         {
             if (this.m_tx != null)
             {
+                this.PDOConnection.ClosePendingReader();
+
                 this.m_tx.Commit();
                 this.m_tx.Dispose();
                 this.m_tx = null;
@@ -381,8 +382,7 @@ namespace PHP.Library.Data
         {
             if (this.m_tx != null)
             {
-                if (this.PDOConnection != null)
-                    this.PDOConnection.ClosePendingReader();
+                this.PDOConnection.ClosePendingReader();
 
                 this.m_tx.Rollback();
                 this.m_tx.Dispose();
