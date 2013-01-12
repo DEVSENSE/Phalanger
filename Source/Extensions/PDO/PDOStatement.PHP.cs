@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using PHP.Core;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace PHP.Library.Data
 {
@@ -27,7 +28,7 @@ namespace PHP.Library.Data
         [PhpVisible]
         [ImplementsMethod]
         [return: CastToFalse]
-        public object setFetchMode(ScriptContext context, object fetch_to_mode, object fetch_to_dest/*=null*/, object fetch_to_args/*=null*/)
+        public virtual object setFetchMode(ScriptContext context, object fetch_to_mode, [Optional]object fetch_to_dest/*=null*/, [Optional]object fetch_to_args/*=null*/)
         {
             return false;
         }
