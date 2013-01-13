@@ -563,12 +563,45 @@ namespace PHP.Library
         [PureFunction]
         public static bool IsNumeric(object variable)
 		{
-			int ival;
-			long lval;
-			double dval;
+            if (variable == null)
+                return false;
 
-			return (Core.Convert.ObjectToNumber(variable, out ival, out lval, out dval) & Core.Convert.NumberInfo.IsNumber) != 0;
+            // real numbers
+            if (variable.GetType() == typeof(int) ||
+                variable.GetType() == typeof(long) ||
+                variable.GetType() == typeof(double))
+                return true;
+
+            // string            
+            if (variable.GetType() == typeof(string))
+                return IsNumericString((string)variable);
+            
+            if (variable.GetType() == typeof(PhpBytes))
+                return IsNumericString(variable.ToString());
+
+            // some .NET types:
+            if (variable is Core.Reflection.IClrValue)
+            {
+                // decimal ?
+            }
+
+            // anything else:
+            return false;
 		}
+
+        /// <summary>
+        /// Checks whether given string can be converted to a number.
+        /// </summary>
+        /// <param name="str">A string value.</param>
+        /// <returns><c>True</c> if the string represents a number. Otherwise <c>false</c>.</returns>
+        private static bool IsNumericString(string str)
+        {
+            int ival;
+            long lval;
+            double dval;
+
+            return (Core.Convert.StringToNumber(str, out ival, out lval, out dval) & Core.Convert.NumberInfo.IsNumber) != 0;
+        }
 
 		/// <summary>
 		/// Verifies that the contents of a variable can be called as a function.
