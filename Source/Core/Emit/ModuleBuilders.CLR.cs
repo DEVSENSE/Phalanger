@@ -12,6 +12,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Diagnostics;
 using System.Diagnostics.SymbolStore;
@@ -498,7 +499,7 @@ namespace PHP.Core.Emit
             if ((emitAttributes & ScriptAttributes.ScriptIncluders) != 0 && CompilationUnit.Includers.Count > 0)
             {
                 // determine includers type token, remove duplicities:
-                int[] includers = new List<int>(ArrayUtils.Unique(Array.ConvertAll(CompilationUnit.Includers.ToArray(), x => real_builder.GetTypeToken(x.Includer.ScriptBuilder.ScriptType).Token))).ToArray();
+                int[] includers = ArrayUtils.Unique(Array.ConvertAll(CompilationUnit.Includers.ToArray(), x => real_builder.GetTypeToken(x.Includer.ScriptBuilder.ScriptType).Token)).ToArray();
             
                 // construct the [ScriptIncluders] attribute:
                 CustomAttributeBuilder cab = new CustomAttributeBuilder(Constructors.ScriptIncluders, new object[] { includers });

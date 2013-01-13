@@ -598,6 +598,8 @@ namespace PHP.Core.Reflection
 			else
 				allAbstracts = abstracts;
 
+            allAbstracts = ArrayUtils.EnsureUnique(allAbstracts);
+
 			DebugDumpAllAbstracts();
 
 			return allAbstracts;
