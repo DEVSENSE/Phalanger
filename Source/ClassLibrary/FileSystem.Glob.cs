@@ -39,7 +39,7 @@ namespace PHP.Library
             None = 0,
 
             /// <summary>
-            /// Append / to matching directories.
+            /// Append system directory separator (slash) to matching directories.
             /// </summary>
             [ImplementsConstant("GLOB_MARK")]
             Mark = 0x0008,
@@ -146,6 +146,17 @@ namespace PHP.Library
                 _chars.Append(']');
                 return _chars.ToString();
             }
+        }
+
+        /// <summary>
+        /// Replaces all slashes with <c>/</c>.
+        /// </summary>
+        /// <param name="pattern">Path pattern.</param>
+        /// <returns>Canonized pattern.</returns>
+        private static string CanonizePattern(string/*!*/pattern)
+        {
+            Debug.Assert(pattern != null);
+            return pattern.Replace('\\', '/');
         }
 
         private static void AppendExplicitRegexChar(StringBuilder/*!*/ builder, char c)
@@ -258,7 +269,7 @@ namespace PHP.Library
 
             public GlobMatcher(string/*!*/ pattern, GlobOptions flags)
             {
-                _pattern = FileSystemUtils.CanonicalizePath(pattern);
+                _pattern = CanonizePattern(pattern);
                 _flags = flags;
                 _result = new List<string>();
                 _dirOnly = _pattern.LastCharacter() == '/' || (flags & GlobOptions.OnlyDir) != 0;
@@ -320,10 +331,11 @@ namespace PHP.Library
 
                 if (System.IO.Directory.Exists(path))
                 {
-                    if (!Mark)
-                        _result.Add(resultPath);
+                    if (Mark)
+                        _result.Add(resultPath + FullPath.DirectorySeparatorString);
                     else
-                        _result.Add(resultPath + '\\');
+                        _result.Add(resultPath);
+                        
                 }
                 else if (!_dirOnly && File.Exists(path))
                 {
@@ -340,7 +352,7 @@ namespace PHP.Library
 
                 int pos = 0;
                 string baseDirectory = ".";
-                if (_pattern[0] == '/' || _pattern.IndexOf(':') >= 0)//is pattern rooted?
+                if (_pattern[0] == '/' ||  (_pattern.Length >= 2 && _pattern[1] == ':'))//is pattern rooted?
                 {
                     bool containsWildcard;
                     pos = FindNextSeparator(0, false, out containsWildcard);
@@ -357,7 +369,7 @@ namespace PHP.Library
                 else
                 {
                     _relative = true;
-                    baseDirectory = FileSystemUtils.CanonicalizePath(ScriptContext.CurrentContext.WorkingDirectory);
+                    baseDirectory = CanonizePattern(ScriptContext.CurrentContext.WorkingDirectory);
                 }
 
                 _stripTwo = (baseDirectory == ".");
@@ -402,7 +414,6 @@ namespace PHP.Library
                     return;
                 }
 
-
                 try
                 {
 
@@ -411,8 +422,7 @@ namespace PHP.Library
                         string objectName = Path.GetFileName(file);
                         if (FnMatch(dirSegment, objectName, _fnMatchFlags))
                         {
-                            var canonFile = FileSystemUtils.CanonicalizePath(file);
-                            TestPath(canonFile, patternEnd, isLastPathSegment);
+                            TestPath(CanonizePattern(file), patternEnd, isLastPathSegment);
                         }
                     }
 
@@ -779,7 +789,7 @@ namespace PHP.Library
             foreach (string group in groups) {
                 GlobMatcher matcher = new GlobMatcher(group, flags);
                 foreach (string filename in matcher.DoGlob()) {                 
-                    yield return filename;
+                    yield return filename.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
                 }
             }            
         }
@@ -859,8 +869,7 @@ namespace PHP.Library
         {
             if (pattern == null)
 				return new PhpArray(0, 0);
-
-
+            
             PhpArray result = new PhpArray();
             foreach (var fileName in GetMatches(pattern, flags))
             {
