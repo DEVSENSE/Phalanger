@@ -115,48 +115,62 @@ namespace PHP.Core.AST
 
 			// TRY
 			Label end_label = il.BeginExceptionBlock();
+
 			foreach (Statement statement in statements)
 				statement.Emit(codeGenerator);
 
+            // catch (PHP.Core.ScriptDiedException)
+            // { throw; }
 
-			// Two catch blocks for PHP and CLR exceptions
-			Tuple<bool, Type>[] excTypes = new Tuple<bool, Type>[] { 
-				new Tuple<bool, Type>(true,  typeof(PhpUserException)),
-				new Tuple<bool, Type>(false,  typeof(Exception)) };
-			foreach (Tuple<bool, Type> exc in excTypes)
+            il.BeginCatchBlock(typeof(PHP.Core.ScriptDiedException));
+            il.Emit(OpCodes.Rethrow);
+
+            // catch (System.Exception ex)
+			
+			il.BeginCatchBlock(typeof(System.Exception));
+
+            // <exception_local> = (DObject) (STACK is PhpUserException) ? ((PhpUserException)STACK).UserException : ClrObject.WrapRealObject(STACK)
+
+            Label clrExceptionLabel = il.DefineLabel();
+            Label wrapEndLabel = il.DefineLabel();
+            LocalBuilder exception_local = il.GetTemporaryLocal(typeof(DObject));
+            
+            il.Emit(OpCodes.Dup);
+            il.Emit(OpCodes.Isinst, typeof(PHP.Core.PhpUserException)); // <STACK> as PhpUserException
+            il.Emit(OpCodes.Brfalse, clrExceptionLabel);
+            
+            // if (<STACK> as PhpUserException != null)
+            {
+                il.Emit(OpCodes.Ldfld, Fields.PhpUserException_UserException);
+                il.Emit(OpCodes.Br, wrapEndLabel);
+            }
+            
+            // else
+            il.MarkLabel(clrExceptionLabel);
+            {
+                il.Emit(OpCodes.Call, Methods.ClrObject_WrapRealObject);
+            }
+            il.MarkLabel(wrapEndLabel);
+            il.Stloc(exception_local);
+
+            // emits all PHP catch-blocks processing into a single CLI catch-block:
+			foreach (CatchItem c in catches)
 			{
-				// Catch it
-				il.BeginCatchBlock(exc.Item2);
+				Label next_catch_label = il.DefineLabel();
 
-				LocalBuilder exception_local;
-				if (exc.Item1)
-				{
-					// PHP: SPL.Exception e  =  _e.InnerException;
-					exception_local = il.DeclareLocal(typeof(Library.SPL.Exception));
-					il.Emit(OpCodes.Ldfld, Fields.PhpUserException_UserException);
-				}
-				else
-				{
-					// CLR: DObject e = ClrObject.WrapRealObject(_e);
-					exception_local = il.DeclareLocal(typeof(DObject));
-					il.Emit(OpCodes.Call, Methods.ClrObject_WrapRealObject); 
-				}
-				il.Stloc(exception_local);
+				// IF (exception <instanceOf> <type>);
+				c.Emit(codeGenerator, exception_local, end_label, next_catch_label);
 
-				// emits all PHP catch-blocks processing into a single CLI catch-block:
-				foreach (CatchItem c in catches)
-				{
-					Label next_catch_label = il.DefineLabel();
-
-					// IF (exception <instanceOf> <type>);
-					c.Emit(codeGenerator, exception_local, end_label, next_catch_label);
-
-					// ELSE
-					il.MarkLabel(next_catch_label);
-				}
-				// emits the "else" branch invoked if the exceptions is not catched:
-				il.Emit(OpCodes.Rethrow);
+				// ELSE
+				il.MarkLabel(next_catch_label);
 			}
+
+            il.ReturnTemporaryLocal(exception_local);
+
+			// emits the "else" branch invoked if the exceptions is not catched:
+			il.Emit(OpCodes.Rethrow);
+
+            //
 			il.EndExceptionBlock();
 
 			codeGenerator.ExceptionBlockNestingLevel--;
