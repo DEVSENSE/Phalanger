@@ -111,6 +111,28 @@ namespace PHP.Core
 		{
 			return null;
 		}
+
+        /// <summary>
+        /// Gets current session name.
+        /// </summary>
+        /// <param name="request">Valid request context.</param>
+        /// <returns>Session name.</returns>
+        public virtual string GetSessionName(RequestContext/*!*/request)
+        {
+            return AspNetSessionHandler.AspNetSessionName;
+        }
+
+        /// <summary>
+        /// Sets new session name.
+        /// </summary>
+        /// <param name="request">Valid request context.</param>
+        /// <param name="name">New session name.</param>
+        /// <returns>Whether session name was changed successfully.</returns>
+        public virtual bool SetSessionName(RequestContext/*!*/request, string name)
+        {
+            PhpException.FunctionNotSupported(PhpError.Notice);
+            return false;
+        }
 	}
 
 	#endregion
@@ -137,7 +159,7 @@ namespace PHP.Core
 
         #endregion
 
-		public const string PhpNetSessionVars = "Phalanger.SessionVars";
+        public const string PhpNetSessionVars = "Phalanger.SessionVars";
 		internal const string DummySessionItem = "Phalanger_DummySessionKeepAliveItem(\uffff)";
 
 		/// <summary>
@@ -168,10 +190,10 @@ namespace PHP.Core
 		internal protected override PhpArray Load(ScriptContext context, HttpContext httpContext)
 		{
 			HttpSessionState state = httpContext.Session;
-
+            
 			PhpArray result = null;
 
-			if (state.Mode == SessionStateMode.InProc)
+            if (state.Mode == SessionStateMode.InProc)
 			{
 				result = new PhpArray();
 
@@ -184,7 +206,7 @@ namespace PHP.Core
 			}
 			else
 			{
-				byte[] data = state[PhpNetSessionVars] as byte[];
+                byte[] data = state[PhpNetSessionVars] as byte[];
 
 				if (data != null)
 				{
@@ -206,7 +228,7 @@ namespace PHP.Core
 		{
 			HttpSessionState state = httpContext.Session;
 
-			if (state.Mode == SessionStateMode.InProc)
+            if (state.Mode == SessionStateMode.InProc)
 			{
                 context.ReleaseArray(variables);
 
@@ -232,7 +254,7 @@ namespace PHP.Core
 				formatter.Serialize(stream, variables);
 
 				// add the serialized $_SESSION to ASP.NET session:
-				state[PhpNetSessionVars] = stream.ToArray();
+                state[PhpNetSessionVars] = stream.ToArray();
 			}
 		}
 
@@ -249,7 +271,7 @@ namespace PHP.Core
         /// </summary>
         public override bool AllowsSessionIdChange { get { return false; } }
 
-		/// <summary>
+        /// <summary>
 		/// Gets session cookie associated with a specified HTTP context.
 		/// </summary>
 		/// <param name="context">The context.</param>

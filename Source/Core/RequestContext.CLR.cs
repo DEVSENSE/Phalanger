@@ -400,15 +400,14 @@ namespace PHP.Core
 		public SessionStates SessionState { get { return sessionState; } }
 		private SessionStates sessionState = SessionStates.Closed;
 
-		/// <summary>
+        /// <summary>
 		/// Gets whether a session exists (i.e. has been started or is being closed).
 		/// </summary>
 		public bool SessionExists
 		{
 			get { return sessionState == SessionStates.Started || sessionState == SessionStates.Closing; }
 		}
-
-
+        
 		/// <summary>
 		/// Ensures that Session ID is set, so calls to Flush() don't cause issues
 		/// (if flush() is called, session ID can't be set because cookie can't be created).
@@ -418,8 +417,6 @@ namespace PHP.Core
             Debug.Assert(httpContext != null);
             if (httpContext.Session != null && httpContext.Session.IsNewSession && httpContext.Session.Count == 0)
             {
-                //httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
-
                 // Ensure the internal method SessionStateModule.DelayedGetSessionId() is called now,
                 // not after the request is processed if no one uses SessionId during the request.
                 // Otherwise it causes an attempt to save the Session ID when the response stream was already flushed.
@@ -471,9 +468,9 @@ namespace PHP.Core
 			GlobalConfiguration global = Configuration.Global;
 			PhpArray variables = null;
 
-            //// removes dummy item keeping the session alive:
-            //if (httpContext.Session[AspNetSessionHandler.PhpNetSessionVars] as string == AspNetSessionHandler.DummySessionItem)
-            //    httpContext.Session.Remove(AspNetSessionHandler.PhpNetSessionVars);
+            // removes dummy item keeping the session alive:
+            if (httpContext.Session[AspNetSessionHandler.PhpNetSessionVars] as string == AspNetSessionHandler.DummySessionItem)
+                httpContext.Session.Remove(AspNetSessionHandler.PhpNetSessionVars);
 
 			// loads an array of session variables using the current session handler:
 			variables = scriptContext.Config.Session.Handler.Load(scriptContext, httpContext);
@@ -525,9 +522,9 @@ namespace PHP.Core
 			{
 				if (!abandon)
 				{
-                    //// if ASP.NET session state is empty then adds a dump item to preserve the session:
-                    //if (httpContext.Session.Count == 0)
-                    //    httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
+                    // if ASP.NET session state is empty then adds a dump item to preserve the session:
+                    if (httpContext.Session.Count == 0)
+                        httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
 				}
 				else
 				{
