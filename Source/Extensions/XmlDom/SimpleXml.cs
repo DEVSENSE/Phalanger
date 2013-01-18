@@ -675,12 +675,19 @@ namespace PHP.Library.Xml
         /// </summary>
         public override bool ToBoolean()
         {
-            // return true iff the instance has at least one property
-            foreach (KeyValuePair<object, object> pair in this)
+            switch (this.iterationType)
             {
-                return true;
+                case IterationType.Attribute:
+                    return true;
+
+                default:
+                    // return true iff the instance has at least one property
+                    foreach (KeyValuePair<object, object> pair in this)
+                    {
+                        return true;
+                    }
+                    return false;
             }
-            return false;
         }
 
 
@@ -1002,31 +1009,38 @@ namespace PHP.Library.Xml
         {
             PhpArray array = new PhpArray();
 
-            foreach (XmlNode child in XmlElement)
+            if (XmlAttribute != null)
             {
-                object childElement = GetPhpChildElement(child);
-
-                if (childElement != null)
+                array.AddToEnd(XmlAttribute.Value);
+            }
+            else
+            {
+                foreach (XmlNode child in XmlElement)
                 {
-                    if (array.ContainsKey(child.LocalName))
-                    {
-                        object item = array[child.LocalName];
-                        PhpArray arrayitem = item as PhpArray;
+                    object childElement = GetPhpChildElement(child);
 
-                        if (arrayitem == null)
+                    if (childElement != null)
+                    {
+                        if (array.ContainsKey(child.LocalName))
                         {
-                            arrayitem = new PhpArray(2);
-                            arrayitem.Add(item);
-                            arrayitem.Add(childElement);
-                            array[child.LocalName] = arrayitem;
+                            object item = array[child.LocalName];
+                            PhpArray arrayitem = item as PhpArray;
+
+                            if (arrayitem == null)
+                            {
+                                arrayitem = new PhpArray(2);
+                                arrayitem.Add(item);
+                                arrayitem.Add(childElement);
+                                array[child.LocalName] = arrayitem;
+                            }
+                            else
+                            {
+                                arrayitem.Add(childElement);
+                            }
                         }
                         else
-                        {
-                            arrayitem.Add(childElement);
-                        }                        
+                            array.Add(child.LocalName, childElement);
                     }
-                    else
-                        array.Add(child.LocalName, childElement);
                 }
             }
 
