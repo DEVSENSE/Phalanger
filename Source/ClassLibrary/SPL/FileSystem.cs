@@ -988,4 +988,142 @@ namespace PHP.Library.SPL
 
         #endregion
     }
+
+    [ImplementsType]
+    public class SplFileObject : SplFileInfo, RecursiveIterator, Traversable, Iterator, SeekableIterator
+    {
+        #region Constants
+
+        /// <summary>
+        /// Drop newlines at the end of a line.
+        /// </summary>
+        public const int DROP_NEW_LINE = 1;
+
+        /// <summary>
+        /// Read on rewind/next.
+        /// </summary>
+        public const int READ_AHEAD = 2;
+
+        /// <summary>
+        /// Skips empty lines in the file. This requires the READ_AHEAD flag be enabled, to work as expected.
+        /// </summary>
+        public const int SKIP_EMPTY = 4;
+
+        /// <summary>
+        /// Read lines as CSV rows.
+        /// </summary>
+        public const int READ_CSV = 8;
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public SplFileObject(ScriptContext/*!*/context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public SplFileObject(ScriptContext/*!*/context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+
+        #region Methods
+
+        ///* Methods */
+        //public __construct ( string $filename [, string $open_mode = "r" [, bool $use_include_path = false [, resource $context ]]] )
+        //public string|array current ( void )
+        //public bool eof ( void )
+        //public bool fflush ( void )
+        //public string fgetc ( void )
+        //public array fgetcsv ([ string $delimiter = "," [, string $enclosure = "\"" [, string $escape = "\\" ]]] )
+        //public string fgets ( void )
+        //public string fgetss ([ string $allowable_tags ] )
+        //public bool flock ( int $operation [, int &$wouldblock ] )
+        //public int fpassthru ( void )
+        //public int fputcsv ( array $fields [, string $delimiter = ',' [, string $enclosure = '"' ]] )
+        //public mixed fscanf ( string $format [, mixed &$... ] )
+        //public int fseek ( int $offset [, int $whence = SEEK_SET ] )
+        //public array fstat ( void )
+        //public int ftell ( void )
+        //public bool ftruncate ( int $size )
+        //public int fwrite ( string $str [, int $length ] )
+        //public void getChildren ( void )
+        //public array getCsvControl ( void )
+        //public int getFlags ( void )
+        //public int getMaxLineLen ( void )
+        //public bool hasChildren ( void )
+        //public int key ( void )
+        //public void next ( void )
+        //public void rewind ( void )
+        //public void seek ( int $line_pos )
+        //public void setCsvControl ([ string $delimiter = "," [, string $enclosure = "\"" [, string $escape = "\\" ]]] )
+        //public void setFlags ( int $flags )
+        //public void setMaxLineLen ( int $max_len )
+        //public bool valid ( void )
+
+        #endregion
+
+        #region RecursiveIterator Members
+
+        public object getChildren(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object hasChildren(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Iterator Members
+
+        public object rewind(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object next(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object valid(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object key(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object current(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region SeekableIterator Members
+
+        public object seek(ScriptContext context, object position)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+    }
 }
