@@ -2489,7 +2489,7 @@ namespace PHP.Library
             }
             else
             {
-                return Split(PHP.Core.Convert.ObjectToString(obj));
+                return Split(PHP.Core.Convert.ObjectToString(obj), splitLength);
             }
         }
 
