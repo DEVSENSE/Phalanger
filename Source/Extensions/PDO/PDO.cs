@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Data;
 using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 
 namespace PHP.Library.Data
 {
@@ -46,7 +47,7 @@ namespace PHP.Library.Data
         }
 
         private PDODriver m_driver;
-        private IDbConnection m_con;
+        private PDOConnection m_con;
         private IDbTransaction m_tx;
 
         /// <summary>
@@ -58,9 +59,14 @@ namespace PHP.Library.Data
         /// </summary>
         public IDbTransaction Transaction { get { return this.m_tx; } }
         /// <summary>
-        /// Current connection
+        /// Current database connection.
         /// </summary>
-        public IDbConnection Connection { get { return this.m_con; } }
+        public PDOConnection PDOConnection { get { return this.m_con; } }
+
+        /// <summary>
+        /// Current database connection.
+        /// </summary>
+        public IDbConnection Connection { get { return this.m_con.Connection; } }
 
         #region Constructor
         /// <summary>
@@ -83,46 +89,25 @@ namespace PHP.Library.Data
         public static object __construct(object instance, PhpStack stack)
         {
             object argDSN = stack.PeekValue(1);
-            object argUsername = stack.PeekReferenceOptional(2);
-            object argPassword = stack.PeekReferenceOptional(3);
-            object argDriverOptions = stack.PeekReferenceOptional(4);
+            object argUsername = stack.PeekValueOptional(2);
+            object argPassword = stack.PeekValueOptional(3);
+            object argDriverOptions = stack.PeekValueOptional(4);
             stack.RemoveFrame();
             return ((PDO)instance).__construct(stack.Context, argDSN, argUsername, argPassword, argDriverOptions);
         }
 
         [PhpVisible]
         [ImplementsMethod]
-        public object __construct(ScriptContext context, object argdsn)
-        {
-            return this.__construct(context, argdsn, null, null, null);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        public object __construct(ScriptContext context, object argdsn, object argusername)
-        {
-            return this.__construct(context, argdsn, argusername, null, null);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        public object __construct(ScriptContext context, object argdsn, object argusername, object argpassword)
-        {
-            return this.__construct(context, argdsn, argusername, argpassword, null);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        public object __construct(ScriptContext context, object argdsn, object argusername, object argpassword, object argdriver_options)
+        public object __construct(ScriptContext context, object argdsn, [Optional] object argusername, [Optional] object argpassword, [Optional] object argdriver_options)
         {
             string dsn = PHP.Core.Convert.ObjectToString(argdsn);
-            string username = PHP.Core.Convert.ObjectToString(argusername);
-            string password = PHP.Core.Convert.ObjectToString(argpassword);
-            if (string.IsNullOrEmpty(dsn))
-            {
-                throw new ArgumentNullException();
-            }
+            string username = (argusername == Arg.Default) ? null : PHP.Core.Convert.ObjectToString(argusername);
+            string password = (argpassword == Arg.Default) ? null : PHP.Core.Convert.ObjectToString(argpassword);
+            object driver_options = (argdriver_options == Arg.Default) ? null : argdriver_options;
 
+            if (string.IsNullOrEmpty(dsn))
+                throw new ArgumentNullException();
+            
             const string uri = "uri:";
             if (dsn.StartsWith(uri))
             {
@@ -144,7 +129,7 @@ namespace PHP.Library.Data
                     PDOException.Throw(context, "Driver not found", null, null, null);
                     return null;
                 }
-                this.m_con = this.m_driver.OpenConnection(context, items[1], username, password, argdriver_options);
+                this.m_con = this.m_driver.OpenConnection(context, items[1], username, password, driver_options);
             }
 
             if (this.m_driver == null || this.m_con == null)
@@ -251,26 +236,15 @@ namespace PHP.Library.Data
         #endregion
 
         #region quote
+        
         [PhpVisible]
         [ImplementsMethod]
-        public object quote(ScriptContext context, object str)
-        {
-            return quote(context, str, PARAM_STR);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        public object quote(ScriptContext context, object str, object parameter_type)
+        public object quote(ScriptContext context, object str, [Optional] object parameter_type)
         {
             PDOParamType pt = PDOParamType.PDO_PARAM_STR;
-            if (parameter_type != null)
-            {
-                int ptInt = PHP.Core.Convert.ObjectToInteger(parameter_type);
-                if (Enum.IsDefined(typeof(PDOParamType), ptInt))
-                {
-                    pt = (PDOParamType)ptInt;
-                }
-            }
+            if (parameter_type != null && parameter_type != Arg.Default)
+                pt = (PDOParamType)PHP.Core.Convert.ObjectToInteger(parameter_type);
+
             return this.m_driver.Quote(context, PHP.Core.Convert.ObjectToString(str), pt);
         }
 
@@ -285,42 +259,22 @@ namespace PHP.Library.Data
         #endregion
 
         #region query
+        
         [PhpVisible]
         [ImplementsMethod]
-        [return: CastToFalse]
-        public object query(ScriptContext context, object statement)
-        {
-            return this.query(context, statement, null, null, null);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        [return: CastToFalse]
-        public object query(ScriptContext context, object statement, object fetch_to_mode)
-        {
-            return this.query(context, statement, fetch_to_mode, null, null);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        [return: CastToFalse]
-        public object query(ScriptContext context, object statement, object fetch_to_mode, object fetch_to_dest)
-        {
-            return this.query(context, statement, fetch_to_mode, fetch_to_dest, null);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        [return: CastToFalse]
-        public object query(ScriptContext context, object statement, object fetch_to_mode, object fetch_to_dest, object fetch_to_args)
+        public object query(ScriptContext context, object statement, [Optional] object fetch_to_mode, [Optional] object fetch_to_dest, [Optional] object fetch_to_args)
         {
             string query = PHP.Core.Convert.ObjectToString(statement);
             PDOStatement stmt = this.m_driver.CreateStatement(context, this);
+
             stmt.Init(query, null);
-            if (fetch_to_mode != null)
-            {
-                stmt.setFetchMode(context, fetch_to_mode, fetch_to_dest, fetch_to_args);
-            }
+
+            if (fetch_to_mode != null && fetch_to_mode != Arg.Default)
+                stmt.setFetchMode(context,
+                    fetch_to_mode,
+                    (fetch_to_dest != Arg.Default) ? fetch_to_dest : null,
+                    (fetch_to_args != Arg.Default) ? fetch_to_args : null);
+            
             if (stmt.ExecuteStatement())
             {
                 return stmt;
@@ -344,19 +298,14 @@ namespace PHP.Library.Data
         #endregion
 
         #region prepare
+        
         [PhpVisible]
         [ImplementsMethod]
-        public object prepare(ScriptContext context, object statement)
-        {
-            return this.prepare(context, statement, null);
-        }
-        [PhpVisible]
-        [ImplementsMethod]
-        public object prepare(ScriptContext context, object statement, object driver_options)
+        public object prepare(ScriptContext context, object statement, [Optional] object driver_options)
         {
             string query = PHP.Core.Convert.ObjectToString(statement);
             Dictionary<int, object> options = new Dictionary<int, object>();
-            if (driver_options != null && driver_options is PhpArray)
+            if (driver_options is PhpArray)
             {
                 PhpArray arr = (PhpArray)driver_options;
                 foreach (var key in arr.Keys)
@@ -387,10 +336,11 @@ namespace PHP.Library.Data
         public object beginTransaction(ScriptContext context)
         {
             if (this.m_tx != null)
-            {
                 return false;
-            }
-            this.m_tx = this.m_con.BeginTransaction();
+
+            this.PDOConnection.ClosePendingReader();
+
+            this.m_tx = this.Connection.BeginTransaction();
             return true;
         }
 
@@ -408,6 +358,8 @@ namespace PHP.Library.Data
         {
             if (this.m_tx != null)
             {
+                this.PDOConnection.ClosePendingReader();
+
                 this.m_tx.Commit();
                 this.m_tx.Dispose();
                 this.m_tx = null;
@@ -430,6 +382,8 @@ namespace PHP.Library.Data
         {
             if (this.m_tx != null)
             {
+                this.PDOConnection.ClosePendingReader();
+
                 this.m_tx.Rollback();
                 this.m_tx.Dispose();
                 this.m_tx = null;
@@ -508,16 +462,13 @@ namespace PHP.Library.Data
         #endregion
 
         #region lastInsertId
+        
         [ImplementsMethod, PhpVisible]
-        public object lastInsertId(ScriptContext context)
+        public object lastInsertId(ScriptContext context, [Optional] object name)
         {
-            return this.getLastInsertId(context, null);
-        }
-
-        [ImplementsMethod, PhpVisible]
-        public object lastInsertId(ScriptContext context, object name)
-        {
-            return this.getLastInsertId(context, null);
+            return this.getLastInsertId(
+                context,
+                (name != Arg.Default && name != null) ? Core.Convert.ObjectToString(name) : null);
         }
 
         private object getLastInsertId(ScriptContext context, string name)

@@ -7,6 +7,7 @@ using System.ComponentModel;
 using PHP.Library.SPL;
 using System.Data;
 using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 
 namespace PHP.Library.Data
 {
@@ -19,7 +20,7 @@ namespace PHP.Library.Data
             : base(context, true)
         {
             this.m_pdo = pdo;
-            this.setFetchMode(context, (int)PDOFetchType.PDO_FETCH_BOTH);
+            this.setFetchMode(context, (int)PDOFetchType.PDO_FETCH_BOTH, null, null);
         }
 
         public abstract bool ExecuteStatement();
@@ -46,36 +47,20 @@ namespace PHP.Library.Data
         #endregion
 
         #region fetch
-        [PhpVisible]
-        [ImplementsMethod]
-        public object fetch(ScriptContext context)
-        {
-            return this.fetch(context, null, FETCH_ORI_NEXT, 0);
-        }
 
-        [PhpVisible]
-        [ImplementsMethod]
-        public object fetch(ScriptContext context, object fetch_style)
+        private object fetch(ScriptContext context, int fetch_style)
         {
             return this.fetch(context, fetch_style, FETCH_ORI_NEXT, 0);
         }
 
         [PhpVisible]
         [ImplementsMethod]
-        public object fetch(ScriptContext context, object fetch_style, object cursor_orientation)
-        {
-            return this.fetch(context, fetch_style, cursor_orientation, 0);
-        }
-
-        [PhpVisible]
-        [ImplementsMethod]
-        public object fetch(ScriptContext context, object fetch_style, object cursor_orientation, object cursor_offset)
+        public object fetch(ScriptContext context, object fetch_style/*=null*/, object cursor_orientation/*FETCH_ORI_NEXT*/, object cursor_offset/*0*/)
         {
             PDOFetchType ft;
-            if (fetch_style == null)
-            {
+            if (fetch_style == null || fetch_style == Arg.Default)
                 fetch_style = this.m_pdo.getAttribute(context, (int)PDOAttributeType.PDO_ATTR_DEFAULT_FETCH_MODE);
-            }
+            
             int fetch_style_int = PHP.Core.Convert.ObjectToInteger(fetch_style);
             if (!Enum.IsDefined(typeof(PDOFetchType), fetch_style_int))
             {
@@ -87,12 +72,12 @@ namespace PHP.Library.Data
             switch (ft)
             {
                 case PDOFetchType.PDO_FETCH_ASSOC:
-                    return Fetch_Assoc(dr, false);
+                    return Fetch_Assoc(m_pdo.Driver, dr, false) ?? (object)false;
                 case PDOFetchType.PDO_FETCH_NUM:
-                    return Fetch_Num(dr);
+                    return Fetch_Num(m_pdo.Driver, dr) ?? (object)false;
                 case PDOFetchType.PDO_FETCH_BOTH:
                 case PDOFetchType.PDO_FETCH_USE_DEFAULT:
-                    return Fetch_Assoc(dr, true);
+                    return Fetch_Assoc(m_pdo.Driver, dr, true) ?? (object)false;
                 default:
                     throw new NotImplementedException();
             }
@@ -108,50 +93,48 @@ namespace PHP.Library.Data
             return ((PDOStatement)instance).fetch(stack.Context, style, orientation, cursor_offset);
         }
 
-        private static object Fetch_Assoc(IDataReader dr, bool withNum)
+        private static PhpArray Fetch_Assoc(PDODriver driver, IDataReader dr, bool withNum)
         {
             if (dr.Read())
             {
-                PhpArray arr = new PhpArray();
-                for (int i = 0; i < dr.FieldCount; i++)
+                int fieldCount = dr.FieldCount;
+                PhpArray arr = new PhpArray(fieldCount * (withNum ? 2 : 1));
+
+                for (int i = 0; i < fieldCount; i++)
                 {
                     string fName = dr.GetName(i);
-                    object value;
-                    if (dr.IsDBNull(i))
-                    {
-                        value = null;
-                    }
-                    else
-                    {
-                        value = dr.GetValue(i);
-                    }
+                    object value = driver.ConvertDbValue(dr.GetValue(i), dr.GetDataTypeName(i));
+
                     arr.Add(fName, value);
                     if (withNum)
-                    {
                         arr.Add(i, value);
-                    }
                 }
                 return arr;
             }
             else
             {
-                return false;
+                return null;
             }
         }
 
-        private static object Fetch_Num(IDataReader dr)
+        private static PhpArray Fetch_Num(PDODriver driver, IDataReader dr)
         {
             if (dr.Read())
             {
                 object[] values = new object[dr.FieldCount];
                 dr.GetValues(values);
+
+                for (int i = 0; i < values.Length; i++)
+                    values[i] = driver.ConvertDbValue(values[i], dr.GetDataTypeName(i));
+                
                 return new PhpArray(values);
             }
             else
             {
-                return false;
+                return null;
             }
         }
+
         #endregion
 
         #region close
@@ -183,16 +166,16 @@ namespace PHP.Library.Data
         }
 
         private PreparedMode m_prepMode = PreparedMode.None;
-        private readonly Dictionary<string, string> m_prepName = new Dictionary<string, string>();
-        private readonly List<string> m_prepNum = new List<string>();
+        private Dictionary<string, string> m_prepName = null;
+        private List<string> m_prepNum = null;
 
         private static readonly Regex regName = new Regex(@"[\w_]+", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         internal void Prepare(ScriptContext context, string query, Dictionary<int, object> options)
         {
             this.m_prepMode = PreparedMode.None;
-            this.m_prepName.Clear();
-            this.m_prepNum.Clear();
+            this.m_prepName = new Dictionary<string, string>();
+            this.m_prepNum = new List<string>();
             int pos = 0;
             StringBuilder sbRewritten = new StringBuilder();
             while (pos < query.Length)
@@ -237,7 +220,7 @@ namespace PHP.Library.Data
                             Match m = regName.Match(query, pos);
                             string paramName = m.Value;
                             string pName = this.m_pdo.Driver.GetParameterName(paramName);
-                            this.m_prepName.Add(paramName, pName);
+                            this.m_prepName[paramName] = pName;
                             sbRewritten.Append(pName);
                             pos += paramName.Length;
                         }
@@ -306,22 +289,15 @@ namespace PHP.Library.Data
         }
 
         #region bindValue
-        [PhpVisible]
-        [ImplementsMethod]
-        public object bindValue(ScriptContext context, object parameter, object value)
-        {
-            return this.bindValue(context, parameter, value, null);
-        }
 
         [PhpVisible]
         [ImplementsMethod]
-        public object bindValue(ScriptContext context, object parameter, object value, object data_type)
+        public object bindValue(ScriptContext context, object parameter, object value, object data_type/*=null*/)
         {
             PDOParamType? dt = null;
-            if (data_type != null && Enum.IsDefined(typeof(PDOParamType), data_type))
-            {
+            if (data_type != null && data_type != Arg.Default)
                 dt = (PDOParamType)data_type;
-            }
+
             return this.bindValue(parameter, value, dt);
         }
 
@@ -337,23 +313,26 @@ namespace PHP.Library.Data
             {
                 case PreparedMode.Named:
                     string pName = PHP.Core.Convert.ObjectToString(param);
+                    string pNameSql;
+
                     if (pName.Length > 0 && pName[0] == ':')
                     {
                         pName = pName.Substring(1);
                     }
-                    if (!this.m_prepName.ContainsKey(pName))
+
+                    if (this.m_prepName != null && this.m_prepName.TryGetValue(pName, out pNameSql))
+                    {
+                        p = (IDataParameter)this.CurrentCommand.Parameters[pNameSql];
+                    }
+                    else
                     {
                         PhpException.Throw(PhpError.Warning, "Parameter '" + pName + "' not found");
                         return false;
                     }
-                    else
-                    {
-                        p = (IDataParameter)this.CurrentCommand.Parameters[this.m_prepName[pName]];
-                    }
                     break;
                 case PreparedMode.Numbers:
                     int pId = PHP.Core.Convert.ObjectToInteger(param);
-                    if (pId >= this.m_prepNum.Count)
+                    if (this.m_prepNum == null || pId >= this.m_prepNum.Count)
                     {
                         PhpException.Throw(PhpError.Warning, "Parameter n° " + pId + " not found");
                         return false;
@@ -395,49 +374,47 @@ namespace PHP.Library.Data
         #endregion
 
         #region execute
-        [PhpVisible, ImplementsMethod]
-        public object execute(ScriptContext context)
-        {
-            return this.ExecuteInternal(null);
-        }
-
+        
         private bool ExecuteInternal(object input_parameters)
         {
             if (input_parameters != null)
             {
-                if (input_parameters is PhpArray)
+                PhpArray arr;
+                if ((arr = input_parameters as PhpArray) != null)
                 {
-                    PhpArray arr = (PhpArray)input_parameters;
-                    PreparedMode mode = PreparedMode.None;
-                    foreach (IntStringKey key in arr.Keys)
+                    if (arr.Count != 0)
                     {
-                        if (key.IsInteger && (mode == PreparedMode.Numbers || mode == PreparedMode.None))
+                        PreparedMode mode = PreparedMode.None;
+                        foreach (var item in arr)
                         {
-                            mode = PreparedMode.Numbers;
-                            if (!this.bindValue(key.Integer, arr[key], PDOParamType.PDO_PARAM_STR))
+                            Debug.Assert(item.Key.Object != null);
+
+                            if (item.Key.IsString && (mode == PreparedMode.Named || mode == PreparedMode.None))
                             {
-                                PhpException.Throw(PhpError.Warning, "Can't bind parameter n°" + key.Integer);
+                                mode = PreparedMode.Named;
+                            }
+                            else if (item.Key.IsInteger && (mode == PreparedMode.Numbers || mode == PreparedMode.None))
+                            {
+                                mode = PreparedMode.Numbers;
+                            }
+                            else
+                            {
+                                PhpException.Throw(PhpError.Warning, "Invalid bind parameter " + item.Key.Object.ToString());
                                 return false;
                             }
-                            continue;
-                        }
-                        if (key.IsString && (mode == PreparedMode.Named || mode == PreparedMode.None))
-                        {
-                            mode = PreparedMode.Named;
-                            if (!this.bindValue(key.String, arr[key], PDOParamType.PDO_PARAM_STR))
+
+                            // bind the parameter
+                            if (!this.bindValue(item.Key.Object, item.Value, PDOParamType.PDO_PARAM_STR))
                             {
-                                PhpException.Throw(PhpError.Warning, "Can't bind parameter " + key.String);
+                                PhpException.Throw(PhpError.Warning, "Can't bind parameter " + item.Key.Object.ToString());
                                 return false;
                             }
-                            continue;
                         }
-                        PhpException.Throw(PhpError.Warning, "Invalid prepared statement");
-                        return false;
                     }
                 }
                 else
                 {
-                    PhpException.Throw(PhpError.Warning, "input_parameters is not an array");
+                    PhpException.InvalidArgumentType("input_parameters", PhpArray.PhpTypeName);
                     return false;
                 }
             }
@@ -445,9 +422,9 @@ namespace PHP.Library.Data
         }
 
         [PhpVisible, ImplementsMethod]
-        public object execute(ScriptContext context, object input_parameters)
+        public object execute(ScriptContext context, [Optional] object input_parameters)
         {
-            return this.ExecuteInternal(input_parameters);
+            return this.ExecuteInternal((input_parameters != Arg.Default) ? input_parameters : null);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -460,22 +437,16 @@ namespace PHP.Library.Data
         #endregion
 
         #region fetchColumn
+        
         [PhpVisible, ImplementsMethod]
-        public object fetchColumn(ScriptContext context)
-        {
-            return this.fetchColumn(context, 0);
-        }
-
-        [PhpVisible, ImplementsMethod]
-        public object fetchColumn(ScriptContext context, object column_number)
+        public object fetchColumn(ScriptContext context, object column_number/*=0*/)
         {
             object ret = this.fetch(context, PDO.FETCH_NUM);
             if (ret is bool && (bool)ret == false)
-            {
                 return false;
-            }
+            
             PhpArray arr = (PhpArray)ret;
-            int col = PHP.Core.Convert.ObjectToInteger(column_number);
+            int col = (column_number == Arg.Default) ? 0 : PHP.Core.Convert.ObjectToInteger(column_number);
             return arr[col];
         }
 
@@ -508,59 +479,48 @@ namespace PHP.Library.Data
         #endregion
 
         #region fetchAll
+        
         [PhpVisible, ImplementsMethod]
-        public object fetchAll(ScriptContext context)
-        {
-            return this.fetchAll(context, null, null, null);
-        }
-
-        [PhpVisible, ImplementsMethod]
-        public object fetchAll(ScriptContext context, object fetch_style)
-        {
-            return this.fetchAll(context, fetch_style, null, null);
-        }
-
-        [PhpVisible, ImplementsMethod]
-        public object fetchAll(ScriptContext context, object fetch_style, object fetch_argument)
-        {
-            return this.fetchAll(context, fetch_style, fetch_argument, null);
-        }
-
-        [PhpVisible, ImplementsMethod]
-        public object fetchAll(ScriptContext context, object fetch_style, object fetch_argument, object ctor_args)
+        public object fetchAll(ScriptContext context, [Optional]object fetch_style/*=null*/, [Optional]object fetch_argument/*=null*/, [Optional]object ctor_args/*=null*/)
         {
             PhpArray arr = new PhpArray();
+
             PDOFetchType fetch;
-            if (fetch_style == null)
-            {
+            if (fetch_style == null || fetch_style == Arg.Default)
                 fetch = PDOFetchType.PDO_FETCH_BOTH;
+            else
+                fetch = (PDOFetchType)(int)fetch_style;
+
+            // TODO: fetch bitwise combinations (group, unique, ...)
+
+            if (fetch == PDOFetchType.PDO_FETCH_COLUMN)
+            {
+                int column = (fetch_argument == null || fetch_argument == Arg.Default) ? 0 : Core.Convert.ObjectToInteger(fetch_argument);
+                while (true)
+                {
+                    var ret = this.fetch(context, (int)PDOFetchType.PDO_FETCH_NUM) as PhpArray;
+                    if (ret == null)
+                        break;
+
+                    arr.AddToEnd(ret[column]);
+                }
             }
             else
             {
-                fetch = (PDOFetchType)fetch_style;
+                while (true)
+                {
+                    object ret = this.fetch(context, (int)fetch);
+                    if ((ret is bool && ((bool)ret) == false) || ret == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        arr.AddToEnd(ret);
+                    }
+                }
             }
 
-            while (true)
-            {
-                switch (fetch)
-                {
-                    case PDOFetchType.PDO_FETCH_BOTH:
-                    case PDOFetchType.PDO_FETCH_ASSOC:
-                    case PDOFetchType.PDO_FETCH_NUM:
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-                object ret = this.fetch(context, fetch);
-                if ((ret is bool && ((bool)ret) == false) || ret == null)
-                {
-                    break;
-                }
-                else
-                {
-                    arr.AddToEnd(ret);
-                }
-            }
             return arr;
         }
 

@@ -988,4 +988,202 @@ namespace PHP.Library.SPL
 
         #endregion
     }
+
+    /// <summary>
+    /// The SplFileObject class offers an object oriented interface for a file.
+    /// </summary>
+    [ImplementsType]
+    public class SplFileObject : SplFileInfo, RecursiveIterator, Traversable, Iterator, SeekableIterator
+    {
+        #region Constants
+
+        /// <summary>
+        /// Drop newlines at the end of a line.
+        /// </summary>
+        public const int DROP_NEW_LINE = 1;
+
+        /// <summary>
+        /// Read on rewind/next.
+        /// </summary>
+        public const int READ_AHEAD = 2;
+
+        /// <summary>
+        /// Skips empty lines in the file. This requires the READ_AHEAD flag be enabled, to work as expected.
+        /// </summary>
+        public const int SKIP_EMPTY = 4;
+
+        /// <summary>
+        /// Read lines as CSV rows.
+        /// </summary>
+        public const int READ_CSV = 8;
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public SplFileObject(ScriptContext/*!*/context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public SplFileObject(ScriptContext/*!*/context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+
+        #region Methods
+
+        ///* Methods */
+        //public __construct ( string $filename [, string $open_mode = "r" [, bool $use_include_path = false [, resource $context ]]] )
+        [ImplementsMethod]
+        public virtual new object __construct(ScriptContext context, object filename)
+        {
+            throw new NotImplementedException();
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static new object __construct(object instance, PhpStack stack)
+        {
+            var arg1 = stack.PeekValue(1);
+
+            stack.RemoveFrame();
+            return ((SplFileObject)instance).__construct(stack.Context, arg1);
+        }
+
+        //public bool eof ( void )
+        //public bool fflush ( void )
+        //public string fgetc ( void )
+        //public array fgetcsv ([ string $delimiter = "," [, string $enclosure = "\"" [, string $escape = "\\" ]]] )
+        //public string fgets ( void )
+        //public string fgetss ([ string $allowable_tags ] )
+        //public bool flock ( int $operation [, int &$wouldblock ] )
+        //public int fpassthru ( void )
+        //public int fputcsv ( array $fields [, string $delimiter = ',' [, string $enclosure = '"' ]] )
+        //public mixed fscanf ( string $format [, mixed &$... ] )
+        //public int fseek ( int $offset [, int $whence = SEEK_SET ] )
+        //public array fstat ( void )
+        //public int ftell ( void )
+        //public bool ftruncate ( int $size )
+        //public int fwrite ( string $str [, int $length ] )
+        //public array getCsvControl ( void )
+        //public int getFlags ( void )
+        //public int getMaxLineLen ( void )
+        //public void setCsvControl ([ string $delimiter = "," [, string $enclosure = "\"" [, string $escape = "\\" ]]] )
+        //public void setFlags ( int $flags )
+        //public void setMaxLineLen ( int $max_len )
+        
+        #endregion
+
+        #region RecursiveIterator Members
+
+        [ImplementsMethod]
+        public virtual object getChildren(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getChildren(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((SplFileObject)instance).getChildren(stack.Context);
+        }
+        [ImplementsMethod]
+        public virtual object hasChildren(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object hasChildren(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((SplFileObject)instance).hasChildren(stack.Context);
+        }
+        #endregion
+
+        #region Iterator Members
+
+        [ImplementsMethod]
+        public virtual object rewind(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object rewind(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((SplFileObject)instance).rewind(stack.Context);
+        }
+
+        [ImplementsMethod]
+        public virtual object next(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object next(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((SplFileObject)instance).next(stack.Context);
+        }
+        [ImplementsMethod]
+        public virtual object valid(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object valid(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((SplFileObject)instance).valid(stack.Context);
+        }
+        [ImplementsMethod]
+        public virtual object key(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object key(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((SplFileObject)instance).key(stack.Context);
+        }
+        [ImplementsMethod]
+        public virtual object current(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object current(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((SplFileObject)instance).current(stack.Context);
+        }
+        #endregion
+
+        #region SeekableIterator Members
+
+        [ImplementsMethod]
+        public virtual object seek(ScriptContext context, object position)
+        {
+            throw new NotImplementedException();
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object seek(object instance, PhpStack stack)
+        {
+            var arg1 = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((SplFileObject)instance).seek(stack.Context, arg1);
+        }
+        
+        #endregion
+    }
 }

@@ -220,7 +220,7 @@ namespace PHP.Core
         #region Inner class: Enumerator
 
         [Serializable]
-        public class Enumerator : IEnumerator<KeyValuePair<IntStringKey, object>>, IDictionaryEnumerator, IDisposable, IPhpEnumerator
+        public sealed class Enumerator : IEnumerator<KeyValuePair<IntStringKey, object>>, IDictionaryEnumerator, IDisposable, IPhpEnumerator
         {
             /// <summary>
             /// Enumerated table.
@@ -419,6 +419,89 @@ namespace PHP.Core
                     if (start) return false;
 
                     return (element < 0);
+                }
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Inner class: EmptyEnumerator
+
+        /// <summary>
+        /// An enumerator representing an empty collection. Single instance can be reused.
+        /// </summary>
+        internal sealed class EmptyEnumerator : IEnumerator<KeyValuePair<IntStringKey, object>>, IDictionaryEnumerator, IDisposable, IPhpEnumerator
+        {
+            /// <summary>
+            /// Singleton instance of this class. Can be reused.
+            /// </summary>
+            internal readonly static EmptyEnumerator/*!*/SingletonInstance = new EmptyEnumerator();
+
+            private EmptyEnumerator()
+            {
+            }
+
+            public object CurrentValue { get { throw new InvalidOperationException(); } }
+            public IntStringKey CurrentKey { get { throw new InvalidOperationException(); } }
+            
+            #region IEnumerator<KeyValuePair<IntStringKey, object>>
+
+            public KeyValuePair<IntStringKey, object> Current { get { throw new InvalidOperationException(); } }
+
+            object System.Collections.IEnumerator.Current { get { throw new InvalidOperationException(); } }
+
+            public bool MoveNext()
+            {
+                return false;
+            }
+
+            public void Reset()
+            {
+                // nothing
+            }
+
+            #endregion
+
+            #region IDisposable
+
+            public void Dispose()
+            {
+            }
+
+            #endregion
+
+            #region IDictionaryEnumerator Members
+
+            DictionaryEntry IDictionaryEnumerator.Entry { get { throw new InvalidOperationException(); } }
+            object IDictionaryEnumerator.Key { get { throw new InvalidOperationException(); } }
+            object IDictionaryEnumerator.Value { get { throw new InvalidOperationException(); } }
+
+            #endregion
+
+            #region IPhpEnumerator
+
+            public bool MoveLast()
+            {
+                return false;
+            }
+
+            public bool MoveFirst()
+            {
+                return false;
+            }
+
+            public bool MovePrevious()
+            {
+                return false;
+            }
+
+            public bool AtEnd
+            {
+                get
+                {
+                    return false;
                 }
             }
 

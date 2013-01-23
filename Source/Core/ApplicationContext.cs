@@ -183,11 +183,13 @@ namespace PHP.Core
             addType(typeof(Library.stdClass));
             addType(typeof(Library.__PHP_Incomplete_Class));
             addType(typeof(Library.EventClass<>));
+
+            addType(typeof(Library.SPL.Countable));
             addType(typeof(Library.SPL.ArrayAccess));
             addType(typeof(Library.SPL.SplFixedArray));
+            addType(typeof(Library.SPL.ArrayObject));
 
             addType(typeof(Library.SPL.Serializable));
-            addType(typeof(Library.SPL.Countable));
             addType(typeof(Library.SPL.SplObjectStorage));
             addType(typeof(Library.SPL.SplObserver));
             addType(typeof(Library.SPL.SplSubject));

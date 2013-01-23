@@ -577,8 +577,10 @@ namespace PHP.Library.Xml
             if (className == null) return new SimpleXMLElement(xmlAttribute, iterationNamespace);
 
             SimpleXMLElement instance = Create(className);
-            instance.XmlAttribute = xmlAttribute;
+            instance.XmlElement = xmlAttribute.OwnerElement;
+            instance.iterationType = IterationType.Attribute;
             instance.iterationNamespace = iterationNamespace;
+            instance.XmlAttribute = xmlAttribute;
 
             return instance;
         }
@@ -594,8 +596,10 @@ namespace PHP.Library.Xml
             if (className == null) return new SimpleXMLElement(xmlAttribute);
 
             SimpleXMLElement instance = Create(className);
+            instance.XmlElement = xmlAttribute.OwnerElement;
+            instance.iterationType = IterationType.Attribute;
             instance.XmlAttribute = xmlAttribute;
-
+            
             return instance;
         }
 
@@ -631,6 +635,16 @@ namespace PHP.Library.Xml
 
             return sb.ToString();
 		}
+
+        /// <summary>
+        /// String representation of the XML element.
+        /// </summary>
+        /// <returns>XML element content.</returns>
+        public override string ToString()
+        {
+            bool success;
+            return ToString(false, out success);
+        }
 		
 		/// <summary>
 		/// Internal to-<see cref="int"/> conversion.
@@ -661,12 +675,19 @@ namespace PHP.Library.Xml
         /// </summary>
         public override bool ToBoolean()
         {
-            // return true iff the instance has at least one property
-            foreach (KeyValuePair<object, object> pair in this)
+            switch (this.iterationType)
             {
-                return true;
+                case IterationType.Attribute:
+                    return true;
+
+                default:
+                    // return true iff the instance has at least one property
+                    foreach (KeyValuePair<object, object> pair in this)
+                    {
+                        return true;
+                    }
+                    return false;
             }
-            return false;
         }
 
 
@@ -988,31 +1009,38 @@ namespace PHP.Library.Xml
         {
             PhpArray array = new PhpArray();
 
-            foreach (XmlNode child in XmlElement)
+            if (XmlAttribute != null)
             {
-                object childElement = GetPhpChildElement(child);
-
-                if (childElement != null)
+                array.AddToEnd(XmlAttribute.Value);
+            }
+            else
+            {
+                foreach (XmlNode child in XmlElement)
                 {
-                    if (array.ContainsKey(child.LocalName))
-                    {
-                        object item = array[child.LocalName];
-                        PhpArray arrayitem = item as PhpArray;
+                    object childElement = GetPhpChildElement(child);
 
-                        if (arrayitem == null)
+                    if (childElement != null)
+                    {
+                        if (array.ContainsKey(child.LocalName))
                         {
-                            arrayitem = new PhpArray(2);
-                            arrayitem.Add(item);
-                            arrayitem.Add(childElement);
-                            array[child.LocalName] = arrayitem;
+                            object item = array[child.LocalName];
+                            PhpArray arrayitem = item as PhpArray;
+
+                            if (arrayitem == null)
+                            {
+                                arrayitem = new PhpArray(2);
+                                arrayitem.Add(item);
+                                arrayitem.Add(childElement);
+                                array[child.LocalName] = arrayitem;
+                            }
+                            else
+                            {
+                                arrayitem.Add(childElement);
+                            }
                         }
                         else
-                        {
-                            arrayitem.Add(childElement);
-                        }                        
+                            array.Add(child.LocalName, childElement);
                     }
-                    else
-                        array.Add(child.LocalName, childElement);
                 }
             }
 

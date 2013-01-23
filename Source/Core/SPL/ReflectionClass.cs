@@ -578,7 +578,7 @@ namespace PHP.Library.SPL
 
         #endregion
 
-        #region getInterfaceNames, getParentClass, getInterfaces
+        #region getInterfaceNames, getParentClass, getInterfaces, implementsInterface
 
         [ImplementsMethod]
         public virtual object getInterfaceNames(ScriptContext/*!*/context)
@@ -642,6 +642,36 @@ namespace PHP.Library.SPL
         {
             stack.RemoveFrame();
             return ((ReflectionClass)instance).getInterfaces(stack.Context);
+        }
+
+        [ImplementsMethod]
+        public virtual object implementsInterface(ScriptContext/*!*/context, object ifacename)
+        {
+            if (typedesc == null)
+                return false;
+
+            var ifacenamestr = Core.Convert.ObjectToString(ifacename);
+            if (string.IsNullOrEmpty(ifacenamestr))
+            {
+                //PhpException.InvalidArgument("ifacename"); // ?
+                return false;
+            }
+
+            var ifaces = typedesc.Interfaces;
+
+            foreach (var ifacedesc in ifaces)
+                if (ifacedesc.MakeFullName().EqualsOrdinalIgnoreCase(ifacenamestr))
+                    return true;
+
+            return false;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object implementsInterface(object instance, PhpStack stack)
+        {
+            var ifacename = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).implementsInterface(stack.Context, ifacename);
         }
 
         #endregion

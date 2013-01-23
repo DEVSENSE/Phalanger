@@ -14,7 +14,7 @@ namespace PHP.Library.Data
     {
         public override string Scheme { get { return "sqlite"; } }
 
-        public override IDbConnection OpenConnection(ScriptContext context, string dsn_data, string username, string password, object argdriver_options)
+        public override PDOConnection OpenConnection(ScriptContext context, string dsn_data, string username, string password, object argdriver_options)
         {
             //Determine file path
             string filename = dsn_data.Replace('/', Path.DirectorySeparatorChar);
@@ -24,22 +24,17 @@ namespace PHP.Library.Data
             csb.DataSource = filePath;
             csb.Version = 3;
 
-            SQLiteConnection con = new SQLiteConnection(csb.ConnectionString);
-            Action clear = null;
-            clear = () =>
-            {
-                con.Dispose();
-                RequestContext.RequestEnd -= clear;
-            };
-            RequestContext.RequestEnd += clear;
-            con.Open();
+            var con = new PDOConnection(csb.ConnectionString, new SQLiteConnection(), "PDO sqllite connection");
+            con.Connect();
 
             return con;
         }
 
         public override object Quote(ScriptContext context, object strobj, PDOParamType param_type)
         {
-            //From mysql extension
+            // From mysql extension
+            // in addition, resulting string is quoted as '...'
+
             if (strobj == null)
                 return string.Empty;
 
@@ -50,7 +45,8 @@ namespace PHP.Library.Data
                 if (strbytes.Length == 0) return strobj;
 
                 var bytes = strbytes.ReadonlyData;
-                List<byte>/*!*/result = new List<byte>(bytes.Length);
+                List<byte>/*!*/result = new List<byte>(bytes.Length + 2);
+                result.Add((byte)'\'');
                 for (int i = 0; i < bytes.Length; i++)
                 {
                     switch (bytes[i])
@@ -65,6 +61,7 @@ namespace PHP.Library.Data
                         default: result.Add(bytes[i]); break;
                     }
                 }
+                result.Add((byte)'\'');
 
                 return new PhpBytes(result.ToArray());
             }
@@ -73,6 +70,7 @@ namespace PHP.Library.Data
             string str = Core.Convert.ObjectToString(strobj);
 
             StringBuilder sb = new StringBuilder();
+            sb.Append('\'');
             for (int i = 0; i < str.Length; i++)
             {
                 char c = str[i];
@@ -88,6 +86,7 @@ namespace PHP.Library.Data
                     default: sb.Append(c); break;
                 }
             }
+            sb.Append('\'');
 
             return sb.ToString();
         }

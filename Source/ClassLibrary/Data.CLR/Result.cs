@@ -186,6 +186,8 @@ namespace PHP.Library.Data
 		{
             this.resultSets = new List<ResultSet>(16);
 
+            var reader = this.reader;
+
 			do
 			{
                 ResultSet result_set = new ResultSet()

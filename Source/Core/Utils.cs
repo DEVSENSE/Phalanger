@@ -2360,13 +2360,25 @@ namespace PHP.Core
         {
             if (items == null || items.Count == 0) return (ICollection<T>)new T[0];
 
-            Dictionary<T, bool> list = new Dictionary<T, bool>(items.Count);
+            return new HashSet<T>(items);
+        }
 
-            foreach (var x in items)
-                if (!list.ContainsKey(x))
-                    list.Add(x, true);
+        /// <summary>
+        /// Creates new or resuses given <paramref name="items"/>, returned array contains only unique items.
+        /// </summary>
+        /// <typeparam name="T">Type of array element.</typeparam>
+        /// <param name="items">Array of elements.</param>
+        /// <returns>Unique array of element. Cannot be null.</returns>
+        public static T[]/*!*/EnsureUnique<T>(T[] items)
+        {
+            if (items == null) return new T[0];
+            if (items.Length == 0) return items;
 
-            return list.Keys;
+            var set = new HashSet<T>(items);
+            if (set.Count == items.Length)
+                return items;
+            else
+                return System.Linq.Enumerable.ToArray(set);
         }
 
         /// <summary>
@@ -3660,17 +3672,6 @@ namespace PHP.Core
             return url;
         }
 
-
-        /// <summary>
-        /// Converts path to standardized form using '/' as only directory separator
-        /// </summary>
-        /// <param name="path">Path to be canonicalized</param>
-        /// <returns>Canonicalized path</returns>
-        public static String CanonicalizePath(string path)
-        {
-            return path.Replace('\\', '/');
-        }
-
         public static int FileSize(FileInfo fi)//TODO: Move this to PlatformAdaptationLayer
         {
             if (EnvironmentUtils.IsDotNetFramework)
@@ -3687,7 +3688,6 @@ namespace PHP.Core
                 }
             }
         }
-
     }
 
     #endregion
