@@ -391,8 +391,9 @@ namespace PHP.Library
             var s = PHP.Core.Convert.ObjectToInteger(second);
             try
             {
+                var time = TimeZoneInfo.ConvertTimeFromUtc(Time, TimeZone);
                 this.Time = TimeZoneInfo.ConvertTimeToUtc(
-                    new DateTime(Time.Year, Time.Month, Time.Day, h, m, s),
+                    new DateTime(time.Year, time.Month, time.Day, h, m, s),
                     TimeZone
                 );
             }
