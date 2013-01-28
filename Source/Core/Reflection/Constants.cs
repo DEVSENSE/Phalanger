@@ -640,12 +640,27 @@ namespace PHP.Core.Reflection
 
 				// represent the class constant as a static initonly field
 				FieldAttributes field_attrs = Enums.ToFieldAttributes(memberDesc.MemberAttributes);
-				if (this.HasValue) field_attrs |= FieldAttributes.InitOnly;
+                Type field_type = Types.Object[0];
+                if (this.HasValue)
+                {
+                    var value = this.Value;
+                    if (value == null || value is int || value is double || value is string || value is long || value is bool)
+                    {
+                        if (value != null)
+                            field_type = value.GetType();
+
+                        field_attrs |= FieldAttributes.Literal;
+                    }
+                    else
+                    {
+                        field_attrs |= FieldAttributes.InitOnly;
+                    }
+                }
                 
 				string name = FullName;
 				if (IsExported) name += "#";
 
-				FieldBuilder fb = type_builder.DefineField(name, Types.Object[0], field_attrs);
+				FieldBuilder fb = type_builder.DefineField(name, field_type, field_attrs);
 
 				// [EditorBrowsable(Never)] for user convenience - not on silverlight
                 // [ThreadStatic] for deferred constants

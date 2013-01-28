@@ -907,6 +907,14 @@ namespace PHP.Core
 		{
 			Debug.Assert(constant != null);
 
+            // real constant definition
+            if (constant.RealField.IsLiteral)
+            {
+                Debug.Assert(constant.RealFieldBuilder != null);
+                constant.RealFieldBuilder.SetConstant(constant.Value);
+                return;
+            }
+
 			// class constant initialization is emitted into the static constructor
 			ILEmitter old_il = il;
 			IPlace old_sc_emitter = ScriptContextPlace;
