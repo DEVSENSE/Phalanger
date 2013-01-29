@@ -259,7 +259,7 @@ namespace PHP.Library
 
 		#endregion
 
-		#region doubleval, floatval, intval, strval, settype, gettype
+		#region doubleval, floatval, intval, strval, settype, gettype, boolval
 
 		/// <summary>
 		/// Converts to double.
@@ -324,6 +324,18 @@ namespace PHP.Library
 		{
 			return PHP.Core.Convert.ObjectToString(variable);
 		}
+
+        /// <summary>
+        /// Converts to boolean.
+        /// </summary>
+        /// <param name="variable">The variable.</param>
+        /// <returns>The converted value.</returns>
+        [ImplementsFunction("boolval")]
+        [PureFunction]
+        public static bool BoolVal(object variable)
+        {
+            return PHP.Core.Convert.ObjectToBoolean(variable);
+        }
 
 		/// <summary>
 		/// Sets variable's type.
