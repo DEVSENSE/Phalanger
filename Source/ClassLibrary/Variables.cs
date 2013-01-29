@@ -841,6 +841,9 @@ namespace PHP.Library
 				return 0;
 			}
 
+            if (vars.Count == 0)
+                return 0;
+
             // unfortunately, type contains flags are combined with enumeration: 
             bool refs = (type & ExtractType.Refs) != 0;
             type &= ExtractType.NonFlags;
