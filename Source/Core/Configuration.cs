@@ -827,13 +827,7 @@ namespace PHP.Core
 			public bool? EnableStaticInclusions { get { return enableStaticInclusions; } set { enableStaticInclusions = value; } }
 			private bool? enableStaticInclusions;
 
-            /// <summary>
-            /// Enable compiler aggresive optimizations. Allows compiler to ignore some PHP vulnerabilities.
-            /// When enabling this option, the code should be free of warnings.
-            /// </summary>
-            public bool EnableAggresiveOptimization { get; private set; }
-
-			#endregion
+            #endregion
 
 			#region Simple Options
 

@@ -1120,7 +1120,7 @@ namespace PHP.Core.Reflection
 			bool args_aware = (properties & RoutineProperties.IsArgsAware) != 0;
 
 			// we need a mediator only to make the code verifiable, which is not applicable on dynamic methods:
-			MethodInfo call_target = (IsStatic || ArgLessInfo is DynamicMethod) ? ArgFullInfo : BuildNonVirtualMediator();
+            MethodInfo call_target = ArgFullInfo; // (IsStatic || ArgLessInfo is DynamicMethod) ? ArgFullInfo : BuildNonVirtualMediator();
 			ILEmitter il = new ILEmitter(ArgLessInfo);
 
 			LocalBuilder loc_count;
@@ -1153,7 +1153,7 @@ namespace PHP.Core.Reflection
 			PhpStackBuilder.EmitArgFullPreCall(il, arglessStackPlace, args_aware, signature.ParamCount,
 			  signature.GenericParamCount, out loc_count);
 
-			// emits call to the arg-full overload or the mediator;
+			// emits call to the arg-full overload non-virtually;
 			// the return value is left on the stack until return:
 			il.Emit(OpCodes.Call, call_target);
 
@@ -1208,29 +1208,6 @@ namespace PHP.Core.Reflection
 				else
 					il.Emit(OpCodes.Call, Methods.PhpStack.PeekValue);
 			}
-		}
-
-		/// <summary>
-		/// Define a non-virtual intermediate method that performs the (non-virtual) argfull call.
-		/// </summary>
-		private MethodInfo/*!*/ BuildNonVirtualMediator()
-		{
-			Type ret_type;
-			Type[] arg_types = signature.ToArgfullSignature(1, out ret_type);
-
-			arg_types[0] = Types.ScriptContext[0];
-
-			MethodInfo mediator = DefineRealMethod(
-			  "<Mediator>", MethodAttributes.PrivateScope | MethodAttributes.SpecialName, ret_type, arg_types);
-
-			// just delegate the call to the real argfull
-			ILEmitter il = new ILEmitter(mediator);
-
-			for (int i = 0; i <= arg_types.Length; i++) il.Ldarg(i);
-			il.Emit(OpCodes.Call, argfull);
-			il.Emit(OpCodes.Ret);
-
-			return mediator;
 		}
 
 		#endregion
@@ -1935,20 +1912,22 @@ namespace PHP.Core.Reflection
             bool runtimeVisibilityCheck, int overloadIndex, DType type, Position position,
             AccessType access, bool callVirt)
         {
+            Debug.Assert(fallbackQualifiedName == null, "Methods do not have fallbacks");
+
+            // private PHP methods called directly, ignoring overrides
+            if (IsPrivate || IsFinal || DeclaringType.IsFinal)
+                callVirt = false;
+            
             if ((Properties & RoutineProperties.IsArgsAware) != 0 || ArgFullInfo == null)
                 runtimeVisibilityCheck = true;  // force dynamic call when the method routine cannot be called virtually
 
             // when calling an instance virtual method, and some passed arguments would be ignored,
             // force dynamic call in case there will be an overload that takes more arguments
-            else if (callVirt && !IsFinal && !DeclaringType.IsFinal && !IsPrivate   // calling virtually non-final or private method
-                && !Configuration.Application.Compiler.EnableAggresiveOptimization) // aggresive optimizations are disabled
-                runtimeVisibilityCheck = true;
+            else if (callVirt
+                && callSignature.Parameters.Count > 0   // some overload may accept less arguments, and its overload more, so we may loose some passed arguments; only if we are not passing any, we are safe
+                //&& callSignature.Parameters.Count != this.Signature.ParamCount     // TODO: only if 'Declaration should be compatible' warning would be considered as error, or overrides must not have less arguments than base overriden method
+                ) runtimeVisibilityCheck = true;
             
-            Debug.Assert(fallbackQualifiedName == null);
-
-            // private PHP methods called directly, ignoring overrides
-            if (IsPrivate || IsFinal) callVirt = false;
-
             // emit the routine call
             return base.EmitCall(codeGenerator, fallbackQualifiedName, callSignature, instance, runtimeVisibilityCheck, overloadIndex, type, position, access, callVirt);
         }
