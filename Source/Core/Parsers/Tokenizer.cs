@@ -166,7 +166,10 @@ namespace PHP.Core.Parsers
 					case Tokens.ParseHexadecimalNumber:
 						tokenCategory = TokenCategory.Number; 
 						return GetHexIntegerTokenType(2);
-
+                    case Tokens.ParseBinaryNumber:
+                        tokenCategory = TokenCategory.Number;
+                        return GetHexIntegerTokenType(2);
+					
 					case Tokens.ParseDouble:
 						goto case Tokens.T_DNUMBER;
 

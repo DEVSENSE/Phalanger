@@ -49,6 +49,7 @@ LNUM                    [0-9]+
 DNUM                    ([0-9]*[.][0-9]+)|([0-9]+[.][0-9]*)
 EXPONENT_DNUM           (({LNUM}|{DNUM})[eE][+-]?{LNUM})
 HNUM                    "0x"{HexDigit}+
+BNUM					"0b"[01]+
 LABEL                   [a-zA-Z_][a-zA-Z0-9_]*
 WHITESPACE              [ \n\r\t]+
 TABS_AND_SPACES         [ \t]*
@@ -279,6 +280,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>{HNUM}            	{ return Tokens.ParseHexadecimalNumber; }
 <ST_IN_SCRIPTING>{DNUM}            	{ return Tokens.ParseDouble; }
 <ST_IN_SCRIPTING>{EXPONENT_DNUM}   	{ return Tokens.ParseDouble; } 
+<ST_IN_SCRIPTING>{BNUM}            	{ return Tokens.ParseBinaryNumber; }
 
 <ST_IN_SCRIPTING>"#pragma"[ \t]+"line"[ \t]+[-]?{LNUM}[ \t]* { BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); return Tokens.T_PRAGMA_LINE; }
 <ST_IN_SCRIPTING>"#pragma"[ \t]+"file"[^\n]+                 { BEGIN(LexicalStates.ST_ONE_LINE_COMMENT); return Tokens.T_PRAGMA_FILE; }
