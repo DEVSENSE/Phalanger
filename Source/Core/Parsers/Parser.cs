@@ -327,9 +327,8 @@ namespace PHP.Core.Parsers
         private void SetCommentSetHelper(object element, object doccomment)
         {
             Debug.Assert(element is IHasPhpDoc);
-            if (doccomment != null)
+            if (doccomment is PHPDocBlock)
             {
-                Debug.Assert(doccomment is PHPDocBlock);
                 ((IHasPhpDoc)element).PHPDoc = (PHPDocBlock)doccomment;
             }
         }
@@ -1109,13 +1108,17 @@ namespace PHP.Core.Parsers
         /// but can be used from referenced C# library.
         /// </summary>
         /// <param name="position">Token position.</param>
+        /// <param name="token">Token text.</param>
         /// <returns>Text of the token.</returns>
-        private string CSharpNameToken(Position position)
+        private string CSharpNameToken(Position position, string token)
         {
             // get token string:
-            string token = this.scanner.GetTokenString(position);
+            //string token = this.scanner.GetTokenString(position);
 
-			// report syntax error if C# names are not allowed
+            if (token == null)
+                throw new ArgumentNullException("token");
+            
+            // report syntax error if C# names are not allowed
 			if ((this.features & LanguageFeatures.CSharpTypeNames) == 0)
                 this.ErrorSink.Add(FatalErrors.SyntaxError, this.SourceUnit, position, CoreResources.GetString("unexpected_token", token));
 

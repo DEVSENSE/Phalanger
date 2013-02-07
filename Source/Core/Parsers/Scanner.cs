@@ -504,6 +504,12 @@ namespace PHP.Core.Parsers
 								goto case Tokens.T_STRING;
 							}
 
+                            if (token == Tokens.T_ABSTRACT)
+                            {
+                                // remember this for possible CLR qualified name:
+                                tokenSemantics.Object = base.GetTokenString();
+                            }
+
 							goto default;
 						}
 
@@ -606,12 +612,7 @@ namespace PHP.Core.Parsers
                             if (!lastDocCommentKeepTokens.Contains(token))
                                 lastDocComment = null;
                         }
-                        else
-                        {
-                            if (tokenSemantics.Object != null && lastDocCommentRememberTokens.Contains(token))
-                                tokenSemantics.Object = null;   // clear tokenSemantics.Object, as it should contain PHPDoc
-                        }
-
+                        
 						return token;
 				}
 			}

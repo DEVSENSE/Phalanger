@@ -3275,34 +3275,34 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 401: // namespace_name_identifier -> T_LIST 
-{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos); }
+{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 402: // namespace_name_identifier -> T_BOOL_TYPE 
-{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos); }
+{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 403: // namespace_name_identifier -> T_INT_TYPE 
-{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos); }
+{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 404: // namespace_name_identifier -> T_INT64_TYPE 
-{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos); }
+{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 405: // namespace_name_identifier -> T_DOUBLE_TYPE 
-{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos); }
+{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 406: // namespace_name_identifier -> T_STRING_TYPE 
-{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos); }
+{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 407: // namespace_name_identifier -> T_RESOURCE_TYPE 
-{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos); }
+{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 408: // namespace_name_identifier -> T_OBJECT_TYPE 
-{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos); }
+{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 409: // namespace_name_identifier -> T_ARRAY 
-{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos); }
+{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 410: // namespace_name_identifier -> T_ABSTRACT 
-{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos); }
+{ yyval.Object = CSharpNameToken(value_stack.array[value_stack.top-1].yypos, (value_stack.array[value_stack.top-1].yyval.Object as string) ?? "Abstract"); }
         return;
       case 411: // keyed_field_names_opt -> keyed_field_names_opt T_OBJECT_OPERATOR keyed_field_name 
 { 
