@@ -27,6 +27,9 @@
 .builds
 **/*.dotCover
 *.dynamic.cs
+[Dd]ebug*/
+obj/
+[Rr]elease*/
 
 # Visual C++ cache files
 ipch/
