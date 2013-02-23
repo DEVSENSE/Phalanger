@@ -931,6 +931,11 @@ namespace PHP.Testing
 		/// <returns></returns>
 		private bool CompareOutputsSubstring(string expected, ref string real, bool noCase, bool ignoreKnownPhalangerDifferences)
 		{
+            if (expected.Length == 0)
+            {
+                return real.Length == 0;
+            }
+
             if (ignoreKnownPhalangerDifferences)
                 ModifyOutput(ref real, ref expected);
 
