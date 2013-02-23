@@ -45,7 +45,7 @@ namespace PHP.Testing
 
         private bool isPure = false, isClr = false;
 
-		public TestResult RealTestResult { get { return realTestResult; } }
+        public TestResult RealTestResult { get { return realTestResult; } }
 		private TestResult realTestResult;
 		private string compilerErrorOutput;
 		private string compilerStdOutput;
@@ -711,49 +711,50 @@ namespace PHP.Testing
 				}
 
 			// run script
-			Process script = new Process();
+		    using (Process script = new Process())
+		    {
+		        if (loaderPath != null)
+		            script.StartInfo = new ProcessStartInfo(loaderPath, "\"" + scriptPath + "\"");
+		        else
+		            script.StartInfo = new ProcessStartInfo(scriptPath);
 
-			if (loaderPath != null)
-				script.StartInfo = new ProcessStartInfo(loaderPath, "\"" + scriptPath + "\"");
-			else
-				script.StartInfo = new ProcessStartInfo(scriptPath);
+		        script.StartInfo.UseShellExecute = false;
+		        script.StartInfo.RedirectStandardOutput = true;
+		        script.StartInfo.ErrorDialog = false;
+		        script.StartInfo.CreateNoWindow = true;
+		        script.StartInfo.RedirectStandardError = true;
+		        script.StartInfo.WorkingDirectory = Path.GetDirectoryName(scriptPath);
 
-			script.StartInfo.UseShellExecute = false;
-			script.StartInfo.RedirectStandardOutput = true;
-            script.StartInfo.ErrorDialog = false;
-            script.StartInfo.CreateNoWindow = true;
-            script.StartInfo.RedirectStandardError = true;
-            script.StartInfo.WorkingDirectory = Path.GetDirectoryName(scriptPath);
-
-            script.EnableRaisingEvents = false;
+		        script.EnableRaisingEvents = false;
            
 
-			if (verbose) Console.WriteLine(String.Format("Starting {0}..", scriptPath));
+		        if (verbose) Console.WriteLine(String.Format("Starting {0}..", scriptPath));
 
-			for (int i = 0; i < numberOfRuns; i++)
-			{
-				DateTime start = DateTime.Now;
-				script.Start();
+		        for (int i = 0; i < numberOfRuns; i++)
+		        {
+		            DateTime start = DateTime.Now;
+		            script.Start();
 
-				output = Utils.RemoveCR(script.StandardOutput.ReadToEnd().Trim());
-				if (!script.WaitForExit(30000))
-				{
-					script.Kill();
-					if (verbose) Console.WriteLine(String.Format("Script {0} hung up.", scriptPath));
-					return false;
-				}
-				if (script.ExitCode != 0)
-				{
-					if (verbose) Console.WriteLine(String.Format("Script {0} does not exit properly.", scriptPath));
-                    output = script.StandardError.ReadToEnd();
-					return false;
-				}
+		            output = Utils.RemoveCR(script.StandardOutput.ReadToEnd().Trim());
+		            if (!script.WaitForExit(30000))
+		            {
+		                script.Kill();
+		                if (verbose) Console.WriteLine(String.Format("Script {0} hung up.", scriptPath));
+		                return false;
+		            }
+		            if (script.ExitCode != 0)
+		            {
+		                if (verbose) Console.WriteLine(String.Format("Script {0} did not exit properly.", scriptPath));
+		                output = script.StandardError.ReadToEnd();
+		                return false;
+		            }
 
-				if (!mainScript) break; // only once if it is expect
-				if (i >= PhpNetTester.BenchmarkWarmup) runningTime += script.ExitTime.Subtract(start).TotalMilliseconds;
-			}
-			script.Dispose();
-			if (verbose) Console.WriteLine(String.Concat("Script output: ", output));
+		            if (!mainScript) break; // only once if it is expect
+		            if (i >= PhpNetTester.BenchmarkWarmup) runningTime += script.ExitTime.Subtract(start).TotalMilliseconds;
+		        }
+		    }
+
+		    if (verbose) Console.WriteLine(String.Concat("Script output: ", output));
 			return true;
 		}
 
