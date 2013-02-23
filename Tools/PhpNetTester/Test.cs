@@ -21,7 +21,7 @@ namespace PHP.Testing
 	public enum Directive
 	{
 		None, Expect, ExpectCtError, ExpectCtWarning, ExpectPhp, ExpectExact, File, Config, Comment,
-		NumberOfRuns, AdditionalScripts, Pure, Clr
+        SkipIf, NumberOfRuns, AdditionalScripts, Pure, Clr
 	}
 
 
@@ -32,6 +32,8 @@ namespace PHP.Testing
         public readonly string SourcePath;
         public readonly string SourcePathRelative;
 		private ArrayList script;
+        private ArrayList comment;
+        private ArrayList skipIf;
 
 		private TestResult expectedTestResult = TestResult.Succees;
 		private ArrayList expect;
@@ -49,6 +51,8 @@ namespace PHP.Testing
 		private string compilerStdOutput;
 		private string scriptOutput;
 		private bool expectPhp = false;
+	    private bool expectF = false;   // Loose validation.
+        private bool expectRegex = false;   // Loose validation.
 
 		private string expectWhereFailed = null;
 
@@ -139,6 +143,13 @@ namespace PHP.Testing
 		{
 			string str_lower = str.ToLower();
 
+            // Skip the DONE directive of phpt.
+            if (str_lower.StartsWith("===done==="))
+            {
+                str = str.Substring("===done===".Length);
+                return Directive.None;
+            }
+
 			if (str_lower.StartsWith("--expect--"))
 			{
 				str = str.Substring("--expect--".Length);
@@ -149,6 +160,34 @@ namespace PHP.Testing
 				str = str.Substring("[expect]".Length);
 				return Directive.Expect;
 			}
+
+            // In phpt EXPECTF and EXPECTREGEX are used to allow looser validation.
+            if (str_lower.StartsWith("--expectf--"))
+            {
+                str = str.Substring("--expectf--".Length);
+                expectF = true;
+                return Directive.Expect;
+            }
+            if (str_lower.StartsWith("[expectf]"))
+            {
+                str = str.Substring("[expectf]".Length);
+                expectF = true;
+                return Directive.Expect;
+            }
+
+            // In phpt EXPECTF and EXPECTREGEX are used to allow looser validation.
+            if (str_lower.StartsWith("--expectregex--"))
+            {
+                str = str.Substring("--expectregex--".Length);
+                expectRegex = true;
+                return Directive.Expect;
+            }
+            if (str_lower.StartsWith("[expectregex]"))
+            {
+                str = str.Substring("[expectregex]".Length);
+                expectRegex = true;
+                return Directive.Expect;
+            }
 
 			if (str_lower.StartsWith("--expect ct-error--"))
 			{
@@ -243,7 +282,18 @@ namespace PHP.Testing
 				return Directive.Comment;
 			}
 
-			if (str_lower.StartsWith("--runs--"))
+            if (str_lower.StartsWith("--skipif--"))
+            {
+                str = str.Substring("--skipif--".Length);
+                return Directive.SkipIf;
+            }
+            if (str_lower.StartsWith("[skipif]"))
+            {
+                str = str.Substring("[skipif]".Length);
+                return Directive.SkipIf;
+            }
+
+            if (str_lower.StartsWith("--runs--"))
 			{
 				str = str.Substring("--runs--".Length);
 				return Directive.NumberOfRuns;
@@ -280,7 +330,7 @@ namespace PHP.Testing
 
 		private void SaveBlock(ArrayList block, Directive directive)
 		{
-			if (directive == Directive.None || directive == Directive.Comment)
+			if (directive == Directive.None)
 				return;
 
             switch (directive)
@@ -324,6 +374,18 @@ namespace PHP.Testing
                     this.script = block;
                     break;
 
+                case Directive.Comment:
+                    if (this.comment != null)
+                        throw new TestException(String.Format("{0}: [test] redefinition", this.SourcePath));
+                    this.comment = block;
+                    break;
+
+                case Directive.SkipIf:
+                    if (this.skipIf != null)
+                        throw new TestException(String.Format("{0}: [skipif] redefinition", this.SourcePath));
+                    this.skipIf = block;
+                    break;
+
                 case Directive.NumberOfRuns:
                     if (this.numberOfRuns > 0)
                         throw new TestException(String.Format("{0}: [runs] redefinition", this.SourcePath));
@@ -362,6 +424,15 @@ namespace PHP.Testing
 			string compiled_script_path = Path.Combine(Path.GetDirectoryName(SourcePath), String.Concat(Path.GetFileNameWithoutExtension(SourcePath), "_file", ".exe"));
 			string compiled_expect_path = Path.Combine(Path.GetDirectoryName(SourcePath), String.Concat(Path.GetFileNameWithoutExtension(SourcePath), "_expect", ".exe"));
 			string expect_output;
+
+            if (comment != null)
+            {
+                string name = Utils.ArrayListToString(comment).Trim();
+                if (name.Length > 0)
+                {
+                    Console.Write("[" + name + "] ");
+                }
+            }
 
 			// assume success
 			realTestResult = TestResult.Succees;

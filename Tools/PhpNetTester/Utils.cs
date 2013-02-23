@@ -96,6 +96,7 @@ namespace PHP.Testing
         {
             return
                 current_directive == Directive.Comment ||
+                current_directive == Directive.SkipIf ||
                 current_directive == Directive.ExpectPhp ||
                 current_directive == Directive.ExpectCtError ||
                 current_directive == Directive.ExpectCtWarning ||
