@@ -53,6 +53,7 @@ namespace PHP.Testing
 		private bool expectPhp = false;
 	    private bool expectF = false;   // Loose validation.
         private bool expectRegex = false;   // Loose validation.
+        private bool skipped = false;
 
 		private string expectWhereFailed = null;
 
@@ -330,7 +331,7 @@ namespace PHP.Testing
 
 		private void SaveBlock(ArrayList block, Directive directive)
 		{
-			if (directive == Directive.None)
+            if (block == null || block.Count == 0 || directive == Directive.None)
 				return;
 
             switch (directive)
@@ -431,6 +432,32 @@ namespace PHP.Testing
                 if (name.Length > 0)
                 {
                     Console.Write("[" + name + "] ");
+                }
+            }
+
+            // First, if we have a SkipIf block, execute it.
+            if (!compileOnly && skipIf != null && skipIf.Count > 0)
+            {
+                // compile and run script
+                if (!Compile(loaderPath, compilerPath, skipIf, compiled_script_path, false))
+                {
+                    // Compile sets realTestResult for compiling script
+                    return;
+                }
+
+                if (!RunCompiledScript(loaderPath, compiled_script_path, out scriptOutput, true))
+                {
+                    realTestResult = TestResult.ScriptHangUp;
+                    if (clean) File.Delete(compiled_script_path);
+                    return;
+                }
+                if (clean) File.Delete(compiled_script_path);
+
+                if (scriptOutput.ToLowerInvariant().IndexOf("skip") >= 0)
+                {
+                    // Skipped test.
+                    skipped = true;
+                    return;
                 }
             }
 
@@ -1032,14 +1059,15 @@ namespace PHP.Testing
 		/// </summary>
 		public bool Succeeded
 		{
-			get
-			{
-				if (realTestResult == expectedTestResult)
-					return true;
-
-				return false;
-			}
+			get { return realTestResult == expectedTestResult; }
 		}
 
+        /// <summary>
+        /// Returns true if the test skipped.
+        /// </summary>
+        public bool Skipped
+        {
+            get { return skipped; }
+        }
 	}
 }

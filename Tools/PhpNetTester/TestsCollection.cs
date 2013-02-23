@@ -91,7 +91,7 @@ namespace PHP.Testing
 				if (!t.Succeeded)
 					failed_num++;
 
-				Console.WriteLine(t.Succeeded ? "OK" : "Failed");
+                Console.WriteLine(t.Skipped ? "Skipped" : (t.Succeeded ? "OK" : "Failed"));
 			}
 
 			return failed_num;
