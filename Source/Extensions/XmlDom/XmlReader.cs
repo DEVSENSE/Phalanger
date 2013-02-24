@@ -213,31 +213,32 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public string getAttribute(string name)
         {
-            return _reader != null ? _reader.GetAttribute(name) : "";
+            return (_reader != null && _reader.NodeType == XmlNodeType.Element) ? _reader.GetAttribute(name) : "";
         }
 
         [PhpVisible]
         public string getAttributeNo(int index)
         {
-            return _reader != null ? _reader.GetAttribute(index) : "";
+            return (_reader != null && _reader.NodeType == XmlNodeType.Element) ? _reader.GetAttribute(index) : "";
         }
 
         [PhpVisible]
         public string getAttributeNs(string localName, string namespaceURI)
         {
-            return _reader != null ? _reader.GetAttribute(localName, namespaceURI) : "";
+            return (_reader != null && _reader.NodeType == XmlNodeType.Element) ? _reader.GetAttribute(localName, namespaceURI) : "";
         }
 
         [PhpVisible]
         public bool getParserProperty(int property)
         {
-            return true;
+            bool oldValue;
+            return _parserProperties.TryGetValue(property, out oldValue) && oldValue;
         }
 
         [PhpVisible]
         public bool isValid()
         {
-            return _reader != null;
+            return _reader != null && _reader.ReadState != ReadState.Error;
         }
 
         [PhpVisible]
@@ -323,21 +324,11 @@ namespace PHP.Library.Xml
                 return false;
             }
 
-            close();
-            try
-            {
-                var settings = new XmlReaderSettings();
-                settings.DtdProcessing = DtdProcessing.Parse;
-                _reader = XmlReader.Create(URI, settings);
-                initialize();
-                return true;
-            }
-            catch (Exception)
-            {
-                close();
-            }
-
-            return false;
+            _source = URI;
+            _uriSource = true;
+            _encoding = encoding;
+            _options = options;
+            return createReader();
         }
 
         [PhpVisible]
@@ -365,8 +356,21 @@ namespace PHP.Library.Xml
         }
 
         [PhpVisible]
-        public bool setParserProperty(int property, bool value)
+        public bool setParserProperty(int property, bool newValue)
         {
+            if (_reader == null)
+            {
+                return false;
+            }
+
+            bool oldValue;
+            if (!_parserProperties.TryGetValue(property, out oldValue) ||
+                oldValue != newValue)
+            {
+                _parserProperties[property] = newValue;
+                return createReader();
+            }
+
             return true;
         }
 
@@ -398,21 +402,11 @@ namespace PHP.Library.Xml
                 return false;
             }
 
-            close();
-            try
-            {
-                var settings = new XmlReaderSettings();
-                settings.DtdProcessing = DtdProcessing.Parse;
-                _reader = XmlReader.Create(new StringReader(source));
-                initialize();
-                return true;
-            }
-            catch (Exception)
-            {
-                close();
-            }
-
-            return false;
+            _source = source;
+            _uriSource = false;
+            _encoding = encoding;
+            _options = options;
+            return createReader();
         }
 
         #endregion
@@ -422,6 +416,36 @@ namespace PHP.Library.Xml
         protected int getAttributeCount()
         {
             return _reader != null ? _reader.AttributeCount : 0;
+        }
+
+        private XmlReaderSettings createSettings()
+        {
+            var settings = new XmlReaderSettings();
+
+            settings.ValidationType = getParserProperty(VALIDATE) ? ValidationType.DTD : ValidationType.None;
+            settings.DtdProcessing = getParserProperty(LOADDTD) ? DtdProcessing.Parse : DtdProcessing.Ignore;
+            settings.XmlResolver = new XmlUrlResolver();
+            return settings;
+        }
+
+        private bool createReader()
+        {
+            close();
+            try
+            {
+                var settings = createSettings();
+                _reader = _uriSource ? XmlReader.Create(_source, settings) : XmlReader.Create(new StringReader(_source), settings);
+
+                initialize();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.Write("Error: " + ex.ToString());
+                close();
+            }
+
+            return false;
         }
 
         private void initialize()
@@ -439,6 +463,12 @@ namespace PHP.Library.Xml
         #region Representation
 
         private XmlReader _reader;
+
+        private readonly Dictionary<int, bool> _parserProperties = new Dictionary<int, bool>(4);
+        private string _source;
+        private string _encoding;
+        private int _options;
+        private bool _uriSource;
 
         #endregion
     }
