@@ -379,18 +379,39 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool setRelaxNGSchema(string filename)
         {
+            if (string.IsNullOrWhiteSpace(filename))
+            {
+                //TODO: Get current file and line.
+                Console.Write("Warning: XMLReader::setRelaxNGSchema(): Schema data source is required in %s on line %d");
+                return false;
+            }
+
             return true;
         }
 
         [PhpVisible]
         public bool setRelaxNGSchemaSource(string source)
         {
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                //TODO: Get current file and line.
+                Console.Write("Warning: XMLReader::setRelaxNGSchemaSource(): Schema data source is required in %s on line %d");
+                return false;
+            }
+
             return true;
         }
 
         [PhpVisible]
         public bool setSchema(string filename)
         {
+            if (string.IsNullOrWhiteSpace(filename))
+            {
+                //TODO: Get current file and line.
+                Console.Write("Warning: XMLReader::setSchema(): Schema data source is required in %s on line %d");
+                return false;
+            }
+
             return true;
         }
 
