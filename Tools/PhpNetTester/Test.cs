@@ -438,6 +438,9 @@ namespace PHP.Testing
             // First, if we have a SkipIf block, execute it.
             if (!compileOnly && skipIf != null && skipIf.Count > 0)
             {
+                bool realVerbose = verbose;
+                verbose = false;
+
                 // compile and run script
                 if (!Compile(loaderPath, compilerPath, skipIf, compiled_script_path, false))
                 {
@@ -459,6 +462,8 @@ namespace PHP.Testing
                     skipped = true;
                     return;
                 }
+
+                verbose = realVerbose;
             }
 
 			// assume success
@@ -908,15 +913,32 @@ namespace PHP.Testing
 
             if (exp_str == real_str)
                 return true;
-            else if (!ignoreKnownPhalangerDifferences)
+            else if (!ignoreKnownPhalangerDifferences && !expectF && !expectRegex)
                 return false;
 
             ModifyOutput(ref real_str, ref exp_str);
 
+            //FIXME: Add scanf and regex parsing.
+            // For now, just do a fuzzy comparison.
+            exp_str = RemoveWhitespace(exp_str);
+            real_str = RemoveWhitespace(real_str);
+
             return (exp_str == real_str);
 		}
 
-        private bool CompareOutputsSubstring(string expected, ref string real, bool ignoreKnownPhalangerDifferences)
+	    private static string RemoveWhitespace(string str)
+	    {
+            // Really dumb and slow, but, it'll have to do for now.
+	        foreach (
+	            char c in new char[] {(char) 9, (char) 10, (char) 11, (char) 12, (char) 13, (char) 32, (char) 133, (char) 160})
+	        {
+	            str = str.Replace(c.ToString(), string.Empty);
+	        }
+
+	        return str;
+	    }
+
+	    private bool CompareOutputsSubstring(string expected, ref string real, bool ignoreKnownPhalangerDifferences)
 		{
             return CompareOutputsSubstring(expected, ref real, false, ignoreKnownPhalangerDifferences);
 		}
@@ -941,6 +963,14 @@ namespace PHP.Testing
 
 			if (noCase)
                 real = real.ToLower();
+
+            //FIXME: Add scanf and regex parsing.
+            // For now, just do a fuzzy comparison.
+            if (expectF || expectRegex)
+            {
+                expected = RemoveWhitespace(expected);
+                real = RemoveWhitespace(real);
+            }
 
             int index = real.IndexOf(expected);
 
