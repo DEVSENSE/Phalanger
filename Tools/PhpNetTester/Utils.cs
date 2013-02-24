@@ -53,8 +53,9 @@ namespace PHP.Testing
 				case TestResult.PhpcHangUp: return "Phalanger hung up";
 				case TestResult.PhpcMisbehaviourScript: return "Phalanger misbehaviour while compiling [file] section";
 				case TestResult.ScriptHangUp: return "Script hung up";
-				case TestResult.Succees: return "Success";
-				case TestResult.UnexpectedOutput: return "Unexpected output";
+                case TestResult.Succees: return "Success";
+                case TestResult.Skipped: return "Skipped";
+                case TestResult.UnexpectedOutput: return "Unexpected output";
 				case TestResult.PhpMisbehaviour: return "PHP (original) misbehaviour.";
 				case TestResult.PhpHangUp: return "PHP (original) hung up";
 				case TestResult.PhpNotFound: return "[expect php] specified and PHP executable file not found";
@@ -62,6 +63,7 @@ namespace PHP.Testing
 				case TestResult.ExpectHangUp: return "Expect section hung up.";
 				case TestResult.ExpectedWarningNotDisplayed: return "Expected warning not displayed.";
 			}
+
 			return "unknown test result";
 		}
 

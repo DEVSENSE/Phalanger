@@ -88,10 +88,10 @@ namespace PHP.Testing
 				Console.Write(String.Format("Running {0}.. ", t.SourcePathRelative));
 
 				t.Run(loader, compiler, php);
-				if (!t.Succeeded)
+				if (!t.Skipped && !t.Succeeded)
 					failed_num++;
 
-                Console.WriteLine(t.Skipped ? "Skipped" : (t.Succeeded ? "OK" : "Failed"));
+                Console.WriteLine(t.Succeeded ? "Pass" : (t.Skipped ? "Skipped" : "Failed"));
 			}
 
 			return failed_num;
@@ -115,12 +115,15 @@ namespace PHP.Testing
 				sw.WriteLine("TABLE { border-collapse:collapse }");
 				sw.WriteLine("TD { FONT-SIZE: 12px; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; border: 1px solid DimGray; }");
 				sw.WriteLine("TR.status TD.succeeded { background-color: #CFC }");
+                sw.WriteLine("TR.status TD.skipped { background-color: #CCF }");
 				sw.WriteLine("TR.status TD.failed { background-color: #FCC }");
 				sw.WriteLine("TD.succeeded { background-color: #EFE }");
-				sw.WriteLine("TD.failed { background-color: #FEE }");
+                sw.WriteLine("TD.skipped { background-color: #EEF }");
+                sw.WriteLine("TD.failed { background-color: #FEE }");
 
-				sw.WriteLine("A.succeeded:link, A.succeeded:visited { color:green; text-decoration: none; }");
-				sw.WriteLine("A.failed:link, A.failed:visited { color:red; text-decoration: none; }");
+                sw.WriteLine("A.succeeded:link, A.succeeded:visited { color:green; text-decoration: none; }");
+                sw.WriteLine("A.skipped:link, A.skipped:visited { color:blue; text-decoration: none; }");
+                sw.WriteLine("A.failed:link, A.failed:visited { color:red; text-decoration: none; }");
                 sw.WriteLine("TR.detail{visibility:hidden;position:absolute;");
 				sw.WriteLine("</style>");
                 sw.WriteLine("</head>");
@@ -145,16 +148,29 @@ namespace PHP.Testing
 
 		public void WriteStatus(StreamWriter sw)
 		{
-			int succeeded = 0;
-			int failed = 0;
+            int succeeded = 0;
+            int skipped = 0;
+            int failed = 0;
 
 			foreach (Test t in tests)
 			{
-				if (t.Succeeded) succeeded++;
-				else failed++;
+                if (t.Succeeded)
+                {
+                    ++succeeded;
+                }
+                else
+                if (t.Skipped)
+                {
+                    ++skipped;
+                }
+                else
+                {
+                    ++failed;
+                }
 			}
 
-			sw.WriteLine("({2}%) {0} succeeded, {1} failed <br>", succeeded, failed, Math.Round((double)succeeded * 100 / (failed + succeeded)));
+		    int total = succeeded + skipped + failed;
+			sw.WriteLine("({3}%) {0} succeeded, {1} skipped, {2} failed <br>", succeeded, skipped, failed, Math.Round((double)succeeded * 100 / total));
 		}
 
 		private void WriteTableHead(TextWriter tw)

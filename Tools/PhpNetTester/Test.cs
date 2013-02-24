@@ -13,7 +13,7 @@ namespace PHP.Testing
 {
 	public enum TestResult
 	{
-		Succees, CtError,
+		Succees, CtError, Skipped,
 		UnexpectedOutput, PhpcMisbehaviourScript, CannotCompileExpect, ScriptHangUp, ExpectHangUp, PhpcHangUp,
 		PhpHangUp, PhpMisbehaviour, PhpNotFound, ExpectedWarningNotDisplayed
 	}
@@ -46,7 +46,7 @@ namespace PHP.Testing
         private bool isPure = false, isClr = false;
 
         public TestResult RealTestResult { get { return realTestResult; } }
-		private TestResult realTestResult;
+		private TestResult realTestResult = TestResult.Skipped;
 		private string compilerErrorOutput;
 		private string compilerStdOutput;
 		private string scriptOutput;
@@ -1030,15 +1030,17 @@ namespace PHP.Testing
         /// <param name="testIndex">The test unique identifier (for the purposes of HTML generation).</param>
 		public void WriteTableRow(TextWriter tw, bool fullLog, int testIndex)
 		{
-            bool displayDetails = (!Succeeded || fullLog || benchmarks);
+            bool displayDetails = (!Succeeded || Skipped || fullLog || benchmarks);
 
             string detailsRowId = "details" + testIndex;
 
-			string classAttr = String.Concat(" class=\"", Succeeded ? "succeeded" : "failed", "\"");
+			string classAttr = String.Concat(" class=\"", Succeeded ? "succeeded" : (Skipped ? "skipped" : "failed"), "\"");
 			tw.WriteLine("<tr class=\"status\">");
 			tw.WriteLine(String.Concat("<td", classAttr, " colspan=\"5\">",
-                "<a", classAttr, " href=\"", SourcePathRelative, "\">", SourcePathRelative, "</a>: <font color=\"", Succeeded ? "green" : "red", "\"><b>", Succeeded ? "SUCCEEDED" : "FAILED", "</b></font>",
-                "</td>"));
+                                        "<a", classAttr, " href=\"", SourcePathRelative, "\">", SourcePathRelative,
+                                        "</a>: <font color=\"", Succeeded ? "green" : (Skipped ? "blue" : "red"), "\"><b>",
+                                        Succeeded ? "SUCCEEDED" : (Skipped ? "SKIPPED" : "FAILED"), "</b></font>",
+                                        "</td>"));
 			tw.WriteLine("</tr>");
 
 			if (displayDetails)
