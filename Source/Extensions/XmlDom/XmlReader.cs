@@ -11,11 +11,8 @@
 */
 
 using System;
-using System.Xml;
-using System.Text;
-
+using System.Runtime.InteropServices;
 using PHP.Core;
-using PHP.Core.Reflection;
 
 namespace PHP.Library.Xml
 {
@@ -179,6 +176,166 @@ namespace PHP.Library.Xml
         {
             get { return ""; }
         }
+
+        #endregion
+
+        #region Methods
+        
+        [PhpVisible]
+        public bool close()
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public object expand([Optional] DOMNode basenode)
+        {
+            return false;
+        }
+
+        [PhpVisible]
+        public string getAttribute(string name)
+        {
+            return "";
+        }
+
+        [PhpVisible]
+        public string getAttributeNo(int index)
+        {
+            return "";
+        }
+
+        [PhpVisible]
+        public string getAttributeNs(string localName, string namespaceURI)
+        {
+            return "";
+        }
+
+        [PhpVisible]
+        public bool getParserProperty(int property)
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool isValid()
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool lookupNamespace(string prefix)
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool moveToAttribute(string name)
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool moveToAttributeNo(int index)
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool moveToAttributeNs(string localName, string namespaceURI)
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool moveToElement()
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool moveToFirstAttribute()
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool moveToNextAttribute()
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool next([Optional] string localname)
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool open(string URI, [Optional] string encoding, [Optional] int options)
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool read()
+        {
+            return false;
+        }
+
+        [PhpVisible]
+        public string readInnerXML()
+        {
+            return "";
+        }
+
+        [PhpVisible]
+        public string readOuterXML()
+        {
+            return "";
+        }
+
+        [PhpVisible]
+        public string readString()
+        {
+            return "";
+        }
+
+        [PhpVisible]
+        public bool setParserProperty(int property, bool value)
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool setRelaxNGSchema(string filename)
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool setRelaxNGSchemaSource(string source)
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool setSchema(string filename)
+        {
+            return true;
+        }
+
+        [PhpVisible]
+        public bool xml(string source, [Optional] string encoding, [Optional] int options)
+        {
+            return false;
+        }
+
+        #endregion
+
+        #region Representation
+
+        private DOMDocument _domDocument;
 
         #endregion
     }
