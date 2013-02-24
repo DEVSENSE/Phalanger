@@ -11,7 +11,11 @@
 */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Xml;
 using PHP.Core;
 
 namespace PHP.Library.Xml
@@ -57,7 +61,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object attributeCount
         {
-            get { return 0; }
+            get { return getAttributeCount(); }
         }
 
         /// <summary>
@@ -66,7 +70,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object baseURI
         {
-            get { return ""; }
+            get { return _reader != null ? _reader.BaseURI : ""; }
         }
 
         /// <summary>
@@ -75,7 +79,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object depth
         {
-            get { return 0; }
+            get { return _reader != null ? _reader.Depth : 0; }
         }
 
         /// <summary>
@@ -84,7 +88,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object hasAttributes
         {
-            get { return false; }
+            get { return _reader != null && _reader.HasAttributes; }
         }
 
         /// <summary>
@@ -93,7 +97,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object hasValue
         {
-            get { return false; }
+            get { return _reader != null && _reader.HasValue; }
         }
 
         /// <summary>
@@ -102,7 +106,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object isDefault
         {
-            get { return true; }
+            get { return _reader != null && _reader.IsDefault; }
         }
 
         /// <summary>
@@ -111,7 +115,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object isEmptyElement
         {
-            get { return true; }
+            get { return _reader != null && _reader.IsEmptyElement; }
         }
 
         /// <summary>
@@ -120,7 +124,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object localName
         {
-            get { return ""; }
+            get { return _reader != null ? _reader.LocalName : ""; }
         }
 
         /// <summary>
@@ -129,7 +133,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object name
         {
-            get { return ""; }
+            get { return _reader != null ? _reader.Name : ""; }
         }
 
         /// <summary>
@@ -138,7 +142,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object namespaceURI
         {
-            get { return ""; }
+            get { return _reader != null ? _reader.NamespaceURI : ""; }
         }
 
         /// <summary>
@@ -147,7 +151,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object nodeType
         {
-            get { return 0; }
+            get { return _reader != null ? (int)_reader.NodeType : 0; }
         }
 
         /// <summary>
@@ -156,7 +160,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object prefix
         {
-            get { return ""; }
+            get { return _reader != null ? _reader.Prefix : ""; }
         }
 
         /// <summary>
@@ -165,7 +169,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object value
         {
-            get { return ""; }
+            get { return _reader != null ? _reader.Value : ""; }
         }
 
         /// <summary>
@@ -174,7 +178,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object xmlLang
         {
-            get { return ""; }
+            get { return _reader != null ? _reader.XmlLang : ""; }
         }
 
         #endregion
@@ -184,6 +188,13 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool close()
         {
+            if (_reader != null)
+            {
+                XmlReader old = _reader;
+                _reader = null;
+                old.Close();
+            }
+
             return true;
         }
 
@@ -196,19 +207,19 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public string getAttribute(string name)
         {
-            return "";
+            return _reader != null ? _reader.GetAttribute(name) : "";
         }
 
         [PhpVisible]
         public string getAttributeNo(int index)
         {
-            return "";
+            return _reader != null ? _reader.GetAttribute(index) : "";
         }
 
         [PhpVisible]
         public string getAttributeNs(string localName, string namespaceURI)
         {
-            return "";
+            return _reader != null ? _reader.GetAttribute(localName, namespaceURI) : "";
         }
 
         [PhpVisible]
@@ -220,55 +231,80 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool isValid()
         {
-            return true;
+            return _reader != null;
         }
 
         [PhpVisible]
         public bool lookupNamespace(string prefix)
         {
-            return true;
+            return _reader != null && _reader.LookupNamespace(prefix) != null;
         }
 
         [PhpVisible]
         public bool moveToAttribute(string name)
         {
-            return true;
+            return _reader.MoveToAttribute(name);
         }
 
         [PhpVisible]
         public bool moveToAttributeNo(int index)
         {
-            return true;
+            if (_reader == null || index < 0 || index >= getAttributeCount())
+            {
+                return false;
+            }
+
+            moveToElement();
+            moveToFirstAttribute();
+            int j = 0;
+            while (j < index)
+            {
+                _reader.MoveToNextAttribute();
+                ++j;
+            }
+
+            return j < index;
         }
 
         [PhpVisible]
         public bool moveToAttributeNs(string localName, string namespaceURI)
         {
-            return true;
+            return _reader != null && _reader.MoveToAttribute(localName, namespaceURI);
         }
 
         [PhpVisible]
         public bool moveToElement()
         {
-            return true;
+            return _reader != null && _reader.MoveToElement();
         }
 
         [PhpVisible]
         public bool moveToFirstAttribute()
         {
-            return true;
+            return _reader != null && _reader.MoveToFirstAttribute();
         }
 
         [PhpVisible]
         public bool moveToNextAttribute()
         {
-            return true;
+            return _reader != null && _reader.MoveToNextAttribute();
         }
 
         [PhpVisible]
         public bool next([Optional] string localname)
         {
-            return true;
+            _reader.Skip();
+            if (string.IsNullOrEmpty(localname))
+            {
+                return !_reader.EOF;
+            }
+
+            while (_reader.LocalName != localname && !_reader.EOF)
+            {
+                _reader.Skip();
+            }
+
+            return _reader.LocalName == localname && !_reader.EOF;
         }
 
         [PhpVisible]
@@ -280,25 +316,25 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool read()
         {
-            return false;
+            return _reader != null && _reader.Read();
         }
 
         [PhpVisible]
         public string readInnerXML()
         {
-            return "";
+            return _reader != null ? _reader.ReadInnerXml() : "";
         }
 
         [PhpVisible]
         public string readOuterXML()
         {
-            return "";
+            return _reader != null ? _reader.ReadOuterXml() : "";
         }
 
         [PhpVisible]
         public string readString()
         {
-            return "";
+            return _reader != null ? _reader.ReadString() : "";
         }
 
         [PhpVisible]
@@ -328,14 +364,39 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool xml(string source, [Optional] string encoding, [Optional] int options)
         {
+            try
+            {
+                close();
+
+                if (string.IsNullOrWhiteSpace(source))
+                {
+                    //TODO: Get current file and line.
+                    Console.Write("Warning: XMLReader::XML(): Empty string supplied as input in %s on line %d");
+                    return false;
+                }
+
+                _reader = XmlReader.Create(new StringReader(source));
+                read(); // Prime.
+
+                return true;
+            }
+            catch (Exception)
+            {
+            }
+
             return false;
         }
 
         #endregion
 
+        protected int getAttributeCount()
+        {
+            return _reader != null ? _reader.AttributeCount : 0;
+        }
+
         #region Representation
 
-        private DOMDocument _domDocument;
+        private XmlReader _reader;
 
         #endregion
     }
