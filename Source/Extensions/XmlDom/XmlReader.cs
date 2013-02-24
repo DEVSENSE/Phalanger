@@ -376,7 +376,13 @@ namespace PHP.Library.Xml
                 }
 
                 _reader = XmlReader.Create(new StringReader(source));
-                read(); // Prime.
+
+                // Prime.
+                read();
+                if ("xml".EqualsOrdinalIgnoreCase(_reader.Name))
+                {
+                    read();
+                }
 
                 return true;
             }

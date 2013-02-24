@@ -11,10 +11,13 @@ $xmlstring = '<?xml version="1.0" encoding="UTF-8"?>
 
 $reader = new XMLReader();
 $reader->XML($xmlstring);
+echo "[" . $reader->name . "]\n";
 
 // Only go through
 $reader->read();
+echo "[" . $reader->name . "]\n";
 $reader->read();
+echo "[" . $reader->name . "]\n";
 
 $reader->next();
 echo $reader->name;
@@ -24,5 +27,8 @@ echo "\n";
 ?>
 ===DONE===
 --EXPECTF--
+[]
+[books]
+[book]
 book 2
 ===DONE===
