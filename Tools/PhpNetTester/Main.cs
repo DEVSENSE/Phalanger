@@ -236,7 +236,7 @@ namespace PHP.Testing
 					testsCollection.WriteLog(Path.Combine(outputDir, "TestLog.htm"), fullLog);
 			}
 
-			Console.WriteLine("Done.");
+			Console.WriteLine("Done. " + failed_num + " failed tests.");
 
 			return failed_num;
 		}
