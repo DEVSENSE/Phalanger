@@ -190,9 +190,15 @@ namespace PHP.Library.Xml
         {
             if (_reader != null)
             {
-                XmlReader old = _reader;
-                _reader = null;
-                old.Close();
+                try
+                {
+                    XmlReader old = _reader;
+                    _reader = null;
+                    old.Close();
+                }
+                catch (Exception)
+                {
+                }
             }
 
             return true;
@@ -310,7 +316,28 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool open(string URI, [Optional] string encoding, [Optional] int options)
         {
-            return true;
+            if (string.IsNullOrWhiteSpace(URI))
+            {
+                //TODO: Get current file and line.
+                Console.WriteLine("Warning: XMLReader::open(): Empty string supplied as input in %s on line %d");
+                return false;
+            }
+
+            close();
+            try
+            {
+                var settings = new XmlReaderSettings();
+                settings.DtdProcessing = DtdProcessing.Parse;
+                _reader = XmlReader.Create(URI, settings);
+                initialize();
+                return true;
+            }
+            catch (Exception)
+            {
+                close();
+            }
+
+            return false;
         }
 
         [PhpVisible]
@@ -364,30 +391,25 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool xml(string source, [Optional] string encoding, [Optional] int options)
         {
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                //TODO: Get current file and line.
+                Console.Write("Warning: XMLReader::XML(): Empty string supplied as input in %s on line %d");
+                return false;
+            }
+
+            close();
             try
             {
-                close();
-
-                if (string.IsNullOrWhiteSpace(source))
-                {
-                    //TODO: Get current file and line.
-                    Console.Write("Warning: XMLReader::XML(): Empty string supplied as input in %s on line %d");
-                    return false;
-                }
-
+                var settings = new XmlReaderSettings();
+                settings.DtdProcessing = DtdProcessing.Parse;
                 _reader = XmlReader.Create(new StringReader(source));
-
-                // Prime.
-                read();
-                if ("xml".EqualsOrdinalIgnoreCase(_reader.Name))
-                {
-                    read();
-                }
-
+                initialize();
                 return true;
             }
             catch (Exception)
             {
+                close();
             }
 
             return false;
@@ -395,10 +417,24 @@ namespace PHP.Library.Xml
 
         #endregion
 
+        #region Implementation
+
         protected int getAttributeCount()
         {
             return _reader != null ? _reader.AttributeCount : 0;
         }
+
+        private void initialize()
+        {
+            // Prime.
+            read();
+            if ("xml".EqualsOrdinalIgnoreCase(_reader.Name))
+            {
+                read();
+            }
+        }
+
+        #endregion
 
         #region Representation
 
