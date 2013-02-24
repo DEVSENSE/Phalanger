@@ -133,7 +133,9 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object name
         {
-            get { return _reader != null ? _reader.Name : ""; }
+            get { return _reader == null ? "" :
+                    (!string.IsNullOrEmpty(_reader.Name) ? _reader.Name : getNodeTypeName());
+            }
         }
 
         /// <summary>
@@ -456,6 +458,56 @@ namespace PHP.Library.Xml
             {
                 read();
             }
+        }
+
+        private string getNodeTypeName()
+        {
+            if (_reader == null)
+            {
+                return "";
+            }
+
+            switch ((int)_reader.NodeType)
+            {
+                case NONE:
+                    return "#none";
+                case ELEMENT:
+                    return "#element";
+                case ATTRIBUTE:
+                    return "#attribute";
+                case TEXT:
+                    return "#text";
+                case CDATA:
+                    return "#cdata";
+                case ENTITY_REF:
+                    return "#entityref";
+                case ENTITY:
+                    return "#entity";
+                case PI:
+                    return "#pi";
+                case COMMENT:
+                    return "#comment";
+                case DOC:
+                    return "#doc";
+                case DOC_TYPE:
+                    return "#doctype";
+                case DOC_FRAGMENT:
+                    return "#docfragment";
+                case NOTATION:
+                    return "#notation";
+                case WHITESPACE:
+                    return "";
+                case SIGNIFICANT_WHITESPACE:
+                    return "";
+                case END_ELEMENT:
+                    return "#endelement";
+                case END_ENTITY:
+                    return "#endentity";
+                case XML_DECLARATION:
+                    return "#xmldeclaration";
+            }
+
+            return "";
         }
 
         #endregion
