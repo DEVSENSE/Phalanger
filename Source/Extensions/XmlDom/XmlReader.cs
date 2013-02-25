@@ -13,9 +13,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Xml;
+using System.Xml.Resolvers;
 using PHP.Core;
 
 namespace PHP.Library.Xml
@@ -336,7 +338,18 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool read()
         {
-            return _reader != null && _reader.Read();
+            try
+            {
+                return _reader != null && _reader.ReadState != ReadState.Closed &&
+                       _reader.Read() &&
+                       _reader.ReadState != ReadState.Error &&
+                       _reader.ReadState != ReadState.EndOfFile;
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.ToString());
+                return false;
+            }
         }
 
         [PhpVisible]
@@ -441,13 +454,39 @@ namespace PHP.Library.Xml
             return _reader != null ? _reader.AttributeCount : 0;
         }
 
+        /// <summary>
+        /// HTML-encoded paths are converted into unix path. Probably .Net trying to assume we're a web-server.
+        /// Original URI from PHP: file:///Z%3A%5CPhalanger%5CTesting%5CTests%5CXml%5CxmlReader/dtdexample.dtd
+        /// Uri.ToString(): file:///Z:/Phalanger/Testing/Tests/Xml/xmlReader/dtdexample.dtd 
+        /// Uri.LocalPath: /Z:/Phalanger/Testing/Tests/Xml/xmlReader/dtdexample.dtd
+        /// As a workaround, we simply load Uri.ToString() into a new Uri (so the resulting LocalPath is correct).
+        /// Result: Z:\Phalanger\Testing\Tests\Xml\xmlReader\dtdexample.dtd
+        /// </summary>
+        class FileUriResolver : XmlUrlResolver
+        {
+            public override bool SupportsType(Uri absoluteUri, Type type)
+            {
+                absoluteUri = new Uri(absoluteUri.ToString());
+                return base.SupportsType(absoluteUri, type);
+            }
+
+            public override object GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn)
+            {
+                absoluteUri = new Uri(absoluteUri.ToString());
+                return base.GetEntity(absoluteUri, role, ofObjectToReturn);
+            }
+        }
+
         private XmlReaderSettings createSettings()
         {
             var settings = new XmlReaderSettings();
 
+            settings.CloseInput = true;
+            settings.ConformanceLevel = ConformanceLevel.Auto;
             settings.ValidationType = getParserProperty(VALIDATE) ? ValidationType.DTD : ValidationType.None;
             settings.DtdProcessing = getParserProperty(LOADDTD) ? DtdProcessing.Parse : DtdProcessing.Ignore;
-            settings.XmlResolver = new XmlUrlResolver();
+            settings.XmlResolver = new FileUriResolver();
+
             return settings;
         }
 
