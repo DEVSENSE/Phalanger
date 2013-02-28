@@ -1407,7 +1407,9 @@ member_modifiers:
 		  
 		  // merge $2 into $1
 		  a1.attr |= a2.attr;
-		  Debug.Assert(object.ReferenceEquals(a1.docComment, a2.docComment));
+		  // This wouldn't allow for "public abstract function" although php does.
+		  // It is broken anyway, because we assume we have a token on the stack before seeing a modified.
+		  //Debug.Assert(object.ReferenceEquals(a1.docComment, a2.docComment));
 
 		  // return $1
 		  $$ = $1;
