@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Web;
 using System.Text;
 using System.Diagnostics;
@@ -54,6 +55,7 @@ namespace PHP.Testing
 	    private bool expectF = false;   // Loose validation.
         private bool expectRegex = false;   // Loose validation.
         private bool skipped = false;
+	    private int timeoutMs = 30000;
 
 		private string expectWhereFailed = null;
 
@@ -76,7 +78,7 @@ namespace PHP.Testing
 		/// <param name="compileOnly"><B>True</B> if only compilation should be performed.</param>
 		public Test(string sourcePath, bool verbose, bool clean, bool compileOnly,
 			bool benchmarks, int defaultNumberOfRuns)
-		{   
+		{
             this.SourcePath = Path.GetFullPath(sourcePath);
             Uri currentDir = new Uri(Directory.GetCurrentDirectory() + "\\");
             this.SourcePathRelative = currentDir.MakeRelativeUri(new Uri(this.SourcePath)).ToString();
@@ -440,6 +442,8 @@ namespace PHP.Testing
             {
                 bool realVerbose = verbose;
                 verbose = false;
+                int realNumberOfRuns = numberOfRuns;
+                numberOfRuns = 1;
 
                 // compile and run script
                 if (!Compile(loaderPath, compilerPath, skipIf, compiled_script_path, false))
@@ -464,6 +468,7 @@ namespace PHP.Testing
                 }
 
                 verbose = realVerbose;
+                numberOfRuns = realNumberOfRuns;
             }
 
 			// assume success
@@ -585,7 +590,7 @@ namespace PHP.Testing
 			}
 
 			Process compiler = new Process();
-            
+
 			string rootDir = Path.GetDirectoryName(SourcePath);
             string arguments = String.Concat("/dw:CompilerStrict /static+ /target:exe /out:\"", output, "\" /root:. /entrypoint:\"", Path.GetFileName(script_path), "\" \"", Path.GetFileName(script_path), "\"");
             if (isPure) arguments = "/pure+ " + arguments;
@@ -615,7 +620,6 @@ namespace PHP.Testing
 			compiler.StartInfo.RedirectStandardInput = true;
 			if (verbose) Console.WriteLine("Running phpc compiler with options: {0}", compiler.StartInfo.Arguments);
 
-			DateTime startTime = System.DateTime.Now;
 			compiler.Start();
 
 			// compiler waits for enter key after work
@@ -630,7 +634,7 @@ namespace PHP.Testing
 				if (clean) File.Delete(script_path);
 				return false;
 			}
-			if (!isExpect) this.compilationTime = compiler.ExitTime.Subtract(startTime).TotalMilliseconds;
+			if (!isExpect) this.compilationTime = compiler.ExitTime.Subtract(compiler.StartTime).TotalMilliseconds;
 			if (clean) File.Delete(script_path);
 
 			if (verbose && compilerErrorOutput.Length > 0) Console.WriteLine("phpc error output: {0}", compilerErrorOutput);
@@ -661,7 +665,7 @@ namespace PHP.Testing
                         realTestResult = TestResult.CtError;
                         return false;
                     }
-                    
+
                     //if (CompareOutputsSubstring("error", ref comp_output, true) && CompareOutputsSubstring(Utils.ArrayListToString(expectCtError), ref comp_output, true))
                     //{
                     //    realTestResult = TestResult.CtError;
@@ -702,68 +706,149 @@ namespace PHP.Testing
 
 			// save configuration if any
 			if (configuration != null)
-				using (StreamWriter sw = new StreamWriter(String.Concat(scriptPath, ".config")))
+			{
+                using (StreamWriter sw = new StreamWriter(String.Concat(scriptPath, ".config")))
 				{
 					sw.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
 					sw.WriteLine("<configuration>");
 
 					foreach (string s in configuration)
-						sw.WriteLine(s);
+					{
+					    sw.WriteLine(s);
+					}
 
 					sw.WriteLine("</configuration>");
-
 					sw.Close();
 				}
+            }
 
 			// run script
-		    using (Process script = new Process())
+		    bool res = false;
+            using (Process script = new Process())
+            {
+                if (loaderPath != null)
+                {
+                    script.StartInfo = new ProcessStartInfo(loaderPath, "\"" + scriptPath + "\"");
+                }
+                else
+                {
+                    script.StartInfo = new ProcessStartInfo(scriptPath);
+                }
+
+                script.StartInfo.UseShellExecute = false;
+                script.StartInfo.RedirectStandardOutput = true;
+                script.StartInfo.ErrorDialog = false;
+                script.StartInfo.CreateNoWindow = true;
+                script.StartInfo.RedirectStandardError = true;
+                script.StartInfo.WorkingDirectory = Path.GetDirectoryName(scriptPath);
+                script.EnableRaisingEvents = false;
+
+                if (verbose)
+                {
+                    Console.WriteLine(String.Format("Starting {0}..", scriptPath));
+                }
+
+                res = RunTestProcess(scriptPath, out output, mainScript, script);
+            }
+
+		    if (verbose)
 		    {
-		        if (loaderPath != null)
-		            script.StartInfo = new ProcessStartInfo(loaderPath, "\"" + scriptPath + "\"");
-		        else
-		            script.StartInfo = new ProcessStartInfo(scriptPath);
-
-		        script.StartInfo.UseShellExecute = false;
-		        script.StartInfo.RedirectStandardOutput = true;
-		        script.StartInfo.ErrorDialog = false;
-		        script.StartInfo.CreateNoWindow = true;
-		        script.StartInfo.RedirectStandardError = true;
-		        script.StartInfo.WorkingDirectory = Path.GetDirectoryName(scriptPath);
-
-		        script.EnableRaisingEvents = false;
-           
-
-		        if (verbose) Console.WriteLine(String.Format("Starting {0}..", scriptPath));
-
-		        for (int i = 0; i < numberOfRuns; i++)
-		        {
-		            DateTime start = DateTime.Now;
-		            script.Start();
-
-		            output = Utils.RemoveCR(script.StandardOutput.ReadToEnd().Trim());
-		            if (!script.WaitForExit(30000))
-		            {
-		                script.Kill();
-		                if (verbose) Console.WriteLine(String.Format("Script {0} hung up.", scriptPath));
-		                return false;
-		            }
-		            if (script.ExitCode != 0)
-		            {
-		                if (verbose) Console.WriteLine(String.Format("Script {0} did not exit properly.", scriptPath));
-		                output = script.StandardError.ReadToEnd();
-		                return false;
-		            }
-
-		            if (!mainScript) break; // only once if it is expect
-		            if (i >= PhpNetTester.BenchmarkWarmup) runningTime += script.ExitTime.Subtract(start).TotalMilliseconds;
-		        }
+		        Console.WriteLine(String.Concat("Script output: ", output));
 		    }
 
-		    if (verbose) Console.WriteLine(String.Concat("Script output: ", output));
-			return true;
+			return res;
 		}
 
-		private bool RunPhp(string phpPath, ArrayList script, out string output)
+	    private bool RunTestProcess(string scriptPath, out string output, bool mainScript, Process script)
+	    {
+	        bool res = false;
+	        output = null;
+            StringBuilder sb = new StringBuilder();
+	        using (AutoResetEvent outputWaitHandle = new AutoResetEvent(false))
+	        {
+	            using (AutoResetEvent errorWaitHandle = new AutoResetEvent(false))
+	            {
+	                script.OutputDataReceived += (sender, e) =>
+	                                                    {
+	                                                        if (e.Data == null)
+	                                                        {
+	                                                            outputWaitHandle.Set();
+	                                                        }
+	                                                        else
+	                                                        {
+	                                                            sb.AppendLine(e.Data);
+	                                                        }
+	                                                    };
+	                script.ErrorDataReceived += (sender, e) =>
+	                                                {
+	                                                    if (e.Data == null)
+	                                                    {
+	                                                        errorWaitHandle.Set();
+	                                                    }
+	                                                    else
+	                                                    {
+	                                                        sb.AppendLine(e.Data);
+	                                                    }
+	                                                };
+                    for (int i = 0; i < numberOfRuns; i++)
+                    {
+                        sb.Clear();
+
+                        script.Start();
+                        script.BeginOutputReadLine();
+                        script.BeginErrorReadLine();
+
+	                    if (script.WaitForExit(timeoutMs) &&
+	                        outputWaitHandle.WaitOne(timeoutMs) &&
+	                        errorWaitHandle.WaitOne(timeoutMs))
+	                    {
+                            script.CancelErrorRead();
+                            script.CancelOutputRead();
+	                        output = sb.ToString();
+	                        if (script.ExitCode != 0)
+	                        {
+	                            if (verbose)
+	                            {
+	                                Console.WriteLine("Script {0} did not exit properly.", scriptPath);
+	                            }
+
+	                            break;
+	                        }
+
+	                        res = true;
+	                    }
+	                    else
+	                    {
+	                        // Timed out.
+                            script.Kill();
+                            script.CancelErrorRead();
+                            script.CancelOutputRead();
+                            output = sb.ToString();
+	                        if (verbose)
+	                        {
+	                            Console.WriteLine("Script {0} hung up.", scriptPath);
+	                        }
+
+	                        break;
+	                    }
+
+	                    if (!mainScript)
+	                    {
+	                        break;
+	                    }
+
+	                    if (i >= PhpNetTester.BenchmarkWarmup)
+	                    {
+                            runningTime += script.ExitTime.Subtract(script.StartTime).TotalMilliseconds;
+	                    }
+	                }
+	            }
+	        }
+
+	        return res;
+	    }
+
+	    private bool RunPhp(string phpPath, ArrayList script, out string output)
 		{
 			output = null;
 
@@ -794,7 +879,6 @@ namespace PHP.Testing
 
 			for (int i = 0; i < numberOfRuns; i++)
 			{
-				DateTime start = DateTime.Now;
 				php.Start();
 
 				output = Utils.RemoveCR(php.StandardOutput.ReadToEnd().Trim());
@@ -808,7 +892,7 @@ namespace PHP.Testing
 				}
 
 				if (i >= PhpNetTester.BenchmarkWarmup)
-					this.phpTime += php.ExitTime.Subtract(start).TotalMilliseconds;
+					this.phpTime += php.ExitTime.Subtract(php.StartTime).TotalMilliseconds;
 			}
 
 			php.Dispose();
