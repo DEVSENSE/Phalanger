@@ -1,7 +1,5 @@
 @echo off
 ..\..\Tools\PhpNetTester.exe /compiler:..\..\Deployment\Debug\phpc.exe /php:..\..\Tools\PHP\php.exe %*
-del /s *.pdb *.exe EmittedNodes.csv LibraryCalls.csv UnknownCalls.csv __input.txt Debug.log > nul
-
-@rem Deleting empty log files...
-for /f "delims=" %%i in ('dir /s/b/a-d *.log') do if %%~zi==0 del %%i
-pause
+@pause
+@rem Deleting output files...
+del /s *.pdb *.exe *.log EmittedNodes.csv LibraryCalls.csv UnknownCalls.csv __input.txt Debug.log > nul
