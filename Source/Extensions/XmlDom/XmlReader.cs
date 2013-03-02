@@ -319,7 +319,7 @@ namespace PHP.Library.Xml
         }
 
         [PhpVisible]
-        public bool open(string URI, [Optional] string encoding, [Optional] int options)
+        public bool open(string URI, [Optional] [Nullable] string encoding, [Optional] int options)
         {
             if (string.IsNullOrWhiteSpace(URI))
             {
@@ -429,7 +429,7 @@ namespace PHP.Library.Xml
         }
 
         [PhpVisible]
-        public bool xml(string source, [Optional] string encoding, [Optional] int options)
+        public bool xml(string source, [Optional] [Nullable] string encoding, [Optional] int options)
         {
             if (string.IsNullOrWhiteSpace(source))
             {
