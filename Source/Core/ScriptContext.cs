@@ -1345,7 +1345,7 @@ namespace PHP.Core
         /// <returns>The <see cref="System.Type"/> or <B>null</B> if not found.</returns>
         public DTypeDesc ResolveType(string/*!*/ fullName)
         {
-            return ResolveType(fullName, null, UnknownTypeDesc.Singleton, null, ResolveTypeFlags.UseAutoload);
+            return ResolveType(fullName, null, UnknownTypeDesc.Singleton, null, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.PreserveFrame);
         }
 
         private DTypeDesc ResolveType(string/*!*/ fullName, NamingContext nameContext, DTypeDesc caller)
