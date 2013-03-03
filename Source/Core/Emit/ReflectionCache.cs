@@ -1345,6 +1345,7 @@ namespace PHP.Core.Emit
 	public class AttributeBuilders
 	{
 		private static CustomAttributeBuilder _PhpFinal, _PhpAbstract,
+            _ImplementsTrait,
 			_PhpHasInitValue, _ImplementsType, _DebuggerNonUserCode, _DebuggerHidden, _ParamArray, _Optional;
 
 		public static CustomAttributeBuilder PhpFinal
@@ -1378,6 +1379,14 @@ namespace PHP.Core.Emit
                 return _ImplementsType ?? (_ImplementsType = new CustomAttributeBuilder(typeof(ImplementsTypeAttribute).GetConstructor(Type.EmptyTypes), ArrayUtils.EmptyObjects));
             }
 		}
+
+        public static CustomAttributeBuilder ImplementsTrait
+        {
+            get
+            {
+                return _ImplementsTrait ?? (_ImplementsTrait = new CustomAttributeBuilder(typeof(PhpTraitAttribute).GetConstructor(Type.EmptyTypes), ArrayUtils.EmptyObjects));
+            }
+        }
 
 		public static CustomAttributeBuilder DebuggerNonUserCode
 		{

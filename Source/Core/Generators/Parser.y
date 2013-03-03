@@ -174,6 +174,7 @@ using Pair = System.Tuple<object,object>;
 %token T_EMPTY
 %token<Object> T_CLASS                    // PHPDocBlock
 %token<Object> T_TRAIT                    // PHPDocBlock
+%token T_INSTEADOF
 %token T_EXTENDS
 %token T_OBJECT_OPERATOR
 %token T_DOUBLE_ARROW
@@ -447,18 +448,16 @@ using Pair = System.Tuple<object,object>;
 %type<Object> implements_opt 
 %type<Object> ctor_arguments_opt
 
-%type<Object> trait_use_statement
-%type<Object> trait_list
-%type<Object> trait_adaptations
-%type<Object> trait_adaptation_list
-%type<Object> non_empty_trait_adaptation_list
-%type<Object> trait_adaptation_statement
+%type<Object> trait_use_statement					  // TraitsUse
+%type<Object> trait_adaptations						  // null or List<TraitsUse.TraitAdaptation>
+%type<Object> trait_adaptation_list					  // null or List<TraitsUse.TraitAdaptation>
+%type<Object> non_empty_trait_adaptation_list		  // List<TraitsUse.TraitAdaptation>
+%type<Object> trait_adaptation_statement			  // TraitsUse.TraitAdaptation
 %type<Object> trait_precedence
-%type<Object> trait_reference_list
 %type<Object> trait_method_reference
 %type<Object> trait_method_reference_fully_qualified
 %type<Object> trait_alias
-%type<Object> trait_modifiers
+%type<Object> trait_modifiers						  // PhpMemberAttributes?
 
 %type<Object> dynamic_class_name_variable_property 
 %type<Object> additional_catches_opt 
@@ -498,6 +497,7 @@ using Pair = System.Tuple<object,object>;
 %type<Object> qualified_namespace_name       // QualifiedName	// has base name
 %type<Object> namespace_name_list			 // List<string>
 %type<Object> namespace_name_identifier		 // string
+%type<Object> qualified_namespace_name_list  // List<QualifiedName>	// have base name
 
 %% /* Productions */
 
@@ -688,17 +688,21 @@ class_declaration_statement:
 		'{' class_statement_list_opt '}' 
 		{ 
 		  Name class_name = new Name((string)$6);
+		  var class_entry = (Tuple<Tokens,PHPDocBlock>)$5;
+		  var member_attr = (PhpMemberAttributes)($2 | $3);
+		  if (class_entry.Item1 == Tokens.T_TRAIT)
+			member_attr |= PhpMemberAttributes.Trait | PhpMemberAttributes.Abstract;
 		  
 		  CheckReservedNamesAbsence((Tuple<GenericQualifiedName,Position>)$9);
 		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Position>>)$10);
 		  
 		  $$ = new TypeDecl(sourceUnit, CombinePositions(@5, @6), @$, GetHeadingEnd(GetLeftValidPosition(10)), GetBodyStart(@11), 
 				IsCurrentCodeConditional, GetScope(), 
-				(PhpMemberAttributes)($2 | $3), $4 != 0, class_name, @6, currentNamespace, 
+				member_attr, $4 != 0, class_name, @6, currentNamespace, 
 				(List<FormalTypeParam>)$7, (Tuple<GenericQualifiedName,Position>)$9, (List<KeyValuePair<GenericQualifiedName,Position>>)$10, 
 		    (List<TypeMemberDecl>)$12, (List<CustomAttribute>)$1);
 		    
-		  SetCommentSetHelper($$, ((Tuple<Tokens,PHPDocBlock>)$5).Item2);
+		  SetCommentSetHelper($$, class_entry.Item2);
 				
 		  reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
 
@@ -1390,60 +1394,50 @@ class_statement:
 ;
 
 trait_use_statement:
-		T_USE trait_list trait_adaptations
-;
-
-trait_list:
-		qualified_namespace_name
-	|	trait_list ',' qualified_namespace_name
+		T_USE qualified_namespace_name_list trait_adaptations		{ $$ = new TraitsUse(@$, (List<QualifiedName>)$2, (List<TraitsUse.TraitAdaptation>)$3); }
 ;
 
 trait_adaptations:
-		';'
-	|	'{' trait_adaptation_list '}'
+		';'									{ $$ = null; }
+	|	'{' trait_adaptation_list '}'		{ $$ = $2; }
 ;
 
 trait_adaptation_list:
-		/* empty */
-	|	non_empty_trait_adaptation_list
+		/* empty */							{ $$ = null; }
+	|	non_empty_trait_adaptation_list		{ $$ = $1; }
 ;
 
 non_empty_trait_adaptation_list:
-		trait_adaptation_statement
-	|	non_empty_trait_adaptation_list trait_adaptation_statement
+		trait_adaptation_statement			{ $$ = NewList<TraitsUse.TraitAdaptation>($1); }
+	|	non_empty_trait_adaptation_list trait_adaptation_statement	{ $$ = ListAdd<TraitsUse.TraitAdaptation>($1, $2); }
 ;
 
 trait_adaptation_statement:
-		trait_precedence ';'
-	|	trait_alias ';'
+		trait_precedence ';'		{ $$ = $1; }
+	|	trait_alias ';'				{ $$ = $1; }
 ;
 
 trait_precedence:
-	trait_method_reference_fully_qualified T_INSTEADOF trait_reference_list
-;
-
-trait_reference_list:
-		qualified_namespace_name
-	|	trait_reference_list ',' qualified_namespace_name
+	trait_method_reference_fully_qualified T_INSTEADOF qualified_namespace_name_list	{ $$ = new TraitsUse.TraitAdaptationPrecedence(@$, (Tuple<QualifiedName?,Name>)$1, (List<QualifiedName>)$3); }
 ;
 
 trait_method_reference:
-		T_STRING
-	|	trait_method_reference_fully_qualified
+		identifier													{ $$ = new Tuple<QualifiedName?,Name>(null, new Name((string)$1)); }
+	|	trait_method_reference_fully_qualified						{ $$ = $1; }
 ;
 
 trait_method_reference_fully_qualified:
-	qualified_namespace_name T_DOUBLE_COLON identifier
+	qualified_namespace_name T_DOUBLE_COLON identifier				{ $$ = new Tuple<QualifiedName?,Name>((QualifiedName)$1, new Name((string)$3)); }
 ;
 
 trait_alias:
-		trait_method_reference T_AS trait_modifiers identifier
-	|	trait_method_reference T_AS member_modifier
+		trait_method_reference T_AS trait_modifiers identifier		{ $$ = new TraitsUse.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$4, (PhpMemberAttributes?)$3); }
+	|	trait_method_reference T_AS member_modifier					{ $$ = new TraitsUse.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, null, ((TmpMemberInfo)$1).attr); }
 ;
 
 trait_modifiers:
 		/* empty */		{ $$ = null; }
-	|	member_modifier	{ $$ = $1; }
+	|	member_modifier	{ $$ = (PhpMemberAttributes?)((TmpMemberInfo)$1).attr; }
 ;
 
 class_method_identifier:
@@ -2014,6 +2008,11 @@ namespace_name_identifier:	// identifier + some keywords that should be used wit
 	|	T_OBJECT_TYPE		{ $$ = CSharpNameToken(@1, (string)$1.Object); }
 	|	T_ARRAY				{ $$ = CSharpNameToken(@1, (string)$1.Object); }
 	|	T_ABSTRACT			{ $$ = CSharpNameToken(@1, ($1 as string) ?? "Abstract"); }	// needs PHPDoc handled differently to be sure the value of this token is its string
+;
+
+qualified_namespace_name_list:
+		qualified_namespace_name										{ $$ = NewList<QualifiedName>($1); }
+	|	qualified_namespace_name_list ',' qualified_namespace_name		{ $$ = ListAdd<QualifiedName>($1, $3); }
 ;
 
 keyed_field_names_opt:

@@ -415,6 +415,7 @@ namespace PHP.Core.AST
 			: base(position)
 		{
 			Debug.Assert(genericParams != null && implementsList != null && members != null);
+            Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
 
 			this.name = className;
             this.NamePosition = classNamePosition;
@@ -1807,4 +1808,146 @@ namespace PHP.Core.AST
 	}
 
 	#endregion
+
+    #region Traits
+
+    /// <summary>
+    /// Represents class traits usage.
+    /// </summary>
+    public sealed class TraitsUse : TypeMemberDecl
+    {
+        #region TraitAdaptation, TraitAdaptationPrecedence, TraitAdaptationAlias
+
+        public abstract class TraitAdaptation : LangElement
+        {
+            /// <summary>
+            /// Name of existing trait member. Its qualified name is optional.
+            /// </summary>
+            public Tuple<QualifiedName?, Name> TraitMemberName { get; private set; }
+
+            public TraitAdaptation(Position position, Tuple<QualifiedName?, Name> traitMemberName)
+                : base(position)
+            {
+                this.TraitMemberName = traitMemberName;                
+            }
+        }
+
+        /// <summary>
+        /// Trait usage adaptation specifying a member which will be preferred over specified ambiguities.
+        /// </summary>
+        public sealed class TraitAdaptationPrecedence : TraitAdaptation
+        {
+            /// <summary>
+            /// List of types which member <see cref="TraitAdaptation.TraitMemberName"/>.<c>Item2</c> will be ignored.
+            /// </summary>
+            public List<QualifiedName>/*!*/IgnoredTypes { get; private set; }
+
+            public TraitAdaptationPrecedence(Position position, Tuple<QualifiedName?, Name> traitMemberName, List<QualifiedName>/*!*/ignoredTypes)
+                :base(position, traitMemberName)
+            {
+                this.IgnoredTypes = ignoredTypes;
+            }
+
+            public override void VisitMe(TreeVisitor visitor)
+            {
+                visitor.VisitTraitAdaptationPrecedence(this);
+            }
+        }
+
+        /// <summary>
+        /// Trait usage adaptation which aliases a trait member.
+        /// </summary>
+        public sealed class TraitAdaptationAlias : TraitAdaptation
+        {
+            /// <summary>
+            /// Optionally new member visibility attributes.
+            /// </summary>
+            public PhpMemberAttributes? NewModifier { get; private set; }
+
+            /// <summary>
+            /// Optionally new member name. Can be <c>null</c>.
+            /// </summary>
+            public string NewName { get; private set; }
+
+            public TraitAdaptationAlias(Position position, Tuple<QualifiedName?, Name>/*!*/oldname, string newname, PhpMemberAttributes? newmodifier)
+                : base(position, oldname)
+            {
+                if (oldname == null)
+                    throw new ArgumentNullException("oldname");
+
+                this.NewName = newname;
+                this.NewModifier = newmodifier;
+            }
+
+            public override void VisitMe(TreeVisitor visitor)
+            {
+                visitor.VisitTraitAdaptationAlias(this);
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// List of trait types to be used.
+        /// </summary>
+        public List<QualifiedName>/*!*/TraitsList { get { return traitsList; } }
+        private readonly List<QualifiedName>/*!*/traitsList;
+
+        /// <summary>
+        /// List of trait adaptations modifying names of trait members. Can be <c>null</c> reference.
+        /// </summary>
+        public List<TraitAdaptation> TraitAdaptationList { get { return traitAdaptationList; } }
+        private readonly List<TraitAdaptation> traitAdaptationList;
+
+        public TraitsUse(Position position, List<QualifiedName>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
+            :base(position, null)
+        {
+            if (traitsList == null)
+                throw new ArgumentNullException("traitsList");
+
+            this.traitsList = traitsList;
+            this.traitAdaptationList = traitAdaptationList;
+        }
+
+        #region TypeMemberDecl
+
+        public override PhpAttributeTargets AttributeTarget
+        {
+            get { return PhpAttributeTargets.Types; }
+        }
+
+        public override AttributeTargets AcceptsTargets
+        {
+            get { return (AttributeTargets)0; }
+        }
+
+        public override void EmitCustomAttribute(CustomAttributeBuilder builder, CustomAttribute.TargetSelectors selector)
+        {
+            // nothing
+        }
+
+        public override void ApplyCustomAttribute(SpecialAttributes kind, Attribute attribute, CustomAttribute.TargetSelectors selector)
+        {
+            // nothing
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitTraitsUse(this);
+        }
+
+        #endregion
+
+        internal override void Analyze(Analyzer analyzer)
+        {
+            // TODO: analyze traits use
+        }
+
+        internal override void Emit(CodeGenerator codeGenerator)
+        {
+            
+        }
+    }
+
+    #endregion
 }

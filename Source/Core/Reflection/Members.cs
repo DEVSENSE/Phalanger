@@ -53,7 +53,16 @@ namespace PHP.Core.Reflection
 		AppStatic = Static | 8,
 		Abstract = 16,
 		Final = 32,
+
+        /// <summary>
+        /// The type is an interface.
+        /// </summary>
 		Interface = 64,
+
+        /// <summary>
+        /// The type is a trait.
+        /// </summary>
+        Trait = 128,
 
 		/// <summary>
 		/// The member is a constructor.
@@ -72,7 +81,7 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		InactiveConditional = 2048,
 
-		StaticMask = Static | AppStatic,
+        StaticMask = Static | AppStatic,
 		VisibilityMask = Public | Private | Protected | NamespacePrivate,
 		SpecialMembersMask = Constructor,
 		PartialMerged = Abstract | Final
@@ -276,6 +285,9 @@ namespace PHP.Core.Reflection
 			{
 				if (type.IsInterface) value |= PhpMemberAttributes.Interface | PhpMemberAttributes.Abstract;
 				else if (type.IsAbstract) value |= PhpMemberAttributes.Abstract;
+
+                if (type.IsDefined(typeof(PhpTraitAttribute), false))
+                    value |= PhpMemberAttributes.Trait;
 			}
 
 			return value;
@@ -307,6 +319,8 @@ namespace PHP.Core.Reflection
 		{
 			Debug.Assert(typeBuilder != null);
 
+            if ((attrs & PhpMemberAttributes.Trait) != 0)
+                typeBuilder.SetCustomAttribute(AttributeBuilders.ImplementsTrait);
 			// no attributes so far
 		}
 

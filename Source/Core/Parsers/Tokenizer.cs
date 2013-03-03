@@ -345,6 +345,7 @@ namespace PHP.Core.Parsers
 					case Tokens.T_EMPTY:
 					case Tokens.T_CLASS:
                     case Tokens.T_TRAIT:
+                    case Tokens.T_INSTEADOF:
 					case Tokens.T_EXTENDS:
 					case Tokens.T_LIST:
 					case Tokens.T_ARRAY:

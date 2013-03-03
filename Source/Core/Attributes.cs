@@ -357,6 +357,15 @@ namespace PHP.Core
 	{
 	}
 
+    /// <summary>
+    /// Marks CLR type representing a PHP trait.
+    /// </summary>
+    /// <remarks>Attribute is used by <see cref="Reflection"/>.</remarks>
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    public sealed class PhpTraitAttribute : Attribute
+    {
+    }
+
 	/// <summary>
 	/// CLI does not allow static final methods. If a static method is declared as
 	/// final, it is marked with this attribute.

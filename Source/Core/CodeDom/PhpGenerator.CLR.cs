@@ -1704,6 +1704,7 @@ namespace PHP.Core.CodeDom
             if (e.IsPartial) Output.Write(Keywords.Partial + WhiteSpace.Space);
 
             if (e.IsClass) Output.Write(Keywords.Class + WhiteSpace.Space);
+            // TODO: Keywords.Trait
             else if (e.IsInterface) Output.Write(Keywords.Interface + WhiteSpace.Space);
             else throw new NotSupportedException();
         }
