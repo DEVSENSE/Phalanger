@@ -401,8 +401,8 @@ using Pair = System.Tuple<object,object>;
 %type<Object> type_ref                                // TypeRef!
 %type<Object> type_ref_list                           // List<TypeRef>
 %type<Object> qualified_static_type_ref               // GenericQualifiedName
-%type<Object> interface_list                          // List<GenericQualifiedName>
-%type<Object> interface_extends_opt                  // List<GenericQualifiedName>
+%type<Object> interface_list                          // List<KeyValuePair<GenericQualifiedName,Position>>
+%type<Object> interface_extends_opt                  // List<KeyValuePair<GenericQualifiedName,Position>>
 %type<Object> variable_name                           
 
 %type<Object> generic_dynamic_args_opt                // List<TypeRef>!
@@ -477,7 +477,7 @@ using Pair = System.Tuple<object,object>;
 
 %type<Integer> attribute_target_opt          // CustomAttribute.Targets
 
-%type<Object> extends_opt                    // GenericQualifiedName?
+%type<Object> extends_opt                    // Tuple<GenericQualifiedName,Position>
 %type<Object> qualified_namespace_name       // QualifiedName	// has base name
 %type<Object> namespace_name_list			 // List<string>
 %type<Object> namespace_name_identifier		 // string
@@ -667,13 +667,13 @@ class_declaration_statement:
 		{ 
 		  Name class_name = new Name((string)$6);
 		  
-		  CheckReservedNamesAbsence((GenericQualifiedName?)$9, @9);
-		  CheckReservedNamesAbsence((List<GenericQualifiedName>)$10, @10);
+		  CheckReservedNamesAbsence((Tuple<GenericQualifiedName,Position>)$9);
+		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Position>>)$10);
 		  
 		  $$ = new TypeDecl(sourceUnit, CombinePositions(@5, @6), @$, GetHeadingEnd(GetLeftValidPosition(10)), GetBodyStart(@11), 
 				IsCurrentCodeConditional, GetScope(), 
-				(PhpMemberAttributes)($2 | $3), $4 != 0, class_name, currentNamespace, 
-				(List<FormalTypeParam>)$7, (GenericQualifiedName?)$9, (List<GenericQualifiedName>)$10, 
+				(PhpMemberAttributes)($2 | $3), $4 != 0, class_name, @6, currentNamespace, 
+				(List<FormalTypeParam>)$7, (Tuple<GenericQualifiedName,Position>)$9, (List<KeyValuePair<GenericQualifiedName,Position>>)$10, 
 		    (List<TypeMemberDecl>)$12, (List<CustomAttribute>)$1);
 		    
 		  SetCommentSetHelper($$, $5);
@@ -698,7 +698,7 @@ class_declaration_statement:
 	  { 
 		  Name class_name = new Name((string)$6);
 		  
-		  CheckReservedNamesAbsence((List<GenericQualifiedName>)$9, @9);
+		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Position>>)$9);
 		  
 			if ((PhpMemberAttributes)$3 != PhpMemberAttributes.None)
 				errors.Add(Errors.InvalidInterfaceModifier, SourceUnit, @3);
@@ -706,8 +706,9 @@ class_declaration_statement:
 		  $$ = new TypeDecl(sourceUnit, CombinePositions(@5, @6), @$, GetHeadingEnd(GetLeftValidPosition(9)), GetBodyStart(@10),
 				IsCurrentCodeConditional, GetScope(), 
 				(PhpMemberAttributes)$2 | PhpMemberAttributes.Abstract | PhpMemberAttributes.Interface, 
-				$4 != 0, class_name, currentNamespace, (List<FormalTypeParam>)$7, null, (List<GenericQualifiedName>)$9, (List<TypeMemberDecl>)$11, 
-				(List<CustomAttribute>)$1); 
+				$4 != 0, class_name, @6, currentNamespace,
+				(List<FormalTypeParam>)$7, null, (List<KeyValuePair<GenericQualifiedName,Position>>)$9,
+				(List<TypeMemberDecl>)$11, (List<CustomAttribute>)$1); 
 				
 			SetCommentSetHelper($$, $5);
 			
@@ -740,29 +741,29 @@ partial_opt:
 
 extends_opt:
 		/* empty */														{ $$ = null; }
-	|	T_EXTENDS qualified_static_type_ref	{ $$ = (GenericQualifiedName)$2; }
+	|	T_EXTENDS qualified_static_type_ref	{ $$ = new Tuple<GenericQualifiedName,Position>((GenericQualifiedName)$2, @2); }
 ;
 
 interface_extends_opt:
-		/* empty */								{ $$ = emptyGenericQualifiedNameList; }
+		/* empty */								{ $$ = emptyGenericQualifiedNamePositionList; }
 	|	T_EXTENDS interface_list	{ $$ = $2; }
 ;
 
 implements_opt:
-		/* empty */										{ $$ = emptyGenericQualifiedNameList; }
+		/* empty */										{ $$ = emptyGenericQualifiedNamePositionList; }
 	|	T_IMPLEMENTS interface_list		{ $$ = $2; }
 ;
 
 interface_list:
 		qualified_static_type_ref						
 		{ 
-			$$ = NewList<GenericQualifiedName>($1);
+			$$ = NewList<KeyValuePair<GenericQualifiedName,Position>>(new KeyValuePair<GenericQualifiedName,Position>((GenericQualifiedName)$1, @1));
 		}		
 		
 	|	interface_list ',' qualified_static_type_ref	
 		{ 
 			$$ = $1; 
-			ListAdd<GenericQualifiedName>($$, $3); 
+			ListAdd<KeyValuePair<GenericQualifiedName,Position>>($$, new KeyValuePair<GenericQualifiedName,Position>((GenericQualifiedName)$3, @3)); 
 		}
 ;
 
@@ -1219,11 +1220,17 @@ formal_parameter_list:
 formal_parameter:         
     attributes_opt type_hint_opt reference_opt T_VARIABLE                   
     { 
-			$$ = new FormalParam(@4, (string)$4, $2, (int)$3 == 1, null, (List<CustomAttribute>)$1); 
+			$$ = new FormalParam(@4, (string)$4, $2, (int)$3 == 1, null, (List<CustomAttribute>)$1)
+			{
+				TypeHintPosition = @2
+			};
 		}
   | attributes_opt type_hint_opt reference_opt T_VARIABLE '=' constant_inititalizer 
 		{ 
-			$$ = new FormalParam(@4, (string)$4, $2, (int)$3 == 1, (Expression)$6, (List<CustomAttribute>)$1); 
+			$$ = new FormalParam(@4, (string)$4, $2, (int)$3 == 1, (Expression)$6, (List<CustomAttribute>)$1)
+			{
+				TypeHintPosition = @2
+			};
 		}
 ;
 
@@ -1784,7 +1791,7 @@ linq_into_clause_opt:
 function_call:
 		qualified_namespace_name generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 		{ 
-		  $$ = CreateDirectFcnCall(@$, (QualifiedName)$1, (List<ActualParam>)$4, (List<TypeRef>)$2);
+		  $$ = CreateDirectFcnCall(@$, (QualifiedName)$1, @1, (List<ActualParam>)$4, (List<TypeRef>)$2);
 		}
 
 	|	class_constant generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
@@ -1794,7 +1801,7 @@ function_call:
 		
 	|	qualified_static_type_ref T_DOUBLE_COLON keyed_variable generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 		{ 
-		  $$ = new IndirectStMtdCall(@$, (GenericQualifiedName)$1, (CompoundVarUse)$3, (List<ActualParam>)$6, 
+		  $$ = new IndirectStMtdCall(@$, (GenericQualifiedName)$1, @1, (CompoundVarUse)$3, (List<ActualParam>)$6, 
 				(List<TypeRef>)$4);	
 		}
 
@@ -1992,11 +1999,11 @@ global_constant:
 class_constant:
 		qualified_static_type_ref T_DOUBLE_COLON identifier 
 		{ 
-		  $$ = new ClassConstUse(@$, (GenericQualifiedName)$1, (string)$3); 
+		  $$ = new ClassConstUse(@$, (GenericQualifiedName)$1, @1, (string)$3, @3); 
 		}
 	|	keyed_variable T_DOUBLE_COLON identifier
 		{
-			$$ = new ClassConstUse(@$, new IndirectTypeRef(@1, (VariableUse)$1, TypeRef.EmptyList), (string)$3); 
+			$$ = new ClassConstUse(@$, new IndirectTypeRef(@1, (VariableUse)$1, TypeRef.EmptyList), (string)$3, @3); 
 		}
 ;
 
@@ -2093,7 +2100,7 @@ chain_base:
 		if ($3 is DirectVarUse && ((DirectVarUse)$3).VarName.IsThisVariableName)
 			$$ = $3;	// you know, in PHP ... whatever::$this means $this
 		else
-			$$ = CreateStaticFieldUse(@$, (GenericQualifiedName)$1, (CompoundVarUse)$3); 
+			$$ = CreateStaticFieldUse(@$, (GenericQualifiedName)$1, @1, (CompoundVarUse)$3); 
 	  }	
 	|	keyed_variable T_DOUBLE_COLON keyed_variable 
 	  { 

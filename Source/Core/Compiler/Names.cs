@@ -119,6 +119,26 @@ namespace PHP.Core
             get { return this.Equals(DObject.SpecialMethodNames.Tostring); }
         }
 
+        public bool IsParentClassName
+        {
+            get { return this.Equals(Name.ParentClassName); }
+        }
+
+        public bool IsSelfClassName
+        {
+            get { return this.Equals(Name.SelfClassName); }
+        }
+
+        public bool IsStaticClassName
+        {
+            get { return this.Equals(Name.StaticClassName); }
+        }
+
+        public bool IsReservedClassName
+        {
+            get { return IsParentClassName || IsSelfClassName || IsStaticClassName; }
+        }
+
 		#endregion
 
 		/// <summary>
@@ -396,7 +416,7 @@ namespace PHP.Core
 
         public bool IsReservedClassName
         {
-            get { return IsParentClassName || IsSelfClassName || IsStaticClassName; }
+            get { return this.IsSimpleName && this.name.IsReservedClassName; }
         }
 
         public bool IsAutoloadName
