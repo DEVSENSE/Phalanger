@@ -344,10 +344,12 @@ namespace PHP.Core.Parsers
 					case Tokens.T_ISSET:
 					case Tokens.T_EMPTY:
 					case Tokens.T_CLASS:
+                    case Tokens.T_TRAIT:
 					case Tokens.T_EXTENDS:
 					case Tokens.T_LIST:
 					case Tokens.T_ARRAY:
 					case Tokens.T_CLASS_C:              // __CLASS__
+                    case Tokens.T_TRAIT_C:              // __TRAIT__
 					case Tokens.T_METHOD_C:             // __METHOD__
 					case Tokens.T_FUNC_C:               // __FUNCTION__
 					case Tokens.T_FILE:                 // __FILE__
