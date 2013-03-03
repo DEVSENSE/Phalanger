@@ -52,12 +52,18 @@ namespace PHP.Core.AST
         /// <summary>GetUserEntryPoint calling signature</summary>
         public CallSignature CallSignature { get { return callSignature; } }
 
-		public FunctionCall(Position position, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+		/// <summary>
+        /// Position of called function name in source code.
+        /// </summary>
+        public Position NamePosition { get; protected set; }
+
+		public FunctionCall(Position position, Position namePosition, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
 			: base(position)
 		{
 			Debug.Assert(parameters != null);
 
 			this.callSignature = new CallSignature(parameters, genericParams);
+            this.NamePosition = namePosition;
 		}
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Expression.Analyze"]/*'/>
@@ -135,7 +141,7 @@ namespace PHP.Core.AST
         /// <summary>Simple name for methods.</summary>
         public QualifiedName QualifiedName { get { return qualifiedName; } }
 
-		private DRoutine routine;
+        private DRoutine routine;
 		private int overloadIndex = DRoutine.InvalidOverloadIndex;
 
 		/// <summary>
@@ -144,9 +150,9 @@ namespace PHP.Core.AST
 		private InlinedFunction inlined = InlinedFunction.None;
 
 		public DirectFcnCall(Position position,
-            QualifiedName qualifiedName, QualifiedName? fallbackQualifiedName,
+            QualifiedName qualifiedName, QualifiedName? fallbackQualifiedName, Position qualifiedNamePosition,
             List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
-			: base(position, parameters, genericParams)
+            : base(position, qualifiedNamePosition, parameters, genericParams)
 		{
             this.qualifiedName = qualifiedName;
             this.fallbackQualifiedName = fallbackQualifiedName;
@@ -923,7 +929,7 @@ namespace PHP.Core.AST
 
 		public IndirectFcnCall(Position p, Expression/*!*/ nameExpr, List<ActualParam>/*!*/ parameters,
 	  List<TypeRef>/*!*/ genericParams)
-			: base(p, parameters, genericParams)
+            : base(p, nameExpr.Position, parameters, genericParams)
 		{
 			this.nameExpr = nameExpr;
 		}
@@ -994,15 +1000,20 @@ namespace PHP.Core.AST
         public GenericQualifiedName ClassName { get { return typeRef.GenericQualifiedName; } }
         protected readonly TypeRef/*!*/typeRef;
 
+        /// <summary>
+        /// Position of <see cref="ClassName"/> in source code.
+        /// </summary>
+        public Position ClassNamePosition { get { return this.typeRef.Position; } }
+
         protected DType/*!A*/type;
-        
-		public StaticMtdCall(Position position, GenericQualifiedName className, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
-			: this(position, DirectTypeRef.FromGenericQualifiedName(position, className), parameters, genericParams)
+
+        public StaticMtdCall(Position position, Position methodNamePosition, GenericQualifiedName className, Position classNamePosition, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+            : this(position, methodNamePosition, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), parameters, genericParams)
 		{	
 		}
 
-        public StaticMtdCall(Position position, TypeRef typeRef, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
-            : base(position, parameters, genericParams)
+        public StaticMtdCall(Position position, Position methodNamePosition, TypeRef typeRef, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+            : base(position, methodNamePosition, parameters, genericParams)
         {
             Debug.Assert(typeRef != null);
 
@@ -1041,14 +1052,14 @@ namespace PHP.Core.AST
 
 		public DirectStMtdCall(Position position, ClassConstUse/*!*/ classConstant, List<ActualParam>/*!*/ parameters,
 	  List<TypeRef>/*!*/ genericParams)
-			: base(position, classConstant.TypeRef, parameters, genericParams)
+			: base(position, classConstant.NamePosition, classConstant.TypeRef, parameters, genericParams)
 		{
 			this.methodName = new Name(classConstant.Name.Value);
 		}
 
-		public DirectStMtdCall(Position position, GenericQualifiedName className, Name methodName, List<ActualParam>/*!*/ parameters,
+		public DirectStMtdCall(Position position, GenericQualifiedName className, Position classNamePosition, Name methodName, Position methodNamePosition, List<ActualParam>/*!*/ parameters,
 		  List<TypeRef>/*!*/ genericParams)
-			: base(position, className, parameters, genericParams)
+			: base(position, methodNamePosition, className, classNamePosition, parameters, genericParams)
 		{
 			this.methodName = methodName;
 		}
@@ -1177,9 +1188,9 @@ namespace PHP.Core.AST
         public CompoundVarUse/*!*/ MethodNameVar { get { return methodNameVar; } }
 
 		public IndirectStMtdCall(Position position,
-                                 GenericQualifiedName className, CompoundVarUse/*!*/ mtdNameVar,
+                                 GenericQualifiedName className, Position classNamePosition, CompoundVarUse/*!*/ mtdNameVar,
 	                             List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
-			: base(position, className, parameters, genericParams)
+            : base(position, mtdNameVar.Position, className, classNamePosition, parameters, genericParams)
 		{
 			this.methodNameVar = mtdNameVar;
 		}
@@ -1187,7 +1198,7 @@ namespace PHP.Core.AST
         public IndirectStMtdCall(Position position,
                                  TypeRef/*!*/typeRef, CompoundVarUse/*!*/ mtdNameVar,
                                  List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
-            : base(position, typeRef, parameters, genericParams)
+            : base(position, mtdNameVar.Position, typeRef, parameters, genericParams)
         {
             this.methodNameVar = mtdNameVar;
         }

@@ -12,6 +12,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
@@ -314,6 +315,11 @@ namespace PHP.Core.AST
 		public Name Name { get { return name; } }
 		private readonly Name name;
 
+        /// <summary>
+        /// Position of <see cref="Name"/> in the source code.
+        /// </summary>
+        public Position NamePosition { get; private set; }
+
 		/// <summary>
 		/// Namespace where the class is declared in.
 		/// </summary>
@@ -333,12 +339,19 @@ namespace PHP.Core.AST
         /// <summary>Name of the base class.</summary>
         public GenericQualifiedName? BaseClassName { get { return baseClassName; } }
 
+        /// <summary>Position of <see cref="BaseClassName"/>.</summary>
+        public Position BaseClassNamePosition { get; private set; }
+
 		/// <summary>
 		/// Implemented interface name indices. 
 		/// </summary>
-		private readonly List<GenericQualifiedName>/*!*/ implementsList;
+		private readonly List<KeyValuePair<GenericQualifiedName, Position>>/*!*/ implementsList;
+
         /// <summary>Implemented interface name indices. </summary>
-        public List<GenericQualifiedName>/*!*/ ImplementsList { get { return implementsList; } }
+        public List<GenericQualifiedName>/*!*/ ImplementsList { get { return this.implementsList.Select(x => x.Key).ToList(); } }
+
+        /// <summary>Positions of <see cref="ImplementsList"/> elements.</summary>
+        public Position[] ImplementsPosition { get { return this.implementsList.Select(x => x.Value).ToArray(); } }
 
 		/// <summary>
 		/// Type parameters.
@@ -395,19 +408,25 @@ namespace PHP.Core.AST
 
 		public TypeDecl(SourceUnit/*!*/ sourceUnit,
 			Position position, Position entireDeclarationPosition, ShortPosition headingEndPosition, ShortPosition declarationBodyPosition,
-			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, Name className,
-			NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, GenericQualifiedName? baseClassName,
-			List<GenericQualifiedName>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ members,
+			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, Name className, Position classNamePosition,
+			NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, Tuple<GenericQualifiedName, Position> baseClassName,
+			List<KeyValuePair<GenericQualifiedName, Position>>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ members,
 			List<CustomAttribute> attributes)
 			: base(position)
 		{
 			Debug.Assert(genericParams != null && implementsList != null && members != null);
+            Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
 
 			this.name = className;
+            this.NamePosition = classNamePosition;
 			this.ns = ns;
 			this.typeSignature = new TypeSignature(genericParams);
-			this.baseClassName = baseClassName;
-			this.implementsList = implementsList;
+            if (baseClassName != null)
+            {
+                this.baseClassName = baseClassName.Item1;
+                this.BaseClassNamePosition = baseClassName.Item2;
+            }
+            this.implementsList = implementsList;
 			this.members = members;
 			this.attributes = new CustomAttributes(attributes);
 			this.entireDeclarationPosition = entireDeclarationPosition;
@@ -591,7 +610,7 @@ namespace PHP.Core.AST
 		{
 			for (int i = 0; i < implementsList.Count; i++)
 			{
-				DType base_type = analyzer.ResolveTypeName(implementsList[i], type, null, position, true);
+                DType base_type = analyzer.ResolveTypeName(implementsList[i].Key, type, null, implementsList[i].Value, true);
 
 				if (base_type.IsGenericParameter)
 				{
@@ -1192,7 +1211,9 @@ namespace PHP.Core.AST
 				else
 				{
 					GenericQualifiedName parent_name = new GenericQualifiedName(new QualifiedName(Name.ParentClassName));
-					DirectStMtdCall call_expr = new DirectStMtdCall(position, parent_name, method.DeclaringType.Base.Constructor.Name,
+					DirectStMtdCall call_expr = new DirectStMtdCall(
+                        position, parent_name, Position.Invalid,
+                        method.DeclaringType.Base.Constructor.Name, Position.Invalid,
 						baseCtorParams, TypeRef.EmptyList);
 
 					body.Insert(0, new ExpressionStmt(position, call_expr));
@@ -1787,4 +1808,146 @@ namespace PHP.Core.AST
 	}
 
 	#endregion
+
+    #region Traits
+
+    /// <summary>
+    /// Represents class traits usage.
+    /// </summary>
+    public sealed class TraitsUse : TypeMemberDecl
+    {
+        #region TraitAdaptation, TraitAdaptationPrecedence, TraitAdaptationAlias
+
+        public abstract class TraitAdaptation : LangElement
+        {
+            /// <summary>
+            /// Name of existing trait member. Its qualified name is optional.
+            /// </summary>
+            public Tuple<QualifiedName?, Name> TraitMemberName { get; private set; }
+
+            public TraitAdaptation(Position position, Tuple<QualifiedName?, Name> traitMemberName)
+                : base(position)
+            {
+                this.TraitMemberName = traitMemberName;                
+            }
+        }
+
+        /// <summary>
+        /// Trait usage adaptation specifying a member which will be preferred over specified ambiguities.
+        /// </summary>
+        public sealed class TraitAdaptationPrecedence : TraitAdaptation
+        {
+            /// <summary>
+            /// List of types which member <see cref="TraitAdaptation.TraitMemberName"/>.<c>Item2</c> will be ignored.
+            /// </summary>
+            public List<QualifiedName>/*!*/IgnoredTypes { get; private set; }
+
+            public TraitAdaptationPrecedence(Position position, Tuple<QualifiedName?, Name> traitMemberName, List<QualifiedName>/*!*/ignoredTypes)
+                :base(position, traitMemberName)
+            {
+                this.IgnoredTypes = ignoredTypes;
+            }
+
+            public override void VisitMe(TreeVisitor visitor)
+            {
+                visitor.VisitTraitAdaptationPrecedence(this);
+            }
+        }
+
+        /// <summary>
+        /// Trait usage adaptation which aliases a trait member.
+        /// </summary>
+        public sealed class TraitAdaptationAlias : TraitAdaptation
+        {
+            /// <summary>
+            /// Optionally new member visibility attributes.
+            /// </summary>
+            public PhpMemberAttributes? NewModifier { get; private set; }
+
+            /// <summary>
+            /// Optionally new member name. Can be <c>null</c>.
+            /// </summary>
+            public string NewName { get; private set; }
+
+            public TraitAdaptationAlias(Position position, Tuple<QualifiedName?, Name>/*!*/oldname, string newname, PhpMemberAttributes? newmodifier)
+                : base(position, oldname)
+            {
+                if (oldname == null)
+                    throw new ArgumentNullException("oldname");
+
+                this.NewName = newname;
+                this.NewModifier = newmodifier;
+            }
+
+            public override void VisitMe(TreeVisitor visitor)
+            {
+                visitor.VisitTraitAdaptationAlias(this);
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// List of trait types to be used.
+        /// </summary>
+        public List<QualifiedName>/*!*/TraitsList { get { return traitsList; } }
+        private readonly List<QualifiedName>/*!*/traitsList;
+
+        /// <summary>
+        /// List of trait adaptations modifying names of trait members. Can be <c>null</c> reference.
+        /// </summary>
+        public List<TraitAdaptation> TraitAdaptationList { get { return traitAdaptationList; } }
+        private readonly List<TraitAdaptation> traitAdaptationList;
+
+        public TraitsUse(Position position, List<QualifiedName>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
+            :base(position, null)
+        {
+            if (traitsList == null)
+                throw new ArgumentNullException("traitsList");
+
+            this.traitsList = traitsList;
+            this.traitAdaptationList = traitAdaptationList;
+        }
+
+        #region TypeMemberDecl
+
+        public override PhpAttributeTargets AttributeTarget
+        {
+            get { return PhpAttributeTargets.Types; }
+        }
+
+        public override AttributeTargets AcceptsTargets
+        {
+            get { return (AttributeTargets)0; }
+        }
+
+        public override void EmitCustomAttribute(CustomAttributeBuilder builder, CustomAttribute.TargetSelectors selector)
+        {
+            // nothing
+        }
+
+        public override void ApplyCustomAttribute(SpecialAttributes kind, Attribute attribute, CustomAttribute.TargetSelectors selector)
+        {
+            // nothing
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitTraitsUse(this);
+        }
+
+        #endregion
+
+        internal override void Analyze(Analyzer analyzer)
+        {
+            // TODO: analyze traits use
+        }
+
+        internal override void Emit(CodeGenerator codeGenerator)
+        {
+            
+        }
+    }
+
+    #endregion
 }

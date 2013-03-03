@@ -29,6 +29,13 @@ namespace PHP.Core.AST
 	{
 		/// <summary>Name of type which's field is being accessed</summary>
         public GenericQualifiedName TypeName { get { return typeRef.GenericQualifiedName; } }
+
+        /// <summary>Position of <see cref="TypeName"/>.</summary>
+        public Position TypenNamePosition { get { return this.typeRef.Position; } }
+
+        /// <summary>Position of the field name.</summary>
+        public Position NamePosition { get; private set; }
+
         protected TypeRef typeRef;
 		protected DType/*!*/ type;
 
@@ -38,17 +45,18 @@ namespace PHP.Core.AST
 		/// </summary>
 		internal AssignmentCallback assignmentCallback;
 
-		public StaticFieldUse(Position position, GenericQualifiedName typeName)
-			: this(position, DirectTypeRef.FromGenericQualifiedName(position, typeName))
+        public StaticFieldUse(Position position, Position namePosition, GenericQualifiedName typeName, Position typeNamePosition)
+            : this(position, namePosition, DirectTypeRef.FromGenericQualifiedName(typeNamePosition, typeName))
 		{
 		}
 
-        public StaticFieldUse(Position position, TypeRef typeRef)
+        public StaticFieldUse(Position position, Position namePosition, TypeRef typeRef)
             : base(position)
         {
             Debug.Assert(typeRef != null);
 
             this.typeRef = typeRef;
+            this.NamePosition = namePosition;
         }
 
 		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
@@ -189,14 +197,14 @@ namespace PHP.Core.AST
 		private DProperty property;
 		private bool runtimeVisibilityCheck;
 
-		public DirectStFldUse(Position position, TypeRef typeRef, VariableName propertyName)
-            : base(position, typeRef)
+		public DirectStFldUse(Position position, TypeRef typeRef, VariableName propertyName, Position propertyNamePosition)
+            : base(position, propertyNamePosition, typeRef)
         {
             this.propertyName = propertyName;
         }
 
-        public DirectStFldUse(Position position, GenericQualifiedName qualifiedName, VariableName propertyName)
-            : this(position, DirectTypeRef.FromGenericQualifiedName(position, qualifiedName), propertyName)
+        public DirectStFldUse(Position position, GenericQualifiedName qualifiedName, Position qualifiedNamePosition, VariableName propertyName, Position propertyNamePosition)
+            : this(position, DirectTypeRef.FromGenericQualifiedName(qualifiedNamePosition, qualifiedName), propertyName, propertyNamePosition)
         {
         }
 
@@ -306,7 +314,7 @@ namespace PHP.Core.AST
         public Expression/*!*/ FieldNameExpr{get{return fieldNameExpr;}}
 
 		public IndirectStFldUse(Position position, TypeRef typeRef, Expression/*!*/ fieldNameExpr)
-            : base(position, typeRef)
+            : base(position, fieldNameExpr.Position, typeRef)
         {
             this.fieldNameExpr = fieldNameExpr;
         }

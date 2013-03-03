@@ -153,6 +153,7 @@ namespace PHP.Core.Reflection
 		public ClrType ClrType { get { return (ClrType)Type; } }
 
 		public bool IsInterface { get { return (memberAttributes & PhpMemberAttributes.Interface) != 0; } }
+        public bool IsTrait { get { return (memberAttributes & PhpMemberAttributes.Trait) != 0; } }
 		public virtual bool IsValueType { get { return false; } }
 
 		/// <summary>

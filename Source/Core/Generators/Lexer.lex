@@ -157,6 +157,8 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"echo"       			{ return Tokens.T_ECHO; }
 <ST_IN_SCRIPTING>"print"      			{ return Tokens.T_PRINT; }
 <ST_IN_SCRIPTING>"class"      			{ return Tokens.T_CLASS; }
+<ST_IN_SCRIPTING>"trait"      			{ return Tokens.T_TRAIT; }
+<ST_IN_SCRIPTING>"insteadof"      		{ return Tokens.T_INSTEADOF; }
 <ST_IN_SCRIPTING>"extends"    			{ return Tokens.T_EXTENDS; }
 <ST_IN_SCRIPTING>"new"        			{ return Tokens.T_NEW; }
 <ST_IN_SCRIPTING>"var"        			{ return Tokens.T_VAR; }
@@ -177,6 +179,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"array"			 			{ return Tokens.T_ARRAY; }
 <ST_IN_SCRIPTING>"callable"			 			{ return Tokens.T_CALLABLE; }
 <ST_IN_SCRIPTING>"__CLASS__"    		{ return Tokens.T_CLASS_C; }
+<ST_IN_SCRIPTING>"__TRAIT__"    		{ return Tokens.T_TRAIT_C; }
 <ST_IN_SCRIPTING>"__FUNCTION__" 		{ return Tokens.T_FUNC_C; }
 <ST_IN_SCRIPTING>"__METHOD__"   		{ return Tokens.T_METHOD_C; }
 <ST_IN_SCRIPTING>"__LINE__"     		{ return Tokens.T_LINE; }

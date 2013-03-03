@@ -195,14 +195,19 @@ namespace PHP.Core.AST
 		public VariableName Name { get { return name; } }
 		private readonly VariableName name;
 
+        /// <summary>
+        /// Position of <see cref="Name"/> part of the constant use.
+        /// </summary>
+        public Position NamePosition { get; private set; }
+
 		bool runtimeVisibilityCheck;
 
-		public ClassConstUse(Position position, GenericQualifiedName className, string/*!*/ name)
-			: this(position, DirectTypeRef.FromGenericQualifiedName(position, className), name)
+        public ClassConstUse(Position position, GenericQualifiedName className, Position classNamePosition, string/*!*/ name, Position namePosition)
+            : this(position, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), name, namePosition)
 		{
 		}
 
-        public ClassConstUse(Position position, TypeRef/*!*/typeRef, string/*!*/ name)
+        public ClassConstUse(Position position, TypeRef/*!*/typeRef, string/*!*/ name, Position namePosition)
             : base(position)
         {
             Debug.Assert(typeRef != null);
@@ -210,6 +215,7 @@ namespace PHP.Core.AST
 
             this.typeRef = typeRef;
 			this.name = new VariableName(name);
+            this.NamePosition = namePosition;
         }
 
 		internal override Evaluation EvaluatePriorAnalysis(SourceUnit/*!*/ sourceUnit)

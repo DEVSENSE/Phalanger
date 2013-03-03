@@ -163,16 +163,18 @@ using Pair = System.Tuple<object,object>;
 %token T_DEFAULT
 %token T_BREAK
 %token T_CONTINUE
-%token<Object> T_FUNCTION                 // string (doc comment)
-%token<Object> T_CONST                    // string (doc comment)
+%token<Object> T_FUNCTION                 // PHPDocBlock
+%token<Object> T_CONST                    // PHPDocBlock
 %token T_RETURN
 %token T_GLOBAL
-%token<Object> T_STATIC					  // string (doc comment)
-%token<Object> T_VAR                      // string (doc comment)
+%token<Object> T_STATIC					  // PHPDocBlock
+%token<Object> T_VAR                      // PHPDocBlock
 %token T_UNSET
 %token T_ISSET
 %token T_EMPTY
-%token<Object> T_CLASS                    // string (doc comment)
+%token<Object> T_CLASS                    // PHPDocBlock
+%token<Object> T_TRAIT                    // PHPDocBlock
+%token T_INSTEADOF
 %token T_EXTENDS
 %token T_OBJECT_OPERATOR
 %token T_DOUBLE_ARROW
@@ -180,6 +182,7 @@ using Pair = System.Tuple<object,object>;
 %token T_ARRAY
 %token T_CALLABLE
 %token T_CLASS_C
+%token T_TRAIT_C
 %token T_METHOD_C
 %token T_FUNC_C
 %token T_LINE
@@ -218,13 +221,13 @@ using Pair = System.Tuple<object,object>;
 %token T_TRY
 %token T_CATCH
 %token T_THROW
-%token<Object> T_INTERFACE                // string (doc comment)
+%token<Object> T_INTERFACE                // PHPDocBlock
 %token T_IMPLEMENTS
-%token<Object> T_ABSTRACT				  // string (doc comment)
-%token<Object> T_FINAL					  // string (doc comment)
-%token<Object> T_PRIVATE				  // string (doc comment)
-%token<Object> T_PROTECTED				  // string (doc comment)
-%token<Object> T_PUBLIC					  // string (doc comment)
+%token<Object> T_ABSTRACT				  // PHPDocBlock
+%token<Object> T_FINAL					  // PHPDocBlock
+%token<Object> T_PRIVATE				  // PHPDocBlock
+%token<Object> T_PROTECTED				  // PHPDocBlock
+%token<Object> T_PUBLIC					  // PHPDocBlock
 %token T_CLONE
 %token T_INSTANCEOF
 %token T_NAMESPACE
@@ -326,6 +329,7 @@ using Pair = System.Tuple<object,object>;
 %type<Object> function_declaration_statement          // FunctionDecl
 %type<Object> function_declaration_head				  // Tuple<List<CustomAttribute>,object,bool>!	// <attributes,doc_comment,is_ref>
 %type<Object> ref_opt_identifier					  // Tuple<bool,string>!	// <is_ref, func_name>
+%type<Object> class_entry_type						  // Tuple<Tokens, PHPDocBlock>	// T_CLASS|T_TRAIT, PHPDocBlock
 %type<Object> class_declaration_statement             // TypeDecl
 %type<Object> class_identifier                        // String
 %type<Object> namespace_declaration_statement         // NamespaceDecl
@@ -401,8 +405,8 @@ using Pair = System.Tuple<object,object>;
 %type<Object> type_ref                                // TypeRef!
 %type<Object> type_ref_list                           // List<TypeRef>
 %type<Object> qualified_static_type_ref               // GenericQualifiedName
-%type<Object> interface_list                          // List<GenericQualifiedName>
-%type<Object> interface_extends_opt                  // List<GenericQualifiedName>
+%type<Object> interface_list                          // List<KeyValuePair<GenericQualifiedName,Position>>
+%type<Object> interface_extends_opt                  // List<KeyValuePair<GenericQualifiedName,Position>>
 %type<Object> variable_name                           
 
 %type<Object> generic_dynamic_args_opt                // List<TypeRef>!
@@ -443,6 +447,18 @@ using Pair = System.Tuple<object,object>;
 %type<Object> class_method_identifier				  // String
 %type<Object> implements_opt 
 %type<Object> ctor_arguments_opt
+
+%type<Object> trait_use_statement					  // TraitsUse
+%type<Object> trait_adaptations						  // null or List<TraitsUse.TraitAdaptation>
+%type<Object> trait_adaptation_list					  // null or List<TraitsUse.TraitAdaptation>
+%type<Object> non_empty_trait_adaptation_list		  // List<TraitsUse.TraitAdaptation>
+%type<Object> trait_adaptation_statement			  // TraitsUse.TraitAdaptation
+%type<Object> trait_precedence
+%type<Object> trait_method_reference
+%type<Object> trait_method_reference_fully_qualified
+%type<Object> trait_alias
+%type<Object> trait_modifiers						  // PhpMemberAttributes?
+
 %type<Object> dynamic_class_name_variable_property 
 %type<Object> additional_catches_opt 
 %type<Object> additional_catches
@@ -477,10 +493,11 @@ using Pair = System.Tuple<object,object>;
 
 %type<Integer> attribute_target_opt          // CustomAttribute.Targets
 
-%type<Object> extends_opt                    // GenericQualifiedName?
+%type<Object> extends_opt                    // Tuple<GenericQualifiedName,Position>
 %type<Object> qualified_namespace_name       // QualifiedName	// has base name
 %type<Object> namespace_name_list			 // List<string>
 %type<Object> namespace_name_identifier		 // string
+%type<Object> qualified_namespace_name_list  // List<QualifiedName>	// have base name
 
 %% /* Productions */
 
@@ -651,8 +668,13 @@ function_declaration_head:
 	|	attributes T_FUNCTION '&'	{ $$ = new Tuple<List<CustomAttribute>,object,bool>((List<CustomAttribute>)$1, $2, true); }
 ;
 
+class_entry_type:
+		T_CLASS		{ $$ = new Tuple<Tokens,PHPDocBlock>(Tokens.T_CLASS, $1 as PHPDocBlock); }
+	|	T_TRAIT		{ $$ = new Tuple<Tokens,PHPDocBlock>(Tokens.T_TRAIT, $1 as PHPDocBlock); }
+;
+
 class_declaration_statement:
-		attributes_opt visibility_opt modifier_opt partial_opt T_CLASS
+		attributes_opt visibility_opt modifier_opt partial_opt class_entry_type
 		class_identifier type_parameter_list_opt
 		{
 			Name class_name = new Name((string)$6);
@@ -666,17 +688,21 @@ class_declaration_statement:
 		'{' class_statement_list_opt '}' 
 		{ 
 		  Name class_name = new Name((string)$6);
+		  var class_entry = (Tuple<Tokens,PHPDocBlock>)$5;
+		  var member_attr = (PhpMemberAttributes)($2 | $3);
+		  if (class_entry.Item1 == Tokens.T_TRAIT)
+			member_attr |= PhpMemberAttributes.Trait | PhpMemberAttributes.Abstract;
 		  
-		  CheckReservedNamesAbsence((GenericQualifiedName?)$9, @9);
-		  CheckReservedNamesAbsence((List<GenericQualifiedName>)$10, @10);
+		  CheckReservedNamesAbsence((Tuple<GenericQualifiedName,Position>)$9);
+		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Position>>)$10);
 		  
 		  $$ = new TypeDecl(sourceUnit, CombinePositions(@5, @6), @$, GetHeadingEnd(GetLeftValidPosition(10)), GetBodyStart(@11), 
 				IsCurrentCodeConditional, GetScope(), 
-				(PhpMemberAttributes)($2 | $3), $4 != 0, class_name, currentNamespace, 
-				(List<FormalTypeParam>)$7, (GenericQualifiedName?)$9, (List<GenericQualifiedName>)$10, 
+				member_attr, $4 != 0, class_name, @6, currentNamespace, 
+				(List<FormalTypeParam>)$7, (Tuple<GenericQualifiedName,Position>)$9, (List<KeyValuePair<GenericQualifiedName,Position>>)$10, 
 		    (List<TypeMemberDecl>)$12, (List<CustomAttribute>)$1);
 		    
-		  SetCommentSetHelper($$, $5);
+		  SetCommentSetHelper($$, class_entry.Item2);
 				
 		  reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
 
@@ -698,7 +724,7 @@ class_declaration_statement:
 	  { 
 		  Name class_name = new Name((string)$6);
 		  
-		  CheckReservedNamesAbsence((List<GenericQualifiedName>)$9, @9);
+		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Position>>)$9);
 		  
 			if ((PhpMemberAttributes)$3 != PhpMemberAttributes.None)
 				errors.Add(Errors.InvalidInterfaceModifier, SourceUnit, @3);
@@ -706,8 +732,9 @@ class_declaration_statement:
 		  $$ = new TypeDecl(sourceUnit, CombinePositions(@5, @6), @$, GetHeadingEnd(GetLeftValidPosition(9)), GetBodyStart(@10),
 				IsCurrentCodeConditional, GetScope(), 
 				(PhpMemberAttributes)$2 | PhpMemberAttributes.Abstract | PhpMemberAttributes.Interface, 
-				$4 != 0, class_name, currentNamespace, (List<FormalTypeParam>)$7, null, (List<GenericQualifiedName>)$9, (List<TypeMemberDecl>)$11, 
-				(List<CustomAttribute>)$1); 
+				$4 != 0, class_name, @6, currentNamespace,
+				(List<FormalTypeParam>)$7, null, (List<KeyValuePair<GenericQualifiedName,Position>>)$9,
+				(List<TypeMemberDecl>)$11, (List<CustomAttribute>)$1); 
 				
 			SetCommentSetHelper($$, $5);
 			
@@ -740,29 +767,29 @@ partial_opt:
 
 extends_opt:
 		/* empty */														{ $$ = null; }
-	|	T_EXTENDS qualified_static_type_ref	{ $$ = (GenericQualifiedName)$2; }
+	|	T_EXTENDS qualified_static_type_ref	{ $$ = new Tuple<GenericQualifiedName,Position>((GenericQualifiedName)$2, @2); }
 ;
 
 interface_extends_opt:
-		/* empty */								{ $$ = emptyGenericQualifiedNameList; }
+		/* empty */								{ $$ = emptyGenericQualifiedNamePositionList; }
 	|	T_EXTENDS interface_list	{ $$ = $2; }
 ;
 
 implements_opt:
-		/* empty */										{ $$ = emptyGenericQualifiedNameList; }
+		/* empty */										{ $$ = emptyGenericQualifiedNamePositionList; }
 	|	T_IMPLEMENTS interface_list		{ $$ = $2; }
 ;
 
 interface_list:
 		qualified_static_type_ref						
 		{ 
-			$$ = NewList<GenericQualifiedName>($1);
+			$$ = NewList<KeyValuePair<GenericQualifiedName,Position>>(new KeyValuePair<GenericQualifiedName,Position>((GenericQualifiedName)$1, @1));
 		}		
 		
 	|	interface_list ',' qualified_static_type_ref	
 		{ 
 			$$ = $1; 
-			ListAdd<GenericQualifiedName>($$, $3); 
+			ListAdd<KeyValuePair<GenericQualifiedName,Position>>($$, new KeyValuePair<GenericQualifiedName,Position>((GenericQualifiedName)$3, @3)); 
 		}
 ;
 
@@ -1219,11 +1246,17 @@ formal_parameter_list:
 formal_parameter:         
     attributes_opt type_hint_opt reference_opt T_VARIABLE                   
     { 
-			$$ = new FormalParam(@4, (string)$4, $2, (int)$3 == 1, null, (List<CustomAttribute>)$1); 
+			$$ = new FormalParam(@4, (string)$4, $2, (int)$3 == 1, null, (List<CustomAttribute>)$1)
+			{
+				TypeHintPosition = @2
+			};
 		}
   | attributes_opt type_hint_opt reference_opt T_VARIABLE '=' constant_inititalizer 
 		{ 
-			$$ = new FormalParam(@4, (string)$4, $2, (int)$3 == 1, (Expression)$6, (List<CustomAttribute>)$1); 
+			$$ = new FormalParam(@4, (string)$4, $2, (int)$3 == 1, (Expression)$6, (List<CustomAttribute>)$1)
+			{
+				TypeHintPosition = @2
+			};
 		}
 ;
 
@@ -1356,7 +1389,55 @@ class_statement:
 			
 			LeaveConditionalCode();
 			UnreserveTypeNames((List<FormalTypeParam>)$6);
-		} 
+		}
+	|	trait_use_statement		{ $$ = $1; }
+;
+
+trait_use_statement:
+		T_USE qualified_namespace_name_list trait_adaptations		{ $$ = new TraitsUse(@$, (List<QualifiedName>)$2, (List<TraitsUse.TraitAdaptation>)$3); }
+;
+
+trait_adaptations:
+		';'									{ $$ = null; }
+	|	'{' trait_adaptation_list '}'		{ $$ = $2; }
+;
+
+trait_adaptation_list:
+		/* empty */							{ $$ = null; }
+	|	non_empty_trait_adaptation_list		{ $$ = $1; }
+;
+
+non_empty_trait_adaptation_list:
+		trait_adaptation_statement			{ $$ = NewList<TraitsUse.TraitAdaptation>($1); }
+	|	non_empty_trait_adaptation_list trait_adaptation_statement	{ $$ = ListAdd<TraitsUse.TraitAdaptation>($1, $2); }
+;
+
+trait_adaptation_statement:
+		trait_precedence ';'		{ $$ = $1; }
+	|	trait_alias ';'				{ $$ = $1; }
+;
+
+trait_precedence:
+	trait_method_reference_fully_qualified T_INSTEADOF qualified_namespace_name_list	{ $$ = new TraitsUse.TraitAdaptationPrecedence(@$, (Tuple<QualifiedName?,Name>)$1, (List<QualifiedName>)$3); }
+;
+
+trait_method_reference:
+		identifier													{ $$ = new Tuple<QualifiedName?,Name>(null, new Name((string)$1)); }
+	|	trait_method_reference_fully_qualified						{ $$ = $1; }
+;
+
+trait_method_reference_fully_qualified:
+	qualified_namespace_name T_DOUBLE_COLON identifier				{ $$ = new Tuple<QualifiedName?,Name>((QualifiedName)$1, new Name((string)$3)); }
+;
+
+trait_alias:
+		trait_method_reference T_AS trait_modifiers identifier		{ $$ = new TraitsUse.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$4, (PhpMemberAttributes?)$3); }
+	|	trait_method_reference T_AS member_modifier					{ $$ = new TraitsUse.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, null, ((TmpMemberInfo)$1).attr); }
+;
+
+trait_modifiers:
+		/* empty */		{ $$ = null; }
+	|	member_modifier	{ $$ = (PhpMemberAttributes?)((TmpMemberInfo)$1).attr; }
 ;
 
 class_method_identifier:
@@ -1786,7 +1867,7 @@ linq_into_clause_opt:
 function_call:
 		qualified_namespace_name generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 		{ 
-		  $$ = CreateDirectFcnCall(@$, (QualifiedName)$1, (List<ActualParam>)$4, (List<TypeRef>)$2);
+		  $$ = CreateDirectFcnCall(@$, (QualifiedName)$1, @1, (List<ActualParam>)$4, (List<TypeRef>)$2);
 		}
 
 	|	class_constant generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
@@ -1796,7 +1877,7 @@ function_call:
 		
 	|	qualified_static_type_ref T_DOUBLE_COLON keyed_variable generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 		{ 
-		  $$ = new IndirectStMtdCall(@$, (GenericQualifiedName)$1, (CompoundVarUse)$3, (List<ActualParam>)$6, 
+		  $$ = new IndirectStMtdCall(@$, (GenericQualifiedName)$1, @1, (CompoundVarUse)$3, (List<ActualParam>)$6, 
 				(List<TypeRef>)$4);	
 		}
 
@@ -1931,6 +2012,11 @@ namespace_name_identifier:	// identifier + some keywords that should be used wit
 	|	T_ABSTRACT			{ $$ = CSharpNameToken(@1, ($1 as string) ?? "Abstract"); }	// needs PHPDoc handled differently to be sure the value of this token is its string
 ;
 
+qualified_namespace_name_list:
+		qualified_namespace_name										{ $$ = NewList<QualifiedName>($1); }
+	|	qualified_namespace_name_list ',' qualified_namespace_name		{ $$ = ListAdd<QualifiedName>($1, $3); }
+;
+
 keyed_field_names_opt:
 		keyed_field_names_opt T_OBJECT_OPERATOR keyed_field_name
 		{ 
@@ -1994,11 +2080,11 @@ global_constant:
 class_constant:
 		qualified_static_type_ref T_DOUBLE_COLON identifier 
 		{ 
-		  $$ = new ClassConstUse(@$, (GenericQualifiedName)$1, (string)$3); 
+		  $$ = new ClassConstUse(@$, (GenericQualifiedName)$1, @1, (string)$3, @3); 
 		}
 	|	keyed_variable T_DOUBLE_COLON identifier
 		{
-			$$ = new ClassConstUse(@$, new IndirectTypeRef(@1, (VariableUse)$1, TypeRef.EmptyList), (string)$3); 
+			$$ = new ClassConstUse(@$, new IndirectTypeRef(@1, (VariableUse)$1, TypeRef.EmptyList), (string)$3, @3); 
 		}
 ;
 
@@ -2095,7 +2181,7 @@ chain_base:
 		if ($3 is DirectVarUse && ((DirectVarUse)$3).VarName.IsThisVariableName)
 			$$ = $3;	// you know, in PHP ... whatever::$this means $this
 		else
-			$$ = CreateStaticFieldUse(@$, (GenericQualifiedName)$1, (CompoundVarUse)$3); 
+			$$ = CreateStaticFieldUse(@$, (GenericQualifiedName)$1, @1, (CompoundVarUse)$3); 
 	  }	
 	|	keyed_variable T_DOUBLE_COLON keyed_variable 
 	  { 
