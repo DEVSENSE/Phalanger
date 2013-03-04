@@ -26,11 +26,17 @@ namespace PHP.Core.AST
 	{
 		internal override Operations Operation { get { return Operations.ItemUse; } }
 
+        /// <summary>
+        /// Whether this represents function array dereferencing.
+        /// </summary>
+        public bool IsFunctionArrayDereferencing { get { return this.functionArrayDereferencing; } }
+        private readonly bool functionArrayDereferencing = false;
+
 		/// <summary>
 		/// Variable used as an array identifier.
 		/// </summary>
-		public VariableUse Array { get { return array; } set { array = value; } }
-		private VariableUse/*!*/ array;
+        public VarLikeConstructUse Array { get { return array; } set { array = value; } }
+        private VarLikeConstructUse/*!*/ array;
 
 		/// <summary>
 		/// Expression used as an array index. 
@@ -44,13 +50,14 @@ namespace PHP.Core.AST
 		/// </summary>
 		private PhpTypeCode indexTypeCode = PhpTypeCode.Unknown;
 
-		public ItemUse(Position p, VariableUse/*!*/ array, Expression index)
+        public ItemUse(Position p, VarLikeConstructUse/*!*/ array, Expression index, bool functionArrayDereferencing = false)
 			: base(p)
 		{
 			Debug.Assert(array != null);
 
 			this.array = array;
 			this.index = index;
+            this.functionArrayDereferencing = functionArrayDereferencing;
 		}
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Expression.Analyze"]/*'/>

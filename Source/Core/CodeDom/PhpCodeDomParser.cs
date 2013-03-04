@@ -1214,7 +1214,7 @@ namespace PHP.Core.CodeDom
             {
                 if (use is ItemUse)
                 {                                         //$var[$index]
-                    return new CodeArrayIndexerExpression(TranslateVariableUse(((ItemUse)use).Array, method, IC), TranslateExpression(((ItemUse)use).Index, method, IC));
+                    return new CodeArrayIndexerExpression(TranslateVarLikeConstructUse(((ItemUse)use).Array, method, IC), TranslateExpression(((ItemUse)use).Index, method, IC));
                 }
                 else if (use is DirectVarUse && use.IsMemberOf == null)
                 {   //$var
