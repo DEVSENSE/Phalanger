@@ -704,51 +704,51 @@ namespace PHP.Core.Emit
 			il.Emit(OpCodes.Ret);
 		}
 
-        ///// <summary>
-        ///// Generates a <c>__PopulateTypeDesc</c> method that populates a <see cref="DTypeDesc"/>
-        ///// at runtime (instead of reflecting the class).
-        ///// </summary>
-        ///// <param name="typeBuilder">The target <see cref="TypeBuilder"/>.</param>
-        ///// <param name="methods">The methods to add to the type desc.</param>
-        ///// <param name="fields">The fields to add to the type desc.</param>
-        ///// <param name="constants">The constants to add to the type desc. Together with their value. (Consts are public static literal fields)</param>
-        ///// <remarks>Used by WrapperGen.</remarks>
-        //public static void GenerateTypeDescPopulation(TypeBuilder typeBuilder,
-        //    ICollection<InfoWithAttributes<MethodInfo>> methods,
-        //    ICollection<InfoWithAttributes<FieldInfo>> fields,
-        //    ICollection<KeyValuePair<FieldInfo,Object>> constants)
-        //{
-        //    MethodBuilder populator = DefinePopulateTypeDescMethod(typeBuilder);
-        //    ILEmitter il = new ILEmitter(populator);
+        /// <summary>
+        /// Generates a <c>__PopulateTypeDesc</c> method that populates a <see cref="DTypeDesc"/>
+        /// at runtime (instead of reflecting the class).
+        /// </summary>
+        /// <param name="typeBuilder">The target <see cref="TypeBuilder"/>.</param>
+        /// <param name="methods">The methods to add to the type desc.</param>
+        /// <param name="fields">The fields to add to the type desc.</param>
+        /// <param name="constants">The constants to add to the type desc. Together with their value. (Consts are public static literal fields)</param>
+        /// <remarks>Used by WrapperGen.</remarks>
+        public static void GenerateTypeDescPopulation(TypeBuilder typeBuilder,
+            ICollection<InfoWithAttributes<MethodInfo>> methods,
+            ICollection<InfoWithAttributes<FieldInfo>> fields,
+            ICollection<KeyValuePair<FieldInfo, Object>> constants)
+        {
+            MethodBuilder populator = DefinePopulateTypeDescMethod(typeBuilder);
+            ILEmitter il = new ILEmitter(populator);
 
-        //    // methods
-        //    if (methods != null)
-        //    {
-        //        foreach (InfoWithAttributes<MethodInfo> info in methods)
-        //        {
-        //            EmitAddMethod(il, info.Info.Name, info.Attributes, info.Info);
-        //        }
-        //    }
+            // methods
+            if (methods != null)
+            {
+                foreach (InfoWithAttributes<MethodInfo> info in methods)
+                {
+                    EmitAddMethod(il, info.Info.Name, info.Attributes, info.Info);
+                }
+            }
 
-        //    // fields
-        //    if (fields != null)
-        //    {
-        //        foreach (InfoWithAttributes<FieldInfo> info in fields)
-        //        {
-        //            EmitAddProperty(il, info.Info.DeclaringType, info.Info.Name, info.Attributes, info.Info);
-        //        }
-        //    }
+            // fields
+            if (fields != null)
+            {
+                foreach (InfoWithAttributes<FieldInfo> info in fields)
+                {
+                    EmitAddProperty(il, info.Info.DeclaringType, info.Info.Name, info.Attributes, info.Info);
+                }
+            }
 
-        //    // constants
-        //    if (constants != null)
-        //    {
-        //        foreach (var info in constants)
-        //        {
-        //            EmitAddConstant(il, info.Key.Name, info.Value);
-        //        }
-        //    }
-        //    il.Emit(OpCodes.Ret);
-        //}
+            // constants
+            if (constants != null)
+            {
+                foreach (var info in constants)
+                {
+                    EmitAddConstant(il, info.Key.Name, info.Value);
+                }
+            }
+            il.Emit(OpCodes.Ret);
+        }
 
 		private static void EmitAddMethod(ILEmitter il, string name, PhpMemberAttributes attributes, MethodInfo argless)
 		{
@@ -794,6 +794,20 @@ namespace PHP.Core.Emit
 
 			il.Emit(OpCodes.Call, Methods.AddProperty);
 		}
+
+        private static void EmitAddConstant(ILEmitter il, string name, object value)
+        {
+            // [ typeDesc.AddConstant("constant", value) ]
+
+            //Debug.Assert(constant.IsStatic);
+
+            il.Ldarg(0);
+            il.Emit(OpCodes.Ldstr, name);
+            il.LoadLiteralBox(value);  // for non dynamic literal fields
+            //il.Emit(OpCodes.Ldsfld, constant);    // for non literal field only !
+
+            il.Emit(OpCodes.Call, Methods.AddConstant);
+        }
 
 		private static void EmitAddConstant(ILEmitter/*!*/il, string/*!*/name, ClassConstant/*!*/constant)
         {
