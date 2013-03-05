@@ -541,6 +541,7 @@ namespace PHP.Testing
 					}
 					if (clean) File.Delete(compiled_expect_path);
 				}
+
 				if (!CompareOutputsSubstring(expect_output, ref script_output_cutted, true))
 				{
 					if (verbose) Console.WriteLine(String.Format("Unexpected output, expected: {0}", expect_output));
@@ -975,51 +976,55 @@ namespace PHP.Testing
 		private bool CompareOutputsExact(object expected, object real, bool ignoreKnownPhalangerDifferences)
 		{
 			string exp_str = expected as string;
-			string real_str = real as string;
-
 			if (exp_str == null)
 			{
 				Debug.Assert(expected is ArrayList);
-				exp_str = "";
-				foreach (string s in (ArrayList)expected)
-					exp_str += String.Concat(s, "\n");
+				exp_str = ((ArrayList) expected).Cast<string>().Aggregate("", (current, s) => current + String.Concat(s, '\n'));
 			}
-			if (real_str == null)
+
+            string real_str = real as string;
+            if (real_str == null)
 			{
 				Debug.Assert(real is ArrayList);
-				real_str = "";
-				foreach (string s in (ArrayList)real)
-					real_str += String.Concat(s, "\n");
+				real_str = ((ArrayList) real).Cast<string>().Aggregate("", (current, s) => current + String.Concat(s, '\n'));
 			}
 
-			exp_str = exp_str.Trim();
-			real_str = real_str.Trim();
+            exp_str = exp_str.Trim().Replace("\n\r", "\n").Replace("\r\n", "\n");
+            real_str = real_str.Trim().Replace("\n\r", "\n").Replace("\r\n", "\n");
 
             if (exp_str == real_str)
+            {
                 return true;
-            else if (!ignoreKnownPhalangerDifferences && !expectF && !expectRegex)
+            }
+            
+            if (!ignoreKnownPhalangerDifferences && !expectF && !expectRegex)
+            {
+                DebugCompareOutput(exp_str, real_str);
                 return false;
+            }
 
+            // Here we need to do a fuzzy match.
             ModifyOutput(ref real_str, ref exp_str);
 
             //FIXME: Add scanf and regex parsing.
             // For now, just do a fuzzy comparison.
             exp_str = RemoveWhitespace(exp_str);
             real_str = RemoveWhitespace(real_str);
-
             return (exp_str == real_str);
 		}
 
 	    private static string RemoveWhitespace(string str)
 	    {
-            // Really dumb and slow, but, it'll have to do for now.
-	        foreach (
-	            char c in new char[] {(char) 9, (char) 10, (char) 11, (char) 12, (char) 13, (char) 32, (char) 133, (char) 160})
-	        {
-	            str = str.Replace(c.ToString(), string.Empty);
-	        }
+            StringBuilder sb = new StringBuilder(str.Length);
+            foreach (char c in str)
+            {
+                if (!Char.IsWhiteSpace(c))
+                {
+                    sb.Append(c);
+                }
+            }
 
-	        return str;
+	        return sb.ToString();
 	    }
 
 	    private bool CompareOutputsSubstring(string expected, ref string real, bool ignoreKnownPhalangerDifferences)
@@ -1042,11 +1047,18 @@ namespace PHP.Testing
                 return real.Length == 0;
             }
 
+            expected = expected.Trim().Replace("\n\r", "\n").Replace("\r\n", "\n");
+            real = real.Trim().Replace("\n\r", "\n").Replace("\r\n", "\n");
+
             if (ignoreKnownPhalangerDifferences)
+            {
                 ModifyOutput(ref real, ref expected);
+            }
 
 			if (noCase)
-                real = real.ToLower();
+			{
+			    real = real.ToLower();
+			}
 
             //FIXME: Add scanf and regex parsing.
             // For now, just do a fuzzy comparison.
@@ -1057,16 +1069,36 @@ namespace PHP.Testing
             }
 
             int index = real.IndexOf(expected);
-
 			if (index < 0)
-				// not a substring
-				return false;
+			{
+			    DebugCompareOutput(expected, real);
+                
+			    // not a substring
+                return false;
+			}
 
-			real = real.Substring(index + expected.Length);
+		    real = real.Substring(index + expected.Length);
 			return true;
         }
 
-        #endregion
+        [Conditional("DEBUG")]
+        private void DebugCompareOutput(string expected, string real)
+	    {
+	        if (verbose)
+	        {
+	            string e = RemoveWhitespace(expected).ToLowerInvariant();
+	            string r = RemoveWhitespace(real).ToLowerInvariant();
+	            ModifyOutput(ref r, ref e);
+	            if (r.IndexOf(e) >= 0)
+	            {
+	                Console.WriteLine("Output has superficial differences from expected.");
+	                Console.WriteLine("Got: " + r);
+	                Console.WriteLine("Expected: " + e);
+	            }
+	        }
+	    }
+
+	    #endregion
         /*
         internal void HighlightDifferences(ref string exp_str, ref string real_str)
         {
