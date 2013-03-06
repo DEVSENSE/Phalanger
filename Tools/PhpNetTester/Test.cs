@@ -1042,10 +1042,8 @@ namespace PHP.Testing
 		/// <returns></returns>
 		private bool CompareOutputsSubstring(string expected, ref string real, bool noCase, bool ignoreKnownPhalangerDifferences)
 		{
-            if (expected.Length == 0)
-            {
-                return real.Length == 0;
-            }
+            Debug.Assert(expected != null);
+            Debug.Assert(real != null);
 
             expected = expected.Trim().Replace("\n\r", "\n").Replace("\r\n", "\n");
             real = real.Trim().Replace("\n\r", "\n").Replace("\r\n", "\n");
@@ -1066,6 +1064,11 @@ namespace PHP.Testing
             {
                 expected = RemoveWhitespace(expected);
                 real = RemoveWhitespace(real);
+            }
+
+            if (expected.Length == 0)
+            {
+                return real.Length == 0;
             }
 
             int index = real.IndexOf(expected);
