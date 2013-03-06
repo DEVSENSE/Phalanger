@@ -23,6 +23,7 @@
 
 */
 using System;
+using System.Linq;
 using PHP.Core;
 using System.IO;
 using System.Text;
@@ -6549,7 +6550,11 @@ namespace PHP.Library
         public static int Length(object x)
         {
             string str = x as string;
-            if (str != null) return str.Length;
+            if (str != null)
+            {
+                // PHP strlen returns the number of bytes, which for UTF depends on the code-points.
+                return str.Sum(c => c <= 255 ? 1 : 2);
+            }
 
             PhpBytes bytes = x as PhpBytes;
             if (bytes != null) return bytes.Length;
