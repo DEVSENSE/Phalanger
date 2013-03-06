@@ -11,13 +11,10 @@
 */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Xml;
-using System.Xml.Resolvers;
 using PHP.Core;
 
 namespace PHP.Library.Xml
@@ -72,7 +69,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object baseURI
         {
-            get { return _reader != null ? _reader.BaseURI : ""; }
+            get { return Active ? _reader.BaseURI : ""; }
         }
 
         /// <summary>
@@ -81,7 +78,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object depth
         {
-            get { return _reader != null ? _reader.Depth : 0; }
+            get { return Active ? _reader.Depth : 0; }
         }
 
         /// <summary>
@@ -90,7 +87,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object hasAttributes
         {
-            get { return _reader != null && _reader.HasAttributes; }
+            get { return Active && _reader.HasAttributes; }
         }
 
         /// <summary>
@@ -99,7 +96,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object hasValue
         {
-            get { return _reader != null && _reader.HasValue; }
+            get { return Active && _reader.HasValue; }
         }
 
         /// <summary>
@@ -108,7 +105,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object isDefault
         {
-            get { return _reader != null && _reader.IsDefault; }
+            get { return Active && _reader.IsDefault; }
         }
 
         /// <summary>
@@ -117,7 +114,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object isEmptyElement
         {
-            get { return _reader != null && _reader.IsEmptyElement; }
+            get { return Active && _reader.IsEmptyElement; }
         }
 
         /// <summary>
@@ -126,7 +123,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object localName
         {
-            get { return _reader != null ? _reader.LocalName : ""; }
+            get { return Active ? _reader.LocalName : ""; }
         }
 
         /// <summary>
@@ -135,7 +132,9 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object name
         {
-            get { return _reader == null ? "" :
+            get
+            {
+                return !Active ? "" :
                     (!string.IsNullOrEmpty(_reader.Name) ? _reader.Name : getNodeTypeName());
             }
         }
@@ -146,7 +145,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object namespaceURI
         {
-            get { return _reader != null ? _reader.NamespaceURI : ""; }
+            get { return Active ? _reader.NamespaceURI : ""; }
         }
 
         /// <summary>
@@ -155,7 +154,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object nodeType
         {
-            get { return _reader != null ? (int)_reader.NodeType : 0; }
+            get { return Active ? (int)_reader.NodeType : 0; }
         }
 
         /// <summary>
@@ -164,7 +163,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object prefix
         {
-            get { return _reader != null ? _reader.Prefix : ""; }
+            get { return Active ? _reader.Prefix : ""; }
         }
 
         /// <summary>
@@ -173,7 +172,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object value
         {
-            get { return _reader != null ? _reader.Value : ""; }
+            get { return Active ? _reader.Value : ""; }
         }
 
         /// <summary>
@@ -182,7 +181,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public object xmlLang
         {
-            get { return _reader != null ? _reader.XmlLang : ""; }
+            get { return Active ? _reader.XmlLang : ""; }
         }
 
         #endregion
@@ -217,19 +216,19 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public string getAttribute(string name)
         {
-            return (_reader != null && _reader.NodeType == XmlNodeType.Element) ? _reader.GetAttribute(name) : "";
+            return (Active && _reader.NodeType == XmlNodeType.Element) ? _reader.GetAttribute(name) : "";
         }
 
         [PhpVisible]
         public string getAttributeNo(int index)
         {
-            return (_reader != null && _reader.NodeType == XmlNodeType.Element) ? _reader.GetAttribute(index) : "";
+            return (Active && _reader.NodeType == XmlNodeType.Element) ? _reader.GetAttribute(index) : "";
         }
 
         [PhpVisible]
         public string getAttributeNs(string localName, string namespaceURI)
         {
-            return (_reader != null && _reader.NodeType == XmlNodeType.Element) ? _reader.GetAttribute(localName, namespaceURI) : "";
+            return (Active && _reader.NodeType == XmlNodeType.Element) ? _reader.GetAttribute(localName, namespaceURI) : "";
         }
 
         [PhpVisible]
@@ -242,13 +241,14 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool isValid()
         {
+            //TODO: This function is for schema validation.
             return _reader != null && _reader.ReadState != ReadState.Error;
         }
 
         [PhpVisible]
         public bool lookupNamespace(string prefix)
         {
-            return _reader != null && _reader.LookupNamespace(prefix) != null;
+            return Active && _reader.LookupNamespace(prefix) != null;
         }
 
         [PhpVisible]
@@ -260,7 +260,7 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool moveToAttributeNo(int index)
         {
-            if (_reader == null || index < 0 || index >= getAttributeCount())
+            if (!Active || index < 0 || index >= getAttributeCount())
             {
                 return false;
             }
@@ -280,25 +280,25 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool moveToAttributeNs(string localName, string namespaceURI)
         {
-            return _reader != null && _reader.MoveToAttribute(localName, namespaceURI);
+            return Active && _reader.MoveToAttribute(localName, namespaceURI);
         }
 
         [PhpVisible]
         public bool moveToElement()
         {
-            return _reader != null && _reader.MoveToElement();
+            return Active && _reader.MoveToElement();
         }
 
         [PhpVisible]
         public bool moveToFirstAttribute()
         {
-            return _reader != null && _reader.MoveToFirstAttribute();
+            return Active && _reader.MoveToFirstAttribute();
         }
 
         [PhpVisible]
         public bool moveToNextAttribute()
         {
-            return _reader != null && _reader.MoveToNextAttribute();
+            return Active && _reader.MoveToNextAttribute();
         }
 
         [PhpVisible]
@@ -340,10 +340,32 @@ namespace PHP.Library.Xml
         {
             try
             {
-                return _reader != null && _reader.ReadState != ReadState.Closed &&
-                       _reader.Read() &&
-                       _reader.ReadState != ReadState.Error &&
-                       _reader.ReadState != ReadState.EndOfFile;
+                if (_reader == null ||
+                    _reader.ReadState == ReadState.Error ||
+                    _reader.ReadState == ReadState.EndOfFile ||
+                    _reader.ReadState == ReadState.Closed)
+                {
+                    return false;
+                }
+
+                if (_reader.ReadState == ReadState.Interactive)
+                {
+                    // Shouldn't Read() return false on Error?
+                    return _reader.Read() &&
+                           _reader.ReadState != ReadState.Error;
+                }
+
+                // Initial state.
+                while (_reader.NodeType != XmlNodeType.Element &&
+                       _reader.ReadState != ReadState.Error)
+                {
+                    if (!_reader.Read())
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -355,25 +377,25 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public string readInnerXML()
         {
-            return _reader != null ? _reader.ReadInnerXml() : "";
+            return Active ? _reader.ReadInnerXml() : "";
         }
 
         [PhpVisible]
         public string readOuterXML()
         {
-            return _reader != null ? _reader.ReadOuterXml() : "";
+            return Active ? _reader.ReadOuterXml() : "";
         }
 
         [PhpVisible]
         public string readString()
         {
-            return _reader != null ? _reader.ReadString() : "";
+            return Active ? _reader.ReadString() : "";
         }
 
         [PhpVisible]
         public bool setParserProperty(int property, bool newValue)
         {
-            if (_reader == null)
+            if (_reader == null || _reader.ReadState != ReadState.Initial)
             {
                 return false;
             }
@@ -392,7 +414,12 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool setRelaxNGSchema(string filename)
         {
-            if (string.IsNullOrWhiteSpace(filename))
+            if (_reader == null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(filename) || _reader.ReadState != ReadState.Initial)
             {
                 //TODO: Get current file and line.
                 Console.Write("Warning: XMLReader::setRelaxNGSchema(): Schema data source is required in %s on line %d");
@@ -405,7 +432,12 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool setRelaxNGSchemaSource(string source)
         {
-            if (string.IsNullOrWhiteSpace(source))
+            if (_reader == null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(source) || _reader.ReadState != ReadState.Initial)
             {
                 //TODO: Get current file and line.
                 Console.Write("Warning: XMLReader::setRelaxNGSchemaSource(): Schema data source is required in %s on line %d");
@@ -418,7 +450,12 @@ namespace PHP.Library.Xml
         [PhpVisible]
         public bool setSchema(string filename)
         {
-            if (string.IsNullOrWhiteSpace(filename))
+            if (_reader == null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(filename) || _reader.ReadState != ReadState.Initial)
             {
                 //TODO: Get current file and line.
                 Console.Write("Warning: XMLReader::setSchema(): Schema data source is required in %s on line %d");
@@ -448,6 +485,11 @@ namespace PHP.Library.Xml
         #endregion
 
         #region Implementation
+
+        protected bool Active
+        {
+            get { return _reader != null && _reader.ReadState == ReadState.Interactive; }
+        }
 
         protected int getAttributeCount()
         {
@@ -497,8 +539,6 @@ namespace PHP.Library.Xml
             {
                 var settings = createSettings();
                 _reader = _uriSource ? XmlReader.Create(_source, settings) : XmlReader.Create(new StringReader(_source), settings);
-
-                initialize();
                 return true;
             }
             catch (Exception ex)
@@ -508,16 +548,6 @@ namespace PHP.Library.Xml
             }
 
             return false;
-        }
-
-        private void initialize()
-        {
-            // Prime.
-            read();
-            if ("xml".EqualsOrdinalIgnoreCase(_reader.Name))
-            {
-                read();
-            }
         }
 
         private string getNodeTypeName()
