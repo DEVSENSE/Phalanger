@@ -30,7 +30,7 @@ while ($reader->read()) {
 }
 ?>
 ===DONE===
---EXPECT--
+--EXPECT EXACT--
 LIST
 LIST
 #text

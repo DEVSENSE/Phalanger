@@ -19,7 +19,7 @@ $t = new test;
 
 echo "Done\n";
 ?>
---EXPECT--	
+--EXPECT EXACT--	
 array(1) {
   [0]=>
   int(1)

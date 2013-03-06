@@ -1,5 +1,5 @@
 --TEST--
-XMLReader: Expand into existing DOM documet
+XMLReader: Expand into existing DOM document
 --SKIPIF--
 <?php if (!extension_loaded("xmlreader")) print "skip";
 if (!extension_loaded("dom")) print "skip DOM extension required";
@@ -32,6 +32,6 @@ while ($reader->read()) {
 $reader->close();
 ?>
 ===DONE===
---EXPECT--
+--EXPECT EXACT--
 base book
 ===DONE===

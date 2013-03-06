@@ -32,6 +32,6 @@ while ($reader->read());
 $reader->close();
 ?>
 ===DONE===
---EXPECT--
+--EXPEC EXACT--
 ok
 ===DONE===

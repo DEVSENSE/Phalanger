@@ -28,7 +28,7 @@ echo "\n";
 $reader->close();
 ?>
 ===DONE===
---EXPECT--
+--EXPECT EXACT--
 <book>test</book>
 <books><book>test</book></books>
 ===DONE===

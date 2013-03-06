@@ -61,7 +61,7 @@ $reader->close();
 
 ?>
 ===DONE===
---EXPECT--
+--EXPECT EXACT--
 string(0) ""
 NULL
 string(0) ""

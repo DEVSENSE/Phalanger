@@ -33,7 +33,7 @@ $reader->close();
 unlink($filename);
 ?>
 ===DONE===
---EXPECT--
+--EXPEC EXACT--
 books
 book
    Attribute Name: num

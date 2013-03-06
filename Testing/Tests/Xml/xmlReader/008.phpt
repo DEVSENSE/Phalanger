@@ -65,7 +65,7 @@ if ($reader->isValid()) {
 }
 ?>
 ===DONE===
---EXPECTF--
+--EXPECT EXACT--
 file DTD: ok
 string DTD: ok
 ===DONE===

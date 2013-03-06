@@ -74,7 +74,7 @@ $reader->close();
 unlink($filename);
 ?>
 ===DONE===
---EXPECT--
+--EXPECT EXACT--
 num: 1
 idx: 2
 num: 1

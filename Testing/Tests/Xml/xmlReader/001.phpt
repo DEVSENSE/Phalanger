@@ -21,7 +21,7 @@ $reader = new XMLReader();
 $reader->XML($xmlstring);
 ?>
 ===DONE===
---EXPECTF--
+--EXPECT EXACT--
 books
 books
 

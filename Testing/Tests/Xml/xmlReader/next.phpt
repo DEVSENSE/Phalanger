@@ -26,7 +26,7 @@ echo $reader->getAttribute('num');
 echo "\n";
 ?>
 ===DONE===
---EXPECTF--
+--EXPECT EXACT--
 []
 [books]
 [book]

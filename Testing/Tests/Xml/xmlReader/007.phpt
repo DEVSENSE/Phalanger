@@ -49,7 +49,7 @@ if ($reader->setRelaxNGSchema('')) {
 $reader->close();
 ?>
 ===DONE===
---EXPECTF--
+--EXPECT EXACT--
 file relaxNG: ok
 string relaxNG: ok
 

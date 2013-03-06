@@ -31,6 +31,6 @@ if ($reader->nodeType != XMLREADER::END_ELEMENT) {
 $reader->close();
 ?>
 ===DONE===
---EXPECT--
+--EXPEC EXACT--
 ok
 ===DONE===
