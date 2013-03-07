@@ -31,7 +31,7 @@ namespace PHP.Core.AST
         public GenericQualifiedName TypeName { get { return typeRef.GenericQualifiedName; } }
 
         /// <summary>Position of <see cref="TypeName"/>.</summary>
-        public Position TypenNamePosition { get { return this.typeRef.Position; } }
+        public Position TypeNamePosition { get { return this.typeRef.Position; } }
 
         /// <summary>Position of the field name.</summary>
         public Position NamePosition { get; private set; }
