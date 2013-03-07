@@ -12,24 +12,23 @@ namespace UseMultiScriptAssembly
         {
             ScriptContext context = ScriptContext.InitApplication(ApplicationContext.Default, null, null, null);
 
-            StringBuilder sb = new StringBuilder();
-            TextWriter tw = new StringWriter(sb);
+            var sb = new StringBuilder();
+            using (TextWriter tw = new StringWriter(sb))
+            {
+                context.Output = tw;
+                context.OutputStream = Console.OpenStandardOutput(); //TODO: Should also redirect binary output.
 
-            // redirect PHP output to the console:
-            context.Output = tw;
-            context.OutputStream = Console.OpenStandardOutput(); // byte stream output
+                context.Include("main.php", true);
 
-            context.Include("main.php", true);
+                var klass = (PhpObject)context.NewObject("Klass", new object[] { "yipppy" });
+                var foo = new PhpCallback(klass, "foo");
+                foo.Invoke(null, new object[] { "param" });
 
-            var klass = (PhpObject)context.NewObject("Klass", new object[] { "yipppy" });
-            var foo = new PhpCallback(klass, "foo");
-            foo.Invoke(null, new object[] { "param" });
+                tw.Close();
+            }
 
-            tw.Close();
             string output = sb.ToString();
-
             const string EXPECTED = "yipppyparam";
-
             if (output != EXPECTED)
             {
                 Console.WriteLine("FAIL");
