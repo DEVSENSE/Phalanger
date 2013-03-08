@@ -662,6 +662,20 @@ namespace PHP.Core
             private readonly int VariableNameOffset = -1;
 
             /// <summary>
+            /// Position of the <see cref="VariableName"/> information.
+            /// </summary>
+            public ShortPosition VariableNamePosition
+            {
+                get
+                {
+                    if (this.VariableNameOffset < 0)
+                        return ShortPosition.Invalid;
+
+                    return new ShortPosition(this.StartPosition.Line, this.StartPosition.Column + this.VariableNameOffset);
+                }
+            }
+
+            /// <summary>
             /// Optional. Element description.
             /// </summary>
             public string Description { get; private set; }
