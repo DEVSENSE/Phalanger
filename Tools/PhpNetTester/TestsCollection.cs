@@ -27,6 +27,8 @@ namespace PHP.Testing
 		private int defaultNumberOfRuns;
         private int maxThreads = 1;
         private ConcurrencyLevel concurrencyLevel = ConcurrencyLevel.None;
+        private readonly Action<string> log;
+	    private readonly object logLock = new object();
 
 		public TestsCollection(List<string> testDirsAndFiles, bool verbose, bool clean, bool compileOnly,
                                bool benchmarks, int defaultNumberOfRuns, ConcurrencyLevel concurrencyLevel, int maxThreads)
@@ -40,6 +42,10 @@ namespace PHP.Testing
 			this.defaultNumberOfRuns = defaultNumberOfRuns;
 		    this.concurrencyLevel = concurrencyLevel;
 		    this.maxThreads = maxThreads;
+            if (this.maxThreads > 1)
+            {
+                log = SyncedLog;
+            }
 		}
 
 	    private void LoadTestsFromDirectory(string dir)
@@ -87,7 +93,7 @@ namespace PHP.Testing
 
 		private void LoadTestFile(string file)
 		{
-			tests.Add(new Test(file, verbose, clean, compileOnly, benchmarks, defaultNumberOfRuns));
+			tests.Add(new Test(file, verbose, clean, compileOnly, benchmarks, defaultNumberOfRuns, log));
 		}
 
 		/// <summary>
@@ -153,6 +159,14 @@ namespace PHP.Testing
                                  });
 
             return failedCount;
+        }
+
+        private void SyncedLog(string msg)
+        {
+            lock (logLock)
+            {
+                Console.Write(msg);
+            }
         }
 
 		/// <summary>

@@ -26,6 +26,7 @@ namespace PHP.Testing
 
 	public class Test
 	{
+	    private readonly Action<string> log;
 	    private readonly string sourcePath;
 	    private readonly string sourcePathRelative;
         private List<string> script;
@@ -76,7 +77,7 @@ namespace PHP.Testing
 		/// <param name="clean"><B>True</B>if created files should be deleted.</param>
 		/// <param name="compileOnly"><B>True</B> if only compilation should be performed.</param>
 		public Test(string sourcePath, bool verbose, bool clean, bool compileOnly,
-			        bool benchmarks, int defaultNumberOfRuns)
+			        bool benchmarks, int defaultNumberOfRuns, Action<string> logger)
 		{
             this.sourcePath = Path.GetFullPath(sourcePath);
             Uri currentDir = new Uri(Directory.GetCurrentDirectory() + "\\");
@@ -89,8 +90,9 @@ namespace PHP.Testing
             this.expectCtWarning = new List<List<string>>();
 			this.benchmarks = benchmarks;
 			this.numberOfRuns = defaultNumberOfRuns;
+		    this.log = logger ?? Console.WriteLine;
 
-			// overwrites numberOfRuns if there is specified
+		    // overwrites numberOfRuns if there is specified
 			ReadFile();
 
 			if (numberOfRuns < 1 || !benchmarks)
@@ -367,7 +369,7 @@ namespace PHP.Testing
                 string name = Utils.ListToString(comment).Trim();
                 if (name.Length > 0)
                 {
-                    Console.Write("[" + name + "] ");
+                    log("[" + name + "] ");
                 }
             }
 
@@ -447,7 +449,7 @@ namespace PHP.Testing
 				}
 				if (!CompareOutputsExact(expect_output, scriptOutput, true))
 				{
-					if (verbose) Console.WriteLine(String.Format("Unexpected output, expected exact: {0}", expect_output));
+					if (verbose) log(String.Format("Unexpected output, expected exact: {0}{1}", expect_output, Environment.NewLine));
 					realTestResult = TestResult.UnexpectedOutput;
 					expectWhereFailed = expect_output;
 					return;
@@ -478,7 +480,7 @@ namespace PHP.Testing
 
 				if (!CompareOutputsSubstring(expect_output, ref script_output_cutted, true))
 				{
-					if (verbose) Console.WriteLine(String.Format("Unexpected output, expected: {0}", expect_output));
+					if (verbose) log(String.Format("Unexpected output, expected: {0}{1}", expect_output, Environment.NewLine));
 					realTestResult = TestResult.UnexpectedOutput;
 					expectWhereFailed = expect_output;
 					return;
@@ -501,7 +503,7 @@ namespace PHP.Testing
 
 					if (!CompareOutputsExact(php_output, scriptOutput, true))
 					{
-						if (verbose) Console.WriteLine(String.Format("Unexpected output, expected: {0}", php_output));
+						if (verbose) log(String.Format("Unexpected output, expected: {0}{1}", php_output, Environment.NewLine));
 						realTestResult = TestResult.UnexpectedOutput;
 						return;
 					}
@@ -555,7 +557,7 @@ namespace PHP.Testing
 			compiler.StartInfo.RedirectStandardError = true;
 			compiler.StartInfo.RedirectStandardOutput = true;
 			compiler.StartInfo.RedirectStandardInput = true;
-			if (verbose) Console.WriteLine("Running phpc compiler with options: {0}", compiler.StartInfo.Arguments);
+			if (verbose) log(string.Format("Running phpc compiler with options: {0}{1}", compiler.StartInfo.Arguments, Environment.NewLine));
 
 			compiler.Start();
 
@@ -567,20 +569,20 @@ namespace PHP.Testing
 			{
 				compiler.Kill();
 				realTestResult = TestResult.PhpcHangUp;
-				if (verbose) Console.WriteLine("Compiler hung up.");
+				if (verbose) log("Compiler hung up." + Environment.NewLine);
 				if (clean) File.Delete(scriptPath);
 				return false;
 			}
 			if (!isExpect) this.compilationTime = compiler.ExitTime.Subtract(compiler.StartTime).TotalMilliseconds;
 			if (clean) File.Delete(scriptPath);
 
-			if (verbose && compilerErrorOutput.Length > 0) Console.WriteLine("phpc error output: {0}", compilerErrorOutput);
+			if (verbose && compilerErrorOutput.Length > 0) log(string.Format("phpc error output: {0}{1}", compilerErrorOutput, Environment.NewLine));
 			compilerStdOutput = compiler.StandardOutput.ReadToEnd();
-			if (verbose && compilerStdOutput.Length > 0) Console.WriteLine("phpc std output: {0}", compilerStdOutput);
+			if (verbose && compilerStdOutput.Length > 0) log(string.Format("phpc std output: {0}{1}", compilerStdOutput, Environment.NewLine));
 
 			if (compiler.ExitCode != 0)
 			{
-				if (verbose) Console.WriteLine("Compiler exited with code: {0}", compiler.ExitCode);
+                if (verbose) log(string.Format("Compiler exited with code: {0}{1}", compiler.ExitCode, Environment.NewLine));
 
 				// do we expect error?
 				if (!isExpect && expectCtError != null)
@@ -596,7 +598,7 @@ namespace PHP.Testing
 				}
 
 				realTestResult = TestResult.PhpcMisbehaviourScript;
-				if (verbose) Console.WriteLine("Test result: {0}", Utils.ResultToString(realTestResult));
+                if (verbose) log(string.Format("Test result: {0}{1}", Utils.ResultToString(realTestResult), Environment.NewLine));
 				return false;
 			}
 
@@ -660,7 +662,7 @@ namespace PHP.Testing
 
                 if (verbose)
                 {
-                    Console.WriteLine(String.Format("Starting {0}..", scriptPath));
+                    log(String.Format("Starting {0}...{1}", scriptPath, Environment.NewLine));
                 }
 
                 res = RunTestProcess(scriptPath, out output, mainScript, script);
@@ -668,7 +670,7 @@ namespace PHP.Testing
 
 		    if (verbose)
 		    {
-		        Console.WriteLine(String.Concat("Script output: ", output));
+		        log(string.Format("Script output: {0}{1}", output, Environment.NewLine));
 		    }
 
 			return res;
@@ -724,7 +726,7 @@ namespace PHP.Testing
 	                        {
 	                            if (verbose)
 	                            {
-	                                Console.WriteLine("Script {0} did not exit properly.", scriptPath);
+	                                log(string.Format("Script {0} did not exit properly.{1}", scriptPath, Environment.NewLine));
 	                            }
 
 	                            break;
@@ -741,7 +743,7 @@ namespace PHP.Testing
                             output = sb.ToString();
 	                        if (verbose)
 	                        {
-	                            Console.WriteLine("Script {0} hung up.", scriptPath);
+	                            log(string.Format("Script {0} hung up.{1}", scriptPath, Environment.NewLine));
 	                        }
 
 	                        break;
@@ -774,7 +776,7 @@ namespace PHP.Testing
 			if (!File.Exists(phpPath))
 			{
 				realTestResult = TestResult.PhpNotFound;
-				if (verbose) Console.WriteLine(Utils.ResultToString(realTestResult));
+				if (verbose) log(Utils.ResultToString(realTestResult) + Environment.NewLine);
 				if (clean) File.Delete(scriptPath);
 				return false;
 			}
@@ -799,19 +801,21 @@ namespace PHP.Testing
 				{
 					php.Kill();
 					realTestResult = TestResult.PhpHangUp;
-					if (verbose) Console.WriteLine(Utils.ResultToString(realTestResult));
+					if (verbose) log(Utils.ResultToString(realTestResult) + Environment.NewLine);
 					if (clean) File.Delete(scriptPath);
 					return false;
 				}
 
 				if (i >= PhpNetTester.BenchmarkWarmup)
-					this.phpTime += php.ExitTime.Subtract(php.StartTime).TotalMilliseconds;
+				{
+				    this.phpTime += php.ExitTime.Subtract(php.StartTime).TotalMilliseconds;
+				}
 			}
 
 			php.Dispose();
 			if (clean) File.Delete(scriptPath);
 
-			if (verbose) Console.WriteLine(String.Concat("Php output: ", output));
+			if (verbose) log("Php output: " + output + Environment.NewLine);
 			return true;
         }
 
@@ -978,9 +982,7 @@ namespace PHP.Testing
 	            ModifyOutput(ref r, ref e);
 	            if (r.IndexOf(e, StringComparison.Ordinal) >= 0)
 	            {
-	                Console.WriteLine("Output has superficial differences from expected.");
-	                Console.WriteLine("Got: " + r);
-	                Console.WriteLine("Expected: " + e);
+                    log(string.Format("Output has superficial differences from expected.{0}Got: {1}{0}Expected: {2}{0}", Environment.NewLine, r, e));
 	            }
 	        }
 	    }
