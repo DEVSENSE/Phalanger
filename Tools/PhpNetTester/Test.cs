@@ -94,7 +94,9 @@ namespace PHP.Testing
 			ReadFile();
 
 			if (numberOfRuns < 1 || !benchmarks)
-				numberOfRuns = 1;
+			{
+			    numberOfRuns = 1;
+			}
 		}
 
 		private void ReadFile()

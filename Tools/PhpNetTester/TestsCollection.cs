@@ -1,12 +1,22 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PHP.Testing
 {
 	public class TestsCollection
 	{
+        public enum ConcurrencyLevel
+        {
+            None,           //< Everything sequential.
+            Folder,         //< Tests in separate folders executed concurrently.
+            Compile,        //< Only compiled concurrently in same folder.
+            SkipIf,         //< SkipIf tests executed concurrently in same folder.
+            Full            //< All possible operations done concurrently.
+        }
+
 		private List<Test> tests;
 		private List<string> testDirsAndFiles;
 
@@ -15,9 +25,11 @@ namespace PHP.Testing
 		private bool compileOnly;
 		private bool benchmarks;
 		private int defaultNumberOfRuns;
+        private int maxThreads = 1;
+        private ConcurrencyLevel concurrencyLevel = ConcurrencyLevel.None;
 
 		public TestsCollection(List<string> testDirsAndFiles, bool verbose, bool clean, bool compileOnly,
-			                   bool benchmarks, int defaultNumberOfRuns)
+                               bool benchmarks, int defaultNumberOfRuns, ConcurrencyLevel concurrencyLevel, int maxThreads)
 		{
 			this.tests = new List<Test>();
 			this.testDirsAndFiles = testDirsAndFiles;
@@ -26,9 +38,11 @@ namespace PHP.Testing
 			this.compileOnly = compileOnly;
 			this.benchmarks = benchmarks;
 			this.defaultNumberOfRuns = defaultNumberOfRuns;
+		    this.concurrencyLevel = concurrencyLevel;
+		    this.maxThreads = maxThreads;
 		}
 
-		private void LoadTestsFromDirectory(string dir)
+	    private void LoadTestsFromDirectory(string dir)
 		{
 			if (Directory.GetFiles(dir, "__skip").Length > 0)
 			{
@@ -82,11 +96,22 @@ namespace PHP.Testing
 		/// <param name="loader">Full path to exe loader or <B>null</B>.</param>
 		/// <param name="compiler">Full path to PHP.NET Compiler</param>
 		/// <param name="php">Full path to PHP (original) executable file.</param>
-		/// <param name="verbose"><c>True</c> if detail information should be printed to console.</param>
 		/// <returns>Number of tests that failed.</returns>
 		public int RunTests(string loader, string compiler, string php)
 		{
-			int failedCount = 0;
+		    switch (concurrencyLevel)
+		    {
+                case ConcurrencyLevel.None:
+                case ConcurrencyLevel.Full:
+		            return RunTestsDefault(loader, compiler, php);
+
+                case ConcurrencyLevel.Folder:
+                case ConcurrencyLevel.Compile:
+                case ConcurrencyLevel.SkipIf:
+		            break;
+		    }
+
+		    int failedCount = 0;
 			foreach (Test t in tests)
 			{
 				Console.Write("Running {0}.. ", t.SourcePathRelative);
@@ -102,6 +127,33 @@ namespace PHP.Testing
 
 			return failedCount;
 		}
+
+        /// <summary>
+        /// Runs all tests
+        /// </summary>
+        /// <param name="loader">Full path to exe loader or <B>null</B>.</param>
+        /// <param name="compiler">Full path to PHP.NET Compiler</param>
+        /// <param name="php">Full path to PHP (original) executable file.</param>
+        /// <returns>Number of tests that failed.</returns>
+        public int RunTestsDefault(string loader, string compiler, string php)
+        {
+            int failedCount = 0;
+            Parallel.ForEach(tests, new ParallelOptions { MaxDegreeOfParallelism = maxThreads },
+                             test =>
+                                 {
+                                     Console.Write("Running {0}.. ", test.SourcePathRelative);
+
+                                     test.Run(loader, compiler, php);
+                                     if (!test.Skipped && !test.Succeeded)
+                                     {
+                                         Interlocked.Increment(ref failedCount);
+                                     }
+
+                                     Console.WriteLine(test.Succeeded ? "Pass" : (test.Skipped ? "Skipped" : "Failed"));
+                                 });
+
+            return failedCount;
+        }
 
 		/// <summary>
 		/// Writes html log into file specified.
