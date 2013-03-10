@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace PHP.Testing
@@ -114,6 +115,17 @@ namespace PHP.Testing
 
 	            sw.Close();
 	        }
+	    }
+
+	    public static string RemoveWhitespace(string str)
+	    {
+	        var sb = new StringBuilder(str.Length);
+	        foreach (var c in str.Where(c => !Char.IsWhiteSpace(c)))
+	        {
+	            sb.Append(c);
+	        }
+
+	        return sb.ToString();
 	    }
 	}
 }

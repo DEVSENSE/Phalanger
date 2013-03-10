@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Collections;
@@ -11,7 +12,7 @@ namespace PHP.Testing
 	class PhpNetTester
 	{
 		private static TestsCollection testsCollection;
-		private static ArrayList testDirsAndFiles;
+        private static readonly List<string> testDirsAndFiles = new List<string>();
 		private static string outputDir;
 		private static string compiler;
 		private static string loader;
@@ -197,21 +198,19 @@ namespace PHP.Testing
 		[STAThread]
 		static int Main(string[] args)
 		{
-			bool tests_started = false;
-			int failed_num = -1;
+		    var sw = Stopwatch.StartNew();
+			bool testingStarted = false;
 			Console.WriteLine("Starting tests...");
-
 			try
 			{
-				testDirsAndFiles = new ArrayList();
 				ProcessArguments(args);
 
 				testsCollection = new TestsCollection(testDirsAndFiles, verbose, clean, compileOnly,
-					benchmarks, numberOfBenchmarkRuns);
+					                                  benchmarks, numberOfBenchmarkRuns);
 				testsCollection.LoadTests();
 
-				tests_started = true;
-				failed_num = testsCollection.RunTests(loader, compiler, php);
+				testingStarted = true;
+				return testsCollection.RunTests(loader, compiler, php);
 			}
 			catch (InvalidArgumentException e)
 			{
@@ -232,13 +231,16 @@ namespace PHP.Testing
 			}
 			finally
 			{
-				if (tests_started)
-					testsCollection.WriteLog(Path.Combine(outputDir, "TestLog.htm"), fullLog);
+				if (testingStarted)
+				{
+				    testsCollection.WriteLog(Path.Combine(outputDir, "TestLog.htm"), fullLog);
+		            Console.WriteLine();
+                    Console.WriteLine("Done. " + testsCollection.GetStatusMessage());
+                    Console.WriteLine("Time: " + sw.Elapsed);
+				}
 			}
 
-			Console.WriteLine("Done. " + failed_num + " failed tests.");
-
-			return failed_num;
+			return 0;
 		}
 	}
 }

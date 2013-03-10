@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 namespace PHP.Testing
 {
 	public class TestsCollection
 	{
-		private ArrayList tests;
-		private ArrayList testDirsAndFiles;
+		private List<Test> tests;
+		private List<string> testDirsAndFiles;
 
 		private bool verbose;
 		private bool clean;
@@ -15,10 +16,10 @@ namespace PHP.Testing
 		private bool benchmarks;
 		private int defaultNumberOfRuns;
 
-		public TestsCollection(ArrayList testDirsAndFiles, bool verbose, bool clean, bool compileOnly,
-			bool benchmarks, int defaultNumberOfRuns)
+		public TestsCollection(List<string> testDirsAndFiles, bool verbose, bool clean, bool compileOnly,
+			                   bool benchmarks, int defaultNumberOfRuns)
 		{
-			this.tests = new ArrayList();
+			this.tests = new List<Test>();
 			this.testDirsAndFiles = testDirsAndFiles;
 			this.verbose = verbose;
 			this.clean = clean;
@@ -37,11 +38,15 @@ namespace PHP.Testing
 
 			// tests are files with extension php or phpt
 			foreach (string file in Directory.GetFiles(dir, "*.php"))
-				LoadTestFile(file);
+			{
+			    LoadTestFile(file);
+			}
 
 			// and process all subdirectories
 			foreach (string subdir in Directory.GetDirectories(dir))
-				LoadTestsFromDirectory(subdir);
+			{
+			    LoadTestsFromDirectory(subdir);
+			}
 		}
 
 		/// <summary>
@@ -81,20 +86,21 @@ namespace PHP.Testing
 		/// <returns>Number of tests that failed.</returns>
 		public int RunTests(string loader, string compiler, string php)
 		{
-			int failed_num = 0;
-
+			int failedCount = 0;
 			foreach (Test t in tests)
 			{
-				Console.Write(String.Format("Running {0}.. ", t.SourcePathRelative));
-
-				t.Run(loader, compiler, php);
+				Console.Write("Running {0}.. ", t.SourcePathRelative);
+                
+                t.Run(loader, compiler, php);
 				if (!t.Skipped && !t.Succeeded)
-					failed_num++;
+				{
+				    ++failedCount;
+				}
 
                 Console.WriteLine(t.Succeeded ? "Pass" : (t.Skipped ? "Skipped" : "Failed"));
 			}
 
-			return failed_num;
+			return failedCount;
 		}
 
 		/// <summary>
@@ -104,7 +110,7 @@ namespace PHP.Testing
 		/// <param name="fullLog">True if detail info is written also if test succeeded.</param>
 		public void WriteLog(string file, bool fullLog)
 		{
-			using (StreamWriter sw = new StreamWriter(file))
+			using (var sw = new StreamWriter(file))
 			{
 				sw.WriteLine("<html>");
 				sw.WriteLine("<head>");
@@ -131,27 +137,27 @@ namespace PHP.Testing
 
 				sw.WriteLine("<h1>PHP.NET Compiler test log</h1>");
 
-				WriteStatus(sw);
+                sw.WriteLine(GetStatusMessage() + " <br />");
 
 				sw.WriteLine("<table width=\"100%\" border=\"1\" cellspacing=\"0\" cellpadding=\"3\">");
 				WriteTableHead(sw);
-                int testIndex = 0;
-				foreach (Test t in tests)
-					t.WriteTableRow(sw, fullLog, ++testIndex);
-				sw.WriteLine("</table>");
+			    for (int testIndex = 0; testIndex < tests.Count; ++testIndex)
+			    {
+			        tests[testIndex].WriteTableRow(sw, fullLog, testIndex);
+			    }
 
+			    sw.WriteLine("</table>");
 				sw.WriteLine("</body>");
 				sw.WriteLine("</html>");
 			}
 
 		}
 
-		public void WriteStatus(StreamWriter sw)
+		public string GetStatusMessage()
 		{
             int succeeded = 0;
             int skipped = 0;
             int failed = 0;
-
 			foreach (Test t in tests)
 			{
                 if (t.Succeeded)
@@ -170,7 +176,8 @@ namespace PHP.Testing
 			}
 
 		    int total = succeeded + skipped + failed;
-			sw.WriteLine("({3}%) {0} succeeded, {1} skipped, {2} failed <br>", succeeded, skipped, failed, Math.Round((double)succeeded * 100 / total));
+			return string.Format("({0}%) {1} succeeded, {2} skipped, {3} failed ({4} total test{5})",
+                                 Math.Round(succeeded * 100.0 / total), succeeded, skipped, failed, total, total > 1 ? "s" : "");
 		}
 
 		private void WriteTableHead(TextWriter tw)
