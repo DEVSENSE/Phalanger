@@ -13,7 +13,7 @@
 using System;
 using System.IO;
 using System.Collections;
-
+using System.Linq;
 using PHP.Core;
 
 namespace extutil
@@ -118,7 +118,7 @@ namespace extutil
 		/// <param name="cb">The callback.</param>
 		static void DoForAllExtensions(Callback cb)
 		{
-			ICollection modules = null;
+			ICollection modules;
 			try
 			{
 				modules = Externals.GetModules(false);
@@ -151,19 +151,15 @@ namespace extutil
 		{
 			try
 			{
-				foreach (string name in Directory.GetFiles(PHP.Core.Configuration.Application.Paths.ExtNatives, "*.dll"))
+				foreach (string item in Directory.GetFiles(Configuration.Application.Paths.ExtNatives, "*.dll").Select(Path.GetFileName).Where(item => !string.IsNullOrWhiteSpace(item)))
 				{
-					string item = Path.GetFileName(name);
-					if (item.ToLower().EndsWith(".dll")) item = item.Substring(0, item.Length - 4);
-
-					cb(item);
+				    cb(item.ToLower().EndsWith(".dll") ? item.Substring(0, item.Length - 4) : item);
 				}
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine("Unable to get native extension list.");
 				Console.WriteLine(e.ToString());
-				return;
 			}
 		}
 
@@ -199,7 +195,7 @@ namespace extutil
 			{
 				case "-e":
 				{
-					ICollection errors = null;
+					ICollection errors;
 					try
 					{
 						errors = Externals.GetStartupErrors();
