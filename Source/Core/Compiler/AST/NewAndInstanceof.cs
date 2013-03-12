@@ -371,7 +371,7 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// <c>new</c> expression.
 	/// </summary>
-	public sealed class NewEx : Expression
+    public sealed class NewEx : VarLikeConstructUse
 	{
 		internal override Operations Operation { get { return Operations.New; } }
 
@@ -397,6 +397,8 @@ namespace PHP.Core.AST
 
 		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
 		{
+            Debug.Assert(this.IsMemberOf == null);
+
 			access = info.Access;
 
 			this.typeArgsResolved = classNameRef.Analyze(analyzer);

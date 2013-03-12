@@ -144,6 +144,39 @@ namespace PHP.Core.AST
         private DRoutine routine;
 		private int overloadIndex = DRoutine.InvalidOverloadIndex;
 
+        /// <summary>
+        /// Type of <see cref="IsMemberOf"/> if can be resolved statically. Otherwise <c>null</c>.
+        /// </summary>
+        private DType/*A*/isMemberOfType;
+
+        /// <summary>
+        /// Gets type of <see cref="IsMemberOf"/> expression if can be resolved.
+        /// </summary>
+        /// <param name="analyzer">Analyzer.</param>
+        /// <returns><see cref="DType"/> or <c>null</c> reference if type could not be resolved.</returns>
+        private DType GetIsMemberOfType(Analyzer/*!*/analyzer)
+        {
+            if (isMemberOf == null)
+                return null;
+
+            DirectVarUse memberDirectVarUse = isMemberOf as DirectVarUse;
+
+            if (memberDirectVarUse != null && memberDirectVarUse.IsMemberOf == null &&  // isMemberOf is single variable
+                memberDirectVarUse.VarName.IsThisVariableName)                          // isMemberOf if $this
+            {
+                // $this->
+                return analyzer.CurrentType;
+            }
+            else if (isMemberOf is NewEx)
+            {
+                // (new T)->
+                return ((NewEx)isMemberOf).ClassNameRef.ResolvedType;
+            }
+
+            //
+            return null;
+        }
+
 		/// <summary>
 		/// An inlined function represented by the node (if any).
 		/// </summary>
@@ -242,6 +275,55 @@ namespace PHP.Core.AST
                 new Evaluation(this);
         }
 
+        private bool AnalyzeMethodCallOnKnownType(Analyzer/*!*/ analyzer, ref ExInfoFromParent info, DType type)
+        {
+            if (type == null || type.IsUnknown)
+                return false;
+
+            bool runtimeVisibilityCheck, isCallMethod;
+
+            routine = analyzer.ResolveMethod(
+                type, qualifiedName.Name,
+                Position,
+                analyzer.CurrentType, analyzer.CurrentRoutine, false,
+                out runtimeVisibilityCheck, out isCallMethod);
+
+            if (routine.IsUnknown)
+                return false;
+
+            Debug.Assert(runtimeVisibilityCheck == false);  // can only be set to true if CurrentType or CurrentRoutine are null
+
+            // check __call
+            if (isCallMethod)
+            {
+                // TODO: generic args
+
+                var arg1 = new StringLiteral(this.Position, qualifiedName.Name.Value);
+                var arg2 = this.callSignature.BuildPhpArray();
+
+                this.callSignature = new CallSignature(
+                    new List<ActualParam>(2) {
+                                new ActualParam(arg1.Position, arg1, false),
+                                new ActualParam(arg2.Position, arg2, false)
+                            },
+                    new List<TypeRef>());
+            }
+
+            // resolve overload if applicable:
+            RoutineSignature signature;
+            overloadIndex = routine.ResolveOverload(analyzer, callSignature, position, out signature);
+
+            Debug.Assert(overloadIndex != DRoutine.InvalidOverloadIndex, "A function should have at least one overload");
+
+            // analyze parameters:
+            callSignature.Analyze(analyzer, signature, info, false);
+
+            // get properties:
+            analyzer.AddCurrentRoutineProperty(routine.GetCallerRequirements());
+
+            return true;
+        }
+
         /// <summary>
         /// Analyze the method call (isMemberOf != null).
         /// </summary>
@@ -252,59 +334,11 @@ namespace PHP.Core.AST
         {
             Debug.Assert(isMemberOf != null);
 
-            // $this->
-            DirectVarUse memberDirectVarUse = isMemberOf as DirectVarUse;
-            if (memberDirectVarUse != null && memberDirectVarUse.IsMemberOf == null &&  // isMemberOf is single variable
-                memberDirectVarUse.VarName.IsThisVariableName &&                        // isMemberOf if $this
-                analyzer.CurrentType != null)                                           // called in class context of known type
-            {
-                // $this->{qualifiedName}(callSignature)
-
-                bool runtimeVisibilityCheck, isCallMethod;
-
-                routine = analyzer.ResolveMethod(
-                    analyzer.CurrentType,//typeof(this)
-                    qualifiedName.Name,//.Namespace?
-                    Position,
-                    analyzer.CurrentType, analyzer.CurrentRoutine, false,
-                    out runtimeVisibilityCheck, out isCallMethod);
-
-                Debug.Assert(runtimeVisibilityCheck == false);  // can only be set to true if CurrentType or CurrentRoutine are null
-
-                if (!routine.IsUnknown)
-                {
-                    // check __call
-                    if (isCallMethod)
-                    {
-                        // TODO: generic args
-                        
-                        var arg1 = new StringLiteral(this.Position, qualifiedName.Name.Value);
-                        var arg2 = this.callSignature.BuildPhpArray();
-
-                        this.callSignature = new CallSignature(
-                            new List<ActualParam>(2) {
-                                new ActualParam(arg1.Position, arg1, false),
-                                new ActualParam(arg2.Position, arg2, false)
-                            },
-                            new List<TypeRef>());
-                    }
-                    
-                    // resolve overload if applicable:
-                    RoutineSignature signature;
-                    overloadIndex = routine.ResolveOverload(analyzer, callSignature, position, out signature);
-
-                    Debug.Assert(overloadIndex != DRoutine.InvalidOverloadIndex, "A function should have at least one overload");
-
-                    // analyze parameters:
-                    callSignature.Analyze(analyzer, signature, info, false);
-
-                    // get properties:
-                    analyzer.AddCurrentRoutineProperty(routine.GetCallerRequirements());
-
-                    return new Evaluation(this);
-                }
-            }
-
+            // resolve routine if IsMemberOf is resolved statically:
+            this.isMemberOfType = this.GetIsMemberOfType(analyzer);
+            if (this.AnalyzeMethodCallOnKnownType(analyzer, ref info, this.isMemberOfType))
+                return new Evaluation(this);
+            
             // by default, fall back to dynamic method invocation
             routine = null;
             callSignature.Analyze(analyzer, UnknownSignature.Default, info, false);
@@ -805,7 +839,7 @@ namespace PHP.Core.AST
                         result = routine.EmitCall(
                             codeGenerator, null, callSignature,
                             new ExpressionPlace(codeGenerator, isMemberOf), false, overloadIndex,
-                            null/*TODO when CFG*/, position, access, true);
+                            this.isMemberOfType, position, access, true);
                 }
                 else
                 {
