@@ -975,6 +975,19 @@ namespace PHP.Core.Parsers
         }
 
         /// <summary>
+        /// Transforms each item of <paramref name="qnameList"/> using <see cref="TranslateAny(QualifiedName)"/> function.
+        /// </summary>
+        /// <param name="qnameList">List of qualified names.</param>
+        /// <returns>Reference to <paramref name="qnameList"/>.</returns>
+        private List<QualifiedName> TranslateAny(List<QualifiedName> qnameList)
+        {
+            for (int i = 0; i < qnameList.Count; i++)
+                qnameList[i] = TranslateAny(qnameList[i]);
+            
+            return qnameList;
+        }
+
+        /// <summary>
         /// Translate the name using defined aliases. Any first part of the <see cref="QualifiedName"/> will be translated.
         /// </summary>
         /// <param name="qname">The name to translate.</param>

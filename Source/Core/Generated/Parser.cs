@@ -2677,7 +2677,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 { yyval.Object = value_stack.array[value_stack.top-1].yyval.Object; }
         return;
       case 221: // trait_use_statement -> T_USE qualified_namespace_name_list trait_adaptations 
-{ yyval.Object = new TraitsUse(yypos, (List<QualifiedName>)value_stack.array[value_stack.top-2].yyval.Object, (List<TraitsUse.TraitAdaptation>)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TraitsUse(yypos, TranslateAny((List<QualifiedName>)value_stack.array[value_stack.top-2].yyval.Object), (List<TraitsUse.TraitAdaptation>)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 222: // trait_adaptations -> ';' 
 { yyval.Object = null; }
