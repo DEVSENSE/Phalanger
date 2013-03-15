@@ -1422,12 +1422,12 @@ non_empty_trait_adaptation_list:
 ;
 
 trait_adaptation_statement:
-		trait_precedence ';'		{ $$ = $1; }
-	|	trait_alias ';'				{ $$ = $1; }
+		trait_precedence		{ $$ = $1; }
+	|	trait_alias				{ $$ = $1; }
 ;
 
 trait_precedence:
-	trait_method_reference_fully_qualified T_INSTEADOF qualified_namespace_name_list	{ $$ = new TraitsUse.TraitAdaptationPrecedence(@$, (Tuple<QualifiedName?,Name>)$1, (List<QualifiedName>)$3); }
+	trait_method_reference_fully_qualified T_INSTEADOF qualified_namespace_name_list ';'	{ $$ = new TraitsUse.TraitAdaptationPrecedence(@$, (Tuple<QualifiedName?,Name>)$1, (List<QualifiedName>)$3); }
 ;
 
 trait_method_reference:
@@ -1440,8 +1440,8 @@ trait_method_reference_fully_qualified:
 ;
 
 trait_alias:
-		trait_method_reference T_AS trait_modifiers identifier		{ $$ = new TraitsUse.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$4, (PhpMemberAttributes?)$3); }
-	|	trait_method_reference T_AS member_modifier					{ $$ = new TraitsUse.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, null, ((TmpMemberInfo)$1).attr); }
+		trait_method_reference T_AS trait_modifiers identifier ';'	{ $$ = new TraitsUse.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, (string)$4, (PhpMemberAttributes?)$3); }
+	|	trait_method_reference T_AS member_modifier	';'				{ $$ = new TraitsUse.TraitAdaptationAlias(@$, (Tuple<QualifiedName?, Name>)$1, null, ((TmpMemberInfo)$1).attr); }
 ;
 
 trait_modifiers:
