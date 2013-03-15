@@ -1899,7 +1899,18 @@ namespace PHP.Core.AST
         public List<TraitAdaptation> TraitAdaptationList { get { return traitAdaptationList; } }
         private readonly List<TraitAdaptation> traitAdaptationList;
 
-        public TraitsUse(Position position, List<QualifiedName>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
+        /// <summary>
+        /// Gets a value indicating whether there is a block (even empty) of trait adaptations.
+        /// </summary>
+        public bool HasTraitAdaptationBlock { get { return this.traitAdaptationList != null; } }
+
+        /// <summary>
+        /// Position where traits list ends.
+        /// </summary>
+        public ShortPosition HeadingEndPosition { get { return headingEndPosition; } }
+        private readonly ShortPosition headingEndPosition;
+
+        public TraitsUse(Position position, ShortPosition headingEndPosition, List<QualifiedName>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
             :base(position, null)
         {
             if (traitsList == null)
@@ -1907,6 +1918,7 @@ namespace PHP.Core.AST
 
             this.traitsList = traitsList;
             this.traitAdaptationList = traitAdaptationList;
+            this.headingEndPosition = headingEndPosition;
         }
 
         #region TypeMemberDecl

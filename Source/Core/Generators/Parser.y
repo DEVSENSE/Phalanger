@@ -1403,7 +1403,7 @@ class_statement:
 ;
 
 trait_use_statement:
-		T_USE qualified_namespace_name_list trait_adaptations		{ $$ = new TraitsUse(@$, TranslateAny((List<QualifiedName>)$2), (List<TraitsUse.TraitAdaptation>)$3); }
+		T_USE qualified_namespace_name_list trait_adaptations		{ $$ = new TraitsUse(@$, GetHeadingEnd(@2), TranslateAny((List<QualifiedName>)$2), (List<TraitsUse.TraitAdaptation>)$3); }
 ;
 
 trait_adaptations:
@@ -1412,7 +1412,7 @@ trait_adaptations:
 ;
 
 trait_adaptation_list:
-		/* empty */							{ $$ = null; }
+		/* empty */							{ $$ = new List<TraitsUse.TraitAdaptation>(/*empty*/); }
 	|	non_empty_trait_adaptation_list		{ $$ = $1; }
 ;
 
