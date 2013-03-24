@@ -97,6 +97,21 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugNoGac|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugNoGac\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <DocumentationFile>Bin\Debug\PhpNetCore.xml</DocumentationFile>
+    <FileAlignment>4096</FileAlignment>
+    <NoWarn>1591,419</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>
@@ -569,18 +584,18 @@
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>cd "$(SolutionDir).."
+    <PreBuildEvent>cd "$(ProjectDir)..\.."
 Tools\UpdateFileVersionFromChangeset.cmd "$(ProjectDir)AssemblyInfo.cs"</PreBuildEvent>
     <PostBuildEvent>REM ECHO Uninstalling previous version from GAC ...
 
-REM "$(SolutionDir)..\Tools\gacutil" /u $(TargetName) 1&gt;nul
+REM "$(ProjectDir)..\..\Tools\gacutil" /u $(TargetName) 1&gt;nul
 
 
 REM ECHO Generating publisher policy assembly ...
 
-REM "$(SolutionDir)..\Tools\PolicyFileGen" "$(TargetPath)" "/out:$(TargetDir)policy.$(TargetName).config" 1&gt;nul
+REM "$(ProjectDir)..\..\Tools\PolicyFileGen" "$(TargetPath)" "/out:$(TargetDir)policy.$(TargetName).config" 1&gt;nul
 
-REM "$(SolutionDir)..\Tools\al" "/link:$(TargetDir)policy.$(TargetName).config" "/out:$(TargetDir)policy.3.0.$(TargetFileName)" "/keyfile:(ProjectDir)$(ProjectName).snk" /platform:anycpu 1&gt;nul
+REM "$(ProjectDir)..\..\Tools\al" "/link:$(TargetDir)policy.$(TargetName).config" "/out:$(TargetDir)policy.3.0.$(TargetFileName)" "/keyfile:(ProjectDir)$(ProjectName).snk" /platform:anycpu 1&gt;nul
 
 
 
@@ -589,32 +604,32 @@ ECHO Copying output to the Deployment folder ...
 
 if $(ConfigurationName) == Release (
 
-xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
+xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(ProjectDir)\..\..\Deployment\Bin" 1&gt;nul
 
-"$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
+"$(ProjectDir)..\..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
 
-REM "$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetDir)policy.3.0.$(TargetFileName)" 1&gt;nul
+REM "$(ProjectDir)..\..\Tools\gacutil" -f -i "$(TargetDir)policy.3.0.$(TargetFileName)" 1&gt;nul
 
 
-REM "$(SolutionDir)..\Deployment\Bin\PhpVerify" "$(TargetFileName)"
+REM "$(ProjectDir)..\..\Deployment\Bin\PhpVerify" "$(TargetFileName)"
 
 )
 
 
 if $(ConfigurationName) == Debug (
 
-xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
+xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(ProjectDir)..\..\Deployment\Debug" 1&gt;nul
 
-"$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
+"$(ProjectDir)..\..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
 
-REM "$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetDir)policy.3.0.$(TargetFileName)" 1&gt;nul
+REM "$(ProjectDir)..\..\Tools\gacutil" -f -i "$(TargetDir)policy.3.0.$(TargetFileName)" 1&gt;nul
 
 )
 
 
 if $(ConfigurationName) == DebugNoGac (
 
-xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
+xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(ProjectDir)..\..\Deployment\Debug" 1&gt;nul
 
 )</PostBuildEvent>
   </PropertyGroup>
