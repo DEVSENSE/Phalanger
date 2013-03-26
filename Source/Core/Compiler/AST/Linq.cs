@@ -50,7 +50,7 @@ namespace PHP.Core.AST.Linq
 	/// </summary>
 	public sealed class LinqExpression : Expression
 	{
-		internal override Operations Operation { get { return Operations.Linq; } }
+        public override Operations Operation { get { return Operations.Linq; } }
 
 		private QueryBody/*!*/ body;
         public QueryBody/*!*/ Body{get{return body;}}
@@ -967,7 +967,7 @@ namespace PHP.Core.AST.Linq
 
 	internal sealed class LinqOpChain : Expression
 	{
-		internal override Operations Operation { get { return Operations.LinqOpChain; } }
+        public override Operations Operation { get { return Operations.LinqOpChain; } }
 
 		public Expression/*!*/ Expression { get { return expression; } set { expression = value; } }
 		private Expression/*!*/ expression;
@@ -1010,7 +1010,7 @@ namespace PHP.Core.AST.Linq
 
 	internal sealed class LinqTuple : Expression
 	{
-		internal override Operations Operation { get { return Operations.LinqTuple; } }
+        public override Operations Operation { get { return Operations.LinqTuple; } }
 
 		public Expression LastItem { get { return lastItem; } set { lastItem = value; } }
 		private Expression lastItem;
@@ -1058,7 +1058,7 @@ namespace PHP.Core.AST.Linq
 
 	internal sealed class LinqTupleItemAccess : Expression
 	{
-		internal override Operations Operation { get { return Operations.LinqTupleItemAccess; } }
+        public override Operations Operation { get { return Operations.LinqTupleItemAccess; } }
 
 		public int Index { get { return index; } set { index = value; } }
 		private int index;

@@ -28,7 +28,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class ListEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.List; } }
+        public override Operations Operation { get { return Operations.List; } }
 
 		/// <summary>
         /// Elements of this list are VarLikeConstructUse, ListEx and null.

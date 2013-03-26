@@ -122,7 +122,7 @@ namespace PHP.Core.AST
 
     public sealed class DirectFcnCall : FunctionCall
 	{
-		internal override Operations Operation { get { return Operations.DirectCall; } }
+        public override Operations Operation { get { return Operations.DirectCall; } }
 
 		/// <summary>
 		/// A list of inlined functions.
@@ -956,7 +956,7 @@ namespace PHP.Core.AST
 
 	public sealed class IndirectFcnCall : FunctionCall
 	{
-		internal override Operations Operation { get { return Operations.IndirectCall; } }
+        public override Operations Operation { get { return Operations.IndirectCall; } }
 
 		internal Expression/*!*/ NameExpr { get { return nameExpr; } }
 		private Expression/*!*/ nameExpr;
@@ -1076,7 +1076,7 @@ namespace PHP.Core.AST
 
 	public sealed class DirectStMtdCall : StaticMtdCall
 	{
-		internal override Operations Operation { get { return Operations.DirectStaticCall; } }
+        public override Operations Operation { get { return Operations.DirectStaticCall; } }
 
 		private Name methodName;
         public Name MethodName { get { return methodName; } }
@@ -1215,7 +1215,7 @@ namespace PHP.Core.AST
 
 	public class IndirectStMtdCall : StaticMtdCall
 	{
-		internal override Operations Operation { get { return Operations.IndirectStaticCall; } }
+        public override Operations Operation { get { return Operations.IndirectStaticCall; } }
 
 		private CompoundVarUse/*!*/ methodNameVar;
         /// <summary>Expression that represents name of method</summary>

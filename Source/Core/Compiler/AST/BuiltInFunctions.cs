@@ -29,7 +29,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed partial class IncludingEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.Inclusion; } }
+        public override Operations Operation { get { return Operations.Inclusion; } }
 
 		/// <summary>
 		/// An argument of the inclusion.
@@ -112,7 +112,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class IssetEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.Isset; } }
+        public override Operations Operation { get { return Operations.Isset; } }
 
 		private readonly List<VariableUse>/*!*/ varList;
         /// <summary>List of variables to test</summary>
@@ -211,7 +211,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class EmptyEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.Empty; } }
+        public override Operations Operation { get { return Operations.Empty; } }
 
 		private VariableUse variable;
         public VariableUse Variable { get { return variable; } }
@@ -279,7 +279,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class EvalEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.Eval; } }
+        public override Operations Operation { get { return Operations.Eval; } }
 
 		internal override bool DoMarkSequencePoint { get { return kind != EvalKinds.SyntheticEval; } }
 
@@ -517,7 +517,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class ExitEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.Exit; } }
+        public override Operations Operation { get { return Operations.Exit; } }
 
 		private Expression resultExpr; //can be null
         /// <summary>Die (exit) expression. Can be null.</summary>

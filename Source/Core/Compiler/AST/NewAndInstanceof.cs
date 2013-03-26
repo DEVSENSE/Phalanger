@@ -373,7 +373,7 @@ namespace PHP.Core.AST
 	/// </summary>
     public sealed class NewEx : VarLikeConstructUse
 	{
-		internal override Operations Operation { get { return Operations.New; } }
+        public override Operations Operation { get { return Operations.New; } }
 
 		internal override bool AllowsPassByReference { get { return true; } }
 
@@ -502,7 +502,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class InstanceOfEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.InstanceOf; } }
+        public override Operations Operation { get { return Operations.InstanceOf; } }
 
 		private Expression/*!*/ expression;
         /// <summary>Expression being tested</summary>
@@ -591,7 +591,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class TypeOfEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.TypeOf; } }
+        public override Operations Operation { get { return Operations.TypeOf; } }
 
 		public TypeRef/*!*/ ClassNameRef { get { return classNameRef; } }
 		private TypeRef/*!*/ classNameRef;

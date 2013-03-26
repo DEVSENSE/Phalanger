@@ -189,7 +189,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class DirectStFldUse : StaticFieldUse
 	{
-		internal override Operations Operation { get { return Operations.DirectStaticFieldUse; } }
+        public override Operations Operation { get { return Operations.DirectStaticFieldUse; } }
 
 		private VariableName propertyName;
         /// <summary>Name of static field beign accessed</summary>
@@ -307,7 +307,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class IndirectStFldUse : StaticFieldUse
 	{
-		internal override Operations Operation { get { return Operations.IndirectStaticFieldUse; } }
+        public override Operations Operation { get { return Operations.IndirectStaticFieldUse; } }
 
 		private Expression/*!*/ fieldNameExpr;
             /// <summary>Expression that produces name of the field</summary>

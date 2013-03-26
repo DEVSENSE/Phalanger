@@ -23,7 +23,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class IncDecEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.IncDec; } }
+        public override Operations Operation { get { return Operations.IncDec; } }
 
 		private bool inc;
         /// <summary>Indicates incrementation.</summary>

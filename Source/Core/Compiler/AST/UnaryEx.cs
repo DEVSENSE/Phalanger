@@ -23,7 +23,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class UnaryEx : Expression
 	{
-		internal override Operations Operation { get { return operation; } }
+		public override Operations Operation { get { return operation; } }
 		private Operations operation;
 
 		private Expression/*!*/ expr;

@@ -115,7 +115,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class IntLiteral : Literal
 	{
-		internal override Operations Operation { get { return Operations.IntLiteral; } }
+        public override Operations Operation { get { return Operations.IntLiteral; } }
 
 		/// <summary>
 		/// Gets a value of the literal.
@@ -166,7 +166,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class LongIntLiteral : Literal
 	{
-		internal override Operations Operation { get { return Operations.LongIntLiteral; } }
+        public override Operations Operation { get { return Operations.LongIntLiteral; } }
 
 		/// <summary>
 		/// Gets a value of the literal.
@@ -217,7 +217,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class DoubleLiteral : Literal
 	{
-		internal override Operations Operation { get { return Operations.DoubleLiteral; } }
+        public override Operations Operation { get { return Operations.DoubleLiteral; } }
 
 		/// <summary>
 		/// Gets a value of the literal.
@@ -273,7 +273,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class StringLiteral : Literal
 	{
-		internal override Operations Operation { get { return Operations.StringLiteral; } }
+        public override Operations Operation { get { return Operations.StringLiteral; } }
 
 		/// <summary>
 		/// A <see cref="string"/> value stored in node.
@@ -328,7 +328,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class BinaryStringLiteral : Literal
 	{
-		internal override Operations Operation { get { return Operations.BinaryStringLiteral; } }
+        public override Operations Operation { get { return Operations.BinaryStringLiteral; } }
 
 		/// <summary>
 		/// Binary data stored in the node.
@@ -383,7 +383,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class BoolLiteral : Literal
 	{
-		internal override Operations Operation { get { return Operations.BoolLiteral; } }
+        public override Operations Operation { get { return Operations.BoolLiteral; } }
 
 		/// <summary>
 		/// Gets a value of the literal.
@@ -428,7 +428,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class NullLiteral : Literal
 	{
-		internal override Operations Operation { get { return Operations.NullLiteral; } }
+        public override Operations Operation { get { return Operations.NullLiteral; } }
 
 		/// <summary>
 		/// Gets a value of the literal.

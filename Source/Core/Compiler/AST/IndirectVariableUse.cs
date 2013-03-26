@@ -25,7 +25,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class IndirectVarUse : SimpleVarUse
 	{
-		internal override Operations Operation { get { return Operations.IndirectVarUse; } }
+        public override Operations Operation { get { return Operations.IndirectVarUse; } }
 
 		public Expression VarNameEx { get { return varNameEx; } }
 		private Expression varNameEx;
