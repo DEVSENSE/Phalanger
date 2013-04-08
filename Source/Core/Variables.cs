@@ -11,7 +11,6 @@
 */
 using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Globalization;
@@ -435,7 +434,7 @@ namespace PHP.Core
 			}
 			else if ((s = obj as string) != null)
 			{
-                output.WriteLine(TypeNameString + "({0}) \"{1}\"", s.Sum(c => c <= 255 ? 1 : 2), s);
+				output.WriteLine(TypeNameString + "({0}) \"{1}\"", s.Length, s);
 			}
 			else if (obj is double)
 			{
@@ -463,7 +462,7 @@ namespace PHP.Core
 			}
 		}
 
-	    /// <summary>
+		/// <summary>
 		/// Dumps the variable to the console.
 		/// </summary>
 		/// <param name="obj">The variable to dump.</param>
