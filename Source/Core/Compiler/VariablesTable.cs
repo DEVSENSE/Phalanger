@@ -56,6 +56,12 @@ namespace PHP.Core
 			public bool IsDirectlyUsed { get { return isDirectlyUsed; } set { isDirectlyUsed = value; } }
 			private bool isDirectlyUsed;
 
+            /// <summary>
+            /// Gets or sets the type information. 
+            /// This member can be null and should be checked for null before accesing it.
+            /// </summary>
+            public VarTypeInfo VarTypeInfo { get; set; }
+
 			public Entry(VariableName varName, bool isPhpReference)
 				: this(varName, isPhpReference, false)
 			{
@@ -108,6 +114,25 @@ namespace PHP.Core
 			}
 		}
 
+        /// <summary>
+        /// Adds a new entry into the table. 
+        /// This is used for copying and merging of tables. 
+        /// The table must not contain an entry with the same name.
+        /// </summary>
+        internal void Add(Entry entry)
+        {
+            Debug.Assert(!this.Contains(entry.VariableName),
+                "Adding entry whose key is already used.");
+            variables[entry.VariableName] = entry;
+        }
+
+        /// <summary>
+        /// Removes all the variables. This is used for copying and merging of tables.
+        /// </summary>
+        internal void Clear()
+        {
+            this.variables.Clear();
+        }
 
 		public bool AddParameter(VariableName paramName, bool isPassedByRef)
 		{

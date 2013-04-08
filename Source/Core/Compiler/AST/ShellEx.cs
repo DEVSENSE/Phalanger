@@ -23,7 +23,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class ShellEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.ShellCommand; } }
+        public override Operations Operation { get { return Operations.ShellCommand; } }
 
 		private Expression/*!*/ command;
         /// <summary>Command to excute</summary>

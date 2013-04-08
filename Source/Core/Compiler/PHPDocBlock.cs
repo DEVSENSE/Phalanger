@@ -84,11 +84,16 @@ namespace PHP.Core
                         {
                             var f1 = t.GetField("Name1");
                             var f2 = t.GetField("Name2");
+                            var f3 = t.GetField("Name3");
+
                             if (f1 != null && f2 != null)
                             {
                                 var factory = CreateElementFactory(t);
                                 elementFactories.Add(TagNameHelper(f1), factory);
                                 elementFactories.Add(TagNameHelper(f2), factory);
+
+                                if (f3 != null)
+                                    elementFactories.Add(TagNameHelper(f3), factory);
                             }
                             else
                             {
@@ -694,7 +699,7 @@ namespace PHP.Core
                 if (word != null && IsTypeName(word))
                 {
                     this.TypeNames = word;
-                    this.TypeNamesOffset = index - word.Length;
+                    this.TypeNamesOffset = index - word.Length + 1;
                     descStart = index;
                     word = NextWord(line, ref index);
                 }
@@ -705,7 +710,7 @@ namespace PHP.Core
                     if (word != null && word[0] == '$')
                     {
                         this.VariableName = word;
-                        this.VariableNameOffset = index - word.Length;
+                        this.VariableNameOffset = index - word.Length + 1;
                         descStart = index;
                         word = NextWord(line, ref index);
                     }
@@ -714,7 +719,7 @@ namespace PHP.Core
                     if (this.TypeNames == null && word != null && IsTypeName(word))
                     {
                         this.TypeNames = word;
-                        this.TypeNamesOffset = index - word.Length;
+                        this.TypeNamesOffset = index - word.Length + 1;
                         descStart = index;
                         word = NextWord(line, ref index);
                     }
@@ -749,7 +754,7 @@ namespace PHP.Core
             /// </summary>
             /// <param name="str">String to check.</param>
             /// <returns>Whether given string may be a PHP type name.</returns>
-            private static bool IsTypeName(string str)
+            internal static bool IsTypeName(string str)
             {
                 if (string.IsNullOrEmpty(str))
                     return false;
@@ -758,8 +763,11 @@ namespace PHP.Core
                     return false;
 
                 for (int i = 1; i < str.Length; i++)
-                    if (str[i] != '_' && !char.IsLetterOrDigit(str[i]))
+                {
+                    char c = str[i];
+                    if (c != '_' && !char.IsLetterOrDigit(c) && c != '[' && c != ']' && c != TypeNamesSeparator && c != QualifiedName.Separator)
                         return false;
+                }
 
                 // ok
                 return true;
@@ -1101,16 +1109,18 @@ namespace PHP.Core
         /// </summary>
         public sealed class PropertyTag : TypeVarDescTag
         {
-            public const string Name = "@property";
+            public const string Name1 = "@property";
+            public const string Name2 = "@property-read";
+            public const string Name3 = "@property-write";
 
-            public PropertyTag(string/*!*/line)
-                : base(Name, line, true)
+            public PropertyTag(string tagName, string/*!*/line)
+                : base(tagName, line, true)
             {
             }
 
             public override string ToString()
             {
-                return Name + " " + this.TypeNames;
+                return Name1 + " " + this.TypeNames;
             }
         }
 
@@ -1150,21 +1160,21 @@ namespace PHP.Core
             {
                 Debug.Assert(line.StartsWith(tagName));
 
-                // [type] name() [name(params ...)] [description]
+                // [type] [name()] [name(params ...)] [description]
 
                 int index = tagName.Length; // current index within line
                 int descStart = index;  // start of description, moved when [type] or [name] found
 
                 // try to find [type]
                 string word = NextWord(line, ref index);
-                if (word != null && !word.EndsWith("()", StringComparison.Ordinal))
+                if (word != null && TypeVarDescTag.IsTypeName(word))
                 {
                     this.TypeNames = word;
                     descStart = index;
                     word = NextWord(line, ref index);
                 }
 
-                // name()
+                // [name()]
                 if (word != null && word.EndsWith("()", StringComparison.Ordinal))
                 {
                     this.MethodName = word.Remove(word.Length - 2);
@@ -1172,26 +1182,34 @@ namespace PHP.Core
                     word = NextWord(line, ref index);
                 }
 
-                // name(params ...)
+                // [name(params ...)]
                 while (descStart < line.Length && char.IsWhiteSpace(line[descStart]))
                     descStart++;    // skip whitespaces
 
                 this.Parameters = null;
+                
+                int nameStart = descStart;
+                int paramsFrom = -1;
+                while (descStart < line.Length && char.IsLetterOrDigit(line[descStart]))
+                    descStart++;
 
-                if (this.MethodName == null)
+                if (line[descStart] == '(')
                 {
-                    int nameStart = descStart;
-                    while (descStart < line.Length && line[descStart] != '(' && char.IsLetterOrDigit(line[descStart]))
-                        descStart++;
-                    if (descStart > nameStart)
-                        this.MethodName = line.Substring(nameStart, descStart - nameStart);
+                    paramsFrom = descStart;
+
+                    if (this.MethodName == null && paramsFrom > nameStart)
+                        this.MethodName = line.Substring(nameStart, paramsFrom - nameStart);
+                }
+                else
+                {
+                    descStart = nameStart;
                 }
 
                 if (string.IsNullOrEmpty(this.MethodName))
                     return;
 
-                int paramsFrom = descStart + this.MethodName.Length;
-                if (paramsFrom < line.Length && line.IndexOf(this.MethodName, descStart, StringComparison.Ordinal) == descStart && line[paramsFrom] == '(')
+                if (paramsFrom > 0)
+                if (paramsFrom < line.Length && line[paramsFrom] == '(')
                 {
                     // "name(" found
                     int paramsEnd = line.IndexOf(')', paramsFrom);

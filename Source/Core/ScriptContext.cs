@@ -1046,27 +1046,11 @@ namespace PHP.Core
 
             if (String.IsNullOrEmpty(function_name))
             {
-                // or <name> can represent an object with __invoke() magic method:
-                DObject obj;
-                if ((obj = name as DObject) != null)
-                {
-                    DRoutineDesc method;
-                    if (obj.TypeDesc.GetMethod(
-                            DObject.SpecialMethodNames.Invoke, null/*caller ignored*/, out method)
-                        != GetMemberResult.NotFound)
-                    {
-                        Debug.Assert(method != null);
-
-                        // (J) maybe:
-                        //// the callee may need table of local variables and/or naming context:
-                        //context.Stack.Variables = localVariables;
-                        //context.Stack.NamingContext = namingContext;
-
-                        // (J) __invoke does not respect visibility (thats why caller is not needed)
-                        return method.Invoke(obj, context.Stack);
-                    }
-                }
-
+                var callback = Convert.ObjectToCallback(name, true);
+                if (callback != null && (callback.IsBound || callback.Bind()))
+                    return callback.TargetRoutine.Invoke(callback.TargetInstance, context.Stack);
+                
+                // callback could not be resulved
                 context.Stack.RemoveFrame();
                 PhpException.Throw(PhpError.Error, CoreResources.GetString("invalid_function_name"));
             }

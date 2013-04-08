@@ -23,7 +23,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class ConditionalEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.Conditional; } }
+        public override Operations Operation { get { return Operations.Conditional; } }
 
 		private Expression/*!*/ condExpr;
 		private Expression trueExpr;

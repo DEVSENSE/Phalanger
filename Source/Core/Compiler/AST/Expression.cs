@@ -175,7 +175,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public abstract class Expression : LangElement
 	{
-		internal abstract Operations Operation { get; }
+		public abstract Operations Operation { get; }
 
 		internal AccessType Access { get { return access; } }
 		protected AccessType access;

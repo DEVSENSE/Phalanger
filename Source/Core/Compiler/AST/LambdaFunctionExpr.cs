@@ -34,7 +34,7 @@ namespace PHP.Core.AST
         //public NamespaceDecl Namespace { get { return ns; } }
         //private readonly NamespaceDecl ns
 
-        internal override Operations Operation
+        public override Operations Operation
         {
             get { return Operations.Closure; }
         }

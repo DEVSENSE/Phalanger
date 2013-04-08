@@ -24,7 +24,7 @@ namespace PHP.Core.AST
     /// </summary>
     public sealed class ConcatEx : Expression
     {
-        internal override Operations Operation { get { return Operations.ConcatN; } }
+        public override Operations Operation { get { return Operations.ConcatN; } }
 
         public List<Expression>/*!*/ Expressions { get { return this.expressions; } }
         private List<Expression>/*!*/ expressions;

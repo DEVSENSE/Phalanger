@@ -26,10 +26,16 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class DirectVarUse : SimpleVarUse
 	{
-		internal override Operations Operation { get { return Operations.DirectVarUse; } }
+        public override Operations Operation { get { return Operations.DirectVarUse; } }
 
 		public VariableName VarName { get { return varName; } set { varName = value; } }
 		private VariableName varName;
+
+        /// <summary>
+        /// Gets or sets possible types of the variable being used. 
+        /// This memeber might be null and should not be accessed without null check first.
+        /// </summary>
+        public VarTypeInfo VarTypeInfo { get; set; }
 
 		public DirectVarUse(Position position, VariableName varName)
 			: base(position)

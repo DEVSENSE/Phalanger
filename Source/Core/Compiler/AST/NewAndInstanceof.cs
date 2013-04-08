@@ -371,9 +371,9 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// <c>new</c> expression.
 	/// </summary>
-	public sealed class NewEx : Expression
+    public sealed class NewEx : VarLikeConstructUse
 	{
-		internal override Operations Operation { get { return Operations.New; } }
+        public override Operations Operation { get { return Operations.New; } }
 
 		internal override bool AllowsPassByReference { get { return true; } }
 
@@ -397,6 +397,8 @@ namespace PHP.Core.AST
 
 		internal override Evaluation Analyze(Analyzer/*!*/ analyzer, ExInfoFromParent info)
 		{
+            Debug.Assert(this.IsMemberOf == null);
+
 			access = info.Access;
 
 			this.typeArgsResolved = classNameRef.Analyze(analyzer);
@@ -500,7 +502,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class InstanceOfEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.InstanceOf; } }
+        public override Operations Operation { get { return Operations.InstanceOf; } }
 
 		private Expression/*!*/ expression;
         /// <summary>Expression being tested</summary>
@@ -589,7 +591,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class TypeOfEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.TypeOf; } }
+        public override Operations Operation { get { return Operations.TypeOf; } }
 
 		public TypeRef/*!*/ ClassNameRef { get { return classNameRef; } }
 		private TypeRef/*!*/ classNameRef;

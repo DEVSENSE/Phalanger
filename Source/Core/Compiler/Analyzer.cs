@@ -12,6 +12,7 @@
 */
 
 using System;
+using System.Linq;
 using System.IO;
 using System.Text;
 using System.Collections;
@@ -31,6 +32,109 @@ using PHP.CoreCLR;
 
 namespace PHP.Core
 {
+    /// <summary>
+    /// A set of possible types of a variable.
+    /// </summary>
+    /// <remarks>
+    /// <para>This type is used to annotate <see cref="DirectVarUse"/> and entries in <see cref="VariablesTable"/>. 
+    /// If an element is annotated with this, we can emit more efficient code.</para>
+    /// </remarks>
+    public class VarTypeInfo
+    {
+        private bool anyType = false;
+
+        private ISet<TypeRef> types;
+
+        public VarTypeInfo()
+        {
+        }
+
+        /// <summary>
+        /// Copy constructor.
+        /// </summary>
+        public VarTypeInfo(VarTypeInfo source)
+        {
+            this.anyType = source.anyType;
+            if (source.types != null)
+                this.types = new HashSet<TypeRef>(source.Types);
+        }
+
+        /// <summary>
+        /// Returns the set of all the possible types of associated element (variable, expression, ...).
+        /// Note: this property can only be accesses if <see cref="IsAnyType"/> is <c>false</c>.
+        /// </summary>
+        public ISet<TypeRef> Types
+        {
+            get
+            {
+                Debug.Assert(!this.IsAnyType, 
+                    "TypeInfo: once a type becomes AnyType, its TypeNames collection cannot be accessed.");
+                if (this.types == null)
+                    this.types = new HashSet<TypeRef>();
+                return this.types;
+            }
+        }
+
+        /// <summary>
+        /// Returns <c>true</c> if the variable was not defined at all in the analyzed code, 
+        /// the might indicate use of uninitialized variable.
+        /// </summary>
+        public bool IsUndefined 
+        { 
+            get { return (this.types == null || this.types.Count == 0) && !anyType; } 
+        }
+
+        /// <summary>
+        /// Returns <c>true</c> if we cannot make any assumptions about the variable's type. 
+        /// I.e. the <see cref="Types"/> set would have to contain all the existing types.
+        /// </summary>
+        public bool IsAnyType 
+        { 
+            get { return this.anyType; }
+            set
+            {
+                this.anyType = true;
+                this.types = null;  // so that GC can collect it if needed.
+            }
+        }
+
+        /// <summary>
+        /// Returns <c>true</c> if the <see cref="Types"/> set has only one type. 
+        /// I.e. the corresponding element (variable, expression, ...) can be statically typed.
+        /// </summary>
+        public bool HasOneType { get { return this.Types.Count == 1; } }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as VarTypeInfo;
+            if (other == null)
+                return false;
+            if (this.IsAnyType || other.IsAnyType)
+                return this.IsAnyType == other.IsAnyType;
+            if (this.IsUndefined || other.IsUndefined)
+                return this.IsUndefined == other.IsUndefined;
+            
+            // non of them can be anytype here, so we can access TypeNames
+            if (this.Types.Count != other.Types.Count)
+                return false;
+            
+            foreach (var type in other.Types)
+                if (!this.types.Any(x => x.QualifiedName == type.QualifiedName))
+                    return false;
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            if (this.IsUndefined)
+                return int.MinValue;
+            else if (this.IsAnyType)
+                return int.MaxValue;
+            return this.types.GetHashCode();
+        }
+    }
+
 	internal interface IPostAnalyzable
 	{
 		void PostAnalyze(Analyzer/*!*/ analyzer);

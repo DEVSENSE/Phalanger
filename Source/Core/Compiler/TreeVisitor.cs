@@ -255,8 +255,8 @@ namespace PHP.Core.AST
             // visits adaptation list
             var list = x.TraitAdaptationList;
             if (list != null)
-                for (int i = 0; i < list.Count; i++)
-                    list[i].VisitMe(this);
+                foreach(PHP.Core.AST.TraitsUse.TraitAdaptation t in list)
+                    VisitElement(t);
         }
 
         virtual public void VisitTraitAdaptationPrecedence(TraitsUse.TraitAdaptationPrecedence x)

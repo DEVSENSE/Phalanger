@@ -98,7 +98,7 @@ namespace PHP.Library.Data
 
         [PhpVisible]
         [ImplementsMethod]
-        public object __construct(ScriptContext context, object argdsn, [Optional] object argusername, [Optional] object argpassword, [Optional] object argdriver_options)
+        public virtual object __construct(ScriptContext context, object argdsn, [Optional] object argusername, [Optional] object argpassword, [Optional] object argdriver_options)
         {
             string dsn = PHP.Core.Convert.ObjectToString(argdsn);
             string username = (argusername == Arg.Default) ? null : PHP.Core.Convert.ObjectToString(argusername);
@@ -192,7 +192,7 @@ namespace PHP.Library.Data
         #region setAttribute
         [PhpVisible]
         [ImplementsMethod]
-        public object setAttribute(ScriptContext context, object attribute, object value)
+        public virtual object setAttribute(ScriptContext context, object attribute, object value)
         {
             int attInt = PHP.Core.Convert.ObjectToInteger(attribute);
             return this.SetAttribute(attInt, value);
@@ -211,7 +211,7 @@ namespace PHP.Library.Data
         #region getAttribute
         [PhpVisible]
         [ImplementsMethod]
-        public object getAttribute(ScriptContext context, object attribute)
+        public virtual object getAttribute(ScriptContext context, object attribute)
         {
             int attInt = PHP.Core.Convert.ObjectToInteger(attribute);
             return this.GetAttribute(attInt, null);
@@ -239,7 +239,7 @@ namespace PHP.Library.Data
         
         [PhpVisible]
         [ImplementsMethod]
-        public object quote(ScriptContext context, object str, [Optional] object parameter_type)
+        public virtual object quote(ScriptContext context, object str, [Optional] object parameter_type)
         {
             PDOParamType pt = PDOParamType.PDO_PARAM_STR;
             if (parameter_type != null && parameter_type != Arg.Default)
@@ -262,7 +262,7 @@ namespace PHP.Library.Data
         
         [PhpVisible]
         [ImplementsMethod]
-        public object query(ScriptContext context, object statement, [Optional] object fetch_to_mode, [Optional] object fetch_to_dest, [Optional] object fetch_to_args)
+        public virtual object query(ScriptContext context, object statement, [Optional] object fetch_to_mode, [Optional] object fetch_to_dest, [Optional] object fetch_to_args)
         {
             string query = PHP.Core.Convert.ObjectToString(statement);
             PDOStatement stmt = this.m_driver.CreateStatement(context, this);
@@ -301,7 +301,7 @@ namespace PHP.Library.Data
         
         [PhpVisible]
         [ImplementsMethod]
-        public object prepare(ScriptContext context, object statement, [Optional] object driver_options)
+        public virtual object prepare(ScriptContext context, object statement, [Optional] object driver_options)
         {
             string query = PHP.Core.Convert.ObjectToString(statement);
             Dictionary<int, object> options = new Dictionary<int, object>();
@@ -333,7 +333,7 @@ namespace PHP.Library.Data
         #region beginTransaction
         [PhpVisible]
         [ImplementsMethod]
-        public object beginTransaction(ScriptContext context)
+        public virtual object beginTransaction(ScriptContext context)
         {
             if (this.m_tx != null)
                 return false;
@@ -354,7 +354,7 @@ namespace PHP.Library.Data
         #region commit
         [PhpVisible]
         [ImplementsMethod]
-        public object commit(ScriptContext context)
+        public virtual object commit(ScriptContext context)
         {
             if (this.m_tx != null)
             {
@@ -378,7 +378,7 @@ namespace PHP.Library.Data
         #region rollback
         [PhpVisible]
         [ImplementsMethod]
-        public object rollback(ScriptContext context)
+        public virtual object rollback(ScriptContext context)
         {
             if (this.m_tx != null)
             {
@@ -402,7 +402,7 @@ namespace PHP.Library.Data
 
         #region errorCode
         [ImplementsMethod, PhpVisible]
-        public object errorCode(ScriptContext context)
+        public virtual object errorCode(ScriptContext context)
         {
             throw new NotImplementedException();
         }
@@ -417,7 +417,7 @@ namespace PHP.Library.Data
 
         #region errorInfo
         [ImplementsMethod, PhpVisible]
-        public object errorInfo(ScriptContext context)
+        public virtual object errorInfo(ScriptContext context)
         {
             throw new NotImplementedException();
         }
@@ -432,7 +432,7 @@ namespace PHP.Library.Data
 
         #region exec
         [ImplementsMethod, PhpVisible]
-        public object exec(ScriptContext context, object statement)
+        public virtual object exec(ScriptContext context, object statement)
         {
             throw new NotImplementedException();
         }
@@ -448,7 +448,7 @@ namespace PHP.Library.Data
 
         #region inTransaction
         [ImplementsMethod, PhpVisible]
-        public object inTransaction(ScriptContext context)
+        public virtual object inTransaction(ScriptContext context)
         {
             return this.Transaction != null;
         }
@@ -464,7 +464,7 @@ namespace PHP.Library.Data
         #region lastInsertId
         
         [ImplementsMethod, PhpVisible]
-        public object lastInsertId(ScriptContext context, [Optional] object name)
+        public virtual object lastInsertId(ScriptContext context, [Optional] object name)
         {
             return this.getLastInsertId(
                 context,

@@ -23,13 +23,13 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class BinaryEx : Expression
 	{
-		internal Expression/*!*/ LeftExpr { get { return leftExpr; } }
+        public Expression/*!*/ LeftExpr { get { return leftExpr; } }
 		private Expression/*!*/ leftExpr;
 
-		internal Expression/*!*/ RightExpr { get { return rightExpr; } }
+        public Expression/*!*/ RightExpr { get { return rightExpr; } }
 		private Expression/*!*/ rightExpr;
 
-		internal override Operations Operation { get { return operation; } }
+        public override Operations Operation { get { return operation; } }
 		private Operations operation;
 
 		#region Construction
