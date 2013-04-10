@@ -44,7 +44,7 @@ namespace ClassDynamizer
 
 					if (parser.Errors.count > 0)
 					{
-						throw new ArgumentException("Parse error.");
+                        throw new ArgumentException("Parse error: " + parser.Errors.ErrorOutput);
 					}
 
 					unit = parser.CompilationUnit;

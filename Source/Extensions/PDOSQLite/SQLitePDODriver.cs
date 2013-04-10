@@ -81,8 +81,8 @@ namespace PHP.Library.Data
                     case '\n': sb.Append(@"\n"); break;
                     case '\r': sb.Append(@"\r"); break;
                     case '\u001a': sb.Append(@"\Z"); break;
-                    case '\'': sb.Append(@"\'"); break;
-                    case '"': sb.Append("\\\""); break;
+                    case '\'': sb.Append(@"''"); break;
+                    case '"': sb.Append("\"\""); break;
                     default: sb.Append(c); break;
                 }
             }

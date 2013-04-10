@@ -899,7 +899,7 @@ namespace PHP.Library
 			}
 
 			IntStringKey array_key;
-			if (PHP.Core.Convert.ObjectToArrayKey(key, out array_key))
+			if (Core.Convert.ObjectToArrayKey(key, out array_key))
 				return array.ContainsKey(array_key);
 				
 			PhpException.Throw(PhpError.Warning, CoreResources.GetString("illegal_offset_type")); 
@@ -1045,18 +1045,22 @@ namespace PHP.Library
         [return: PhpDeepCopy]
         public static PhpArray FillKeys(PhpArray keys, object value)
         {
-            PhpArray result = new PhpArray(keys.Count);
+            if (keys == null)
+            {
+                PhpException.ArgumentNull("keys");
+                return null;
+            }
 
-            if (keys != null)
-                foreach (var x in keys)
+            var result = new PhpArray(keys.Count);
+            foreach (var x in keys)
+            {
+                IntStringKey key;
+                if (Core.Convert.ObjectToArrayKey(x.Value, out key) &&
+                    !result.ContainsKey(key))
                 {
-                    IntStringKey key;
-                    if (!PHP.Core.Convert.ObjectToArrayKey(x.Value, out key))
-                        continue;
-
-                    if (!result.ContainsKey(key))
-                        result.Add(key, value);
+                    result.Add(key, value);
                 }
+            }
 
             // makes deep copies of all added items:
             result.InplaceCopyOnReturn = true;

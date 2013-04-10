@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Name>"Sample"</Name>
@@ -9,6 +10,8 @@
     <AssemblyName>Test1</AssemblyName>
     <MainFile>Test1.php</MainFile>
     <TargetPlatform>v2</TargetPlatform>
+    <CompilationMode>Standard</CompilationMode>
+    <StartupObject>Test1.php</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <IncludeDebugInformation>true</IncludeDebugInformation>
@@ -36,5 +39,5 @@
       <SubType>Content</SubType>
     </Content>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Phalanger\2.0\Phalanger.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Phalanger\3.0\Phalanger.targets" />
 </Project>

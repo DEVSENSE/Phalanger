@@ -160,20 +160,13 @@ namespace PHP.Library
             {
                 Debug.Assert(str != null);
 
-                string result = str;
-
-                int i = 0;
+                StringBuilder sb = new StringBuilder(str.Length);
                 foreach (char c in str)
                 {
-                    byte b = (byte)c;
-
-                    if (b <= 0x1F || b == 0x7F)
-                        result = result.Remove(i) + newChar + result.Substring(i + 1);
-
-                    ++i;
+                    sb.Append(Char.IsControl(c) ? newChar : c);
                 }
 
-                return result;
+                return sb.ToString();
             }
         }
 
