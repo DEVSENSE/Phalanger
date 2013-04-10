@@ -3,15 +3,15 @@
 
  Copyright (c) 2004-2006 Tomas Matousek and Pavel Novak.
 
- The use and distribution terms for this software are contained in the file named License.txt, 
- which can be found in the root of the Phalanger distribution. By using this software 
+ The use and distribution terms for this software are contained in the file named License.txt,
+ which can be found in the root of the Phalanger distribution. By using this software
  in any fashion, you are agreeing to be bound by the terms of this license.
- 
+
  You must not remove this notice from this software.
 
 TODO:
   - sunset/sunrise calculations changed (PHP 5.1.2)
-  - Added support for exif date format in strtotime(). (PHP 5.1.3) 
+  - Added support for exif date format in strtotime(). (PHP 5.1.3)
 */
 
 using System;
@@ -106,24 +106,14 @@ namespace PHP.Library
         #region Methods
 
         private static DateTime StrToTime(string timestr, DateTime time)
-
         {
             if (string.IsNullOrEmpty(timestr) || timestr.EqualsOrdinalIgnoreCase("now"))
             {
                 return DateTime.UtcNow;
             }
-            else
-            {
-                var result = PhpDateTime.StringToTime(timestr, DateTimeUtils.UtcToUnixTimeStamp(time));
-                if (result is int)
-                {
-                    return DateTimeUtils.UnixTimeStampToUtc((int)result);
-                }
-                else
-                {
-                    return DateTime.UtcNow;
-                }
-            }
+
+            var result = PhpDateTime.StringToTime(timestr, DateTimeUtils.UtcToUnixTimeStamp(time));
+            return result is int ? DateTimeUtils.UnixTimeStampToUtc((int) result) : DateTime.UtcNow;
         }
 
         // public __construct ([ string $time = "now" [, DateTimeZone $timezone = NULL ]] )
@@ -155,7 +145,7 @@ namespace PHP.Library
             }
 
             var timestr = (time == Arg.Default) ? "now" : PHP.Core.Convert.ObjectToString(time);
-            this.Time = StrToTime(timestr, DateTime.UtcNow);            
+            this.Time = StrToTime(timestr, DateTime.UtcNow);
 
             //this.date.Value = this.Time.ToString("yyyy-mm-dd HH:mm:ss");
             //this.timezone_type.Value = 3;
@@ -276,7 +266,7 @@ namespace PHP.Library
             var tz = (timezone is DateTimeZone) ? ((DateTimeZone)timezone).timezone : PhpTimeZone.CurrentTimeZone;
             string formatstr = PhpVariable.AsString(format);
             string timestr = PhpVariable.AsString(time);
-            
+
             if (formatstr == null)
             {
                 PhpException.InvalidArgument("format");
@@ -346,7 +336,7 @@ namespace PHP.Library
             return createFromFormat(stack.Context, format, time, timezone);
         }
 
-        [ImplementsMethod]        
+        [ImplementsMethod]
         public object setDate(ScriptContext/*!*/context, object year, object month, object day)
         {
             var y = PHP.Core.Convert.ObjectToInteger(year);
@@ -451,7 +441,7 @@ namespace PHP.Library
 	public static class PhpDateTime
 	{
 		/// <summary>
-		/// Gets the current local time with respect to the current PHP time zone. 
+		/// Gets the current local time with respect to the current PHP time zone.
 		/// </summary>
 		public static DateTime Now
 		{
@@ -636,7 +626,7 @@ namespace PHP.Library
 			return FormatDate(format, DateTime.UtcNow, DateTimeUtils.UtcTimeZone);
 		}
 
-		/// <summary>              
+		/// <summary>
 		/// Identical to the date() function except that the time returned is Greenwich Mean Time (GMT)
 		/// </summary>
 		/// <param name="format">Format definition for output.</param>
@@ -684,7 +674,7 @@ namespace PHP.Library
 			switch (format)
 			{
 				case 'B':
-					// Swatch Beat (Internet Time) - 000 through 999 
+					// Swatch Beat (Internet Time) - 000 through 999
 					return GetSwatchBeat(utc);
 
 				case 'd':
@@ -788,18 +778,18 @@ namespace PHP.Library
                         break;
 
                     case 'A':
-                        // Uppercase Ante meridiem and Post meridiem - AM or PM 
+                        // Uppercase Ante meridiem and Post meridiem - AM or PM
                         result.Append(local.ToString("tt", DateTimeFormatInfo.InvariantInfo));
                         break;
 
                     case 'B':
-                        // Swatch Beat (Internet Time) - 000 through 999 
+                        // Swatch Beat (Internet Time) - 000 through 999
                         result.AppendFormat("{0:000}", GetSwatchBeat(utc));
                         break;
 
                     case 'c':
                         {
-                            // ISO 8601 date (added in PHP 5) 2004-02-12T15:19:21+00:00 
+                            // ISO 8601 date (added in PHP 5) 2004-02-12T15:19:21+00:00
                             result.Append(local.ToString("yyyy-MM-dd'T'HH:mm:ss", DateTimeFormatInfo.InvariantInfo));
 
                             TimeSpan offset = zone.GetUtcOffset(local);
@@ -823,7 +813,7 @@ namespace PHP.Library
                         break;
 
                     case 'F':
-                        // A full textual representation of a month, such as January or March - January through December 
+                        // A full textual representation of a month, such as January or March - January through December
                         result.Append(local.ToString("MMMM", DateTimeFormatInfo.InvariantInfo));
                         break;
 
@@ -1063,7 +1053,7 @@ namespace PHP.Library
             if (DayNumber10 == 1) { if (DayNumber/*%100*/ != 11) return "st"; }
             else if (DayNumber10 == 2) { if (DayNumber/*%100*/ != 12) return "nd"; }
             else if (DayNumber10 == 3) { if (DayNumber/*%100*/ != 13) return "rd"; }
-            
+
             return "th";
         }
 
@@ -1280,14 +1270,14 @@ namespace PHP.Library
 						break;
 
 					case 'U':
-						// week number of the current year as a decimal number, starting with the first 
+						// week number of the current year as a decimal number, starting with the first
 						// Sunday as the first day of the first week (formula taken from GlibC 2.3.5):
 						result.AppendFormat("{0:00}", (local.DayOfYear - 1 - (int)local.DayOfWeek + 7) / 7);
 						break;
 
 					case 'V':
 						{
-							// The ISO 8601:1988 week number of the current year 
+							// The ISO 8601:1988 week number of the current year
 							int week, year;
 							GetIsoWeekAndYear(local, out week, out year);
 							result.AppendFormat("{0:00}", week);
@@ -1300,7 +1290,7 @@ namespace PHP.Library
 						break;
 
 					case 'W':
-						// week number of the current year as a decimal number, starting with the first 
+						// week number of the current year as a decimal number, starting with the first
 						// Monday as the first day of the first week (formula taken from GlibC 2.3.5):
 						result.AppendFormat("{0:00}", (local.DayOfYear - 1 - ((int)local.DayOfWeek - 1 + 7) % 7 + 7) / 7);
 						break;
@@ -1350,7 +1340,7 @@ namespace PHP.Library
 		//		[ImplementsFunction("strptime")]
 		//		public static PhpArray StringToTime(string datetime,string format)
 		//		{
-		//		  
+		//
 		//		}
 
 		#endregion
@@ -1455,7 +1445,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Returns the Unix timestamp for a time compound of an hour, a minute and a second which are specified and 
+		/// Returns the Unix timestamp for a time compound of an hour, a minute and a second which are specified and
 		/// a month, a day and a year which are taken from the current date values.
 		/// </summary>
 		/// <param name="hour">The hour.</param>
@@ -1470,7 +1460,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Returns the Unix timestamp for a time compound of an hour, a minute, a second and a month which are specified and 
+		/// Returns the Unix timestamp for a time compound of an hour, a minute, a second and a month which are specified and
 		/// a day and a year which are taken from the current date values.
 		/// </summary>
 		/// <param name="hour">The hour.</param>
@@ -1486,7 +1476,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Returns the Unix timestamp for a time compound of an hour, a minute, a second, a month and a day 
+		/// Returns the Unix timestamp for a time compound of an hour, a minute, a second, a month and a day
 		/// which are specified and a year which is taken from the current date values.
 		/// </summary>
 		/// <param name="hour">The hour.</param>
@@ -1534,7 +1524,7 @@ namespace PHP.Library
 		{
 			var zone = PhpTimeZone.CurrentTimeZone;
 			DateTime local = MakeDateTime(hour, minute, second, month, day, year);
-            
+
 			switch (daylightSaving)
 			{
 				case -1: // detect, whether the date is during DST:
@@ -1637,7 +1627,7 @@ namespace PHP.Library
 		/// <item>year is between 1 and 32767 inclusive</item>
 		/// <item>month is between 1 and 12 inclusive</item>
 		/// <item>day is within the allowed number of days for the given month. Leap years are taken into consideration.</item>
-		/// </list>		
+		/// </list>
 		/// </remarks>
 		/// <param name="month">Month</param>
 		/// <param name="day">Day</param>
@@ -1744,7 +1734,7 @@ namespace PHP.Library
 			PhpArray result = new PhpArray(0, 4);
 
             DateTime local = TimeZoneInfo.ConvertTimeFromUtc(utc, zone);
-            
+
 			int current_dst = 0;
             if (zone.IsDaylightSavingTime(local))
             {
@@ -1757,7 +1747,7 @@ namespace PHP.Library
                         break;
                     }
                 }
-            }			
+            }
 
 			const int ticks_per_microsecond = (int)TimeSpan.TicksPerMillisecond / 1000;
 
@@ -1835,13 +1825,13 @@ namespace PHP.Library
 		/// The first argument to localtime() is the timestamp. The second argument to the localtime() is
 		/// the isAssociative, if this is set to <c>false</c> than the array is returned as a regular, numerically indexed array.
 		/// If the argument is set to <c>true</c> then localtime() is an associative array containing all the different
-		/// elements of the structure returned by the C function call to localtime. 
+		/// elements of the structure returned by the C function call to localtime.
 		/// </summary>
 		/// <remarks>
 		/// Returned array contains these elements if isAssociative is set to true:
 		/// <list type="bullet">
-		/// <term><c>"tm_sec"</c></term><description>seconds</description> 
-		/// <term><c>"tm_min"</c></term><description>minutes</description> 
+		/// <term><c>"tm_sec"</c></term><description>seconds</description>
+		/// <term><c>"tm_min"</c></term><description>minutes</description>
 		/// <term><c>"tm_hour"</c></term><description>hour</description>
 		///	<term><c>"tm_mday"</c></term><description>day of the month</description>
 		///	<term><c>"tm_mon"</c></term><description>month of the year, starting with 0 for January</description>
@@ -1961,7 +1951,7 @@ namespace PHP.Library
 		/// </summary>
 		/// <param name="returnDouble"><c>true</c> to return the double, <c>false</c> to return string.</param>
 		/// <returns><see cref="String"/> containing number of miliseconds, space and number of seconds
-		/// if <paramref name="returnDouble"/> is <c>false</c> and <see cref="double"/> 
+		/// if <paramref name="returnDouble"/> is <c>false</c> and <see cref="double"/>
 		/// containing the fractional count of seconds otherwise.</returns>
 		[ImplementsFunction("microtime")]
 		public static object MicroTime(bool returnDouble)
@@ -2006,11 +1996,10 @@ namespace PHP.Library
 		{
 			if (time == null) return false;
 			time = time.Trim();
-			if (time == "") return false;
+			if (time.Length == 0) return false;
 
 			string error = null;
 			int result = StrToTime.DateInfo.Parse(time, startUtc, out error);
-
 			if (error != null)
 			{
 				PhpException.Throw(PhpError.Warning, error);
@@ -2306,7 +2295,7 @@ namespace PHP.Library
 		[Test]
 		static void TestStringToTime()
 		{
-			TimeZoneInfo[] all_zones = 
+			TimeZoneInfo[] all_zones =
 		  {
 		    PhpTimeZone.NepalTimeZone,
 		    PhpTimeZone.PacificTimeZone,
@@ -2324,18 +2313,18 @@ namespace PHP.Library
 			DateTime time1 = new DateTime(2005, 11, 13, 17, 41, 43);
 			// mktime(17,41,43,11,13,2005);
 
-			StringToTimeCase[] cases = 
+			StringToTimeCase[] cases =
 		  {
 		    new StringToTimeCase("10 September 2000",                time1,pac_zone, "", pac_zones),
 		    new StringToTimeCase("+0545",                            time1,pac_zone, "", pac_zones),
-		  
+
 //		    new StringToTimeCase("+0545",                            time1,pac_zone, "11:56:43 11/13/2005", pac_zones),
 //		    new StringToTimeCase("11/31/2005",                       time1,pac_zone, "17:41:43 11/13/2005", pac_zones),
 //		    new StringToTimeCase("-1 month +0545",11,01,2005,pac_zone, "20:15:00 09-30-2005", pac_zones),
 //        new StringToTimeCase("@-1519789808",null,pac_zones),
 //		    new StringToTimeCase( "1/1/1900",                                        null, all_zones),
 //		    new StringToTimeCase("11/1/2005",                       "00:00:00 11/01/2005", nep_zones),
-//    
+//
 //		    // note: goes over daylight savings change date:
 //		    new StringToTimeCase( "+1 month",  10,01,2005,utc_zone, "00:00:00 11/01/2005", utc_zones),
 //		    new StringToTimeCase( "+1 month",  10,01,2005,nep_zone, "00:00:00 11/01/2005", nep_zones),
@@ -2343,7 +2332,7 @@ namespace PHP.Library
 //		    new StringToTimeCase( "-1 month",  11,01,2005,utc_zone, "00:00:00 10/01/2005", utc_zones),
 //		    new StringToTimeCase( "-1 month",  11,01,2005,nep_zone, "00:00:00 10/01/2005", nep_zones),
 //		    new StringToTimeCase( "-1 month",  11,01,2005,pac_zone, "00:00:00 10/01/2005", pac_zones),
-//		                                                                            
+//
 //        new StringToTimeCase("now",                              time1,pac_zone, "17:41:43 11/13/2005", pac_zones),
 //        new StringToTimeCase("10 September 2000",                time1,pac_zone, "00:00:00 09/10/2000", pac_zones),
 //        new StringToTimeCase("+1 day",                           time1,pac_zone, "17:41:43 11/14/2005", pac_zones),
@@ -2381,10 +2370,10 @@ namespace PHP.Library
 					object timestamp = StringToTime(c.String, c.StartTime);
 
 					//          string str = null;
-					//          if (timestamp is int) 
+					//          if (timestamp is int)
 					//            str = FormatDate("H:i:s m/d/Y",(int)timestamp); else
 					//            Debug.Assert(!(bool)timestamp);
-					//          
+					//
 					//          if (str!=c.Result)
 					//            Debug.Fail();
 				}

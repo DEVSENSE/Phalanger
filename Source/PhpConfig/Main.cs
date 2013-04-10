@@ -173,7 +173,7 @@ namespace PHP
 				writer.IndentChar = '\t';
 
 				writer.WriteStartElement("configuration");
-				writer.WriteStartElement(PHP.Core.Configuration.SectionName);
+				writer.WriteStartElement(Core.Configuration.SectionName);
 
 				// write libraries:
 				if (Extensions.Count > 0)
@@ -188,6 +188,7 @@ namespace PHP
 						// TODO: writer.WriteAttributeString("section", descriptor.Name);
 						writer.WriteEndElement();
 					}
+
 					writer.WriteEndElement();
 				}
 
@@ -320,7 +321,7 @@ namespace PHP
 			// loads entire configuration:
 			try
 			{
-				PHP.Core.Configuration.Load(ApplicationContext.Default);
+				Core.Configuration.Load(ApplicationContext.Default);
 			}
 			catch (ConfigurationErrorsException e)
 			{

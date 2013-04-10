@@ -1,0 +1,1 @@
+..\Tools\Elevate cmd /C "start %~dp0\Phalanger.sln"

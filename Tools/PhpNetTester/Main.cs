@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
-using System.Collections;
 
 namespace PHP.Testing
 {
@@ -11,7 +11,7 @@ namespace PHP.Testing
 	class PhpNetTester
 	{
 		private static TestsCollection testsCollection;
-		private static ArrayList testDirsAndFiles;
+        private static readonly List<string> testDirsAndFiles = new List<string>();
 		private static string outputDir;
 		private static string compiler;
 		private static string loader;
@@ -22,6 +22,8 @@ namespace PHP.Testing
 		private static bool compileOnly = false;
 		private static bool benchmarks = false;
 		private static int numberOfBenchmarkRuns = 1;
+        private static int maxThreads = 1;
+        private static TestsCollection.ConcurrencyLevel concurrencyLevel = TestsCollection.ConcurrencyLevel.SkipIf;
 
 		public static int BenchmarkWarmup { get { return benchmarkWarmup; } }
 		private static int benchmarkWarmup = 1;
@@ -45,8 +47,15 @@ namespace PHP.Testing
 			Console.WriteLine("  /verbose      - writes much more information to console while testing");
 			Console.WriteLine("  /clean        - deletes all files created during the test");
 			Console.WriteLine("  /compileonly  - test only compilation, do not run compiled scripts");
-			Console.WriteLine("  /benchmark:<runs>[/<warmup>] - run benchmarks");
-			Console.WriteLine("  arguments <absolute or relative directory paths where are directories to test>");
+            Console.WriteLine("  /benchmark:<runs>[/<warmup>] - run benchmarks");
+            Console.WriteLine("  /j[:max-threads] - execute in parallel (may affect benchmarks)");
+            Console.WriteLine("  /p:<none|folder|compile|skipif|full> - concurrency level:");
+            Console.WriteLine("      none - Everything sequential. Disables /j option.");
+            Console.WriteLine("      folder - Tests in separate folders executed concurrently.");
+            Console.WriteLine("      compile - Only compiled concurrently in same folder.");
+            Console.WriteLine("      skipif - SkipIf tests executed concurrently in same folder.");
+            Console.WriteLine("      full - All possible operations done concurrently.");
+            Console.WriteLine("  arguments <absolute or relative directory paths where are directories to test>");
 			Console.WriteLine("         or <absolute or relative paths to test files>");
 			Console.WriteLine("                - current directory if no argument is specified");
 		}
@@ -108,17 +117,20 @@ namespace PHP.Testing
 							break;
 
 							case "log":
-							if (value == "full")
-								fullLog = true;
-							else if (value == "short")
-								fullLog = false;
-							else
-								throw new InvalidArgumentException(String.Format("Illegal /log:{0} option.", value));
+							    if (value == "full")
+								    fullLog = true;
+							    else if (value == "short")
+								    fullLog = false;
+							    else
+								    throw new InvalidArgumentException(String.Format("Illegal /log:{0} option.", value));
 							break;
 
 							case "benchmark":
 							if (benchmarks)
-								throw new InvalidArgumentException("/benchmark option specified twice");
+							{
+							    throw new InvalidArgumentException("/benchmark option specified twice");
+							}
+
 							benchmarks = true;
 							try
 							{
@@ -139,33 +151,61 @@ namespace PHP.Testing
 							}
 							break;
 
+                            case "j":
+                                maxThreads = Math.Max(Int32.Parse(value), 1);
+                            break;
+
+                            case "p":
+                                switch (value)
+                                {
+                                    case "none":
+                                        maxThreads = 1;
+                                        concurrencyLevel = TestsCollection.ConcurrencyLevel.None;
+                                        break;
+                                    case "folder":
+                                        concurrencyLevel = TestsCollection.ConcurrencyLevel.Folder;
+                                        break;
+                                    case "compile":
+                                        concurrencyLevel = TestsCollection.ConcurrencyLevel.Compile;
+                                        break;
+                                    case "skipif":
+                                        concurrencyLevel = TestsCollection.ConcurrencyLevel.SkipIf;
+                                        break;
+                                    case "full":
+                                        concurrencyLevel = TestsCollection.ConcurrencyLevel.Full;
+                                        break;
+                                    default:
+                                        throw new InvalidArgumentException(
+                                            String.Format(
+                                                "Invalid value for conncurrency-level [{0}] in option [{1}].", value, name));
+                                }
+                                
+                            break;
+
 							default:
-							throw new InvalidArgumentException(String.Format("Invalid option {0}.", name));
+							    throw new InvalidArgumentException(String.Format("Invalid option {0}.", name));
 						}
 					}
 					else
 					{	// option without ':'
 						string name = args[i].Substring(1).Trim();
-
-						switch (name)
+                        switch (name)
 						{
 							case "verbose":
-							if (verbose)
-								throw new InvalidArgumentException("/verbose option specified twice");
-							verbose = true;
+							    verbose = true;
 							break;
 							case "clean":
-							if (clean)
-								throw new InvalidArgumentException("/clean option specified twice");
-							clean = true;
+    							clean = true;
 							break;
 							case "compileonly":
-							if (compileOnly)
-								throw new InvalidArgumentException("/compileonly option specified twice");
-							compileOnly = true;
+    							compileOnly = true;
 							break;
+                            case "j":
+                                maxThreads = Environment.ProcessorCount;
+                            break;
+
 							default:
-							throw new InvalidArgumentException(String.Format("Invalid option {0}.", args[i]));
+	    						throw new InvalidArgumentException(String.Format("Invalid option {0}.", args[i]));
 						}
 
 					}
@@ -176,15 +216,36 @@ namespace PHP.Testing
 				}
 			}
 
+            if (maxThreads <= 1)
+            {
+                concurrencyLevel = TestsCollection.ConcurrencyLevel.None;
+            }
+            else
+            if (concurrencyLevel == TestsCollection.ConcurrencyLevel.None)
+            {
+                maxThreads = 1;
+            }
+
 			// default values
 			if (testDirsAndFiles.Count == 0)
-				testDirsAndFiles.Add(Directory.GetCurrentDirectory());
+			{
+			    testDirsAndFiles.Add(Directory.GetCurrentDirectory());
+			}
+
 			if (compiler == null)
-				compiler = Path.Combine(Directory.GetCurrentDirectory(), "phpc.exe");
+			{
+			    compiler = Path.Combine(Directory.GetCurrentDirectory(), "phpc.exe");
+			}
+
 			if (php == null)
-				php = Path.Combine(Directory.GetCurrentDirectory(), "php.exe");
+			{
+			    php = Path.Combine(Directory.GetCurrentDirectory(), "php.exe");
+			}
+
 			if (outputDir == null)
-				outputDir = Directory.GetCurrentDirectory();
+			{
+			    outputDir = Directory.GetCurrentDirectory();
+			}
 
 			return true;
 		}
@@ -197,21 +258,19 @@ namespace PHP.Testing
 		[STAThread]
 		static int Main(string[] args)
 		{
-			bool tests_started = false;
-			int failed_num = -1;
+		    var sw = Stopwatch.StartNew();
+			bool testingStarted = false;
 			Console.WriteLine("Starting tests...");
-
 			try
 			{
-				testDirsAndFiles = new ArrayList();
 				ProcessArguments(args);
 
 				testsCollection = new TestsCollection(testDirsAndFiles, verbose, clean, compileOnly,
-					benchmarks, numberOfBenchmarkRuns);
+					                                  benchmarks, numberOfBenchmarkRuns, concurrencyLevel, maxThreads);
 				testsCollection.LoadTests();
 
-				tests_started = true;
-				failed_num = testsCollection.RunTests(loader, compiler, php);
+				testingStarted = true;
+				return testsCollection.RunTests(loader, compiler, php);
 			}
 			catch (InvalidArgumentException e)
 			{
@@ -232,13 +291,16 @@ namespace PHP.Testing
 			}
 			finally
 			{
-				if (tests_started)
-					testsCollection.WriteLog(Path.Combine(outputDir, "TestLog.htm"), fullLog);
+				if (testingStarted)
+				{
+				    testsCollection.WriteLog(Path.Combine(outputDir, "TestLog.htm"), fullLog);
+		            Console.WriteLine();
+                    Console.WriteLine("Done. " + testsCollection.GetStatusMessage());
+                    Console.WriteLine("Time: " + sw.Elapsed);
+				}
 			}
 
-			Console.WriteLine("Done.");
-
-			return failed_num;
+			return 0;
 		}
 	}
 }

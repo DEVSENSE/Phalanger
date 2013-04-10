@@ -135,9 +135,12 @@ namespace PHP.Library.Xml
 
         internal static XmlParserResource ValidResource(PhpResource handle)
         {
-            if (handle != null && handle.GetType() == typeof(XmlParserResource))
-                return (XmlParserResource)handle;
-
+            var xmlParserResource = handle as XmlParserResource;
+            if (xmlParserResource != null)
+            {
+                return xmlParserResource;
+            }
+            
             PhpException.Throw(PhpError.Warning, Strings.invalid_xmlresource);
             return null;
         }
