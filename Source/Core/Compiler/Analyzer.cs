@@ -33,106 +33,46 @@ using PHP.CoreCLR;
 namespace PHP.Core
 {
     /// <summary>
-    /// A set of possible types of a variable.
+    /// A set of possible types that an expression can result to.
     /// </summary>
     /// <remarks>
-    /// <para>This type is used to annotate <see cref="DirectVarUse"/> and entries in <see cref="VariablesTable"/>. 
+    /// <para>This type is used to annotate <see cref="Expression"/>. 
     /// If an element is annotated with this, we can emit more efficient code.</para>
     /// </remarks>
-    public class VarTypeInfo
+    public interface IExTypeInfo
     {
-        private bool anyType = false;
-
-        private ISet<TypeRef> types;
-
-        public VarTypeInfo()
-        {
-        }
+        /// <summary>
+        /// Enumeration of possible types. 
+        /// If one of them is <see cref="PhpTypeCode.Object"/>, 
+        /// then <see cref="Types"/> contains a collection of 
+        /// possible types of the object.
+        /// </summary>
+        IEnumerable<PhpTypeCode> TypeCodes { get; }
 
         /// <summary>
-        /// Copy constructor.
+        /// If <see cref="TypeCodes"/> contains <see cref="PhpTypeCode.Object"/>, 
+        /// then this enumerates all the possible types of the object reference.
         /// </summary>
-        public VarTypeInfo(VarTypeInfo source)
-        {
-            this.anyType = source.anyType;
-            if (source.types != null)
-                this.types = new HashSet<TypeRef>(source.Types);
-        }
+        IEnumerable<TypeRef> Types { get; }
 
         /// <summary>
-        /// Returns the set of all the possible types of associated element (variable, expression, ...).
-        /// Note: this property can only be accesses if <see cref="IsAnyType"/> is <c>false</c>.
+        /// If <c>true</c>, then we do not know anything about the type for sure. 
+        /// However this instance might still represent a type hint if <see cref="IsTypeHint"/> is <c>true</c>.
         /// </summary>
-        public ISet<TypeRef> Types
-        {
-            get
-            {
-                Debug.Assert(!this.IsAnyType, 
-                    "TypeInfo: once a type becomes AnyType, its TypeNames collection cannot be accessed.");
-                if (this.types == null)
-                    this.types = new HashSet<TypeRef>();
-                return this.types;
-            }
-        }
+        bool IsAnyType { get; }
 
         /// <summary>
-        /// Returns <c>true</c> if the variable was not defined at all in the analyzed code, 
-        /// the might indicate use of uninitialized variable.
+        /// If <c>true</c> (implies that <see cref="IsAnyType"/> is <c>true</c>), then we don't know 
+        /// anything about this type, but <see cref="TypeCodes"/> and <see cref="Types"/> 
+        /// contain type hints.
         /// </summary>
-        public bool IsUndefined 
-        { 
-            get { return (this.types == null || this.types.Count == 0) && !anyType; } 
-        }
+        /// <remarks>Value of this property really makes sense once <see cref="IsAnyType"/> is <c>true</c>, 
+        /// otherwise value of <see cref="IsTypeHint"/> should always be <c>false</c>.</remarks>
+        bool IsTypeHint { get; }
 
-        /// <summary>
-        /// Returns <c>true</c> if we cannot make any assumptions about the variable's type. 
-        /// I.e. the <see cref="Types"/> set would have to contain all the existing types.
-        /// </summary>
-        public bool IsAnyType 
-        { 
-            get { return this.anyType; }
-            set
-            {
-                this.anyType = true;
-                this.types = null;  // so that GC can collect it if needed.
-            }
-        }
+        bool HasTypeCode(PhpTypeCode typeCode);
 
-        /// <summary>
-        /// Returns <c>true</c> if the <see cref="Types"/> set has only one type. 
-        /// I.e. the corresponding element (variable, expression, ...) can be statically typed.
-        /// </summary>
-        public bool HasOneType { get { return this.Types.Count == 1; } }
-
-        public override bool Equals(object obj)
-        {
-            var other = obj as VarTypeInfo;
-            if (other == null)
-                return false;
-            if (this.IsAnyType || other.IsAnyType)
-                return this.IsAnyType == other.IsAnyType;
-            if (this.IsUndefined || other.IsUndefined)
-                return this.IsUndefined == other.IsUndefined;
-            
-            // non of them can be anytype here, so we can access TypeNames
-            if (this.Types.Count != other.Types.Count)
-                return false;
-            
-            foreach (var type in other.Types)
-                if (!this.types.Any(x => x.QualifiedName == type.QualifiedName))
-                    return false;
-
-            return true;
-        }
-
-        public override int GetHashCode()
-        {
-            if (this.IsUndefined)
-                return int.MinValue;
-            else if (this.IsAnyType)
-                return int.MaxValue;
-            return this.types.GetHashCode();
-        }
+        bool HasType(TypeRef type);
     }
 
 	internal interface IPostAnalyzable
