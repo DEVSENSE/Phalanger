@@ -58,7 +58,7 @@ namespace PHP.Core.CodeDom
 				string[] names = Names;
 				for (int i = 0; i < names.Length; i++)
 				{
-					if (names[i].Equals(str_value, StringComparison.OrdinalIgnoreCase))
+					if (names[i].EqualsOrdinalIgnoreCase(str_value))
 					{
 						return Values[i];
 					}

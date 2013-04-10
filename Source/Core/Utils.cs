@@ -3813,7 +3813,7 @@ namespace PHP.Core
         /// <summary>
         /// Time 0 in terms of Unix TimeStamp.
         /// </summary>
-        public static readonly DateTime/*!*/UtcStartOfUnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0);
+        public static readonly DateTime/*!*/UtcStartOfUnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         /// UTC time zone.
@@ -3846,6 +3846,7 @@ namespace PHP.Core
         {
             return UtcStartOfUnixEpoch + TimeSpan.FromSeconds(timestamp);
         }
+
 #if !SILVERLIGHT
         /// <summary>
         /// Gets the daylight saving time difference between two dates.

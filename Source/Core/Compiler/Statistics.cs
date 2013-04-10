@@ -2,28 +2,21 @@
 
  Copyright (c) 2004-2006 Tomas Matousek.
 
- The use and distribution terms for this software are contained in the file named License.txt, 
- which can be found in the root of the Phalanger distribution. By using this software 
+ The use and distribution terms for this software are contained in the file named License.txt,
+ which can be found in the root of the Phalanger distribution. By using this software
  in any fashion, you are agreeing to be bound by the terms of this license.
- 
+
  You must not remove this notice from this software.
 
 */
 
 using System;
 using System.Diagnostics;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using PHP.Core.Reflection;
-
-#if !SILVERLIGHT
-using System.CodeDom.Compiler; // IndentedTextWriter
-#endif
 
 namespace PHP.Core
 {
-
 	public sealed partial class Statistics
 	{
 		private static DateTime start;
@@ -145,20 +138,33 @@ namespace PHP.Core
 		[Conditional("DEBUG")]
 		internal static void Dump(TextWriter/*!*/ output, string path)
 		{
-			Statistics.CompilationEnd();
-			output.WriteLine(string.Format
-				("Compiled in {0}:{1:00}.{2:000}.", duration.Minutes, duration.Seconds, duration.Milliseconds));
+		    try
+		    {
+                CompilationEnd();
+                output.WriteLine("Compiled in {0}:{1:00}.{2:000}.", duration.Minutes, duration.Seconds, duration.Milliseconds);
 
-			AST.DumpBasic(output);
+                AST.DumpBasic(output);
 
-			using (StreamWriter f = File.CreateText(Path.Combine(path, "LibraryCalls.csv")))
-				AST.DumpLibraryFunctionCalls(f);
+                using (StreamWriter f = File.CreateText(Path.Combine(path, "LibraryCalls.csv")))
+                {
+                    AST.DumpLibraryFunctionCalls(f);
+                }
 
-			using (StreamWriter f = File.CreateText(Path.Combine(path, "UnknownCalls.csv")))
-				AST.DumpUnknownFunctionCalls(f);
+                using (StreamWriter f = File.CreateText(Path.Combine(path, "UnknownCalls.csv")))
+                {
+                    AST.DumpUnknownFunctionCalls(f);
+                }
 
-			using (StreamWriter f = File.CreateText(Path.Combine(path, "EmittedNodes.csv")))
-				AST.DumpNodes(f);
+                using (StreamWriter f = File.CreateText(Path.Combine(path, "EmittedNodes.csv")))
+                {
+                    AST.DumpNodes(f);
+                }
+            }
+		    catch (Exception ex)
+		    {
+                // Log error to stderr and move on.
+                Console.Error.WriteLine("Error: " + ex);
+		    }
 		}
 	}
 }

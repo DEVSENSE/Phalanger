@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{1EA040D2-53F6-4409-9FA4-7C60E868BB52}") = "Sample", "Sample.phpproj", "{E97D0D1A-EABB-4B50-ACA5-BC61B74212EA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpLibrary", "CSharpLibrary.csproj", "{B466C784-9BC9-42DE-9C83-C962C9580402}"

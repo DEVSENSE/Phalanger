@@ -1,4 +1,6 @@
 @echo off
-..\Tools\PhpNetTester\bin\Debug\PhpNetTester.exe "/loader:\Program Files\Mono-1.1.17\bin\mono.exe" /compiler:..\Deployment\Debug\phpc.exe /php:..\Tools\PHP\php.exe
-del /s *.mdb *.exe EmittedNodes.csv LibraryCalls.csv UnknownCalls.csv __input.txt Debug.log > nul
-pause
+..\..\Tools\PhpNetTester.exe "/loader:\Program Files\Mono-1.1.17\bin\mono.exe" /compiler:..\..\Deployment\Bin\phpc.exe /php:..\..\Tools\PHP\php.exe %*
+
+@pause
+@rem Deleting output and temporary files...
+del /s *.pdb *.exe *.log EmittedNodes.csv LibraryCalls.csv UnknownCalls.csv *.phpscript > nul
