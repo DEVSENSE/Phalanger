@@ -74,15 +74,17 @@ namespace PHP.Library
 			// set SMTP server we are using
             RawSmtpClient client = new RawSmtpClient(config.Mailer.SmtpServer, config.Mailer.SmtpPort);
 
+            // X-PHP-Originating-Script
+            if (config.Mailer.AddXHeader)
+                additionalHeaders = "X-PHP-Originating-Script: 1:" + ScriptContext.CurrentContext.MainScriptFile.RelativePath.Path + "\n" + additionalHeaders;
+
             try
             {
                 client.Connect();
                 client.SendMessage(
                     config.Mailer.DefaultFromHeader, to,
                     subject,
-                    string.Format(
-                        "X-PHP-Originating-Script: 1:{0}\n{1}", ScriptContext.CurrentContext.MainScriptFile.RelativePath.Path,
-                        additionalHeaders),
+                    additionalHeaders,
                     message);
                 return true;
             }
