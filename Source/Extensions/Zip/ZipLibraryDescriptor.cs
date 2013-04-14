@@ -9,6 +9,7 @@ namespace PHP.Library.Zip
 {
     public sealed class ZipLibraryDescriptor : PhpLibraryDescriptor
     {
+        /// <summary>
         /// Stores one and only instance of the class that is created when the assembly is loaded.
         /// </summary>
         internal static ZipLibraryDescriptor Singleton { get { return singleton; } }
