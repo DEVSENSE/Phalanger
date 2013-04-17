@@ -282,6 +282,20 @@ namespace PHP.Core.AST
         {
             visitor.VisitDirectTypeRef(this);
         }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as DirectTypeRef;
+            if (other == null)
+                return false;
+
+            return this.QualifiedName.Equals(other.QualifiedName);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.QualifiedName.GetHashCode();
+        }
 	}
 
 	#endregion
