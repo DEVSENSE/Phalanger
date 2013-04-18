@@ -118,7 +118,7 @@ namespace PHP.Library
 
         // public __construct ([ string $time = "now" [, DateTimeZone $timezone = NULL ]] )
         [ImplementsMethod]
-        public object __construct(ScriptContext/*!*/context, [Optional]object time, [Optional]object timezone)
+        public virtual object __construct(ScriptContext/*!*/context, [Optional]object time, [Optional]object timezone)
         {
             if (timezone == Arg.Default || timezone == null)
             {
@@ -163,7 +163,7 @@ namespace PHP.Library
         }
 
         [ImplementsMethod]
-        public object setTimeZone(ScriptContext/*!*/context, object timezone)
+        public virtual object setTimeZone(ScriptContext/*!*/context, object timezone)
         {
             if (timezone == null)
             {
@@ -193,7 +193,7 @@ namespace PHP.Library
         }
 
         [ImplementsMethod]
-        public object format(ScriptContext/*!*/context, object format)
+        public virtual object format(ScriptContext/*!*/context, object format)
         {
             if (format == null)
             {
@@ -220,7 +220,7 @@ namespace PHP.Library
         }
 
         [ImplementsMethod]
-        public object getOffset(ScriptContext/*!*/context)
+        public virtual object getOffset(ScriptContext/*!*/context)
         {
             if (this.TimeZone == null)
                 return false;
@@ -236,7 +236,7 @@ namespace PHP.Library
         }
 
         [ImplementsMethod]
-        public object modify(ScriptContext/*!*/context, object modify)
+        public virtual object modify(ScriptContext/*!*/context, object modify)
         {
             if (modify == null)
             {
@@ -337,7 +337,7 @@ namespace PHP.Library
         }
 
         [ImplementsMethod]
-        public object setDate(ScriptContext/*!*/context, object year, object month, object day)
+        public virtual object setDate(ScriptContext/*!*/context, object year, object month, object day)
         {
             var y = PHP.Core.Convert.ObjectToInteger(year);
             var m = PHP.Core.Convert.ObjectToInteger(month);
@@ -374,7 +374,7 @@ namespace PHP.Library
         }
 
         [ImplementsMethod]
-        public object setTime(ScriptContext/*!*/context, object hour, object minute, object second)
+        public virtual object setTime(ScriptContext/*!*/context, object hour, object minute, object second)
         {
             var h = PHP.Core.Convert.ObjectToInteger(hour);
             var m = PHP.Core.Convert.ObjectToInteger(minute);
@@ -407,7 +407,7 @@ namespace PHP.Library
         }
 
         [ImplementsMethod]
-        public object getTimestamp(ScriptContext/*!*/context)
+        public virtual object getTimestamp(ScriptContext/*!*/context)
         {
             return DateTimeUtils.UtcToUnixTimeStamp(Time);
         }
