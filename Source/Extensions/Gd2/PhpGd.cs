@@ -901,43 +901,44 @@ namespace PHP.Library.Gd2
 
             if (pct <= 0 || src_w <= 0 || src_h <= 0)
                 return true;
-            
+
+            ImageAttributes ia = null;
+
+            if (pct < 100)
+            {
+                // prepare transformation matrix if needed
+                ColorMatrix cm = new ColorMatrix();
+                cm.Matrix00 = cm.Matrix11 = cm.Matrix22 = cm.Matrix44 = 1.0f;
+                cm.Matrix33 = (float)pct * 0.01f;
+
+                ia = new ImageAttributes();
+                ia.SetColorMatrix(cm, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+            }
+
             try
             {
-                if (pct >= 100)
+                // draw the image
+                using (Graphics g = Graphics.FromImage(dst_img.Image))
                 {
-                    using (Graphics g = Graphics.FromImage(dst_img.Image))
-                    {
-                        g.DrawImage(src_img.Image,
-                            dst_x, dst_y,
-                            new Rectangle(src_x, src_y, src_w, src_h),
-                            GraphicsUnit.Pixel);
-                    }
-                }
-                else
-                {
-                    ColorMatrix cm = new ColorMatrix();
-                    cm.Matrix00 = cm.Matrix11 = cm.Matrix22 = cm.Matrix44 = 1.0f;
-                    cm.Matrix33 = (float)pct * 0.01f;
-
-                    using (ImageAttributes ia = new ImageAttributes())
-                    {
-                        ia.SetColorMatrix(cm, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
-
-                        using (Graphics g = Graphics.FromImage(dst_img.Image))
-                        {
-                            g.DrawImage(src_img.Image,
-                                new Rectangle(dst_x, dst_y, src_w, src_h),
-                                src_x, src_y, src_w, src_h,
-                                GraphicsUnit.Pixel, ia);
-                        }
-                    }
+                    g.DrawImage(src_img.Image,
+                        new Rectangle(dst_x, dst_y, src_w, src_h),
+                        src_x, src_y, src_w, src_h,
+                        GraphicsUnit.Pixel, ia);
                 }
             }
             catch (Exception ex)
             {
+                // output the warning
                 PhpException.Throw(PhpError.Warning, ex.Message);
                 return false;
+            }
+            finally
+            {
+                if (ia != null)
+                {
+                    ia.Dispose();
+                    ia = null;
+                }
             }
 
             return true;
