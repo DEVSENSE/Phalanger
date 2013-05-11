@@ -4889,6 +4889,28 @@ namespace PHP.Core
             return xtype == ytype && PhpComparer./*Default.*/CompareEq(x, y);
         }
 
+        /// <summary>
+        /// Compares given object for strict equality with empty PHP array.
+        /// </summary>
+        /// <param name="x">Object to compare.</param>
+        /// <returns>Whether <paramref name="x"/> is an empty PHP array.</returns>
+        [Emitted]
+        public static bool StrictEmptyPhpArrayEquality(object x)
+        {
+            return x != null && x.GetType() == typeof(PhpArray) && ((PhpArray)x).Count == 0;
+        }
+
+        /// <summary>
+        /// Compares given array for strict equality with empty PHP array.
+        /// </summary>
+        /// <param name="x">Object to compare.</param>
+        /// <returns>Whether <paramref name="x"/> is an empty PHP array.</returns>
+        [Emitted]
+        public static bool StrictEmptyPhpArrayEquality(PhpArray x)
+        {
+            return x != null && x.Count == 0;
+        }
+
         #endregion
 
         #region Exception Handling
