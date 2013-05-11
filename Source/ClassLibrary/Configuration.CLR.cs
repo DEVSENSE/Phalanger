@@ -152,7 +152,8 @@ namespace PHP.Library
                     if (config == null) return;
 
                     RequestContext context = RequestContext.CurrentContext;
-                    Debug.Assert(context != null);
+                    if (context == null) return;
+
                     HttpCookie cookie = AspNetSessionHandler.GetCookie(context.HttpContext);
 
                     if (config.Session.CacheExpire >= 0)
