@@ -304,7 +304,7 @@ namespace PHP.Core.Emit
             public static MethodInfo NewClr { get { if (_NewClr == null) _NewClr = _this.GetMethod("NewClr"); return _NewClr; } }
             public static MethodInfo InstanceOf { get { if (_InstanceOf == null) _InstanceOf = _this.GetMethod("InstanceOf"); return _InstanceOf; } }
             public static MethodInfo TypeOf { get { if (_TypeOf == null) _TypeOf = _this.GetMethod("TypeOf"); return _TypeOf; } }
-            public static MethodInfo StrictEquality { get { if (_StrictEquality == null) _StrictEquality = _this.GetMethod("StrictEquality"); return _StrictEquality; } }
+            public static MethodInfo StrictEquality { get { return _StrictEquality ?? (_StrictEquality = new Func<object, object, bool>(Core.Operators.StrictEquality).Method); } }
             public static MethodInfo StrictEmptyPhpArrayEquality { get { return _StrictEmptyPhpArrayEquality ?? (_StrictEmptyPhpArrayEquality = new Func<object,bool>(Core.Operators.StrictEmptyPhpArrayEquality).Method); } }
             public static MethodInfo StrictEmptyPhpArrayEquality_PhpArray { get { return _StrictEmptyPhpArrayEquality_PhpArray ?? (_StrictEmptyPhpArrayEquality_PhpArray = new Func<Core.PhpArray, bool>(Core.Operators.StrictEmptyPhpArrayEquality).Method); } }
             public static MethodInfo Throw { get { if (_Throw == null) _Throw = _this.GetMethod("Throw"); return _Throw; } }
