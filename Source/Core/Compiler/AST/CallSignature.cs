@@ -419,31 +419,26 @@ namespace PHP.Core.AST
 			Type elem_type = param.ParameterType.GetElementType();
 			Type array_type = elem_type.MakeArrayType();
 
-			LocalBuilder loc_array = il.DeclareLocal(array_type);
-			LocalBuilder loc_item = il.DeclareLocal(elem_type);
-
-			// NEW <alem_type>[<parameters count - start>]
+            // NEW <alem_type>[<parameters count - start>]
 			il.LdcI4(parameters.Count - start);
 			il.Emit(OpCodes.Newarr, elem_type);
-			il.Stloc(loc_array);
-
+			
 			// loads each optional parameter into the appropriate bucket of the array:
 			for (int i = start; i < parameters.Count; i++)
 			{
-				// item = <parameter value>;
-				object type_or_value = EmitLibraryLoadArgument(il, i, builder.Aux);
-				builder.EmitArgumentConversion(elem_type, type_or_value, false, param);
-				il.Stloc(loc_item);
+                // <arr>[i - start]
+                il.Emit(OpCodes.Dup);
+                il.LdcI4(i - start);
 
-				// array[<i-start>] = item;
-				il.Ldloc(loc_array);
-				il.LdcI4(i - start);
-				il.Ldloc(loc_item);
-				il.Stelem(elem_type);
+                // <parameter value>
+                object type_or_value = EmitLibraryLoadArgument(il, i, builder.Aux);
+                builder.EmitArgumentConversion(elem_type, type_or_value, false, param);
+				
+                // <arr>[i - start] = <parameter value>;
+                il.Stelem(elem_type);
 			}
 
-			// loads the array:
-			il.Ldloc(loc_array);
+            // <arr>
 		}
 
 		#endregion
