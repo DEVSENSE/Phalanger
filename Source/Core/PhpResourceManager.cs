@@ -44,6 +44,7 @@ namespace PHP.Core
         internal static LinkedListNode<PhpResource> RegisterResource(PhpResource/*!*/res)
         {
             Debug.Assert(res != null);
+            //Debug.Assert(this method can only be called on the request thread)
 
             if (resources == null)
                 resources = new LinkedList<PhpResource>();
@@ -57,7 +58,6 @@ namespace PHP.Core
         internal static void UnregisterResource(LinkedListNode<PhpResource>/*!*/node)
         {
             Debug.Assert(node != null);
-            Debug.Assert(node.List == resources);
             
             node.List.Remove(node); // node.list == resources
         }
