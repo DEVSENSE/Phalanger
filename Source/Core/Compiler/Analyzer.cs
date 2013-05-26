@@ -37,7 +37,7 @@ namespace PHP.Core
     /// </summary>
     /// <remarks>
     /// <para>This type is used to annotate <see cref="Expression"/>. 
-    /// If an element is annotated with this, we can emit more efficient code.</para>
+    /// If an element is annotated with this information, we can emit more efficient code.</para>
     /// </remarks>
     public interface IExTypeInfo
     {
@@ -56,23 +56,48 @@ namespace PHP.Core
         IEnumerable<TypeRef> Types { get; }
 
         /// <summary>
-        /// If <c>true</c>, then we do not know anything about the type for sure. 
-        /// However this instance might still represent a type hint if <see cref="IsTypeHint"/> is <c>true</c>.
+        /// If <c>true</c>, then we do not know anything about the type for sure and 
+        /// <see cref="TypeCodes"/> and <see cref="Types"/> contain undefined data.
         /// </summary>
         bool IsAnyType { get; }
 
         /// <summary>
-        /// If <c>true</c> (implies that <see cref="IsAnyType"/> is <c>true</c>), then we don't know 
-        /// anything about this type, but <see cref="TypeCodes"/> and <see cref="Types"/> 
-        /// contain type hints.
+        /// If <c>true</c>, then we don't know anything about this type, 
+        /// like if <see cref="IsAnyType"/> was <c>true</c>,
+        /// but <see cref="TypeCodes"/> and <see cref="Types"/> contain type hints.
         /// </summary>
         /// <remarks>Value of this property really makes sense once <see cref="IsAnyType"/> is <c>true</c>, 
         /// otherwise value of <see cref="IsTypeHint"/> should always be <c>false</c>.</remarks>
         bool IsTypeHint { get; }
 
+        /// <summary>
+        /// This is a shortcut for checking whether <see cref="TypeCodes"/> 
+        /// collection contains given element. Due to internal implementation details, 
+        /// using this method might be faster, then constructing the collection in 
+        /// <see cref="TypeCodes"/> getter.
+        /// </summary>
         bool HasTypeCode(PhpTypeCode typeCode);
 
+        /// <summary>
+        /// This is a shortcut for checking whether <see cref="Types"/> 
+        /// collection contains given element. Due to internal implementation details, 
+        /// using this method might be faster, then constructing the collection in 
+        /// <see cref="Types"/> getter.
+        /// </summary>
         bool HasType(TypeRef type);
+
+        /// <summary>
+        /// Returns <c>true</c> if both <see cref="IsAnyType"/> and <see cref="IsTypeHint"/> 
+        /// are <c>false</c> and <see cref="TypeCodes"/> contains only the given type.
+        /// </summary>
+        bool IsOfType(PhpTypeCode typeCode);
+
+        /// <summary>
+        /// Returns <c>true</c> if both <see cref="IsAnyType"/> and <see cref="IsTypeHint"/> 
+        /// are <c>false</c>, <see cref="TypeCodes"/> contains only object and <see cref="Types"/> 
+        /// contains only the given object type.
+        /// </summary>
+        bool IsOfType(TypeRef type);
     }
 
 	internal interface IPostAnalyzable
