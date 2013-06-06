@@ -26,6 +26,7 @@ using PHP.Core;
 using PHP.Core.Reflection;
 using System.Web.Configuration;
 using System.Security.Cryptography;
+using System.Collections.Generic;
 
 namespace PHP.Library
 {
@@ -810,6 +811,19 @@ namespace PHP.Library
             public override IDictionaryEnumerator GetForeachEnumerator(bool keyed, bool aliasedValues, DTypeDesc caller)
             {
                 return new SessionStateEnumerator(this, aliasedValues);
+            }
+
+            #endregion
+
+            #region Enumeration
+
+            public override IEnumerator<KeyValuePair<IntStringKey, object>>/*!*/ GetEnumerator()
+            {
+                foreach (string name in state)
+                {
+                    string key = (string)name;
+                    yield return new KeyValuePair<IntStringKey, object>(new IntStringKey(key), state[key]);
+                }
             }
 
             #endregion
