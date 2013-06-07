@@ -331,13 +331,13 @@ namespace PHP.Core.AST
 		/// Analyzer maintains during AST walk information about its position in AST
 		/// and that information uses (among others) to provide values of the pseudo constants.
 		/// </remarks>
-		private string Evaluate(Analyzer/*!*/ analyzer)
+		private object Evaluate(Analyzer/*!*/ analyzer)
 		{
 			// TODO: sync with PHP behavior
 			switch (type)
 			{
 				case Types.Line:
-					return position.FirstLine.ToString();
+                    return (int)position.FirstLine; // __LINE__ is of type Integer in PHP
 
 				case Types.Class:
 					if (analyzer.CurrentType != null)
@@ -362,7 +362,7 @@ namespace PHP.Core.AST
 						else
 							return analyzer.CurrentRoutine.FullName;
 					}
-					return "";
+					return string.Empty;
 
 				case Types.Namespace:
                     return analyzer.CurrentNamespace.HasValue ? analyzer.CurrentNamespace.Value.NamespacePhpName : string.Empty;
