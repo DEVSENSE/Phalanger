@@ -166,7 +166,7 @@ using System.Collections.Generic;
 				case 5:
 					// #line 93
 					{
-						if (GetTokenChar(1) == '%' && AllowAspTags || GetTokenChar(1) == '?' && AllowShortTags) 
+						if (GetTokenChar(1) != '%' || AllowAspTags) 
 						{
 							BEGIN(LexicalStates.ST_IN_SCRIPTING);
 							return Tokens.T_OPEN_TAG_WITH_ECHO;
