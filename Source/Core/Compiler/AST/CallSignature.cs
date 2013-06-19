@@ -432,7 +432,7 @@ namespace PHP.Core.AST
 
                 // <parameter value>
                 object type_or_value = EmitLibraryLoadArgument(il, i, builder.Aux);
-                builder.EmitArgumentConversion(elem_type, type_or_value, false, param);
+                builder.EmitArgumentConversion(elem_type, type_or_value, false, param, 3);
 				
                 // <arr>[i - start] = <parameter value>;
                 il.Stelem(elem_type);
