@@ -2854,7 +2854,7 @@ namespace PHP.Core
 
 		#region IEnumerable<KeyValuePair<IntStringKey, object>> Members
 
-		public IEnumerator<KeyValuePair<IntStringKey, object>>/*!*/ GetEnumerator()
+		public virtual IEnumerator<KeyValuePair<IntStringKey, object>>/*!*/ GetEnumerator()
 		{
             if (this.Count == 0)
                 return OrderedDictionary.EmptyEnumerator.SingletonInstance;

@@ -3256,6 +3256,16 @@ namespace PHP.Core.Reflection
             return base.ToNumber(out intValue, out longValue, out doubleValue);
         }
 
+        public override int CompareTo(object obj, IComparer comparer)
+        {
+            if (typeof(T) == typeof(decimal))
+            {
+                return comparer.Compare((double)(decimal)this.RealObject, obj);
+            }
+
+            return base.CompareTo(obj, comparer);
+        }
+
         #endregion
 
         #region Clone

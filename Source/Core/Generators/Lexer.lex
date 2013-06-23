@@ -74,7 +74,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 %%
 
-<INITIAL>(([^<]|"<"[^?%s<])+)|"<s"|"<" { 
+<INITIAL>(([^<]|"<"[^?%s<])+)|"<" { 
 	return Tokens.T_INLINE_HTML; 
 }
 
@@ -90,8 +90,12 @@ NonVariableStart        [^a-zA-Z_{]
 	}
 }
 
+<INITIAL>("<s"[^< \n\r\t]*) { 
+	return Tokens.T_INLINE_HTML; 
+}
+
 <INITIAL>"<%="|"<?=" {
-	if (GetTokenChar(1) == '%' && AllowAspTags || GetTokenChar(1) == '?' && AllowShortTags) 
+	if (GetTokenChar(1) != '%' || AllowAspTags) 
 	{
 		BEGIN(LexicalStates.ST_IN_SCRIPTING);
 		return Tokens.T_OPEN_TAG_WITH_ECHO;
