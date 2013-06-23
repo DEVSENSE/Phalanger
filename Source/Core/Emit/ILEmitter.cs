@@ -1417,6 +1417,7 @@ namespace PHP.Core.Emit
 						case TypeCode.Int64: Emit(OpCodes.Stelem_I8); break;
 						case TypeCode.Double: Emit(OpCodes.Stelem_R8); break;
 						case TypeCode.Single: Emit(OpCodes.Stelem_R4); break;
+						case TypeCode.Object: Emit(OpCodes.Stelem, type); break;
 						default:
 							throw new ArgumentException("type");
 					}
