@@ -905,6 +905,7 @@ namespace PHP.Library.Xml
             //htmlDoc.OptionOutputOriginalCase = true;  // NOTE: we need lower-cased names because of XPath queries
             //htmlDoc.OptionFixNestedTags = true;
             htmlDoc.OptionCheckSyntax = false;
+            htmlDoc.OptionUseIdAttribute = false;   // only needed when XPath navigator is used on htmlDoc
             htmlDoc.OptionWriteEmptyNodes = true;
             
             // load HTML (from string or a stream)
