@@ -62,8 +62,9 @@ namespace PHP.Core.Parsers
 		public Tokens RealToken { get { return realToken; } }
 		private Tokens realToken;
 
-		public string TokenText { get { return tokenText; } }
-		private string tokenText;
+        public string TokenText { get { return _tokenText ?? (_tokenText = base.GetTokenString()); } }
+		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        private string _tokenText;
 
 		#region Compressed State
 
@@ -142,7 +143,7 @@ namespace PHP.Core.Parsers
 				isCode = false;
 
 				Tokens token = realToken = base.GetNextToken();
-				tokenText = base.GetTokenString();
+				_tokenText = null;
 
 				switch (token)
 				{
