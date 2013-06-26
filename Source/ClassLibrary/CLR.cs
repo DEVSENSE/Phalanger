@@ -24,12 +24,12 @@ namespace PHP.Library
 	{
 		#region Threads
 
-		private class Worker
+		private sealed class Worker
 		{
 			private ScriptContext context;
 			private object[] args;
 
-			public Worker(ScriptContext/*!*/ context, object[] args)
+			public Worker(ScriptContext/*!*/context, object[] args)
 			{
 				this.context = context;
 				this.args = args;
@@ -37,7 +37,7 @@ namespace PHP.Library
 
 			public void Run(object _)
 			{
-                var callback = _ as PhpCallback;
+                var callback = (PhpCallback)_;
 
 				callback.SwitchContext(context.Fork());
 				callback.Invoke(args);
@@ -45,20 +45,20 @@ namespace PHP.Library
 		}
 
 		[ImplementsFunction("clr_create_thread")]
-		public static DObject CreateClrThread(PhpCallback/*!*/ callback, params object[] args)
+		public static bool CreateClrThread(ScriptContext/*!*/context, PhpCallback/*!*/ callback, params object[] args)
 		{
 			if (callback == null)
 				PhpException.ArgumentNull("callback");
 
 			if (!callback.Bind())
-				return null;
+				return false;
 
 			object[] copies = (args != null) ? new object[args.Length] : ArrayUtils.EmptyObjects;
 
 			for (int i = 0; i < copies.Length; i++)
 				copies[i] = PhpVariable.DeepCopy(args[i]);
 
-            return ClrObject.WrapRealObject(ThreadPool.QueueUserWorkItem(new Worker(ScriptContext.CurrentContext, copies).Run, callback));
+            return ThreadPool.QueueUserWorkItem(new Worker(context, copies).Run, callback);
 		}
 
 		#endregion
