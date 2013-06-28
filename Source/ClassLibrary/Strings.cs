@@ -1304,6 +1304,21 @@ namespace PHP.Library
             if (glue != null && glue.GetType() == typeof(PhpArray))
                 return Implode(pieces, (PhpArray)glue);
 
+            return ImplodeGenericEnumeration(glue, pieces);
+        }
+
+        private static object ImplodeGenericEnumeration(object glue, object pieces)
+        {
+            Core.Reflection.DObject dobj;
+            IEnumerable enumerable;
+
+            if ((dobj = pieces as Core.Reflection.DObject) != null && (enumerable = dobj.RealObject as IEnumerable) != null)
+                return Implode(glue, new PhpArray(enumerable));
+
+            if ((dobj = glue as Core.Reflection.DObject) != null && (enumerable = dobj.RealObject as IEnumerable) != null)
+                return Implode(pieces, new PhpArray(enumerable));
+
+            //
             PhpException.InvalidArgument("pieces");
             return null;
         }
