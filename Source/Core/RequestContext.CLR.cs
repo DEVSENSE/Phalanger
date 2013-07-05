@@ -416,6 +416,8 @@ namespace PHP.Core
 
 		private void ClientDisconnected()
 		{
+			if (httpContext == null)
+				return; //already disposed
 			// switch off tracking; 
 			// if connection has been aborted then we needn't to track it any more: 
 			TrackClientDisconnection = false;

@@ -117,7 +117,10 @@ namespace PHP.Library.Curl
                             request.Accept = headerValue;
                             break;
                         case "connection":
-                            request.Connection = headerValue;
+                            if (headerValue.Equals("close", StringComparison.InvariantCultureIgnoreCase))
+                                request.KeepAlive = false;
+                            else
+                                request.Connection = headerValue;
                             break;
                         case "content-length":
                             request.ContentLength = System.Convert.ToInt32(headerValue);
@@ -126,7 +129,10 @@ namespace PHP.Library.Curl
                             request.ContentType = headerValue;
                             break;
                         case "expect":
-                            request.Expect = headerValue;
+                            if (headerValue.Equals("100-continue", StringComparison.InvariantCultureIgnoreCase))
+                                request.ServicePoint.Expect100Continue = true;
+                            else
+                                request.Expect = headerValue;
                             break;
                         case "date":
                             request.Date = System.Convert.ToDateTime(headerValue);
