@@ -223,11 +223,17 @@ namespace PHP.Library.Curl
         /// <summary>
         /// Set an array of option for a cURL transfer
         /// </summary> 
-        [ImplementsFunction("curl_setopt_array", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("curl_setopt_array")]
         public static bool SetOptArray(PhpResource ch, PhpArray options)
         {
-            return false;
+            var result = true;
+            foreach (var item in options)
+            {
+                result &= SetOpt(ch, (CurlOption) item.Key.Integer, item.Value);
+            }
+            return result;
         }
+
 
         #endregion
 
@@ -279,10 +285,15 @@ namespace PHP.Library.Curl
         /// <summary>
         /// Add a normal cURL handle to a cURL multi handle
         /// </summary> 
-        [ImplementsFunction("curl_multi_add_handle", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("curl_multi_add_handle")]
         public static int MultiAddHandle(PhpResource mh, PhpResource ch)
         {
-            return -1;
+            var mh1 = mh as PhpCurlMultiResource;
+            var ch1 = ch as PhpCurlResource;
+            if (mh1 == null || ch1 == null)
+                return (int)CURLcode.CURLM_INTERNAL_ERROR;
+            mh1.Add(ch1);
+            return 0;
         }
 
         #endregion
@@ -292,10 +303,13 @@ namespace PHP.Library.Curl
         /// <summary>
         /// Close a set of cURL handles
         /// </summary> 
-        [ImplementsFunction("curl_multi_close", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("curl_multi_close")]
         public static void MultiClose(PhpResource mh)
         {
-            
+            var mh1 = mh as PhpCurlMultiResource;
+            if (mh1 == null)
+                return;
+            mh1.Close();
         }
 
         #endregion
@@ -305,10 +319,15 @@ namespace PHP.Library.Curl
         /// <summary>
         /// Run the sub-connections of the current cURL handle
         /// </summary> 
-        [ImplementsFunction("curl_multi_exec", FunctionImplOptions.NotSupported)]
-        public static int MultiExec(PhpResource mh, int still_running)
+        [ImplementsFunction("curl_multi_exec")]
+        public static int MultiExec(PhpResource mh, ref int still_running)
         {
-            return -1;
+            var mh1 = mh as PhpCurlMultiResource;
+            if (mh1 == null)
+                return (int) CURLcode.CURLM_INTERNAL_ERROR;
+            mh1.StartIfNeeded();
+            still_running = mh1.StillRunning;
+            return (int)(mh1.SomeResultIsReady ? CURLcode.CURLM_OK : CURLcode.CURLM_CALL_MULTI_PERFORM);
         }
 
         #endregion
@@ -318,23 +337,47 @@ namespace PHP.Library.Curl
         /// <summary>
         /// Return the content of a cURL handle if CURLOPT_RETURNTRANSFER is set
         /// </summary> 
-        [ImplementsFunction("curl_multi_getcontent", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("curl_multi_getcontent")]
         public static string MultiGetContent(PhpResource ch)
         {
-            return null;
+            var ch1 = ch as PhpCurlResource;
+            if (ch1 == null)
+                return null;
+            var mh = ch1.MultiParent;
+            if (mh == null)
+                return null;
+            return mh.GetResult(ch1).ToString();
         }
 
         #endregion
 
         #region curl_multi_info_read
 
+        [ImplementsFunction("curl_multi_info_read")]
+        public static object MultiInfoRead(PhpResource mh)
+        {
+            int tmp = 0;
+            return MultiInfoRead(mh, ref tmp);
+        }
+
         /// <summary>
         /// Get information about the current transfers
         /// </summary> 
-        [ImplementsFunction("curl_multi_info_read", FunctionImplOptions.NotSupported)]
-        public static PhpArray MultiInfoRead(PhpResource mh, int msgs_in_queue)
+        [ImplementsFunction("curl_multi_info_read")]
+        public static object MultiInfoRead(PhpResource mh, ref int msgs_in_queue)
         {
-            return null;
+            var mh1 = mh as PhpCurlMultiResource;
+            if (mh1 == null)
+                return false;
+            var handle = mh1.NextCompleted();
+            msgs_in_queue = mh1.StillRunning;
+            if (handle == null)
+                return false;
+            var arr = new PhpArray();
+            arr["msg"] = (int)CURLcode.CURLMSG_DONE;
+            arr["result"] = (int)handle.ErrorCode;
+            arr["handle"] = handle;
+            return arr;
         }
 
         #endregion
@@ -344,10 +387,10 @@ namespace PHP.Library.Curl
         /// <summary>
         /// Returns a new cURL multi handle
         /// </summary> 
-        [ImplementsFunction("curl_multi_init", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("curl_multi_init")]
         public static PhpResource MultiInit()
         {
-            return null;
+            return new PhpCurlMultiResource();
         }
 
         #endregion
@@ -357,23 +400,38 @@ namespace PHP.Library.Curl
         /// <summary>
         /// Remove a multi handle from a set of cURL handles
         /// </summary> 
-        [ImplementsFunction("curl_multi_remove_handle", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("curl_multi_remove_handle")]
         public static int MultiRemoveHandle(PhpResource mh, PhpResource ch)
         {
-            return -1;
+            var mh1 = mh as PhpCurlMultiResource;
+            var ch1 = ch as PhpCurlResource;
+            if (mh1 == null || ch1 == null)
+                return (int)CURLcode.CURLM_INTERNAL_ERROR;
+            mh1.Remove(ch1);
+            return 0;
         }
 
         #endregion
 
         #region curl_multi_select
 
+        [ImplementsFunction("curl_multi_select")]
+        public static int MultiSelect(PhpResource mh)
+        {
+            return MultiSelect(mh, 0);
+        }
+
         /// <summary>
         /// Get all the sockets associated with the cURL extension, which can then be "selected"
         /// </summary> 
-        [ImplementsFunction("curl_multi_select", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("curl_multi_select")]
         public static int MultiSelect(PhpResource mh, double timeout)
         {
-            return -1;
+            var mh1 = mh as PhpCurlMultiResource;
+            if (mh1 == null)
+                return -1;
+            mh1.WaitAny(timeout == 0 ? TimeSpan.MaxValue : TimeSpan.FromSeconds(timeout));
+            return 1;
         }
 
         #endregion
