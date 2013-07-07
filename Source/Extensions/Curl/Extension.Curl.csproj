@@ -77,6 +77,7 @@
     <Compile Include="HttpUploadBitsState.cs" />
     <Compile Include="HttpUtils.cs" />
     <Compile Include="LibraryDescriptor.cs" />
+    <Compile Include="PhpCurlMultiResource.cs" />
     <Compile Include="PhpCurlResource.cs" />
     <Compile Include="Port.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

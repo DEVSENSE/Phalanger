@@ -409,7 +409,27 @@ namespace PHP.Library.Curl
         ///  Could not load CACERT file, missing or wrong format
         /// </summary>
         [ImplementsConstant("CURLE_SSL_CACERT_BADFILE")]
-        CURLE_SSL_CACERT_BADFILE = 77, 
-    };
+        CURLE_SSL_CACERT_BADFILE = 77,
 
+        [ImplementsConstant("CURLM_CALL_MULTI_PERFORM")]
+        CURLM_CALL_MULTI_PERFORM = -1,
+
+        [ImplementsConstant("CURLM_OK")]
+        CURLM_OK = 0,
+
+        [ImplementsConstant("CURLM_BAD_HANDLE")]
+        CURLM_BAD_HANDLE = 1,
+
+        [ImplementsConstant("CURLM_BAD_EASY_HANDLE")]
+        CURLM_BAD_EASY_HANDLE = 2,
+
+        [ImplementsConstant("CURLM_OUT_OF_MEMORY")]
+        CURLM_OUT_OF_MEMORY = 3,
+
+        [ImplementsConstant("CURLM_INTERNAL_ERROR")]
+        CURLM_INTERNAL_ERROR = 4,
+
+        [ImplementsConstant("CURLMSG_DONE")]
+        CURLMSG_DONE = 1
+    };
 }

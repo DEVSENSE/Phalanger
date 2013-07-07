@@ -621,6 +621,8 @@ namespace PHP.Library.Curl
                         return false;
 
                     return response.ContentType;
+                case CurlInfo.HEADER_SIZE:
+                    return Encoding.ASCII.GetByteCount(response.GetHttpHeaderAsString());
 
             }
 
