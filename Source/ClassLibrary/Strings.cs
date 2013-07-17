@@ -3136,7 +3136,7 @@ namespace PHP.Library
         /// <b>htmlentities</b> (<see cref="EncodeHtmlEntities"/>), all characters that have HTML character entity equivalents are
         /// translated into these entities.</remarks>
         [ImplementsFunction("htmlentities")]
-        public static string EncodeHtmlEntities(string str)
+        public static PhpBytes EncodeHtmlEntities(PhpBytes str)
         {
             return EncodeHtmlEntities(str, QuoteStyle.Compatible, "ISO-8859-1", true);
         }
@@ -3151,7 +3151,7 @@ namespace PHP.Library
         /// <b>htmlentities</b> (<see cref="EncodeHtmlEntities"/>), all characters that have HTML character entity equivalents are
         /// translated into these entities.</remarks>
         [ImplementsFunction("htmlentities")]
-        public static string EncodeHtmlEntities(string str, QuoteStyle quoteStyle)
+        public static PhpBytes EncodeHtmlEntities(PhpBytes str, QuoteStyle quoteStyle)
         {
             return EncodeHtmlEntities(str, quoteStyle, "ISO-8859-1", true);
         }
@@ -3167,7 +3167,7 @@ namespace PHP.Library
         /// <b>htmlentities</b> (<see cref="EncodeHtmlEntities"/>), all characters that have HTML character entity equivalents are
         /// translated into these entities.</remarks>
         [ImplementsFunction("htmlentities")]
-        public static string EncodeHtmlEntities(string str, QuoteStyle quoteStyle, string charSet)
+        public static PhpBytes EncodeHtmlEntities(PhpBytes str, QuoteStyle quoteStyle, string charSet)
         {
             return EncodeHtmlEntities(str, quoteStyle, "ISO-8859-1", true);
         }
@@ -3184,13 +3184,21 @@ namespace PHP.Library
         /// <b>htmlentities</b> (<see cref="EncodeHtmlEntities"/>), all characters that have HTML character entity equivalents are
         /// translated into these entities.</remarks>
         [ImplementsFunction("htmlentities")]
-        public static string EncodeHtmlEntities(string str, QuoteStyle quoteStyle, string charSet, bool doubleEncode)
+        public static PhpBytes EncodeHtmlEntities(PhpBytes str, QuoteStyle quoteStyle, string charSet, bool doubleEncode)
+        {
+            var encoding = Encoding.GetEncoding(charSet);
+            var s = encoding.GetString(str.Data);
+            s = EncodeHtmlEntities(s, quoteStyle, doubleEncode);
+            return new PhpBytes(encoding.GetBytes(s));
+        }
+
+        private static string EncodeHtmlEntities(string str, QuoteStyle quoteStyle, bool doubleEncode)
         {
             if (str == null) return String.Empty;
 
             if (!doubleEncode)
             {   // existing HTML entities will not be double encoded // TODO: do it nicely
-                str = DecodeHtmlEntities(str, quoteStyle, charSet);
+                str = DecodeHtmlEntities(str, quoteStyle);
             }
 
             // if only double quotes should be encoded, we can use HttpUtility.HtmlEncode right away:
@@ -3283,7 +3291,7 @@ namespace PHP.Library
         /// <param name="str">The string to convert.</param>
         /// <returns>The converted string.</returns>
         [ImplementsFunction("html_entity_decode")]
-        public static string DecodeHtmlEntities(string str)
+        public static PhpBytes DecodeHtmlEntities(PhpBytes str)
         {
             return DecodeHtmlEntities(str, QuoteStyle.Compatible, "ISO-8859-1");
         }
@@ -3295,7 +3303,7 @@ namespace PHP.Library
         /// <param name="quoteStyle">Quote conversion.</param>
         /// <returns>The converted string.</returns>
         [ImplementsFunction("html_entity_decode")]
-        public static string DecodeHtmlEntities(string str, QuoteStyle quoteStyle)
+        public static PhpBytes DecodeHtmlEntities(PhpBytes str, QuoteStyle quoteStyle)
         {
             return DecodeHtmlEntities(str, quoteStyle, "ISO-8859-1");
         }
@@ -3308,7 +3316,15 @@ namespace PHP.Library
         /// <param name="charset">The character set used in conversion. This parameter is ignored.</param>
         /// <returns>The converted string.</returns>
         [ImplementsFunction("html_entity_decode")]
-        public static string DecodeHtmlEntities(string str, QuoteStyle quoteStyle, string charset)
+        public static PhpBytes DecodeHtmlEntities(PhpBytes str, QuoteStyle quoteStyle, string charset)
+        {
+            var encoding = Encoding.GetEncoding(charset);
+            var s = encoding.GetString(str.Data);
+            s = DecodeHtmlEntities(s, quoteStyle);
+            return new PhpBytes(encoding.GetBytes(s));
+        }
+
+        private static string DecodeHtmlEntities(string str, QuoteStyle quoteStyle)
         {
             if (str == null) return String.Empty;
 

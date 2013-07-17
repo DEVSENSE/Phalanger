@@ -2159,7 +2159,7 @@ namespace PHP.Library
 		/// <param name="perlExpr">Perl regular expression to convert.</param>
 		/// <param name="opt">Regexp options - some of them must be processed by changes in match string.</param>
 		/// <returns>Resulting .NET regular expression.</returns>
-		private static string ConvertRegex(string perlExpr, PerlRegexOptions opt)
+		private string ConvertRegex(string perlExpr, PerlRegexOptions opt)
 		{
 			// Ranges in bracket expressions should be replaced with appropriate characters
 
@@ -2707,14 +2707,47 @@ namespace PHP.Library
                             // 1. <utf16>-<utf16>
                             // 2. <utf16>-<utf32>
                             // 3. <utf32>-<utf32>
-
                             if (range_from_character <= char.MaxValue)
                             {
                                 if (ch <= char.MaxValue)
                                 {
-                                    // 1.
-                                    result.Append('-');
-                                    AppendEscaped(result, ch);
+																	//symbol order can be different, not testet with other modes
+																	var seqBreak = false;
+	                                byte from = 0;
+	                                byte to = 0;
+	                                if (encoding.IsSingleByte)
+	                                {
+		                                var bytes = encoding.GetBytes(new char[] {(char) range_from_character});
+		                                from = bytes[0];
+		                                bytes = encoding.GetBytes(new char[] {(char)ch});
+		                                to = bytes[0];
+		                                var lastChar = range_from_character;
+		                                for (byte b = (byte)(from + 1); b <= to; b++)
+		                                {
+			                                var chars = encoding.GetChars(new[] {b});
+			                                if (chars[0] - lastChar != 1)
+			                                {
+				                                seqBreak = true;
+				                                break;
+			                                }
+			                                lastChar = chars[0];
+		                                }
+	                                }
+
+	                                // 1.
+	                                if (!seqBreak)
+	                                {
+		                                result.Append('-');
+		                                AppendEscaped(result, ch);
+	                                }
+	                                else
+	                                {
+																		for (byte b = (byte)(from + 1); b <= to; b++)
+																		{
+																			var chars = encoding.GetChars(new[] { b });
+																			AppendEscaped(result, chars[0]);
+																		}
+	                                }
                                 }
                                 else
                                 {
@@ -3190,7 +3223,7 @@ namespace PHP.Library
 #if !SILVERLIGHT
 #if DEBUG
 		[Test]
-		private static void TestConvertRegex()
+		private void TestConvertRegex()
 		{
 			string s;
 			s = ConvertRegex(@"?a+sa?s (?:{1,2})", PerlRegexOptions.Ungreedy);

@@ -198,7 +198,7 @@ namespace PHP.Core
         /// Debug view of internal data. Non-ASCII characters are escaped.
         /// </summary>
         /// <returns>Content of this instance.</returns>
-        private string DebugView()
+        internal string DebugView()
         {
             var output = new System.IO.StringWriter();
             DumpTo(output);
@@ -219,7 +219,7 @@ namespace PHP.Core
             foreach (byte b in ReadonlyData)
             {
                 // printable characters are outputted normally
-                if (b < 0x7f)
+                if (b > 0 && b < 0x7f)
                 {
                     output.Write((char)b);
                 }

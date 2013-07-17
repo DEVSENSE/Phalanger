@@ -23,14 +23,24 @@ namespace PHP.Core
 	/// Represents a PHP reference.
 	/// </summary>
 	[Serializable]
-    [DebuggerDisplay("&{this.Value}", Type = "&{PHP.Core.PhpVariable.GetTypeName(this.Value),nq}")]
+    [DebuggerDisplay("&{this.DebugView()}", Type = "&{PHP.Core.PhpVariable.GetTypeName(this.Value),nq}")]
     [DebuggerNonUserCode]
 	public class PhpReference : IPhpVariable, ICloneable, IPhpObjectGraphNode
 	{
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public const string PhpTypeName = "reference";
 
-		#region Fields
+	    private string DebugView()
+	    {
+		    var phpBytes = Value as PhpBytes;
+		    if (phpBytes != null)
+			    return phpBytes.DebugView();
+		    if (Value == null)
+			    return null;
+		    return Value.ToString();
+	    }
+
+	    #region Fields
 
 		/// <summary>
 		/// Referenced object.

@@ -18,6 +18,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using PHP.Core;
 using PHP.Core.Reflection;
 using System.ComponentModel;
@@ -1997,8 +1998,18 @@ namespace PHP.Library
 			if (time == null) return false;
 			time = time.Trim();
 			if (time.Length == 0) return false;
+            
+            //workaround for bug in parser
+		    if (time.Length == 15 && Regex.IsMatch(time, @"\d\d\d\d\d\d\d\d \d\d\d\d\d\d"))
+		    {
+		        time = time.Substring(0, 11) + ":" + time.Substring(11, 2) + ":" + time.Substring(13, 2);
+		    }
+            else if (time.Length == 14 && Regex.IsMatch(time, @"\d\d\d\d\d\d\d\d\d\d\d\d\d\d"))
+            {
+                time = time.Substring(0, 8) + " " + time.Substring(8, 2) + ":" + time.Substring(10, 2) + ":" + time.Substring(12, 2);
+            }
 
-			string error = null;
+		    string error = null;
 			int result = StrToTime.DateInfo.Parse(time, startUtc, out error);
 			if (error != null)
 			{
