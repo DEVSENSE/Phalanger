@@ -3236,6 +3236,20 @@ namespace PHP.Core.Reflection
         {
             if (typeof(T) == typeof(decimal))
                 return (double)(decimal)this.RealObject;
+            if (typeof(T) == typeof(byte))
+                return (byte)this.RealObject;
+            if (typeof(T) == typeof(float))
+                return (float)this.RealObject;
+            if (typeof(T) == typeof(short))
+                return (short)this.RealObject;
+            if (typeof(T) == typeof(ushort))
+                return (ushort)this.RealObject;
+            if (typeof(T) == typeof(sbyte))
+                return (sbyte)this.RealObject;
+            if (typeof(T) == typeof(uint))
+                return (uint)this.RealObject;
+            if (typeof(T) == typeof(ulong))
+                return (ulong)this.RealObject;
 
             return base.ToDouble();
         }
@@ -3252,6 +3266,56 @@ namespace PHP.Core.Reflection
                 longValue = unchecked((long)doubleValue);
                 return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
             }
+            if (typeof(T) == typeof(byte))
+            {
+                intValue = (byte)this.RealObject;
+                doubleValue = intValue;
+                longValue = intValue;
+                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
+            }
+            if (typeof(T) == typeof(float))
+            {
+                doubleValue = (float)this.RealObject;
+                intValue = unchecked((int)doubleValue);
+                longValue = unchecked((long)doubleValue);
+                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
+            }
+            if (typeof(T) == typeof(short))
+            {
+                intValue = (short)this.RealObject;
+                doubleValue = intValue;
+                longValue = intValue;
+                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
+            }
+            if (typeof(T) == typeof(ushort))
+            {
+                intValue = (ushort)this.RealObject;
+                doubleValue = intValue;
+                longValue = intValue;
+                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
+            }
+            if (typeof(T) == typeof(sbyte))
+            {
+                intValue = (sbyte)this.RealObject;
+                doubleValue = intValue;
+                longValue = intValue;
+                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
+            }
+            if (typeof(T) == typeof(uint))
+            {
+                longValue = (uint)this.RealObject;
+                intValue = unchecked((int)longValue);
+                doubleValue = intValue;
+                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
+            }
+            if (typeof(T) == typeof(ulong))
+            {
+                var real = (ulong)this.RealObject;
+                longValue = unchecked((long)real);
+                doubleValue = real;
+                intValue = unchecked((int)longValue);
+                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
+            }
 
             return base.ToNumber(out intValue, out longValue, out doubleValue);
         }
@@ -3261,6 +3325,34 @@ namespace PHP.Core.Reflection
             if (typeof(T) == typeof(decimal))
             {
                 return comparer.Compare((double)(decimal)this.RealObject, obj);
+            }
+            if (typeof(T) == typeof(byte))
+            {
+                return comparer.Compare((int)(byte)this.RealObject, obj);
+            }
+            if (typeof(T) == typeof(float))
+            {
+                return comparer.Compare((double)(float)this.RealObject, obj);
+            }
+            if (typeof(T) == typeof(short))
+            {
+                return comparer.Compare((int)(short)this.RealObject, obj);
+            }
+            if (typeof(T) == typeof(ushort))
+            {
+                return comparer.Compare((int)(ushort)this.RealObject, obj);
+            }
+            if (typeof(T) == typeof(sbyte))
+            {
+                return comparer.Compare((int)(sbyte)this.RealObject, obj);
+            }
+            if (typeof(T) == typeof(uint))
+            {
+                return comparer.Compare((long)(uint)this.RealObject, obj);
+            }
+            if (typeof(T) == typeof(ulong))
+            {
+                return comparer.Compare((double)(ulong)this.RealObject, obj);
             }
 
             return base.CompareTo(obj, comparer);

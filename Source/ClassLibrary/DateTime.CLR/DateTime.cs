@@ -1999,16 +1999,6 @@ namespace PHP.Library
 			time = time.Trim();
 			if (time.Length == 0) return false;
             
-            //workaround for bug in parser
-		    if (time.Length == 15 && Regex.IsMatch(time, @"\d\d\d\d\d\d\d\d \d\d\d\d\d\d"))
-		    {
-		        time = time.Substring(0, 11) + ":" + time.Substring(11, 2) + ":" + time.Substring(13, 2);
-		    }
-            else if (time.Length == 14 && Regex.IsMatch(time, @"\d\d\d\d\d\d\d\d\d\d\d\d\d\d"))
-            {
-                time = time.Substring(0, 8) + " " + time.Substring(8, 2) + ":" + time.Substring(10, 2) + ":" + time.Substring(12, 2);
-            }
-
 		    string error = null;
 			int result = StrToTime.DateInfo.Parse(time, startUtc, out error);
 			if (error != null)

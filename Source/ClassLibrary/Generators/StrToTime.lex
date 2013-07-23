@@ -105,7 +105,7 @@ iso8601long			{hour24}[:.]{minute}[:.]{second}{frac}([ ]*{zone})?
 iso8601normtz		{hour24}[:.]{minute}[:.]{secondlz}[ ]*{zone}
 
 gnunocolon			{hour24lz}{minutelz}
-iso8601nocolon	{hour24lz}{minutelz}{secondlz};
+iso8601nocolon	{hour24lz}{minutelz}{secondlz}
 
 americanshort		{month}"/"{day}
 american				{month}"/"{day}"/"{year}
