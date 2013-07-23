@@ -1630,40 +1630,53 @@ namespace PHP.Core
             else return ObjectToNumberEpilogue(obj, out intValue, out longValue, out doubleValue);
 		}
 
-        private static NumberInfo ObjectToNumberEpilogue(object/*!*/obj, out int intValue, out long longValue, out double doubleValue)
-        {
-            Debug.Assert(obj != null);
+		private static NumberInfo ObjectToNumberEpilogue(object /*!*/ obj, out int intValue, out long longValue, out double doubleValue)
+		{
+			Debug.Assert(obj != null);
 
-            IPhpConvertible php_conv;
+			IPhpConvertible php_conv;
+			IConvertible conv;
 
-            if (obj.GetType() == typeof(long))
-            {
-                longValue = (long)obj;
-                intValue = NarrowToInt32(longValue);
-                doubleValue = (double)longValue;
-                return NumberInfo.LongInteger | NumberInfo.IsNumber;
-            }
-            else if (obj.GetType() == typeof(string))
-            {
-                return StringToNumber((string)obj, out intValue, out longValue, out doubleValue);
-            }
-            else if (obj.GetType() == typeof(bool))
-            {
-                intValue = (bool)obj ? 1 : 0;
-                doubleValue = intValue;
-                longValue = intValue;
-                return NumberInfo.Integer;
-            }
-            else if ((php_conv = obj as IPhpConvertible) != null)
-            {
-                return php_conv.ToNumber(out intValue, out longValue, out doubleValue);
-            }
-            
-            intValue = 0;
-            longValue = 0;
-            doubleValue = 0.0;
-            return NumberInfo.Unconvertible;
-        }
+			if (obj.GetType() == typeof (long))
+			{
+				longValue = (long) obj;
+				intValue = NarrowToInt32(longValue);
+				doubleValue = (double) longValue;
+				return NumberInfo.LongInteger | NumberInfo.IsNumber;
+			}
+			else if (obj.GetType() == typeof (string))
+			{
+				return StringToNumber((string) obj, out intValue, out longValue, out doubleValue);
+			}
+			else if (obj.GetType() == typeof (bool))
+			{
+				intValue = (bool) obj ? 1 : 0;
+				doubleValue = intValue;
+				longValue = intValue;
+				return NumberInfo.Integer;
+			}
+			else if ((php_conv = obj as IPhpConvertible) != null)
+			{
+				return php_conv.ToNumber(out intValue, out longValue, out doubleValue);
+			}
+			else if ((conv = obj as IConvertible) != null)
+			{
+				try
+				{
+					intValue = conv.ToInt32(null);
+					doubleValue = conv.ToDouble(null);
+					longValue = conv.ToInt64(null);
+					return NumberInfo.Integer;
+				}
+				catch(OverflowException)
+				{}
+			}
+
+			intValue = 0;
+			longValue = 0;
+			doubleValue = 0.0;
+			return NumberInfo.Unconvertible;
+		}
 
 		/// <summary>
 		/// Converts string into integer, long integer and double value using conversion algorithm in a manner of PHP. 

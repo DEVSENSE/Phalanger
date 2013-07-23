@@ -177,6 +177,13 @@ namespace PHP.Library
 								}
 								goto default;
 							}
+						case TypeCode.Byte: WriteInteger((Byte)graph); break;
+						case TypeCode.Int16: WriteInteger((Int16)graph); break;
+						case TypeCode.SByte: WriteInteger((SByte)graph); break;
+						case TypeCode.UInt16: WriteInteger((UInt16)graph); break;
+						case TypeCode.UInt32: WriteInteger((UInt32)graph); break;
+						case TypeCode.Single: WriteDouble((Single)graph); break;
+						case TypeCode.Decimal: WriteDouble((double)(Decimal)graph); break;
 
 						default: throw new SerializationException(LibResources.GetString("serialization_unsupported_type",
 									 graph.GetType().FullName));
