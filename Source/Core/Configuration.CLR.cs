@@ -181,7 +181,7 @@ namespace PHP.Core
 						break;
 					case "UserHandler": UserHandler = (value != String.Empty) ? new PhpCallback(value) : null; break;
 					case "UserHandlerErrors":
-						UserHandlerErrors = (PhpError)ConfigUtils.ParseFlags(node, (int)ReportErrors, typeof(PhpError));
+            UserHandlerErrors = (PhpError)ConfigUtils.ParseFlags(node, (int)UserHandlerErrors, typeof(PhpError));
 						break;
 					case "UserExceptionHandler": UserExceptionHandler = (value != String.Empty) ? new PhpCallback(value) : null; break;
 					case "DisplayErrors": DisplayErrors = t; break;
