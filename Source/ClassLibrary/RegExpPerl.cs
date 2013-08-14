@@ -2722,9 +2722,9 @@ namespace PHP.Library
 		                                bytes = encoding.GetBytes(new char[] {(char)ch});
 		                                to = bytes[0];
 		                                var lastChar = range_from_character;
-		                                for (byte b = (byte)(from + 1); b <= to; b++)
+		                                for (int j = from + 1; j <= to; j++)
 		                                {
-			                                var chars = encoding.GetChars(new[] {b});
+			                                var chars = encoding.GetChars(new[] {(byte)j});
 			                                if (chars[0] - lastChar != 1)
 			                                {
 				                                seqBreak = true;

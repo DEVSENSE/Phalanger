@@ -1110,6 +1110,8 @@ namespace PHP.Core
 
     public override string ToString()
     {
+      if (Value.Value == null)
+        return string.Empty;
       return Value.Value.ToString();
     }
   }
