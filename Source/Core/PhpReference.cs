@@ -25,12 +25,20 @@ namespace PHP.Core
 	[Serializable]
     [DebuggerDisplay("&{this.Value}", Type = "&{PHP.Core.PhpVariable.GetTypeName(this.Value),nq}")]
     [DebuggerNonUserCode]
+	[DebuggerTypeProxy(typeof(DebuggerProxy))]
 	public class PhpReference : IPhpVariable, ICloneable, IPhpObjectGraphNode
 	{
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public const string PhpTypeName = "reference";
 
-		#region Fields
+	    private string DebugView()
+	    {
+		    if (Value == null)
+			    return null;
+		    return Value.ToString();
+	    }
+
+	    #region Fields
 
 		/// <summary>
 		/// Referenced object.
@@ -357,6 +365,17 @@ namespace PHP.Core
 		}
 
 		#endregion
+
+	    private class DebuggerProxy
+	    {
+				private PhpReference _reference;
+		    public DebuggerProxy(PhpReference reference)
+		    {
+			    _reference = reference;
+		    }
+				[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+				public object Value { get { return _reference.Value; } }
+	    }
 	}
 
 	/// <summary>

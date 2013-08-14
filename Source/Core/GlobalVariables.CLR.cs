@@ -328,7 +328,7 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="result">An array where to add variables stored in the collection.</param>
 		/// <param name="collection">The collection.</param>
-		private static void LoadFromCollection(PhpArray result, NameValueCollection collection)
+		public static void LoadFromCollection(PhpArray result, NameValueCollection collection)
 		{
 			foreach (string name in collection)
 			{

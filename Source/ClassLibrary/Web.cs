@@ -294,15 +294,7 @@ namespace PHP.Library
 		public static void ParseUrlQuery(Dictionary<string, object> definedVariables, string str, out PhpArray result)
 		{
 			result = new PhpArray();
-
-			Dictionary<string, object> temp = new Dictionary<string, object>();
-
-			ParseUrlQuery(temp, str);
-
-			foreach(string key in temp.Keys)
-			{
-				result.Add(key, temp[key]);
-			}
+			AutoGlobals.LoadFromCollection(result, HttpUtility.ParseQueryString(str));
 		}
 
 		/// <summary>
@@ -317,51 +309,7 @@ namespace PHP.Library
 			if (str == null) return;
 
 			PhpArray globals = (localVariables != null) ? null : ScriptContext.CurrentContext.GlobalVariables;
-
-			int index = -1, lastAmp = -1, lastEq = -1;
-			char[] eqAmp = new char[] { '&', '=' };
-			string key = null, val = null;
-
-			// search for = and & if = has not been found yet, or for & if = has already been found
-			while ((index = (lastEq > -1 ? str.IndexOf('&', index + 1) : str.IndexOfAny(eqAmp, index + 1))) > -1)
-			{
-				if (str[index] == '=')
-				{
-					key = str.Substring(lastAmp + 1, index - lastAmp - 1);
-					lastEq = index;
-				}
-				else
-				{
-					if (lastEq > -1)
-						val = str.Substring(lastEq + 1, index - lastEq - 1);
-					else
-						key = str.Substring(lastAmp + 1, index - lastAmp - 1);
-
-					if (key.Length > 0)
-					{
-						// if no variable value is specified (no = or nothing after =),
-						// an empty string is used as the value:
-						ParseUrlQuery_InitVariable(globals, localVariables, HttpUtility.UrlDecode(key),
-							(val == null) ? String.Empty : HttpUtility.UrlDecode(val));
-					}
-
-					lastAmp = index;
-					lastEq = -1;
-					key = val = null;
-				}
-			}
-
-			// process the rest of the string (after last = and &)
-			if (lastEq > -1)
-				val = str.Substring(lastEq + 1, str.Length - lastEq - 1);
-			else
-				key = str.Substring(lastAmp + 1, str.Length - lastAmp - 1);
-
-			if (key.Length > 0)
-			{
-				ParseUrlQuery_InitVariable(globals, localVariables, HttpUtility.UrlDecode(key),
-					(val == null) ? String.Empty : HttpUtility.UrlDecode(val));
-			}
+			AutoGlobals.LoadFromCollection(globals, HttpUtility.ParseQueryString(str));
 		}
 
 		private static void ParseUrlQuery_InitVariable(PhpArray globals, Dictionary<string, object> localVariables, string key, object value)
