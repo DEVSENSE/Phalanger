@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net.Sockets;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace PHP.Core
 {
@@ -26,6 +27,16 @@ namespace PHP.Core
 	/// </summary>
 	public abstract partial class PhpStream : PhpResource
 	{
+		public virtual bool CanReadWithoutLock()
+		{
+			return true;
+		}
+
+		public virtual bool CanWriteWithoutLock()
+		{
+			return true;
+		}
+
 		#region Stat (optional)
 		/// <include file='Doc/Streams.xml' path='docs/method[@name="Stat"]/*'/>
 		public virtual StatStruct Stat()
@@ -354,6 +365,16 @@ namespace PHP.Core
 	/// </summary>
 	public class SocketStream : PhpStream
 	{
+		public override bool CanReadWithoutLock()
+		{
+			return socket.Available > 0 && (currentTask == null || currentTask.IsCompleted);
+		}
+
+		public override bool CanWriteWithoutLock()
+		{
+			return currentTask == null || currentTask.IsCompleted;
+		}
+
 		/// <summary>
 		/// The encapsulated network socket.
 		/// </summary>
@@ -364,15 +385,20 @@ namespace PHP.Core
 		/// </summary>
 		protected bool eof;
 
+		private bool isAsync;
+		private Task currentTask;
+
 		#region PhpStream overrides
 
-		public SocketStream(Socket socket, string openedPath, StreamContext context)
+		public SocketStream(Socket socket, string openedPath, StreamContext context, bool isAsync = false)
 			: base(null, StreamAccessOptions.Read | StreamAccessOptions.Write, openedPath, context)
 		{
 			Debug.Assert(socket != null);
 			this.socket = socket;
 			this.IsWriteBuffered = false;
 			this.eof = false;
+			this.isAsync = isAsync;
+			this.IsReadBuffered = false;
 		}
 
 		/// <summary>
@@ -392,6 +418,8 @@ namespace PHP.Core
 		/// <include file='Doc/Streams.xml' path='docs/method[@name="RawRead"]/*'/>
 		protected override int RawRead(byte[] buffer, int offset, int count)
 		{
+			if (currentTask != null)
+				currentTask.Wait();
 			try
 			{
 				int rv = socket.Receive(buffer, offset, count, SocketFlags.None);
@@ -410,9 +438,24 @@ namespace PHP.Core
 		{
 			try
 			{
-				int rv = socket.Send(buffer, offset, count, SocketFlags.None);
-				eof = rv == 0;
-				return rv;
+				if (isAsync)
+				{
+					if (currentTask != null)
+						currentTask.Wait();
+					currentTask = new Task(() =>
+					{
+						int rv = socket.Send(buffer, offset, count, SocketFlags.None);
+						eof = rv == 0;
+					});
+					currentTask.Start();
+					return count;
+				}
+				else
+				{
+					int rv = socket.Send(buffer, offset, count, SocketFlags.None);
+					eof = rv == 0;
+					return rv;
+				}
 			}
 			catch (Exception e)
 			{
@@ -471,6 +514,5 @@ namespace PHP.Core
 			return result;
 		}
 	}
-
 	#endregion
 }

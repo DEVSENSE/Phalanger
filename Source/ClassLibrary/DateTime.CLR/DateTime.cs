@@ -18,6 +18,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using PHP.Core;
 using PHP.Core.Reflection;
 using System.ComponentModel;
@@ -1997,8 +1998,8 @@ namespace PHP.Library
 			if (time == null) return false;
 			time = time.Trim();
 			if (time.Length == 0) return false;
-
-			string error = null;
+            
+		    string error = null;
 			int result = StrToTime.DateInfo.Parse(time, startUtc, out error);
 			if (error != null)
 			{
