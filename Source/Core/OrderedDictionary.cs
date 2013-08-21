@@ -213,6 +213,15 @@ namespace PHP.Core
             }
 
             public KeyValuePair<IntStringKey, object> KeyValuePair { get { return new KeyValuePair<IntStringKey, object>(_key, _value); } }
+
+            /// <summary>
+            /// Wraps <see cref="Value"/> into new instance of <see cref="PhpReference"/>.
+            /// </summary>
+            /// <returns>New instance of <see cref="PhpReference"/> assigned to <see cref="Value"/>.</returns>
+            internal PhpReference/*!*/MakeValueReferenceNoCheck()
+            {
+                return new PhpReference(ref this._value);
+            }
         }
 
         #endregion
@@ -2022,14 +2031,11 @@ namespace PHP.Core
                             // we have to unshare this, so we can modify the content:
                             array.EnsureWritable();
                             // "this" is not "array.table" anymore!
-                            _entries = array.table.entries;
-                            _entries[p].Value = (valueref = new PhpReference(_entries[p].Value));
+                            _entries = array.table.entries;                            
                         }
-                        else
-                        {
-                            valueref = new PhpReference(_entries[p].Value);
-                            _entries[p].Value = valueref;
-                        }
+
+                        // wrap _entries[p].Value into PhpReference
+                        valueref = _entries[p].MakeValueReferenceNoCheck();
                     }
 
                     //

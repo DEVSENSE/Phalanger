@@ -238,7 +238,7 @@ namespace PHP.Core.Emit
         /// <summary>
 		/// A delegate used to load a parameter to evaluation stack.
 		/// </summary>
-		internal delegate object ParameterLoader(ILEmitter/*!*/ il, int/*!*/ index, object aux);
+        internal delegate object ParameterLoader(ILEmitter/*!*/ il, int/*!*/ index, object aux, ParameterInfo param);
 
 		internal delegate void ParametersLoader(OverloadsBuilder builder, int start, ParameterInfo param, IPlace argCount);
 
@@ -711,7 +711,7 @@ namespace PHP.Core.Emit
 
 				// emits reference argument peeking:
 				// ref = <load reference parameter>
-				loadReferenceParam(il, index, this.aux);
+				loadReferenceParam(il, index, this.aux, param);
 				il.Stloc(ref_loc);
 
 				// loads a value to the holder if parameter is not out-only:
@@ -741,12 +741,12 @@ namespace PHP.Core.Emit
 				if (formal_type == typeof(PhpReference))
 				{
 					// LOAD <load reference parameter>
-					type_or_value = loadReferenceParam(il, index, this.aux);
+					type_or_value = loadReferenceParam(il, index, this.aux, param);
 				}
 				else
 				{
 					// LOAD <load value parameter>
-					type_or_value = loadValueParam(il, index, this.aux);
+                    type_or_value = loadValueParam(il, index, this.aux, param);
 				}
 
 				// emits conversion stuff:

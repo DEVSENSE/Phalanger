@@ -82,6 +82,18 @@ namespace PHP.Core
 			this.value = value;
 		}
 
+        /// <summary>
+        /// Initializes new instance of <see cref="PhpReference"/> and
+        /// assigns this new instance into <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">Value to be wrapped into new instance of <see cref="PhpReference"/> and
+        /// then it will be overwritten by the reference to this new instance.</param>
+        internal PhpReference(ref object value)
+            :this(value)
+        {
+            value = this;
+        }
+
 		#endregion
 
 		#region IsAliased, IsSet

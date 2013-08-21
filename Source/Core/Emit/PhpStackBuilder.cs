@@ -170,7 +170,7 @@ namespace PHP.Core.Emit
 			return typeof(object);
 		}
 
-		public static object EmitValuePeekUnchecked(ILEmitter/*!*/ il, int index, object/*!*/ stackPlace)
+		public static object EmitValuePeekUnchecked(ILEmitter/*!*/ il, int index, object/*!*/ stackPlace, ParameterInfo param)
 		{
 			Debug.Assert(il != null && stackPlace != null);
 
@@ -194,7 +194,7 @@ namespace PHP.Core.Emit
 			return typeof(PhpReference);
 		}
 
-		public static object EmitReferencePeekUnchecked(ILEmitter/*!*/ il, int index, object/*!*/ stackPlace)
+		public static object EmitReferencePeekUnchecked(ILEmitter/*!*/ il, int index, object/*!*/ stackPlace, ParameterInfo param)
 		{
 			Debug.Assert(il != null && stackPlace != null);
 

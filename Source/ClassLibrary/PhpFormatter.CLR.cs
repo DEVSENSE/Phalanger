@@ -178,8 +178,8 @@ namespace PHP.Library
 								goto default;
 							}
 
-						default: throw new SerializationException(LibResources.GetString("serialization_unsupported_type",
-									 graph.GetType().FullName));
+						default:
+                            throw new SerializationException(string.Format(Strings.serialization_unsupported_type, graph.GetType().FullName));
 					}
 				}
 			}

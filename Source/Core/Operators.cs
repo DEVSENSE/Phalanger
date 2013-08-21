@@ -3797,6 +3797,22 @@ namespace PHP.Core
             return null;
         }
 
+        /// <summary>
+        /// Ensures the object is writeable,
+        /// and so not shared by more PHP variables.
+        /// </summary>
+        public static void EnsureObjectIsWritable(object obj)
+        {
+            if (obj != null)
+            {
+                if (obj.GetType() == typeof(PhpArray))
+                    ((PhpArray)obj).EnsureWritable();
+                //else if (obj.GetType() == typeof(PhpBytes))
+                //    ((PhpBytes)obj).EnsureWritable();
+                // ...
+            }
+        }
+
         #endregion
 
         #region Object Operators

@@ -223,36 +223,35 @@ namespace PHP.Core
             }
         }
 
-				private string DebugView()
-				{
-					var output = new System.IO.StringWriter();
-					const string hex_digs = "0123456789ABCDEF";
-					var isBinary = false;
-					var data = ReadonlyData;
-					foreach (var b in data)
-					{
-						if (b < 32)
-						{
-							isBinary = true;
-							break;
-						}
-					}
-					if (isBinary)
-					{
-						output.Write("0x");
-						foreach (byte b in data)
-						{
-							output.Write(hex_digs[(b & 0xf0) >> 4]);
-							output.Write(hex_digs[(b & 0x0f)]);
-						}
-					}
-					else
-					{
-						output.Write(ToString());
-					}
-					return output.ToString();
-				}
-
+        private string DebugView()
+        {
+            var output = new System.IO.StringWriter();
+            const string hex_digs = "0123456789ABCDEF";
+            var isBinary = false;
+            var data = ReadonlyData;
+            foreach (var b in data)
+            {
+                if (b < 32)
+                {
+                    isBinary = true;
+                    break;
+                }
+            }
+            if (isBinary)
+            {
+                output.Write("0x");
+                foreach (byte b in data)
+                {
+                    output.Write(hex_digs[(b & 0xf0) >> 4]);
+                    output.Write(hex_digs[(b & 0x0f)]);
+                }
+            }
+            else
+            {
+                output.Write(ToString());
+            }
+            return output.ToString();
+        }
 
         #endregion
 
@@ -746,7 +745,9 @@ namespace PHP.Core
 
 		#endregion
 
-		private class DebuggerProxy
+        #region Nested class: DebuggerProxy
+
+        private sealed class DebuggerProxy
 		{
 			private readonly PhpBytes _phpBytes;
 
@@ -754,7 +755,6 @@ namespace PHP.Core
 			{
 				_phpBytes = phpBytes;
 			}
-
 
 			public string String
 			{
@@ -765,6 +765,8 @@ namespace PHP.Core
 			{
 				get { return _phpBytes.ReadonlyData; }
 			}
-		}
-	}
+        }
+
+        #endregion
+    }
 }

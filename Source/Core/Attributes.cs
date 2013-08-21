@@ -827,7 +827,10 @@ namespace PHP.Core
 	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
 	public sealed class PhpRwAttribute : Attribute
 	{
-
+        internal static bool IsDefined(ParameterInfo/*!*/ param)
+        {
+            return param != null && param.IsDefined(typeof(PhpRwAttribute), false);
+        }
 	}
 
 	/// <summary>
