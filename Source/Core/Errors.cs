@@ -11,6 +11,7 @@
 */
 
 using System;
+using System.Collections;
 using System.IO;
 using System.Threading;
 using System.Reflection;
@@ -619,18 +620,26 @@ namespace PHP.Core
 			// calls a user defined handler if available:
 			if (is_error_handleable && config.ErrorControl.UserHandler != null)
 			{
-				// loads stack info:
-				if (!info_loaded) { info = PhpStackTrace.TraceErrorFrame(context); info_loaded = true; }
+			  // loads stack info:
+			  Func<ErrorStackInfo> func = () =>
+			  {
+			    if (!info_loaded)
+			    {
+			      info = PhpStackTrace.TraceErrorFrame(context, true);
+			      info_loaded = true;
+			    }
+			    return info;
+			  };
 
-				do_report = CallUserErrorHandler(context, error, info, message);
+        do_report = CallUserErrorHandler(context, error, func, message);
 			}
 
-			// reports error to output and logs:
+          // reports error to output and logs:
             if (do_report && is_error_reported &&
                 (config.ErrorControl.DisplayErrors || config.ErrorControl.EnableLogging))   // check if the error will be displayed to avoid stack trace loading
 			{
 				// loads stack info:
-				if (!info_loaded) { info = PhpStackTrace.TraceErrorFrame(context); info_loaded = true; }
+				if (!info_loaded) { info = PhpStackTrace.TraceErrorFrame(context, false); info_loaded = true; }
 
 				ReportError(config, context.Output, error, -1, info, message);
 			}
@@ -641,7 +650,7 @@ namespace PHP.Core
 			if (is_error_fatal && context.ThrowExceptionOnError)
 			{
 				// loads stack info:
-				if (!info_loaded) { info = PhpStackTrace.TraceErrorFrame(context); info_loaded = true; }
+				if (!info_loaded) { info = PhpStackTrace.TraceErrorFrame(context, false); info_loaded = true; }
 
 				throw new PhpException(error, message, info);
 			}
@@ -689,12 +698,12 @@ namespace PHP.Core
 			}
 		}
 
-		/// <summary>
+	  /// <summary>
 		/// Calls user error handler. 
 		/// </summary>
 		/// <returns>Whether to report error by default handler (determined by handler's return value).</returns>
 		/// <exception cref="ScriptDiedException">Error handler dies.</exception>
-		private static bool CallUserErrorHandler(ScriptContext context, PhpError error, ErrorStackInfo info, string message)
+		private static bool CallUserErrorHandler(ScriptContext context, PhpError error, Func<ErrorStackInfo> info, string message)
 		{
 			LocalConfiguration config = context.Config;
 
@@ -704,8 +713,8 @@ namespace PHP.Core
         { 
           new PhpReference((int)error),
           new PhpReference(message),
-          new PhpReference(info.File),
-          new PhpReference(info.Line),
+          new PhpReference(new LazyStackInfo(info, true)),
+          new PhpReference(new LazyStackInfo(info, false)),
           new PhpReference() // global variables list is not supported
         }));
 
@@ -987,7 +996,127 @@ namespace PHP.Core
 		#endregion
 	}
 
-	// TODO:
+  internal class LazyStackInfo : IPhpVariable
+  {
+    private PhpReference value;
+    private Func<ErrorStackInfo> info;
+    private readonly bool file;
+
+    private PhpReference Value
+    {
+      get
+      {
+        if (value == null)
+          value = file ? new PhpReference(info().File) : new PhpReference(info().Line);
+        return value;
+      }
+    }
+
+    public LazyStackInfo(Func<ErrorStackInfo> info, bool file)
+    {
+      this.info = info;
+      this.file = file;
+    }
+
+    public PhpTypeCode GetTypeCode()
+    {
+      return Value.GetTypeCode();
+    }
+
+    public double ToDouble()
+    {
+      return Value.ToDouble();
+    }
+
+    public int ToInteger()
+    {
+      return Value.ToInteger();
+    }
+
+    public long ToLongInteger()
+    {
+      return Value.ToLongInteger();
+    }
+
+    public bool ToBoolean()
+    {
+      return Value.ToBoolean();
+    }
+
+    public PhpBytes ToPhpBytes()
+    {
+      return Value.ToPhpBytes();
+    }
+
+    public Convert.NumberInfo ToNumber(out int intValue, out long longValue, out double doubleValue)
+    {
+      return Value.ToNumber(out intValue, out longValue, out doubleValue);
+    }
+
+    public string ToString(bool throwOnError, out bool success)
+    {
+      return ((IPhpConvertible)Value).ToString(throwOnError, out success);
+    }
+
+    public void Print(TextWriter output)
+    {
+      Value.Print(output);
+    }
+
+    public void Dump(TextWriter output)
+    {
+      Value.Dump(output);
+    }
+
+    public void Export(TextWriter output)
+    {
+      Value.Export(output);
+    }
+
+    public object DeepCopy()
+    {
+      return Value.DeepCopy();
+    }
+
+    public object Copy(CopyReason reason)
+    {
+      return this;
+    }
+
+    public int CompareTo(object obj)
+    {
+      return Value.CompareTo(obj);
+    }
+
+    public int CompareTo(object obj, IComparer comparer)
+    {
+      return Value.CompareTo(obj, comparer);
+    }
+
+    public bool IsEmpty()
+    {
+      return Value.IsEmpty();
+    }
+
+    public bool IsScalar()
+    {
+      return Value.IsScalar();
+    }
+
+    public string GetTypeName()
+    {
+      return Value.GetTypeName();
+    }
+
+    public override string ToString()
+    {
+      if (Value.Value == null)
+        return string.Empty;
+      return Value.Value.ToString();
+    }
+  }
+
+  // TODO:
 	internal sealed class EvalErrorSink : ErrorSink
 	{
 		private readonly int firstLineColumnDisplacement;

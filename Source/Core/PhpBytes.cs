@@ -26,7 +26,8 @@ namespace PHP.Core
 	/// </summary>
 	[Serializable]
 	[DebuggerNonUserCode]
-    [DebuggerDisplay("\"{this.DebugView(),nq}\"", Type = "binary({Length})")]
+	[DebuggerTypeProxy(typeof(DebuggerProxy))]
+	[DebuggerDisplay("\"{this.DebugView(),nq}\"", Type = "binary({Length})")]
 	public sealed class PhpBytes : IPhpVariable, IPhpObjectGraphNode, ICloneable         // GENERICS: IEquatable<PhpBytes>
 	{
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -195,17 +196,6 @@ namespace PHP.Core
         #region DebugView, DumpTo
 
         /// <summary>
-        /// Debug view of internal data. Non-ASCII characters are escaped.
-        /// </summary>
-        /// <returns>Content of this instance.</returns>
-        private string DebugView()
-        {
-            var output = new System.IO.StringWriter();
-            DumpTo(output);
-            return output.ToString().Replace("\"", "\\\"");
-        }
-
-        /// <summary>
         /// Dumps internal data, escapes non-ASCII characters.
         /// </summary>
         /// <param name="output">Output to dump to.</param>
@@ -232,6 +222,37 @@ namespace PHP.Core
                 }
             }
         }
+
+				private string DebugView()
+				{
+					var output = new System.IO.StringWriter();
+					const string hex_digs = "0123456789ABCDEF";
+					var isBinary = false;
+					var data = ReadonlyData;
+					foreach (var b in data)
+					{
+						if (b < 32)
+						{
+							isBinary = true;
+							break;
+						}
+					}
+					if (isBinary)
+					{
+						output.Write("0x");
+						foreach (byte b in data)
+						{
+							output.Write(hex_digs[(b & 0xf0) >> 4]);
+							output.Write(hex_digs[(b & 0x0f)]);
+						}
+					}
+					else
+					{
+						output.Write(ToString());
+					}
+					return output.ToString();
+				}
+
 
         #endregion
 
@@ -724,5 +745,26 @@ namespace PHP.Core
         }
 
 		#endregion
+
+		private class DebuggerProxy
+		{
+			private readonly PhpBytes _phpBytes;
+
+			public DebuggerProxy(PhpBytes phpBytes)
+			{
+				_phpBytes = phpBytes;
+			}
+
+
+			public string String
+			{
+				get { return _phpBytes.ToString(); }
+			}
+
+			public byte[] Binary
+			{
+				get { return _phpBytes.ReadonlyData; }
+			}
+		}
 	}
 }

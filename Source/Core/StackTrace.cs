@@ -441,7 +441,7 @@ namespace PHP.Core
 		/// If the trace ends up with a function or method inside transient assembly an eval hierarchy is inspected
 		/// and added to the resulting source position information.
 		/// </remarks>
-		internal static ErrorStackInfo TraceErrorFrame(ScriptContext/*!*/ context)
+		internal static ErrorStackInfo TraceErrorFrame(ScriptContext/*!*/ context, bool lazy)
 		{
 			Debug.Assert(context != null);
 
@@ -479,12 +479,18 @@ namespace PHP.Core
 					return result;
 				}
 
-				FrameKinds frame_kind = GetFrameKind(frame);
+        MethodBase method = frame.GetMethod();
+			  if (lazy)
+			  {
+          if(method.Name == "Throw" && method.DeclaringType == typeof (PhpException))
+			      lazy = false;
+          continue;
+			  }
+
+        FrameKinds frame_kind = GetFrameKind(frame);
 
 				if (frame_kind == FrameKinds.Visible)
 				{
-					MethodBase method = frame.GetMethod();
-
 					int eid = TransientModule.GetEvalId(context.ApplicationContext, method);
 
 					if (eval_id == TransientAssembly.InvalidEvalId)
@@ -495,8 +501,6 @@ namespace PHP.Core
 				}
 				else if (frame_kind == FrameKinds.ClassLibraryFunction)
 				{
-					MethodBase method = frame.GetMethod();
-
 					cl_function_idx = i;
 					cl_function_name = ImplementsFunctionAttribute.Reflect(method).Name;
 				}
