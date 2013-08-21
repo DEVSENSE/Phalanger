@@ -1884,39 +1884,30 @@ namespace PHP.Library
 		/// <summary>
 		/// Internal method common for all functions.
 		/// </summary>
-		private static PhpArray SetOperation(SetOperations op, PhpArray array, PhpArray[] arrays,
-			IComparer<KeyValuePair<IntStringKey, object>> comparer)
-		{
-			if (array == null)
-			{
-				PhpException.ArgumentNull("array");
-				return null;
-			}
+        private static PhpArray SetOperation(SetOperations op, PhpArray array, PhpArray[] arrays,
+            IComparer<KeyValuePair<IntStringKey, object>> comparer)
+        {
+            if (array == null)
+            {
+                PhpException.ArgumentNull("array");
+                return null;
+            }
 
-			if (arrays == null || arrays.Length == 0)
-			{
-				PhpException.InvalidArgumentCount(null, null);
-				return null;
-			}
+            if (arrays == null || arrays.Length == 0)
+            {
+                PhpException.InvalidArgumentCount(null, null);
+                return null;
+            }
 
-		  for (int i = 0; i < arrays.Length; i++)
-		  {
-		    if (arrays[i] == null)
-		    {
-		      PhpException.Throw(PhpError.Warning, "Argument is not an array");
-		      return null;
-		    }
-		  }
+            Debug.Assert(comparer != null);
 
-		  Debug.Assert(comparer != null);
+            PhpArray result = new PhpArray();
+            array.SetOperation(op, arrays, comparer, result);
 
-			PhpArray result = new PhpArray();
-			array.SetOperation(op, arrays, comparer, result);
-
-			// the result is inplace deeply copied on return to PHP code:
-			result.InplaceCopyOnReturn = true;
-			return result;
-		}
+            // the result is inplace deeply copied on return to PHP code:
+            result.InplaceCopyOnReturn = true;
+            return result;
+        }
 
 		/// <summary>
 		/// There have to be at least 1 value in <paramref name="vars"/>.
