@@ -1350,13 +1350,14 @@ namespace PHP.Core
         /// <summary>
         /// Original PHPDoc text, including comment tags.
         /// </summary>
-        private readonly string doccomment;
+        /// <remarks>Used internally for lazy initialization.</remarks>
+        private string _docCommentString;
 
         /// <summary>
         /// Position of the whole token in the source code.
         /// </summary>
-        public Parsers.Position Position { get { return this.position; } }
-        private readonly Parsers.Position position;
+        public Parsers.Position Position { get { return this._position; } }
+        private readonly Parsers.Position _position;
 
         /// <summary>
         /// Parsed data. Lazily initialized.
@@ -1371,8 +1372,21 @@ namespace PHP.Core
         {
             get
             {
-                Initialize();
-                return this.elements ?? EmptyElements;
+                if (this.elements == null)
+                    lock (this)
+                        if (this.elements == null)  // double checked lock
+                        {
+                            var elementsList = ParseNoLock(this._docCommentString, this._position);
+                            if (elementsList != null && elementsList.Count > 0)
+                                this.elements = elementsList.ToArray();
+                            else
+                                this.elements = EmptyElements;
+
+                            // dispose the string
+                            this._docCommentString = null;
+                        }
+                
+                return this.elements;
             }
         }
 
@@ -1387,30 +1401,8 @@ namespace PHP.Core
         /// <param name="position">Position of whole token in the source code.</param>
         public PHPDocBlock(string doccomment, Parsers.Position position)
         {
-            this.doccomment = doccomment;
-            this.position = position;
-        }
-
-        /// <summary>
-        /// Parses PHPDoc comment if not yet. 
-        /// </summary>
-        private void Initialize()
-        {
-            if (this.elements != null || string.IsNullOrEmpty(this.doccomment))
-                return; // nothing to do
-
-            //
-            lock (this)
-            {
-                // double-checked lock
-                if (this.elements == null)
-                {
-                    var elements = ParseNoLock(this.doccomment, this.position);
-                    Debug.Assert(elements != null);
-
-                    this.elements = elements.ToArray();
-                }
-            }
+            this._docCommentString = doccomment;
+            this._position = position;
         }
 
         /// <summary>
@@ -1627,12 +1619,11 @@ namespace PHP.Core
         #region ToString
 
         /// <summary>
-        /// Returns whole reformatted PHPDoc content.
+        /// Returns summary of PHPDoc.
         /// </summary>
-        /// <returns></returns>
         public override string ToString()
         {
-            return this.doccomment;
+            return this.Summary;
         }
 
         #endregion
