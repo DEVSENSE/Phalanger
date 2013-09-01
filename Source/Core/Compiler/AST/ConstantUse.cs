@@ -176,7 +176,7 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Class constant use.
 	/// </summary>
-	public sealed class ClassConstUse : ConstantUse
+	public class ClassConstUse : ConstantUse
 	{
 		public override Operations Operation { get { return Operations.ClassConstUse; } }
 
@@ -190,7 +190,7 @@ namespace PHP.Core.AST
         /// </summary>
         public TypeRef/*!*/TypeRef { get { return this.typeRef; } }
         private readonly TypeRef/*!*/typeRef;
-        private DType/*!A*/type;
+        protected DType/*!A*/type;
 
 		public VariableName Name { get { return name; } }
 		private readonly VariableName name;
@@ -268,6 +268,114 @@ namespace PHP.Core.AST
             visitor.VisitClassConstUse(this);
         }
 	}
+
+    /// <summary>
+    /// Pseudo class constant use.
+    /// </summary>
+    public sealed class PseudoClassConstUse : ClassConstUse
+    {
+        /// <summary>
+        /// Possible types of pseudo class constant.
+        /// </summary>
+        public enum Types
+        {
+            Class
+        }
+
+        /// <summary>Type of pseudoconstant</summary>
+        public Types Type { get { return consttype; } }
+        private Types consttype;
+        
+        public PseudoClassConstUse(Position position, GenericQualifiedName className, Position classNamePosition, Types type, Position namePosition)
+            : this(position, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), type, namePosition)
+		{
+		}
+
+        public PseudoClassConstUse(Position position, TypeRef/*!*/typeRef, Types type, Position namePosition)
+            : base(position, typeRef, type.ToString().ToLowerInvariant(), namePosition)
+        {
+            this.consttype = type;
+        }
+
+        public override object Value
+        {
+            get
+            {
+                switch (this.consttype)
+                {
+                    case Types.Class:
+                        var className = this.ClassName;
+                        if (string.IsNullOrEmpty(className.QualifiedName.Name.Value) ||
+                            className.QualifiedName.IsStaticClassName ||
+                            className.QualifiedName.IsSelfClassName)
+                            return null;
+
+                        return className.QualifiedName.ToString();
+
+                    default:
+                        throw new InvalidOperationException();
+                }
+            }
+        }
+
+        internal override void ResolveName(Analyzer/*!*/ analyzer)
+        {
+            if (this.type != null)
+                return;
+
+            this.TypeRef.Analyze(analyzer);
+            this.type = this.TypeRef.ResolvedTypeOrUnknown;
+
+            // analyze constructed type (we are in the full analysis):
+            analyzer.AnalyzeConstructedType(type);
+
+            //
+            this.constant = null;
+        }
+
+        internal override Evaluation EvaluatePriorAnalysis(SourceUnit sourceUnit)
+        {
+            var value = this.Value;
+            if (value != null)
+                return new Evaluation(this, value);
+            else
+                return base.EvaluatePriorAnalysis(sourceUnit);
+        }
+
+        internal override Evaluation Analyze(Analyzer analyzer, ExInfoFromParent info)
+        {
+            access = info.access;
+
+            var value = this.Value;
+            if (value != null)
+                return new Evaluation(this, value);
+            
+            //
+            this.ResolveName(analyzer);
+
+            //
+            return new Evaluation(this);
+        }
+
+        internal override PhpTypeCode Emit(CodeGenerator codeGenerator)
+        {
+            switch (this.consttype)
+            {
+                case Types.Class:
+                    this.type.EmitLoadTypeDesc(codeGenerator, ResolveTypeFlags.ThrowErrors | ResolveTypeFlags.UseAutoload);
+                    codeGenerator.IL.Emit(OpCodes.Call, Methods.Operators.GetFullyQualifiedName);
+                    return PhpTypeCode.String;
+
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            base.VisitMe(visitor);
+        }
+    }
 
 	#endregion
 
