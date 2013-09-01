@@ -467,7 +467,7 @@ namespace PHP.Core.Emit
                 _TryObjectToBoolean, _TryObjectToInt8, _TryObjectToInt16, _TryObjectToInt32, _TryObjectToInt64, _TryObjectToUInt8,
                 _TryObjectToUInt16, _TryObjectToUInt32, _TryObjectToUInt64, _TryObjectToSingle, _TryObjectToDouble, _TryObjectToDecimal,
                 _TryObjectToChar, _TryObjectToString, _TryObjectToDateTime, _TryObjectToDBNull, _TryObjectToClass, _TryObjectToStruct,
-                _TryObjectToDelegate, _TryObjectToArray, _TryObjectToType, _StringToTypeDesc;
+                _TryObjectToDelegate, _TryObjectToArray, _TryObjectToType, _StringToTypeDesc, _StringToBoolean;
 
             public static MethodInfo ObjectToString { get { if (_ObjectToString == null) _ObjectToString = _this.GetMethod("ObjectToString", Types.Object); return _ObjectToString; } }
             public static MethodInfo ObjectToChar { get { if (_ObjectToChar == null) _ObjectToChar = _this.GetMethod("ObjectToChar"); return _ObjectToChar; } }
@@ -483,6 +483,7 @@ namespace PHP.Core.Emit
             public static MethodInfo ObjectToLinqSource { get { if (_ObjectToLinqSource == null) _ObjectToLinqSource = _this.GetMethod("ObjectToLinqSource"); return _ObjectToLinqSource; } }
 
             public static MethodInfo StringToTypeDesc { get { return _StringToTypeDesc ?? (_StringToTypeDesc = new Func<string, ResolveTypeFlags, DTypeDesc, Core.ScriptContext, Core.NamingContext, object[], DTypeDesc>(Core.Convert.StringToTypeDesc).Method); } }
+            public static MethodInfo StringToBoolean { get { return _StringToBoolean ?? (_StringToBoolean = new Func<string, bool>(Core.Convert.StringToBoolean).Method); } }
 
             public static MethodInfo TryObjectToBoolean { get { if (_TryObjectToBoolean == null) _TryObjectToBoolean = _this.GetMethod("TryObjectToBoolean"); return _TryObjectToBoolean; } }
             public static MethodInfo TryObjectToInt8 { get { if (_TryObjectToInt8 == null) _TryObjectToInt8 = _this.GetMethod("TryObjectToInt8"); return _TryObjectToInt8; } }

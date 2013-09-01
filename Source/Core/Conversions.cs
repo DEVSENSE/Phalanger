@@ -1896,7 +1896,8 @@ namespace PHP.Core
 		/// <param name="str">The string to convert.</param>
 		/// <returns>Whether <paramref name="str"/> is empty or equal to "0".</returns>
 		/// <remarks>Asserts that <paramref name="str"/> is not null.</remarks>
-		public static bool StringToBoolean(string str)
+		[Emitted]
+        public static bool StringToBoolean(string str)
 		{
 			if (str == null) return false;
 

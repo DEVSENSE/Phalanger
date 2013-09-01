@@ -1824,8 +1824,7 @@ namespace PHP.Core
 		}
 
 		#endregion
-
-
+        
 		#region Routines Body Emission (Tomas Matousek)
 
 		/// <summary>
@@ -2385,8 +2384,7 @@ namespace PHP.Core
 		}
 
 		#endregion
-
-
+        
 		#region Ghost GetUserEntryPoint/Property Implement Stub Emission (Ladislav Prosek)
 
 		/// <summary>
@@ -3612,6 +3610,90 @@ namespace PHP.Core
             }
 
             return PhpTypeCode.Boolean;
+        }
+
+        /// <summary>
+        /// Emits "!= 0" operation. This method expects I4 valua on top of evaluation stack.
+        /// </summary>
+        internal void EmitLogicNegation()
+        {
+            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(OpCodes.Ceq);
+        }
+
+        /// <summary>
+        /// Emits conversion to boolean.
+        /// </summary>
+        /// <param name="expr">Expression to be converted.</param>
+        internal void EmitObjectToBoolean(Expression/*!*/expr)
+        {
+            EmitObjectToBoolean(expr, false);
+        }
+        
+        /// <summary>
+        /// Emits conversion to boolean.
+        /// </summary>
+        /// <param name="expr">Expression to be converted.</param>
+        /// <param name="negation">Whether the result should be logic negation of original conversion.</param>
+        internal void EmitObjectToBoolean(Expression/*!*/expr, bool negation)
+        {
+            // <expr>
+            var typecode = expr.Emit(this);
+
+            //
+            switch (typecode)
+            {
+                case PhpTypeCode.Boolean:
+                    if (negation)
+                        this.EmitLogicNegation();
+                    break;
+
+                case PhpTypeCode.Integer:
+                    // <int> != 0
+                    this.EmitLogicNegation();
+                    if (!negation)
+                        this.EmitLogicNegation();
+                    break;
+
+                case PhpTypeCode.LongInteger:
+                    // <long> != 0
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Conv_I8);
+					il.Emit(OpCodes.Ceq);
+                    if (!negation)
+                        this.EmitLogicNegation();
+                    break;
+
+                case PhpTypeCode.Double:
+                    // <double> != 0.0
+                    il.Emit(OpCodes.Ldc_R8, 0.0);
+                    il.Emit(OpCodes.Ceq);
+                    if (!negation)
+                        this.EmitLogicNegation();
+                    break;
+
+                case PhpTypeCode.Void:
+                    if (negation)
+                        il.Emit(OpCodes.Ldc_I4_1);
+                    else
+                        il.Emit(OpCodes.Ldc_I4_0);
+                    break;
+
+                case PhpTypeCode.String:
+                    // StringToBoolean( <string> )
+                    IL.Emit(OpCodes.Call, Methods.Convert.StringToBoolean);
+                    if (negation)
+                        this.EmitLogicNegation();
+                    break;
+
+                default:
+                    // ObjectToBoolean( (object)<expr> )
+                    EmitBoxing(typecode);
+                    IL.Emit(OpCodes.Call, Methods.Convert.ObjectToBoolean);
+                    if (negation)
+                        this.EmitLogicNegation();
+                    break;
+            }
         }
 
         #endregion

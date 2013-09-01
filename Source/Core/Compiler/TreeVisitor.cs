@@ -475,7 +475,7 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitEmptyEx(EmptyEx x)
         {
-            VisitElement(x.Variable);
+            VisitElement(x.Expression);
         }
 
         /// <summary>
