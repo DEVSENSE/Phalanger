@@ -725,4 +725,88 @@ namespace PHP.Core.AST
             visitor.VisitItemUse(this);
         }
 	}
+
+    /// <summary>
+    /// String literal dereferencing.
+    /// </summary>
+    public sealed class StringLiteralDereferenceEx : Expression
+    {
+        public override Operations Operation
+        {
+            get { return Operations.ItemUse; }
+        }
+
+        /// <summary>
+        /// Expression representing the string value.
+        /// </summary>
+        public Expression/*!*/StringExpr { get; private set; }
+
+        /// <summary>
+        /// Expression representing index in the string.
+        /// </summary>
+        public Expression/*!*/KeyExpr { get; private set; }
+
+        public StringLiteralDereferenceEx(Position position, Expression expr, Expression key)
+            : base(position)
+        {
+            this.StringExpr = expr;
+            this.KeyExpr = key;
+        }
+
+        internal override Evaluation Analyze(Analyzer analyzer, ExInfoFromParent info)
+        {
+            access = info.Access;
+
+            this.StringExpr = this.StringExpr.Analyze(analyzer, info).Literalize();
+            this.KeyExpr = this.KeyExpr.Analyze(analyzer, info).Literalize();
+
+            IntLiteral @int = this.KeyExpr as IntLiteral;
+            if (@int != null)
+            {
+                int key = (int)@int.Value;
+                if (key >= 0)
+                {
+                    StringLiteral str;
+                    BinaryStringLiteral bstr;
+
+                    if ((str = this.StringExpr as StringLiteral) != null)
+                    {
+                        string strValue = (string)str.Value;
+                        if (key < strValue.Length)
+                            return new Evaluation(this, strValue[key].ToString());
+                        else
+                        { }// report invalid index
+                    }
+                    else if ((bstr = this.StringExpr as BinaryStringLiteral) != null)
+                    {
+                        var bytesValue = (PhpBytes)bstr.Value;
+                        if (key < bytesValue.Length)
+                            return new Evaluation(this, new PhpBytes(new byte[] { bytesValue[key] }));
+                        else
+                        { }// report invalid index
+                    }
+                }
+                else
+                {
+                    // report invalid index
+                }
+            }
+
+            return new Evaluation(this);
+        }
+
+        internal override PhpTypeCode Emit(CodeGenerator codeGenerator)
+        {
+            codeGenerator.ChainBuilder.Create();
+            var typeCode = codeGenerator.ChainBuilder.EmitGetItem(this.StringExpr, this.KeyExpr, Operators.GetItemKinds.Get);
+            codeGenerator.ChainBuilder.End();
+
+            return typeCode;
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitStringLiteralDereferenceEx(this);
+        }
+    }
 }

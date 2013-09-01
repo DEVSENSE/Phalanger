@@ -528,6 +528,15 @@ namespace PHP.Core.AST
         }
 
         /// <summary>
+        /// Visits string literal dereferencing.
+        /// </summary>
+        virtual public void VisitStringLiteralDereferenceEx(StringLiteralDereferenceEx x)
+        {
+            VisitElement(x.StringExpr);
+            VisitElement(x.KeyExpr);
+        }
+
+        /// <summary>
         /// Called when derived class visited.
         /// </summary>
         /// <param name="x"></param>
