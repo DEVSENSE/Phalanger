@@ -88,7 +88,7 @@ namespace PHP.Library
 
         /// <summary>
         /// Replace invalid code unit sequences with a Unicode
-        /// Replacement Character U+FFFD (UTF-8) or &#FFFD;
+        /// Replacement Character U+FFFD (UTF-8) or &amp;#FFFD;
         /// (otherwise) instead of returning an empty string.
         /// </summary>
         [ImplementsConstant("ENT_SUBSTITUTE")]  //	8
@@ -120,7 +120,7 @@ namespace PHP.Library
 
         /// <summary>
         /// Replace invalid code points for the given document type
-        /// with a Unicode Replacement Character U+FFFD (UTF-8) or &#FFFD;
+        /// with a Unicode Replacement Character U+FFFD (UTF-8) or &amp;#FFFD;
         /// (otherwise) instead of leaving them as is.
         /// This may be useful, for instance, to ensure the well-formedness
         /// of XML documents with embedded external content.

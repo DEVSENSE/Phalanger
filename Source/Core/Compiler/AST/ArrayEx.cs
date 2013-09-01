@@ -23,7 +23,7 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Represents <c>array</c> constructor.
 	/// </summary>
-	public sealed class ArrayEx : Expression
+	public sealed class ArrayEx : VarLikeConstructUse
 	{
 		public override Operations Operation { get { return Operations.Array; } }
 
