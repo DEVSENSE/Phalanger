@@ -344,22 +344,47 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Whether the variable is aliased.
 		/// </summary>
-		public bool Alias { get { return alias; } set { alias = value; } }
-		private bool alias;
-
+        public bool Alias { get { return alias; } set { alias = value; } }
+        private bool alias;
+		
 		/// <summary>
-		/// The variable itself.
+		/// The variable itself. Can be <c>null</c> reference if <see cref="ListEx"/> is represented instead.
 		/// </summary>
-		private VariableUse variable;
-        /// <summary>The variable itself.</summary>
-        public VariableUse Variable { get { return variable; } }
-		internal Position Position { get { return variable.Position; } }
+        public VariableUse Variable { get { return this.expr as VariableUse; } }
+
+        /// <summary>
+        /// PHP list expression. Can be <c>null</c> reference if <see cref="VariableUse"/> is represented instead.
+        /// </summary>
+        public ListEx List { get { return this.expr as ListEx; } }
+
+        /// <summary>
+        /// Inner expression representing <see cref="Variable"/> or <see cref="List"/>.
+        /// </summary>
+        private Expression/*!*/expr;
+
+        /// <summary>
+        /// Position of foreach variable.
+        /// </summary>
+		internal Position Position { get { return expr.Position; } }
 
 		public ForeachVar(VariableUse variable, bool alias)
 		{
-			this.variable = variable;
+			this.expr = variable;
 			this.alias = alias;
 		}
+
+        /// <summary>
+        /// Initializes instance of <see cref="ForeachVar"/> representing PHP list expression.
+        /// </summary>
+        /// <param name="list"></param>
+        public ForeachVar(ListEx/*!*/list)
+        {
+            Debug.Assert(list != null);
+            Debug.Assert(list.RValue == null);
+
+            this.expr = list;
+            this.alias = false;
+        }
 
 		internal void Analyze(Analyzer analyzer)
 		{
@@ -368,18 +393,45 @@ namespace PHP.Core.AST
 			else info.Access = AccessType.Write;
 
 			//retval not needed
-			variable.Analyze(analyzer, info);
+			expr.Analyze(analyzer, info);
 		}
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
 		internal PhpTypeCode Emit(CodeGenerator codeGenerator)
 		{
-			return this.variable.Emit(codeGenerator);
+            var varuse = this.Variable;
+            if (varuse != null)
+            {
+                return varuse.Emit(codeGenerator);
+            }
+            else
+            {
+                // other epxressions are handled in EmitAssign only
+                return PhpTypeCode.Unknown; // ignored
+            }
 		}
 
 		internal PhpTypeCode EmitAssign(CodeGenerator codeGenerator)
 		{
-			return this.variable.EmitAssign(codeGenerator);
+            // Object (or PhpReference) is on top of evaluation stack
+            
+            var varuse = this.Variable;
+            if (varuse != null)
+            {
+                return varuse.EmitAssign(codeGenerator);
+            }
+            else
+            {
+                var listex = this.List;
+                if (listex != null)
+                {
+                    return listex.EmitAssign(codeGenerator);
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
 		}
 
 	}

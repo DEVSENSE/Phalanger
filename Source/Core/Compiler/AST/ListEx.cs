@@ -85,6 +85,15 @@ namespace PHP.Core.AST
             
             codeGenerator.EmitBoxing(RValue.Emit(codeGenerator));   // put object on the top of the stack
 
+            // assign the value from top of evaluation stack to the list
+            return this.EmitAssign(codeGenerator);
+		}
+
+        /// <summary>
+        /// Assigns items of array from the top of evaluation stack to the list.
+        /// </summary>
+        internal PhpTypeCode EmitAssign(CodeGenerator codeGenerator)
+        {
             LocalBuilder o1 = codeGenerator.IL.GetTemporaryLocal(Types.Object[0]);   // temporary variable for object to be copied
             EmitAssignList(codeGenerator, LValues, o1);                 // assign particular elements of the list, using the array from the stack
 
@@ -101,7 +110,7 @@ namespace PHP.Core.AST
                 codeGenerator.IL.Emit(OpCodes.Pop); // remove the top of the stack, not used
                 return PhpTypeCode.Void;
             }
-		}
+        }
 
         /// <summary>
         /// Use the object on the top of the stack, the object here will stay untouched.

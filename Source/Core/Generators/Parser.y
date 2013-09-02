@@ -1084,6 +1084,14 @@ non_empty_statement:
 			$$ = CreateForeachStmt(@$, (Expression)$3, new ForeachVar((VariableUse)$5, false), @5, 
 			  (ForeachVar)$6, (Statement)$8);
 		}
+
+	|	T_FOREACH '(' chain T_AS T_LIST '(' assignment_list ')' ')' foreach_statement 
+		{ 
+			var listpos = Position.CombinePositions(@5, @8);
+			$$ = CreateForeachStmt(@$, (Expression)$3,
+				new ForeachVar(new ListEx(listpos, (List<Expression>)$7, null)), listpos,
+				null, (Statement)$10);
+		}
 	
 	|	T_TRY
 		{
