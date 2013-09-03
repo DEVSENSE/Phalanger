@@ -918,6 +918,8 @@ namespace PHP.Core
 
         public static readonly ErrorInfo AliasAlreadyInUse = new ErrorInfo(2040, "alias_in_use", ErrorSeverity.FatalError);
         public static readonly ErrorInfo ClassAlreadyInUse = new ErrorInfo(2041, "class_in_use", ErrorSeverity.FatalError);
+
+        public static readonly ErrorInfo TryWithoutCatchOrFinally = new ErrorInfo(2050, "try_without_catch_or_finally", ErrorSeverity.FatalError);
     }
 
 	#endregion

@@ -52,8 +52,12 @@ namespace PHP.Core.AST
             VisitStatementList(x.Statements);
 
             // visit catch blocks
-            foreach (CatchItem c in x.Catches)
-                VisitElement(c);
+            if (x.Catches != null)
+                foreach (CatchItem c in x.Catches)
+                    VisitElement(c);
+
+            // visit finally block
+            VisitStatementList(x.FinallyStatements);
         }
 
         /// <summary>

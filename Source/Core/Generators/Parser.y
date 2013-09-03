@@ -220,6 +220,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %token T_GOTO
 %token T_TRY
 %token T_CATCH
+%token T_FINALLY
 %token T_THROW
 %token<Object> T_INTERFACE                // PHPDocBlock
 %token T_IMPLEMENTS
@@ -465,8 +466,9 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> trait_modifiers						  // PhpMemberAttributes?
 
 %type<Object> dynamic_class_name_variable_property 
-%type<Object> additional_catches_opt 
-%type<Object> additional_catches
+%type<Object> catches_opt								// List<CatchItem> or null
+%type<Object> catches									// List<CatchItem>
+%type<Object> finally_opt								// List<Statement> or null
 
 %type<Object> lambda_function_expression				// LambdaFuncExpr!
 %type<Object> lambda_function_head_						// Tuple<PhpMemberAttributes,object,bool>!	// <static,doc_comment,is_ref>
@@ -1097,10 +1099,13 @@ non_empty_statement:
 		{
 			EnterConditionalCode();
 		}
-		'{' inner_statement_list_opt '}' T_CATCH '(' qualified_static_type_ref T_VARIABLE ')' 
-		'{' inner_statement_list_opt '}' additional_catches_opt	
-		{ 
-			$$ = CreateTryStmt(@$, (List<Statement>)$4, @8, (GenericQualifiedName)$8, @9, (string)$9, (List<Statement>)$12, (List<CatchItem>)$14);
+		'{' inner_statement_list_opt '}' catches_opt finally_opt
+		{
+			if ($6 == null && $7 == null)
+				errors.Add(FatalErrors.TryWithoutCatchOrFinally, SourceUnit, @$);
+
+			$$ = new TryStmt(@$, (List<Statement>)$4, (List<CatchItem>)$6, (List<Statement>)$7);
+
 			LeaveConditionalCode();
 		}
 	
@@ -1116,22 +1121,26 @@ non_empty_statement:
 ;
 
 
-additional_catches_opt:
-		additional_catches	{ $$ = $1; }
-	|	/* empty */					{ $$ = null; }
+catches_opt:
+		catches			{ $$ = $1; }
+	|	/* empty */		{ $$ = null; }
 ;
 
-additional_catches:
-		additional_catches T_CATCH '(' qualified_static_type_ref T_VARIABLE ')'  '{' inner_statement_list_opt '}' 
+catches:
+		catches T_CATCH '(' qualified_static_type_ref T_VARIABLE ')'  '{' inner_statement_list_opt '}' 
 		{ 
 			$$ = $1; 
 			ListAdd<CatchItem>($$, new CatchItem(@4, (GenericQualifiedName)$4, new DirectVarUse(@5, (string)$5), (List<Statement>)$8)); 
-		}
-		
+		}		
 	|	T_CATCH '(' qualified_static_type_ref T_VARIABLE ')'  '{' inner_statement_list_opt '}'
 		{
 			$$ = NewList<CatchItem>(new CatchItem(@4, (GenericQualifiedName)$3, new DirectVarUse(@4, (string)$4), (List<Statement>)$7));
 		} 
+;
+
+finally_opt:
+		/* empty */ { $$ = null; }
+	|	T_FINALLY '{' inner_statement_list_opt '}' { $$ = $3; }
 ;
 
 reference_opt:
