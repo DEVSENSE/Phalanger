@@ -188,7 +188,9 @@ namespace PHP.Library
 			T_TRY = CoreTokens.T_TRY,
 			[ImplementsConstant("T_CATCH")]
 			T_CATCH = CoreTokens.T_CATCH,
-			[ImplementsConstant("T_THROW")]
+            [ImplementsConstant("T_FINALLY")]
+            T_FINALLY = CoreTokens.T_FINALLY,
+            [ImplementsConstant("T_THROW")]
 			T_THROW = CoreTokens.T_THROW,
 			// [ImplementsConstant("T_USE")] T_USE = CoreTokens.T_USE,
 			[ImplementsConstant("T_GLOBAL")]

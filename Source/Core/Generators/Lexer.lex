@@ -192,6 +192,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 <ST_IN_SCRIPTING>"try"              { return Tokens.T_TRY; }
 <ST_IN_SCRIPTING>"catch"            { return Tokens.T_CATCH; }
+<ST_IN_SCRIPTING>"finally"          { return Tokens.T_FINALLY; }
 <ST_IN_SCRIPTING>"throw"            { return Tokens.T_THROW; }
 <ST_IN_SCRIPTING>"interface"        { return Tokens.T_INTERFACE; } 
 <ST_IN_SCRIPTING>"implements"       { return Tokens.T_IMPLEMENTS; }

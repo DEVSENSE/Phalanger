@@ -35,29 +35,52 @@ namespace PHP.Core.AST
         public List<Statement>/*!*/ Statements { get { return statements; } }
 
 		/// <summary>
-		/// A list of catch statements catching exceptions thrown inside the try block.
+        /// A list of catch statements catching exceptions thrown inside the try block. Can be a <c>null</c> reference.
 		/// </summary>
-		private readonly List<CatchItem>/*!*/ catches;
-        /// <summary>A list of catch statements catching exceptions thrown inside the try block.</summary>
-        public List<CatchItem>/*!*/ Catches { get { return catches; } }
+		private readonly List<CatchItem> catches;
+        /// <summary>A list of catch statements catching exceptions thrown inside the try block. Can be a <c>null</c> reference.</summary>
+        public List<CatchItem> Catches { get { return catches; } }
+        private bool HasCatches { get { return catches != null && catches.Count != 0; } }
 
-		public TryStmt(Position p, List<Statement>/*!*/ statements, List<CatchItem>/*!*/ catches)
+        /// <summary>
+        /// A list of statements contained in the finally-block. Can be a <c>null</c> reference.
+        /// </summary>
+        private readonly List<Statement> finallyStatements;
+        /// <summary>A list of statements contained in the finally-block. Can be a <c>null</c> reference.</summary>
+        public List<Statement> FinallyStatements { get { return finallyStatements; } }
+        private bool HasFinallyStatements { get { return finallyStatements != null && finallyStatements.Count != 0; } }
+
+        public TryStmt(Position p, List<Statement>/*!*/ statements, List<CatchItem> catches, List<Statement> finallyStatements)
 			: base(p)
 		{
-			Debug.Assert(statements != null && catches != null && catches.Count > 0);
-
+            Debug.Assert(statements != null);
+            
 			this.statements = statements;
 			this.catches = catches;
+            this.finallyStatements = finallyStatements;
 		}
 
 		internal override Statement Analyze(Analyzer/*!*/ analyzer)
 		{
+            // try {}
 			analyzer.EnterConditionalCode();
             this.Statements.Analyze(analyzer);
 			analyzer.LeaveConditionalCode();
 
-			for (int i = 0; i < catches.Count; i++)
-				catches[i].Analyze(analyzer);
+            // catch {}
+            if (HasCatches)
+            {
+                for (int i = 0; i < catches.Count; i++)
+                    catches[i].Analyze(analyzer);
+            }
+
+            // finally {}
+            if (HasFinallyStatements)
+            {
+                analyzer.EnterConditionalCode();
+                this.finallyStatements.Analyze(analyzer);
+                analyzer.LeaveConditionalCode();
+            }
 
 			return this;
 		}
@@ -110,65 +133,88 @@ namespace PHP.Core.AST
 		internal override void Emit(CodeGenerator/*!*/ codeGenerator)
 		{
 			Statistics.AST.AddNode("TryStmt");
+
+            // emit try block without CLR exception block if possible
+
+            if (!HasCatches && !HasFinallyStatements)
+            {
+                this.Statements.Emit(codeGenerator);
+                return;
+            }
+
+            // emit CLR exception block
+
 			ILEmitter il = codeGenerator.IL;
 			codeGenerator.ExceptionBlockNestingLevel++;
 
 			// TRY
 			Label end_label = il.BeginExceptionBlock();
 
-			foreach (Statement statement in statements)
-				statement.Emit(codeGenerator);
-
-            // catch (PHP.Core.ScriptDiedException)
-            // { throw; }
-
-            il.BeginCatchBlock(typeof(PHP.Core.ScriptDiedException));
-            il.Emit(OpCodes.Rethrow);
-
-            // catch (System.Exception ex)
-			
-			il.BeginCatchBlock(typeof(System.Exception));
-
-            // <exception_local> = (DObject) (STACK is PhpUserException) ? ((PhpUserException)STACK).UserException : ClrObject.WrapRealObject(STACK)
-
-            Label clrExceptionLabel = il.DefineLabel();
-            Label wrapEndLabel = il.DefineLabel();
-            LocalBuilder exception_local = il.GetTemporaryLocal(typeof(DObject));
+            this.Statements.Emit(codeGenerator);
             
-            il.Emit(OpCodes.Dup);
-            il.Emit(OpCodes.Isinst, typeof(PHP.Core.PhpUserException)); // <STACK> as PhpUserException
-            il.Emit(OpCodes.Brfalse, clrExceptionLabel);
-            
-            // if (<STACK> as PhpUserException != null)
+            // catches
+
+            if (HasCatches)
             {
-                il.Emit(OpCodes.Ldfld, Fields.PhpUserException_UserException);
-                il.Emit(OpCodes.Br, wrapEndLabel);
+                // catch (PHP.Core.ScriptDiedException)
+                // { throw; }
+
+                il.BeginCatchBlock(typeof(PHP.Core.ScriptDiedException));
+                il.Emit(OpCodes.Rethrow);
+
+                // catch (System.Exception ex)
+
+                il.BeginCatchBlock(typeof(System.Exception));
+
+                // <exception_local> = (DObject) (STACK is PhpUserException) ? ((PhpUserException)STACK).UserException : ClrObject.WrapRealObject(STACK)
+
+                Label clrExceptionLabel = il.DefineLabel();
+                Label wrapEndLabel = il.DefineLabel();
+                LocalBuilder exception_local = il.GetTemporaryLocal(typeof(DObject));
+
+                il.Emit(OpCodes.Dup);
+                il.Emit(OpCodes.Isinst, typeof(PHP.Core.PhpUserException)); // <STACK> as PhpUserException
+                il.Emit(OpCodes.Brfalse, clrExceptionLabel);
+
+                // if (<STACK> as PhpUserException != null)
+                {
+                    il.Emit(OpCodes.Ldfld, Fields.PhpUserException_UserException);
+                    il.Emit(OpCodes.Br, wrapEndLabel);
+                }
+
+                // else
+                il.MarkLabel(clrExceptionLabel);
+                {
+                    il.Emit(OpCodes.Call, Methods.ClrObject_WrapRealObject);
+                }
+                il.MarkLabel(wrapEndLabel);
+                il.Stloc(exception_local);
+
+                // emits all PHP catch-blocks processing into a single CLI catch-block:
+                foreach (CatchItem c in catches)
+                {
+                    Label next_catch_label = il.DefineLabel();
+
+                    // IF (exception <instanceOf> <type>);
+                    c.Emit(codeGenerator, exception_local, end_label, next_catch_label);
+
+                    // ELSE
+                    il.MarkLabel(next_catch_label);
+                }
+
+                il.ReturnTemporaryLocal(exception_local);
+
+                // emits the "else" branch invoked if the exceptions is not catched:
+                il.Emit(OpCodes.Rethrow);
             }
-            
-            // else
-            il.MarkLabel(clrExceptionLabel);
+
+            // finally
+
+            if (HasFinallyStatements)
             {
-                il.Emit(OpCodes.Call, Methods.ClrObject_WrapRealObject);
+                il.BeginFinallyBlock();
+                finallyStatements.Emit(codeGenerator);
             }
-            il.MarkLabel(wrapEndLabel);
-            il.Stloc(exception_local);
-
-            // emits all PHP catch-blocks processing into a single CLI catch-block:
-			foreach (CatchItem c in catches)
-			{
-				Label next_catch_label = il.DefineLabel();
-
-				// IF (exception <instanceOf> <type>);
-				c.Emit(codeGenerator, exception_local, end_label, next_catch_label);
-
-				// ELSE
-				il.MarkLabel(next_catch_label);
-			}
-
-            il.ReturnTemporaryLocal(exception_local);
-
-			// emits the "else" branch invoked if the exceptions is not catched:
-			il.Emit(OpCodes.Rethrow);
 
             //
 			il.EndExceptionBlock();

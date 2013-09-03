@@ -2086,4 +2086,7 @@ non-infringement.
   <data name="incomparable_objects_compared_exception" xml:space="preserve">
     <value>Incomparable objects ({0} and {1}) have been compared</value>
   </data>
+  <data name="try_without_catch_or_finally" xml:space="preserve">
+    <value>Cannot use try without catch or finally</value>
+  </data>
 </root>

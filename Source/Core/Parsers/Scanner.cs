@@ -481,8 +481,9 @@ namespace PHP.Core.Parsers
 						goto case Tokens.T_STRING;
 
 					case Tokens.T_TRY:
-					case Tokens.T_CATCH:
-					case Tokens.T_THROW:
+                    case Tokens.T_CATCH:
+                    case Tokens.T_FINALLY:
+                    case Tokens.T_THROW:
 					case Tokens.T_IMPLEMENTS:
 					case Tokens.T_CLONE:
 					case Tokens.T_ABSTRACT:

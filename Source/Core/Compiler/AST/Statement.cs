@@ -83,6 +83,18 @@ namespace PHP.Core.AST
                     statements[i] = analyzed;
             }
         }
+
+        /// <summary>
+        /// Emits each <see cref="Statement"/> in given <paramref name="statements"/> list.
+        /// </summary>
+        public static void Emit(this List<Statement> statements, CodeGenerator codeGenerator)
+        {
+            if (statements != null)
+            {
+                foreach (Statement statement in statements)
+                    statement.Emit(codeGenerator);
+            }
+        }
     }
 
     #endregion
