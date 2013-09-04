@@ -471,7 +471,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> dynamic_class_name_variable_property 
 %type<Object> catches_opt								// List<CatchItem> or null
 %type<Object> catches									// List<CatchItem>
-%type<Object> finally_opt								// List<Statement> or null
+%type<Object> finally_opt								// FinallyItem or null
 
 %type<Object> lambda_function_expression				// LambdaFuncExpr!
 %type<Object> lambda_function_head_						// Tuple<PhpMemberAttributes,object,bool>!	// <static,doc_comment,is_ref>
@@ -1108,7 +1108,7 @@ non_empty_statement:
 			if ($6 == null && $7 == null)
 				errors.Add(FatalErrors.TryWithoutCatchOrFinally, SourceUnit, @$);
 
-			$$ = new TryStmt(@$, (List<Statement>)$4, (List<CatchItem>)$6, (List<Statement>)$7);
+			$$ = new TryStmt(@$, (List<Statement>)$4, (List<CatchItem>)$6, (FinallyItem)$7);
 
 			LeaveConditionalCode();
 		}
@@ -1144,7 +1144,7 @@ catches:
 
 finally_opt:
 		/* empty */ { $$ = null; }
-	|	T_FINALLY '{' inner_statement_list_opt '}' { $$ = $3; }
+	|	T_FINALLY '{' inner_statement_list_opt '}' { $$ = new FinallyItem(@$, (List<Statement>)$3); }
 ;
 
 reference_opt:

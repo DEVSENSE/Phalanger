@@ -45,19 +45,19 @@ namespace PHP.Core.AST
         /// <summary>
         /// A list of statements contained in the finally-block. Can be a <c>null</c> reference.
         /// </summary>
-        private readonly List<Statement> finallyStatements;
+        private readonly FinallyItem finallyItem;
         /// <summary>A list of statements contained in the finally-block. Can be a <c>null</c> reference.</summary>
-        public List<Statement> FinallyStatements { get { return finallyStatements; } }
-        private bool HasFinallyStatements { get { return finallyStatements != null && finallyStatements.Count != 0; } }
+        public FinallyItem FinallyItem { get { return finallyItem; } }
+        private bool HasFinallyStatements { get { return finallyItem != null && finallyItem.Statements.Count != 0; } }
 
-        public TryStmt(Position p, List<Statement>/*!*/ statements, List<CatchItem> catches, List<Statement> finallyStatements)
+        public TryStmt(Position p, List<Statement>/*!*/ statements, List<CatchItem> catches, FinallyItem finallyItem)
 			: base(p)
 		{
             Debug.Assert(statements != null);
             
 			this.statements = statements;
 			this.catches = catches;
-            this.finallyStatements = finallyStatements;
+            this.finallyItem = finallyItem;
 		}
 
 		internal override Statement Analyze(Analyzer/*!*/ analyzer)
@@ -77,9 +77,7 @@ namespace PHP.Core.AST
             // finally {}
             if (HasFinallyStatements)
             {
-                analyzer.EnterConditionalCode();
-                this.finallyStatements.Analyze(analyzer);
-                analyzer.LeaveConditionalCode();
+                this.finallyItem.Analyze(analyzer);
             }
 
 			return this;
@@ -212,8 +210,7 @@ namespace PHP.Core.AST
 
             if (HasFinallyStatements)
             {
-                il.BeginFinallyBlock();
-                finallyStatements.Emit(codeGenerator);
+                finallyItem.Emit(codeGenerator);
             }
 
             //
@@ -331,6 +328,45 @@ namespace PHP.Core.AST
             visitor.VisitCatchItem(this);
         }
 	}
+
+    /// <summary>
+    /// Represents a finally-block.
+    /// </summary>
+    public sealed class FinallyItem : LangElement
+    {
+        /// <summary>
+        /// A list of statements contained in the finally-block.
+        /// </summary>
+        private readonly List<Statement>/*!*/statements;
+        /// <summary>A list of statements contained in the try-block.</summary>
+        public List<Statement>/*!*/Statements { get { return statements; } }
+
+        public FinallyItem(Position position, List<Statement>/*!*/statements)
+            :base(position)
+        {
+            this.statements = statements;
+        }
+
+        internal void Analyze(Analyzer/*!*/ analyzer)
+        {
+            analyzer.EnterConditionalCode();
+            this.statements.Analyze(analyzer);
+            analyzer.LeaveConditionalCode();
+        }
+
+        internal void Emit(CodeGenerator codeGenerator)
+        {
+            codeGenerator.IL.BeginFinallyBlock();
+            statements.Emit(codeGenerator);
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitFinallyItem(this);
+        }
+
+        
+    }
 
 	/// <summary>
 	/// Represents a throw statement.
