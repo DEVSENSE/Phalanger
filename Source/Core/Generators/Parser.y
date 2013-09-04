@@ -113,6 +113,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %left T_LOGICAL_XOR
 %left T_LOGICAL_AND
 %right T_PRINT
+%right T_YIELD
 %left '=' T_PLUS_EQUAL T_MINUS_EQUAL T_MUL_EQUAL T_DIV_EQUAL T_CONCAT_EQUAL T_MOD_EQUAL T_AND_EQUAL T_OR_EQUAL T_XOR_EQUAL T_SL_EQUAL T_SR_EQUAL
 %left '?' ':'
 %left T_BOOLEAN_OR
@@ -340,7 +341,9 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> inner_statement_list_opt                // List<Statement>
 %type<Object> inner_statement                         // Statement
 %type<Object> expr                                    // Expression
+%type<Object> parenthesis_expr						  // Expression
 %type<Object> array_ex								  // VarLikeConstructUse
+%type<Object> yield_ex								  // YieldEx
 %type<Object> concat_exprs							  // List<Expression>
 %type<Object> assignment_expression                   // AssignEx
 %type<Integer> cast_operation                         // Operation
@@ -985,55 +988,55 @@ non_empty_statement:
 		  $$ = new BlockStmt(@$, (List<Statement>)$2); 
 		}
 		
-	|	T_IF '(' expr ')'  
+	|	T_IF parenthesis_expr  
 		{ 
 			EnterConditionalCode(); 
 		} 
 		statement elseif_list_opt else_opt 
 		{ 
-			List<ConditionalStmt> conditions = (List<ConditionalStmt>)$7;
-			conditions[0] = new ConditionalStmt(@1.Short, (Expression)$3, (Statement)$6);
+			List<ConditionalStmt> conditions = (List<ConditionalStmt>)$5;
+			conditions[0] = new ConditionalStmt(@1.Short, (Expression)$2, (Statement)$4);
 			
 			// add else:
-			if ($8 != null)
-				conditions.Add(new ConditionalStmt(@8.Short, null, (Statement)$8));
+			if ($6 != null)
+				conditions.Add(new ConditionalStmt(@6.Short, null, (Statement)$6));
 			
 			$$ = new IfStmt(@$, conditions);
 			
 			LeaveConditionalCode();
 	  }
 		
-	|	T_IF '(' expr ')' ':'  
+	|	T_IF parenthesis_expr ':'  
 		{ 
 			EnterConditionalCode();
 		}
 		inner_statement_list_opt elseif_colon_list_opt else_colon_opt T_ENDIF ';' 
 		{ 
-			List<ConditionalStmt> conditions = (List<ConditionalStmt>)$8;
-			conditions[0] = new ConditionalStmt(@1.Short, (Expression)$3, new BlockStmt(@7, (List<Statement>)$7));
+			List<ConditionalStmt> conditions = (List<ConditionalStmt>)$6;
+			conditions[0] = new ConditionalStmt(@1.Short, (Expression)$2, new BlockStmt(@5, (List<Statement>)$5));
 			
 			// add else:
-			if ($9 != null)
-				conditions.Add(new ConditionalStmt(@9.Short, null, (Statement)$9));
+			if ($7 != null)
+				conditions.Add(new ConditionalStmt(@7.Short, null, (Statement)$7));
 			
 			$$ = new IfStmt(@$, conditions);
 			
 			LeaveConditionalCode();
 		}
 		
-	|	T_WHILE '(' expr ')' 
+	|	T_WHILE parenthesis_expr 
 		{
 			EnterConditionalCode();
 		}
 		while_statement 
 		{ 
-			$$ = new WhileStmt(@$, WhileStmt.Type.While, (Expression)$3, (Statement)$6); 
+			$$ = new WhileStmt(@$, WhileStmt.Type.While, (Expression)$2, (Statement)$4); 
 			LeaveConditionalCode();
 		}
 		
-	|	T_DO statement T_WHILE '('  expr ')' ';' 
+	|	T_DO statement T_WHILE parenthesis_expr ';' 
 		{ 
-			$$ = new WhileStmt(@$, WhileStmt.Type.Do, (Expression)$5, (Statement)$2); 
+			$$ = new WhileStmt(@$, WhileStmt.Type.Do, (Expression)$4, (Statement)$2); 
 		}
 	
 	|	T_FOR '(' expression_list_opt ';' expression_list_opt ';' expression_list_opt ')' 
@@ -1046,13 +1049,13 @@ non_empty_statement:
 			LeaveConditionalCode();
 		}
 	
-	|	T_SWITCH '(' expr ')'	 
+	|	T_SWITCH parenthesis_expr
 		{
 			EnterConditionalCode();
 		}
 		switch_case_list 
 		{ 
-			$$ = new SwitchStmt(@$, (Expression)$3, (List<SwitchItem>)$6); 
+			$$ = new SwitchStmt(@$, (Expression)$2, (List<SwitchItem>)$4); 
 			LeaveConditionalCode();
 		}
 		
@@ -1062,6 +1065,7 @@ non_empty_statement:
 	|	T_CONTINUE expr ';'									{ $$ = new JumpStmt(@$, JumpStmt.Types.Continue, (Expression)$2); }	
 	|	T_RETURN ';'												{ $$ = new JumpStmt(@$, JumpStmt.Types.Return, null); }						
 	|	T_RETURN expr ';'                   { $$ = new JumpStmt(@$, JumpStmt.Types.Return, (Expression)$2); }	
+	|	yield_ex ';'						{ $$ = new ExpressionStmt(@$, (Expression)$1); }
 	|	T_GLOBAL global_var_list ';'        { $$ = new GlobalStmt(@$, (List<SimpleVarUse>)$2); }
 	|	T_STATIC static_variable_list ';'   { $$ = new StaticStmt(@$, (List<StaticVarDecl>)$2); }
 	|	T_ECHO expression_list ';'          { $$ = new EchoStmt(@$, (List<Expression>)$2); }
@@ -1214,10 +1218,10 @@ elseif_list_opt:
 			// initialize list with the first item reserved for the if-condition and the true-statement pair:
 			$$ = NewList<ConditionalStmt>(null);
 		}
-	|	elseif_list_opt T_ELSEIF '(' expr ')' statement
+	|	elseif_list_opt T_ELSEIF parenthesis_expr statement
 		{ 
 			$$ = $1; 
-			ListAdd<ConditionalStmt>($$, new ConditionalStmt(@2.Short, (Expression)$4, (Statement)$6)); 
+			ListAdd<ConditionalStmt>($$, new ConditionalStmt(@2.Short, (Expression)$3, (Statement)$4)); 
 		}
 ;
 
@@ -1227,10 +1231,10 @@ elseif_colon_list_opt:
 		{ 
 		  $$ = NewList<ConditionalStmt>(null);
 		}
-	|	elseif_colon_list_opt T_ELSEIF '(' expr ')' ':' inner_statement_list_opt 
+	|	elseif_colon_list_opt T_ELSEIF parenthesis_expr ':' inner_statement_list_opt 
 		{ 
 			$$ = $1;
-			ListAdd<ConditionalStmt>($$, new ConditionalStmt(@2.Short, (Expression)$4, new BlockStmt(@7, (List<Statement>)$7))); 
+			ListAdd<ConditionalStmt>($$, new ConditionalStmt(@2.Short, (Expression)$3, new BlockStmt(@5, (List<Statement>)$5))); 
 		}
 ;
 
@@ -1303,6 +1307,7 @@ non_empty_actual_arguments_opt:
 
 actual_argument_list_opt:
 		actual_argument_list	     { $$ = $1; }
+	|	yield_ex					{ $$ = $1; }
 	|	/* empty */								 { $$ = emptyActualParamListIndex; }			
 ;
 
@@ -1634,6 +1639,11 @@ expr:
 	|	expr_without_chain	{ $$ = $1; }
 ;
 
+parenthesis_expr:
+		'(' expr ')'		{ $$ = $2; }
+	|	'(' yield_ex ')'	{ $$ = $2; }
+;
+
 assignment_expression:
 		writable_chain '=' expr	         { $$ = new ValueAssignEx(@$, Operations.AssignValue, (VariableUse)$1, (Expression)$3); }	
 	|	writable_chain '=' '&' chain  { $$ = new RefAssignEx(@$, (VariableUse)$1, (VarLikeConstructUse)$4); }
@@ -1703,11 +1713,12 @@ expr_without_chain:
 	|	expr T_IS_GREATER_OR_EQUAL expr { $$ = new BinaryEx(@$, Operations.GreaterThanOrEqual, (Expression)$1, (Expression)$3); }
 	|	expr T_INSTANCEOF type_ref      { $$ = new InstanceOfEx(@$, (Expression)$1, (TypeRef)$3); }
 	|	T_TYPEOF type_ref               { $$ = new TypeOfEx(@$, (TypeRef)$2); } // not enclosed in parenthesis to prevent conflicts with casts. e.g clrtypeof(int)
-	|	'(' expr ')'                    { $$ = $2;}
+	|	parenthesis_expr                    { $$ = $1;}
 	|	expr '?' expr ':' expr          { $$ = new ConditionalEx(@$, (Expression)$1, (Expression)$3, (Expression)$5); }
 	|	expr '?' ':' expr			    { $$ = new ConditionalEx(@$, (Expression)$1, null, (Expression)$4); }
 	|	array_ex						{ $$ = $1; }
 	|	array_ex '[' expr ']'					{ $$ = new ItemUse(@$, (VarLikeConstructUse)$1, (Expression)$3); }
+	|	T_YIELD							{ $$ = new YieldEx(@$);  }
 	|	T_LIST '(' assignment_list ')' '=' expr { $$ = new ListEx(@$, (List<Expression>)$3, (Expression)$6); }
 	|	T_ISSET '(' writable_chain_list ')'     { $$ = new IssetEx(@$, (List<VariableUse>)$3); }
 	|	T_EMPTY '(' chain ')'				            { $$ = new EmptyEx(@$, (Expression)$3); }		
@@ -1726,6 +1737,11 @@ expr_without_chain:
 	| linq_query_expression				{ $$ = $1; }
 
 	| lambda_function_expression		{ $$ = $1; }
+;
+
+yield_ex:
+		T_YIELD expr						{ $$ = new YieldEx(@$, null, (Expression)$2); }
+	|	T_YIELD expr T_DOUBLE_ARROW expr	{ $$ = new YieldEx(@$, (Expression)$2, (Expression)$4); }
 ;
 
 array_ex:
@@ -2066,7 +2082,7 @@ keyed_field_names_opt:
 exit_expr_opt:
 		/* empty */		{ $$ = null; }
 	|	'(' ')'				{ $$ = null; }
-	|	'(' expr ')'	{ $$ = $2; }
+	|	parenthesis_expr	{ $$ = $1; }
 ;
 
 

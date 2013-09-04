@@ -155,6 +155,7 @@ namespace PHP.Core.AST
 		Exit,
 		ShellCommand,
 		IncDec,
+        Yield,
 
 		// LINQ:
 		Linq,

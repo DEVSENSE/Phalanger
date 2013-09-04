@@ -140,6 +140,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"function"   			{ return Tokens.T_FUNCTION; }
 <ST_IN_SCRIPTING>"const"      			{ return Tokens.T_CONST; }
 <ST_IN_SCRIPTING>"return"     			{ return Tokens.T_RETURN; }
+<ST_IN_SCRIPTING>"yield"     			{ return Tokens.T_YIELD; }
 <ST_IN_SCRIPTING>"if"         			{ return Tokens.T_IF; }
 <ST_IN_SCRIPTING>"elseif"     			{ return Tokens.T_ELSEIF; }
 <ST_IN_SCRIPTING>"endif"      			{ return Tokens.T_ENDIF; }

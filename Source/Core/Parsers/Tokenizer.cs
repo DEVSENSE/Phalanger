@@ -339,6 +339,7 @@ namespace PHP.Core.Parsers
 					case Tokens.T_FUNCTION:
 					case Tokens.T_CONST:
 					case Tokens.T_RETURN:
+                    case Tokens.T_YIELD:
 					case Tokens.T_GLOBAL:
 					case Tokens.T_STATIC:
 					case Tokens.T_VAR:
