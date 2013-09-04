@@ -57,7 +57,7 @@ namespace PHP.Core.AST
                     VisitElement(c);
 
             // visit finally block
-            VisitStatementList(x.FinallyStatements);
+            VisitElement(x.FinallyItem);
         }
 
         /// <summary>
@@ -850,6 +850,14 @@ namespace PHP.Core.AST
         {
             VisitElement(x.Variable);
 
+            VisitStatementList(x.Statements);
+        }
+
+        /// <summary>
+        /// Visit <see cref="FinallyItem"/>.
+        /// </summary>
+        virtual public void VisitFinallyItem(FinallyItem x)
+        {
             VisitStatementList(x.Statements);
         }
 
