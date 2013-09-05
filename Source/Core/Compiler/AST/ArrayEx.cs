@@ -26,6 +26,7 @@ namespace PHP.Core.AST
 	public sealed class ArrayEx : VarLikeConstructUse
 	{
 		public override Operations Operation { get { return Operations.Array; } }
+        internal override bool AllowsPassByReference { get { return false; } }
 
 		private readonly List<Item>/*!*/ items;
         public List<Item>/*!*/ Items{get{return items;}}
