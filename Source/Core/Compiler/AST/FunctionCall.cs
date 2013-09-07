@@ -1079,6 +1079,8 @@ namespace PHP.Core.AST
         /// </summary>
         public Position ClassNamePosition { get { return this.typeRef.Position; } }
 
+        public TypeRef/*!*/ TypeRef { get { return this.typeRef; } }
+
         protected DType/*!A*/type;
 
         public StaticMtdCall(Position position, Position methodNamePosition, GenericQualifiedName className, Position classNamePosition, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
