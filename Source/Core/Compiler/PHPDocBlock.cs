@@ -759,7 +759,7 @@ namespace PHP.Core
                 if (string.IsNullOrEmpty(str))
                     return false;
 
-                if (str[0] != '_' && !char.IsLetter(str[0]))
+                if (str[0] != '_' && !char.IsLetter(str[0]) && str[0] != QualifiedName.Separator)
                     return false;
 
                 for (int i = 1; i < str.Length; i++)
