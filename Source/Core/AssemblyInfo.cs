@@ -22,6 +22,7 @@ using System;
 [assembly: AssemblyCopyright("Copyright (c) 2004-2010 Tomas Matousek, Ladislav Prosek, Vaclav Novak, Pavel Novak, Jan Benda, Martin Maly, Tomas Petricek, Daniel Balas, Miloslav Beno, Jakub Misek")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+[assembly: System.Resources.NeutralResourcesLanguage("en-US", System.Resources.UltimateResourceFallbackLocation.MainAssembly)]
 //[assembly: CLSCompliant(true)]
 
 #if !SILVERLIGHT
