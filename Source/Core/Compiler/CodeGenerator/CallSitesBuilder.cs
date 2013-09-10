@@ -174,6 +174,22 @@ namespace PHP.Core.Compiler.CodeGenerator
         }
 
         /// <summary>
+        /// Defines field in callsite's container type.
+        /// </summary>
+        /// <param name="name">Field name.</param>
+        /// <param name="type">Field type.</param>
+        /// <param name="attributes">Field attributes.</param>
+        /// <returns>Instance of newly defined <see cref="FieldInfo"/>.</returns>
+        public FieldBuilder/*!*/DefineField(string name, Type type, FieldAttributes attributes)
+        {
+            // call sites container 
+            var typebuilder = EnsureContainer();
+
+            // define field
+            return typebuilder.DefineField(name, type, attributes);
+        }
+
+        /// <summary>
         /// Define new instance of CallSite&lt;<paramref name="delegateType"/>&gt; and initialize it with specified binder.
         /// </summary>
         /// <param name="bodyEmitter"><see cref="ILEmitter"/> of the body that is using this call site. This method may emit initialization of the call site into this <paramref name="bodyEmitter"/>.</param>
@@ -187,16 +203,13 @@ namespace PHP.Core.Compiler.CodeGenerator
 
             userFriendlyName += ("'" + (callSitesCount++));
 
-            // call sites container 
-            var type = EnsureContainer();
-
             // call site type
             var callSiteType = Types.CallSiteGeneric[0].MakeGenericType(delegateType);
 
             // define the field:
             // public static readonly CallSite<delegateType> <userFriendlyName>
-            var attrs = FieldAttributes.Static | FieldAttributes.InitOnly | ((staticCtorEmitter == null) ? FieldAttributes.Private : FieldAttributes.Public);
-            var field = type.DefineField(PluginHandler.ConvertCallSiteName(userFriendlyName), callSiteType, attrs);
+            var attrs = FieldAttributes.Static | FieldAttributes.InitOnly | ((staticCtorEmitter == null) ? FieldAttributes.Private : FieldAttributes.Assembly);
+            var field = this.DefineField(PluginHandler.ConvertCallSiteName(userFriendlyName), callSiteType, attrs);
 
             if (staticCtorEmitter == null) // => this.classContext != null
             {
