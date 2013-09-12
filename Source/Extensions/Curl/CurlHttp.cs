@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -94,6 +95,18 @@ namespace PHP.Library.Curl
                 setProxy(data);
                 setCredentials(data);
                 setCookies(data);
+
+#if NET45
+                request.ServerCertificateValidationCallback = (sender, certificate, chain, errors) =>
+                {
+                    if (data.Ssl.VerifyPeer && (errors & SslPolicyErrors.RemoteCertificateChainErrors) == SslPolicyErrors.RemoteCertificateChainErrors)
+                        return false;
+                    if (data.Ssl.VerifyHost > 0 && (errors & SslPolicyErrors.RemoteCertificateNameMismatch) == SslPolicyErrors.RemoteCertificateNameMismatch)
+                        // VerifyHost==1 removed in curl
+                        return false;
+                    return true;
+                };
+#endif       
 
                 //ssl.VerifyPeer && ssl.VerifyHost == 2 is supported by default .NET
                 // other values are currently unsupported

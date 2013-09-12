@@ -202,7 +202,7 @@ namespace PHP.Library.Xml
 
                 sb.Append(input);
 
-                return ParseInternal(caller, context, sb.ToString(), null, null);                
+                return ParseInternal(caller, context, new PhpBytes(sb.ToString()), null, null);                
             }
             else
             {
@@ -223,15 +223,16 @@ namespace PHP.Library.Xml
             }
         }
 
-        public bool ParseIntoStruct(DTypeDesc caller, NamingContext context, string input, PhpArray values, PhpArray indices)
+        public bool ParseIntoStruct(DTypeDesc caller, NamingContext context, PhpBytes input, PhpArray values, PhpArray indices)
         {
             return ParseInternal(caller, context, input, values, indices);
         }
 
-        private bool ParseInternal(DTypeDesc caller, NamingContext context, string xml, PhpArray values, PhpArray indices)
+        private bool ParseInternal(DTypeDesc caller, NamingContext context, PhpBytes xml, PhpArray values, PhpArray indices)
         {
-            StringReader stringReader = new StringReader(xml);
-            XmlTextReader reader = new XmlTextReader(stringReader);
+            MemoryStream stringReader = new MemoryStream(xml.ReadonlyData);
+            XmlTextReader reader = new XmlTextReader(new StreamReader(stringReader));
+          reader.EntityHandling=EntityHandling.ExpandCharEntities;
             Stack<ElementRecord> elementStack = new Stack<ElementRecord>();
             TextRecord textChunk = null;
 
@@ -242,6 +243,7 @@ namespace PHP.Library.Xml
             _endNamespaceDeclHandler.BindOrBiteMyLegsOff(caller, context);
             _characterDataHandler.BindOrBiteMyLegsOff(caller, context);
             _processingInstructionHandler.BindOrBiteMyLegsOff(caller, context);
+            int depth = 1;
 
             while (reader.ReadState == ReadState.Initial || reader.ReadState == ReadState.Interactive)
             {
@@ -282,7 +284,7 @@ namespace PHP.Library.Xml
                     case ReadState.Interactive:
                         //debug step, that prints out the current state of the parser (pretty printed)
                         //Debug_ParseStep(reader);
-                        ParseStep(reader, elementStack, ref textChunk, values, indices);
+                        ParseStep(reader, elementStack, ref textChunk, values, indices, ref depth);
                         break;
                 }
 
@@ -293,7 +295,7 @@ namespace PHP.Library.Xml
             return true;
         }
 
-        private void ParseStep(XmlReader reader, Stack<ElementRecord> elementStack, ref TextRecord textChunk, PhpArray values, PhpArray indices)
+        private void ParseStep(XmlReader reader, Stack<ElementRecord> elementStack, ref TextRecord textChunk, PhpArray values, PhpArray indices, ref int depth)
         {
             string elementName;
             bool emptyElement;
@@ -302,7 +304,7 @@ namespace PHP.Library.Xml
             switch (reader.NodeType)
             {
                 case XmlNodeType.Element:
-                    elementName = reader.Name;
+                    elementName = _enableCaseFolding ? reader.Name.ToUpperInvariant() : reader.Name;
                     emptyElement = reader.IsEmptyElement;
                     PhpArray attributeArray = new PhpArray();
 
@@ -326,8 +328,7 @@ namespace PHP.Library.Xml
 
                                 continue;
                             }
-
-                            attributeArray.Add(_enableCaseFolding ? reader.Name.ToUpperInvariant() : reader.Name, reader.Value);
+                            attributeArray.Add(_enableCaseFolding ? reader.Name.ToUpperInvariant() : reader.Name, new PhpBytes(Encoding.UTF8.GetBytes(reader.Value)));
                         }
                         while (reader.MoveToNextAttribute());   
                     }
@@ -347,10 +348,12 @@ namespace PHP.Library.Xml
                     elementStack.Push(
                         new ElementRecord() { 
                             ElementName = elementName,
-                            Level = reader.Depth, 
+                            Level = depth, 
                             State = ElementState.Beginning, 
                             Attributes = (PhpArray)attributeArray.DeepCopy() 
                         });
+                    if (!reader.IsEmptyElement)
+                        depth++;
 
                     if (_startElementHandler.Callback != null)
                         _startElementHandler.Invoke(this, _enableCaseFolding ? elementName.ToUpperInvariant() : elementName, attributeArray);
@@ -380,6 +383,8 @@ namespace PHP.Library.Xml
                         _endElementHandler.Invoke(this, _enableCaseFolding ? elementName.ToUpperInvariant() : elementName);
                     else
                         if (_defaultHandler.Callback != null) _defaultHandler.Invoke(this, "");
+                    if (!reader.IsEmptyElement)
+                        depth--;
                     break;
 
 
@@ -413,6 +418,46 @@ namespace PHP.Library.Xml
 
         private void UpdateValueAndIndexArrays(ElementRecord elementRecord, ref TextRecord textRecord, PhpArray values, PhpArray indices, bool middle)
         {
+            if (values != null)
+            {
+                PhpArray arrayRecord = new PhpArray();
+
+                arrayRecord.Add("tag", elementRecord.ElementName);
+
+                if (elementRecord.State == ElementState.Beginning)
+                    arrayRecord.Add("type", middle ? "open" : "complete");
+                else
+                    arrayRecord.Add("type", middle ? "cdata" : "close");
+                arrayRecord.Add("level", elementRecord.Level);
+
+                if (textRecord != null && !string.IsNullOrWhiteSpace(textRecord.Text))
+                    arrayRecord.Add("value", new PhpBytes(Encoding.UTF8.GetBytes(textRecord.Text)));
+
+                if ((string)arrayRecord["type"] != "cdata" || arrayRecord.ContainsKey("value"))
+                {
+
+                    if (elementRecord.State == ElementState.Beginning && elementRecord.Attributes.Count != 0)
+                        arrayRecord.Add("attributes", elementRecord.Attributes);
+
+                    values.Add(arrayRecord);
+
+                    if (indices != null)
+                    {
+                        PhpArray elementIndices;
+
+                        if (!indices.ContainsKey(elementRecord.ElementName))
+                        {
+                            elementIndices = new PhpArray();
+                            indices.Add(elementRecord.ElementName, elementIndices);
+                        }
+                        else
+                            elementIndices = (PhpArray) indices[elementRecord.ElementName];
+
+                        // add the max index (last inserted value)
+                        elementIndices.Add(values.MaxIntegerKey);
+                    }
+                }
+            }
             // if we have no valid data in the middle, just end
             if (middle && textRecord == null)
                 return;
@@ -420,42 +465,6 @@ namespace PHP.Library.Xml
             if (!middle && elementRecord.State == ElementState.Interior)
                 UpdateValueAndIndexArrays(elementRecord, ref textRecord, values, indices, true);
             
-            if (values != null)
-            {
-                PhpArray arrayRecord = new PhpArray();
-
-                arrayRecord.Add("tag", elementRecord.ElementName);
-                arrayRecord.Add("level", elementRecord.Level);
-
-                if (elementRecord.State == ElementState.Beginning)
-                    arrayRecord.Add("type", middle ? "open" : "complete");
-                else
-                    arrayRecord.Add("type", middle ? "cdata" : "close");
-
-                if (textRecord != null)
-                    arrayRecord.Add("value", textRecord.Text);
-
-                if (elementRecord.State == ElementState.Beginning && elementRecord.Attributes.Count != 0)
-                    arrayRecord.Add("attributes", elementRecord.Attributes);
-
-                values.Add(arrayRecord);
-
-                if (indices != null)
-                {
-                    PhpArray elementIndices;
-
-                    if (!indices.ContainsKey(elementRecord.ElementName))
-                    {
-                        elementIndices = new PhpArray();
-                        indices.Add(elementRecord.ElementName, elementIndices);
-                    }
-                    else
-                        elementIndices = (PhpArray)indices[elementRecord.ElementName];
-
-                    // add the max index (last inserted value)
-                    elementIndices.Add(values.MaxIntegerKey);
-                }
-            }
 
             textRecord = null;
         }

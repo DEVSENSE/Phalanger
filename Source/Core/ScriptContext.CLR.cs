@@ -337,13 +337,18 @@ namespace PHP.Core
                 // ScriptContext is ILogicalThreadAffinative, LogicalCallContext is used.
 				try
 				{
-                    return ((ScriptContext)CallContext.GetData(callContextSlotName)) ?? CreateDefaultScriptContext();   // on Mono, .GetData must be used (GetLogicalData is not implemented)
+                    var weak = (WeakReference<ScriptContext>)CallContext.GetData(callContextSlotName);// on Mono, .GetData must be used (GetLogicalData is not implemented)
+				    ScriptContext result = null;
+                    if (weak!=null)
+                    {
+                        weak.TryGetTarget(out result);
+                    }
+				    return result ?? CreateDefaultScriptContext();   
 				}
 				catch (InvalidCastException)
 				{
 					throw new InvalidCallContextDataException(callContextSlotName);
 				}
-
 				//return result.AttachToHttpApplication();
 			}
 			set
@@ -351,7 +356,7 @@ namespace PHP.Core
 				if (value == null)
 					CallContext.FreeNamedDataSlot(callContextSlotName);
 				else
-                    CallContext.SetData(callContextSlotName, value);            // on Mono, .SetData must be used (SetLogicalData is not implemented)
+                    CallContext.SetData(callContextSlotName, new WeakReference<ScriptContext>(value));            // on Mono, .SetData must be used (SetLogicalData is not implemented)
 			}
 		}
 

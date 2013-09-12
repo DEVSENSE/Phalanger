@@ -714,12 +714,24 @@ namespace PHP.Library.Gd2
         /// <summary>
         /// Get the index of the specified color or its closest possible alternative
         /// </summary> 
-        [ImplementsFunction("imagecolorresolve", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("imagecolorresolve")]
         public static int imagecolorresolve(PhpResource im, int red, int green, int blue)
         {
-            //TODO: (Maros) Used in non-truecolor images (palette images).
-            //PhpException.FunctionNotSupported(PhpError.Warning);
-            return -1;
+            var im1 = (PhpGdImageResource) im;
+            var minValue = int.MaxValue;
+            var color = Color.FromArgb(red, green, blue);
+            int minIndex = -1;
+            for (int i = 0; i < im1.Image.Palette.Entries.Length; i++)
+            {
+                var curColor = im1.Image.Palette.Entries[i];
+                var value = Math.Abs(curColor.A - color.A) + Math.Abs(curColor.B - color.B) + Math.Abs(curColor.G - color.G) + Math.Abs(curColor.R - color.R);
+                if (value < minValue)
+                {
+                    value = minValue;
+                    minIndex = i;
+                }
+            }
+            return minIndex;
         }
 
         #endregion
@@ -758,11 +770,26 @@ namespace PHP.Library.Gd2
         /// <summary>
         /// Get the colors for an index
         /// </summary> 
-        [ImplementsFunction("imagecolorsforindex", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("imagecolorsforindex")]
         public static PhpArray imagecolorsforindex(PhpResource im, int col)
         {
-            //PhpException.FunctionNotSupported(PhpError.Warning);
-            return null;
+            var im1 = (PhpGdImageResource) im;
+            var arr = new PhpArray();
+            var entries = im1.Image.Palette.Entries;
+            Color color;
+            if (entries.Length > 0)
+            {
+                color = entries[col];
+            }
+            else
+            {
+                color = Color.FromArgb(col);
+            }
+            arr["red"] = (int)color.R;
+            arr["green"] = (int)color.G;
+            arr["blue"] = (int)color.B;
+            arr["alpha"] = (int)color.A;
+            return arr;
         }
 
         #endregion
@@ -3308,8 +3335,16 @@ namespace PHP.Library.Gd2
             Bitmap image = LoadBitmap(filename, format);
             if (image == null)
                 return null;
-            
-            return new PhpGdImageResource(image);
+
+            var result = new PhpGdImageResource(image);
+            var color = image.Palette.Entries.Where(a => a.A < 255).Take(1).ToArray();
+            if (color.Length > 0)
+            {
+                result.transparentColor = color[0];
+                result.IsTransparentColSet = true;
+                result.SaveAlpha = true;
+            }
+            return result;
         }
 
         /// <summary>

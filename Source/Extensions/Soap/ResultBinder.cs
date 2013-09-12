@@ -37,9 +37,26 @@ namespace PHP.Library.Soap
             object res = Bind(graph);
 
             if (wrapResult)
-                return WrapToStdClass(res, functionName + "Result");
+                return WrapToStdClass(res, functionName);
             else
                 return res;
+        }
+        
+        internal static object BindServerParameters(object[] parameters, MethodInfo mi)
+        {
+            var runtimeFields = new PhpArray();
+            //I can also just return CLR type and wrap it with PHP.Core.Reflection.ClrObject.WrapDynamic
+            int i = 0;
+            foreach (var p in mi.GetParameters().Where(a => !a.IsOut))
+            {
+                var name = WsdlHelper.GetParameterSoapName(p);
+                var value = Bind(parameters[i++]);
+                runtimeFields[name] = value;
+            }
+            return new stdClass()
+            {
+                RuntimeFields = runtimeFields
+            };
         }
 
         private static object BindEnum(object obj, Type type)
@@ -75,9 +92,18 @@ namespace PHP.Library.Soap
 
                 if (specified)
                 {
-                    value = Bind(field.GetValue(obj), field);
+                  var fieldValue = field.GetValue(obj);
+                  value = Bind(fieldValue, field);
                     if (value != null)
-                        runtimeFields.Add(field.Name, value);
+                    {
+                        if (fieldValue != null && fieldValue.GetType().IsArray && ((Array) fieldValue).Length > 0)
+                            fieldValue = ((Array) fieldValue).GetValue(0);
+                        var attr = Attribute.GetCustomAttributes(field, typeof(XmlElementAttribute)).Cast<XmlElementAttribute>().FirstOrDefault(a => a.Type == null || a.Type.IsInstanceOfType(fieldValue));
+                        var name = field.Name;
+                        if (attr != null && !string.IsNullOrWhiteSpace(attr.ElementName))
+                            name = attr.ElementName;
+                        runtimeFields.Add(name, value);
+                    }
                 }
             }
 
@@ -92,29 +118,28 @@ namespace PHP.Library.Soap
             if (fi == null)
                 return "item";
 
-            object[] attr = fi.GetCustomAttributes(false);
+            XmlArrayItemAttribute[] attr = (XmlArrayItemAttribute[])fi.GetCustomAttributes(typeof(XmlArrayItemAttribute), false);
 
             for (int i = 0; i < attr.Length; ++i)
             {
-                if (attr[i].GetType() == typeof(XmlArrayItemAttribute))
-                {
-                    XmlArrayItemAttribute arrayItemAttr = (XmlArrayItemAttribute)attr[i];
-                    if (!String.IsNullOrEmpty(arrayItemAttr.ElementName))
-                        return arrayItemAttr.ElementName;
-                    else
-                        return type.GetElementType().Name;
-                }
-                else if (attr[i].GetType() == typeof(XmlArrayAttribute))
-                {
+                XmlArrayItemAttribute arrayItemAttr = (XmlArrayItemAttribute) attr[i];
+                if (!String.IsNullOrEmpty(arrayItemAttr.ElementName))
+                    return arrayItemAttr.ElementName;
+                else
                     return type.GetElementType().Name;
-                }
             }
+            XmlArrayAttribute attr1 = (XmlArrayAttribute)fi.GetCustomAttribute(typeof(XmlArrayAttribute), false);
+            if (attr1 != null)
+                return type.GetElementType().Name;
 
             return null;
         }
 
         private static object BindArray(object obj, Type type, FieldInfo targetFieldInfo)
         {
+            if (type == typeof(byte[]))
+                return new PhpBytes((byte[])obj);
+
             Array array = (Array)obj;
             object res;
             string elementName;
@@ -176,8 +201,8 @@ namespace PHP.Library.Soap
 
                     if (type.IsEnum)
                         return BindEnum(graph, type);
-
-
+                    if (type == typeof (string))
+                        graph = Encoding.Default.GetString(Encoding.UTF8.GetBytes((string) graph));
                     return PHP.Core.Convert.ClrLiteralToPhpLiteral(graph);
 
                 case TypeCode.DateTime:
@@ -187,7 +212,7 @@ namespace PHP.Library.Soap
                     if (dt.TimeOfDay == TimeSpan.Zero)
                          return dt.ToString("yyyy-MM-dd");
 
-                    return dt.ToString("yyyy-MM-ddTHH:mm:ss.fffffffzzz");
+                    return dt.ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFFzzz");
 
                 case TypeCode.Object:
                     {

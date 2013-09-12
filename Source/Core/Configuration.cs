@@ -222,7 +222,14 @@ namespace PHP.Core
 
 			internal OutputControlSection DeepCopy()
 			{
-				return (OutputControlSection)MemberwiseClone();
+			    return new OutputControlSection()
+			    {
+			        charSet = charSet,
+			        contentType = contentType,
+			        implicitFlush = implicitFlush,
+			        outputBuffering = outputBuffering,
+			        outputHandler = outputHandler == null ? null : outputHandler.DeepCopy()
+			    };
 			}
 		}
 
@@ -337,7 +344,23 @@ namespace PHP.Core
 			/// </summary>
 			internal ErrorControlSection DeepCopy()
 			{
-				return (ErrorControlSection)this.MemberwiseClone();
+			    return new ErrorControlSection()
+			    {
+			        DisplayErrors = DisplayErrors,
+			        DocRefExtension = DocRefExtension,
+			        DocRefRoot = DocRefRoot,
+			        EnableLogging = EnableLogging,
+			        ErrorAppendString = ErrorAppendString,
+			        ErrorPrependString = ErrorPrependString,
+			        HtmlMessages = HtmlMessages,
+			        IgnoreAtOperator = IgnoreAtOperator,
+			        LogFile = LogFile,
+			        ReportErrors = ReportErrors,
+			        SysLog = SysLog,
+			        UserExceptionHandler = UserExceptionHandler == null ? null : UserExceptionHandler.DeepCopy(),
+			        UserHandler = UserHandler == null ? null : UserHandler.DeepCopy(),
+			        UserHandlerErrors = UserHandlerErrors
+			    };
 			}
 		}
 
@@ -422,7 +445,14 @@ namespace PHP.Core
 			/// </summary>
 			internal AssertionSection DeepCopy()
 			{
-				return (AssertionSection)this.MemberwiseClone();
+			    return new AssertionSection()
+			    {
+			        Active = Active,
+			        Callback = Callback == null ? null : Callback.DeepCopy(),
+			        Quiet = Quiet,
+			        ReportWarning = ReportWarning,
+			        Terminate = Terminate
+			    };
 			}
 		}
 
@@ -503,7 +533,13 @@ namespace PHP.Core
 			/// </summary>
 			internal VariablesSection DeepCopy()
 			{
-				return (VariablesSection)this.MemberwiseClone();
+			    return new VariablesSection()
+			    {
+			        AlwaysPopulateRawPostData = AlwaysPopulateRawPostData,
+			        DeserializationCallback = DeserializationCallback == null ? null : DeserializationCallback.DeepCopy(),
+                    QuoteRuntimeVariables = QuoteRuntimeVariables,
+                    RegisteringOrder = RegisteringOrder
+			    };
 			}
 		}
 

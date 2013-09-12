@@ -203,24 +203,7 @@ namespace PHP.Core
         {
             Debug.Assert(output != null);
 
-            const string hex_digs = "0123456789abcdef";
-            char[] patch = new char[4] { '\\', 'x', '0', '0' };
-
-            foreach (byte b in ReadonlyData)
-            {
-                // printable characters are outputted normally
-                if (b < 0x7f)
-                {
-                    output.Write((char)b);
-                }
-                else
-                {
-                    patch[2] = hex_digs[(b & 0xf0) >> 4];
-                    patch[3] = hex_digs[(b & 0x0f)];
-
-                    output.Write(patch);
-                }
-            }
+            output.Write(ToString());
         }
 
         private string DebugView()
@@ -420,9 +403,7 @@ namespace PHP.Core
 		/// <param name="output">The output text stream.</param>
 		public void Print(System.IO.TextWriter output)
 		{
-			output.Write("\"");
             DumpTo(output);
-            output.WriteLine("\"");            
 		}
 
 		/// <summary>

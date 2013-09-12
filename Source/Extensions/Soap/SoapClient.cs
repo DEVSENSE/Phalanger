@@ -20,6 +20,13 @@ namespace PHP.Library.Soap
     {
         private DynamicWebServiceProxy wsp = null;
         private bool exceptions = true;
+        private SoapVersion version = SoapVersion.SOAP_1_1;
+
+        [PhpVisible, ImplementsMethod]
+      public object __soapCall(string function_name, PhpArray arguments)
+      {
+        return __call(function_name, arguments);
+      }
 
         /// <summary>
         /// Calls a SOAP function
@@ -217,6 +224,11 @@ namespace PHP.Library.Soap
                     exceptions = PHP.Core.Convert.ObjectToBoolean(value);
                 }
 
+                if (options.TryGetValue("soap_version", out value))
+                {
+                    version = (SoapVersion) PHP.Core.Convert.ObjectToInteger(value);
+                }
+
                 // certificate:
                 string pass = null;
 
@@ -229,13 +241,13 @@ namespace PHP.Library.Soap
                 {
                     var cert = Core.Convert.ObjectToString(value);
                     if (cert != null)
-                        certificate = new X509Certificate2(cert, pass);
+                        certificate = new X509Certificate2(cert, pass, X509KeyStorageFlags.MachineKeySet);
                 }
             }
 
             try
             {
-                wsp = new DynamicWebServiceProxy(wsdl, enableMessageAccess, wsdlCache, certificate);
+                wsp = new DynamicWebServiceProxy(wsdl, enableMessageAccess, wsdlCache, certificate, version);
             }
             catch (Exception exception)
             {
