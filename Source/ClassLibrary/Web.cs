@@ -378,7 +378,7 @@ namespace PHP.Library
 		[ImplementsFunction("urldecode")]
 		public static string UrlDecode(string str)
 		{
-            return HttpUtility.UrlDecode(str);
+        return HttpUtility.UrlDecode(str, Configuration.Application.Globalization.PageEncoding);
 		}
 
 		/// <summary>
@@ -387,7 +387,7 @@ namespace PHP.Library
 		[ImplementsFunction("urlencode")]
 		public static string UrlEncode(string str)
 		{
-            return UpperCaseEncodedChars(HttpUtility.UrlEncode(str));
+        return UpperCaseEncodedChars(HttpUtility.UrlEncode(str, Configuration.Application.Globalization.PageEncoding));
 		}
 
         private static string UpperCaseEncodedChars(string encoded)

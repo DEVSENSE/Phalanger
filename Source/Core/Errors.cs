@@ -216,7 +216,7 @@ namespace PHP.Core
 		/// <param name="argument">The name of the argument.</param>
 		public static void ReferenceNull(string argument)
 		{
-			Throw(PhpError.Error, CoreResources.GetString("reference_null", argument));
+			Throw(PhpError.Warning, CoreResources.GetString("reference_null", argument));
 		}
 
 		/// <summary>
@@ -607,7 +607,7 @@ namespace PHP.Core
 
 			// determines whether the error will be reported and whether it is handleable:
 			bool is_error_reported = ((PhpErrorSet)error & config.ErrorControl.ReportErrors) != 0 && !context.ErrorReportingDisabled;
-			bool is_error_handleable = ((PhpErrorSet)error & PhpErrorSet.Handleable & (PhpErrorSet)config.ErrorControl.UserHandlerErrors) != 0;
+            bool is_error_handleable = ((PhpErrorSet)error & PhpErrorSet.Handleable & (PhpErrorSet)config.ErrorControl.UserHandlerErrors) != 0 && !context.ErrorReportingDisabled;
 			bool is_error_fatal = ((PhpErrorSet)error & PhpErrorSet.Fatal) != 0;
 			bool do_report = true;
 

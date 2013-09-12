@@ -9,27 +9,57 @@ using System.Linq;
 using System.Text;
 using PHP.Core;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
+using System.IO;
 namespace PHP.Library.Soap
 {
 	[Serializable()]
 	public partial class SoapClient
 	{
-        /// <summary></summary>
 		protected SoapClient(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context)
 		{
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public SoapClient(ScriptContext context, bool newInstance) : base(context, newInstance)
 		{
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public SoapClient(ScriptContext context, DTypeDesc caller) : this(context, true)
 		{
 			this.InvokeConstructor(context, caller);
 		}
-        /// <summary></summary>
+		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+		public object __soapCall(ScriptContext __context, object function_name, object arguments)
+		{
+			
+			string tmp1 = PhpVariable.AsString(function_name);
+			if (tmp1 == null)
+
+				{
+					PhpException.InvalidImplicitCast(function_name, "string", "__soapCall");
+					return null;
+				}
+			
+			PhpArray tmp2 = arguments as PhpArray;
+			if (tmp2 == null)
+
+				{
+					PhpException.InvalidImplicitCast(arguments, "PhpArray", "__soapCall");
+					return null;
+				}
+			return __soapCall(tmp1, tmp2);
+		}
+		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+		public static object __soapCall(object instance, PhpStack stack)
+		{
+			stack.CalleeName = "__soapCall";
+			
+			object arg1 = stack.PeekValue(1);
+			
+			object arg2 = stack.PeekValue(2);
+			stack.RemoveFrame();
+			return ((SoapClient)instance).__soapCall(stack.Context, arg1, arg2);
+		}
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object __call(ScriptContext __context, object function_name, object arguments)
 		{
@@ -51,7 +81,6 @@ namespace PHP.Library.Soap
 				}
 			return __call(tmp1, tmp2);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object __call(object instance, PhpStack stack)
 		{
@@ -63,13 +92,11 @@ namespace PHP.Library.Soap
 			stack.RemoveFrame();
 			return ((SoapClient)instance).__call(stack.Context, arg1, arg2);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object __doRequest(ScriptContext __context)
 		{
 			return __doRequest();
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object __doRequest(object instance, PhpStack stack)
 		{
@@ -77,13 +104,11 @@ namespace PHP.Library.Soap
 			stack.RemoveFrame();
 			return ((SoapClient)instance).__doRequest(stack.Context);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object __getFunctions(ScriptContext __context)
 		{
 			return __getFunctions();
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object __getFunctions(object instance, PhpStack stack)
 		{
@@ -91,13 +116,11 @@ namespace PHP.Library.Soap
 			stack.RemoveFrame();
 			return ((SoapClient)instance).__getFunctions(stack.Context);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object __getLastRequest(ScriptContext __context)
 		{
 			return __getLastRequest();
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object __getLastRequest(object instance, PhpStack stack)
 		{
@@ -105,13 +128,11 @@ namespace PHP.Library.Soap
 			stack.RemoveFrame();
 			return ((SoapClient)instance).__getLastRequest(stack.Context);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object __getLastRequestHeaders(ScriptContext __context)
 		{
 			return __getLastRequestHeaders();
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object __getLastRequestHeaders(object instance, PhpStack stack)
 		{
@@ -119,13 +140,11 @@ namespace PHP.Library.Soap
 			stack.RemoveFrame();
 			return ((SoapClient)instance).__getLastRequestHeaders(stack.Context);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object __getLastResponse(ScriptContext __context)
 		{
 			return __getLastResponse();
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object __getLastResponse(object instance, PhpStack stack)
 		{
@@ -133,13 +152,11 @@ namespace PHP.Library.Soap
 			stack.RemoveFrame();
 			return ((SoapClient)instance).__getLastResponse(stack.Context);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object __getLastResponseHeaders(ScriptContext __context)
 		{
 			return __getLastResponseHeaders();
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object __getLastResponseHeaders(object instance, PhpStack stack)
 		{
@@ -147,13 +164,11 @@ namespace PHP.Library.Soap
 			stack.RemoveFrame();
 			return ((SoapClient)instance).__getLastResponseHeaders(stack.Context);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object __getTypes(ScriptContext __context)
 		{
 			return __getTypes();
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object __getTypes(object instance, PhpStack stack)
 		{
@@ -161,7 +176,6 @@ namespace PHP.Library.Soap
 			stack.RemoveFrame();
 			return ((SoapClient)instance).__getTypes(stack.Context);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object __setCookie(ScriptContext __context, object name, object value)
 		{
@@ -184,7 +198,6 @@ namespace PHP.Library.Soap
 			__setCookie(tmp1, tmp2);
 			return null;
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object __setCookie(object instance, PhpStack stack)
 		{
@@ -196,7 +209,6 @@ namespace PHP.Library.Soap
 			stack.RemoveFrame();
 			return ((SoapClient)instance).__setCookie(stack.Context, arg1, arg2);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object __setLocation(ScriptContext __context, object new_location)
 		{
@@ -210,7 +222,6 @@ namespace PHP.Library.Soap
 				}
 			return __setLocation(tmp1);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object __setLocation(object instance, PhpStack stack)
 		{
@@ -220,7 +231,6 @@ namespace PHP.Library.Soap
 			stack.RemoveFrame();
 			return ((SoapClient)instance).__setLocation(stack.Context, arg1);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object __setSoapHeaders(ScriptContext __context, object SoapHeaders)
 		{
@@ -235,7 +245,6 @@ namespace PHP.Library.Soap
 			__setSoapHeaders(tmp1);
 			return null;
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object __setSoapHeaders(object instance, PhpStack stack)
 		{
@@ -245,7 +254,6 @@ namespace PHP.Library.Soap
 			stack.RemoveFrame();
 			return ((SoapClient)instance).__setSoapHeaders(stack.Context, arg1);
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public object __construct(ScriptContext __context, object wsdl, 		[System.Runtime.InteropServices.OptionalAttribute()]
 object options)
@@ -274,7 +282,6 @@ object options)
 			__construct(tmp1, tmp2);
 			return null;
 		}
-        /// <summary></summary>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public static object __construct(object instance, PhpStack stack)
 		{
@@ -286,9 +293,9 @@ object options)
 			stack.RemoveFrame();
 			return ((SoapClient)instance).__construct(stack.Context, arg1, arg2);
 		}
-        /// <summary></summary>
 		private static void __PopulateTypeDesc(PhpTypeDesc desc)
 		{
+			desc.AddMethod("__soapCall", PhpMemberAttributes.Public, new RoutineDelegate(SoapClient.__soapCall));
 			desc.AddMethod("__call", PhpMemberAttributes.Public, new RoutineDelegate(SoapClient.__call));
 			desc.AddMethod("__doRequest", PhpMemberAttributes.Public, new RoutineDelegate(SoapClient.__doRequest));
 			desc.AddMethod("__getFunctions", PhpMemberAttributes.Public, new RoutineDelegate(SoapClient.__getFunctions));

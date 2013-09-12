@@ -155,6 +155,7 @@ namespace PHP.Library.Zlib
 		        PhpException.Throw(PhpError.Warning, String.Format("compression level ({0}) must be within -1..9", level));
 		        return null;
 	        }
+            if (data == null) data = PhpBytes.Empty;
 
             int length_bound = data.Length + (data.Length / PHP_ZLIB_MODIFIER) + 15 + 1;
 

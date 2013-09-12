@@ -68,6 +68,12 @@
     <Compile Include="CustomExceptions.cs" />
     <Compile Include="DynamicWebServiceProxy.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="SoapServer.cs" />
+    <Compile Include="SoapServer.dynamic.cs" />
+    <Compile Include="SoapServerProtocolFactoryExtended.cs" />
+    <Compile Include="WebServiceExtended.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

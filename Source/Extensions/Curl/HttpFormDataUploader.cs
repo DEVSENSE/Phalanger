@@ -7,6 +7,7 @@ using System.Net;
 using System.IO;
 using System.Threading;
 using System.Security;
+using Convert = PHP.Core.Convert;
 
 namespace PHP.Library.Curl
 {
@@ -113,7 +114,7 @@ namespace PHP.Library.Curl
         {
             //currentData.Type = FormType.FORM_CONTENT;
 
-            PhpBytes bytes = PhpVariable.AsBytes(data);
+            PhpBytes bytes = Convert.ObjectToPhpBytes(data);
             currentData.Data = bytes.ReadonlyData;
 
             NextDataIsFooter();

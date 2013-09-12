@@ -2,16 +2,20 @@
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
-﻿using System.Security.Cryptography.X509Certificates;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Web;
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
+using System.Web.Services.Protocols;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -36,6 +40,7 @@ namespace PHP.Library.Soap
         private ArrayList outParams = new ArrayList();
         private ServiceCache serviceCache;
         private readonly X509Certificate2 certificate;
+        private SoapVersion version;
 
         /// <summary>
         /// Creates a new <see cref="DynamicWebServiceProxy"/> instance.
@@ -44,12 +49,16 @@ namespace PHP.Library.Soap
         /// <param name="enableMessageAccess">Enables access to SOAP messages</param>
         /// <param name="wsdlCache">Type of caching to be used</param>
         /// <param name="certificate">Certificate to use.</param>
-        internal DynamicWebServiceProxy(string wsdlLocation, bool enableMessageAccess = false, WsdlCache wsdlCache = WsdlCache.Both, X509Certificate2 certificate = null)
+        /// <param name="version"></param>
+        internal DynamicWebServiceProxy(string wsdlLocation, bool enableMessageAccess = false, WsdlCache wsdlCache = WsdlCache.Both, X509Certificate2 certificate = null, SoapVersion version = SoapVersion.SOAP_1_1)
         {
             this.wsdl = wsdlLocation;
             this.enableMessageAccess = enableMessageAccess;
             this.serviceCache = new ServiceCache(wsdlLocation, wsdlCache, new ServiceCache.CacheMissEvent(BuildAssemblyFromWsdl));
             this.certificate = certificate;
+            this.version = version;
+            if (this.version == SoapVersion.SOAP_1_2)
+                protocolName = "Soap12";
             BuildProxy();
         }
 
@@ -60,7 +69,7 @@ namespace PHP.Library.Soap
         public object InvokeCall(string methodName ,PhpArray parameters)
         {
             var soapProxy = (SoapHttpClientProtocolExtended)proxyInstance;
-            MethodInfo mi = soapProxy.GetType().GetMethod(methodName);
+            var mi = WsdlHelper.GetMethodBySoapName(methodName, soapProxy.GetType());
 
             bool wrappedArgs = true;
 
@@ -79,13 +88,14 @@ namespace PHP.Library.Soap
             object[] transformedParameters = paramBinder.BindParams(mi, parameters, wrappedArgs);
 
 
-            object[] resArray = soapProxy.Invoke(methodName, transformedParameters);
+            object[] resArray = soapProxy.Invoke(mi.Name, transformedParameters);
 
             if (resArray[0] != null)
             {
+                var returnName = WsdlHelper.GetParameterSoapName(mi.ReturnParameter);
                 resArray[0] = ResultBinder.BindResult( 
                     resArray[0],
-                    mi.Name,
+                    returnName,
                     wrappedArgs);
             }
 
@@ -100,6 +110,7 @@ namespace PHP.Library.Soap
                 
             return resArray[0];
         }
+
 
         #region Async invoke (not supported now)
 
@@ -225,6 +236,8 @@ namespace PHP.Library.Soap
                         return Protocol.HttpPost;
                     case "Soap":
                         return Protocol.HttpSoap;
+                    case "Soap12":
+                        return Protocol.HttpSoap12;
                     default:
                         return Protocol.HttpSoap;
                 }
@@ -241,6 +254,9 @@ namespace PHP.Library.Soap
                         break;
                     case Protocol.HttpSoap:
                         protocolName = "Soap";
+                        break;
+                    case Protocol.HttpSoap12:
+                        protocolName = "Soap12";
                         break;
                 }
             }
@@ -279,7 +295,9 @@ namespace PHP.Library.Soap
 
             // WSDL service description importer 
             CodeNamespace cns = new CodeNamespace(CodeConstants.CODENAMESPACE);
+            CodeNamespace cnsServer = new CodeNamespace(CodeConstants.CODENAMESPACESERVER);//TODO: may be split assembly or merge namespaces
             sdi = new ServiceDescriptionImporter();
+            sdi.CodeGenerationOptions = CodeGenerationOptions.None;
             //sdi.AddServiceDescription(sd, null, null);
 
             // check for optional imports in the root WSDL
@@ -287,10 +305,15 @@ namespace PHP.Library.Soap
 
             sdi.ProtocolName = protocolName;
             sdi.Import(cns, null);
+            sdi = new ServiceDescriptionImporter();
+            CheckForImports(absoluteWsdlLocation);
+            sdi.Style = ServiceDescriptionImportStyle.Server;
+            sdi.Import(cnsServer, null);
 
             // change the base class
             // get all available Service classes - not only the default one
             ArrayList newCtr = new ArrayList();
+            Dictionary<string, CodeStatementCollection> bodies = new Dictionary<string, CodeStatementCollection>();
 
             foreach (CodeTypeDeclaration ctDecl in cns.Types)
             {
@@ -307,8 +330,58 @@ namespace PHP.Library.Soap
             {
                 cns.Types.Remove(ctDecl);
                 ctDecl.BaseTypes[0] = new CodeTypeReference(CodeConstants.CUSTOMBASETYPE);
+                /*BinaryFormatter formatter = new BinaryFormatter();
+                var ms = new MemoryStream();
+                formatter.Serialize(ms, ctDecl);
+                ms.Position = 0;
+                var ctDecl1 = (CodeTypeDeclaration)formatter.Deserialize(ms);
+                ctDecl1.Name += "Server";
+                ctDecl1.BaseTypes[0] = new CodeTypeReference(CodeConstants.CUSTOMSERVERBASETYPE);
+                var constructors = ctDecl1.Members.OfType<CodeConstructor>().ToArray();
+                foreach (var codeConstructor in constructors)
+                {
+                    ctDecl1.Members.Remove(codeConstructor);
+                }
+                cns.Types.Add(ctDecl1);*/
+                foreach (var member in ctDecl.Members.OfType<CodeMemberMethod>())
+                {
+                    bodies[member.Name] = member.Statements;
+                }
                 cns.Types.Add(ctDecl);
             }
+
+            newCtr.Clear();
+            foreach (CodeTypeDeclaration ctDecl in cnsServer.Types)
+            {
+                if (ctDecl.BaseTypes.Count > 0)
+                {
+                    if (ctDecl.BaseTypes[0].BaseType == CodeConstants.DEFAULTSERVERBASETYPE)
+                    {
+                        newCtr.Add(ctDecl);
+                    }
+                }
+            }
+            foreach (CodeTypeDeclaration ctDecl in newCtr)
+            {
+                cnsServer.Types.Remove(ctDecl);
+                ctDecl.BaseTypes[0] = new CodeTypeReference(CodeConstants.CUSTOMSERVERBASETYPE);
+                ctDecl.TypeAttributes = ctDecl.TypeAttributes ^ TypeAttributes.Abstract;
+                foreach (var member in ctDecl.Members.OfType<CodeMemberMethod>().Where(a=>(a.Attributes&MemberAttributes.ScopeMask)==MemberAttributes.Abstract).ToArray())
+                {
+                    ctDecl.Members.Remove(member);
+                    member.Attributes = member.Attributes ^ MemberAttributes.Abstract;
+                    /*var invokeExpression = new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "Invoke",
+                        member.Parameters.OfType<CodeParameterDeclarationExpression>()
+                            .Where(a => a.Direction == FieldDirection.In)
+                            .Select(a => (CodeExpression) new CodeArgumentReferenceExpression(a.Name))
+                            .ToArray());
+                    member.Statements.Add(new CodeMethodReturnStatement(invokeExpression));*/
+                    member.Statements.AddRange(bodies[member.Name]);
+                    ctDecl.Members.Add(member);
+                }
+                cnsServer.Types.Add(ctDecl);
+            }
+            
 
             // source code generation
             CSharpCodeProvider cscp = new CSharpCodeProvider();
@@ -332,8 +405,10 @@ namespace PHP.Library.Soap
                     }
                 }
             }
-
-            cscp.GenerateCodeFromNamespace(cns, sw, null);
+            var unit = new CodeCompileUnit();
+            unit.Namespaces.Add(cns);
+            unit.Namespaces.Add(cnsServer);
+            cscp.GenerateCodeFromCompileUnit(unit, sw, null);
             proxySource = srcStringBuilder.ToString();
             sw.Close();
 
@@ -402,7 +477,7 @@ namespace PHP.Library.Soap
         /// </summary>
         private void ResetInternalState()
         {
-            protocolName = "Soap";
+            protocolName = version == SoapVersion.SOAP_1_2 ? "Soap12" : "Soap";
             sdi = null;
         }
 

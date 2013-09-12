@@ -959,10 +959,10 @@ namespace PHP.Library.Curl
                     /*
                         * Enable peer SSL verifying.
                         */
-
+#if !NET45
                     if (((bool)value) == false)
                         PhpException.ArgumentValueNotSupported("value", false);
-
+#endif
                     ssl.VerifyPeer = (bool)value;
                     break;
 
@@ -972,9 +972,10 @@ namespace PHP.Library.Curl
                      * Enable verification of the CN contained in the peer certificate
                      */
 
+#if !NET45
                     if (((int)value) != 2)
                         PhpException.ArgumentValueNotSupported("value", (int)value);
-
+#endif
                     ssl.VerifyHost = (int)value;
                     break;
 
@@ -1098,6 +1099,10 @@ namespace PHP.Library.Curl
                     curl_httppost = value as CurlForm;
                     httpreq = Curl_HttpReq.POST_FORM;
                     opt_no_body = false; /* this is implied */
+                    break;
+                  case CurlOption.CURLOPT_NOSIGNAL:
+                  case CurlOption.CURLOPT_SSLVERSION:
+                    // this options can be safely ignored
                     break;
 
                 #region UNSUPPORTED OPTIONS

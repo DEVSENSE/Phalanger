@@ -44,6 +44,15 @@ namespace PHP.Library.Soap
     {
         HttpGet,
         HttpPost,
-        HttpSoap
+        HttpSoap,
+        HttpSoap12
+    }
+
+    public enum SoapVersion
+    {
+        [ImplementsConstant("SOAP_1_1")]
+        SOAP_1_1 = 1,
+        [ImplementsConstant("SOAP_1_2")]
+        SOAP_1_2 = 2
     }
 }

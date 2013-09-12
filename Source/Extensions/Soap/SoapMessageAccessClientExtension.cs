@@ -198,7 +198,12 @@ namespace PHP.Library.Soap
                 // Set large fields to null
                 if (oldStream != null)
                 {
-                    oldStream.Close();
+                    try
+                    {
+                        oldStream.Close();
+                    }
+                    catch(InvalidOperationException)
+                    {}
                     oldStream = null;
                 }
 

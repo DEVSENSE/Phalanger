@@ -6,6 +6,7 @@ using PHP.Core;
 using System.Collections;
 using System.Reflection;
 using PHP.Core.Reflection;
+using Convert = PHP.Core.Convert;
 
 namespace PHP.Library.Soap
 {
@@ -118,6 +119,8 @@ namespace PHP.Library.Soap
             // unwrap Nullable<>
             if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))
                 targetType = targetType.GetGenericArguments()[0];
+            if (targetType.IsByRef)
+                targetType = targetType.GetElementType();
 
             switch (Type.GetTypeCode(graph.GetType()))
             {
@@ -218,6 +221,9 @@ namespace PHP.Library.Soap
             if (targetType.IsValueType)
                 lastPrimitive = true;
 
+            if (targetType == typeof (string))
+                obj = Encoding.UTF8.GetString(Convert.ObjectToPhpBytes(obj).ReadonlyData);
+
             return PHP.Core.ConvertToClr.ObjectToType(obj, targetType);
         }
 
@@ -273,7 +279,7 @@ namespace PHP.Library.Soap
         private object BindArray(PhpArray array, Type targetType)
         {
             if (targetType.IsArray)
-                return BindArrayToArray(array, targetType);
+                return BindArrayToArray((PhpArray) array["item"], targetType);
             else
                 return BindArrayToObject(array, targetType);
         }
@@ -355,5 +361,41 @@ namespace PHP.Library.Soap
 
 
         #endregion
+
+        public object[] BindServerResult(MethodInfo mi, PhpArray result, bool wrappedArgs)
+        {
+            var resultParams = new List<object>();
+            var parameterInfos = new List<ParameterInfo>();
+            parameterInfos.Add(mi.ReturnParameter);
+            parameterInfos.AddRange(mi.GetParameters().Where(a=>a.IsOut));
+            object value;
+
+
+            if (!wrappedArgs)
+            {
+                //TODO: make sure: When arguments are not wrapped soap method parameter is only one
+                Debug.Assert(parameterInfos.Count == 1);
+
+                resultParams.Add(Bind(result, parameterInfos[0].ParameterType));
+
+            }
+            else
+            {
+                foreach (var pi in parameterInfos)
+                {
+                    if (SetSpecifiedParameter(resultParams, pi))
+                        continue;
+                    var name = WsdlHelper.GetParameterSoapName(pi);
+                    if (result.TryGetValue(name, out value))
+                    {
+                        resultParams.Add(Bind(value, pi.ParameterType));
+                    }
+                }
+            }
+
+            lastPrimitive = false;
+
+            return resultParams.ToArray();
+        }
     }
 }

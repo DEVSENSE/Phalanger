@@ -708,6 +708,9 @@ namespace PHP.Library
 		{
             StreamWrapper wrapper;
 
+		    if (path.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
+		        return false;
+
             if (StatInternalCheck(ref path, false, out wrapper))
             {
                 string url;
