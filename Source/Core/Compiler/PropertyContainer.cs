@@ -6,6 +6,14 @@ using System.Text;
 
 namespace PHP.Core
 {
+    public interface IPropertyOwner
+    {
+        void SetProperty<T>(T value);
+        T GetProperty<T>();
+        bool RemoveProperty<T>();
+        void ClearProperties();
+    }
+
     /// <summary>
     /// Manages list of properties, organized by their <see cref="System.Type"/>.
     /// </summary>
@@ -22,6 +30,11 @@ namespace PHP.Core
         /// type of this object depends on amount of properties in the set.
         /// </remarks>
         private object obj;
+
+        /// <summary>
+        /// If amount of properties exceeds this number, Dictionary should be used instead of array or list.
+        /// </summary>
+        private const int MinDictSize = 9;
 
         #endregion
 
@@ -49,14 +62,14 @@ namespace PHP.Core
             //
             object p = this.obj;
 
-            // empty list or one-item list
+            // empty container or one-item container
             if (p == null || p.GetType() == typeof(T))
             {
                 this.obj = value;
                 return;
             }
 
-            // 8-items list
+            // few items container
             if (p.GetType() == typeof(object[]))
             {
                 if (SetProperty<T>((object[])p, value))
@@ -65,18 +78,19 @@ namespace PHP.Core
                 }
                 else
                 {
-                    this.obj = ToDictionary((object[])p);
+                    this.obj = p = ToDictionary((object[])p);
+                    // continue to add {value} to dictionary
                 }
             }
-            // multiple items
+            // many items container
             if (p.GetType() == typeof(Dictionary<Type, object>))
             {
                 ((Dictionary<Type, object>)p)[typeof(T)] = (object)value;
                 return;
             }
 
-            // upgrade one-list to array
-            this.obj = ToArray(value);
+            // upgrade one-item container to array
+            this.obj = ToArray((object)value, this.obj);
         }
 
         /// <summary>
@@ -88,21 +102,28 @@ namespace PHP.Core
         {
             object p = this.obj;
             
-            // empty list
-            if (p == null)
-                return default(T);
+            // empty container
+            if (p != null)
+            {
+                // one-item container
+                if (p.GetType() == typeof(T))
+                    return (T)p;
 
-            // one-item list
-            if (p.GetType() == typeof(T))
-                return (T)p;
+                // few items container
+                if (p.GetType() == typeof(object[]))
+                    return GetProperty<T>((object[])p);
 
-            // 8-items list
-            if (p.GetType() == typeof(object[]))
-                return GetProperty<T>((object[])p);
-            
-            // multiple items
-            Debug.Assert(p is Dictionary<Type, object>);
-            return (T)((Dictionary<Type, object>)p)[typeof(T)];
+                // many items container
+                if (p.GetType() == typeof(Dictionary<Type, object>))
+                {
+                    object obj;
+                    if (((Dictionary<Type, object>)p).TryGetValue(typeof(T), out obj))
+                        return (T)obj;
+                }
+            }
+
+            // nothing found
+            return default(T);
         }
 
         /// <summary>
@@ -114,33 +135,88 @@ namespace PHP.Core
         {
             var p = this.obj;
 
+            // empty container
             if (p == null)
                 return false;
 
+            // single item container
             if (p.GetType() == typeof(T))
             {
                 this.obj = null;
                 return true;
             }
 
+            // container of few items
             if (p.GetType() == typeof(object[]))
             {
-                var arr = (object[])p;
-                for (int i = 0; i < arr.Length; i++)
-                    if (arr[i] != null && arr[i].GetType() == typeof(T))
-                    {
-                        arr[i] = null;
-                        return true;
-                    }
+                // count items,
+                // find item of type T
 
-                return false;
+                var arr = (object[])p;  // array of items
+                int count = 0;          // amount of items left in array
+                object lastp = null;    // reference to last/some item left in array
+                int index = -1;         // index of item of type T (if any)
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    var arrp = arr[i];
+                    if (arrp != null)
+                    {
+                        if (arrp.GetType() == typeof(T))
+                        {
+                            index = i;
+                        }
+                        else
+                        {
+                            lastp = arrp;
+                            count++;
+                        }
+                    }
+                }
+
+                if (index >= 0)
+                {
+                    // item found
+                    if (count <= 1)
+                    {
+                        // only one or none items left
+                        // downgrade to single-item container
+                        this.obj = lastp;
+                    }
+                    else
+                    {
+                        // remove the item from the array
+                        arr[index] = null;
+                    }
+                    
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
 
+            // container of many items
             if (p.GetType() == typeof(Dictionary<Type, object>))
             {
-                return ((Dictionary<Type, object>)p).Remove(typeof(T));
+                var dict = (Dictionary<Type, object>)p;
+                if (dict.Remove(typeof(T)))
+                {
+                    if (dict.Count < MinDictSize)
+                    {
+                        // dowgrade to object[]
+                        this.obj = dict.Values.ToArray();
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
 
+            // nothing found
             return false;
         }
 
@@ -176,7 +252,7 @@ namespace PHP.Core
         {
             Debug.Assert(values != null);
 
-            var dict = new Dictionary<Type, object>(values.Length + 1);
+            var dict = new Dictionary<Type, object>(MinDictSize);
             object obj;
             for (int i = 0; i < values.Length; i++)
             {
@@ -187,10 +263,13 @@ namespace PHP.Core
             return dict;
         }
 
-        private static object[] ToArray(object value)
+        private static object[] ToArray(object value1, object value2)
         {
-            var arr = new object[8];
-            arr[0] = value;
+            Debug.Assert(MinDictSize >= 2);
+
+            var arr = new object[MinDictSize - 1];
+            arr[0] = value1;
+            arr[1] = value2;
             return arr;
         }
 

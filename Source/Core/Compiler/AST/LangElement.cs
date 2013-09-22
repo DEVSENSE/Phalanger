@@ -21,12 +21,52 @@ namespace PHP.Core.AST
     /// <summary>
     /// Base class for all AST nodes.
     /// </summary>
-    public abstract class AstNode
-	{
+    public abstract class AstNode : IPropertyOwner
+    {
+        #region Fields
+
         /// <summary>
         /// Contains properties of this <see cref="AstNode"/>.
         /// </summary>
-        public readonly PropertyContainer NodeProperties;
+        private readonly PropertyContainer properties;
+
+        #endregion
+
+        #region IPropertyOwner
+
+        /// <summary>
+        /// Sets property.
+        /// </summary>
+        public void SetProperty<T>(T value)
+        {
+            this.properties.SetProperty<T>(value);
+        }
+
+        /// <summary>
+        /// Gets property.
+        /// </summary>
+        public T GetProperty<T>()
+        {
+            return this.properties.GetProperty<T>();
+        }
+
+        /// <summary>
+        /// Removes property.
+        /// </summary>
+        public bool RemoveProperty<T>()
+        {
+            return this.properties.Remove<T>();
+        }
+
+        /// <summary>
+        /// Clears properties.
+        /// </summary>
+        public void ClearProperties()
+        {
+            this.properties.Clear();
+        }
+
+        #endregion
     }
 
     /// <summary>
