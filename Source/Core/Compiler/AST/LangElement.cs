@@ -13,22 +13,21 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using PHP.Core.Parsers;
 using PHP.Core.AST;
+using PHP.Core;
 using System;
 
 namespace PHP.Core.AST
 {
-    #region AstNode
-
-    //public enum NodeIds
-    //{
-    //}
-
-	public abstract class AstNode
+    /// <summary>
+    /// Base class for all AST nodes.
+    /// </summary>
+    public abstract class AstNode
 	{
-		// public abstract NodeIds NodeId { get; }
+        /// <summary>
+        /// Contains properties of this <see cref="AstNode"/>.
+        /// </summary>
+        public readonly PropertyContainer NodeProperties;
     }
-
-    #endregion
 
     /// <summary>
 	/// Base class for all AST nodes representing PHP language Elements - statements and expressions.
@@ -38,29 +37,22 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Position of element in source file.
 		/// </summary>
-        public Position Position
-        {
-            get
-            {
-                return position;
-            }
-        }
-		protected Position position;
+        public Position Position { get; protected set; }
 		
 		/// <summary>
         /// Initialize the LangElement.
         /// </summary>
-        /// <param name="p">The position of the LangElement in the source code.</param>
-		protected LangElement(Position p)
+        /// <param name="position">The position of the LangElement in the source code.</param>
+		protected LangElement(Position position)
 		{
-			position = p;
+			this.Position = position;
 		}
 
         /// <summary>
         /// In derived classes, calls Visit* on the given visitor object.
         /// </summary>
         /// <param name="visitor">Visitor.</param>
-        public abstract void VisitMe(TreeVisitor/*!*/ visitor);
+        public abstract void VisitMe(TreeVisitor/*!*/visitor);
 	}
 
     /// <summary>
@@ -73,5 +65,4 @@ namespace PHP.Core.AST
         /// </summary>
         PHPDocBlock PHPDoc { get; set; }
     }
-
 }

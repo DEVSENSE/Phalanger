@@ -47,7 +47,7 @@ namespace PHP.Core.AST
 		{
 			if (analyzer.IsThisCodeUnreachable())
 			{
-				analyzer.ReportUnreachableCode(position);
+                analyzer.ReportUnreachableCode(this.Position);
 				return EmptyStmt.Unreachable;
 			}
 
@@ -266,7 +266,7 @@ namespace PHP.Core.AST
 			analyzer.LeaveConditionalCode();
 		}
 
-		internal abstract void MarkSequencePoint(CodeGenerator/*!*/ codeGenerator);
+        internal abstract void MarkSequencePoint(CodeGenerator/*!*/codeGenerator);
 
 		internal virtual void EmitStatements(CodeGenerator/*!*/ codeGenerator)
 		{
@@ -298,7 +298,7 @@ namespace PHP.Core.AST
 			caseVal = caseVal.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
 
 			if (caseVal.HasValue)
-				analyzer.AddConstCaseToCurrentSwitch(caseVal.Value, position);
+                analyzer.AddConstCaseToCurrentSwitch(caseVal.Value, this.Position);
 
 			base.Analyze(analyzer);
 		}
@@ -308,11 +308,7 @@ namespace PHP.Core.AST
 		/// </summary>
 		internal override void MarkSequencePoint(CodeGenerator codeGenerator)
 		{
-			codeGenerator.MarkSequencePoint(
-			  position.FirstLine,
-			  position.FirstColumn,
-			  caseVal.Position.LastLine,
-			  caseVal.Position.LastColumn + 1);
+			codeGenerator.MarkSequencePoint(this.Position);
 		}
 
 		internal PhpTypeCode EmitCaseValue(CodeGenerator codeGenerator)
@@ -347,21 +343,14 @@ namespace PHP.Core.AST
 
 		internal override void Analyze(Analyzer analyzer)
 		{
-			analyzer.AddDefaultToCurrentSwitch(position);
+            analyzer.AddDefaultToCurrentSwitch(this.Position);
 			base.Analyze(analyzer);
 		}
 
-		/// <summary>
-		/// Marks a sequence point "default".
-		/// </summary>
-		internal override void MarkSequencePoint(CodeGenerator/*!*/ codeGenerator)
-		{
-			codeGenerator.MarkSequencePoint(
-			  position.FirstLine,
-			  position.FirstColumn,
-			  position.LastLine,
-			  position.LastColumn + 1);
-		}
+        internal override void MarkSequencePoint(CodeGenerator codeGenerator)
+        {
+            codeGenerator.MarkSequencePoint(this.Position);
+        }
 
 		internal override void EmitStatements(CodeGenerator/*!*/ codeGenerator)
 		{
@@ -376,7 +365,7 @@ namespace PHP.Core.AST
         {
             visitor.VisitDefaultItem(this);
         }
-	}
+    }
 
 	#endregion
 }

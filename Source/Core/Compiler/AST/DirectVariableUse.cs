@@ -65,7 +65,7 @@ namespace PHP.Core.AST
 				// report misuse of $this if we are sure about it, that is in a static routine:
 				if (analyzer.CurrentRoutine != null && analyzer.CurrentRoutine.IsStatic)
 				{
-					analyzer.ErrorSink.Add(Warnings.ThisOutOfMethod, analyzer.SourceUnit, position);
+                    analyzer.ErrorSink.Add(Warnings.ThisOutOfMethod, analyzer.SourceUnit, this.Position);
 				}
 
 				if (!(info.Parent is VarLikeConstructUse) // $this->a = 1; is ok, but $this has write AT
@@ -74,7 +74,7 @@ namespace PHP.Core.AST
 								|| access == AccessType.ReadRef
 								|| access == AccessType.ReadUnknown))
 				{
-					analyzer.ErrorSink.Add(Warnings.ThisInWriteContext, analyzer.SourceUnit, position);
+                    analyzer.ErrorSink.Add(Warnings.ThisInWriteContext, analyzer.SourceUnit, this.Position);
 				}
 			}
 
@@ -85,7 +85,7 @@ namespace PHP.Core.AST
 					Debug.Assert(analyzer.SourceUnit.CompilationUnit.IsPure);
 				
 					// variables used in global context when we do not have global variable table:
-					analyzer.ErrorSink.Add(Errors.GlobalCodeInPureUnit, analyzer.SourceUnit, position);
+                    analyzer.ErrorSink.Add(Errors.GlobalCodeInPureUnit, analyzer.SourceUnit, this.Position);
 				}
 				else
 					analyzer.CurrentVarTable.Set(varName, var_shall_be_ref);

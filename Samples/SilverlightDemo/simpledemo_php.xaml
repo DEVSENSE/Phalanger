@@ -1,8 +1,0 @@
-﻿<Canvas
-    xmlns="http://schemas.microsoft.com/client/2007" 
-    xmlns:php="clr-namespace:PHP.Silverlight;assembly=ClientBin/PhpNetCore.dll"
-    Width="800"
-    Height="600"
-    Background="White">
-  <php:PhalangerLoader Source="simpledemo_php.phpx" />
-</Canvas>

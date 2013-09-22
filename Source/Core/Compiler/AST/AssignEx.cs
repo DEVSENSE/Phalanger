@@ -585,7 +585,7 @@ namespace PHP.Core.AST
             if (rvalue is NewEx)
             {
                 //PhpException.Throw(PhpError.Deprecated, CoreResources.GetString("assign_new_as_ref_is_deprecated"));
-                analyzer.ErrorSink.Add(Warnings.AssignNewByRefDeprecated, analyzer.SourceUnit, position);
+                analyzer.ErrorSink.Add(Warnings.AssignNewByRefDeprecated, analyzer.SourceUnit, this.Position);
             }
 
             return new Evaluation(this);

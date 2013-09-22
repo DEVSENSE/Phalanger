@@ -274,7 +274,7 @@ namespace PHP.Core.AST
 			ExInfoFromParent info = new ExInfoFromParent(this);
 			info.Access = AccessType.Write;
 
-			resolvedType = analyzer.ResolveTypeName(className, analyzer.CurrentType, analyzer.CurrentRoutine, position, false);
+            resolvedType = analyzer.ResolveTypeName(className, analyzer.CurrentType, analyzer.CurrentRoutine, this.Position, false);
 
 			variable.Analyze(analyzer, info);
 
@@ -395,12 +395,7 @@ namespace PHP.Core.AST
 
 		internal override void Emit(CodeGenerator/*!*/ codeGenerator)
 		{
-			codeGenerator.MarkSequencePoint(
-				position.FirstLine,
-				position.FirstColumn,
-				position.LastLine,
-				position.LastColumn + 1
-			);
+			codeGenerator.MarkSequencePoint(this.Position);
 
 			// CALL Operators.Throw(<context>, <expression>);
 			codeGenerator.EmitLoadScriptContext();

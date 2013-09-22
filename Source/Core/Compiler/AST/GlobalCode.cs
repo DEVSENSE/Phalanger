@@ -285,7 +285,7 @@ namespace PHP.Core.AST
         /// <param name="p"></param>
         public void UpdatePosition(Position p)
         {
-            this.position = p;
+            this.Position = p;
         }
 
 		#endregion
@@ -361,7 +361,7 @@ namespace PHP.Core.AST
 
 			if (is_unreachable)
 			{
-				analyzer.ReportUnreachableCode(position);
+                analyzer.ReportUnreachableCode(this.Position);
 				return EmptyStmt.Unreachable;
 			}
 			else
