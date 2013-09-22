@@ -175,7 +175,11 @@ namespace PHP.Core.AST
         /// <summary>
         /// Results of <see cref="Analyze"/> method call.
         /// </summary>
-        private AnalysisResult/*!A*/analysis;
+        private AnalysisResult/*!A*/Analysis
+        {
+            get { return this.GetProperty<AnalysisResult>(); }
+            set { this.SetProperty<AnalysisResult>(value); }
+        }
 
         /// <summary>
         /// Gets type of <see cref="VarLikeConstructUse.IsMemberOf"/> expression if can be resolved.
@@ -219,8 +223,8 @@ namespace PHP.Core.AST
 		{
             base.Analyze(analyzer, info);
 
-            Debug.Assert(analysis == null);
-            analysis = new AnalysisResult();
+            Debug.Assert(this.Analysis == null);
+            this.Analysis = new AnalysisResult();
 
             if (isMemberOf == null)
             {
@@ -247,9 +251,10 @@ namespace PHP.Core.AST
         private Evaluation AnalyzeFunctionCall(Analyzer/*!*/ analyzer, ref ExInfoFromParent info)
         {
             Debug.Assert(isMemberOf == null);
-            Debug.Assert(analysis != null);
-
+            
             // resolve name:
+            var/*!*/analysis = this.Analysis;
+            Debug.Assert(analysis != null);
 
             analysis.routine = analyzer.ResolveFunctionName(qualifiedName, this.Position);
 
@@ -304,12 +309,12 @@ namespace PHP.Core.AST
 
         private bool AnalyzeMethodCallOnKnownType(Analyzer/*!*/ analyzer, ref ExInfoFromParent info, DType type)
         {
-            Debug.Assert(analysis != null);
-
             if (type == null || type.IsUnknown)
                 return false;
 
             bool runtimeVisibilityCheck, isCallMethod;
+            var/*!*/analysis = this.Analysis;
+            Debug.Assert(analysis != null);
 
             analysis.routine = analyzer.ResolveMethod(
                 type, qualifiedName.Name,
@@ -362,6 +367,8 @@ namespace PHP.Core.AST
         private Evaluation AnalyzeMethodCall(Analyzer/*!*/ analyzer, ref ExInfoFromParent info)
         {
             Debug.Assert(isMemberOf != null);
+            
+            var/*!*/analysis = this.Analysis;
             Debug.Assert(analysis != null);
 
             // resolve routine if IsMemberOf is resolved statically:
@@ -394,6 +401,8 @@ namespace PHP.Core.AST
         /// <remarks>Some well-known constructs can be modified to be analyzed and emitted better.</remarks>
         private void AnalyzeSpecial(Analyzer/*!*/ analyzer)
         {
+            var/*!*/analysis = this.Analysis;
+
             if (analysis.routine is PhpLibraryFunction)
             {
                 // basename(__FILE__, ...) -> basename("actual_file", ...)  // SourceRoot can be ignored in this case
@@ -418,6 +427,7 @@ namespace PHP.Core.AST
 		/// </returns>
 		private bool TryEvaluate(Analyzer/*!*/ analyzer, out object value)
 		{
+            var/*!*/analysis = this.Analysis;
             Debug.Assert(analysis != null);
 
             // special cases, allow some AST transformation:
@@ -829,8 +839,7 @@ namespace PHP.Core.AST
         /// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
 		internal override PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator)
 		{
-            Debug.Assert(analysis != null);
-			Debug.Assert(
+            Debug.Assert(
                 access == AccessType.Read ||
                 access == AccessType.ReadRef ||
                 access == AccessType.ReadUnknown ||
@@ -840,7 +849,9 @@ namespace PHP.Core.AST
 			Statistics.AST.AddNode("FunctionCall.Direct");
 
 			PhpTypeCode result;
-
+            var/*!*/analysis = this.Analysis;
+            Debug.Assert(analysis != null);
+			
             if (analysis.inlined != InlinedFunction.None)
 			{
 				result = EmitInlinedFunctionCall(codeGenerator);
@@ -940,6 +951,7 @@ namespace PHP.Core.AST
 		/// </summary>
 		private PhpTypeCode EmitInlinedFunctionCall(CodeGenerator/*!*/ codeGenerator)
 		{
+            var/*!*/analysis = this.Analysis;
             Debug.Assert(analysis != null);
 
             switch (analysis.inlined)

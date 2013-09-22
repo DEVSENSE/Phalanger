@@ -17,7 +17,7 @@ namespace PHP.Core
     /// <summary>
     /// Manages list of properties, organized by their <see cref="System.Type"/>.
     /// </summary>
-    public struct PropertyContainer
+    public struct PropertyContainer : IPropertyOwner
     {
         #region Fields
 
@@ -302,6 +302,30 @@ namespace PHP.Core
             }
 
             return default(T);
+        }
+
+        #endregion
+
+        #region IPropertyOwner
+
+        void IPropertyOwner.SetProperty<T>(T value)
+        {
+            this.SetProperty<T>(value);
+        }
+
+        T IPropertyOwner.GetProperty<T>()
+        {
+            return this.GetProperty<T>();
+        }
+
+        bool IPropertyOwner.RemoveProperty<T>()
+        {
+            return this.Remove<T>();
+        }
+
+        void IPropertyOwner.ClearProperties()
+        {
+            this.Clear();
         }
 
         #endregion
