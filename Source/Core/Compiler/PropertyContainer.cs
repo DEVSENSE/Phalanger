@@ -27,13 +27,24 @@ namespace PHP.Core
 
         #region Public methods
 
+        /// <summary>
+        /// Sets property into the container.
+        /// </summary>
+        /// <typeparam name="T">Type of the value.</typeparam>
+        /// <param name="value">Value.</param>
         public void SetProperty<T>(T value)
         {
             if (value == null)
                 throw new ArgumentNullException("value");
 
             if (value.GetType() != typeof(T))
-                throw new ArgumentException(); 
+                throw new ArgumentException();
+
+            if (typeof(T) == typeof(object[]))
+                throw new ArgumentException();
+
+            if (typeof(T) == typeof(Dictionary<Type, object>))
+                throw new ArgumentException();
             
             //
             object p = this.obj;
@@ -68,6 +79,11 @@ namespace PHP.Core
             this.obj = ToArray(value);
         }
 
+        /// <summary>
+        /// Tries to get property from the container.
+        /// </summary>
+        /// <typeparam name="T">Type of the property to get.</typeparam>
+        /// <returns><c>null</c> or property value.</returns>
         public T GetProperty<T>()
         {
             object p = this.obj;
@@ -89,6 +105,11 @@ namespace PHP.Core
             return (T)((Dictionary<Type, object>)p)[typeof(T)];
         }
 
+        /// <summary>
+        /// Removes property from the container.
+        /// </summary>
+        /// <typeparam name="T">Type of the property to remove.</typeparam>
+        /// <returns><c>True</c> if property was found and removed. otherwise <c>false</c>.</returns>
         public bool Remove<T>()
         {
             var p = this.obj;
@@ -117,17 +138,23 @@ namespace PHP.Core
 
             if (p.GetType() == typeof(Dictionary<Type, object>))
             {
-                ((Dictionary<Type, object>)p).Remove(typeof(T));
+                return ((Dictionary<Type, object>)p).Remove(typeof(T));
             }
 
             return false;
         }
 
+        /// <summary>
+        /// Clears the container.
+        /// </summary>
         public void Clear()
         {
             this.obj = null;
         }
 
+        /// <summary>
+        /// Gets amount of properties in the container.
+        /// </summary>
         public int Count
         {
             get
@@ -137,7 +164,7 @@ namespace PHP.Core
                 if (p == null) return 0;
                 if (p.GetType() == typeof(object[])) return ((object[])p).Count(x => x != null);
                 if (p.GetType() == typeof(Dictionary<Type, object>)) return ((Dictionary<Type, object>)p).Count;
-                throw new InvalidOperationException();
+                return 1;
             }
         }
 
