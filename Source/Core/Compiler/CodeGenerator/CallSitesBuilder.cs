@@ -208,7 +208,7 @@ namespace PHP.Core.Compiler.CodeGenerator
 
             // define the field:
             // public static readonly CallSite<delegateType> <userFriendlyName>
-            var attrs = FieldAttributes.Static | FieldAttributes.InitOnly | ((staticCtorEmitter == null) ? FieldAttributes.Private : FieldAttributes.Assembly);
+            var attrs = FieldAttributes.Static | FieldAttributes.InitOnly | ((staticCtorEmitter == null) ? FieldAttributes.Private : FieldAttributes.Public);
             var field = this.DefineField(PluginHandler.ConvertCallSiteName(userFriendlyName), callSiteType, attrs);
 
             if (staticCtorEmitter == null) // => this.classContext != null
