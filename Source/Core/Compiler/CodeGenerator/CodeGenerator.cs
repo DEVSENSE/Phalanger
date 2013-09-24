@@ -2982,11 +2982,13 @@ namespace PHP.Core
         internal void MarkSequencePoint(Expression/*!*/expression)
         {
             Debug.Assert(expression != null);
-            MarkSequencePoint(
-                expression.Position.FirstLine,
-                expression.Position.FirstColumn,
-                expression.Position.LastLine,
-                expression.Position.LastColumn + 1);
+            MarkSequencePoint(expression.Position);
+        }
+
+        internal void MarkSequencePoint(Position position)
+        {
+            if (position.IsValid)
+                MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 1);
         }
 
 		internal void MarkTransientSequencePoint()

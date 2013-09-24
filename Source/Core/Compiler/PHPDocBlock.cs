@@ -786,9 +786,13 @@ namespace PHP.Core
             internal override void OnEndParsing()
             {
                 base.OnEndParsing();
-                
-                if (this.Description != null)
+
+                if (string.IsNullOrWhiteSpace(this.Description))
+                    this.Description = null;
+                else
                     this.Description = this.Description.Trim();
+
+                // TODO: compress TypeNames, VariableName, Description
             }
 
             internal override bool IsEmpty
@@ -851,7 +855,10 @@ namespace PHP.Core
             internal override void OnEndParsing()
             {
                 base.OnEndParsing();
-                if (this.Text != null)
+
+                if (string.IsNullOrWhiteSpace(this.Text))
+                    this.Text = string.Empty;
+                else
                     this.Text = this.Text.Trim();
             }
         }
@@ -1302,8 +1309,10 @@ namespace PHP.Core
             internal override void OnEndParsing()
             {
                 base.OnEndParsing();
-                
-                if (this.Description != null)
+
+                if (string.IsNullOrWhiteSpace(this.Description))
+                    this.Description = null;
+                else
                     this.Description = this.Description.Trim();
             }
 

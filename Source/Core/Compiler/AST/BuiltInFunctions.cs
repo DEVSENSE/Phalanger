@@ -422,7 +422,7 @@ namespace PHP.Core.AST
 								return new Evaluation(this, true);
 
 							if (statements.Count > 1)
-								analyzer.ErrorSink.Add(Warnings.MultipleStatementsInAssertion, analyzer.SourceUnit, position);
+                                analyzer.ErrorSink.Add(Warnings.MultipleStatementsInAssertion, analyzer.SourceUnit, this.Position);
 
 							Debug.Assert(statements.Count > 0 && statements[0] is JumpStmt);
 
@@ -497,8 +497,8 @@ namespace PHP.Core.AST
 					il.Emit(OpCodes.Ldstr, inlinedCode);
 					codeGenerator.EmitLoadScriptContext();
 					il.Emit(OpCodes.Ldstr, codeGenerator.SourceUnit.SourceFile.RelativePath.ToString());
-					il.LdcI4(this.position.FirstLine);
-					il.LdcI4(this.position.FirstColumn);
+                    il.LdcI4(this.Position.FirstLine);
+                    il.LdcI4(this.Position.FirstColumn);
 					codeGenerator.EmitLoadNamingContext();
 					il.Emit(OpCodes.Call, Methods.DynamicCode.CheckAssertion);
 
@@ -519,7 +519,7 @@ namespace PHP.Core.AST
 			}
 			else
 			{
-                result = codeGenerator.EmitEval(kind, code, position, currentNamespace, aliases);
+                result = codeGenerator.EmitEval(kind, code, this.Position, currentNamespace, aliases);
 			}
 
 			// handles return value according to the access type:

@@ -126,7 +126,7 @@ namespace PHP.Core.AST
 
 			attributes.AnalyzeMembers(analyzer, referring_scope);
 
-			resolvedTypeHint = analyzer.ResolveType(typeHint, referring_type, routine, position, false);
+            resolvedTypeHint = analyzer.ResolveType(typeHint, referring_type, routine, this.Position, false);
 		}
 
 		internal void Analyze(Analyzer/*!*/ analyzer)
@@ -140,13 +140,13 @@ namespace PHP.Core.AST
 			if (!routine.Builder.LocalVariables.AddParameter(name, passedByRef))
 			{
 				// parameter with the same name specified twice
-				analyzer.ErrorSink.Add(Errors.DuplicateParameterName, analyzer.SourceUnit, position, name);
+                analyzer.ErrorSink.Add(Errors.DuplicateParameterName, analyzer.SourceUnit, this.Position, name);
 			}
 
 			if (isOut && !passedByRef)
 			{
 				// out can be used only on by-ref params:
-				analyzer.ErrorSink.Add(Errors.OutAttributeOnByValueParam, analyzer.SourceUnit, position, name);
+                analyzer.ErrorSink.Add(Errors.OutAttributeOnByValueParam, analyzer.SourceUnit, this.Position, name);
 			}
 		}
 
@@ -421,7 +421,7 @@ namespace PHP.Core.AST
 			function.Declaration.IsUnreachable = analyzer.IsThisCodeUnreachable();
 
 			if (function.Declaration.IsUnreachable)
-				analyzer.ReportUnreachableCode(position);
+                analyzer.ReportUnreachableCode(this.Position);
 
 			analyzer.EnterFunctionDeclaration(function);
 
@@ -449,7 +449,7 @@ namespace PHP.Core.AST
 			else
 			{
 				// add entry point if applicable:
-				analyzer.SetEntryPoint(function, position);
+                analyzer.SetEntryPoint(function, this.Position);
 				return this;
 			}
 		}
@@ -477,7 +477,7 @@ namespace PHP.Core.AST
 			// marks a sequence point if function is declared here (i.e. is m-decl):
             //Note: this sequence point goes to the function where this function is declared not to this declared function!
 			if (!function.IsLambda && function.Declaration.IsConditional)
-				codeGenerator.MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 2);
+                codeGenerator.MarkSequencePoint(this.Position);
 
             // emits attributes on the function itself, its return value, type parameters and regular parameters:
 			attributes.Emit(codeGenerator, this);
@@ -574,7 +574,11 @@ namespace PHP.Core.AST
         /// <summary>
         /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
         /// </summary>
-        public PHPDocBlock PHPDoc { get; set; }
+        public PHPDocBlock PHPDoc
+        {
+            get { return this.GetProperty<PHPDocBlock>(); }
+            set { this.SetProperty<PHPDocBlock>(value); }
+        }
 	}
 
 	#endregion

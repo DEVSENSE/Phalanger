@@ -151,7 +151,7 @@ namespace PHP.Core.AST
             this.function.DefineBuilders(typeBuilder);
 
             //
-            codeGenerator.MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 2);
+            codeGenerator.MarkSequencePoint(this.Position);
             if (!codeGenerator.EnterFunctionDeclaration(function))
                 throw new Exception("EnterFunctionDeclaration() failed!");
 
@@ -253,7 +253,11 @@ namespace PHP.Core.AST
         /// <summary>
         /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
         /// </summary>
-        public PHPDocBlock PHPDoc { get; set; }
+        public PHPDocBlock PHPDoc
+        {
+            get { return this.GetProperty<PHPDocBlock>(); }
+            set { this.SetProperty<PHPDocBlock>(value); }
+        }
     }
 
     #endregion

@@ -42,7 +42,7 @@ namespace PHP.Core.AST
 		/// </summary>
 		internal virtual void ReportUnreachable(Analyzer/*!*/ analyzer)
 		{
-			analyzer.ErrorSink.Add(Warnings.UnreachableCodeDetected, analyzer.SourceUnit, position);
+			analyzer.ErrorSink.Add(Warnings.UnreachableCodeDetected, analyzer.SourceUnit, this.Position);
 		}
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
@@ -124,7 +124,7 @@ namespace PHP.Core.AST
 		{
 			if (analyzer.IsThisCodeUnreachable())
 			{
-				analyzer.ReportUnreachableCode(position);
+				analyzer.ReportUnreachableCode(this.Position);
 				return EmptyStmt.Unreachable;
 			}
 
@@ -182,7 +182,7 @@ namespace PHP.Core.AST
 		{
 			if (analyzer.IsThisCodeUnreachable())
 			{
-				analyzer.ReportUnreachableCode(position);
+                analyzer.ReportUnreachableCode(this.Position);
 				return EmptyStmt.Unreachable;
 			}
 
@@ -202,7 +202,7 @@ namespace PHP.Core.AST
 		internal override void Emit(CodeGenerator/*!*/ codeGenerator)
 		{
 			if (expression.DoMarkSequencePoint)
-				codeGenerator.MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 1);
+                codeGenerator.MarkSequencePoint(this.Position);
 
             try
             {
@@ -264,9 +264,9 @@ namespace PHP.Core.AST
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
 		internal override void Emit(CodeGenerator/*!*/ codeGenerator)
 		{
-			if (position.IsValid)
+            if (this.Position.IsValid)
 			{
-				codeGenerator.MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 2);
+                codeGenerator.MarkSequencePoint(this.Position.FirstLine, this.Position.FirstColumn, this.Position.LastLine, this.Position.LastColumn + 2);
 			}
 		}
 
@@ -330,7 +330,7 @@ namespace PHP.Core.AST
 		{
 			if (analyzer.IsThisCodeUnreachable())
 			{
-				analyzer.ReportUnreachableCode(position);
+                analyzer.ReportUnreachableCode(this.Position);
 				return EmptyStmt.Unreachable;
 			}
 
@@ -346,10 +346,10 @@ namespace PHP.Core.AST
 			Statistics.AST.AddNode("UnsetStmt");
 
 			codeGenerator.MarkSequencePoint(
-			  position.FirstLine,
-			  position.FirstColumn,
-			  position.LastLine,
-			  position.LastColumn + 1);
+              this.Position.FirstLine,
+              this.Position.FirstColumn,
+              this.Position.LastLine,
+              this.Position.LastColumn + 1);
 
 			foreach (VariableUse variable in varList)
 			{
@@ -395,7 +395,7 @@ namespace PHP.Core.AST
 		{
 			if (analyzer.IsThisCodeUnreachable())
 			{
-				analyzer.ReportUnreachableCode(position);
+                analyzer.ReportUnreachableCode(this.Position);
 				return EmptyStmt.Unreachable;
 			}
 
@@ -459,7 +459,7 @@ namespace PHP.Core.AST
 		{
 			if (analyzer.IsThisCodeUnreachable())
 			{
-				analyzer.ReportUnreachableCode(position);
+                analyzer.ReportUnreachableCode(this.Position);
 				return EmptyStmt.Unreachable;
 			}
 
@@ -554,7 +554,7 @@ namespace PHP.Core.AST
                 // (J): cache the integer index of static local variable to access its value fast from within the array
 
                 // unique static local variable string ID
-				id = String.Format("{0}${1}${2}${3}", id, variable.VarName, position.FirstLine, position.FirstColumn);
+                id = String.Format("{0}${1}${2}${3}", id, variable.VarName, this.Position.FirstLine, this.Position.FirstColumn);
 
                 // create static field for static local index: private static int <id>;
                 var type = codeGenerator.IL.TypeBuilder;

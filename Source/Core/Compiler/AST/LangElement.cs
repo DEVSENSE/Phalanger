@@ -13,22 +13,64 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using PHP.Core.Parsers;
 using PHP.Core.AST;
+using PHP.Core;
 using System;
 
 namespace PHP.Core.AST
 {
-    #region AstNode
+    /// <summary>
+    /// Base class for all AST nodes.
+    /// </summary>
+    public abstract class AstNode : IPropertyOwner
+    {
+        #region Fields
 
-    //public enum NodeIds
-    //{
-    //}
+        /// <summary>
+        /// Contains properties of this <see cref="AstNode"/>.
+        /// </summary>
+        private PropertyContainer properties;
 
-	public abstract class AstNode
-	{
-		// public abstract NodeIds NodeId { get; }
+        #endregion
+
+        #region IPropertyOwner
+
+        /// <summary>
+        /// Sets property.
+        /// </summary>
+        public void SetProperty<T>(T value)
+        {
+            if (value != null)
+                this.properties.SetProperty<T>(value);
+            else
+                this.properties.Remove<T>();
+        }
+
+        /// <summary>
+        /// Gets property.
+        /// </summary>
+        public T GetProperty<T>()
+        {
+            return this.properties.GetProperty<T>();
+        }
+
+        /// <summary>
+        /// Removes property.
+        /// </summary>
+        public bool RemoveProperty<T>()
+        {
+            return this.properties.Remove<T>();
+        }
+
+        /// <summary>
+        /// Clears properties.
+        /// </summary>
+        public void ClearProperties()
+        {
+            this.properties.Clear();
+        }
+
+        #endregion
     }
-
-    #endregion
 
     /// <summary>
 	/// Base class for all AST nodes representing PHP language Elements - statements and expressions.
@@ -38,29 +80,22 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Position of element in source file.
 		/// </summary>
-        public Position Position
-        {
-            get
-            {
-                return position;
-            }
-        }
-		protected Position position;
+        public Position Position { get; protected set; }
 		
 		/// <summary>
         /// Initialize the LangElement.
         /// </summary>
-        /// <param name="p">The position of the LangElement in the source code.</param>
-		protected LangElement(Position p)
+        /// <param name="position">The position of the LangElement in the source code.</param>
+		protected LangElement(Position position)
 		{
-			position = p;
+			this.Position = position;
 		}
 
         /// <summary>
         /// In derived classes, calls Visit* on the given visitor object.
         /// </summary>
         /// <param name="visitor">Visitor.</param>
-        public abstract void VisitMe(TreeVisitor/*!*/ visitor);
+        public abstract void VisitMe(TreeVisitor/*!*/visitor);
 	}
 
     /// <summary>
@@ -73,5 +108,4 @@ namespace PHP.Core.AST
         /// </summary>
         PHPDocBlock PHPDoc { get; set; }
     }
-
 }

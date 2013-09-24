@@ -61,7 +61,7 @@ namespace PHP.Core.AST
 		{
 			if (analyzer.IsThisCodeUnreachable())
 			{
-				analyzer.ReportUnreachableCode(position);
+                analyzer.ReportUnreachableCode(this.Position);
 				return EmptyStmt.Unreachable;
 			}
 
@@ -95,7 +95,7 @@ namespace PHP.Core.AST
 		{
 			Statistics.AST.AddNode("EchoStmt");
 
-			codeGenerator.MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 2);
+            codeGenerator.MarkSequencePoint(this.Position.FirstLine, this.Position.FirstColumn, this.Position.LastLine, this.Position.LastColumn + 2);
 			foreach (Expression parameter in parameters)
 			{
                 // skip empty evaluated expression

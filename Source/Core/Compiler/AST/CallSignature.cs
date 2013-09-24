@@ -61,7 +61,7 @@ namespace PHP.Core.AST
 					// That's why we report warning when user use '&' in calling, 
 					// because it has no influence.
 					if (ampersand)
-						analyzer.ErrorSink.Add(Warnings.ActualParamWithAmpersand, analyzer.SourceUnit, position);
+                        analyzer.ErrorSink.Add(Warnings.ActualParamWithAmpersand, analyzer.SourceUnit, this.Position);
 				}
 				else
 				{
@@ -86,7 +86,7 @@ namespace PHP.Core.AST
 				else
 				{
 					info.Access = AccessType.Read;
-					if (ampersand) analyzer.ErrorSink.Add(Warnings.ActualParamWithAmpersand, analyzer.SourceUnit, position);
+                    if (ampersand) analyzer.ErrorSink.Add(Warnings.ActualParamWithAmpersand, analyzer.SourceUnit, this.Position);
 				}
 			}
 
@@ -159,7 +159,7 @@ namespace PHP.Core.AST
 
 			if (!propertiesDeclarer.IsUnknown)
 			{
-				property = analyzer.ResolveProperty(propertiesDeclarer, name, position, false, null, null, out visibility_check);
+                property = analyzer.ResolveProperty(propertiesDeclarer, name, this.Position, false, null, null, out visibility_check);
 			}
 
 			expression = expression.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();

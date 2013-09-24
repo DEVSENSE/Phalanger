@@ -210,7 +210,7 @@ namespace PHP.Core.AST
 		internal void AnalyzeMembers(Analyzer/*!*/ analyzer, Scope referringScope)
 		{
 			// resolve attribute type:
-			type = analyzer.ResolveCustomAttributeType(qualifiedName, referringScope, position);
+            type = analyzer.ResolveCustomAttributeType(qualifiedName, referringScope, this.Position);
 
 			// let the Assembly Builder know that this attribute is defined on it;
 			// we need the Builder to be able to count the defined attributes in analysis:
@@ -233,7 +233,7 @@ namespace PHP.Core.AST
 			// check selector:
 			if (((int)target.AcceptsTargets & (int)targetSelector) == 0)
 			{
-				analyzer.ErrorSink.Add(Errors.InvalidAttributeTargetSelector, analyzer.SourceUnit, position,
+                analyzer.ErrorSink.Add(Errors.InvalidAttributeTargetSelector, analyzer.SourceUnit, this.Position,
 					targetSelector.ToString().ToLower(System.Globalization.CultureInfo.InvariantCulture));
 			}
 
@@ -270,7 +270,7 @@ namespace PHP.Core.AST
 
 				if (!analyzer.SourceUnit.CompilationUnit.IsPure)
 				{
-					analyzer.ErrorSink.Add(Errors.ExportAttributeInNonPureUnit, analyzer.SourceUnit, this.position);
+					analyzer.ErrorSink.Add(Errors.ExportAttributeInNonPureUnit, analyzer.SourceUnit, this.Position);
 				}
 				else
 				{
@@ -339,7 +339,7 @@ namespace PHP.Core.AST
 			if (!type.IsDefinite)
 			{
 				// attribute type has to be known definitely:
-				analyzer.ErrorSink.Add(Errors.UnknownCustomAttribute, analyzer.SourceUnit, position,
+                analyzer.ErrorSink.Add(Errors.UnknownCustomAttribute, analyzer.SourceUnit, this.Position,
 				  type.FullName, type.FullName + "Attribute");
 
 				return false;
@@ -347,18 +347,18 @@ namespace PHP.Core.AST
 
 			if (!type.IsCustomAttributeType)
 			{
-				analyzer.ErrorSink.Add(Errors.NotCustomAttributeClass, analyzer.SourceUnit, position, type.FullName);
+                analyzer.ErrorSink.Add(Errors.NotCustomAttributeClass, analyzer.SourceUnit, this.Position, type.FullName);
 				return false;
 			}
 
 			// resolve ctor overload in global context (only public ctors are visible):
 			bool check_visibility;
-			DRoutine constructor = analyzer.ResolveConstructor(type, position, null, null, out check_visibility);
+            DRoutine constructor = analyzer.ResolveConstructor(type, this.Position, null, null, out check_visibility);
 			Debug.Assert(!check_visibility);
 
-			if (constructor.ResolveOverload(analyzer, callSignature, position, out overload) == DRoutine.InvalidOverloadIndex)
+            if (constructor.ResolveOverload(analyzer, callSignature, this.Position, out overload) == DRoutine.InvalidOverloadIndex)
 			{
-				analyzer.ErrorSink.Add(Errors.ClassHasNoVisibleCtor, analyzer.SourceUnit, position, type.FullName);
+                analyzer.ErrorSink.Add(Errors.ClassHasNoVisibleCtor, analyzer.SourceUnit, this.Position, type.FullName);
 				return false;
 			}
 
@@ -418,14 +418,14 @@ namespace PHP.Core.AST
 		{
 			if (usage != null && (target.AcceptsTargets & usage.ValidOn) == 0)
 			{
-				analyzer.ErrorSink.Add(Errors.InvalidAttributeUsage, analyzer.SourceUnit, position, qualifiedName.ToString());
+                analyzer.ErrorSink.Add(Errors.InvalidAttributeUsage, analyzer.SourceUnit, this.Position, qualifiedName.ToString());
 				return false;
 			}
 
 			// check duplicate usage of this attribute:
 			if (!duplicateFound && (usage == null || !usage.AllowMultiple) && target.GetAttributeUsageCount(type, targetSelector) > 1)
 			{
-				analyzer.ErrorSink.Add(Errors.DuplicateAttributeUsage, analyzer.SourceUnit, position, qualifiedName.ToString());
+                analyzer.ErrorSink.Add(Errors.DuplicateAttributeUsage, analyzer.SourceUnit, this.Position, qualifiedName.ToString());
 				duplicateFound = true;
 				return false;
 			}

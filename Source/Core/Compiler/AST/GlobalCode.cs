@@ -226,7 +226,11 @@ namespace PHP.Core.AST
         /// <summary>
         /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
         /// </summary>
-        public PHPDocBlock PHPDoc { get; set; }
+        public PHPDocBlock PHPDoc
+        {
+            get { return this.GetProperty<PHPDocBlock>(); }
+            set { this.SetProperty<PHPDocBlock>(value); }
+        }
 	}
 
 	#endregion
@@ -285,7 +289,7 @@ namespace PHP.Core.AST
         /// <param name="p"></param>
         public void UpdatePosition(Position p)
         {
-            this.position = p;
+            this.Position = p;
         }
 
 		#endregion
@@ -322,7 +326,11 @@ namespace PHP.Core.AST
         /// <summary>
         /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
         /// </summary>
-        public PHPDocBlock PHPDoc { get; set; }
+        public PHPDocBlock PHPDoc
+        {
+            get { return this.GetProperty<PHPDocBlock>(); }
+            set { this.SetProperty<PHPDocBlock>(value); }
+        }
 	}
 
 	#endregion
@@ -361,7 +369,7 @@ namespace PHP.Core.AST
 
 			if (is_unreachable)
 			{
-				analyzer.ReportUnreachableCode(position);
+                analyzer.ReportUnreachableCode(this.Position);
 				return EmptyStmt.Unreachable;
 			}
 			else
@@ -411,7 +419,11 @@ namespace PHP.Core.AST
         /// <summary>
         /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
         /// </summary>
-        public PHPDocBlock PHPDoc { get; set; }
+        public PHPDocBlock PHPDoc
+        {
+            get { return this.GetProperty<PHPDocBlock>(); }
+            set { this.SetProperty<PHPDocBlock>(value); }
+        }
 	}
 
 	public sealed class GlobalConstantDecl : ConstantDecl
