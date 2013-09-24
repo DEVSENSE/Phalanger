@@ -203,12 +203,16 @@ namespace PHP.Core.Compiler.CodeGenerator
 
             userFriendlyName += ("'" + (callSitesCount++));
 
+            // ensures call sites container is initialized
+            // this ensures, {staticCtorEmitter} is set properly
+            var typebuilder = EnsureContainer();
+
             // call site type
             var callSiteType = Types.CallSiteGeneric[0].MakeGenericType(delegateType);
 
             // define the field:
             // public static readonly CallSite<delegateType> <userFriendlyName>
-            var attrs = FieldAttributes.Static | FieldAttributes.InitOnly | ((staticCtorEmitter == null) ? FieldAttributes.Private : FieldAttributes.Public);
+            var attrs = FieldAttributes.Static | FieldAttributes.InitOnly | ((staticCtorEmitter == null) ? FieldAttributes.Private : FieldAttributes.Assembly);
             var field = this.DefineField(PluginHandler.ConvertCallSiteName(userFriendlyName), callSiteType, attrs);
 
             if (staticCtorEmitter == null) // => this.classContext != null
