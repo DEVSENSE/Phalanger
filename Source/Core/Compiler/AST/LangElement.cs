@@ -28,42 +28,27 @@ namespace PHP.Core.AST
         /// <summary>
         /// Contains properties of this <see cref="AstNode"/>.
         /// </summary>
-        private PropertyContainer properties;
+        private PropertyCollection properties;
 
         #endregion
 
         #region IPropertyOwner
 
-        /// <summary>
-        /// Sets property.
-        /// </summary>
-        public void SetProperty<T>(T value)
+        public void SetProperty(object key, object value)
         {
-            if (value != null)
-                this.properties.SetProperty<T>(value);
-            else
-                this.properties.Remove<T>();
+            this.properties.SetProperty(key, value);
         }
 
-        /// <summary>
-        /// Gets property.
-        /// </summary>
-        public T GetProperty<T>()
+        public object GetProperty(object key)
         {
-            return this.properties.GetProperty<T>();
+            return this.properties.GetProperty(key);
         }
 
-        /// <summary>
-        /// Removes property.
-        /// </summary>
-        public bool RemoveProperty<T>()
+        public bool RemoveProperty(object key)
         {
-            return this.properties.Remove<T>();
+            return this.properties.Remove(key);
         }
 
-        /// <summary>
-        /// Clears properties.
-        /// </summary>
         public void ClearProperties()
         {
             this.properties.Clear();

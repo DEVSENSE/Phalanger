@@ -14,7 +14,7 @@
       <compiler 
          language="PHP" 
          extension=".php"
-         type="PHP.Core.CodeDom.PhpCodeProvider, PhpNetCore, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71"
+         type="PHP.Core.CodeDom.PhpCodeProvider, PhpNetCore.CodeDom, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71"
          compilerOptions=""  
          warningLevel="1" />
     </compilers>
