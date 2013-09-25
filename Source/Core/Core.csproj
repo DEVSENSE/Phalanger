@@ -156,16 +156,6 @@
     <Compile Include="Binders\PhpInvokeMemberBinder.cs" />
     <Compile Include="Binders\PhpOverloadResolver.cs" />
     <Compile Include="Binders\ReturnArgumentHelpers.cs" />
-    <Compile Include="CodeDom\CodeProvider.CLR.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CodeDom\Helper.cs" />
-    <Compile Include="CodeDom\Keywords.CLR.cs" />
-    <Compile Include="CodeDom\CodeDomUnits.cs" />
-    <Compile Include="CodeDom\PhpCodeDomParser.cs" />
-    <Compile Include="CodeDom\PhpCompiler.CLR.cs" />
-    <Compile Include="CodeDom\PhpGenerator.CLR.cs" />
-    <Compile Include="CodeDom\TypeConverters.CLR.cs" />
     <Compile Include="Comparisons.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -277,7 +267,7 @@
     <Compile Include="Compiler\AST\VariableUse.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Compiler\PropertyContainer.cs" />
+    <Compile Include="Compiler\PropertyCollection.cs" />
     <Compile Include="Compiler\CodeGenerator\CallSitesBuilder.cs" />
     <Compile Include="Compiler\CodeGenerator\Chains.cs">
       <SubType>Code</SubType>
@@ -583,6 +573,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core.Parsers\Core.Parsers.csproj">
+      <Project>{581f1486-5062-459e-bae6-a41886584f81}</Project>
+      <Name>Core.Parsers</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
