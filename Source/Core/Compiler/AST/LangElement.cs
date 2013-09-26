@@ -21,7 +21,7 @@ namespace PHP.Core.AST
     /// <summary>
     /// Base class for all AST nodes.
     /// </summary>
-    public abstract class AstNode : IPropertyOwner
+    public abstract class AstNode : IPropertyCollection
     {
         #region Fields & Properties
 
@@ -33,33 +33,33 @@ namespace PHP.Core.AST
         /// <summary>
         /// Gets property collection associated with this node.
         /// </summary>
-        public IPropertyOwner Properties { get { return (IPropertyOwner)this; } }
+        public IPropertyCollection Properties { get { return (IPropertyCollection)this; } }
 
         #endregion
 
         #region IPropertyOwner
 
-        void IPropertyOwner.SetProperty(object key, object value)
+        void IPropertyCollection.SetProperty(object key, object value)
         {
             _properties.SetProperty(key, value);
         }
 
-        object IPropertyOwner.GetProperty(object key)
+        object IPropertyCollection.GetProperty(object key)
         {
             return _properties.GetProperty(key);
         }
 
-        bool IPropertyOwner.RemoveProperty(object key)
+        bool IPropertyCollection.RemoveProperty(object key)
         {
-            return _properties.Remove(key);
+            return _properties.RemoveProperty(key);
         }
 
-        void IPropertyOwner.ClearProperties()
+        void IPropertyCollection.ClearProperties()
         {
-            _properties.Clear();
+            _properties.ClearProperties();
         }
 
-        object IPropertyOwner.this[object key]
+        object IPropertyCollection.this[object key]
         {
             get
             {

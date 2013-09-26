@@ -6,20 +6,50 @@ using System.Text;
 
 namespace PHP.Core
 {
-    public interface IPropertyOwner
+    /// <summary>
+    /// Provides set of keyed properties.
+    /// </summary>
+    public interface IPropertyCollection
     {
+        /// <summary>
+        /// Sets property into collection.
+        /// </summary>
+        /// <param name="key">Key to the property, cannot be <c>null</c>.</param>
+        /// <param name="value"></param>
         void SetProperty(object key, object value);
+
+        /// <summary>
+        /// Gets property from the collection.
+        /// </summary>
+        /// <param name="key">Key to the property, cannot be <c>null</c>.</param>
+        /// <returns>Property value or <c>null</c> if property does not exist.</returns>
         object GetProperty(object key);
+
+        /// <summary>
+        /// Removes property from the collection.
+        /// </summary>
+        /// <param name="key">Key to the property.</param>
+        /// <returns><c>True</c> if property was found and removed, otherwise <c>false</c>.</returns>
         bool RemoveProperty(object key);
+
+        /// <summary>
+        /// Clear the collection of properties.
+        /// </summary>
         void ClearProperties();
+
+        /// <summary>
+        /// Gets or sets property.
+        /// </summary>
+        /// <param name="key">Property key, cannot be <c>null</c>.</param>
+        /// <returns>Property value or <c>null</c> if property does not exist.</returns>
         object this[object key] { get; set; }
     }
 
     /// <summary>
-    /// Manages list of properties, organized by their <see cref="System.Type"/>.
+    /// Manages list of properties, organized by a key.
     /// </summary>
     [Serializable]
-    public struct PropertyCollection : IPropertyOwner
+    public struct PropertyCollection : IPropertyCollection
     {
         #region Fields & Properties
 
@@ -85,7 +115,7 @@ namespace PHP.Core
                 _obj = value;
             }
             // linked list
-            else if (p == TypeList)
+            else if (object.ReferenceEquals(p, TypeList))
             {
                 Debug.Assert(_obj is DictionaryNode);
 
@@ -118,7 +148,7 @@ namespace PHP.Core
                 }
             }
             // hashtable
-            else if (p == TypeHashtable)
+            else if (object.ReferenceEquals(p, TypeHashtable))
             {
                 Debug.Assert(_obj is Hashtable);
                 ((Hashtable)_obj)[key] = value;
@@ -160,14 +190,16 @@ namespace PHP.Core
                 {
                     return _obj;
                 }
-                else if (p == TypeList)
+                else if (object.ReferenceEquals(p, TypeList))
                 {
+                    Debug.Assert(_obj is DictionaryNode);
                     for (var node = (DictionaryNode)_obj; node != null; node = node.next)
                         if (node.key == key)
                             return node.value;
                 }
-                else if (p == TypeHashtable)
+                else if (object.ReferenceEquals(p, TypeHashtable))
                 {
+                    Debug.Assert(_obj is Hashtable);
                     return ((Hashtable)_obj)[key];
                 }
             }
@@ -181,7 +213,7 @@ namespace PHP.Core
         /// </summary>
         /// <param name="key">Key.</param>
         /// <returns><c>True</c> if property was found and removed. otherwise <c>false</c>.</returns>
-        public bool Remove(object key)
+        public bool RemoveProperty(object key)
         {
             CheckKey(key);
 
@@ -195,8 +227,9 @@ namespace PHP.Core
                     _obj = null;
                     return true;
                 }
-                else if (p == TypeList)
+                else if (object.ReferenceEquals(p, TypeList))
                 {
+                    Debug.Assert(_obj is DictionaryNode);
                     DictionaryNode prev = null;
                     for (var node = (DictionaryNode)_obj; node != null; node = node.next)
                     {
@@ -218,8 +251,9 @@ namespace PHP.Core
                         }
                     }
                 }
-                else if (p == TypeHashtable)
+                else if (object.ReferenceEquals(p, TypeHashtable))
                 {
+                    Debug.Assert(_obj is Hashtable);
                     var hashtable = (Hashtable)_obj;
                     int count = hashtable.Count;
                     hashtable.Remove(key);
@@ -242,7 +276,7 @@ namespace PHP.Core
         /// <summary>
         /// Clears the container.
         /// </summary>
-        public void Clear()
+        public void ClearProperties()
         {
             _obj = _type = null;
         }
@@ -257,12 +291,29 @@ namespace PHP.Core
                 var p = _type;
 
                 if (p == null) return 0;
-                if (p == TypeList) return CountItems((PropertyCollection.DictionaryNode)_obj);
-                if (p == TypeHashtable) return ((Hashtable)_obj).Count;
+                if (object.ReferenceEquals(p, TypeList)) return CountItems((PropertyCollection.DictionaryNode)_obj);
+                if (object.ReferenceEquals(p, TypeHashtable)) return ((Hashtable)_obj).Count;
                 return 1;
             }
         }
 
+        /// <summary>
+        /// Gets or sets named property.
+        /// </summary>
+        /// <param name="key">Property key.</param>
+        /// <returns>Property value or <c>null</c>.</returns>
+        public object this[object key]
+        {
+            get
+            {
+                return this.GetProperty(key);
+            }
+            set
+            {
+                this.SetProperty(key, value);
+            }
+        }
+        
         #endregion
 
         #region Helper functions
@@ -301,42 +352,6 @@ namespace PHP.Core
                 list = new DictionaryNode() { key = p.Key, value = p.Value, next = list };
             }
             return list;
-        }
-
-        #endregion
-
-        #region IPropertyOwner
-
-        void IPropertyOwner.SetProperty(object key, object value)
-        {
-            this.SetProperty(key, value);
-        }
-
-        object IPropertyOwner.GetProperty(object key)
-        {
-            return this.GetProperty(key);
-        }
-
-        bool IPropertyOwner.RemoveProperty(object key)
-        {
-            return this.Remove(key);
-        }
-
-        void IPropertyOwner.ClearProperties()
-        {
-            this.Clear();
-        }
-
-        object IPropertyOwner.this[object key]
-        {
-            get
-            {
-                return this.GetProperty(key);
-            }
-            set
-            {
-                this.SetProperty(key, value);
-            }
         }
 
         #endregion
