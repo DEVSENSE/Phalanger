@@ -576,8 +576,8 @@ namespace PHP.Core.AST
         /// </summary>
         public PHPDocBlock PHPDoc
         {
-            get { return (PHPDocBlock)this.GetProperty(typeof(PHPDocBlock)); }
-            set { this.SetProperty(typeof(PHPDocBlock), value); }
+            get { return (PHPDocBlock)this.Properties[typeof(PHPDocBlock)]; }
+            set { this.Properties[typeof(PHPDocBlock)] = value; }
         }
 	}
 

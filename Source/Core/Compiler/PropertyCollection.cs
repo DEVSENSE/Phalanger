@@ -12,6 +12,7 @@ namespace PHP.Core
         object GetProperty(object key);
         bool RemoveProperty(object key);
         void ClearProperties();
+        object this[object key] { get; set; }
     }
 
     /// <summary>
@@ -31,6 +32,14 @@ namespace PHP.Core
         /// </remarks>
         private object _obj;
 
+        /// <summary>
+        /// Type of the hybrid table.
+        /// </summary>
+        private object _type;
+
+        private static readonly object TypeHashtable = new object();
+        private static readonly object TypeList = new object();
+        
         /// <summary>
         /// If amount of properties exceeds this number, hashtable will be used instead of an array.
         /// </summary>
@@ -62,20 +71,28 @@ namespace PHP.Core
             CheckKey(key);
 
             //
-            object p = _obj;
+            object p = _type;
 
-            // empty
+            // empty list
             if (p == null)
             {
-                _obj = new DictionaryNode() { key = key, value = value };
+                _type = key;
+                _obj = value;
             }
-            // DictionaryNode
-            else if (p.GetType() == typeof(DictionaryNode))
+            // one item list, with the same key
+            else if (p == key)
             {
+                _obj = value;
+            }
+            // linked list
+            else if (p == TypeList)
+            {
+                Debug.Assert(_obj is DictionaryNode);
+
                 // replaces value if key already in collection,
                 // counts items
                 int count = 0;
-                for (var node = (DictionaryNode)p; node != null; node = node.next)
+                for (var node = (DictionaryNode)_obj; node != null; node = node.next)
                 {
                     if (node.key == key)
                     {
@@ -88,24 +105,40 @@ namespace PHP.Core
                 // add new item
                 if (count < MaxListSize)
                 {
-                    _obj = new DictionaryNode() { key = key, value = value, next = (DictionaryNode)p };
+                    _obj = new DictionaryNode() { key = key, value = value, next = (DictionaryNode)_obj };
                 }
                 else
                 {
                     // upgrade to hashtable
-                    var hashtable = ToHashtable((DictionaryNode)p);
+                    var hashtable = ToHashtable((DictionaryNode)_obj);
                     hashtable.Add(key, value);
+
                     _obj = hashtable;
+                    _type = TypeHashtable;
                 }
             }
-            // Hashtable
-            else if (p.GetType() == typeof(Hashtable))
+            // hashtable
+            else if (p == TypeHashtable)
             {
-                ((Hashtable)p)[key] = value;
+                Debug.Assert(_obj is Hashtable);
+                ((Hashtable)_obj)[key] = value;
             }
+            // one item list,
+            // upgrade to linked list
             else
             {
-                throw new InvalidOperationException();
+                _obj = new DictionaryNode()
+                {
+                    key = _type,
+                    value = _obj,
+                    next = new DictionaryNode()
+                    {
+                        key = key,
+                        value = value,
+                        next = null,
+                    }
+                };
+                _type = TypeList;
             }
         }
 
@@ -118,20 +151,24 @@ namespace PHP.Core
         {
             CheckKey(key);
 
-            object p = _obj;
+            object p = _type;
             
             // empty container
             if (p != null)
             {
-                if (p.GetType() == typeof(DictionaryNode))
+                if (p == key)
                 {
-                    for (var node = (DictionaryNode)p; node != null; node = node.next)
+                    return _obj;
+                }
+                else if (p == TypeList)
+                {
+                    for (var node = (DictionaryNode)_obj; node != null; node = node.next)
                         if (node.key == key)
                             return node.value;
                 }
-                else if (p.GetType() == typeof(Hashtable))
+                else if (p == TypeHashtable)
                 {
-                    return ((Hashtable)p)[key];
+                    return ((Hashtable)_obj)[key];
                 }
             }
 
@@ -148,33 +185,51 @@ namespace PHP.Core
         {
             CheckKey(key);
 
-            var p = _obj;
+            var p = _type;
 
             if (p != null)
             {
-                if (p.GetType() == typeof(DictionaryNode))
+                if (p == key)
+                {
+                    _type = null;
+                    _obj = null;
+                    return true;
+                }
+                else if (p == TypeList)
                 {
                     DictionaryNode prev = null;
-                    for (var node = (DictionaryNode)p; node != null; node = node.next)
+                    for (var node = (DictionaryNode)_obj; node != null; node = node.next)
                     {
                         if (node.key == key)
                         {
-                            if (prev == null) _obj = p = node.next;
-                            else prev.next = node.next;
+                            if (prev == null)
+                            {
+                                if ((_obj = node.next) == null)
+                                {
+                                    _type = null;   // empty list
+                                }
+                            }
+                            else
+                            {
+                                prev.next = node.next;
+                            }
                             
                             return true;
                         }
                     }
                 }
-                else if (p.GetType() == typeof(Hashtable))
+                else if (p == TypeHashtable)
                 {
-                    var hashtable = (Hashtable)p;
+                    var hashtable = (Hashtable)_obj;
                     int count = hashtable.Count;
                     hashtable.Remove(key);
                     if (hashtable.Count != count)
                     {
                         if (hashtable.Count <= MaxListSize)
+                        {
                             _obj = ToList((Hashtable)p);
+                            _type = TypeHashtable;
+                        }
 
                         return true;
                     }
@@ -189,7 +244,7 @@ namespace PHP.Core
         /// </summary>
         public void Clear()
         {
-            _obj = null;
+            _obj = _type = null;
         }
 
         /// <summary>
@@ -199,12 +254,12 @@ namespace PHP.Core
         {
             get
             {
-                var p = _obj;
+                var p = _type;
 
                 if (p == null) return 0;
-                if (p.GetType() == typeof(PropertyCollection.DictionaryNode)) return CountItems((PropertyCollection.DictionaryNode)p);
-                if (p.GetType() == typeof(Hashtable)) return ((Hashtable)p).Count;
-                throw new InvalidOperationException();
+                if (p == TypeList) return CountItems((PropertyCollection.DictionaryNode)_obj);
+                if (p == TypeHashtable) return ((Hashtable)_obj).Count;
+                return 1;
             }
         }
 
@@ -270,6 +325,18 @@ namespace PHP.Core
         void IPropertyOwner.ClearProperties()
         {
             this.Clear();
+        }
+
+        object IPropertyOwner.this[object key]
+        {
+            get
+            {
+                return this.GetProperty(key);
+            }
+            set
+            {
+                this.SetProperty(key, value);
+            }
         }
 
         #endregion

@@ -573,7 +573,7 @@ namespace PHP.Core.AST
 					// ASSIGN(value,enumerator.Value);
 					valueVariable.Emit(codeGenerator);
 					il.Ldloc(enumerator);
-					il.Emit(OpCodes.Callvirt, Properties.IDictionaryEnumerator_Value.GetGetMethod());
+					il.Emit(OpCodes.Callvirt, Core.Emit.Properties.IDictionaryEnumerator_Value.GetGetMethod());
 					if (valueVariable.Alias) il.Emit(OpCodes.Castclass, typeof(PhpReference));
 					valueVariable.EmitAssign(codeGenerator);
 
@@ -583,7 +583,7 @@ namespace PHP.Core.AST
 						// ASSIGN(key,enumerator.Key);
 						keyVariable.Emit(codeGenerator);
 						il.Ldloc(enumerator);
-						il.Emit(OpCodes.Callvirt, Properties.IDictionaryEnumerator_Key.GetGetMethod());
+						il.Emit(OpCodes.Callvirt, Core.Emit.Properties.IDictionaryEnumerator_Key.GetGetMethod());
 						keyVariable.EmitAssign(codeGenerator);
 					}
 
