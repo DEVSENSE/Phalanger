@@ -1,5 +1,6 @@
 /*
 
+ Copyright (c) 2007- DEVSENSE
  Copyright (c) 2004-2006 Tomas Matousek, Ladislav Prosek, and Vaclav Novak.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -21,6 +22,7 @@ namespace PHP.Core.AST
     /// <summary>
     /// Base class for all AST nodes.
     /// </summary>
+    [Serializable]
     public abstract class AstNode : IPropertyCollection
     {
         #region Fields & Properties
@@ -37,7 +39,7 @@ namespace PHP.Core.AST
 
         #endregion
 
-        #region IPropertyOwner
+        #region IPropertyCollection
 
         void IPropertyCollection.SetProperty(object key, object value)
         {
@@ -77,6 +79,7 @@ namespace PHP.Core.AST
     /// <summary>
 	/// Base class for all AST nodes representing PHP language Elements - statements and expressions.
 	/// </summary>
+    [Serializable]
 	public abstract class LangElement : AstNode
 	{
 		/// <summary>
@@ -99,15 +102,4 @@ namespace PHP.Core.AST
         /// <param name="visitor">Visitor.</param>
         public abstract void VisitMe(TreeVisitor/*!*/visitor);
 	}
-
-    /// <summary>
-    /// Interface for elements that can hold an instance of <see cref="PHPDocBlock"/>.
-    /// </summary>
-    public interface IHasPhpDoc
-    {
-        /// <summary>
-        /// Associated <see cref="PHPDocBlock"/> instance or <c>null</c> reference if the element has no PHPDoc block.
-        /// </summary>
-        PHPDocBlock PHPDoc { get; set; }
-    }
 }

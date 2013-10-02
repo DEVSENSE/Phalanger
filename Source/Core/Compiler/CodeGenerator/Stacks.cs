@@ -1,5 +1,6 @@
 /*
 
+ Copyright (c) 2007- DEVSENSE
  Copyright (c) 2003-2006 Martin Maly, Ladislav Prosek, Tomas Matousek.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -306,7 +307,7 @@ namespace PHP.Core
             /// <summary>
             /// CallSite manager and emitter.
             /// </summary>
-            public PHP.Core.Compiler.CodeGenerator.CallSitesBuilder CallSites;
+            public CallSitesBuilder CallSites;
 		}
 
 		/// <summary>
@@ -334,7 +335,7 @@ namespace PHP.Core
             /// <summary>
             /// CallSite manager and emitter.
             /// </summary>
-            public PHP.Core.Compiler.CodeGenerator.CallSitesBuilder CallSites;
+            public CallSitesBuilder CallSites;
 		}
 
 		#endregion

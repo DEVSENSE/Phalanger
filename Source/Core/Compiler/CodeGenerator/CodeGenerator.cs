@@ -1,5 +1,6 @@
 /*
 
+  Copyright (c) 2007- DEVSENSE
   Copyright (c) 2003-2006 Tomas Matousek, Ladislav Prosek 
   Copyright (c) 2003-2004 Martin Maly.
 
@@ -209,12 +210,12 @@ namespace PHP.Core
         /// Current scope CallSites.
         /// Will not be null within the GlobalCode and its sub-tree.
         /// </summary>
-        private PHP.Core.Compiler.CodeGenerator.CallSitesBuilder callSites = null;
+        private CallSitesBuilder callSites = null;
 
         /// <summary>
         /// Current scope CallSitesBuilder.
         /// </summary>
-        public PHP.Core.Compiler.CodeGenerator.CallSitesBuilder CallSitesBuilder
+        public CallSitesBuilder CallSitesBuilder
         {
             get
             {
@@ -457,7 +458,7 @@ namespace PHP.Core
 
             // CallSites
             Debug.Assert(this.callSites == null, "Unclosed CallSite!");
-            this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
+            this.callSites = new CallSitesBuilder(
                 sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
                 sourceUnit.SourceFile.RelativePath.ToString(),
                 null/*Unknown at compile time*/);
@@ -749,7 +750,7 @@ namespace PHP.Core
 
             // CallSites
             cd_context.CallSites = callSites;
-            this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
+            this.callSites = new CallSitesBuilder(
                 sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
                 type.QualifiedName.ToString(),
                 TypeContextPlace, /*class_context = TypeContextPlace, can be used in .cctor of call sites container*/
@@ -1533,7 +1534,7 @@ namespace PHP.Core
             {
                 Debug.Assert(fallbackRoutineFullname == null);
 
-                return this.CallSitesBuilder.EmitMethodCall(this, Compiler.CodeGenerator.CallSitesBuilder.AccessToReturnType(access), targetExpr, type, routineFullName, routineNameExpr, callSignature);
+                return this.CallSitesBuilder.EmitMethodCall(this, CallSitesBuilder.AccessToReturnType(access), targetExpr, type, routineFullName, routineNameExpr, callSignature);
             }
             else if (targetExpr != null)
             {

@@ -29,7 +29,7 @@ namespace PHP.Core.AST
     /// <summary>
     /// Represents a function declaration.
     /// </summary>
-    public sealed class LambdaFunctionExpr : Expression, IHasPhpDoc
+    public sealed class LambdaFunctionExpr : Expression
     {
         //public NamespaceDecl Namespace { get { return ns; } }
         //private readonly NamespaceDecl ns

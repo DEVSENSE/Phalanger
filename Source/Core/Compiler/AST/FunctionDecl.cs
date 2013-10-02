@@ -1,5 +1,6 @@
 /*
 
+ Copyright (c) 2007- DEVSENSE
  Copyright (c) 2004-2006 Tomas Matousek and Vaclav Novak.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -326,7 +327,7 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Represents a function declaration.
 	/// </summary>
-	public sealed class FunctionDecl : Statement, IPhpCustomAttributeProvider, IDeclarationNode, IHasPhpDoc
+	public sealed class FunctionDecl : Statement, IPhpCustomAttributeProvider, IDeclarationNode
 	{ 
 		internal override bool IsDeclaration { get { return true; } }
 
