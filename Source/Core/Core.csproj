@@ -116,6 +116,7 @@
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data">
       <Name>System.Data</Name>
@@ -165,6 +166,9 @@
     <Compile Include="Compiler\AppCompiler.CLR.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Compiler\AST_\AstNodeCompiler.cs" />
+    <Compile Include="Compiler\AST_\AstNodeCompilers.cs" />
+    <Compile Include="Compiler\AST_\AstNodeExtension.cs" />
     <Compile Include="Compiler\AstVisitor.cs">
       <SubType>Code</SubType>
     </Compile>

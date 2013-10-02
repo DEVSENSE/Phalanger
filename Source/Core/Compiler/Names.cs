@@ -1,5 +1,6 @@
 /*
 
+ Copyright (c) 2007- DEVSENSE
  Copyright (c) 2006 Tomas Matousek.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -269,6 +270,7 @@ namespace PHP.Core
 	/// Used for names of variables and constants.
 	/// </summary>
 	[DebuggerNonUserCode]
+    [Serializable]
 	public struct VariableName : IEquatable<VariableName>, IEquatable<string>
 	{
 		public string/*!*/ Value { get { return value; } set { this.value = value; } }
@@ -933,6 +935,7 @@ namespace PHP.Core
 	/// Case-insensitive culture-sensitive (TODO ???) qualified name in Unicode C normal form
 	/// with associated list of generic qualified names.
 	/// </summary>
+    [Serializable]
 	public struct GenericQualifiedName
 	{
 		public QualifiedName QualifiedName { get { return qualifiedName; } }

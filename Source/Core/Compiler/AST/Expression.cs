@@ -1,5 +1,6 @@
 /*
 
+ Copyright (c) 2007- DEVSENSE
  Copyright (c) 2004-2006 Tomas Matousek and Vaclav Novak.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -458,8 +459,6 @@ namespace PHP.Core.AST
                     return AccessType.Read;
             }
         }
-
-        
 	}
 
 	#endregion

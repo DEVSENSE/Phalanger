@@ -1,5 +1,6 @@
 /*
 
+ Copyright (c) 2007- DEVSENSE
  Copyright (c) 2004-2006 Tomas Matousek and Vaclav Novak.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -35,7 +36,7 @@ namespace PHP.Core.AST
 	/// by GlobalCode node. Finally, it is emitted into Main() method of concrete PHPPage 
 	/// class. The sample code below illustrates a part of PHP global code
 	/// </remarks>
-	public sealed class GlobalCode : AstNode, IHasPhpDoc
+	public sealed class GlobalCode : AstNode
 	{
 		/// <summary>
 		/// Array of nodes representing statements in PHP global code
@@ -237,7 +238,7 @@ namespace PHP.Core.AST
 
 	#region NamespaceDecl
 
-	public sealed class NamespaceDecl : Statement, IHasPhpDoc
+	public sealed class NamespaceDecl : Statement
 	{
 		internal override bool IsDeclaration { get { return true; } }
 
@@ -337,7 +338,7 @@ namespace PHP.Core.AST
 
 	#region GlobalConstDeclList, GlobalConstantDecl
 
-	public sealed class GlobalConstDeclList : Statement, IPhpCustomAttributeProvider, IHasPhpDoc
+	public sealed class GlobalConstDeclList : Statement, IPhpCustomAttributeProvider
 	{
 		private CustomAttributes attributes;
 

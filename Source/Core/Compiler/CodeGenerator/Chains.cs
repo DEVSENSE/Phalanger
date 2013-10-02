@@ -1,5 +1,6 @@
 /*
 
+ Copyright (c) 2007- DEVSENSE
  Copyright (c) 2003-2006 Martin Maly, Tomas Matousek, Ladislav Prosek.
 
  The use and distribution terms for this software are contained in the file named License.txt, 

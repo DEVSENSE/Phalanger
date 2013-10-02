@@ -1,7 +1,7 @@
 /*
 
+ Copyright (c) 2006- DEVSENSE
  Copyright (c) 2005-2006 Tomas Matousek, Ladislav Prosek, Vaclav Novak, Pavel Novak, Jan Benda and Martin Maly.
- Copyright (c) 2006-2012 DEVSENSE s.r.o.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
  which can be found in the root of the Phalanger distribution. By using this software 
@@ -35,7 +35,7 @@ using System;
 #endif
 
 [assembly: AssemblyVersion("3.0.0.0")]
-[assembly: AssemblyFileVersion("3.0.0.4622")]
+[assembly: AssemblyFileVersion("3.0.0.0")]
 
 //[assembly: InternalsVisibleTo("PhpNetClasslibrary, PublicKey=0024000004800000940000000602000000240000525341310004000001000100611b1c313d77d51b5ac4d5b309e8712919634a716ae826dd133e722fe5e4f10012a8b96c40b7098d669ac5f78581b83cfa412d1a436a65450fac212d0d2dca824f8b1ab51b98af6d44d14ffd9a7aacd21e23557971564886df047070ca34d51869f3eddfb343739ee014e1b117772885fbc0758232461c5db7c659ca98b981a9")]
 [assembly: InternalsVisibleTo("PhpNetCore.CodeDom, PublicKey=0024000004800000940000000602000000240000525341310004000001000100e3c182f57d3158a916b477e7fbdb05d2733bf65c53e5ad976bd1af240211998dd8ffb116d73e2d2059909f1578a4031b3a33c0dc892d22834960f413ca1ebbe0cfe631c84d4ba26cb5f44f4fd8785a08260d44600fa6b6fddd8a4ace4d7d86a9f5d7884539b343973d8b4ac305ccffda775c493326aee5284e8b963b297a7eb9")]

@@ -1,5 +1,6 @@
 /*
 
+ Copyright (c) 2007- DEVSENSE
  Copyright (c) 2004-2006 Tomas Matousek, Ladislav Prosek and Vaclav Novak.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -303,7 +304,7 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Represents a class or an interface declaration.
 	/// </summary>
-    public sealed class TypeDecl : Statement, IPhpCustomAttributeProvider, IDeclarationNode, IHasPhpDoc
+    public sealed class TypeDecl : Statement, IPhpCustomAttributeProvider, IDeclarationNode
 	{
 		#region Properties
 
@@ -1094,7 +1095,7 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Represents a method declaration.
 	/// </summary>
-    public sealed class MethodDecl : TypeMemberDecl, IPhpCustomAttributeProvider, IHasPhpDoc
+    public sealed class MethodDecl : TypeMemberDecl, IPhpCustomAttributeProvider
 	{
 		/// <summary>
 		/// Name of the method.
@@ -1422,7 +1423,7 @@ namespace PHP.Core.AST
 	/// Is derived from LangElement because we need position to report field_in_interface error.
 	/// Else we would have to test ClassType in every FieldDecl and not only in FildDeclList
 	/// </remarks>
-	public sealed class FieldDeclList : TypeMemberDecl, IPhpCustomAttributeProvider, IHasPhpDoc
+	public sealed class FieldDeclList : TypeMemberDecl, IPhpCustomAttributeProvider
 	{
 		private readonly List<FieldDecl>/*!*/ fields;
         /// <summary>List of fields in this list</summary>
@@ -1636,7 +1637,7 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Represents a class constant declaration.
 	/// </summary>
-	public sealed class ConstDeclList : TypeMemberDecl, IPhpCustomAttributeProvider, IHasPhpDoc
+	public sealed class ConstDeclList : TypeMemberDecl, IPhpCustomAttributeProvider
 	{
 		private readonly List<ClassConstantDecl>/*!*/ constants;
         /// <summary>List of constants in this list</summary>
