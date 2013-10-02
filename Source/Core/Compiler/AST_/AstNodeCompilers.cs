@@ -26,11 +26,12 @@ namespace PHP.Core.Compiler.AST
     /// </summary>
     public partial class AstNodeCompilers
     {
+        #if DEBUG
+
         /// <summary>
         /// Checks whether every implementation of <see cref="AstNode"/> has its <see cref="INodeCompiler"/> implementation.
         /// </summary>
         [Test]
-        [Conditional("DEBUG")]
         static void TestAstNodeCompilersDefined()
         {
             var dict = AstNodeExtension.AstNodeExtensionTypes;
@@ -45,5 +46,7 @@ namespace PHP.Core.Compiler.AST
                 Debug.Assert(dict[t] != null);
             }
         }
+
+        #endif
     }
 }
