@@ -77,4 +77,70 @@ namespace PHP.Core
 	}
 
 	#endregion
+
+    #region ExpressionPlace
+
+    /// <summary>
+    /// <see cref="IPlace"/> representing an <see cref="Expression"/>. Supports only loading onto the top of evaluation stack.
+    /// </summary>
+    internal sealed class ExpressionPlace : IPlace
+    {
+        private CodeGenerator/*!*/ codeGenerator;
+        private Expression/*!*/ expression;
+
+        public PhpTypeCode TypeCode { get { return typeCode; } }
+        private PhpTypeCode typeCode;
+
+        /// <summary>
+        /// Get the expression if given place represents ExpressionPlace.
+        /// </summary>
+        /// <param name="place"></param>
+        /// <returns></returns>
+        public static Expression GetExpression(IPlace place)
+        {
+            if (place != null && place.GetType() == typeof(ExpressionPlace))
+                return ((ExpressionPlace)place).expression;
+            else
+                return null;
+        }
+
+        public ExpressionPlace(CodeGenerator/*!*/ codeGenerator, Expression/*!*/ expression)
+        {
+            this.codeGenerator = codeGenerator;
+            this.expression = expression;
+            this.typeCode = PhpTypeCode.Invalid;
+        }
+
+        #region IPlace Members
+
+        public void EmitLoad(ILEmitter/*!*/ il)
+        {
+            Debug.Assert(ReferenceEquals(il, codeGenerator.IL));
+            typeCode = expression.Emit(codeGenerator);
+        }
+
+        public void EmitStore(ILEmitter/*!*/ il)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public void EmitLoadAddress(ILEmitter/*!*/ il)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public bool HasAddress
+        {
+            get { return false; }
+        }
+
+        public Type PlaceType
+        {
+            get { return (typeCode != PhpTypeCode.Invalid) ? PhpTypeCodeEnum.ToType(typeCode) : null; }
+        }
+
+        #endregion
+    }
+
+    #endregion
 }

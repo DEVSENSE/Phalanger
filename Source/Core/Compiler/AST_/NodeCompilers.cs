@@ -24,7 +24,7 @@ namespace PHP.Core.Compiler.AST
     /// <summary>
     /// Container for <see cref="INodeCompiler"/> implementations.
     /// </summary>
-    public partial class AstNodeCompilers
+    public partial class NodeCompilers
     {
         #if DEBUG
 
