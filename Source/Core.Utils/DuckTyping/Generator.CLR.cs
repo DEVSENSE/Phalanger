@@ -20,7 +20,7 @@ using System.CodeDom.Compiler;
 using System.CodeDom;
 using System.IO;
 
-namespace PHP.Core
+namespace PHP.Core.DuckTyping
 {
 	/// <summary>
 	/// Describes one module which is being processed by duck type generator.
