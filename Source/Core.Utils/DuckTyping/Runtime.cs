@@ -20,7 +20,7 @@ using System.Reflection.Emit;
 using PHP.Core.Emit;
 using System.Collections;
 
-namespace PHP.Core
+namespace PHP.Core.DuckTyping
 {
 	#region Attributes
 

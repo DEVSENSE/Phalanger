@@ -25,7 +25,7 @@ namespace PHP.Core.Compiler.AST
     /// </summary>
     internal static class AstNodeExtension
     {
-        #region IAstNodeCompiler instantiation
+        #region INodeCompiler instantiation
 
         /// <summary>
         /// Gets map of <see cref="AstNode"/> types corresponding to <see cref="INodeCompiler"/> types.
@@ -37,7 +37,7 @@ namespace PHP.Core.Compiler.AST
                 if (_astNodeExtensionTypes == null)
                     lock (typeof(AstNodeExtension))
                         if (_astNodeExtensionTypes == null)
-                            _astNodeExtensionTypes = CreateAstNodeExtensionTypes();
+                            _astNodeExtensionTypes = CreateNodeExtensionTypes();
 
                 return _astNodeExtensionTypes;
             }
@@ -48,19 +48,24 @@ namespace PHP.Core.Compiler.AST
         /// Creates map of <see cref="AstNode"/> types corresponding to <see cref="INodeCompiler"/> types.
         /// </summary>
         /// <returns>Dictionary of <see cref="AstNode"/> types each mapped to <see cref="INodeCompiler"/> type.</returns>
-        private static Dictionary<Type, Type>/*!*/CreateAstNodeExtensionTypes()
+        private static Dictionary<Type, Type>/*!*/CreateNodeExtensionTypes()
         {
             // like MEF, but simpler
-            var types = typeof(AstNodeCompilers).GetNestedTypes(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+
+            // lists all types within NodeCompilers,
+            // maps types defining INodeCompiler with corresponding AstNode type
+
+            var types = typeof(NodeCompilers).GetNestedTypes(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
             var dict = new Dictionary<Type, Type>(types.Length);
             for (int i = 0; i < types.Length; i++)
             {
                 var t = types[i];
                 if (!t.IsAbstract && typeof(INodeCompiler).IsAssignableFrom(t))
                 {
-                    var attr = t.GetCustomAttributes(typeof(NodeCompilerAttribute), false).FirstOrDefault() as NodeCompilerAttribute;
-                    if (attr != null)
+                    var attrs = t.GetCustomAttributes(typeof(NodeCompilerAttribute), false);
+                    if (attrs != null && attrs.Length != 0)
                     {
+                        var attr = (NodeCompilerAttribute)attrs[0];
                         dict.Add(attr.AstNodeType, t);
                     }
                 }
