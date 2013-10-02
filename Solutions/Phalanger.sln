@@ -71,7 +71,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Parsers", "..\Source\C
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 27
+		SccNumberOfProjects = 28
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
@@ -172,6 +172,9 @@ Global
 		SccProjectUniqueName26 = ..\\Source\\Core.CodeDom\\Core.CodeDom.csproj
 		SccProjectName26 = ../Source/Core.CodeDom
 		SccLocalPath26 = ..\\Source\\Core.CodeDom
+		SccProjectUniqueName27 = ..\\Source\\Core.Parsers\\Core.Parsers.csproj
+		SccProjectName27 = ../Source/Core.Parsers
+		SccLocalPath27 = ..\\Source\\Core.Parsers
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
