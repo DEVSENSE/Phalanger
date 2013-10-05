@@ -24,6 +24,8 @@ using PHP.Core.AST;
 using PHP.Core.Emit;
 using PHP.Core.Parsers;
 using PHP.Core.Reflection;
+using PHP.Core.Compiler;
+using PHP.Core.Compiler.AST;
 using System.Reflection.Emit;
 
 #if SILVERLIGHT
@@ -148,7 +150,7 @@ namespace PHP.Core
 		public Expression/*!*/ Literalize()
 		{
 			if (HasValue && !Expression.HasValue)
-				return Expression = Literal.Create(Expression.Position, Value, Expression.Access);
+				return Expression = LiteralUtils.Create(Expression.Position, Value, Expression.NodeCompiler<IExpressionCompiler>().Access);
 			else
 				return Expression;
 		}
@@ -165,7 +167,8 @@ namespace PHP.Core
 			return new Evaluation(parent);
 		}
 
-		internal static Evaluation Evaluate(Expression/*!*/ parent, Evaluation eval1, out Expression/*!*/ expr1,
+		internal static Evaluation Evaluate(Expression/*!*/ parent,
+            Evaluation eval1, out Expression/*!*/ expr1,
 			Evaluation eval2, out Expression/*!*/ expr2)
 		{
 			if (eval1.HasValue && eval2.HasValue)
@@ -487,9 +490,6 @@ namespace PHP.Core
 			/// <summary>
 			/// Says if the just now analyzed actual parameter shall be passed be reference
 			/// </summary>
-			/// <remarks>
-			/// Called only from <see cref="ActualParam.Analyze"/>.
-			/// </remarks>
 			/// <returns>
 			/// <B>true</B> if the just now analyzed actual parameter shall be passed be reference
 			/// </returns>
@@ -722,7 +722,7 @@ namespace PHP.Core
 		/// </summary>
 		/// <remarks>
 		/// This method is called only from <see cref="LeaveConditionalCode"/> because unreachable code ends 
-		/// at the end of conditional block and from <see cref="GlobalCode.Analyze"/> 
+		/// at the end of conditional block and from <see cref="GlobalCode"/>.<c>Analyze</c>.
 		/// because unreachable declarations in global code are valid.
 		/// </remarks>
 		internal void LeaveUnreachableCode()
@@ -750,10 +750,10 @@ namespace PHP.Core
 		{
 			get
 			{
-				if (CurrentRoutine != null)
-					return CurrentRoutine.Builder.LocalVariables;
-				else
-					return sourceUnit.Ast.VarTable;
+                if (CurrentRoutine != null)
+                    return CurrentRoutine.Builder.LocalVariables;
+                else
+                    return sourceUnit.Ast.GetVarTable();
 			}
 		}
 
@@ -764,10 +764,10 @@ namespace PHP.Core
 		{
 			get
 			{
-				if (CurrentRoutine != null)
-					return CurrentRoutine.Builder.Labels;
-				else
-					return sourceUnit.Ast.Labels;
+                if (CurrentRoutine != null)
+                    return CurrentRoutine.Builder.Labels;
+                else
+                    return sourceUnit.Ast.GetLabels();
 			}
 		}
 
@@ -1034,23 +1034,38 @@ namespace PHP.Core
 			return result;
 		}
 
-		public DType ResolveType(object typeNameOrPrimitiveType, PhpType referringType, PhpRoutine referringRoutine,
+        /// <summary>
+        /// Resolves type based on provided <paramref name="typeName"/>.
+        /// </summary>
+        /// <param name="typeName">Either <see cref="GenericQualifiedName"/> or <see cref="PrimitiveTypeName"/> or <c>null</c> reference.</param>
+        /// <param name="referringType"></param>
+        /// <param name="referringRoutine"></param>
+        /// <param name="position"></param>
+        /// <param name="mustResolve"></param>
+        /// <returns></returns>
+        internal DType ResolveType(object typeName, PhpType referringType, PhpRoutine referringRoutine,
 				Position position, bool mustResolve)
 		{
-			Debug.Assert(typeNameOrPrimitiveType == null || typeNameOrPrimitiveType is PrimitiveType
-			  || typeNameOrPrimitiveType is GenericQualifiedName);
+			DType result = null;
 
-			DType result = typeNameOrPrimitiveType as PrimitiveType;
-			if (result != null)
-				return result;
+            if (typeName != null)
+            {
+                if (typeName.GetType() == typeof(GenericQualifiedName))
+                {
+                    result = ResolveTypeName((GenericQualifiedName)typeName,
+                        referringType, referringRoutine, position, mustResolve);
+                }
+                else if (typeName.GetType() == typeof(PrimitiveTypeName))
+                {
+                    result = PrimitiveType.GetByName((PrimitiveTypeName)typeName);
+                }
+                else
+                {
+                    throw new ArgumentException("typeName");
+                }
+            }
 
-			if (typeNameOrPrimitiveType != null)
-			{
-				return ResolveTypeName((GenericQualifiedName)typeNameOrPrimitiveType, referringType,
-							referringRoutine, position, mustResolve);
-			}
-
-			return null;
+            return result;
 		}
 
 		public DType/*!*/ ResolveTypeName(QualifiedName qualifiedName, PhpType referringType,
@@ -1190,15 +1205,23 @@ namespace PHP.Core
 			PhpRoutine referringRoutine, Position position, bool mustResolve)
 		{
 			DType type = ResolveTypeName(genericName.QualifiedName, referringType, referringRoutine, position, mustResolve);
+            DTypeDesc[] arguments;
 
-			DTypeDesc[] arguments = (genericName.GenericParams.Length > 0) ? new DTypeDesc[genericName.GenericParams.Length] : DTypeDesc.EmptyArray;
+            if (genericName.IsGeneric)
+            {
+                arguments = new DTypeDesc[genericName.GenericParams.Length];
 
-			for (int i = 0; i < arguments.Length; i++)
-			{
-				arguments[i] = ResolveType(genericName.GenericParams[i], referringType, referringRoutine, position, mustResolve).TypeDesc;
-			}
+                for (int i = 0; i < arguments.Length; i++)
+                {
+                    arguments[i] = ResolveType(genericName.GenericParams[i], referringType, referringRoutine, position, mustResolve).TypeDesc;
+                }
+            }
+            else
+            {
+                arguments = DTypeDesc.EmptyArray;
+            }
 
-			return type.MakeConstructedType(this, arguments, position);
+            return type.MakeConstructedType(this, arguments, position);
 		}
 
 		/// <summary>
@@ -1208,20 +1231,26 @@ namespace PHP.Core
 		{
 			if (qualifiedName.IsAppStaticAttributeName)
 			{
-				return CustomAttribute.AppStaticAttribute;
+                return SpecialCustomAttribute.AppStaticAttribute;
 			}
 			else if (qualifiedName.IsExportAttributeName)
 			{
-				return CustomAttribute.ExportAttribute;
+                return SpecialCustomAttribute.ExportAttribute;
 			}
+            else if (qualifiedName.IsDllImportAttributeName)
+            {
+                return SpecialCustomAttribute.DllImportAttribute;
+            }
 			else if (qualifiedName.IsOutAttributeName)
 			{
-				return CustomAttribute.OutAttribute;
+                return SpecialCustomAttribute.OutAttribute;
 			}
 			else
 			{
 				QualifiedName? alias;
-				QualifiedName name = new QualifiedName(new Name(qualifiedName.Name.Value + "Attribute"), qualifiedName.Namespaces);
+                string attrname = qualifiedName.Name.Value;
+                if (!attrname.EndsWith(Name.AttributeNameSuffix)) attrname += Name.AttributeNameSuffix;
+				QualifiedName name = new QualifiedName(new Name(attrname), qualifiedName.Namespaces);
 
 				DType type = sourceUnit.ResolveTypeName(name, referringScope, out alias, ErrorSink, position, true);
 

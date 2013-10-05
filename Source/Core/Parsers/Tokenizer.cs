@@ -27,14 +27,13 @@ namespace PHP.Core.Parsers
 		{
 			V5Keywords = 1,
 			ContextKeywords = 2,
-			Linq = 4,
 			SkipWhitespace = 8,
 
 			AllowAspTags = 16,
 			AllowShortTags = 32,
 			TypeKeywords = 64,
 
-			Default = V5Keywords | AllowAspTags | AllowShortTags | Linq | ContextKeywords | TypeKeywords
+			Default = V5Keywords | AllowAspTags | AllowShortTags |  ContextKeywords | TypeKeywords
 		}
 
 		private Features features;
@@ -270,27 +269,7 @@ namespace PHP.Core.Parsers
 							return token;
 						}
 
-					case Tokens.T_LINQ_SELECT:
-					case Tokens.T_LINQ_BY:
-					case Tokens.T_LINQ_WHERE:
-					case Tokens.T_LINQ_DESCENDING:
-					case Tokens.T_LINQ_ASCENDING:
-					case Tokens.T_LINQ_ORDERBY:
-					case Tokens.T_LINQ_GROUP:
-					case Tokens.T_LINQ_FROM:
-					case Tokens.T_LINQ_IN:
-						{
-							if ((features & Features.Linq) == 0)
-							{
-								token = Tokens.T_STRING;
-								goto case Tokens.T_STRING;
-							}
-
-							tokenCategory = TokenCategory.Keyword;
-							return token;
-						}
-
-                    case Tokens.T_IMPORT:
+					case Tokens.T_IMPORT:
                         {
                             //if ((features & Features.V6Keywords) == 0)
                             //{

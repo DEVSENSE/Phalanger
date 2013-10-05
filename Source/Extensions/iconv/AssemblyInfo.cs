@@ -26,7 +26,7 @@ using PHP.Core;
 [assembly: AssemblyCopyright("Copyright (c) 2005-2012 DEVSENSE s.r.o.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyVersion("4.0.0.0")]
 [assembly: AssemblyKeyName("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

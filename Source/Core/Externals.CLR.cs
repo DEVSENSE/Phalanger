@@ -1904,10 +1904,10 @@ namespace PHP.Core
                     switch ((ExtensionLibraryDescriptor.ExtSupportVersion)i)
                     {
                         case ExtensionLibraryDescriptor.ExtSupportVersion.php4ts:
-                            ass = Assembly.Load("php4ts, Version=3.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0");
+                            ass = Assembly.Load("php4ts, Version=4.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0");
                             break;
                         case ExtensionLibraryDescriptor.ExtSupportVersion.php5ts:
-                            ass = Assembly.Load("php5ts, Version=3.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0");
+                            ass = Assembly.Load("php5ts, Version=4.0.0.0, Culture=neutral, PublicKeyToken=43b6773fb05dc4f0");
                             break;
                         default:
                             throw new NotImplementedException("Not implemented extension support " + (ExtensionLibraryDescriptor.ExtSupportVersion)i);

@@ -34,8 +34,7 @@ namespace PHP.Core.Emit
 		// singles:
         public static Type Void { get { return typeof(void); } }
 
-		public static readonly Type IEnumerableOfObject = typeof(IEnumerable<>).MakeGenericType(typeof(object));
-        public static Type RoutineDelegate { get { return typeof(PHP.Core.RoutineDelegate); } }
+		public static Type RoutineDelegate { get { return typeof(PHP.Core.RoutineDelegate); } }
         public static Type DebuggerHiddenAttribute { get { return typeof(System.Diagnostics.DebuggerHiddenAttribute); } }
 
         public static Type ImplementsTypeAttribute { get { return typeof(ImplementsTypeAttribute); } }
@@ -101,10 +100,6 @@ namespace PHP.Core.Emit
 		public static readonly Type[] Object_Object_ObjectRef = new Type[] { typeof(object), typeof(object), ObjectRef[0] };
 		public static readonly Type[] Object_Object_Object = new Type[] { typeof(object), typeof(object), typeof(object) };
 
-		// quadruplets:
-		public static readonly Type[] LinqContextArgs = new Type[] { typeof(Core.Reflection.DObject), typeof(Dictionary<string, object>), 
-			typeof(PHP.Core.ScriptContext), typeof(PHP.Core.Reflection.DTypeDesc) };
-
 		// CLR only
 #if !SILVERLIGHT
 		// singles:
@@ -137,8 +132,7 @@ namespace PHP.Core.Emit
                 _GetItemExact, _SetItemExact,
 
                 _GetFullyQualifiedName,
-                _IsCallable,
-                _Select, _Where;
+                _IsCallable;
 
             public struct Add
             {
@@ -313,10 +307,6 @@ namespace PHP.Core.Emit
             public static MethodInfo IsCallable { get { return _IsCallable ?? (_IsCallable = _this.GetMethod("IsCallable")); } }
             public static MethodInfo GetFullyQualifiedName { get { return _GetFullyQualifiedName ?? (_GetFullyQualifiedName = new Func<DTypeDesc, string>(PHP.Core.Operators.GetFullyQualifiedName).Method); } }
 
-            // LINQ stuff
-            public static MethodInfo Where { get { if (_Where == null) _Where = _this.GetMethod("Where"); return _Where; } }
-            public static MethodInfo Select { get { if (_Select == null) _Select = _this.GetMethod("Select"); return _Select; } }
-
             public static class MakeGenericTypeInstantiation
             {
                 private static MethodInfo _1, _2, _3, _4, _N;
@@ -465,7 +455,7 @@ namespace PHP.Core.Emit
         {
             static Type _this { get { return typeof(PHP.Core.Convert); } }
             static MethodInfo _ObjectToString, _ObjectToChar, _ObjectToPhpBytes, _ObjectToBoolean, _ObjectToInteger, _ObjectToLongInteger,
-                _ObjectToDouble, _ObjectToPhpArray, _ObjectToDObject, _ObjectToCallback, _ObjectToLinqSource, _ObjectToTypeDesc,
+                _ObjectToDouble, _ObjectToPhpArray, _ObjectToDObject, _ObjectToCallback, _ObjectToTypeDesc,
                 _TryObjectToBoolean, _TryObjectToInt8, _TryObjectToInt16, _TryObjectToInt32, _TryObjectToInt64, _TryObjectToUInt8,
                 _TryObjectToUInt16, _TryObjectToUInt32, _TryObjectToUInt64, _TryObjectToSingle, _TryObjectToDouble, _TryObjectToDecimal,
                 _TryObjectToChar, _TryObjectToString, _TryObjectToDateTime, _TryObjectToDBNull, _TryObjectToClass, _TryObjectToStruct,
@@ -482,8 +472,7 @@ namespace PHP.Core.Emit
             public static MethodInfo ObjectToDObject { get { if (_ObjectToDObject == null) _ObjectToDObject = _this.GetMethod("ObjectToDObject"); return _ObjectToDObject; } }
             public static MethodInfo ObjectToCallback { get { if (_ObjectToCallback == null) _ObjectToCallback = _this.GetMethod("ObjectToCallback", Types.Object); return _ObjectToCallback; } }
             public static MethodInfo ObjectToTypeDesc { get { if (_ObjectToTypeDesc == null) _ObjectToTypeDesc = _this.GetMethod("ObjectToTypeDesc"); return _ObjectToTypeDesc; } }
-            public static MethodInfo ObjectToLinqSource { get { if (_ObjectToLinqSource == null) _ObjectToLinqSource = _this.GetMethod("ObjectToLinqSource"); return _ObjectToLinqSource; } }
-
+            
             public static MethodInfo StringToTypeDesc { get { return _StringToTypeDesc ?? (_StringToTypeDesc = new Func<string, ResolveTypeFlags, DTypeDesc, Core.ScriptContext, Core.NamingContext, object[], DTypeDesc>(Core.Convert.StringToTypeDesc).Method); } }
             public static MethodInfo StringToBoolean { get { return _StringToBoolean ?? (_StringToBoolean = new Func<string, bool>(Core.Convert.StringToBoolean).Method); } }
 
@@ -867,8 +856,8 @@ namespace PHP.Core.Emit
 
         public static MethodInfo SetStaticInit { get { if (_SetStaticInit == null)   _SetStaticInit = typeof(Reflection.PhpTypeDesc).GetMethod("SetStaticInit"); return _SetStaticInit; } }
         public static MethodInfo AddConstant { get { if (_AddConstant == null)     _AddConstant = typeof(Reflection.PhpTypeDesc).GetMethod("AddConstant", Types.String_Object); return _AddConstant; } }
-        public static MethodInfo AddProperty { get { if (_AddProperty == null)     _AddProperty = typeof(Reflection.PhpTypeDesc).GetMethod("AddProperty", new Type[] { Types.String[0], typeof(Reflection.PhpMemberAttributes), typeof(GetterDelegate), typeof(SetterDelegate) }); return _AddProperty; } }
-        public static MethodInfo AddMethod { get { if (_AddMethod == null)       _AddMethod = typeof(Reflection.PhpTypeDesc).GetMethod("AddMethod", new Type[] { Types.String[0], typeof(Reflection.PhpMemberAttributes), typeof(RoutineDelegate) }); return _AddMethod; } }
+        public static MethodInfo AddProperty { get { if (_AddProperty == null)     _AddProperty = typeof(Reflection.PhpTypeDesc).GetMethod("AddProperty", new Type[] { Types.String[0], typeof(PhpMemberAttributes), typeof(GetterDelegate), typeof(SetterDelegate) }); return _AddProperty; } }
+        public static MethodInfo AddMethod { get { if (_AddMethod == null)       _AddMethod = typeof(Reflection.PhpTypeDesc).GetMethod("AddMethod", new Type[] { Types.String[0], typeof(PhpMemberAttributes), typeof(RoutineDelegate) }); return _AddMethod; } }
 
         public static MethodInfo DTypeDesc_Create { get { if (_DTypeDesc_Create == null)   _DTypeDesc_Create = Types.DTypeDesc[0].GetMethod("Create", new Type[] { typeof(RuntimeTypeHandle) }); return _DTypeDesc_Create; } }
         public static MethodInfo PhpTypeDesc_Create { get { if (_PhpTypeDesc_Create == null) _PhpTypeDesc_Create = Types.PhpTypeDesc[0].GetMethod("Create"); return _PhpTypeDesc_Create; } }
@@ -939,172 +928,6 @@ namespace PHP.Core.Emit
         #endregion
     }
 
-	#region LINQ Externs
-
-	public static class LinqExterns
-	{
-		#region From LINQ assemblies
-
-		// LINQ: TODO: Using Orcas beta2 or Silverlight preview
-#if !SILVERLIGHT
-		static readonly Assembly _Assembly = Assembly.LoadFrom(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)+@"\Reference Assemblies\Microsoft\Framework\v3.5\System.Core.dll");
-#else
-		static readonly Assembly _Assembly = Assembly.Load("System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
-#endif
-
-		public static readonly Type Sequence;
-		public static readonly Type Func2;
-
-		public static readonly Type Func2_object_object;
-		public static readonly Type Func2_object_bool;
-		public static readonly Type Func2_object_IEnumerable_object;
-
-		public static readonly ConstructorInfo Func2_object_object_ctor;
-		public static readonly ConstructorInfo Func2_object_bool_ctor;
-		public static readonly ConstructorInfo Func2_object_IEnumerable_object_ctor;
-
-		public static MethodInfo Where;
-		public static MethodInfo ThenBy;
-		public static MethodInfo ThenByDescending;
-		public static MethodInfo OrderBy;
-		public static MethodInfo OrderByDescending;
-		public static MethodInfo Select;
-		public static MethodInfo SelectMany;
-		public static MethodInfo GroupBy;
-		public static MethodInfo GroupByElementSel;
-
-		static LinqExterns()
-		{
-			// Load stuff from LINQ assembly
-			Sequence = _Assembly.GetType("System.Linq.Enumerable", true);
-
-			Func2 = _Assembly.GetType("System.Func`2", true);
-			Func2_object_object = Func2.MakeGenericType(typeof(object), typeof(object));
-			Func2_object_bool = Func2.MakeGenericType(typeof(object), typeof(bool));
-			Func2_object_IEnumerable_object = Func2.MakeGenericType(typeof(object), Types.IEnumerableOfObject);
-
-			Func2_object_object_ctor = Func2_object_object.GetConstructor(Types.DelegateCtorArgs);
-			Func2_object_bool_ctor = Func2_object_bool.GetConstructor(Types.DelegateCtorArgs);
-			Func2_object_IEnumerable_object_ctor = Func2_object_IEnumerable_object.GetConstructor(Types.DelegateCtorArgs);
-
-			Sequence.FindMembers(MemberTypes.Method, BindingFlags.Public | BindingFlags.Static,
-				delegate(MemberInfo member, object _)
-				{
-					MethodInfo method = (MethodInfo)member;
-
-					switch (method.ToString())
-					{
-						case "System.Collections.Generic.IEnumerable`1[TSource] Where[TSource](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,System.Boolean])":
-							Where = method.MakeGenericMethod(Types.Object);
-							break;
-
-						case "System.Collections.Generic.IEnumerable`1[TResult] Select[TSource,TResult](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TResult])":
-							Select = method.MakeGenericMethod(Types.Object_Object);
-							break;
-
-						case "System.Collections.Generic.IEnumerable`1[TResult] SelectMany[TSource,TResult](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,System.Collections.Generic.IEnumerable`1[TResult]])":
-							SelectMany = method.MakeGenericMethod(Types.Object_Object);
-							break;
-
-						case "System.Linq.IOrderedEnumerable`1[TSource] ThenBy[TSource,TKey](System.Linq.IOrderedEnumerable`1[TSource], System.Func`2[TSource,TKey])":
-							ThenBy = method.MakeGenericMethod(Types.Object_Object);
-							break;
-
-						case "System.Linq.IOrderedEnumerable`1[TSource] ThenByDescending[TSource,TKey](System.Linq.IOrderedEnumerable`1[TSource], System.Func`2[TSource,TKey])":
-							ThenByDescending = method.MakeGenericMethod(Types.Object_Object);
-							break;
-
-						case "System.Linq.IOrderedEnumerable`1[TSource] OrderBy[TSource,TKey](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey])":
-							OrderBy = method.MakeGenericMethod(Types.Object_Object);
-							break;
-
-						case "System.Linq.IOrderedEnumerable`1[TSource] OrderByDescending[TSource,TKey](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey])":
-							OrderByDescending = method.MakeGenericMethod(Types.Object_Object);
-							break;
-
-						case "System.Collections.Generic.IEnumerable`1[System.Linq.IGrouping`2[TKey,TSource]] GroupBy[TSource,TKey](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey])":
-							GroupBy = method.MakeGenericMethod(Types.Object_Object);
-							break;
-
-						case "System.Collections.Generic.IEnumerable`1[System.Linq.IGrouping`2[TKey,TElement]] GroupBy[TSource,TKey,TElement](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey], System.Func`2[TSource,TElement])":
-							GroupByElementSel = method.MakeGenericMethod(Types.Object_Object_Object);
-							break;
-					}
-					return false;
-				}, null);
-
-
-			// Initialize PHP objects cache
-			tupleTypes = new List<TupleInfo>();
-			tupleGenerator = TupleGenerator();
-		}
-
-		#endregion
-		#region From PHP assemblies
-
-		/// <summary>
-		/// Stores information about constructed tuple type
-		/// </summary>
-		public struct TupleInfo
-		{
-			public TupleInfo(Type type)
-			{
-				this.type = type;
-				this.constructor = type.GetConstructors()[0];
-				this.firstGetter = type.GetProperty("First").GetGetMethod();
-				this.secondGetter = type.GetProperty("Second").GetGetMethod();
-			}
-
-			private Type type;
-			private ConstructorInfo constructor;
-			private MethodInfo firstGetter, secondGetter;
-
-			// public properties
-			public Type Type { get { return type; } }
-			public ConstructorInfo Constructor { get { return constructor; } }
-			public MethodInfo FirstGetter { get { return firstGetter; } }
-			public MethodInfo SecondGetter { get { return secondGetter; } }
-		}
-
-		static List<TupleInfo> tupleTypes;
-		static IEnumerator<TupleInfo> tupleGenerator;
-
-		/// <summary>
-		/// Enumerator for lazy loading of tuple types
-		/// </summary>
-		private static IEnumerator<TupleInfo> TupleGenerator()
-		{
-			Type lastType = typeof(object);
-			while (true)
-			{
-				lastType = typeof(Tuple<,>).MakeGenericType(new Type[] { typeof(object), lastType });
-				yield return new TupleInfo(lastType);
-			}
-		}
-
-
-		/// <summary>
-		/// Returns cached tuple information for specified indirection level.
-		/// Indirection equals to zero means Tuple&lt;object, object&gt;>, 1 means
-		/// Tuple&lt;Tuple&lt;object, object&gt;>, object&gt;> etc.
-		/// </summary>
-		public static TupleInfo GetTupleInfo(int indirection)
-		{
-			Debug.Assert(indirection >= 0);
-			while (tupleTypes.Count <= indirection)
-			{
-				tupleGenerator.MoveNext();
-				tupleTypes.Add(tupleGenerator.Current);
-			}
-			return tupleTypes[indirection];
-		}
-
-		#endregion
-	}
-
-	#endregion
-
-
 	// TODO: mark following by [Emitted]
 
 	/// <exclude/>
@@ -1158,7 +981,7 @@ namespace PHP.Core.Emit
 
 		static ConstructorInfo _PhpReference_Void, _PhpReference_Object,
 			_PhpBytes_ByteArray, _StdClass_ScriptContext, _PhpRuntimeChain_Object_DTypeDesc,
-            _RoutineDelegate, _PhpRoutineDesc_Attr_Delegate, _GetterDelegate, _SetterDelegate, _PhpScript_MainHelperDelegate, _LinqContext, _NamingContext,
+            _RoutineDelegate, _PhpRoutineDesc_Attr_Delegate, _GetterDelegate, _SetterDelegate, _PhpScript_MainHelperDelegate, _NamingContext,
             _Action_ScriptContext, _PurePhpFunction;
 
 		public static ConstructorInfo RoutineDelegate { get { if (_RoutineDelegate == null) _RoutineDelegate = typeof(RoutineDelegate).GetConstructor(Types.DelegateCtorArgs); return _RoutineDelegate; } }
@@ -1205,8 +1028,7 @@ namespace PHP.Core.Emit
 		}
 
 		public static ConstructorInfo PhpRuntimeChain_Object_DTypeDesc { get { if (_PhpRuntimeChain_Object_DTypeDesc == null) _PhpRuntimeChain_Object_DTypeDesc = typeof(PHP.Core.PhpRuntimeChain).GetConstructor(new Type[] { typeof(object), typeof(PHP.Core.Reflection.DTypeDesc) }); return _PhpRuntimeChain_Object_DTypeDesc; } }
-		public static ConstructorInfo LinqContext { get { if (_LinqContext == null) _LinqContext = typeof(PHP.Core.LinqContext).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, Types.LinqContextArgs, null); return _LinqContext; } }
-
+		
 		#endregion
 	}
 
@@ -1218,7 +1040,6 @@ namespace PHP.Core.Emit
             _PhpStack_ArgCount, _PhpStack_Context, _PhpStack_Variables, _PhpStack_NamingContext, _PhpStack_AllowProtectedCall, _PhpStack_LateStaticBindType,
 	        _PhpStack_CalleeName, _Arg_Default, _Arg_DefaultType, _ScriptContext_EvalId, _ScriptContext_EvalRelativeSourcePath,
 			_ScriptContext_EvalLine, _ScriptContext_EvalColumn, _PhpUserException_UserException,
-			_LinqContext_outerType, _LinqContext_typeHandle, _LinqContext_variables, _LinqContext_context,
 			_PhpVariable_LiteralNull, _PhpVariable_LiteralTrue, _PhpVariable_LiteralFalse;
 
 		public static FieldInfo ScriptContext_Stack { get { if (_ScriptContext_Stack == null)  _ScriptContext_Stack = typeof(ScriptContext).GetField("Stack"); return _ScriptContext_Stack; } }
@@ -1306,11 +1127,6 @@ namespace PHP.Core.Emit
 
             public static FieldInfo Singleton { get { return _Singleton ?? (_Singleton = _this.GetField("Singleton")); } }
         }
-
-		public static FieldInfo LinqContext_context { get { if (_LinqContext_context == null) _LinqContext_context = typeof(Core.LinqContext).GetField("context", BindingFlags.NonPublic | BindingFlags.Instance); return _LinqContext_context; } }
-		public static FieldInfo LinqContext_variables { get { if (_LinqContext_variables == null) _LinqContext_variables = typeof(Core.LinqContext).GetField("variables", BindingFlags.NonPublic | BindingFlags.Instance); return _LinqContext_variables; } }
-		public static FieldInfo LinqContext_typeHandle { get { if (_LinqContext_typeHandle == null) _LinqContext_typeHandle = typeof(Core.LinqContext).GetField("typeHandle", BindingFlags.NonPublic | BindingFlags.Instance); return _LinqContext_typeHandle; } }
-		public static FieldInfo LinqContext_outerType { get { if (_LinqContext_outerType == null) _LinqContext_outerType = typeof(Core.LinqContext).GetField("outerType", BindingFlags.NonPublic | BindingFlags.Instance); return _LinqContext_outerType; } }
 	}
 
 	/// <exclude/>

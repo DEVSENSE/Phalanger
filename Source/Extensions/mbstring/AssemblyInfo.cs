@@ -22,11 +22,7 @@ using PHP.Core;
 [assembly: AssemblyCopyright("Copyright © DEVSENSE 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyVersion("4.0.0.0")]
 [assembly: AssemblyKeyName("")]
 
-//#if DEBUG
 [assembly: PhpLibrary(typeof(PHP.Library.Strings.MbstringLibraryDescriptor), "mbstring", new string[] { "mbstring" })]
-//#else
-//[assembly: PhpLibrary(typeof(PHP.Library.Data.MsSqlLibraryDescriptor), "mbstring", false, true)]
-//#endif

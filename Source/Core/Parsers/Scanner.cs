@@ -514,26 +514,7 @@ namespace PHP.Core.Parsers
 							goto default;
 						}
 
-					case Tokens.T_LINQ_FROM:
-					case Tokens.T_LINQ_SELECT:
-					case Tokens.T_LINQ_BY:
-					case Tokens.T_LINQ_WHERE:
-					case Tokens.T_LINQ_DESCENDING:
-					case Tokens.T_LINQ_ASCENDING:
-					case Tokens.T_LINQ_ORDERBY:
-					case Tokens.T_LINQ_GROUP:
-					case Tokens.T_LINQ_IN:
-						{
-							if ((features & LanguageFeatures.Linq) == 0)
-							{
-								token = Tokens.T_STRING;
-								goto case Tokens.T_STRING;
-							}
-
-							goto default;
-						}
-
-                    case Tokens.T_IMPORT:
+					case Tokens.T_IMPORT:
                         {
                             if (!sourceUnit.CompilationUnit.IsPure)
                             {

@@ -22,11 +22,7 @@ using PHP.Core;
 [assembly: AssemblyCopyright("Copyright (c) 2006 Ladislav Prosek")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyVersion("4.0.0.0")]
 [assembly: AssemblyKeyName("")]
 
-//#if DEBUG
 [assembly: PhpLibrary(typeof(PHP.Library.Xml.XmlDomLibraryDescriptor), "XmlDom", new string[] { "SimpleXML", "dom", "xsl", "libxml", "XMLReader" })]
-//#else/
-//[assembly: PhpLibrary(typeof(PHP.Library.Xml.XmlDomLibraryDescriptor), "XmlDom", false, true)]
-//#endif

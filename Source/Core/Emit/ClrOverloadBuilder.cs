@@ -1304,8 +1304,8 @@ namespace PHP.Core.Emit
 						break;
 					}
 
-				case PhpTypeCode.LinqSource:
-				case PhpTypeCode.PhpRuntimeChain:
+				
+                case PhpTypeCode.PhpRuntimeChain:
 					{
 						Debug.Fail();
 						return true;

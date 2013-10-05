@@ -436,7 +436,7 @@ namespace PHP.Core
 		}
 
 		/// <summary>
-		/// Evaluates this chain as if it had the <see cref="PHP.Core.AST.AccessType.Read"/> access type.
+		/// Evaluates this chain as if it had the <see cref="PHP.Core.Compiler.AST.AccessType.Read"/> access type.
 		/// </summary>
 		/// <param name="context">Current script context.</param>
 		/// <returns>The result of chain evaluation.</returns>
@@ -456,7 +456,7 @@ namespace PHP.Core
 		}
 
 		/// <summary>
-		/// Evaluates this chain as if it had the <see cref="PHP.Core.AST.AccessType.ReadRef"/> access type.
+		/// Evaluates this chain as if it had the <see cref="PHP.Core.Compiler.AST.AccessType.ReadRef"/> access type.
 		/// </summary>
 		/// <param name="context">Current script context.</param>
 		/// <returns>The result of chain evaluation.</returns>

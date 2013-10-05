@@ -406,29 +406,36 @@ namespace PHP.Library.Curl
         CURLE_WRITE_ERROR = 23,
 
         /// <summary>
-        ///  Could not load CACERT file, missing or wrong format
+        /// Could not load CACERT file, missing or wrong format
         /// </summary>
         [ImplementsConstant("CURLE_SSL_CACERT_BADFILE")]
         CURLE_SSL_CACERT_BADFILE = 77,
 
+        /// <summary></summary>
         [ImplementsConstant("CURLM_CALL_MULTI_PERFORM")]
         CURLM_CALL_MULTI_PERFORM = -1,
 
+        /// <summary></summary>
         [ImplementsConstant("CURLM_OK")]
         CURLM_OK = 0,
 
+        /// <summary></summary>
         [ImplementsConstant("CURLM_BAD_HANDLE")]
         CURLM_BAD_HANDLE = 1,
 
+        /// <summary></summary>
         [ImplementsConstant("CURLM_BAD_EASY_HANDLE")]
         CURLM_BAD_EASY_HANDLE = 2,
 
+        /// <summary></summary>
         [ImplementsConstant("CURLM_OUT_OF_MEMORY")]
         CURLM_OUT_OF_MEMORY = 3,
 
+        /// <summary></summary>
         [ImplementsConstant("CURLM_INTERNAL_ERROR")]
         CURLM_INTERNAL_ERROR = 4,
 
+        /// <summary></summary>
         [ImplementsConstant("CURLMSG_DONE")]
         CURLMSG_DONE = 1
     };

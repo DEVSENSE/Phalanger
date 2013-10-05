@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using PHP.Core;
 using System.Xml;
-using PHP.Core.Reflection;
 
 namespace PHP.Library.Data
 {
@@ -30,10 +29,9 @@ namespace PHP.Library.Data
 
             PDOLibraryDescriptor.RegisterProvider(new SQLitePDODriver());
 
-            string fullname = typeof(PDO).Name;
-            DType tPDO = ApplicationContext.Default.GetType(new QualifiedName(new Name(typeof(PDO).FullName)), ref fullname);
-            Core.Reflection.PhpMemberAttributes att = Core.Reflection.PhpMemberAttributes.Public | Core.Reflection.PhpMemberAttributes.Static;
-            ApplicationContext.Default.AddMethodToType(tPDO.TypeDesc, att, "sqliteCreateFunction", SQLitePDODriver.PDO_sqliteCreateFunction);
+            var tPDO = Core.Reflection.DTypeDesc.Create(typeof(PDO));
+            PhpMemberAttributes att = PhpMemberAttributes.Public | PhpMemberAttributes.Static;
+            ApplicationContext.Default.AddMethodToType(tPDO, att, "sqliteCreateFunction", SQLitePDODriver.PDO_sqliteCreateFunction);
         }
 
         /// <summary>

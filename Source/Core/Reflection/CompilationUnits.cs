@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using PHP.Core.Parsers;
+using PHP.Core.Compiler.AST;
 using PHP.Core.Emit;
 using System.Reflection.Emit;
 using System.Reflection;
@@ -618,27 +619,28 @@ namespace PHP.Core.Reflection
 		{
 			// make all inclusions dynamic:
 #if !SILVERLIGHT
-			node.Inclusion = null;
-			node.Characteristic = Characteristic.Dynamic;
+            var nodecompiler = node.NodeCompiler<IIncludingExCompiler>();
+            nodecompiler.Inclusion = null;
+            nodecompiler.Characteristic = Characteristic.Dynamic;
 #endif
 		}
 
 		public void FunctionDeclarationReduced(Parser/*!*/ parser, AST.FunctionDecl/*!*/ node)
 		{
 			if (functions == null) functions = new Dictionary<QualifiedName, Declaration>();
-			AddDeclaration(parser.ErrorSink, node.Function, functions);
+			AddDeclaration(parser.ErrorSink, node.GetFunction(), functions);
 		}
 
 		public void TypeDeclarationReduced(Parser/*!*/ parser, AST.TypeDecl/*!*/ node)
 		{
 			if (types == null) types = new Dictionary<QualifiedName, Declaration>();
-			AddDeclaration(parser.ErrorSink, node.Type, types);
+            AddDeclaration(parser.ErrorSink, node.Type(), types);
 		}
 
 		public void GlobalConstantDeclarationReduced(Parser/*!*/ parser, AST.GlobalConstantDecl/*!*/ node)
 		{
 			if (constants == null) constants = new Dictionary<QualifiedName, Declaration>();
-			AddDeclaration(parser.ErrorSink, node.GlobalConstant, constants);
+			AddDeclaration(parser.ErrorSink, node.GetGlobalConstant(), constants);
 		}
 
 		private void AddDeclaration(ErrorSink/*!*/ errors, IDeclaree/*!*/ member, Dictionary<QualifiedName, Declaration>/*!*/ table)

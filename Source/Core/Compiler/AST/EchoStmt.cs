@@ -1,5 +1,6 @@
 /*
 
+ Copyright (c) 2006- DEVSENSE
  Copyright (c) 2004-2006 Tomas Matousek, Vaclav Novak and Martin Maly.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -10,7 +11,6 @@
 
 */
 
-using System.Reflection.Emit;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,17 +23,15 @@ namespace PHP.Core.AST
 	/// <summary>
 	/// Represents an <c>echo</c> statement.
 	/// </summary>
+    [Serializable]
 	public sealed class EchoStmt : Statement
 	{
-		/// <summary>
-		/// Array of parameters - Expressions.
-		/// </summary>
-		private List<Expression>/*!*/ parameters;
-        /// <summary>Array of parameters - Expressions.</summary>
+		/// <summary>Array of parameters - Expressions.</summary>
         public List<Expression> /*!*/ Parameters { get { return parameters; } }
-
+        private List<Expression>/*!*/ parameters;
+        
         /// <summary>
-        /// Returns <c>true</c> if this <see cref="EchoStmt"/> represents HTML code.
+        /// Gets value indicating whether this <see cref="EchoStmt"/> represents HTML code.
         /// </summary>
         public bool IsHtmlCode { get { return isHtmlCode; } }
         private readonly bool isHtmlCode;
@@ -56,24 +54,6 @@ namespace PHP.Core.AST
             this.isHtmlCode = true;
         }
 
-		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Statement.Analyze"]/*'/>
-		internal override Statement Analyze(Analyzer/*!*/ analyzer)
-		{
-			if (analyzer.IsThisCodeUnreachable())
-			{
-                analyzer.ReportUnreachableCode(this.Position);
-				return EmptyStmt.Unreachable;
-			}
-
-			ExInfoFromParent info = ExInfoFromParent.DefaultExInfo;
-			for (int i = 0; i < parameters.Count; i++)
-			{
-				parameters[i] = parameters[i].Analyze(analyzer, info).Literalize();
-			}
-
-			return this;
-		}
-
 		internal override bool SkipInPureGlobalCode()
 		{
 			StringLiteral literal;
@@ -87,34 +67,7 @@ namespace PHP.Core.AST
 			}
 		}
 
-		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
-		/// <remarks>
-		/// Nothing is expected on the evaluation stack. Nothing is left on the evaluation stack.
-		/// </remarks>
-		internal override void Emit(CodeGenerator/*!*/ codeGenerator)
-		{
-			Statistics.AST.AddNode("EchoStmt");
-
-            codeGenerator.MarkSequencePoint(this.Position.FirstLine, this.Position.FirstColumn, this.Position.LastLine, this.Position.LastColumn + 2);
-			foreach (Expression parameter in parameters)
-			{
-                // skip empty evaluated expression
-                if (parameter.HasValue &&
-                    (
-                        parameter.Value == null ||
-                        (parameter.Value is string && ((string)parameter.Value) == string.Empty) ||
-                        Convert.ObjectToPhpBytes(parameter.Value).Length == 0
-                    ))
-                {
-                    continue;
-                }
-
-                // emit the echo of parameter expression
-				codeGenerator.EmitEcho(parameter);
-			}
-		}
-
-        /// <summary>
+		/// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>

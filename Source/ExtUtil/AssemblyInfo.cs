@@ -22,5 +22,5 @@ using System.Resources;
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyVersion("4.0.0.0")]
 [assembly: NeutralResourcesLanguageAttribute("")]
