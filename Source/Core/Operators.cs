@@ -4982,63 +4982,6 @@ namespace PHP.Core
         }
 
         #endregion
-
-        #region LINQ Operators
-        /*
-    public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-		{
-		}
-
-    public static IEnumerable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
-		{
-		}
-   
-    public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-		{
-		}
-
-    public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-		{
-		}
-
-		public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-		{
-		}
-
-    public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-		{
-		}
-   
-    public static IEnumerable<TResult> SelectMany<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
-		{
-		}
-*/
-        public static object Where(object source, object predicate)
-        {
-            // TODO: convert from LinqSource
-            source = ClrObject.WrapRealObject(source);
-
-            bool isMagic;
-            DRoutineDesc desc = ((DObject)source).GetMethodDesc("Where", null, true, out isMagic);
-            if (desc != null)
-            {
-                ScriptContext.CurrentContext.Stack.AddFrame(source, predicate);
-                return Operators.InvokeMethod(source, "Where", null, ScriptContext.CurrentContext).Value;
-            }
-            else
-            {
-                ScriptContext.CurrentContext.Stack.AddFrame(source, predicate);
-                DTypeDesc dty = DTypeDesc.Create(Emit.LinqExterns.Sequence);
-                return Operators.InvokeStaticMethod(dty, "Where", null, null, ScriptContext.CurrentContext).Value;
-            }
-        }
-
-        public static object Select(object source, object selector)
-        {
-            return source;
-        }
-
-        #endregion
     }
 
     #region Unit Tests

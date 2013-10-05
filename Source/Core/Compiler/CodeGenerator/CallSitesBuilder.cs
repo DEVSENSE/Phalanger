@@ -21,6 +21,7 @@ using System.Reflection.Emit;
 using PHP.Core;
 using PHP.Core.Emit;
 using PHP.Core.AST;
+using PHP.Core.Compiler.AST;
 using PHP.Core.Reflection;
 
 namespace PHP.Core

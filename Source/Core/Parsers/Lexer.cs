@@ -266,22 +266,8 @@ namespace PHP.Core.Parsers
 		/// </summary>
 		protected bool isCode;
 
-		protected bool InLinq { get { return linqNesting > 0; } }
-		private int linqNesting = 0;
-
 		public bool InUnicodeString { get { return inUnicodeString; } set { inUnicodeString = true; } }
 		private bool inUnicodeString = false;
-
-		public void EnterLinq()
-		{
-			linqNesting++;
-		}
-
-		public void LeaveLinq()
-		{
-			Debug.Assert(linqNesting > 0);
-			linqNesting--;
-		}
 
 		protected string hereDocLabel = null;
 		protected Stack<LexicalStates> StateStack { get { return stateStack; } set { stateStack = value; } }

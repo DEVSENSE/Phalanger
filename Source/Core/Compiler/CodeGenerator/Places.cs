@@ -21,6 +21,7 @@ using System.Diagnostics.SymbolStore;
 
 using PHP.Core.Emit;
 using PHP.Core.AST;
+using PHP.Core.Compiler.AST;
 
 namespace PHP.Core
 {

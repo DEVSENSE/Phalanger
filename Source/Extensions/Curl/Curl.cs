@@ -353,6 +353,11 @@ namespace PHP.Library.Curl
 
         #region curl_multi_info_read
 
+        /// <summary>
+        /// Get information about the current transfers.
+        /// </summary>
+        /// <param name="mh">A cURL multi handle returned by curl_multi_init().</param>
+        /// <returns>On success, returns an associative array for the message, FALSE on failure.</returns>
         [ImplementsFunction("curl_multi_info_read")]
         public static object MultiInfoRead(PhpResource mh)
         {
@@ -415,6 +420,11 @@ namespace PHP.Library.Curl
 
         #region curl_multi_select
 
+        /// <summary>
+        /// Wait for activity on any curl_multi connection.
+        /// </summary>
+        /// <param name="mh">A cURL multi handle returned by curl_multi_init().</param>
+        /// <returns>On success, returns the number of descriptors contained in the descriptor sets. On failure, this function will return -1 on a select failure or timeout (from the underlying select system call).</returns>
         [ImplementsFunction("curl_multi_select")]
         public static int MultiSelect(PhpResource mh)
         {

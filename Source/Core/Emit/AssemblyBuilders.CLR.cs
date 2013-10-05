@@ -18,6 +18,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 
 using PHP.Core;
+using PHP.Core.Compiler.AST;
 using PHP.Core.Reflection;
 using System.Collections.Generic;
 using System.Text;

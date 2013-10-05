@@ -30,50 +30,20 @@ namespace PHP.Core.Compiler.AST
         /// <summary>
         /// Gets map of <see cref="AstNode"/> types corresponding to <see cref="INodeCompiler"/> types.
         /// </summary>
-        internal static Dictionary<Type, Type>/*!*/AstNodeExtensionTypes
+        internal static Dictionary<Type, NodeCompilers.NodeCompilerInfo>/*!*/AstNodeExtensionTypes
         {
             get
             {
                 if (_astNodeExtensionTypes == null)
                     lock (typeof(AstNodeExtension))
                         if (_astNodeExtensionTypes == null)
-                            _astNodeExtensionTypes = CreateNodeExtensionTypes();
+                            _astNodeExtensionTypes = NodeCompilers.CreateNodeExtensionTypes();
 
                 return _astNodeExtensionTypes;
             }
         }
-        private static Dictionary<Type, Type> _astNodeExtensionTypes = null;
+        private static Dictionary<Type, NodeCompilers.NodeCompilerInfo> _astNodeExtensionTypes = null;
         
-        /// <summary>
-        /// Creates map of <see cref="AstNode"/> types corresponding to <see cref="INodeCompiler"/> types.
-        /// </summary>
-        /// <returns>Dictionary of <see cref="AstNode"/> types each mapped to <see cref="INodeCompiler"/> type.</returns>
-        private static Dictionary<Type, Type>/*!*/CreateNodeExtensionTypes()
-        {
-            // like MEF, but simpler
-
-            // lists all types within NodeCompilers,
-            // maps types defining INodeCompiler with corresponding AstNode type
-
-            var types = typeof(NodeCompilers).GetNestedTypes(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
-            var dict = new Dictionary<Type, Type>(types.Length);
-            for (int i = 0; i < types.Length; i++)
-            {
-                var t = types[i];
-                if (!t.IsAbstract && typeof(INodeCompiler).IsAssignableFrom(t))
-                {
-                    var attrs = t.GetCustomAttributes(typeof(NodeCompilerAttribute), false);
-                    if (attrs != null && attrs.Length != 0)
-                    {
-                        var attr = (NodeCompilerAttribute)attrs[0];
-                        dict.Add(attr.AstNodeType, t);
-                    }
-                }
-            }
-
-            return dict;
-        }
-
         /// <summary>
         /// Key to <see cref="AstNode.Properties"/> referencing its <see cref="INodeCompiler"/>.
         /// </summary>
@@ -84,15 +54,13 @@ namespace PHP.Core.Compiler.AST
         /// </summary>
         /// <param name="node"><see cref="AstNode"/> instance.</param>
         /// <returns>Associuated <see cref="INodeCompiler"/> instance.</returns>
-        private static T/*!*/NodeCompiler<T>(this AstNode/*!*/node) where T : class
+        public static T/*!*/NodeCompiler<T>(this AstNode/*!*/node) where T : class
         {
-            Debug.Assert(typeof(INodeCompiler).IsAssignableFrom(typeof(T)));
-
             var obj = node.Properties[AstNodeCompilerKey] as T;
             if (obj == null)
             {
-                node.Properties[AstNodeCompilerKey] = obj = CreateNodeCompiler(node.GetType()) as T;
-                Debug.Assert(obj != null);
+                node.Properties[AstNodeCompilerKey] = obj = CreateNodeCompiler(node) as T;
+                Debug.Assert(obj != null, "AstNode " + node.GetType().ToString() + " does not implement INodeCompiler of type " + typeof(T).ToString());
             }
             return obj;
         }
@@ -106,22 +74,27 @@ namespace PHP.Core.Compiler.AST
         }
 
         /// <summary>
-        /// Creates <see cref="INodeCompiler"/> instance for given <paramref name="nodeType"/>.
+        /// Creates <see cref="INodeCompiler"/> instance for given <paramref name="node"/>.
         /// </summary>
-        /// <param name="nodeType">Type of <see cref="AstNode"/>.</param>
-        /// <returns>New <see cref="INodeCompiler"/> instance for given <paramref name="nodeType"/>.</returns>
-        private static INodeCompiler/*!*/CreateNodeCompiler(Type/*!*/nodeType)
+        /// <param name="node">Corresponding <see cref="AstNode"/> instance.</param>
+        /// <returns>New <see cref="INodeCompiler"/> instance for given <paramref name="node"/>.</returns>
+        private static INodeCompiler/*!*/CreateNodeCompiler(AstNode/*!*/node)
         {
-            Debug.Assert(nodeType != null);
-            Debug.Assert(typeof(AstNode).IsAssignableFrom(nodeType));
-
-            Type/*!*/nodeCompilerType = AstNodeExtensionTypes[nodeType];
-            return (INodeCompiler)Activator.CreateInstance(nodeCompilerType);
+            var/*!*/nodeCompilerType = AstNodeExtensionTypes[node.GetType()];
+            if (nodeCompilerType.hasDefaultCtor)
+                return (INodeCompiler)Activator.CreateInstance(nodeCompilerType.type);
+            else
+                return (INodeCompiler)Activator.CreateInstance(nodeCompilerType.type, node);
         }
 
         #endregion
 
         #region Expression
+
+        public static AccessType GetAccess(this Expression/*!*/node)
+        {
+            return node.ExpressionCompiler().Access;
+        }
 
         public static Evaluation EvaluatePriorAnalysis(this Expression/*!*/node, SourceUnit/*!*/sourceUnit)
         {
@@ -157,6 +130,12 @@ namespace PHP.Core.Compiler.AST
             return nodecompiler.IsDeeplyCopied(node, reason, nestingLevel);
         }
 
+        public static bool IsCustomAttributeArgumentValue(this Expression/*!*/node)
+        {
+            var nodecompiler = node.ExpressionCompiler();
+            return nodecompiler.IsCustomAttributeArgumentValue(node);
+        }
+
         /// <summary>
         /// Whether an expression represented by this node should be stored to a temporary local if assigned.
         /// </summary>
@@ -166,6 +145,6 @@ namespace PHP.Core.Compiler.AST
             return nodecompiler.StoreOnAssignment(node);
         }
 
-        #endregion
+        #endregion        
     }
 }

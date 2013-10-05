@@ -115,10 +115,6 @@ namespace PHP.Core.Reflection
 
 	internal interface IDeclarationNode
 	{
-		Position EntireDeclarationPosition { get; }
-        ShortPosition HeadingEndPosition { get; }
-		ShortPosition DeclarationBodyPosition { get; }
-		
 		void PreAnalyze(Analyzer/*!*/ analyzer);
 		void AnalyzeMembers(Analyzer/*!*/ analyzer);
 	}

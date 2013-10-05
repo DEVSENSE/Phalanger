@@ -166,6 +166,41 @@
     <Compile Include="Compiler\AppCompiler.CLR.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Compiler\AST\TypeRef.cs" />
+    <Compile Include="Compiler\AST_\ArrayEx.cs" />
+    <Compile Include="Compiler\AST_\AssignEx.cs" />
+    <Compile Include="Compiler\AST_\BinaryEx.cs" />
+    <Compile Include="Compiler\AST_\BuiltInFunctions.cs" />
+    <Compile Include="Compiler\AST_\CallSignature.cs" />
+    <Compile Include="Compiler\AST_\ConcatEx.cs" />
+    <Compile Include="Compiler\AST_\ConstantUse.cs" />
+    <Compile Include="Compiler\AST_\CustomAttributes.cs" />
+    <Compile Include="Compiler\AST_\DirectVariableUse.cs" />
+    <Compile Include="Compiler\AST_\EchoStmt.cs" />
+    <Compile Include="Compiler\AST_\FieldUse.cs" />
+    <Compile Include="Compiler\AST_\FunctionCall.cs" />
+    <Compile Include="Compiler\AST_\FunctionDecl.cs" />
+    <Compile Include="Compiler\AST_\GlobalCode.cs" />
+    <Compile Include="Compiler\AST_\IfStmt.cs" />
+    <Compile Include="Compiler\AST_\IncDecEx.cs" />
+    <Compile Include="Compiler\AST_\IndirectVariableUse.cs" />
+    <Compile Include="Compiler\AST_\ItemUse.cs" />
+    <Compile Include="Compiler\AST_\JumpStmt.cs" />
+    <Compile Include="Compiler\AST_\LambdaFunctionExpr.cs" />
+    <Compile Include="Compiler\AST_\ListEx.cs" />
+    <Compile Include="Compiler\AST_\LoopStmt.cs" />
+    <Compile Include="Compiler\AST_\NewAndInstanceof.cs" />
+    <Compile Include="Compiler\AST_\ShellEx.cs" />
+    <Compile Include="Compiler\AST_\Statement.cs" />
+    <Compile Include="Compiler\AST_\SwitchStmt.cs" />
+    <Compile Include="Compiler\AST_\TernaryEx.cs" />
+    <Compile Include="Compiler\AST_\TryStmt.cs" />
+    <Compile Include="Compiler\AST_\TypeDecl.cs" />
+    <Compile Include="Compiler\AST_\TypeRef.cs" />
+    <Compile Include="Compiler\AST_\UnaryEx.cs" />
+    <Compile Include="Compiler\AST_\VariableUse.cs" />
+    <Compile Include="Compiler\AST_\YieldEx.cs" />
+    <Compile Include="Compiler\AST_\Literal.cs" />
     <Compile Include="Compiler\AST_\Expression.cs" />
     <Compile Include="Compiler\AST_\NodeCompiler.cs" />
     <Compile Include="Compiler\AST_\NodeCompilers.cs" />
@@ -182,7 +217,6 @@
     <Compile Include="Compiler\AST\BinaryEx.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Compiler\AST\BuiltInFunctions.CLR.cs" />
     <Compile Include="Compiler\AST\BuiltInFunctions.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -235,9 +269,6 @@
     <Compile Include="Compiler\AST\LangElement.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Compiler\AST\Linq.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Compiler\AST\ListEx.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -272,6 +303,8 @@
     <Compile Include="Compiler\AST\VariableUse.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Compiler\InclusionTypes.cs" />
+    <Compile Include="Compiler\Members.cs" />
     <Compile Include="Compiler\PropertyCollection.cs" />
     <Compile Include="Compiler\CodeGenerator\CallSitesBuilder.cs" />
     <Compile Include="Compiler\CodeGenerator\Chains.cs">
@@ -326,7 +359,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Emit\LibraryBuilder.cs" />
-    <Compile Include="Emit\LinqBuilder.cs" />
     <Compile Include="Emit\ModuleBuilders.CLR.cs" />
     <Compile Include="Emit\ModuleBuilders.cs" />
     <Compile Include="Emit\OverloadsBuilder.cs">
@@ -397,7 +429,6 @@
     <Compile Include="LibraryVerifier.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LinqHelper.cs" />
     <Compile Include="Namespaces.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -527,7 +558,7 @@
     <Compile Include="Variables.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Content Include="Compiler\AST\Doc\Nodes.xml" />
+    <Content Include="Compiler\AST_\Doc\Nodes.xml" />
     <Content Include="Doc\Common.xml" />
     <Content Include="Doc\Conversions.xml" />
     <Content Include="Doc\Externals.xml" />

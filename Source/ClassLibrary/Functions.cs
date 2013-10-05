@@ -92,7 +92,7 @@ namespace PHP.Library
 
         #region analyzer of create_function
 
-        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo CreateFunction_Analyze(
+        public static PHP.Core.Compiler.AST.FunctionCallEvaluateInfo CreateFunction_Analyze(
             Analyzer analyzer,
             PHP.Core.AST.CallSignature callSignature,
             string args, string body)
@@ -135,13 +135,13 @@ namespace PHP.Library
             analyzer.AddLambdaFcnDeclaration(decl_node);
 
             //
-            return new PHP.Core.AST.DirectFcnCall.EvaluateInfo()
+            return new PHP.Core.Compiler.AST.FunctionCallEvaluateInfo()
             {
                 //.inlined = InlinedFunction.CreateFunction;
                 emitDeclareLamdaFunction = true,
 
                 // modify declaration:
-                newRoutine = decl_node.ConvertToLambda(analyzer),
+                newRoutine = Core.Compiler.AST.FunctionDeclCompilerHelper.ConvertToLambda(decl_node, analyzer),
             };
         }
 
@@ -290,7 +290,7 @@ namespace PHP.Library
 
         #region analyzer of function_exists
 
-        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo Exists_Analyze(Analyzer analyzer, string name)
+        public static PHP.Core.Compiler.AST.FunctionCallEvaluateInfo Exists_Analyze(Analyzer analyzer, string name)
         {
             QualifiedName? alias;
 
@@ -305,7 +305,7 @@ namespace PHP.Library
             if (routine == null || routine.IsUnknown)
                 return null;  // function is not known at the compilation time. However it can be defined at the runtime (dynamic include, script library, etc).
 
-            return new PHP.Core.AST.DirectFcnCall.EvaluateInfo()
+            return new PHP.Core.Compiler.AST.FunctionCallEvaluateInfo()
             {
                 value = true    // function is definitely known the the compilation time
             };

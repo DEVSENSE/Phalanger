@@ -12,12 +12,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using PHP.Core.Parsers;
-using PHP.Core.Emit;
 using System.Reflection.Emit;
 using System.Reflection;
 using System.Diagnostics.SymbolStore;
 using System.IO;
+
+using PHP.Core.Parsers;
+using PHP.Core.Emit;
+using PHP.Core.Compiler.AST;
 
 namespace PHP.Core.Reflection
 {
@@ -720,17 +722,17 @@ namespace PHP.Core.Reflection
 
 		public void FunctionDeclarationReduced(Parser/*!*/ parser, AST.FunctionDecl/*!*/ node)
 		{
-			AddDeclaration(parser.ErrorSink, node.Function, functions);
+			AddDeclaration(parser.ErrorSink, node.GetFunction(), functions);
 		}
 
 		public void TypeDeclarationReduced(Parser/*!*/ parser, AST.TypeDecl/*!*/ node)
 		{
-			AddDeclaration(parser.ErrorSink, node.Type, types);
+			AddDeclaration(parser.ErrorSink, node.Type(), types);
 		}
 
 		public void GlobalConstantDeclarationReduced(Parser/*!*/ parser, AST.GlobalConstantDecl/*!*/ node)
 		{
-			AddDeclaration(parser.ErrorSink, node.GlobalConstant, constants);
+            AddDeclaration(parser.ErrorSink, node.GetGlobalConstant(), constants);
 		}
 
 		private void AddDeclaration(ErrorSink/*!*/ errors, IDeclaree/*!*/ member, Dictionary<QualifiedName, Declaration>/*!*/ table)
@@ -972,9 +974,9 @@ namespace PHP.Core.Reflection
 				inclusionExpressions.Add(append);
 			}
 #endif
-
-			sourceUnit.Ast.PrependedInclusion = prepend;
-			sourceUnit.Ast.AppendedInclusion = append;
+            var astcompiler = sourceUnit.Ast.NodeCompiler<IGlobalCodeCompiler>();
+            astcompiler.PrependedInclusion = prepend;
+            astcompiler.AppendedInclusion = append;
 
 			this.state = States.Parsed;
 		}
@@ -1195,17 +1197,17 @@ namespace PHP.Core.Reflection
 
 		public void FunctionDeclarationReduced(Parser/*!*/ parser, AST.FunctionDecl/*!*/ node)
 		{
-			AddDeclaration<DRoutine>(parser.ErrorSink, node.Function, visibleFunctions);
+			AddDeclaration<DRoutine>(parser.ErrorSink, node.GetFunction(), visibleFunctions);
 		}
 
 		public void TypeDeclarationReduced(Parser/*!*/ parser, AST.TypeDecl/*!*/ node)
 		{
-			AddDeclaration<DType>(parser.ErrorSink, node.Type, visibleTypes);
+            AddDeclaration<DType>(parser.ErrorSink, node.Type(), visibleTypes);
 		}
 
 		public void GlobalConstantDeclarationReduced(Parser/*!*/ parser, AST.GlobalConstantDecl/*!*/ node)
 		{
-			AddDeclaration<DConstant>(parser.ErrorSink, node.GlobalConstant, visibleConstants);
+			AddDeclaration<DConstant>(parser.ErrorSink, node.GetGlobalConstant(), visibleConstants);
 		}
 
 		private void AddDeclaration<T>(ErrorSink/*!*/ errors, IDeclaree/*!*/ member,
@@ -1291,12 +1293,13 @@ namespace PHP.Core.Reflection
 		{
 			Debug.Assert(state == States.Parsed);
 
-			foreach (AST.IncludingEx inclusion in inclusionExpressions)
+			foreach (var inclusion in inclusionExpressions)
 			{
 				Characteristic characteristic;
 				PhpSourceFile target_file;
 
 				ResolveInclusion(inclusion.InclusionType, inclusion, graphBuilder.Context, out characteristic, out target_file);
+                var inclusionCompiler = inclusion.NodeCompiler<IIncludingExCompiler>();
 
 				if (target_file != null)
 				{
@@ -1307,15 +1310,15 @@ namespace PHP.Core.Reflection
 					this.Inclusions.Add(static_inclusion);
 					includee.Includers.Add(static_inclusion);
 
-					inclusion.Inclusion = static_inclusion;
-					inclusion.Characteristic = characteristic;
+					inclusionCompiler.Inclusion = static_inclusion;
+					inclusionCompiler.Characteristic = characteristic;
 
 					graphBuilder.EdgeAdded(static_inclusion);
 				}
 				else
 				{
-					inclusion.Inclusion = null;
-					inclusion.Characteristic = Characteristic.Dynamic;
+					inclusionCompiler.Inclusion = null;
+					inclusionCompiler.Characteristic = Characteristic.Dynamic;
 				}
 			}
 

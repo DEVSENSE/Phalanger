@@ -6,6 +6,9 @@ using PHP.Core;
 
 namespace PHP.Library.Curl
 {
+    /// <summary>
+    /// Represents a cURL multi-session.
+    /// </summary>
     public class PhpCurlMultiResource : PhpResource
     {
         private readonly List<PhpCurlResource> _resources = new List<PhpCurlResource>();
@@ -48,6 +51,9 @@ namespace PHP.Library.Curl
             }
         }
 
+        /// <summary>
+        /// Closes contained cURL sessions.
+        /// </summary>
         public override void Close()
         {
             foreach (PhpCurlResource resource in _resources)

@@ -17,6 +17,7 @@ using System.IO;
 
 using PHP.Core.Parsers;
 using PHP.Core.Emit;
+using PHP.Core.Compiler.AST;
 using System.Reflection.Emit;
 using System.Reflection;
 using System.Diagnostics.SymbolStore;
@@ -431,7 +432,7 @@ namespace PHP.Core.Reflection
 
 		internal ClassConstant TryResolveClassConstantGlobally(GenericQualifiedName typeName, VariableName constantName)
 		{
-			if (typeName.GenericParams.Length != 0) return null;
+			if (typeName.IsGeneric) return null;
 
 			QualifiedName? alias;
 			DType type = ResolveTypeName(typeName.QualifiedName, Scope.Global, out alias, null, Position.Invalid, false);
@@ -455,7 +456,7 @@ namespace PHP.Core.Reflection
 
 		#region Emission
 
-		internal void Emit(CodeGenerator/*!*/ codeGen)
+		internal void Emit(CodeGenerator/*!*/codeGenerator)
 		{
 			if (!compilationUnit.IsTransient || ((TransientCompilationUnit)compilationUnit).EvalKind == EvalKinds.SyntheticEval)
 				this.symbolDocumentWriter = compilationUnit.GetSymbolDocumentWriter(sourceFile.FullPath);
@@ -464,7 +465,7 @@ namespace PHP.Core.Reflection
 			this.namingContextFieldBuilder = EmitInitNamingContext();
 
 			// emit AST content:
-			ast.Emit(codeGen);
+            ast.Emit(codeGenerator);
 		}
 
 		private FieldBuilder EmitInitNamingContext()

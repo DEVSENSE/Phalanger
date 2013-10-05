@@ -97,20 +97,9 @@ namespace PHP.Core.Reflection
 		#endregion
 	}
 
-	#region InclusionTypes
+	#region InclusionTypesEnum
 
-	/// <summary>
-	/// Type of inclusion.
-	/// </summary>
-	/// <remarks>
-	/// The properties of inclusion types are defined by IsXxxInclusion methods.
-	/// </remarks>
-	public enum InclusionTypes
-	{
-		Include, IncludeOnce, Require, RequireOnce, Prepended, Appended, RunSilverlight
-	}
-
-    [DebuggerNonUserCode]
+	[DebuggerNonUserCode]
     public static partial class InclusionTypesEnum
 	{
 		/// <summary>

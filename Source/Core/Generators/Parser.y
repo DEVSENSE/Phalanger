@@ -10,8 +10,6 @@ distributed with PHP5 and PHP6 interpreter.
 
 using PHP.Core;
 using PHP.Core.AST;
-using PHP.Core.AST.Linq;
-using PHP.Core.Reflection;
 using PHP.Core.Parsers.GPPG;
 using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeRef>, System.Collections.Generic.List<PHP.Core.AST.ActualParam>, System.Collections.Generic.List<PHP.Core.AST.Expression>>;
 
@@ -45,10 +43,9 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 /*
   Ambiguities:
   
-	%expect 5
+	%expect 4
 	
   2 due to the dangling elseif/else.  Solved by shift.
-  1 due to LINQ. Solved by shift (from ... select ... from ... select as in ...).
   1 due to arrays within encapsulated strings. Solved by shift. 
   1 due to objects within encapsulated strings.  Solved by shift.
   
@@ -106,8 +103,6 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 
 %left T_INCLUDE T_INCLUDE_ONCE T_EVAL T_REQUIRE T_REQUIRE_ONCE
 %left ','
-
-%left T_LINQ_SELECT T_LINQ_BY 
 
 %left T_LOGICAL_OR
 %left T_LOGICAL_XOR
@@ -268,16 +263,6 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 
 %token T_IMPORT		// pure mode
 
-%token T_LINQ_SELECT
-%token T_LINQ_BY
-%token T_LINQ_WHERE
-%token T_LINQ_DESCENDING
-%token T_LINQ_ASCENDING
-%token T_LINQ_ORDERBY
-%token T_LINQ_GROUP
-%token T_LINQ_FROM
-%token T_LINQ_IN
-
 %token T_BOOL_TYPE
 %token T_INT_TYPE
 %token T_INT64_TYPE
@@ -419,9 +404,9 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> variable_name                           
 
 %type<Object> generic_dynamic_args_opt                // List<TypeRef>!
-%type<Object> primitive_type                          // PrimitiveType
+%type<Object> primitive_type                          // PrimitiveTypeName
 
-%type<Object> type_hint_opt                           // object (null, GenericQualifiedName, PrimitiveType)
+%type<Object> type_hint_opt                           // object (null, GenericQualifiedName, PrimitiveTypeName)
 %type<Object> chain_base_with_function_calls       
 %type<Object> keyed_simple_field_name 
 %type<Object> chain                                   // VarLikeConstructUse 
@@ -478,19 +463,6 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> lambda_function_use_var					// FormalParam!
 %type<Object> lambda_function_use_var_list				// List<FormalParam>!
 %type<Object> lambda_function_use_vars					// List<FormalParam>
-
-%type<Object> linq_query_expression 
-%type<Object> linq_from_clause 
-%type<Object> linq_generator_list 
-%type<Object> linq_generator
-%type<Object> linq_query_body 
-%type<Object> linq_from_where_clause_list_opt 
-%type<Object> linq_where_clause 
-%type<Object> linq_orderby_clause_opt 
-%type<Object> linq_ordering_list 
-%type<Object> linq_ordering_clause 
-%type<Object> linq_select_groupby_clause 
-%type<Object> linq_into_clause_opt
 
 %type<Integer> modifier_opt                  // PhpMemberAttributes
 %type<Integer> visibility_opt                // PhpMemberAttributes
@@ -849,14 +821,14 @@ type_parameter_with_default_decl:
 ;
 
 primitive_type:
-    T_BOOL_TYPE     { $$ = PrimitiveType.Boolean; }
-  | T_INT_TYPE      { $$ = PrimitiveType.Integer; }
-  | T_INT64_TYPE    { $$ = PrimitiveType.LongInteger; }
-  | T_DOUBLE_TYPE   { $$ = PrimitiveType.Double; }
-  | T_STRING_TYPE   { $$ = PrimitiveType.String; }
-  | T_RESOURCE_TYPE { $$ = PrimitiveType.Resource; }
-  | T_OBJECT_TYPE   { $$ = PrimitiveType.Object; }
-  | T_ARRAY         { $$ = PrimitiveType.Array; }
+    T_BOOL_TYPE     { $$ = new PrimitiveTypeName(QualifiedName.Boolean); }
+  | T_INT_TYPE      { $$ = new PrimitiveTypeName(QualifiedName.Integer); }
+  | T_INT64_TYPE    { $$ = new PrimitiveTypeName(QualifiedName.LongInteger); }
+  | T_DOUBLE_TYPE   { $$ = new PrimitiveTypeName(QualifiedName.Double); }
+  | T_STRING_TYPE   { $$ = new PrimitiveTypeName(QualifiedName.String); }
+  | T_RESOURCE_TYPE { $$ = new PrimitiveTypeName(QualifiedName.Resource); }
+  | T_OBJECT_TYPE   { $$ = new PrimitiveTypeName(QualifiedName.Object); }
+  | T_ARRAY         { $$ = new PrimitiveTypeName(QualifiedName.Array); }
 ;
 
 
@@ -1289,7 +1261,7 @@ formal_parameter:
 type_hint_opt:
 		/* empty */                { $$ = null; }	
 	|	qualified_static_type_ref  { $$ = $1; }
-	|	T_CALLABLE				   { $$ = PrimitiveType.Callable; }
+	|	T_CALLABLE				   { $$ = new PrimitiveTypeName(QualifiedName.Callable); }
 	|	primitive_type             { $$ = $1; }
 ;
 
@@ -1734,8 +1706,6 @@ expr_without_chain:
 	|	T_REQUIRE expr		              { $$ = new IncludingEx(sourceUnit, GetScope(), IsCurrentCodeConditional, @$, InclusionTypes.Require, (Expression)$2); reductionsSink.InclusionReduced(this, (IncludingEx)$$); }
 	|	T_REQUIRE_ONCE expr		          { $$ = new IncludingEx(sourceUnit, GetScope(), IsCurrentCodeConditional, @$, InclusionTypes.RequireOnce, (Expression)$2); reductionsSink.InclusionReduced(this, (IncludingEx)$$); }
 
-	| linq_query_expression				{ $$ = $1; }
-
 	| lambda_function_expression		{ $$ = $1; }
 ;
 
@@ -1822,100 +1792,6 @@ cast_operation:
   | T_UNSET_CAST                { $$ = (int)Operations.UnsetCast; }
 ;
 
-linq_query_expression:
-    linq_from_clause linq_query_body 
-    { 
-      $$ = new LinqExpression(@$, (FromClause)$1, (QueryBody)$2);
-      scanner.LeaveLinq();
-    }
-;
-  
-linq_from_clause: 
-    T_LINQ_FROM { scanner.EnterLinq(); } linq_generator_list 
-    { 
-      $$ = new FromClause(@$, (List<Generator>)$3); 
-    }
-;
-
-linq_generator_list:
-    linq_generator_list ',' linq_generator { $$ = $1; ListAdd<Generator>($$, $3); }
-  | linq_generator                         { $$ = NewList<Generator>($1); }
-;  
-
-linq_generator:
-    expr T_AS T_VARIABLE 
-    {
-      $$ = new Generator(@$, (Expression)$1, null, new DirectVarUse(@3, (string)$3));
-    }
-  | expr T_AS T_VARIABLE T_DOUBLE_ARROW T_VARIABLE 
-    {
-      $$ = new Generator(@$, (Expression)$1, new DirectVarUse(@3, (string)$3), new DirectVarUse(@5, (string)$5)); 
-    }
-;
-
-linq_query_body:
-    linq_from_where_clause_list_opt
-    linq_orderby_clause_opt
-    linq_select_groupby_clause
-    linq_into_clause_opt 
-    { 
-      $$ = new QueryBody((List<FromWhereClause>)$1, (OrderByClause)$2, $3, (IntoClause)$4);
-    }
-;
-
-linq_from_where_clause_list_opt:
-    /* empty */                                       { $$ = new List<FromWhereClause>(); }
-  | linq_from_where_clause_list_opt linq_from_clause  { $$ = $1; ListAdd<FromWhereClause>($$, $2); }
-  | linq_from_where_clause_list_opt linq_where_clause { $$ = $1; ListAdd<FromWhereClause>($$, $2); }
-;
-
-linq_where_clause: 
-    T_LINQ_WHERE expr { $$ = new WhereClause(@$, (Expression)$2); }
-;                     
-
-linq_orderby_clause_opt:
-    /* empty */                                 { $$ = null; }
-  | T_LINQ_ORDERBY linq_ordering_list           { $$ = new OrderByClause(@$, (List<OrderingClause>)$2); }
-;
-
-linq_ordering_list:
-    linq_ordering_list ',' linq_ordering_clause { $$ = $1; ListAdd<OrderingClause>($$, $3); }
-  | linq_ordering_clause                        { $$ = NewList<OrderingClause>($1); }
-;
-
-linq_ordering_clause:
-    expr                   { $$ = new OrderingClause(@$, (Expression)$1, Ordering.Default); }                   
-  | expr T_LINQ_DESCENDING { $$ = new OrderingClause(@$, (Expression)$1, Ordering.Descending); } 
-  | expr T_LINQ_ASCENDING  { $$ = new OrderingClause(@$, (Expression)$1, Ordering.Ascending); }  
-;  
-    
-linq_select_groupby_clause:
-    T_LINQ_SELECT expr               { $$ = new SelectClause(@$, (Expression)$2); }
-  | T_LINQ_GROUP expr T_LINQ_BY expr { $$ = new GroupByClause(@$, (Expression)$2, (Expression)$4); }
-;  
-
-linq_into_clause_opt:
-    /* empty */ 
-    { 
-      $$ = null; 
-    }
-  | T_AS T_VARIABLE T_LINQ_IN linq_query_body 
-    { 
-      DirectVarUse value_var = new DirectVarUse(@2, (string)$2);
-      QueryBody body = (QueryBody)$4;
-      
-      $$ = new IntoClause(@$, null, value_var, body); 
-    }
-  | T_AS T_VARIABLE T_DOUBLE_ARROW T_VARIABLE T_LINQ_IN linq_query_body 
-    { 
-      DirectVarUse key_var = new DirectVarUse(@2, (string)$2);
-      DirectVarUse value_var = new DirectVarUse(@4, (string)$4);
-      QueryBody body = (QueryBody)$6;
-      
-      $$ = new IntoClause(@$, key_var, value_var, body); 
-    }  
-;
-
 function_call:
 		qualified_namespace_name generic_dynamic_args_opt '(' actual_argument_list_opt ')' 
 		{ 
@@ -1971,7 +1847,7 @@ type_ref:
 	
 	|	primitive_type
 		{ 
-			$$ = new PrimitiveTypeRef(@$, (PrimitiveType)$1); 
+			$$ = new PrimitiveTypeRef(@$, (PrimitiveTypeName)$1);
 		}
 
 	|	T_STATIC

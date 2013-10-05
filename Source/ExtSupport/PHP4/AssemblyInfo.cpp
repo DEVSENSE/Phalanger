@@ -23,7 +23,7 @@ using namespace System::Runtime::CompilerServices;
 [assembly:AssemblyCopyrightAttribute("Copyright (c) 2004-2010 Tomas Matousek, Ladislav Prosek, Vaclav Novak, Pavel Novak, Jan Benda, Martin Maly")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];		
-[assembly:AssemblyVersionAttribute("3.0.0.0")];
+[assembly:AssemblyVersionAttribute("4.0.0.0")];
 
 // The .snk file is specified in Linker property pages (it avoids problems with post-processing
 // the already-signed assembly with mt.exe).

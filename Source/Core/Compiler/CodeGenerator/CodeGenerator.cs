@@ -24,6 +24,7 @@ using PHP.Core.AST;
 using PHP.Core.Emit;
 using PHP.Core.Parsers;
 using PHP.Core.Reflection;
+using PHP.Core.Compiler.AST;
 
 namespace PHP.Core
 {
@@ -41,9 +42,6 @@ namespace PHP.Core
 		/// </summary>
 		public ILEmitter IL { get { return il; } set { il = value; } }
 		private ILEmitter il;
-
-		public LinqBuilder LinqBuilder { get { return linqBuilder; } set { linqBuilder = value; } }
-		private LinqBuilder linqBuilder;
 
 		/// <summary>
 		/// The current compilation context.
@@ -320,15 +318,6 @@ namespace PHP.Core
 
 					case PhpTypeCode.Object:
 						// nop //
-						break;
-
-					case PhpTypeCode.LinqSource:
-						// LOAD Convert.ObjectToLinqSource(<variable>, <type desc>);
-                        TypeContextPlace.EmitLoad(il);
-                        il.Emit(OpCodes.Call, Methods.Convert.ObjectToLinqSource);
-						
-						// nop //
-
 						break;
 
 					default:
@@ -1483,7 +1472,7 @@ namespace PHP.Core
 			}
 
 			IndirectVarUse indirect_var = (IndirectVarUse)variable;
-			indirect_var.EmitSwitch(this, new IndirectVarUse.SwitchMethod(indirect_var.LoadLocal));
+			indirect_var.EmitSwitch_LoadLocal(this);
 			il.Emit(OpCodes.Ldnull);
 			il.Emit(OpCodes.Ceq);
 			il.Emit(OpCodes.Ldc_I4_0);
@@ -1869,8 +1858,7 @@ namespace PHP.Core
 			DefineLabels(routine.Builder.Labels);
 
 			// emits function's body:
-			foreach (Statement statement in body)
-				statement.Emit(this);
+            body.Emit(this);
 
 			// marks ending "}" as the last sequence point of the routine:
 			// (do not mark it in lambda functions as they are created from source code without braces);
@@ -2252,7 +2240,7 @@ namespace PHP.Core
 				return;
 			}
 
-			switch (callExpression.Access)
+			switch (callExpression.GetAccess())
 			{
 				case AccessType.None:
 
@@ -2312,7 +2300,8 @@ namespace PHP.Core
 		/// </summary>
 		public void EmitRoutineEpilogue(GlobalCode globalCode, bool transient)
 		{
-            if (globalCode != null && globalCode.AppendedInclusion != null)
+            IncludingEx appendedInclusion;
+            if (globalCode != null && (appendedInclusion = globalCode.NodeCompiler<IGlobalCodeCompiler>().AppendedInclusion) != null)
 			{
 				// marks the return label, however return value is ignored since it is 
 				// overriden by appended script's return value (TODO: HOW DOES PHP BEHAVE?):
@@ -2320,7 +2309,7 @@ namespace PHP.Core
 					il.MarkLabel(ReturnLabel);
 
 				// IF (<is main script>) LOAD <appended file script>.Main(...):
-				globalCode.AppendedInclusion.Emit(this);
+				appendedInclusion.Emit(this);
 
 				// returns the value retured by the appended script:
 				il.Emit(OpCodes.Ret);
@@ -2984,6 +2973,25 @@ namespace PHP.Core
         {
             Debug.Assert(expression != null);
             MarkSequencePoint(expression.Position);
+        }
+
+        internal void MarkSequencePoint(List<Expression>/*!*/expressions)
+        {
+            if (expressions != null && expressions.Count != 0)
+            {
+                if (expressions.Count == 1)
+                {
+                    MarkSequencePoint(expressions[0]);
+                }
+                else
+                {
+                    MarkSequencePoint(
+                        expressions[0].Position.FirstLine,
+                        expressions[0].Position.FirstColumn,
+                        expressions[expressions.Count - 1].Position.LastLine,
+                        expressions[expressions.Count - 1].Position.LastColumn + 1);
+                }
+            }
         }
 
         internal void MarkSequencePoint(Position position)

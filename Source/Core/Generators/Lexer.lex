@@ -220,16 +220,6 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"object"           { return Tokens.T_OBJECT_TYPE; }
 <ST_IN_SCRIPTING>"clrtypeof"        { return Tokens.T_TYPEOF; }
 
-<ST_IN_SCRIPTING>"from"         		{ return Tokens.T_LINQ_FROM; }
-<ST_IN_SCRIPTING>"where"        		{ return (InLinq) ? Tokens.T_LINQ_WHERE : Tokens.T_STRING; }
-<ST_IN_SCRIPTING>"orderby"      		{ return (InLinq) ? Tokens.T_LINQ_ORDERBY : Tokens.T_STRING; }
-<ST_IN_SCRIPTING>"descending"   		{ return (InLinq) ? Tokens.T_LINQ_DESCENDING : Tokens.T_STRING; }
-<ST_IN_SCRIPTING>"ascending"    		{ return (InLinq) ? Tokens.T_LINQ_ASCENDING : Tokens.T_STRING; }
-<ST_IN_SCRIPTING>"select"       		{ return (InLinq) ? Tokens.T_LINQ_SELECT : Tokens.T_STRING; }
-<ST_IN_SCRIPTING>"group"        		{ return (InLinq) ? Tokens.T_LINQ_GROUP : Tokens.T_STRING; }
-<ST_IN_SCRIPTING>"in"           		{ return (InLinq) ? Tokens.T_LINQ_IN : Tokens.T_STRING; }
-<ST_IN_SCRIPTING>"by"           		{ return (InLinq) ? Tokens.T_LINQ_BY : Tokens.T_STRING; }
-
 <ST_IN_SCRIPTING>"partial"          { return Tokens.T_PARTIAL; }
 
 <ST_IN_SCRIPTING>"<:"           		{ return Tokens.T_LGENERIC; }
