@@ -686,7 +686,7 @@ namespace PHP.Library.SPL
 
             DRoutineDesc method;
 
-            if (typedesc.GetMethod(DObject.SpecialMethodNames.Construct, null, out method) == GetMemberResult.NotFound)
+            if (typedesc.GetMethod(Name.SpecialMethodNames.Construct, null, out method) == GetMemberResult.NotFound)
                 return false;
 
             // construct new ReflectionClass with resolved TypeDesc
@@ -902,7 +902,7 @@ namespace PHP.Library.SPL
             DRoutineDesc m;
             return
                 desc != null &&
-                ((m = desc.GetMethod(DObject.SpecialMethodNames.Clone)) == null || !m.IsPrivate);
+                ((m = desc.GetMethod(Name.SpecialMethodNames.Clone)) == null || !m.IsPrivate);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -939,7 +939,7 @@ namespace PHP.Library.SPL
             return desc != null &&
                 !desc.IsInterface &&
                 !desc.IsAbstract &&
-                ((ctor = desc.GetMethod(DObject.SpecialMethodNames.Construct)) == null || !ctor.IsPrivate);
+                ((ctor = desc.GetMethod(Name.SpecialMethodNames.Construct)) == null || !ctor.IsPrivate);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]

@@ -18,6 +18,7 @@ using PHP.Core.Reflection;
 using System.ComponentModel;
 using System.Collections;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace PHP.Library.SPL
 {
@@ -853,7 +854,7 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual object/*bool*/isDestructor(ScriptContext context)
         {
-            return method != null && DObject.SpecialMethodNames.Destruct.Value.EqualsOrdinalIgnoreCase(method.MakeFullName());
+            return method != null && Name.SpecialMethodNames.Destruct.Value.EqualsOrdinalIgnoreCase(method.MakeFullName());
         }
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static object isDestructor(object instance, PhpStack stack)

@@ -3364,7 +3364,7 @@ namespace PHP.Core
             if (reference != null && !reference.IsSet)
             {
                 // this CT property has been unset
-                if (obj.TypeDesc.GetMethod(DObject.SpecialMethodNames.Set) != null &&
+                if (obj.TypeDesc.GetMethod(Name.SpecialMethodNames.Set) != null &&
                     obj.TypeDesc.RealType.Namespace != null &&
                     obj.TypeDesc.RealType.Namespace.StartsWith(Namespaces.Library))
                 {
@@ -3512,7 +3512,7 @@ namespace PHP.Core
             if (reference != null && !reference.IsSet)
             {
                 // this CT property has been unset
-                if (obj.TypeDesc.GetMethod(DObject.SpecialMethodNames.Set) != null &&
+                if (obj.TypeDesc.GetMethod(Name.SpecialMethodNames.Set) != null &&
                     obj.TypeDesc.RealType.Namespace != null &&
                     obj.TypeDesc.RealType.Namespace.StartsWith(Namespaces.Library))
                 {
@@ -4490,7 +4490,7 @@ namespace PHP.Core
             {
                 // if not found, perform __callStatic or __call 'magic' method lookup
                 Name callMethod = (self != null && requestedType.IsAssignableFrom(self.TypeDesc)) ?
-                    DObject.SpecialMethodNames.Call : DObject.SpecialMethodNames.CallStatic;
+                    Name.SpecialMethodNames.Call : Name.SpecialMethodNames.CallStatic;
 
                 if ((result = requestedType.GetMethod(callMethod, caller, out method)) != GetMemberResult.NotFound)
                 {

@@ -22,6 +22,7 @@ using PHP;
 using PHP.Core;
 using Convert = PHP.Core.Convert;
 using System.Web.Configuration;
+using System.Diagnostics;
 
 namespace PHP.Library
 {

@@ -1319,8 +1319,7 @@ namespace PHP.Core
 					break;
 
 				default:
-					Debug.Fail();
-					throw null;
+                    throw new ArgumentException();
 			}
 
 			PhpAssemblyBuilder assembly_builder = PhpAssemblyBuilder.Create(applicationContext, kind, ps.Pure, ps.OutPath,
@@ -1607,7 +1606,7 @@ namespace PHP.Core
                 errorSink.TreatWarningsAsErrors = compiler_config.Compiler.TreatWarningsAsErrors;
 			
 				// initializes log:
-				Debug.ConsoleInitialize(Path.GetDirectoryName(ps.OutPath));
+				DebugUtils.ConsoleInitialize(Path.GetDirectoryName(ps.OutPath));
 
 				Compile(app_context, compiler_config, errorSink, ps);
 			}

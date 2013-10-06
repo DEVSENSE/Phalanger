@@ -748,7 +748,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.Double: return CompareDouble(dx, y);
 				case Convert.NumberInfo.Integer: return CompareInteger(ix, y);
 				case Convert.NumberInfo.LongInteger: return CompareLongInteger(lx, y);
-				default: Debug.Fail(); throw null;
+				default: Debug.Fail(null); throw null;
 			}
 		}
 
@@ -769,7 +769,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.Double: return CompareDouble(dx, y);
 				case Convert.NumberInfo.Integer: return CompareLongInteger(ix, y);
 				case Convert.NumberInfo.LongInteger: return CompareLongInteger(lx, y);
-				default: Debug.Fail(); throw null;
+				default: Debug.Fail(null); throw null;
 			}
 		}
 
@@ -790,7 +790,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.Double: return CompareDouble(dx, y);
 				case Convert.NumberInfo.Integer: return CompareDouble(ix, y);
 				case Convert.NumberInfo.LongInteger: return CompareDouble(lx, y);
-				default: Debug.Fail(); throw null;
+				default: Debug.Fail(null); throw null;
 			}
 		}
 
@@ -813,7 +813,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.Double: return dx == y;
 				case Convert.NumberInfo.Integer: return ix == y;
 				case Convert.NumberInfo.LongInteger: return lx == y;
-				default: Debug.Fail(); throw null;
+				default: Debug.Fail(null); throw null;
 			}
 		}
 
@@ -836,7 +836,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.Double: return dx == y;
 				case Convert.NumberInfo.Integer: return ix == y;
 				case Convert.NumberInfo.LongInteger: return lx == y;
-				default: Debug.Fail(); throw null;
+				default: Debug.Fail(null); throw null;
 			}
 		}
 
@@ -859,7 +859,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.Double: return dx == y;
 				case Convert.NumberInfo.Integer: return ix == y;
 				case Convert.NumberInfo.LongInteger: return lx == y;
-				default: Debug.Fail(); throw null;
+				default: Debug.Fail(null); throw null;
 			}
 		}
 

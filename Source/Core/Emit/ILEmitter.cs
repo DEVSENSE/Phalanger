@@ -1103,7 +1103,7 @@ namespace PHP.Core.Emit
 				default:
 					{
 						if (type == typeof(IntPtr)) Emit(overflow ? OpCodes.Conv_Ovf_I : OpCodes.Conv_I);
-						else Debug.Fail();
+						else Debug.Fail(null);
 						break;
 					}
 			}

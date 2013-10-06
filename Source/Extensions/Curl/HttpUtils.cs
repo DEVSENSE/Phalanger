@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using PHP.Core;
 using System.IO;
+using System.Diagnostics;
 
 namespace PHP.Library.Curl
 {

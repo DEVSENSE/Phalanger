@@ -22,6 +22,7 @@ using System.Runtime.Serialization;
 using PHP;
 using PHP.Core;
 using System.Net.Mail;
+using System.Diagnostics;
 
 namespace PHP.Library
 {

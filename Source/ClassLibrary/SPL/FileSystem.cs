@@ -7,6 +7,7 @@ using System.ComponentModel;
 using PHP.Core.Reflection;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace PHP.Library.SPL
 {

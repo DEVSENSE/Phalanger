@@ -24,6 +24,7 @@ using PHP.CoreCLR;
 #else
 using System.Web;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Diagnostics;
 #endif
 
 namespace PHP.Library
@@ -1109,10 +1110,10 @@ namespace PHP.Library
 			foreach (KeyValuePair<IntStringKey, object> entry in gpcArray)
 			{
 				string name = prefix + entry.Key.ToString();
-				if (name == AutoGlobals.GlobalsName)
+				if (name == VariableName.GlobalsName)
 				{
 					PhpException.Throw(PhpError.Warning, LibResources.GetString("attempted_variable_override",
-							AutoGlobals.GlobalsName));
+                            VariableName.GlobalsName));
 				}
 				else
 				{

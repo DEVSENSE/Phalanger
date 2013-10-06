@@ -129,7 +129,6 @@ namespace PHP.Core.Emit
             // bake global functions and <Global Fields> type, only once:
             if (!globalTypeCreated)
             {
-#if !SILVERLIGHT
                 // Bake global CLR type:
 
                 // Throws No Debug Module if the globals have been already created
@@ -137,10 +136,12 @@ namespace PHP.Core.Emit
 
                 try
                 { ReflectionUtils.CreateGlobalType(RealModuleBuilder); }
-                catch (Exception) { Debug.Fail(); }
-#else
-			    // TODO: .. this is some hack.. 
+                catch (Exception)
+                {
+#if DEBUG
+                    throw;
 #endif
+                }
                 globalTypeCreated = true;
             }
 		}

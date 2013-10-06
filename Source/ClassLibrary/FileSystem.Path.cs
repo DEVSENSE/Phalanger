@@ -27,6 +27,7 @@ using System.Text.RegularExpressions;
 using DirectoryEx = PHP.CoreCLR.DirectoryEx;
 #else
 using DirectoryEx = System.IO.Directory;
+using System.Diagnostics;
 #endif
 
 namespace PHP.Library

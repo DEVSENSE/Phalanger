@@ -30,6 +30,7 @@ using PHP.CoreCLR;
 #else
 using System.Web;
 using System.Collections.Specialized;
+using System.Diagnostics;
 #endif
 
 namespace PHP.Library

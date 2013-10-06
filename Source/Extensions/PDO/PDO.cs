@@ -8,6 +8,7 @@ using System.IO;
 using System.Data;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace PHP.Library.Data
 {

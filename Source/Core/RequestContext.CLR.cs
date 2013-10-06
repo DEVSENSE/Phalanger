@@ -38,7 +38,7 @@ namespace PHP.Core
 		static RequestContext()
 		{
 			if (HttpContext.Current != null)
-				Debug.WebInitialize();
+				DebugUtils.WebInitialize();
 		}
 
 		/// <summary>

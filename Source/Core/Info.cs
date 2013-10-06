@@ -517,13 +517,13 @@ namespace PHP.Core
 			ScriptContext context = ScriptContext.CurrentContext;
 
 #if !SILVERLIGHT
-			WriteAutoGlobal(output, context, AutoGlobals.GetName, context.AutoGlobals.Get);
-			WriteAutoGlobal(output, context, AutoGlobals.PostName, context.AutoGlobals.Post);
-			WriteAutoGlobal(output, context, AutoGlobals.CookieName, context.AutoGlobals.Cookie);
-			WriteAutoGlobal(output, context, AutoGlobals.FilesName, context.AutoGlobals.Files);
-			WriteAutoGlobal(output, context, AutoGlobals.SessionName, context.AutoGlobals.Session);
-			WriteAutoGlobal(output, context, AutoGlobals.ServerName, context.AutoGlobals.Server);
-			WriteAutoGlobal(output, context, AutoGlobals.EnvName, context.AutoGlobals.Env);
+			WriteAutoGlobal(output, context, VariableName.GetName, context.AutoGlobals.Get);
+            WriteAutoGlobal(output, context, VariableName.PostName, context.AutoGlobals.Post);
+            WriteAutoGlobal(output, context, VariableName.CookieName, context.AutoGlobals.Cookie);
+            WriteAutoGlobal(output, context, VariableName.FilesName, context.AutoGlobals.Files);
+            WriteAutoGlobal(output, context, VariableName.SessionName, context.AutoGlobals.Session);
+            WriteAutoGlobal(output, context, VariableName.ServerName, context.AutoGlobals.Server);
+            WriteAutoGlobal(output, context, VariableName.EnvName, context.AutoGlobals.Env);
 #endif
 
 			output.Write(htmlTableEnd);

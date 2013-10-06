@@ -28,6 +28,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 
 using PHP.Core;
+using System.Diagnostics;
 #if SILVERLIGHT
 using PHP.CoreCLR;
 #endif

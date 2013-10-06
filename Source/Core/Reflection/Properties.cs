@@ -1864,14 +1864,14 @@ namespace PHP.Core.Reflection
 		internal override AssignmentCallback EmitSet(CodeGenerator/*!*/ codeGenerator, IPlace instance, bool isRef,
 			ConstructedType constructedType, bool runtimeVisibilityCheck)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			return null;
 		}
 
 		internal override void EmitUnset(CodeGenerator/*!*/ codeGenerator, IPlace/*!*/ instance,
 			ConstructedType constructedType, bool runtimeVisibilityCheck)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		#endregion

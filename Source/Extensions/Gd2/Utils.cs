@@ -6,6 +6,7 @@ using System.Resources;
 using System.Reflection;
 
 using PHP.Core;
+using System.Diagnostics;
 
 namespace PHP.Library.Gd2
 {

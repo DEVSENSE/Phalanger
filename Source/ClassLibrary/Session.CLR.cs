@@ -27,6 +27,7 @@ using PHP.Core.Reflection;
 using System.Web.Configuration;
 using System.Security.Cryptography;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PHP.Library
 {
@@ -503,10 +504,10 @@ namespace PHP.Library
                 {
                     var dobj = (DObject)obj;
 
-                    if (dobj.TypeDesc.GetMethod(DObject.SpecialMethodNames.Wakeup) != null)
+                    if (dobj.TypeDesc.GetMethod(Core.Name.SpecialMethodNames.Wakeup) != null)
                         throw new ArgumentException("__wakeup not handled yet in aspnet session handler!");
 
-                    if (dobj.TypeDesc.GetMethod(DObject.SpecialMethodNames.Sleep) != null)
+                    if (dobj.TypeDesc.GetMethod(Core.Name.SpecialMethodNames.Sleep) != null)
                         throw new ArgumentException("__sleep not handled yet in aspnet session handler!");
                 }
             }

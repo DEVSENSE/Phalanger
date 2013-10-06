@@ -537,7 +537,7 @@ namespace PHP.Core.Reflection
             if (phpTypeAttr != null && phpTypeAttr.PHPTypeName != null)
                 return phpTypeAttr.PHPTypeName;
             else
-                return QualifiedName.SubstringWithoutBackquoteAndHash(realType.Name, 0, realType.Name.Length);
+                return ClrNotationUtils.SubstringWithoutBackquoteAndHash(realType.Name, 0, realType.Name.Length);
         }
 
         /// <summary>
@@ -627,7 +627,7 @@ namespace PHP.Core.Reflection
             if (type.DeclaringType != null)
                 GetNestedTypeNames(type.DeclaringType, result);
 
-            result.Append(QualifiedName.SubstringWithoutBackquoteAndHash(type.Name, 0, type.Name.Length));
+            result.Append(ClrNotationUtils.SubstringWithoutBackquoteAndHash(type.Name, 0, type.Name.Length));
             result.Append(QualifiedName.Separator);
         }
 
@@ -1645,7 +1645,7 @@ namespace PHP.Core.Reflection
 
 				case ConstructedTypeStart:
 				case ConstructedTypeEnd:
-					Debug.Fail();
+					Debug.Fail(null);
 					throw null;
 
 				case NamedType:
@@ -1760,39 +1760,39 @@ namespace PHP.Core.Reflection
 
 		protected override DType/*!*/ Reflect()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			return null;
 		}
 
 		protected override void ReflectInterfaces()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		protected override void ReflectMethods()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		protected override void ReflectProperties()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		protected override void ReflectConstants()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		public override object New(PhpStack stack, DTypeDesc caller, NamingContext nameContext)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			return null;
 		}
 
 		public override object New(ScriptContext context)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			return null;
 		}
 
@@ -1828,39 +1828,39 @@ namespace PHP.Core.Reflection
 
 		protected override DType/*!*/ Reflect()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			return null;
 		}
 
 		protected override void ReflectInterfaces()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		protected override void ReflectMethods()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		protected override void ReflectProperties()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		protected override void ReflectConstants()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		public override object New(PhpStack stack, DTypeDesc caller, NamingContext nameContext)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			return null;
 		}
 
 		public override object New(ScriptContext context)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			return null;
 		}
 
@@ -1925,31 +1925,31 @@ namespace PHP.Core.Reflection
 
 		protected override DType/*!*/ Reflect()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			throw null;
 		}
 
 		protected override void ReflectInterfaces()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			throw null;
 		}
 
 		protected override void ReflectMethods()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			throw null;
 		}
 
 		protected override void ReflectProperties()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			throw null;
 		}
 
 		protected override void ReflectConstants()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		#endregion
@@ -1958,13 +1958,13 @@ namespace PHP.Core.Reflection
 
 		public override object New(PhpStack/*!*/ stack, DTypeDesc caller, NamingContext nameContext)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			return null;
 		}
 
 		public override object New(ScriptContext/*!*/ context)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			return null;
 		}
 
@@ -1990,7 +1990,7 @@ namespace PHP.Core.Reflection
 				if (_genericParameters == null)
 				{
 					_genericParameters = genericType.ReflectGenericParameters(null, null, null);
-					Debug.AssertAllNonNull(_genericParameters);
+                    DebugHelper.AssertAllNonNull(_genericParameters);
 				}
 
 				return _genericParameters;
@@ -2008,7 +2008,7 @@ namespace PHP.Core.Reflection
 
 		public GenericTypeDefinition(DTypeDesc/*!*/ genericType, GenericParameterDesc[]/*!!*/ genericParameters)
 		{
-			Debug.AssertAllNonNull(genericParameters);
+            DebugHelper.AssertAllNonNull(genericParameters);
 			Debug.Assert(genericType != null && genericParameters.Length > 0);
 
 			this.genericType = genericType;
@@ -2077,13 +2077,13 @@ namespace PHP.Core.Reflection
 
 		public override object New(PhpStack/*!*/ stack, DTypeDesc caller, NamingContext nameContext)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			return null;
 		}
 
 		public override object New(ScriptContext/*!*/ context)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			return null;
 		}
 
@@ -2294,19 +2294,19 @@ namespace PHP.Core.Reflection
 		protected override void ReflectMethods()
 		{
 			// TODO: fill methods
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		protected override void ReflectProperties()
 		{
 			// TODO: fill properties
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		protected override void ReflectConstants()
 		{
 			// TODO: fill constants
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		#endregion
@@ -2432,7 +2432,7 @@ namespace PHP.Core.Reflection
 		{
 			// this type-desc represents non-generic type or the generic definition => create the ClrType for it:
 			if (!RealType.IsGenericType || RealType.IsGenericTypeDefinition)
-				return new PhpType(this, QualifiedName.FromClrNotation(RealType));
+				return new PhpType(this, ClrNotationUtils.FromClrNotation(RealType));
 
 			// this type-desc represents a generic type instantiation; 
 			// all instantiations of a single generic type share the same ClrType => do not create new ClrType;
@@ -3136,7 +3136,7 @@ namespace PHP.Core.Reflection
 		{
 			// this type-desc represents non-generic type or the generic definition => create the ClrType for it:
 			if (!RealType.IsGenericType || RealType.IsGenericTypeDefinition)
-				return new ClrType(this, QualifiedName.FromClrNotation(RealType.FullName, true));
+				return new ClrType(this, ClrNotationUtils.FromClrNotation(RealType.FullName, true));
 
 			// this type-desc represents a generic type instantiation; 
 			// all instantiations of a single generic type share the same ClrType => do not create new ClrType;

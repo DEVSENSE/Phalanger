@@ -21,6 +21,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using PHP.Core;
 using PHP.Core.Reflection;
+using System.Diagnostics;
 
 namespace PHP.Library
 {

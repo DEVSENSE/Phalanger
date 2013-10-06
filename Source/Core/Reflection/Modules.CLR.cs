@@ -19,6 +19,7 @@ using System.Reflection;
 using System.Threading;
 using PHP.Core.Emit;
 using System.Reflection.Emit;
+using System.Diagnostics;
 
 namespace PHP.Core.Reflection
 {
@@ -422,7 +423,7 @@ namespace PHP.Core.Reflection
                 if (PhpType.IsPhpRealType(type) && !PhpType.IsRealConditionalDefinition(type))
                 {
                     // converts CLR namespaces and nested types to PHP namespaces:
-                    string full_name = QualifiedName.FromClrNotation(type.FullName, true).ToString();
+                    string full_name = ClrNotationUtils.FromClrNotation(type.FullName, true).ToString();
 
                     // Creating PhpTypeDesc with cache lookup since this type can be in the cache already:
                     // Also force PHP type, because we already checked PhpType.IsPhpRealType(type)
@@ -517,7 +518,7 @@ namespace PHP.Core.Reflection
             {
                 // TODO: namespaces!!
 
-                GlobalConstant constant = new GlobalConstant(this, QualifiedName.FromClrNotation(field.Name, true), field);
+                GlobalConstant constant = new GlobalConstant(this, ClrNotationUtils.FromClrNotation(field.Name, true), field);
                 constant.SetValue(Convert.ClrLiteralToPhpLiteral(field.GetValue(null)));
                 constants.Add(field.Name, constant.ConstantDesc, false);
             }            

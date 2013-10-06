@@ -6,6 +6,7 @@ using System.Text;
 using PHP.Core;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 
 namespace PHP.Library.Gd2
 {

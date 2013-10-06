@@ -5,6 +5,7 @@ using System.Text;
 using PHP.Core;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 
 namespace PHP.Library.Data
 {

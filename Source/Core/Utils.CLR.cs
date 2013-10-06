@@ -34,9 +34,9 @@ namespace PHP.Core
 	#region Debug
 
 	/// <summary>
-	/// Support for debugging (replaces <see cref="System.Diagnostics.Debug"/>).
+	/// Support for debugging.
 	/// </summary>
-	public static partial class Debug
+	public static partial class DebugUtils
 	{
 		/// <summary>
 		/// Initializes log logging in the context of web server.
@@ -502,7 +502,7 @@ namespace PHP.Core
                     else if (child.Name == "remove")
                         libraries.RemoveLibrary(assembly_name, uri);
                     else
-                        Debug.Fail();
+                        Debug.Fail(null);
 				}
                 else if (child.Name == "clear")
                 {

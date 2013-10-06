@@ -8,7 +8,8 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.XPath;
 
-using PHP.Core; // StringUtils
+using PHP.Core;
+using System.Diagnostics; // StringUtils
 
 namespace HtmlAgilityPack
 {

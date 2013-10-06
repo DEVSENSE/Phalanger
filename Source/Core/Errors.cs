@@ -32,43 +32,43 @@ using System.Web; // ReportError(config, HttpContext.Current.Response.Output, er
 
 namespace PHP.Core
 {
-	#region Enumerations
+    #region Enumerations
 
-	/// <summary>
-	/// Types of errors caused by PHP class library functions.
-	/// </summary>
-	[Flags]
-	public enum PhpError : int
-	{
-		/// <summary>Error.</summary>
-		Error = 1,
-		/// <summary>Warning.</summary>
-		Warning = 2,
-		/// <summary>Notice.</summary>
-		Notice = 8,
+    /// <summary>
+    /// Types of errors caused by PHP class library functions.
+    /// </summary>
+    [Flags]
+    public enum PhpError : int
+    {
+        /// <summary>Error.</summary>
+        Error = 1,
+        /// <summary>Warning.</summary>
+        Warning = 2,
+        /// <summary>Notice.</summary>
+        Notice = 8,
 
-		/// <summary>User error.</summary>
-		UserError = 256,
-		/// <summary>User warning.</summary>
-		UserWarning = 512,
-		/// <summary>User notice.</summary>
-		UserNotice = 1024,
+        /// <summary>User error.</summary>
+        UserError = 256,
+        /// <summary>User warning.</summary>
+        UserWarning = 512,
+        /// <summary>User notice.</summary>
+        UserNotice = 1024,
 
-		/// <summary>Parse error.</summary>
-		ParseError = 4,
+        /// <summary>Parse error.</summary>
+        ParseError = 4,
 
-		/// <summary>Core error.</summary>
-		CoreError = 16,
-		/// <summary>Core warning.</summary>
-		CoreWarning = 32,
+        /// <summary>Core error.</summary>
+        CoreError = 16,
+        /// <summary>Core warning.</summary>
+        CoreWarning = 32,
 
-		/// <summary>Compile error.</summary>
-		CompileError = 64,
-		/// <summary>Compile warning.</summary>
-		CompileWarning = 128,
+        /// <summary>Compile error.</summary>
+        CompileError = 64,
+        /// <summary>Compile warning.</summary>
+        CompileWarning = 128,
 
-		/// <summary>Strict notice (PHP 5.0+).</summary>
-		Strict = 2048,
+        /// <summary>Strict notice (PHP 5.0+).</summary>
+        Strict = 2048,
 
         /// <summary>PHP 5.2+</summary>
         RecoverableError = 4096,
@@ -76,83 +76,83 @@ namespace PHP.Core
         /// <summary>Deprecated (PHP 5.3+)</summary>
         Deprecated = 8192,
         UserDeprecated = 16384,
-	}
+    }
 
-	/// <summary>
-	/// Sets of error types.
-	/// </summary>
-	[Flags]
-	public enum PhpErrorSet : int
-	{
-		/// <summary>Empty error set.</summary>
-		None = 0,
+    /// <summary>
+    /// Sets of error types.
+    /// </summary>
+    [Flags]
+    public enum PhpErrorSet : int
+    {
+        /// <summary>Empty error set.</summary>
+        None = 0,
 
-		/// <summary>Standard errors used by Core and Class Library.</summary>
-		Standard = PhpError.Error | PhpError.Warning | PhpError.Notice | PhpError.Deprecated,
+        /// <summary>Standard errors used by Core and Class Library.</summary>
+        Standard = PhpError.Error | PhpError.Warning | PhpError.Notice | PhpError.Deprecated,
 
-		/// <summary>User triggered errors.</summary>
-		User = PhpError.UserError | PhpError.UserWarning | PhpError.UserNotice | PhpError.UserDeprecated,
+        /// <summary>User triggered errors.</summary>
+        User = PhpError.UserError | PhpError.UserWarning | PhpError.UserNotice | PhpError.UserDeprecated,
 
-		/// <summary>Core system errors.</summary>
+        /// <summary>Core system errors.</summary>
         System = PhpError.ParseError | PhpError.CoreError | PhpError.CoreWarning | PhpError.CompileError | PhpError.CompileWarning | PhpError.RecoverableError,
 
-		/// <summary>All possible errors except for the strict ones.</summary>
-		AllButStrict = Standard | User | System,
+        /// <summary>All possible errors except for the strict ones.</summary>
+        AllButStrict = Standard | User | System,
 
         /// <summary>All possible errors. 30719 in PHP 5.3</summary>
-		All = AllButStrict | PhpError.Strict,
+        All = AllButStrict | PhpError.Strict,
 
-		/// <summary>Errors which can be handled by the user defined routine.</summary>
-		Handleable = (User | Standard) & ~PhpError.Error,
+        /// <summary>Errors which can be handled by the user defined routine.</summary>
+        Handleable = (User | Standard) & ~PhpError.Error,
 
-		/// <summary>Errors which causes termination of a running script.</summary>
-		Fatal = PhpError.Error | PhpError.CompileError | PhpError.CoreError | PhpError.UserError
-	}
+        /// <summary>Errors which causes termination of a running script.</summary>
+        Fatal = PhpError.Error | PhpError.CompileError | PhpError.CoreError | PhpError.UserError
+    }
 
-	/// <summary>
-	/// Type of action being performed when PhpException static handlers (Throw, InvalidArgument, ...) are called. 
-	/// </summary>
-	public enum PhpErrorAction
-	{
-		/// <summary>An action specified by the current configuration is taken.</summary>
-		Default,
-		/// <summary>An exception is thrown.</summary>
-		Throw,
-		/// <summary>Do nothing but setting the flag.</summary>
-		None
-	}
+    /// <summary>
+    /// Type of action being performed when PhpException static handlers (Throw, InvalidArgument, ...) are called. 
+    /// </summary>
+    public enum PhpErrorAction
+    {
+        /// <summary>An action specified by the current configuration is taken.</summary>
+        Default,
+        /// <summary>An exception is thrown.</summary>
+        Throw,
+        /// <summary>Do nothing but setting the flag.</summary>
+        None
+    }
 
-	#endregion
+    #endregion
 
-	/// <summary>
-	/// Represents information about an error got from the stack.
-	/// </summary>
-	public struct ErrorStackInfo
-	{
+    /// <summary>
+    /// Represents information about an error got from the stack.
+    /// </summary>
+    public struct ErrorStackInfo
+    {
         /// <summary>
-		/// The name of the source file.
-		/// </summary>
-		public string File;
+        /// The name of the source file.
+        /// </summary>
+        public string File;
 
-		/// <summary>
-		/// The name of the PHP function which caused an error.
-		/// </summary>
-		public string Caller;
+        /// <summary>
+        /// The name of the PHP function which caused an error.
+        /// </summary>
+        public string Caller;
 
-		/// <summary>
-		/// Whether a caller is a library function.
-		/// </summary>
-		public bool LibraryCaller;
+        /// <summary>
+        /// Whether a caller is a library function.
+        /// </summary>
+        public bool LibraryCaller;
 
-		/// <summary>
-		/// A number of a line in a source file where an error occured.
-		/// </summary>
-		public int Line;
+        /// <summary>
+        /// A number of a line in a source file where an error occured.
+        /// </summary>
+        public int Line;
 
-		/// <summary>
-		/// A number of a column in a source file where an error occured.
-		/// </summary>
-		public int Column;
+        /// <summary>
+        /// A number of a column in a source file where an error occured.
+        /// </summary>
+        public int Column;
 
         /// <summary>
         /// Initializes <see cref="ErrorStackInfo"/> by given values.
@@ -170,83 +170,83 @@ namespace PHP.Core
             Column = column;
             LibraryCaller = libraryCaller;
         }
-	}
+    }
 
-	/// <summary>
-	/// Represents exceptions thrown by PHP class library functions.
-	/// </summary>
-	[Serializable]
-	[DebuggerNonUserCode]
-	public class PhpException : System.Exception
-	{
-		#region Frequently reported errors
-
-		/// <summary>
-		/// Invalid argument error.
-		/// </summary>
-		/// <param name="argument">The name of the argument being invalid.</param>
-		public static void InvalidArgument(string argument)
-		{
-			Throw(PhpError.Warning, CoreResources.GetString("invalid_argument", argument));
-		}
-
-		/// <summary>
-		/// Invalid argument error with a description of a reason. 
-		/// </summary>
-		/// <param name="argument">The name of the argument being invalid.</param>
-		/// <param name="message">The message - what is wrong with the argument. Must contain "{0}" which is replaced by argument's name.
-		/// </param>
-		public static void InvalidArgument(string argument, string message)
-		{
-			Throw(PhpError.Warning, String.Format(CoreResources.GetString("invalid_argument_with_message") + message, argument));
-		}
-
-		/// <summary>
-		/// Argument null error. Thrown when argument can't be null but it is.
-		/// </summary>
-		/// <param name="argument">The name of the argument.</param>
-		public static void ArgumentNull(string argument)
-		{
-			Throw(PhpError.Warning, CoreResources.GetString("argument_null", argument));
-		}
-
-		/// <summary>
-		/// Reference argument null error. Thrown when argument which is passed by reference is null.
-		/// </summary>
-		/// <param name="argument">The name of the argument.</param>
-		public static void ReferenceNull(string argument)
-		{
-			Throw(PhpError.Error, CoreResources.GetString("reference_null", argument));
-		}
-
-		/// <summary>
-		/// Called library function is not supported.
-		/// </summary>
-		public static void FunctionNotSupported()
-		{
-			Throw(PhpError.Warning, CoreResources.GetString("function_not_supported"));
-		}
+    /// <summary>
+    /// Represents exceptions thrown by PHP class library functions.
+    /// </summary>
+    [Serializable]
+    [DebuggerNonUserCode]
+    public class PhpException : System.Exception
+    {
+        #region Frequently reported errors
 
         /// <summary>
-		/// Called library function is not supported.
-		/// </summary>
+        /// Invalid argument error.
+        /// </summary>
+        /// <param name="argument">The name of the argument being invalid.</param>
+        public static void InvalidArgument(string argument)
+        {
+            Throw(PhpError.Warning, CoreResources.GetString("invalid_argument", argument));
+        }
+
+        /// <summary>
+        /// Invalid argument error with a description of a reason. 
+        /// </summary>
+        /// <param name="argument">The name of the argument being invalid.</param>
+        /// <param name="message">The message - what is wrong with the argument. Must contain "{0}" which is replaced by argument's name.
+        /// </param>
+        public static void InvalidArgument(string argument, string message)
+        {
+            Throw(PhpError.Warning, String.Format(CoreResources.GetString("invalid_argument_with_message") + message, argument));
+        }
+
+        /// <summary>
+        /// Argument null error. Thrown when argument can't be null but it is.
+        /// </summary>
+        /// <param name="argument">The name of the argument.</param>
+        public static void ArgumentNull(string argument)
+        {
+            Throw(PhpError.Warning, CoreResources.GetString("argument_null", argument));
+        }
+
+        /// <summary>
+        /// Reference argument null error. Thrown when argument which is passed by reference is null.
+        /// </summary>
+        /// <param name="argument">The name of the argument.</param>
+        public static void ReferenceNull(string argument)
+        {
+            Throw(PhpError.Error, CoreResources.GetString("reference_null", argument));
+        }
+
+        /// <summary>
+        /// Called library function is not supported.
+        /// </summary>
+        public static void FunctionNotSupported()
+        {
+            Throw(PhpError.Warning, CoreResources.GetString("function_not_supported"));
+        }
+
+        /// <summary>
+        /// Called library function is not supported.
+        /// </summary>
         /// <param name="function">Not supported function name.</param>
         [Emitted]
-		public static void FunctionNotSupported(string/*!*/function)
-		{
+        public static void FunctionNotSupported(string/*!*/function)
+        {
             Debug.Assert(!string.IsNullOrEmpty(function));
 
             Throw(PhpError.Warning, CoreResources.GetString("notsupported_function_called", function));
-		}
+        }
 
         /// <summary>
-		/// Calles library function is not supported.
-		/// </summary>
-		/// <param name="severity">A severity of the error.</param>
-		public static void FunctionNotSupported(PhpError severity)
-		{
-			Throw(severity, CoreResources.GetString("function_not_supported"));
-		}
+        /// Calles library function is not supported.
+        /// </summary>
+        /// <param name="severity">A severity of the error.</param>
+        public static void FunctionNotSupported(PhpError severity)
+        {
+            Throw(severity, CoreResources.GetString("function_not_supported"));
+        }
 
         ///// <summary>
         ///// Called library function is deprecated.
@@ -266,172 +266,172 @@ namespace PHP.Core
         }
 
         /// <summary>
-		/// Calls by the Class Library methods which need variables but get a <b>null</b> reference.
-		/// </summary>
-		public static void NeedsVariables()
-		{
-			Throw(PhpError.Warning, CoreResources.GetString("function_needs_variables"));
-		}
+        /// Calls by the Class Library methods which need variables but get a <b>null</b> reference.
+        /// </summary>
+        public static void NeedsVariables()
+        {
+            Throw(PhpError.Warning, CoreResources.GetString("function_needs_variables"));
+        }
 
-		/// <summary>
-		/// The value of an argument is not invalid but unsupported.
-		/// </summary>
-		/// <param name="argument">The argument which value is unsupported.</param>
+        /// <summary>
+        /// The value of an argument is not invalid but unsupported.
+        /// </summary>
+        /// <param name="argument">The argument which value is unsupported.</param>
         /// <param name="value">The value which is unsupported.</param>
-		public static void ArgumentValueNotSupported(string argument, object value)
-		{
-			Throw(PhpError.Warning, CoreResources.GetString("argument_value_not_supported", value, argument));
-		}
+        public static void ArgumentValueNotSupported(string argument, object value)
+        {
+            Throw(PhpError.Warning, CoreResources.GetString("argument_value_not_supported", value, argument));
+        }
 
-		/// <summary>
-		/// Throw by <see cref="PhpStack"/> when a peeked argument should be passed by reference but it is not.
-		/// </summary>
-		/// <param name="index">An index of the argument.</param>
-		/// <param name="calleeName">A name of the function or method being called. Can be a <B>null</B> reference.</param>
-		public static void ArgumentNotPassedByRef(int index, string calleeName)
-		{
-			if (calleeName != null)
-				Throw(PhpError.Error, CoreResources.GetString("argument_not_passed_byref_to", index, calleeName));
-			else
-				Throw(PhpError.Error, CoreResources.GetString("argument_not_passed_byref", index));
-		}
+        /// <summary>
+        /// Throw by <see cref="PhpStack"/> when a peeked argument should be passed by reference but it is not.
+        /// </summary>
+        /// <param name="index">An index of the argument.</param>
+        /// <param name="calleeName">A name of the function or method being called. Can be a <B>null</B> reference.</param>
+        public static void ArgumentNotPassedByRef(int index, string calleeName)
+        {
+            if (calleeName != null)
+                Throw(PhpError.Error, CoreResources.GetString("argument_not_passed_byref_to", index, calleeName));
+            else
+                Throw(PhpError.Error, CoreResources.GetString("argument_not_passed_byref", index));
+        }
 
-		/// <summary>
-		/// Emitted to a user function/method call which has less actual arguments than it's expected to have.
-		/// </summary>
-		/// <param name="index">An index of the parameter.</param>
-		/// <param name="calleeName">A name of the function or method being called. Can be a <B>null</B> reference.</param>
-		[Emitted]
-		public static void MissingArgument(int index, string calleeName)
-		{
-			if (calleeName != null)
-				Throw(PhpError.Warning, CoreResources.GetString("missing_argument_for", index, calleeName));
-			else
-				Throw(PhpError.Warning, CoreResources.GetString("missing_argument", index));
-		}
+        /// <summary>
+        /// Emitted to a user function/method call which has less actual arguments than it's expected to have.
+        /// </summary>
+        /// <param name="index">An index of the parameter.</param>
+        /// <param name="calleeName">A name of the function or method being called. Can be a <B>null</B> reference.</param>
+        [Emitted]
+        public static void MissingArgument(int index, string calleeName)
+        {
+            if (calleeName != null)
+                Throw(PhpError.Warning, CoreResources.GetString("missing_argument_for", index, calleeName));
+            else
+                Throw(PhpError.Warning, CoreResources.GetString("missing_argument", index));
+        }
 
-		/// <summary>
-		/// Emitted to a user function/method call which has less actual type arguments than it's expected to have.
-		/// </summary>
-		/// <param name="index">An index of the type parameter.</param>
-		/// <param name="calleeName">A name of the function or method being called. Can be a <B>null</B> reference.</param>
-		[Emitted]
-		public static void MissingTypeArgument(int index, string calleeName)
-		{
-			if (calleeName != null)
-				Throw(PhpError.Warning, CoreResources.GetString("missing_type_argument_for", index, calleeName));
-			else
-				Throw(PhpError.Warning, CoreResources.GetString("missing_type_argument", index));
-		}
+        /// <summary>
+        /// Emitted to a user function/method call which has less actual type arguments than it's expected to have.
+        /// </summary>
+        /// <param name="index">An index of the type parameter.</param>
+        /// <param name="calleeName">A name of the function or method being called. Can be a <B>null</B> reference.</param>
+        [Emitted]
+        public static void MissingTypeArgument(int index, string calleeName)
+        {
+            if (calleeName != null)
+                Throw(PhpError.Warning, CoreResources.GetString("missing_type_argument_for", index, calleeName));
+            else
+                Throw(PhpError.Warning, CoreResources.GetString("missing_type_argument", index));
+        }
 
-		[Emitted]
-		public static void MissingArguments(string typeName, string methodName, int actual, int required)
-		{
-			if (typeName != null)
-			{
-				if (methodName != null)
-					Throw(PhpError.Warning, CoreResources.GetString("too_few_method_params", typeName, methodName, required, actual));
-				else
-					Throw(PhpError.Warning, CoreResources.GetString("too_few_ctor_params", typeName, required, actual));
-			}
-			else
-				Throw(PhpError.Warning, CoreResources.GetString("too_few_function_params", methodName, required, actual));
-		}
+        [Emitted]
+        public static void MissingArguments(string typeName, string methodName, int actual, int required)
+        {
+            if (typeName != null)
+            {
+                if (methodName != null)
+                    Throw(PhpError.Warning, CoreResources.GetString("too_few_method_params", typeName, methodName, required, actual));
+                else
+                    Throw(PhpError.Warning, CoreResources.GetString("too_few_ctor_params", typeName, required, actual));
+            }
+            else
+                Throw(PhpError.Warning, CoreResources.GetString("too_few_function_params", methodName, required, actual));
+        }
 
         public static void UnsupportedOperandTypes()
         {
             PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
         }
 
-		/// <summary>
-		/// Emitted to a library function call which has invalid actual argument count.
-		/// </summary>
-		[Emitted]
-		public static void InvalidArgumentCount(string typeName, string methodName)
-		{
-			if (methodName != null)
-			{
-				if (typeName != null)
-					Throw(PhpError.Warning, CoreResources.GetString("invalid_argument_count_for_method", typeName, methodName));
-				else
-					Throw(PhpError.Warning, CoreResources.GetString("invalid_argument_count_for_function", methodName));
-			}
-			else
-				Throw(PhpError.Warning, CoreResources.GetString("invalid_argument_count"));
-		}
+        /// <summary>
+        /// Emitted to a library function call which has invalid actual argument count.
+        /// </summary>
+        [Emitted]
+        public static void InvalidArgumentCount(string typeName, string methodName)
+        {
+            if (methodName != null)
+            {
+                if (typeName != null)
+                    Throw(PhpError.Warning, CoreResources.GetString("invalid_argument_count_for_method", typeName, methodName));
+                else
+                    Throw(PhpError.Warning, CoreResources.GetString("invalid_argument_count_for_function", methodName));
+            }
+            else
+                Throw(PhpError.Warning, CoreResources.GetString("invalid_argument_count"));
+        }
 
-		/// <summary>
-		/// Emitted to the foreach statement if the variable to be enumerated doesn't implement 
-		/// the <see cref="IPhpEnumerable"/> interface.
-		/// </summary>
-		[Emitted]
-		public static void InvalidForeachArgument()
-		{
-			Throw(PhpError.Warning, CoreResources.GetString("invalid_foreach_argument"));
-		}
+        /// <summary>
+        /// Emitted to the foreach statement if the variable to be enumerated doesn't implement 
+        /// the <see cref="IPhpEnumerable"/> interface.
+        /// </summary>
+        [Emitted]
+        public static void InvalidForeachArgument()
+        {
+            Throw(PhpError.Warning, CoreResources.GetString("invalid_foreach_argument"));
+        }
 
-		/// <summary>
-		/// Emitted to the function call if an argument cannot be implicitly casted.
-		/// </summary>
-		/// <param name="argument">The argument which is casted.</param>
-		/// <param name="targetType">The type to which is casted.</param>
-		/// <param name="functionName">The name of the function called.</param>
-		[Emitted]
-		public static void InvalidImplicitCast(object argument, string targetType, string functionName)
-		{
-			Throw(PhpError.Warning, CoreResources.GetString("invalid_implicit_cast",
-			  PhpVariable.GetTypeName(argument),
-			  targetType,
-			  functionName));
-		}
+        /// <summary>
+        /// Emitted to the function call if an argument cannot be implicitly casted.
+        /// </summary>
+        /// <param name="argument">The argument which is casted.</param>
+        /// <param name="targetType">The type to which is casted.</param>
+        /// <param name="functionName">The name of the function called.</param>
+        [Emitted]
+        public static void InvalidImplicitCast(object argument, string targetType, string functionName)
+        {
+            Throw(PhpError.Warning, CoreResources.GetString("invalid_implicit_cast",
+              PhpVariable.GetTypeName(argument),
+              targetType,
+              functionName));
+        }
 
-		/// <summary>
-		/// Emitted to the code on the places where invalid number of breaking levels is used.
-		/// </summary>
-		/// <param name="levelCount">The number of levels.</param>
-		[Emitted]
-		public static void InvalidBreakLevelCount(int levelCount)
-		{
-			Throw(PhpError.Error, CoreResources.GetString("invalid_break_level_count", levelCount));
-		}
+        /// <summary>
+        /// Emitted to the code on the places where invalid number of breaking levels is used.
+        /// </summary>
+        /// <param name="levelCount">The number of levels.</param>
+        [Emitted]
+        public static void InvalidBreakLevelCount(int levelCount)
+        {
+            Throw(PhpError.Error, CoreResources.GetString("invalid_break_level_count", levelCount));
+        }
 
-		/// <summary>
-		/// Reported by operators when they found that a undefined variable is acceesed.
-		/// </summary>
-		/// <param name="name">The name of the variable.</param>
-		[Emitted]
-		public static void UndefinedVariable(string name)
-		{
-			Throw(PhpError.Notice, CoreResources.GetString("undefined_variable", name));
-		}
+        /// <summary>
+        /// Reported by operators when they found that a undefined variable is acceesed.
+        /// </summary>
+        /// <param name="name">The name of the variable.</param>
+        [Emitted]
+        public static void UndefinedVariable(string name)
+        {
+            Throw(PhpError.Notice, CoreResources.GetString("undefined_variable", name));
+        }
 
-		/// <summary>
-		/// Emitted instead of the assignment of to the "$this" variable.
-		/// </summary>
-		[Emitted]
-		public static void CannotReassignThis()
-		{
-			Throw(PhpError.Error, CoreResources.GetString("cannot_reassign_this"));
-		}
+        /// <summary>
+        /// Emitted instead of the assignment of to the "$this" variable.
+        /// </summary>
+        [Emitted]
+        public static void CannotReassignThis()
+        {
+            Throw(PhpError.Error, CoreResources.GetString("cannot_reassign_this"));
+        }
 
-		/// <summary>
-		/// An argument violates a type hint.
-		/// </summary>
-		/// <param name="argName">The name of the argument.</param>
-		/// <param name="typeName">The name of the hinted type.</param>
-		[Emitted]
-		public static void InvalidArgumentType(string argName, string typeName)
-		{
-			Throw(PhpError.Error, CoreResources.GetString("invalid_argument_type", argName, typeName));
-		}
+        /// <summary>
+        /// An argument violates a type hint.
+        /// </summary>
+        /// <param name="argName">The name of the argument.</param>
+        /// <param name="typeName">The name of the hinted type.</param>
+        [Emitted]
+        public static void InvalidArgumentType(string argName, string typeName)
+        {
+            Throw(PhpError.Error, CoreResources.GetString("invalid_argument_type", argName, typeName));
+        }
 
-		/// <summary>
-		/// Array operators reports this error if an value of illegal type is used for indexation.
-		/// </summary>
-		public static void IllegalOffsetType()
-		{
-			Throw(PhpError.Warning, CoreResources.GetString("illegal_offset_type"));
-		}
+        /// <summary>
+        /// Array operators reports this error if an value of illegal type is used for indexation.
+        /// </summary>
+        public static void IllegalOffsetType()
+        {
+            Throw(PhpError.Warning, CoreResources.GetString("illegal_offset_type"));
+        }
 
         /// <summary>
         /// Array does not contain given <paramref name="key"/>.
@@ -442,140 +442,140 @@ namespace PHP.Core
             Throw(PhpError.Notice, CoreResources.GetString("undefined_offset", key));
         }
 
-		/// <summary>
-		/// Emitted to the script's Main() routine. Thrown when an unexpected exception is catched.
-		/// </summary>
-		/// <param name="e">The catched exception.</param>
-		public static void InternalError(Exception e)
-		{
-			throw new PhpNetInternalException(e.Message, e);
-		}
+        /// <summary>
+        /// Emitted to the script's Main() routine. Thrown when an unexpected exception is catched.
+        /// </summary>
+        /// <param name="e">The catched exception.</param>
+        public static void InternalError(Exception e)
+        {
+            throw new PhpNetInternalException(e.Message, e);
+        }
 
-		/// <summary>
-		/// Reports an error when a variable should be PHP array but it is not.
-		/// </summary>
-		/// <param name="reference">Whether a reference modifier (=&amp;) is used.</param>
-		/// <param name="var">The variable which was misused.</param>
-		/// <exception cref="PhpException"><paramref name="var"/> is <see cref="PhpArray"/> (Warning).</exception>
-		/// <exception cref="PhpException"><paramref name="var"/> is scalar type (Warning).</exception>
-		/// <exception cref="PhpException"><paramref name="var"/> is a string (Warning).</exception>
-		public static void VariableMisusedAsArray(object var, bool reference)
-		{
-			Debug.Assert(var != null);
+        /// <summary>
+        /// Reports an error when a variable should be PHP array but it is not.
+        /// </summary>
+        /// <param name="reference">Whether a reference modifier (=&amp;) is used.</param>
+        /// <param name="var">The variable which was misused.</param>
+        /// <exception cref="PhpException"><paramref name="var"/> is <see cref="PhpArray"/> (Warning).</exception>
+        /// <exception cref="PhpException"><paramref name="var"/> is scalar type (Warning).</exception>
+        /// <exception cref="PhpException"><paramref name="var"/> is a string (Warning).</exception>
+        public static void VariableMisusedAsArray(object var, bool reference)
+        {
+            Debug.Assert(var != null);
 
-			DObject obj;
+            DObject obj;
 
-			if ((obj = var as DObject) != null)
-			{
-				PhpException.Throw(PhpError.Warning, CoreResources.GetString("object_used_as_array", obj.TypeName));
-			}
-			else if (PhpVariable.IsString(var))
-			{
-				PhpException.Throw(PhpError.Warning, CoreResources.GetString(reference ? "string_item_used_as_reference" : "string_used_as_array"));
-			}
-			else
-			{
-				PhpException.Throw(PhpError.Warning, CoreResources.GetString("scalar_used_as_array", PhpVariable.GetTypeName(var)));
-			}
-		}
+            if ((obj = var as DObject) != null)
+            {
+                PhpException.Throw(PhpError.Warning, CoreResources.GetString("object_used_as_array", obj.TypeName));
+            }
+            else if (PhpVariable.IsString(var))
+            {
+                PhpException.Throw(PhpError.Warning, CoreResources.GetString(reference ? "string_item_used_as_reference" : "string_used_as_array"));
+            }
+            else
+            {
+                PhpException.Throw(PhpError.Warning, CoreResources.GetString("scalar_used_as_array", PhpVariable.GetTypeName(var)));
+            }
+        }
 
-		/// <summary>
-		/// Reports an error when a variable should be PHP object but it is not.
-		/// </summary>
-		/// <param name="reference">Whether a reference modifier (=&amp;) is used.</param>
-		/// <param name="var">The variable which was misused.</param>
-		/// <exception cref="PhpException"><paramref name="var"/> is <see cref="PhpArray"/> (Warning).</exception>
-		/// <exception cref="PhpException"><paramref name="var"/> is scalar type (Warning).</exception>
-		/// <exception cref="PhpException"><paramref name="var"/> is a string (Warning).</exception>
-		public static void VariableMisusedAsObject(object var, bool reference)
-		{
-			Debug.Assert(var != null);
+        /// <summary>
+        /// Reports an error when a variable should be PHP object but it is not.
+        /// </summary>
+        /// <param name="reference">Whether a reference modifier (=&amp;) is used.</param>
+        /// <param name="var">The variable which was misused.</param>
+        /// <exception cref="PhpException"><paramref name="var"/> is <see cref="PhpArray"/> (Warning).</exception>
+        /// <exception cref="PhpException"><paramref name="var"/> is scalar type (Warning).</exception>
+        /// <exception cref="PhpException"><paramref name="var"/> is a string (Warning).</exception>
+        public static void VariableMisusedAsObject(object var, bool reference)
+        {
+            Debug.Assert(var != null);
 
-			if (var is PhpArray)
-			{
-				PhpException.Throw(PhpError.Warning, CoreResources.GetString("array_used_as_object"));
-			}
-			else if (PhpVariable.IsString(var))
-			{
-				PhpException.Throw(PhpError.Warning, CoreResources.GetString(reference ? "string_item_used_as_reference" : "string_used_as_object"));
-			}
-			else
-			{
-				PhpException.Throw(PhpError.Warning, CoreResources.GetString("scalar_used_as_object", PhpVariable.GetTypeName(var)));
-			}
-		}
+            if (var is PhpArray)
+            {
+                PhpException.Throw(PhpError.Warning, CoreResources.GetString("array_used_as_object"));
+            }
+            else if (PhpVariable.IsString(var))
+            {
+                PhpException.Throw(PhpError.Warning, CoreResources.GetString(reference ? "string_item_used_as_reference" : "string_used_as_object"));
+            }
+            else
+            {
+                PhpException.Throw(PhpError.Warning, CoreResources.GetString("scalar_used_as_object", PhpVariable.GetTypeName(var)));
+            }
+        }
 
-		/// <summary>
-		/// Thrown when "this" special variable is used out of class.
-		/// </summary>
-		[Emitted]
-		public static void ThisUsedOutOfObjectContext()
-		{
-			PhpException.Throw(PhpError.Error, CoreResources.GetString("this_used_out_of_object"));
-		}
+        /// <summary>
+        /// Thrown when "this" special variable is used out of class.
+        /// </summary>
+        [Emitted]
+        public static void ThisUsedOutOfObjectContext()
+        {
+            PhpException.Throw(PhpError.Error, CoreResources.GetString("this_used_out_of_object"));
+        }
 
-		public static void UndeclaredStaticProperty(string className, string fieldName)
-		{
-			PhpException.Throw(PhpError.Error, CoreResources.GetString("undeclared_static_property_accessed", className, fieldName));
-		}
-
-		[Emitted]
-		public static void StaticPropertyUnset(string className, string fieldName)
-		{
-			PhpException.Throw(PhpError.Error, CoreResources.GetString("static_property_unset", className, fieldName));
-		}
+        public static void UndeclaredStaticProperty(string className, string fieldName)
+        {
+            PhpException.Throw(PhpError.Error, CoreResources.GetString("undeclared_static_property_accessed", className, fieldName));
+        }
 
         [Emitted]
-		public static void UndefinedMethodCalled(string className, string methodName)
-		{
-			PhpException.Throw(PhpError.Error, CoreResources.GetString("undefined_method_called", className, methodName));
-		}
+        public static void StaticPropertyUnset(string className, string fieldName)
+        {
+            PhpException.Throw(PhpError.Error, CoreResources.GetString("static_property_unset", className, fieldName));
+        }
 
-		public static void AbstractMethodCalled(string className, string methodName)
-		{
-			PhpException.Throw(PhpError.Error, CoreResources.GetString("abstract_method_called", className, methodName));
-		}
+        [Emitted]
+        public static void UndefinedMethodCalled(string className, string methodName)
+        {
+            PhpException.Throw(PhpError.Error, CoreResources.GetString("undefined_method_called", className, methodName));
+        }
 
-		public static void ConstantNotAccessible(string className, string constName, string context, bool isProtected)
-		{
-			PhpException.Throw(PhpError.Error, CoreResources.GetString(
-					  isProtected ? "protected_constant_accessed" : "private_constant_accessed", className, constName, context));
-		}
+        public static void AbstractMethodCalled(string className, string methodName)
+        {
+            PhpException.Throw(PhpError.Error, CoreResources.GetString("abstract_method_called", className, methodName));
+        }
 
-		public static void PropertyNotAccessible(string className, string fieldName, string context, bool isProtected)
-		{
-			PhpException.Throw(PhpError.Error, CoreResources.GetString(
-					  isProtected ? "protected_property_accessed" : "private_property_accessed", className, fieldName, context));
-		}
+        public static void ConstantNotAccessible(string className, string constName, string context, bool isProtected)
+        {
+            PhpException.Throw(PhpError.Error, CoreResources.GetString(
+                      isProtected ? "protected_constant_accessed" : "private_constant_accessed", className, constName, context));
+        }
 
-		public static void MethodNotAccessible(string className, string methodName, string context, bool isProtected)
-		{
-			PhpException.Throw(PhpError.Error, CoreResources.GetString(
-					  isProtected ? "protected_method_called" : "private_method_called", className, methodName, context));
-		}
+        public static void PropertyNotAccessible(string className, string fieldName, string context, bool isProtected)
+        {
+            PhpException.Throw(PhpError.Error, CoreResources.GetString(
+                      isProtected ? "protected_property_accessed" : "private_property_accessed", className, fieldName, context));
+        }
 
-		public static void CannotInstantiateType(string typeName, bool isInterface)
-		{
-			PhpException.Throw(PhpError.Error, CoreResources.GetString(
-			  isInterface ? "interface_instantiated" : "abstract_class_instantiated", typeName));
-		}
+        public static void MethodNotAccessible(string className, string methodName, string context, bool isProtected)
+        {
+            PhpException.Throw(PhpError.Error, CoreResources.GetString(
+                      isProtected ? "protected_method_called" : "private_method_called", className, methodName, context));
+        }
 
-		[Emitted]
-		public static void NoSuitableOverload(string className, string/*!*/ methodName)
-		{
-			PhpException.Throw(PhpError.Error, CoreResources.GetString(
-					  (className != null) ? "no_suitable_method_overload" : "no_suitable_function_overload",
-					  className, methodName));
-		}
+        public static void CannotInstantiateType(string typeName, bool isInterface)
+        {
+            PhpException.Throw(PhpError.Error, CoreResources.GetString(
+              isInterface ? "interface_instantiated" : "abstract_class_instantiated", typeName));
+        }
 
-		[Emitted]
-		public static void PropertyTypeMismatch(string/*!*/ className, string/*!*/ propertyName)
-		{
-			PhpException.Throw(PhpError.Error, CoreResources.GetString("property_type_mismatch",
-				className, propertyName));
-		}
+        [Emitted]
+        public static void NoSuitableOverload(string className, string/*!*/ methodName)
+        {
+            PhpException.Throw(PhpError.Error, CoreResources.GetString(
+                      (className != null) ? "no_suitable_method_overload" : "no_suitable_function_overload",
+                      className, methodName));
+        }
 
-		#endregion
+        [Emitted]
+        public static void PropertyTypeMismatch(string/*!*/ className, string/*!*/ propertyName)
+        {
+            PhpException.Throw(PhpError.Error, CoreResources.GetString("property_type_mismatch",
+                className, propertyName));
+        }
+
+        #endregion
 
         #region Error handling stuff
 
@@ -586,30 +586,30 @@ namespace PHP.Core
         internal static Action<PhpError, string> ThrowCallbackOverride = null;
 
         /// <summary>
-		/// Reports a PHP error. 
-		/// </summary>
-		/// <param name="error">The error type</param>
-		/// <param name="message">The error message.</param>    
-		public static void Throw(PhpError error, string message)
-		{
+        /// Reports a PHP error. 
+        /// </summary>
+        /// <param name="error">The error type</param>
+        /// <param name="message">The error message.</param>    
+        public static void Throw(PhpError error, string message)
+        {
             if (ThrowCallbackOverride != null)
             {
                 ThrowCallbackOverride(error, message);
                 return;
             }
 
-			ErrorStackInfo info = new ErrorStackInfo();
-			bool info_loaded = false;
+            ErrorStackInfo info = new ErrorStackInfo();
+            bool info_loaded = false;
 
-			// gets the current script context and config:
-			ScriptContext context = ScriptContext.CurrentContext;
-			LocalConfiguration config = context.Config;
+            // gets the current script context and config:
+            ScriptContext context = ScriptContext.CurrentContext;
+            LocalConfiguration config = context.Config;
 
-			// determines whether the error will be reported and whether it is handleable:
-			bool is_error_reported = ((PhpErrorSet)error & config.ErrorControl.ReportErrors) != 0 && !context.ErrorReportingDisabled;
-			bool is_error_handleable = ((PhpErrorSet)error & PhpErrorSet.Handleable & (PhpErrorSet)config.ErrorControl.UserHandlerErrors) != 0;
-			bool is_error_fatal = ((PhpErrorSet)error & PhpErrorSet.Fatal) != 0;
-			bool do_report = true;
+            // determines whether the error will be reported and whether it is handleable:
+            bool is_error_reported = ((PhpErrorSet)error & config.ErrorControl.ReportErrors) != 0 && !context.ErrorReportingDisabled;
+            bool is_error_handleable = ((PhpErrorSet)error & PhpErrorSet.Handleable & (PhpErrorSet)config.ErrorControl.UserHandlerErrors) != 0;
+            bool is_error_fatal = ((PhpErrorSet)error & PhpErrorSet.Fatal) != 0;
+            bool do_report = true;
 
             // remember last error info
             context.LastErrorType = error;
@@ -617,61 +617,61 @@ namespace PHP.Core
             context.LastErrorFile = null;   // only if we are getting ErrorStackInfo, see PhpStackTrace.TraceErrorFrame
             context.LastErrorLine = 0;     // only if we are getting ErrorStackInfo, see PhpStackTrace.TraceErrorFrame
 
-			// calls a user defined handler if available:
-			if (is_error_handleable && config.ErrorControl.UserHandler != null)
-			{
-			  // loads stack info:
-			  Func<ErrorStackInfo> func = () =>
-			  {
-			    if (!info_loaded)
-			    {
-			      info = PhpStackTrace.TraceErrorFrame(context, true);
-			      info_loaded = true;
-			    }
-			    return info;
-			  };
+            // calls a user defined handler if available:
+            if (is_error_handleable && config.ErrorControl.UserHandler != null)
+            {
+                // loads stack info:
+                Func<ErrorStackInfo> func = () =>
+                {
+                    if (!info_loaded)
+                    {
+                        info = PhpStackTrace.TraceErrorFrame(context, true);
+                        info_loaded = true;
+                    }
+                    return info;
+                };
 
-        do_report = CallUserErrorHandler(context, error, func, message);
-			}
+                do_report = CallUserErrorHandler(context, error, func, message);
+            }
 
-          // reports error to output and logs:
+            // reports error to output and logs:
             if (do_report && is_error_reported &&
                 (config.ErrorControl.DisplayErrors || config.ErrorControl.EnableLogging))   // check if the error will be displayed to avoid stack trace loading
-			{
-				// loads stack info:
-				if (!info_loaded) { info = PhpStackTrace.TraceErrorFrame(context, false); info_loaded = true; }
+            {
+                // loads stack info:
+                if (!info_loaded) { info = PhpStackTrace.TraceErrorFrame(context, false); info_loaded = true; }
 
-				ReportError(config, context.Output, error, -1, info, message);
-			}
+                ReportError(config, context.Output, error, -1, info, message);
+            }
 
-			// Throws an exception if the error is fatal and throwing is enabled.
-			// PhpError.UserError is also fatal, but can be cancelled by user handler => handler call must precede this line.
-			// Error displaying must also precede this line because the error should be displayed before an exception is thrown.
-			if (is_error_fatal && context.ThrowExceptionOnError)
-			{
-				// loads stack info:
-				if (!info_loaded) { info = PhpStackTrace.TraceErrorFrame(context, false); info_loaded = true; }
+            // Throws an exception if the error is fatal and throwing is enabled.
+            // PhpError.UserError is also fatal, but can be cancelled by user handler => handler call must precede this line.
+            // Error displaying must also precede this line because the error should be displayed before an exception is thrown.
+            if (is_error_fatal && context.ThrowExceptionOnError)
+            {
+                // loads stack info:
+                if (!info_loaded) { info = PhpStackTrace.TraceErrorFrame(context, false); info_loaded = true; }
 
-				throw new PhpException(error, message, info);
-			}
-		}
+                throw new PhpException(error, message, info);
+            }
+        }
 
-		/// <summary>
-		/// Reports an error to log file, event log and to output (as configured).
-		/// </summary>
-		private static void ReportError(LocalConfiguration config, TextWriter output, PhpError error, int id,
-			ErrorStackInfo info, string message)
-		{
+        /// <summary>
+        /// Reports an error to log file, event log and to output (as configured).
+        /// </summary>
+        private static void ReportError(LocalConfiguration config, TextWriter output, PhpError error, int id,
+            ErrorStackInfo info, string message)
+        {
             string formatted_message = FormatErrorMessageOutput(config, error, id, info, message);
 
-			// logs error if logging is enabled:
-			if (config.ErrorControl.EnableLogging)
-			{
+            // logs error if logging is enabled:
+            if (config.ErrorControl.EnableLogging)
+            {
 #if SILVERLIGHT
 				throw new NotSupportedException("Logging is not supported on Silverlight. Set EnableLogging to false.");
 #else
-				// adds a message to log file:
-				if (config.ErrorControl.LogFile != null)
+                // adds a message to log file:
+                if (config.ErrorControl.LogFile != null)
                     try
                     {
                         // <error>: <caller>(): <message> in <file> on line <line>
@@ -682,34 +682,34 @@ namespace PHP.Core
                     }
                     catch (Exception) { }
 
-				// adds a message to event log:
-				if (config.ErrorControl.SysLog)
-					try { Logger.AddToEventLog(message); }
-					catch (Exception) { }
+                // adds a message to event log:
+                if (config.ErrorControl.SysLog)
+                    try { Logger.AddToEventLog(message); }
+                    catch (Exception) { }
 #endif
-			}
+            }
 
-			// displays an error message if desired:
-			if (config.ErrorControl.DisplayErrors)
-			{
-				output.Write(config.ErrorControl.ErrorPrependString);
-				output.Write(formatted_message);
-				output.Write(config.ErrorControl.ErrorAppendString);
-			}
-		}
+            // displays an error message if desired:
+            if (config.ErrorControl.DisplayErrors)
+            {
+                output.Write(config.ErrorControl.ErrorPrependString);
+                output.Write(formatted_message);
+                output.Write(config.ErrorControl.ErrorAppendString);
+            }
+        }
 
-	  /// <summary>
-		/// Calls user error handler. 
-		/// </summary>
-		/// <returns>Whether to report error by default handler (determined by handler's return value).</returns>
-		/// <exception cref="ScriptDiedException">Error handler dies.</exception>
-		private static bool CallUserErrorHandler(ScriptContext context, PhpError error, Func<ErrorStackInfo> info, string message)
-		{
-			LocalConfiguration config = context.Config;
+        /// <summary>
+        /// Calls user error handler. 
+        /// </summary>
+        /// <returns>Whether to report error by default handler (determined by handler's return value).</returns>
+        /// <exception cref="ScriptDiedException">Error handler dies.</exception>
+        private static bool CallUserErrorHandler(ScriptContext context, PhpError error, Func<ErrorStackInfo> info, string message)
+        {
+            LocalConfiguration config = context.Config;
 
-			try
-			{
-				object result = PhpVariable.Dereference(config.ErrorControl.UserHandler.Invoke(new PhpReference[] 
+            try
+            {
+                object result = PhpVariable.Dereference(config.ErrorControl.UserHandler.Invoke(new PhpReference[] 
         { 
           new PhpReference((int)error),
           new PhpReference(message),
@@ -718,59 +718,59 @@ namespace PHP.Core
           new PhpReference() // global variables list is not supported
         }));
 
-				// since PHP5 an error is reported by default error handler if user handler returns false:
-				return result is bool && (bool)result == false;
-			}
-			catch (ScriptDiedException)
-			{
-				// user handler has cancelled the error via script termination:
-				throw;
-			}
-			catch (PhpUserException)
-			{
-				// rethrow user exceptions:
-				throw;
-			}
-			catch (Exception)
-			{
-			}
-			return false;
-		}
+                // since PHP5 an error is reported by default error handler if user handler returns false:
+                return result is bool && (bool)result == false;
+            }
+            catch (ScriptDiedException)
+            {
+                // user handler has cancelled the error via script termination:
+                throw;
+            }
+            catch (PhpUserException)
+            {
+                // rethrow user exceptions:
+                throw;
+            }
+            catch (Exception)
+            {
+            }
+            return false;
+        }
 
-		/// <summary>
-		/// Reports error thrown from inside eval.
-		/// </summary>
-		internal static void ThrowByEval(PhpError error, string sourceFile, int line, int column, string message)
-		{
-			// obsolete:
-			//      ErrorStackInfo info = new ErrorStackInfo(sourceFile,null,line,column,false);
-			//      
-			//      if (ScriptContext.CurrentContext.Config.ErrorControl.HtmlMessages)
-			//        message = CoreResources.GetString("error_message_html_eval",message,info.Line,info.Column); else
-			//        message = CoreResources.GetString("error_message_plain_eval",message,info.Line,info.Column);
+        /// <summary>
+        /// Reports error thrown from inside eval.
+        /// </summary>
+        internal static void ThrowByEval(PhpError error, string sourceFile, int line, int column, string message)
+        {
+            // obsolete:
+            //      ErrorStackInfo info = new ErrorStackInfo(sourceFile,null,line,column,false);
+            //      
+            //      if (ScriptContext.CurrentContext.Config.ErrorControl.HtmlMessages)
+            //        message = CoreResources.GetString("error_message_html_eval",message,info.Line,info.Column); else
+            //        message = CoreResources.GetString("error_message_plain_eval",message,info.Line,info.Column);
 
-			Throw(error, message);
-		}
+            Throw(error, message);
+        }
 
-		/// <summary>
-		/// Reports error thrown by compiler.
-		/// </summary>
-		internal static void ThrowByWebCompiler(PhpError error, int id, string sourceFile, int line, int column, string message)
-		{
-			ErrorStackInfo info = new ErrorStackInfo(sourceFile, null, line, column, false);
+        /// <summary>
+        /// Reports error thrown by compiler.
+        /// </summary>
+        internal static void ThrowByWebCompiler(PhpError error, int id, string sourceFile, int line, int column, string message)
+        {
+            ErrorStackInfo info = new ErrorStackInfo(sourceFile, null, line, column, false);
 
-			// gets the current script context and config:
-			LocalConfiguration config = Configuration.Local;
+            // gets the current script context and config:
+            LocalConfiguration config = Configuration.Local;
 
 #if !SILVERLIGHT
-			ReportError(config, HttpContext.Current.Response.Output, error, id, info, message);
+            ReportError(config, HttpContext.Current.Response.Output, error, id, info, message);
 #else
 			ReportError(config, new StreamWriter(ScriptContext.CurrentContext.OutputStream), error, id, info, message);
 #endif
 
-			if (((PhpErrorSet)error & PhpErrorSet.Fatal) != 0)
-				throw new PhpException(error, message, info);
-		}
+            if (((PhpErrorSet)error & PhpErrorSet.Fatal) != 0)
+                throw new PhpException(error, message, info);
+        }
 
         /// <summary>
         /// Get the error type text, to be displayed on output.
@@ -855,19 +855,19 @@ namespace PHP.Core
         }
 
         /// <summary>
-		/// Formats error message.
-		/// </summary>
-		/// <param name="config">A configuration.</param>
-		/// <param name="error">A type of the error.</param>
-		/// <param name="id">Error id or -1.</param>
-		/// <param name="info">A stack information about the error.</param>
-		/// <param name="message">A message.</param>
-		/// <returns>A formatted plain text or HTML message depending on settings in <paramref name="config"/>.</returns>
-		/// <exception cref="ArgumentNullException"><paramren name="config"/> is a <B>null</B> reference.</exception>
-		public static string FormatErrorMessageOutput(LocalConfiguration config, PhpError error, int id, ErrorStackInfo info, string message)
-		{
-			if (config == null)
-				throw new ArgumentNullException("config");
+        /// Formats error message.
+        /// </summary>
+        /// <param name="config">A configuration.</param>
+        /// <param name="error">A type of the error.</param>
+        /// <param name="id">Error id or -1.</param>
+        /// <param name="info">A stack information about the error.</param>
+        /// <param name="message">A message.</param>
+        /// <returns>A formatted plain text or HTML message depending on settings in <paramref name="config"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramren name="config"/> is a <B>null</B> reference.</exception>
+        public static string FormatErrorMessageOutput(LocalConfiguration config, PhpError error, int id, ErrorStackInfo info, string message)
+        {
+            if (config == null)
+                throw new ArgumentNullException("config");
 
             string error_str = PhpErrorText(error, id); // the error type (Warning, Error, ...)
             bool show_place = info.Line > 0 && info.Column > 0; // we are able to report error position
@@ -882,309 +882,319 @@ namespace PHP.Core
                 (show_place ? CoreResources.error_message_html_debug : CoreResources.error_message_html) :
                 (show_place ? CoreResources.error_message_plain_debug : CoreResources.error_message_plain);
 
-			if (show_place)
+            if (show_place)
                 return string.Format(ErrorFormatString,
-					error_str, caller, message, info.File, info.Line, info.Column);
-			else
+                    error_str, caller, message, info.File, info.Line, info.Column);
+            else
                 return string.Format(ErrorFormatString,
                     error_str, caller, message);
-		}
+        }
 
-		/// <summary>
-		/// Converts exception message (ending by dot) to error message (not ending by a dot).
-		/// </summary>
-		/// <param name="exceptionMessage">The exception message.</param>
-		/// <returns>The error message.</returns>
-		/// <exception cref="ArgumentNullException"><paramref name="exceptionMessage"/> is a <B>null</B> reference.</exception>
-		public static string ToErrorMessage(string exceptionMessage)
-		{
-			if (exceptionMessage == null) throw new ArgumentNullException("exceptionMessage");
-			return exceptionMessage.TrimEnd(new char[] { '.' });
-		}
+        /// <summary>
+        /// Converts exception message (ending by dot) to error message (not ending by a dot).
+        /// </summary>
+        /// <param name="exceptionMessage">The exception message.</param>
+        /// <returns>The error message.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="exceptionMessage"/> is a <B>null</B> reference.</exception>
+        public static string ToErrorMessage(string exceptionMessage)
+        {
+            if (exceptionMessage == null) throw new ArgumentNullException("exceptionMessage");
+            return exceptionMessage.TrimEnd(new char[] { '.' });
+        }
 
-		#endregion
+        #endregion
 
-		#region Exception handling stuff
+        #region Exception handling stuff
 
-		/// <summary>
-		/// Exception constructor.
-		/// </summary>
-		internal PhpException()
-		{
-		}
+        /// <summary>
+        /// Exception constructor.
+        /// </summary>
+        internal PhpException()
+        {
+        }
 
-		/// <summary>
-		/// Exception constructor.
-		/// </summary>
-		/// <param name="error">The type of PHP error.</param>
-		/// <param name="message">The error message.</param>
-		/// <param name="info">Information about an error gained from a stack.</param>
-		private PhpException(PhpError error, string message, ErrorStackInfo info)
-			: base(message)
-		{
-			this.info = info;
-			this.error = error;
-		}
+        /// <summary>
+        /// Exception constructor.
+        /// </summary>
+        /// <param name="error">The type of PHP error.</param>
+        /// <param name="message">The error message.</param>
+        /// <param name="info">Information about an error gained from a stack.</param>
+        private PhpException(PhpError error, string message, ErrorStackInfo info)
+            : base(message)
+        {
+            this.info = info;
+            this.error = error;
+        }
 
-		/// <summary>
-		/// Error seriousness.
-		/// </summary>
-		public PhpError Error { get { return error; } }
-		private PhpError error;
+        /// <summary>
+        /// Error seriousness.
+        /// </summary>
+        public PhpError Error { get { return error; } }
+        private PhpError error;
 
-		/// <summary>
-		/// Error debug info (caller, source file, line and column).
-		/// </summary>
-		public ErrorStackInfo DebugInfo { get { return info; } }
-		private ErrorStackInfo info;
+        /// <summary>
+        /// Error debug info (caller, source file, line and column).
+        /// </summary>
+        public ErrorStackInfo DebugInfo { get { return info; } }
+        private ErrorStackInfo info;
 
-		/// <summary>
-		/// Converts the exception to a string message.
-		/// </summary>
-		/// <returns>The formatted message.</returns>
-		public override string ToString()
-		{
-			return FormatErrorMessageOutput(ScriptContext.CurrentContext.Config, error, -1, info, Message);
-		}
+        /// <summary>
+        /// Converts the exception to a string message.
+        /// </summary>
+        /// <returns>The formatted message.</returns>
+        public override string ToString()
+        {
+            return FormatErrorMessageOutput(ScriptContext.CurrentContext.Config, error, -1, info, Message);
+        }
 
-		#endregion
+        #endregion
 
-		#region Serialization (CLR only)
+        #region Serialization (CLR only)
 #if !SILVERLIGHT
 
-		/// <summary>
-		/// Initializes a new instance of the PhpException class with serialized data. This constructor is used
-		/// when an exception is thrown in a remotely called method. Such an exceptions needs to be serialized,
-		/// transferred back to the caller and then rethrown using this constructor.
-		/// </summary>
-		/// <param name="info">The SerializationInfo that holds the serialized object data about the exception 
-		/// being thrown.</param>
-		/// <param name="context">The StreamingContext that contains contextual information about the source or 
-		/// destination.</param>
-		protected PhpException(SerializationInfo info, StreamingContext context)
-			: base(info, context)
-		{
-			this.error = (PhpError)info.GetValue("error", typeof(PhpError));
-			this.info = new ErrorStackInfo(
-			  (string)info.GetString("file"),
+        /// <summary>
+        /// Initializes a new instance of the PhpException class with serialized data. This constructor is used
+        /// when an exception is thrown in a remotely called method. Such an exceptions needs to be serialized,
+        /// transferred back to the caller and then rethrown using this constructor.
+        /// </summary>
+        /// <param name="info">The SerializationInfo that holds the serialized object data about the exception 
+        /// being thrown.</param>
+        /// <param name="context">The StreamingContext that contains contextual information about the source or 
+        /// destination.</param>
+        protected PhpException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            this.error = (PhpError)info.GetValue("error", typeof(PhpError));
+            this.info = new ErrorStackInfo(
+              (string)info.GetString("file"),
               (string)info.GetString("caller"),
               (int)info.GetInt32("line"),
-			  (int)info.GetInt32("column"),
-			  (bool)info.GetBoolean("libraryCaller"));
-		}
+              (int)info.GetInt32("column"),
+              (bool)info.GetBoolean("libraryCaller"));
+        }
 
 
-		/// <summary>
-		/// Sets the SerializationInfo with information about the exception. This method is called when a skeleton
-		/// catches PhpException thrown in a remotely called method.
-		/// </summary>
-		/// <param name="info">The SerializationInfo that holds the serialized object data.</param>
-		/// <param name="context">The StreamingContext that contains contextual information about the source or 
-		/// destination.</param>
+        /// <summary>
+        /// Sets the SerializationInfo with information about the exception. This method is called when a skeleton
+        /// catches PhpException thrown in a remotely called method.
+        /// </summary>
+        /// <param name="info">The SerializationInfo that holds the serialized object data.</param>
+        /// <param name="context">The StreamingContext that contains contextual information about the source or 
+        /// destination.</param>
         [System.Security.SecurityCritical]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			base.GetObjectData(info, context);
-			info.AddValue("error", error);
-			info.AddValue("caller", this.info.Caller);
-			info.AddValue("file", this.info.File);
-			info.AddValue("line", this.info.Line);
-			info.AddValue("column", this.info.Column);
-		}
+        {
+            base.GetObjectData(info, context);
+            info.AddValue("error", error);
+            info.AddValue("caller", this.info.Caller);
+            info.AddValue("file", this.info.File);
+            info.AddValue("line", this.info.Line);
+            info.AddValue("column", this.info.Column);
+        }
 #endif
 
-		#endregion
-	}
-
-  internal class LazyStackInfo : IPhpVariable
-  {
-    private PhpReference value;
-    private Func<ErrorStackInfo> info;
-    private readonly bool file;
-
-    private PhpReference Value
-    {
-      get
-      {
-        if (value == null)
-          value = file ? new PhpReference(info().File) : new PhpReference(info().Line);
-        return value;
-      }
+        #endregion
     }
 
-    public LazyStackInfo(Func<ErrorStackInfo> info, bool file)
+    internal class LazyStackInfo : IPhpVariable
     {
-      this.info = info;
-      this.file = file;
+        private PhpReference value;
+        private Func<ErrorStackInfo> info;
+        private readonly bool file;
+
+        private PhpReference Value
+        {
+            get
+            {
+                if (value == null)
+                    value = file ? new PhpReference(info().File) : new PhpReference(info().Line);
+                return value;
+            }
+        }
+
+        public LazyStackInfo(Func<ErrorStackInfo> info, bool file)
+        {
+            this.info = info;
+            this.file = file;
+        }
+
+        public PhpTypeCode GetTypeCode()
+        {
+            return Value.GetTypeCode();
+        }
+
+        public double ToDouble()
+        {
+            return Value.ToDouble();
+        }
+
+        public int ToInteger()
+        {
+            return Value.ToInteger();
+        }
+
+        public long ToLongInteger()
+        {
+            return Value.ToLongInteger();
+        }
+
+        public bool ToBoolean()
+        {
+            return Value.ToBoolean();
+        }
+
+        public PhpBytes ToPhpBytes()
+        {
+            return Value.ToPhpBytes();
+        }
+
+        public Convert.NumberInfo ToNumber(out int intValue, out long longValue, out double doubleValue)
+        {
+            return Value.ToNumber(out intValue, out longValue, out doubleValue);
+        }
+
+        public string ToString(bool throwOnError, out bool success)
+        {
+            return ((IPhpConvertible)Value).ToString(throwOnError, out success);
+        }
+
+        public void Print(TextWriter output)
+        {
+            Value.Print(output);
+        }
+
+        public void Dump(TextWriter output)
+        {
+            Value.Dump(output);
+        }
+
+        public void Export(TextWriter output)
+        {
+            Value.Export(output);
+        }
+
+        public object DeepCopy()
+        {
+            return Value.DeepCopy();
+        }
+
+        public object Copy(CopyReason reason)
+        {
+            return this;
+        }
+
+        public int CompareTo(object obj)
+        {
+            return Value.CompareTo(obj);
+        }
+
+        public int CompareTo(object obj, IComparer comparer)
+        {
+            return Value.CompareTo(obj, comparer);
+        }
+
+        public bool IsEmpty()
+        {
+            return Value.IsEmpty();
+        }
+
+        public bool IsScalar()
+        {
+            return Value.IsScalar();
+        }
+
+        public string GetTypeName()
+        {
+            return Value.GetTypeName();
+        }
+
+        public override string ToString()
+        {
+            if (Value.Value == null)
+                return string.Empty;
+            return Value.Value.ToString();
+        }
     }
 
-    public PhpTypeCode GetTypeCode()
+    internal static class ErrorSeverityHelper
     {
-      return Value.GetTypeCode();
+        public static PhpError ToPhpCompileError(this ErrorSeverity severity)
+        {
+            return (severity.Value == ErrorSeverity.Values.Warning)
+                ? PhpError.CompileWarning
+                : PhpError.CompileError;
+        }
     }
 
-    public double ToDouble()
+    // TODO:
+    internal sealed class EvalErrorSink : ErrorSink
     {
-      return Value.ToDouble();
+        private readonly int firstLineColumnDisplacement;
+
+        public EvalErrorSink(int firstLineColumnDisplacement, WarningGroups disabledGroups, int[]/*!*/ disabledWarnings)
+            : base(disabledGroups, disabledWarnings)
+        {
+            this.firstLineColumnDisplacement = firstLineColumnDisplacement;
+        }
+
+        protected override bool Add(int id, string message, ErrorSeverity severity, int group, string/*!*/ fullPath,
+            ErrorPosition pos)
+        {
+            Debug.Assert(fullPath != null);
+
+            // first line column adjustment:
+            if (pos.FirstLine == 1) pos.FirstColumn += firstLineColumnDisplacement;
+
+            Debug.WriteLine("!!!3", message);
+
+            PhpException.ThrowByEval(severity.ToPhpCompileError(), fullPath, pos.FirstLine, pos.FirstColumn, message);
+
+            return true;
+        }
     }
 
-    public int ToInteger()
+    internal sealed class WebErrorSink : ErrorSink
     {
-      return Value.ToInteger();
+        public WebErrorSink(WarningGroups disabledGroups, int[]/*!*/ disabledWarnings)
+            : base(disabledGroups, disabledWarnings)
+        {
+
+        }
+
+        protected override bool Add(int id, string message, ErrorSeverity severity, int group, string/*!*/ fullPath,
+            ErrorPosition pos)
+        {
+            Debug.Assert(fullPath != null);
+            PhpException.ThrowByWebCompiler(severity.ToPhpCompileError(), id, fullPath, pos.FirstLine, pos.FirstColumn, message);
+            return true;
+        }
     }
 
-    public long ToLongInteger()
+    /// <summary>
+    /// Thrown when data are not found found in call context or are not valid.
+    /// </summary>
+    [Serializable]
+    public class InvalidCallContextDataException : ApplicationException
     {
-      return Value.ToLongInteger();
+        internal InvalidCallContextDataException(string slot)
+            : base(CoreResources.GetString("invalid_call_context_data", slot)) { }
     }
 
-    public bool ToBoolean()
+    /// <summary>
+    /// Thrown by exit/die language constructs to cause immediate termination of a script being executed.
+    /// </summary>
+    [Serializable]
+    public class ScriptDiedException : ApplicationException
     {
-      return Value.ToBoolean();
-    }
+        internal ScriptDiedException(object status)
+        {
+            this.status = status;
+        }
 
-    public PhpBytes ToPhpBytes()
-    {
-      return Value.ToPhpBytes();
-    }
+        internal ScriptDiedException() : this(255) { }
 
-    public Convert.NumberInfo ToNumber(out int intValue, out long longValue, out double doubleValue)
-    {
-      return Value.ToNumber(out intValue, out longValue, out doubleValue);
-    }
-
-    public string ToString(bool throwOnError, out bool success)
-    {
-      return ((IPhpConvertible)Value).ToString(throwOnError, out success);
-    }
-
-    public void Print(TextWriter output)
-    {
-      Value.Print(output);
-    }
-
-    public void Dump(TextWriter output)
-    {
-      Value.Dump(output);
-    }
-
-    public void Export(TextWriter output)
-    {
-      Value.Export(output);
-    }
-
-    public object DeepCopy()
-    {
-      return Value.DeepCopy();
-    }
-
-    public object Copy(CopyReason reason)
-    {
-      return this;
-    }
-
-    public int CompareTo(object obj)
-    {
-      return Value.CompareTo(obj);
-    }
-
-    public int CompareTo(object obj, IComparer comparer)
-    {
-      return Value.CompareTo(obj, comparer);
-    }
-
-    public bool IsEmpty()
-    {
-      return Value.IsEmpty();
-    }
-
-    public bool IsScalar()
-    {
-      return Value.IsScalar();
-    }
-
-    public string GetTypeName()
-    {
-      return Value.GetTypeName();
-    }
-
-    public override string ToString()
-    {
-      if (Value.Value == null)
-        return string.Empty;
-      return Value.Value.ToString();
-    }
-  }
-
-  // TODO:
-	internal sealed class EvalErrorSink : ErrorSink
-	{
-		private readonly int firstLineColumnDisplacement;
-
-		public EvalErrorSink(int firstLineColumnDisplacement, WarningGroups disabledGroups, int[]/*!*/ disabledWarnings)
-			: base(disabledGroups, disabledWarnings)
-		{
-			this.firstLineColumnDisplacement = firstLineColumnDisplacement;
-		}
-
-		protected override bool Add(int id, string message, ErrorSeverity severity, int group, string/*!*/ fullPath,
-			ErrorPosition pos)
-		{
-			Debug.Assert(fullPath != null);
-
-			// first line column adjustment:
-			if (pos.FirstLine == 1) pos.FirstColumn += firstLineColumnDisplacement;
-
-			Debug.WriteLine("!!!3", message);
-			
-			PhpException.ThrowByEval(severity.ToPhpCompileError(), fullPath, pos.FirstLine, pos.FirstColumn, message);
-
-			return true;
-		}
-	}
-
-	internal sealed class WebErrorSink : ErrorSink
-	{
-		public WebErrorSink(WarningGroups disabledGroups, int[]/*!*/ disabledWarnings)
-			: base(disabledGroups, disabledWarnings)
-		{
-
-		}
-		
-		protected override bool Add(int id, string message, ErrorSeverity severity, int group, string/*!*/ fullPath,
-			ErrorPosition pos)
-		{
-			Debug.Assert(fullPath != null);
-			PhpException.ThrowByWebCompiler(severity.ToPhpCompileError(), id, fullPath, pos.FirstLine, pos.FirstColumn, message);
-			return true;
-		}
-	}
-
-	/// <summary>
-	/// Thrown when data are not found found in call context or are not valid.
-	/// </summary>
-	[Serializable]
-	public class InvalidCallContextDataException : ApplicationException
-	{
-		internal InvalidCallContextDataException(string slot)
-			: base(CoreResources.GetString("invalid_call_context_data", slot)) { }
-	}
-
-	/// <summary>
-	/// Thrown by exit/die language constructs to cause immediate termination of a script being executed.
-	/// </summary>
-	[Serializable]
-	public class ScriptDiedException : ApplicationException
-	{
-		internal ScriptDiedException(object status)
-		{
-			this.status = status;
-		}
-
-		internal ScriptDiedException() : this(255) { }
-
-		public object Status { get { return status; } set { status = value; } }
-		private object status;
+        public object Status { get { return status; } set { status = value; } }
+        private object status;
 
         #region Serializable
 
@@ -1216,28 +1226,28 @@ namespace PHP.Core
 
     }
 
-	/// <summary>
-	/// Thrown when user attempts to create two types with same name in one assembly.
-	/// </summary>
-	internal class DuplicateTypeNames : ApplicationException
-	{
-		public DuplicateTypeNames(string name)
-		{
-			this.name = name;
-		}
+    /// <summary>
+    /// Thrown when user attempts to create two types with same name in one assembly.
+    /// </summary>
+    internal class DuplicateTypeNames : ApplicationException
+    {
+        public DuplicateTypeNames(string name)
+        {
+            this.name = name;
+        }
 
-		public readonly string name;
-	}
+        public readonly string name;
+    }
 
-	/// <summary>
-	/// Thrown when an unexpected exception is thrown during a script execution.
-	/// </summary>
-	[Serializable]
-	public class PhpNetInternalException : ApplicationException
-	{
-		internal PhpNetInternalException(string message, Exception inner) : base(message, inner) { }
+    /// <summary>
+    /// Thrown when an unexpected exception is thrown during a script execution.
+    /// </summary>
+    [Serializable]
+    public class PhpNetInternalException : ApplicationException
+    {
+        internal PhpNetInternalException(string message, Exception inner) : base(message, inner) { }
 #if !SILVERLIGHT
-		protected PhpNetInternalException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+        protected PhpNetInternalException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 #endif
 
         /// <summary>
@@ -1260,30 +1270,31 @@ namespace PHP.Core
                 return result.ToString();
             }
         }
-	}
+    }
 
-	/// <summary>
-	/// Holder for an instance of <see cref="Library.SPL.Exception"/>.
-	/// For internal purposes only.
-	/// </summary>
-	public class PhpUserException : ApplicationException
-	{
-		public readonly Library.SPL.Exception UserException;
+    /// <summary>
+    /// Holder for an instance of <see cref="Library.SPL.Exception"/>.
+    /// For internal purposes only.
+    /// </summary>
+    public class PhpUserException : ApplicationException
+    {
+        public readonly Library.SPL.Exception UserException;
 
-		public PhpUserException(Library.SPL.Exception inner) : base(Convert.ObjectToString(inner.getMessage(ScriptContext.CurrentContext)))
-		{
-			UserException = inner;
-		}
-	}
+        public PhpUserException(Library.SPL.Exception inner)
+            : base(Convert.ObjectToString(inner.getMessage(ScriptContext.CurrentContext)))
+        {
+            UserException = inner;
+        }
+    }
 
-	/// <summary>
-	/// An implementation of a method doesn't behave correctly.
-	/// </summary>
-	public class InvalidMethodImplementationException : ApplicationException
-	{
-		public InvalidMethodImplementationException(string methodName)
-			: base(CoreResources.GetString("invalid_method_implementation", methodName))
-		{ }
-	}
+    /// <summary>
+    /// An implementation of a method doesn't behave correctly.
+    /// </summary>
+    public class InvalidMethodImplementationException : ApplicationException
+    {
+        public InvalidMethodImplementationException(string methodName)
+            : base(CoreResources.GetString("invalid_method_implementation", methodName))
+        { }
+    }
 
-} 
+}

@@ -6,6 +6,7 @@ using PHP.Core;
 using System.Xml;
 using System.IO;
 using PHP.Core.Reflection;
+using System.Diagnostics;
 
 namespace PHP.Library.Xml
 {
@@ -277,7 +278,7 @@ namespace PHP.Library.Xml
                     case ReadState.Closed:
                     case ReadState.Initial:
                         //nonsense
-                        Debug.Fail();
+                        Debug.Fail(null);
                         break;
                     case ReadState.Interactive:
                         //debug step, that prints out the current state of the parser (pretty printed)

@@ -1198,26 +1198,5 @@ namespace PHP.Core
         }
     }
 
-#if DEBUG
-
-	// GENERICS: replace with VSUnit
-	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-	public class TestAttribute : Attribute
-	{
-		public TestAttribute()
-		{
-			this.One = false;
-		}
-
-		public TestAttribute(bool one)
-		{
-			this.One = one;
-		}
-
-		public readonly bool One;
-	}
-
-#endif
-
 	#endregion
 }

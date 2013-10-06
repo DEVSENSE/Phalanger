@@ -43,12 +43,6 @@
     <AssemblyOriginatorKeyFile>..\Extensions.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="PhpNetClassLibrary, Version=0.0.0.0, Culture=neutral, PublicKeyToken=4af37afe3cde05fb, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="PhpNetCore, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0a8e8c4c76728c71, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -90,6 +84,16 @@
     <None Include="..\Extensions.snk">
       <Link>Extensions.snk</Link>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ClassLibrary\ClassLibrary.csproj">
+      <Project>{d515e8f4-357c-4caf-87c1-97d64c5f865a}</Project>
+      <Name>ClassLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\Core.csproj">
+      <Project>{9a2867a2-981c-4b5a-a1c5-eaccc80b5148}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

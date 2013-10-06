@@ -7,7 +7,7 @@
     <ProjectGuid>{581F1486-5062-459E-BAE6-A41886584F81}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PHP.Core.Parsers</RootNamespace>
+    <RootNamespace>PHP.Core</RootNamespace>
     <AssemblyName>PhpNetCore.Parsers</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -27,6 +27,10 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Debug\PhpNetCore.Parsers.XML</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591,419</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,20 +39,126 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\PhpNetCore.Parsers.XML</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591,419</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyResources.cs" />
+    <Compile Include="AST\ArrayEx.cs" />
+    <Compile Include="AST\AssignEx.cs" />
+    <Compile Include="AST\BinaryEx.cs" />
+    <Compile Include="AST\BuiltInFunctions.cs" />
+    <Compile Include="AST\CallSignature.cs" />
+    <Compile Include="AST\ConcatEx.cs" />
+    <Compile Include="AST\ConstantUse.cs" />
+    <Compile Include="AST\CustomAttributes.cs" />
+    <Compile Include="AST\DirectVariableUse.cs" />
+    <Compile Include="AST\EchoStmt.cs" />
+    <Compile Include="AST\Expression.cs" />
+    <Compile Include="AST\FieldUse.cs" />
+    <Compile Include="AST\FunctionCall.cs" />
+    <Compile Include="AST\FunctionDecl.cs" />
+    <Compile Include="AST\GlobalCode.cs" />
+    <Compile Include="AST\IfStmt.cs" />
+    <Compile Include="AST\IncDecEx.cs" />
+    <Compile Include="AST\IndirectVariableUse.cs" />
+    <Compile Include="AST\ItemUse.cs" />
+    <Compile Include="AST\JumpStmt.cs" />
+    <Compile Include="AST\LambdaFunctionExpr.cs" />
+    <Compile Include="AST\LangElement.cs" />
+    <Compile Include="AST\ListEx.cs" />
+    <Compile Include="AST\Literal.cs" />
+    <Compile Include="AST\LoopStmt.cs" />
+    <Compile Include="AST\NewAndInstanceof.cs" />
+    <Compile Include="AST\ShellEx.cs" />
+    <Compile Include="AST\Statement.cs" />
+    <Compile Include="AST\SwitchStmt.cs" />
+    <Compile Include="AST\TernaryEx.cs" />
+    <Compile Include="AST\TryStmt.cs" />
+    <Compile Include="AST\TypeDecl.cs" />
+    <Compile Include="AST\TypeRef.cs" />
+    <Compile Include="AST\UnaryEx.cs" />
+    <Compile Include="AST\VariableUse.cs" />
+    <Compile Include="AST\YieldEx.cs" />
+    <Compile Include="Attributes.cs" />
+    <Compile Include="Errors.cs" />
+    <Compile Include="Generated\Lexer.cs" />
+    <Compile Include="Generated\Parser.cs" />
+    <Compile Include="InclusionTypes.cs" />
+    <Compile Include="LanguageFeatures.cs" />
+    <Compile Include="Members.cs" />
+    <Compile Include="Names.cs" />
+    <Compile Include="Parsers\GPPG.cs" />
+    <Compile Include="Parsers\Lexer.cs" />
+    <Compile Include="Parsers\Parser.cs" />
+    <Compile Include="Parsers\Scanner.cs" />
+    <Compile Include="Parsers\Tokenizer.cs" />
+    <Compile Include="Parsers\Tokens.cs" />
+    <Compile Include="Parsers\Convert.cs" />
+    <Compile Include="PHPDocBlock.cs" />
+    <Compile Include="PhpSourceFile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyCollection.cs" />
+    <Compile Include="SourceUnit.cs" />
+    <Compile Include="Strings.Designer.cs">
+      <DependentUpon>Strings.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="TreeVisitor.cs" />
+    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Generators\Generate.cmd" />
+    <None Include="Generators\Lexer.lex" />
+    <None Include="Generators\Parser.y" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Strings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>PHP.Core.Localizations</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>ECHO Copying output to the Deployment folder ...
+
+
+if $(ConfigurationName) == Release (
+
+xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(ProjectDir)\..\..\Deployment\Bin" 1&gt;nul
+
+"$(ProjectDir)..\..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
+
+)
+
+
+if $(ConfigurationName) == Debug (
+
+xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(ProjectDir)..\..\Deployment\Debug" 1&gt;nul
+
+"$(ProjectDir)..\..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
+
+)
+
+
+if $(ConfigurationName) == DebugNoGac (
+
+xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(ProjectDir)..\..\Deployment\Debug" 1&gt;nul
+
+)</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

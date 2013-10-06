@@ -19,6 +19,7 @@ using System.Runtime.Serialization;
 using PHP.Core.Reflection;
 using System.Collections.Generic;
 using PHP.Core.AST;
+using System.Diagnostics;
 
 namespace PHP.Core.Emit
 {
@@ -142,8 +143,8 @@ namespace PHP.Core.Emit
             // only if __destruct was now defined in some base class, no need to override existing definition on Finalize
             DRoutine basedestruct;
             DRoutineDesc destruct;
-            if ((destruct = phpType.TypeDesc.GetMethod(DObject.SpecialMethodNames.Destruct)) != null && (phpType.Base == null ||
-                phpType.Base.GetMethod(DObject.SpecialMethodNames.Destruct, phpType, out basedestruct) == GetMemberResult.NotFound))
+            if ((destruct = phpType.TypeDesc.GetMethod(Name.SpecialMethodNames.Destruct)) != null && (phpType.Base == null ||
+                phpType.Base.GetMethod(Name.SpecialMethodNames.Destruct, phpType, out basedestruct) == GetMemberResult.NotFound))
             {
                 MethodBuilder finalizer_builder = phpType.RealTypeBuilder.DefineMethod("Finalize", MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.Family, typeof(void), Type.EmptyTypes);
                 
@@ -235,8 +236,8 @@ namespace PHP.Core.Emit
 
 			// register this instance for finalization if it introduced the __destruct method
 			DRoutine destruct;
-			if (phpType.TypeDesc.GetMethod(DObject.SpecialMethodNames.Destruct) != null && (phpType.Base == null ||
-				phpType.Base.GetMethod(DObject.SpecialMethodNames.Destruct, phpType, out destruct) == GetMemberResult.NotFound))
+            if (phpType.TypeDesc.GetMethod(Name.SpecialMethodNames.Destruct) != null && (phpType.Base == null ||
+                phpType.Base.GetMethod(Name.SpecialMethodNames.Destruct, phpType, out destruct) == GetMemberResult.NotFound))
 			{
 				cil.Ldarg(FunctionBuilder.ArgContextInstance);
 				cil.Ldarg(FunctionBuilder.ArgThis);
@@ -296,7 +297,7 @@ namespace PHP.Core.Emit
                 // try to find constructor
                 for (DTypeDesc type_desc = phpType.TypeDesc; type_desc != null; type_desc = type_desc.Base)
                 {
-                    construct = type_desc.GetMethod(DObject.SpecialMethodNames.Construct);
+                    construct = type_desc.GetMethod(Name.SpecialMethodNames.Construct);
                     if (construct == null)
                         construct = type_desc.GetMethod(new Name(type_desc.MakeSimpleName()));
 

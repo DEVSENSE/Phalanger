@@ -44,6 +44,7 @@ using PHP.CoreCLR;
 #else
 using System.Web;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Diagnostics;
 #endif
 
 namespace PHP.Library

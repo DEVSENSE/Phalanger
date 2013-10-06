@@ -11,6 +11,7 @@
 */
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Collections;
@@ -362,7 +363,7 @@ namespace PHP.Library
 					case 0: stream = process.StandardInput.BaseStream; access = StreamAccessOptions.Write; break;
 					case 1: stream = process.StandardOutput.BaseStream; access = StreamAccessOptions.Read; break;
 					case 2: stream = process.StandardError.BaseStream; access = StreamAccessOptions.Read; break;
-					default: Debug.Fail(); return false;
+					default: Debug.Fail(null); return false;
 				}
 
                 object value = PhpVariable.Dereference(descriptors_enum.CurrentValue);

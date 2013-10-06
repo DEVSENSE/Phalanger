@@ -672,7 +672,7 @@ namespace PHP.Core.Reflection
 		/// <param name="constructedType"></param>
 		internal virtual void EmitInvokeConstructor(ILEmitter/*!*/ il, PhpType/*!*/ derivedType, ConstructedType constructedType)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 #if !SILVERLIGHT
@@ -682,11 +682,11 @@ namespace PHP.Core.Reflection
 		internal virtual void EmitInvokeDeserializationConstructor(ILEmitter/*!*/ il, PhpType/*!*/ derivedType,
 			ConstructedType constructedType)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 #endif
 
-		internal abstract DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit);
+        internal abstract DTypeSpec GetTypeSpec(CompilationSourceUnit/*!*/ referringUnit);
 
 		/// <summary>
 		/// Defines a real method builder on the type. 
@@ -904,7 +904,7 @@ namespace PHP.Core.Reflection
 			    codeGenerator.EmitLoadTypeDescOperator(this.FullName, null, flags);
 		}
 
-		internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)
+		internal override DTypeSpec GetTypeSpec(CompilationSourceUnit/*!*/ referringUnit)
 		{
 			return new DTypeSpec(FullName, referringUnit.NamingContextFieldBuilder,
 				referringUnit.CompilationUnit.ModuleBuilder.AssemblyBuilder.RealModuleBuilder);
@@ -994,15 +994,15 @@ namespace PHP.Core.Reflection
 
 		#region N/A
 
-		internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)
+        internal override DTypeSpec GetTypeSpec(CompilationSourceUnit/*!*/ referringUnit)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			throw null;
 		}
 
 		public override KnownRoutine GetConstructor()
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 			throw null;
 		}
 
@@ -1287,7 +1287,7 @@ namespace PHP.Core.Reflection
 			codeGenerator.IL.Emit(OpCodes.Ldsfld, field);
 		}
 
-		internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)
+        internal override DTypeSpec GetTypeSpec(CompilationSourceUnit/*!*/ referringUnit)
 		{
             return new DTypeSpec(TypeCode);
 		}
@@ -1417,7 +1417,7 @@ namespace PHP.Core.Reflection
             codeGenerator.EmitLoadStaticTypeDesc(flags);
 		}
 
-		internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)
+        internal override DTypeSpec GetTypeSpec(CompilationSourceUnit/*!*/ referringUnit)
 		{
             throw new NotSupportedException();
 		}
@@ -1619,7 +1619,7 @@ namespace PHP.Core.Reflection
 			}
 		}
 
-		internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)
+        internal override DTypeSpec GetTypeSpec(CompilationSourceUnit/*!*/ referringUnit)
 		{
 			return new DTypeSpec(this.index, (declaringMember is PhpRoutine) ? MemberTypes.Method : MemberTypes.TypeInfo);
 		}
@@ -2044,7 +2044,7 @@ namespace PHP.Core.Reflection
 			}
 		}
 
-		internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)
+        internal override DTypeSpec GetTypeSpec(CompilationSourceUnit/*!*/ referringUnit)
 		{
 			if (isDefinite)
 			{
@@ -2304,7 +2304,7 @@ namespace PHP.Core.Reflection
 			codeGenerator.EmitLoadTypeDesc(RealType);
 		}
 
-		internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)
+        internal override DTypeSpec GetTypeSpec(CompilationSourceUnit/*!*/ referringUnit)
 		{
 			return new DTypeSpec(this.RealType, referringUnit.CompilationUnit.ModuleBuilder.AssemblyBuilder.RealModuleBuilder);
 		}
@@ -2575,7 +2575,7 @@ namespace PHP.Core.Reflection
 		/// To be used by the compiler.
 		/// </summary>
 		public PhpType(QualifiedName qualifiedName, PhpMemberAttributes memberAttributes, bool isPartial,
-			TypeSignature typeSignature, bool isConditionalDeclaration, Scope scope, SourceUnit/*!*/ sourceUnit, Position position)
+			TypeSignature typeSignature, bool isConditionalDeclaration, Scope scope, CompilationSourceUnit/*!*/ sourceUnit, Position position)
 			: base(new PhpTypeDesc(sourceUnit.CompilationUnit.Module, memberAttributes), qualifiedName)
 		{
 			Debug.Assert(sourceUnit != null && position.IsValid);
@@ -2865,7 +2865,7 @@ namespace PHP.Core.Reflection
 		private void DetermineConstructor()
 		{
 			DRoutineDesc ctor_desc;
-			if (TypeDesc.Methods.TryGetValue(DObject.SpecialMethodNames.Construct, out ctor_desc) ||
+			if (TypeDesc.Methods.TryGetValue(Name.SpecialMethodNames.Construct, out ctor_desc) ||
 				TypeDesc.Methods.TryGetValue(this.qualifiedName.Name, out ctor_desc))
 			{
 				ctor_desc.MemberAttributes |= PhpMemberAttributes.Constructor;
@@ -3060,7 +3060,7 @@ namespace PHP.Core.Reflection
 		#region Member Addition
 
 		internal ClassConstant AddConstant(VariableName name, PhpMemberAttributes memberAttributes,
-			Position position, SourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
+            Position position, CompilationSourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
 		{
 			DConstantDesc existing;
 
@@ -3086,7 +3086,7 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		/// <returns>Whether the field has been added.</returns>
 		internal PhpField AddField(VariableName name, PhpMemberAttributes memberAttributes, bool hasInitialValue,
-			Position position, SourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
+            Position position, CompilationSourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
 		{
 			DPropertyDesc existing;
 
@@ -3110,7 +3110,7 @@ namespace PHP.Core.Reflection
 
 		internal PhpMethod AddMethod(Name name, PhpMemberAttributes memberAttributes, bool hasBody,
 		  Signature astSignature, TypeSignature astTypeSignature,
-		  Position position, SourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
+		  Position position, CompilationSourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
 		{
 			DRoutineDesc existing;
 
@@ -3278,7 +3278,7 @@ namespace PHP.Core.Reflection
 
                 // implements IPhpDestructable (can be implemented in every extending class) if destructor can be called anywhere
                 DRoutineDesc destructor;
-                if ((destructor = this.TypeDesc.GetMethod(DObject.SpecialMethodNames.Destruct)) != null && destructor.IsPublic && !destructor.IsStatic)
+                if ((destructor = this.TypeDesc.GetMethod(Name.SpecialMethodNames.Destruct)) != null && destructor.IsPublic && !destructor.IsStatic)
                     type_builder.AddInterfaceImplementation(typeof(IPhpDestructable));
                 
 				// define fully open type:
@@ -3745,7 +3745,7 @@ namespace PHP.Core.Reflection
             }                        
         }
 
-        internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)
+        internal override DTypeSpec GetTypeSpec(CompilationSourceUnit/*!*/ referringUnit)
 		{
 			if (IsDefinite)
 			{

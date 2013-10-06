@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Dynamic;
-using PHP.Core.Reflection;
 using System.Linq.Expressions;
+using System.Diagnostics;
+
+using PHP.Core.Emit;
+using PHP.Core.Reflection;
 
 namespace PHP.Core.Binders
 {
     //TODO:
     // - implement IDynamicMetaObjectProvider for DObject, PhpObject, ClrObject, ClrValue
     // - if library function is called with wrong number of arguments throw PhpException.InvalidArgumentCount
-    using PHP.Core.Emit;
-
+    
     /// <summary>
     /// 
     /// </summary>
@@ -371,7 +373,7 @@ namespace PHP.Core.Binders
             if (result == GetMemberResult.NotFound)
             {
 
-                if ((result = type_desc.GetMethod(DObject.SpecialMethodNames.Call, classContext, out method)) == GetMemberResult.NotFound)
+                if ((result = type_desc.GetMethod(Name.SpecialMethodNames.Call, classContext, out method)) == GetMemberResult.NotFound)
                 {
                     return DoAndReturnDefault(
                                     Expression.Call(Methods.PhpException.UndefinedMethodCalled, Expression.Constant(obj.TypeName), Expression.Constant(ActualMethodName)),
@@ -622,7 +624,7 @@ namespace PHP.Core.Binders
             BindingRestrictions argumentsRestrictions;
             Expression[] arguments;
 
-            if (routine.Name != PHP.Core.Reflection.DObject.SpecialMethodNames.Call)
+            if (routine.Name != Name.SpecialMethodNames.Call)
             {
                 args = GetArgumentsRange(args, 0, RealMethodArgumentCount);// This can't be done when _call method is invoked
 
