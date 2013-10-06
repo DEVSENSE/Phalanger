@@ -15,6 +15,7 @@ using System.IO;
 using System.Threading;
 using System.Collections;
 using System.Runtime.Serialization;
+using System.Diagnostics;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;

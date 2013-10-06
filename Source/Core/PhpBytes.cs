@@ -1,5 +1,6 @@
 /*
 
+ Copyright (c) 2013 DEVSENSE
  Copyright (c) 2004-2006 Tomas Matousek.
   
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -14,10 +15,6 @@ using System;
 using System.Text;
 using System.Diagnostics;
 using System.Collections;
-
-#if SILVERLIGHT
-using PHP.CoreCLR;
-#endif
 
 namespace PHP.Core
 {

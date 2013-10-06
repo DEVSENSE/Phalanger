@@ -85,91 +85,51 @@ namespace PHP.Core
 		/// </para>
 		/// </summary>
 		public PhpReference/*!*/ Server = new PhpReference();
-		public const string ServerName = "_SERVER";
-
+		
 		/// <summary>
 		/// Environment variables ($_ENV).
 		/// </summary>
 		public PhpReference/*!*/ Env = new PhpReference();
-		public const string EnvName = "_ENV";
 
 		/// <summary>
 		/// Global variables ($GLOBALS). 
 		/// </summary>
 		public PhpReference/*!*/ Globals = new PhpReference();
-		public const string GlobalsName = "GLOBALS";
-
+		
 		/// <summary>
 		/// Request variables ($_REQUEST) copied from $_GET, $_POST and $_COOKIE arrays.
 		/// </summary>
 		public PhpReference/*!*/ Request = new PhpReference();
-		public const string RequestName = "_REQUEST";
 
 		/// <summary>
 		/// Variables passed by HTTP GET method ($_GET).
 		/// </summary>
 		public PhpReference/*!*/ Get = new PhpReference();
-		public const string GetName = "_GET";
 
 		/// <summary>
 		/// Variables passed by HTTP POST method ($_POST).
 		/// </summary>
 		public PhpReference/*!*/ Post = new PhpReference();
-		public const string PostName = "_POST";
 
 		/// <summary>
 		/// Cookies ($_COOKIE).
 		/// </summary>
 		public PhpReference/*!*/ Cookie = new PhpReference();
-		public const string CookieName = "_COOKIE";
 
         /// <summary>
         /// Raw POST data ($HTTP_RAW_POST_DTA). Equivalent to file_get_contents("php://input").
         /// </summary>
         public PhpReference/*!*/ HttpRawPostData = new PhpReference();
-        public const string HttpRawPostDataName = "HTTP_RAW_POST_DATA";
 
 		/// <summary>
 		/// Uploaded files information ($_FILES).
 		/// </summary>
 		public PhpReference/*!*/ Files = new PhpReference();
-		public const string FilesName = "_FILES";
 
 		/// <summary>
 		/// Session variables ($_SESSION). Initialized on session start.
 		/// </summary>
 		public PhpReference/*!*/ Session = new PhpReference();
-		public const string SessionName = "_SESSION";
-
-		#endregion
-
-		#region IsAutoGlobal
-
-		/// <summary>
-		/// Checks whether a specified name is the name of an auto-global variable.
-		/// </summary>
-		/// <param name="name">The name.</param>
-		/// <returns>Whether <paramref name="name"/> is auto-global.</returns>
-		public static bool IsAutoGlobal(string name)
-		{
-			switch (name)
-			{
-                case GlobalsName:
-                case ServerName:
-                case EnvName:
-                case CookieName:
-                case HttpRawPostDataName:
-                case FilesName:
-                case RequestName:
-                case GetName:
-                case PostName:
-                case SessionName:
-					return true;
-
-                default:
-                    return false;
-			}
-		}
 
 		#endregion
 
@@ -811,16 +771,16 @@ namespace PHP.Core
 			}
 
 			// adds auto-global variables (overwrites potential existing variables in $GLOBALS):
-			globals[GlobalsName] = Globals;
-			globals[EnvName] = Env;
-			globals[GetName] = Get;
-			globals[PostName] = Post;
-			globals[CookieName] = Cookie;
-			globals[RequestName] = Request;
-			globals[ServerName] = Server;
-			globals[FilesName] = Files;
-			globals[SessionName] = Session;
-            globals[HttpRawPostDataName] = HttpRawPostData;
+            globals[VariableName.GlobalsName] = Globals;
+            globals[VariableName.EnvName] = Env;
+            globals[VariableName.GetName] = Get;
+            globals[VariableName.PostName] = Post;
+            globals[VariableName.CookieName] = Cookie;
+            globals[VariableName.RequestName] = Request;
+            globals[VariableName.ServerName] = Server;
+            globals[VariableName.FilesName] = Files;
+            globals[VariableName.SessionName] = Session;
+            globals[VariableName.HttpRawPostDataName] = HttpRawPostData;
 
 			// adds long arrays:
 			if (Configuration.Global.GlobalVariables.RegisterLongArrays)
@@ -850,25 +810,25 @@ namespace PHP.Core
 		{
 			switch (name.ToString())
 			{
-				case AutoGlobals.CookieName:
+				case VariableName.CookieName:
 					return Fields.AutoGlobals.Cookie;
-				case AutoGlobals.EnvName:
+                case VariableName.EnvName:
 					return Fields.AutoGlobals.Env;
-				case AutoGlobals.FilesName:
+                case VariableName.FilesName:
 					return Fields.AutoGlobals.Files;
-				case AutoGlobals.GetName:
+                case VariableName.GetName:
 					return Fields.AutoGlobals.Get;
-				case AutoGlobals.GlobalsName:
+                case VariableName.GlobalsName:
 					return Fields.AutoGlobals.Globals;
-				case AutoGlobals.PostName:
+                case VariableName.PostName:
 					return Fields.AutoGlobals.Post;
-				case AutoGlobals.RequestName:
+                case VariableName.RequestName:
 					return Fields.AutoGlobals.Request;
-				case AutoGlobals.ServerName:
+                case VariableName.ServerName:
 					return Fields.AutoGlobals.Server;
-				case AutoGlobals.SessionName:
+                case VariableName.SessionName:
 					return Fields.AutoGlobals.Session;
-                case AutoGlobals.HttpRawPostDataName:
+                case VariableName.HttpRawPostDataName:
                     return Fields.AutoGlobals.HttpRawPostData;
 				default:
 					return null;

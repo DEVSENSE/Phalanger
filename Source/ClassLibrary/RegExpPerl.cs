@@ -23,6 +23,7 @@ using System.Text.RegularExpressions;
 
 using PHP.Core;
 using PHP.Core.Reflection;
+using System.Diagnostics;
 
 namespace PHP.Library
 {
@@ -2044,7 +2045,7 @@ namespace PHP.Library
 					int i = pos + 3;
 					while (i < str.Length && str[i] != '}' && number < Char.MaxValue)
 					{
-						int digit = Core.Convert.AlphaNumericToDigit(str[i]);
+                        int digit = Core.Parsers.Convert.AlphaNumericToDigit(str[i]);
 						if (digit > 16) return false;
 						number = (number << 4) + digit;
 						i++;
@@ -2061,7 +2062,7 @@ namespace PHP.Library
 					for (int i = pos + 2; i < pos + 4; i++)
 					{
 						Debug.Assert(i < str.Length);
-						int digit = Core.Convert.AlphaNumericToDigit(str[i]);
+                        int digit = Core.Parsers.Convert.AlphaNumericToDigit(str[i]);
 						if (digit > 16) return false;
 						number = (number << 4) + digit;
 					}
@@ -2082,7 +2083,7 @@ namespace PHP.Library
 				for (int i = pos + 1; i < pos + 4; i++)
 				{
 					Debug.Assert(i < str.Length);
-					int digit = Core.Convert.AlphaNumericToDigit(str[i]);
+                    int digit = Core.Parsers.Convert.AlphaNumericToDigit(str[i]);
 					if (digit > 8) return false;
 					number = (number << 3) + digit;
 				}

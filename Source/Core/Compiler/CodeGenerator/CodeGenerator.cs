@@ -53,8 +53,8 @@ namespace PHP.Core
 		/// Current source unit. Switched by <see cref="GlobalCode"/>.
         /// Internally modifiable in order to change the sourceUnit during the emission of methods/fields in partial classes.
 		/// </summary>
-        public SourceUnit SourceUnit { get { return sourceUnit; } internal set { sourceUnit = value; } }
-		private SourceUnit sourceUnit;
+        public CompilationSourceUnit SourceUnit { get { return sourceUnit; } internal set { sourceUnit = value; } }
+        private CompilationSourceUnit sourceUnit;
 
 		public CompilationUnitBase CompilationUnit { get { return sourceUnit.CompilationUnit; } }
 
@@ -258,28 +258,28 @@ namespace PHP.Core
 		internal void EmitConversion(Expression/*!*/ expression, PhpTypeCode dst)
 		{
 			// expression is evaluable:
-			if (expression.HasValue)
+			if (expression.HasValue())
 			{
 				switch (dst)
 				{
 					case PhpTypeCode.String:
-						il.Emit(OpCodes.Ldstr, PHP.Core.Convert.ObjectToString(expression.Value));
+						il.Emit(OpCodes.Ldstr, PHP.Core.Convert.ObjectToString(expression.GetValue()));
 						break;
 
 					case PhpTypeCode.Boolean:
-						il.LdcI4(PHP.Core.Convert.ObjectToBoolean(expression.Value) ? 1 : 0);
+                        il.LdcI4(PHP.Core.Convert.ObjectToBoolean(expression.GetValue()) ? 1 : 0);
 						break;
 
 					case PhpTypeCode.Integer:
-						il.LdcI4(PHP.Core.Convert.ObjectToInteger(expression.Value));
+                        il.LdcI4(PHP.Core.Convert.ObjectToInteger(expression.GetValue()));
 						break;
 
 					case PhpTypeCode.Double:
-						il.Emit(OpCodes.Ldc_R8, PHP.Core.Convert.ObjectToDouble(expression.Value));
+                        il.Emit(OpCodes.Ldc_R8, PHP.Core.Convert.ObjectToDouble(expression.GetValue()));
 						break;
 
 					case PhpTypeCode.Object:
-						il.LoadLiteral(expression.Value);
+                        il.LoadLiteral(expression.GetValue());
 						break;
 
 					default:
@@ -430,7 +430,7 @@ namespace PHP.Core
 		/// Called when a <see cref="PHP.Core.AST.GlobalCode"/> AST node is entered during the emit phase.
 		/// </summary>
 		public void EnterGlobalCodeDeclaration(VariablesTable variablesTable,
-			Dictionary<VariableName, Statement> labels, SourceUnit/*!*/ sourceUnit)
+            Dictionary<VariableName, Statement> labels, CompilationSourceUnit/*!*/ sourceUnit)
 		{
 			CompilerLocationStack.GlobalCodeContext gc_context = new CompilerLocationStack.GlobalCodeContext();
 
@@ -1619,7 +1619,7 @@ namespace PHP.Core
 
 		private void EmitLoadTypeDesc(string typeFullName, TypeRef typeNameRef, DType type, ResolveTypeFlags flags)
 		{
-			Debug.AssertNonNull(1, typeFullName, typeNameRef, type);
+            DebugHelper.AssertNonNull(1, typeFullName, typeNameRef, type);
 
 			if (typeFullName != null)
 				EmitLoadTypeDescOperator(typeFullName, null, flags);
@@ -1703,7 +1703,7 @@ namespace PHP.Core
 
 		internal void EmitNewOperator(string typeFullName, TypeRef typeNameRef, DType type, CallSignature callSignature)
 		{
-			Debug.AssertNonNull(1, typeFullName, typeNameRef, type);
+            DebugHelper.AssertNonNull(1, typeFullName, typeNameRef, type);
 
 			// prepare stack frame for the constructor:
 			callSignature.EmitLoadOnPhpStack(this);
@@ -1718,7 +1718,7 @@ namespace PHP.Core
 
 		internal void EmitInstanceOfOperator(string typeFullName, TypeRef typeNameRef, DType type)
 		{
-			Debug.AssertNonNull(1, typeFullName, typeNameRef, type);
+            DebugHelper.AssertNonNull(1, typeFullName, typeNameRef, type);
 
 			// LOAD Operators.InstanceOf(STACK, <type desc>);
 			EmitLoadTypeDesc(typeFullName, typeNameRef, type, ResolveTypeFlags.None);
@@ -1727,7 +1727,7 @@ namespace PHP.Core
 
 		internal void EmitTypeOfOperator(string typeFullName, TypeRef typeNameRef, DType type)
 		{
-			Debug.AssertNonNull(1, typeFullName, typeNameRef, type);
+            DebugHelper.AssertNonNull(1, typeFullName, typeNameRef, type);
 
 			// LOAD Operators.InstanceOf(STACK, <type desc>, <context type desc>, <script context>);
 			EmitLoadTypeDesc(typeFullName, typeNameRef, type, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
@@ -2290,7 +2290,7 @@ namespace PHP.Core
 					break;
 
 				default:
-					Debug.Fail();
+					Debug.Fail(null);
 					break;
 			}
 		}
@@ -3286,11 +3286,11 @@ namespace PHP.Core
             }
             else if (kind == EvalKinds.SyntheticEval)
             {
-                Debug.Assert(code.HasValue);
-                Debug.Assert(code.Value is string);
+                Debug.Assert(code.HasValue());
+                Debug.Assert(code.GetValue() is string);
 
                 // an argument of the eval is converted to a string:
-                il.Emit(OpCodes.Ldstr, (string)code.Value);
+                il.Emit(OpCodes.Ldstr, (string)code.GetValue());
                 il.Emit(OpCodes.Ldc_I4_1);
             }
             else
@@ -3313,13 +3313,26 @@ namespace PHP.Core
         }
 
         /// <summary>
+        /// Determine if <see cref="NamingContext "/> is needed for the current namespace and aliases.
+        /// </summary>
+        /// <param name="currentNamespace"></param>
+        /// <param name="aliases"></param>
+        /// <returns>True if current namespace is not global namespace or there are some aliases.</returns>
+        private static bool NeedsNamingContext(QualifiedName? currentNamespace, Dictionary<string, QualifiedName> aliases)
+        {
+            return
+                (currentNamespace.HasValue && currentNamespace.Value.Namespaces.Length > 0) ||
+                (aliases != null && aliases.Count > 0);
+        }
+
+        /// <summary>
         /// Loads (cached) instance of given state of <see cref="NamingContext"/> onto the evaluation stack.
         /// </summary>
         internal void EmitNamingContext(QualifiedName? currentNamespace, Dictionary<string, QualifiedName> currentAliases, Position position)
         {
             ILEmitter il = this.IL;
 
-            if (NamingContext.NeedsNamingContext(currentNamespace, currentAliases))
+            if (NeedsNamingContext(currentNamespace, currentAliases))
             {
                 // private static NamingContext <id> = null;
                 string fname = (this.SourceUnit != null) ? this.SourceUnit.SourceFile.ToString() : string.Empty;
@@ -3338,7 +3351,7 @@ namespace PHP.Core
                 if (true)
                 {
                     il.Emit(OpCodes.Pop);
-                    NamingContext.EmitNewNamingContext(il, currentNamespace, currentAliases);
+                    EmitNewNamingContext(il, currentNamespace, currentAliases);
                     il.Emit(OpCodes.Dup);
                     il.Emit(OpCodes.Stsfld, fld);
                 }
@@ -3349,6 +3362,46 @@ namespace PHP.Core
             {
                 il.Emit(OpCodes.Ldnull);
             }
+        }
+
+        /// <summary>
+        /// Emit instantiation and initialization of NamingContext. Leaves reference to new NamingContext on the top of evaluation stack.
+        /// </summary>
+        /// <param name="il"></param>
+        /// <param name="currentNamespace">Namespace to be passed as current namespace to the new instance of <see cref="NamingContext"/>.</param>
+        /// <param name="aliases">Aliases to be passed to the new instance of <see cref="NamingContext"/>.</param>
+        internal static void EmitNewNamingContext(Emit.ILEmitter/*!*/il, QualifiedName? currentNamespace, Dictionary<string, QualifiedName> aliases)
+        {
+            if (!NeedsNamingContext(currentNamespace, aliases))
+            {
+                il.Emit(OpCodes.Ldnull);
+                return;
+            }
+
+            //
+            // new NamingContext( currentNamespace.NamespacePhpName, aliases.Count )
+
+            if (currentNamespace.HasValue && currentNamespace.Value.Namespaces.Length > 0)
+                il.Emit(OpCodes.Ldstr, currentNamespace.Value.NamespacePhpName);
+            else
+                il.Emit(OpCodes.Ldnull);
+
+            il.LdcI4((aliases != null) ? aliases.Count : 0);
+
+            il.Emit(OpCodes.Newobj, Constructors.NamingContext);
+
+            // tmp.AddAlias( aliases[i].Key, aliases[i].Value.NamespacePhpName
+            if (aliases != null)
+            {
+                foreach (var alias in aliases)
+                {
+                    il.Emit(OpCodes.Dup);                                   // the NamingContext instance
+                    il.Emit(OpCodes.Ldstr, alias.Key);                      // alias
+                    il.Emit(OpCodes.Ldstr, alias.Value.ToString());         // qualifiedName
+                    il.Emit(OpCodes.Call, Methods.NamingContext.AddAlias);  // AddAlias( <alias>, <qualifiedName> )
+                }
+            }
+
         }
 
         /// <summary>
@@ -3394,7 +3447,7 @@ namespace PHP.Core
 				
                 // convert the key into integer if necessary and possible in compile time
                 IntStringKey array_key;
-                if (key.HasValue && Convert.ObjectToArrayKey(key.Value, out array_key) && array_key.IsInteger)
+                if (key.HasValue() && Convert.ObjectToArrayKey(key.GetValue(), out array_key) && array_key.IsInteger)
                 {
                     il.LdcI4(array_key.Integer);
                     result = PhpTypeCode.Integer;
@@ -3427,9 +3480,9 @@ namespace PHP.Core
 		
 		private bool EmitExactStringKeyHash(PhpTypeCode keyTypeCode, Expression keyExpr)
 		{
-			if (keyExpr != null && keyTypeCode == PhpTypeCode.String && keyExpr.HasValue)
+			if (keyExpr != null && keyTypeCode == PhpTypeCode.String && keyExpr.HasValue())
 			{
-				string skey = (string)keyExpr.Value;
+                string skey = (string)keyExpr.GetValue();
 				IntStringKey array_key = Convert.StringToArrayKey(skey);
 				if (array_key.IsString && skey == array_key.String) // skey was not converted to int
 				{
@@ -3473,8 +3526,7 @@ namespace PHP.Core
 					break;
 
 				default:
-					Debug.Fail();
-					throw null;
+                    throw new ArgumentException();
 			}
 			il.Emit(method.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, method);
 		}
@@ -3511,8 +3563,7 @@ namespace PHP.Core
 					break;
 					
 				default:
-					Debug.Fail();
-					throw null;
+                    throw new ArgumentException();
 			}
             il.Emit(method.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, method);
 		}
@@ -3551,8 +3602,7 @@ namespace PHP.Core
 					break;
 
 				default:
-					Debug.Fail();
-					throw null;
+                    throw new ArgumentException();
 			}
 			
 			il.Emit(OpCodes.Call, method);	
@@ -3590,8 +3640,7 @@ namespace PHP.Core
 					break;
 
 				default:
-					Debug.Fail();
-					throw null;
+                    throw new ArgumentException();
 			}
 			il.Emit(OpCodes.Call, method);
 		}
@@ -3714,6 +3763,5 @@ namespace PHP.Core
         }
 
         #endregion
-
     }
 }

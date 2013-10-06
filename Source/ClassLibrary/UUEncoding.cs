@@ -19,6 +19,7 @@ using PHP.Core;
 using MathEx = PHP.CoreCLR.MathEx;
 #else
 using MathEx = System.Math;
+using System.Diagnostics;
 #endif
 
 namespace PHP.Library
@@ -295,13 +296,12 @@ A96YC;V1E9""!O;B!E86-H(&QI;F4@<VAA;&P@8F4@-#4N
 					Console.WriteLine();
 					Console.WriteLine(encoded);
 					Console.WriteLine(StringUtils.FirstDifferent(encoded, cases[i, 1], false));
-					Debug.Fail();
+					Debug.Fail(null);
 				}
 
                 byte[] bytes = Decode(encoded).ReadonlyData;
 				string decoded = Encoding.Default.GetString(bytes, 0, bytes.Length);
-				if (decoded != cases[i, 0])
-					Debug.Fail();
+                Debug.Assert(decoded == cases[i, 0]);
 			}
 		}
 

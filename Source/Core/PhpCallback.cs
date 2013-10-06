@@ -579,7 +579,7 @@ namespace PHP.Core
 					}
 
 				default:
-					Debug.Fail(); return null;
+					Debug.Fail(null); return null;
 			}
 		}
 
@@ -646,7 +646,7 @@ namespace PHP.Core
 					}
 
 				default:
-					Debug.Fail(); return null;
+					Debug.Fail(null); return null;
 			}
 		}
 

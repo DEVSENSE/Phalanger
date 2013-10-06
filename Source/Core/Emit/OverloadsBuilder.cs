@@ -12,6 +12,7 @@
 
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections;
@@ -19,10 +20,6 @@ using System.Collections.Generic;
 
 using PHP.Core;
 using PHP.Core.Reflection;
-
-#if SILVERLIGHT
-using PHP.CoreCLR;
-#endif
 
 /*
   FUTURE VERSION:
@@ -101,7 +98,7 @@ namespace PHP.Core.Emit
 
                         if (index == overloads[0].ParamCount)
                         {
-                            Debug.Fail();
+                            Debug.Fail(null);
                             overload = overloads[0];
                             childNodes = new Dictionary<Type,OverloadTreeNode>();                            
                             break;
@@ -374,7 +371,7 @@ namespace PHP.Core.Emit
 		/// </remarks>
 		public void EmitCallSwitch(IPlace/*!*/ thisRef, IPlace/*!*/script_context, IPlace/*!*/ rtVariables, IPlace/*!*/ namingContext, IPlace/*!*/classContext, List<PhpLibraryFunction.Overload>/*!!*/ overloads)
 		{
-			Debug.AssertAllNonNull(overloads);
+            DebugHelper.AssertAllNonNull(overloads);
 
 			int last = overloads.Count - 1;
 			int min = overloads[0].ParamCount;

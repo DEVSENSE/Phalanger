@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using PHP.Core;
+using System.Diagnostics;
 
 namespace PHP.Library.Xml
 {

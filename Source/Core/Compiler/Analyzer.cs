@@ -149,7 +149,7 @@ namespace PHP.Core
 		/// </summary>
 		public Expression/*!*/ Literalize()
 		{
-			if (HasValue && !Expression.HasValue)
+			if (HasValue && !Expression.HasValue())
 				return Expression = LiteralUtils.Create(Expression.Position, Value, Expression.NodeCompiler<IExpressionCompiler>().Access);
 			else
 				return Expression;
@@ -231,8 +231,8 @@ namespace PHP.Core
 		/// Analyzed AST.
         /// Must be internally modifiable in order to allow partial class declaration to change the sourceUnit during the analysis
 		/// </summary>
-        public SourceUnit SourceUnit { get { return sourceUnit; } internal set { sourceUnit = value; } }
-		private SourceUnit sourceUnit; 
+        public CompilationSourceUnit SourceUnit { get { return sourceUnit; } internal set { sourceUnit = value; } }
+        private CompilationSourceUnit sourceUnit; 
 
 		/// <summary>
 		/// Current scope. Available only during full analysis.
@@ -300,7 +300,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Analyzes the AST of the source unit.
 		/// </summary>
-		internal void Analyze(SourceUnit/*!*/ sourceUnit)
+        internal void Analyze(CompilationSourceUnit/*!*/ sourceUnit)
 		{
 			state = States.FullAnalysisStarted;
 
@@ -1314,7 +1314,7 @@ namespace PHP.Core
                         (!calledStatically ||   // just to have complete condition here, always false
                         (referringRoutine != null && referringType != null && !referringRoutine.IsStatic &&  // in non-static method
                         type.TypeDesc.IsAssignableFrom(referringType.TypeDesc)) // {CurrentType} is inherited from or equal {type}
-                        ) ? DObject.SpecialMethodNames.Call : DObject.SpecialMethodNames.CallStatic;
+                        ) ? Name.SpecialMethodNames.Call : Name.SpecialMethodNames.CallStatic;
 
                     member_result = type.GetMethod(callMethodName, referringType, out routine);
 
@@ -1362,8 +1362,7 @@ namespace PHP.Core
 						}
 
 					default:
-						Debug.Fail();
-						return null;
+                        throw new InvalidOperationException();
 				}
 			}
 			else
@@ -1419,8 +1418,7 @@ namespace PHP.Core
 					}
 
 				default:
-					Debug.Fail();
-					return null;
+                    throw new InvalidOperationException();
 			}
 		}
 
@@ -1475,8 +1473,7 @@ namespace PHP.Core
 						}
 
 					default:
-						Debug.Fail();
-						throw null;
+                        throw new InvalidOperationException();
 				}
 			}
 			else
@@ -1531,8 +1528,7 @@ namespace PHP.Core
 						}
 
 					default:
-						Debug.Fail();
-						throw null;
+                        throw new InvalidOperationException();
 				}
 			}
 			else

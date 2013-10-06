@@ -74,55 +74,6 @@ namespace PHP.Core.Reflection
 
 		#endregion
 
-		#region SpecialMethodNames
-
-		/// <summary>
-		/// Contains special (or &quot;magic&quot;) method names.
-		/// </summary>
-		public static class SpecialMethodNames
-		{
-			/// <summary>Constructor.</summary>
-			public static readonly Name Construct = new Name("__construct");
-
-			/// <summary>Destructor.</summary>
-			public static readonly Name Destruct = new Name("__destruct");
-
-			/// <summary>Invoked when cloning instances.</summary>
-			public static readonly Name Clone = new Name("__clone");
-
-			/// <summary>Invoked when casting to string.</summary>
-			public static readonly Name Tostring = new Name("__tostring");
-
-			/// <summary>Invoked when serializing instances.</summary>
-			public static readonly Name Sleep = new Name("__sleep");
-
-			/// <summary>Invoked when deserializing instanced.</summary>
-			public static readonly Name Wakeup = new Name("__wakeup");
-
-			/// <summary>Invoked when an unknown field is read.</summary>
-			public static readonly Name Get = new Name("__get");
-
-			/// <summary>Invoked when an unknown field is written.</summary>
-			public static readonly Name Set = new Name("__set");
-
-			/// <summary>Invoked when an unknown method is called.</summary>
-			public static readonly Name Call = new Name("__call");
-
-            /// <summary>Invoked when an object is called like a function.</summary>
-            public static readonly Name Invoke = new Name("__invoke");
-            
-            /// <summary>Invoked when an unknown method is called statically.</summary>
-            public static readonly Name CallStatic = new Name("__callStatic");
-
-			/// <summary>Invoked when an unknown field is unset.</summary>
-			public static readonly Name Unset = new Name("__unset");
-
-			/// <summary>Invoked when an unknown field is tested for being set.</summary>
-			public static readonly Name Isset = new Name("__isset");
-		};
-
-		#endregion
-
 		#region AttributedValue
 
 		protected struct AttributedValue
@@ -496,7 +447,7 @@ namespace PHP.Core.Reflection
             {
                 if (type_desc == caller) seen_context = true;
 
-                method = type_desc.GetMethod(SpecialMethodNames.Construct);
+                method = type_desc.GetMethod(Name.SpecialMethodNames.Construct);
                 if (method == null)
                     method = type_desc.GetMethod(new Name(type_desc.MakeSimpleName()));
 
@@ -577,7 +528,7 @@ namespace PHP.Core.Reflection
 			{
 				// if not found, perform __call 'magic' method lookup, but not if we are already inside a __call
 				if (insideCaller ||
-					(result = type_desc.GetMethod(SpecialMethodNames.Call, caller, out method)) ==
+					(result = type_desc.GetMethod(Name.SpecialMethodNames.Call, caller, out method)) ==
 					GetMemberResult.NotFound)
 				{
 					stack.RemoveFrame();
@@ -644,7 +595,7 @@ namespace PHP.Core.Reflection
 			if (result == GetMemberResult.NotFound)
 			{
 				// if not found, perform __call 'magic' method lookup
-				if ((result = type_desc.GetMethod(SpecialMethodNames.Call, caller, out method)) ==
+				if ((result = type_desc.GetMethod(Name.SpecialMethodNames.Call, caller, out method)) ==
 					GetMemberResult.NotFound)
 				{
 					if (!quiet) PhpException.UndefinedMethodCalled(TypeName, name);
@@ -712,7 +663,7 @@ namespace PHP.Core.Reflection
 		/// <remarks>Override in order to get custom property reading behavior.</remarks>
 		protected virtual object PropertyReadHandler(string name, DTypeDesc caller, out bool handled)
 		{
-			return InvokeSpecialMethod(SpecialMethodNames.Get, ObjectFlags.InsideGetter, caller, out handled, name);
+			return InvokeSpecialMethod(Name.SpecialMethodNames.Get, ObjectFlags.InsideGetter, caller, out handled, name);
 		}
 
 		/// <summary>
@@ -721,7 +672,7 @@ namespace PHP.Core.Reflection
 		protected virtual bool PropertyWriteHandler(object name, object value, DTypeDesc caller)
 		{
 			bool handled;
-			InvokeSpecialMethod(SpecialMethodNames.Set, ObjectFlags.InsideSetter, caller, out handled, name, value);
+			InvokeSpecialMethod(Name.SpecialMethodNames.Set, ObjectFlags.InsideSetter, caller, out handled, name, value);
 
 			return handled;
 		}
@@ -732,7 +683,7 @@ namespace PHP.Core.Reflection
 		protected virtual bool PropertyUnsetHandler(string name, DTypeDesc caller)
 		{
 			bool handled;
-			InvokeSpecialMethod(SpecialMethodNames.Unset, ObjectFlags.InsideUnsetter, caller, out handled, name);
+			InvokeSpecialMethod(Name.SpecialMethodNames.Unset, ObjectFlags.InsideUnsetter, caller, out handled, name);
 
 			return handled;
 		}
@@ -742,7 +693,7 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		public virtual object PropertyIssetHandler(string name, DTypeDesc caller, out bool handled)
 		{
-			return InvokeSpecialMethod(SpecialMethodNames.Isset, ObjectFlags.InsideIssetter, caller, out handled, name);
+            return InvokeSpecialMethod(Name.SpecialMethodNames.Isset, ObjectFlags.InsideIssetter, caller, out handled, name);
 		}
 
 		#endregion
@@ -1220,7 +1171,7 @@ namespace PHP.Core.Reflection
 			{
 				// try to invoke __clone on the copy
 				DRoutineDesc method;
-				switch (copy.TypeDesc.GetMethod(SpecialMethodNames.Clone, caller, out method))
+                switch (copy.TypeDesc.GetMethod(Name.SpecialMethodNames.Clone, caller, out method))
 				{
 					case GetMemberResult.BadVisibility:
 					{
@@ -1309,7 +1260,7 @@ namespace PHP.Core.Reflection
 		public void Wakeup(DTypeDesc caller, ScriptContext context)
 		{
 			DRoutineDesc method;
-			switch (TypeDesc.GetMethod(SpecialMethodNames.Wakeup, caller, out method))
+            switch (TypeDesc.GetMethod(Name.SpecialMethodNames.Wakeup, caller, out method))
 			{
 				case GetMemberResult.BadVisibility:
 				{
@@ -1347,7 +1298,7 @@ namespace PHP.Core.Reflection
 			PhpArray sleep_result = null;
 
 			DRoutineDesc method;
-			switch (TypeDesc.GetMethod(SpecialMethodNames.Sleep, caller, out method))
+            switch (TypeDesc.GetMethod(Name.SpecialMethodNames.Sleep, caller, out method))
 			{
 				case GetMemberResult.BadVisibility:
 				{
@@ -1705,7 +1656,7 @@ namespace PHP.Core.Reflection
 		private object InvokeToString(out GetMemberResult lookupResult)
 		{
 			DRoutineDesc method;
-            if ((lookupResult = TypeDesc.GetMethod(SpecialMethodNames.Tostring, null/*ignoring visibility*/, out method)) != GetMemberResult.NotFound)
+            if ((lookupResult = TypeDesc.GetMethod(Name.SpecialMethodNames.Tostring, null/*ignoring visibility*/, out method)) != GetMemberResult.NotFound)
             {
                 // ignoring __toString() visibility as it is in PHP:
                 PhpStack stack = ScriptContext.CurrentContext.Stack;
@@ -2709,7 +2660,7 @@ namespace PHP.Core.Reflection
 
 				// perform __destruct method lookup and runtime check
 				DRoutineDesc method;
-				switch (TypeDesc.GetMethod(SpecialMethodNames.Destruct, TypeDesc, out method))
+                switch (TypeDesc.GetMethod(Name.SpecialMethodNames.Destruct, TypeDesc, out method))
 				{
 					case GetMemberResult.BadVisibility:
 					{
@@ -2723,7 +2674,7 @@ namespace PHP.Core.Reflection
 						if (method.IsStatic)
 						{
 							PhpException.Throw(PhpError.Error, CoreResources.GetString("destructor_cannot_be_static",
-							  method.DeclaringType.MakeFullName(), SpecialMethodNames.Destruct));
+							  method.DeclaringType.MakeFullName(), Name.SpecialMethodNames.Destruct));
 							return;
 						}
 

@@ -8,6 +8,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Reflection;
+using System.Diagnostics;
 
 
 namespace PHP.Core.CodeDom
@@ -851,7 +852,7 @@ namespace PHP.Core.CodeDom
                 }
                 else if (Expression is Literal)
                 {
-                    return new CodePrimitiveExpression(((Literal)Expression).Value);
+                    return new CodePrimitiveExpression(((Literal)Expression).ValueObj);
                 }
                 else if (Expression is NewEx)
                 {//new Instance()
@@ -1161,12 +1162,14 @@ namespace PHP.Core.CodeDom
             {
                 try
                 {
+                    var expr = New.CallSignature.Parameters[0].Expression;
+
                     return new CodeDelegateCreateExpression(
                         TranslateTypeRef(New.ClassNameRef, method),
-                        (((ValueItem)((ArrayEx)New.CallSignature.Parameters[0].Expression).Items[0]).ValueExpr is StringLiteral) ?
-                        new CodeTypeReferenceExpression(((string)((StringLiteral)((ValueItem)((ArrayEx)New.CallSignature.Parameters[0].Expression).Items[0]).ValueExpr).Value).Replace(":::", ".")) :
-                        TranslateExpression(((ValueItem)((ArrayEx)New.CallSignature.Parameters[0].Expression).Items[0]).ValueExpr, method, IC),
-                        (string)((StringLiteral)((ValueItem)((ArrayEx)New.CallSignature.Parameters[0].Expression).Items[1]).ValueExpr).Value);
+                        (((ValueItem)((ArrayEx)expr).Items[0]).ValueExpr is StringLiteral)
+                            ? new CodeTypeReferenceExpression(((string)((StringLiteral)((ValueItem)((ArrayEx)expr).Items[0]).ValueExpr).Value).Replace(QualifiedName.Separator, '.'))
+                            : TranslateExpression(((ValueItem)((ArrayEx)expr).Items[0]).ValueExpr, method, IC),
+                        (string)((StringLiteral)((ValueItem)((ArrayEx)expr).Items[1]).ValueExpr).Value);
                 }
                 catch (Exception ex)
                 {

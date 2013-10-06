@@ -16,6 +16,7 @@ using System.Collections;
 using System.Collections.Specialized;
 
 using PHP.Core;
+using System.Diagnostics;
 
 namespace PHP.Library.Data
 {
@@ -142,7 +143,7 @@ namespace PHP.Library.Data
 						case ParameterType.Integer: binding.Parameter.Value = Core.Convert.ObjectToInteger(binding.Variable.Value); break;
 						case ParameterType.Null: binding.Parameter.Value = DBNull.Value; break;
 						case ParameterType.Infer: binding.Parameter.Value = binding.Variable.Value; break;
-						default: Debug.Fail(); break;
+						default: Debug.Fail(null); break;
 					}
 				}
 
@@ -170,7 +171,7 @@ namespace PHP.Library.Data
 						case ParameterType.Integer: binding.Variable.Value = Core.Convert.ObjectToInteger(binding.Parameter.Value); break;
 						case ParameterType.Null: binding.Variable.Value = binding.Parameter.Value; break;
 						case ParameterType.Infer: binding.Variable.Value = binding.Parameter.Value; break;
-						default: Debug.Fail(); break;
+                        default: Debug.Fail(null); break;
 					}
 				}
 			}

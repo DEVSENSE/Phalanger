@@ -16,6 +16,7 @@ TODO:
 using System;
 using System.Text;
 using PHP.Core;
+using System.Diagnostics;
 
 namespace PHP.Library
 {

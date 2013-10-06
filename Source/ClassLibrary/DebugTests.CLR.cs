@@ -133,7 +133,7 @@ namespace PHP.Library
 		{
 			StringWriter s = new StringWriter();
 			PhpVariable.Dump(s, var);
-			Core.Debug.WriteLine("DEBUG", s.ToString());
+			Debug.WriteLine("DEBUG", s.ToString());
 		}
 
 		[ImplementsFunction("__0", FunctionImplOptions.Internal)]

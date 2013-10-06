@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using PHP.Core.Reflection;
-using System.Linq.Expressions;
-using PHP.Core.Emit;
+using System.Diagnostics;
 using System.Dynamic;
-
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Text;
 
+using PHP.Core.Emit;
+using PHP.Core.Reflection;
 
 namespace PHP.Core.Binders
 {

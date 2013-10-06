@@ -14,62 +14,31 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-
-using PHP.Core.Parsers;
-using PHP.Core.Emit;
-using PHP.Core.Compiler.AST;
 using System.Reflection.Emit;
 using System.Reflection;
 using System.Diagnostics.SymbolStore;
 using System.Diagnostics;
 
+using PHP.Core.AST;
+using PHP.Core.Parsers;
+using PHP.Core.Emit;
+using PHP.Core.Compiler.AST;
+
 namespace PHP.Core.Reflection
 {
 	#region SourceUnit
 
-	public abstract class SourceUnit
+	public abstract class CompilationSourceUnit : SourceUnit
 	{
+        public override bool IsPure { get { return this.CompilationUnit.IsPure; } }
+
+        public override bool IsTransient { get { return this.CompilationUnit.IsTransient; } }
+
 		/// <summary>
 		/// Containing compilation unit.
 		/// </summary>
 		public CompilationUnitBase/*!*/ CompilationUnit { get { return compilationUnit; } }
 		protected readonly CompilationUnitBase/*!*/ compilationUnit;
-
-		/// <summary>
-		/// Source file containing the unit. For evals, it can be even a non-php source file.
-		/// Used for emitting debug information and error reporting.
-		/// </summary>
-		public PhpSourceFile/*!*/ SourceFile { get { return sourceFile; } }
-		protected readonly PhpSourceFile/*!*/ sourceFile;
-
-		public AST.GlobalCode Ast { get { return ast; } }
-		protected AST.GlobalCode ast;
-
-        /// <summary>
-        /// Dictionary of PHP aliases.
-        /// </summary>
-        public Dictionary<string, QualifiedName>/*!*/ Aliases { get { return aliases; } }
-        private readonly Dictionary<string, QualifiedName>/*!*/ aliases = new Dictionary<string, QualifiedName>(StringComparer.OrdinalIgnoreCase);
-        
-        /// <summary>
-        /// Current namespace (in case we are compiling through eval from within namespace).
-        /// </summary>
-        public QualifiedName? CurrentNamespace { get { return currentNamespace; } }
-        private QualifiedName? currentNamespace = null;
-
-
-        //public Dictionary<Name, QualifiedName> TypeAliases { get { return typeAliases; } }
-        //private Dictionary<Name, QualifiedName> typeAliases = null;
-
-        //public Dictionary<Name, QualifiedName> FunctionAliases { get { return functionAliases; } }
-        //private Dictionary<Name, QualifiedName> functionAliases = null;
-
-        //public Dictionary<Name, QualifiedName> ConstantAliases { get { return constantAliases; } }
-        //private Dictionary<Name, QualifiedName> constantAliases = null;
-
-        public List<QualifiedName>/*!*/ImportedNamespaces { get { return importedNamespaces; } }
-        private readonly List<QualifiedName>/*!*/importedNamespaces = new List<QualifiedName>();
-        public bool HasImportedNamespaces { get { return this.importedNamespaces != null && this.importedNamespaces.Count > 0; } }
 
 		/// <summary>
 		/// Place where this unit's <see cref="NamingContext"/> is stored (<B>null</B> if there are no imports).
@@ -84,185 +53,26 @@ namespace PHP.Core.Reflection
 		public ISymbolDocumentWriter SymbolDocumentWriter { get { return symbolDocumentWriter; } }
 		private ISymbolDocumentWriter symbolDocumentWriter;
 
-		/// <summary>
-		/// Encoding of the file or the containing file.
-		/// </summary>
-		public Encoding/*!*/ Encoding { get { return encoding; } }
-		protected readonly Encoding/*!*/ encoding;
-
 		#region Construction
 
-		public SourceUnit(CompilationUnitBase/*!*/ compilationUnit, PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding)
+        public CompilationSourceUnit(CompilationUnitBase/*!*/ compilationUnit, PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding)
+            :base(sourceFile, encoding)
 		{
-			Debug.Assert(compilationUnit != null && sourceFile != null && encoding != null);
+			Debug.Assert(compilationUnit != null);
 
 			this.compilationUnit = compilationUnit;
-			this.sourceFile = sourceFile;
-			this.encoding = encoding;
 			this.namingContextFieldBuilder = null;   // to be filled during compilation just before the unit gets emitted
 			this.symbolDocumentWriter = null; // to be filled during compilation just before the unit gets emitted
 		}
 
 		#endregion
 
-		/// <summary>
-		/// Gets a piece of source code.
-		/// </summary>
-		/// <param name="position">Position of the piece to get.</param>
-		/// <returns>Source code.</returns>
-		public abstract string GetSourceCode(Position position);
-
-		public abstract void Parse(ErrorSink/*!*/ errors, IReductionsSink/*!*/ reductionsSink,
-			Parsers.Position initialPosition, LanguageFeatures features);
-
-		public abstract void Close();
-
-		#region Source Position Mapping (#pragma line/file)
-
-		public const int DefaultLine = Int32.MinValue;
-		public const string DefaultFile = null;
-		
-		private List<int> mappedPathsAnchors;
-		private List<string> mappedPaths;
-		private List<int> mappedLinesAnchors;
-		private List<int> mappedLines;
-
-		internal void AddSourceFileMapping(int realLine, string mappedFullPath)
-		{
-			if (mappedPathsAnchors == null)
-			{
-				mappedPathsAnchors = new List<int>();
-				mappedPaths = new List<string>();
-			}
-
-			mappedPathsAnchors.Add(realLine);
-			mappedPaths.Add(mappedFullPath);
-		}
-
-		internal void AddSourceLineMapping(int realLine, int mappedLine)
-		{
-			if (mappedLinesAnchors == null)
-			{
-				mappedLinesAnchors = new List<int>();
-				mappedLines = new List<int>();
-			}
-
-			mappedLinesAnchors.Add(realLine);
-			mappedLines.Add(mappedLine);
-		}
-
 		public ISymbolDocumentWriter GetMappedSymbolDocumentWriter(int realLine)
 		{
 			return compilationUnit.GetSymbolDocumentWriter(GetMappedFullSourcePath(realLine));
 		}
 
-		public string/*!*/ GetMappedFullSourcePath(int realLine)
-		{
-			if (mappedPathsAnchors == null) return sourceFile.FullPath;
-			Debug.Assert(mappedPaths != null);
-
-			int index = mappedPathsAnchors.BinarySearch(realLine);
-
-			// the line containing the pragma:
-			string result;
-			if (index >= 0)
-			{
-				result = mappedPaths[index];
-			}
-			else
-			{
-				index = ~index - 1;
-				result = (index < 0) ? sourceFile.FullPath : mappedPaths[index];
-			}
-
-			return (result != DefaultFile) ? result : sourceFile.FullPath;
-		}
-
-		public int GetMappedLine(int realLine)
-		{
-			if (mappedLinesAnchors == null) return realLine;
-			Debug.Assert(mappedLines != null);
-
-			int index = mappedLinesAnchors.BinarySearch(realLine);
-
-			// the line containing the pragma:
-			if (index >= 0)
-				return (mappedLines[index] != 0) ? mappedLines[index] : realLine;
-
-			index = ~index - 1;
-
-			return (index < 0 || mappedLines[index] == DefaultLine) ? realLine :
-				mappedLines[index] + realLine - mappedLinesAnchors[index];
-		}
-
-		#endregion
-
-        //#region Aliases and Imported Namespaces
-
-        //public bool AddTypeAlias(QualifiedName typeName, Name alias)
-        //{
-        //    if (typeAliases == null)
-        //        typeAliases = new Dictionary<Name, QualifiedName>();
-        //    else if (typeAliases.ContainsKey(alias))
-        //        return false;
-
-        //    typeAliases.Add(alias, typeName);
-        //    return true;
-        //}
-
-        //public bool AddFunctionAlias(QualifiedName functionName, Name alias)
-        //{
-        //    if (functionAliases == null)
-        //        functionAliases = new Dictionary<Name, QualifiedName>();
-        //    else if (functionAliases.ContainsKey(alias))
-        //        return false;
-
-        //    functionAliases.Add(alias, functionName);
-        //    return true;
-        //}
-
-        //public bool AddConstantAlias(QualifiedName constantName, Name alias)
-        //{
-        //    if (constantAliases == null)
-        //        constantAliases = new Dictionary<Name, QualifiedName>();
-        //    else if (constantAliases.ContainsKey(alias))
-        //        return false;
-
-        //    constantAliases.Add(alias, constantName);
-        //    return true;
-        //}
-
-        //public void AddImportedNamespace(QualifiedName namespaceName)
-        //{
-        //    if (importedNamespaces == null)
-        //        importedNamespaces = new List<QualifiedName>();
-
-        //    importedNamespaces.Add(namespaceName);
-        //}
-
-        /// <summary>
-        /// Used to merge namespaces included by the caller of 'eval' function.
-        /// </summary>
-        /// <param name="namingContext">Naming context of the caller</param>
-        public void AddImportedNamespaces(NamingContext namingContext)
-        {
-            if (namingContext == null) return;
-
-            this.currentNamespace = namingContext.CurrentNamespace;
-            if (namingContext.Aliases != null)
-                foreach (var alias in namingContext.Aliases)
-                    this.Aliases.Add(alias.Key, alias.Value);
-            
-            //foreach (string s in namingContext.Prefixes)
-            //{
-            //    string nsn = s.EndsWith(QualifiedName.Separator.ToString()) ? s.Substring(0, s.Length - QualifiedName.Separator.ToString().Length) : s;
-            //    AddImportedNamespace(new QualifiedName(nsn, false));
-            //}
-        }
-
-        //#endregion
-
-		#region Name Resolving
+        #region Name Resolving
 
 		/// <summary>
 		/// Resolves a function or type name using aliases and imported namespaces of the source unit.
@@ -341,7 +151,7 @@ namespace PHP.Core.Reflection
 			{
 				result = null;
 
-				foreach (QualifiedName imported_ns in importedNamespaces)
+				foreach (QualifiedName imported_ns in this.ImportedNamespaces)
 				{
 					QualifiedName combined_qualified_name = new QualifiedName(qualifiedName, imported_ns);
 					full_name = null;
@@ -407,7 +217,7 @@ namespace PHP.Core.Reflection
 					return compilationUnit.GetVisibleConstant(qualifiedName, ref fullName, currentScope);
 
 				default:
-					Debug.Fail();
+					Debug.Fail(null);
 					throw null;
 			}
 		}
@@ -510,7 +320,7 @@ namespace PHP.Core.Reflection
 
 	#region SourceFileUnit
 
-	public sealed class SourceFileUnit : SourceUnit
+	public sealed class SourceFileUnit : CompilationSourceUnit
 	{
 		public FileStream Stream { get { return stream; } }
 		private FileStream stream;
@@ -580,7 +390,7 @@ namespace PHP.Core.Reflection
 
 	#region SourceCodeUnit
 
-	public class SourceCodeUnit : SourceUnit
+	public class SourceCodeUnit : CompilationSourceUnit
 	{
 		public string/*!*/ Code { get { return code; } }
 		private string/*!*/ code;
@@ -660,7 +470,7 @@ namespace PHP.Core.Reflection
 
 	#region VirtualSourceFileUnit
 
-	public sealed class VirtualSourceFileUnit : SourceUnit
+	public sealed class VirtualSourceFileUnit : CompilationSourceUnit
 	{
 		public string/*!*/ Code { get { return code; } }
 		private string/*!*/ code;

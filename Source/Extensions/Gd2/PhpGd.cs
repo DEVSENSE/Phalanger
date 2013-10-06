@@ -27,6 +27,7 @@ using System.Runtime.InteropServices;
 using System.Reflection;
 
 using PHP.Core;
+using System.Diagnostics;
 
 namespace PHP.Library.Gd2
 {

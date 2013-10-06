@@ -13,14 +13,15 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
-
-using PHP.Core;
-using PHP.Core.Parsers;
-using PHP.Core.Emit;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.CodeDom.Compiler;
 using System.CodeDom;
+
+using PHP.Core;
+using PHP.Core.AST;
+using PHP.Core.Parsers;
+using PHP.Core.Emit;
 
 namespace PHP.Core.Reflection
 {

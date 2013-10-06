@@ -20,6 +20,7 @@ using System.Diagnostics.SymbolStore;
 using System.IO;
 using PHP.Core.CodeDom;
 using PHP.Core.Reflection;
+using PHP.Core.AST;
 
 namespace PHP.Core.Reflection {
     /// <summary>

@@ -5,6 +5,7 @@ using System.Collections;
 using System.Configuration;
 
 using PHP.Core;
+using System.Diagnostics;
 
 namespace PHP.Library.Iconv
 {

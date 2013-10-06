@@ -21,6 +21,7 @@ using PHP.CoreCLR;
 using MathEx = PHP.CoreCLR.MathEx;
 #else
 using MathEx = System.Math;
+using System.Diagnostics;
 #endif
 
 namespace PHP.Library
@@ -530,7 +531,7 @@ namespace PHP.Library
             double fnum = 0;
             for (int i = 0; i < number.Length; i++)
             {
-                int digit = Core.Convert.AlphaNumericToDigit((char)number.ReadonlyData[i]);
+                int digit = Core.Parsers.Convert.AlphaNumericToDigit((char)number.ReadonlyData[i]);
                 if (digit < fromBase)
                     fnum = fnum * fromBase + digit;
             }
@@ -556,7 +557,7 @@ namespace PHP.Library
 			double fnum = 0;
 			for (int i = 0; i < number.Length; i++)
 			{
-				int digit = Core.Convert.AlphaNumericToDigit(number[i]);
+                int digit = Core.Parsers.Convert.AlphaNumericToDigit(number[i]);
 				if (digit < fromBase)
 					fnum = fnum * fromBase + digit;
 			}

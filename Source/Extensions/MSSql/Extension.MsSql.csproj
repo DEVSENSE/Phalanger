@@ -112,6 +112,10 @@
       <Project>{D515E8F4-357C-4CAF-87C1-97D64C5F865A}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
+    <ProjectReference Include="..\..\Core.Parsers\Core.Parsers.csproj">
+      <Project>{581f1486-5062-459e-bae6-a41886584f81}</Project>
+      <Name>Core.Parsers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\Core.csproj">
       <Name>Core</Name>
       <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>

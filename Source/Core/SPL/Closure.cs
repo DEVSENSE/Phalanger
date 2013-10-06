@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2011 Jakub Misek
+ Copyright (c) 2011 DEVSENSE
 
  The use and distribution terms for this software are contained in the file named License.txt, 
  which can be found in the root of the Phalanger distribution. By using this software 
@@ -14,11 +14,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using PHP.Core;
-using PHP.Core.Reflection;
+using System.Diagnostics;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
+
+using PHP.Core;
+using PHP.Core.Reflection;
 
 namespace PHP.Library.SPL
 {

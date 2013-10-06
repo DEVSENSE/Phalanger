@@ -11,10 +11,12 @@
 */
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Collections.Generic;
+
 using PHP.Core.Reflection;
 
 namespace PHP.Core.Emit

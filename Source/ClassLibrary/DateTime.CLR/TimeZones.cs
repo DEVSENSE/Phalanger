@@ -24,6 +24,7 @@ using System.Runtime.InteropServices;
 
 using PHP.Core;
 using PHP.Core.Reflection;
+using System.Diagnostics;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;

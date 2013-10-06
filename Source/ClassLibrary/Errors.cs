@@ -15,6 +15,7 @@ using System.Collections;
 using System.Text;
 using System.ComponentModel;
 using PHP.Core;
+using System.Diagnostics;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;

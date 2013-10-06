@@ -151,7 +151,7 @@ namespace extutil
 		{
 			try
 			{
-				foreach (string item in Directory.GetFiles(Configuration.Application.Paths.ExtNatives, "*.dll").Select(Path.GetFileName).Where(item => !string.IsNullOrWhiteSpace(item)))
+				foreach (string item in Directory.GetFiles(Configuration.Application.Paths.ExtNatives.ToString(), "*.dll").Select(Path.GetFileName).Where(item => !string.IsNullOrWhiteSpace(item)))
 				{
 				    cb(item.ToLower().EndsWith(".dll") ? item.Substring(0, item.Length - 4) : item);
 				}

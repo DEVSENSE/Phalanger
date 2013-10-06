@@ -6,6 +6,7 @@ using PHP.Core;
 using System.Collections;
 using System.Reflection;
 using PHP.Core.Reflection;
+using System.Diagnostics;
 
 namespace PHP.Library.Soap
 {

@@ -17,6 +17,7 @@ using System.Runtime.Serialization;
 using PHP.Core;
 using PHP.Core.Reflection;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PHP.Library
 {

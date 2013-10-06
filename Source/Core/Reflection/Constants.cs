@@ -11,14 +11,17 @@
 */
 
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
 
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections;
-using PHP.Core.Parsers;
+
+using PHP.Core.AST;
 using PHP.Core.Emit;
+using PHP.Core.Parsers;
 
 namespace PHP.Core.Reflection
 {
@@ -74,13 +77,13 @@ namespace PHP.Core.Reflection
 
 		public override string MakeFullName()
 		{
-			Debug.Fail();
+			Debug.Fail("Not Supported");
 			return null;
 		}
 
 		public override string MakeFullGenericName()
 		{
-			Debug.Fail();
+            Debug.Fail("Not Supported");
 			return null;
         }
 
@@ -167,7 +170,7 @@ namespace PHP.Core.Reflection
 
 		internal virtual void ReportCircularDefinition(ErrorSink/*!*/ errors)
 		{
-			Debug.Fail();
+			Debug.Fail(null);
 		}
 
 		internal abstract PhpTypeCode EmitGet(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType,
@@ -460,7 +463,7 @@ namespace PHP.Core.Reflection
 		/// Used by compiler.
 		/// </summary>
 		public GlobalConstant(QualifiedName qualifiedName, PhpMemberAttributes memberAttributes,
-            SourceUnit/*!*/ sourceUnit, bool isConditional, Scope scope, Position position)
+            CompilationSourceUnit/*!*/ sourceUnit, bool isConditional, Scope scope, Position position)
 			: base(new DConstantDesc(sourceUnit.CompilationUnit.Module, memberAttributes, null))
 		{
             Debug.Assert(sourceUnit != null);

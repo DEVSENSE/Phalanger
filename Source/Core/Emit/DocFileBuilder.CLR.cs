@@ -11,6 +11,7 @@
 */
 
 using System;
+using System.Diagnostics;
 using System.Xml;
 using System.IO;
 using System.Reflection;

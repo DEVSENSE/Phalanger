@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Security;
 using System.Security.Permissions;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace PHP.Core.CodeDom
 {

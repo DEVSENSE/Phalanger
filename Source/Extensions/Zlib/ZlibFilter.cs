@@ -5,6 +5,7 @@ using System.Text;
 using PHP.Core;
 using ComponentAce.Compression.Libs.zlib;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace PHP.Library.Zlib
 {
@@ -186,7 +187,7 @@ namespace PHP.Library.Zlib
                 }                
             }
 
-            Debug.Fail();
+            Debug.Fail(null);
             return null;
         }
 
@@ -790,7 +791,7 @@ namespace PHP.Library.Zlib
                 }
 
                 //this should not happen
-                Debug.Fail();
+                Debug.Fail(null);
                 return null;
             }
             else

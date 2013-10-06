@@ -94,7 +94,7 @@ namespace PHP.Core
 				case PhpMemberAttributes.Protected: return "\0*\0" + propertyName;
 				case PhpMemberAttributes.Private: return "\0" + property.DeclaringType.MakeFullName() + "\0" + propertyName;
 
-				default: Debug.Fail(); return null;
+				default: Debug.Fail(null); return null;
 			}
 		}
 

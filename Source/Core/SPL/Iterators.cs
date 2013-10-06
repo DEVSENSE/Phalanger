@@ -18,6 +18,7 @@ using PHP.Core.Reflection;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace PHP.Library.SPL
 {
@@ -589,7 +590,7 @@ namespace PHP.Library.SPL
                 else if (isObjectIterator)
                     return dobjEnumerator.Current.Key;
                 else
-                    Debug.Fail();
+                    Debug.Fail(null);
             }
 
             return null;
@@ -607,7 +608,7 @@ namespace PHP.Library.SPL
                 else if (isObjectIterator)
                     return dobjEnumerator.Current.Value;
                 else
-                    Debug.Fail();
+                    Debug.Fail(null);
             }
 
             return null;
