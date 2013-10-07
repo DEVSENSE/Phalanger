@@ -80,12 +80,16 @@ namespace PHP.Core.Text
                 throw new ArgumentOutOfRangeException("position");
             
             //
-            if (position == this.TextLength)
+            if (this.Count == 0 || position < this.EndOfLineBreak(0))
+                return 0;
+            
+            if (position >= this.EndOfLineBreak(this.Count - 1))
                 return this.LinesCount - 1;
 
+            
             // binary search
             int a = 0;
-            int b = this.TextLength;
+            int b = this.Count;
             while (a < b)
             {
                 int x = (a + b) / 2;
@@ -142,14 +146,14 @@ namespace PHP.Core.Text
                 int i = 0;
                 while (i < text.Length)
                 {
-                    int num = TextUtils.LengthOfLineBreak(text, i);
-                    if (num == 0)
+                    int len = TextUtils.LengthOfLineBreak(text, i);
+                    if (len == 0)
                     {
                         i++;
                     }
                     else
                     {
-                        i += num;
+                        i += len;
                         list.Add(i);
                     }
                 }
@@ -198,7 +202,7 @@ namespace PHP.Core.Text
 
     #endregion
 
-    #region LongLineBreaks
+    #region IntLineBreaks
 
     /// <summary>
     /// Generalization of <see cref="LineBreaks"/> using <see cref="int"/> internally.
