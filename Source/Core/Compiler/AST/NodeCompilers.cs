@@ -27,17 +27,11 @@ namespace PHP.Core.Compiler.AST
     /// </summary>
     public partial class NodeCompilers
     {
-        internal struct NodeCompilerInfo
-        {
-            public Type type;
-            public bool hasDefaultCtor;
-        }
-
         /// <summary>
         /// Creates map of <see cref="AstNode"/> types corresponding to <see cref="INodeCompiler"/> types.
         /// </summary>
         /// <returns>Dictionary of <see cref="AstNode"/> types each mapped to <see cref="INodeCompiler"/> type.</returns>
-        internal static Dictionary<Type, NodeCompilerInfo>/*!*/CreateNodeExtensionTypes()
+        internal static Dictionary<Type, AstNodeExtension.NodeCompilerInfo>/*!*/CreateNodeExtensionTypes()
         {
             // like MEF, but simpler
 
@@ -45,7 +39,7 @@ namespace PHP.Core.Compiler.AST
             // maps types defining INodeCompiler with corresponding AstNode type
 
             var types = typeof(NodeCompilers).GetNestedTypes(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
-            var dict = new Dictionary<Type, NodeCompilerInfo>(types.Length);
+            var dict = new Dictionary<Type, AstNodeExtension.NodeCompilerInfo>(types.Length);
             for (int i = 0; i < types.Length; i++)
             {
                 var t = types[i];
@@ -57,7 +51,7 @@ namespace PHP.Core.Compiler.AST
                         bool hasDefaultCtor = t.GetConstructor(Type.EmptyTypes) != null;
                         foreach (NodeCompilerAttribute attr in attrs)
                         {
-                            dict.Add(attr.AstNodeType, new NodeCompilerInfo() { type = t, hasDefaultCtor = hasDefaultCtor });
+                            dict.Add(attr.AstNodeType, new AstNodeExtension.NodeCompilerInfo(t, hasDefaultCtor, attr.Singleton));
                         }
                     }
                 }
@@ -83,8 +77,8 @@ namespace PHP.Core.Compiler.AST
 
             foreach (var t in asttypes)
             {
-                Debug.Assert(dict.ContainsKey(t));
-                // TODO: determine whether NodeCompilerAttribute should have Singleton = true
+                var compilerinfo = dict[t];
+                compilerinfo.Test();
             }
         }
 

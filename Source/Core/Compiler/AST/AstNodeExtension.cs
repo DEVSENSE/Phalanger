@@ -29,9 +29,84 @@ namespace PHP.Core.Compiler.AST
         #region INodeCompiler instantiation
 
         /// <summary>
+        /// Reflected information about specific node compiler.
+        /// </summary>
+        public struct NodeCompilerInfo
+        {
+            [Flags]
+            private enum Flags : byte
+            {
+                HasDefaultCtor = 1,
+                IsSingleton = 2,
+            }
+
+            private object data;
+            private Flags flags;
+
+            public bool IsSingleton { get { return (flags & Flags.IsSingleton) != 0; } }
+            public bool HasDefaultCtor { get { return (flags & Flags.HasDefaultCtor) != 0; } }
+
+            public NodeCompilerInfo(Type type, bool hasDefaultCtor, bool isSingleton)
+            {
+                Debug.Assert(type != null);
+                Debug.Assert(!isSingleton || hasDefaultCtor);   // isSingleton => hasDefaultCtor
+                data = type;
+                flags = (Flags)0;
+                if (hasDefaultCtor) flags |= Flags.HasDefaultCtor;
+                if (isSingleton) flags |= Flags.IsSingleton;
+            }
+
+            /// <summary>
+            /// Type of <see cref="INodeCompiler"/> to be used. In case of <see cref="IsSingleton"/>, this property is invalid.
+            /// </summary>
+            public Type/*!*/NodeCompilerType
+            {
+                get
+                {
+                    Debug.Assert(!IsSingleton);
+                    return (Type)data;
+                }
+            }
+
+            /// <summary>
+            /// Instance of <see cref="INodeCompiler"/> is case of <see cref="IsSingleton"/> is <c>true</c>.
+            /// </summary>
+            public INodeCompiler/*!*/NodeCompilerSingleton
+            {
+                get
+                {
+                    Debug.Assert(IsSingleton);
+
+                    var result = data as INodeCompiler;
+                    if (result == null && IsSingleton)
+                    {
+                        Debug.Assert(HasDefaultCtor);
+                        Debug.Assert(data is Type);
+
+                        // lazily create instance of INodeCompiler
+                        data = result = (INodeCompiler)Activator.CreateInstance((Type)data);
+                    }
+                    return result;
+                }
+            }
+
+#if DEBUG
+            internal void Test()
+            {
+                var type = data as Type;
+                if (type == null) return;
+                // determine whether NodeCompilerAttribute should have Singleton = true
+                var fields = type.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+                if (IsSingleton) Debug.Assert(fields.Length == 0, "Singleton should not have instance fields.");
+                else Debug.Assert(fields.Length != 0 || !type.IsSealed, type.ToString() + "  should be marked as Singleton.");
+            }
+#endif
+        }
+
+        /// <summary>
         /// Gets map of <see cref="AstNode"/> types corresponding to <see cref="INodeCompiler"/> types.
         /// </summary>
-        internal static Dictionary<Type, NodeCompilers.NodeCompilerInfo>/*!*/AstNodeExtensionTypes
+        internal static Dictionary<Type, NodeCompilerInfo>/*!*/AstNodeExtensionTypes
         {
             get
             {
@@ -43,7 +118,7 @@ namespace PHP.Core.Compiler.AST
                 return _astNodeExtensionTypes;
             }
         }
-        private static Dictionary<Type, NodeCompilers.NodeCompilerInfo> _astNodeExtensionTypes = null;
+        private static Dictionary<Type, NodeCompilerInfo> _astNodeExtensionTypes = null;
         
         /// <summary>
         /// Key to <see cref="AstNode.Properties"/> referencing its <see cref="INodeCompiler"/>.
@@ -67,25 +142,28 @@ namespace PHP.Core.Compiler.AST
         }
 
         /// <summary>
+        /// Creates <see cref="INodeCompiler"/> instance for given <paramref name="node"/>.
+        /// </summary>
+        /// <param name="node">Corresponding <see cref="AstNode"/> instance.</param>
+        /// <returns><see cref="INodeCompiler"/> instance for given <paramref name="node"/>.</returns>
+        private static INodeCompiler/*!*/CreateNodeCompiler(AstNode/*!*/node)
+        {
+            var compilerinfo = AstNodeExtensionTypes[node.GetType()];
+            if (compilerinfo.IsSingleton)
+                return compilerinfo.NodeCompilerSingleton;
+
+            if (compilerinfo.HasDefaultCtor)
+                return (INodeCompiler)Activator.CreateInstance(compilerinfo.NodeCompilerType);
+            else
+                return (INodeCompiler)Activator.CreateInstance(compilerinfo.NodeCompilerType, node);
+        }
+
+        /// <summary>
         /// Gets (or creates) <see cref="IExpressionCompiler"/> associatd with given expression.
         /// </summary>
         private static IExpressionCompiler/*!*/ExpressionCompiler(this Expression/*!*/expr)
         {
             return NodeCompiler<IExpressionCompiler>(expr);
-        }
-
-        /// <summary>
-        /// Creates <see cref="INodeCompiler"/> instance for given <paramref name="node"/>.
-        /// </summary>
-        /// <param name="node">Corresponding <see cref="AstNode"/> instance.</param>
-        /// <returns>New <see cref="INodeCompiler"/> instance for given <paramref name="node"/>.</returns>
-        private static INodeCompiler/*!*/CreateNodeCompiler(AstNode/*!*/node)
-        {
-            var/*!*/nodeCompilerType = AstNodeExtensionTypes[node.GetType()];
-            if (nodeCompilerType.hasDefaultCtor)
-                return (INodeCompiler)Activator.CreateInstance(nodeCompilerType.type);
-            else
-                return (INodeCompiler)Activator.CreateInstance(nodeCompilerType.type, node);
         }
 
         #endregion
