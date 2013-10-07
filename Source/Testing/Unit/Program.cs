@@ -10,7 +10,8 @@ namespace Testers
 		static void Main(string[] args)
 		{
 			#if DEBUG
-            TestUtils.UnitTestCore();
+            TestUtils.UnitTest(typeof(PHP.Core.Parsers.Parser).Assembly, Console.Out);
+            TestUtils.UnitTest(typeof(ScriptContext).Assembly, Console.Out);
             TestUtils.UnitTest(typeof(PhpArrays).Assembly, Console.Out);
 			#endif
 		}
