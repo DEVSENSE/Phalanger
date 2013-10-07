@@ -12,6 +12,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -109,7 +110,7 @@ namespace PHP.Core.Text
         public static LineBreaks/*!*/Create(string text, List<int>/*!*/lineEnds)
         {
             if (text == null || lineEnds == null) throw new ArgumentNullException();
-            if (lineEnds.Last() <= ushort.MaxValue)
+            if (lineEnds.Count == 0 || lineEnds.Last() <= ushort.MaxValue)
             {
                 return new ShortLineBreaks(text.Length, lineEnds);
             }
@@ -156,6 +157,32 @@ namespace PHP.Core.Text
             }
             return list;
         }
+
+#if DEBUG
+
+        [Test]
+        private static void Test()
+        {
+            string sample = "Hello World";
+            foreach (var nl in new[] { "\r", "\r\n", "\n", "\u0085", "\u2028", "\u2029" })
+            {
+                for (int linecount = 0; linecount < 512; linecount += 17)
+                {
+                    // construct sample text with {linecount} lines
+                    string text = string.Empty;
+                    for (var line = 0; line < linecount; line++)
+                        text += sample + nl;
+                    text += sample;
+
+                    // test LineBreaks
+                    var linebreaks = LineBreaks.Create(text);
+                    for (int i = 0; i <= text.Length; i += 7)
+                        Debug.Assert(linebreaks.GetLineFromPosition(i) == (i / (sample.Length + nl.Length)));
+                }
+            }
+        }
+
+#endif
     }
 
     #endregion

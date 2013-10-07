@@ -1214,7 +1214,7 @@ namespace PHP.Core
         /// <returns>Last element of given list.</returns>
         public static T Last<T>(this IList<T>/*!*/list)
         {
-            return list[list.Count];
+            return list[list.Count - 1];
         }
     }
 
