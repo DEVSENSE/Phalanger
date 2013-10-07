@@ -90,6 +90,7 @@
     <Compile Include="AST\VariableUse.cs" />
     <Compile Include="AST\YieldEx.cs" />
     <Compile Include="Attributes.cs" />
+    <Compile Include="Text\TextUtils.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Generated\Lexer.cs" />
     <Compile Include="Generated\Parser.cs" />
@@ -114,6 +115,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Text\ILineBreaks.cs" />
     <Compile Include="TreeVisitor.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
@@ -130,6 +132,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>ECHO Copying output to the Deployment folder ...
