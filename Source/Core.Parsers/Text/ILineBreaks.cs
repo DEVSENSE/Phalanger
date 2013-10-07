@@ -115,7 +115,7 @@ namespace PHP.Core.Text
             }
             else
             {
-                return new LongLineBreaks(text.Length, lineEnds);
+                return new IntLineBreaks(text.Length, lineEnds);
             }
         }
 
@@ -203,11 +203,11 @@ namespace PHP.Core.Text
     /// <summary>
     /// Generalization of <see cref="LineBreaks"/> using <see cref="int"/> internally.
     /// </summary>
-    internal sealed class LongLineBreaks : LineBreaks
+    internal sealed class IntLineBreaks : LineBreaks
     {
         private readonly int[]/*!*/_lineEnds;
 
-        public LongLineBreaks(int textLength, List<int> lineEnds)
+        public IntLineBreaks(int textLength, List<int> lineEnds)
             : base(textLength)
         {
             var count = lineEnds.Count;

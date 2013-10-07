@@ -90,6 +90,9 @@
     <Compile Include="AST\VariableUse.cs" />
     <Compile Include="AST\YieldEx.cs" />
     <Compile Include="Attributes.cs" />
+    <Compile Include="Text\Span.cs" />
+    <Compile Include="Text\TextSpan.cs" />
+    <Compile Include="Text\TextPoint.cs" />
     <Compile Include="Text\TextUtils.cs" />
     <Compile Include="Errors.cs" />
     <Compile Include="Generated\Lexer.cs" />
