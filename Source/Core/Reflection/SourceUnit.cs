@@ -390,6 +390,10 @@ namespace PHP.Core.Reflection
 
 	#region SourceCodeUnit
 
+    /// <summary>
+    /// Source unit from string representation of code.
+    /// The code is expected to not contain opening and closing script tags.
+    /// </summary>
 	public class SourceCodeUnit : CompilationSourceUnit
 	{
 		public string/*!*/ Code { get { return code; } }
@@ -421,6 +425,7 @@ namespace PHP.Core.Reflection
 			this.line = line;
 			this.column = column;
 
+            // opening and closing script tags are not present
 			this.initialState = Lexer.LexicalStates.ST_IN_SCRIPTING;
 		}
 

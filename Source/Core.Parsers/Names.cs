@@ -22,10 +22,6 @@ using System.Linq;
 using System.Reflection.Emit;
 using PHP.Core.Parsers;
 
-#if SILVERLIGHT
-using PHP.CoreCLR;
-#endif
-
 namespace PHP.Core
 {
 	// 
