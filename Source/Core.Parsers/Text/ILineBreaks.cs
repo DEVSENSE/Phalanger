@@ -27,7 +27,7 @@ namespace PHP.Core.Text
         /// <summary>
         /// Gets amount of line breaks.
         /// </summary>
-        /// <remarks>Lines count equals <see cref="Count"/> + 1.</remarks>
+        /// <remarks>Lines count equals <see cref="Count"/> + <c>1</c>.</remarks>
         int Count { get; }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace PHP.Core.Text
         int TextLength { get; }
 
         /// <summary>
-        /// Gets position of <paramref name="index"/>th line end, including its break characters.
+        /// Gets position of <paramref name="index"/>-th line end, including its break characters.
         /// </summary>
         /// <param name="index">Index of te line.</param>
         /// <returns>Position of the line end.</returns>
@@ -73,7 +73,7 @@ namespace PHP.Core.Text
         /// </summary>
         /// <param name="position">Position within document.</param>
         /// <returns>Line number.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">In case <paramref name="position"/> is out of line number range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">In case <paramref name="position"/> is out of text document range.</exception>
         public int GetLineFromPosition(int position)
         {
             if (position < 0 || position > this.TextLength)
