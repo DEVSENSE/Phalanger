@@ -35,7 +35,7 @@ namespace PHP.Core.AST
         public bool Ampersand { get { return ampersand; } }
 		private bool ampersand;
 
-		public ActualParam(Position p, Expression param, bool ampersand)
+		public ActualParam(Text.Span p, Expression param, bool ampersand)
 			: base(p)
 		{
 			Debug.Assert(param != null);
@@ -66,8 +66,8 @@ namespace PHP.Core.AST
 		public VariableName Name { get { return name; } }
 		private VariableName name;
 
-        public NamedActualParam(Position position, string name, Expression/*!*/ expression)
-            : base(position)
+        public NamedActualParam(Text.Span span, string name, Expression/*!*/ expression)
+            : base(span)
         {
             this.name = new VariableName(name);
             this.expression = expression;

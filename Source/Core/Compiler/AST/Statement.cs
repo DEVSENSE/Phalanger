@@ -47,7 +47,7 @@ namespace PHP.Core.Compiler.AST
             /// </summary>
             protected virtual void ReportUnreachable(T/*!*/node, Analyzer/*!*/ analyzer)
             {
-                analyzer.ErrorSink.Add(Warnings.UnreachableCodeDetected, analyzer.SourceUnit, node.Position);
+                analyzer.ErrorSink.Add(Warnings.UnreachableCodeDetected, analyzer.SourceUnit, node.Span);
             }
 
             #region IStatementCompiler Members
@@ -81,7 +81,7 @@ namespace PHP.Core.Compiler.AST
             {
                 if (analyzer.IsThisCodeUnreachable())
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
 
@@ -114,7 +114,7 @@ namespace PHP.Core.Compiler.AST
             {
                 if (analyzer.IsThisCodeUnreachable())
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
 
@@ -134,7 +134,7 @@ namespace PHP.Core.Compiler.AST
             internal override void Emit(ExpressionStmt node, CodeGenerator codeGenerator)
             {
                 if (node.Expression.DoMarkSequencePoint)
-                    codeGenerator.MarkSequencePoint(node.Position);
+                    codeGenerator.MarkSequencePoint(node.Span);
 
                 try
                 {
@@ -148,7 +148,7 @@ namespace PHP.Core.Compiler.AST
                     codeGenerator.Context.Errors.Add(
                         ex.ErrorInfo,
                         codeGenerator.SourceUnit,
-                        node.Position,   // exact position of the statement
+                        node.Span,   // exact position of the statement
                         ex.ErrorParams
                         );
 
@@ -172,8 +172,7 @@ namespace PHP.Core.Compiler.AST
 
             internal override void Emit(EmptyStmt node, CodeGenerator codeGenerator)
             {
-                if (node.Position.IsValid)
-                    codeGenerator.MarkSequencePoint(node.Position);
+                codeGenerator.MarkSequencePoint(node.Span);
             }
         }
 
@@ -188,7 +187,7 @@ namespace PHP.Core.Compiler.AST
             {
                 if (analyzer.IsThisCodeUnreachable())
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
 
@@ -204,7 +203,7 @@ namespace PHP.Core.Compiler.AST
             {
                 Statistics.AST.AddNode("UnsetStmt");
 
-                codeGenerator.MarkSequencePoint(node.Position);
+                codeGenerator.MarkSequencePoint(node.Span);
 
                 foreach (VariableUse variable in node.VarList)
                 {
@@ -227,7 +226,7 @@ namespace PHP.Core.Compiler.AST
             {
                 if (analyzer.IsThisCodeUnreachable())
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
 
@@ -268,7 +267,7 @@ namespace PHP.Core.Compiler.AST
             {
                 if (analyzer.IsThisCodeUnreachable())
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
 
@@ -328,7 +327,7 @@ namespace PHP.Core.Compiler.AST
                     // cache the integer index of static local variable to access its value fast from within the array
 
                     // unique static local variable string ID
-                    id = String.Format("{0}${1}${2}${3}", id, node.Variable.VarName, node.Position.FirstLine, node.Position.FirstColumn);
+                    id = String.Format("{0}${1}${2}", id, node.Variable.VarName, node.Span.Start);
 
                     // create static field for static local index: private static int <id>;
                     var type = codeGenerator.IL.TypeBuilder;

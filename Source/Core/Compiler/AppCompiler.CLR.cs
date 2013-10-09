@@ -56,9 +56,9 @@ namespace PHP.Core
 				throw new ArgumentNullException("sink");
 				
 			if (name != null)
-				sink.Add(FatalErrors.InvalidCommandLineArgument, null, Parsers.Position.Invalid, name, Message);
+                sink.Add(FatalErrors.InvalidCommandLineArgument, null, Text.Span.Invalid, name, Message);
 			else
-				sink.Add(FatalErrors.InvalidCommandLineArgumentNoName, null, Parsers.Position.Invalid, Message);
+                sink.Add(FatalErrors.InvalidCommandLineArgumentNoName, null, Text.Span.Invalid, Message);
 		}
 	}
 	

@@ -25,7 +25,7 @@ namespace PHP.Core.Compiler.AST
 {
     internal static class LiteralUtils
     {
-        public static Literal/*!*/Create(Position position, object value, AccessType access)
+        public static Literal/*!*/Create(Text.Span position, object value, AccessType access)
         {
             Literal result;
 

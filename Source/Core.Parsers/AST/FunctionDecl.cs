@@ -62,7 +62,7 @@ namespace PHP.Core.AST
 		private object typeHint;
 
         /// <summary>Position of <see cref="TypeHint"/> if any.</summary>
-        public Position TypeHintPosition { get; internal set; }
+        public Text.Span TypeHintPosition { get; internal set; }
 
 		/// <summary>
         /// Gets collection of CLR attributes annotating this statement.
@@ -75,9 +75,9 @@ namespace PHP.Core.AST
 
         #region Construction
 
-		public FormalParam(Position position, string/*!*/ name, object typeHint, bool passedByRef,
+		public FormalParam(Text.Span span, string/*!*/ name, object typeHint, bool passedByRef,
 				Expression initValue, List<CustomAttribute> attributes)
-			: base(position)
+            : base(span)
 		{
             Debug.Assert(typeHint == null || typeHint is PrimitiveTypeName || typeHint is GenericQualifiedName);
 
@@ -88,7 +88,7 @@ namespace PHP.Core.AST
             if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);
 
-			this.TypeHintPosition = Position.Invalid;
+			this.TypeHintPosition = Text.Span.Invalid;
 		}
 
 		#endregion
@@ -171,24 +171,24 @@ namespace PHP.Core.AST
             get { return this.GetCustomAttributes(); }
             set { this.SetCustomAttributes(value); }
         }
-		
-		public Position EntireDeclarationPosition { get { return entireDeclarationPosition; } }
-		private Position entireDeclarationPosition;
 
-        public ShortPosition HeadingEndPosition { get { return headingEndPosition; } }
-        private ShortPosition headingEndPosition;
+        public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }
+        private Text.Span entireDeclarationPosition;
 
-        public ShortPosition DeclarationBodyPosition { get { return declarationBodyPosition; } }
-        private ShortPosition declarationBodyPosition;
+        public int HeadingEndPosition { get { return headingEndPosition; } }
+        private int headingEndPosition;
+
+        public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
+        private int declarationBodyPosition;
 
 		#region Construction
 
 		public FunctionDecl(SourceUnit/*!*/ sourceUnit,
-            Position position, Position entireDeclarationPosition, ShortPosition headingEndPosition, ShortPosition declarationBodyPosition,
+            Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
 			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, string/*!*/ name, NamespaceDecl ns,
 			bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalTypeParam>/*!*/ genericParams,
 			List<Statement>/*!*/ body, List<CustomAttribute> attributes)
-			: base(position)
+			: base(span)
 		{
 			Debug.Assert(genericParams != null && name != null && formalParams != null && body != null);
 

@@ -555,31 +555,35 @@ namespace PHP.Core.Parsers
 			tokenizer.Initialize(new StreamReader(stream), LexicalStates.ST_IN_SCRIPTING, true);
 			tokenizer.hereDocLabel = null;
 
-			int b_start = 0;
-			int b_end = -1;
-			int b_length = 0;
+            //int b_start = 0;
+            //int b_end = -1;
+            //int b_length = 0;
 
 			Tokens token;
 			for (; ; )
 			{
 				token = tokenizer.GetNextToken();
-				b_length = tokenizer.GetTokenByteLength(Encoding.UTF8);
-				b_start = b_end + 1;
-				b_end += b_length;
 
-				// check binary positions:
-				long pos = stream.Position;
-				stream.Seek(b_start, SeekOrigin.Begin);
-				stream.Read(buffer, 0, b_length);
-				stream.Seek(pos, SeekOrigin.Begin);
+                // check byte position matches:
+                //b_length = tokenizer.GetTokenByteLength(Encoding.UTF8);
+                //b_start = b_end + 1;
+                //b_end += b_length;
 
-				Debug.Assert(String.CompareOrdinal(Encoding.UTF8.GetString(buffer, 0, b_length), tokenizer.TokenText) == 0);
+                //// check binary positions:
+                //long pos = stream.Position;
+                //stream.Seek(b_start, SeekOrigin.Begin);
+                //stream.Read(buffer, 0, b_length);
+                //stream.Seek(pos, SeekOrigin.Begin);
+
+                //Debug.Assert(String.CompareOrdinal(Encoding.UTF8.GetString(buffer, 0, b_length), tokenizer.TokenText) == 0);
 
 				if (token == Tokens.EOF) break;
 
-				Console.WriteLine("{0} '{1}' ({2}:{3}[{4}] - {5}:{6}[{7}])", token, tokenizer.TokenText,
-		  tokenizer.token_start_pos.Line, tokenizer.token_start_pos.Column, b_start,
-					tokenizer.token_end_pos.Line, tokenizer.token_end_pos.Column, b_end);
+                // check position:
+                Debug.Assert(s.Substring(tokenizer.token_start_pos.Char, tokenizer.TokenLength) == tokenizer.TokenText);
+
+                //
+				Console.WriteLine("{0} '{1}' ({2}..{3}]", token, tokenizer.TokenText, tokenizer.token_start_pos.Char, tokenizer.token_end_pos.Char);
 			}
 		}
 

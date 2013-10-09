@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+
 using PHP.Core.Parsers;
+using PHP.Core.Text;
 
 namespace PHP.Core
 {
-    #region SourceUnit
-
-    public abstract class SourceUnit
+    public abstract class SourceUnit : ILineBreaks
     {
+        #region Fields & Properties
+
         /// <summary>
         /// Source file containing the unit. For evals, it can be even a non-php source file.
         /// Used for emitting debug information and error reporting.
@@ -20,6 +22,17 @@ namespace PHP.Core
 
         public AST.GlobalCode Ast { get { return ast; } }
         protected AST.GlobalCode ast;
+
+        /// <summary>
+        /// Gets line breaks for this source unit.
+        /// </summary>
+        /// <remarks>Line breaks are used to resolve line and column number from given position.</remarks>
+        public ILineBreaks/*!*/LineBreaks { get { return (ILineBreaks)this; } }
+
+        /// <summary>
+        /// Line breaks managed internally.
+        /// </summary>
+        protected ILineBreaks innerLineBreaks;
 
         /// <summary>
         /// Dictionary of PHP aliases.
@@ -53,29 +66,33 @@ namespace PHP.Core
         /// </summary>
         public virtual bool IsTransient { get { return false; } }
 
+        #endregion
+
         #region Construction
 
-        public SourceUnit(PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding)
+        public SourceUnit(PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding, ILineBreaks/*!*/lineBreaks)
         {
             Debug.Assert(sourceFile != null && encoding != null);
+            Debug.Assert(lineBreaks != null);
 
             this.sourceFile = sourceFile;
             this.encoding = encoding;
+            this.innerLineBreaks = lineBreaks;
         }
 
         #endregion
 
-        /// <summary>
-        /// Gets a piece of source code.
-        /// </summary>
-        /// <param name="position">Position of the piece to get.</param>
-        /// <returns>Source code.</returns>
-        public abstract string GetSourceCode(Position position);
+        #region Abstract Methods
 
-        public abstract void Parse(ErrorSink/*!*/ errors, IReductionsSink/*!*/ reductionsSink,
-            Parsers.Position initialPosition, LanguageFeatures features);
+        public abstract void Parse(
+            ErrorSink/*!*/ errors, IReductionsSink/*!*/ reductionsSink,
+            LanguageFeatures features);
 
         public abstract void Close();
+
+        public abstract string GetSourceCode(Text.Span span);
+
+        #endregion
 
         #region Source Position Mapping (#pragma line/file)
 
@@ -152,10 +169,12 @@ namespace PHP.Core
 
         #endregion
 
+        #region Namespaces
+
         /// <summary>
         /// Used to merge namespaces included by the caller of 'eval' function.
         /// </summary>
-        /// <param name="namingContext">Naming context of the caller</param>
+        /// <param name="namingContext">Naming context of the caller.</param>
         public void AddImportedNamespaces(NamingContext namingContext)
         {
             if (namingContext == null) return;
@@ -165,7 +184,36 @@ namespace PHP.Core
                 foreach (var alias in namingContext.Aliases)
                     this.Aliases.Add(alias.Key, alias.Value);
         }
-    }
 
-    #endregion
+        #endregion
+
+        #region ILineBreaks Members
+
+        int ILineBreaks.Count
+        {
+            get { return this.innerLineBreaks.Count; }
+        }
+
+        int ILineBreaks.TextLength
+        {
+            get { return this.innerLineBreaks.TextLength; }
+        }
+
+        int ILineBreaks.EndOfLineBreak(int index)
+        {
+            return this.innerLineBreaks.EndOfLineBreak(index);
+        }
+
+        public virtual int GetLineFromPosition(int position)
+        {
+            return this.innerLineBreaks.GetLineFromPosition(position);
+        }
+
+        public virtual void GetLineColumnFromPosition(int position, out int line, out int column)
+        {
+            this.innerLineBreaks.GetLineColumnFromPosition(position, out line, out column);
+        }
+
+        #endregion
+    }
 }

@@ -200,6 +200,14 @@ namespace PHP.Core.Text
 				throw new ArgumentException();
 		}
 
+        /// <summary>
+        /// Gets portion of document defined by this <see cref="Span"/>.
+        /// </summary>
+        public string GetText(string document)
+        {
+            return this.Span.GetText(document);
+        }
+
         #endregion
 
         #region IEquatable<TextSpan> Members

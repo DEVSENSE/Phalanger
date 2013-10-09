@@ -34,8 +34,8 @@ namespace PHP.Core.AST
         /// <summary><summary>Expression evaluated when <see cref="CondExpr"/> is false</summary></summary>
         public Expression/*!*/ FalseExpr { get { return falseExpr; } set { falseExpr = value; } }
 
-		public ConditionalEx(Position position, Expression/*!*/ condExpr, Expression trueExpr, Expression/*!*/ falseExpr)
-			: base(position)
+		public ConditionalEx(Text.Span span, Expression/*!*/ condExpr, Expression trueExpr, Expression/*!*/ falseExpr)
+			: base(span)
 		{
             Debug.Assert(condExpr != null);
             // Debug.Assert(trueExpr != null); // allowed to enable ternary shortcut
@@ -47,7 +47,7 @@ namespace PHP.Core.AST
 		}
 
 		public ConditionalEx(Expression/*!*/ condExpr, Expression/*!*/ trueExpr, Expression/*!*/ falseExpr)
-			: this(Position.Invalid, condExpr, trueExpr, falseExpr)
+            : this(Text.Span.Invalid, condExpr, trueExpr, falseExpr)
 		{
 		}
 

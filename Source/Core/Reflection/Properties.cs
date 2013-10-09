@@ -613,7 +613,7 @@ namespace PHP.Core.Reflection
 		internal override void ReportAbstractNotImplemented(ErrorSink/*!*/ errors, DType/*!*/ declaringType, PhpType/*!*/ referringType)
 		{
 			errors.Add(Errors.AbstractPropertyNotImplemented, referringType.Declaration.SourceUnit,
-				referringType.Declaration.Position, referringType.FullName, declaringType.MakeFullGenericName(), this.FullName);
+				referringType.Declaration.Span, referringType.FullName, declaringType.MakeFullGenericName(), this.FullName);
 
 			ReportError(errors, Errors.RelatedLocation);
 		}
@@ -777,8 +777,8 @@ namespace PHP.Core.Reflection
 		/// Error reporting.
 		/// <c>Position.Invalid</c> for reflected PHP fields.
 		/// </summary>
-		public Position Position { get { return position; } }
-		private readonly Position position;
+        public Text.Span Span { get { return span; } }
+        private readonly Text.Span span;
 
 		/// <summary>
 		/// Error reporting (for partial classes).
@@ -844,11 +844,11 @@ namespace PHP.Core.Reflection
 		/// Used by compiler.
 		/// </summary>
 		public PhpField(VariableName name, DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes,
-			bool hasInitialValue, SourceUnit/*!*/ sourceUnit, Position position)
+            bool hasInitialValue, SourceUnit/*!*/ sourceUnit, Text.Span position)
 			: base(new DPhpFieldDesc(declaringType, memberAttributes), name)
 		{
 			this.hasInitialValue = hasInitialValue;
-			this.position = position;
+			this.span = position;
 			this.sourceUnit = sourceUnit;
 			this.builder = new PhpFieldBuilder(this);
 		}
@@ -896,7 +896,7 @@ namespace PHP.Core.Reflection
 		internal override void ReportError(ErrorSink/*!*/ sink, ErrorInfo error)
 		{
 			if (sourceUnit != null)
-				sink.Add(error, SourceUnit, position);
+				sink.Add(error, SourceUnit, span);
 		}
 
 		#endregion
@@ -922,19 +922,19 @@ namespace PHP.Core.Reflection
 
 		internal void Validate(SourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
 		{
-			Debug.Assert(position.IsValid);
+			Debug.Assert(span.IsValid);
 
 			// no abstract fields:
 			if (IsAbstract)
 			{
-				errors.Add(Errors.PropertyDeclaredAbstract, SourceUnit, position);
+				errors.Add(Errors.PropertyDeclaredAbstract, SourceUnit, span);
 				memberDesc.MemberAttributes &= ~PhpMemberAttributes.Abstract;
 			}
 
 			// no final fields:
 			if (IsFinal)
 			{
-				errors.Add(Errors.PropertyDeclaredFinal, SourceUnit, position);
+				errors.Add(Errors.PropertyDeclaredFinal, SourceUnit, span);
 				memberDesc.MemberAttributes &= ~PhpMemberAttributes.Final;
 			}
 		}
@@ -949,7 +949,7 @@ namespace PHP.Core.Reflection
             // static field cannot be made non static
             if (overridden.IsStatic && !this.IsStatic)
             {
-                errors.Add(Errors.MakeStaticPropertyNonStatic, SourceUnit, Position,
+                errors.Add(Errors.MakeStaticPropertyNonStatic, SourceUnit, Span,
                   overridden.DeclaringType.FullName, this.Name.ToString(), this.DeclaringType.FullName);
             }
 
@@ -957,7 +957,7 @@ namespace PHP.Core.Reflection
             if ((overridden.IsPublic && (this.IsPrivate || this.IsProtected)) ||
                 (overridden.IsProtected && (this.IsPrivate)))
             {
-                errors.Add(Errors.OverridingFieldRestrictsVisibility, SourceUnit, Position,
+                errors.Add(Errors.OverridingFieldRestrictsVisibility, SourceUnit, Span,
                   overridden.DeclaringType.FullName, this.Name.ToString(), overridden.Visibility.ToString().ToLowerInvariant(), this.DeclaringType.FullName);
             }
 

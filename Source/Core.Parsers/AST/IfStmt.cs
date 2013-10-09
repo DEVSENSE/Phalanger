@@ -11,6 +11,7 @@
 */
 
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,13 +30,13 @@ namespace PHP.Core.AST
 		/// List of conditions including the if-conditions and the final else.
 		/// </summary>
 		private List<ConditionalStmt>/*!!*/ conditions;
-        public List<ConditionalStmt>/*!!*/ Conditions { get { return conditions; } }
+        public List<ConditionalStmt>/*!!*/ Conditions { get { return conditions; } internal set { conditions = value; } }
 
-		public IfStmt(Position position, List<ConditionalStmt>/*!!*/ conditions)
-			: base(position)
+		public IfStmt(Text.Span span, List<ConditionalStmt>/*!!*/ conditions)
+			: base(span)
 		{
 			Debug.Assert(conditions != null && conditions.Count > 0);
-			Debug.Assert(conditions.TrueForAll(delegate(ConditionalStmt stmt) { return stmt != null; }));
+			Debug.Assert(conditions.All((x) => x != null));
 			this.conditions = conditions;
 		}
 
@@ -64,11 +65,11 @@ namespace PHP.Core.AST
         /// <summary>
         /// Beginning of <see cref="ConditionalStmt"/>.
         /// </summary>
-        public readonly ShortPosition Position;
+        public readonly Text.Span Span;
 
-		public ConditionalStmt(ShortPosition position, Expression condition, Statement/*!*/ statement)
+        public ConditionalStmt(Text.Span span, Expression condition, Statement/*!*/ statement)
 		{
-            this.Position = position;
+            this.Span = span;
 			this.condition = condition;
 			this.statement = statement;
 		}

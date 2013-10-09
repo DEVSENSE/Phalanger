@@ -33,11 +33,11 @@ namespace PHP.Core.AST
         /// <summary>
         /// Initialize the ConcatEx AST node and optimize the subtree if possible. Look for child expressions and chain possible concatenations. This prevents StackOverflowException in case of huge concatenation expressions.
         /// </summary>
-        /// <param name="position"></param>
+        /// <param name="span"></param>
         /// <param name="expressions">List of expressions to concatenate.</param>
         /// <remarks>This method tries to propagate child concatenations and chain them.</remarks>
-        public ConcatEx(Position position, List<Expression>/*!*/ expressions)
-            : base(position)
+        public ConcatEx(Text.Span span, List<Expression>/*!*/ expressions)
+            : base(span)
         {
             Debug.Assert(expressions != null);
             this.expressions = expressions;
