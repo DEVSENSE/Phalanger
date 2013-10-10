@@ -63,10 +63,21 @@ namespace PHP.Core.Reflection
 	/// </summary>
 	[DebuggerDisplay("{MakeFullGenericName()}")]
 	public abstract class DType : DMember, IEquatable<DType>
-	{
-		#region Properties
+    {
+        #region Enum DfsStates
 
-		public static readonly DType[]/*!*/ EmptyArray = new DType[0];
+        protected enum DfsStates
+        {
+            Initial,
+            Entered,
+            Done
+        }
+
+        #endregion
+
+        #region Properties
+
+        public static readonly DType[]/*!*/ EmptyArray = new DType[0];
 
 		/// <summary>
 		/// Whether all base types are definite. Note that the type itself needn't to be definite nor identity definite.
@@ -2356,7 +2367,7 @@ namespace PHP.Core.Reflection
 	[DebuggerDisplay("{DebuggerDisplay}")]
 	public sealed class PhpType : KnownType, IDeclaree, IPhpMember
 	{
-		#region Properties
+        #region Properties
 
 		public override bool IsUnknown { get { return false; } }
 		public override bool IsGeneric { get { return GenericParams.Length > 0; } }

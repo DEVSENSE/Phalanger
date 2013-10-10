@@ -861,16 +861,6 @@ namespace PHP.Core
 
                     return LoadSSA(ns, file, out cache_entry);
                 }
-                else
-                {
-                    // do "some" cleanup:
-                    try
-                    {
-                        File.Delete(file);
-                        File.Delete(Path.ChangeExtension(file, ".pdb"));
-                    }
-                    catch{ /*nop*/ }
-                }
             }
             cache_entry = default(CacheEntry);
             return false;

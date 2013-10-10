@@ -95,6 +95,8 @@ namespace PHP.Core
 
     #endregion
 
+    #region DebugHelper
+
     /// <summary>
     /// Debug helpers.
     /// </summary>
@@ -126,6 +128,8 @@ namespace PHP.Core
                 Debug.Assert(array[i] != null);
         }
     }
+
+    #endregion
 
     #region Reflection Utils
 
@@ -1503,6 +1507,8 @@ namespace PHP.Core
 
     #endregion
 
+    #region FileSystemUtils
+
     /// <summary>
     /// File system utilities.
     /// </summary>
@@ -1555,11 +1561,6 @@ namespace PHP.Core
             }
         }
     }
-    
-    public enum DfsStates
-    {
-        Initial,
-        Entered,
-        Done
-    }
+
+    #endregion
 }
