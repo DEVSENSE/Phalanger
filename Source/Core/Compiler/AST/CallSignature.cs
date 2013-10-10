@@ -37,7 +37,7 @@ namespace PHP.Core.Compiler.AST
             {
                 // TODO: isBaseCtorCallConstrained
 
-                ExInfoFromParent info = new ExInfoFromParent(this);
+                ExInfoFromParent info = new ExInfoFromParent(node);
 
                 analyzer.EnterActParam();
 

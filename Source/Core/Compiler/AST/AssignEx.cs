@@ -55,7 +55,7 @@ namespace PHP.Core.Compiler.AST
 
                 var valueassignex = (ValueAssignEx)node;
 
-                ExInfoFromParent lvalue_info = new ExInfoFromParent(this);
+                ExInfoFromParent lvalue_info = new ExInfoFromParent(node);
 
                 // x[] = y
                 if (node.LValue is ItemUse && ((ItemUse)node.LValue).Index == null)
@@ -519,8 +519,8 @@ namespace PHP.Core.Compiler.AST
             public override Evaluation Analyze(AssignEx node, Analyzer analyzer, ExInfoFromParent info)
             {
                 access = info.Access;
-                ExInfoFromParent lvalue_info = new ExInfoFromParent(this);
-                ExInfoFromParent rvalue_info = new ExInfoFromParent(this);
+                ExInfoFromParent lvalue_info = new ExInfoFromParent(node);
+                ExInfoFromParent rvalue_info = new ExInfoFromParent(node);
 
                 lvalue_info.Access = AccessType.WriteRef;
                 rvalue_info.Access = AccessType.ReadRef;
