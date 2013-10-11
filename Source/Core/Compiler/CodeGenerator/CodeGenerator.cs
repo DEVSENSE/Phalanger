@@ -2992,7 +2992,7 @@ namespace PHP.Core
             if (span.IsValid)
             {
                 var position = new Text.TextSpan(SourceUnit.LineBreaks, span);
-                MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 1);
+                MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn);
             }
         }
 
