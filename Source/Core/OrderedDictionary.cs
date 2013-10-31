@@ -935,7 +935,6 @@ namespace PHP.Core
                     _entries = this.entries;
                 }
                 p = this.count++;
-                CheckSize();
             }
 
             //
@@ -949,13 +948,6 @@ namespace PHP.Core
             //    this.nextNewIndex = key.Integer + 1;
 
             return;// true;
-        }
-
-        private void CheckSize()
-        {
-            const int limit = 1000000;
-            if (count > limit)
-                PhpException.Throw(PhpError.Error, "array size is over " + limit);
         }
 
         //private void _add_no_check(int intKey, object value)
@@ -1000,7 +992,6 @@ namespace PHP.Core
                     _entries = this.entries;
                 }
                 p = this.count++;
-                CheckSize();
             }
 
             //
@@ -1058,7 +1049,6 @@ namespace PHP.Core
                     _entries = this.entries;
                 }
                 p = this.count++;
-                CheckSize();
             }
 
             //
@@ -1108,7 +1098,6 @@ namespace PHP.Core
                     _entries = this.entries;
                 }
                 p = this.count++;
-                CheckSize();
             }
 
             //
@@ -1163,7 +1152,6 @@ namespace PHP.Core
                     _entries = this.entries;
                 }
                 p = this.count++;
-                CheckSize();
             }
 
             //
@@ -1844,11 +1832,8 @@ namespace PHP.Core
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _deep_copy_entry_value(object oldref, object newref, ref Entry entry)
         {
-            var r = entry.Value as PhpReference;
-            if (r != null)
-            {
-                entry.Value = r.Value == oldref ? new PhpReference(newref) : new PhpReference(r.Value);
-            }
+            if (entry.Value is PhpReference && ((PhpReference)entry.Value).Value == oldref)
+                entry.Value = new PhpReference(newref);
             else
                 entry.Value = PhpVariable.DeepCopy(entry.Value);
         }
@@ -1912,7 +1897,6 @@ namespace PHP.Core
                     _entries = this.entries;
                 }
                 p = this.count++;
-                CheckSize();
             }
 
             //
@@ -1981,7 +1965,6 @@ namespace PHP.Core
                     _entries = this.entries;
                 }
                 p = this.count++;
-                CheckSize();
             }
 
             //
