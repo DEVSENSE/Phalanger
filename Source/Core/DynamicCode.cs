@@ -376,8 +376,8 @@ namespace PHP.Core
 			// assertion failed:
 			return false;
 		}
-
-		/// <summary>
+    
+      /// <summary>
 		/// Implements PHP <c>eval</c> construct. 
 		/// </summary>
 		/// <param name="code">A code to be evaluated.</param>
@@ -409,10 +409,23 @@ namespace PHP.Core
 			int containerId,
 			NamingContext namingContext)
 		{
-			EvalKinds kind = synthetic ? EvalKinds.SyntheticEval : EvalKinds.ExplicitEval;
+      lock (Evals)
+        {
+          var key = callerRelativeSourcePath + ":" + line + ":" + column;
+          Dictionary<string, bool> dic;
+          if (!Evals.TryGetValue(key, out dic))
+          {
+            dic = new Dictionary<string, bool>();
+            Evals.Add(key, dic);
+          }
+          dic[code] = true;
+        }
+      EvalKinds kind = synthetic ? EvalKinds.SyntheticEval : EvalKinds.ExplicitEval;
                 return EvalInternal("", code, "", kind, context, definedVariables, self, referringType,
                     new SourceCodeDescriptor(callerRelativeSourcePath, containerId, line, column), false, namingContext);
 		}
+
+	  public static Dictionary<string, Dictionary<string, bool>> Evals = new Dictionary<string, Dictionary<string, bool>>();
 
 #if SILVERLIGHT
 		/// <summary>

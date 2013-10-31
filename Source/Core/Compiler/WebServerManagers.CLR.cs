@@ -381,7 +381,7 @@ namespace PHP.Core
 
 			// creates a script assembly builder:
 			SingleScriptAssemblyBuilder builder = new SingleScriptAssemblyBuilder(applicationContext,
-				name, outDir, name.Name + AssemblyExt, AssemblyKinds.WebPage, context.Config.Compiler.Debug, false, context.SaveOnlyAssembly, null);
+				name, outDir, name.Name + AssemblyExt, AssemblyKinds.WebPage, context.Config.Compiler.DebugMode, false, context.SaveOnlyAssembly, null);
             
 			return builder.DefineScript(unit);
 		}

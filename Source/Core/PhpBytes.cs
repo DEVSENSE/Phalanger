@@ -195,18 +195,35 @@ namespace PHP.Core
 
         #region DebugView, DumpTo
 
-        /// <summary>
-        /// Dumps internal data, escapes non-ASCII characters.
-        /// </summary>
-        /// <param name="output">Output to dump to.</param>
-        private void DumpTo(System.IO.TextWriter/*!*/output)
-        {
-            Debug.Assert(output != null);
+	    /// <summary>
+	    /// Dumps internal data, escapes non-ASCII characters.
+	    /// </summary>
+	    /// <param name="output">Output to dump to.</param>
+	    private void DumpTo(System.IO.TextWriter /*!*/ output)
+	    {
+	        Debug.Assert(output != null);
 
-            output.Write(ToString());
-        }
+	        const string hex_digs = "0123456789abcdef";
+	        char[] patch = new char[4] {'\\', 'x', '0', '0'};
 
-				private string DebugView()
+	        foreach (byte b in ReadonlyData)
+	        {
+	            // printable characters are outputted normally
+	            if (b < 0x7f)
+	            {
+	                output.Write((char) b);
+	            }
+	            else
+	            {
+	                patch[2] = hex_digs[(b & 0xf0) >> 4];
+	                patch[3] = hex_digs[(b & 0x0f)];
+
+	                output.Write(patch);
+	            }
+	        }
+	    }
+
+	    private string DebugView()
 				{
 					var output = new System.IO.StringWriter();
 					const string hex_digs = "0123456789ABCDEF";
@@ -404,7 +421,7 @@ namespace PHP.Core
 		/// <param name="output">The output text stream.</param>
 		public void Print(System.IO.TextWriter output)
 		{
-            DumpTo(output);
+            output.Write(ToString()); 
 		}
 
 		/// <summary>

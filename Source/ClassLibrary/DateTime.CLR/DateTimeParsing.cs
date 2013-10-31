@@ -116,7 +116,7 @@ namespace PHP.Library.StrToTime
 
 		#region Parse
 
-		public static int Parse(string/*!*/ str, DateTime utcStart, out string error)
+		public static long Parse(string/*!*/ str, DateTime utcStart, out string error)
 		{
 			Debug.Assert(str != null);
 
@@ -141,7 +141,7 @@ namespace PHP.Library.StrToTime
 
 		#region GetUnixTimeStamp
 
-		private int GetUnixTimeStamp(DateTime utcStart, out string error)
+		private long GetUnixTimeStamp(DateTime utcStart, out string error)
 		{
             var zone = PhpTimeZone.CurrentTimeZone;
             DateTime start = TimeZoneInfo.ConvertTimeFromUtc(utcStart, zone);// zone.ToLocalTime(utcStart);

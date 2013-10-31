@@ -31,7 +31,7 @@ namespace PHP.Library.Soap
         private Assembly ass;
         private object proxyInstance;
         private string wsdl;
-        private string protocolName = "Soap";
+        private string protocolName = null;
         private string proxySource;
         private ServiceDescriptionImporter sdi;
         private XmlSchemas schemas;
@@ -40,7 +40,7 @@ namespace PHP.Library.Soap
         private ArrayList outParams = new ArrayList();
         private ServiceCache serviceCache;
         private readonly X509Certificate2 certificate;
-        private SoapVersion version;
+        private SoapVersion? version;
 
         /// <summary>
         /// Creates a new <see cref="DynamicWebServiceProxy"/> instance.
@@ -50,7 +50,7 @@ namespace PHP.Library.Soap
         /// <param name="wsdlCache">Type of caching to be used</param>
         /// <param name="certificate">Certificate to use.</param>
         /// <param name="version"></param>
-        internal DynamicWebServiceProxy(string wsdlLocation, bool enableMessageAccess = false, WsdlCache wsdlCache = WsdlCache.Both, X509Certificate2 certificate = null, SoapVersion version = SoapVersion.SOAP_1_1)
+        internal DynamicWebServiceProxy(string wsdlLocation, bool enableMessageAccess = false, WsdlCache wsdlCache = WsdlCache.Both, X509Certificate2 certificate = null, SoapVersion? version = null)
         {
             this.wsdl = wsdlLocation;
             this.enableMessageAccess = enableMessageAccess;
@@ -59,6 +59,8 @@ namespace PHP.Library.Soap
             this.version = version;
             if (this.version == SoapVersion.SOAP_1_2)
                 protocolName = "Soap12";
+            else if (this.version == SoapVersion.SOAP_1_1)
+                protocolName = "Soap";
             BuildProxy();
         }
 
@@ -224,7 +226,7 @@ namespace PHP.Library.Soap
         /// Gets or sets the name of the protocol.
         /// </summary>
         /// <value></value>
-        public Protocol ProtocolName
+        public Protocol? ProtocolName
         {
             get
             {
@@ -238,6 +240,8 @@ namespace PHP.Library.Soap
                         return Protocol.HttpSoap;
                     case "Soap12":
                         return Protocol.HttpSoap12;
+                    case null:
+                        return null;
                     default:
                         return Protocol.HttpSoap;
                 }
@@ -257,6 +261,9 @@ namespace PHP.Library.Soap
                         break;
                     case Protocol.HttpSoap12:
                         protocolName = "Soap12";
+                        break;
+                    case null:
+                        protocolName = null;
                         break;
                 }
             }
@@ -307,6 +314,8 @@ namespace PHP.Library.Soap
             sdi.Import(cns, null);
             sdi = new ServiceDescriptionImporter();
             CheckForImports(absoluteWsdlLocation);
+            sdi.CodeGenerationOptions = CodeGenerationOptions.None;
+            sdi.ProtocolName = protocolName;
             sdi.Style = ServiceDescriptionImportStyle.Server;
             sdi.Import(cnsServer, null);
 
@@ -330,19 +339,6 @@ namespace PHP.Library.Soap
             {
                 cns.Types.Remove(ctDecl);
                 ctDecl.BaseTypes[0] = new CodeTypeReference(CodeConstants.CUSTOMBASETYPE);
-                /*BinaryFormatter formatter = new BinaryFormatter();
-                var ms = new MemoryStream();
-                formatter.Serialize(ms, ctDecl);
-                ms.Position = 0;
-                var ctDecl1 = (CodeTypeDeclaration)formatter.Deserialize(ms);
-                ctDecl1.Name += "Server";
-                ctDecl1.BaseTypes[0] = new CodeTypeReference(CodeConstants.CUSTOMSERVERBASETYPE);
-                var constructors = ctDecl1.Members.OfType<CodeConstructor>().ToArray();
-                foreach (var codeConstructor in constructors)
-                {
-                    ctDecl1.Members.Remove(codeConstructor);
-                }
-                cns.Types.Add(ctDecl1);*/
                 foreach (var member in ctDecl.Members.OfType<CodeMemberMethod>())
                 {
                     bodies[member.Name] = member.Statements;
@@ -370,12 +366,6 @@ namespace PHP.Library.Soap
                 {
                     ctDecl.Members.Remove(member);
                     member.Attributes = member.Attributes ^ MemberAttributes.Abstract;
-                    /*var invokeExpression = new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "Invoke",
-                        member.Parameters.OfType<CodeParameterDeclarationExpression>()
-                            .Where(a => a.Direction == FieldDirection.In)
-                            .Select(a => (CodeExpression) new CodeArgumentReferenceExpression(a.Name))
-                            .ToArray());
-                    member.Statements.Add(new CodeMethodReturnStatement(invokeExpression));*/
                     member.Statements.AddRange(bodies[member.Name]);
                     ctDecl.Members.Add(member);
                 }
@@ -477,7 +467,12 @@ namespace PHP.Library.Soap
         /// </summary>
         private void ResetInternalState()
         {
-            protocolName = version == SoapVersion.SOAP_1_2 ? "Soap12" : "Soap";
+            if (version == null)
+                protocolName = null;
+            else if (version == SoapVersion.SOAP_1_2)
+                protocolName = "Soap12";
+            else
+                protocolName = "Soap";
             sdi = null;
         }
 
@@ -544,8 +539,7 @@ namespace PHP.Library.Soap
             {
                 if (enableMessageAccess && pipelineProperlyConfigured)
                 {
-                    PropertyInfo propInfo = proxyInstance.GetType().GetProperty("SoapRequestString");
-                    object result = propInfo.GetValue(proxyInstance, null);
+                    object result = ((SoapHttpClientProtocolExtended)proxyInstance).SoapRequestString;
 
                     return (string)result;
                 }
@@ -564,13 +558,36 @@ namespace PHP.Library.Soap
             {
                 if (enableMessageAccess && pipelineProperlyConfigured)
                 {
-                    PropertyInfo propInfo = proxyInstance.GetType().GetProperty("SoapResponseString");
-                    object result = propInfo.GetValue(proxyInstance, null);
+                    object result = ((SoapHttpClientProtocolExtended)proxyInstance).SoapResponseString;
 
                     return (string)result;
                 }
                 else
                     return String.Empty;
+            }
+        }
+
+        public string RequestHeaders
+        {
+            get
+            {
+                if (enableMessageAccess && pipelineProperlyConfigured)
+                {
+                    return ((SoapHttpClientProtocolExtended) proxyInstance).RequestHeaders;
+                }
+                return string.Empty;
+            }
+        }
+
+        public string ResponseHeaders
+        {
+            get
+            {
+                if (enableMessageAccess && pipelineProperlyConfigured)
+                {
+                    return ((SoapHttpClientProtocolExtended) proxyInstance).ResponseHeaders;
+                }
+                return string.Empty;
             }
         }
 

@@ -6,6 +6,7 @@ using PHP.Core;
 using System.Xml;
 using System.IO;
 using PHP.Core.Reflection;
+using Convert = PHP.Core.Convert;
 
 namespace PHP.Library.Xml
 {
@@ -202,7 +203,7 @@ namespace PHP.Library.Xml
 
                 sb.Append(input);
 
-                return ParseInternal(caller, context, new PhpBytes(sb.ToString()), null, null);                
+                return ParseInternal(caller, context, sb.ToString(), null, null);                
             }
             else
             {
@@ -223,16 +224,24 @@ namespace PHP.Library.Xml
             }
         }
 
-        public bool ParseIntoStruct(DTypeDesc caller, NamingContext context, PhpBytes input, PhpArray values, PhpArray indices)
+        public bool ParseIntoStruct(DTypeDesc caller, NamingContext context, object input, PhpArray values, PhpArray indices)
         {
             return ParseInternal(caller, context, input, values, indices);
         }
 
-        private bool ParseInternal(DTypeDesc caller, NamingContext context, PhpBytes xml, PhpArray values, PhpArray indices)
+        private bool ParseInternal(DTypeDesc caller, NamingContext context, object xml, PhpArray values, PhpArray indices)
         {
-            MemoryStream stringReader = new MemoryStream(xml.ReadonlyData);
-            XmlTextReader reader = new XmlTextReader(new StreamReader(stringReader));
-          reader.EntityHandling=EntityHandling.ExpandCharEntities;
+            Stream stream;
+            PhpBytes phpBytes;
+            byte[] bytes;
+            if ((phpBytes = xml as PhpBytes) != null)
+                stream = new MemoryStream(phpBytes.ReadonlyData, false);
+            else if ((bytes = xml as byte[]) != null)
+                stream = new MemoryStream(bytes);
+            else
+                stream = new RecodingStream(Convert.ObjectToString(xml), Configuration.Application.Globalization.PageEncoding);
+            XmlTextReader reader = new XmlTextReader(stream);
+            
             Stack<ElementRecord> elementStack = new Stack<ElementRecord>();
             TextRecord textChunk = null;
 
@@ -295,7 +304,7 @@ namespace PHP.Library.Xml
             return true;
         }
 
-        private void ParseStep(XmlReader reader, Stack<ElementRecord> elementStack, ref TextRecord textChunk, PhpArray values, PhpArray indices, ref int depth)
+        private void ParseStep(XmlTextReader reader, Stack<ElementRecord> elementStack, ref TextRecord textChunk, PhpArray values, PhpArray indices, ref int depth)
         {
             string elementName;
             bool emptyElement;
@@ -328,7 +337,7 @@ namespace PHP.Library.Xml
 
                                 continue;
                             }
-                            attributeArray.Add(_enableCaseFolding ? reader.Name.ToUpperInvariant() : reader.Name, new PhpBytes(Encoding.UTF8.GetBytes(reader.Value)));
+                            attributeArray.Add(_enableCaseFolding ? reader.Name.ToUpperInvariant() : reader.Name, new PhpBytes(reader.Encoding.GetBytes(reader.Value)));
                         }
                         while (reader.MoveToNextAttribute());   
                     }
@@ -338,7 +347,7 @@ namespace PHP.Library.Xml
                     {
                         currentElementRecord = elementStack.Peek();
 
-                        UpdateValueAndIndexArrays(currentElementRecord, ref textChunk, values, indices, true);
+                        UpdateValueAndIndexArrays(reader, currentElementRecord, ref textChunk, values, indices, true);
 
                         if (currentElementRecord.State == ElementState.Beginning)
                             currentElementRecord.State = ElementState.Interior;
@@ -377,7 +386,7 @@ namespace PHP.Library.Xml
                     // pop the top element record
                     currentElementRecord = elementStack.Pop();
 
-                    UpdateValueAndIndexArrays(currentElementRecord, ref textChunk, values, indices, false);
+                    UpdateValueAndIndexArrays(reader, currentElementRecord, ref textChunk, values, indices, false);
 
                     if (_endElementHandler.Callback != null)
                         _endElementHandler.Invoke(this, _enableCaseFolding ? elementName.ToUpperInvariant() : elementName);
@@ -416,7 +425,7 @@ namespace PHP.Library.Xml
             }
         }
 
-        private void UpdateValueAndIndexArrays(ElementRecord elementRecord, ref TextRecord textRecord, PhpArray values, PhpArray indices, bool middle)
+        private void UpdateValueAndIndexArrays(XmlTextReader reader, ElementRecord elementRecord, ref TextRecord textRecord, PhpArray values, PhpArray indices, bool middle)
         {
             if (values != null)
             {
@@ -463,7 +472,7 @@ namespace PHP.Library.Xml
                 return;
 
             if (!middle && elementRecord.State == ElementState.Interior)
-                UpdateValueAndIndexArrays(elementRecord, ref textRecord, values, indices, true);
+                UpdateValueAndIndexArrays(reader, elementRecord, ref textRecord, values, indices, true);
             
 
             textRecord = null;
@@ -485,6 +494,77 @@ namespace PHP.Library.Xml
 
             _enableCaseFolding = true;
             _enableSkipWhitespace = false;
+        }
+
+        private class RecodingStream : Stream
+        {
+            private char[] data;
+            private Encoder encoder;
+            private int charsPosition;
+
+            public RecodingStream(string data, Encoding encoding)
+            {
+                this.data = data.ToCharArray();
+                encoder = encoding.GetEncoder();
+            }
+
+            public override void Flush()
+            {
+                encoder.Reset();
+            }
+
+            public override long Seek(long offset, SeekOrigin origin)
+            {
+                throw new NotSupportedException();
+            }
+
+            public override void SetLength(long value)
+            {
+                throw new NotSupportedException();
+            }
+
+            public override int Read(byte[] buffer, int offset, int count)
+            {
+                if (charsPosition >= data.Length)
+                    return 0;
+                int charsUsed;
+                int bytesUsed;
+                bool completed;
+                encoder.Convert(data, charsPosition, data.Length - charsPosition, buffer, offset, count, false, out charsUsed, out bytesUsed, out completed);
+                charsPosition += charsUsed;
+                return bytesUsed;
+            }
+
+            public override void Write(byte[] buffer, int offset, int count)
+            {
+                throw new NotSupportedException();
+            }
+
+            public override bool CanRead
+            {
+                get { return true; }
+            }
+
+            public override bool CanSeek
+            {
+                get { return false; }
+            }
+
+            public override bool CanWrite
+            {
+                get { return false; }
+            }
+
+            public override long Length
+            {
+                get { throw new NotSupportedException(); }
+            }
+
+            public override long Position
+            {
+                get { throw new NotSupportedException(); }
+                set { throw new NotSupportedException(); }
+            }
         }
     }
 }

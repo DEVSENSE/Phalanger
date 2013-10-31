@@ -55,6 +55,8 @@ namespace PHP.Library
 			statCacheUrl = null;
 		}
 
+	    private static char[] invalidPathChars = Path.GetInvalidPathChars();
+
 		#endregion
 
 		#region Stat Basics (BuildStatArray, StatInternal, lstat, stat, fstat, clearstatcache; exists, touch)
@@ -510,11 +512,11 @@ namespace PHP.Library
 		/// <returns>The file access time or -1 in case of failure.</returns>
 		[ImplementsFunction("fileatime")]
 		[return: CastToFalse]
-		public static int GetAccessTime(string path)
+		public static long GetAccessTime(string path)
 		{
 			bool ok = StatInternal(path, false);
 			if (!ok) return -1;
-			return unchecked((int)statCache.st_atime);
+			return statCache.st_atime;
 		}
 
 		/// <summary>
@@ -666,7 +668,7 @@ namespace PHP.Library
 		{
             StreamWrapper wrapper;
 
-            if (!string.IsNullOrEmpty(path) && StatInternalCheck(ref path, false, out wrapper)) // do not throw warning if path is null or empty
+            if (!string.IsNullOrEmpty(path) && path.IndexOfAny(invalidPathChars) < 0 && StatInternalCheck(ref path, false, out wrapper)) // do not throw warning if path is null or empty
             {
                 string url;
                 if (StatInternalTryCache(path, out url))
@@ -693,7 +695,7 @@ namespace PHP.Library
 		[ImplementsFunction("is_executable")]
 		public static bool IsExecutable(string path)
 		{
-			bool ok = StatInternal(path, false);
+            bool ok = !string.IsNullOrEmpty(path) && path.IndexOfAny(invalidPathChars) < 0 && StatInternal(path, false);
 			if (!ok) return false;
 			return ((FileModeFlags)statCache.st_mode & FileModeFlags.Execute) > 0;
 		}
@@ -708,10 +710,7 @@ namespace PHP.Library
 		{
             StreamWrapper wrapper;
 
-		    if (path.IndexOfAny(Path.GetInvalidPathChars()) >= 0)
-		        return false;
-
-            if (StatInternalCheck(ref path, false, out wrapper))
+            if (!string.IsNullOrEmpty(path) && path.IndexOfAny(invalidPathChars) < 0 && StatInternalCheck(ref path, false, out wrapper))
             {
                 string url;
                 if (StatInternalTryCache(path, out url))
@@ -747,7 +746,7 @@ namespace PHP.Library
 		[ImplementsFunction("is_readable")]
 		public static bool IsReadable(string path)
 		{
-			bool ok = StatInternal(path, false);
+            bool ok = !string.IsNullOrEmpty(path) && path.IndexOfAny(invalidPathChars) < 0 && StatInternal(path, false);
 			if (!ok) return false;
 			return ((FileModeFlags)statCache.st_mode & FileModeFlags.Read) > 0;
 		}
@@ -772,7 +771,7 @@ namespace PHP.Library
 		[ImplementsFunction("is_writable")]
 		public static bool IsWritable(string path)
 		{
-			bool ok = StatInternal(path, false);
+            bool ok = !string.IsNullOrEmpty(path) && path.IndexOfAny(invalidPathChars) < 0 && StatInternal(path, false);
 			if (!ok) return false;
 			return ((FileModeFlags)statCache.st_mode & FileModeFlags.Write) > 0;
 		}

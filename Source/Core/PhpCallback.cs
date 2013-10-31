@@ -585,6 +585,8 @@ namespace PHP.Core
 
 	    public PhpCallback DeepCopy()
 	    {
+	        Debug.Assert(!IsBound); //bounded callbacks are not supported
+
 	        return (PhpCallback)MemberwiseClone();
 	    }
 

@@ -585,12 +585,12 @@ namespace PHP.Core
         [ThreadStatic]
         internal static Action<PhpError, string> ThrowCallbackOverride = null;
 
-        /// <summary>
-		/// Reports a PHP error. 
-		/// </summary>
-		/// <param name="error">The error type</param>
-		/// <param name="message">The error message.</param>    
-		public static void Throw(PhpError error, string message)
+	    /// <summary>
+	    /// Reports a PHP error. 
+	    /// </summary>
+	    /// <param name="error">The error type</param>
+	    /// <param name="message">The error message.</param>
+	    public static void Throw(PhpError error, string message)
 		{
             if (ThrowCallbackOverride != null)
             {
@@ -607,7 +607,7 @@ namespace PHP.Core
 
 			// determines whether the error will be reported and whether it is handleable:
 			bool is_error_reported = ((PhpErrorSet)error & config.ErrorControl.ReportErrors) != 0 && !context.ErrorReportingDisabled;
-            bool is_error_handleable = ((PhpErrorSet)error & PhpErrorSet.Handleable & (PhpErrorSet)config.ErrorControl.UserHandlerErrors) != 0 && !context.ErrorReportingDisabled;
+            bool is_error_handleable = ((PhpErrorSet)error & PhpErrorSet.Handleable & (PhpErrorSet)config.ErrorControl.UserHandlerErrors) != 0;
 			bool is_error_fatal = ((PhpErrorSet)error & PhpErrorSet.Fatal) != 0;
 			bool do_report = true;
 

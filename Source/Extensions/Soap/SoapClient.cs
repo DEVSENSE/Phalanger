@@ -40,9 +40,9 @@ namespace PHP.Library.Soap
                 {
                     var item = arguments.GetArrayItem(0, true);
 
-                    if (item != null && item.GetType() == typeof(PhpArray))
+                    if ((item != null && item.GetType() == typeof (PhpArray)) || item == null)
                     {
-                        PhpArray arr = (PhpArray)item;
+                        PhpArray arr = (PhpArray) item;
                         return wsp.InvokeCall(function_name, arr);
                     }
                 }
@@ -102,8 +102,15 @@ namespace PHP.Library.Soap
         [PhpVisible, ImplementsMethod]
         public string __getLastRequestHeaders()
         {
-            PhpException.FunctionNotSupported(PhpError.Warning);
-            return null;
+            try
+            {
+                return wsp.RequestHeaders;
+            }
+            catch (Exception exception)
+            {
+                SoapFault.Throw(ScriptContext.CurrentContext, "SOAP-ERROR", exception.Message, exceptions);
+                return null;
+            }
         }
 
 
@@ -131,8 +138,15 @@ namespace PHP.Library.Soap
         [PhpVisible, ImplementsMethod]
         public string __getLastResponseHeaders()
         {
-            PhpException.FunctionNotSupported(PhpError.Warning);
-            return null;
+            try
+            {
+                return wsp.ResponseHeaders;
+            }
+            catch (Exception exception)
+            {
+                SoapFault.Throw(ScriptContext.CurrentContext, "SOAP-ERROR", exception.Message, exceptions);
+                return null;
+            }
         }
 
 

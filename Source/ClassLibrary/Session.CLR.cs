@@ -213,7 +213,7 @@ namespace PHP.Library
 			{
 				if (dir == null) return;
 
-				int threshold = DateTimeUtils.UtcToUnixTimeStamp(DateTime.Now.ToUniversalTime().AddSeconds(-lifetime));
+				long threshold = DateTimeUtils.UtcToUnixTimeStamp(DateTime.Now.ToUniversalTime().AddSeconds(-lifetime));
 
 				string file_name;
 				while ((file_name = PhpDirectory.Read(dir)) != null)
@@ -221,7 +221,7 @@ namespace PHP.Library
 					if (file_name.Length >= FilePrefix.Length && file_name.Substring(0, FilePrefix.Length) == FilePrefix)
 					{
 						string full_path = Path.Combine(savePath, file_name);
-						int time = PhpFile.GetAccessTime(full_path);
+						long time = PhpFile.GetAccessTime(full_path);
 
 						if (time < threshold)
 						{

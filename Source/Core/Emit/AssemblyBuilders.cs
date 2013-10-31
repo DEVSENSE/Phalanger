@@ -194,7 +194,7 @@ namespace PHP.Core.Emit
 
 		private object initializationMutex = new object();
 		private volatile bool initialized = false;
-		private bool debuggable = false;
+		private DebugMode debuggable = DebugMode.None;
 
 		#endregion
 
@@ -230,7 +230,7 @@ namespace PHP.Core.Emit
 			return result;
 		}
 
-		private void InitializeRealAssembly(bool debuggable)
+		private void InitializeRealAssembly(DebugMode debuggable)
 		{
 			if (!initialized)
 			{
@@ -243,7 +243,7 @@ namespace PHP.Core.Emit
 						// TODO: do we need sync?
 						AssemblyBuilder assembly_builder = AppDomain.CurrentDomain.DefineDynamicAssembly
 							(assembly_name, AssemblyBuilderAccess.Run);
-						ModuleBuilder module_builder = assembly_builder.DefineDynamicModule(TransientAssembly.RealModuleName, debuggable);
+						ModuleBuilder module_builder = assembly_builder.DefineDynamicModule(TransientAssembly.RealModuleName, debuggable!=DebugMode.None);
 
 						assembly.WriteUp(module_builder, null);
 
@@ -258,7 +258,7 @@ namespace PHP.Core.Emit
 
 		public TransientAssembly TransientAssembly { get { return (TransientAssembly)assembly; } }
 
-		public TransientModuleBuilder/*!*/ DefineModule(TransientCompilationUnit/*!*/ compilationUnit, bool debuggable,
+		public TransientModuleBuilder/*!*/ DefineModule(TransientCompilationUnit/*!*/ compilationUnit, DebugMode debuggable,
 			int containerId, EvalKinds kind, string sourcePath)
 		{
 			InitializeRealAssembly(debuggable);

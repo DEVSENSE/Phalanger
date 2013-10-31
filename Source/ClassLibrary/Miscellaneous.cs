@@ -378,7 +378,7 @@ namespace PHP.Library
 		/// </summary>
 		/// <returns>The UNIX timestamp or -1 on error.</returns>
 		[ImplementsFunction("getlastmod")]
-		public static int GetLastModification()
+		public static long GetLastModification()
 		{
 			try
 			{

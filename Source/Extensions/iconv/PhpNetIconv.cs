@@ -403,18 +403,18 @@ namespace PHP.Library.Iconv
             try
             {
                 //
+                var in_encoding = ResolveEncoding(in_charset);
+                if (in_encoding == null)
+                {
+                    PhpException.Throw(PhpError.Notice, string.Format(Strings.wrong_charset, in_charset, in_charset, out_charset));
+                    return null;
+                }
                 if (str.GetType() == typeof(PhpBytes))
                 {
                     // resolve in_charset
                     if (in_charset == null)
                     {
                         PhpException.ArgumentNull("in_charset");
-                        return null;
-                    }
-                    var in_encoding = ResolveEncoding(in_charset);
-                    if (in_encoding == null)
-                    {
-                        PhpException.Throw(PhpError.Notice, string.Format(Strings.wrong_charset, in_charset, in_charset, out_charset));
                         return null;
                     }
 
@@ -427,7 +427,10 @@ namespace PHP.Library.Iconv
                 if (str.GetType() == typeof(string) || (str = Core.Convert.ObjectToString(str)) != null)
                 {
                     // convert UTF16 to <out_charset>
-                    return new PhpBytes(out_encoding.GetBytes((string)str));
+                    var pageEncoding = Configuration.Application.Globalization.PageEncoding;
+                    if (in_encoding.Equals(pageEncoding))
+                        return new PhpBytes(out_encoding.GetBytes((string) str));
+                    return new PhpBytes(Encoding.Convert(in_encoding, out_encoding, pageEncoding.GetBytes((string)str)));
                 }
             }
             finally

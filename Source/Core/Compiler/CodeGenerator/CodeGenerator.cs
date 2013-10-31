@@ -2950,7 +2950,7 @@ namespace PHP.Core
 		/// <param name="endColumn">Real last column of the point.</param>
 		internal void MarkSequencePoint(int startLine, int startColumn, int endLine, int endColumn)
 		{
-			if (context.Config.Compiler.Debug)
+		    if (context.Config.Compiler.DebugMode != DebugMode.None)
 			{
 				// ignores #pragma inside the code span:
 				ISymbolDocumentWriter symbol_writer = sourceUnit.GetMappedSymbolDocumentWriter(startLine);
@@ -2971,7 +2971,7 @@ namespace PHP.Core
 			}
 		}
 
-        /// <summary>
+	    /// <summary>
         /// Marks a sequence point (see <see cref="MarkSequencePoint"/>) using position of given <paramref name="expression"/>.
         /// </summary>
         /// <param name="expression">Expression which position is used to mark sequence point.</param>

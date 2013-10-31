@@ -315,7 +315,7 @@ namespace PHP.Core.Reflection
 			//  .. but we don't know whether it will be dynamic in advance!
 
 			this.assembly_builder = scriptContext.ApplicationContext.TransientAssemblyBuilder;
-			this.module_builder = assembly_builder.DefineModule(this, context.Config.Compiler.Debug,
+            this.module_builder = assembly_builder.DefineModule(this, context.Config.Compiler.DebugMode,
 				descriptor.ContainingTransientModuleId, kind, descriptor.ContainingSourcePath);
 			this.module = module_builder;
 			this.evalKind = kind;

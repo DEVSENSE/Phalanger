@@ -75,6 +75,11 @@ namespace PHP.Library.Curl
             for (; ; )
             {
                 request = (HttpWebRequest)HttpWebRequest.Create(uri);
+                if (!string.IsNullOrWhiteSpace(uri.UserInfo))
+                {
+                    var arr = uri.UserInfo.Split(new[] {':'}, 2);
+                    request.Credentials = new NetworkCredential(arr[0], arr[1]);
+                }
 
                 Curl_HttpReq httpreq = (redirectAttempts == 0) || keepVerb ? setRequestMethod(data) : Curl_HttpReq.GET;
                 setTimeOut(data);

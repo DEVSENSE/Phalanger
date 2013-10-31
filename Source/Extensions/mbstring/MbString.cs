@@ -173,7 +173,11 @@ namespace PHP.Library.Strings
 
                     // .NET encodings
                     foreach (var encoding in Encoding.GetEncodings())
-                        enc[encoding.Name] = encoding.GetEncoding();
+                    {
+                        var e = encoding.GetEncoding();
+                        enc[encoding.Name] = e;
+                        enc["cp" + encoding.CodePage] = e;
+                    }
 
                     _encodings = enc;
                 }

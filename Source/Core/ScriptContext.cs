@@ -12,6 +12,7 @@
 
 using System;
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using System.Reflection;
@@ -461,6 +462,33 @@ namespace PHP.Core
         #endregion
 
         #region Construction
+
+        static ScriptContext()
+        {
+            AppDomain.CurrentDomain.FirstChanceException+=CurrentDomainOnFirstChanceException;
+        }
+
+        private static void CurrentDomainOnFirstChanceException(object sender, FirstChanceExceptionEventArgs args)
+        {
+            if (args.Exception is ThreadAbortException)
+            {
+                try
+                {
+                    var context = CurrentContext;
+                    if (context == null)
+                        return;
+                    bool old_throw = context.ThrowExceptionOnError;
+                    context.ThrowExceptionOnError = false;
+
+                    PhpException.Throw(PhpError.Error, CoreResources.GetString("execution_timed_out",
+                        context.config.RequestControl.ExecutionTimeout));
+
+                    context.ThrowExceptionOnError = old_throw;
+                }
+                catch
+                { }
+            }
+        }
 
         /// <summary>
         /// Creates an instance of <see cref="ScriptContext"/> initialized with dummy streams and 
@@ -2160,7 +2188,9 @@ namespace PHP.Core
             catch (ThreadAbortException)
             {
                 if (!executionTimedOut) throw;
-                ThreadAbortedDueToTimeout();
+#if !SILVERLIGHT
+                Thread.ResetAbort();
+#endif
             }
             catch (PhpException)
             {
@@ -2277,30 +2307,11 @@ namespace PHP.Core
             return null;
         }
 
-        /// <summary>
-        /// Called when the execution has been timed out. 
-        /// </summary>
-        private void ThreadAbortedDueToTimeout()
-        {
-            Debug.Assert(executionTimedOut);
-
-#if !SILVERLIGHT
-            Thread.ResetAbort();
-#endif
-
-            bool old_throw = ThrowExceptionOnError;
-            ThrowExceptionOnError = false;
-
-            PhpException.Throw(PhpError.Error, CoreResources.GetString("execution_timed_out",
-                config.RequestControl.ExecutionTimeout));
-
-            ThrowExceptionOnError = old_throw;
-        }
-
         // GENERICS: Lambda
         private void TimedOut(object/*!*/ thread)
         {
             executionTimedOut = true;
+
             ((Thread)thread).Abort();
         }
 

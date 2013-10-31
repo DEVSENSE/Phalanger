@@ -266,7 +266,7 @@ namespace PHP.Core
                 output = Stream.Null;
 
             context.OutputStream = output;
-            context.Output = new StreamWriter(output);
+            context.Output = new StreamWriter(output, Configuration.Application.Globalization.PageEncoding);
 
             return context;
         }
@@ -337,14 +337,8 @@ namespace PHP.Core
                 // ScriptContext is ILogicalThreadAffinative, LogicalCallContext is used.
 				try
 				{
-                    var weak = (WeakReference<ScriptContext>)CallContext.GetData(callContextSlotName);// on Mono, .GetData must be used (GetLogicalData is not implemented)
-				    ScriptContext result = null;
-                    if (weak!=null)
-                    {
-                        weak.TryGetTarget(out result);
-                    }
-				    return result ?? CreateDefaultScriptContext();   
-				}
+                    return ((ScriptContext)CallContext.GetData(callContextSlotName)) ?? CreateDefaultScriptContext();   // on Mono, .GetData must be used (GetLogicalData is not implemented)
+                }
 				catch (InvalidCastException)
 				{
 					throw new InvalidCallContextDataException(callContextSlotName);
@@ -356,8 +350,8 @@ namespace PHP.Core
 				if (value == null)
 					CallContext.FreeNamedDataSlot(callContextSlotName);
 				else
-                    CallContext.SetData(callContextSlotName, new WeakReference<ScriptContext>(value));            // on Mono, .SetData must be used (SetLogicalData is not implemented)
-			}
+                    CallContext.SetData(callContextSlotName, value);            // on Mono, .SetData must be used (SetLogicalData is not implemented)
+            }
 		}
 
         /// <summary>

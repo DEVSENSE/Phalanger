@@ -16,6 +16,12 @@ using System.Diagnostics;
 
 namespace PHP.Core
 {
+    public enum DebugMode
+    {
+        None,
+        Pdb,
+        Full
+    }
 	#region Language Features Enum
 
 	/// <summary>
@@ -344,23 +350,12 @@ namespace PHP.Core
 			/// </summary>
 			internal ErrorControlSection DeepCopy()
 			{
-			    return new ErrorControlSection()
-			    {
-			        DisplayErrors = DisplayErrors,
-			        DocRefExtension = DocRefExtension,
-			        DocRefRoot = DocRefRoot,
-			        EnableLogging = EnableLogging,
-			        ErrorAppendString = ErrorAppendString,
-			        ErrorPrependString = ErrorPrependString,
-			        HtmlMessages = HtmlMessages,
-			        IgnoreAtOperator = IgnoreAtOperator,
-			        LogFile = LogFile,
-			        ReportErrors = ReportErrors,
-			        SysLog = SysLog,
-			        UserExceptionHandler = UserExceptionHandler == null ? null : UserExceptionHandler.DeepCopy(),
-			        UserHandler = UserHandler == null ? null : UserHandler.DeepCopy(),
-			        UserHandlerErrors = UserHandlerErrors
-			    };
+			    var copy = (ErrorControlSection)MemberwiseClone();
+			    if (UserExceptionHandler != null)
+			        copy.UserExceptionHandler = UserExceptionHandler.DeepCopy();
+			    if (UserHandler != null)
+			        copy.UserHandler = UserHandler.DeepCopy();
+			    return copy;
 			}
 		}
 
@@ -445,14 +440,10 @@ namespace PHP.Core
 			/// </summary>
 			internal AssertionSection DeepCopy()
 			{
-			    return new AssertionSection()
-			    {
-			        Active = Active,
-			        Callback = Callback == null ? null : Callback.DeepCopy(),
-			        Quiet = Quiet,
-			        ReportWarning = ReportWarning,
-			        Terminate = Terminate
-			    };
+			    var copy = (AssertionSection) MemberwiseClone();
+			    if (Callback != null)
+			        copy.Callback = Callback.DeepCopy();
+			    return copy;
 			}
 		}
 
@@ -533,13 +524,12 @@ namespace PHP.Core
 			/// </summary>
 			internal VariablesSection DeepCopy()
 			{
-			    return new VariablesSection()
+			    var copy = (VariablesSection) MemberwiseClone();
+			    if (DeserializationCallback != null)
 			    {
-			        AlwaysPopulateRawPostData = AlwaysPopulateRawPostData,
-			        DeserializationCallback = DeserializationCallback == null ? null : DeserializationCallback.DeepCopy(),
-                    QuoteRuntimeVariables = QuoteRuntimeVariables,
-                    RegisteringOrder = RegisteringOrder
-			    };
+			        copy.DeserializationCallback = DeserializationCallback.DeepCopy();
+			    }
+			    return copy;
 			}
 		}
 
@@ -823,7 +813,34 @@ namespace PHP.Core
 			}
 			internal bool debug;
 
-			#endregion
+            public bool GenegatePdbInRelease {
+                get { return genegatePdbInRelease; }
+                set
+                {
+                    genegatePdbInRelease = value;
+#if !SILVERLIGHT
+                    dirty = true;
+#endif
+                }
+            }
+		    internal bool genegatePdbInRelease;
+
+		    public DebugMode DebugMode
+		    {
+		        get
+		        {
+                    DebugMode result;
+                    if (debug)
+                        result = DebugMode.Full;
+                    else if (genegatePdbInRelease)
+                        result = DebugMode.Pdb;
+                    else
+                        result = DebugMode.None;
+		            return result;
+		        }
+		    }
+
+		    #endregion
 
 			#region Inclusions
 

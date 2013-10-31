@@ -435,8 +435,13 @@ namespace PHP.Core
             public IntegratedPipelineHeaders()
                 :base(false)
             {
-                if (httpContext != null)
-                    httpContext.Response.Headers["X-Powered-By"] = PoweredByHeader;
+                try
+                {
+                    if (httpContext != null)
+                        httpContext.Response.Headers["X-Powered-By"] = PoweredByHeader;
+                }
+                catch(HttpException) // integrated pipeline initialization mode
+                {}
             }
 
             #endregion

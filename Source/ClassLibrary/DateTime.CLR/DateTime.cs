@@ -611,7 +611,7 @@ namespace PHP.Library
 		/// <param name="timestamp">Nuber of seconds since 1970 specifying a date.</param>
 		/// <returns>Formatted string.</returns>
 		[ImplementsFunction("date")]
-		public static string FormatDate(string format, int timestamp)
+		public static string FormatDate(string format, long timestamp)
 		{
 			return FormatDate(format, DateTimeUtils.UnixTimeStampToUtc(timestamp), PhpTimeZone.CurrentTimeZone);
 		}
@@ -634,7 +634,7 @@ namespace PHP.Library
 		/// <param name="timestamp">Nuber of seconds since 1970 specifying a date.</param>
 		/// <returns>Formatted string.</returns>
 		[ImplementsFunction("gmdate")]
-		public static string FormatUtcDate(string format, int timestamp)
+		public static string FormatUtcDate(string format, long timestamp)
 		{
 			return FormatDate(format, DateTimeUtils.UnixTimeStampToUtc(timestamp), DateTimeUtils.UtcTimeZone);
 		}
@@ -645,7 +645,7 @@ namespace PHP.Library
 		/// <param name="format">Format definition for output.</param>
 		/// <returns>Part of the date, e.g. month or hours.</returns>
 		[ImplementsFunction("idate")]
-		public static int GetDatePart(string format)
+		public static long GetDatePart(string format)
 		{
 			if (format == null || format.Length != 1)
 				PhpException.InvalidArgument("format");
@@ -660,7 +660,7 @@ namespace PHP.Library
 		/// <param name="timestamp">Nuber of seconds since 1970 specifying a date.</param>
 		/// <returns>Part of the date, e.g. month or hours.</returns>
 		[ImplementsFunction("idate")]
-		public static int GetDatePart(string format, int timestamp)
+		public static long GetDatePart(string format, long timestamp)
 		{
 			if (format == null || format.Length != 1)
 				PhpException.InvalidArgument("format");
@@ -668,7 +668,7 @@ namespace PHP.Library
 			return GetDatePart(format[0], DateTimeUtils.UnixTimeStampToUtc(timestamp), PhpTimeZone.CurrentTimeZone);
 		}
 
-		private static int GetDatePart(char format, DateTime utc, TimeZoneInfo/*!*/ zone)
+		private static long GetDatePart(char format, DateTime utc, TimeZoneInfo/*!*/ zone)
 		{
             DateTime local = TimeZoneInfo.ConvertTimeFromUtc(utc, zone);// zone.ToLocalTime(utc);
 
@@ -1035,7 +1035,7 @@ namespace PHP.Library
 
 		private static int GetSwatchBeat(DateTime utc)
 		{
-			int seconds = DateTimeUtils.UtcToUnixTimeStamp(utc);
+			long seconds = DateTimeUtils.UtcToUnixTimeStamp(utc);
 			int beat = (int)(((seconds - (seconds - ((seconds % 86400) + 3600))) * 10) / 864) % 1000;
 			return (beat < 0) ? beat + 1000 : beat;
 		}
@@ -1080,7 +1080,7 @@ namespace PHP.Library
 		/// <param name="timestamp">Number of seconds since 1970 representing the time to format.</param>
 		/// <returns>Formatted string representing date and time.</returns>
 		[ImplementsFunction("strftime")]
-		public static string FormatTime(string format, int timestamp)
+		public static string FormatTime(string format, long timestamp)
 		{
 			return FormatTime(format, DateTimeUtils.UnixTimeStampToUtc(timestamp), PhpTimeZone.CurrentTimeZone);
 		}
@@ -1103,7 +1103,7 @@ namespace PHP.Library
 		/// <param name="timestamp">Number of seconds since 1970 representing the time to format.</param>
 		/// <returns>Formatted string representing date and time.</returns>
 		[ImplementsFunction("gmstrftime")]
-		public static string FormatUtcTime(string format, int timestamp)
+		public static string FormatUtcTime(string format, long timestamp)
 		{
 			return FormatTime(format, DateTimeUtils.UnixTimeStampToUtc(timestamp), DateTimeUtils.UtcTimeZone);
 		}
@@ -1349,56 +1349,56 @@ namespace PHP.Library
 		#region gmmktime
 
 		[ImplementsFunction("gmmktime")]
-		public static int MakeUtcTime()
+		public static long MakeUtcTime()
 		{
 			DateTime utc_now = DateTime.UtcNow;
 			return MakeUtcTime(utc_now.Hour, utc_now.Minute, utc_now.Second, utc_now.Month, utc_now.Day, utc_now.Year);
 		}
 
 		[ImplementsFunction("gmmktime")]
-		public static int MakeUtcTime(int hour)
+		public static long MakeUtcTime(int hour)
 		{
 			DateTime utc_now = DateTime.UtcNow;
 			return MakeUtcTime(hour, utc_now.Minute, utc_now.Second, utc_now.Month, utc_now.Day, utc_now.Year);
 		}
 
 		[ImplementsFunction("gmmktime")]
-		public static int MakeUtcTime(int hour, int minute)
+		public static long MakeUtcTime(int hour, int minute)
 		{
 			DateTime utc_now = DateTime.UtcNow;
 			return MakeUtcTime(hour, minute, utc_now.Second, utc_now.Month, utc_now.Day, utc_now.Year);
 		}
 
 		[ImplementsFunction("gmmktime")]
-		public static int MakeUtcTime(int hour, int minute, int second)
+		public static long MakeUtcTime(int hour, int minute, int second)
 		{
 			DateTime utc_now = DateTime.UtcNow;
 			return MakeUtcTime(hour, minute, second, utc_now.Month, utc_now.Day, utc_now.Year);
 		}
 
 		[ImplementsFunction("gmmktime")]
-		public static int MakeUtcTime(int hour, int minute, int second, int month)
+		public static long MakeUtcTime(int hour, int minute, int second, int month)
 		{
 			DateTime utc_now = DateTime.UtcNow;
 			return MakeUtcTime(hour, minute, second, month, utc_now.Day, utc_now.Year);
 		}
 
 		[ImplementsFunction("gmmktime")]
-		public static int MakeUtcTime(int hour, int minute, int second, int month, int day)
+		public static long MakeUtcTime(int hour, int minute, int second, int month, int day)
 		{
 			DateTime utc_now = DateTime.UtcNow;
 			return MakeUtcTime(hour, minute, second, month, day, utc_now.Year);
 		}
 
 		[ImplementsFunction("gmmktime")]
-		public static int MakeUtcTime(int hour, int minute, int second, int month, int day, int year, int dummy)
+		public static long MakeUtcTime(int hour, int minute, int second, int month, int day, int year, int dummy)
 		{
 			// According to PHP manual daylight savings time parameter ignored
 			return MakeUtcTime(hour, minute, second, month, day, year);
 		}
 
 		[ImplementsFunction("gmmktime")]
-		public static int MakeUtcTime(int hour, int minute, int second, int month, int day, int year)
+		public static long MakeUtcTime(int hour, int minute, int second, int month, int day, int year)
 		{
 			return DateTimeUtils.UtcToUnixTimeStamp(MakeDateTime(hour, minute, second, month, day, year));
 		}
@@ -1412,7 +1412,7 @@ namespace PHP.Library
 		/// </summary>
 		/// <returns>Unix timestamp.</returns>
 		[ImplementsFunction("mktime")]
-		public static int MakeTime()
+		public static long MakeTime()
 		{
 			DateTime now = Now;
 			return MakeTime(now.Hour, now.Minute, now.Second, now.Month, now.Day, now.Year, -1);
@@ -1425,7 +1425,7 @@ namespace PHP.Library
 		/// <param name="hour">The hour.</param>
 		/// <returns>Unix timestamp.</returns>
 		[ImplementsFunction("mktime")]
-		public static int MakeTime(int hour)
+		public static long MakeTime(int hour)
 		{
 			DateTime now = Now;
 			return MakeTime(hour, now.Minute, now.Second, now.Month, now.Day, now.Year, -1);
@@ -1439,7 +1439,7 @@ namespace PHP.Library
 		/// <param name="minute">The minute.</param>
 		/// <returns>Unix timestamp.</returns>
 		[ImplementsFunction("mktime")]
-		public static int MakeTime(int hour, int minute)
+		public static long MakeTime(int hour, int minute)
 		{
 			DateTime now = Now;
 			return MakeTime(hour, minute, now.Second, now.Month, now.Day, now.Year, -1);
@@ -1454,7 +1454,7 @@ namespace PHP.Library
 		/// <param name="second">The second.</param>
 		/// <returns>Unix timestamp.</returns>
 		[ImplementsFunction("mktime")]
-		public static int MakeTime(int hour, int minute, int second)
+		public static long MakeTime(int hour, int minute, int second)
 		{
 			DateTime now = Now;
 			return MakeTime(hour, minute, second, now.Month, now.Day, now.Year, -1);
@@ -1470,7 +1470,7 @@ namespace PHP.Library
 		/// <param name="month">The month.</param>
 		/// <returns>Unix timestamp.</returns>
 		[ImplementsFunction("mktime")]
-		public static int MakeTime(int hour, int minute, int second, int month)
+		public static long MakeTime(int hour, int minute, int second, int month)
 		{
 			DateTime now = Now;
 			return MakeTime(hour, minute, second, month, now.Day, now.Year, -1);
@@ -1487,7 +1487,7 @@ namespace PHP.Library
 		/// <param name="day">The day.</param>
 		/// <returns>Unix timestamp.</returns>
 		[ImplementsFunction("mktime")]
-		public static int MakeTime(int hour, int minute, int second, int month, int day)
+		public static long MakeTime(int hour, int minute, int second, int month, int day)
 		{
 			DateTime now = Now;
 			return MakeTime(hour, minute, second, month, day, now.Year, -1);
@@ -1504,7 +1504,7 @@ namespace PHP.Library
 		/// <param name="year">The year.</param>
 		/// <returns>Unix timestamp.</returns>
 		[ImplementsFunction("mktime")]
-		public static int MakeTime(int hour, int minute, int second, int month, int day, int year)
+		public static long MakeTime(int hour, int minute, int second, int month, int day, int year)
 		{
 			return MakeTime(hour, minute, second, month, day, year, -1);
 		}
@@ -1521,7 +1521,7 @@ namespace PHP.Library
 		/// <param name="daylightSaving">Daylight savings time.</param>
 		/// <returns>Unix timestamp.</returns>
 		[ImplementsFunction("mktime")]
-		public static int MakeTime(int hour, int minute, int second, int month, int day, int year, int daylightSaving)
+		public static long MakeTime(int hour, int minute, int second, int month, int day, int year, int daylightSaving)
 		{
 			var zone = PhpTimeZone.CurrentTimeZone;
 			DateTime local = MakeDateTime(hour, minute, second, month, day, year);
@@ -1662,7 +1662,7 @@ namespace PHP.Library
 		/// <param name="timestamp">Number of seconds since 1970.</param>
 		/// <returns>Associative array with date information.</returns>
 		[ImplementsFunction("getdate")]
-		public static PhpArray GetDate(int timestamp)
+		public static PhpArray GetDate(long timestamp)
 		{
 			return GetDate(DateTimeUtils.UnixTimeStampToUtc(timestamp));
 		}
@@ -1816,7 +1816,7 @@ namespace PHP.Library
 		/// <param name="timestamp">Number of seconds since 1970.</param>
 		/// <returns>Array containing values specifying the date and time.</returns>
 		[ImplementsFunction("localtime")]
-		public static PhpArray GetLocalTime(int timestamp)
+		public static PhpArray GetLocalTime(long timestamp)
 		{
 			return GetLocalTime(DateTimeUtils.UnixTimeStampToUtc(timestamp), false);
 		}
@@ -1846,7 +1846,7 @@ namespace PHP.Library
 		/// <param name="returnAssociative"></param>
 		/// <returns></returns>
 		[ImplementsFunction("localtime")]
-		public static PhpArray GetLocalTime(int timestamp, bool returnAssociative)
+		public static PhpArray GetLocalTime(long timestamp, bool returnAssociative)
 		{
 			return GetLocalTime(DateTimeUtils.UnixTimeStampToUtc(timestamp), returnAssociative);
 		}
@@ -1985,13 +1985,13 @@ namespace PHP.Library
 		/// <param name="start">Timestamp (seconds from 1970) to which is the new timestamp counted.</param>
 		/// <returns>Number of seconds since 1/1/1970 or -1 on failure.</returns>
 		[ImplementsFunction("strtotime")]
-		public static object StringToTime(string time, int start)
+		public static object StringToTime(string time, long start)
 		{
 			return StringToTime(time, DateTimeUtils.UnixTimeStampToUtc(start));
 		}
 
 		/// <summary>
-		/// Implementation of <see cref="StringToTime(string,int)"/> function.
+		/// Implementation of <see cref="StringToTime(string,long)"/> function.
 		/// </summary>
 		private static object StringToTime(string time, DateTime startUtc)
 		{
@@ -2000,7 +2000,7 @@ namespace PHP.Library
 			if (time.Length == 0) return false;
             
 		    string error = null;
-			int result = StrToTime.DateInfo.Parse(time, startUtc, out error);
+			long result = StrToTime.DateInfo.Parse(time, startUtc, out error);
 			if (error != null)
 			{
 				PhpException.Throw(PhpError.Warning, error);
@@ -2019,7 +2019,7 @@ namespace PHP.Library
 		/// </summary>
 		/// <returns>Number of seconds since 1970.</returns>
 		[ImplementsFunction("time")]
-		public static int Time()
+		public static long Time()
 		{
 			return DateTimeUtils.UtcToUnixTimeStamp(DateTime.UtcNow);
 		}
@@ -2039,79 +2039,79 @@ namespace PHP.Library
 		}
 
 		[ImplementsFunction("date_sunrise")]
-		public static object GetSunriseTime(int timestamp)
+		public static object GetSunriseTime(long timestamp)
 		{
 			return GetSunTime(timestamp, TimeFormats.String, Double.NaN, Double.NaN, Double.NaN, Double.NaN, true);
 		}
 
 		[ImplementsFunction("date_sunrise")]
-		public static object GetSunriseTime(int timestamp, TimeFormats format)
+		public static object GetSunriseTime(long timestamp, TimeFormats format)
 		{
 			return GetSunTime(timestamp, format, Double.NaN, Double.NaN, Double.NaN, Double.NaN, true);
 		}
 
 		[ImplementsFunction("date_sunrise")]
-		public static object GetSunriseTime(int timestamp, TimeFormats format, double latitude)
+        public static object GetSunriseTime(long timestamp, TimeFormats format, double latitude)
 		{
 			return GetSunTime(timestamp, format, latitude, Double.NaN, Double.NaN, Double.NaN, true);
 		}
 
 		[ImplementsFunction("date_sunrise")]
-		public static object GetSunriseTime(int timestamp, TimeFormats format, double latitude, double longitude)
+        public static object GetSunriseTime(long timestamp, TimeFormats format, double latitude, double longitude)
 		{
 			return GetSunTime(timestamp, format, latitude, longitude, Double.NaN, Double.NaN, true);
 		}
 
 		[ImplementsFunction("date_sunrise")]
-		public static object GetSunriseTime(int timestamp, TimeFormats format, double latitude, double longitude, double zenith)
+        public static object GetSunriseTime(long timestamp, TimeFormats format, double latitude, double longitude, double zenith)
 		{
 			return GetSunTime(timestamp, format, latitude, longitude, zenith, Double.NaN, true);
 		}
 
 		[ImplementsFunction("date_sunrise")]
-		public static object GetSunriseTime(int timestamp, TimeFormats format, double latitude, double longitude, double zenith, double offset)
+        public static object GetSunriseTime(long timestamp, TimeFormats format, double latitude, double longitude, double zenith, double offset)
 		{
 			return GetSunTime(timestamp, format, latitude, longitude, zenith, offset, true);
 		}
 
 		[ImplementsFunction("date_sunset")]
-		public static object GetSunsetTime(int timestamp)
+        public static object GetSunsetTime(long timestamp)
 		{
 			return GetSunTime(timestamp, TimeFormats.String, Double.NaN, Double.NaN, Double.NaN, Double.NaN, false);
 		}
 
 		[ImplementsFunction("date_sunset")]
-		public static object GetSunsetTime(int timestamp, TimeFormats format)
+        public static object GetSunsetTime(long timestamp, TimeFormats format)
 		{
 			return GetSunTime(timestamp, format, Double.NaN, Double.NaN, Double.NaN, Double.NaN, false);
 		}
 
 		[ImplementsFunction("date_sunset")]
-		public static object GetSunsetTime(int timestamp, TimeFormats format, double latitude)
+        public static object GetSunsetTime(long timestamp, TimeFormats format, double latitude)
 		{
 			return GetSunTime(timestamp, format, latitude, Double.NaN, Double.NaN, Double.NaN, false);
 		}
 
 		[ImplementsFunction("date_sunset")]
-		public static object GetSunsetTime(int timestamp, TimeFormats format, double latitude, double longitude)
+        public static object GetSunsetTime(long timestamp, TimeFormats format, double latitude, double longitude)
 		{
 			return GetSunTime(timestamp, format, latitude, longitude, Double.NaN, Double.NaN, false);
 		}
 
 		[ImplementsFunction("date_sunset")]
-		public static object GetSunsetTime(int timestamp, TimeFormats format, double latitude, double longitude, double zenith)
+        public static object GetSunsetTime(long timestamp, TimeFormats format, double latitude, double longitude, double zenith)
 		{
 			return GetSunTime(timestamp, format, latitude, longitude, zenith, Double.NaN, false);
 		}
 
 		[ImplementsFunction("date_sunset")]
-		public static object GetSunsetTime(int timestamp, TimeFormats format, double latitude, double longitude, double zenith, double offset)
+        public static object GetSunsetTime(long timestamp, TimeFormats format, double latitude, double longitude, double zenith, double offset)
 		{
 			return GetSunTime(timestamp, format, latitude, longitude, zenith, offset, false);
 		}
 
 
-		public static object GetSunTime(int timestamp, TimeFormats format, double latitude, double longitude, double zenith, double offset, bool getSunrise)
+        public static object GetSunTime(long timestamp, TimeFormats format, double latitude, double longitude, double zenith, double offset, bool getSunrise)
 		{
 			var zone = PhpTimeZone.CurrentTimeZone;
 			DateTime utc = DateTimeUtils.UnixTimeStampToUtc(timestamp);
@@ -2263,11 +2263,11 @@ namespace PHP.Library
 		struct StringToTimeCase
 		{
 			public string String;
-			public int StartTime;
+			public long StartTime;
 			public string Result;
             public TimeZoneInfo[] Zones;
 
-            public StringToTimeCase(string str, int start, string result, TimeZoneInfo[] zones)
+            public StringToTimeCase(string str, long start, string result, TimeZoneInfo[] zones)
 			{
 				this.String = str;
 				this.StartTime = start;

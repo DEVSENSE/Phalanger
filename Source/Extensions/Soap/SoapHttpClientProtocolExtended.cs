@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Web;
 using System.Web.Services.Protocols;
 
 namespace PHP.Library.Soap
@@ -14,6 +16,8 @@ namespace PHP.Library.Soap
     {
         private byte[] m_SoapRequestMsg;
         private byte[] m_SoapResponseMsg;
+        private WebRequest lastRequest;
+        private WebResponse lastResponse;
 
         /// <summary>
         /// Creates a new <see cref="SoapHttpClientProtocolExtended"/> instance.
@@ -109,6 +113,40 @@ namespace PHP.Library.Soap
         public new object[] Invoke(string methodName, object[] parameters)
         {
             return base.Invoke(methodName, parameters);
+        }
+
+        protected override WebRequest GetWebRequest(Uri uri)
+        {
+            return lastRequest = base.GetWebRequest(uri);
+        }
+
+        protected override WebResponse GetWebResponse(WebRequest request)
+        {
+            return lastResponse = base.GetWebResponse(request);
+        }
+
+        public string RequestHeaders
+        {
+            get
+            {
+                var req = (HttpWebRequest) lastRequest;
+                var sb = new StringBuilder();
+                sb.AppendFormat("{0} {1} HTTP/{2}{3}", req.Method, req.RequestUri.PathAndQuery, req.ProtocolVersion.ToString(2), Environment.NewLine);
+                sb.Append(req.Headers);
+                return sb.ToString();
+            }
+        }
+
+        public string ResponseHeaders
+        {
+            get
+            {
+                var res = ((HttpWebResponse) lastResponse);
+                var sb = new StringBuilder();
+                sb.AppendFormat("HTTP/{0} {1} {2}{3}", res.ProtocolVersion.ToString(2), (int)res.StatusCode, res.StatusDescription, Environment.NewLine);
+                sb.Append(res.Headers);
+                return sb.ToString();
+            }
         }
     }
 }

@@ -93,8 +93,8 @@ namespace PHP.Library.Soap
                 {
                     if (SetSpecifiedParameter(resultParams, pi))
                         continue;
-
-                    if (parameters.TryGetValue(pi.Name, out value))
+                    value = null;
+                    if (parameters == null || parameters.TryGetValue(pi.Name, out value))
                     {
                         resultParams.Add(Bind(value, pi.ParameterType));
                     }
@@ -114,7 +114,11 @@ namespace PHP.Library.Soap
         private object Bind(object graph, Type targetType)
         {
             if (graph == null)
-                return null;
+            {
+                if(!targetType.IsValueType)
+                    return null;
+                return Activator.CreateInstance(targetType);
+            }
 
             // unwrap Nullable<>
             if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(Nullable<>))

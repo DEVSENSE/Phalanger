@@ -369,7 +369,7 @@ namespace PHP.Library.Xml
         /// with operators such as ===.
         /// </returns>
         [ImplementsFunction("xml_parse_into_struct", FunctionImplOptions.NeedsClassContext | FunctionImplOptions.NeedsNamingContext)]
-        public static int ParseIntoStruct(NamingContext/*!*/ namingContext, DTypeDesc caller, PhpResource parser, PhpBytes data, PhpReference values)
+        public static int ParseIntoStruct(NamingContext/*!*/ namingContext, DTypeDesc caller, PhpResource parser, object data, PhpReference values)
         {
             return ParseIntoStruct(namingContext, caller, parser, data, values, null);
         }
@@ -392,7 +392,7 @@ namespace PHP.Library.Xml
         /// with operators such as ===.
         /// </returns>
         [ImplementsFunction("xml_parse_into_struct", FunctionImplOptions.NeedsClassContext | FunctionImplOptions.NeedsNamingContext)]
-        public static int ParseIntoStruct(NamingContext/*!*/ namingContext, DTypeDesc caller, PhpResource parser, PhpBytes data, PhpReference values, PhpReference index)
+        public static int ParseIntoStruct(NamingContext/*!*/ namingContext, DTypeDesc caller, PhpResource parser, object data, PhpReference values, PhpReference index)
         {
             if (values == null)
             {

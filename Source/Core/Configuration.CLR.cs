@@ -851,7 +851,15 @@ namespace PHP.Core
 								hashcode += mapping.Pattern.ToString().GetHashCode();
 								hashcode += mapping.Replacement.GetHashCode();
 							}
-							hashcode += debug ? 897987897 : 12;
+						    if (debug)
+						    {
+						        hashcode += 897987897;
+						    }
+						    else
+						    {
+						        hashcode += 12;
+                                hashcode += genegatePdbInRelease ? 564456654 : 35;
+                            }
 						}
 
 						dirty = false;
@@ -873,6 +881,7 @@ namespace PHP.Core
 				dirty = true;
 				hashcode = 0;
 				debug = true;
+				genegatePdbInRelease = true;
 				disabledWarnings = WarningGroups.DeferredToRuntime | WarningGroups.CompilerStrict;
 				disabledWarningNumbers = ArrayUtils.EmptyIntegers;
 
@@ -978,6 +987,10 @@ namespace PHP.Core
 					case "Debug":
 						debug = (value == "true");
 						return true;
+
+                    case "GeneratePdbInRelease":
+				        genegatePdbInRelease = (value == "true");
+				        return true;
 
 					case "WatchSourceChanges":
 						{

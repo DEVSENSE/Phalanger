@@ -3825,16 +3825,16 @@ namespace PHP.Core
         /// </summary>
         /// <param name="dt">Time.</param>
         /// <returns>Unix timestamp.</returns>
-        public static int UtcToUnixTimeStamp(DateTime dt)
+        public static long UtcToUnixTimeStamp(DateTime dt)
         {
             double seconds = (dt - UtcStartOfUnixEpoch).TotalSeconds;
 
-            if (seconds < Int32.MinValue)
-                return Int32.MinValue;
-            if (seconds > Int32.MaxValue)
-                return Int32.MaxValue;
+            if (seconds < Int64.MinValue)
+                return Int64.MinValue;
+            if (seconds > Int64.MaxValue)
+                return Int64.MaxValue;
 
-            return (int)seconds;
+            return (long)seconds;
         }
 
         /// <summary>
@@ -3842,7 +3842,7 @@ namespace PHP.Core
         /// </summary>
         /// <param name="timestamp">UNIX timestamp</param>
         /// <returns><see cref="DateTime"/> structure representing UTC time.</returns>
-        public static DateTime UnixTimeStampToUtc(int timestamp)
+        public static DateTime UnixTimeStampToUtc(long timestamp)
         {
             return UtcStartOfUnixEpoch + TimeSpan.FromSeconds(timestamp);
         }

@@ -1324,7 +1324,7 @@ namespace PHP.Core
 			}
 
 			PhpAssemblyBuilder assembly_builder = PhpAssemblyBuilder.Create(applicationContext, kind, ps.Pure, ps.OutPath,
-				ps.DocPath, entry_point_file, ps.Version, ps.Key, ps.Icon, resource_files, config.Compiler.Debug, ps.Force32Bit);
+				ps.DocPath, entry_point_file, ps.Version, ps.Key, ps.Icon, resource_files, config.Compiler.DebugMode, ps.Force32Bit);
 
 			assembly_builder.IsMTA = ps.IsMTA;
 			
