@@ -178,8 +178,9 @@ namespace PHP.Library.Soap
         [PhpVisible, ImplementsMethod]
         public string __setLocation(string new_location)
         {
-            PhpException.FunctionNotSupported(PhpError.Warning);
-            return null;
+            var result = wsp.Location;
+            wsp.Location = new_location;
+            return result;
         }
 
 

@@ -711,5 +711,19 @@ namespace PHP.Library.Soap
         {
             get { return outParams; }
         }
+
+        public string Location
+        {
+            get
+            {
+                var soapProxy = (SoapHttpClientProtocolExtended)proxyInstance;
+                return soapProxy.Url;
+            }
+            set
+            {
+                var soapProxy = (SoapHttpClientProtocolExtended)proxyInstance;
+                soapProxy.Url = value;
+            }
+        }
     }
 }
