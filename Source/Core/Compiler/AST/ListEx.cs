@@ -29,7 +29,7 @@ namespace PHP.Core.Compiler.AST
             public override Evaluation Analyze(ListEx node, Analyzer analyzer, ExInfoFromParent info)
             {
                 access = info.Access;
-                ExInfoFromParent sinfo = new ExInfoFromParent(this);
+                ExInfoFromParent sinfo = new ExInfoFromParent(node);
 
                 // r-value
                 if (node.RValue != null)
