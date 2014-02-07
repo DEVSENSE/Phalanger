@@ -879,7 +879,20 @@ namespace PHP.Core.CodeDom
             {
                 Output.Write(WhiteSpace.Space + Tokens.Assignment + WhiteSpace.Space);
 
+                bool notsupported = e.InitExpression is CodeMethodInvokeExpression;
+                if (notsupported)
+                {
+                    Output.Write(SpecialWords.Null);
+                    Output.Write(Tokens.CommentLeft);
+                    Output.Write(" TODO: ");    // PHP does not support fields with method call initializer
+                }
+
                 GenerateExpression(e.InitExpression);
+
+                if (notsupported)
+                {
+                    Output.Write(Tokens.CommentRight);
+                }
             }
             base.Output.WriteLine(Tokens.Semicolon);
         }

@@ -325,7 +325,7 @@ namespace PHP.Core.AST
 		public List<Statement> Body { get { return body; } }
 		private readonly List<Statement> body;
 
-        public List<ActualParam> BaseCtorParams { get { return baseCtorParams; } internal set { BaseCtorParams = value; } }
+        public List<ActualParam> BaseCtorParams { get { return baseCtorParams; } internal set { baseCtorParams = value; } }
 		private List<ActualParam> baseCtorParams;
 
         public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }

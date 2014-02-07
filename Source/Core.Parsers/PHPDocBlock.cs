@@ -1211,10 +1211,12 @@ namespace PHP.Core
                 
                 int nameStart = descStart;
                 int paramsFrom = -1;
+                // skip [name]
                 while (descStart < line.Length && char.IsLetterOrDigit(line[descStart]))
                     descStart++;
 
-                if (line[descStart] == '(')
+                // parse parameters
+                if (descStart < line.Length && line[descStart] == '(')
                 {
                     paramsFrom = descStart;
 
