@@ -191,7 +191,11 @@ namespace PHP.Core.Compiler.AST
         {
             internal override void Analyze(Item node, Analyzer analyzer)
             {
+<<<<<<< HEAD
                 ExInfoFromParent info = new ExInfoFromParent(this);
+=======
+                ExInfoFromParent info = new ExInfoFromParent(node);
+>>>>>>> refs/remotes/tfs/default
                 info.Access = AccessType.ReadRef;
                 ((RefItem)node).RefToGet.Analyze(analyzer, info);
                 base.Analyze(node, analyzer);

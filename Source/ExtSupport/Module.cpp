@@ -962,7 +962,7 @@ namespace PHP
 						
 						if (istypeof<RuntimeChainProperty>(rce)) element.type = OE_IS_OBJECT;
 						else if (istypeof<RuntimeChainItem>(rce)) element.type = OE_IS_ARRAY;
-						else Debug::Assert(false, "Invalid setter chain element type.");
+						else System::Diagnostics::Debug::Assert(false, "Invalid setter chain element type.");
 
 						element.element = *(zval *)marshaler->MarshalManagedToNative(rce->Name).ToPointer();
 						zend_llist_add_element(property_reference.elements_list, &element);
@@ -1094,9 +1094,9 @@ namespace PHP
 				{
 					// create an artificial __call method
 					CallerMethod ^caller_method = gcnew CallerMethod(this, CALL_HANDLER(classEntry));
-					methods->Add(PHP::Core::PhpObject::SpecialMethodNames::Call.Value, caller_method);
+					methods->Add(PHP::Core::Name::SpecialMethodNames::Call.Value, caller_method);
 
-					if (!methods->ContainsKey(PHP::Core::PhpObject::SpecialMethodNames::Construct.Value) &&
+					if (!methods->ContainsKey(PHP::Core::Name::SpecialMethodNames::Construct.Value) &&
 						!methods->ContainsKey(GetClassName()->ToLower()))
 					{
 						// there is no explicit constructor -> create an artificial constructor that calls __call
@@ -1108,14 +1108,14 @@ namespace PHP
 				{
 					// create an artificial __get method
 					GetterMethod ^getter_method = gcnew GetterMethod(this, GET_HANDLER(classEntry));
-					methods->Add(PHP::Core::PhpObject::SpecialMethodNames::Get.Value, getter_method);
+					methods->Add(PHP::Core::Name::SpecialMethodNames::Get.Value, getter_method);
 				}
 
 				if (SET_HANDLER(classEntry) != NULL)
 				{
 					// create an artificial __set method
 					SetterMethod ^setter_method = gcnew SetterMethod(this, SET_HANDLER(classEntry));
-					methods->Add(PHP::Core::PhpObject::SpecialMethodNames::Set.Value, setter_method);
+					methods->Add(PHP::Core::Name::SpecialMethodNames::Set.Value, setter_method);
 				}
 #pragma warning (pop)
 #elif defined (PHP5TS)

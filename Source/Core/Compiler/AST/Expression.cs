@@ -123,7 +123,11 @@ namespace PHP.Core.Compiler.AST
             public override Evaluation Analyze(T/*!*/node, Analyzer/*!*/ analyzer, ExInfoFromParent info)
             {
                 if (node.IsMemberOf != null)
+<<<<<<< HEAD
                     node.IsMemberOf.Analyze(analyzer, new ExInfoFromParent(this, DetermineAccessType(node, info.Access)));
+=======
+                    node.IsMemberOf.Analyze(analyzer, new ExInfoFromParent(node, DetermineAccessType(node, info.Access)));
+>>>>>>> refs/remotes/tfs/default
 
                 return new Evaluation(node);
             }
@@ -264,6 +268,7 @@ namespace PHP.Core.Compiler.AST
         /// Used only by DirectVarUse to avoid assigning to $this. 
         /// Can be null reference if not needed.
         /// </summary>
+<<<<<<< HEAD
         public object Parent { get { return parent; } }
         private object parent;
 
@@ -276,6 +281,19 @@ namespace PHP.Core.Compiler.AST
         }
 
         public ExInfoFromParent(object parent, AccessType access)
+=======
+        public AstNode Parent { get { return parent; } }
+        private AstNode parent;
+
+        public readonly static ExInfoFromParent DefaultExInfo = new ExInfoFromParent(null);
+
+        public ExInfoFromParent(AstNode parent)
+            :this(parent, AccessType.Read)
+        {
+        }
+
+        public ExInfoFromParent(AstNode parent, AccessType access)
+>>>>>>> refs/remotes/tfs/default
         {
             this.parent = parent;
             this.access = access;

@@ -356,21 +356,17 @@ namespace PHP.Core.AST
 
         #region Jumps statements
 
-        /// <summary>
-        /// see JumpStmt.Expression
-        /// </summary>
-        /// <param name="x"></param>
         virtual public void VisitJumpStmt(JumpStmt x)
         {
-            //VisitElement(x.Expression); // see JumpStmt.Expression
+            VisitElement(x.Expression);
         }
         virtual public void VisitGotoStmt(GotoStmt x)
         {
-            // LabelName
+            // x.LabelName
         }
         virtual public void VisitLabelStmt(LabelStmt x)
         {
-            // nothing
+            // x.Name
         }
         
         #endregion

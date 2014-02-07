@@ -194,10 +194,13 @@ namespace PHP.Library.Data
 		/// </summary>
 		public void ClosePendingReader()
 		{
-			if (pendingReader != null && !pendingReader.IsClosed)
-				pendingReader.Close();
+            if (pendingReader != null)
+            {
+                if (!pendingReader.IsClosed)
+                    pendingReader.Close();
 
-			pendingReader = null;
+                pendingReader = null;
+            }
 		}
 
 		/// <summary>
@@ -244,16 +247,21 @@ namespace PHP.Library.Data
 		/// <returns>PhpDbResult class representing the data read from database.</returns>
 		/// <exception cref="ArgumentNullException"><paramref name="commandText"/> is a <B>null</B> reference.</exception>
 		/// <exception cref="PhpException">Command execution failed (Warning).</exception>
-		public PhpDbResult ExecuteCommand(string/*!*/ commandText, CommandType commandType, bool convertTypes,
-		  IEnumerable<IDataParameter> parameters, bool skipResults)
+        public PhpDbResult ExecuteCommand(string/*!*/ commandText, CommandType commandType, bool convertTypes, IEnumerable<IDataParameter> parameters, bool skipResults)
+        {
+            if (commandText == null)
+                throw new ArgumentNullException("commandText");
+
+            return (Connect())
+                ? ExecuteCommandInternal(commandText, commandType, convertTypes, parameters, skipResults)
+                : null;
+        }
+		
+        protected virtual PhpDbResult ExecuteCommandInternal(string/*!*/ commandText, CommandType commandType, bool convertTypes, IEnumerable<IDataParameter> parameters, bool skipResults)
 		{
-			if (commandText == null)
-				throw new ArgumentNullException("commandText");
-
-			if (!Connect()) return null;
-
 			ClosePendingReader();
 
+            // IDbCommand
 			IDbCommand command = CreateCommand();
 
 			command.Connection = connection;
@@ -267,38 +275,40 @@ namespace PHP.Library.Data
 					command.Parameters.Add(parameter);
 			}
 
+            // ExecuteReader
+            PhpDbResult result = null;
+
 			try
 			{
+                var/*!*/reader = this.pendingReader = command.ExecuteReader();
+
 				if (skipResults)
 				{
-					pendingReader = command.ExecuteReader();
-
 					// reads all data:
-					do { while (pendingReader.Read()); } while (pendingReader.NextResult());
-
-					lastException = null;
-					return null;
+                    do { while (reader.Read()); } while (reader.NextResult());
 				}
 				else
 				{
 					lastResult = null;
-
-					pendingReader = command.ExecuteReader();
-					PhpDbResult result = GetResult(this, pendingReader, convertTypes);
+                    
+                    // read all data into PhpDbResult:
+                    result = GetResult(this, reader, convertTypes);
 					result.command = command;
 
-					lastException = null;
 					lastResult = result;
-					return result;
 				}
-			}
+
+                lastException = null;
+            }
 			catch (Exception e)
 			{
 				lastException = e;
 				PhpException.Throw(PhpError.Warning, LibResources.GetString("command_execution_failed",
 					GetExceptionMessage(e)));
-				return null;
 			}
+
+            //
+            return result;
 		}
 
 		/// <summary>

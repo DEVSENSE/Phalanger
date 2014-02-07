@@ -65,7 +65,7 @@ namespace PHP.Core.Compiler.AST
             {
                 analyzer.LeaveUnreachableCode();
 
-                ExInfoFromParent info = new ExInfoFromParent(this);
+                ExInfoFromParent info = new ExInfoFromParent(ast);
 
                 // analyze auto-prepended inclusion (no code reachability checks):
                 if (PrependedInclusion != null)

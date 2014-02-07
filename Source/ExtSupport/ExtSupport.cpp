@@ -99,7 +99,7 @@ void StartupHelper::InitializeCRTX()
 	CRTX_FUNCTION_INIT(msvcrt, rewind);
 	CRTX_FUNCTION_INIT(msvcrt, setvbuf);
 
-	Debug::Assert(crtx_close != NULL && crtx_creat != NULL && crtx_errno != NULL && crtx_fdopen != NULL &&
+	System::Diagnostics::Debug::Assert(crtx_close != NULL && crtx_creat != NULL && crtx_errno != NULL && crtx_fdopen != NULL &&
 		crtx_fileno != NULL && crtx_fstat != NULL && crtx_get_osfhandle != NULL && crtx_lseek != NULL &&
 		crtx_open != NULL && crtx_open_osfhandle != NULL && crtx_read != NULL && crtx_write != NULL &&
 		crtx_fclose != NULL && crtx_fflush != NULL && crtx_fopen != NULL && crtx_fread != NULL &&

@@ -1804,62 +1804,6 @@ namespace PHP.Core
 
     }
 
-    public struct SubArray<T> : IEnumerable<T>
-    {
-        private readonly T[] array;
-        private int start;
-
-        public int Length { get { return length; } }
-        private int length;
-
-        public bool IsNull { get { return array == null; } }
-
-        public bool IsNullOrEmpty { get { return array == null || length == 0; } }
-
-        public T this[int index] { get { return array[start + index]; } set { array[start + index] = value; } }
-
-        public SubArray(T[] array, int start, int length)
-        {
-            this.array = array;
-            this.start = start;
-            this.length = length;
-        }
-
-        public T[] ToArray()
-        {
-            if (array == null) return null;
-
-            T[] result = new T[length];
-
-            for (int i = 0, j = start; i < length; i++, j++)
-                result[i] = array[j];
-
-            return result;
-        }
-
-        #region IEnumerable<T> Members
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            if (array != null)
-            {
-                for (int i = 0, j = start; i < length; i++, j++)
-                    yield return array[j];
-            }
-        }
-
-        #endregion
-
-        #region IEnumerable Members
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        #endregion
-    }
-
     #endregion
 
     #region Paths

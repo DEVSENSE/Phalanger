@@ -29,7 +29,11 @@ namespace PHP.Core.Compiler.AST
             public override Evaluation Analyze(ListEx node, Analyzer analyzer, ExInfoFromParent info)
             {
                 access = info.Access;
+<<<<<<< HEAD
                 ExInfoFromParent sinfo = new ExInfoFromParent(this);
+=======
+                ExInfoFromParent sinfo = new ExInfoFromParent(node);
+>>>>>>> refs/remotes/tfs/default
 
                 // r-value
                 if (node.RValue != null)

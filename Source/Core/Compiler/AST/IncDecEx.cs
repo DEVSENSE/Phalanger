@@ -28,7 +28,7 @@ namespace PHP.Core.Compiler.AST
             public override Evaluation Analyze(IncDecEx node, Analyzer analyzer, ExInfoFromParent info)
             {
                 access = info.Access;
-                ExInfoFromParent var_info = new ExInfoFromParent(this);
+                ExInfoFromParent var_info = new ExInfoFromParent(node);
                 var_info.Access = AccessType.ReadAndWrite;
 
                 node.Variable.Analyze(analyzer, var_info);
