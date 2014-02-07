@@ -442,7 +442,7 @@ namespace PHP
 			{
 #pragma warning (push)
 #pragma warning (disable: 4395)
-				return PHP::Core::PhpObject::SpecialMethodNames::Call.ToString();
+				return PHP::Core::Name::SpecialMethodNames::Call.ToString();
 #pragma warning (pop)
 			}
 
@@ -552,7 +552,7 @@ namespace PHP
 			{
 #pragma warning (push)
 #pragma warning (disable: 4395)
-				return PHP::Core::PhpObject::SpecialMethodNames::Get.ToString();
+				return PHP::Core::Name::SpecialMethodNames::Get.ToString();
 #pragma warning (pop)
 			}
 
@@ -604,7 +604,7 @@ namespace PHP
 			{
 #pragma warning (push)
 #pragma warning (disable: 4395)
-				return PHP::Core::PhpObject::SpecialMethodNames::Set.ToString();
+				return PHP::Core::Name::SpecialMethodNames::Set.ToString();
 #pragma warning (pop)
 			}
 
