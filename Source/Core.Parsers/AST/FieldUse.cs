@@ -30,26 +30,26 @@ namespace PHP.Core.AST
         public GenericQualifiedName TypeName { get { return typeRef.GenericQualifiedName; } }
 
         /// <summary>Position of <see cref="TypeName"/>.</summary>
-        public Position TypeNamePosition { get { return this.typeRef.Position; } }
+        public Text.Span TypeNameSpan { get { return this.typeRef.Span; } }
 
         /// <summary>Position of the field name.</summary>
-        public Position NamePosition { get; private set; }
+        public Text.Span NameSpan { get; private set; }
 
         internal TypeRef TypeRef { get { return typeRef; } }
         protected TypeRef typeRef;
 
-        public StaticFieldUse(Position position, Position namePosition, GenericQualifiedName typeName, Position typeNamePosition)
-            : this(position, namePosition, DirectTypeRef.FromGenericQualifiedName(typeNamePosition, typeName))
+        public StaticFieldUse(Text.Span span, Text.Span nameSpan, GenericQualifiedName typeName, Text.Span typeNamePosition)
+            : this(span, nameSpan, DirectTypeRef.FromGenericQualifiedName(typeNamePosition, typeName))
         {
         }
 
-        public StaticFieldUse(Position position, Position namePosition, TypeRef typeRef)
-            : base(position)
+        public StaticFieldUse(Text.Span span, Text.Span nameSpan, TypeRef typeRef)
+            : base(span)
         {
             Debug.Assert(typeRef != null);
 
             this.typeRef = typeRef;
-            this.NamePosition = namePosition;
+            this.NameSpan = nameSpan;
         }
     }
 
@@ -69,14 +69,14 @@ namespace PHP.Core.AST
         /// <summary>Name of static field beign accessed</summary>
         public VariableName PropertyName { get { return propertyName; } }
 
-        public DirectStFldUse(Position position, TypeRef typeRef, VariableName propertyName, Position propertyNamePosition)
-            : base(position, propertyNamePosition, typeRef)
+        public DirectStFldUse(Text.Span span, TypeRef typeRef, VariableName propertyName, Text.Span propertyNamePosition)
+            : base(span, propertyNamePosition, typeRef)
         {
             this.propertyName = propertyName;
         }
 
-        public DirectStFldUse(Position position, GenericQualifiedName qualifiedName, Position qualifiedNamePosition, VariableName propertyName, Position propertyNamePosition)
-            : this(position, DirectTypeRef.FromGenericQualifiedName(qualifiedNamePosition, qualifiedName), propertyName, propertyNamePosition)
+        public DirectStFldUse(Text.Span span, GenericQualifiedName qualifiedName, Text.Span qualifiedNameSpan, VariableName propertyName, Text.Span propertyNameSpan)
+            : this(span, DirectTypeRef.FromGenericQualifiedName(qualifiedNameSpan, qualifiedName), propertyName, propertyNameSpan)
         {
         }
 
@@ -106,8 +106,8 @@ namespace PHP.Core.AST
         public Expression/*!*/ FieldNameExpr { get { return fieldNameExpr; } internal set { fieldNameExpr = value; } }
         private Expression/*!*/ fieldNameExpr;
         
-        public IndirectStFldUse(Position position, TypeRef typeRef, Expression/*!*/ fieldNameExpr)
-            : base(position, fieldNameExpr.Position, typeRef)
+        public IndirectStFldUse(Text.Span span, TypeRef typeRef, Expression/*!*/ fieldNameExpr)
+            : base(span, fieldNameExpr.Span, typeRef)
         {
             this.fieldNameExpr = fieldNameExpr;
         }

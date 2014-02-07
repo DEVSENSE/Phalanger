@@ -21,11 +21,18 @@ namespace PHP.Core.Text
 
         public TextPoint(ILineBreaks lineBreaks, int position)
         {
+            //if (lineBreaks == null)
+            //    throw new ArgumentNullException("lineBreaks");
+            //if (position > lineBreaks.TextLength)
+            //    throw new ArgumentException("position");
+
             _lineBreaks = lineBreaks;
             _position = position;
         }
 
         #endregion
+
+        #region Properties
 
         public ILineBreaks LineBreaks
         {
@@ -55,13 +62,15 @@ namespace PHP.Core.Text
         {
             get
             {
-                var line = this.Line;
-                if (line == 0)
-                    return _position;
-                else
-                    return _position - _lineBreaks.EndOfLineBreak(line - 1);
+                int line, column;
+                _lineBreaks.GetLineColumnFromPosition(_position, out line, out column);
+                return column;
             }
         }
+
+        #endregion
+
+        #region Methods
 
         public static implicit operator int(TextPoint point)
         {
@@ -128,6 +137,8 @@ namespace PHP.Core.Text
         {
             return left.CompareTo(right) < 0;
         }
+
+        #endregion
 
         #region IComparable<TextPoint>
 

@@ -466,9 +466,9 @@ namespace PHP.Core
             return result;
         }
 
-        internal static void StringBuilderAppend(PHP.Core.Parsers.PhpStringBuilder/*!*/ dst, StringBuilder/*!*/ src, int startIndex, int length)
+        internal static void StringBuilderAppend(PHP.Core.Parsers.PhpStringBuilder/*!*/ dst, StringBuilder/*!*/ src, int startIndex, int length, Text.Span span)
         {
-            dst.Append(src.ToString(startIndex, length));
+            dst.Append(src.ToString(startIndex, length), span);
         }
 
         public static bool IsAsciiString(string/*!*/ str)

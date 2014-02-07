@@ -108,7 +108,7 @@ namespace PHP.Core.Reflection
 			{
 				// report fatal error (do not throw an exception, just don't let the analysis continue):
 				member.ReportRedeclaration(errors);
-				errors.Add(FatalErrors.RelatedLocation, existing.SourceUnit, existing.Position);
+				errors.Add(FatalErrors.RelatedLocation, existing.SourceUnit, existing.Span);
 				return false;
 			}
 
@@ -120,8 +120,8 @@ namespace PHP.Core.Reflection
 			if (!first.IsPartial && !first.IsConditional)
 			{
 				// report error and mark the declaration partial:
-				errors.Add(Errors.MissingPartialModifier, first.SourceUnit, first.Position, first.Declaree.FullName);
-				errors.Add(Errors.RelatedLocation, second.SourceUnit, second.Position);
+				errors.Add(Errors.MissingPartialModifier, first.SourceUnit, first.Span, first.Declaree.FullName);
+				errors.Add(Errors.RelatedLocation, second.SourceUnit, second.Span);
 
 				first.IsPartial = true;
 			}
@@ -207,17 +207,6 @@ namespace PHP.Core.Reflection
 		public bool IsDynamic { get { return isDynamic; } }
 		private bool isDynamic = false;
 
-#if SILVERLIGHT
-		public TransientCompilationUnit(string/*!*/ sourceCode, PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding, NamingContext namingContext, int line, int column, bool client)
-		{
-			Debug.Assert(sourceCode != null && sourceFile != null && encoding != null);
-			if (client)
-				this.sourceUnit = new ClientSourceCodeUnit(this, sourceCode, sourceFile, encoding, line, column);
-			else
-				this.sourceUnit = new SourceCodeUnit(this, sourceCode, sourceFile, encoding, line, column);
-			this.sourceUnit.AddImportedNamespaces(namingContext);
-		}
-#else
 		public TransientCompilationUnit(string/*!*/ sourceCode, PhpSourceFile/*!*/ sourceFile, Encoding/*!*/ encoding, NamingContext namingContext, int line, int column, bool client)
 		{
 			Debug.Assert(sourceCode != null && sourceFile != null && encoding != null);
@@ -225,7 +214,6 @@ namespace PHP.Core.Reflection
 			this.sourceUnit = new SourceCodeUnit(this, sourceCode, sourceFile, encoding, line, column);
 			this.sourceUnit.AddImportedNamespaces(namingContext);
 		}
-#endif
 
 		#region Declaration look-up
 
@@ -311,6 +299,9 @@ namespace PHP.Core.Reflection
 		internal bool PreCompile(CompilationContext/*!*/ context, ScriptContext/*!*/ scriptContext,
 			SourceCodeDescriptor descriptor, EvalKinds kind, DTypeDesc referringType)
 		{
+            Debug.Assert(descriptor.Line == this.sourceUnit.Line);
+            Debug.Assert(descriptor.Column == this.sourceUnit.Column);
+
 			this.resolvingScriptContext = scriptContext;
 			this.referringType = referringType;
 
@@ -326,7 +317,6 @@ namespace PHP.Core.Reflection
 
             sourceUnit.Parse(
                 context.Errors, this,
-                new Position(descriptor.Line, descriptor.Column, 0, descriptor.Line, descriptor.Column, 0),
                 context.Config.Compiler.LanguageFeatures);
 
 			if (context.Errors.AnyFatalError) return false;

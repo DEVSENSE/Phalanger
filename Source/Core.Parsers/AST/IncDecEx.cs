@@ -49,8 +49,8 @@ namespace PHP.Core.AST
         /// <summary>Variable being incremented/decremented</summary>
         public VariableUse /*!*/ Variable { get { return variable; } }
 
-		public IncDecEx(Position position, bool inc, bool post, VariableUse/*!*/ variable)
-			: base(position)
+		public IncDecEx(Text.Span span, bool inc, bool post, VariableUse/*!*/ variable)
+			: base(span)
 		{
 			this.variable = variable;
 

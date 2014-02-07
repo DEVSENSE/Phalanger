@@ -133,7 +133,7 @@ namespace PHP.Core.Compiler.AST
 
             internal override bool Analyze(DirectTypeRef node, Analyzer analyzer)
             {
-                resolvedType = analyzer.ResolveTypeName(node.ClassName, analyzer.CurrentType, analyzer.CurrentRoutine, node.Position, false);
+                resolvedType = analyzer.ResolveTypeName(node.ClassName, analyzer.CurrentType, analyzer.CurrentRoutine, node.Span, false);
 
                 // base call must follow the class name resolution:
                 bool args_static = base.Analyze(node, analyzer);
@@ -150,7 +150,7 @@ namespace PHP.Core.Compiler.AST
                             resolved_arguments[i] = TypeRefHelper.ResolvedType(genericParams[i]).TypeDesc;
                     }
 
-                    resolvedType = resolvedType.MakeConstructedType(analyzer, resolved_arguments, node.Position);
+                    resolvedType = resolvedType.MakeConstructedType(analyzer, resolved_arguments, node.Span);
                 }
 
                 return args_static;

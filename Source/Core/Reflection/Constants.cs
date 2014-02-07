@@ -266,7 +266,7 @@ namespace PHP.Core.Reflection
 		internal AST.ConstantDecl Node { get { return node; } }
 		private AST.ConstantDecl node;
 
-		public abstract Position Position { get; }
+        public abstract Text.Span Span { get; }
 		public abstract SourceUnit SourceUnit { get; }
 
 		internal ExportAttribute ExportInfo { get { return exportInfo; } set { exportInfo = value; } }
@@ -401,7 +401,7 @@ namespace PHP.Core.Reflection
 		public VersionInfo Version { get { return version; } set { version = value; } }
 		private VersionInfo version;
 
-		public override Position Position { get { return declaration.Position; } }
+        public override Text.Span Span { get { return declaration.Span; } }
 		public override SourceUnit SourceUnit { get { return declaration.SourceUnit; } }
 
         /// <summary>
@@ -463,7 +463,7 @@ namespace PHP.Core.Reflection
 		/// Used by compiler.
 		/// </summary>
 		public GlobalConstant(QualifiedName qualifiedName, PhpMemberAttributes memberAttributes,
-            CompilationSourceUnit/*!*/ sourceUnit, bool isConditional, Scope scope, Position position)
+            CompilationSourceUnit/*!*/ sourceUnit, bool isConditional, Scope scope, Text.Span position)
 			: base(new DConstantDesc(sourceUnit.CompilationUnit.Module, memberAttributes, null))
 		{
             Debug.Assert(sourceUnit != null);
@@ -485,12 +485,12 @@ namespace PHP.Core.Reflection
 
 		internal override void ReportCircularDefinition(ErrorSink/*!*/ errors)
 		{
-			errors.Add(Errors.CircularConstantDefinitionGlobal, SourceUnit, Position, FullName);
+			errors.Add(Errors.CircularConstantDefinitionGlobal, SourceUnit, Span, FullName);
 		}
 
 		public void ReportRedeclaration(ErrorSink/*!*/ errors)
 		{
-			errors.Add(FatalErrors.ConstantRedeclared, SourceUnit, Position, FullName);
+			errors.Add(FatalErrors.ConstantRedeclared, SourceUnit, Span, FullName);
 		}
 
 		internal void DefineBuilders()
@@ -555,8 +555,8 @@ namespace PHP.Core.Reflection
 		/// Error reporting.
 		/// <see cref="ShortPosition.Invalid"/> for reflected PHP methods.
 		/// </summary>
-		public override Position Position { get { return position; } }
-		private readonly Position position;
+        public override Text.Span Span { get { return span; } }
+        private readonly Text.Span span;
 
 		/// <summary>
 		/// Error reporting (for partial classes).
@@ -577,13 +577,13 @@ namespace PHP.Core.Reflection
 		/// Used by compiler.
 		/// </summary>
 		public ClassConstant(VariableName name, DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes,
-			SourceUnit/*!*/ sourceUnit, Position position)
+            SourceUnit/*!*/ sourceUnit, Text.Span position)
 			: base(new DConstantDesc(declaringType, memberAttributes, null))
 		{
 			Debug.Assert(declaringType != null);
 
 			this.name = name;
-			this.position = position;
+			this.span = position;
 			this.sourceUnit = sourceUnit;
 		}
 
@@ -617,7 +617,7 @@ namespace PHP.Core.Reflection
 
 		internal override void ReportCircularDefinition(ErrorSink/*!*/ errors)
 		{
-			errors.Add(Errors.CircularConstantDefinitionClass, SourceUnit, Position, DeclaringType.FullName, FullName);
+			errors.Add(Errors.CircularConstantDefinitionClass, SourceUnit, Span, DeclaringType.FullName, FullName);
 		}
 
 		/// <summary>

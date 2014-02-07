@@ -118,7 +118,7 @@ namespace PHP.Core.AST
 
         #region Construction
 
-        public NamespaceDecl(Position p)
+        public NamespaceDecl(Text.Span p)
             : base(p)
         {
             this.isAnonymous = true;
@@ -126,7 +126,7 @@ namespace PHP.Core.AST
             this.IsSimpleSyntax = false;
         }
 
-        public NamespaceDecl(Position p, List<string>/*!*/ names, bool simpleSyntax)
+        public NamespaceDecl(Text.Span p, List<string>/*!*/ names, bool simpleSyntax)
             : base(p)
         {
             this.isAnonymous = false;
@@ -138,9 +138,9 @@ namespace PHP.Core.AST
         /// Finish parsing of namespace, complete its position.
         /// </summary>
         /// <param name="p"></param>
-        public void UpdatePosition(Position p)
+        public void UpdatePosition(Text.Span p)
         {
-            this.Position = p;
+            this.Span = p;
         }
 
         #endregion
@@ -183,8 +183,8 @@ namespace PHP.Core.AST
         public List<GlobalConstantDecl>/*!*/ Constants { get { return constants; } }
         private readonly List<GlobalConstantDecl>/*!*/ constants;
         
-        public GlobalConstDeclList(Position position, List<GlobalConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
-            : base(position)
+        public GlobalConstDeclList(Text.Span span, List<GlobalConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
+            : base(span)
         {
             Debug.Assert(constants != null);
 
@@ -236,9 +236,9 @@ namespace PHP.Core.AST
         /// </summary>
         internal SourceUnit SourceUnit { get; private set; }
 
-        public GlobalConstantDecl(SourceUnit/*!*/ sourceUnit, Position position, bool isConditional, Scope scope,
+        public GlobalConstantDecl(SourceUnit/*!*/ sourceUnit, Text.Span span, bool isConditional, Scope scope,
             string/*!*/ name, NamespaceDecl ns, Expression/*!*/ initializer)
-            : base(position, name, initializer)
+            : base(span, name, initializer)
         {
             this.ns = ns;
             this.IsConditional = IsConditional;

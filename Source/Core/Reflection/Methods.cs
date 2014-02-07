@@ -192,7 +192,7 @@ namespace PHP.Core.Reflection
 		internal override void ReportAbstractNotImplemented(ErrorSink/*!*/ errors, DType/*!*/ declaringType, PhpType/*!*/ referringType)
 		{
 			errors.Add(Errors.AbstractMethodNotImplemented, referringType.Declaration.SourceUnit,
-				referringType.Declaration.Position,
+				referringType.Declaration.Span,
                 referringType.FullName, declaringType.MakeFullGenericName(), this.FullName);
 
 			//ReportError(errors, Errors.RelatedLocation);
@@ -201,7 +201,7 @@ namespace PHP.Core.Reflection
         internal override void ReportMethodNotCompatible(ErrorSink errors, DType declaringType, PhpType referringType)
         {
             errors.Add(Errors.MethodNotCompatible, referringType.Declaration.SourceUnit,
-                referringType.Declaration.Position,
+                referringType.Declaration.Span,
                 referringType.FullName, this.FullName, declaringType.MakeFullGenericName(), this.FullName);
 
             //ReportError(errors, Errors.RelatedLocation);
@@ -224,14 +224,14 @@ namespace PHP.Core.Reflection
         /// <param name="callVirt">True to call the instance method virtually, using <c>.callvirt</c> instruction. This is used when current routine is non-static routine called on instance, not statically.</param>
         /// <returns>PhpTypeCode of the resulting value that is on the top of the evaluation stack after the DRoutine call. Value types are not boxed.</returns>
         internal abstract PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, string fallbackQualifiedName, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Position position,
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Text.Span position,
             AccessType access, bool callVirt);
 
 		/// <summary>
 		/// Finds most suitable overload. Returns <see cref="InvalidOverloadIndex"/> and 
 		/// <see cref="UnknownSignature.Default"/> in <c>overloadSignature</c> if no suitable overload exists.
 		/// </summary>
-		internal abstract int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Position position,
+        internal abstract int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Text.Span position,
 			out RoutineSignature overloadSignature);
 
 	}
@@ -348,7 +348,7 @@ namespace PHP.Core.Reflection
 			throw null;
 		}
 
-		internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Position position,
+        internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Text.Span position,
 			out RoutineSignature overloadSignature)
 		{
 			overloadSignature = UnknownSignature.Default;
@@ -356,7 +356,7 @@ namespace PHP.Core.Reflection
 		}
 
         internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, string fallbackQualifiedName, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Position position,
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Text.Span position,
             AccessType access, bool callVirt)
 		{
 			return codeGenerator.EmitRoutineOperatorCall(null, null, FullName, fallbackQualifiedName, null, callSignature, access);
@@ -414,7 +414,7 @@ namespace PHP.Core.Reflection
 			throw null;
 		}
 
-		internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Position position,
+        internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Text.Span position,
 			out RoutineSignature overloadSignature)
 		{
 			// no ctor defined => default is to be used => should have no parameters;
@@ -430,7 +430,7 @@ namespace PHP.Core.Reflection
 		}
 
         internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, string fallbackQualifiedName, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Position position,
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Text.Span position,
             AccessType access, bool callVirt)
 		{
             Debug.Assert(instance == null || instance is ExpressionPlace);
@@ -844,7 +844,7 @@ namespace PHP.Core.Reflection
         public virtual bool IsLambdaFunction { get { return false; } }
 
         public abstract CompilationSourceUnit SourceUnit { get; }
-		public abstract Position Position { get; }
+        public abstract Text.Span Span { get; }
 
         /// <summary>Contains value of the <see cref="IsDllImport"/> property</summary>
         private bool isDllImport = false;
@@ -955,12 +955,12 @@ namespace PHP.Core.Reflection
 
 				if (IsMethod)
 				{
-					errors.Add(Warnings.TooManyLocalVariablesInMethod, SourceUnit, Position,
+					errors.Add(Warnings.TooManyLocalVariablesInMethod, SourceUnit, Span,
 						DeclaringType.FullName, FullName, builder.LocalVariables.Count.ToString());
 				}
 				else
 				{
-					errors.Add(Warnings.TooManyLocalVariablesInFunction, SourceUnit, Position,
+					errors.Add(Warnings.TooManyLocalVariablesInFunction, SourceUnit, Span,
 						FullName, builder.LocalVariables.Count.ToString());
 				}
 			}
@@ -1239,7 +1239,7 @@ namespace PHP.Core.Reflection
         }
 
         internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, string fallbackQualifiedName, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Position position,
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Text.Span position,
             AccessType access, bool callVirt)
 		{
             if (IsStatic != (instance == null) || runtimeVisibilityCheck)
@@ -1388,7 +1388,7 @@ namespace PHP.Core.Reflection
 		private Declaration/*!*/ declaration;
 
         public override CompilationSourceUnit SourceUnit { get { return declaration.SourceUnit; } }
-		public override Position Position { get { return declaration.Position; } }
+        public override Text.Span Span { get { return declaration.Span; } }
 
 		public override bool IsLambda { get { return isLambda; } }
 		private bool isLambda;
@@ -1406,7 +1406,7 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		internal PhpFunction(QualifiedName qualifiedName, PhpMemberAttributes memberAttributes,
 			Signature astSignature, TypeSignature astTypeSignature, bool isConditional, Scope scope,
-			CompilationSourceUnit/*!*/ sourceUnit, Position position)
+            CompilationSourceUnit/*!*/ sourceUnit, Text.Span position)
 			: base(new PhpRoutineDesc(sourceUnit.CompilationUnit.Module, memberAttributes), astSignature, astTypeSignature)
 		{
 			Debug.Assert(sourceUnit != null && position.IsValid);
@@ -1459,13 +1459,13 @@ namespace PHP.Core.Reflection
 		internal override void ReportError(ErrorSink/*!*/ sink, ErrorInfo error)
 		{
 			if (declaration != null)
-				sink.Add(error, declaration.SourceUnit, declaration.Position);
+				sink.Add(error, declaration.SourceUnit, declaration.Span);
 		}
 
 		public void ReportRedeclaration(ErrorSink/*!*/ errors)
 		{
 			Debug.Assert(declaration != null);
-			errors.Add(FatalErrors.FunctionRedeclared, declaration.SourceUnit, declaration.Position, FullName);
+			errors.Add(FatalErrors.FunctionRedeclared, declaration.SourceUnit, declaration.Span, FullName);
 		}
 
 		#endregion
@@ -1477,7 +1477,7 @@ namespace PHP.Core.Reflection
 			// TODO: check special functions (__autoload)
 		}
 
-		internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Position position,
+        internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Text.Span position,
 			out RoutineSignature overloadSignature)
 		{
 			if (callSignature.Parameters.Count < signature.MandatoryParamCount)
@@ -1545,7 +1545,7 @@ namespace PHP.Core.Reflection
 		}
 
         internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, string fallbackQualifiedName, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Position position,
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Text.Span position,
             AccessType access, bool callVirt)
 		{
 			Debug.Assert(instance == null && !runtimeVisibilityCheck);
@@ -1583,8 +1583,8 @@ namespace PHP.Core.Reflection
 		/// Error reporting.
 		/// <c>Position.Invalid</c> for reflected PHP methods.
 		/// </summary>
-		public override Position Position { get { return position; } }
-		private readonly Position position;
+        public override Text.Span Span { get { return span; } }
+        private readonly Text.Span span;
 
 		/// <summary>
 		/// Error reporting (for partial classes).
@@ -1618,13 +1618,13 @@ namespace PHP.Core.Reflection
 		/// Used by the compiler.
 		/// </summary>
 		internal PhpMethod(PhpType/*!*/ declaringType, Name name, PhpMemberAttributes memberAttributes, bool hasBody,
-      Signature astSignature, TypeSignature astTypeSignature, CompilationSourceUnit/*!*/ sourceUnit, Position position)
+      Signature astSignature, TypeSignature astTypeSignature, CompilationSourceUnit/*!*/ sourceUnit, Text.Span position)
 			: base(new PhpRoutineDesc(declaringType.TypeDesc, memberAttributes), astSignature, astTypeSignature)
 		{
 			Debug.Assert(declaringType != null && sourceUnit != null && position.IsValid);
 
 			this.name = name;
-			this.position = position;
+			this.span = position;
 			this.hasBody = hasBody;
 			this.sourceUnit = sourceUnit;
 		}
@@ -1667,7 +1667,7 @@ namespace PHP.Core.Reflection
 
 		#region Analysis
 
-		internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Position position,
+        internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Text.Span position,
 			out RoutineSignature overloadSignature)
 		{
 			if (callSignature.Parameters.Count < signature.MandatoryParamCount)
@@ -1720,12 +1720,12 @@ namespace PHP.Core.Reflection
 				// make sure that interface methods have no bodies:
 				if (DeclaringType.IsInterface)
 				{
-					errors.Add(Errors.InterfaceMethodWithBody, sourceUnit, position, DeclaringType.FullName, this.FullName);
+					errors.Add(Errors.InterfaceMethodWithBody, sourceUnit, span, DeclaringType.FullName, this.FullName);
 				}
 				else if (IsAbstract) // all methods in interfaces are abstract
 				{
 					// make sure that abstract methods have no bodies
-					errors.Add(Errors.AbstractMethodWithBody, sourceUnit, position, DeclaringType.FullName, this.FullName);
+					errors.Add(Errors.AbstractMethodWithBody, sourceUnit, span, DeclaringType.FullName, this.FullName);
 					MemberDesc.MemberAttributes &= ~PhpMemberAttributes.Abstract;
 				}
 			}
@@ -1734,7 +1734,7 @@ namespace PHP.Core.Reflection
 				// make sure that non-abstract methods have bodies
 				if (!IsAbstract)
 				{
-					errors.Add(Errors.NonAbstractMethodWithoutBody, sourceUnit, position, DeclaringType.FullName, this.FullName);
+					errors.Add(Errors.NonAbstractMethodWithoutBody, sourceUnit, span, DeclaringType.FullName, this.FullName);
 					MemberDesc.MemberAttributes |= PhpMemberAttributes.Abstract;
 				}
 			}
@@ -1744,14 +1744,14 @@ namespace PHP.Core.Reflection
 				// constructor non-staticness:
 				if (IsStatic)
 				{
-					errors.Add(Errors.ConstructCannotBeStatic, sourceUnit, position, DeclaringType.FullName, this.FullName);
+					errors.Add(Errors.ConstructCannotBeStatic, sourceUnit, span, DeclaringType.FullName, this.FullName);
 					MemberDesc.MemberAttributes &= ~PhpMemberAttributes.Static;
 				}
 
 				// no generic parameters on ctor:
 				if (signature.GenericParamCount > 0)
 				{
-					errors.Add(Errors.ConstructorWithGenericParameters, sourceUnit, position, DeclaringType.FullName, this.FullName);
+					errors.Add(Errors.ConstructorWithGenericParameters, sourceUnit, span, DeclaringType.FullName, this.FullName);
 					// generic arguments needn't to be removed
 				}
 			}
@@ -1759,12 +1759,12 @@ namespace PHP.Core.Reflection
 			{
 				// clone argumentless-ness
 				if (signature != null && signature.ParamCount > 0)
-					errors.Add(Errors.CloneCannotTakeArguments, sourceUnit, position, DeclaringType.FullName);
+					errors.Add(Errors.CloneCannotTakeArguments, sourceUnit, span, DeclaringType.FullName);
 
 				// clone non-staticness
 				if (IsStatic)
 				{
-					errors.Add(Errors.CloneCannotBeStatic, sourceUnit, position, DeclaringType.FullName);
+					errors.Add(Errors.CloneCannotBeStatic, sourceUnit, span, DeclaringType.FullName);
 					RoutineDesc.MemberAttributes &= ~PhpMemberAttributes.Final;
 				}
 			}
@@ -1772,12 +1772,12 @@ namespace PHP.Core.Reflection
 			{
 				// destructor argumentless-ness
 				if (signature != null && signature.ParamCount > 0)
-					errors.Add(Errors.DestructCannotTakeArguments, sourceUnit, position, DeclaringType.FullName);
+					errors.Add(Errors.DestructCannotTakeArguments, sourceUnit, span, DeclaringType.FullName);
 
 				// destructor non-staticness
 				if (IsStatic)
 				{
-					errors.Add(Errors.DestructCannotBeStatic, sourceUnit, position, DeclaringType.FullName);
+					errors.Add(Errors.DestructCannotBeStatic, sourceUnit, span, DeclaringType.FullName);
 					MemberDesc.MemberAttributes &= ~PhpMemberAttributes.Static;
 				}
 			}
@@ -1785,44 +1785,44 @@ namespace PHP.Core.Reflection
             {
                 // check visibility & staticness
                 if (this.Name.IsCallName && (this.IsStatic || !this.IsPublic))
-                    errors.Add(Warnings.MagicMethodMustBePublicNonStatic, sourceUnit, position, this.Name.Value);
+                    errors.Add(Warnings.MagicMethodMustBePublicNonStatic, sourceUnit, span, this.Name.Value);
 
                 if (this.Name.IsCallStaticName && (!this.IsStatic || !this.IsPublic))
-                    errors.Add(Warnings.CallStatMustBePublicStatic, sourceUnit, position);
+                    errors.Add(Warnings.CallStatMustBePublicStatic, sourceUnit, span);
 
                 // check args count
                 if (signature != null && signature.ParamCount != 2)
                 {
-                    errors.Add(FatalErrors.MethodMustTakeExacArgsCount, sourceUnit, position, this.DeclaringType.FullName, this.Name.Value, 2);
+                    errors.Add(FatalErrors.MethodMustTakeExacArgsCount, sourceUnit, span, this.DeclaringType.FullName, this.Name.Value, 2);
                 }
             }
             else if (this.Name.IsToStringName)
             {
                 if (IsStatic || !IsPublic)
-                    errors.Add(Warnings.MagicMethodMustBePublicNonStatic, sourceUnit, position, this.Name.Value);
+                    errors.Add(Warnings.MagicMethodMustBePublicNonStatic, sourceUnit, span, this.Name.Value);
 
                 if (signature != null && signature.ParamCount != 0)
-                    errors.Add(Errors.MethodCannotTakeArguments, sourceUnit, position, this.DeclaringType.FullName, this.Name.Value);
+                    errors.Add(Errors.MethodCannotTakeArguments, sourceUnit, span, this.DeclaringType.FullName, this.Name.Value);
             }
 
 			// no final abstract member:
 			if (IsAbstract && IsFinal)
 			{
-				errors.Add(Errors.AbstractFinalMethodDeclared, sourceUnit, position);
+				errors.Add(Errors.AbstractFinalMethodDeclared, sourceUnit, span);
 				MemberDesc.MemberAttributes &= ~((hasBody) ? PhpMemberAttributes.Final : PhpMemberAttributes.Abstract);
 			}
 
 			// no private abstract member:
 			if (IsAbstract && IsPrivate)
 			{
-				errors.Add(Errors.AbstractPrivateMethodDeclared, sourceUnit, position);
+				errors.Add(Errors.AbstractPrivateMethodDeclared, sourceUnit, span);
 				MemberDesc.MemberAttributes &= ~((hasBody) ? PhpMemberAttributes.Private : PhpMemberAttributes.Abstract);
 			}
 
 			// no non-public interface methods
 			if (DeclaringType.IsInterface && (IsPrivate || IsProtected))
 			{
-				errors.Add(Errors.InterfaceMethodNotPublic, sourceUnit, position, DeclaringType.FullName, this.FullName);
+				errors.Add(Errors.InterfaceMethodNotPublic, sourceUnit, span, DeclaringType.FullName, this.FullName);
 				MemberDesc.MemberAttributes &= ~PhpMemberAttributes.VisibilityMask;
 				MemberDesc.MemberAttributes |= PhpMemberAttributes.Public;
 			}
@@ -1836,14 +1836,14 @@ namespace PHP.Core.Reflection
             // final method cannot be overridden:
             if (overridden.IsFinal)
             {
-                errors.Add(Errors.OverrideFinalMethod, SourceUnit, position, DeclaringType.FullName, this.FullName);
+                errors.Add(Errors.OverrideFinalMethod, SourceUnit, span, DeclaringType.FullName, this.FullName);
                 overridden.ReportError(errors, Errors.RelatedLocation);
             }
 
             // cannot override non-abstract method by abstract:
             if (this.IsAbstract && !overridden.IsAbstract)
             {
-                errors.Add(Errors.OverridingNonAbstractMethodByAbstract, SourceUnit, position,
+                errors.Add(Errors.OverridingNonAbstractMethodByAbstract, SourceUnit, span,
                     overridden.DeclaringType.FullName, overridden.FullName, DeclaringType.FullName);
 
                 overridden.ReportError(errors, Errors.RelatedLocation);
@@ -1855,7 +1855,7 @@ namespace PHP.Core.Reflection
                 // visibility of .ctor in CLR base can be restricted:
                     !(overridden.DeclaringType.IsClrType && overridden.IsConstructor))
             {
-                errors.Add(Errors.OverridingMethodRestrictsVisibility, SourceUnit, position,
+                errors.Add(Errors.OverridingMethodRestrictsVisibility, SourceUnit, span,
                     DeclaringType.FullName, this.FullName, Enums.VisibilityToString(overridden.MemberDesc.MemberAttributes),
                     overridden.DeclaringType.FullName);
 
@@ -1865,7 +1865,7 @@ namespace PHP.Core.Reflection
             // method staticness non-overridable:
             if (overridden.IsStatic && !this.IsStatic)
             {
-                errors.Add(Errors.MakeStaticMethodNonStatic, SourceUnit, position,
+                errors.Add(Errors.MakeStaticMethodNonStatic, SourceUnit, span,
                     overridden.DeclaringType.FullName, overridden.FullName, DeclaringType.FullName);
 
                 overridden.ReportError(errors, Errors.RelatedLocation);
@@ -1874,7 +1874,7 @@ namespace PHP.Core.Reflection
             // method non-staticness non-overridable:
             if (!overridden.IsStatic && this.IsStatic)
             {
-                errors.Add(Errors.MakeNonStaticMethodStatic, SourceUnit, position,
+                errors.Add(Errors.MakeNonStaticMethodStatic, SourceUnit, span,
                     overridden.DeclaringType.FullName, overridden.FullName, DeclaringType.FullName);
 
                 overridden.ReportError(errors, Errors.RelatedLocation);
@@ -1885,7 +1885,7 @@ namespace PHP.Core.Reflection
             // This check is not performed for __construct() function in PHP.
             if (!Signature.CanOverride(overridden.GetSignature(0)) && !this.Name.IsConstructName)
             {
-                errors.Add(Warnings.DeclarationShouldBeCompatible, SourceUnit, position,
+                errors.Add(Warnings.DeclarationShouldBeCompatible, SourceUnit, span,
                     DeclaringType.FullName, this.FullName, overridden.DeclaringType.FullName, overridden.FullName);
                 /*PhpException.Throw(PhpError.Strict,
                     CoreResources.GetString("declaration_should_be_compatible",
@@ -1896,7 +1896,7 @@ namespace PHP.Core.Reflection
 		internal override void ReportError(ErrorSink/*!*/ sink, ErrorInfo error)
 		{
 			if (sourceUnit != null)
-				sink.Add(error, SourceUnit, position);
+				sink.Add(error, SourceUnit, span);
 		}
 
 		#endregion
@@ -1910,7 +1910,7 @@ namespace PHP.Core.Reflection
 
         internal override PhpTypeCode EmitCall(
             CodeGenerator codeGenerator, string fallbackQualifiedName, CallSignature callSignature, IPlace instance,
-            bool runtimeVisibilityCheck, int overloadIndex, DType type, Position position,
+            bool runtimeVisibilityCheck, int overloadIndex, DType type, Text.Span position,
             AccessType access, bool callVirt)
         {
             Debug.Assert(fallbackQualifiedName == null, "Methods do not have fallbacks");
@@ -1951,8 +1951,8 @@ namespace PHP.Core.Reflection
 
         public override Name Name { get { return Name.ClosureFunctionName; } }
 
-        public override Position Position { get { return position; } }
-        private readonly Position position;
+        public override Text.Span Span { get { return span; } }
+        private readonly Text.Span span;
 
         public override CompilationSourceUnit SourceUnit { get { return sourceUnit; } }
         private CompilationSourceUnit sourceUnit;
@@ -1966,7 +1966,7 @@ namespace PHP.Core.Reflection
         /// <summary>
         /// Used by the compiler.
         /// </summary>
-        internal PhpLambdaFunction(Signature astSignature, CompilationSourceUnit/*!*/ sourceUnit, Position position)
+        internal PhpLambdaFunction(Signature astSignature, CompilationSourceUnit/*!*/ sourceUnit, Text.Span position)
             : base(
             new PhpRoutineDesc(
                 DTypeDesc.Create(typeof(PHP.Library.SPL.Closure)),
@@ -1976,7 +1976,7 @@ namespace PHP.Core.Reflection
         {
             Debug.Assert(sourceUnit != null && position.IsValid);
 
-            this.position = position;
+            this.span = position;
             this.sourceUnit = sourceUnit;
         }
 
@@ -1998,7 +1998,7 @@ namespace PHP.Core.Reflection
 
         #region Analysis
 
-        internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Position position,
+        internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Text.Span position,
             out RoutineSignature overloadSignature)
         {
             overloadSignature = signature;
@@ -2017,7 +2017,7 @@ namespace PHP.Core.Reflection
         internal override void ReportError(ErrorSink/*!*/ sink, ErrorInfo error)
         {
             if (sourceUnit != null)
-                sink.Add(error, SourceUnit, position);
+                sink.Add(error, SourceUnit, span);
         }
 
         #endregion
@@ -2041,7 +2041,7 @@ namespace PHP.Core.Reflection
 
         internal override PhpTypeCode EmitCall(
             CodeGenerator codeGenerator, string fallbackQualifiedName, CallSignature callSignature, IPlace instance,
-            bool runtimeVisibilityCheck, int overloadIndex, DType type, Position position,
+            bool runtimeVisibilityCheck, int overloadIndex, DType type, Text.Span position,
             AccessType access, bool callVirt)
         {
             // calling closured function directly is not handled yet (not needed without type inference),
@@ -2357,7 +2357,7 @@ namespace PHP.Core.Reflection
 			return i;
 		}
 
-		internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Position position,
+        internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Text.Span position,
 			out RoutineSignature overloadSignature)
 		{
 			if (callSignature.GenericParams.Count > 0)
@@ -2418,7 +2418,7 @@ namespace PHP.Core.Reflection
 		#region Emission
 
         internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, string fallbackQualifiedName, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Position position,
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Text.Span position,
             AccessType access, bool callVirt)
 		{
 			Overload overload = overloads[overloadIndex];
@@ -2447,7 +2447,7 @@ namespace PHP.Core.Reflection
 			// captures eval info:
 			if ((options & FunctionImplOptions.CaptureEvalInfo) != 0)
 			{
-				codeGenerator.EmitEvalInfoCapture(position.FirstLine, position.FirstColumn, false);
+                codeGenerator.EmitEvalInfoCapture(position.Start, false);
 			}
 
             // current ScriptContext:
@@ -2923,7 +2923,7 @@ namespace PHP.Core.Reflection
 			return i;
 		}
 
-		internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Position position,
+        internal override int ResolveOverload(Analyzer/*!*/ analyzer, CallSignature callSignature, Text.Span position,
 			out RoutineSignature/*!*/ overloadSignature)
 		{
 			if (overloads.Count == 0)
@@ -3022,7 +3022,7 @@ namespace PHP.Core.Reflection
 		#region Emission
 
         internal override PhpTypeCode EmitCall(CodeGenerator/*!*/ codeGenerator, string fallbackQualifiedName, CallSignature callSignature,
-            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Position position,
+            IPlace instance, bool runtimeVisibilityCheck, int overloadIndex, DType type, Text.Span position,
             AccessType access, bool callVirt)
 		{
 #if DEBUG_DYNAMIC_STUBS
@@ -3113,7 +3113,7 @@ namespace PHP.Core.Reflection
         public override bool IsFunction { get { return true; } }
 
         public override CompilationSourceUnit SourceUnit { get { throw new NotSupportedException(); } }
-        public override Position Position { get { throw new NotSupportedException(); } }
+        public override Text.Span Span { get { throw new NotSupportedException(); } }
 
         internal override bool IsExported { get { return false; } }
 
@@ -3146,7 +3146,7 @@ namespace PHP.Core.Reflection
             return name.Value;
         }
 
-        internal override int ResolveOverload(Analyzer analyzer, CallSignature callSignature, Position position, out RoutineSignature overloadSignature)
+        internal override int ResolveOverload(Analyzer analyzer, CallSignature callSignature, Text.Span position, out RoutineSignature overloadSignature)
         {
             overloadSignature = signature;
             return 0;

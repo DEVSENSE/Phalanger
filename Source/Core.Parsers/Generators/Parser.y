@@ -18,7 +18,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 
 %namespace PHP.Core.Parsers
 %valuetype SemanticValueType
-%positiontype Position
+%positiontype Text.Span
 %tokentype Toks
 %visibility public
 
@@ -400,8 +400,8 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> type_ref                                // TypeRef!
 %type<Object> type_ref_list                           // List<TypeRef>
 %type<Object> qualified_static_type_ref               // GenericQualifiedName
-%type<Object> interface_list                          // List<KeyValuePair<GenericQualifiedName,Position>>
-%type<Object> interface_extends_opt                  // List<KeyValuePair<GenericQualifiedName,Position>>
+%type<Object> interface_list                          // List<KeyValuePair<GenericQualifiedName,Text.Span>>
+%type<Object> interface_extends_opt                  // List<KeyValuePair<GenericQualifiedName,Text.Span>>
 %type<Object> variable_name                           
 
 %type<Object> generic_dynamic_args_opt                // List<TypeRef>!
@@ -476,7 +476,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 
 %type<Integer> attribute_target_opt          // CustomAttribute.Targets
 
-%type<Object> extends_opt                    // Tuple<GenericQualifiedName,Position>
+%type<Object> extends_opt                    // Tuple<GenericQualifiedName,Text.Span>
 %type<Object> qualified_namespace_name       // QualifiedName	// has base name
 %type<Object> namespace_name_list			 // List<string>
 %type<Object> namespace_name_identifier		 // string
@@ -676,13 +676,13 @@ class_declaration_statement:
 		  if (class_entry.Item1 == Tokens.T_TRAIT)
 			member_attr |= PhpMemberAttributes.Trait | PhpMemberAttributes.Abstract;
 		  
-		  CheckReservedNamesAbsence((Tuple<GenericQualifiedName,Position>)$9);
-		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Position>>)$10);
+		  CheckReservedNamesAbsence((Tuple<GenericQualifiedName,Text.Span>)$9);
+		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Text.Span>>)$10);
 		  
 		  $$ = new TypeDecl(sourceUnit, CombinePositions(@5, @6), @$, GetHeadingEnd(GetLeftValidPosition(10)), GetBodyStart(@11), 
 				IsCurrentCodeConditional, GetScope(), 
 				member_attr, $4 != 0, class_name, @6, currentNamespace, 
-				(List<FormalTypeParam>)$7, (Tuple<GenericQualifiedName,Position>)$9, (List<KeyValuePair<GenericQualifiedName,Position>>)$10, 
+				(List<FormalTypeParam>)$7, (Tuple<GenericQualifiedName,Text.Span>)$9, (List<KeyValuePair<GenericQualifiedName,Text.Span>>)$10, 
 		    (List<TypeMemberDecl>)$12, (List<CustomAttribute>)$1);
 		    
 		  SetCommentSetHelper($$, class_entry.Item2);
@@ -707,7 +707,7 @@ class_declaration_statement:
 	  { 
 		  Name class_name = new Name((string)$6);
 		  
-		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Position>>)$9);
+		  CheckReservedNamesAbsence((List<KeyValuePair<GenericQualifiedName,Text.Span>>)$9);
 		  
 			if ((PhpMemberAttributes)$3 != PhpMemberAttributes.None)
 				errors.Add(Errors.InvalidInterfaceModifier, SourceUnit, @3);
@@ -716,7 +716,7 @@ class_declaration_statement:
 				IsCurrentCodeConditional, GetScope(), 
 				(PhpMemberAttributes)$2 | PhpMemberAttributes.Abstract | PhpMemberAttributes.Interface, 
 				$4 != 0, class_name, @6, currentNamespace,
-				(List<FormalTypeParam>)$7, null, (List<KeyValuePair<GenericQualifiedName,Position>>)$9,
+				(List<FormalTypeParam>)$7, null, (List<KeyValuePair<GenericQualifiedName,Text.Span>>)$9,
 				(List<TypeMemberDecl>)$11, (List<CustomAttribute>)$1); 
 				
 			SetCommentSetHelper($$, $5);
@@ -750,7 +750,7 @@ partial_opt:
 
 extends_opt:
 		/* empty */														{ $$ = null; }
-	|	T_EXTENDS qualified_static_type_ref	{ $$ = new Tuple<GenericQualifiedName,Position>((GenericQualifiedName)$2, @2); }
+	|	T_EXTENDS qualified_static_type_ref	{ $$ = new Tuple<GenericQualifiedName,Text.Span>((GenericQualifiedName)$2, @2); }
 ;
 
 interface_extends_opt:
@@ -766,13 +766,13 @@ implements_opt:
 interface_list:
 		qualified_static_type_ref						
 		{ 
-			$$ = NewList<KeyValuePair<GenericQualifiedName,Position>>(new KeyValuePair<GenericQualifiedName,Position>((GenericQualifiedName)$1, @1));
+			$$ = NewList<KeyValuePair<GenericQualifiedName,Text.Span>>(new KeyValuePair<GenericQualifiedName,Text.Span>((GenericQualifiedName)$1, @1));
 		}		
 		
 	|	interface_list ',' qualified_static_type_ref	
 		{ 
 			$$ = $1; 
-			ListAdd<KeyValuePair<GenericQualifiedName,Position>>($$, new KeyValuePair<GenericQualifiedName,Position>((GenericQualifiedName)$3, @3)); 
+			ListAdd<KeyValuePair<GenericQualifiedName,Text.Span>>($$, new KeyValuePair<GenericQualifiedName,Text.Span>((GenericQualifiedName)$3, @3)); 
 		}
 ;
 
@@ -968,11 +968,11 @@ non_empty_statement:
 		statement elseif_list_opt else_opt 
 		{ 
 			List<ConditionalStmt> conditions = (List<ConditionalStmt>)$5;
-			conditions[0] = new ConditionalStmt(@1.Short, (Expression)$2, (Statement)$4);
+			conditions[0] = new ConditionalStmt(@1, (Expression)$2, (Statement)$4);
 			
 			// add else:
 			if ($6 != null)
-				conditions.Add(new ConditionalStmt(@6.Short, null, (Statement)$6));
+				conditions.Add(new ConditionalStmt(@6, null, (Statement)$6));
 			
 			$$ = new IfStmt(@$, conditions);
 			
@@ -986,11 +986,11 @@ non_empty_statement:
 		inner_statement_list_opt elseif_colon_list_opt else_colon_opt T_ENDIF ';' 
 		{ 
 			List<ConditionalStmt> conditions = (List<ConditionalStmt>)$6;
-			conditions[0] = new ConditionalStmt(@1.Short, (Expression)$2, new BlockStmt(@5, (List<Statement>)$5));
+			conditions[0] = new ConditionalStmt(@1, (Expression)$2, new BlockStmt(@5, (List<Statement>)$5));
 			
 			// add else:
 			if ($7 != null)
-				conditions.Add(new ConditionalStmt(@7.Short, null, (Statement)$7));
+				conditions.Add(new ConditionalStmt(@7, null, (Statement)$7));
 			
 			$$ = new IfStmt(@$, conditions);
 			
@@ -1066,7 +1066,7 @@ non_empty_statement:
 
 	|	T_FOREACH '(' chain T_AS T_LIST '(' assignment_list ')' ')' foreach_statement 
 		{ 
-			var listpos = Position.CombinePositions(@5, @8);
+			var listpos = Text.Span.Combine(@5, @8);
 			$$ = CreateForeachStmt(@$, (Expression)$3,
 				new ForeachVar(new ListEx(listpos, (List<Expression>)$7, null)), listpos,
 				null, (Statement)$10);
@@ -1194,7 +1194,7 @@ elseif_list_opt:
 	|	elseif_list_opt T_ELSEIF parenthesis_expr statement
 		{ 
 			$$ = $1; 
-			ListAdd<ConditionalStmt>($$, new ConditionalStmt(@2.Short, (Expression)$3, (Statement)$4)); 
+			ListAdd<ConditionalStmt>($$, new ConditionalStmt(@2, (Expression)$3, (Statement)$4)); 
 		}
 ;
 
@@ -1207,7 +1207,7 @@ elseif_colon_list_opt:
 	|	elseif_colon_list_opt T_ELSEIF parenthesis_expr ':' inner_statement_list_opt 
 		{ 
 			$$ = $1;
-			ListAdd<ConditionalStmt>($$, new ConditionalStmt(@2.Short, (Expression)$3, new BlockStmt(@5, (List<Statement>)$5))); 
+			ListAdd<ConditionalStmt>($$, new ConditionalStmt(@2, (Expression)$3, new BlockStmt(@5, (List<Statement>)$5))); 
 		}
 ;
 
@@ -2237,7 +2237,7 @@ composite_string_opt:
 			PhpStringBuilder sb = strBufStack.Pop();
 			
 			if (sb.Length > 0)
-			  ListAdd<Expression>($1, sb.CreateLiteral(@$)); 
+			  ListAdd<Expression>($1, sb.CreateLiteral()); 
 			
 			ListAdd<Expression>($1, (VarLikeConstructUse)$2); 
 			
@@ -2247,42 +2247,42 @@ composite_string_opt:
 		
 	|	composite_string_opt T_STRING	
 	  { 
-	    StringUtils.StringBuilderAppend(strBufStack.Peek(), scanner.EncapsedStringBuffer, $2.Offset, $2.Integer); 
+	    StringUtils.StringBuilderAppend(strBufStack.Peek(), scanner.EncapsedStringBuffer, $2.Offset, $2.Integer, @2); 
 	    $$ = $1;
 	  }
 	  
 	|	composite_string_opt T_NUM_STRING 
 	  { 
-	    StringUtils.StringBuilderAppend(strBufStack.Peek(), scanner.EncapsedStringBuffer, $2.Offset, $2.Integer); 
+	    StringUtils.StringBuilderAppend(strBufStack.Peek(), scanner.EncapsedStringBuffer, $2.Offset, $2.Integer, @2); 
 	    $$ = $1;
 	  }
 	  
 	|	composite_string_opt T_ENCAPSED_AND_WHITESPACE	
 	  { 
-	    StringUtils.StringBuilderAppend(strBufStack.Peek(), scanner.EncapsedStringBuffer, $2.Offset, $2.Integer); 
+	    StringUtils.StringBuilderAppend(strBufStack.Peek(), scanner.EncapsedStringBuffer, $2.Offset, $2.Integer, @2); 
 	    $$ = $1;
 	  }
 	  
 	|	composite_string_opt T_BAD_CHARACTER	
 	  { 
-	    StringUtils.StringBuilderAppend(strBufStack.Peek(), scanner.EncapsedStringBuffer, $2.Offset, $2.Integer); 
+	    StringUtils.StringBuilderAppend(strBufStack.Peek(), scanner.EncapsedStringBuffer, $2.Offset, $2.Integer, @2); 
 	    $$ = $1;
 	  }
 	  		
 	|	composite_string_opt T_CHARACTER 
 	  { 
-	    strBufStack.Peek().Append((int)$2); 
+	    strBufStack.Peek().Append((int)$2, @2); 
 	    $$ = $1;
 	  }
 	  
-	|	composite_string_opt '['	{ strBufStack.Peek().Append('['); $$ = $1; }		
-	|	composite_string_opt ']'	{ strBufStack.Peek().Append(']'); $$ = $1; }		
-	|	composite_string_opt '{'	{ strBufStack.Peek().Append('{'); $$ = $1; }		
-	|	composite_string_opt '}'	{ strBufStack.Peek().Append('}'); $$ = $1; }
+	|	composite_string_opt '['	{ strBufStack.Peek().Append('[', @2); $$ = $1; }		
+	|	composite_string_opt ']'	{ strBufStack.Peek().Append(']', @2); $$ = $1; }		
+	|	composite_string_opt '{'	{ strBufStack.Peek().Append('{', @2); $$ = $1; }		
+	|	composite_string_opt '}'	{ strBufStack.Peek().Append('}', @2); $$ = $1; }
 		
 	|	composite_string_opt T_OBJECT_OPERATOR 
 	  { 
-	    strBufStack.Peek().Append("->");
+	    strBufStack.Peek().Append("->", @2);
 	    $$ = $1;
 	  }
 	   

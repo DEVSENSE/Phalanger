@@ -109,8 +109,8 @@ namespace PHP.Core.Reflection
 		public DeclarationGroup Group { get { return group; } set { group = value; } }
 		private DeclarationGroup group;
 
-		public Position Position { get { return position; } }
-		private readonly Position position;
+        public Text.Span Span { get { return span; } }
+        private readonly Text.Span span;
 
 		/// <summary>
 		/// Set by analyzer.
@@ -132,12 +132,12 @@ namespace PHP.Core.Reflection
 		public bool IsInsideIncompleteClass { get { return isInsideIncompleteClass; } internal set { isInsideIncompleteClass = value; } }
 
         public Declaration(CompilationSourceUnit/*!*/ sourceUnit, IDeclaree/*!*/ declaree, bool isPartial, bool isConditional,
-			Scope scope, Position position)
+            Scope scope, Text.Span position)
 		{
 			this.sourceUnit = sourceUnit;
 			this.declaree = declaree;
 			this.scope = scope;
-			this.position = position;
+			this.span = position;
 			this.isPartial = isPartial;
 			this.isConditional = isConditional;
 		}

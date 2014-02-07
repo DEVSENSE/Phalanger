@@ -35,7 +35,7 @@ namespace PHP.Core.AST
         /// <summary>Array being assigned</summary>
         public Expression RValue { get; internal set; }
 
-        public ListEx(Position p, List<Expression>/*!*/ lvalues, Expression rvalue)
+        public ListEx(Text.Span p, List<Expression>/*!*/ lvalues, Expression rvalue)
             : base(p)
         {
             Debug.Assert(lvalues != null /*&& rvalue != null*/);    // rvalue can be determined during runtime in case of list in list.

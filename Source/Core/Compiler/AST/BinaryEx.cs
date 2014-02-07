@@ -64,12 +64,12 @@ namespace PHP.Core.Compiler.AST
                 // division by zero check:
                 if ((node.Operation == Operations.Div || node.Operation == Operations.Mod) && result.HasValue && result.Value is bool && (bool)result.Value == false)
                 {
-                    analyzer.ErrorSink.Add(Warnings.DivisionByZero, analyzer.SourceUnit, node.RightExpr.Position);
+                    analyzer.ErrorSink.Add(Warnings.DivisionByZero, analyzer.SourceUnit, node.RightExpr.Span);
                 }
                 else if ((node.Operation == Operations.Div || node.Operation == Operations.Mod) && right_eval.HasValue && right_eval.Value is int && (int)right_eval.Value == 0)
                 {
                     result = new Evaluation(node, false);
-                    analyzer.ErrorSink.Add(Warnings.DivisionByZero, analyzer.SourceUnit, node.RightExpr.Position);
+                    analyzer.ErrorSink.Add(Warnings.DivisionByZero, analyzer.SourceUnit, node.RightExpr.Span);
                 }
 
                 return result;

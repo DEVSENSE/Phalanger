@@ -38,8 +38,8 @@ namespace PHP.Core.AST
 
         #region Construction
 
-        public BinaryEx(Position position, Operations operation, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
-			: base(position)
+        public BinaryEx(Text.Span span, Operations operation, Expression/*!*/ leftExpr, Expression/*!*/ rightExpr)
+			: base(span)
 		{
 			Debug.Assert(leftExpr != null && rightExpr != null);
 			this.operation = operation;

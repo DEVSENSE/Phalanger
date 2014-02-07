@@ -90,35 +90,9 @@ namespace gpcc
 			}
 			return "int";
 		}
-		private void GeneratePositionType()
-		{
-			this.output.WriteLine("{0} partial struct {1}", this.grammar.Visibility, this.grammar.PositionType);
-			this.output.WriteLine("{");
-			this.output.WriteLine("  public int FirstLine;");
-			this.output.WriteLine("  public int FirstColumn;");
-			this.output.WriteLine("  public int FirstOffset;");
-			this.output.WriteLine("  public int LastLine;");
-			this.output.WriteLine("  public int LastColumn;");
-			this.output.WriteLine("  public int LastOffset;");
-			this.output.WriteLine();
-			this.output.WriteLine("  public {0}(int firstLine, int firstColumn, int firstOffset, int lastLine, int lastColumn, int lastOffset)", this.grammar.PositionType);
-			this.output.WriteLine("  {");
-			this.output.WriteLine("    this.FirstLine = firstLine;");
-			this.output.WriteLine("    this.FirstColumn = firstColumn;");
-			this.output.WriteLine("    this.FirstOffset = firstOffset;");
-			this.output.WriteLine("    this.LastLine = lastLine;");
-			this.output.WriteLine("    this.LastColumn = lastColumn;");
-			this.output.WriteLine("    this.LastOffset = lastOffset;");
-			this.output.WriteLine("  }");
-			this.output.WriteLine("}");
-		}
 		private void GenerateClassHeader(string name)
 		{
 			string text = this.GenerateValueType();
-			if (this.grammar.PositionType != null)
-			{
-				this.GeneratePositionType();
-			}
 			this.output.WriteLine("{0} {1} partial class {2}: ShiftReduceParser<{3},{4}>", new object[]
 			{
 				this.grammar.Visibility,
@@ -145,13 +119,6 @@ namespace gpcc
 			this.output.WriteLine("  protected override Rule[] Rules { get { return rules; } }");
 			this.output.WriteLine("  private static readonly Rule[] rules;");
 			this.output.WriteLine();
-			if (this.grammar.PositionType != null)
-			{
-				this.output.WriteLine("  protected sealed override {0} CombinePositions({0} first, {0} last)", this.grammar.PositionType);
-				this.output.WriteLine("  {");
-				this.output.WriteLine("    return new {0}(first.FirstLine, first.FirstColumn, first.FirstOffset, last.LastLine, last.LastColumn, last.LastOffset);", this.grammar.PositionType);
-				this.output.WriteLine("  }");
-			}
 			this.output.WriteLine();
 			this.output.WriteLine("  #region Construction");
 			this.output.WriteLine();

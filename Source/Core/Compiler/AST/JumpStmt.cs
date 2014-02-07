@@ -34,7 +34,7 @@ namespace PHP.Core.Compiler.AST
             {
                 if (analyzer.IsThisCodeUnreachable())
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
 
@@ -56,13 +56,13 @@ namespace PHP.Core.Compiler.AST
                         int level = Convert.ObjectToInteger(node.Expression.GetValue());
                         if (level > analyzer.LoopNestingLevel || level < 0)
                         {
-                            analyzer.ErrorSink.Add(Errors.InvalidBreakLevelCount, analyzer.SourceUnit, node.Position, level);
+                            analyzer.ErrorSink.Add(Errors.InvalidBreakLevelCount, analyzer.SourceUnit, node.Span, level);
                         }
                     }
                 }
                 else if (node.Type != JumpStmt.Types.Return && analyzer.LoopNestingLevel == 0)
                 {
-                    analyzer.ErrorSink.Add(Errors.InvalidBreakLevelCount, analyzer.SourceUnit, node.Position, 1);
+                    analyzer.ErrorSink.Add(Errors.InvalidBreakLevelCount, analyzer.SourceUnit, node.Span, 1);
                 }
 
                 // code in the same block after return, break, continue is unreachable
@@ -75,7 +75,7 @@ namespace PHP.Core.Compiler.AST
                 Statistics.AST.AddNode("JumpStmt");
 
                 // marks a sequence point:
-                codeGenerator.MarkSequencePoint(node.Position);
+                codeGenerator.MarkSequencePoint(node.Span);
 
                 switch (node.Type)
                 {
@@ -222,7 +222,7 @@ namespace PHP.Core.Compiler.AST
 
                 if (analyzer.IsThisCodeUnreachable())
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
 
@@ -250,7 +250,7 @@ namespace PHP.Core.Compiler.AST
                 Debug.Assert(codeGenerator.CurrentLabels[node.LabelName] is LabelStmt);
 
                 // marks a sequence point:
-                codeGenerator.MarkSequencePoint(node.Position);
+                codeGenerator.MarkSequencePoint(node.Span);
 
                 codeGenerator.IL.Emit(OpCodes.Br, ((LabelStmt)codeGenerator.CurrentLabels[node.LabelName]).Label);
             }
@@ -272,8 +272,8 @@ namespace PHP.Core.Compiler.AST
                 {
                     if (stmt is LabelStmt)
                     {
-                        analyzer.ErrorSink.Add(Errors.LabelRedeclared, analyzer.SourceUnit, node.Position, node.Name);
-                        analyzer.ErrorSink.Add(Errors.RelatedLocation, analyzer.SourceUnit, stmt.Position);
+                        analyzer.ErrorSink.Add(Errors.LabelRedeclared, analyzer.SourceUnit, node.Span, node.Name);
+                        analyzer.ErrorSink.Add(Errors.RelatedLocation, analyzer.SourceUnit, stmt.Span);
                     }
                     else
                     {

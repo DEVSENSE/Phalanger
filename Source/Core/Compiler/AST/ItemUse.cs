@@ -43,7 +43,11 @@ namespace PHP.Core.Compiler.AST
                         || access == AccessType.ReadAndWriteAndReadRef
                         || access == AccessType.ReadAndWriteAndReadUnknown))
                 {
+<<<<<<< HEAD
                     analyzer.ErrorSink.Add(Errors.EmptyIndexInReadContext, analyzer.SourceUnit, node.Position);
+=======
+                    analyzer.ErrorSink.Add(Errors.EmptyIndexInReadContext, analyzer.SourceUnit, node.Span);
+>>>>>>> refs/remotes/tfs/default
                     return new Evaluation(node);
                 }
 

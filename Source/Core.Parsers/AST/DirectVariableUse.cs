@@ -29,14 +29,14 @@ namespace PHP.Core.AST
 		public VariableName VarName { get { return varName; } set { varName = value; } }
 		private VariableName varName;
 
-		public DirectVarUse(Position position, VariableName varName)
-			: base(position)
+		public DirectVarUse(Text.Span span, VariableName varName)
+            : base(span)
 		{
 			this.varName = varName;
 		}
 
-		public DirectVarUse(Position position, string/*!*/ varName)
-			: base(position)
+		public DirectVarUse(Text.Span span, string/*!*/ varName)
+            : base(span)
 		{
 			this.varName = new VariableName(varName);
 		}
