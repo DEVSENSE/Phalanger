@@ -132,11 +132,7 @@ namespace PHP.Core.Compiler.AST
                     attributes.AnalyzeMembers(analyzer, referring_scope);
                 }
 
-<<<<<<< HEAD
-                resolvedTypeHint = analyzer.ResolveType(node.TypeHint, referring_type, routine, node.Position, false);
-=======
                 resolvedTypeHint = analyzer.ResolveType(node.TypeHint, referring_type, routine, node.Span, false);
->>>>>>> refs/remotes/tfs/default
             }
 
             internal void Analyze(FormalParam/*!*/node, Analyzer/*!*/ analyzer)
@@ -154,21 +150,13 @@ namespace PHP.Core.Compiler.AST
                 if (!routine.Builder.LocalVariables.AddParameter(node.Name, node.PassedByRef))
                 {
                     // parameter with the same name specified twice
-<<<<<<< HEAD
-                    analyzer.ErrorSink.Add(Errors.DuplicateParameterName, analyzer.SourceUnit, node.Position, node.Name);
-=======
                     analyzer.ErrorSink.Add(Errors.DuplicateParameterName, analyzer.SourceUnit, node.Span, node.Name);
->>>>>>> refs/remotes/tfs/default
                 }
 
                 if (node.IsOut && !node.PassedByRef)
                 {
                     // out can be used only on by-ref params:
-<<<<<<< HEAD
-                    analyzer.ErrorSink.Add(Errors.OutAttributeOnByValueParam, analyzer.SourceUnit, node.Position, node.Name);
-=======
                     analyzer.ErrorSink.Add(Errors.OutAttributeOnByValueParam, analyzer.SourceUnit, node.Span, node.Name);
->>>>>>> refs/remotes/tfs/default
                 }
             }
 
@@ -265,11 +253,7 @@ namespace PHP.Core.Compiler.AST
                         if (last_param_was_optional)
                         {
                             analyzer.ErrorSink.Add(Warnings.MandatoryBehindOptionalParam, analyzer.SourceUnit,
-<<<<<<< HEAD
-                                param.Position, param.Name);
-=======
                                 param.Span, param.Name);
->>>>>>> refs/remotes/tfs/default
                         }
 
                         last_mandatory_param_index = i;
@@ -321,11 +305,7 @@ namespace PHP.Core.Compiler.AST
 
                 function = new PhpFunction(
                     qn, node.MemberAttributes, node.Signature, node.TypeSignature,
-<<<<<<< HEAD
-                    node.IsConditional, node.Scope, (CompilationSourceUnit)node.SourceUnit, node.Position);
-=======
                     node.IsConditional, node.Scope, (CompilationSourceUnit)node.SourceUnit, node.Span);
->>>>>>> refs/remotes/tfs/default
 
                 function.WriteUp(node.TypeSignature.ToPhpRoutineSignature(function));
                 function.Declaration.Node = this;
@@ -372,11 +352,7 @@ namespace PHP.Core.Compiler.AST
                 function.Declaration.IsUnreachable = analyzer.IsThisCodeUnreachable();
 
                 if (function.Declaration.IsUnreachable)
-<<<<<<< HEAD
-                    analyzer.ReportUnreachableCode(node.Position);
-=======
                     analyzer.ReportUnreachableCode(node.Span);
->>>>>>> refs/remotes/tfs/default
 
                 analyzer.EnterFunctionDeclaration(function);
 
@@ -404,11 +380,7 @@ namespace PHP.Core.Compiler.AST
                 else
                 {
                     // add entry point if applicable:
-<<<<<<< HEAD
-                    analyzer.SetEntryPoint(function, node.Position);
-=======
                     analyzer.SetEntryPoint(function, node.Span);
->>>>>>> refs/remotes/tfs/default
                     return node;
                 }
             }
@@ -424,11 +396,7 @@ namespace PHP.Core.Compiler.AST
                 // marks a sequence point if function is declared here (i.e. is m-decl):
                 //Note: this sequence point goes to the function where this function is declared not to this declared function!
                 if (!function.IsLambda && function.Declaration.IsConditional)
-<<<<<<< HEAD
-                    codeGenerator.MarkSequencePoint(node.Position);
-=======
                     codeGenerator.MarkSequencePoint(node.Span);
->>>>>>> refs/remotes/tfs/default
 
                 // emits attributes on the function itself, its return value, type parameters and regular parameters:
                 var attributes = node.Attributes;
