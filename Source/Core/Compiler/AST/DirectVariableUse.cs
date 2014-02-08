@@ -48,7 +48,11 @@ namespace PHP.Core.Compiler.AST
                     // report misuse of $this if we are sure about it, that is in a static routine:
                     if (analyzer.CurrentRoutine != null && analyzer.CurrentRoutine.IsStatic)
                     {
+<<<<<<< HEAD
+                        analyzer.ErrorSink.Add(Warnings.ThisOutOfMethod, analyzer.SourceUnit, node.Position);
+=======
                         analyzer.ErrorSink.Add(Warnings.ThisOutOfMethod, analyzer.SourceUnit, node.Span);
+>>>>>>> refs/remotes/tfs/default
                     }
 
                     if (!(info.Parent is VarLikeConstructUse) // $this->a = 1; is ok, but $this has write AT
@@ -57,7 +61,11 @@ namespace PHP.Core.Compiler.AST
                                     || access == AccessType.ReadRef
                                     || access == AccessType.ReadUnknown))
                     {
+<<<<<<< HEAD
+                        analyzer.ErrorSink.Add(Warnings.ThisInWriteContext, analyzer.SourceUnit, node.Position);
+=======
                         analyzer.ErrorSink.Add(Warnings.ThisInWriteContext, analyzer.SourceUnit, node.Span);
+>>>>>>> refs/remotes/tfs/default
                     }
                 }
 
@@ -68,7 +76,11 @@ namespace PHP.Core.Compiler.AST
                         Debug.Assert(analyzer.SourceUnit.CompilationUnit.IsPure);
 
                         // variables used in global context when we do not have global variable table:
+<<<<<<< HEAD
+                        analyzer.ErrorSink.Add(Errors.GlobalCodeInPureUnit, analyzer.SourceUnit, node.Position);
+=======
                         analyzer.ErrorSink.Add(Errors.GlobalCodeInPureUnit, analyzer.SourceUnit, node.Span);
+>>>>>>> refs/remotes/tfs/default
                     }
                     else
                         analyzer.CurrentVarTable.Set(node.VarName, var_shall_be_ref);
