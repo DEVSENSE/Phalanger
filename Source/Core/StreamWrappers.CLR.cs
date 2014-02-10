@@ -260,6 +260,15 @@ namespace PHP.Core
         /// </summary>
         public static FileModeFlags GetFileMode(FileInfo info)
         {
+            if (Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                // Only some flags are currently supported
+                // TODO: Use info.GetAccessControl()?
+                FileModeFlags flags = new FileModeFlags();
+                if (!info.IsReadOnly) flags |= FileModeFlags.Write;
+                return flags;
+            }
+
             System.Security.AccessControl.AuthorizationRuleCollection acl;
 
             try
@@ -281,6 +290,15 @@ namespace PHP.Core
         /// </summary>
         public static FileModeFlags GetFileMode(DirectoryInfo info)
         {
+            if (Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                // Only some flags are currently supported
+                // TODO: Use info.GetAccessControl()?
+                FileModeFlags flags = new FileModeFlags();
+                if ((info.Attributes & FileAttributes.ReadOnly) == 0) flags |= FileModeFlags.Write;
+                return flags;
+            }
+
             System.Security.AccessControl.AuthorizationRuleCollection acl;
 
             try
