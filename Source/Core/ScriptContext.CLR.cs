@@ -289,7 +289,23 @@ namespace PHP.Core
             _constants.Add("PHP_RELEASE_VERSION", PhpVersion.Release, false);
             _constants.Add("PHP_VERSION_ID", PhpVersion.Major * 10000 + PhpVersion.Minor * 100 + PhpVersion.Release, false);
             _constants.Add("PHP_EXTRA_VERSION", PhpVersion.Extra, false);
-            _constants.Add("PHP_OS", Environment.OSVersion.Platform == PlatformID.Win32NT ? "WINNT" : "WIN32", false); // TODO: GENERICS (Unix)
+
+            string php_os = "Unknown";
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                    php_os = "WINNT";
+                    break;
+                case PlatformID.Win32S:
+                case PlatformID.Win32Windows:
+                case PlatformID.WinCE:
+                    php_os = "WIN32";
+                    break;
+                case PlatformID.Unix:
+                    php_os = "Linux";
+                    break;
+            }
+            _constants.Add("PHP_OS", php_os, false);
             _constants.Add("PHP_SAPI", (System.Web.HttpContext.Current == null) ? "cli" : "isapi", false);
             _constants.Add("DIRECTORY_SEPARATOR", FullPath.DirectorySeparatorString, false);
             _constants.Add("PATH_SEPARATOR", Path.PathSeparator.ToString(), false);
@@ -574,6 +590,14 @@ namespace PHP.Core
 			DTypeDesc includer,
 			InclusionTypes inclusionType)
 		{
+            if (Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                // Fix for absolute-path-includes on Unix filesystems.
+                // Example: include_once('/path/app\libs\include.php')
+                // HACK: Translate "\" to "/"
+                includerFileRelPath = includerFileRelPath.Replace('\\', '/');
+            }
+
 			ApplicationConfiguration app_config = Configuration.Application;
 
 			// determines inclusion behavior:
