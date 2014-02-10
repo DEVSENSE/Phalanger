@@ -1518,8 +1518,32 @@ namespace PHP.Library
             var fileStream = phpStream.RawStream as FileStream;
             if (fileStream == null) return false;
 
-            //
-            if (EnvironmentUtils.IsDotNetFramework)
+            if (Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                switch ((StreamLockOptions)operation & ~StreamLockOptions.NoBlocking)
+                {
+                    case StreamLockOptions.Exclusive:
+                        // Exclusive lock
+                        fileStream.Lock(0, Int64.MaxValue);
+                        return true;
+
+                    /*
+                     * TODO: Implement.
+                    case StreamLockOptions.Shared:
+                        // Shared lock
+                    */
+
+                    case StreamLockOptions.Unlock:
+                        // Unlock always succeeds
+                        fileStream.Unlock(0, Int64.MaxValue);
+                        return true;
+
+                    default:
+                        PhpException.FunctionNotSupported();
+                        return false;
+                }
+
+            } else if (EnvironmentUtils.IsDotNetFramework)
             {
                 return Lock_dotNET(fileStream, (StreamLockOptions)operation);
             }
