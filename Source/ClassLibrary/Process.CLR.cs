@@ -275,6 +275,9 @@ namespace PHP.Library
 
 			Process process = new Process();
 
+            // IX: Hide console window when running inside CassiniDev
+            process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+
             if (bypass_shell)
             {
                 var match = CommandLineSplitter.Match(command);
@@ -283,9 +286,32 @@ namespace PHP.Library
                     PhpException.InvalidArgument("command");
                     return null;
                 }
-                
+
                 process.StartInfo.FileName = match.Groups["filename"].Value;
                 process.StartInfo.Arguments = match.Groups["arguments"].Value;
+            }
+            else if (Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                // TODO: Parse commands surrounded by single and double quotes (['ls' -la] and ["ls" -la]).
+                // command = command.Trim();
+                // if (command.Substring(0, 1) == "\"") ...
+
+                int i = command.IndexOf(" ");
+                string bin, args;
+                if (i >= 0)
+                {
+                    // "ls -la"
+                    bin = command.Substring(0, i);
+                    args = command.Substring(i + 1);
+
+                    process.StartInfo.Arguments = args;
+                }
+                else
+                {
+                    // "ls"
+                    bin = command;
+                }
+                process.StartInfo.FileName = bin;
             }
             else
             {
@@ -544,14 +570,13 @@ namespace PHP.Library
 			try
 			{
 				process.WaitForExit();
+                return process.ExitCode; // Throws exception when process has not started.
 			}
 			catch (Exception e)
 			{
 				PhpException.Throw(PhpError.Warning, LibResources.GetString("error_waiting_for_process_exit", e.Message));
 				return -1;
 			}
-
-			return process.ExitCode;
 		}
 
 		/// <summary>
