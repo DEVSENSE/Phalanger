@@ -553,7 +553,7 @@ namespace PHP.Core.Reflection
 
             if (File.Exists(wrapper_name))
             {
-                if (File.GetLastWriteTimeUtc(ass.Location) < File.GetLastWriteTimeUtc(wrapper_name))
+                if (FileSystemUtils.GetLastModifiedTimeUtc(ass.Location) < FileSystemUtils.GetLastModifiedTimeUtc(wrapper_name))
                     return true;
             }
 
