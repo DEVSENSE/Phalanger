@@ -1170,10 +1170,22 @@ namespace PHP.Core
                 try { current_app_dir = (http_context != null) ? http_context.Server.MapPath("/bin") : "."; }  // this can throw on Mono
                 catch (InvalidOperationException) { current_app_dir = "bin"; }
 
-                libraries = /*manager =*/ natives = wrappers = typeDefs = new FullPath(current_app_dir);
-
                 string dynamic_path = (http_context != null) ? current_app_dir : Path.GetTempPath();
-                dynamicWrappers = new FullPath(dynamic_path);
+
+                if (Environment.OSVersion.Platform == PlatformID.Unix)
+                {
+                    // Mono + Apache|XSP don't set the working directory, thus new FullPath() converts "bin" to "//bin" (mono 2.10.9) or "/bin".
+                    // It's preferable to build a path relative to the AppDomain BaseDirectory
+
+                    FullPath basePath = new FullPath(AppDomain.CurrentDomain.BaseDirectory);
+                    libraries = /*manager =*/ natives = wrappers = typeDefs = new FullPath(current_app_dir, basePath);
+                    dynamicWrappers = new FullPath(dynamic_path, basePath);
+                }
+                else
+                {
+                    libraries = /*manager =*/ natives = wrappers = typeDefs = new FullPath(current_app_dir);
+                    dynamicWrappers = new FullPath(dynamic_path);
+                }
             }
 
 			/// <summary>

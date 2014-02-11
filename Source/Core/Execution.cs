@@ -112,8 +112,51 @@ namespace PHP.Core
                     }                    
                 }
 
-				p.StartInfo.FileName = "cmd.exe";
-				p.StartInfo.Arguments = "/c " + command;
+                if (Environment.OSVersion.Platform == PlatformID.Unix)
+                {
+                    // TODO: Use same code in ShellExec() and CreateProcessExecutingCommand()
+                    string bin, args;
+
+                    command = command.Trim();
+                    string quoteChar = "\"";
+                    if (command.Substring(0, 1) == quoteChar)
+                    {
+                        // Parse commands surrounded by single and double quotes (['ls' -la] and ["ls" -la]).
+                        int end = command.IndexOf(quoteChar, 1);
+                        bin = command.Substring(1, end - 1);
+                        args = command.Substring(end + 1);
+
+                        // TODO: Support redirections.
+                        args = args.Replace("2>&1", "");
+
+                        p.StartInfo.Arguments = args;
+                        // System.Console.WriteLine("bin: " + bin + ", args: " + args);
+                    }
+                    else
+                    {
+                        int i = command.IndexOf(" ");
+                        if (i >= 0)
+                        {
+                            // "ls -la"
+                            bin = command.Substring(0, i);
+                            args = command.Substring(i + 1);
+
+                            p.StartInfo.Arguments = args;
+                        }
+                        else
+                        {
+                            // "ls"
+                            bin = command;
+                        }
+                    }
+                    p.StartInfo.FileName = bin;
+                }
+                else
+                {
+                    p.StartInfo.FileName = "cmd.exe";
+                    p.StartInfo.Arguments = "/c " + command;
+                }
+
 				p.StartInfo.UseShellExecute = false;
 				p.StartInfo.CreateNoWindow = true;
 				p.StartInfo.RedirectStandardOutput = true;

@@ -1545,7 +1545,15 @@ namespace PHP.Library
                     PhpException.ArgumentValueNotSupported("daylightSaving", daylightSaving);
 					break;
 			}
-            return DateTimeUtils.UtcToUnixTimeStamp(TimeZoneInfo.ConvertTimeToUtc(local, zone));
+            try
+            {
+                return DateTimeUtils.UtcToUnixTimeStamp(TimeZoneInfo.ConvertTimeToUtc(local, zone));
+            }
+            catch (Exception e)
+            {
+                // IX: Was throwing "System.ArgumentException: dateTime parameter is an invalid time" for mktime(0,0,0,10,10,2010)
+                return -1;
+            }
 		}
 
 		#endregion
