@@ -21,14 +21,15 @@ using System.Globalization;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Collections;
+using System.Configuration.Assemblies;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Configuration.Assemblies;
 using System.Runtime.Remoting;
+using System.Text.RegularExpressions;
 
 using PHP.Core.Emit;
 using PHP.Core.Reflection;
-using System.Text.RegularExpressions;
+using PHP.Core.Utilities;
 
 namespace PHP.Core
 {
@@ -42,8 +43,8 @@ namespace PHP.Core
 		/// <summary>
 		/// A timestamp of the current request.
 		/// </summary>
-		public DateTime RequestTimestamp { get { return requestTimestamp; } }
-		private readonly DateTime requestTimestamp;
+		public DateTime RequestTimestampUtc { get { return requestTimestampUtc; } }
+		private readonly DateTime requestTimestampUtc;
 
         public override bool SaveOnlyAssembly
         {
@@ -57,7 +58,7 @@ namespace PHP.Core
 		  DateTime requestTimestamp)
 			: base(applicationContext, manager, config, new WebErrorSink(config.Compiler.DisabledWarnings, config.Compiler.DisabledWarningNumbers), workingDirectory)
 		{
-			this.requestTimestamp = requestTimestamp;
+			this.requestTimestampUtc = requestTimestamp.ToUniversalTime();
 		}
 
 		#region Assembly Naming
@@ -109,7 +110,7 @@ namespace PHP.Core
 		{
 			// timestamp ensures there won't be two loaded assemblies of the same name:
 			// (consider editing of a source file)
-			string stamp = requestTimestamp.Ticks.ToString("x16");
+			string stamp = requestTimestampUtc.Ticks.ToString("x16");
 
 			AssemblyName result = new AssemblyName();
 			result.Name = GetAssemblyCodedName(sourceFile, config) + stamp;
@@ -226,7 +227,7 @@ namespace PHP.Core
         /// <summary>
         /// Time of AppCode assembly was created. Any SSA compiled before this time should be recompiled.
         /// </summary>
-        private DateTime appCodeAssemblyCreated = DateTime.MinValue;
+        private DateTime appCodeAssemblyCreatedUtc = DateTime.MinValue;
 
 		#endregion
 
@@ -293,7 +294,7 @@ namespace PHP.Core
             if (node != null)
             {
                 var assemblyFile = Path.Combine(Path.GetDirectoryName(app_code_compiled_path), node.Attributes["assembly"].Value + ".dll");
-                appCodeAssemblyCreated = File.GetLastWriteTime(assemblyFile);
+                appCodeAssemblyCreatedUtc = FileSystemUtils.GetLastModifiedTimeUtc(assemblyFile);
                 ApplicationContext.AssemblyLoader.Load(Assembly.LoadFrom(assemblyFile), null);
             }
         }
@@ -433,7 +434,7 @@ namespace PHP.Core
                 SetCacheEntry(ns,
                     new CacheEntry(
                         assembly_builder.SingleScriptAssembly.GetScriptType(),
-                        assembly_builder.SingleScriptAssembly, context.RequestTimestamp, includers, inclusions, true), true, true);
+                        assembly_builder.SingleScriptAssembly, context.RequestTimestampUtc, includers, inclusions, true), true, true);
             }
 		}
 
@@ -493,8 +494,8 @@ namespace PHP.Core
 			public ScriptAssembly/*!*/ ScriptAssembly { get { return scriptAssembly; } }
 			private readonly ScriptAssembly/*!*/ scriptAssembly;
 
-			public DateTime BuildTimestamp { get { return buildTimeStamp; } }
-			private readonly DateTime buildTimeStamp;
+			public DateTime BuildTimestampUtc { get { return buildTimeStampUtc; } }
+			private readonly DateTime buildTimeStampUtc;
 
 			/// <summary>
 			/// Collection of scripts that include this script - if the item is invalidated
@@ -525,10 +526,10 @@ namespace PHP.Core
 				string[]/*!*/ includers, bool fileTimeChecked)
 			{
                 Debug.Assert(scriptType != null && scriptAssembly != null && includers != null);
-
+                
                 this.scriptInfo = new ScriptInfo(scriptType);
 				this.scriptAssembly = scriptAssembly;
-				this.buildTimeStamp = buildTimeStamp;
+				this.buildTimeStampUtc = buildTimeStamp.ToUniversalTime();
 				this.includers = new List<string>(includers);
 				this.fileTimeChecked = fileTimeChecked;
 				this.includees = new List<string>();
@@ -538,10 +539,11 @@ namespace PHP.Core
 				string[]/*!*/ includers, string[]/*!*/ includees, bool fileTimeChecked)
 			{
                 Debug.Assert(scriptType != null && scriptAssembly != null && includers != null);
+                Debug.Assert(buildTimeStampUtc.Kind == DateTimeKind.Utc);
 			
 				this.scriptInfo = new ScriptInfo(scriptType);
 				this.scriptAssembly = scriptAssembly;
-				this.buildTimeStamp = buildTimeStamp;
+                this.buildTimeStampUtc = buildTimeStamp.ToUniversalTime();
 				this.includers = new List<string>(includers);
 				this.fileTimeChecked = fileTimeChecked;
 				this.includees = new List<string>(includees);
@@ -792,7 +794,7 @@ namespace PHP.Core
 				entry.FileTimeChecked = true;
 
 				// is compilation obsolete?
-				if (entry.BuildTimestamp < File.GetLastWriteTime(source_path))
+				if (entry.BuildTimestampUtc < FileSystemUtils.GetLastModifiedTimeUtc(source_path))
 				{
 					RemoveCachedEntryNoLock(ns, entry, null);
 					return false;
@@ -834,12 +836,13 @@ namespace PHP.Core
             string name = WebCompilationContext.GetAssemblyCodedName(sourceFile, config);
 
             string sourcePath = sourceFile.FullPath.ToString();
-            bool sourceExists = File.Exists(sourcePath);
-            DateTime sourceTime = sourceExists ? File.GetLastWriteTime(sourcePath) : DateTime.UtcNow.AddYears(1);   // If file does not exist, fake the sourceTime to NOT load any SSA DLL. Delete them instead.
-            DateTime configTime = Configuration.LastConfigurationModificationTime;
+            FileInfo sourceInfo = new FileInfo(sourcePath);
+            bool sourceExists = sourceInfo.Exists;
+            DateTime sourceTimeUtc = sourceExists ? sourceInfo.GetLastModifiedTimeUtc() : DateTime.UtcNow.AddYears(1);   // If file does not exist, fake the sourceTime to NOT load any SSA DLL. Delete them instead.
+            DateTime configTimeUtc = Configuration.LastConfigurationModifiedTimeUtc;
 
             // here find the max modification of all dependant files (configuration, script itself, other DLLs):
-            long sourceStamp = Math.Max(Math.Max(sourceTime.Ticks, configTime.Ticks), appCodeAssemblyCreated.Ticks);
+            long sourceStamp = Math.Max(Math.Max(sourceTimeUtc.Ticks, configTimeUtc.Ticks), appCodeAssemblyCreatedUtc.Ticks);
 
             // Find specified file in temporary files
 
@@ -928,7 +931,7 @@ namespace PHP.Core
             {
                 string path = ScriptModule.GetPathFromSubnamespace(ns).
                     ToFullPath(Configuration.Application.Compiler.SourceRoot).ToString();
-                DateTime writeStamp = File.GetLastWriteTime(path);  // note: it does not fail if the file does not exists, in such case it returns 12:00 midnight, January 1, 1601 A.D.
+                DateTime writeStamp = FileSystemUtils.GetLastModifiedTimeUtc(path);  // note: it does not fail if the file does not exists, in such case it returns 12:00 midnight, January 1, 1601 A.D.
                 if (writeStamp > script_attr.SourceTimestamp) return false;
             }
 

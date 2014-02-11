@@ -548,6 +548,14 @@ namespace PHP.Core
         /// <summary>
         /// Determine maximum of three given <see cref="DateTime"/> values.
         /// </summary>
+        public static DateTime Max(DateTime d1, DateTime d2)
+        {
+            return (d1 > d2) ? d1 : d2;
+        }
+
+        /// <summary>
+        /// Determine maximum of three given <see cref="DateTime"/> values.
+        /// </summary>
         public static DateTime Max(DateTime d1, DateTime d2, DateTime d3)
         {
             return (d1 < d2) ? ((d2 < d3) ? d3 : d2) : ((d1 < d3) ? d3 : d1);
@@ -1559,6 +1567,29 @@ namespace PHP.Core
                     return unchecked((int)stream.Length);
                 }
             }
+        }
+        
+        /// <summary>
+        /// Gets the time given <paramref name="fsi"/> was modified. Mostly it is the <see cref="FileSystemInfo.LastWriteTimeUtc"/>
+        /// however if the file was modified elsewhere and copied, <see cref="FileSystemInfo.CreationTimeUtc"/> may be greater.
+        /// </summary>
+        /// <param name="fsi">File or a directory.</param>
+        /// <returns>Max of <see cref="FileSystemInfo.LastWriteTimeUtc"/> and <see cref="FileSystemInfo.CreationTimeUtc"/>.</returns>
+        public static DateTime GetLastModifiedTimeUtc(this FileSystemInfo fsi)
+        {
+            Debug.Assert(fsi != null);
+            return DateTimeUtils.Max(fsi.LastWriteTimeUtc, fsi.CreationTimeUtc);
+        }
+
+        /// <summary>
+        /// Gets the time given file at <paramref name="path"/> was modified. Mostly it is the <see cref="FileSystemInfo.LastWriteTimeUtc"/>
+        /// however if the file was modified elsewhere and copied, <see cref="FileSystemInfo.CreationTimeUtc"/> may be greater.
+        /// </summary>
+        /// <param name="path">Path to the file.</param>
+        /// <returns>Max of <see cref="FileSystemInfo.LastWriteTimeUtc"/> and <see cref="FileSystemInfo.CreationTimeUtc"/>.</returns>
+        public static DateTime GetLastModifiedTimeUtc(string path)
+        {
+            return GetLastModifiedTimeUtc(new FileInfo(path));
         }
     }
 
