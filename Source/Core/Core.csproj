@@ -482,7 +482,12 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>cd "$(ProjectDir)..\.."
-Tools\UpdateFileVersionFromChangeset.cmd "$(ProjectDir)AssemblyInfo.cs"</PreBuildEvent>
+Tools\UpdateFileVersionFromChangeset.cmd "$(ProjectDir)AssemblyInfo.cs"
+
+REM workaround issue of missing CopyLocal reference; msbuild does not copy the refernce if it is in GAC; this causes the project is being rebuilt every time
+xcopy /q /y "$(ProjectDir)..\Core.Parsers\bin\$(ConfigurationName)\*.dll" "$(TargetDir)*" 1&gt;nul
+
+</PreBuildEvent>
     <PostBuildEvent>REM ECHO Uninstalling previous version from GAC ...
 
 REM "$(ProjectDir)..\..\Tools\gacutil" /u $(TargetName) 1&gt;nul

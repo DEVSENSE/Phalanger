@@ -338,7 +338,7 @@ namespace PHP.Core.Binders
                 paramTypes[i + 1] = parameters[i].ParameterType;
 
             // create static dynamic method that calls given MethodInfo statically
-            DynamicMethod stub = new DynamicMethod(mi.Name + "_", mi.ReturnType, paramTypes, mi.DeclaringType);
+            DynamicMethod stub = new DynamicMethod("<^>." + mi.Name, mi.ReturnType, paramTypes, mi.DeclaringType);
             ILEmitter il = new ILEmitter(stub);
 
             // return <mi>( instance, arg_1, arg_2, ..., arg_n ):

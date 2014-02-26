@@ -30,7 +30,8 @@ namespace PHP.Core
 	{
 		Invisible,
 		Visible,
-		ClassLibraryFunction
+		ClassLibraryFunction,
+        Main,
 	}
 
 	/// <summary>
@@ -196,10 +197,17 @@ namespace PHP.Core
 
 				// the caller has already been set by FillEvalStackInfo 
 				// if it is not an eval main:
-				if (!(eval_id != TransientAssembly.InvalidEvalId && PhpScript.IsScriptType(type) && method.Name == ScriptModule.MainHelperName))
+				if (!(eval_id != TransientAssembly.InvalidEvalId && PhpScript.IsScriptType(type) && kind == FrameKinds.Main))
 				{
-					int j;
-					PhpScript.ParseMDeclName(method.Name, out this.name, out j);
+                    if (this.name == ScriptModule.MainHelperName)
+                    {
+                        this.name = "{main}";
+                    }
+                    else
+                    {
+                        int j;
+                        PhpScript.ParseMDeclName(method.Name, out this.name, out j);
+                    }                    
 				}
 			}
 		}
@@ -272,7 +280,7 @@ namespace PHP.Core
 				if (DRoutineDesc.GetSpecialName(method_base) == ScriptModule.MainHelperName &&
 					method_base.Module.Assembly.IsDefined(typeof(ScriptAssemblyAttribute), false))
 				{
-					return FrameKinds.Visible;
+					return FrameKinds.Main;
 				}
 
 				return FrameKinds.Invisible;
@@ -331,7 +339,7 @@ namespace PHP.Core
 				{
 					// main helper is visible as it contains user code:
 					if (DRoutineDesc.GetSpecialName(method) == ScriptModule.MainHelperName)
-						return FrameKinds.Visible;
+						return FrameKinds.Main;
 
 					return FrameKinds.Invisible;
 				}
@@ -340,6 +348,7 @@ namespace PHP.Core
 				if (method.IsDefined(Emit.Types.DebuggerHiddenAttribute, false))
 					return FrameKinds.Invisible;
 
+                //
 				return FrameKinds.Visible;
 			}
 
@@ -419,8 +428,16 @@ namespace PHP.Core
 				StackFrame frame = clrTrace.GetFrame(i);
 				FrameKinds kind = GetFrameKind(frame);
 
-				if (kind != FrameKinds.Invisible)
-					frames.Add(new PhpStackFrame(context, frame, kind));
+                if (kind != FrameKinds.Invisible)
+                {
+                    frames.Add(new PhpStackFrame(context, frame, kind));
+                }
+                else
+                {
+                    // stop probing the stack trace once we reach RequestHandler
+                    if (frame.GetMethod().DeclaringType == typeof(RequestHandler))
+                        break;
+                }
 			}
 		}
 
@@ -489,7 +506,7 @@ namespace PHP.Core
 
         FrameKinds frame_kind = GetFrameKind(frame);
 
-				if (frame_kind == FrameKinds.Visible)
+				if (frame_kind == FrameKinds.Visible || frame_kind == FrameKinds.Main)
 				{
 					int eid = TransientModule.GetEvalId(context.ApplicationContext, method);
 
@@ -805,15 +822,15 @@ namespace PHP.Core
 					int line = Convert.ObjectToInteger(frame["line"]);
 					int column = Convert.ObjectToInteger(frame["column"]);
 
-					result.Insert(0, String.Format("#{0} {1}{2}: {3}{4}\n",
+                    result.AppendFormat("#{0} {1}{2}: {3}{4}\n",
 					  entry.Key.Object,
 					  Convert.ObjectToString(frame["file"]),
 					  (line > 0 && column > 0) ? String.Format("({0},{1})", line, column) : null,
 					  Convert.ObjectToString(frame["class"]) + Convert.ObjectToString(frame["type"]),
-					  frame["function"]));
+					  frame["function"]);
 				}
 			}
-			return result.AppendFormat("#{0} {{main}}", trace.Count).ToString();
+            return result.AppendFormat("#{0} {{main}}", trace.Count).ToString();
 		}
 
 		/// <summary>
