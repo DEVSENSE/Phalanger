@@ -1363,6 +1363,38 @@ namespace PHP.Core
             }
         }
 
+        public sealed class TestTag : EmptyTag
+        {
+            public const string Name = "@test";
+
+            public TestTag(string/*!*/line)
+                : base()
+            {
+            }
+
+            public override string ToString()
+            {
+                return Name;
+            }
+        }
+
+        public sealed class GroupTag : SingleLineTag
+        {
+            public const string Name = "@group";
+
+            public string Group { get { return this.text; } }
+
+            public GroupTag(string/*!*/line)
+                : base(Name, line)
+            {
+            }
+
+            public override string ToString()
+            {
+                return Name + " " + this.Group;
+            }
+        }
+
         #endregion
 
         #region Properties
