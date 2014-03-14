@@ -332,7 +332,22 @@ namespace PHP.Library
 		public static void FlushHttpBuffers()
 		{
 			HttpContext http_context = HttpContext.Current;
-			if (http_context != null) http_context.Response.Flush();
+		  if (http_context != null)
+		  {
+		    try
+		    {
+		      http_context.Response.Flush();
+		    }
+		    catch (HttpException)
+		    {
+		      var context = RequestContext.CurrentContext;
+		      if (context != null && !context.TrackClientDisconnection)
+		      {
+		        return;
+		      }
+		      throw;
+		    }
+		  }
 		}
 
 		/// <summary>

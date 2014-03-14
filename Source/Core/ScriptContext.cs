@@ -474,14 +474,15 @@ namespace PHP.Core
             {
                 try
                 {
-                    var context = CurrentContext;
-                    if (context == null)
+                    var context = CurrentContextOrNull;
+                    if (context == null || !context.ExecutionTimedOut)
                         return;
                     bool old_throw = context.ThrowExceptionOnError;
                     context.ThrowExceptionOnError = false;
 
-                    PhpException.Throw(PhpError.Error, CoreResources.GetString("execution_timed_out",
-                        context.config.RequestControl.ExecutionTimeout));
+                    PhpException.Throw(
+                        PhpError.Error,
+                        CoreResources.GetString("execution_timed_out", context.config.RequestControl.ExecutionTimeout) + new StackTrace());
 
                     context.ThrowExceptionOnError = old_throw;
                 }
@@ -2295,7 +2296,7 @@ namespace PHP.Core
         /// <summary>
         /// Flushes all remaining data from output buffers.
         /// </summary>
-        internal object FinalizeBufferedOutput(object _)
+        internal object FinalizeOutput(object _)
         {
             // flushes output, applies user defined output filter, and disables buffering:
             if (bufferedOutput != null)
@@ -2303,6 +2304,9 @@ namespace PHP.Core
 
             // redirects sinks:
             IsOutputBuffered = false;
+
+            // flush unbuffered output
+            output.Flush();
 
             return null;
         }
@@ -2924,7 +2928,7 @@ namespace PHP.Core
                 {
                     this.GuardedCall<object, object>(this.ProcessShutdownCallbacks, null, false);
                     this.GuardedCall<object, object>(this.FinalizePhpObjects, null, false);
-                    this.GuardedCall<object, object>(this.FinalizeBufferedOutput, null, false);
+                    this.GuardedCall<object, object>(this.FinalizeOutput, null, false);
 
                     // additional disposal action
                     if (this.TryDispose != null)

@@ -82,7 +82,7 @@ namespace PHP.Library.Soap
         /// Returns last SOAP request
         /// </summary> 
         [PhpVisible, ImplementsMethod]
-        public string __getLastRequest()
+        public PhpBytes __getLastRequest()
         {
             try
             {
@@ -118,7 +118,7 @@ namespace PHP.Library.Soap
         /// Returns last SOAP response
         /// </summary> 
         [PhpVisible, ImplementsMethod]
-        public object __getLastResponse()
+        public PhpBytes __getLastResponse()
         {
             try
             {

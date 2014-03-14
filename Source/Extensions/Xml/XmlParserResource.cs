@@ -241,6 +241,7 @@ namespace PHP.Library.Xml
             else
                 stream = new RecodingStream(Convert.ObjectToString(xml), Configuration.Application.Globalization.PageEncoding);
             XmlTextReader reader = new XmlTextReader(stream);
+            reader.DtdProcessing = DtdProcessing.Ignore;
             
             Stack<ElementRecord> elementStack = new Stack<ElementRecord>();
             TextRecord textChunk = null;
@@ -440,7 +441,7 @@ namespace PHP.Library.Xml
                 arrayRecord.Add("level", elementRecord.Level);
 
                 if (textRecord != null && !string.IsNullOrWhiteSpace(textRecord.Text))
-                    arrayRecord.Add("value", new PhpBytes(Encoding.UTF8.GetBytes(textRecord.Text)));
+                    arrayRecord.Add("value", new PhpBytes(reader.Encoding.GetBytes(textRecord.Text)));
 
                 if ((string)arrayRecord["type"] != "cdata" || arrayRecord.ContainsKey("value"))
                 {

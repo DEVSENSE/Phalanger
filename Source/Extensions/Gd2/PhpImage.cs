@@ -767,8 +767,19 @@ namespace PHP.Library.Gd2
                     return false;
                 }
                 length = length - 2;
-
-                stream.Seek(length, SeekOrigin.Current);
+                if (stream.CanSeek)
+                    stream.Seek(length, SeekOrigin.Current);
+                else
+                {
+                    var buffer = new byte[Math.Min(4*1024, length)];
+                    do
+                    {
+                        var count = stream.Read(buffer, 0, Math.Min(length, buffer.Length));
+                        length -= count;
+                        if (count == 0)
+                            return false;
+                    } while (length > 0);
+                }
 
                 return true;
             }

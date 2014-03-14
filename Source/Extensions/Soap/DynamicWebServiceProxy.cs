@@ -533,18 +533,18 @@ namespace PHP.Library.Soap
         /// Gets the SOAP request.
         /// </summary>
         /// <value></value>
-        public string SoapRequest
+        public PhpBytes SoapRequest
         {
             get
             {
                 if (enableMessageAccess && pipelineProperlyConfigured)
                 {
-                    object result = ((SoapHttpClientProtocolExtended)proxyInstance).SoapRequestString;
+                    byte[] result = ((SoapHttpClientProtocolExtended)proxyInstance).SoapRequest;
 
-                    return (string)result;
+                    return result == null ? PhpBytes.Empty : new PhpBytes(result);
                 }
                 else
-                    return String.Empty;
+                    return PhpBytes.Empty;
             }
         }
 
@@ -552,18 +552,18 @@ namespace PHP.Library.Soap
         /// Gets the SOAP response.
         /// </summary>
         /// <value></value>
-        public string SoapResponse
+        public PhpBytes SoapResponse
         {
             get
             {
                 if (enableMessageAccess && pipelineProperlyConfigured)
                 {
-                    object result = ((SoapHttpClientProtocolExtended)proxyInstance).SoapResponseString;
+                    byte[] result = ((SoapHttpClientProtocolExtended)proxyInstance).SoapResponse;
 
-                    return (string)result;
+                    return result == null ? PhpBytes.Empty : new PhpBytes(result);
                 }
                 else
-                    return String.Empty;
+                    return PhpBytes.Empty;
             }
         }
 

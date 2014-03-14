@@ -98,6 +98,10 @@ namespace PHP.Library.Soap
                     {
                         resultParams.Add(Bind(value, pi.ParameterType));
                     }
+                    else
+                    {
+                        resultParams.Add(pi.ParameterType.IsValueType ? Activator.CreateInstance(pi.ParameterType) : null);
+                    }
                 }
             }
 
@@ -283,7 +287,10 @@ namespace PHP.Library.Soap
         private object BindArray(PhpArray array, Type targetType)
         {
             if (targetType.IsArray)
-                return BindArrayToArray((PhpArray) array["item"], targetType);
+            {
+                array = (PhpArray) (array.ContainsKey("item") ? array["item"] : array); // TODO: ???
+                return BindArrayToArray(array, targetType);
+            }
             else
                 return BindArrayToObject(array, targetType);
         }
@@ -350,10 +357,12 @@ namespace PHP.Library.Soap
         {
             Debug.Assert(targetType.IsArray);
 
-            Type elementType = targetType.GetElementType();
-            Array vals = Array.CreateInstance(elementType, array.Count);
+            var count = array == null ? 0 : array.Count;
 
-            for (int i = 0; i < array.Count; ++i)
+            Type elementType = targetType.GetElementType();
+            Array vals = Array.CreateInstance(elementType, count);
+
+            for (int i = 0; i < count; ++i)
             {
                 vals.SetValue(Bind(array[i], elementType), i);
             }

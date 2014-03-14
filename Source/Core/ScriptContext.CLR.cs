@@ -355,6 +355,24 @@ namespace PHP.Core
 		}
 
         /// <summary>
+
+      public static ScriptContext CurrentContextOrNull
+	    {
+            [Emitted]
+            get
+            {
+                try
+                {
+                    return (ScriptContext)CallContext.GetData(callContextSlotName);   // on Mono, .GetData must be used (GetLogicalData is not implemented)
+                }
+                catch (InvalidCastException)
+                {
+                    throw new InvalidCallContextDataException(callContextSlotName);
+                };
+            }
+	    }
+
+	    /// <summary>
         /// Initialize new ScriptContext and store it into the LogicalCallContext.
         /// </summary>
         /// <returns>Newly created ScriptContext.</returns>

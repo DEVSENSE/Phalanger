@@ -364,6 +364,7 @@ namespace PHP.Library.Iconv
         [return: CastToFalse]
         public static PhpBytes iconv(string in_charset, string out_charset, object str)
         {
+            PhpBytes result = null;
             // check args
             if (str == null)
             {
@@ -400,49 +401,48 @@ namespace PHP.Library.Iconv
             else
                 out_encoding.EncoderFallback = new StopEncoderFallback(out_result);    // throw notice and discard all remaining characters
 
-            try
+            //
+            var in_encoding = ResolveEncoding(in_charset);
+            if (in_encoding == null)
             {
-                //
-                var in_encoding = ResolveEncoding(in_charset);
-                if (in_encoding == null)
+                PhpException.Throw(PhpError.Notice, string.Format(Strings.wrong_charset, in_charset, in_charset, out_charset));
+                result = null;
+            }
+            else if (str.GetType() == typeof(PhpBytes))
+            {
+                // resolve in_charset
+                if (in_charset == null)
                 {
-                    PhpException.Throw(PhpError.Notice, string.Format(Strings.wrong_charset, in_charset, in_charset, out_charset));
-                    return null;
+                    PhpException.ArgumentNull("in_charset");
+                    result = null;
                 }
-                if (str.GetType() == typeof(PhpBytes))
+                else
                 {
-                    // resolve in_charset
-                    if (in_charset == null)
-                    {
-                        PhpException.ArgumentNull("in_charset");
-                        return null;
-                    }
-
                     // TODO: in_encoding.Clone() ensures it is NOT readOnly, then set DecoderFallback to catch invalid byte sequences
 
                     // convert <in_charset> to <out_charset>
-                    return new PhpBytes(out_encoding.GetBytes(in_encoding.GetString(((PhpBytes)str).ReadonlyData)));
-                }
-
-                if (str.GetType() == typeof(string) || (str = Core.Convert.ObjectToString(str)) != null)
-                {
-                    // convert UTF16 to <out_charset>
-                    var pageEncoding = Configuration.Application.Globalization.PageEncoding;
-                    if (in_encoding.Equals(pageEncoding))
-                        return new PhpBytes(out_encoding.GetBytes((string) str));
-                    return new PhpBytes(Encoding.Convert(in_encoding, out_encoding, pageEncoding.GetBytes((string)str)));
+                    result = new PhpBytes(out_encoding.GetBytes(in_encoding.GetString(((PhpBytes) str).ReadonlyData)));
                 }
             }
-            finally
+            else if (str.GetType() == typeof(string) || (str = Core.Convert.ObjectToString(str)) != null)
             {
-                if (out_result.firstFallbackCharIndex >= 0)
+                // convert UTF16 to <out_charset>
+                var pageEncoding = Configuration.Application.Globalization.PageEncoding;
+                if (in_encoding.Equals(pageEncoding))
+                    result = new PhpBytes(out_encoding.GetBytes((string) str));
+                else
+                    result = new PhpBytes(Encoding.Convert(in_encoding, out_encoding, pageEncoding.GetBytes((string)str)));
+            }
+            if (out_result.firstFallbackCharIndex >= 0)
+            {
+                // Notice: iconv(): Detected an illegal character in input string
+                PHP.Core.PhpException.Throw(Core.PhpError.Notice, Strings.illegal_character);
+                if (!transliterate && !discard_ilseq)
                 {
-                    // Notice: iconv(): Detected an illegal character in input string
-                    PHP.Core.PhpException.Throw(Core.PhpError.Notice, Strings.illegal_character);
+                    result = null;
                 }
             }
-            
-            return null;
+            return result;
         }
 
         //ob_iconv_handler — Convert character encoding as output buffer handler
