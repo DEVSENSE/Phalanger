@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Resources;
@@ -34,6 +34,7 @@ using System.Resources;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("4.0.0.0")]
+[assembly: AssemblyFileVersion("4.0.0.4946")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
 
 [assembly: InternalsVisibleTo("PhpNetCore, PublicKey=0024000004800000940000000602000000240000525341310004000001000100e3c182f57d3158a916b477e7fbdb05d2733bf65c53e5ad976bd1af240211998dd8ffb116d73e2d2059909f1578a4031b3a33c0dc892d22834960f413ca1ebbe0cfe631c84d4ba26cb5f44f4fd8785a08260d44600fa6b6fddd8a4ace4d7d86a9f5d7884539b343973d8b4ac305ccffda775c493326aee5284e8b963b297a7eb9")]
