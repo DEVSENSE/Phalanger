@@ -297,9 +297,6 @@
     <Compile Include="Execution.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Externals.CLR.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Functions.cs">
       <SubType>Code</SubType>
     </Compile>

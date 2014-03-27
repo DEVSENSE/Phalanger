@@ -428,7 +428,6 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="node">Node containing the list.</param>
 		/// <param name="libraries">List of libraries to be modified by given <paramref name="node"/>.</param>
-		/// <param name="extensionsPath">Full path to the extensions directory.</param>
 		/// <param name="librariesPath">Full path to the libraries directory.</param>
 		/// <remarks>
 		/// The following node type is allowed to be contained in the <paramref name="node"/>:
@@ -437,8 +436,7 @@ namespace PHP.Core
 		/// </code>
 		/// </remarks>
 		public static void ParseLibraryAssemblyList(XmlNode/*!*/ node,
-            LibrariesConfigurationList/*!*/ libraries,
-			FullPath extensionsPath, FullPath librariesPath)
+            LibrariesConfigurationList/*!*/ libraries, FullPath librariesPath)
 		{
 			if (node == null)
 				throw new ArgumentNullException("node");
@@ -475,14 +473,7 @@ namespace PHP.Core
 
 					if (extension_name != null)
 					{
-						try
-						{
-							uri = new Uri("file:///" + Externals.GetWrapperPath(extension_name, extensionsPath.IsEmpty ? "" : extensionsPath));
-						}
-						catch (UriFormatException)
-						{
-							throw new InvalidAttributeValueException(child, "extension");
-						}
+                        throw new NotSupportedException();
 					}
 
 					if (url != null)

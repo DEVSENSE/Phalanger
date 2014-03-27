@@ -545,56 +545,6 @@ namespace PHP.Core.Emit
 
         #endregion
 
-        #region Externals (CLR only)
-#if !SILVERLIGHT
-        public struct Externals
-        {
-            static Type _this { get { return typeof(PHP.Core.Externals); } }
-
-            static MethodInfo _InvokeFunction, _InvokeMethod, _InvokeFunctionDynamic, _InvokeMethodDynamic,
-                _GetFunctionProxy,
-                _MarshalBoundVariables, _MarkParameterForBinding,
-                _PrepareParametersForBinding, _BindParameters;
-
-            public static MethodInfo InvokeFunction { get { if (_InvokeFunction == null)          _InvokeFunction = _this.GetMethod("InvokeFunction"); return _InvokeFunction; } }
-            public static MethodInfo InvokeMethod { get { if (_InvokeMethod == null)            _InvokeMethod = _this.GetMethod("InvokeMethod"); return _InvokeMethod; } }
-            public static MethodInfo InvokeFunctionDynamic { get { if (_InvokeFunctionDynamic == null)   _InvokeFunctionDynamic = _this.GetMethod("InvokeFunctionDynamic"); return _InvokeFunctionDynamic; } }
-            public static MethodInfo InvokeMethodDynamic { get { if (_InvokeMethodDynamic == null)     _InvokeMethodDynamic = _this.GetMethod("InvokeMethodDynamic"); return _InvokeMethodDynamic; } }
-
-            public static MethodInfo GetFunctionProxy { get { return (_GetFunctionProxy ?? (_GetFunctionProxy = _this.GetMethod("GetFunctionProxy"))); } }
-
-            public static MethodInfo MarshalBoundVariables { get { if (_MarshalBoundVariables == null)   _MarshalBoundVariables = _this.GetMethod("MarshalBoundVariables"); return _MarshalBoundVariables; } }
-            public static MethodInfo MarkParameterForBinding { get { if (_MarkParameterForBinding == null) _MarkParameterForBinding = _this.GetMethod("MarkParameterForBinding"); return _MarkParameterForBinding; } }
-
-            public static MethodInfo PrepareParametersForBinding { get { if (_PrepareParametersForBinding == null)   _PrepareParametersForBinding = _this.GetMethod("PrepareParametersForBinding"); return _PrepareParametersForBinding; } }
-            public static MethodInfo BindParameters { get { if (_BindParameters == null) _BindParameters = _this.GetMethod("BindParameters"); return _BindParameters; } }
-
-            public struct ParameterTransformation
-            {
-                static Type _this { get { return typeof(PHP.Core.Externals.ParameterTransformation); } }
-
-                static MethodInfo _TransformInParameters, _TransformOutParameters, _TransformInParameter, _TransformOutParameter;
-
-                public static MethodInfo TransformInParameters { get { if (_TransformInParameters == null)   _TransformInParameters = _this.GetMethod("TransformInParameters"); return _TransformInParameters; } }
-                public static MethodInfo TransformOutParameters { get { if (_TransformOutParameters == null) _TransformOutParameters = _this.GetMethod("TransformOutParameters"); return _TransformOutParameters; } }
-
-                public static MethodInfo TransformInParameter { get { if (_TransformInParameter == null)   _TransformInParameter = _this.GetMethod("TransformInParameter"); return _TransformInParameter; } }
-                public static MethodInfo TransformOutParameter { get { if (_TransformOutParameter == null) _TransformOutParameter = _this.GetMethod("TransformOutParameter"); return _TransformOutParameter; } }
-            }
-
-            public struct IExternalFunction
-            {
-                static Type _this { get { return typeof(PHP.Core.IExternalFunction); } }
-
-                static MethodInfo _Invoke, _GetExtManager;
-
-                public static MethodInfo Invoke { get { if (_Invoke == null)   _Invoke = _this.GetMethod("Invoke"); return _Invoke; } }
-                public static MethodInfo GetExtManager { get { if (_GetExtManager == null)   _GetExtManager = _this.GetMethod("get_ExtManager"); return _GetExtManager; } }
-            }
-        }
-#endif
-        #endregion
-
         #region PhpStack
 
         public struct PhpStack
@@ -967,13 +917,12 @@ namespace PHP.Core.Emit
 
 		#region Attributes - CLR only
 #if !SILVERLIGHT
-		static ConstructorInfo _EditorBrowsable, _ThreadStatic, _STAThread, _MTAThread, _ExtensionDescriptor;
+		static ConstructorInfo _EditorBrowsable, _ThreadStatic, _STAThread, _MTAThread;
 
 		public static ConstructorInfo EditorBrowsable { get { return _EditorBrowsable ?? (_EditorBrowsable = typeof(EditorBrowsableAttribute).GetConstructor(new Type[] { typeof(EditorBrowsableState) })); } }
 		public static ConstructorInfo ThreadStatic { get { if (_ThreadStatic == null)        _ThreadStatic = typeof(ThreadStaticAttribute).GetConstructor(Type.EmptyTypes); return _ThreadStatic; } }
 		public static ConstructorInfo STAThread { get { if (_STAThread == null)           _STAThread = typeof(STAThreadAttribute).GetConstructor(Type.EmptyTypes); return _STAThread; } }
 		public static ConstructorInfo MTAThread { get { if (_MTAThread == null)           _MTAThread = typeof(MTAThreadAttribute).GetConstructor(Type.EmptyTypes); return _MTAThread; } }
-		public static ConstructorInfo ExtensionDescriptor { get { if (_ExtensionDescriptor == null) _ExtensionDescriptor = typeof(ExtensionDescriptorAttribute).GetConstructor(new Type[] { typeof(string), typeof(string), typeof(bool) }); return _ExtensionDescriptor; } }
 #endif
 		#endregion
 
