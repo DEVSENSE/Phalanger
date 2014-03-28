@@ -2768,39 +2768,6 @@ namespace PHP.Core.Reflection
 			}
 		}
 
-		#region Unit Test
-#if DEBUG
-
-		[Test]
-		private static void TestPhpObjectInterfaces()
-		{
-			Type[] ifaces = typeof(PhpObject).GetInterfaces();
-			Type[] expected = new Type[]
-				{ 
-					typeof(PHP.Core.IPhpVariable),
-					typeof(PHP.Core.IPhpConvertible),
-					typeof(PHP.Core.IPhpPrintable),
-					typeof(PHP.Core.IPhpCloneable),
-					typeof(PHP.Core.IPhpComparable),
-					typeof(PHP.Core.IPhpObjectGraphNode),
-					typeof(PHP.Core.IPhpEnumerable),
-					typeof(System.IDisposable),
-                    typeof(System.Dynamic.IDynamicMetaObjectProvider),
-#if !SILVERLIGHT
-					typeof(System.Runtime.Serialization.ISerializable),
-					typeof(System.Runtime.Serialization.IDeserializationCallback) 
-#endif
-				};
-
-            Debug.Assert(ifaces.Length == expected.Length && ArrayEx.TrueForAll(ifaces, delegate(System.Type iface)
-			{
-				return Array.IndexOf(expected, iface) != -1;
-			}), "ReflectInterfaces must be updated if PhpObject implements different interfaces than listed");
-		}
-
-#endif
-		#endregion
-
 		private static bool IsRealInterfaceHidden(Type/*!*/ realType, Type/*!*/ realInterface)
 		{
 			// non public:

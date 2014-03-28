@@ -473,6 +473,7 @@
     <ProjectReference Include="..\Core.Parsers\Core.Parsers.csproj">
       <Project>{581f1486-5062-459e-bae6-a41886584f81}</Project>
       <Name>Core.Parsers</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

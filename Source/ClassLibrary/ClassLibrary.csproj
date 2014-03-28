@@ -309,10 +309,12 @@
     <ProjectReference Include="..\Core.Parsers\Core.Parsers.csproj">
       <Project>{581f1486-5062-459e-bae6-a41886584f81}</Project>
       <Name>Core.Parsers</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>
       <Name>Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

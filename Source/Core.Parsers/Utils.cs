@@ -146,21 +146,6 @@ namespace PHP.Core
             return result.ToString();
         }
 
-#if DEBUG
-        /// <summary>
-        /// Unit test.
-        /// </summary>
-        [Test]
-        static void TestIncrement()
-        {
-            string[] cases = new string[] { null, "", "z", "ZZ[Z9ZzZ", "ZZz" };
-            string[] results = new string[] { "0", "1", "aa", "ZZ[A0AaA", "AAAa" };
-
-            for (int i = 0; i < cases.Length; i++)
-                Debug.Assert(StringUtils.Increment(cases[i]) == results[i]);
-        }
-#endif
-
         public static string/*!*/ AddCSlashes(string/*!*/ str)
         {
             return AddCSlashes(str, true, true, true);
@@ -2544,65 +2529,6 @@ namespace PHP.Core
             return other.level - this.level;                     // TODO:
         }
 
-        #endregion
-
-        #region Unit Tests
-#if DEBUG
-
-        [Test]
-        static void TestPaths()
-        {
-            FullPath root;
-            FullPath full;
-            RelativePath rel;
-            string str1, str2;
-
-            string[,] cases = 
-      {
-          // root:        // full:          // full canonical:    // relative canonical:
-        { @"C:\a/b/c/",   @"D:\a/b/",       @"D:\a\b\",           @"D:\a\b\" },
-                                            
-        { @"C:\a\b\c",    @"C:\a\b\c",      @"C:\a\b\c",          @"" },
-        { @"C:\a\b\c",    @"C:\a\b\c\",     @"C:\a\b\c\",         @"" },
-        { @"C:\a\b\c\",   @"C:\a\b\c",      @"C:\a\b\c",          @"" },
-        { @"C:\a\b\c\",   @"C:\a\b\c\",     @"C:\a\b\c\",         @"" },
-                                            
-        { @"C:\a\b\c",    @"C:\a\b",        @"C:\a\b",            @".." },
-        { @"C:\a\b\c\",   @"C:\a\b",        @"C:\a\b",            @".." },
-                                            
-        { @"C:\a\b\c",    @"C:\",           @"C:\",                @"..\..\.." },
-        { @"C:\a\b\c\",   @"C:\",           @"C:\",                @"..\..\.." },
-                                            
-        { @"C:\a\b\c\",   @"C:\a\b\x\y\z",  @"C:\a\b\x\y\z",      @"..\x\y\z" },
-        { @"C:\a\b\cd\",  @"C:\a\b\c",      @"C:\a\b\c",          @"..\c" },
-        { @"C:\a\b\cd",   @"C:\a\b\c",      @"C:\a\b\c",          @"..\c" },
-        { @"C:\a\b\cd\",  @"C:\a\b\c\d",    @"C:\a\b\c\d",          @"..\c\d" },
-        { @"C:\a\b\cd",   @"C:\a\b\c\d",    @"C:\a\b\c\d",          @"..\c\d" },
-      };
-
-            for (int i = 0; i < cases.GetLength(0); i++)
-            {
-                root = new FullPath(cases[i, 0]);
-                full = new FullPath(cases[i, 1]);
-                rel = new RelativePath(root, full);
-
-                Debug.Assert(full.ToString() == cases[i, 2]);
-
-                Debug.Assert(rel.ToString() == cases[i, 3]);
-
-                str1 = full;
-                if (str1[str1.Length - 1] == '\\') str1 = str1.Substring(0, str1.Length - 1);
-
-                str2 = rel.ToFullPath(root);
-                if (str2[str2.Length - 1] == '\\') str2 = str2.Substring(0, str2.Length - 1);
-
-                Debug.Assert(str1 == str2);
-
-                Debug.Assert(RelativePath.ParseCanonical(cases[i, 3]).ToString() == cases[i, 3]);
-            }
-        }
-
-#endif
         #endregion
 
     }

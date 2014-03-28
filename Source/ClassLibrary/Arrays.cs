@@ -864,24 +864,7 @@ namespace PHP.Library
 			return true;
 		}
 
-		#region Unit Test
-
-#if DEBUG
-
-		[Test]
-		private static void TestRandomKeys()
-		{
-			PhpArray a = PhpArray.Keyed("Server1", 1, "Server2", 2, "Server3", 3);
-			PhpVariable.Dump(a);
-			string result = RandomKeys(a) as string;
-			Debug.Assert(result == "Server1" || result == "Server2" || result == "Server3");
-		}
-
-#endif
-
-		#endregion
-
-		#endregion
+        #endregion
 
 
 		#region array_key_exists, in_array, array_search
