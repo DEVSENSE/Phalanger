@@ -46,13 +46,24 @@ namespace VersionReplacer
                 }
                 else if (iscs)
                 {
-                    if (line.Contains("public const string Version"))
+                    if (line.Contains("public const string"))
                     {
-                        var regex = new Regex(@"public\s+const\s+string\s+Version\s+\=\s+""[0-9]+\.[0-9]+\.(.+)""");
-                        var newline = (regex.Replace(line, versionChanger));
-                        result.AppendLine(newline);
+                        var newline = line;
 
-                        changed |= newline != line;
+                        if (line.Contains("Version"))
+                        {
+                            var regex = new Regex(@"Version\s+\=\s+""[0-9]+\.[0-9]+\.(.+)""");
+                            newline = (regex.Replace(line, versionChanger));
+                            result.AppendLine(newline);
+                        }
+                        else if (line.Contains("ChangesetNumber"))
+                        {
+                            var regex = new Regex(@"ChangesetNumber\s+\=\s+""(.+)""");
+                            newline = (regex.Replace(line, versionChanger));
+                            result.AppendLine(newline);
+                        }
+
+                        changed |= (newline != line);
                         continue;
                     }
 

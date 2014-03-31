@@ -16,15 +16,6 @@ using System.Security;
 using System.Runtime.CompilerServices;
 using System;
 
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("The Phalanger Project Team")]
-[assembly: AssemblyProduct("Phalanger")]
-[assembly: AssemblyCopyright("Copyright (c) 2004-2010 Tomas Matousek, Ladislav Prosek, Vaclav Novak, Pavel Novak, Jan Benda, Martin Maly, Tomas Petricek, Daniel Balas, Miloslav Beno, Jakub Misek")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: System.Resources.NeutralResourcesLanguage("en-US", System.Resources.UltimateResourceFallbackLocation.MainAssembly)]
-//[assembly: CLSCompliant(true)]
-
 #if !SILVERLIGHT
 [assembly: AssemblyTitle("Phalanger Core")]
 [assembly: AssemblyDescription("Phalanger Core Functionality")]
@@ -33,9 +24,6 @@ using System;
 [assembly: AssemblyTitle("Phalanger Core (Silverlight)")]
 [assembly: AssemblyDescription("Phalanger Core Functionality (Silverlight)")]
 #endif
-
-[assembly: AssemblyVersion("4.0.0.0")]
-[assembly: AssemblyFileVersion("4.0.0.5096")]
 
 //[assembly: InternalsVisibleTo("PhpNetClasslibrary, PublicKey=0024000004800000940000000602000000240000525341310004000001000100611b1c313d77d51b5ac4d5b309e8712919634a716ae826dd133e722fe5e4f10012a8b96c40b7098d669ac5f78581b83cfa412d1a436a65450fac212d0d2dca824f8b1ab51b98af6d44d14ffd9a7aacd21e23557971564886df047070ca34d51869f3eddfb343739ee014e1b117772885fbc0758232461c5db7c659ca98b981a9")]
 [assembly: InternalsVisibleTo("PhpNetCore.CodeDom, PublicKey=0024000004800000940000000602000000240000525341310004000001000100e3c182f57d3158a916b477e7fbdb05d2733bf65c53e5ad976bd1af240211998dd8ffb116d73e2d2059909f1578a4031b3a33c0dc892d22834960f413ca1ebbe0cfe631c84d4ba26cb5f44f4fd8785a08260d44600fa6b6fddd8a4ace4d7d86a9f5d7884539b343973d8b4ac305ccffda775c493326aee5284e8b963b297a7eb9")]

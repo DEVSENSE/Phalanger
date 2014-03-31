@@ -1,31 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\..\Build\Common.Build.settings" />
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2153C1DA-B1C5-4B6F-B6D9-272D6099FFC6}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon>
-    </ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>PhpNetMsSql</AssemblyName>
     <AssemblyOriginatorKeyFile>..\Extensions.snk</AssemblyOriginatorKeyFile>
-    <DefaultClientScript>JScript</DefaultClientScript>
-    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
-    <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
     <RootNamespace>PHP.Library.Data</RootNamespace>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <StartupObject>
-    </StartupObject>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
     <SignAssembly>true</SignAssembly>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -33,65 +22,35 @@
     <SccProvider>SAK</SccProvider>
     <OldToolsVersion>3.5</OldToolsVersion>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>bin\Debug\PhpNetMsSql.xml</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>1591</NoWarn>
     <Optimize>false</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
-    <DebugType>full</DebugType>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>436207616</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>bin\Release\PhpNetMsSql.xml</DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>1591</NoWarn>
     <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
-    <DebugType>none</DebugType>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
@@ -162,34 +121,5 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>"$(SolutionDir)..\Tools\gacutil" /u $(TargetName) 1&gt;nul
-
-if $(ConfigurationName) == Release (
-xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
-
-REM mkdir "$(SolutionDir)..\Deployment\Bin\Temp"
-REM "$(SolutionDir)..\Deployment\Bin\MkDynamic" "$(SolutionDir)..\Deployment\Bin\$(TargetName).dll" "$(SolutionDir)..\Deployment\Bin\Temp"
-REM "$(SolutionDir)..\Tools\ilmerge" /ndebug /keyfile:"$(ProjectDir)..\Extensions.snk" /out:"$(SolutionDir)..\Deployment\Bin\Temp\$(TargetFileName)" "$(TargetPath)"  REM "$(SolutionDir)..\Deployment\Bin\Temp\$(TargetName).dynamic.dll"
-REM del "$(SolutionDir)..\Deployment\Bin\$(TargetName).dll"
-REM del "$(SolutionDir)..\Deployment\Bin\Temp\$(TargetName).dynamic.dll"
-REM move "$(SolutionDir)..\Deployment\Bin\Temp\$(TargetName).dll" "$(SolutionDir)..\Deployment\Bin"
-REM rmdir "$(SolutionDir)..\Deployment\Bin\Temp"
-
-"$(SolutionDir)..\Tools\gacutil" -f -i "$(SolutionDir)..\Deployment\Bin\$(TargetName).dll" 1&gt;nul
-
-REM "$(SolutionDir)..\Deployment\Bin\PhpVerify" "$(TargetFileName)"
-)
-if $(ConfigurationName) == Debug (
-xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
-"$(SolutionDir)..\Tools\gacutil" -f -i "$(SolutionDir)..\Deployment\Debug\$(TargetName).dll" 1&gt;nul
-)
-if $(ConfigurationName) == DebugNoGac (
-xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
-rmdir "$(SolutionDir)..\Deployment\Debug\Temp"
-)</PostBuildEvent>
-  </PropertyGroup>
+  <Import Project="..\..\Build\Common.Build.targets" />
 </Project>

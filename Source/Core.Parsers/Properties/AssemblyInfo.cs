@@ -8,34 +8,9 @@ using System.Resources;
 // associated with an assembly.
 [assembly: AssemblyTitle("PhpNetCore.Parsers")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Phalanger")]
-[assembly: AssemblyCopyright("Copyright © 2013")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("c7052f8c-341d-45aa-8209-47656eb896b5")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("4.0.0.0")]
-[assembly: AssemblyFileVersion("4.0.0.5096")]
-[assembly: NeutralResourcesLanguageAttribute("en-US")]
 
 [assembly: InternalsVisibleTo("PhpNetCore.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100cfbcc1fd851a8a7bdbea1fcd2a974e9b30d66e78bd559ee4b6601165b95bf88fa560523627862acffc0480b1ed91ee84220e76473a3f93e394fb3f452dea4928b915f3f994d26a5863956f1ccf5f772176a70371cac2a9ace9dfc756cc4033ef192b880bac533ee800ccdea929c5d51dbfc7e5003f23753916438f3dd6d7889d")]
 [assembly: InternalsVisibleTo("PhpNetCore.Parsers.Tests, PublicKey=00240000048000009400000006020000002400005253413100040000010001006759d806c997ee61480837e1f990757b79760c4735e92ce6b606794a3ff501f876ee640e919e91eedf39d96d26a8cc2669595e8633b68d53a1909c500ef8e5e41059a62c3402f8e716a26867163c4c51a79b112b6abe7ad4a32488a31d57dd9fc45819679e14883705a8608d5d4f15088448020bc9c6b88305aeec8c35ce7988")]

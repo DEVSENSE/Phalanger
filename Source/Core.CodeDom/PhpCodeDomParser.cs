@@ -733,8 +733,6 @@ namespace PHP.Core.CodeDom
             /// =or=
             /// <paramref name="Expression"/> is <see cref="IncludingEx"/>
             /// =or=
-            /// <paramref name="Expression"/> is either <see cref="AST.Linq.LinqExpression"/>, <see cref="AST.Linq.LinqOpChain"/>, <see cref="AST.Linq.LinqTuple"/> or <see cref="AST.Linq.LinqTupleItemAccess"/>
-            /// =or=
             /// <paramref name="Expression"/> is of another unknown and thus unsupported type
             /// =or=
             /// Some sub-expression is not supported (as goes from <see cref="TranslateVariableUse"/>, <see cref="TranslateExpression"/>, <see cref="TranslateBinaryOperation"/>, <see cref="TranslateConcatExpression"/>, <see cref="TranslateGenericQualifiedName"/>, <see cref="TranslateTypeRef"/>, <see cref="TranslateList"/>, <see cref="TranslateNew"/>, <see cref="TranslateShellExec"/>, <see cref="TranslateUnaryOperator"/>, <see cref="TranslateVarLikeConstructUse"/>, <see cref="TranslateArray"/>)
@@ -1210,7 +1208,7 @@ namespace PHP.Core.CodeDom
             /// <exception cref="PhpToCodeDomNotSupportedException">
             /// <paramref name="use"/> is neither of <see cref="ItemUse"/> <see cref="DirectVarUse"/>, <see cref="IndirectVarUse"/>, <see cref="DirectStFldUse"/>, <see cref="DirectStFldUse"/>
             /// =or=
-            /// some sub-construct is not supported (as comes from <see cref="TranslateVariableUse"/>, <see cref="TranslateVarLikeConstructUse"/>, <see cref="TranslateExpression"/>, <see cref="TranslateGenericQualifiedName"/>, <see cref="TranslateDirectVarUse"/>, <see cref="TranslateDirectStFldUse"/>)
+            /// some sub-construct is not supported (as comes from <see cref="TranslateVariableUse"/>, <see cref="TranslateVarLikeConstructUse"/>, <see cref="TranslateExpression"/>, <see cref="TranslateGenericQualifiedName"/>, <see cref="TranslateDirectVarUse(DirectVarUse,MethodContextBase)"/>, <see cref="TranslateDirectStFldUse"/>)
             /// =or=
             /// Attempt to use static variable inside method that is not member of class.
             /// </exception>
@@ -1938,7 +1936,7 @@ namespace PHP.Core.CodeDom
                     else throw new PhpToCodeDomNotSupportedException(Localizations.Strings.cdp_unsup_array_item_reference, item.Index == null ? (item is RefItem ? (LangElement)((RefItem)item).RefToGet : array) : (LangElement)item.Index);
                 return ret.ToArray();
             }
-            /// <summary>Translates PHP execution expression `` to CodeDom call of <see cref="Execution.ShellExec"/> method</summary>
+            /// <summary>Translates PHP execution expression `` to CodeDom call of <see cref="Execution.ShellExec(string)"/> method</summary>
             /// <param name="command">Command do translate</param>
             /// <param name="method">GetUserEntryPoint for declaring local variables</param>
             /// <param name="IC">Block for inserting additional statements</param>
@@ -2344,7 +2342,7 @@ namespace PHP.Core.CodeDom
             /// <exception cref="PhpToCodeDomNotSupportedException">
             /// GetUserEntryPoint cannot be added to <paramref name="block"/>.
             /// =or=
-            /// Some statement contained in method is not supported or consists of unsupported constructs (see <see cref="TranslateStatement"/>)
+            /// Some statement contained in method is not supported or consists of unsupported constructs (see <c>TranslateStatement</c>)
             /// =or=
             /// Some construct in method header is usupported (see <see cref="TranslateAttribute"/>,<see cref="TranslateParameter"/>
             /// </exception>
@@ -2633,7 +2631,7 @@ namespace PHP.Core.CodeDom
                 block.AddObject(label2, statement);
             }
             /// <summary>Translates try statement from PHP to CodeDOM</summary><param name="statement">Statement to translate</param><param name="method">GetUserEntryPoint for declaring local variables</param><param name="block">Block for adding statements</param>
-            /// <exception cref="PhpToCodeDomNotSupportedException">Some part of statement is not supported (see <see cref="TranslateBlock(IEnumerable&lt;Statement>,MethodContextBase,IBlockContext)"/>, <see cref="TranslateDirectVarUse"/>)</exception>
+            /// <exception cref="PhpToCodeDomNotSupportedException">Some part of statement is not supported (see <see cref="TranslateBlock(IEnumerable&lt;Statement>,MethodContextBase,IBlockContext)"/>, <see cref="TranslateDirectVarUse(DirectVarUse,MethodContextBase)"/>)</exception>
             protected void TranslateStatement(TryStmt statement, MethodContextBase method, IBlockContext block)
             {
                 MethodContext Method = null; ICodeBlockContext Block = null;
@@ -2953,7 +2951,7 @@ namespace PHP.Core.CodeDom
 
             /// <summary>Gets CLR name of <see cref="QualifiedName"/> without trailing dot (.)</summary>
             /// <param name="name"><see cref="QualifiedName"/> to get name for.</param>
-            /// <returns>Uses <see cref="QualifiedName.ToClrNotation"/> and removes traling dot (.) if any</returns>
+            /// <returns>CLR name of <see cref="QualifiedName"/> without trailing dot (.)</returns>
             private String getCLRName(QualifiedName name)
             {
                 String CLR = name.ToClrNotation(0, 0);
@@ -3677,7 +3675,7 @@ namespace PHP.Core.CodeDom
             //public int Line { get { return element.Position.FirstLine; } }
             ///// <summary>Column where element that caused the exception starts</summary>
             //public int Column { get { return element.Position.FirstColumn; } }
-            /// <summary><see cref="Parsers.Position">Position</see> of <see cref="Element"/></summary>
+            /// <summary><see cref="Text.Span">Position</see> of <see cref="Element"/></summary>
             public Text.Span Position { get { return element.Span; } }
         }
     }

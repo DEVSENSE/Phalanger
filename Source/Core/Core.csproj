@@ -1,115 +1,65 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="..\Build\Common.Build.settings" />
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon>
-    </ApplicationIcon>
-    <AssemblyKeyContainerName>
-    </AssemblyKeyContainerName>
     <AssemblyName>PhpNetCore</AssemblyName>
     <AssemblyOriginatorKeyFile>Core.snk</AssemblyOriginatorKeyFile>
-    <DefaultClientScript>JScript</DefaultClientScript>
-    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
-    <DefaultTargetSchema>IE50</DefaultTargetSchema>
-    <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
     <RootNamespace>PHP.Core</RootNamespace>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <StartupObject>
-    </StartupObject>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
     <SignAssembly>true</SignAssembly>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <NoWarn>$(NoWarn),1591,419</NoWarn>
     <OldToolsVersion>3.5</OldToolsVersion>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <IsWebBootstrapper>true</IsWebBootstrapper>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <PublishUrl>http://localhost/PhpNetCore/</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Web</InstallFrom>
-    <UpdateEnabled>true</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>Bin\Debug\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>Bin\Debug\PhpNetCore.xml</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>1591,419</NoWarn>
     <Optimize>false</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
-    <ErrorReport>prompt</ErrorReport>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>Bin\Release\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <BaseAddress>402653184</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>Bin\Release\PhpNetCore.xml</DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>1591,419</NoWarn>
     <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
     <DebugType>none</DebugType>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugNoGac|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\DebugNoGac\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <DocumentationFile>Bin\Debug\PhpNetCore.xml</DocumentationFile>
     <FileAlignment>4096</FileAlignment>
     <NoWarn>1591,419</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
@@ -476,61 +426,5 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>cd "$(ProjectDir)..\.."
-Tools\UpdateFileVersionFromChangeset.cmd "$(ProjectDir)AssemblyInfo.cs"
-
-REM workaround issue of missing CopyLocal reference; msbuild does not copy the refernce if it is in GAC; this causes the project is being rebuilt every time
-xcopy /q /y "$(ProjectDir)..\Core.Parsers\bin\$(ConfigurationName)\*.dll" "$(TargetDir)*" 1&gt;nul
-
-</PreBuildEvent>
-    <PostBuildEvent>REM ECHO Uninstalling previous version from GAC ...
-
-REM "$(ProjectDir)..\..\Tools\gacutil" /u $(TargetName) 1&gt;nul
-
-
-REM ECHO Generating publisher policy assembly ...
-
-REM "$(ProjectDir)..\..\Tools\PolicyFileGen" "$(TargetPath)" "/out:$(TargetDir)policy.$(TargetName).config" 1&gt;nul
-
-REM "$(ProjectDir)..\..\Tools\al" "/link:$(TargetDir)policy.$(TargetName).config" "/out:$(TargetDir)policy.3.0.$(TargetFileName)" "/keyfile:(ProjectDir)$(ProjectName).snk" /platform:anycpu 1&gt;nul
-
-
-
-ECHO Copying output to the Deployment folder ...
-
-
-if $(ConfigurationName) == Release (
-
-xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(ProjectDir)\..\..\Deployment\Bin" 1&gt;nul
-
-"$(ProjectDir)..\..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
-
-REM "$(ProjectDir)..\..\Tools\gacutil" -f -i "$(TargetDir)policy.3.0.$(TargetFileName)" 1&gt;nul
-
-
-REM "$(ProjectDir)..\..\Deployment\Bin\PhpVerify" "$(TargetFileName)"
-
-)
-
-
-if $(ConfigurationName) == Debug (
-
-xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(ProjectDir)..\..\Deployment\Debug" 1&gt;nul
-
-"$(ProjectDir)..\..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
-
-REM "$(ProjectDir)..\..\Tools\gacutil" -f -i "$(TargetDir)policy.3.0.$(TargetFileName)" 1&gt;nul
-
-)
-
-
-if $(ConfigurationName) == DebugNoGac (
-
-xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(ProjectDir)..\..\Deployment\Debug" 1&gt;nul
-
-)</PostBuildEvent>
-  </PropertyGroup>
+  <Import Project="..\Build\Common.Build.targets" />
 </Project>
