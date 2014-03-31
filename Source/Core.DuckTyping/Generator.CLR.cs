@@ -558,8 +558,6 @@ namespace PHP.Core.DuckTyping
 		/// <summary>
 		/// Transforms parsed type information into CLR type name.
 		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
 		private static CodeTypeReference ResolveType(string typename)
 		{
             if (string.IsNullOrEmpty(typename))
@@ -658,7 +656,7 @@ namespace PHP.Core.DuckTyping
         #endregion
 
         /// <summary>
-        /// Generates duck type interfaces for given <see cref="sourceAsts"/>.
+        /// Generates duck type interfaces for given <paramref name="sourceAsts"/>.
         /// </summary>
         /// <param name="sourceAsts">Enumeration of <see cref="GlobalCode"/> - AST of source files containing PHP source code.</param>
         /// <param name="duckPath">Target path.</param>
