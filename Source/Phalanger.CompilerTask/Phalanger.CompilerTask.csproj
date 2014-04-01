@@ -77,10 +77,7 @@
   <Target Name="AfterBuild">
     <Message Text="Deploying..." />
     <MakeDir Directories="$(DeployDestination)" Condition="!Exists($(DeployDestination))" />
-    <CreateItem Include="$(OutputPath)\*.dll" AdditionalMetadata="Visible=false">
-      <Output TaskParameter="Include" ItemName="DeployToMSBuild" />
-    </CreateItem>
-    <CreateItem Include="$(OutputPath)\*.pdb" AdditionalMetadata="Visible=false">
+    <CreateItem Include="$(OutputPath)\$(TargetName).*" AdditionalMetadata="Visible=false">
       <Output TaskParameter="Include" ItemName="DeployToMSBuild" />
     </CreateItem>
     <Copy SourceFiles="%(DeployToMSBuild.Identity)" DestinationFolder="$(DeployDestination)" SkipUnchangedFiles="true" />
