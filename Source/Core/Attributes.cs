@@ -879,7 +879,7 @@ namespace PHP.Core
         /// <summary>
 		/// A timestamp of the source file when the script builder is created.
 		/// </summary>
-		public DateTime SourceTimestamp  { get { return new DateTime(sourceTimestamp); } }
+		public DateTime SourceTimestamp  { get { return new DateTime(sourceTimestamp, DateTimeKind.Utc); } }
         private readonly long sourceTimestamp;
 
         /// <summary>

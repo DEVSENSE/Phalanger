@@ -83,6 +83,7 @@ namespace PHP.Core
 		/// <exception cref="ArgumentNullException"><paramref name="relativeSourcePath"/> or <paramref name="script"/> are <B>null</B> references.</exception>
 		/// <exception cref="ArgumentException">Script type cannot be resolved.</exception>
 		/// <exception cref="InvalidScriptAssemblyException">The target assembly is not a valid Phalanger compiled assembly.</exception>
+        [DebuggerNonUserCode]
 		public object IncludeScript(string/*!*/ relativeSourcePath, ScriptInfo/*!*/ script)
 		{
 			if (disposed)
