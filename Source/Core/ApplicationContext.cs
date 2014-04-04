@@ -424,9 +424,16 @@ namespace PHP.Core
                     // on web, check following locations too:
 
                     // 2. bin/WebPages.dll
-                    var msa = context.GetPrecompiledAssembly();
-                    if (msa != null)
-                        file_exists = file_exists.OrElse((path) => msa.ScriptExists(path));
+                    var msas = context.GetPrecompiledAssemblies();
+                    file_exists = file_exists.OrElse((path) => 
+                        {
+                            foreach (var msa in msas)
+                                if (msa.ScriptExists(path))
+                                    return true;
+
+                            // path was not found in any msa
+                            return false;
+                        });
                 }
                 else
                 {
