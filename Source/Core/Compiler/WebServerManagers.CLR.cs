@@ -1015,7 +1015,7 @@ namespace PHP.Core
         {
             var result = new List<MultiScriptAssembly>();
 
-            if (HttpContext.Current != null && !string.IsNullOrEmpty(HttpRuntime.BinDirectory))
+            if (HttpContext.Current != null && Directory.Exists(HttpRuntime.BinDirectory))
             {
                 // load all script libraries from configuration if not yet
                 applicationContext.ScriptLibraryDatabase.EnsureLibrariesReflected();
