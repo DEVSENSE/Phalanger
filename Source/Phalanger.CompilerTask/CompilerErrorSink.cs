@@ -50,11 +50,11 @@ namespace PHP.VisualStudio.PhalangerTasks
                 case ErrorSeverity.Values.FatalError:
 				case ErrorSeverity.Values.Error:
                 case ErrorSeverity.Values.WarningAsError:
-                    logger.LogError(severity.Value.ToString(), code, "", fullPath, pos.FirstLine, Math.Max(0, pos.FirstColumn - 1), pos.LastLine, pos.LastColumn, message);
+                    logger.LogError(severity.Value.ToString(), code, "", fullPath, pos.FirstLine, pos.FirstColumn, pos.LastLine, pos.LastColumn, message);
 					break;
 
 				case ErrorSeverity.Values.Warning:
-                    logger.LogWarning(severity.Value.ToString(), code, "", fullPath, pos.FirstLine, Math.Max(0, pos.FirstColumn - 1), pos.LastLine, pos.LastColumn, message);
+                    logger.LogWarning(severity.Value.ToString(), code, "", fullPath, pos.FirstLine, pos.FirstColumn, pos.LastLine, pos.LastColumn, message);
 					break;
 			}
 			return true;
