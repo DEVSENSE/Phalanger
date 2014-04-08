@@ -3316,9 +3316,6 @@ namespace PHP.Core.Reflection
 					}
 #endif
 
-					if (IsExported)
-						PhpObjectBuilder.DefineExportedConstructors(this);
-
 					PhpObjectBuilder.EmitInitFieldHelpers(this);
 				}
 

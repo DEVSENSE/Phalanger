@@ -681,10 +681,17 @@ namespace PHP.Core.Reflection
 
 		private void DefineBuilders()
 		{
-			foreach (Declaration declaration in types.Values)
+            foreach (Declaration declaration in types.Values)
 			{
-				((PhpType)declaration.Declaree).DefineBuilders();
+                ((PhpType)declaration.Declaree).DefineBuilders();
 			}
+
+            foreach (Declaration declaration in types.Values)
+            {
+                var phptype = (PhpType)declaration.Declaree;
+                if (phptype.IsExported)
+                    PhpObjectBuilder.DefineExportedConstructors(phptype);
+            }
 
 			foreach (Declaration declaration in functions.Values)
 			{
