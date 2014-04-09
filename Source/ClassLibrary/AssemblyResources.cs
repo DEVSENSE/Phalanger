@@ -32,7 +32,7 @@ namespace PHP.Library
 		/// </summary>
 		static LibResources()
 		{
-			strings = new ResourceManager("PHP.Strings", Assembly.GetExecutingAssembly());
+            strings = PHP.Library.Strings.ResourceManager;
 		}
 
 		/// <summary>
