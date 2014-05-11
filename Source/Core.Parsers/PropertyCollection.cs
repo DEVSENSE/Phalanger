@@ -111,7 +111,7 @@ namespace PHP.Core
                 _obj = value;
             }
             // one item list, with the same key
-            else if (p == key)
+            else if (object.Equals(p, key))
             {
                 _obj = value;
             }
@@ -125,7 +125,7 @@ namespace PHP.Core
                 int count = 0;
                 for (var node = (DictionaryNode)_obj; node != null; node = node.next)
                 {
-                    if (node.key == key)
+                    if (object.Equals(node.key, key))
                     {
                         node.value = value;
                         return;
@@ -187,7 +187,7 @@ namespace PHP.Core
             // empty container
             if (p != null)
             {
-                if (p == key)
+                if (object.Equals(p, key))
                 {
                     return _obj;
                 }
@@ -195,7 +195,7 @@ namespace PHP.Core
                 {
                     Debug.Assert(_obj is DictionaryNode);
                     for (var node = (DictionaryNode)_obj; node != null; node = node.next)
-                        if (node.key == key)
+                        if (object.Equals(node.key, key))
                             return node.value;
                 }
                 else if (object.ReferenceEquals(p, TypeHashtable))
@@ -222,7 +222,7 @@ namespace PHP.Core
 
             if (p != null)
             {
-                if (p == key)
+                if (object.Equals(p, key))
                 {
                     _type = null;
                     _obj = null;
@@ -234,7 +234,7 @@ namespace PHP.Core
                     DictionaryNode prev = null;
                     for (var node = (DictionaryNode)_obj; node != null; node = node.next)
                     {
-                        if (node.key == key)
+                        if (object.Equals(node.key, key))
                         {
                             if (prev == null)
                             {
@@ -250,6 +250,9 @@ namespace PHP.Core
                             
                             return true;
                         }
+
+                        //
+                        prev = node;
                     }
                 }
                 else if (object.ReferenceEquals(p, TypeHashtable))
@@ -262,8 +265,8 @@ namespace PHP.Core
                     {
                         if (hashtable.Count <= MaxListSize)
                         {
-                            _obj = ToList((Hashtable)p);
-                            _type = TypeHashtable;
+                            _obj = ToList(hashtable);
+                            _type = TypeList;
                         }
 
                         return true;
