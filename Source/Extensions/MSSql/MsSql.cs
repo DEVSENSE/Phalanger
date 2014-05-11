@@ -484,6 +484,62 @@ namespace PHP.Library.Data
 
 		#endregion
 
+        #region mssql_exec_prep
+        /// <summary>
+        /// Added by IMATRONIX
+        /// </summary>
+        /// <param name="query">Query.</param>
+        /// <returns>Query resource or a <B>null</B> reference (<B>null</B> in PHP) on failure.</returns>
+        [ImplementsFunction("mssql_exec_prep")]
+        [return: CastToFalse]
+        public static PhpResource ExecPrep(string query, PhpArray args)
+        {
+            IDataParameter[] parameters = new IDataParameter[args.Count];
+            int i = 0;
+            foreach (var arg in args)
+            {
+                SqlParameter parameter = new SqlParameter("@" + arg.Key.ToString(), (arg.Value != null ? arg.Value.ToString() : (object)DBNull.Value));
+                // parameter.Size = 64000; // TODO: More?
+                // parameter.DbType = System.Data.DbType.String;
+                parameters[i] = parameter;
+                i++;
+            }
+
+            // Técnica de ing. reversa aplicada : Comenzamos desmenuzando código a partir de Query() ; -)
+
+            PhpDbConnection last_connection = manager.GetLastConnection();
+
+            if (last_connection == null)
+                last_connection = (PhpDbConnection)Connect();
+
+            MsSqlLocalConfig local = MsSqlConfiguration.Local;
+
+            // HINT: return Query(query, last_connection, local.BatchSize);
+            // HINT: public static PhpResource Query(string query, PhpResource linkIdentifier, int batchSize)
+            PhpResource linkIdentifier = last_connection;
+            int batchSize = local.BatchSize;
+
+            PhpSqlDbConnection connection = PhpSqlDbConnection.ValidConnection(linkIdentifier);
+            if (query == null || connection == null) return null;
+
+            // HINT: PhpSqlDbResult result = (PhpSqlDbResult)connection.ExecuteQuery(query.Trim(), true);
+            // HINT: public PhpDbResult ExecuteQuery(string/*!*/ query, bool convertTypes)
+            bool convertTypes = true;
+
+            if (query == null)
+                throw new ArgumentNullException("query");
+
+            PhpSqlDbResult result = (PhpSqlDbResult)connection.ExecuteCommand(query, CommandType.Text, convertTypes, parameters, false);
+
+            if (result == null) return null;
+
+            // ScriptContext.Echo("HERE 3<br>", ScriptContext.CurrentContext);
+
+            result.BatchSize = batchSize;
+            return result;
+        }
+        #endregion
+
 		#region mssql_fetch_row, mssql_fetch_assoc, mssql_fetch_array, mssql_fetch_object
 
 		/// <summary>

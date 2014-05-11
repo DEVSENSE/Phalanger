@@ -125,7 +125,7 @@ namespace PHP.Library
 				sb.Replace('"', ' ');
 				sb.Replace('%', ' ');
 				sb.Append('"');
-				sb[0] = '\'';
+                sb[0] = '"';
 			}
 			else
 			{

@@ -37,7 +37,7 @@ namespace PHP.Library.GetText
         /// <param name="domain"></param>
         /// <param name="codeset"></param>
         /// <returns></returns>
-        [ImplementsFunction("bind_textdomain_codeset", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("bind_textdomain_codeset")]
         public static string bind_textdomain_codeset(string domain, string codeset)
         {
             return "";
@@ -53,7 +53,7 @@ namespace PHP.Library.GetText
         /// <param name="domain"></param>
         /// <param name="directory"></param>
         /// <returns>The full pathname for the domain currently being set.</returns>
-        [ImplementsFunction("bindtextdomain", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("bindtextdomain")]
         [return: CastToFalse]
         public static string bindtextdomain(string domain, string directory)
         {
@@ -223,11 +223,10 @@ namespace PHP.Library.GetText
         /// This function sets the domain to search within when calls are made to gettext(), usually the named after an application.
         /// </summary>
         /// <param name="domain"></param>
-        /// <param name="directory"></param>
         /// <returns>The full pathname for the domain currently being set.</returns>
-        [ImplementsFunction("textdomain", FunctionImplOptions.NotSupported)]
+        [ImplementsFunction("textdomain")]
         [return: CastToFalse]
-        public static string textdomain(string domain, string directory)
+        public static string textdomain(string domain)
         {
             return "";
         }

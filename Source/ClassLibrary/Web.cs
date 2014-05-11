@@ -379,7 +379,7 @@ namespace PHP.Library
 		[ImplementsFunction("urldecode")]
 		public static string UrlDecode(string str)
 		{
-            return HttpUtility.UrlDecode(str);
+            return HttpUtility.UrlDecode(str, Configuration.Application.Globalization.PageEncoding);
 		}
 
 		/// <summary>
