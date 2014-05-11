@@ -120,6 +120,7 @@
     <Compile Include="Compiler\AST\CallSignature.cs" />
     <Compile Include="Compiler\AST\ConcatEx.cs" />
     <Compile Include="Compiler\AST\ConstantUse.cs" />
+    <Compile Include="Compiler\AST\PHPDocBlock.cs" />
     <Compile Include="Compiler\AST\CustomAttributes.cs" />
     <Compile Include="Compiler\AST\DirectVariableUse.cs" />
     <Compile Include="Compiler\AST\EchoStmt.cs" />
