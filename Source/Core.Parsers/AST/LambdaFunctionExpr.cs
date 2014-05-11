@@ -60,23 +60,23 @@ namespace PHP.Core.AST
         public List<Statement>/*!*/ Body { get { return body; } }
         //private readonly CustomAttributes attributes;
 
-        public Position EntireDeclarationPosition { get { return entireDeclarationPosition; } }
-        private Position entireDeclarationPosition;
+        public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }
+        private Text.Span entireDeclarationPosition;
 
-        public ShortPosition HeadingEndPosition { get { return headingEndPosition; } }
-        private ShortPosition headingEndPosition;
+        public int HeadingEndPosition { get { return headingEndPosition; } }
+        private int headingEndPosition;
 
-        public ShortPosition DeclarationBodyPosition { get { return declarationBodyPosition; } }
-        private ShortPosition declarationBodyPosition;
+        public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
+        private int declarationBodyPosition;
 
         #region Construction
 
         public LambdaFunctionExpr(SourceUnit/*!*/ sourceUnit,
-            Position position, Position entireDeclarationPosition, ShortPosition headingEndPosition, ShortPosition declarationBodyPosition,
+            Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
             Scope scope, NamespaceDecl ns,
             bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalParam> useParams,
             List<Statement>/*!*/ body)
-            : base(position)
+            : base(span)
         {
             Debug.Assert(formalParams != null && body != null);
 

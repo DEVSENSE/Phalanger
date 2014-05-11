@@ -54,9 +54,9 @@ namespace PHP.Core.AST
 		public SourceUnit/*!*/ SourceUnit { get { return sourceUnit; } }
 		private SourceUnit/*!*/ sourceUnit;
 
-		public IncludingEx(SourceUnit/*!*/ sourceUnit, Scope scope, bool isConditional, Position position,
+		public IncludingEx(SourceUnit/*!*/ sourceUnit, Scope scope, bool isConditional, Text.Span span,
 			InclusionTypes inclusionType, Expression/*!*/ fileName)
-			: base(position)
+            : base(span)
 		{
 			Debug.Assert(fileName != null);
 
@@ -93,8 +93,8 @@ namespace PHP.Core.AST
         /// <summary>List of variables to test</summary>
         public List<VariableUse>/*!*/ VarList { get { return varList; } }
 
-		public IssetEx(Position position, List<VariableUse>/*!*/ varList)
-			: base(position)
+		public IssetEx(Text.Span span, List<VariableUse>/*!*/ varList)
+			: base(span)
 		{
 			Debug.Assert(varList != null && varList.Count > 0);
 			this.varList = varList;
@@ -128,7 +128,7 @@ namespace PHP.Core.AST
         public Expression/*!*/Expression { get { return this.expression; } set { this.expression = value; } }
         private Expression/*!*/expression;
         
-        public EmptyEx(Position p, Expression expression)
+        public EmptyEx(Text.Span p, Expression expression)
 			: base(p)
 		{
             if (expression == null)
@@ -179,11 +179,11 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Creates a node representing an eval or assert constructs.
 		/// </summary>
-		/// <param name="position">Position.</param>
+        /// <param name="span">Position.</param>
 		/// <param name="code">Source code expression.</param>
 		/// <param name="isAssert">Whether the node represents an assert construct.</param>
-		public EvalEx(Position position, Expression/*!*/ code, bool isAssert)
-			: base(position)
+		public EvalEx(Text.Span span, Expression/*!*/ code, bool isAssert)
+            : base(span)
 		{
             this.isAssert = isAssert;
 			this.code = code;
@@ -217,8 +217,8 @@ namespace PHP.Core.AST
         public Expression ResulExpr { get { return resultExpr; } set { resultExpr = value; } }
         private Expression resultExpr; //can be null
         
-		public ExitEx(Position position, Expression resultExpr)
-			: base(position)
+		public ExitEx(Text.Span span, Expression resultExpr)
+            : base(span)
 		{
 			this.resultExpr = resultExpr;
 		}

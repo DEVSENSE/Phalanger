@@ -106,7 +106,7 @@ namespace PHP.Library
 			{
 				#region <paths>
 
-				case "extension_dir": Debug.Assert(action == IniAction.Get); return app.Paths.ExtNatives;
+				case "extension_dir": Debug.Assert(action == IniAction.Get); return app.Paths.Libraries;
 
 				#endregion
 
@@ -676,7 +676,7 @@ namespace PHP.Library
 		[ImplementsFunction("ini_get_all")]
 		public static PhpArray GetAll(string extension)
 		{
-			PhpArray result = Externals.IniGetAll(extension);
+            PhpArray result = new PhpArray();
 
 			// adds options from managed libraries:
 			IniOptions.GetAllOptionStates(extension, result);

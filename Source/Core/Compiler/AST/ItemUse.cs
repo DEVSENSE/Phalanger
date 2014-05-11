@@ -43,7 +43,7 @@ namespace PHP.Core.Compiler.AST
                         || access == AccessType.ReadAndWriteAndReadRef
                         || access == AccessType.ReadAndWriteAndReadUnknown))
                 {
-                    analyzer.ErrorSink.Add(Errors.EmptyIndexInReadContext, analyzer.SourceUnit, node.Position);
+                    analyzer.ErrorSink.Add(Errors.EmptyIndexInReadContext, analyzer.SourceUnit, node.Span);
                     return new Evaluation(node);
                 }
 

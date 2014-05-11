@@ -50,7 +50,7 @@ namespace PHP.Core.AST
         public FinallyItem FinallyItem { get { return finallyItem; } }
         internal bool HasFinallyStatements { get { return finallyItem != null && finallyItem.Statements.Count != 0; } }
 
-        public TryStmt(Position p, List<Statement>/*!*/ statements, List<CatchItem> catches, FinallyItem finallyItem)
+        public TryStmt(Text.Span p, List<Statement>/*!*/ statements, List<CatchItem> catches, FinallyItem finallyItem)
 			: base(p)
 		{
             Debug.Assert(statements != null);
@@ -97,7 +97,7 @@ namespace PHP.Core.AST
         /// <summary>An index of type identifier.</summary>
         public GenericQualifiedName ClassName { get { return className; } }
 
-		public CatchItem(Position p, GenericQualifiedName className, DirectVarUse/*!*/ variable,
+        public CatchItem(Text.Span p, GenericQualifiedName className, DirectVarUse/*!*/ variable,
 			List<Statement>/*!*/ statements)
 			: base(p)
 		{
@@ -131,8 +131,8 @@ namespace PHP.Core.AST
         /// <summary>A list of statements contained in the try-block.</summary>
         public List<Statement>/*!*/Statements { get { return statements; } }
 
-        public FinallyItem(Position position, List<Statement>/*!*/statements)
-            :base(position)
+        public FinallyItem(Text.Span span, List<Statement>/*!*/statements)
+            : base(span)
         {
             this.statements = statements;
         }
@@ -155,8 +155,8 @@ namespace PHP.Core.AST
 		public Expression /*!*/ Expression { get { return expression; } internal set { expression = value; } }
         private Expression/*!*/ expression;
         
-		public ThrowStmt(Position position, Expression/*!*/ expression)
-			: base(position)
+		public ThrowStmt(Text.Span span, Expression/*!*/ expression)
+            : base(span)
 		{
 			Debug.Assert(expression != null);
 			this.expression = expression;

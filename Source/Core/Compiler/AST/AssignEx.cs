@@ -55,7 +55,7 @@ namespace PHP.Core.Compiler.AST
 
                 var valueassignex = (ValueAssignEx)node;
 
-                ExInfoFromParent lvalue_info = new ExInfoFromParent(this);
+                ExInfoFromParent lvalue_info = new ExInfoFromParent(node);
 
                 // x[] = y
                 if (node.LValue is ItemUse && ((ItemUse)node.LValue).Index == null)
@@ -66,22 +66,22 @@ namespace PHP.Core.Compiler.AST
 
                         // x[] .= y -> x[] = null . y
                         if (oldop == Operations.AssignAppend)
-                            valueassignex.rvalue = new BinaryEx(node.Position, Operations.Concat, new NullLiteral(node.Position), valueassignex.rvalue);
+                            valueassignex.rvalue = new BinaryEx(node.Span, Operations.Concat, new NullLiteral(node.Span), valueassignex.rvalue);
                         // x[] += y -> x[] = 0 + y
                         else if (oldop == Operations.AssignAdd)
-                            valueassignex.rvalue = new BinaryEx(node.Position, Operations.Add, new NullLiteral(node.Position), valueassignex.rvalue);
+                            valueassignex.rvalue = new BinaryEx(node.Span, Operations.Add, new NullLiteral(node.Span), valueassignex.rvalue);
                         // x[] -= y -> x[] = 0 - y
                         else if (oldop == Operations.AssignSub)
-                            valueassignex.rvalue = new BinaryEx(node.Position, Operations.Sub, new NullLiteral(node.Position), valueassignex.rvalue);
+                            valueassignex.rvalue = new BinaryEx(node.Span, Operations.Sub, new NullLiteral(node.Span), valueassignex.rvalue);
                         // x[] *= y -> x[] = 0 * y
                         else if (oldop == Operations.AssignMul)
-                            valueassignex.rvalue = new BinaryEx(node.Position, Operations.Mul, new NullLiteral(node.Position), valueassignex.rvalue);
+                            valueassignex.rvalue = new BinaryEx(node.Span, Operations.Mul, new NullLiteral(node.Span), valueassignex.rvalue);
                         // x[] /= y -> x[] = 0 / y
                         else if (oldop == Operations.AssignDiv)
-                            valueassignex.rvalue = new BinaryEx(node.Position, Operations.Div, new NullLiteral(node.Position), valueassignex.rvalue);
+                            valueassignex.rvalue = new BinaryEx(node.Span, Operations.Div, new NullLiteral(node.Span), valueassignex.rvalue);
                         // x[] &= y -> x[] = 0 & y
                         else if (oldop == Operations.AssignAnd)
-                            valueassignex.rvalue = new BinaryEx(node.Position, Operations.BitAnd, new NullLiteral(node.Position), valueassignex.rvalue);
+                            valueassignex.rvalue = new BinaryEx(node.Span, Operations.BitAnd, new NullLiteral(node.Span), valueassignex.rvalue);
                         else
                         {
                             Debug.Fail("Unhandled operation " + oldop.ToString() + " must be reduced!");
@@ -519,8 +519,8 @@ namespace PHP.Core.Compiler.AST
             public override Evaluation Analyze(AssignEx node, Analyzer analyzer, ExInfoFromParent info)
             {
                 access = info.Access;
-                ExInfoFromParent lvalue_info = new ExInfoFromParent(this);
-                ExInfoFromParent rvalue_info = new ExInfoFromParent(this);
+                ExInfoFromParent lvalue_info = new ExInfoFromParent(node);
+                ExInfoFromParent rvalue_info = new ExInfoFromParent(node);
 
                 lvalue_info.Access = AccessType.WriteRef;
                 rvalue_info.Access = AccessType.ReadRef;
@@ -533,7 +533,7 @@ namespace PHP.Core.Compiler.AST
                 if (refassignex.RValue is NewEx)
                 {
                     //PhpException.Throw(PhpError.Deprecated, CoreResources.GetString("assign_new_as_ref_is_deprecated"));
-                    analyzer.ErrorSink.Add(Warnings.AssignNewByRefDeprecated, analyzer.SourceUnit, node.Position);
+                    analyzer.ErrorSink.Add(Warnings.AssignNewByRefDeprecated, analyzer.SourceUnit, node.Span);
                 }
 
                 return new Evaluation(node);

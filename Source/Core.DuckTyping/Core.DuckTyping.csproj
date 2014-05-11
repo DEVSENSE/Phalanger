@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\Build\Common.Build.settings" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}</ProjectGuid>
@@ -21,18 +20,12 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -58,41 +51,16 @@
     <ProjectReference Include="..\Core.Parsers\Core.Parsers.csproj">
       <Project>{581f1486-5062-459e-bae6-a41886584f81}</Project>
       <Name>Core.Parsers</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>
       <Name>Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DuckTyping\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Release (
-
-xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
-
-"$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
-
-)
-
-
-if $(ConfigurationName) == Debug (
-
-xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
-
-"$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
-
-)
-
-
-if $(ConfigurationName) == DebugNoGac (
-
-xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
-
-)</PostBuildEvent>
-  </PropertyGroup>
+  <ItemGroup />
+  <Import Project="..\Build\Common.Build.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

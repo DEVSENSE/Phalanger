@@ -85,15 +85,15 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Position of element in source file.
 		/// </summary>
-        public Position Position { get; protected set; }
+        public Text.Span Span { get; protected set; }
 		
 		/// <summary>
         /// Initialize the LangElement.
         /// </summary>
-        /// <param name="position">The position of the LangElement in the source code.</param>
-		protected LangElement(Position position)
+        /// <param name="span">The position of the LangElement in the source code.</param>
+		protected LangElement(Text.Span span)
 		{
-			this.Position = position;
+			this.Span = span;
 		}
 
         /// <summary>

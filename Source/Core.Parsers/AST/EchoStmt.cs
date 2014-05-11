@@ -36,8 +36,8 @@ namespace PHP.Core.AST
         public bool IsHtmlCode { get { return isHtmlCode; } }
         private readonly bool isHtmlCode;
 
-		public EchoStmt(Position position, List<Expression>/*!*/ parameters)
-			: base(position)
+		public EchoStmt(Text.Span span, List<Expression>/*!*/ parameters)
+            : base(span)
 		{
 			Debug.Assert(parameters != null);
 			this.parameters = parameters;
@@ -47,10 +47,10 @@ namespace PHP.Core.AST
         /// <summary>
         /// Initializes new echo statement as a representation of HTML code.
         /// </summary>
-        public EchoStmt(Position position, string htmlCode)
-            : base(position)
+        public EchoStmt(Text.Span span, string htmlCode)
+            : base(span)
         {
-            this.parameters = new List<Expression>(1) { new StringLiteral(position, htmlCode) };
+            this.parameters = new List<Expression>(1) { new StringLiteral(span, htmlCode) };
             this.isHtmlCode = true;
         }
 

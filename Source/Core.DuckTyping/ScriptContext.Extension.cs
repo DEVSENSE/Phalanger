@@ -18,10 +18,10 @@ namespace PHP.Core.DuckTyping
                 return DuckTyping.Instance.ImplementDuckType<T>(rf.Value);
         }
 
-        public static T Call<T>(string/*!*/ functionName, params object[] arguments)
+        public static T Call<T>(this ScriptContext context, string/*!*/ functionName, params object[] arguments)
             where T : class
         {
-            return Call<T>(functionName, null, null, arguments);
+            return Call<T>(context, functionName, null, null, arguments);
         }
 
         /// <summary>
@@ -39,6 +39,7 @@ namespace PHP.Core.DuckTyping
         /// a duck type specified in generic type arguments.
         /// </summary>
         /// <typeparam name="T">Duck type interface to be used for wrapping.</typeparam>
+        /// <param name="context">Current context.</param>
         /// <param name="className">Class name which will be used for new object creation.</param>
         /// <param name="ctorArguments">Constructor arguments to be used.</param>
         /// <returns>Dynamic object wrapped into static wrapper.</returns>
@@ -52,6 +53,7 @@ namespace PHP.Core.DuckTyping
         /// a duck type specified in generic type arguments.
         /// </summary>
         /// <typeparam name="T">Duck type interface to be used for wrapping.</typeparam>
+        /// <param name="context">Current context.</param>
         /// <param name="className">Class name which will be used for new object creation.</param>
         /// <param name="namingContext">Naming context.</param>
         /// <param name="ctorArguments">Constructor arguments to be used.</param>

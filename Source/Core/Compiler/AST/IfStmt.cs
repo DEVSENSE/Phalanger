@@ -33,7 +33,7 @@ namespace PHP.Core.Compiler.AST
             {
                 if (analyzer.IsThisCodeUnreachable())
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
 
@@ -131,7 +131,7 @@ namespace PHP.Core.Compiler.AST
                         if (condition != null)
                             compacted.Add(condition);
                     }
-                    conditions = compacted;
+                    node.Conditions = compacted;
                 }
 
                 return node;
@@ -158,9 +158,8 @@ namespace PHP.Core.Compiler.AST
                 il.Emit(OpCodes.Brfalse, false_label);
                 conditions[0].Statement.Emit(codeGenerator);
 
-                codeGenerator.MarkSequencePoint(    // (J) Mark the end of condition body so debugger will jump off the block properly
-                    conditions[0].Statement.Position.LastLine, conditions[0].Statement.Position.LastColumn,
-                    conditions[0].Statement.Position.LastLine, conditions[0].Statement.Position.LastColumn + 1);
+                // (J) Mark the end of condition body so debugger will jump off the block properly
+                codeGenerator.MarkSequencePoint(conditions[0].Statement.Span.End);
 
                 il.Emit(OpCodes.Br, exit_label);
 

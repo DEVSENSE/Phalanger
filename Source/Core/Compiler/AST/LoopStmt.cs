@@ -34,7 +34,7 @@ namespace PHP.Core.Compiler.AST
             {
                 if (analyzer.IsThisCodeUnreachable())
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
 
@@ -121,11 +121,11 @@ namespace PHP.Core.Compiler.AST
             {
                 if (analyzer.IsThisCodeUnreachable())
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
 
-                ExInfoFromParent info = new ExInfoFromParent(this);
+                ExInfoFromParent info = new ExInfoFromParent(node);
 
                 info.Access = AccessType.None;
 
@@ -244,7 +244,7 @@ namespace PHP.Core.Compiler.AST
         {
             public void Analyze(ForeachVar/*!*/node, Analyzer analyzer)
             {
-                ExInfoFromParent info = new ExInfoFromParent(this);
+                ExInfoFromParent info = new ExInfoFromParent(node);
                 if (node.Alias) info.Access = AccessType.WriteRef;
                 else info.Access = AccessType.Write;
 
@@ -298,7 +298,7 @@ namespace PHP.Core.Compiler.AST
             {
                 if (analyzer.IsThisCodeUnreachable())
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
 
@@ -445,10 +445,7 @@ namespace PHP.Core.Compiler.AST
             private static void MarkSequencePointHeader(ForeachStmt node, CodeGenerator codeGenerator)
             {
                 codeGenerator.MarkSequencePoint(
-                      node.Enumeree.Position.FirstLine,
-                      node.Enumeree.Position.FirstColumn,
-                      node.ValueVariable.Position.LastLine,
-                      node.ValueVariable.Position.LastColumn + 1);
+                    Text.Span.FromBounds(node.Enumeree.Span.Start, node.ValueVariable.Span.End));
             }
         }
 

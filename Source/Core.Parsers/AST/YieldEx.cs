@@ -52,16 +52,16 @@ namespace PHP.Core.AST
         /// <summary>
         /// Initializes new instance of <see cref="YieldEx"/>.
         /// </summary>
-        public YieldEx(Position position)
-            : this(position, null, null)
+        public YieldEx(Text.Span span)
+            : this(span, null, null)
         {
         }
 
         /// <summary>
         /// Initializes new instance of <see cref="YieldEx"/>.
         /// </summary>
-        public YieldEx(Position position, Expression keyEx, Expression valueEx)
-            : base(position)
+        public YieldEx(Text.Span span, Expression keyEx, Expression valueEx)
+            : base(span)
         {
             if (keyEx != null && valueEx == null) throw new ArgumentException();
 

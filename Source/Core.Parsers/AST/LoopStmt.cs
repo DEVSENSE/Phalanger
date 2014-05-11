@@ -44,8 +44,8 @@ namespace PHP.Core.AST
         public Statement/*!*/ Body { get { return body; } internal set { body = value; } }
         private Statement/*!*/ body;
 
-		public WhileStmt(Position position, Type type, Expression/*!*/ condExpr, Statement/*!*/ body)
-			: base(position)
+		public WhileStmt(Text.Span span, Type type, Expression/*!*/ condExpr, Statement/*!*/ body)
+            : base(span)
 		{
 			Debug.Assert(condExpr != null && body != null);
 
@@ -88,7 +88,7 @@ namespace PHP.Core.AST
         /// <summary>Body of statement</summary>
         public Statement/*!*/ Body { get { return body; } internal set { body = value; } }
 
-		public ForStmt(Position p, List<Expression>/*!*/ initExList, List<Expression>/*!*/ condExList,
+        public ForStmt(Text.Span p, List<Expression>/*!*/ initExList, List<Expression>/*!*/ condExList,
 		  List<Expression>/*!*/ actionExList, Statement/*!*/ body)
 			: base(p)
 		{
@@ -144,7 +144,7 @@ namespace PHP.Core.AST
         /// <summary>
         /// Position of foreach variable.
         /// </summary>
-		internal Position Position { get { return expr.Position; } }
+        internal Text.Span Span { get { return expr.Span; } }
 
 		public ForeachVar(VariableUse variable, bool alias)
 		{
@@ -185,9 +185,9 @@ namespace PHP.Core.AST
         /// <summary>Body - statement in loop</summary>
         public Statement/*!*/ Body { get { return body; } internal set { body = value; } }
 
-		public ForeachStmt(Position position, Expression/*!*/ enumeree, ForeachVar key, ForeachVar/*!*/ value,
+		public ForeachStmt(Text.Span span, Expression/*!*/ enumeree, ForeachVar key, ForeachVar/*!*/ value,
 		  Statement/*!*/ body)
-			: base(position)
+            : base(span)
 		{
 			Debug.Assert(enumeree != null && value != null && body != null);
 

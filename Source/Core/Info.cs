@@ -81,15 +81,13 @@ namespace PHP.Core
 				WriteCredits(output);
 			}
 
-#if !SILVERLIGHT
 			if ((sections & Sections.Extensions) != 0)
 			{
 				output.Write("<h2>");
 				output.Write(CoreResources.GetString("info_loaded_extensions"));
 				output.Write("</h2>");
-				output.Write(Externals.PhpInfo());
+				// TODO: loaded extensions
 			}
-#endif
 
 			if ((sections & Sections.Environment) != 0)
 			{

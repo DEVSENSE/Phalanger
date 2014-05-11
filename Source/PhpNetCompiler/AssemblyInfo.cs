@@ -15,10 +15,3 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("The PHP Language Compiler")]
 [assembly: AssemblyDescription("The PHP Language Compiler")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright 2005-2010 Tomas Matousek")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("4.0.0.0")]

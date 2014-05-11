@@ -20,19 +20,6 @@ using PHP.Core;
 // associated with an assembly.
 [assembly: AssemblyTitle("Phalanger Iconv")]
 [assembly: AssemblyDescription("Phalanger Managed Extension - Iconv")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("DEVSENSE s.r.o.")]
-[assembly: AssemblyProduct("Phalanger")]
-[assembly: AssemblyCopyright("Copyright (c) 2005-2012 DEVSENSE s.r.o.")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("4.0.0.0")]
-[assembly: AssemblyKeyName("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("E19A61F5-A199-4EBB-9F1F-7CF832B20099")]

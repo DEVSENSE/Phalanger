@@ -502,7 +502,7 @@ namespace PHP.Library
                 analyzer.CurrentScope,
                 out alias,
                 null,
-                PHP.Core.Parsers.Position.Invalid,
+                PHP.Core.Text.Span.Invalid,
                 false);
 
             if (type == null || type.IsUnknown)
@@ -627,7 +627,7 @@ namespace PHP.Library
                 analyzer.CurrentScope,
                 out alias,
                 null,
-                PHP.Core.Parsers.Position.Invalid,
+                PHP.Core.Text.Span.Invalid,
                 false);
 
             if (type == null || type.IsUnknown)

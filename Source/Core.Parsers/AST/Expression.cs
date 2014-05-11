@@ -143,7 +143,7 @@ namespace PHP.Core.AST
 	{
 		public abstract Operations Operation { get; }
 
-		protected Expression(Position position) : base(position) { }
+        protected Expression(Text.Span span) : base(span) { }
 
 		/// <summary>
         /// Whether the expression is allowed to be passed by reference to a routine.
@@ -169,8 +169,8 @@ namespace PHP.Core.AST
         public Expression/*!*/ Initializer { get { return initializer; } internal set { initializer = value; } }
 		private Expression/*!*/ initializer;
 
-		public ConstantDecl(Position position, string/*!*/ name, Expression/*!*/ initializer)
-			: base(position)
+		public ConstantDecl(Text.Span span, string/*!*/ name, Expression/*!*/ initializer)
+			: base(span)
 		{
 			this.name = new VariableName(name);
 			this.initializer = initializer;
@@ -192,7 +192,7 @@ namespace PHP.Core.AST
             
 		internal override bool AllowsPassByReference { get { return true; } }
 
-		protected VarLikeConstructUse(Position p) : base(p) { }
+		protected VarLikeConstructUse(Text.Span p) : base(p) { }
 	}
 
 	#endregion

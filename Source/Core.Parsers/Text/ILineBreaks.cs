@@ -50,6 +50,14 @@ namespace PHP.Core.Text
         /// <returns>Line number.</returns>
         /// <exception cref="ArgumentOutOfRangeException">In case <paramref name="position"/> is out of line number range.</exception>
         int GetLineFromPosition(int position);
+
+        /// <summary>
+        /// Gets line and column from position number.
+        /// </summary>
+        /// <param name="position">Position with the document.</param>
+        /// <param name="line">Line number.</param>
+        /// <param name="column">Column nummber.</param>
+        void GetLineColumnFromPosition(int position, out int line, out int column);
     }
 
     #endregion
@@ -98,31 +106,48 @@ namespace PHP.Core.Text
             return a;
         }
 
+        public void GetLineColumnFromPosition(int position, out int line, out int column)
+        {
+            line = GetLineFromPosition(position);
+            if (line == 0)
+                column = position;
+            else
+                column = position - this.EndOfLineBreak(line - 1);
+        }
+
         #endregion
 
-        private readonly int _textLength;
+        protected int _textLength;
 
         protected LineBreaks(int textLength)
         {
             _textLength = textLength;
         }
 
+        public static LineBreaks/*!*/Create(string text)
+        {
+            return Create(text, CalculateLineEnds(text));
+        }
+
         public static LineBreaks/*!*/Create(string text, List<int>/*!*/lineEnds)
         {
-            if (text == null || lineEnds == null) throw new ArgumentNullException();
+            if (text == null) throw new ArgumentNullException();
+            return Create(text.Length, lineEnds);
+        }
+
+        internal static LineBreaks/*!*/Create(int textLength, List<int>/*!*/lineEnds)
+        {
+            if (textLength < 0) throw new ArgumentException();
+            if (lineEnds == null) throw new ArgumentNullException();
+            
             if (lineEnds.Count == 0 || lineEnds.Last() <= ushort.MaxValue)
             {
-                return new ShortLineBreaks(text.Length, lineEnds);
+                return new ShortLineBreaks(textLength, lineEnds);
             }
             else
             {
-                return new IntLineBreaks(text.Length, lineEnds);
+                return new IntLineBreaks(textLength, lineEnds);
             }
-        }
-
-        public static LineBreaks/*!*/Create(string text)
-        {
-	        return Create(text, CalculateLineEnds(text));
         }
 
         /// <summary>
@@ -157,32 +182,6 @@ namespace PHP.Core.Text
             }
             return list;
         }
-
-#if DEBUG
-
-        [Test]
-        private static void Test()
-        {
-            string sample = "Hello World";
-            foreach (var nl in new[] { "\r", "\r\n", "\n", "\u0085", "\u2028", "\u2029" })
-            {
-                for (int linecount = 0; linecount < 512; linecount += 17)
-                {
-                    // construct sample text with {linecount} lines
-                    string text = string.Empty;
-                    for (var line = 0; line < linecount; line++)
-                        text += sample + nl;
-                    text += sample;
-
-                    // test LineBreaks
-                    var linebreaks = LineBreaks.Create(text);
-                    for (int i = 0; i <= text.Length; i += 7)
-                        Debug.Assert(linebreaks.GetLineFromPosition(i) == (i / (sample.Length + nl.Length)));
-                }
-            }
-        }
-
-#endif
     }
 
     #endregion
@@ -260,4 +259,146 @@ namespace PHP.Core.Text
     }
 
     #endregion
+
+    #region ExpandableLineBreaks
+
+    /// <summary>
+    /// Generalization of <see cref="LineBreaks"/> using <see cref="List{T}"/> internally.
+    /// </summary>
+    internal sealed class ExpandableLineBreaks : LineBreaks
+    {
+        private readonly List<int>/*!*/_lineEnds = new List<int>();
+
+        public ExpandableLineBreaks()
+            : base(0)
+        {
+        }
+
+        public override int Count
+        {
+            get { return _lineEnds.Count; }
+        }
+
+        public override int EndOfLineBreak(int index)
+        {
+            return (int)_lineEnds[index];
+        }
+
+        public void Expand(char[] text, int from, int length)
+        {
+            int oldTextLength = _textLength;
+
+            int i = from;
+            int to = from + length;
+            while (i < to)
+            {
+                int len = TextUtils.LengthOfLineBreak(text, i);
+                if (len == 0)
+                {
+                    i++;
+                }
+                else
+                {
+                    i += len;
+                    _lineEnds.Add(oldTextLength - from + i);
+                }
+            }
+
+            //
+            _textLength += length;
+        }
+
+        public LineBreaks/*!*/Finalize()
+        {
+            return LineBreaks.Create(_textLength, _lineEnds);
+        }
+    }
+
+    #endregion
+
+    //#region VirtualLineBreaks
+
+    ///// <summary>
+    ///// <see cref="ILineBreaks"/> implementation which is collecting line break information subsequently
+    ///// and provides ability to shift resulting line and column.
+    ///// </summary>
+    //internal sealed class VirtualLineBreaks : ILineBreaks
+    //{
+    //    private readonly int lineShift, columnShift;
+    //    private LineBreaks/*!*/lineBreaks;
+    //    private ExpandableLineBreaks ExpandableLineBreaks { get { return (ExpandableLineBreaks)lineBreaks; } }
+
+    //    public VirtualLineBreaks(LineBreaks lineBreaks, int lineShift, int columnShift)
+    //    {
+    //        this.lineShift = lineShift;
+    //        this.columnShift = columnShift;
+    //        this.lineBreaks = lineBreaks;
+    //    }
+
+    //    public VirtualLineBreaks(int lineShift, int columnShift)
+    //        : this(new ExpandableLineBreaks(), lineShift, columnShift)
+    //    {
+    //    }
+
+    //    /// <summary>
+    //    /// Updates <see cref="TextLength"/> and line breaks with an additional piece of text.
+    //    /// </summary>
+    //    public void Expand(char[] text, int from, int length)
+    //    {
+    //        if (IsFinalized)
+    //            throw new InvalidOperationException();
+
+    //        this.ExpandableLineBreaks.Expand(text, from, length);
+    //    }
+
+    //    /// <summary>
+    //    /// Compresses internal storage of line breaks and does not allow to expand any more.
+    //    /// </summary>
+    //    public ILineBreaks Finalize()
+    //    {
+    //        if (!IsFinalized)
+    //            lineBreaks = this.ExpandableLineBreaks.Finalize();
+
+    //        if (lineShift == 0 && columnShift == 0)
+    //            return lineBreaks;
+    //        else
+    //            return this;
+    //    }
+
+    //    public bool IsFinalized { get { return !(lineBreaks is ExpandableLineBreaks); } }
+
+    //    #region ILineBreaks Members
+
+    //    public int Count
+    //    {
+    //        get { return lineBreaks.Count; }
+    //    }
+
+    //    public int TextLength
+    //    {
+    //        get { return lineBreaks.TextLength; }
+    //    }
+
+    //    public int EndOfLineBreak(int index)
+    //    {
+    //        return lineBreaks.EndOfLineBreak(index);
+    //    }
+
+    //    public int GetLineFromPosition(int position)
+    //    {
+    //        return lineBreaks.GetLineFromPosition(position) + lineShift;
+    //    }
+
+    //    public void GetLineColumnFromPosition(int position, out int line, out int column)
+    //    {
+    //        lineBreaks.GetLineColumnFromPosition(position, out line, out column);
+
+    //        if (line == 0) column += columnShift;
+    //        line += lineShift;
+    //    }
+
+    //    #endregion
+    //}
+
+    //#endregion
 }

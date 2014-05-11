@@ -138,13 +138,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>if $(ConfigurationName) == Release (
-xcopy /q /y "$(TargetPath)" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
-)
-if $(ConfigurationName) == Debug (
-xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
-)</PostBuildEvent>
+    <PreBuildEvent></PreBuildEvent>
+    <PostBuildEvent></PostBuildEvent>
   </PropertyGroup>
 </Project>

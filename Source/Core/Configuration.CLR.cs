@@ -565,7 +565,6 @@ namespace PHP.Core
 							ConfigUtils.ParseLibraryAssemblyList(
                                 node,
                                 addedLibraries,
-								Paths.ExtWrappers,
 								Paths.Libraries);
 							break;
 
@@ -1131,34 +1130,10 @@ namespace PHP.Core
             public FullPath Libraries { get { return libraries; } }
 			private FullPath libraries;
 
-            ///// <summary>
-            ///// Path to Extensions Manager root.
-            ///// </summary>
-            //public FullPath ExtManager { get { return manager; } }
-            //private FullPath manager;
-
-			/// <summary>
-			/// Path to PHP native extensions directory.
-			/// </summary>
-			public FullPath ExtNatives { get { return natives; } }
-			private FullPath natives;
-
-			/// <summary>
-			/// Path to PHP extensions wrappers directory.
-			/// </summary>
-			public FullPath ExtWrappers { get { return wrappers; } }
-			private FullPath wrappers;
-
-			/// <summary>
-			/// Directory path where type definitions of extensions are stored. 
-			/// </summary>
-			public FullPath ExtTypeDefs { get { return typeDefs; } }
-			private FullPath typeDefs;
-
             /// <summary>
             /// Last determined modification time. Used to invalidate assemblies compiled before this time.
             /// </summary>
-            public DateTime LastConfigurationModificationTime { get; private set; }
+            public DateTime LastConfigurationModificationTimeUtc { get; private set; }
 
             public PathsSection()
             {
@@ -1170,6 +1145,11 @@ namespace PHP.Core
                 try { current_app_dir = (http_context != null) ? http_context.Server.MapPath("/bin") : "."; }  // this can throw on Mono
                 catch (InvalidOperationException) { current_app_dir = "bin"; }
 
+<<<<<<< HEAD
+=======
+                libraries = new FullPath(current_app_dir);
+
+>>>>>>> upstream/master
                 string dynamic_path = (http_context != null) ? current_app_dir : Path.GetTempPath();
 
                 if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -1194,16 +1174,16 @@ namespace PHP.Core
 			public bool Parse(string name, string value, XmlNode node)
 			{
                 // determine last configuration modification time:
-                this.LastConfigurationModificationTime = ConfigUtils.GetConfigModificationTime(node, this.LastConfigurationModificationTime);
+                this.LastConfigurationModificationTimeUtc = ConfigUtils.GetConfigModificationTimeUtc(node, this.LastConfigurationModificationTimeUtc);
 
                 switch (name)
 				{
 					case "DynamicWrappers": dynamicWrappers = CheckedPath(value, node); return true;
 					case "Libraries": libraries = CheckedPath(value, node); return true;
-					case "ExtWrappers": wrappers = CheckedPath(value, node); return true;
-					case "ExtTypeDefs": typeDefs = CheckedPath(value, node); return true;
-					case "ExtNatives": natives = CheckedPath(value, node); return true;
-					case "ExtManager": /*manager = CheckedPath(value, node); // DEPRECATED: will be removed in future versions */  return true;
+					case "ExtWrappers": /* DEPRECATED */ return true;
+                    case "ExtTypeDefs": /* DEPRECATED */ return true;
+                    case "ExtNatives": /* DEPRECATED */ return true;
+                    case "ExtManager": /* DEPRECATED */ return true;
 				}
 				return false;
 			}
@@ -2058,7 +2038,7 @@ namespace PHP.Core
             XmlNode node_ScriptLibrary = null;
 
             // determine configuration modification time:
-            result.Global.LastConfigurationModificationTime = ConfigUtils.GetConfigModificationTime(section, result.Global.LastConfigurationModificationTime);
+            result.Global.LastConfigurationModifiedTimeUtc = ConfigUtils.GetConfigModificationTimeUtc(section, result.Global.LastConfigurationModifiedTimeUtc);
             
 			// parses XML tree:
 			foreach (XmlNode node in section.ChildNodes)
@@ -2082,7 +2062,6 @@ namespace PHP.Core
                             ConfigUtils.ParseLibraryAssemblyList(
                                 node,
                                 result.librariesList,
-                                app.Paths.ExtWrappers,
                                 app.Paths.Libraries);
                             break;
 
@@ -2371,14 +2350,14 @@ namespace PHP.Core
         /// Latest configuration modification time.
         /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
         /// </summary>
-        public static DateTime LastConfigurationModificationTime
+        public static DateTime LastConfigurationModifiedTimeUtc
         {
             get
             {
                 return DateTimeUtils.Max(
-                    Application.LastConfigurationModificationTime,
-                    Global.LastConfigurationModificationTime,
-                    Local.LastConfigurationModificationTime);
+                    Application.LastConfigurationModifiedTimeUtc,
+                    Global.LastConfigurationModifiedTimeUtc,
+                    Local.LastConfigurationModifiedTimeUtc);
             }
         }
 	}

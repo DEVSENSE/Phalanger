@@ -238,8 +238,8 @@ namespace PHP.Core.Emit
 		/// <summary>
 		/// Timestamp of the source file when the script builder is created.
 		/// </summary>
-		public DateTime SourceTimestamp { get { return SourceTimestamp; } }
-		private DateTime sourceTimestamp;
+        public DateTime SourceTimestampUtc { get { return sourceTimestampUtc; } }
+		private DateTime sourceTimestampUtc;
 
 		#endregion
 
@@ -260,7 +260,7 @@ namespace PHP.Core.Emit
 			this.assemblyBuilder = assemblyBuilder;
 
 			// remembers a timestamp of the source file:
-			this.sourceTimestamp = File.GetLastWriteTime(unit.SourceUnit.SourceFile.FullPath);
+			this.sourceTimestampUtc = FileSystemUtils.GetLastModifiedTimeUtc(unit.SourceUnit.SourceFile.FullPath);
 
 			DefineBuilders(subnamespace);
 		}
@@ -491,7 +491,7 @@ namespace PHP.Core.Emit
             if ((emitAttributes & ScriptAttributes.Script) != 0)
             {
                 // construct the [Script] attribute:
-                CustomAttributeBuilder cab = new CustomAttributeBuilder(Constructors.Script, new object[] { sourceTimestamp.Ticks, CompilationUnit.RelativeSourcePath });
+                CustomAttributeBuilder cab = new CustomAttributeBuilder(Constructors.Script, new object[] { sourceTimestampUtc.Ticks, CompilationUnit.RelativeSourcePath });
                 ScriptTypeBuilder.SetCustomAttribute(cab);
             }
 

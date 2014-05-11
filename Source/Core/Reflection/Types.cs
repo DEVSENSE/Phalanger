@@ -63,10 +63,21 @@ namespace PHP.Core.Reflection
 	/// </summary>
 	[DebuggerDisplay("{MakeFullGenericName()}")]
 	public abstract class DType : DMember, IEquatable<DType>
-	{
-		#region Properties
+    {
+        #region Enum DfsStates
 
-		public static readonly DType[]/*!*/ EmptyArray = new DType[0];
+        protected enum DfsStates
+        {
+            Initial,
+            Entered,
+            Done
+        }
+
+        #endregion
+
+        #region Properties
+
+        public static readonly DType[]/*!*/ EmptyArray = new DType[0];
 
 		/// <summary>
 		/// Whether all base types are definite. Note that the type itself needn't to be definite nor identity definite.
@@ -323,7 +334,7 @@ namespace PHP.Core.Reflection
 
 		#region Analysis: MakeConstructedType, AnalyzeInheritance, ResolveAbstractOverrides
 
-		internal virtual DType/*!*/ MakeConstructedType(Analyzer/*!*/ analyzer, DTypeDesc[]/*!*/ arguments, Position position)
+		internal virtual DType/*!*/ MakeConstructedType(Analyzer/*!*/ analyzer, DTypeDesc[]/*!*/ arguments, Text.Span position)
 		{
 			if (arguments.Length > 0)
 			{
@@ -1293,67 +1304,6 @@ namespace PHP.Core.Reflection
 		}
 
 		#endregion
-
-        #region Test
-
-#if DEBUG
-
-        [Test]
-        static void TestGetByName()
-        {
-            // positive tests
-            foreach (var name in new [] {
-                QualifiedName.Boolean,
-                QualifiedName.Integer, 
-                QualifiedName.LongInteger,
-                QualifiedName.Double,
-                QualifiedName.String,
-                QualifiedName.Resource,
-                QualifiedName.Array,
-                QualifiedName.Object,
-                QualifiedName.Callable})
-            {
-                Debug.Assert(name.IsPrimitiveTypeName);
-                Debug.Assert(GetByName(name) != null);
-                Debug.Assert(GetByName(new PrimitiveTypeName(name)) != null);
-            }
-
-            // false tests
-            foreach (var name in new[] {
-                QualifiedName.Error,
-                QualifiedName.False, 
-                QualifiedName.Global,
-                QualifiedName.Lambda,
-                QualifiedName.Null,
-                QualifiedName.True})
-            {
-                Debug.Assert(!name.IsPrimitiveTypeName);
-                Debug.Assert(GetByName(name) == null);
-            }
-        }
-
-        [Test]
-        static void TestGetByTypeCode()
-        {
-            // positive tests
-            foreach (var typecode in new PhpTypeCode[] {
-                PhpTypeCode.Boolean,
-                PhpTypeCode.Integer,
-                PhpTypeCode.LongInteger,
-                PhpTypeCode.Double,
-                PhpTypeCode.String,
-                PhpTypeCode.PhpResource,
-                PhpTypeCode.PhpArray,
-                PhpTypeCode.DObject,
-                PhpTypeCode.PhpCallable})
-            {
-                Debug.Assert(GetByTypeCode(typecode) != null);
-            }
-        }
-
-#endif
-
-        #endregion
     }
 
 	#endregion
@@ -1783,7 +1733,7 @@ namespace PHP.Core.Reflection
 						{
 							// fatal error - circular inheritance (the further analysis assumes non-circularity):
 							errors.Add((generic_php_type.IsInterface) ? FatalErrors.CircularBaseInterfaceDependency : FatalErrors.CircularBaseClassDependency,
-								generic_php_type.Declaration.SourceUnit, generic_php_type.Declaration.Position, phpPredecessor.FullName,
+								generic_php_type.Declaration.SourceUnit, generic_php_type.Declaration.Span, phpPredecessor.FullName,
 								generic_php_type.FullName);
 							phpPredecessor.ReportError(errors, FatalErrors.RelatedLocation);
 
@@ -2155,7 +2105,7 @@ namespace PHP.Core.Reflection
 
 		#region Analysis: ResolveAbstractOverrides, MakeConstructedType
 
-		internal override DType/*!*/ MakeConstructedType(Analyzer/*!*/ analyzer, DTypeDesc[]/*!*/ arguments, Position position)
+        internal override DType/*!*/ MakeConstructedType(Analyzer/*!*/ analyzer, DTypeDesc[]/*!*/ arguments, Text.Span position)
 		{
 			if (!IsGeneric)
 			{
@@ -2356,7 +2306,7 @@ namespace PHP.Core.Reflection
 	[DebuggerDisplay("{DebuggerDisplay}")]
 	public sealed class PhpType : KnownType, IDeclaree, IPhpMember
 	{
-		#region Properties
+        #region Properties
 
 		public override bool IsUnknown { get { return false; } }
 		public override bool IsGeneric { get { return GenericParams.Length > 0; } }
@@ -2575,7 +2525,7 @@ namespace PHP.Core.Reflection
 		/// To be used by the compiler.
 		/// </summary>
 		public PhpType(QualifiedName qualifiedName, PhpMemberAttributes memberAttributes, bool isPartial,
-			TypeSignature typeSignature, bool isConditionalDeclaration, Scope scope, CompilationSourceUnit/*!*/ sourceUnit, Position position)
+            TypeSignature typeSignature, bool isConditionalDeclaration, Scope scope, CompilationSourceUnit/*!*/ sourceUnit, Text.Span position)
 			: base(new PhpTypeDesc(sourceUnit.CompilationUnit.Module, memberAttributes), qualifiedName)
 		{
 			Debug.Assert(sourceUnit != null && position.IsValid);
@@ -2613,13 +2563,13 @@ namespace PHP.Core.Reflection
 		internal override void ReportError(ErrorSink/*!*/ sink, ErrorInfo error)
 		{
 			if (declaration != null)
-				sink.Add(error, declaration.SourceUnit, declaration.Position);
+				sink.Add(error, declaration.SourceUnit, declaration.Span);
 		}
 
 		public void ReportRedeclaration(ErrorSink/*!*/ errors)
 		{
 			Debug.Assert(declaration != null);
-			errors.Add(FatalErrors.TypeRedeclared, declaration.SourceUnit, declaration.Position, FullName);
+			errors.Add(FatalErrors.TypeRedeclared, declaration.SourceUnit, declaration.Span, FullName);
 		}
 
 
@@ -2705,7 +2655,7 @@ namespace PHP.Core.Reflection
 						{
 							// fatal error - circular inheritance (the further analysis assumes non-circularity):
 							errors.Add((this.IsInterface) ? FatalErrors.CircularBaseInterfaceDependency : FatalErrors.CircularBaseClassDependency,
-								declaration.SourceUnit, declaration.Position, phpPredecessor.FullName, this.FullName);
+								declaration.SourceUnit, declaration.Span, phpPredecessor.FullName, this.FullName);
 							phpPredecessor.ReportError(errors, FatalErrors.RelatedLocation);
 
 							throw new CompilerException();
@@ -2877,7 +2827,7 @@ namespace PHP.Core.Reflection
 
 		#region Analysis, Validation
 
-		internal override DType/*!*/ MakeConstructedType(Analyzer/*!*/ analyzer, DTypeDesc[]/*!*/ arguments, Position position)
+		internal override DType/*!*/ MakeConstructedType(Analyzer/*!*/ analyzer, DTypeDesc[]/*!*/ arguments, Text.Span position)
 		{
 			// only error definites know their generic parameters:
 			if (!IsIdentityDefinite)
@@ -3035,7 +2985,7 @@ namespace PHP.Core.Reflection
 				ClrType base_clr_type = this.Base as ClrType;
 				if (base_clr_type != null && !base_clr_type.ClrConstructor.HasParameterlessOverload)
 				{
-					errors.Add(Errors.MissingCtorInClrSubclass, declaration.SourceUnit, declaration.Position,
+					errors.Add(Errors.MissingCtorInClrSubclass, declaration.SourceUnit, declaration.Span,
 						this.FullName);
 				}
 			}
@@ -3060,7 +3010,7 @@ namespace PHP.Core.Reflection
 		#region Member Addition
 
 		internal ClassConstant AddConstant(VariableName name, PhpMemberAttributes memberAttributes,
-            Position position, CompilationSourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
+            Text.Span position, CompilationSourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
 		{
 			DConstantDesc existing;
 
@@ -3068,7 +3018,7 @@ namespace PHP.Core.Reflection
 			if (TypeDesc.Constants.TryGetValue(name, out existing))
 			{
 				errors.Add(Errors.ConstantRedeclared, sourceUnit, position, QualifiedName.ToString(new Name(name.Value), false));
-				errors.Add(Errors.RelatedLocation, sourceUnit, existing.ClassConstant.Position);
+				errors.Add(Errors.RelatedLocation, sourceUnit, existing.ClassConstant.Span);
 				return null;
 			}
 
@@ -3086,7 +3036,7 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		/// <returns>Whether the field has been added.</returns>
 		internal PhpField AddField(VariableName name, PhpMemberAttributes memberAttributes, bool hasInitialValue,
-            Position position, CompilationSourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
+            Text.Span position, CompilationSourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
 		{
 			DPropertyDesc existing;
 
@@ -3094,7 +3044,7 @@ namespace PHP.Core.Reflection
 			if (TypeDesc.Properties.TryGetValue(name, out existing))
 			{
 				errors.Add(Errors.PropertyRedeclared, sourceUnit, position, QualifiedName, name);
-				errors.Add(Errors.RelatedLocation, sourceUnit, existing.PhpField.Position);
+				errors.Add(Errors.RelatedLocation, sourceUnit, existing.PhpField.Span);
 				return null;
 			}
 
@@ -3110,7 +3060,7 @@ namespace PHP.Core.Reflection
 
 		internal PhpMethod AddMethod(Name name, PhpMemberAttributes memberAttributes, bool hasBody,
 		  Signature astSignature, TypeSignature astTypeSignature,
-		  Position position, CompilationSourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
+          Text.Span position, CompilationSourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors)
 		{
 			DRoutineDesc existing;
 
@@ -3118,15 +3068,14 @@ namespace PHP.Core.Reflection
 			if (TypeDesc.Methods.TryGetValue(name, out existing))
 			{
 				errors.Add(Errors.MethodRedeclared, sourceUnit, position, QualifiedName, name);
-				errors.Add(Errors.RelatedLocation, sourceUnit, existing.PhpMethod.Position);
+				errors.Add(Errors.RelatedLocation, sourceUnit, existing.PhpMethod.Span);
 				return null;
 			}
 
 			if (this.IsInterface)
 				memberAttributes |= PhpMemberAttributes.Abstract;
 
-			PhpMethod method = new PhpMethod(this, name, memberAttributes, hasBody, astSignature, astTypeSignature,
-			  sourceUnit, position);
+			PhpMethod method = new PhpMethod(this, name, memberAttributes, hasBody, astSignature, astTypeSignature, sourceUnit, position);
 
 			TypeDesc.Methods.Add(name, method.RoutineDesc);
 
@@ -3366,9 +3315,6 @@ namespace PHP.Core.Reflection
 							PhpObjectBuilder.DeserializingConstructorParamTypes);
 					}
 #endif
-
-					if (IsExported)
-						PhpObjectBuilder.DefineExportedConstructors(this);
 
 					PhpObjectBuilder.EmitInitFieldHelpers(this);
 				}
@@ -3815,7 +3761,7 @@ namespace PHP.Core.Reflection
 		{
 			get
 			{
-				return MakeFullGenericName() + ((declaration != null) ? " " + declaration.Position.ToString() : "");
+				return MakeFullGenericName() + ((declaration != null) ? " " + declaration.Span.ToString() : "");
 			}
 		}
 

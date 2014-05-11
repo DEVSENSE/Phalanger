@@ -14,10 +14,3 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("Phalanger Compiler Task")]
 [assembly: AssemblyDescription("Phalanger MSBuild Compiler Task")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("DEVSENSE")]
-[assembly: AssemblyProduct("Phalanger")]
-[assembly: AssemblyCopyright("Copyright (c) 2013 DEVSENSE ")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("4.0.0.0")]

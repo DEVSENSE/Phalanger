@@ -33,67 +33,7 @@ using DirectoryEx = System.IO.Directory;
 
 namespace PHP.Core
 {
-    #region TestUtils
-
-    public static class TestUtils
-    {
-#if DEBUG
-
-        /// <summary>
-        /// Runs unit tests (methods marked with <see cref="TestAttribute"/>) included in the specified assembly.
-        /// </summary>
-        public static void UnitTest(Assembly/*!*/ assembly, TextWriter/*!*/ output)
-        {
-            ScriptContext.CurrentContext.DisableErrorReporting();
-
-            foreach (MethodInfo method in GetTestMethods(assembly))
-            {
-                output.Write("Testing {0}.{1} ... ", method.DeclaringType.Name, method.Name);
-
-                Debug.Assert(method.GetParameters().Length == 0 && method.ReturnType == Emit.Types.Void && method.IsStatic);
-
-                try
-                {
-                    method.Invoke(null, ArrayUtils.EmptyStrings);
-                    output.WriteLine("OK.");
-                }
-                catch (TargetInvocationException)
-                {
-                    output.WriteLine("Failed.");
-                }
-            }
-            output.WriteLine("Done.");
-        }
-
-        private static IEnumerable<MethodInfo> GetTestMethods(Assembly/*!*/ assembly)
-        {
-            // scans assembly for test methods:
-            foreach (Type type in assembly.GetTypes())
-            {
-                foreach (MethodInfo method in type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static))
-                {
-                    object[] attrs = method.GetCustomAttributes(typeof(TestAttribute), false);
-                    if (attrs.Length == 1)
-                    {
-                        if (((TestAttribute)attrs[0]).One)
-                        {
-                            //result = new ArrayList();
-                            //result.Add(method);
-                            //return result;
-                        }
-                        else
-                        {
-                            yield return method;
-                        }
-                    }
-                }
-            }
-        }
-
-#endif
-    }
-
-    #endregion
+    #region DebugHelper
 
     /// <summary>
     /// Debug helpers.
@@ -126,6 +66,8 @@ namespace PHP.Core
                 Debug.Assert(array[i] != null);
         }
     }
+
+    #endregion
 
     #region Reflection Utils
 
@@ -540,6 +482,14 @@ namespace PHP.Core
               (TimeZone.IsDaylightSavingTime(src, src_dt) ? src_dt.Delta : TimeSpan.Zero);
         }
 #endif
+
+        /// <summary>
+        /// Determine maximum of three given <see cref="DateTime"/> values.
+        /// </summary>
+        public static DateTime Max(DateTime d1, DateTime d2)
+        {
+            return (d1 > d2) ? d1 : d2;
+        }
 
         /// <summary>
         /// Determine maximum of three given <see cref="DateTime"/> values.
@@ -1503,6 +1453,8 @@ namespace PHP.Core
 
     #endregion
 
+    #region FileSystemUtils
+
     /// <summary>
     /// File system utilities.
     /// </summary>
@@ -1554,12 +1506,30 @@ namespace PHP.Core
                 }
             }
         }
+        
+        /// <summary>
+        /// Gets the time given <paramref name="fsi"/> was modified. Mostly it is the <see cref="FileSystemInfo.LastWriteTimeUtc"/>
+        /// however if the file was modified elsewhere and copied, <see cref="FileSystemInfo.CreationTimeUtc"/> may be greater.
+        /// </summary>
+        /// <param name="fsi">File or a directory.</param>
+        /// <returns>Max of <see cref="FileSystemInfo.LastWriteTimeUtc"/> and <see cref="FileSystemInfo.CreationTimeUtc"/>.</returns>
+        public static DateTime GetLastModifiedTimeUtc(this FileSystemInfo fsi)
+        {
+            Debug.Assert(fsi != null);
+            return DateTimeUtils.Max(fsi.LastWriteTimeUtc, fsi.CreationTimeUtc);
+        }
+
+        /// <summary>
+        /// Gets the time given file at <paramref name="path"/> was modified. Mostly it is the <see cref="FileSystemInfo.LastWriteTimeUtc"/>
+        /// however if the file was modified elsewhere and copied, <see cref="FileSystemInfo.CreationTimeUtc"/> may be greater.
+        /// </summary>
+        /// <param name="path">Path to the file.</param>
+        /// <returns>Max of <see cref="FileSystemInfo.LastWriteTimeUtc"/> and <see cref="FileSystemInfo.CreationTimeUtc"/>.</returns>
+        public static DateTime GetLastModifiedTimeUtc(string path)
+        {
+            return GetLastModifiedTimeUtc(new FileInfo(path));
+        }
     }
-    
-    public enum DfsStates
-    {
-        Initial,
-        Entered,
-        Done
-    }
+
+    #endregion
 }

@@ -197,10 +197,10 @@ namespace PHP.Core.Compiler.AST
 
             public void Analyze(CatchItem/*!*/node, Analyzer/*!*/ analyzer)
             {
-                ExInfoFromParent info = new ExInfoFromParent(this);
+                ExInfoFromParent info = new ExInfoFromParent(node);
                 info.Access = AccessType.Write;
 
-                resolvedType = analyzer.ResolveTypeName(node.ClassName, analyzer.CurrentType, analyzer.CurrentRoutine, node.Position, false);
+                resolvedType = analyzer.ResolveTypeName(node.ClassName, analyzer.CurrentType, analyzer.CurrentRoutine, node.Span, false);
 
                 node.Variable.Analyze(analyzer, info);
 
@@ -284,7 +284,7 @@ namespace PHP.Core.Compiler.AST
 
             internal override void Emit(ThrowStmt node, CodeGenerator codeGenerator)
             {
-                codeGenerator.MarkSequencePoint(node.Position);
+                codeGenerator.MarkSequencePoint(node.Span);
 
                 // CALL Operators.Throw(<context>, <expression>);
                 codeGenerator.EmitLoadScriptContext();

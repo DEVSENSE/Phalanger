@@ -1826,7 +1826,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Emits a body of an arg-full function or method overload.
 		/// </summary>
-		public void EmitArgfullOverloadBody(PhpRoutine/*!*/ routine, List<Statement>/*!*/ body, Position entirePosition, ShortPosition declarationBodyPosition)
+        public void EmitArgfullOverloadBody(PhpRoutine/*!*/ routine, List<Statement>/*!*/ body, Text.Span entirePosition, int declarationBodyPosition)
 		{
 			Debug.Assert(!routine.IsAbstract);
 
@@ -1834,8 +1834,7 @@ namespace PHP.Core
             {
                 if (!routine.IsLambda)
                 {
-                    MarkSequencePoint(declarationBodyPosition.Line, declarationBodyPosition.Column,
-                        declarationBodyPosition.Line, declarationBodyPosition.Column + 1);
+                    MarkSequencePoint(declarationBodyPosition);
                 }
                 il.Emit(OpCodes.Nop);
 
@@ -1864,9 +1863,9 @@ namespace PHP.Core
 			// (do not mark it in lambda functions as they are created from source code without braces);
 			if (!routine.IsLambda)
 			{
-				MarkSequencePoint(entirePosition.LastLine, entirePosition.LastColumn,
-					entirePosition.LastLine, entirePosition.LastColumn + 1);
-			}else if (context.Config.Compiler.Debug)
+				MarkSequencePoint(entirePosition.End);
+			}
+            else if (context.Config.Compiler.Debug)
             {
                 il.Emit(OpCodes.Nop);
             }
@@ -2010,11 +2009,7 @@ namespace PHP.Core
 					// marks a sequence point if a parameter is initialized or type hinted:
 					if (optional || param.TypeHint != null)
 					{
-						this.MarkSequencePoint(
-							param.Position.FirstLine,
-							param.Position.FirstColumn,
-							param.Position.LastLine,
-							param.Position.LastColumn + 2);
+						this.MarkSequencePoint(param.Span);
 					}
 
 					if (optional)
@@ -2866,7 +2861,7 @@ namespace PHP.Core
 			attributes |= MethodAttributes.HideBySig;
 
 			foreach (StubInfo stub in ClrStubBuilder.DefineMethodExportStubs(
-				target,
+				target, target.DeclaringPhpType,
 				attributes,
 				false,
 				delegate(string[] genericParamNames, object[] parameterTypes, object returnType)
@@ -2953,7 +2948,7 @@ namespace PHP.Core
 				if (symbol_writer != null && startLine >= 0)
 				{
 					Debug.Assert(startLine >= 0 && startColumn >= 0 && endLine >= 0 && endColumn >= 0, "Invalid position values.");
-					il.MarkSequencePoint(symbol_writer, startLine, startColumn, endLine, endColumn);
+					il.MarkSequencePoint(symbol_writer, startLine + 1, startColumn + 1, endLine + 1, endColumn + 1);
 				}
 
 				if (CompilationUnit.IsTransient)
@@ -2972,7 +2967,7 @@ namespace PHP.Core
         internal void MarkSequencePoint(Expression/*!*/expression)
         {
             Debug.Assert(expression != null);
-            MarkSequencePoint(expression.Position);
+            MarkSequencePoint(expression.Span);
         }
 
         internal void MarkSequencePoint(List<Expression>/*!*/expressions)
@@ -2985,19 +2980,26 @@ namespace PHP.Core
                 }
                 else
                 {
-                    MarkSequencePoint(
-                        expressions[0].Position.FirstLine,
-                        expressions[0].Position.FirstColumn,
-                        expressions[expressions.Count - 1].Position.LastLine,
-                        expressions[expressions.Count - 1].Position.LastColumn + 1);
+                    var first = expressions[0];
+                    var last = expressions.Last();
+                    MarkSequencePoint(Text.Span.FromBounds(first.Span.Start, last.Span.End));
                 }
             }
         }
 
-        internal void MarkSequencePoint(Position position)
+        internal void MarkSequencePoint(Text.Span span)
         {
-            if (position.IsValid)
-                MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 1);
+            if (span.IsValid)
+            {
+                var position = new Text.TextSpan(SourceUnit.LineBreaks, span);
+                MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn);
+            }
+        }
+
+        internal void MarkSequencePoint(int position)
+        {
+            if (position >= 0)
+                MarkSequencePoint(new Text.Span(position, 0));
         }
 
 		internal void MarkTransientSequencePoint()
@@ -3008,6 +3010,14 @@ namespace PHP.Core
 				EmitEvalInfoCapture(LastTransientLine, LastTransientColumn, true);
 			}
 		}
+
+        internal void EmitEvalInfoCapture(int position, bool positionOnly)
+        {
+            int line, column;
+            SourceUnit.LineBreaks.GetLineColumnFromPosition(position, out line, out column);
+
+            EmitEvalInfoCapture(line, column, positionOnly);
+        }
 
 		internal void EmitEvalInfoCapture(int line, int column, bool positionOnly)
 		{
@@ -3274,7 +3284,7 @@ namespace PHP.Core
         /// <summary>
         /// Emit call to <see cref="DynamicCode.Assert"/> or <see cref="DynamicCode.Eval"/>.
         /// </summary>
-        internal PhpTypeCode EmitEval(EvalKinds kind, Expression/*!*/code, Position position, QualifiedName? currentNamespace, Dictionary<string, QualifiedName> currentAliases)
+        internal PhpTypeCode EmitEval(EvalKinds kind, Expression/*!*/code, Text.Span span, QualifiedName? currentNamespace, Dictionary<string, QualifiedName> currentAliases)
         {
             Debug.Assert(code != null);
 
@@ -3300,12 +3310,14 @@ namespace PHP.Core
                 il.Emit(OpCodes.Ldc_I4_0);
             }
 
+            var position = new Text.TextPoint(this.SourceUnit.LineBreaks, span.Start);
+
             EmitLoadScriptContext();
             EmitLoadRTVariablesTable();
             EmitLoadSelf();
             EmitLoadClassContext();
-            EmitEvalInfoPass(position.FirstLine, position.FirstColumn);
-            EmitNamingContext(currentNamespace, currentAliases, position);
+            EmitEvalInfoPass(position.Line, position.Column);
+            EmitNamingContext(currentNamespace, currentAliases, span.Start);
 
             il.Emit(OpCodes.Call, (kind == EvalKinds.Assert) ? Methods.DynamicCode.Assert : Methods.DynamicCode.Eval);
 
@@ -3328,7 +3340,7 @@ namespace PHP.Core
         /// <summary>
         /// Loads (cached) instance of given state of <see cref="NamingContext"/> onto the evaluation stack.
         /// </summary>
-        internal void EmitNamingContext(QualifiedName? currentNamespace, Dictionary<string, QualifiedName> currentAliases, Position position)
+        internal void EmitNamingContext(QualifiedName? currentNamespace, Dictionary<string, QualifiedName> currentAliases, int position)
         {
             ILEmitter il = this.IL;
 
@@ -3336,7 +3348,7 @@ namespace PHP.Core
             {
                 // private static NamingContext <id> = null;
                 string fname = (this.SourceUnit != null) ? this.SourceUnit.SourceFile.ToString() : string.Empty;
-                string id = String.Format("<namingContext>{0}${1}${2}", unchecked((uint)fname.GetHashCode()), position.FirstLine, position.FirstColumn);
+                string id = String.Format("<namingContext>{0}${1}", unchecked((uint)fname.GetHashCode()), position);
 
                 // create static field for static local index: static int <id>;
                 Debug.Assert(il.TypeBuilder != null, "The method does not have declaring type! (global code in pure mode?)");

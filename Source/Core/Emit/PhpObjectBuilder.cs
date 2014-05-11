@@ -407,7 +407,7 @@ namespace PHP.Core.Emit
 		/// </summary>
 		public static void DefineExportedConstructors(PhpType/*!*/ phpType)
 		{
-			phpType.Builder.ClrConstructorStubs = new List<StubInfo>();
+            phpType.Builder.ClrConstructorStubs = new List<StubInfo>();
 			PhpMethod ctor = phpType.GetConstructor() as PhpMethod;
 
 			if (ctor == null)
@@ -441,7 +441,7 @@ namespace PHP.Core.Emit
                 MethodAttributes attr = Reflection.Enums.ToMethodAttributes(ctor.RoutineDesc.MemberAttributes);
 
                 foreach (StubInfo info in ClrStubBuilder.DefineMethodExportStubs(
-                    ctor,
+                    ctor, phpType,
                     attr,
                     true,
                     delegate(string[] genericParamNames, object[] parameterTypes, object returnType)

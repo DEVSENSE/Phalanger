@@ -27,8 +27,6 @@ using System.Collections.Generic;
 %ignorecase
 %charmap Map
 %char
-%line
-%column
 
 %x INITIAL
 %x ST_IN_SCRIPTING

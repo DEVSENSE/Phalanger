@@ -933,15 +933,6 @@ namespace PHP.Library
 				ret.Add(scheme);
 			}
 
-#if !SILVERLIGHT
-			// Then get the external wrapper schemes list.
-			ICollection externals = Externals.GetStreamWrapperSchemes();
-			foreach (string scheme in externals)
-			{
-				ret.Add(scheme);
-			}
-#endif
-
 			// Now add the indexes (schemes) of User wrappers.
 			foreach (string scheme in StreamWrapper.GetUserWrapperSchemes())
 			{

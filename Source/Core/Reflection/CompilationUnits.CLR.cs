@@ -550,7 +550,7 @@ namespace PHP.Core.Reflection
 				{
 					try
 					{
-						source_unit.Parse(errors, this, Position.Initial, languageFeatures);
+						source_unit.Parse(errors, this, languageFeatures);
 						files[source_file] = source_unit;
 					}
 					catch (CompilerException)
@@ -643,7 +643,7 @@ namespace PHP.Core.Reflection
 
 				// check entry point presence:
 				if (assembly_builder.IsExecutable && entryPoint == null)
-					context.Errors.Add(Errors.MissingEntryPoint, null, Position.Invalid, PureAssembly.EntryPointName);
+					context.Errors.Add(Errors.MissingEntryPoint, null, Text.Span.Invalid, PureAssembly.EntryPointName);
 			}
 			catch (CompilerException)
 			{
@@ -681,10 +681,17 @@ namespace PHP.Core.Reflection
 
 		private void DefineBuilders()
 		{
-			foreach (Declaration declaration in types.Values)
+            foreach (Declaration declaration in types.Values)
 			{
-				((PhpType)declaration.Declaree).DefineBuilders();
+                ((PhpType)declaration.Declaree).DefineBuilders();
 			}
+
+            foreach (Declaration declaration in types.Values)
+            {
+                var phptype = (PhpType)declaration.Declaree;
+                if (phptype.IsExported)
+                    PhpObjectBuilder.DefineExportedConstructors(phptype);
+            }
 
 			foreach (Declaration declaration in functions.Values)
 			{
@@ -719,7 +726,7 @@ namespace PHP.Core.Reflection
 		public void InclusionReduced(Parser/*!*/ parser, AST.IncludingEx/*!*/ node)
 		{
 			if (!relaxPurity)
-				parser.ErrorSink.Add(Errors.InclusionInPureUnit, parser.SourceUnit, node.Position);
+				parser.ErrorSink.Add(Errors.InclusionInPureUnit, parser.SourceUnit, node.Span);
 		}
 
 		public void FunctionDeclarationReduced(Parser/*!*/ parser, AST.FunctionDecl/*!*/ node)
@@ -947,8 +954,8 @@ namespace PHP.Core.Reflection
 #if !SILVERLIGHT
 			if (context.Config.Compiler.PrependFile != null)
 			{
-				prepend = new AST.IncludingEx(sourceUnit, new Scope(1), false, Position.Initial, InclusionTypes.Prepended,
-					new AST.StringLiteral(Position.Initial, context.Config.Compiler.PrependFile));
+                prepend = new AST.IncludingEx(sourceUnit, new Scope(1), false, Text.Span.FromBounds(0, 0), InclusionTypes.Prepended,
+                    new AST.StringLiteral(Text.Span.FromBounds(0, 0), context.Config.Compiler.PrependFile));
 
 				inclusionExpressions.Add(prepend);
 			}
@@ -970,8 +977,8 @@ namespace PHP.Core.Reflection
 #if !SILVERLIGHT
 			if (context.Config.Compiler.AppendFile != null)
 			{
-				append = new AST.IncludingEx(sourceUnit, new Scope(Int32.MaxValue), false, Position.Initial, InclusionTypes.Appended,
-					new AST.StringLiteral(Position.Initial, context.Config.Compiler.AppendFile));
+                append = new AST.IncludingEx(sourceUnit, new Scope(Int32.MaxValue), false, Text.Span.FromBounds(0, 0), InclusionTypes.Appended,
+                    new AST.StringLiteral(Text.Span.FromBounds(0, 0), context.Config.Compiler.AppendFile));
 
 				inclusionExpressions.Add(append);
 			}
@@ -993,7 +1000,7 @@ namespace PHP.Core.Reflection
 
 			try
 			{
-				sourceUnit.Parse(errors, this, Position.Initial, languageFeatures);
+				sourceUnit.Parse(errors, this, languageFeatures);
 			}
 			catch (CompilerException)
 			{
@@ -1356,7 +1363,7 @@ namespace PHP.Core.Reflection
 					if (context.Config.Compiler.InclusionMappings.Count > 0)
 					{
 						// tries to match the pattern:
-						string source_code = sourceUnit.GetSourceCode(inclusionExpr.Target.Position);
+						string source_code = sourceUnit.GetSourceCode(inclusionExpr.Target.Span);
 						string translated_path = InclusionMapping.TranslateExpression(context.Config.Compiler.InclusionMappings,
                             source_code, context.Config.Compiler.SourceRoot.FullFileName);
 
@@ -1369,7 +1376,7 @@ namespace PHP.Core.Reflection
 						}
 						else
 						{
-							context.Errors.Add(Warnings.InclusionReplacementFailed, SourceUnit, inclusionExpr.Position, source_code);
+							context.Errors.Add(Warnings.InclusionReplacementFailed, SourceUnit, inclusionExpr.Span, source_code);
 						}
 					}
 
@@ -1423,7 +1430,7 @@ namespace PHP.Core.Reflection
 
             if (full_path.IsEmpty)
 			{
-				context.Errors.Add(Warnings.InclusionDeferredToRuntime, SourceUnit, target.Position,
+				context.Errors.Add(Warnings.InclusionDeferredToRuntime, SourceUnit, target.Span,
 					translatedPath, warning);
 				return null;
 			}

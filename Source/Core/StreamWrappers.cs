@@ -19,12 +19,37 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using PHP.Core;
+using System.Runtime.InteropServices;
 #if SILVERLIGHT
 using PHP.CoreCLR;
 #endif
 
 namespace PHP.Core
 {
+    #region StatStruct
+
+    /// <summary>
+    /// Managed equivalent of the CRT <c>stat</c> structure.
+    /// </summary>
+    [Serializable]
+    [StructLayout(LayoutKind.Sequential)]
+    public struct StatStruct
+    {
+        public uint st_dev;
+        public ushort st_ino;
+        public ushort st_mode;
+        public short st_nlink;
+        public short st_uid;
+        public short st_gid;
+        public uint st_rdev;
+        public int st_size;
+        public long st_atime;
+        public long st_mtime;
+        public long st_ctime;
+    }
+
+    #endregion
+
     #region Open-Mode decoded options
     /// <summary>
     /// Flags returned by <see cref="StreamWrapper.ParseMode"/> indicating
@@ -660,17 +685,8 @@ namespace PHP.Core
                 return (StreamWrapper)UserWrappers[scheme];
             }
 
-#if !SILVERLIGHT
-            // And finally look inside the extensions. 
-            StreamWrapper externalWrapper =
-              ExternalStreamWrapper.GetExternalWrapperByScheme(scheme);
-
-            // Returns either the found external wrapper or null.
-            return externalWrapper;
-#else
-			// External wrappers N/A on SL
-			return null;
-#endif
+            // no wrapper for given scheme
+            return null;
         }
 
         /// <summary>

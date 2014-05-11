@@ -150,7 +150,7 @@ namespace PHP.Core
 		public Expression/*!*/ Literalize()
 		{
 			if (HasValue && !Expression.HasValue())
-				return Expression = LiteralUtils.Create(Expression.Position, Value, Expression.NodeCompiler<IExpressionCompiler>().Access);
+				return Expression = LiteralUtils.Create(Expression.Span, Value, Expression.NodeCompiler<IExpressionCompiler>().Access);
 			else
 				return Expression;
 		}
@@ -341,11 +341,11 @@ namespace PHP.Core
 		/// Builds AST from the given source code string.
 		/// Returns <B>null</B> if the AST cannot be built (new declarations appears in the code).
 		/// </summary>
-		internal List<Statement> BuildAst(Position initialPosition, string/*!*/ sourceCode)
+        internal List<Statement> BuildAst(int positionShift, string/*!*/ sourceCode)
 		{
 			Parser.ReductionsCounter counter = new Parser.ReductionsCounter();
 
-            var ast = BuildAst(initialPosition, sourceCode, counter);
+            var ast = BuildAst(positionShift, sourceCode, counter);
 
 			if (counter.FunctionCount + counter.TypeCount + counter.ConstantCount > 0)
 				return null;
@@ -356,12 +356,11 @@ namespace PHP.Core
         /// <summary>
         /// Builds AST from the given source code string. Does not check for declarations in the source code.
         /// </summary>
-        public AST.GlobalCode BuildAst(Position initialPosition, string/*!*/ sourceCode, Parser.ReductionsCounter counter)
+        public AST.GlobalCode BuildAst(int positionShift, string/*!*/ sourceCode, Parser.ReductionsCounter counter)
         {
             StringReader source_reader = new StringReader(sourceCode);
-
             AST.GlobalCode ast = AstBuilder.Parse(sourceUnit, source_reader, ErrorSink, counter,
-                initialPosition, Lexer.LexicalStates.ST_IN_SCRIPTING, context.Config.Compiler.LanguageFeatures);
+                Lexer.LexicalStates.ST_IN_SCRIPTING, context.Config.Compiler.LanguageFeatures, positionShift);
 
             return ast;
         }
@@ -730,7 +729,7 @@ namespace PHP.Core
 			unreachableCode = false;
 		}
 
-		internal void ReportUnreachableCode(Position position)
+        internal void ReportUnreachableCode(Text.Span position)
 		{
 			if (!unreachableCodeReported)
 			{
@@ -981,7 +980,7 @@ namespace PHP.Core
 			locationStack.Pop();
 		}
 
-		internal void AddConstCaseToCurrentSwitch(object value, Position position)
+        internal void AddConstCaseToCurrentSwitch(object value, Text.Span position)
 		{
 			SwitchLocation current_switch = (SwitchLocation)CurrentLocation;
 
@@ -991,7 +990,7 @@ namespace PHP.Core
 				current_switch.ConstCases.Add(value);
 		}
 
-		internal void AddDefaultToCurrentSwitch(Position position)
+        internal void AddDefaultToCurrentSwitch(Text.Span position)
 		{
 			SwitchLocation current_switch = (SwitchLocation)CurrentLocation;
 
@@ -1016,7 +1015,7 @@ namespace PHP.Core
 			return currentScope;
 		}
 
-		public DRoutine/*!*/ ResolveFunctionName(QualifiedName qualifiedName, Position position)
+        public DRoutine/*!*/ ResolveFunctionName(QualifiedName qualifiedName, Text.Span position)
 		{
 			Debug.Assert(currentScope.IsValid, "Scope is available only during full analysis.");
 
@@ -1044,7 +1043,7 @@ namespace PHP.Core
         /// <param name="mustResolve"></param>
         /// <returns></returns>
         internal DType ResolveType(object typeName, PhpType referringType, PhpRoutine referringRoutine,
-				Position position, bool mustResolve)
+                Text.Span position, bool mustResolve)
 		{
 			DType result = null;
 
@@ -1069,7 +1068,7 @@ namespace PHP.Core
 		}
 
 		public DType/*!*/ ResolveTypeName(QualifiedName qualifiedName, PhpType referringType,
-			PhpRoutine referringRoutine, Position position, bool mustResolve)
+            PhpRoutine referringRoutine, Text.Span position, bool mustResolve)
 		{
 			DType result;
 
@@ -1190,7 +1189,7 @@ namespace PHP.Core
 			return result;
 		}
 
-		private void ReportUnknownType(DType/*!*/ type, QualifiedName? alias, Position position)
+		private void ReportUnknownType(DType/*!*/ type, QualifiedName? alias, Text.Span position)
 		{
 			if (type.IsUnknown)
 			{
@@ -1202,7 +1201,7 @@ namespace PHP.Core
 		}
 
 		public DType/*!*/ ResolveTypeName(GenericQualifiedName genericName, PhpType referringType,
-			PhpRoutine referringRoutine, Position position, bool mustResolve)
+            PhpRoutine referringRoutine, Text.Span position, bool mustResolve)
 		{
 			DType type = ResolveTypeName(genericName.QualifiedName, referringType, referringRoutine, position, mustResolve);
             DTypeDesc[] arguments;
@@ -1227,7 +1226,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Gets the type for specified attribute type name.
 		/// </summary>
-		public DType/*!*/ ResolveCustomAttributeType(QualifiedName qualifiedName, Scope referringScope, Position position)
+        public DType/*!*/ ResolveCustomAttributeType(QualifiedName qualifiedName, Scope referringScope, Text.Span position)
 		{
 			if (qualifiedName.IsAppStaticAttributeName)
 			{
@@ -1279,7 +1278,7 @@ namespace PHP.Core
         /// <param name="checkVisibilityAtRuntime">Will determine if the routine call must be checked for visibility at runtime.</param>
         /// <param name="isCallMethod">Will determine if __call or __callStatic magic methods were found instead.</param>
         /// <returns>The resolved routine. Cannot return <c>null</c>.</returns>
-		public DRoutine/*!*/ ResolveMethod(DType/*!*/ type, Name methodName, Position position,
+        public DRoutine/*!*/ ResolveMethod(DType/*!*/ type, Name methodName, Text.Span position,
 			PhpType referringType, PhpRoutine referringRoutine, bool calledStatically,
             out bool checkVisibilityAtRuntime, out bool isCallMethod)
 		{
@@ -1375,7 +1374,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Resolves constructor of the specified type within the current context (location).
 		/// </summary>
-		public DRoutine/*!*/ ResolveConstructor(DType/*!*/ type, Position position, PhpType referringType,
+        public DRoutine/*!*/ ResolveConstructor(DType/*!*/ type, Text.Span position, PhpType referringType,
 			PhpRoutine referringRoutine, out bool checkVisibilityAtRuntime)
 		{
 			checkVisibilityAtRuntime = false;
@@ -1425,7 +1424,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Resolves static properties.
 		/// </summary>
-		public DProperty/*!*/ ResolveProperty(DType/*!*/ type, VariableName propertyName, Position position, bool staticOnly,
+		public DProperty/*!*/ ResolveProperty(DType/*!*/ type, VariableName propertyName, Text.Span position, bool staticOnly,
 			PhpType referringType, PhpRoutine referringRoutine, out bool checkVisibilityAtRuntime)
 		{
 			Debug.Assert(type != null);
@@ -1484,7 +1483,7 @@ namespace PHP.Core
 		}
 
 		internal DConstant ResolveClassConstantName(DType/*!*/ type, VariableName constantName,
-			Position position, PhpType referringType, PhpRoutine referringRoutine, out bool checkVisibilityAtRuntime)
+            Text.Span position, PhpType referringType, PhpRoutine referringRoutine, out bool checkVisibilityAtRuntime)
 		{
 			checkVisibilityAtRuntime = false;
 
@@ -1538,7 +1537,7 @@ namespace PHP.Core
 			}
 		}
 
-		internal DConstant ResolveGlobalConstantName(QualifiedName qualifiedName, Position position)
+        internal DConstant ResolveGlobalConstantName(QualifiedName qualifiedName, Text.Span position)
 		{
 			Debug.Assert(currentScope.IsValid, "Scope is available only during full analysis.");
 
@@ -1570,8 +1569,7 @@ namespace PHP.Core
 			sourceUnit.Ast.Statements.Add(decl);
 		}
 
-#if !SILVERLIGHT
-		internal void SetEntryPoint(PhpRoutine/*!*/ routine, Position position)
+        internal void SetEntryPoint(PhpRoutine/*!*/ routine, Text.Span position)
 		{
 			// pure entry point is a static parameterless "Main" method/function:
 			if (!sourceUnit.CompilationUnit.IsPure || !routine.Name.Equals(PureAssembly.EntryPointName)
@@ -1583,19 +1581,13 @@ namespace PHP.Core
 			if (pcu.EntryPoint != null)
 			{
 				ErrorSink.Add(Errors.EntryPointRedefined, SourceUnit, position);
-				ErrorSink.Add(Errors.RelatedLocation, pcu.EntryPoint.SourceUnit, pcu.EntryPoint.Position);
+				ErrorSink.Add(Errors.RelatedLocation, pcu.EntryPoint.SourceUnit, pcu.EntryPoint.Span);
 			}
 			else
 			{
 				pcu.SetEntryPoint(routine);
 			}
 		}
-#else
-		internal void SetEntryPoint(PhpRoutine/*!*/ routine, Position position)
-		{
-			// nothing to do here on silverlight..
-		}
-#endif
 
 		internal static void ValidateLabels(ErrorSink/*!*/ errors, SourceUnit/*!*/ sourceUnit,
 			Dictionary<VariableName, Statement>/*!*/ labels)
@@ -1606,11 +1598,11 @@ namespace PHP.Core
 				if (label != null)
 				{
 					if (!label.IsReferred)
-						errors.Add(Warnings.UnusedLabel, sourceUnit, label.Position, entry.Key);
+						errors.Add(Warnings.UnusedLabel, sourceUnit, label.Span, entry.Key);
 				}
 				else
 				{
-					errors.Add(Errors.UndefinedLabel, sourceUnit, entry.Value.Position, entry.Key);
+					errors.Add(Errors.UndefinedLabel, sourceUnit, entry.Value.Span, entry.Key);
 				}
 			}
 		}

@@ -15,6 +15,7 @@
 using System;
 //using System.Web;
 using System.IO;
+using System.Linq;
 using System.Collections;
 using System.ComponentModel;
 using System.Threading;
@@ -140,14 +141,13 @@ namespace PHP.Library
 		/// Retrieves a string version of PHP language which features is supported by the Phalanger.
 		/// </summary>
 		/// <returns>PHP language version.</returns>
-		[ImplementsFunction("phpversion"/*, FunctionImplOptions.Special*/)]
+		[ImplementsFunction("phpversion")]
         [PureFunction]
         public static string PhpVersion()
 		{
 			return Core.PhpVersion.Current;
 		}
 
-#if !SILVERLIGHT
 		/// <summary>
 		/// Retrieves a string version of a specified extension.
 		/// </summary>
@@ -156,10 +156,10 @@ namespace PHP.Library
 		[return: CastToFalse]
 		public static string PhpVersion(string extensionName)
 		{
-			bool dummy;
-			return Externals.GetModuleVersion(extensionName, true, out dummy);
+            PhpException.FunctionNotSupported();
+			//return ApplicationContext.Default.GetLoadedLibraries().FirstOrDefault(x => x.Descriptor.AssemblyAttribute ...
+            return null;
 		}
-#endif
 
 		/// <summary>
 		/// Compares PHP versions.
@@ -167,7 +167,7 @@ namespace PHP.Library
 		/// <param name="ver1">The first version.</param>
 		/// <param name="ver2">The second version.</param>
 		/// <returns>The result of comparison (-1,0,+1).</returns>
-		[ImplementsFunction("version_compare"/*, FunctionImplOptions.Special*/)]
+		[ImplementsFunction("version_compare")]
         [PureFunction]
         public static int VersionCompare(string ver1, string ver2)
 		{
@@ -181,7 +181,7 @@ namespace PHP.Library
 		/// <param name="ver2">The second version.</param>
 		/// <param name="op">The operator to be used.</param>
 		/// <returns>A boolean result of comparison or a <B>null</B> reference if the operator is invalid.</returns>
-		[ImplementsFunction("version_compare"/*, FunctionImplOptions.Special*/)]
+		[ImplementsFunction("version_compare")]
         [PureFunction]
         public static object VersionCompare(string ver1, string ver2, string op)
 		{

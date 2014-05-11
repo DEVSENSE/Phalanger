@@ -648,13 +648,6 @@ namespace PHP.Library
             return null;
         }
 
-#if DEBUG
-
-        internal static TimeZoneInfo/*!*/NepalTimeZone { get { return GetTimeZone("Asia/Katmandu"); } }// = TimeZoneInfo.FindSystemTimeZoneById("Nepal Standard Time");// new _NepalTimeZone();
-        internal static TimeZoneInfo/*!*/PacificTimeZone { get { return GetTimeZone("America/Los_Angeles"); } }//  = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");//new _PacificTimeZone();
-        internal static TimeZoneInfo/*!*/GmtTimeZone { get { return GetTimeZone("Etc/GMT"); } }//  = TimeZoneInfo.FindSystemTimeZoneById("GTM");
-#endif
-
         #region date_default_timezone_get, date_default_timezone_set
 
         [ImplementsFunction("date_default_timezone_set")]
@@ -759,62 +752,6 @@ namespace PHP.Library
             return (PhpArray)timezone.getTransitions(context, Arg.Default, Arg.Default);
         }
 
-        #endregion
-
-        #region Unit Testing
-#if DEBUG
-
-        //        //[Test(true)]
-        //        static void SortZones()
-        //        {
-        //            InitTables();
-
-        //#if !SILVERLIGHT
-        //            Array.Sort(zones, CaseInsensitiveComparer.DefaultInvariant);
-        //#else
-        //            Array.Sort(zones, StringComparer.InvariantCultureIgnoreCase);
-        //#endif
-
-
-        //            Console.WriteLine();
-        //            foreach (string z in zones)
-        //            {
-        //                Console.WriteLine("\"{0}\",", z);
-        //            }
-        //        }
-
-        //        [Test]
-        //        static void TestSorted()
-        //        {
-        //            InitTables();
-        //            string[] sorted = (string[])zones.Clone();
-
-        //#if !SILVERLIGHT
-        //            Array.Sort(sorted, CaseInsensitiveComparer.DefaultInvariant);
-        //#else
-        //            Array.Sort(sorted, StringComparer.InvariantCultureIgnoreCase);
-        //#endif
-
-        //            for (int i = 0; i < zones.Length; i++)
-        //                Debug.Assert(sorted[i] == zones[i]);
-        //        }
-
-        [Test]
-        static void TestGetTimeZone()
-        {
-            TimeZoneInfo zone;
-
-            zone = GetTimeZone("Europe/Prague");
-            Debug.Assert(zone != null && zone.Id == "Europe/Prague");
-
-            zone = GetTimeZone("europe/prague");
-            Debug.Assert(zone != null && zone.Id == "Europe/Prague");
-
-            zone = GetTimeZone("foo");
-            Debug.Assert(zone == null);
-        }
-
-#endif
         #endregion
     }
 }

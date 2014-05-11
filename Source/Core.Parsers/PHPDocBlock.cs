@@ -17,6 +17,8 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
+using PHP.Core.Text;
+
 namespace PHP.Core
 {
     /// <summary>
@@ -1209,10 +1211,12 @@ namespace PHP.Core
                 
                 int nameStart = descStart;
                 int paramsFrom = -1;
+                // skip [name]
                 while (descStart < line.Length && char.IsLetterOrDigit(line[descStart]))
                     descStart++;
 
-                if (line[descStart] == '(')
+                // parse parameters
+                if (descStart < line.Length && line[descStart] == '(')
                 {
                     paramsFrom = descStart;
 
@@ -1285,7 +1289,7 @@ namespace PHP.Core
                     }
                 }
 
-                return new AST.FormalParam(Parsers.Position.Invalid, paramname, typehint, byref, null, new List<AST.CustomAttribute>());
+                return new AST.FormalParam(Text.Span.Invalid, paramname, typehint, byref, null, new List<AST.CustomAttribute>());
             }
 
             #region Helpers
@@ -1359,6 +1363,38 @@ namespace PHP.Core
             }
         }
 
+        public sealed class TestTag : EmptyTag
+        {
+            public const string Name = "@test";
+
+            public TestTag(string/*!*/line)
+                : base()
+            {
+            }
+
+            public override string ToString()
+            {
+                return Name;
+            }
+        }
+
+        public sealed class GroupTag : SingleLineTag
+        {
+            public const string Name = "@group";
+
+            public string Group { get { return this.text; } }
+
+            public GroupTag(string/*!*/line)
+                : base(Name, line)
+            {
+            }
+
+            public override string ToString()
+            {
+                return Name + " " + this.Group;
+            }
+        }
+
         #endregion
 
         #region Properties
@@ -1377,8 +1413,8 @@ namespace PHP.Core
         /// <summary>
         /// Position of the whole token in the source code.
         /// </summary>
-        public Parsers.Position Position { get { return this._position; } }
-        private readonly Parsers.Position _position;
+        public ShortPosition Position { get { return this._position; } }
+        private readonly ShortPosition _position;
 
         /// <summary>
         /// Parsed data. Lazily initialized.
@@ -1419,8 +1455,8 @@ namespace PHP.Core
         /// Initializes new instance of <see cref="PHPDocBlock"/>.
         /// </summary>
         /// <param name="doccomment">PHPDoc token content.</param>
-        /// <param name="position">Position of whole token in the source code.</param>
-        public PHPDocBlock(string doccomment, Parsers.Position position)
+        /// <param name="position">Position of the comment in the source code.</param>
+        public PHPDocBlock(string doccomment, ShortPosition position)
         {
             this._docCommentString = doccomment;
             this._position = position;
@@ -1430,8 +1466,8 @@ namespace PHP.Core
         /// Parses given <paramref name="doccomment"/> into a list of <see cref="Element"/> instances.
         /// </summary>
         /// <param name="doccomment">Content of the PHPDoc token.</param>
-        /// <param name="position">Position of whole <paramref name="doccomment"/> within the source code.</param>
-        private static List<Element>/*!*/ParseNoLock(string/*!*/doccomment, Parsers.Position position)
+        /// <param name="position">Position of <paramref name="doccomment"/> within the source code.</param>
+        private static List<Element>/*!*/ParseNoLock(string/*!*/doccomment, ShortPosition position)
         {
             Debug.Assert(doccomment != null);
 
@@ -1452,11 +1488,11 @@ namespace PHP.Core
                     Debug.Assert(line != null);
                     
                     // determine position within the source code:
-                    int sourcePositionLine = lineIndex + position.FirstLine;
+                    int sourcePositionLine = lineIndex + position.Line;
                     if (lineIndex == 0)
                     {
-                        startCharIndex += position.FirstColumn;
-                        endCharIndex += position.FirstColumn;
+                        startCharIndex += position.Column;
+                        endCharIndex += position.Column;
                     }
 
                     //

@@ -365,22 +365,15 @@ namespace PHP.Core.Compiler.AST
                             {
                                 const string prefix = "return ";
 
-                                // position setup:
-                                Position pos = Position.Initial;
-
                                 // the position of the last character before the parsed string:
-                                pos.FirstLine = node.Code.Position.FirstLine;
-                                pos.FirstOffset = node.Code.Position.FirstOffset - prefix.Length + 1;
-                                pos.FirstColumn = node.Code.Position.FirstColumn - prefix.Length + 1;
-
-                                List<Statement> statements = analyzer.BuildAst(pos, String.Concat(prefix, inlinedCode, ";"));
+                                List<Statement> statements = analyzer.BuildAst(node.Code.Span.Start - prefix.Length + 1, String.Concat(prefix, inlinedCode, ";"));
 
                                 // code is unevaluable:
                                 if (statements == null)
                                     return new Evaluation(node, true);
 
                                 if (statements.Count > 1)
-                                    analyzer.ErrorSink.Add(Warnings.MultipleStatementsInAssertion, analyzer.SourceUnit, node.Position);
+                                    analyzer.ErrorSink.Add(Warnings.MultipleStatementsInAssertion, analyzer.SourceUnit, node.Span);
 
                                 Debug.Assert(statements.Count > 0 && statements[0] is JumpStmt);
 
@@ -445,11 +438,12 @@ namespace PHP.Core.Compiler.AST
                         il.Emit(OpCodes.Call, Methods.DynamicCode.PostAssert);
 
                         // LOAD bool CheckAssertion(STACK, <inlined code>, context, <source path>, line, column);
+                        var position = new Text.TextPoint(codeGenerator.SourceUnit.LineBreaks, node.Span.Start);
                         il.Emit(OpCodes.Ldstr, inlinedCode);
                         codeGenerator.EmitLoadScriptContext();
                         il.Emit(OpCodes.Ldstr, codeGenerator.SourceUnit.SourceFile.RelativePath.ToString());
-                        il.LdcI4(node.Position.FirstLine);
-                        il.LdcI4(node.Position.FirstColumn);
+                        il.LdcI4(position.Line);
+                        il.LdcI4(position.Column);
                         codeGenerator.EmitLoadNamingContext();
                         il.Emit(OpCodes.Call, Methods.DynamicCode.CheckAssertion);
 
@@ -470,7 +464,7 @@ namespace PHP.Core.Compiler.AST
                 }
                 else
                 {
-                    result = codeGenerator.EmitEval(node.IsAssert ? EvalKinds.Assert : EvalKinds.ExplicitEval, node.Code, node.Position, null, null);
+                    result = codeGenerator.EmitEval(node.IsAssert ? EvalKinds.Assert : EvalKinds.ExplicitEval, node.Code, node.Span, null, null);
                 }
 
                 // handles return value according to the access type:

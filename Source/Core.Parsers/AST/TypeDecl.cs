@@ -53,8 +53,8 @@ namespace PHP.Core.AST
 
 		#region Construction
 
-		public FormalTypeParam(Position position, Name name, object defaultType, List<CustomAttribute> attributes)
-			: base(position)
+		public FormalTypeParam(Text.Span span, Name name, object defaultType, List<CustomAttribute> attributes)
+            : base(span)
 		{
             Debug.Assert(defaultType == null || defaultType is PrimitiveTypeName || defaultType is GenericQualifiedName);
 
@@ -121,7 +121,7 @@ namespace PHP.Core.AST
         /// <summary>
         /// Position of <see cref="Name"/> in the source code.
         /// </summary>
-        public Position NamePosition { get; private set; }
+        public Text.Span NamePosition { get; private set; }
 
 		/// <summary>
 		/// Namespace where the class is declared in.
@@ -143,20 +143,20 @@ namespace PHP.Core.AST
         public GenericQualifiedName? BaseClassName { get { return baseClassName; } }
 
         /// <summary>Position of <see cref="BaseClassName"/>.</summary>
-        public Position BaseClassNamePosition { get; private set; }
+        public Text.Span BaseClassNamePosition { get; private set; }
 
         public PhpMemberAttributes MemberAttributes { get; private set; }
 
 		/// <summary>
 		/// Implemented interface name indices. 
 		/// </summary>
-		internal readonly List<KeyValuePair<GenericQualifiedName, Position>>/*!*/ implementsList;
+        internal readonly List<KeyValuePair<GenericQualifiedName, Text.Span>>/*!*/ implementsList;
 
         /// <summary>Implemented interface name indices. </summary>
         public List<GenericQualifiedName>/*!*/ ImplementsList { get { return this.implementsList.Select(x => x.Key).ToList(); } }
 
         /// <summary>Positions of <see cref="ImplementsList"/> elements.</summary>
-        public Position[] ImplementsPosition { get { return this.implementsList.Select(x => x.Value).ToArray(); } }
+        public Text.Span[] ImplementsPosition { get { return this.implementsList.Select(x => x.Value).ToArray(); } }
 
 		/// <summary>
 		/// Type parameters.
@@ -183,14 +183,14 @@ namespace PHP.Core.AST
 		/// Position spanning over the entire declaration including the attributes.
 		/// Used for transformation to an eval and for VS integration.
 		/// </summary>
-		public Position EntireDeclarationPosition { get { return entireDeclarationPosition; } }
-		private Position entireDeclarationPosition;
+        public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }
+        private Text.Span entireDeclarationPosition;
 
-		public ShortPosition DeclarationBodyPosition { get { return declarationBodyPosition; } }
-		private ShortPosition declarationBodyPosition;
+        public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
+        private int declarationBodyPosition;
 
-        private ShortPosition headingEndPosition;
-        public ShortPosition HeadingEndPosition { get { return headingEndPosition; } }
+        private int headingEndPosition;
+        public int HeadingEndPosition { get { return headingEndPosition; } }
 
         /// <summary>Indicates if type was decorated with partial keyword (Pure mode only).</summary>
         public bool PartialKeyword { get { return partialKeyword; } }
@@ -211,12 +211,12 @@ namespace PHP.Core.AST
 		#region Construction
 
 		public TypeDecl(SourceUnit/*!*/ sourceUnit,
-			Position position, Position entireDeclarationPosition, ShortPosition headingEndPosition, ShortPosition declarationBodyPosition,
-			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, Name className, Position classNamePosition,
-			NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, Tuple<GenericQualifiedName, Position> baseClassName,
-			List<KeyValuePair<GenericQualifiedName, Position>>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ members,
+            Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
+            bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, Name className, Text.Span classNamePosition,
+            NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, Tuple<GenericQualifiedName, Text.Span> baseClassName,
+            List<KeyValuePair<GenericQualifiedName, Text.Span>>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ members,
 			List<CustomAttribute> attributes)
-			: base(position)
+            : base(span)
 		{
 			Debug.Assert(genericParams != null && implementsList != null && members != null);
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
@@ -292,8 +292,8 @@ namespace PHP.Core.AST
             set { this.SetCustomAttributes(value); }
         }
 
-        protected TypeMemberDecl(Position position, List<CustomAttribute> attributes)
-			: base(position)
+        protected TypeMemberDecl(Text.Span span, List<CustomAttribute> attributes)
+            : base(span)
 		{
             if (attributes != null && attributes.Count != 0)
 			    this.Attributes = new CustomAttributes(attributes);
@@ -325,25 +325,25 @@ namespace PHP.Core.AST
 		public List<Statement> Body { get { return body; } }
 		private readonly List<Statement> body;
 
-        public List<ActualParam> BaseCtorParams { get { return baseCtorParams; } internal set { BaseCtorParams = value; } }
+        public List<ActualParam> BaseCtorParams { get { return baseCtorParams; } internal set { baseCtorParams = value; } }
 		private List<ActualParam> baseCtorParams;
-        
-		public Position EntireDeclarationPosition { get { return entireDeclarationPosition; } }
-		private Position entireDeclarationPosition;
 
-        public ShortPosition HeadingEndPosition { get { return headingEndPosition; } }
-        private ShortPosition headingEndPosition;
+        public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }
+        private Text.Span entireDeclarationPosition;
 
-		public ShortPosition DeclarationBodyPosition { get { return declarationBodyPosition; } }
-		private ShortPosition declarationBodyPosition;
+        public int HeadingEndPosition { get { return headingEndPosition; } }
+        private int headingEndPosition;
+
+        public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
+        private int declarationBodyPosition;
 
 		#region Construction
 
-        public MethodDecl(Position position, Position entireDeclarationPosition, ShortPosition headingEndPosition, ShortPosition declarationBodyPosition, 
+        public MethodDecl(Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition, 
 			string name, bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalTypeParam>/*!*/ genericParams, 
 			List<Statement> body, PhpMemberAttributes modifiers, List<ActualParam> baseCtorParams, 
 			List<CustomAttribute> attributes)
-            : base(position, attributes)
+            : base(span, attributes)
         {
             Debug.Assert(genericParams != null && formalParams != null);
 
@@ -398,9 +398,9 @@ namespace PHP.Core.AST
         public List<FieldDecl> Fields/*!*/ { get { return fields; } }
 
 
-		public FieldDeclList(Position position, PhpMemberAttributes modifiers, List<FieldDecl>/*!*/ fields,
+		public FieldDeclList(Text.Span span, PhpMemberAttributes modifiers, List<FieldDecl>/*!*/ fields,
 			List<CustomAttribute> attributes)
-			: base(position, attributes)
+            : base(span, attributes)
 		{
 			Debug.Assert(fields != null);
 
@@ -457,8 +457,8 @@ namespace PHP.Core.AST
 		/// </summary>
 		public bool HasInitVal { get { return initializer != null; } }
 
-		public FieldDecl(Position position, string/*!*/ name, Expression initVal)
-			: base(position)
+		public FieldDecl(Text.Span span, string/*!*/ name, Expression initVal)
+            : base(span)
 		{
 			this.name = new VariableName(name);
 			this.initializer = initVal;
@@ -488,8 +488,8 @@ namespace PHP.Core.AST
         public List<ClassConstantDecl>/*!*/ Constants { get { return constants; } }
         private readonly List<ClassConstantDecl>/*!*/ constants;
         
-		public ConstDeclList(Position position, List<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
-			: base(position, attributes)
+		public ConstDeclList(Text.Span span, List<ClassConstantDecl>/*!*/ constants, List<CustomAttribute> attributes)
+            : base(span, attributes)
 		{
 			Debug.Assert(constants != null);
 
@@ -521,8 +521,8 @@ namespace PHP.Core.AST
     [Serializable]
 	public sealed class ClassConstantDecl : ConstantDecl
 	{
-        public ClassConstantDecl(Position position, string/*!*/ name, Expression/*!*/ initializer)
-			: base(position, name, initializer)
+        public ClassConstantDecl(Text.Span span, string/*!*/ name, Expression/*!*/ initializer)
+            : base(span, name, initializer)
 		{
 		}
 
@@ -556,8 +556,8 @@ namespace PHP.Core.AST
             /// </summary>
             public Tuple<QualifiedName?, Name> TraitMemberName { get; private set; }
 
-            public TraitAdaptation(Position position, Tuple<QualifiedName?, Name> traitMemberName)
-                : base(position)
+            public TraitAdaptation(Text.Span span, Tuple<QualifiedName?, Name> traitMemberName)
+                : base(span)
             {
                 this.TraitMemberName = traitMemberName;                
             }
@@ -574,8 +574,8 @@ namespace PHP.Core.AST
             /// </summary>
             public List<QualifiedName>/*!*/IgnoredTypes { get; private set; }
 
-            public TraitAdaptationPrecedence(Position position, Tuple<QualifiedName?, Name> traitMemberName, List<QualifiedName>/*!*/ignoredTypes)
-                :base(position, traitMemberName)
+            public TraitAdaptationPrecedence(Text.Span span, Tuple<QualifiedName?, Name> traitMemberName, List<QualifiedName>/*!*/ignoredTypes)
+                : base(span, traitMemberName)
             {
                 this.IgnoredTypes = ignoredTypes;
             }
@@ -602,8 +602,8 @@ namespace PHP.Core.AST
             /// </summary>
             public string NewName { get; private set; }
 
-            public TraitAdaptationAlias(Position position, Tuple<QualifiedName?, Name>/*!*/oldname, string newname, PhpMemberAttributes? newmodifier)
-                : base(position, oldname)
+            public TraitAdaptationAlias(Text.Span span, Tuple<QualifiedName?, Name>/*!*/oldname, string newname, PhpMemberAttributes? newmodifier)
+                : base(span, oldname)
             {
                 if (oldname == null)
                     throw new ArgumentNullException("oldname");
@@ -640,11 +640,11 @@ namespace PHP.Core.AST
         /// <summary>
         /// Position where traits list ends.
         /// </summary>
-        public ShortPosition HeadingEndPosition { get { return headingEndPosition; } }
-        private readonly ShortPosition headingEndPosition;
+        public int HeadingEndPosition { get { return headingEndPosition; } }
+        private readonly int headingEndPosition;
 
-        public TraitsUse(Position position, ShortPosition headingEndPosition, List<QualifiedName>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
-            :base(position, null)
+        public TraitsUse(Text.Span span, int headingEndPosition, List<QualifiedName>/*!*/traitsList, List<TraitAdaptation> traitAdaptationList)
+            : base(span, null)
         {
             if (traitsList == null)
                 throw new ArgumentNullException("traitsList");

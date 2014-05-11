@@ -74,8 +74,6 @@ namespace PHP.Core
 
 			ScriptContext.CurrentContext = result;
 
-			Externals.BeginRequest();
-
 			return result;
 		}
 
@@ -110,15 +108,6 @@ namespace PHP.Core
 
             if (is_pure && !app_config.Compiler.LanguageFeaturesSet)
                 app_config.Compiler.LanguageFeatures = LanguageFeatures.PureModeDefault;
-
-            // environment settings; modifies the PATH variable to fix LoadLibrary called by native extensions:
-            if (EnvironmentUtils.IsDotNetFramework)
-            {
-                string path = Environment.GetEnvironmentVariable("PATH");
-                path = String.Concat(path, Path.PathSeparator, app_config.Paths.ExtNatives);
-
-                Environment.SetEnvironmentVariable("PATH", path);
-            }
 
             Type main_script;
             if (is_pure)
@@ -213,9 +202,6 @@ namespace PHP.Core
             }
 
             ScriptContext.CurrentContext = result;
-
-            Externals.BeginRequest();
-            result.FinallyDispose += Externals.EndRequest;
 
             //
             return result;

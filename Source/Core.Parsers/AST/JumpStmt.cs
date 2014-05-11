@@ -45,8 +45,8 @@ namespace PHP.Core.AST
         public Expression Expression { get { return expr; } internal set { expr = value; } }
 		private Expression expr; // can be null
 
-		public JumpStmt(Position position, Types type, Expression expr)
-			: base(position)
+		public JumpStmt(Text.Span span, Types type, Expression expr)
+			: base(span)
 		{
 			this.type = type;
 			this.expr = expr;
@@ -73,8 +73,8 @@ namespace PHP.Core.AST
         /// <summary>Label that is target of goto statement</summary>
         public VariableName LabelName { get { return labelName; } }
 
-		public GotoStmt(Position position, string/*!*/ labelName)
-			: base(position)
+		public GotoStmt(Text.Span span, string/*!*/ labelName)
+			: base(span)
 		{
 			this.labelName = new VariableName(labelName);
 		}
@@ -105,8 +105,8 @@ namespace PHP.Core.AST
 		internal bool IsReferred { get { return isReferred; } set { isReferred = value; } }
 		private bool isReferred;
 
-		public LabelStmt(Position position, string/*!*/ name)
-			: base(position)
+		public LabelStmt(Text.Span span, string/*!*/ name)
+			: base(span)
 		{
 			this.name = new VariableName(name);
 		}

@@ -1739,7 +1739,7 @@ namespace PHP.Library
 			}
 		}
 
-		private static PhpArray GetTimeOfDay(DateTime utc, TimeZoneInfo/*!*/ zone)
+		internal static PhpArray GetTimeOfDay(DateTime utc, TimeZoneInfo/*!*/ zone)
 		{
 			PhpArray result = new PhpArray(0, 4);
 
@@ -1768,40 +1768,6 @@ namespace PHP.Library
 
 			return result;
 		}
-
-#if DEBUG
-
-		[Test]
-		private static void TestGetTimeOfDay()
-		{
-			PhpArray result;
-
-			result = GetTimeOfDay(new DateTime(2005, 10, 1), PhpTimeZone.PacificTimeZone);
-			Debug.Assert((int)result["minuteswest"] == 480);
-			Debug.Assert((int)result["dsttime"] == 1);
-
-			result = GetTimeOfDay(new DateTime(2005, 11, 1), PhpTimeZone.PacificTimeZone);
-			Debug.Assert((int)result["minuteswest"] == 480);
-			Debug.Assert((int)result["dsttime"] == 1);
-
-			result = GetTimeOfDay(new DateTime(2005, 11, 1), PhpTimeZone.NepalTimeZone);
-			Debug.Assert((int)result["minuteswest"] == -345);
-			Debug.Assert((int)result["dsttime"] == 0);
-
-            result = GetTimeOfDay(new DateTime(2005, 10, 1), PhpTimeZone.GmtTimeZone);
-			Debug.Assert((int)result["minuteswest"] == 0);
-			Debug.Assert((int)result["dsttime"] == 1);
-
-            result = GetTimeOfDay(new DateTime(2005, 11, 1), PhpTimeZone.GmtTimeZone);
-			Debug.Assert((int)result["minuteswest"] == 0);
-			Debug.Assert((int)result["dsttime"] == 1);
-
-			result = GetTimeOfDay(new DateTime(2005, 11, 1), DateTimeUtils.UtcTimeZone);
-			Debug.Assert((int)result["minuteswest"] == 0);
-			Debug.Assert((int)result["dsttime"] == 0);
-		}
-
-#endif
 
 		#endregion
 
@@ -1860,7 +1826,7 @@ namespace PHP.Library
 			return GetLocalTime(DateTimeUtils.UnixTimeStampToUtc(timestamp), returnAssociative);
 		}
 
-		private static PhpArray GetLocalTime(DateTime utc, bool returnAssociative)
+		internal static PhpArray GetLocalTime(DateTime utc, bool returnAssociative)
 		{
 			PhpArray result;
 
@@ -1895,42 +1861,7 @@ namespace PHP.Library
 
 			return result;
 		}
-
-#if DEBUG
-
-		[Test]
-		private static void TestGetLocalTime()
-		{
-			PhpArray result1, result2;
-
-			PhpTimeZone.CurrentTimeZone = PhpTimeZone.GetTimeZone("UTC");
-			DateTime dt = new DateTime(2005, 11, 4, 5, 4, 3, 132);
-
-			result1 = GetLocalTime(dt, false);
-			result2 = GetLocalTime(dt, true);
-			Debug.Assert((int)result1[0] == 3);
-			Debug.Assert((int)result1[1] == 4);
-			Debug.Assert((int)result1[2] == 5);
-			Debug.Assert((int)result1[3] == 4);
-			Debug.Assert((int)result1[4] == 10);
-			Debug.Assert((int)result1[5] == 105);
-			Debug.Assert((int)result1[6] == 5);
-			Debug.Assert((int)result1[7] == 307);
-			Debug.Assert((int)result1[8] == 0);
-
-			Debug.Assert((int)result1[0] == (int)result2["tm_sec"]);
-			Debug.Assert((int)result1[1] == (int)result2["tm_min"]);
-			Debug.Assert((int)result1[2] == (int)result2["tm_hour"]);
-			Debug.Assert((int)result1[3] == (int)result2["tm_mday"]);
-			Debug.Assert((int)result1[4] == (int)result2["tm_mon"]);
-			Debug.Assert((int)result1[5] == (int)result2["tm_year"]);
-			Debug.Assert((int)result1[6] == (int)result2["tm_wday"]);
-			Debug.Assert((int)result1[7] == (int)result2["tm_yday"]);
-			Debug.Assert((int)result1[8] == (int)result2["tm_isdst"]);
-		}
-
-#endif
-
+        
 		#endregion
 
 		#region microtime
@@ -2263,134 +2194,6 @@ namespace PHP.Library
 			return UT;
 		}
 
-		#endregion
-
-		#region Unit Tests
-
-#if DEBUG
-
-		struct StringToTimeCase
-		{
-			public string String;
-			public int StartTime;
-			public string Result;
-            public TimeZoneInfo[] Zones;
-
-            public StringToTimeCase(string str, int start, string result, TimeZoneInfo[] zones)
-			{
-				this.String = str;
-				this.StartTime = start;
-				this.Result = result;
-				this.Zones = zones;
-			}
-
-            public StringToTimeCase(string str, string result, TimeZoneInfo[] zones)
-				: this(str, 0, result, zones)
-			{
-			}
-
-            public StringToTimeCase(string str, int locMonth, int locDay, int locYear, TimeZoneInfo zone, string result, TimeZoneInfo[] zones)
-				: this(str, DateTimeUtils.UtcToUnixTimeStamp(TimeZoneInfo.ConvertTimeToUtc(new DateTime(locYear, locMonth, locDay), zone)),
-				  result, zones)
-			{
-			}
-
-            public StringToTimeCase(string str, DateTime local, TimeZoneInfo zone, string result, TimeZoneInfo[] zones)
-				: this(str, DateTimeUtils.UtcToUnixTimeStamp(TimeZoneInfo.ConvertTimeToUtc(local, zone)),
-				  result, zones)
-			{
-			}
-		}
-
-		[Test]
-		static void TestStringToTime()
-		{
-			TimeZoneInfo[] all_zones =
-		  {
-		    PhpTimeZone.NepalTimeZone,
-		    PhpTimeZone.PacificTimeZone,
-		    PhpTimeZone.GmtTimeZone
-		  };
-
-			var utc_zone = DateTimeUtils.UtcTimeZone;
-            var nep_zone = PhpTimeZone.NepalTimeZone;
-            var pac_zone = PhpTimeZone.PacificTimeZone;
-
-			TimeZoneInfo[] utc_zones = { utc_zone };
-            TimeZoneInfo[] nep_zones = { nep_zone };
-            TimeZoneInfo[] pac_zones = { pac_zone };
-
-			DateTime time1 = new DateTime(2005, 11, 13, 17, 41, 43);
-			// mktime(17,41,43,11,13,2005);
-
-			StringToTimeCase[] cases =
-		  {
-		    new StringToTimeCase("10 September 2000",                time1,pac_zone, "", pac_zones),
-		    new StringToTimeCase("+0545",                            time1,pac_zone, "", pac_zones),
-
-//		    new StringToTimeCase("+0545",                            time1,pac_zone, "11:56:43 11/13/2005", pac_zones),
-//		    new StringToTimeCase("11/31/2005",                       time1,pac_zone, "17:41:43 11/13/2005", pac_zones),
-//		    new StringToTimeCase("-1 month +0545",11,01,2005,pac_zone, "20:15:00 09-30-2005", pac_zones),
-//        new StringToTimeCase("@-1519789808",null,pac_zones),
-//		    new StringToTimeCase( "1/1/1900",                                        null, all_zones),
-//		    new StringToTimeCase("11/1/2005",                       "00:00:00 11/01/2005", nep_zones),
-//
-//		    // note: goes over daylight savings change date:
-//		    new StringToTimeCase( "+1 month",  10,01,2005,utc_zone, "00:00:00 11/01/2005", utc_zones),
-//		    new StringToTimeCase( "+1 month",  10,01,2005,nep_zone, "00:00:00 11/01/2005", nep_zones),
-//		    new StringToTimeCase( "+1 month",  10,01,2005,pac_zone, "00:00:00 11/01/2005", pac_zones),
-//		    new StringToTimeCase( "-1 month",  11,01,2005,utc_zone, "00:00:00 10/01/2005", utc_zones),
-//		    new StringToTimeCase( "-1 month",  11,01,2005,nep_zone, "00:00:00 10/01/2005", nep_zones),
-//		    new StringToTimeCase( "-1 month",  11,01,2005,pac_zone, "00:00:00 10/01/2005", pac_zones),
-//
-//        new StringToTimeCase("now",                              time1,pac_zone, "17:41:43 11/13/2005", pac_zones),
-//        new StringToTimeCase("10 September 2000",                time1,pac_zone, "00:00:00 09/10/2000", pac_zones),
-//        new StringToTimeCase("+1 day",                           time1,pac_zone, "17:41:43 11/14/2005", pac_zones),
-//        new StringToTimeCase("+1 week",                          time1,pac_zone, "17:41:43 11/20/2005", pac_zones),
-//        new StringToTimeCase("+1 week 2 days 4 hours 2 seconds", time1,pac_zone, "21:41:45 11/22/2005", pac_zones),
-//        new StringToTimeCase("next Thursday",                    time1,pac_zone, "00:00:00 11/17/2005", pac_zones),
-//        new StringToTimeCase("last Monday",                      time1,pac_zone, "00:00:00 11/07/2005", pac_zones),
-//        new StringToTimeCase("2004-12-31",                       time1,pac_zone, "00:00:00 12/31/2004", pac_zones),
-//        new StringToTimeCase("2005-04-15",                       time1,pac_zone, "00:00:00 04/15/2005", pac_zones),
-//        new StringToTimeCase("last Wednesday",                   time1,pac_zone, "00:00:00 11/09/2005", pac_zones),
-//        new StringToTimeCase("04/05/2005",                       time1,pac_zone, "00:00:00 04/05/2005", pac_zones),
-//        new StringToTimeCase("Thu, 31 Jul 2003 13:02:39 -0700",  time1,pac_zone, "13:02:39 07/31/2003", pac_zones),
-//        new StringToTimeCase("today 00:00:00",                   time1,pac_zone, "00:00:00 11/13/2005", pac_zones),
-//        new StringToTimeCase("last Friday",                      time1,pac_zone, "00:00:00 11/11/2005", pac_zones),
-//        new StringToTimeCase("2004-12-01",                       time1,pac_zone, "00:00:00 12/01/2004", pac_zones),
-//        new StringToTimeCase("- 1week",                          time1,pac_zone, "16:00:00 12/31/1969", pac_zones),
-//        new StringToTimeCase("2004-06-13 09:20:00.0",            time1,pac_zone, "09:20:00 06/13/2004", pac_zones),
-//        new StringToTimeCase("+10 seconds",                      time1,pac_zone, "17:41:53 11/13/2005", pac_zones),
-//        new StringToTimeCase("2004-04-04 02:00:00 GMT",          time1,pac_zone, "18:00:00 04/03/2004", pac_zones),
-//        new StringToTimeCase("2004-04-04 01:59:59 UTC",          time1,pac_zone, "16:00:00 12/31/1969", pac_zones),
-//        new StringToTimeCase("2004-06-13 09:20:00.0",            time1,pac_zone, "09:20:00 06/13/2004", pac_zones),
-//        new StringToTimeCase("2004-04-04 02:00:00",              time1,pac_zone, "03:00:00 04/04/2004", pac_zones),
-//        new StringToTimeCase("last sunday 12:00:00",             time1,pac_zone, "12:00:00 11/06/2005", pac_zones),
-//        new StringToTimeCase("last sunday",                      time1,pac_zone, "00:00:00 11/06/2005", pac_zones),
-//        new StringToTimeCase("01-jan-70 01:00",                  time1,pac_zone, "01:00:00 01/01/1970", pac_zones),
-//        new StringToTimeCase("01-jan-70 02:00",                  time1,pac_zone, "02:00:00 01/01/1970", pac_zones),
-		  };
-
-			foreach (StringToTimeCase c in cases)
-			{
-				foreach (var zone in c.Zones)
-				{
-					//DateTimeUtils.SetCurrentTimeZone(zone);
-
-					object timestamp = StringToTime(c.String, c.StartTime);
-
-					//          string str = null;
-					//          if (timestamp is int)
-					//            str = FormatDate("H:i:s m/d/Y",(int)timestamp); else
-					//            Debug.Assert(!(bool)timestamp);
-					//
-					//          if (str!=c.Result)
-					//            Debug.Fail();
-				}
-			}
-		}
-
-#endif
 		#endregion
     }
 }

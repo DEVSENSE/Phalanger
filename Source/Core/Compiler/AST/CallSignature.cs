@@ -37,7 +37,7 @@ namespace PHP.Core.Compiler.AST
             {
                 // TODO: isBaseCtorCallConstrained
 
-                ExInfoFromParent info = new ExInfoFromParent(this);
+                ExInfoFromParent info = new ExInfoFromParent(node);
 
                 analyzer.EnterActParam();
 
@@ -52,7 +52,7 @@ namespace PHP.Core.Compiler.AST
                         // That's why we report warning when user use '&' in calling, 
                         // because it has no influence.
                         if (node.Ampersand)
-                            analyzer.ErrorSink.Add(Warnings.ActualParamWithAmpersand, analyzer.SourceUnit, node.Position);
+                            analyzer.ErrorSink.Add(Warnings.ActualParamWithAmpersand, analyzer.SourceUnit, node.Span);
                     }
                     else
                     {
@@ -69,7 +69,7 @@ namespace PHP.Core.Compiler.AST
                         }
                         else
                         {
-                            analyzer.ErrorSink.Add(Errors.NonVariablePassedByRef, analyzer.SourceUnit, node.Expression.Position);
+                            analyzer.ErrorSink.Add(Errors.NonVariablePassedByRef, analyzer.SourceUnit, node.Expression.Span);
                             analyzer.LeaveActParam();
                             return;
                         }
@@ -77,7 +77,7 @@ namespace PHP.Core.Compiler.AST
                     else
                     {
                         info.Access = AccessType.Read;
-                        if (node.Ampersand) analyzer.ErrorSink.Add(Warnings.ActualParamWithAmpersand, analyzer.SourceUnit, node.Position);
+                        if (node.Ampersand) analyzer.ErrorSink.Add(Warnings.ActualParamWithAmpersand, analyzer.SourceUnit, node.Span);
                     }
                 }
 
@@ -125,7 +125,7 @@ namespace PHP.Core.Compiler.AST
 
                 if (!propertiesDeclarer.IsUnknown)
                 {
-                    property = analyzer.ResolveProperty(propertiesDeclarer, node.Name, node.Position, false, null, null, out visibility_check);
+                    property = analyzer.ResolveProperty(propertiesDeclarer, node.Name, node.Span, false, null, null, out visibility_check);
                 }
 
                 node.expression = node.Expression.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
@@ -177,18 +177,15 @@ namespace PHP.Core.Compiler.AST
                 Debug.Assert(node.GenericParams == null || node.GenericParams.Count == 0);
 
                 List<Item> arrayItems = new List<Item>(node.Parameters.Count);
-                Position pos = Position.Invalid;
+                var pos = Text.Span.Invalid;
 
                 foreach (var p in node.Parameters)
                 {
                     arrayItems.Add(new ValueItem(null, p.Expression));
-                    if (pos.IsValid) pos = p.Position;
+                    if (pos.IsValid)
+                        pos = p.Span;
                     else
-                    {
-                        pos.LastColumn = p.Position.LastColumn;
-                        pos.LastLine = p.Position.LastLine;
-                        pos.LastOffset = p.Position.LastOffset;
-                    }
+                        pos = Text.Span.FromBounds(pos.Start, p.Span.End);
                 }
 
                 return new ArrayEx(pos, arrayItems);

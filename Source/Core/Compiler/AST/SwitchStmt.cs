@@ -32,7 +32,7 @@ namespace PHP.Core.Compiler.AST
             {
                 if (analyzer.IsThisCodeUnreachable())
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
 
@@ -74,7 +74,7 @@ namespace PHP.Core.Compiler.AST
                   codeGenerator.ExceptionBlockNestingLevel);
 
                 // marks a sequence point containing the discriminator evaluation:
-                codeGenerator.MarkSequencePoint(node.SwitchValue.Position);
+                codeGenerator.MarkSequencePoint(node.SwitchValue.Span);
 
                 // Evaluate condition value and store the result into local variable
                 codeGenerator.EmitBoxing(node.SwitchValue.Emit(codeGenerator));
@@ -155,7 +155,7 @@ namespace PHP.Core.Compiler.AST
                 if (last_default != null)
                 {
                     // marks a sequence point containing the condition evaluation or skip of the default case:
-                    codeGenerator.MarkSequencePoint(last_default.Position);
+                    codeGenerator.MarkSequencePoint(last_default.Span);
 
                     Debug.Assert(branch_to_lastdefault != null);
                     Label temp = il.DefineLabel();
@@ -255,7 +255,7 @@ namespace PHP.Core.Compiler.AST
                 node.CaseVal = node.CaseVal.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
 
                 if (node.CaseVal.HasValue())
-                    analyzer.AddConstCaseToCurrentSwitch(node.CaseVal.GetValue(), node.Position);
+                    analyzer.AddConstCaseToCurrentSwitch(node.CaseVal.GetValue(), node.Span);
 
                 base.Analyze(node, analyzer);
             }
@@ -265,7 +265,7 @@ namespace PHP.Core.Compiler.AST
             /// </summary>
             protected override void MarkSequencePoint(CaseItem/*!*/node, CodeGenerator codeGenerator)
             {
-                codeGenerator.MarkSequencePoint(node.Position);
+                codeGenerator.MarkSequencePoint(node.Span);
             }
 
             protected override void EmitStatements(CaseItem/*!*/node, CodeGenerator codeGenerator)
@@ -279,13 +279,13 @@ namespace PHP.Core.Compiler.AST
         {
             protected override void Analyze(DefaultItem/*!*/node, Analyzer analyzer)
             {
-                analyzer.AddDefaultToCurrentSwitch(node.Position);
+                analyzer.AddDefaultToCurrentSwitch(node.Span);
                 base.Analyze(node, analyzer);
             }
 
             protected override void MarkSequencePoint(DefaultItem/*!*/node, CodeGenerator codeGenerator)
             {
-                codeGenerator.MarkSequencePoint(node.Position);
+                codeGenerator.MarkSequencePoint(node.Span);
             }
 
             protected override void EmitStatements(DefaultItem/*!*/node, CodeGenerator/*!*/ codeGenerator)

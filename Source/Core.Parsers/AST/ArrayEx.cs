@@ -32,8 +32,8 @@ namespace PHP.Core.AST
 		private readonly List<Item>/*!*/ items;
         public List<Item>/*!*/ Items{get{return items;}}
 
-		public ArrayEx(Position position, List<Item>/*!*/ items)
-			: base(position)
+		public ArrayEx(Text.Span span, List<Item>/*!*/ items)
+			: base(span)
 		{
 			Debug.Assert(items != null);
 			this.items = items;

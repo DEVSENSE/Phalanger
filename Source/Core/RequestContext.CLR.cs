@@ -639,8 +639,7 @@ namespace PHP.Core
 		void FinallyDispose()
 		{
 			DeleteTemporaryFiles();
-			Externals.EndRequest();
-
+			
 			// updates session cookie expiration stamp:
 			UpdateSessionCookieExpiration();
 
@@ -652,9 +651,9 @@ namespace PHP.Core
 
 		#region Compilation
 
-		internal MultiScriptAssembly GetPrecompiledAssembly()
+        internal MultiScriptAssembly[]/*!!*/GetPrecompiledAssemblies()
 		{
-            return scriptContext.ApplicationContext.RuntimeCompilerManager.GetPrecompiledAssembly();
+            return scriptContext.ApplicationContext.RuntimeCompilerManager.GetPrecompiledAssemblies();
 		}
 
         /// <summary>

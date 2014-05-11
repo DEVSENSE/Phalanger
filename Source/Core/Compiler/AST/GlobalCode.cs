@@ -65,7 +65,7 @@ namespace PHP.Core.Compiler.AST
             {
                 analyzer.LeaveUnreachableCode();
 
-                ExInfoFromParent info = new ExInfoFromParent(this);
+                ExInfoFromParent info = new ExInfoFromParent(ast);
 
                 // analyze auto-prepended inclusion (no code reachability checks):
                 if (PrependedInclusion != null)
@@ -154,7 +154,7 @@ namespace PHP.Core.Compiler.AST
 
                     if (codeGenerator.Context.Config.Compiler.Debug)
                     {
-                        codeGenerator.MarkSequencePoint(1, 1, 1, 2);
+                        codeGenerator.MarkSequencePoint(0);
                         il.Emit(OpCodes.Nop);
                     }
 
@@ -287,7 +287,7 @@ namespace PHP.Core.Compiler.AST
 
                 if (is_unreachable)
                 {
-                    analyzer.ReportUnreachableCode(node.Position);
+                    analyzer.ReportUnreachableCode(node.Span);
                     return EmptyStmt.Unreachable;
                 }
                 else
@@ -318,7 +318,7 @@ namespace PHP.Core.Compiler.AST
                 QualifiedName qn = (node.Namespace != null)
                             ? new QualifiedName(new Name(node.Name.Value), node.Namespace.QualifiedName)
                             : new QualifiedName(new Name(node.Name.Value));
-                constant = new GlobalConstant(qn, PhpMemberAttributes.Public, (CompilationSourceUnit)node.SourceUnit, node.IsConditional, node.Scope, node.Position);
+                constant = new GlobalConstant(qn, PhpMemberAttributes.Public, (CompilationSourceUnit)node.SourceUnit, node.IsConditional, node.Scope, node.Span);
                 constant.SetNode(node);
             }
 
@@ -332,7 +332,7 @@ namespace PHP.Core.Compiler.AST
                     if (node.Name.Value == GlobalConstant.Null.FullName ||
                         node.Name.Value == GlobalConstant.False.FullName ||
                         node.Name.Value == GlobalConstant.True.FullName)
-                        analyzer.ErrorSink.Add(FatalErrors.ConstantRedeclared, analyzer.SourceUnit, node.Position, node.Name.Value);
+                        analyzer.ErrorSink.Add(FatalErrors.ConstantRedeclared, analyzer.SourceUnit, node.Span, node.Name.Value);
                 }
             }
 
