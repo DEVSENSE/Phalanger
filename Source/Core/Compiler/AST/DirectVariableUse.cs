@@ -57,7 +57,8 @@ namespace PHP.Core.Compiler.AST
                                     || access == AccessType.ReadRef
                                     || access == AccessType.ReadUnknown))
                     {
-                        analyzer.ErrorSink.Add(Warnings.ThisInWriteContext, analyzer.SourceUnit, node.Position);
+                        // False alarms
+                        // analyzer.ErrorSink.Add(Warnings.ThisInWriteContext, analyzer.SourceUnit, node.Position);
                     }
                 }
 

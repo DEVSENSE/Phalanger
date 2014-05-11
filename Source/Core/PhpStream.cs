@@ -2415,7 +2415,17 @@ namespace PHP.Core
 		/// <include file='Doc/Streams.xml' path='docs/method[@name="RawFlush"]/*'/>
 		protected override bool RawFlush()
 		{
-			if (stream.CanWrite) stream.Flush();
+            try
+            {
+                if (stream.CanWrite) stream.Flush();
+            }
+            catch (System.IO.IOException)
+            {
+                // Occurs when writing to an already closed process on Mono/Linux.
+                // See: http://www.mail-archive.com/mono-bugs@lists.ximian.com/msg54300.html
+                // TEST CASE: proc_open('/bin/ls -la', ...)
+                Console.WriteLine("WARNING: Trying to write to an already closed process.");
+            }
 			return true;
 		}
 
