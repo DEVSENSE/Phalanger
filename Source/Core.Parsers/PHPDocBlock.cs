@@ -1478,9 +1478,8 @@ namespace PHP.Core
 
             for (int lineIndex = 0; lineIndex < lineBreaks.LinesCount; lineIndex++)
             {
-                int lineStart = (lineIndex == 0) ? 0 : lineBreaks.EndOfLineBreak(lineIndex - 1);
-                int lineEnd = (lineIndex == lineBreaks.Count) ? doccomment.Length : lineBreaks.EndOfLineBreak(lineIndex);
-                string/*!*/line = doccomment.Substring(lineStart, lineEnd - lineStart);
+                var lineSpan = lineBreaks.GetLineSpan(lineIndex);
+                string/*!*/line = lineSpan.GetText(doccomment);
                 
                 int startCharIndex, endCharIndex;
                 if (Element.TryParseLine(ref line, out tmp, lineIndex, out startCharIndex, out endCharIndex))    // validate the line, process tags
@@ -1496,12 +1495,12 @@ namespace PHP.Core
                         if (current.Span.IsValid == false)      // ShortDescriptionElement has not initialized Span
                         {
                             if (!current.IsEmpty)   // initialize Start iff element has some text
-                                current.Span = new Span(offset + lineStart + startCharIndex, endCharIndex - startCharIndex);
+                                current.Span = new Span(offset + lineSpan.Start + startCharIndex, endCharIndex - startCharIndex);
                         }
                         else                                    // other elements has to update their end position
                         {
                             if (tmp != null)
-                                current.Span = new Span(current.Span.Start, offset + lineStart + endCharIndex - current.Span.Start);   // update its end position                        
+                                current.Span = new Span(current.Span.Start, offset + lineSpan.Start + endCharIndex - current.Span.Start);   // update its end position                        
                         }
                     }
 
@@ -1513,7 +1512,7 @@ namespace PHP.Core
                             result.Add(current);
                         }
 
-                        tmp.Span = new Span(offset + lineStart + startCharIndex, endCharIndex - startCharIndex);
+                        tmp.Span = new Span(offset + lineSpan.Start + startCharIndex, endCharIndex - startCharIndex);
                         current = tmp;  // it is current element from now
                     }
                 }
