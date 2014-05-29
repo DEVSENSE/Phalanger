@@ -892,7 +892,7 @@ namespace PHP.Core
 
             public override string ToString()
             {
-                return Name + NewLineString + Text;
+                return Name + " " + Text;
             }
         }
 
@@ -1107,7 +1107,25 @@ namespace PHP.Core
 
             public override string ToString()
             {
-                return Name + NewLineString + Text;
+                return Name + " " + Text;
+            }
+        }
+
+        /// <summary>
+        /// Documents a link to an external source.
+        /// </summary>
+        public sealed class LinkTag : TextTag
+        {
+            public const string Name = "@link";
+
+            public LinkTag(string/*!*/line)
+                : base(Name, line)
+            {
+            }
+
+            public override string ToString()
+            {
+                return Name + " " + Text;
             }
         }
 
