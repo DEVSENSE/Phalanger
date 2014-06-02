@@ -1714,7 +1714,7 @@ namespace PHP.Core
         /// </summary>
         public static PHPDocBlock GetPHPDoc(this IPropertyCollection/*!*/properties)
         {
-            return properties[typeof(PHPDocBlock)] as PHPDocBlock;
+            return properties.GetProperty<PHPDocBlock>();
         }
 
         /// <summary>
@@ -1723,9 +1723,9 @@ namespace PHP.Core
         public static void SetPHPDoc(this IPropertyCollection/*!*/properties, PHPDocBlock phpdoc)
         {
             if (phpdoc != null)
-                properties[typeof(PHPDocBlock)] = phpdoc;
+                properties.SetProperty<PHPDocBlock>(phpdoc);
             else
-                properties.RemoveProperty(typeof(PHPDocBlock));
+                properties.RemoveProperty<PHPDocBlock>();
         }
     }
 }
