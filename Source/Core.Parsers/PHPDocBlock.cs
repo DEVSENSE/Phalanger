@@ -107,7 +107,10 @@ namespace PHP.Core
                             else
                             {
                                 // only these Elements do not represent a tag:
-                                Debug.Assert(t.Name == typeof(ShortDescriptionElement).Name || t.Name == typeof(LongDescriptionElement).Name);
+                                Debug.Assert(
+                                    t.Name == typeof(ShortDescriptionElement).Name ||
+                                    t.Name == typeof(LongDescriptionElement).Name ||
+                                    t.Name == typeof(UnknownTextTag).Name);
                             }
                         }
                     }
@@ -179,7 +182,7 @@ namespace PHP.Core
                 if (elementFactories.TryGetValue(tagName, out tmp))
                     return new KeyValuePair<string, Func<string, string, Element>>(tagName, tmp);
                 else
-                    return new KeyValuePair<string, Func<string, string, Element>>();
+                    return new KeyValuePair<string, Func<string, string, Element>>(tagName, (_name, _line) => new UnknownTextTag(_name, _line));
             }
 
             #endregion
@@ -853,6 +856,9 @@ namespace PHP.Core
 
         public abstract class TextTag : Element
         {
+            /// <summary>
+            /// Tag text information.
+            /// </summary>
             public string Text { get; private set; }
 
             public TextTag(string/*!*/tagName, string/*!*/line)
@@ -875,6 +881,28 @@ namespace PHP.Core
                     this.Text = string.Empty;
                 else
                     this.Text = this.Text.Trim();
+            }
+        }
+
+        /// <summary>
+        /// Represents an unknown PHPDoc tag followed by text.
+        /// </summary>
+        public sealed class UnknownTextTag : TextTag
+        {
+            /// <summary>
+            /// Tag name.
+            /// </summary>
+            public string TagName { get; private set; }
+
+            internal UnknownTextTag(string tagName, string/*!*/line)
+                : base(tagName, line)
+            {
+                this.TagName = tagName;
+            }
+
+            public override string ToString()
+            {
+                return string.IsNullOrEmpty(Text) ? (TagName) : (TagName + " " + Text);
             }
         }
 
