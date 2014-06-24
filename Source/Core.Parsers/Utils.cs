@@ -1208,6 +1208,27 @@ namespace PHP.Core
     #region Arrays
 
     /// <summary>
+    /// Helper for an empty array instance.
+    /// </summary>
+    /// <typeparam name="T">Type of array elements.</typeparam>
+    public static class EmptyArray<T>
+    {
+        /// <summary>
+        /// Singleton instance of empty array of <typeparamref name="T"/>.
+        /// </summary>
+        public static T[]/*!*/Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new T[0];
+                return _instance;
+            }
+        }
+        private static volatile T[] _instance;
+    }
+
+    /// <summary>
     /// Utilities manipulating arrays.
     /// </summary>
     [DebuggerNonUserCode]
@@ -1216,37 +1237,27 @@ namespace PHP.Core
         /// <summary>
         /// Empty int array.
         /// </summary>
-        public static readonly int[] EmptyIntegers = new int[0];
+        public static int[] EmptyIntegers { get { return EmptyArray<int>.Instance; } }
 
         /// <summary>
         /// Empty ushort array.
         /// </summary>
-        public static readonly ushort[] EmptyUShorts = new ushort[0];
+        public static ushort[] EmptyUShorts { get { return EmptyArray<ushort>.Instance; } }
 
         /// <summary>
         /// Empty object array.
         /// </summary>
-        public static readonly object[] EmptyObjects = new object[0];
-
-        /// <summary>
-        /// Empty object array.
-        /// </summary>
-        public static readonly char[] EmptyChars = new char[0];
+        public static object[] EmptyObjects { get { return EmptyArray<object>.Instance; } }
 
         /// <summary>
         /// Empty byte array.
         /// </summary>
-        public static readonly byte[] EmptyBytes = new byte[0];
-
-        /// <summary>
-        /// Empty <see cref="MethodInfo"/> array.
-        /// </summary>
-        public static readonly MethodInfo[] EmptyMethodInfos = new MethodInfo[0];
+        public static byte[] EmptyBytes { get { return EmptyArray<byte>.Instance; } }
 
         /// <summary>
         /// Empty <see cref="string"/> array.
         /// </summary>
-        public static readonly string[] EmptyStrings = new string[0];
+        public static string[] EmptyStrings { get { return EmptyArray<string>.Instance; } }
 
         /// <summary>
         /// Converts a <see cref="IList"/> to an array of strings.
@@ -1786,7 +1797,6 @@ namespace PHP.Core
                 return ms.ToArray();
             }
         }
-
     }
 
     #endregion

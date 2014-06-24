@@ -727,13 +727,13 @@ namespace PHP.Core.Parsers
                     CheckReservedNamesAbsence((GenericQualifiedName)static_type_ref, span);
         }
 
-		private void CheckReservedNamesAbsence(List<KeyValuePair<GenericQualifiedName, Text.Span>> genericNames)
+        private void CheckReservedNamesAbsence(List<Tuple<GenericQualifiedName, Text.Span>> genericNames)
 		{
             if (genericNames != null)
             {
                 int count = genericNames.Count;
                 for (int i = 0; i < count; i++)
-                    CheckReservedNamesAbsence(genericNames[i].Key, genericNames[i].Value);
+                    CheckReservedNamesAbsence(genericNames[i].Item1, genericNames[i].Item2);
             }
 		}
 
@@ -1034,7 +1034,7 @@ namespace PHP.Core.Parsers
         #region Helpers
 
         private static readonly List<Statement> emptyStatementList = new List<Statement>();
-        private static readonly List<KeyValuePair<GenericQualifiedName, Text.Span>> emptyGenericQualifiedNamePositionList = new List<KeyValuePair<GenericQualifiedName, Text.Span>>();
+        private static readonly List<Tuple<GenericQualifiedName, Text.Span>> emptyGenericQualifiedNamePositionList = new List<Tuple<GenericQualifiedName, Text.Span>>();
 		private static readonly List<FormalParam> emptyFormalParamListIndex = new List<FormalParam>();
 		private static readonly List<ActualParam> emptyActualParamListIndex = new List<ActualParam>();
 		private static readonly List<Expression> emptyExpressionListIndex = new List<Expression>();
@@ -1042,8 +1042,7 @@ namespace PHP.Core.Parsers
 		private static readonly List<NamedActualParam> emptyNamedActualParamListIndex = new List<NamedActualParam>();
 		private static readonly List<FormalTypeParam> emptyFormalTypeParamList = new List<FormalTypeParam>();
 		private static readonly List<TypeRef> emptyTypeRefList = new List<TypeRef>();
-
-
+        
 		private static List<T>/*!*/ListAdd<T>(object list, object item)
 		{
             Debug.Assert(list is List<T>);
