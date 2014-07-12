@@ -1777,6 +1777,8 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
 {
 			currentNamespace.Statements = (List<Statement>)value_stack.array[value_stack.top-2].yyval.Object;
 			currentNamespace.UpdatePosition(yypos);
+
+			reductionsSink.NamespaceDeclReduced(this, currentNamespace);
 			yyval.Object = currentNamespace;
 			currentNamespace = null;
 		}
@@ -1790,6 +1792,8 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
 {
 			currentNamespace.Statements = (List<Statement>)value_stack.array[value_stack.top-2].yyval.Object;
 			currentNamespace.UpdatePosition(yypos);
+			
+			reductionsSink.NamespaceDeclReduced(this, currentNamespace);
 			yyval.Object = currentNamespace;
 			currentNamespace = null;
 		}
@@ -1797,6 +1801,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
       case 34: // namespace_declaration_statement -> T_NAMESPACE namespace_name_list ';' 
 { 
 			yyval.Object = currentNamespace = new NamespaceDecl(yypos, (List<string>)value_stack.array[value_stack.top-2].yyval.Object, true);
+			reductionsSink.NamespaceDeclReduced(this, currentNamespace);
 			currentNamespace.Statements = new List<Statement>();
 		}
         return;
@@ -3117,6 +3122,8 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
             GetScope(), currentNamespace,
             static_doc_ref.Item3, (List<FormalParam>)value_stack.array[value_stack.top-7].yyval.Object, (List<FormalParam>)value_stack.array[value_stack.top-5].yyval.Object,
             (List<Statement>)value_stack.array[value_stack.top-2].yyval.Object);
+
+		reductionsSink.LambdaFunctionReduced(this, (LambdaFunctionExpr)yyval.Object);
 
 		LeaveConditionalCode();
 	}

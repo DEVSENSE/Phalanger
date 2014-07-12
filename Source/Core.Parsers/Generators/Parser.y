@@ -576,6 +576,8 @@ namespace_declaration_statement:   /* PHP 5.3 */
 		{
 			currentNamespace.Statements = (List<Statement>)$4;
 			currentNamespace.UpdatePosition(@$);
+
+			reductionsSink.NamespaceDeclReduced(this, currentNamespace);
 			$$ = currentNamespace;
 			currentNamespace = null;
 		}
@@ -588,6 +590,8 @@ namespace_declaration_statement:   /* PHP 5.3 */
 		{
 			currentNamespace.Statements = (List<Statement>)$5;
 			currentNamespace.UpdatePosition(@$);
+			
+			reductionsSink.NamespaceDeclReduced(this, currentNamespace);
 			$$ = currentNamespace;
 			currentNamespace = null;
 		}
@@ -595,6 +599,7 @@ namespace_declaration_statement:   /* PHP 5.3 */
 	|	T_NAMESPACE namespace_name_list ';'
 		{ 
 			$$ = currentNamespace = new NamespaceDecl(@$, (List<string>)$2, true);
+			reductionsSink.NamespaceDeclReduced(this, currentNamespace);
 			currentNamespace.Statements = new List<Statement>();
 		}		
 ;
@@ -1741,6 +1746,8 @@ lambda_function_expression:
             GetScope(), currentNamespace,
             static_doc_ref.Item3, (List<FormalParam>)$2, (List<FormalParam>)$4,
             (List<Statement>)$7);
+
+		reductionsSink.LambdaFunctionReduced(this, (LambdaFunctionExpr)$$);
 
 		LeaveConditionalCode();
 	}

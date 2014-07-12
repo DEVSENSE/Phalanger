@@ -744,6 +744,14 @@ namespace PHP.Core.Reflection
             AddDeclaration(parser.ErrorSink, node.GetGlobalConstant(), constants);
 		}
 
+        public void NamespaceDeclReduced(Parser parser, AST.NamespaceDecl decl)
+        {
+        }
+
+        public void LambdaFunctionReduced(Parser parser, AST.LambdaFunctionExpr decl)
+        {
+        }
+
 		private void AddDeclaration(ErrorSink/*!*/ errors, IDeclaree/*!*/ member, Dictionary<QualifiedName, Declaration>/*!*/ table)
 		{
 			Declaration existing;
@@ -1218,6 +1226,14 @@ namespace PHP.Core.Reflection
 		{
 			AddDeclaration<DConstant>(parser.ErrorSink, node.GetGlobalConstant(), visibleConstants);
 		}
+
+        public void NamespaceDeclReduced(Parser parser, NamespaceDecl decl)
+        {
+        }
+
+        public void LambdaFunctionReduced(Parser parser, LambdaFunctionExpr decl)
+        {
+        }
 
 		private void AddDeclaration<T>(ErrorSink/*!*/ errors, IDeclaree/*!*/ member,
 			Dictionary<QualifiedName, ScopedDeclaration<T>>/*!*/ table)
