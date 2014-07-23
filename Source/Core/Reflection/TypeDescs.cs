@@ -88,15 +88,15 @@ namespace PHP.Core.Reflection
 		{
 			getConstantDictionary = (GetMemberDictionary<VariableName, DConstantDesc>)
 				Delegate.CreateDelegate(typeof(GetMemberDictionary<VariableName, DConstantDesc>), null,
-				typeof(DTypeDesc).GetProperty("Constants", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true));
+				typeof(DTypeDesc).GetProperty("Constants", BindingFlags.Public | BindingFlags.Instance).GetGetMethod(true));
 
 			getPropertyDictionary = (GetMemberDictionary<VariableName, DPropertyDesc>)
 				Delegate.CreateDelegate(typeof(GetMemberDictionary<VariableName, DPropertyDesc>), null,
-				typeof(DTypeDesc).GetProperty("Properties", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true));
+                typeof(DTypeDesc).GetProperty("Properties", BindingFlags.Public | BindingFlags.Instance).GetGetMethod(true));
 
 			getMethodDictionary = (GetMemberDictionary<Name, DRoutineDesc>)
 				Delegate.CreateDelegate(typeof(GetMemberDictionary<Name, DRoutineDesc>), null,
-				typeof(DTypeDesc).GetProperty("Methods", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true));
+                typeof(DTypeDesc).GetProperty("Methods", BindingFlags.Public | BindingFlags.Instance).GetGetMethod(true));
 
 			if (UnknownModule.RuntimeModule == null)
 				UnknownModule.RuntimeModule = new UnknownModule();
@@ -243,7 +243,7 @@ namespace PHP.Core.Reflection
 		}
 		protected DTypeDesc[] interfaces;
 
-		internal Dictionary<Name, DRoutineDesc> Methods
+		public Dictionary<Name, DRoutineDesc> Methods
 		{
 			get
 			{
@@ -263,7 +263,7 @@ namespace PHP.Core.Reflection
 		protected Dictionary<Name, DRoutineDesc> methods;
 
 		// TODO: OrderedHashtable
-		internal Dictionary<VariableName, DPropertyDesc> Properties
+		public Dictionary<VariableName, DPropertyDesc> Properties
 		{
 			get
 			{
@@ -282,7 +282,7 @@ namespace PHP.Core.Reflection
 		}
 		protected Dictionary<VariableName, DPropertyDesc> properties;
 
-		internal Dictionary<VariableName, DConstantDesc> Constants
+		public Dictionary<VariableName, DConstantDesc> Constants
 		{
 			get
 			{

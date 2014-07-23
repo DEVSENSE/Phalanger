@@ -51,9 +51,24 @@ namespace PHP.Core.AST
             return _properties.GetProperty(key);
         }
 
+        public void SetProperty<T>(T value)
+        {
+            _properties.SetProperty<T>(value);
+        }
+
+        public T GetProperty<T>()
+        {
+            return _properties.GetProperty<T>();
+        }
+
         bool IPropertyCollection.RemoveProperty(object key)
         {
             return _properties.RemoveProperty(key);
+        }
+
+        bool IPropertyCollection.RemoveProperty<T>()
+        {
+            return _properties.RemoveProperty<T>();
         }
 
         void IPropertyCollection.ClearProperties()
@@ -130,7 +145,6 @@ namespace PHP.Core.AST
                 return start >= 0;
             }
         }
-
 
         public Scope(int start)
         {

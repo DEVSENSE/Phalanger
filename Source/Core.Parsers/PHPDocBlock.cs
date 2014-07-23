@@ -26,7 +26,7 @@ namespace PHP.Core
     /// </summary>
     /// <remarks>define() statements, functions, classes, class methods, and class vars, include() statements, and global variables can all be documented.
     /// See http://en.wikipedia.org/wiki/PHPDoc for specifications.</remarks>
-    public sealed class PHPDocBlock
+    public sealed class PHPDocBlock : AST.LangElement
     {
         #region Nested classes: Element
 
@@ -59,14 +59,9 @@ namespace PHP.Core
             #region Properties
 
             /// <summary>
-            /// Element starting position within the source code.
+            /// Element position within the source code.
             /// </summary>
-            public ShortPosition StartPosition { get; internal set; }
-
-            /// <summary>
-            /// Element ending position within the source code.
-            /// </summary>
-            public ShortPosition EndPosition { get; internal set; }
+            public Span Span { get; internal set; }
 
             #endregion
 
@@ -112,7 +107,10 @@ namespace PHP.Core
                             else
                             {
                                 // only these Elements do not represent a tag:
-                                Debug.Assert(t.Name == typeof(ShortDescriptionElement).Name || t.Name == typeof(LongDescriptionElement).Name);
+                                Debug.Assert(
+                                    t.Name == typeof(ShortDescriptionElement).Name ||
+                                    t.Name == typeof(LongDescriptionElement).Name ||
+                                    t.Name == typeof(UnknownTextTag).Name);
                             }
                         }
                     }
@@ -184,7 +182,7 @@ namespace PHP.Core
                 if (elementFactories.TryGetValue(tagName, out tmp))
                     return new KeyValuePair<string, Func<string, string, Element>>(tagName, tmp);
                 else
-                    return new KeyValuePair<string, Func<string, string, Element>>();
+                    return new KeyValuePair<string, Func<string, string, Element>>(tagName, (_name, _line) => new UnknownTextTag(_name, _line));
             }
 
             #endregion
@@ -325,6 +323,10 @@ namespace PHP.Core
             {
                 next = null;
 
+                // ignore first line of length 0 (empty space after /**)
+                if (this.Text == null && string.IsNullOrWhiteSpace(line))
+                    return;
+
                 // Short Description can be followed by Long Description.
                 // It can be only 3 lines long, otherwise only the first line is taken
                 // It is terminated by empty line or a dot.
@@ -344,7 +346,7 @@ namespace PHP.Core
                     int firstLineEndIndex = this.Text.IndexOf('\n');
                     Debug.Assert(firstLineEndIndex != -1);
 
-                    next = new LongDescriptionElement(this.Text.Substring(firstLineEndIndex + 1));
+                    next = new LongDescriptionElement(this.Text.Substring(firstLineEndIndex + 1) + NewLineString + line);
                     this.Text = this.Text.Remove(firstLineEndIndex);
                 }
                 else
@@ -647,21 +649,22 @@ namespace PHP.Core
             public readonly string TypeNames;
 
             /// <summary>
-            /// Starting column of the <see cref="TypeNames"/> within the line of code.
+            /// Starting position of the <see cref="TypeNames"/> within the element.
             /// </summary>
             private readonly int TypeNamesOffset = -1;
 
             /// <summary>
             /// Position of the <see cref="TypeNames"/> information.
             /// </summary>
-            public ShortPosition TypeNamesPosition
+            public Span TypeNamesSpan
             {
                 get
                 {
                     if (this.TypeNamesOffset < 0)
-                        return ShortPosition.Invalid;
+                        return Span.Invalid;
 
-                    return new ShortPosition(this.StartPosition.Line, this.StartPosition.Column + this.TypeNamesOffset);
+                    Debug.Assert(this.TypeNames != null);
+                    return new Span(this.Span.Start + this.TypeNamesOffset, this.TypeNames.Length);
                 }
             }
 
@@ -676,21 +679,22 @@ namespace PHP.Core
             public readonly string VariableName;
 
             /// <summary>
-            /// Starting column of the <see cref="VariableName"/> within the line of code.
+            /// Starting column of the <see cref="VariableName"/> within the element.
             /// </summary>
             private readonly int VariableNameOffset = -1;
 
             /// <summary>
             /// Position of the <see cref="VariableName"/> information.
             /// </summary>
-            public ShortPosition VariableNamePosition
+            public Span VariableNameSpan
             {
                 get
                 {
                     if (this.VariableNameOffset < 0)
-                        return ShortPosition.Invalid;
+                        return Span.Invalid;
 
-                    return new ShortPosition(this.StartPosition.Line, this.StartPosition.Column + this.VariableNameOffset);
+                    Debug.Assert(this.VariableName != null);
+                    return new Span(this.Span.Start + this.VariableNameOffset, this.VariableName.Length);
                 }
             }
 
@@ -713,7 +717,7 @@ namespace PHP.Core
                 if (word != null && IsTypeName(word))
                 {
                     this.TypeNames = word;
-                    this.TypeNamesOffset = index - word.Length + 1;
+                    this.TypeNamesOffset = index - word.Length;
                     descStart = index;
                     word = NextWord(line, ref index);
                 }
@@ -724,7 +728,7 @@ namespace PHP.Core
                     if (word != null && word[0] == '$')
                     {
                         this.VariableName = word;
-                        this.VariableNameOffset = index - word.Length + 1;
+                        this.VariableNameOffset = index - word.Length;
                         descStart = index;
                         word = NextWord(line, ref index);
                     }
@@ -733,7 +737,7 @@ namespace PHP.Core
                     if (this.TypeNames == null && word != null && IsTypeName(word))
                     {
                         this.TypeNames = word;
-                        this.TypeNamesOffset = index - word.Length + 1;
+                        this.TypeNamesOffset = index - word.Length;
                         descStart = index;
                         word = NextWord(line, ref index);
                     }
@@ -852,6 +856,9 @@ namespace PHP.Core
 
         public abstract class TextTag : Element
         {
+            /// <summary>
+            /// Tag text information.
+            /// </summary>
             public string Text { get; private set; }
 
             public TextTag(string/*!*/tagName, string/*!*/line)
@@ -878,6 +885,28 @@ namespace PHP.Core
         }
 
         /// <summary>
+        /// Represents an unknown PHPDoc tag followed by text.
+        /// </summary>
+        public sealed class UnknownTextTag : TextTag
+        {
+            /// <summary>
+            /// Tag name.
+            /// </summary>
+            public string TagName { get; private set; }
+
+            internal UnknownTextTag(string tagName, string/*!*/line)
+                : base(tagName, line)
+            {
+                this.TagName = tagName;
+            }
+
+            public override string ToString()
+            {
+                return string.IsNullOrEmpty(Text) ? (TagName) : (TagName + " " + Text);
+            }
+        }
+
+        /// <summary>
         /// Private information for advanced developers.
         /// </summary>
         public sealed class InternalTag : TextTag
@@ -891,7 +920,7 @@ namespace PHP.Core
 
             public override string ToString()
             {
-                return Name + NewLineString + Text;
+                return Name + " " + Text;
             }
         }
 
@@ -1106,7 +1135,25 @@ namespace PHP.Core
 
             public override string ToString()
             {
-                return Name + NewLineString + Text;
+                return Name + " " + Text;
+            }
+        }
+
+        /// <summary>
+        /// Documents a link to an external source.
+        /// </summary>
+        public sealed class LinkTag : TextTag
+        {
+            public const string Name = "@link";
+
+            public LinkTag(string/*!*/line)
+                : base(Name, line)
+            {
+            }
+
+            public override string ToString()
+            {
+                return Name + " " + Text;
             }
         }
 
@@ -1411,12 +1458,6 @@ namespace PHP.Core
         private string _docCommentString;
 
         /// <summary>
-        /// Position of the whole token in the source code.
-        /// </summary>
-        public ShortPosition Position { get { return this._position; } }
-        private readonly ShortPosition _position;
-
-        /// <summary>
         /// Parsed data. Lazily initialized.
         /// </summary>
         private Element[] elements;
@@ -1433,7 +1474,7 @@ namespace PHP.Core
                     lock (this)
                         if (this.elements == null)  // double checked lock
                         {
-                            var elementsList = ParseNoLock(this._docCommentString, this._position);
+                            var elementsList = ParseNoLock(this._docCommentString, this.Span.Start);
                             if (elementsList != null && elementsList.Count > 0)
                                 this.elements = elementsList.ToArray();
                             else
@@ -1455,55 +1496,58 @@ namespace PHP.Core
         /// Initializes new instance of <see cref="PHPDocBlock"/>.
         /// </summary>
         /// <param name="doccomment">PHPDoc token content.</param>
-        /// <param name="position">Position of the comment in the source code.</param>
-        public PHPDocBlock(string doccomment, ShortPosition position)
+        /// <param name="span">Position of the comment in the source code.</param>
+        public PHPDocBlock(string doccomment, TextSpan span)
+            :base(span)
         {
             this._docCommentString = doccomment;
-            this._position = position;
         }
 
         /// <summary>
         /// Parses given <paramref name="doccomment"/> into a list of <see cref="Element"/> instances.
         /// </summary>
         /// <param name="doccomment">Content of the PHPDoc token.</param>
-        /// <param name="position">Position of <paramref name="doccomment"/> within the source code.</param>
-        private static List<Element>/*!*/ParseNoLock(string/*!*/doccomment, ShortPosition position)
+        /// <param name="offset">Start position of <paramref name="doccomment"/> within the source code.</param>
+        private static List<Element>/*!*/ParseNoLock(string/*!*/doccomment, int offset)
         {
             Debug.Assert(doccomment != null);
 
+            // initialize line endings information
+            var/*!*/lineBreaks = Text.LineBreaks.Create(doccomment);
+
+            //
             var result = new List<Element>();
-            var reader = new StringReader(doccomment);
-            int lineIndex = 0;
-            string line;
             Element tmp;
             
             Element/*!*/current = new ShortDescriptionElement();
-            current.StartPosition = ShortPosition.Invalid;
-            
-            while ((line = reader.ReadLine()) != null)
+            current.Span = Span.Invalid;
+
+            for (int lineIndex = 0; lineIndex < lineBreaks.LinesCount; lineIndex++)
             {
+                var lineSpan = lineBreaks.GetLineSpan(lineIndex);
+                string/*!*/line = lineSpan.GetText(doccomment);
+                
                 int startCharIndex, endCharIndex;
                 if (Element.TryParseLine(ref line, out tmp, lineIndex, out startCharIndex, out endCharIndex))    // validate the line, process tags
                 {
                     Debug.Assert(line != null);
                     
-                    // determine position within the source code:
-                    int sourcePositionLine = lineIndex + position.Line;
-                    if (lineIndex == 0)
-                    {
-                        startCharIndex += position.Column;
-                        endCharIndex += position.Column;
-                    }
-
-                    //
                     if (tmp == null)    // no new element created
                     {
-                        current.ParseLine(line, out tmp);       // pass the line into the current element
-                        current.EndPosition = new ShortPosition(sourcePositionLine, endCharIndex);   // update its end position
+                        // pass the line into the current element
+                        current.ParseLine(line, out tmp);
 
-                        // initialize start position of initial element
-                        if (current.GetType() == typeof(ShortDescriptionElement) && current.StartPosition.IsValid == false)
-                            current.StartPosition = new ShortPosition(sourcePositionLine, startCharIndex);
+                        // update position of the element
+                        if (current.Span.IsValid == false)      // ShortDescriptionElement has not initialized Span
+                        {
+                            if (!current.IsEmpty)   // initialize Start iff element has some text
+                                current.Span = new Span(offset + lineSpan.Start + startCharIndex, endCharIndex - startCharIndex);
+                        }
+                        else                                    // other elements has to update their end position
+                        {
+                            if (tmp != null)
+                                current.Span = new Span(current.Span.Start, offset + lineSpan.Start + endCharIndex - current.Span.Start);   // update its end position                        
+                        }
                     }
 
                     if (tmp != null)    // new element created, it is already initialized with the current line
@@ -1514,14 +1558,10 @@ namespace PHP.Core
                             result.Add(current);
                         }
 
-                        tmp.StartPosition = new ShortPosition(sourcePositionLine, startCharIndex);   // initialize its start position
-                        tmp.EndPosition = new ShortPosition(sourcePositionLine, endCharIndex);       // update its end position
-
+                        tmp.Span = new Span(offset + lineSpan.Start + startCharIndex, endCharIndex - startCharIndex);
                         current = tmp;  // it is current element from now
                     }
                 }
-
-                lineIndex++;
             }
 
             // add the last found element
@@ -1684,6 +1724,15 @@ namespace PHP.Core
         }
 
         #endregion
+
+        #region LangElement
+
+        public override void VisitMe(AST.TreeVisitor visitor)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 
     internal static class PHPDocBlockHelper
@@ -1693,7 +1742,7 @@ namespace PHP.Core
         /// </summary>
         public static PHPDocBlock GetPHPDoc(this IPropertyCollection/*!*/properties)
         {
-            return properties[typeof(PHPDocBlock)] as PHPDocBlock;
+            return properties.GetProperty<PHPDocBlock>();
         }
 
         /// <summary>
@@ -1702,9 +1751,16 @@ namespace PHP.Core
         public static void SetPHPDoc(this IPropertyCollection/*!*/properties, PHPDocBlock phpdoc)
         {
             if (phpdoc != null)
-                properties[typeof(PHPDocBlock)] = phpdoc;
+            {
+                properties.SetProperty<PHPDocBlock>(phpdoc);
+
+                // remember LangElement associated with phpdoc
+                var element = properties as AST.LangElement;
+                if (element != null)
+                    phpdoc.SetProperty<AST.LangElement>(element);
+            }
             else
-                properties.RemoveProperty(typeof(PHPDocBlock));
+                properties.RemoveProperty<PHPDocBlock>();
         }
     }
 }

@@ -16,8 +16,15 @@ namespace PHP.Core
         /// Sets property into collection.
         /// </summary>
         /// <param name="key">Key to the property, cannot be <c>null</c>.</param>
-        /// <param name="value"></param>
+        /// <param name="value">Value.</param>
         void SetProperty(object key, object value);
+
+        /// <summary>
+        /// Sets property into collection under the key <c>typeof(T)</c>.
+        /// </summary>
+        /// <typeparam name="T">Type of the value and property key.</typeparam>
+        /// <param name="value">Value.</param>
+        void SetProperty<T>(T value);
 
         /// <summary>
         /// Gets property from the collection.
@@ -27,11 +34,25 @@ namespace PHP.Core
         object GetProperty(object key);
 
         /// <summary>
+        /// Gets property of type <typeparamref name="T"/> from the collection.
+        /// </summary>
+        /// <typeparam name="T">Type and key of the property.</typeparam>
+        /// <returns>Property value.</returns>
+        T GetProperty<T>();
+
+        /// <summary>
         /// Removes property from the collection.
         /// </summary>
         /// <param name="key">Key to the property.</param>
         /// <returns><c>True</c> if property was found and removed, otherwise <c>false</c>.</returns>
         bool RemoveProperty(object key);
+
+        /// <summary>
+        /// Removes property from the collection.
+        /// </summary>
+        /// <typeparam name="T">Key to the property.</typeparam>
+        /// <returns><c>True</c> if property was found and removed, otherwise <c>false</c>.</returns>
+        bool RemoveProperty<T>();
 
         /// <summary>
         /// Clear the collection of properties.
@@ -111,7 +132,7 @@ namespace PHP.Core
                 _obj = value;
             }
             // one item list, with the same key
-            else if (p == key)
+            else if (object.Equals(p, key))
             {
                 _obj = value;
             }
@@ -125,7 +146,7 @@ namespace PHP.Core
                 int count = 0;
                 for (var node = (DictionaryNode)_obj; node != null; node = node.next)
                 {
-                    if (node.key == key)
+                    if (object.Equals(node.key, key))
                     {
                         node.value = value;
                         return;
@@ -174,6 +195,14 @@ namespace PHP.Core
         }
 
         /// <summary>
+        /// Sets property into the container.
+        /// </summary>
+        public void SetProperty<T>(T value)
+        {
+            SetProperty(typeof(T), (object)value);
+        }
+
+        /// <summary>
         /// Tries to get property from the container.
         /// </summary>
         /// <param name="key">Key.</param>
@@ -187,7 +216,7 @@ namespace PHP.Core
             // empty container
             if (p != null)
             {
-                if (p == key)
+                if (object.Equals(p, key))
                 {
                     return _obj;
                 }
@@ -195,7 +224,7 @@ namespace PHP.Core
                 {
                     Debug.Assert(_obj is DictionaryNode);
                     for (var node = (DictionaryNode)_obj; node != null; node = node.next)
-                        if (node.key == key)
+                        if (object.Equals(node.key, key))
                             return node.value;
                 }
                 else if (object.ReferenceEquals(p, TypeHashtable))
@@ -207,6 +236,14 @@ namespace PHP.Core
 
             // nothing found
             return null;
+        }
+
+        /// <summary>
+        /// Tries to get property from the container.
+        /// </summary>
+        public T GetProperty<T>()
+        {
+            return (T)GetProperty(typeof(T));
         }
 
         /// <summary>
@@ -222,7 +259,7 @@ namespace PHP.Core
 
             if (p != null)
             {
-                if (p == key)
+                if (object.Equals(p, key))
                 {
                     _type = null;
                     _obj = null;
@@ -234,7 +271,7 @@ namespace PHP.Core
                     DictionaryNode prev = null;
                     for (var node = (DictionaryNode)_obj; node != null; node = node.next)
                     {
-                        if (node.key == key)
+                        if (object.Equals(node.key, key))
                         {
                             if (prev == null)
                             {
@@ -250,6 +287,9 @@ namespace PHP.Core
                             
                             return true;
                         }
+
+                        //
+                        prev = node;
                     }
                 }
                 else if (object.ReferenceEquals(p, TypeHashtable))
@@ -262,8 +302,8 @@ namespace PHP.Core
                     {
                         if (hashtable.Count <= MaxListSize)
                         {
-                            _obj = ToList((Hashtable)p);
-                            _type = TypeHashtable;
+                            _obj = ToList(hashtable);
+                            _type = TypeList;
                         }
 
                         return true;
@@ -272,6 +312,14 @@ namespace PHP.Core
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Removes property from the container.
+        /// </summary>
+        public bool RemoveProperty<T>()
+        {
+            return RemoveProperty(typeof(T));
         }
 
         /// <summary>

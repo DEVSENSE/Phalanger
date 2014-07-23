@@ -89,6 +89,14 @@ namespace PHP.Core.Reflection {
         public void GlobalConstantDeclarationReduced(Parser parser, PHP.Core.AST.GlobalConstantDecl decl) {
         }
 
+        public void NamespaceDeclReduced(Parser parser, NamespaceDecl decl)
+        {
+        }
+
+        public void LambdaFunctionReduced(Parser parser, LambdaFunctionExpr decl)
+        {
+        }
+
         #endregion
 
         #region Implementation

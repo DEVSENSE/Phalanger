@@ -457,11 +457,11 @@ namespace PHP.Core
             ErrorPosition mapped_pos;
 
             // missing source unit means the file name shouldn't be reported (it is not available)
-            if (sourceUnit != null)
+            if (sourceUnit != null && pos.IsValid)
             {
                 // get line,column from position
                 sourceUnit.LineBreaks.GetLineColumnFromPosition(pos.Start, out mapped_pos.FirstLine, out mapped_pos.FirstColumn);
-                sourceUnit.LineBreaks.GetLineColumnFromPosition(pos.End, out mapped_pos.LastLine, out mapped_pos.LastColumn);
+                sourceUnit.LineBreaks.GetLineColumnFromPosition(pos.End - 1, out mapped_pos.LastLine, out mapped_pos.LastColumn);
 
                 //
                 full_path = sourceUnit.GetMappedFullSourcePath(mapped_pos.FirstLine);

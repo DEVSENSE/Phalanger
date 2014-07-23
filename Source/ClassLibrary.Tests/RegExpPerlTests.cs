@@ -58,7 +58,7 @@ namespace PHP.Library.Tests
         }
 
         [TestMethod]
-        private void TestConvertRegex()
+        public void TestConvertRegex()
         {
             IEnumerable<Tuple<string,string,PerlRegexOptions>> tests = new Tuple<string,string,PerlRegexOptions>[]
             {
