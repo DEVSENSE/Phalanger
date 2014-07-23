@@ -2692,9 +2692,9 @@ namespace PHP.Library
                                     }
                                     else
                                     {
-                                        for (byte b = (byte)(from + 1); b <= to; b++)
+                                        for (int j = from + 1; j <= to; j++)
                                         {
-                                            var chars = encoding.GetChars(new[] { b });
+                                            var chars = encoding.GetChars(new[] { (byte)j });
                                             AppendEscaped(result, chars[0]);
                                         }
                                     }
