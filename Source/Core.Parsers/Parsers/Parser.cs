@@ -451,6 +451,7 @@ namespace PHP.Core.Parsers
 			if (item as VariableUse == null)
 			{
                 errors.Add(FatalErrors.CheckVarUseFault, SourceUnit, span);
+                throw new CompilerException();
 			}
 		}
 
