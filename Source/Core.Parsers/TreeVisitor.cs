@@ -147,6 +147,14 @@ namespace PHP.Core.AST
         }
 
         /// <summary>
+        /// Visits <c>declare</c> statement and its inner statement.
+        /// </summary>
+        virtual public void VisitDeclareStmt(DeclareStmt x)
+        {
+            VisitElement(x.Statement);
+        }
+
+        /// <summary>
         /// Visit all conditional statements.
         /// See VisitConditionalStmt(ConditionalStmt x).
         /// </summary>
