@@ -258,7 +258,6 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %token T_WAKEUP  
 %token T_SLEEP  
 %token T_AUTOLOAD
-%token T_ASSERT
 
 %token T_PARTIAL
 %token T_LGENERIC
@@ -321,7 +320,6 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> ref_opt_identifier					  // Tuple<bool,string>!	// <is_ref, func_name>
 %type<Object> class_entry_type						  // Tuple<Tokens, PHPDocBlock>	// T_CLASS|T_TRAIT, PHPDocBlock
 %type<Object> class_declaration_statement             // TypeDecl
-%type<Object> class_identifier                        // String
 %type<Object> namespace_declaration_statement         // NamespaceDecl
 %type<Object> global_constant_declarator              // GlobalConstantDecl
 %type<Object> global_constant_declarator_list         // List<GlobalConstantDecl>
@@ -442,7 +440,6 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> class_constant_declarator_list          // List<ClassConstantDecl>!
 %type<Object> class_statement_list_opt
 %type<Object> class_statement
-%type<Object> class_method_identifier				  // String
 %type<Object> implements_opt 
 %type<Object> ctor_arguments_opt
 
@@ -666,7 +663,7 @@ class_entry_type:
 
 class_declaration_statement:
 		attributes_opt visibility_opt modifier_opt partial_opt class_entry_type
-		class_identifier type_parameter_list_opt
+		identifier type_parameter_list_opt
 		{
 			Name class_name = new Name((string)$6);
 
@@ -733,11 +730,6 @@ class_declaration_statement:
 
 			UnreserveTypeNames((List<FormalTypeParam>)$7);
 	  }
-;
-
-class_identifier:
-	  identifier { $$ = $1; }
-	| T_ASSERT { $$ = $1.Object; }
 ;
 
 modifier_opt:
@@ -1396,7 +1388,7 @@ class_statement:
 		  SetCommentSetHelper($$, $2);
 		}
 		
-	|	attributes_opt member_modifiers_opt T_FUNCTION reference_opt class_method_identifier 
+	|	attributes_opt member_modifiers_opt T_FUNCTION reference_opt identifier 
 	  type_parameter_list_opt
 	  {
 			ReserveTypeNames((List<FormalTypeParam>)$6);
@@ -1466,12 +1458,6 @@ trait_alias:
 trait_modifiers:
 		/* empty */		{ $$ = null; }
 	|	member_modifier	{ $$ = (PhpMemberAttributes?)((TmpMemberInfo)$1).attr; }
-;
-
-class_method_identifier:
-	identifier { $$ = $1; }
-	|
-	T_ASSERT { $$ = "assert"; }
 ;
 
 base_ctor_call_opt:
@@ -1717,8 +1703,7 @@ expr_without_chain:
 	|	T_LIST '(' assignment_list ')' '=' expr { $$ = new ListEx(@$, (List<Expression>)$3, (Expression)$6); }
 	|	T_ISSET '(' writable_chain_list ')'     { $$ = new IssetEx(@$, (List<VariableUse>)$3); }
 	|	T_EMPTY '(' chain ')'				            { $$ = new EmptyEx(@$, (Expression)$3); }		
-	|	T_EVAL '(' expr ')'                     { $$ = new EvalEx(@$, (Expression)$3, false); }
-	|	T_ASSERT '(' expr ')'                   { $$ = new EvalEx(@$, (Expression)$3, true); }
+	|	T_EVAL '(' expr ')'                     { $$ = new EvalEx(@$, (Expression)$3); }
 	|	T_EXIT exit_expr_opt		                { $$ = new ExitEx(@$, (Expression)$2); }
 	|	scalar_expr                             { $$ = $1; }			
 	|	string_constant '[' expr ']'			{ $$ = new StringLiteralDereferenceEx(@$, (Expression)$1, (Expression)$3); }
@@ -1947,12 +1932,12 @@ qualified_namespace_name:
 ;
 
 namespace_name_list:
-		class_identifier												{ $$ = new List<string>( ((string)$1).Split('\\') ); if (((List<string>)$$)[0]==""){ Debug.Fail("TODO: fully qualified namespace name!"); } }
+		identifier														{ $$ = new List<string>( ((string)$1).Split('\\') ); if (((List<string>)$$)[0]==""){ Debug.Fail("TODO: fully qualified namespace name!"); } }
 	|	namespace_name_list T_NS_SEPARATOR namespace_name_identifier	{ $$ = $1; ListAdd<string>($$, $3 ); }
 ;
 
 namespace_name_identifier:	// identifier + some keywords that should be used within qualified name (List, Array, ...)
-		class_identifier	{ $$ = $1; }
+		identifier			{ $$ = $1; }
 	|	T_LIST				{ $$ = CSharpNameToken(@1, (string)$1.Object); }
 	|	T_BOOL_TYPE			{ $$ = CSharpNameToken(@1, (string)$1.Object); }
 	|	T_INT_TYPE			{ $$ = CSharpNameToken(@1, (string)$1.Object); }

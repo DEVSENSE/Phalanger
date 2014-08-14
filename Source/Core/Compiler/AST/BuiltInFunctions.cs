@@ -331,71 +331,16 @@ namespace PHP.Core.Compiler.AST
 
         #endregion
 
-        #region EvalEx
+        #region EvalEx, AssertEx
 
-        [NodeCompiler(typeof(EvalEx))]
+        [NodeCompiler(typeof(EvalEx), Singleton = true)]
         sealed class EvalExCompiler : ExpressionCompiler<EvalEx>
         {
-            /// <summary>Contains the code string literal that has been inlined.</summary>
-            public string InlinedCode { get { return inlinedCode; } }
-
-            /// <summary>
-            /// Contains the code string literal that has been inlined.
-            /// </summary>
-            private string inlinedCode;
-
             #region Analysis
 
             public override Evaluation Analyze(EvalEx node, Analyzer analyzer, ExInfoFromParent info)
             {
                 access = info.Access;
-
-                // assertion:
-                if (node.IsAssert)
-                {
-                    if (analyzer.Context.Config.Compiler.Debug)
-                    {
-                        Evaluation code_evaluation = node.Code.Analyze(analyzer, ExInfoFromParent.DefaultExInfo);
-
-                        // string parameter is parsed and converted to an expression:
-                        if (code_evaluation.HasValue)
-                        {
-                            inlinedCode = Convert.ObjectToString(code_evaluation.Value);
-                            if (!string.IsNullOrEmpty(inlinedCode))
-                            {
-                                const string prefix = "return ";
-
-                                // the position of the last character before the parsed string:
-                                List<Statement> statements = analyzer.BuildAst(node.Code.Span.Start - prefix.Length + 1, String.Concat(prefix, inlinedCode, ";"));
-
-                                // code is unevaluable:
-                                if (statements == null)
-                                    return new Evaluation(node, true);
-
-                                if (statements.Count > 1)
-                                    analyzer.ErrorSink.Add(Warnings.MultipleStatementsInAssertion, analyzer.SourceUnit, node.Span);
-
-                                Debug.Assert(statements.Count > 0 && statements[0] is JumpStmt);
-
-                                node.Code = ((JumpStmt)statements[0]).Expression;
-                            }
-                            else
-                            {
-                                // empty assertion:
-                                return new Evaluation(node, true);
-                            }
-                        }
-                        else
-                        {
-                            node.Code = code_evaluation.Expression;
-                        }
-                    }
-                    else
-                    {
-                        // replace with "true" value in release mode:
-                        return new Evaluation(node, true);
-                    }
-                }
 
                 node.Code = node.Code.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
                 analyzer.AddCurrentRoutineProperty(RoutineProperties.ContainsEval);
@@ -410,17 +355,103 @@ namespace PHP.Core.Compiler.AST
             public override PhpTypeCode Emit(EvalEx node, CodeGenerator codeGenerator)
             {
                 // not emitted in release mode:
-                Debug.Assert(!node.IsAssert || codeGenerator.Context.Config.Compiler.Debug, "Assert should be cut off in release mode.");
                 Debug.Assert(access == AccessType.None || access == AccessType.Read || access == AccessType.ReadRef);
-                Debug.Assert(inlinedCode != null || codeGenerator.RTVariablesTablePlace != null, "Function should have variables table.");
+                Debug.Assert(codeGenerator.RTVariablesTablePlace != null, "Function should have variables table.");
                 Statistics.AST.AddNode("EvalEx");
+
+                PhpTypeCode result = codeGenerator.EmitEval(EvalKinds.ExplicitEval, node.Code, node.Span, null, null);
+                
+                // handles return value according to the access type:
+                codeGenerator.EmitReturnValueHandling(node, false, ref result);
+                return result;
+            }
+
+            #endregion
+        }
+
+        [NodeCompiler(typeof(AssertEx))]
+        sealed class AssertExCompiler : ExpressionCompiler<AssertEx>
+        {
+            /// <summary>
+            /// Contains the code string literal that has been inlined.
+            /// </summary>
+            private string _inlinedCode;
+
+            #region Analysis
+
+            public override Evaluation Analyze(AssertEx node, Analyzer analyzer, ExInfoFromParent info)
+            {
+                access = info.Access;
+
+                // assertion:
+                if (analyzer.Context.Config.Compiler.Debug)
+                {
+                    Evaluation code_evaluation = node.CodeEx.Analyze(analyzer, ExInfoFromParent.DefaultExInfo);
+                    //Evaluation desc_evaluation = node.DescriptionEx.Analyze(analyzer, ExInfoFromParent.DefaultExInfo);
+
+                    // string parameter is parsed and converted to an expression:
+                    if (code_evaluation.HasValue)
+                    {
+                        _inlinedCode = Convert.ObjectToString(code_evaluation.Value);
+                        if (!string.IsNullOrEmpty(_inlinedCode))
+                        {
+                            const string prefix = "return ";
+
+                            // the position of the last character before the parsed string:
+                            List<Statement> statements = analyzer.BuildAst(node.CodeEx.Span.Start - prefix.Length + 1, String.Concat(prefix, _inlinedCode, ";"));
+
+                            // code is unevaluable:
+                            if (statements == null)
+                                return new Evaluation(node, true);
+
+                            if (statements.Count > 1)
+                                analyzer.ErrorSink.Add(Warnings.MultipleStatementsInAssertion, analyzer.SourceUnit, node.Span);
+
+                            Debug.Assert(statements.Count > 0 && statements[0] is JumpStmt);
+
+                            node.CodeEx = ((JumpStmt)statements[0]).Expression;
+                        }
+                        else
+                        {
+                            // empty assertion:
+                            return new Evaluation(node, true);
+                        }
+                    }
+                    else
+                    {
+                        node.CodeEx = code_evaluation.Expression;
+                        analyzer.AddCurrentRoutineProperty(RoutineProperties.ContainsEval);
+                    }
+
+                    //
+                    node.CodeEx = node.CodeEx.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
+                    
+                    return new Evaluation(node);
+                }
+                else
+                {
+                    // replace with "true" value in release mode:
+                    return new Evaluation(node, true);
+                }
+            }
+
+            #endregion
+
+            #region Emission
+
+            public override PhpTypeCode Emit(AssertEx node, CodeGenerator codeGenerator)
+            {
+                // not emitted in release mode:
+                Debug.Assert(codeGenerator.Context.Config.Compiler.Debug, "Assert should be cut off in release mode.");
+                Debug.Assert(access == AccessType.None || access == AccessType.Read || access == AccessType.ReadRef);
+                Debug.Assert(_inlinedCode != null || codeGenerator.RTVariablesTablePlace != null, "Function should have variables table.");
+                Statistics.AST.AddNode("AssertEx");
 
                 ILEmitter il = codeGenerator.IL;
                 PhpTypeCode result;
 
-                if (inlinedCode != null)
+                if (_inlinedCode != null)
                 {
-                    Debug.Assert(node.IsAssert, "Only assert can be inlined so far.");
                     Label endif_label = il.DefineLabel();
                     Label else_label = il.DefineLabel();
 
@@ -431,7 +462,7 @@ namespace PHP.Core.Compiler.AST
                     if (true)
                     {
                         // LOAD <evaluated assertion>;
-                        codeGenerator.EmitBoxing(((Expression)node.Code).Emit(codeGenerator));
+                        codeGenerator.EmitBoxing(((Expression)node.CodeEx).Emit(codeGenerator));
 
                         // CALL DynamicCode.PostAssert(context);
                         codeGenerator.EmitLoadScriptContext();
@@ -439,7 +470,7 @@ namespace PHP.Core.Compiler.AST
 
                         // LOAD bool CheckAssertion(STACK, <inlined code>, context, <source path>, line, column);
                         var position = new Text.TextPoint(codeGenerator.SourceUnit.LineBreaks, node.Span.Start);
-                        il.Emit(OpCodes.Ldstr, inlinedCode);
+                        il.Emit(OpCodes.Ldstr, _inlinedCode);
                         codeGenerator.EmitLoadScriptContext();
                         il.Emit(OpCodes.Ldstr, codeGenerator.SourceUnit.SourceFile.RelativePath.ToString());
                         il.LdcI4(position.Line);
@@ -464,7 +495,7 @@ namespace PHP.Core.Compiler.AST
                 }
                 else
                 {
-                    result = codeGenerator.EmitEval(node.IsAssert ? EvalKinds.Assert : EvalKinds.ExplicitEval, node.Code, node.Span, null, null);
+                    result = codeGenerator.EmitEval(EvalKinds.Assert, node.CodeEx, node.Span, null, null);
                 }
 
                 // handles return value according to the access type:

@@ -149,7 +149,7 @@ namespace PHP.Core.AST
 
 	#endregion
 
-	#region EvalEx
+	#region EvalEx, AssertEx
 
 	/// <summary>
 	/// Represents <c>eval</c> construct.
@@ -167,13 +167,6 @@ namespace PHP.Core.AST
         /// </summary>
         private Expression/*!*/ code;
         
-		/// <summary>
-		/// Says if this eval is real in source code, or if it was made during analyzis to
-		/// defer some compilation to run-time.
-		/// </summary>
-        public bool IsAssert { get { return isAssert; } }
-		private bool isAssert;
-
 		#region Construction
 
 		/// <summary>
@@ -181,12 +174,10 @@ namespace PHP.Core.AST
 		/// </summary>
         /// <param name="span">Position.</param>
 		/// <param name="code">Source code expression.</param>
-		/// <param name="isAssert">Whether the node represents an assert construct.</param>
-		public EvalEx(Text.Span span, Expression/*!*/ code, bool isAssert)
+		public EvalEx(Text.Span span, Expression/*!*/ code)
             : base(span)
 		{
-            this.isAssert = isAssert;
-			this.code = code;
+            this.code = code;
 		}
 
 		#endregion
@@ -200,6 +191,38 @@ namespace PHP.Core.AST
             visitor.VisitEvalEx(this);
         }
 	}
+
+    /// <summary>
+    /// Meta language element used for assert() function call analysis.
+    /// </summary>
+    [Serializable]
+    internal sealed class AssertEx : Expression
+    {
+        public override Operations Operation { get { return Operations.Eval; } }
+
+        /// <summary>Expression containing source code to be evaluated.</summary>
+        public Expression /*!*/ CodeEx { get; internal set; }
+
+        ///// <summary>Description para,eter.</summary>
+        //public Expression DescriptionEx { get; internal set; }
+
+        public AssertEx(Text.Span span, CallSignature callsignature)
+            : base(span)
+        {
+            Debug.Assert(callsignature.Parameters.Count >= 1);
+            Debug.Assert(callsignature.GenericParams.Count == 0);
+
+            this.CodeEx = callsignature.Parameters[0].Expression;
+            //this.DescriptionEx = description;
+        }
+
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            // note: should not be used
+            visitor.VisitElement(this.CodeEx);
+            //visitor.VisitElement(this.DescriptionEx);
+        }
+    }
 
 	#endregion
 

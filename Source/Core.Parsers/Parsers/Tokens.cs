@@ -72,7 +72,6 @@ namespace PHP.Core.Parsers
 		T_SELF = Toks.T_SELF,
 		T_AUTOLOAD = Toks.T_AUTOLOAD,
 
-		T_ASSERT = Toks.T_ASSERT,
 		T_TRUE = Toks.T_TRUE,
 		T_FALSE = Toks.T_FALSE,
 		T_NULL = Toks.T_NULL,
