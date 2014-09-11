@@ -13,7 +13,7 @@ using System.Diagnostics;
 namespace PHP.Library.Data
 {
     [ImplementsType]
-    public abstract partial class PDOStatement : PhpObject, IteratorAggregate
+    public partial class PDOStatement : PhpObject, IteratorAggregate
     {
         protected readonly PDO m_pdo;
 
@@ -24,13 +24,13 @@ namespace PHP.Library.Data
             this.setFetchMode(context, (int)PDOFetchType.PDO_FETCH_BOTH, null, null);
         }
 
-        public abstract bool ExecuteStatement();
+        public virtual bool ExecuteStatement() { throw new NotImplementedException(); }
 
         //////////////////////////
         //////////////////////////
 
-        protected abstract IDbCommand CurrentCommand { get; }
-        protected abstract IDataReader CurrentReader { get; }
+        protected virtual IDbCommand CurrentCommand { get { return null; } }
+        protected virtual IDataReader CurrentReader { get { return null; } }
 
         #region getIterator
         [PhpVisible]
@@ -147,7 +147,7 @@ namespace PHP.Library.Data
             return null;
         }
 
-        protected abstract void CloseReader();
+        protected virtual void CloseReader() { throw new NotImplementedException(); }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static object closeCursor(object instance, PhpStack stack)
@@ -157,7 +157,7 @@ namespace PHP.Library.Data
         }
         #endregion
 
-        public abstract void Init(string query, Dictionary<int, object> options);
+        public virtual void Init(string query, Dictionary<int, object> options) { throw new NotImplementedException(); }
 
         enum PreparedMode
         {
@@ -293,17 +293,61 @@ namespace PHP.Library.Data
 
         [PhpVisible]
         [ImplementsMethod]
-        public virtual object bindValue(ScriptContext context, object parameter, object value, object data_type/*=null*/)
+        public virtual object bindValue(ScriptContext context, object parameter, object value, object data_type = null)
         {
-            PDOParamType? dt = null;
-            if (data_type != null && data_type != Arg.Default)
-                dt = (PDOParamType)data_type;
+            if (this.CurrentCommand != null)
+            {
+                PDOParamType? dt = null;
+                if (data_type != null && data_type != Arg.Default)
+                    dt = (PDOParamType)data_type;
 
-            return this.bindValue(parameter, value, dt);
+                return this.bindValue(parameter, value, dt);
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private bool bindValues(ScriptContext context, PhpArray parameters, PDOParamType dt)
+        {
+            if (parameters == null || parameters.Count == 0)
+                return true;
+
+            PreparedMode mode = PreparedMode.None;
+            foreach (var item in parameters)
+            {
+                Debug.Assert(item.Key.Object != null);
+
+                if (item.Key.IsString && (mode == PreparedMode.Named || mode == PreparedMode.None))
+                {
+                    mode = PreparedMode.Named;
+                }
+                else if (item.Key.IsInteger && (mode == PreparedMode.Numbers || mode == PreparedMode.None))
+                {
+                    mode = PreparedMode.Numbers;
+                }
+                else
+                {
+                    PhpException.Throw(PhpError.Warning, "Invalid bind parameter " + item.Key.Object.ToString());
+                    return false;
+                }
+
+                // bind the parameter
+                var bindresult = this.bindValue(context, item.Key.Object, item.Value, dt);
+                if (!Core.Convert.ObjectToBoolean(bindresult))
+                {
+                    PhpException.Throw(PhpError.Warning, "Can't bind parameter " + item.Key.Object.ToString());
+                    return false;
+                }
+            }
+
+            //
+            return true;
         }
 
         private bool bindValue(object param, object value, PDOParamType? type)
         {
+            Debug.Assert(this.CurrentCommand != null);
+
             if (this.m_prepMode == PreparedMode.None)
             {
                 PhpException.Throw(PhpError.Warning, "PDO statement not prepared or no parameters to bind");
@@ -376,56 +420,22 @@ namespace PHP.Library.Data
 
         #region execute
         
-        private bool ExecuteInternal(object input_parameters)
+        [PhpVisible, ImplementsMethod]
+        public virtual object execute(ScriptContext context, [Optional] object input_parameters)
         {
-            if (input_parameters != null)
+            if (input_parameters != Arg.Default && input_parameters != null)
             {
-                PhpArray arr;
-                if ((arr = input_parameters as PhpArray) != null)
-                {
-                    if (arr.Count != 0)
-                    {
-                        PreparedMode mode = PreparedMode.None;
-                        foreach (var item in arr)
-                        {
-                            Debug.Assert(item.Key.Object != null);
-
-                            if (item.Key.IsString && (mode == PreparedMode.Named || mode == PreparedMode.None))
-                            {
-                                mode = PreparedMode.Named;
-                            }
-                            else if (item.Key.IsInteger && (mode == PreparedMode.Numbers || mode == PreparedMode.None))
-                            {
-                                mode = PreparedMode.Numbers;
-                            }
-                            else
-                            {
-                                PhpException.Throw(PhpError.Warning, "Invalid bind parameter " + item.Key.Object.ToString());
-                                return false;
-                            }
-
-                            // bind the parameter
-                            if (!this.bindValue(item.Key.Object, item.Value, PDOParamType.PDO_PARAM_STR))
-                            {
-                                PhpException.Throw(PhpError.Warning, "Can't bind parameter " + item.Key.Object.ToString());
-                                return false;
-                            }
-                        }
-                    }
-                }
-                else
+                PhpArray arr = PhpArray.AsPhpArray(input_parameters);
+                if (arr == null)
                 {
                     PhpException.InvalidArgumentType("input_parameters", PhpArray.PhpTypeName);
                     return false;
                 }
-            }
-            return this.ExecuteStatement();
-        }
 
-        [PhpVisible, ImplementsMethod]
-        public virtual object execute(ScriptContext context, [Optional] object input_parameters)
-        {
-            return this.ExecuteInternal((input_parameters != Arg.Default) ? input_parameters : null);
+                this.bindValues(context, arr, PDOParamType.PDO_PARAM_STR);
+            }
+
+            return this.ExecuteStatement();
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
