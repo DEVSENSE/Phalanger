@@ -58,6 +58,8 @@ namespace PHP.Core.Parsers
 		public TokenCategory TokenCategory { get { return tokenCategory; } }
 		private TokenCategory tokenCategory;
 
+        public Text.Span TokenSpan { get { return Text.Span.FromBounds(token_start_pos.Char, token_end_pos.Char); } }
+
 		public Tokens RealToken { get { return realToken; } }
 		private Tokens realToken;
 
