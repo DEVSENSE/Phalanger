@@ -616,10 +616,6 @@ namespace PHP.Core.Emit
 				Types.ScriptContext);
 			phpType.Builder.InstanceFieldInitEmitter = new ILEmitter(phpType.Builder.InstanceFieldInit);
 
-            // emit custom body prolog:
-            PluginHandler.EmitBeforeBody(phpType.Builder.InstanceFieldInitEmitter, null); 
-            
-
             //
             // <InitializeStaticFields>
             //
@@ -640,9 +636,6 @@ namespace PHP.Core.Emit
 #if !SILVERLIGHT 
 				last_context.SetCustomAttribute(AttributeBuilders.ThreadStatic);
 #endif
-                // emit custom body prolog:
-                PluginHandler.EmitBeforeBody(cil, null); 
-
                 //
                 Label init_needed_label = cil.DefineLabel();
 				// [ if (arg0 == __lastContext) ret ]

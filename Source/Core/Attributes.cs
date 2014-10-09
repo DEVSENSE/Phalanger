@@ -228,34 +228,7 @@ namespace PHP.Core
 		}
 	}
 
-    /// <summary>
-    /// Attribute marks an assembly as a plugin extending set of compiler and runtime features.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
-    public sealed class PluginAssemblyAttribute : Attribute
-    {
-        public readonly Type/*!*/LoaderType;
-
-        public PluginAssemblyAttribute(Type/*!*/loaderType)
-        {
-            Debug.Assert(loaderType != null);
-            Debug.Assert(loaderType.GetMethod(PluginAssembly.LoaderMethod, BindingFlags.Public | BindingFlags.Static, null, PluginAssembly.LoaderMethodParameters, null) != null, "Plugin loader method cannot be found!");
-
-            this.LoaderType = loaderType;
-        }
-
-        internal static IEnumerable<PluginAssemblyAttribute> Reflect(Assembly/*!*/ assembly)
-        {
-#if !SILVERLIGHT
-            Debug.Assert(!assembly.ReflectionOnly);
-#endif
-            object[] attrs = assembly.GetCustomAttributes(typeof(PluginAssemblyAttribute), false);
-            return (attrs != null && attrs.Length > 0) ? attrs.Cast<PluginAssemblyAttribute>() : null;
-        }
-    }
-
-
-	#endregion
+    #endregion
 
 	#region Language
 

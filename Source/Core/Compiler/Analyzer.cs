@@ -341,7 +341,7 @@ namespace PHP.Core
 		/// Builds AST from the given source code string.
 		/// Returns <B>null</B> if the AST cannot be built (new declarations appears in the code).
 		/// </summary>
-        internal List<Statement> BuildAst(int positionShift, string/*!*/ sourceCode)
+        internal Statement[] BuildAst(int positionShift, string/*!*/ sourceCode)
 		{
 			Parser.ReductionsCounter counter = new Parser.ReductionsCounter();
 
@@ -1573,7 +1573,8 @@ namespace PHP.Core
 
 		public void AddLambdaFcnDeclaration(FunctionDecl decl)
 		{
-			sourceUnit.Ast.Statements.Add(decl);
+            var ast = sourceUnit.Ast;
+			ast.Statements = ArrayUtils.Concat(ast.Statements, decl);
 		}
 
         internal void SetEntryPoint(PhpRoutine/*!*/ routine, Text.Span position)

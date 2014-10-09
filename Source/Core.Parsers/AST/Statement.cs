@@ -51,15 +51,15 @@ namespace PHP.Core.AST
     [Serializable]
     public sealed class BlockStmt : Statement
     {
-        private readonly List<Statement>/*!*/ statements;
+        private readonly Statement[]/*!*/_statements;
         /// <summary>Statements in block</summary>
-        public List<Statement>/*!*/ Statements { get { return statements; } }
+        public Statement[]/*!*/ Statements { get { return _statements; } }
 
-        public BlockStmt(Text.Span span, List<Statement>/*!*/ body)
+        public BlockStmt(Text.Span span, List<Statement>/*!*/body)
             : base(span)
         {
             Debug.Assert(body != null);
-            this.statements = body;
+            _statements = body.AsArray();
         }
 
         /// <summary>

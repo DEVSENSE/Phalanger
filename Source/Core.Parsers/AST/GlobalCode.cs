@@ -40,8 +40,8 @@ namespace PHP.Core.AST
         /// <summary>
         /// Array of nodes representing statements in PHP global code
         /// </summary>
-        public List<Statement>/*!*/ Statements { get { return statements; } }
-        private readonly List<Statement>/*!*/ statements;
+        public Statement[]/*!*/ Statements { get { return statements; } internal set { statements = value; } }
+        private Statement[]/*!*/ statements;
 
         /// <summary>
         /// Represented source unit.
@@ -59,7 +59,7 @@ namespace PHP.Core.AST
             Debug.Assert(statements != null && sourceUnit != null);
 
             this.sourceUnit = sourceUnit;
-            this.statements = statements;
+            this.statements = statements.AsArray();
         }
 
         #endregion

@@ -75,7 +75,7 @@ namespace PHP.Core.Compiler.AST
                 }
 
                 var statements = ast.Statements;
-                for (int i = 0; i < statements.Count; i++)
+                for (int i = 0; i < statements.Length; i++)
                 {
                     if (analyzer.IsThisCodeUnreachable() && statements[i].IsDeclaration)
                     {
@@ -113,9 +113,6 @@ namespace PHP.Core.Compiler.AST
             {
                 // TODO: improve
                 codeGenerator.EnterGlobalCodeDeclaration(this.varTable, labels, (CompilationSourceUnit)ast.SourceUnit);
-
-                // custom body prolog emittion:
-                PluginHandler.EmitBeforeBody(codeGenerator.IL, ast.Statements);
 
                 //
                 if (codeGenerator.CompilationUnit.IsTransient)

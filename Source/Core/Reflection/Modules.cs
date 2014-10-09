@@ -417,50 +417,6 @@ namespace PHP.Core.Reflection
 
     #endregion
 
-    #region PluginModule
-
-    public sealed class PluginModule : DModule
-    {
-        public PluginAssembly/*!*/ PluginAssembly { get { return (PluginAssembly)assembly; } }
-
-        #region Construction
-
-        /// <summary>
-        /// Called by the loader via <see cref="PluginAssembly"/>.
-        /// </summary>
-        internal PluginModule(PluginAssembly/*!*/ assembly)
-            : base(assembly)
-        {
-
-        }
-
-        #endregion
-
-        #region Reflection
-
-        public override void Reflect(bool full,
-            Dictionary<string, DTypeDesc>/*!*/ types,
-            Dictionary<string, DRoutineDesc>/*!*/ functions,
-            DualDictionary<string, DConstantDesc>/*!*/ constants)
-        {
-            // PluginAssembly does not contain any declarations
-
-            // Let the plugin to modify ApplicationContext
-            var attrs = PluginAssemblyAttribute.Reflect(PluginAssembly.RealAssembly);
-            if (attrs != null)
-                foreach (var plug in attrs)
-                {
-                    var method = plug.LoaderType.GetMethod(PluginAssembly.LoaderMethod, BindingFlags.Public | BindingFlags.Static, null, PluginAssembly.LoaderMethodParameters, null);
-                    if (method != null)
-                        method.Invoke(null, new object[] { PluginAssembly.ApplicationContext });
-                }
-        }
-
-        #endregion
-    }
-
-    #endregion
-
     #region UnknownModule
 
     public sealed class UnknownModule : DModule

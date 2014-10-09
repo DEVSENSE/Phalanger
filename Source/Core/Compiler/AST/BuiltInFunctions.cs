@@ -398,16 +398,16 @@ namespace PHP.Core.Compiler.AST
                             const string prefix = "return ";
 
                             // the position of the last character before the parsed string:
-                            List<Statement> statements = analyzer.BuildAst(node.CodeEx.Span.Start - prefix.Length + 1, String.Concat(prefix, _inlinedCode, ";"));
+                            var statements = analyzer.BuildAst(node.CodeEx.Span.Start - prefix.Length + 1, String.Concat(prefix, _inlinedCode, ";"));
 
                             // code is unevaluable:
                             if (statements == null)
                                 return new Evaluation(node, true);
 
-                            if (statements.Count > 1)
+                            if (statements.Length > 1)
                                 analyzer.ErrorSink.Add(Warnings.MultipleStatementsInAssertion, analyzer.SourceUnit, node.Span);
 
-                            Debug.Assert(statements.Count > 0 && statements[0] is JumpStmt);
+                            Debug.Assert(statements.Length > 0 && statements[0] is JumpStmt);
 
                             node.CodeEx = ((JumpStmt)statements[0]).Expression;
                         }

@@ -84,15 +84,15 @@ namespace PHP.Core.AST
     [Serializable]
 	public struct TypeSignature
 	{
-		internal List<FormalTypeParam>/*!!*/ TypeParams { get { return typeParams; } }
-		private readonly List<FormalTypeParam>/*!!*/ typeParams;
+		internal FormalTypeParam[]/*!!*/ TypeParams { get { return typeParams; } }
+		private readonly FormalTypeParam[]/*!!*/ typeParams;
 
 		#region Construction
 
 		public TypeSignature(List<FormalTypeParam>/*!!*/ typeParams)
 		{
 			Debug.Assert(typeParams != null);
-			this.typeParams = typeParams;
+			this.typeParams = typeParams.AsArray();
 		}
 
 		#endregion
@@ -326,8 +326,8 @@ namespace PHP.Core.AST
 		public TypeSignature TypeSignature { get { return typeSignature; } }
 		private readonly TypeSignature typeSignature;
 
-		public List<Statement> Body { get { return body; } }
-		private readonly List<Statement> body;
+        public Statement[] Body { get { return body; } internal set { body = value; } }
+        private Statement[] body;
 
         public List<ActualParam> BaseCtorParams { get { return baseCtorParams; } internal set { baseCtorParams = value; } }
 		private List<ActualParam> baseCtorParams;
@@ -355,7 +355,7 @@ namespace PHP.Core.AST
             this.name = new Name(name);
             this.signature = new Signature(aliasReturn, formalParams);
             this.typeSignature = new TypeSignature(genericParams);
-            this.body = body;
+            this.body = body.AsArray();
             this.baseCtorParams = baseCtorParams;
             this.entireDeclarationPosition = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
