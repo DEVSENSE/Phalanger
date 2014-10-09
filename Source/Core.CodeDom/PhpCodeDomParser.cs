@@ -2322,7 +2322,7 @@ namespace PHP.Core.CodeDom
                 cType.TypeAttributes = ta;
 
                 //Generic information
-                if (sType.TypeSignature.TypeParams.Count != 0)
+                if (sType.TypeSignature.TypeParams.Any())
                 {
                     foreach (var GPar in sType.TypeSignature.TypeParams)
                     {
