@@ -236,9 +236,6 @@ namespace PHP.Core.Parsers
             Name.SelfClassName.Value,
             Name.StaticClassName.Value,
             Name.ParentClassName.Value,
-            QualifiedName.False.Name.Value,
-            QualifiedName.True.Name.Value,
-            QualifiedName.Null.Name.Value,
         };
 
 		// stack of string buffers; used when processing encaps strings
@@ -619,7 +616,17 @@ namespace PHP.Core.Parsers
         {
             QualifiedName? fallbackQName;
 
-            TranslateFallbackQualifiedName(ref qname, out fallbackQName);
+            if (qname.IsSimpleName && (qname == QualifiedName.Null || qname == QualifiedName.True || qname == QualifiedName.False))
+            {
+                // special global consts
+                fallbackQName = null;
+                qname.IsFullyQualifiedName = true;
+            }
+            else
+            {
+                TranslateFallbackQualifiedName(ref qname, out fallbackQName);
+            }
+            
             return new GlobalConstUse(pos, qname, fallbackQName);
         }
 
@@ -760,10 +767,8 @@ namespace PHP.Core.Parsers
 
         private void CheckTypeNameInUse(Name typeName, Text.Span span)
         {
-            if (CurrentScopeAliases.ContainsKey(typeName.Value) ||
-                reservedTypeNames.Contains(typeName.Value))
-                errors.Add(FatalErrors.ClassAlreadyInUse, SourceUnit, span,
-                     CurrentNamespaceName + typeName.Value);
+            if (CurrentScopeAliases.ContainsKey(typeName.Value) || reservedTypeNames.Contains(typeName.Value))
+                errors.Add(FatalErrors.ClassAlreadyInUse, SourceUnit, span, CurrentNamespaceName + typeName.Value);
         }
 
         /// <summary>
@@ -979,24 +984,8 @@ namespace PHP.Core.Parsers
             // skip special names:
             if (qname.IsSimpleName)
             {
-
-                //if (qname.IsReservedClassName)
-                //    return qname;
-            
                 if (reservedTypeNames.Contains(qname.Name.Value))
                     return qname;
-
-                //if ((features & LanguageFeatures.ClrSemantics) != 0)
-                //{
-                //    if (qname == QualifiedName.Array ||
-                //        qname == QualifiedName.Boolean ||
-                //        qname == QualifiedName.Double ||
-                //        qname == QualifiedName.Integer ||
-                //        qname == QualifiedName.LongInteger ||
-                //        qname == QualifiedName.Object ||
-                //        qname == QualifiedName.String)
-                //        return qname;
-                //}
             }
 
             // return the alias if found:
@@ -1011,7 +1000,10 @@ namespace PHP.Core.Parsers
         /// <remarks>Fully qualified names are not translated.</remarks>
         private QualifiedName TranslateNamespace(QualifiedName qname)
         {
-            if (qname.IsFullyQualifiedName) return qname;
+            if (qname.IsFullyQualifiedName)
+            {
+                return qname;
+            }
 
             if (qname.IsSimpleName)
             {
