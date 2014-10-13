@@ -20,7 +20,7 @@ class AssemblyVersionInfo
     public const string ReleaseVersion = "4.0";
 
     // Replaced by changeset number using build script.
-    public const string ChangesetNumber = "5099";
+    public const string ChangesetNumber = "5598";
 
     public const string StableVersion = ReleaseVersion + ".0.0";
 
