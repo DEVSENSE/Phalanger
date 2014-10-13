@@ -99,7 +99,7 @@ namespace PHP.Core.Compiler.AST
                     DirectVarUse vur;
                     DirectVarUse vul = valueassignex.lvalue as DirectVarUse;
 
-                    if (concat != null && concat.Expressions.Count >= 2 && vul != null && vul.IsMemberOf == null)
+                    if (concat != null && concat.Expressions.Length >= 2 && vul != null && vul.IsMemberOf == null)
                     {
                         if ((vur = concat.Expressions[0] as DirectVarUse) != null && vur.VarName.Equals(vul.VarName) && vur.IsMemberOf == null)
                         {
@@ -111,9 +111,9 @@ namespace PHP.Core.Compiler.AST
                             lvalue_info.Access = AccessType.ReadAndWrite;
 
                             //rvalue = concat.RightExpr;
-                            concat.Expressions.RemoveAt(0);
+                            concat.Expressions = concat.Expressions.TakeArray(1, concat.Expressions.Length - 1);
                         }
-                        else if ((vur = concat.Expressions[concat.Expressions.Count - 1] as DirectVarUse) != null && vur.VarName.Equals(vul.VarName) && vur.IsMemberOf == null)
+                        else if ((vur = concat.Expressions[concat.Expressions.Length - 1] as DirectVarUse) != null && vur.VarName.Equals(vul.VarName) && vur.IsMemberOf == null)
                         {
                             // $x = a.b.c.$x
                             // =>
@@ -123,7 +123,7 @@ namespace PHP.Core.Compiler.AST
                             lvalue_info.Access = AccessType.ReadAndWrite;
 
                             //rvalue = (Expression)concat.LeftExpr;
-                            concat.Expressions.RemoveAt(concat.Expressions.Count - 1);
+                            concat.Expressions = concat.Expressions.TakeArray(0, concat.Expressions.Length - 1);
                         }
                         else
                             lvalue_info.Access = AccessType.Write;

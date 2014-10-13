@@ -54,7 +54,7 @@ namespace PHP.Core.AST
         /// <summary>
         /// Initializes a new instance of the GlobalCode class.
         /// </summary>
-        public GlobalCode(List<Statement>/*!*/ statements, SourceUnit/*!*/ sourceUnit)
+        public GlobalCode(IList<Statement>/*!*/ statements, SourceUnit/*!*/ sourceUnit)
         {
             Debug.Assert(statements != null && sourceUnit != null);
 

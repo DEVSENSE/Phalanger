@@ -89,7 +89,7 @@ namespace PHP.Core.AST
 
 		#region Construction
 
-		public TypeSignature(List<FormalTypeParam>/*!!*/ typeParams)
+		public TypeSignature(IList<FormalTypeParam>/*!!*/ typeParams)
 		{
 			Debug.Assert(typeParams != null);
 			this.typeParams = typeParams.AsArray();
@@ -329,8 +329,8 @@ namespace PHP.Core.AST
         public Statement[] Body { get { return body; } internal set { body = value; } }
         private Statement[] body;
 
-        public List<ActualParam> BaseCtorParams { get { return baseCtorParams; } internal set { baseCtorParams = value; } }
-		private List<ActualParam> baseCtorParams;
+        public ActualParam[] BaseCtorParams { get { return baseCtorParams; } internal set { baseCtorParams = value; } }
+		private ActualParam[] baseCtorParams;
 
         public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }
         private Text.Span entireDeclarationPosition;
@@ -344,8 +344,8 @@ namespace PHP.Core.AST
 		#region Construction
 
         public MethodDecl(Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition, 
-			string name, bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalTypeParam>/*!*/ genericParams, 
-			List<Statement> body, PhpMemberAttributes modifiers, List<ActualParam> baseCtorParams, 
+			string name, bool aliasReturn, IList<FormalParam>/*!*/ formalParams, IList<FormalTypeParam>/*!*/ genericParams, 
+			IList<Statement> body, PhpMemberAttributes modifiers, IList<ActualParam> baseCtorParams, 
 			List<CustomAttribute> attributes)
             : base(span, attributes)
         {
@@ -356,7 +356,7 @@ namespace PHP.Core.AST
             this.signature = new Signature(aliasReturn, formalParams);
             this.typeSignature = new TypeSignature(genericParams);
             this.body = body.AsArray();
-            this.baseCtorParams = baseCtorParams;
+            this.baseCtorParams = baseCtorParams.AsArray();
             this.entireDeclarationPosition = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
             this.declarationBodyPosition = declarationBodyPosition;

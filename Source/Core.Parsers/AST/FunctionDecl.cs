@@ -116,7 +116,7 @@ namespace PHP.Core.AST
 		public FormalParam[]/*!*/ FormalParams { get { return formalParams; } }
 		private readonly FormalParam[]/*!*/ formalParams;
 
-		public Signature(bool aliasReturn, List<FormalParam>/*!*/ formalParams)
+		public Signature(bool aliasReturn, IList<FormalParam>/*!*/ formalParams)
 		{
 			this.aliasReturn = aliasReturn;
 			this.formalParams = formalParams.AsArray();
@@ -187,7 +187,7 @@ namespace PHP.Core.AST
             Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
 			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, string/*!*/ name, NamespaceDecl ns,
 			bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalTypeParam>/*!*/ genericParams,
-			List<Statement>/*!*/ body, List<CustomAttribute> attributes)
+			IList<Statement>/*!*/ body, List<CustomAttribute> attributes)
 			: base(span)
 		{
 			Debug.Assert(genericParams != null && name != null && formalParams != null && body != null);

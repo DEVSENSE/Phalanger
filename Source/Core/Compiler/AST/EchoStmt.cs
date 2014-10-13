@@ -38,7 +38,7 @@ namespace PHP.Core.Compiler.AST
                 ExInfoFromParent info = ExInfoFromParent.DefaultExInfo;
                 
                 var parameters = node.Parameters;
-                for (int i = 0; i < parameters.Count; i++)
+                for (int i = 0; i < parameters.Length; i++)
                 {
                     parameters[i] = parameters[i].Analyze(analyzer, info).Literalize();
                 }

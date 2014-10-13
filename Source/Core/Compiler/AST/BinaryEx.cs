@@ -779,7 +779,7 @@ namespace PHP.Core.Compiler.AST
             private static bool IsEmptyArrayEx(Expression/*!*/expr)
             {
                 Debug.Assert(expr != null);
-                return expr.GetType() == typeof(ArrayEx) && ((ArrayEx)expr).Items.Count == 0;
+                return expr.GetType() == typeof(ArrayEx) && ((ArrayEx)expr).Items.Empty();
             }
 
             #endregion

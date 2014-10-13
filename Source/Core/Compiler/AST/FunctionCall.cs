@@ -311,7 +311,7 @@ namespace PHP.Core.Compiler.AST
                 {
                     // basename(__FILE__, ...) -> basename("actual_file", ...)  // SourceRoot can be ignored in this case
                     if (routine.FullName.EqualsOrdinalIgnoreCase("basename"))
-                        if (node.CallSignature.Parameters.Count > 0)
+                        if (node.CallSignature.Parameters.Any())
                         {
                             var path_param = node.CallSignature.Parameters[0];
                             var path_expr = path_param.Expression;
@@ -377,7 +377,7 @@ namespace PHP.Core.Compiler.AST
                             // perform parameter conversion:
                             Action<Converter<object, object>> PassArgument = (converter) =>
                                 {
-                                    if (nextCallParamIndex >= node.CallSignature.Parameters.Count)
+                                    if (nextCallParamIndex >= node.CallSignature.Parameters.Length)
                                         throw new ArgumentException("Not enough parameters in evaluable method.");
 
                                     object obj = node.CallSignature.Parameters[nextCallParamIndex++].Expression.GetValue();
@@ -399,7 +399,7 @@ namespace PHP.Core.Compiler.AST
                                 parametersInfo[i].IsDefined(typeof(ParamArrayAttribute), false))
                             {
                                 // params object[]
-                                var args = new object[node.CallSignature.Parameters.Count - nextCallParamIndex];
+                                var args = new object[node.CallSignature.Parameters.Length - nextCallParamIndex];
                                 for (int arg = 0; arg < args.Length; ++nextCallParamIndex, ++arg)
                                     args[arg] = node.CallSignature.Parameters[nextCallParamIndex].Expression.GetValue();
 
@@ -498,7 +498,7 @@ namespace PHP.Core.Compiler.AST
                     return false;
                 }
 
-                switch (callSignature.Parameters.Count)
+                switch (callSignature.Parameters.Length)
                 {
                     case 0:
                         {

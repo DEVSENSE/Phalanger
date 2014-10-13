@@ -75,7 +75,7 @@ namespace PHP.Core.AST
             Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
             Scope scope, NamespaceDecl ns,
             bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalParam> useParams,
-            List<Statement>/*!*/ body)
+            IList<Statement>/*!*/ body)
             : base(span)
         {
             Debug.Assert(formalParams != null && body != null);

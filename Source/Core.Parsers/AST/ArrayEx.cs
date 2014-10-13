@@ -29,14 +29,14 @@ namespace PHP.Core.AST
 		public override Operations Operation { get { return Operations.Array; } }
         internal override bool AllowsPassByReference { get { return false; } }
 
-		private readonly List<Item>/*!*/ items;
-        public List<Item>/*!*/ Items{get{return items;}}
-
-		public ArrayEx(Text.Span span, List<Item>/*!*/ items)
+        public Item[]/*!*/ Items { get { return items; } }
+        private readonly Item[]/*!*/items;
+        
+		public ArrayEx(Text.Span span, IList<Item>/*!*/items)
 			: base(span)
 		{
 			Debug.Assert(items != null);
-			this.items = items;
+			this.items = items.AsArray();
 		}
 
 		/// <summary>

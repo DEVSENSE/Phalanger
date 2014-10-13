@@ -259,13 +259,13 @@ namespace PHP.Core.Compiler.AST
             {
                 if (type.Equals(SpecialCustomAttribute.AppStaticAttribute))
                 {
-                    Debug.Assert(node.CallSignature.Parameters.Count == 0, "Should be checked by ResolveOverload");
+                    Debug.Assert(node.CallSignature.Parameters.Empty(), "Should be checked by ResolveOverload");
                     ApplySpecialAttribute(analyzer, SpecialAttributes.AppStatic, null);
                     isEmitted = false;
                 }
                 else if (type.Equals(SpecialCustomAttribute.ExportAttribute))
                 {
-                    Debug.Assert(node.CallSignature.Parameters.Count == 0, "Should be checked by ResolveOverload");
+                    Debug.Assert(node.CallSignature.Parameters.Empty(), "Should be checked by ResolveOverload");
 
                     if (!analyzer.SourceUnit.CompilationUnit.IsPure)
                     {
@@ -280,7 +280,7 @@ namespace PHP.Core.Compiler.AST
                 }
                 else if (type.Equals(SpecialCustomAttribute.OutAttribute))
                 {
-                    Debug.Assert(node.CallSignature.Parameters.Count == 0, "Should be checked by ResolveOverload");
+                    Debug.Assert(node.CallSignature.Parameters.Empty(), "Should be checked by ResolveOverload");
                     ApplySpecialAttribute(analyzer, SpecialAttributes.Out, new System.Runtime.InteropServices.OutAttribute());
                     isEmitted = true;
                 }
@@ -292,7 +292,7 @@ namespace PHP.Core.Compiler.AST
                 {
                     // set usage of the attribute defined by this attribute's target //
 
-                    Debug.Assert(node.CallSignature.Parameters.Count > 0, "Missing arguments should be checked by ResolveOverload");
+                    Debug.Assert(node.CallSignature.Parameters.Empty(), "Missing arguments should be checked by ResolveOverload");
 
                     int valid_on = Convert.ObjectToInteger(node.CallSignature.Parameters[0].Expression.GetValue());
 
@@ -459,7 +459,8 @@ namespace PHP.Core.Compiler.AST
 
                 // TODO: type conversions (in analysis during overload resolution?)
 
-                Type[] real_ctor_parameter_types = new Type[node.CallSignature.Parameters.Count];
+                var parameters = node.CallSignature.Parameters;
+                Type[] real_ctor_parameter_types = new Type[parameters.Length];
 
                 if (type is ClrType)
                 {
@@ -481,11 +482,11 @@ namespace PHP.Core.Compiler.AST
                 }
 
                 // ctor args:
-                object[] ctor_args = new object[node.CallSignature.Parameters.Count];
+                object[] ctor_args = new object[parameters.Length];
 
-                for (int i = 0; i < node.CallSignature.Parameters.Count; i++)
+                for (int i = 0; i < parameters.Length; i++)
                 {
-                    Expression expr = node.CallSignature.Parameters[i].Expression;
+                    Expression expr = parameters[i].Expression;
 
                     TypeOfEx type_of = expr as TypeOfEx;
                     if (type_of != null)
