@@ -1764,7 +1764,8 @@ namespace PHP.Core
         /// <returns>New list of unique items. Cannot return null.</returns>
         public static ICollection<T>/*!*/Unique<T>(IList<T> items)
         {
-            if (items == null || items.Count == 0) return (ICollection<T>)new T[0];
+            if (items == null || items.Count == 0)
+                return EmptyArray<T>.Instance;
 
             return new HashSet<T>(items);
         }
@@ -1777,7 +1778,7 @@ namespace PHP.Core
         /// <returns>Unique array of element. Cannot be null.</returns>
         public static T[]/*!*/EnsureUnique<T>(T[] items)
         {
-            if (items == null) return new T[0];
+            if (items == null) return EmptyArray<T>.Instance;
             if (items.Length == 0) return items;
 
             var set = new HashSet<T>(items);
@@ -1948,7 +1949,7 @@ namespace PHP.Core
         /// </summary>
         public static StringComparer/*!*/StringComparer { get { return EqualityComparer.StringComparer; } }
 
-        public static readonly FullPath[]/*!*/ EmptyArray = new FullPath[0];
+        public readonly FullPath[]/*!*/ EmptyArray { get { return EmptyArray<FullPath>.Instance; } }
 
         /// <summary>
         /// Empty path.
