@@ -2707,7 +2707,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
 { yyval.Object = new TraitsUse.TraitAdaptationAlias(yypos, (Tuple<QualifiedName?, Name>)value_stack.array[value_stack.top-5].yyval.Object, (string)value_stack.array[value_stack.top-2].yyval.Object, (PhpMemberAttributes?)value_stack.array[value_stack.top-3].yyval.Object); }
         return;
       case 243: // trait_alias -> trait_method_reference T_AS member_modifier ';' 
-{ yyval.Object = new TraitsUse.TraitAdaptationAlias(yypos, (Tuple<QualifiedName?, Name>)value_stack.array[value_stack.top-4].yyval.Object, null, ((TmpMemberInfo)value_stack.array[value_stack.top-4].yyval.Object).attr); }
+{ yyval.Object = new TraitsUse.TraitAdaptationAlias(yypos, (Tuple<QualifiedName?, Name>)value_stack.array[value_stack.top-4].yyval.Object, null, ((TmpMemberInfo)value_stack.array[value_stack.top-2].yyval.Object).attr); }
         return;
       case 244: // trait_modifiers -> 
 { yyval.Object = null; }
