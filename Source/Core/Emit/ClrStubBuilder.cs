@@ -311,7 +311,7 @@ namespace PHP.Core.Emit
 			changed = false;
 			while (typeDesc.GetMethod(name) != null)
 			{
-				name.Value += "_";
+                name = new Name(name.Value + "_");
 				changed = true;
 			}
 

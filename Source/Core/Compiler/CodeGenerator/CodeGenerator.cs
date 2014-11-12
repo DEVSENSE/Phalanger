@@ -1659,7 +1659,7 @@ namespace PHP.Core
                     int genericParamIndex = _i / 2;
                     if ((_i&1) == 0)
                     {   // arg name
-                        il.Emit(OpCodes.Ldstr, signature.GenericParams[genericParamIndex].Name.LowercaseValue);
+                        il.Emit(OpCodes.Ldstr, signature.GenericParams[genericParamIndex].Name.Value.ToLowerInvariant());
                     }
                     else
                     {   // DTypeDesc
