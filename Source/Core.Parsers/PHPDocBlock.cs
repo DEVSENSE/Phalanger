@@ -173,7 +173,8 @@ namespace PHP.Core
                 Debug.Assert(line[0] == PHPDocTagChar);
 
                 int endIndex = 1;
-                while (endIndex < line.Length && !char.IsWhiteSpace(line[endIndex]))
+                char c;
+                while (endIndex < line.Length && !char.IsWhiteSpace(c = line[endIndex]) && c != ':' && c != '(' && c != ';')
                     endIndex++;
 
                 string tagName = (endIndex < line.Length) ? line.Remove(endIndex) : line;
@@ -432,7 +433,8 @@ namespace PHP.Core
         /// </summary>
         public sealed class AccessTag : Element
         {
-            public const string Name = "@access";
+            public const string Name1 = "@access";
+            public const string Name2 = "@private";
 
             private const string IsPublic = "public";
             private const string IsPrivate = "private";
@@ -459,17 +461,36 @@ namespace PHP.Core
 
             public AccessTag(string/*!*/line)
             {
-                if (line.Length > Name.Length)
-                    // public, private or protected
-                    switch (line.Substring(Name.Length + 1).Trim().ToLowerInvariant())
+                if (line.StartsWith(Name1))
+                {
+                    if (line.Length > Name1.Length)
                     {
-                        case IsPublic: attributes = PhpMemberAttributes.Public; break;
-                        case IsPrivate: attributes = PhpMemberAttributes.Private; break;
-                        case IsProtected: attributes = PhpMemberAttributes.Protected; break;
-                        default:
-                            System.Diagnostics.Debug.WriteLine("Unexpected access modifier in PHPDoc @access tag, line:" + line);
-                            break;
+                        var access = line.Substring(Name1.Length + 1).Trim().ToLowerInvariant();
+
+                        // public, private or protected
+                        switch (access)
+                        {
+                            case IsPublic: attributes = PhpMemberAttributes.Public; break;
+                            case IsPrivate: attributes = PhpMemberAttributes.Private; break;
+                            case IsProtected: attributes = PhpMemberAttributes.Protected; break;
+                            default:
+                                Debug.WriteLine("Unexpected access modifier in PHPDoc @access tag, line:" + line);
+                                break;
+                        }
                     }
+                    else
+                    {
+                        attributes = PhpMemberAttributes.Public;
+                    }
+                }
+                else if (line.StartsWith(Name2))
+                {
+                    attributes = PhpMemberAttributes.Private;
+                }
+                else
+                {
+                    Debug.Fail("Unexpected " + line);
+                }
             }
 
             internal override void ParseLine(string line, out Element next)
@@ -480,7 +501,7 @@ namespace PHP.Core
 
             public override string ToString()
             {
-                return Name + " " + AccessString;
+                return Name1 + " " + AccessString;
             }
         }
 
@@ -920,7 +941,19 @@ namespace PHP.Core
             public TextTag(string/*!*/tagName, string/*!*/line)
             {
                 Debug.Assert(line.StartsWith(tagName));
-                this.Text = line.Substring(tagName.Length).TrimStart(null);
+                int index = tagName.Length;
+
+                if (index < line.Length)
+                {
+                    var c = line[index];
+                    if (c == ':' || c == '(' || c == ';') index++;
+                }
+
+                // trim leading whitespaces
+                while (index < line.Length && char.IsWhiteSpace(line[index]))
+                    index++;
+
+                this.Text = (index < line.Length) ? line.Substring(index) : string.Empty;
             }
 
             internal override void  ParseLine(string line, out Element next)
@@ -1221,6 +1254,24 @@ namespace PHP.Core
             public const string Name = "@link";
 
             public LinkTag(string/*!*/line)
+                : base(Name, line)
+            {
+            }
+
+            public override string ToString()
+            {
+                return Name + " " + Text;
+            }
+        }
+
+        /// <summary>
+        /// Documents a license information.
+        /// </summary>
+        public sealed class LicenseTag : TextTag
+        {
+            public const string Name = "@license";
+
+            public LicenseTag(string/*!*/line)
                 : base(Name, line)
             {
             }
