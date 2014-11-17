@@ -649,24 +649,22 @@ namespace PHP.Core
             public readonly string TypeNames;
 
             /// <summary>
-            /// Starting position of the <see cref="TypeNames"/> within the element.
-            /// </summary>
-            private readonly int TypeNamesOffset = -1;
-
-            /// <summary>
             /// Position of the <see cref="TypeNames"/> information.
             /// </summary>
             public Span TypeNamesSpan
             {
                 get
                 {
-                    if (this.TypeNamesOffset < 0)
-                        return Span.Invalid;
-
-                    Debug.Assert(this.TypeNames != null);
-                    return new Span(this.Span.Start + this.TypeNamesOffset, this.TypeNames.Length);
+                    var span = this.typeNamesSpanRelative;  // relative span to the current PHPDoc element
+                    if (span.IsValid)
+                    {
+                        Debug.Assert(this.TypeNames != null);
+                        span = new Span(this.Span.Start + span.Start, span.Length); // move by this.Span
+                    }
+                    return span;
                 }
             }
+            private readonly Span typeNamesSpanRelative = Span.Invalid;
 
             /// <summary>
             /// Array of type names. Cannot be <c>null</c>. Can be an empty array.
@@ -710,41 +708,29 @@ namespace PHP.Core
                 // [type] [$varname] [type] [description]
 
                 int index = tagName.Length; // current index within line
-                int descStart = index;  // start of description, moved when [type] or [$varname] found
-
+                
                 // try to find [type]
-                string word = NextWord(line, ref index);
-                if (word != null && IsTypeName(word))
-                {
-                    this.TypeNames = word;
-                    this.TypeNamesOffset = index - word.Length;
-                    descStart = index;
-                    word = NextWord(line, ref index);
-                }
-
+                TryReadTypeName(line, ref index, out this.TypeNames, out this.typeNamesSpanRelative);
+                
                 if (allowVariableName)
                 {
                     // try to find [$varname]
-                    if (word != null && word[0] == '$')
+                    if (TryReadVariableName(line, ref index, out this.VariableName, out this.VariableNameOffset))
                     {
-                        this.VariableName = word;
-                        this.VariableNameOffset = index - word.Length;
-                        descStart = index;
-                        word = NextWord(line, ref index);
-                    }
-
-                    // try to find [type] if it was not found yet
-                    if (this.TypeNames == null && word != null && IsTypeName(word))
-                    {
-                        this.TypeNames = word;
-                        this.TypeNamesOffset = index - word.Length;
-                        descStart = index;
-                        word = NextWord(line, ref index);
+                        // try to find [type] if it was not found yet, user may specified it after variable name
+                        if (this.TypeNames == null)
+                        {
+                            TryReadTypeName(line, ref index, out this.TypeNames, out this.typeNamesSpanRelative);
+                        }
                     }
                 }
 
-                if (descStart < line.Length)
-                    this.Description = line.Substring(descStart).TrimStart(null/*default whitespace characters*/);
+                if (index < line.Length)
+                {
+                    this.Description = line.Substring(index).TrimStart(null/*default whitespace characters*/);
+                    if (string.IsNullOrEmpty(this.Description))
+                        this.Description = string.Empty;
+                }
             }
 
             #region Helpers
@@ -765,6 +751,76 @@ namespace PHP.Core
                     return text.Substring(startIndex, index - startIndex);
                 else
                     return null;
+            }
+
+            /// <summary>
+            /// Tries to recognize a type name starting at given <paramref name="index"/>.
+            /// </summary>
+            /// <param name="text">Source text.</param>
+            /// <param name="index">Index within <paramref name="text"/> to start read.</param>
+            /// <param name="typenames">Resulting type name(s) separated by <c>|</c>.</param>
+            /// <param name="typenamesSpan">Type names span or invalid span.</param>
+            /// <returns>Whether the type name was parsed.</returns>
+            private static bool TryReadTypeName(string/*!*/text, ref int index, out string typenames, out Span typenamesSpan)
+            {
+                // [type]
+                
+                var typenameend = index;
+                var typename = NextWord(text, ref typenameend);
+                if (IsTypeName(typename))
+                {
+                    int typenameOffset = typenameend - typename.Length;
+                    index = typenameend;
+                    typenames = typename;
+                    typenamesSpan = new Span(typenameOffset, typename.Length);
+
+                    // [type] or [type]
+                    var orend = typenameend;
+                    var or = NextWord(text, ref orend);
+                    if (or == "or")
+                    {
+                        var nextend = orend;
+                        var next = NextWord(text, ref nextend);
+                        if (IsTypeName(next))
+                        {
+                            index = nextend;
+                            typenames = typename + TypeNamesSeparator.ToString() + next;
+                            typenamesSpan = Span.FromBounds(typenameOffset, nextend);
+                        }
+                    }
+
+                    return true;
+                }
+
+                //
+                typenames = null;
+                typenamesSpan = Span.Invalid;
+                return false;
+            }
+
+            /// <summary>
+            /// tries to read a variable name starting at given <paramref name="index"/>.
+            /// </summary>
+            /// <param name="text">Source text.</param>
+            /// <param name="index">Index within <paramref name="text"/> to start read.</param>
+            /// <param name="variableName">Result variable name.</param>
+            /// <param name="variableNameOffset">Variable name start index within text.</param>
+            /// <returns>Whether the variable name was parsed.</returns>
+            private static bool TryReadVariableName(string/*!*/text, ref int index, out string variableName, out int variableNameOffset)
+            {
+                var wordend = index;
+                var word = NextWord(text, ref wordend);
+                if (word != null /* => word.Length != 0 */ && word[0] == '$')
+                {
+                    index = wordend;
+                    variableName = word;
+                    variableNameOffset = wordend - word.Length;
+                    return true;
+                }
+
+                variableName = null;
+                variableNameOffset = -1;
+                return false;
             }
 
             /// <summary>
@@ -1028,7 +1084,25 @@ namespace PHP.Core
 
             public override string ToString()
             {
-                return Name + " " + TypeNames + " " + VariableName + NewLineString + Description;
+                StringBuilder result = new StringBuilder(Name, Name.Length + ((this.Description != null) ? this.Description.Length : 0) + 16);
+
+                if (this.TypeNames != null)
+                {
+                    result.Append(' ');
+                    result.Append(this.TypeNames);
+                }
+                if (this.VariableName != null)
+                {
+                    result.Append(' ');
+                    result.Append(this.VariableName);
+                }
+                if (this.Description != null)
+                {
+                    result.Append(' ');
+                    result.Append(this.Description);
+                }
+                //
+                return result.ToString();
             }
         }
 
@@ -1759,7 +1833,9 @@ namespace PHP.Core
                     phpdoc.SetProperty<AST.LangElement>(element);
             }
             else
+            {
                 properties.RemoveProperty<PHPDocBlock>();
+            }
         }
     }
 }

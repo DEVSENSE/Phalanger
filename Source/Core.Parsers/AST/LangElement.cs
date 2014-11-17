@@ -163,4 +163,19 @@ namespace PHP.Core.AST
     }
 
     #endregion
+
+#region IHasSourceUnit
+
+    /// <summary>
+    /// Annotates AST nodes having reference to containing source unit.
+    /// </summary>
+    public interface IHasSourceUnit
+    {
+        /// <summary>
+        /// Gets source unit of the containing source file.
+        /// </summary>
+        SourceUnit SourceUnit { get; }
+    }
+
+#endregion
 }

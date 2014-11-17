@@ -321,9 +321,9 @@ namespace PHP.Core.Parsers
         private void SetCommentSetHelper(object element, object doccomment)
         {
             Debug.Assert(element is AstNode);
-            if (doccomment is PHPDocBlock)
+            if (doccomment != null && doccomment.GetType() == typeof(PHPDocBlock))
             {
-                ((AstNode)element).Properties[typeof(PHPDocBlock)] = (PHPDocBlock)doccomment;
+                PHPDocBlockHelper.SetPHPDoc((AstNode)element, (PHPDocBlock)doccomment);
             }
         }
 

@@ -27,7 +27,7 @@ namespace PHP.Core.AST
     /// Represents a function declaration.
     /// </summary>
     [Serializable]
-    public sealed class LambdaFunctionExpr : Expression
+    public sealed class LambdaFunctionExpr : Expression, IHasSourceUnit
     {
         //public NamespaceDecl Namespace { get { return ns; } }
         //private readonly NamespaceDecl ns
@@ -56,18 +56,24 @@ namespace PHP.Core.AST
         private readonly List<FormalParam> useParams;
 
         //private readonly TypeSignature typeSignature;
-        private readonly Statement[]/*!*/ body;
         public Statement[]/*!*/ Body { get { return body; } }
+        private readonly Statement[]/*!*/ body;
         //private readonly CustomAttributes attributes;
 
         public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }
-        private Text.Span entireDeclarationPosition;
+        private readonly Text.Span entireDeclarationPosition;
 
         public int HeadingEndPosition { get { return headingEndPosition; } }
-        private int headingEndPosition;
+        private readonly int headingEndPosition;
 
         public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
-        private int declarationBodyPosition;
+        private readonly int declarationBodyPosition;
+
+        /// <summary>
+        /// Gets the source file <see cref="SourceUnit"/>. Cannot be <c>null</c>.
+        /// </summary>
+        public SourceUnit/*!*/SourceUnit { get { return this.sourceUnit; } }
+        private readonly SourceUnit/*!*/sourceUnit;
 
         #region Construction
 
@@ -79,7 +85,10 @@ namespace PHP.Core.AST
             : base(span)
         {
             Debug.Assert(formalParams != null && body != null);
+            Debug.Assert(sourceUnit != null);
 
+            this.sourceUnit = sourceUnit;
+            
             // inject use parameters at the begining of formal parameters
             if (useParams != null && useParams.Count > 0)
             {
