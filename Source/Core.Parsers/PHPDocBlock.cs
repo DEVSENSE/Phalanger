@@ -75,7 +75,7 @@ namespace PHP.Core
             static Element()
             {
                 // initilize dictionary of known tags and their factories:
-                elementFactories = new Dictionary<string, Func<string, string, Element>>(20, StringComparer.Ordinal);
+                elementFactories = new Dictionary<string, Func<string, string, Element>>(20, StringComparer.OrdinalIgnoreCase);
                 var types = typeof(PHPDocBlock).GetNestedTypes(System.Reflection.BindingFlags.Public);
                 
                 foreach (var t in types)
@@ -174,7 +174,7 @@ namespace PHP.Core
 
                 int endIndex = 1;
                 char c;
-                while (endIndex < line.Length && !char.IsWhiteSpace(c = line[endIndex]) && c != ':' && c != '(' && c != ';')
+                while (endIndex < line.Length && !char.IsWhiteSpace(c = line[endIndex]) && c != ':' && c != '(' && c != ';' && c != '.')
                     endIndex++;
 
                 string tagName = (endIndex < line.Length) ? line.Remove(endIndex) : line;
@@ -946,7 +946,7 @@ namespace PHP.Core
                 if (index < line.Length)
                 {
                     var c = line[index];
-                    if (c == ':' || c == '(' || c == ';') index++;
+                    if (c == ':' || c == '(' || c == ';' || c == '.') index++;
                 }
 
                 // trim leading whitespaces
