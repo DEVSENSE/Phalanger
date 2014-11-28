@@ -439,7 +439,7 @@ namespace PHP.Core.AST
 
         virtual public void VisitDirectVarUse(DirectVarUse x)
         {
-            //VisitVarLikeConstructUse(x);
+            VisitVarLikeConstructUse(x);
         }
         virtual public void VisitGlobalConstUse(GlobalConstUse x)
         {
@@ -455,7 +455,12 @@ namespace PHP.Core.AST
         }
         virtual public void VisitIndirectVarUse(IndirectVarUse x)
         {
-            //VisitVarLikeConstructUse(x);
+            VisitVarLikeConstructUse(x);
+        }
+
+        virtual public void VisitVarLikeConstructUse(VarLikeConstructUse x)
+        {
+            VisitElement(x.IsMemberOf);
         }
 
         /// <summary>
@@ -532,7 +537,7 @@ namespace PHP.Core.AST
             VisitElement(x.Index);
             VisitElement(x.Array);
 
-            //VisitVarLikeConstructUse(x);
+            VisitVarLikeConstructUse(x);
         }
 
         /// <summary>
@@ -550,6 +555,8 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitFunctionCall(FunctionCall x)
         {
+            VisitVarLikeConstructUse(x);
+
             foreach (ActualParam p in x.CallSignature.Parameters)
                 VisitElement(p);
         }
