@@ -2369,7 +2369,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
         return;
       case 155: // catches -> T_CATCH '(' qualified_static_type_ref T_VARIABLE ')' '{' inner_statement_list_opt '}' 
 {
-			yyval.Object = NewList<CatchItem>(new CatchItem(value_stack.array[value_stack.top-5].yypos, (GenericQualifiedName)value_stack.array[value_stack.top-6].yyval.Object, new DirectVarUse(value_stack.array[value_stack.top-5].yypos, (string)value_stack.array[value_stack.top-5].yyval.Object), (List<Statement>)value_stack.array[value_stack.top-2].yyval.Object));
+			yyval.Object = NewList<CatchItem>(new CatchItem(value_stack.array[value_stack.top-6].yypos, (GenericQualifiedName)value_stack.array[value_stack.top-6].yyval.Object, new DirectVarUse(value_stack.array[value_stack.top-5].yypos, (string)value_stack.array[value_stack.top-5].yyval.Object), (List<Statement>)value_stack.array[value_stack.top-2].yyval.Object));
 		}
         return;
       case 156: // finally_opt -> 

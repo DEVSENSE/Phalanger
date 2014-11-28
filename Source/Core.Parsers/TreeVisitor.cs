@@ -674,6 +674,8 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitNewEx(NewEx x)
         {
+            VisitElement(x.ClassNameRef);
+
             foreach (ActualParam p in x.CallSignature.Parameters)
                 VisitElement(p);
         }
@@ -685,6 +687,7 @@ namespace PHP.Core.AST
         virtual public void VisitInstanceOfEx(InstanceOfEx x)
         {
             VisitElement(x.Expression);
+            VisitElement(x.ClassNameRef);
         }
 
         /// <summary>

@@ -1115,7 +1115,7 @@ catches:
 		}		
 	|	T_CATCH '(' qualified_static_type_ref T_VARIABLE ')'  '{' inner_statement_list_opt '}'
 		{
-			$$ = NewList<CatchItem>(new CatchItem(@4, (GenericQualifiedName)$3, new DirectVarUse(@4, (string)$4), (List<Statement>)$7));
+			$$ = NewList<CatchItem>(new CatchItem(@3, (GenericQualifiedName)$3, new DirectVarUse(@4, (string)$4), (List<Statement>)$7));
 		} 
 ;
 
