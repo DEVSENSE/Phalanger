@@ -615,7 +615,19 @@ namespace PHP.Core.AST
         virtual public void VisitArrayEx(ArrayEx x)
         {
             foreach (Item item in x.Items)
-                VisitElement(item.Index);
+                VisitArrayItem(item);
+        }
+
+        virtual public void VisitArrayItem(Item item)
+        {
+            // key
+            VisitElement(item.Index);
+
+            // value
+            if (item is ValueItem)
+                VisitElement(((ValueItem)item).ValueExpr);
+            else
+                VisitElement(((RefItem)item).RefToGet);
         }
 
         /// <summary>
