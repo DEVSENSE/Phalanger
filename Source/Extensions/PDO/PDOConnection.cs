@@ -9,11 +9,6 @@ namespace PHP.Library.Data
     public sealed class PDOConnection : PhpDbConnection
     {
         /// <summary>
-        /// Underlying database connection.
-        /// </summary>
-        public IDbConnection/*!*/Connection { get { return this.connection; } }
-
-        /// <summary>
         /// Pending DB data reader.
         /// </summary>
         public IDataReader PendingReader { get { return this.pendingReader; } set { this.pendingReader = value; } }

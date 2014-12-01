@@ -667,7 +667,17 @@ namespace PHP.Core
             /// <summary>
             /// Optional. Type names separated by '|'.
             /// </summary>
-            public readonly string TypeNames;
+            public string TypeNames
+            {
+                get
+                {
+                    var names = _typeNames;
+                    if (names == null || names.Length == 0)
+                        return null;
+
+                    return string.Join(TypeNamesSeparator.ToString(), names);
+                }
+            }
 
             /// <summary>
             /// Position of the <see cref="TypeNames"/> information.
@@ -676,21 +686,41 @@ namespace PHP.Core
             {
                 get
                 {
-                    var span = this.typeNamesSpanRelative;  // relative span to the current PHPDoc element
-                    if (span.IsValid)
-                    {
-                        Debug.Assert(this.TypeNames != null);
-                        span = new Span(this.Span.Start + span.Start, span.Length); // move by this.Span
-                    }
-                    return span;
+                    var positions = _typeNamesPos;
+                    if (positions == null || positions.Length == 0)
+                        return Span.Invalid;
+                    var names = _typeNames;
+
+                    var offset = this.Span.Start;
+                    return Span.FromBounds(offset + positions[0], offset + positions[positions.Length - 1] + names[names.Length - 1].Length);
                 }
             }
-            private readonly Span typeNamesSpanRelative = Span.Invalid;
 
             /// <summary>
             /// Array of type names. Cannot be <c>null</c>. Can be an empty array.
             /// </summary>
-            public string[]/*!!*/TypeNamesArray { get { return string.IsNullOrEmpty(TypeNames) ? ArrayUtils.EmptyStrings : TypeNames.Split(new char[] { TypeNamesSeparator }, StringSplitOptions.RemoveEmptyEntries); } }
+            public string[]/*!!*/TypeNamesArray { get { return _typeNames; } }
+            private readonly string[]/*!!*/_typeNames;
+
+            /// <summary>
+            /// Array of type names span within the source code.
+            /// </summary>
+            public Span[]/*!*/TypeNameSpans
+            {
+                get
+                {
+                    var positions = _typeNamesPos;
+                    var names = _typeNames;
+                    Debug.Assert(names.Length == positions.Length);
+                    Span[] spans = new Span[positions.Length];
+                    var offset = this.Span.Start;
+                    for (int i = 0; i < spans.Length; i++)
+                        spans[i] = new Span(offset + positions[i], names[i].Length);
+
+                    return spans;
+                }
+            }
+            private readonly int[]/*!!*/_typeNamesPos;
 
             /// <summary>
             /// Optional. Variable name, starts with '$'.
@@ -700,7 +730,7 @@ namespace PHP.Core
             /// <summary>
             /// Starting column of the <see cref="VariableName"/> within the element.
             /// </summary>
-            private readonly int VariableNameOffset = -1;
+            private readonly int _variableNameOffset = -1;
 
             /// <summary>
             /// Position of the <see cref="VariableName"/> information.
@@ -709,11 +739,11 @@ namespace PHP.Core
             {
                 get
                 {
-                    if (this.VariableNameOffset < 0)
+                    if (this._variableNameOffset < 0)
                         return Span.Invalid;
 
                     Debug.Assert(this.VariableName != null);
-                    return new Span(this.Span.Start + this.VariableNameOffset, this.VariableName.Length);
+                    return new Span(this.Span.Start + this._variableNameOffset, this.VariableName.Length);
                 }
             }
 
@@ -731,17 +761,17 @@ namespace PHP.Core
                 int index = tagName.Length; // current index within line
                 
                 // try to find [type]
-                TryReadTypeName(line, ref index, out this.TypeNames, out this.typeNamesSpanRelative);
+                TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos);
                 
                 if (allowVariableName)
                 {
                     // try to find [$varname]
-                    if (TryReadVariableName(line, ref index, out this.VariableName, out this.VariableNameOffset))
+                    if (TryReadVariableName(line, ref index, out this.VariableName, out this._variableNameOffset))
                     {
                         // try to find [type] if it was not found yet, user may specified it after variable name
-                        if (this.TypeNames == null)
+                        if (_typeNames == null || _typeNames.Length == 0)
                         {
-                            TryReadTypeName(line, ref index, out this.TypeNames, out this.typeNamesSpanRelative);
+                            TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos);
                         }
                     }
                 }
@@ -780,9 +810,9 @@ namespace PHP.Core
             /// <param name="text">Source text.</param>
             /// <param name="index">Index within <paramref name="text"/> to start read.</param>
             /// <param name="typenames">Resulting type name(s) separated by <c>|</c>.</param>
-            /// <param name="typenamesSpan">Type names span or invalid span.</param>
+            /// <param name="typenamesPos">Type names span or invalid span.</param>
             /// <returns>Whether the type name was parsed.</returns>
-            private static bool TryReadTypeName(string/*!*/text, ref int index, out string typenames, out Span typenamesSpan)
+            internal static bool TryReadTypeName(string/*!*/text, ref int index, out string[] typenames, out int[] typenamesPos)
             {
                 // [type]
                 
@@ -790,10 +820,24 @@ namespace PHP.Core
                 var typename = NextWord(text, ref typenameend);
                 if (IsTypeName(typename))
                 {
+                    List<int> positions = new List<int>(1);
+                    List<string> names = new List<string>(1);
+
                     int typenameOffset = typenameend - typename.Length;
                     index = typenameend;
-                    typenames = typename;
-                    typenamesSpan = new Span(typenameOffset, typename.Length);
+
+                    var split = typename.Split(new char[] { TypeNamesSeparator });
+                    int splitat = typenameOffset;
+                    foreach (var s in split)
+                    {
+                        if (!string.IsNullOrEmpty(s))
+                        {
+                            names.Add(s);
+                            positions.Add(splitat);
+                            splitat += s.Length;    // type name length
+                        }
+                        splitat++;  // separator
+                    }
 
                     // [type] or [type]
                     var orend = typenameend;
@@ -802,20 +846,22 @@ namespace PHP.Core
                     {
                         var nextend = orend;
                         var next = NextWord(text, ref nextend);
-                        if (IsTypeName(next))
+                        if (IsTypeName(next) && next.IndexOf(TypeNamesSeparator) == -1)
                         {
                             index = nextend;
-                            typenames = typename + TypeNamesSeparator.ToString() + next;
-                            typenamesSpan = Span.FromBounds(typenameOffset, nextend);
+                            names.Add(next);
+                            positions.Add(nextend - next.Length);
                         }
                     }
 
+                    typenames = names.ToArray();
+                    typenamesPos = positions.ToArray();
                     return true;
                 }
 
                 //
-                typenames = null;
-                typenamesSpan = Span.Invalid;
+                typenames = EmptyArray<string>.Instance;
+                typenamesPos = EmptyArray<int>.Instance;
                 return false;
             }
 
@@ -894,7 +940,7 @@ namespace PHP.Core
             {
                 get
                 {
-                    return string.IsNullOrEmpty(this.TypeNames) && string.IsNullOrEmpty(this.VariableName) && string.IsNullOrWhiteSpace(this.Description);
+                    return _typeNames.Length == 0 && string.IsNullOrEmpty(this.VariableName) && string.IsNullOrWhiteSpace(this.Description);
                 }
             }
         }
@@ -914,7 +960,17 @@ namespace PHP.Core
 
             public override string ToString()
             {
-                return Name + " " + TypeNames + " " + VariableName;
+                string result = Name;
+
+                var type = this.TypeNames;
+                if (type != null)
+                    result += " " + type;
+
+                var varname = this.VariableName;
+                if (varname != null)
+                    result += " " + varname;
+                
+                return result;
             }
         }
 
@@ -1327,12 +1383,43 @@ namespace PHP.Core
             /// <summary>
             /// Optional. Type names separated by '|'.
             /// </summary>
-            public readonly string TypeNames;
+            public string TypeNames
+            {
+                get
+                {
+                    var names = _typeNames;
+                    if (names == null || names.Length == 0)
+                        return null;
+
+                    return string.Join(TypeVarDescTag.TypeNamesSeparator.ToString(), names);
+                }
+            }
 
             /// <summary>
             /// Array of type names. Cannot be <c>null</c>. Can be an empty array.
             /// </summary>
-            public string[]/*!!*/TypeNamesArray { get { return string.IsNullOrEmpty(TypeNames) ? ArrayUtils.EmptyStrings : TypeNames.Split(new char[] { TypeVarDescTag.TypeNamesSeparator }, StringSplitOptions.RemoveEmptyEntries); } }
+            public string[]/*!!*/TypeNamesArray { get { return _typeNames; } }
+            private readonly string[]/*!*/_typeNames;
+
+            /// <summary>
+            /// Array of type names span within the source code.
+            /// </summary>
+            public Span[]/*!*/TypeNameSpans
+            {
+                get
+                {
+                    var positions = _typeNamesPos;
+                    var names = _typeNames;
+                    Debug.Assert(names.Length == positions.Length);
+                    Span[] spans = new Span[positions.Length];
+                    var offset = this.Span.Start;
+                    for (int i = 0; i < spans.Length; i++)
+                        spans[i] = new Span(offset + positions[i], names[i].Length);
+
+                    return spans;
+                }
+            }
+            private readonly int[]/*!*/_typeNamesPos;
 
             /// <summary>
             /// Array of method parameters;
@@ -1345,6 +1432,22 @@ namespace PHP.Core
             public readonly string MethodName;
 
             /// <summary>
+            /// Span within the source code of the method name.
+            /// </summary>
+            public Span MethodNameSpan
+            {
+                get
+                {
+                    var pos = _methodNamePos;
+                    if (pos < 0)
+                        return Span.Invalid;
+                    Debug.Assert(MethodName != null);
+                    return new Span(pos + this.Span.Start, this.MethodName.Length);
+                }            
+            }
+            private readonly int _methodNamePos;
+
+            /// <summary>
             /// Optional. Element description.
             /// </summary>
             public string Description { get; private set; }
@@ -1353,24 +1456,24 @@ namespace PHP.Core
             {
                 Debug.Assert(line.StartsWith(tagName));
 
+                _methodNamePos = -1;
+
                 // [type] [name()] [name(params ...)] [description]
 
                 int index = tagName.Length; // current index within line
                 int descStart = index;  // start of description, moved when [type] or [name] found
 
                 // try to find [type]
+                TypeVarDescTag.TryReadTypeName(line, ref index, out _typeNames, out _typeNamesPos);
+
+                descStart = index;
                 string word = NextWord(line, ref index);
-                if (word != null && TypeVarDescTag.IsTypeName(word))
-                {
-                    this.TypeNames = word;
-                    descStart = index;
-                    word = NextWord(line, ref index);
-                }
 
                 // [name()]
                 if (word != null && word.EndsWith("()", StringComparison.Ordinal))
                 {
                     this.MethodName = word.Remove(word.Length - 2);
+                    _methodNamePos = index - word.Length;
                     descStart = index;
                     word = NextWord(line, ref index);
                 }
@@ -1391,9 +1494,12 @@ namespace PHP.Core
                 if (descStart < line.Length && line[descStart] == '(')
                 {
                     paramsFrom = descStart;
-
-                    if (this.MethodName == null && paramsFrom > nameStart)
-                        this.MethodName = line.Substring(nameStart, paramsFrom - nameStart);
+                    if (nameStart < paramsFrom)
+                    {
+                        if (this.MethodName == null)
+                            this.MethodName = line.Substring(nameStart, paramsFrom - nameStart);
+                        _methodNamePos = nameStart;
+                    }
                 }
                 else
                 {
@@ -1507,7 +1613,7 @@ namespace PHP.Core
             {
                 get
                 {
-                    return string.IsNullOrEmpty(this.TypeNames) && string.IsNullOrEmpty(this.MethodName) && string.IsNullOrWhiteSpace(this.Description);
+                    return _typeNames.Length == 0 && string.IsNullOrEmpty(this.MethodName) && string.IsNullOrWhiteSpace(this.Description);
                 }
             }
 

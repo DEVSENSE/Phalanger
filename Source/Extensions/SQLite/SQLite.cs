@@ -285,7 +285,7 @@ namespace PHP.Library.Data
 
             int paramCount = cb.TargetRoutine.PhpFunction.ArgFullInfo.GetParameters().Length;
             Delegate d = null;
-            connection.Connection.RegisterFunction(function_name, paramCount, FunctionType.Scalar, d);
+            connection.SqLiteConnection.RegisterFunction(function_name, paramCount, FunctionType.Scalar, d);
             //SQLiteFunction.RegisterFunction()
         }
         #endregion
