@@ -35,7 +35,7 @@ namespace PHP.Core.AST
         /// <summary>Position of the field name.</summary>
         public Text.Span NameSpan { get; private set; }
 
-        internal TypeRef TypeRef { get { return typeRef; } }
+        public TypeRef TypeRef { get { return typeRef; } }
         protected TypeRef typeRef;
 
         public StaticFieldUse(Text.Span span, Text.Span nameSpan, GenericQualifiedName typeName, Text.Span typeNamePosition)
