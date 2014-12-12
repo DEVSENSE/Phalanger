@@ -148,7 +148,7 @@ namespace PHP.Core.AST
         /// <summary>
         /// Internal type information determined during type analysis.
         /// </summary>
-        internal ulong/*A*/TypeInfoValue { get; set; }
+        public ulong/*A*/TypeInfoValue { get; set; }
 
 		/// <summary>
         /// Whether the expression is allowed to be passed by reference to a routine.
