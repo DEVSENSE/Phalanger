@@ -41,6 +41,16 @@ namespace PHP.Core
         T GetProperty<T>();
 
         /// <summary>
+        /// Tries to get property from the container.
+        /// </summary>
+        bool TryGetProperty(object key, out object value);
+
+        /// <summary>
+        /// Tries to get property from the container.
+        /// </summary>
+        bool TryGetProperty<T>(out T value);
+
+        /// <summary>
         /// Removes property from the collection.
         /// </summary>
         /// <param name="key">Key to the property.</param>
@@ -206,36 +216,55 @@ namespace PHP.Core
         /// Tries to get property from the container.
         /// </summary>
         /// <param name="key">Key.</param>
-        /// <returns><c>null</c> or property value.</returns>
-        public object GetProperty(object key)
+        /// <param name="value">Out. Value of the property.</param>
+        /// <returns><c>true</c> if the property was found, otherwise <c>false</c>.</returns>
+        public bool TryGetProperty(object key, out object value)
         {
             CheckKey(key);
 
             object p = _type;
-            
+
             // empty container
             if (p != null)
             {
                 if (object.Equals(p, key))
                 {
-                    return _obj;
+                    value = _obj;
+                    return true;
                 }
                 else if (object.ReferenceEquals(p, TypeList))
                 {
                     Debug.Assert(_obj is DictionaryNode);
                     for (var node = (DictionaryNode)_obj; node != null; node = node.next)
                         if (object.Equals(node.key, key))
-                            return node.value;
+                        {
+                            value = node.value;
+                            return true;
+                        }
                 }
                 else if (object.ReferenceEquals(p, TypeHashtable))
                 {
                     Debug.Assert(_obj is Hashtable);
-                    return ((Hashtable)_obj)[key];
+                    value = ((Hashtable)_obj)[key];
+                    return value != null || ((Hashtable)_obj).ContainsKey(key);
                 }
             }
 
             // nothing found
-            return null;
+            value = default(object);
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get property from the container.
+        /// </summary>
+        /// <param name="key">Key.</param>
+        /// <returns><c>null</c> or property value.</returns>
+        public object GetProperty(object key)
+        {
+            object value;
+            TryGetProperty(key, out value);
+            return value;
         }
 
         /// <summary>
@@ -244,6 +273,22 @@ namespace PHP.Core
         public T GetProperty<T>()
         {
             return (T)GetProperty(typeof(T));
+        }
+
+        /// <summary>
+        /// Tries to get property from the container.
+        /// </summary>
+        public bool TryGetProperty<T>(out T value)
+        {
+            object tmp;
+            if (TryGetProperty(typeof(T), out tmp))
+            {
+                value = (T)tmp;
+                return true;
+            }
+
+            value = default(T);
+            return false;
         }
 
         /// <summary>
