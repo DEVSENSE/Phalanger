@@ -2179,7 +2179,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
         return;
       case 118: // non_empty_statement -> identifier ':' 
 { 
-		  yyval.Object = new LabelStmt(yypos, (string)value_stack.array[value_stack.top-2].yyval.Object); /* PHP6 */ 
+		  yyval.Object = new LabelStmt(yypos, (string)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-1].yypos); /* PHP 5.3 */ 
 		}
         return;
       case 119: // non_empty_statement -> '{' inner_statement_list_opt '}' 
@@ -2347,7 +2347,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Text.Span>
         return;
       case 150: // non_empty_statement -> T_GOTO identifier ';' 
 { 
-			yyval.Object = new GotoStmt(yypos, (string)value_stack.array[value_stack.top-2].yyval.Object); /* PHP6 */ 
+			yyval.Object = new GotoStmt(yypos, (string)value_stack.array[value_stack.top-2].yyval.Object, value_stack.array[value_stack.top-2].yypos); /* PHP 5.3 */ 
 		}
         return;
       case 151: // non_empty_statement -> T_DECLARE '(' declare_list ')' declare_statement 

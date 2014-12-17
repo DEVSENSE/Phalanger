@@ -953,7 +953,7 @@ statement:
 non_empty_statement:
 		identifier ':'     
 		{ 
-		  $$ = new LabelStmt(@$, (string)$1); /* PHP6 */ 
+		  $$ = new LabelStmt(@$, (string)$1, @2); /* PHP 5.3 */ 
 		}
 		
 	|	'{' inner_statement_list_opt '}' 
@@ -1093,7 +1093,7 @@ non_empty_statement:
 	
 	|	T_GOTO identifier ';'
 		{ 
-			$$ = new GotoStmt(@$, (string)$2); /* PHP6 */ 
+			$$ = new GotoStmt(@$, (string)$2, @2); /* PHP 5.3 */ 
 		}
 	|	T_DECLARE '(' declare_list ')' declare_statement
 		{
