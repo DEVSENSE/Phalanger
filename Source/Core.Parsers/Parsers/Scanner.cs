@@ -105,37 +105,6 @@ namespace PHP.Core.Parsers
 		private Text.Span tokenPosition;
         private Text.TextSpan TokenTextSpan { get { return new TextSpan(sourceUnit, tokenPosition); } }
 
-        #region T_DOC_COMMENT handling
-
-        /// <summary>
-        /// Last doc comment read from input.
-        /// </summary>
-        private PHPDocBlock lastDocComment;
-
-        /// <summary>
-        /// Tokens that should remember current <see cref="lastDocComment"/>.
-        /// </summary>
-        private static readonly HashSet<Tokens>/*!*/lastDocCommentRememberTokens = new HashSet<Tokens>()
-        {
-            Tokens.T_ABSTRACT, Tokens.T_FINAL, Tokens.T_STATIC, Tokens.T_PUBLIC, Tokens.T_PRIVATE, Tokens.T_PROTECTED,  // modifiers, also holds the doc comment (for class fields without T_VAR)
-            Tokens.T_VAR,       // for class fields
-            Tokens.T_CONST,     // for constants
-            Tokens.T_CLASS, Tokens.T_TRAIT, Tokens.T_INTERFACE, // for type decl
-            Tokens.T_FUNCTION,  // for function/method
-        };
-
-        /// <summary>
-        /// Tokens that keep value of <see cref="lastDocComment"/> to be used later for <see cref="lastDocCommentRememberTokens"/>.
-        /// </summary>
-        private static readonly HashSet<Tokens>/*!*/lastDocCommentKeepTokens = new HashSet<Tokens>()
-        {
-            Tokens.T_ABSTRACT, Tokens.T_STATIC, Tokens.T_PUBLIC, Tokens.T_PRIVATE, Tokens.T_PROTECTED,
-            Tokens.T_FINAL, Tokens.T_PARTIAL,
-            // TODO: tokens within attributes_opt
-        };
-
-        #endregion
-
         private int charOffset;
 
         private Encoding Encoding { get { return sourceUnit.Encoding; } }
@@ -219,10 +188,12 @@ namespace PHP.Core.Parsers
                     case Tokens.T_OPEN_TAG: this.commentsSink.OnOpenTag(this, TokenTextSpan); break;
 
                     case Tokens.T_DOC_COMMENT:
-                        // remember token value to be used by the next token and skip the current:
-                        this.lastDocComment = new PHPDocBlock(base.GetTokenString(), TokenTextSpan);
-                        this.commentsSink.OnPhpDocComment(this, this.lastDocComment);
-                        break;
+                        {
+                            var phpdoc = new PHPDocBlock(base.GetTokenString(), TokenTextSpan);
+                            this.commentsSink.OnPhpDocComment(this, phpdoc);
+                            tokenSemantics.Object = phpdoc;
+                            goto default;
+                        }
 
 					case Tokens.T_PRAGMA_FILE:
                         sourceUnit.AddSourceFileMapping(TokenTextSpan.FirstLine, base.GetTokenAsFilePragma());
@@ -588,19 +559,7 @@ namespace PHP.Core.Parsers
 
 					case Tokens.T_SEMI:
 					default:
-
-                        if (lastDocComment != null)
-                        {
-                            // remember PHPDoc for current token
-                            if (lastDocCommentRememberTokens.Contains(token))
-                                tokenSemantics.Object = this.lastDocComment;
-
-                            // forget last doc comment text
-                            if (!lastDocCommentKeepTokens.Contains(token))
-                                lastDocComment = null;
-                        }
-                        
-						return token;
+                        return token;
 				}
 			}
 		}

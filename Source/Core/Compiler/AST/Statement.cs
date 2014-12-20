@@ -178,6 +178,23 @@ namespace PHP.Core.Compiler.AST
 
         #endregion
 
+        #region PHPDocStmt
+
+        [NodeCompiler(typeof(PHPDocStmt), Singleton = true)]
+        sealed class PHPDocStmtCompiler : StatementCompiler<PHPDocStmt>
+        {
+            internal override Statement Analyze(PHPDocStmt node, Analyzer analyzer)
+            {
+                return node;
+            }
+
+            internal override void Emit(PHPDocStmt node, CodeGenerator codeGenerator)
+            {   
+            }
+        }
+
+        #endregion
+
         #region UnsetStmt
 
         [NodeCompiler(typeof(UnsetStmt), Singleton = true)]

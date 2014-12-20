@@ -136,38 +136,6 @@ namespace PHP.Core.Parsers
 
 		#endregion
         
-        #region TmpMemberInfo
-
-        /// <summary>
-        /// Singleton used to remember information about modifier + associated doc comment.
-        /// </summary>
-        private class TmpMemberInfo
-        {
-            public PhpMemberAttributes attr;
-            public object docComment;
-
-            public TmpMemberInfo(PhpMemberAttributes attr, object docComment)
-            {
-                this.Update(attr, docComment);
-            }
-
-            public TmpMemberInfo/*!*/Update(PhpMemberAttributes attr, object docComment)
-            {
-                this.attr = attr;
-                this.docComment = docComment;
-
-                return this;
-            }
-        }
-
-        /// <summary>
-        /// Singleton; used to pass information from <c>member_modifier</c> together with doc comment.
-        /// </summary>
-        private TmpMemberInfo TmpMemberInfoSingleton { get { return _tmpMemberInfoSingleton ?? (_tmpMemberInfoSingleton = new TmpMemberInfo(PhpMemberAttributes.Public, null)); } }
-        private TmpMemberInfo _tmpMemberInfoSingleton = null;
-
-        #endregion
-
         protected sealed override int EofToken
 		{
 			get { return (int)Tokens.EOF; }
@@ -177,6 +145,11 @@ namespace PHP.Core.Parsers
 		{
 			get { return (int)Tokens.ERROR; }
 		}
+
+        protected override bool IsDocCommentToken(int tok)
+        {
+            return (tok == (int)Tokens.T_DOC_COMMENT);
+        }
 
         protected override Text.Span CombinePositions(Text.Span first, Text.Span last)
         {
@@ -316,20 +289,7 @@ namespace PHP.Core.Parsers
 			reader = null;
 		}
 
-        #region DocComments
-
-        private void SetCommentSetHelper(object element, object doccomment)
-        {
-            Debug.Assert(element is AstNode);
-            if (doccomment != null && doccomment.GetType() == typeof(PHPDocBlock))
-            {
-                PHPDocBlockHelper.SetPHPDoc((AstNode)element, (PHPDocBlock)doccomment);
-            }
-        }
-
-        #endregion
-
-		#region Conditional Code, Scope
+        #region Conditional Code, Scope
 
 		private int condLevel;
 
@@ -1035,6 +995,28 @@ namespace PHP.Core.Parsers
 
         #endregion
 
+        #region PHPDocBlock
+
+        protected object CreatePHPDocBlockStmt(object/*!*/doccomment)
+        {
+            Debug.Assert(doccomment is PHPDocBlock);
+            return new PHPDocStmt(yypos, (PHPDocBlock)doccomment);
+        }
+
+        protected object SetPHPDoc(object obj, object phpdoc)
+        {
+            Debug.Assert(obj is LangElement);
+            if (!object.ReferenceEquals(phpdoc, null))
+            {
+                Debug.Assert(phpdoc is PHPDocBlock);
+                ((LangElement)obj).SetPHPDoc((PHPDocBlock)phpdoc);
+            }
+
+            return obj;
+        }
+
+        #endregion
+
         #region Helpers
 
         private static readonly List<Statement> emptyStatementList = new List<Statement>();
@@ -1046,45 +1028,67 @@ namespace PHP.Core.Parsers
 		private static readonly List<NamedActualParam> emptyNamedActualParamListIndex = new List<NamedActualParam>();
 		private static readonly List<FormalTypeParam> emptyFormalTypeParamList = new List<FormalTypeParam>();
 		private static readonly List<TypeRef> emptyTypeRefList = new List<TypeRef>();
-        
-		private static List<T>/*!*/ListAdd<T>(object list, object item)
-		{
+
+        private static List<T>/*!*/ListAdd<T>(object list, object item)
+        {
             Debug.Assert(list is List<T>);
             //Debug.Assert(item is T);
 
             var tlist = (List<T>)list;
-
-            NamespaceDecl nsitem;
-                
-            // little hack when appending statement after simple syntaxed namespace:
-
-            // namespace A;
-            // foo();   // <-- add this statement into namespace A
-
-            if (tlist.Count > 0 &&
-                (nsitem = tlist[tlist.Count - 1] as NamespaceDecl) != null &&
-                nsitem.IsSimpleSyntax &&
-                !(item is NamespaceDecl))
+            
+            if (item is T)
             {
-                // adding a statement after simple namespace declaration => add the statement into the namespace:
-                Debug.Assert(item is T);
-                Debug.Assert(item is Statement);
-
-                nsitem.Statements.Add((Statement)item);
-                //nsitem.UpdatePosition(Text.Span.CombinePositions(nsitem.Span, ((Statement)item).Span));
-            }
-            else if (item is List<T>)
-            {
-                tlist.AddRange((List<T>)item);
-            }
-            else
-            {
-                Debug.Assert(item == null || item is T);
                 tlist.Add((T)item);
+            }
+            else if (item != null)
+            {
+                Debug.Assert(item is List<T>);
+                tlist.AddRange((List<T>)item);
             }
 
             return tlist;
-		}
+        }
+
+        private static object/*!*/StatementListAdd(object/*!*/listObj, object itemObj)
+        {
+            Debug.Assert(listObj is List<Statement>);
+
+            if (!object.ReferenceEquals(itemObj, null))
+            {
+                Debug.Assert(itemObj is Statement);
+
+                var list = (List<Statement>)listObj;
+                var stmt = (Statement)itemObj;
+
+                NamespaceDecl nsitem;
+                
+                // little hack when appending statement after simple syntaxed namespace:
+
+                // namespace A;
+                // foo();   // <-- add this statement into namespace A
+
+                if (list.Count != 0 && (nsitem = list.Last() as NamespaceDecl) != null && nsitem.IsSimpleSyntax && !(stmt is NamespaceDecl))
+                {
+                    // adding a statement after simple namespace declaration => add the statement into the namespace:
+                    nsitem.Statements.Add(stmt);
+                    //nsitem.UpdatePosition(Text.Span.CombinePositions(nsitem.Span, ((Statement)item).Span));
+                }
+                else
+                {
+                    if (list.Count != 0)
+                    {
+                        var last = list.Last();
+                        if (last.GetType() == typeof(PHPDocStmt))
+                            stmt.SetPHPDoc(((PHPDocStmt)last).PHPDoc);
+                    }
+
+                    list.Add(stmt);
+                }
+            }
+
+            //
+            return listObj;
+        }
 
         private static void ListPrepend<T>(object/*!*/list, object/*!*/item)
         {
