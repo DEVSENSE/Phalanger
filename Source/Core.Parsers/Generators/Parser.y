@@ -440,7 +440,6 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> class_constant_declarator_list          // List<ClassConstantDecl>!
 %type<Object> class_statement_list_opt
 %type<Object> class_statement
-%type<Object> phpdoc_opt							  // PHPDocBlock|null
 %type<Object> implements_opt 
 %type<Object> ctor_arguments_opt
 
@@ -685,7 +684,7 @@ class_declaration_statement:
 				IsCurrentCodeConditional, GetScope(), 
 				member_attr, $4 != 0, class_name, @6, currentNamespace, 
 				(List<FormalTypeParam>)$7, (Tuple<GenericQualifiedName,Text.Span>)$9, (List<Tuple<GenericQualifiedName,Text.Span>>)$10, 
-		    (List<TypeMemberDecl>)$12, (List<CustomAttribute>)$1);
+		    (List<LangElement>)$12, (List<CustomAttribute>)$1);
 		    
 		  reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
 		  UnreserveTypeNames((List<FormalTypeParam>)$7);
@@ -716,7 +715,7 @@ class_declaration_statement:
 				(PhpMemberAttributes)$2 | PhpMemberAttributes.Abstract | PhpMemberAttributes.Interface, 
 				$4 != 0, class_name, @6, currentNamespace,
 				(List<FormalTypeParam>)$7, null, (List<Tuple<GenericQualifiedName,Text.Span>>)$9,
-				(List<TypeMemberDecl>)$11, (List<CustomAttribute>)$1); 
+				(List<LangElement>)$11, (List<CustomAttribute>)$1); 
 				
 			reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
 
@@ -1363,16 +1362,10 @@ static_variable:
 		}
 ;
 
-phpdoc_opt:
-		T_DOC_COMMENT		{ $$ = (PHPDocBlock)$1; }
-	|	/* empty */			{}
-;
-
 class_statement_list_opt:
-		class_statement_list_opt phpdoc_opt class_statement		{ $$ = ListAdd<TypeMemberDecl>($1, SetPHPDoc($3, $2)); }
-	|	/* empty */												{ $$ = new List<TypeMemberDecl>(); }
+		class_statement_list_opt class_statement	{ $$ = ListAdd<LangElement>($1, $2); }
+	|	/* empty */									{ $$ = new List<LangElement>(); }
 ;
-
 
 class_statement:
 		attributes_opt property_modifiers property_declarator_list ';'			
@@ -1407,6 +1400,7 @@ class_statement:
 			UnreserveTypeNames((List<FormalTypeParam>)$6);
 		}
 	|	trait_use_statement		{ $$ = $1; }
+	|	T_DOC_COMMENT			{ $$ = $1; }
 ;
 
 trait_use_statement:

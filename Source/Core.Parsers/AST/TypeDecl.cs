@@ -209,11 +209,11 @@ namespace PHP.Core.AST
             Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
             bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, bool isPartial, Name className, Text.Span classNamePosition,
             NamespaceDecl ns, List<FormalTypeParam>/*!*/ genericParams, Tuple<GenericQualifiedName, Text.Span> baseClassName,
-            List<Tuple<GenericQualifiedName, Text.Span>>/*!*/ implementsList, List<TypeMemberDecl>/*!*/ members,
+            List<Tuple<GenericQualifiedName, Text.Span>>/*!*/ implementsList, List<LangElement>/*!*/ elements,
 			List<CustomAttribute> attributes)
             : base(span)
 		{
-			Debug.Assert(genericParams != null && implementsList != null && members != null);
+			Debug.Assert(genericParams != null && implementsList != null && elements != null);
             Debug.Assert((memberAttributes & PhpMemberAttributes.Trait) == 0 || (memberAttributes & PhpMemberAttributes.Interface) == 0, "Interface cannot be a trait");
 
 			this.name = className;
@@ -239,7 +239,7 @@ namespace PHP.Core.AST
                 this.ImplementsList = implementsList.Select(x => x.Item1).ToArray();
                 this.ImplementsListPosition = implementsList.Select(x => x.Item2).ToArray();
             }
-            this.members = members;
+            this.members = ProcessMemberElements(elements);
 			if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);
 			this.entireDeclarationPosition = entireDeclarationPosition;
@@ -253,9 +253,55 @@ namespace PHP.Core.AST
                 validAliases = new Dictionary<string, QualifiedName>(aliases);
 		}
 
-		#endregion
+        /// <summary>
+        /// Processes top elements within type declaration;
+        /// - associates PHPDoc blocks with the following TypeMemberDecl.
+        /// - trims the list.
+        /// </summary>
+        /// <param name="elements">All elements within the type declaration.</param>
+        /// <returns>List of type member declarations.</returns>
+        private static List<TypeMemberDecl>/*!*/ProcessMemberElements(List<LangElement>/*!*/elements)
+        {
+            Debug.Assert(elements != null);
 
-		/// <summary>
+            int membersCount = 0;
+            PHPDocBlock lastPHPDoc = null;
+
+            // associate PHPDoc with following member element
+            for (int i = 0; i < elements.Count; i++)
+            {
+                var member = elements[i] as TypeMemberDecl;
+                if (member != null)
+                {
+                    membersCount++;
+                    if (lastPHPDoc != null)
+                    {
+                        member.SetPHPDoc(lastPHPDoc);
+                        lastPHPDoc = null;
+                    }
+                }
+                else
+                {
+                    lastPHPDoc = elements[i] as PHPDocBlock;
+                }
+            }
+
+            // trims/filters the list
+            var list = new List<TypeMemberDecl>(membersCount);
+            for (int i = 0; i < elements.Count; i++)
+            {
+                var member = elements[i] as TypeMemberDecl;
+                if (member != null)
+                    list.Add(member);
+            }
+
+            //
+            return list;
+        }
+
+        #endregion
+
+        /// <summary>
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
@@ -284,7 +330,7 @@ namespace PHP.Core.AST
     [Serializable]
 	public abstract class TypeMemberDecl : LangElement
 	{
-		public PhpMemberAttributes Modifiers { get { return modifiers; } }
+        public PhpMemberAttributes Modifiers { get { return modifiers; } }
 		protected PhpMemberAttributes modifiers;
 
         /// <summary>
