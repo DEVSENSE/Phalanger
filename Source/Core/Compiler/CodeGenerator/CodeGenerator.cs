@@ -607,12 +607,15 @@ namespace PHP.Core
 			fd_context.SelfPlace = this.SelfPlace;
 			this.SelfPlace = LiteralPlace.Null;
 
+            // Set Static
+            fd_context.LateStaticBindTypePlace = this.LateStaticBindTypePlace;
+            this.LateStaticBindTypePlace = null;
+
             // set Result place
 			fd_context.ResultPlace = this.ResultPlace;
 			fd_context.ReturnLabel = this.ReturnLabel;
 			this.ResultPlace = null;
-            this.LateStaticBindTypePlace = null;
-
+            
 			// set exception block nesting:
 			fd_context.ExceptionBlockNestingLevel = this.ExceptionBlockNestingLevel;
 			this.ExceptionBlockNestingLevel = 0;
