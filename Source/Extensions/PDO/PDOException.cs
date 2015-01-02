@@ -58,7 +58,10 @@ namespace PHP.Library.Data
         }
 
         [PhpVisible]
-        public PhpArray errorInfo { get { return this.m_errorInfo; } }
+        public PhpArray errorInfo { 
+            get { return this.m_errorInfo; }
+            set { this.m_errorInfo = value; }
+        }
 
         public static void Throw(ScriptContext context, string message, PhpArray errorInfo, object code, object previous)
         {
