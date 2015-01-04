@@ -747,6 +747,11 @@ namespace PHP.Core.AST
         /// </summary>
         virtual public void VisitLambdaFunctionExpr(LambdaFunctionExpr x)
         {
+            // use parameters
+            if (x.UseParams != null)
+                foreach (var p in x.UseParams)
+                    VisitElement(p);
+
             // function parameters
             foreach (var p in x.Signature.FormalParams)
                 VisitElement(p);

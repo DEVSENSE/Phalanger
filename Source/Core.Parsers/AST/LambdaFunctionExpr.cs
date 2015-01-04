@@ -89,15 +89,6 @@ namespace PHP.Core.AST
 
             this.sourceUnit = sourceUnit;
             
-            // inject use parameters at the begining of formal parameters
-            if (useParams != null && useParams.Count > 0)
-            {
-                if (formalParams.Count == 0)
-                    formalParams = useParams;   // also we don't want to modify Parser.emptyFormalParamListIndex singleton.
-                else
-                    formalParams.InsertRange(0, useParams);
-            }
-            
             //this.ns = ns;
             this.signature = new Signature(aliasReturn, formalParams);
             this.useParams = useParams;
