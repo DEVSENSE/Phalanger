@@ -330,6 +330,14 @@ namespace PHP.Core
             }
         }
 
+        /// <summary>
+        /// Initializes <c>Ast</c> with empty <see cref="AST.GlobalCode"/>.
+        /// </summary>
+        internal void SetEmptyAst()
+        {
+            this.ast = new AST.GlobalCode(new List<AST.Statement>(), this);
+        }
+
         public override string GetSourceCode(Text.Span span)
         {
             return span.GetText(code);
