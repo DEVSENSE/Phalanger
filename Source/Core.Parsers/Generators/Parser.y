@@ -485,34 +485,16 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %% /* Productions */
 
 start:
-		colons_opt 
+		top_statement_list 
 		{ 
-			astRoot = new GlobalCode(emptyStatementList, sourceUnit);
-		}
-	|	colons_opt non_empty_top_statement 
-		{ 
-			astRoot = new GlobalCode(NewList<Statement>($2), sourceUnit);
-		}
-	|	colons_opt non_empty_top_statement top_statement_list 
-		{ 
-			List<Statement> top_statements = (List<Statement>)$3;
-			ListPrepend<Statement>(top_statements, $2);
+			List<Statement> top_statements = (List<Statement>)$1;
 			astRoot = new GlobalCode(top_statements, sourceUnit);
 		}
-	|	colons_opt import_statement_list
+	|	import_statement_list top_statement_list 
 		{ 
-			astRoot = new GlobalCode(emptyStatementList, sourceUnit);
-		}
-	|	colons_opt import_statement_list top_statement_list 
-		{ 
-			List<Statement> top_statements = (List<Statement>)$3;
+			List<Statement> top_statements = (List<Statement>)$2;
 			astRoot = new GlobalCode(top_statements, sourceUnit);
 		}
-;
-
-colons_opt:
-    colons_opt ';' { /* nop */ }
-  | /* empty */    { /* nop */ }
 ;
 
 comma_opt:
@@ -550,7 +532,7 @@ use_statement_content: /* PHP 5.3 */
 
 top_statement_list:
 		top_statement_list top_statement { $$ = StatementListAdd($1, $2); } 
-	|	top_statement                    { $$ = NewList<Statement>($1); }
+	|	/* empty */						 { $$ = new List<Statement>(); }
 ;
 
 top_statement:

@@ -1080,6 +1080,9 @@ namespace PHP.Core.Parsers
                         var last = list.Last();
                         if (last.GetType() == typeof(PHPDocStmt))
                             stmt.SetPHPDoc(((PHPDocStmt)last).PHPDoc);
+
+                        // last.GetType() == typeof(NamespaceDecl) && last.Statements.Last() is PHPDoc
+                        // ...
                     }
 
                     list.Add(stmt);
@@ -1090,44 +1093,7 @@ namespace PHP.Core.Parsers
             return listObj;
         }
 
-        private static void ListPrepend<T>(object/*!*/list, object/*!*/item)
-        {
-            Debug.Assert(list != null);
-            Debug.Assert(item != null);
-            Debug.Assert(item is T);
-                
-            var tlist = (List<T>)list;
-
-            // little hack when prepending simple syntaxed namespace before some statements:
-            
-            // namespace A;  // == {item}
-            // stmt1; stmt2; // <-- add these stamenents into namespace A
-            // namespace B;
-
-            NamespaceDecl nsitem = item as NamespaceDecl;
-            if (nsitem != null && nsitem.IsSimpleSyntax)
-            {
-                Debug.Assert(list is List<Statement>);
-                var slist = (List<Statement>)list;
-
-                // move statements into nsitem namespace:
-                int i = 0;  // find how many Statements from tlist move to nsitem.Statements
-                while (i < slist.Count && !(slist[i] is NamespaceDecl))
-                    ++i;
-
-                if (i > 0)
-                {
-                    nsitem.Statements.AddRange(slist.Take(i));
-                    //nsitem.UpdatePosition(Text.Span.CombinePositions(nsitem.Span, slist[i - 1].Span));
-                    tlist.RemoveRange(0, i);
-                }
-            }
-                
-            // prepend the item:
-            tlist.Insert(0, (T)item);
-        }
-
-		private static List<T>/*!*/NewList<T>(T item)
+        private static List<T>/*!*/NewList<T>(T item)
 		{
 			return new List<T>(1){ item };
         }
