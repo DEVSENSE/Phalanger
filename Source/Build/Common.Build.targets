@@ -14,7 +14,7 @@
   <PropertyGroup>
     <PreBuildEvent>
 cd "$(RootDir)"
-$(ToolsDir)UpdateFileVersionFromChangeset.cmd "$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs"
+"$(ToolsDir)UpdateFileVersionFromChangeset.cmd" "$(MSBuildThisFileDirectory)AssemblyInfoCommon.cs"
 	</PreBuildEvent>
     <PostBuildEvent>
 if [$(TargetExt)]==[.dll] if [$(SignAssembly)]==[true] (

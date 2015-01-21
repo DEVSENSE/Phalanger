@@ -916,10 +916,7 @@ namespace PHP.Core
 
         public bool Equals(QualifiedName x, QualifiedName y)
         {
-            if (x == null && y == null) return true;
-            if (x == null || y == null) return false;
-
-            return x.Equals(y) && string.Compare(x.Name.Value, y.Name.Value, StringComparison.Ordinal) == 0;   // case sensitive comparison of names
+            return x.Equals(y) && string.Equals(x.Name.Value, y.Name.Value, StringComparison.Ordinal);   // case sensitive comparison of names
         }
 
         public int GetHashCode(QualifiedName obj)
