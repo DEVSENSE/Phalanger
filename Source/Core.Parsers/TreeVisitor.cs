@@ -450,6 +450,10 @@ namespace PHP.Core.AST
             VisitElement(x.TypeRef);
             VisitConstantUse(x);
         }
+        virtual public void VisitPseudoClassConstUse(PseudoClassConstUse x)
+        {
+            VisitClassConstUse(x);
+        }
         virtual public void VisitPseudoConstUse(PseudoConstUse x)
         {
             // nothing

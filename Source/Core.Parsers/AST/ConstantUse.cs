@@ -158,7 +158,7 @@ namespace PHP.Core.AST
 
         public override void VisitMe(TreeVisitor visitor)
         {
-            base.VisitMe(visitor);
+            visitor.VisitPseudoClassConstUse(this);
         }
     }
 
