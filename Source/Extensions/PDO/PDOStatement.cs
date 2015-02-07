@@ -166,16 +166,16 @@ namespace PHP.Library.Data
         }
 
         private PreparedMode m_prepMode = PreparedMode.None;
-        private readonly Dictionary<string, string> m_prepName = new Dictionary<string, string>();
-        private readonly List<string> m_prepNum = new List<string>();
+        private Dictionary<string, string> m_prepName = null;
+        private List<string> m_prepNum = null;
 
         private static readonly Regex regName = new Regex(@"[\w_]+", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         internal void Prepare(ScriptContext context, string query, Dictionary<int, object> options)
         {
             this.m_prepMode = PreparedMode.None;
-            this.m_prepName.Clear();
-            this.m_prepNum.Clear();
+            this.m_prepName = new Dictionary<string, string>();
+            this.m_prepNum = new List<string>();
             int pos = 0;
             StringBuilder sbRewritten = new StringBuilder();
             while (pos < query.Length)
@@ -220,7 +220,7 @@ namespace PHP.Library.Data
                             Match m = regName.Match(query, pos);
                             string paramName = m.Value;
                             string pName = this.m_pdo.Driver.GetParameterName(paramName);
-                            this.m_prepName.Add(paramName, pName);
+                            this.m_prepName[paramName] = pName;
                             sbRewritten.Append(pName);
                             pos += paramName.Length;
                         }
@@ -313,23 +313,26 @@ namespace PHP.Library.Data
             {
                 case PreparedMode.Named:
                     string pName = PHP.Core.Convert.ObjectToString(param);
+                    string pNameSql;
+
                     if (pName.Length > 0 && pName[0] == ':')
                     {
                         pName = pName.Substring(1);
                     }
-                    if (!this.m_prepName.ContainsKey(pName))
+
+                    if (this.m_prepName != null && this.m_prepName.TryGetValue(pName, out pNameSql))
+                    {
+                        p = (IDataParameter)this.CurrentCommand.Parameters[pNameSql];
+                    }
+                    else
                     {
                         PhpException.Throw(PhpError.Warning, "Parameter '" + pName + "' not found");
                         return false;
                     }
-                    else
-                    {
-                        p = (IDataParameter)this.CurrentCommand.Parameters[this.m_prepName[pName]];
-                    }
                     break;
                 case PreparedMode.Numbers:
                     int pId = PHP.Core.Convert.ObjectToInteger(param);
-                    if (pId >= this.m_prepNum.Count)
+                    if (this.m_prepNum == null || pId >= this.m_prepNum.Count)
                     {
                         PhpException.Throw(PhpError.Warning, "Parameter n° " + pId + " not found");
                         return false;
