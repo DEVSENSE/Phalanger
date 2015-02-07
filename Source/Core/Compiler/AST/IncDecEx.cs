@@ -22,7 +22,7 @@ namespace PHP.Core.Compiler.AST
 {
     partial class NodeCompilers
     {
-        [NodeCompiler(typeof(IncDecEx), Singleton = true)]
+        [NodeCompiler(typeof(IncDecEx))]
         sealed class IncDecExCompiler : ExpressionCompiler<IncDecEx>
         {
             public override Evaluation Analyze(IncDecEx node, Analyzer analyzer, ExInfoFromParent info)

@@ -90,11 +90,6 @@ namespace PHP.Core
             }
         }
 
-        public static void UnitTestCore()
-        {
-            UnitTest(Assembly.GetExecutingAssembly(), Console.Out);
-        }
-
 #endif
     }
 

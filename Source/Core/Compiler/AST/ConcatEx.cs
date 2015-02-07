@@ -23,7 +23,7 @@ namespace PHP.Core.Compiler.AST
 {
     partial class NodeCompilers
     {
-        [NodeCompiler(typeof(ConcatEx), Singleton = true)]
+        [NodeCompiler(typeof(ConcatEx))]
         sealed class ConcatExCompiler : ExpressionCompiler<ConcatEx>
         {
             #region Analysis

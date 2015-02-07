@@ -133,7 +133,7 @@ namespace PHP.Core.Compiler.AST
     {
         #region CustomAttributes
 
-        [NodeCompiler(typeof(CustomAttributes))]
+        [NodeCompiler(typeof(CustomAttributes), Singleton = true)]
         sealed class CustomAttributesCompiler : ICustomAttributesCompiler
         {
             public void AnalyzeMembers(CustomAttributes/*!*/node, Analyzer/*!*/ analyzer, Scope referringScope)

@@ -30,7 +30,7 @@ namespace PHP.Core.Compiler.AST
     {
         #region ActualParam
 
-        [NodeCompiler(typeof(ActualParam))]
+        [NodeCompiler(typeof(ActualParam), Singleton = true)]
         sealed class ActualParamCompiler : INodeCompiler, IActualParamCompiler
         {
             public void Analyze(ActualParam/*!*/node, Analyzer/*!*/ analyzer, bool isBaseCtorCallConstrained)
@@ -136,7 +136,7 @@ namespace PHP.Core.Compiler.AST
 
         #region CallSignature
 
-        [NodeCompiler(typeof(CallSignature))]
+        [NodeCompiler(typeof(CallSignature), Singleton = true)]
         sealed class CallSignatureCompiler : INodeCompiler, ICallSignatureCompiler
         {
             /// <summary>

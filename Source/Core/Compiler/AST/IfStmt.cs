@@ -26,7 +26,7 @@ namespace PHP.Core.Compiler.AST
     {
         #region IfStmt
 
-        [NodeCompiler(typeof(IfStmt))]
+        [NodeCompiler(typeof(IfStmt), Singleton = true)]
         sealed class IfStmtCompiler : StatementCompiler<IfStmt>
         {
             internal override Statement Analyze(IfStmt node, Analyzer analyzer)

@@ -189,7 +189,7 @@ namespace PHP.Core.Compiler.AST
 
         #region NamespaceDecl
 
-        [NodeCompiler(typeof(NamespaceDecl))]
+        [NodeCompiler(typeof(NamespaceDecl), Singleton = true)]
         sealed class NamespaceDeclCompiler : StatementCompiler<NamespaceDecl>
         {
             internal override Statement Analyze(NamespaceDecl node, Analyzer analyzer)
@@ -217,7 +217,7 @@ namespace PHP.Core.Compiler.AST
 
         #region GlobalConstDeclList
 
-        [NodeCompiler(typeof(GlobalConstDeclList))]
+        [NodeCompiler(typeof(GlobalConstDeclList), Singleton = true)]
         sealed class GlobalConstDeclListCompiler : StatementCompiler<GlobalConstDeclList>
         {
             #region CustomAttributesProvider

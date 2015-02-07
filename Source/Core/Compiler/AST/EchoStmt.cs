@@ -24,7 +24,7 @@ namespace PHP.Core.Compiler.AST
 {
     partial class NodeCompilers
     {
-        [NodeCompiler(typeof(EchoStmt))]
+        [NodeCompiler(typeof(EchoStmt), Singleton = true)]
         sealed class EchoStmtCompiler : StatementCompiler<EchoStmt>
         {
             internal override Core.AST.Statement Analyze(EchoStmt node, Analyzer analyzer)

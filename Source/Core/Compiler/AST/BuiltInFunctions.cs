@@ -485,7 +485,7 @@ namespace PHP.Core.Compiler.AST
 
         #region ExitEx
 
-        [NodeCompiler(typeof(ExitEx), Singleton = true)]
+        [NodeCompiler(typeof(ExitEx))]
         sealed class ExitExCompiler : ExpressionCompiler<ExitEx>
         {
             public override Evaluation Analyze(ExitEx node, Analyzer analyzer, ExInfoFromParent info)
