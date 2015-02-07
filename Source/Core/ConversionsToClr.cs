@@ -338,7 +338,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.LongInteger: { strictness = ConversionStrictness.ImplExactMatch; ret = lval; break; }
 				case Convert.NumberInfo.Double: { strictness = ConversionStrictness.ImplPercisionLost; ret = unchecked((decimal)dval); break; }
 				case Convert.NumberInfo.Unconvertible: { strictness = ConversionStrictness.Failed; ret = 0; break; }
-                default: throw new InvalidOperationException();
+				default: Debug.Fail(); throw null;
 			}
 			if (obj is string) strictness = ConversionStrictness.ImplDomainChange;
 			if (obj is bool) strictness = ConversionStrictness.ImplDomainChange;
@@ -400,15 +400,6 @@ namespace PHP.Core
 		[Emitted]
 		public static DateTime TryObjectToDateTime(object obj, out ConversionStrictness strictness)
 		{
-            // try wrapped DateTime:
-            var exactMatch = obj as Reflection.ClrValue<DateTime>;
-            if (exactMatch != null)
-            {
-                strictness = ConversionStrictness.ImplExactMatch;
-                return exactMatch.realValue;
-            }
-
-            // try obj -> String -> DateTime
 			string str = TryObjectToString(obj, out strictness);
 
 			if (strictness != ConversionStrictness.Failed)
@@ -423,7 +414,7 @@ namespace PHP.Core
 				try { result = DateTime.Parse(str); } catch { success = false; }
 				if (success)
 #endif
-                { strictness = ConversionStrictness.ImplDomainChange; return result; }
+				{ strictness = ConversionStrictness.ImplExactMatch; return result; }
 			}
 
 			strictness = ConversionStrictness.Failed;
@@ -663,7 +654,8 @@ namespace PHP.Core
 
 				default:
 					{
-                        throw new ArgumentException();
+						Debug.Fail();
+						return null;
 					}
 			}
 		}
