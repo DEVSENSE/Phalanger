@@ -36,6 +36,7 @@ using System.Collections.Generic;
 %x ST_SINGLE_QUOTES
 %x ST_BACKQUOTE
 %x ST_HEREDOC
+%x ST_NEWDOC
 %x ST_LOOKING_FOR_PROPERTY
 %x ST_LOOKING_FOR_VARNAME
 %x ST_DOC_COMMENT
@@ -350,10 +351,16 @@ NonVariableStart        [^a-zA-Z_{]
 	return Tokens.T_BACKQUOTE; 
 }
 
-<ST_IN_SCRIPTING>b?"<<<"{TABS_AND_SPACES}{LABEL}{NEWLINE} {
+<ST_IN_SCRIPTING>b?"<<<"{TABS_AND_SPACES}({LABEL}|([']{LABEL}['])|(["]{LABEL}["])){NEWLINE} {
 	bool is_binary = GetTokenChar(0) != '<';
 	hereDocLabel = GetTokenSubstring(is_binary ? 4 : 3).Trim();
-	BEGIN(LexicalStates.ST_HEREDOC);
+	var newstate = LexicalStates.ST_HEREDOC;
+	if (hereDocLabel[0] == '"' || hereDocLabel[0] == '\'')
+	{
+		if (hereDocLabel[0] == '\'') newstate = LexicalStates.ST_NEWDOC;	// newdoc syntax, continue in ST_NEWDOC lexical state
+		hereDocLabel = hereDocLabel.Substring(1, hereDocLabel.Length - 2);	// trim quote characters around
+	}
+	BEGIN(newstate);
 	return is_binary ? Tokens.T_BINARY_HEREDOC : Tokens.T_START_HEREDOC;
 }
 
@@ -430,7 +437,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 
 
-<ST_HEREDOC>^{LABEL}(";")?{NEWLINE} {
+<ST_HEREDOC,ST_NEWDOC>^{LABEL}(";")?{NEWLINE} {
 	if (IsCurrentHeredocEnd(0))
 	{
 	  yyless(hereDocLabel.Length);
@@ -462,7 +469,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_HEREDOC>("["|"]"|"{"|"}"|"$")          { inString = true; return (Tokens)GetTokenChar(0); }
 <ST_HEREDOC>"{$"                           { yy_push_state(LexicalStates.ST_IN_SCRIPTING); yyless(1); return Tokens.T_CURLY_OPEN; }
 <ST_HEREDOC>{ESCAPED_AND_WHITESPACE}       { return Tokens.T_ENCAPSED_AND_WHITESPACE; }
-<ST_HEREDOC>{ANY_CHAR}                     { return Tokens.T_CHARACTER; }
+<ST_HEREDOC,ST_NEWDOC>{ANY_CHAR}                     { return Tokens.T_CHARACTER; }
 
 
 <ST_DOUBLE_QUOTES>{LNUM}|{HNUM}            { return Tokens.T_NUM_STRING; }
