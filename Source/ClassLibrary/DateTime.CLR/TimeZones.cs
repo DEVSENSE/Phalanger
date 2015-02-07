@@ -531,13 +531,13 @@ namespace PHP.Library
                 }
 
                 // convert current system time zone to PHP zone:
-                result = TimeZoneInfo.Local;// SystemToPhpTimeZone(TimeZone.CurrentTimeZone);
-
+                result = SystemToPhpTimeZone(TimeZoneInfo.Local);
+                
                 // UTC:
                 if (result == null)
                     result = DateTimeUtils.UtcTimeZone;// GetTimeZone("UTC");
 
-                PhpException.Throw(PhpError.Strict, LibResources.GetString("using_implicit_timezone", result.StandardName));
+                PhpException.Throw(PhpError.Strict, LibResources.GetString("using_implicit_timezone", result.Id));
 
                 // recheck the timezone when the TimeZone in local configuration is set
                 changedFunc = (timezone) => LibraryConfiguration.Local.Date.TimeZone != null;
@@ -614,6 +614,25 @@ namespace PHP.Library
                     a = x + 1;
                 else //if (comparison > 0)
                     b = x - 1;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Tries to match given <paramref name="systemTimeZone"/> to our fixed <see cref="timezones"/>.
+        /// </summary>
+        private static TimeZoneInfo SystemToPhpTimeZone(TimeZoneInfo systemTimeZone)
+        {
+            if (systemTimeZone == null)
+                return null;
+
+            var tzns = timezones;
+            for (int i = 0; i < tzns.Length; i++)
+            {
+                var tz = tzns[i].Info;
+                if (tz != null && tz.DisplayName.EqualsOrdinalIgnoreCase(systemTimeZone.DisplayName) && tz.HasSameRules(systemTimeZone))
+                    return tz;
             }
 
             return null;
