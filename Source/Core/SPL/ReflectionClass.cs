@@ -64,7 +64,10 @@ namespace PHP.Library.SPL
         {
             get
             {
-                return (typedesc != null) ? typedesc.MakeFullName() : null;
+                if (this._name == null && typedesc != null)
+                    this._name = typedesc.MakeFullName();
+
+                return this._name;
             }
             //set   // DPhpFieldDesc.Set does not support properties properly yet
             //{
@@ -74,6 +77,7 @@ namespace PHP.Library.SPL
             //        string.Format(CoreResources.readonly_property_written, "ReflectionClass", "name"), 0, null);
             //}
         }
+        private string _name = null;
 
         #endregion
 
@@ -201,6 +205,10 @@ namespace PHP.Library.SPL
             return Operators.New(typedesc, null, context, null);
         }
 
+        #endregion
+
+        #region getName, inNamespace, getNamespaceName, getShortName
+
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static object getName(object instance, PhpStack stack)
         {
@@ -215,6 +223,69 @@ namespace PHP.Library.SPL
         public object getName(ScriptContext/*!*/context)
         {
             return this.name;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object inNamespace(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).inNamespace(stack.Context);
+        }
+
+        /// <summary>
+        /// Checks if this class is defined in a namespace.
+        /// </summary>
+        [ImplementsMethod]
+        public object inNamespace(ScriptContext/*!*/context)
+        {
+            var name = this.name;
+            return name != null && name.IndexOf(QualifiedName.Separator) != -1;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getNamespaceName(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getNamespaceName(stack.Context);
+        }
+
+        /// <summary>
+        /// Gets the namespace name or an empty string if the class is not defined in a namespace.
+        /// </summary>
+        [ImplementsMethod]
+        public object getNamespaceName(ScriptContext/*!*/context)
+        {
+            var name = this.name;
+            int lastSeparatorIndex;
+            if (name != null && (lastSeparatorIndex = name.LastIndexOf(QualifiedName.Separator)) != -1)
+            {
+                return name.Remove(lastSeparatorIndex);
+            }
+
+            return string.Empty;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getShortName(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getShortName(stack.Context);
+        }
+
+        /// <summary>
+        /// Gets the short name of the class, the part without the namespace.
+        /// </summary>
+        [ImplementsMethod]
+        public object getShortName(ScriptContext/*!*/context)
+        {
+            var name = this.name;
+            int lastSeparatorIndex;
+            if (name != null && (lastSeparatorIndex = name.LastIndexOf(QualifiedName.Separator)) != -1)
+            {
+                return name.Substring(lastSeparatorIndex + 1);
+            }
+
+            return name;
         }
 
         #endregion
