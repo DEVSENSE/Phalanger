@@ -225,7 +225,7 @@ namespace PHP.Library
 		[PureFunction]
         public static string GetBase(string path)
 		{
-			return GetBase(path, "");
+			return GetBase(path, null);
 		}
 
 		/// <summary>
@@ -240,29 +240,29 @@ namespace PHP.Library
 		/// <param name="path">A <see cref="string"/> containing a path to a file.</param>
 		/// <param name="suffix">A <see cref="string"/> containing suffix to be cut off the path if present.</param>
 		/// <returns>The path conponent of the given <paramref name="path"/>.</returns>
-		[ImplementsFunction("basename")]
+        [ImplementsFunction("basename")]
         [PureFunction]
         public static string GetBase(string path, string suffix)
-		{
-			if (String.IsNullOrEmpty(path)) return "";
-			if (suffix == null) suffix = "";
+        {
+            if (String.IsNullOrEmpty(path)) return string.Empty;
 
-			int end = path.Length - 1;
-			while (end >= 0 && IsDirectorySeparator(path[end])) end--;
+            int end = path.Length - 1;
+            while (end >= 0 && IsDirectorySeparator(path[end])) end--;
 
-			int start = end;
-			while (start >= 0 && !IsDirectorySeparator(path[start])) start--;
-			start++;
+            int start = end;
+            while (start >= 0 && !IsDirectorySeparator(path[start])) start--;
+            start++;
 
-			int name_length = end - start + 1;
-			if (suffix.Length < name_length &&
-			  String.Compare(path, end - suffix.Length + 1, suffix, 0, suffix.Length, StringComparison.CurrentCultureIgnoreCase) == 0)
-			{
-				name_length -= suffix.Length;
-			}
+            int name_length = end - start + 1;
+            if (!string.IsNullOrEmpty(suffix) &&
+                suffix.Length < name_length &&
+                String.Compare(path, end - suffix.Length + 1, suffix, 0, suffix.Length, StringComparison.CurrentCultureIgnoreCase) == 0)
+            {
+                name_length -= suffix.Length;
+            }
 
-			return path.Substring(start, name_length);
-		}
+            return path.Substring(start, name_length);
+        }
 
 		private static bool IsDirectorySeparator(char c)
 		{
