@@ -71,6 +71,15 @@ namespace PHP.Core
         bool IsTypeHint { get; }
 
         /// <summary>
+        /// If <c>true</c>, then for all the <see cref="TypeRef"/> returned by <see cref="Types"/> we 
+        /// have to consider all their subclasses too.
+        /// </summary>
+        /// <remarks>
+        /// Value of this only makes sense when <see cref="TypeCodes"/> contain <see cref="PhpTypeCode.Object"/>.
+        /// </remarks>
+        bool IncludesSubclasses { get; }
+
+        /// <summary>
         /// This is a shortcut for checking whether <see cref="TypeCodes"/> 
         /// collection contains given element. Due to internal implementation details, 
         /// using this method might be faster, then constructing the collection in 
@@ -95,7 +104,8 @@ namespace PHP.Core
         /// <summary>
         /// Returns <c>true</c> if both <see cref="IsAnyType"/> and <see cref="IsTypeHint"/> 
         /// are <c>false</c>, <see cref="TypeCodes"/> contains only object and <see cref="Types"/> 
-        /// contains only the given object type.
+        /// contains only the given object type. Does not take into account 
+        /// class hierarchy (<see cref="IncludesSubclasses"/>).
         /// </summary>
         bool IsOfType(TypeRef type);
     }
