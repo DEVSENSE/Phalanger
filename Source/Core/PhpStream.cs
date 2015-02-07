@@ -37,7 +37,7 @@ namespace PHP.Core
         /// <summary>
         /// Default StreamContext. Cannot be null.
         /// </summary>
-		public static readonly StreamContext/*!*/Default = new StreamContext(null, false);
+		public static readonly StreamContext/*!*/Default = new StreamContext();
 
 		#region Properties
 
@@ -73,27 +73,19 @@ namespace PHP.Core
 		/// <summary>
 		/// Create an empty StreamContext (allows lazy PhpArray instantiation).
 		/// </summary>
-		public StreamContext() : this(null, true) { }
+		public StreamContext() : this(null) { }
 
-        /// <summary>
+		/// <summary>
 		/// Create a new context resource from an array of wrapper options.
 		/// </summary>
 		/// <param name="data">A 2-dimensional array of wrapper options</param>
-        public StreamContext(PhpArray data)
-            : this(data, true) { }
+		public StreamContext(PhpArray data)
+			: base(StreamContextTypeName)
+		{
+			this.data = data;
+		}
 
-        /// <summary>
-        /// Create a new context resource from an array of wrapper options.
-        /// </summary>
-        /// <param name="data">A 2-dimensional array of wrapper options</param>
-        /// <param name="registerInReqContext">Whether to register this instance in current <see cref="RequestContext"/>. Should be <c>false</c> for static resources.</param>
-        private StreamContext(PhpArray data, bool registerInReqContext)
-            : base(StreamContextTypeName, registerInReqContext)
-        {
-            this.data = data;
-        }
-
-        #endregion
+		#endregion
 
         /// <summary>
 		/// Checks the context for validity, throws a warning it is not.
@@ -479,7 +471,7 @@ namespace PHP.Core
 		/// <include file='Doc/Streams.xml' path='docs/method[@name="RawTell"]/*'/>
 		protected virtual int RawTell()
 		{
-            PhpException.Throw(PhpError.Warning, CoreResources.GetString("wrapper_op_unsupported", "Seek"));
+			PhpException.Throw(PhpError.Warning, CoreResources.GetString("wrapper_op_unsupported", "Seek"));
 			return -1;
 		}
 
@@ -577,7 +569,7 @@ namespace PHP.Core
 		{
 			get
 			{
-                // The raw stream reached EOF and all the data is processed.
+				// The raw stream reached EOF and all the data is processed.
 				if (RawEof)
 				{
 					// Check the buffers as quickly as possible.
@@ -1173,32 +1165,44 @@ namespace PHP.Core
 		/// <param name="data">Data to scan.</param>
 		/// <param name="from">Index of the first character to scan.</param>
 		/// <returns></returns>
-		private static int FindEoln(object data, int from)
+		private int FindEoln(object data, int from)
 		{
-            Debug.Assert(data != null);
-			//if (this.IsText)
-            if (data.GetType() == typeof(string))
+			Debug.Assert(data != null);
+			if (this.IsText)
 			{
-                return ((string)data).IndexOf('\n', from);
+				string s = data as string;
+				Debug.Assert(s != null);
+				return s.IndexOf('\n', from);
 			}
 			else
 			{
-                Debug.Assert(data is PhpBytes);
-                return ArrayUtils.IndexOf(((PhpBytes)data).ReadonlyData, (byte)'\n', from);
+				PhpBytes bin = data as PhpBytes;
+				Debug.Assert(bin != null);
+                return ArrayUtils.IndexOf(bin.ReadonlyData, (byte)'\n', from);
+				/*
+				for (int i = from; i < bin.Data.Length; i++)
+				{
+				  if (bin.Data[i] == '\n') return i;
+				}
+				return -1;
+				/**/
 			}
 		}
 
 		/// <summary>
-        /// Split a <see cref="String"/> or <see cref="PhpBytes"/> to "upto" bytes at left and the rest or <c>null</c> at right.
+		/// Split a string or PhpBytes to "upto" bytes at left and the rest or null at right.
 		/// </summary>
-		private static void SplitData(object data, int upto, out object left, out object right)
+		/// <param name="data"></param>
+		/// <param name="upto"></param>
+		/// <param name="left"></param>
+		/// <param name="right"></param>
+		private void SplitData(object data, int upto, out object left, out object right)
 		{
 			Debug.Assert(data != null);
 			Debug.Assert(upto >= 0);
-			//if (this.IsText)
-            if (data.GetType() == typeof(string))
+			if (this.IsText)
 			{
-                string s = (string)data;
+				string s = data as string;
 				Debug.Assert(s != null);
 				if (upto < s.Length - 1)
 				{
@@ -1213,8 +1217,8 @@ namespace PHP.Core
 			}
 			else
 			{
-                Debug.Assert(data is PhpBytes);
-				PhpBytes bin = (PhpBytes)data;
+				PhpBytes bin = data as PhpBytes;
+				Debug.Assert(bin != null);
 				if (upto < bin.Length - 1)
 				{
 					byte[] l = new byte[upto + 1], r = new byte[bin.Length - upto - 1];
@@ -1407,7 +1411,7 @@ namespace PHP.Core
 					SplitData(str, pos + ending.Length - 1, out left, out right);
 					Debug.Assert(left is string);
 					Debug.Assert(right is string);
-                    int returnedLength = ((string)right).Length;
+					int returnedLength = (right as string).Length;
 					if (this.IsBinary) right = AsBinary(right);
 
 					if (readBuffers.Count > 0)
@@ -1428,7 +1432,7 @@ namespace PHP.Core
 					}
 					// Update the offset as the data gets back.
 					readOffset -= returnedLength;
-					return (string)left;
+					return left as string;
 				}
 			}
 			// ReadLine now works on binary files too but only for the \n ending.
@@ -1792,27 +1796,26 @@ namespace PHP.Core
 					break;
 
 				case FileAccess.Write:
-                    // The following does not currently work since other methods do not take unempty writebuffer into account
-
-                    //// Maybe we can seek inside of the buffer but we allow only backward skips.
-                    //if ((newpos >= writeOffset) && (newpos < writeOffset + writePosition))
-                    //{
-                    //    // We are inside the current buffer, great.
-                    //    writePosition = newpos - writeOffset;
-                    //}
-                    //else
-                    //{
-
-					// Flush write buffers and proceed to the default handling.
-					FlushWriteBuffer();
-
-					// Notice that for a filtered stream, seeking is not a good idea
-					if (IsWriteFiltered)
+					// Maybe we can seek inside of the buffer but we allow only backward skips.
+					if ((newpos >= writeOffset) && (newpos < writeOffset + writePosition))
 					{
-						PhpException.Throw(PhpError.Notice,
-							CoreResources.GetString("stream_seek_filtered", (textWriteFilter != null) ? "text" : "filtered"));
+						// We are inside the current buffer, great.
+						writePosition = newpos - writeOffset;
 					}
-					return SeekInternal(offset, current, whence);
+					else
+					{
+						// Flush write buffers and proceed to the default handling.
+						FlushWriteBuffer();
+
+						// Notice that for a filtered stream, seeking is not a good idea
+						if (IsWriteFiltered)
+						{
+							PhpException.Throw(PhpError.Notice,
+								CoreResources.GetString("stream_seek_filtered", (textWriteFilter != null) ? "text" : "filtered"));
+						}
+						return SeekInternal(offset, current, whence);
+					}
+					break;
 			}
 			return true;
 			// CHECKME: [PhpStream.Seek]
@@ -1859,7 +1862,7 @@ namespace PHP.Core
 
 				// No data should be buffered when seeking the underlying stream!
 				Debug.Assert(readBuffers == null);
-				Debug.Assert(writeBuffer == null || writePosition == 0);
+				Debug.Assert(writeBuffer == null);
 				readPosition = writePosition = 0;
 
 				// EX: This is inaccurate, but there is no better information avalable (w/o processing the whole stream)
@@ -2130,15 +2133,15 @@ namespace PHP.Core
 				if (CurrentAccess != FileAccess.Write) return -1;
 
 				// Data passed via filters to output buffers (not filtered yet!)
-                return writeFilteredCount;
-                //try
-                //{
-                //  return RawTell() + this.writePosition;
-                //}
-                //catch (Exception)
-                //{
-                //  return this.writeOffset + this.writePosition;
-                //}
+				return writeFilteredCount;
+				//        try
+				//        {
+				//          return RawTell() + this.writePosition;
+				//        }
+				//        catch (Exception)
+				//        {
+				//          return this.writeOffset + this.writePosition;
+				//        }
 			}
 		}
 
@@ -2150,16 +2153,16 @@ namespace PHP.Core
 				if (CurrentAccess != FileAccess.Read) return -1;
 
 				// Data physically read - data still in buffers
-                return readFilteredCount - ReadBufferLength;
-                //try
-                //{
-                //  return RawTell() - ReadBufferLength;
-                //  // The position in the stream minus the data remaining in the buffers
-                //}
-                //catch (Exception)
-                //{
-                //  return this.readOffset + this.readPosition;
-                //}
+				return readFilteredCount - ReadBufferLength;
+				//        try
+				//        {
+				//          return RawTell() - ReadBufferLength;
+				//          // The position in the stream minus the data remaining in the buffers
+				//        }
+				//        catch (Exception)
+				//        {
+				//          return this.readOffset + this.readPosition;
+				//        }
 			}
 		}
 

@@ -202,12 +202,12 @@ namespace PHP.Core
 			StatStruct result;//  = new StatStruct();
 			uint device = unchecked((uint)(char.ToLower(info.FullName[0]) - 'a')); // index of the disk
 
-            ushort mode = (ushort)BuildMode(info, attributes, path);
+			ushort mode = (ushort)BuildMode(info,attributes, path);
 
-			long atime,mtime,ctime;
-            atime = ToStatUnixTimeStamp(info, (_info) => _info.LastAccessTimeUtc);
-            mtime = ToStatUnixTimeStamp(info, (_info) => _info.LastWriteTimeUtc);
-            ctime = ToStatUnixTimeStamp(info, (_info) => _info.CreationTimeUtc);
+			long
+				atime = ToStatUnixTimeStamp(info.LastAccessTimeUtc),
+				mtime = ToStatUnixTimeStamp(info.LastWriteTimeUtc),
+				ctime = ToStatUnixTimeStamp(info.CreationTimeUtc);
 
 			result.st_dev = device;         // device number 
 			result.st_ino = 0;              // inode number 
@@ -218,9 +218,8 @@ namespace PHP.Core
 			result.st_rdev = device;        // device type, if inode device -1
 			result.st_size = 0;             // size in bytes
 
-            FileInfo file_info = info as FileInfo;
-            if (file_info != null) 
-                result.st_size = FileSystemUtils.FileSize(file_info);
+			FileInfo file_info = info as FileInfo;
+			if (file_info != null) result.st_size = unchecked((int)file_info.Length);
 
 			result.st_atime = atime;        // time of last access (unix timestamp) 
 			result.st_mtime = mtime;        // time of last modification (unix timestamp) 
@@ -235,23 +234,8 @@ namespace PHP.Core
 		/// Adjusts UTC time of a file by adding Daylight Saving Time difference.
 		/// Makes file times working in the same way as in PHP and Windows Explorer.
 		/// </summary>
-        /// <param name="info"><see cref="FileSystemInfo"/> object reference. Used to avoid creating of closure when passing <paramref name="utcTimeFunc"/>.</param>
-        /// <param name="utcTimeFunc">Function obtaining specific <see cref="DateTime"/> from given <paramref name="info"/>.</param>
-        private static long ToStatUnixTimeStamp(FileSystemInfo info, Func<FileSystemInfo, DateTime> utcTimeFunc)
+		private static long ToStatUnixTimeStamp(DateTime utcTime)
 		{
-            DateTime utcTime;
-
-            try
-            {
-                utcTime = utcTimeFunc(info);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                //On Linux this exception might be thrown if a file metadata are corrupted
-                //just catch it and return 0;
-                return 0;
-            }
-
 			return DateTimeUtils.UtcToUnixTimeStamp(utcTime + DateTimeUtils.GetDaylightTimeDifference(utcTime, DateTime.UtcNow));
 		}
 
@@ -356,65 +340,55 @@ namespace PHP.Core
 		/// <param name="attributes">Attributes of the file.</param>
 		/// <param name="path">Paths to the file.</param>
 		/// <returns>UNIX-like file mode.</returns>
-		private static FileModeFlags BuildMode(FileSystemInfo/*!*/info, FileAttributes attributes, string path)
-        {
-            // TODO: remove !EnvironmentUtils.IsDotNetFramework branches;
-            // use mono.unix.native.stat on Mono instead of BuildStatStruct(), http://docs.go-mono.com/?link=M%3aMono.Unix.Native.Syscall.stat
-
-            // TODO: use Win32 stat on Windows
-
+		private static FileModeFlags BuildMode(FileSystemInfo info, FileAttributes attributes, string path)
+		{
 			// Simulates the UNIX file mode.
-			FileModeFlags rv;
+			bool directory = ((attributes & FileAttributes.Directory) > 0);
+			FileModeFlags rv = (directory) ? FileModeFlags.Directory : FileModeFlags.File;
 
-            if ((attributes & FileAttributes.Directory) != 0)
+            if (directory)
             {
-                // a directory:
-                rv = FileModeFlags.Directory;
+                rv |= GetFileMode((DirectoryInfo)info);
 
-                if (EnvironmentUtils.IsDotNetFramework)
-                {
-                    rv |= GetFileMode((DirectoryInfo)info);
-
-                    // PHP on Windows always shows that directory isn't executable
-                    rv &= ~FileModeFlags.Execute;
-                }
-                else
-                {
-                    rv |= FileModeFlags.Read | FileModeFlags.Execute | FileModeFlags.Write;
-                }
+                // PHP on windows always shows that directory isn't executable
+                rv &= ~FileModeFlags.Execute;
             }
             else
             {
-                // a file:
-                rv = FileModeFlags.File;
+                rv |= GetFileMode((FileInfo)info);
 
-                if (EnvironmentUtils.IsDotNetFramework)
+                if ((attributes & FileAttributes.ReadOnly) != 0 && (rv & FileModeFlags.Write) != 0)
+                    rv |= FileModeFlags.Write;
+
+                if ((rv & FileModeFlags.Execute) != 0)
                 {
-                    rv |= GetFileMode((FileInfo)info);
+                    //Php on windows check the file internaly wheather it is executable
+                    //we just look on the extension
 
-                    if ((attributes & FileAttributes.ReadOnly) != 0 && (rv & FileModeFlags.Write) != 0)
-                        rv &= ~FileModeFlags.Write;
-
-                    if ((rv & FileModeFlags.Execute) == 0)
-                    {
-                        // PHP on Windows checks the file internaly wheather it is executable
-                        // we just look on the extension
-
-                        string ext = Path.GetExtension(path);
-                        if ((ext.EqualsOrdinalIgnoreCase(".exe")) || (ext.EqualsOrdinalIgnoreCase(".com")) || (ext.EqualsOrdinalIgnoreCase(".bat")))
-                            rv |= FileModeFlags.Execute;
-                    }
+                    string ext = Path.GetExtension(path).ToLower();
+                    if ((ext == ".exe") || (ext == ".com") || (ext == ".bat"))
+                        rv |= FileModeFlags.Execute;
                 }
-                else
-                {
-                    rv |= FileModeFlags.Read; // | FileModeFlags.Execute;
 
-                    if ((attributes & FileAttributes.ReadOnly) == 0)
-                        rv |= FileModeFlags.Write;
-                }
             }
 
-            //
+            //rv |= FileModeFlags.Read;
+
+            //if (directory)
+            //{
+            //    rv |= FileModeFlags.Execute;
+            //    rv |= FileModeFlags.Write;
+            //}
+            //else
+            //{
+            //    if ((attributes & FileAttributes.ReadOnly) == 0)
+            //        rv |= FileModeFlags.Write;
+
+            //    string ext = Path.GetExtension(path).ToLower();
+            //    if ((ext == ".exe") || (ext == ".com") || (ext == ".bat"))
+            //        rv |= FileModeFlags.Execute;
+            //}
+
 			return rv;
 		}
 
@@ -440,7 +414,7 @@ namespace PHP.Core
                         }
                     }
 
-                    return BuildStatStruct(info, info.Attributes, p);
+                    return BuildStatStruct(info, File.GetAttributes(p), p);
                 });
         }
 
@@ -749,5 +723,119 @@ namespace PHP.Core
 		private static PhpStream stderr = null;
 	}
 
+	#endregion
+
+	#region Extenal streams wrapper
+	/// <summary>
+	/// Represents a native PHP stream wrapper that lives in <c>ExtManager</c>.
+	/// </summary>
+	public class ExternalStreamWrapper : StreamWrapper
+	{
+		/// <summary>A MBRO proxy of the (remote) native stream wrapper.</summary>
+		private IExternalStreamWrapper proxy;
+
+		/// <summary>The protocol portion of URL handled by this wrapper.</summary>
+		private readonly string scheme;
+
+		/// <summary>
+		/// Tries to find an <see cref="ExternalStreamWrapper"/> a given <paramref name="scheme"/>.
+		/// </summary>
+		/// <param name="scheme">The scheme portion of an URL.</param>
+		/// <returns>An <see cref="ExternalStreamWrapper"/> associated with the given <paramref name="scheme"/>
+		/// or <c>null</c> if the wrapper was not found.</returns>
+		public static ExternalStreamWrapper GetExternalWrapperByScheme(string scheme)
+		{
+			IExternalStreamWrapper proxy = Externals.GetStreamWrapper(scheme);
+			return (proxy == null ? null : new ExternalStreamWrapper(proxy, scheme));
+		}
+
+		/// <summary>
+		/// Creates a new <see cref="ExternalStreamWrapper"/> with the given proxy object.
+		/// </summary>
+		/// <param name="proxy">Instance of a class derived from <see cref="MarshalByRefObject"/> that should
+		/// serve as a proxy for this <see cref="ExternalStreamWrapper"/>.</param>
+		/// <param name="scheme">The protocol portion of URL handled by this wrapper.</param>
+		protected ExternalStreamWrapper(IExternalStreamWrapper proxy, string scheme)
+		{
+			this.proxy = proxy;
+			this.scheme = scheme;
+		}
+
+		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="Open"]/*'/>
+		public override PhpStream Open(ref string path, string mode, StreamOpenOptions options, StreamContext context)
+		{
+			StreamAccessOptions accessOptions;
+			if (!ParseMode(mode, options, out accessOptions)) return null;
+			string opened_path;
+			IExternalStream stream = proxy.Open(path, mode, (int)options, out opened_path, null);
+			path = opened_path;
+			return (stream == null ? null :
+				new ExternalStream(stream, this, accessOptions, opened_path, context));
+		}
+
+		/// <include file='Doc/Wrappers.xml' path='docs/property[@name="Label"]/*'/>
+		public override string Label
+		{
+			get
+			{
+				return proxy.Label;
+			}
+		}
+
+		/// <include file='Doc/Wrappers.xml' path='docs/property[@name="Scheme"]/*'/>
+		public override string Scheme
+		{
+			get
+			{
+				return scheme;
+			}
+		}
+
+		/// <include file='Doc/Wrappers.xml' path='docs/property[@name="IsUrl"]/*'/>
+		public override bool IsUrl
+		{
+			get
+			{
+				return proxy.IsUrl;
+			}
+		}
+
+
+		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="Stat"]/*'/>
+        public override StatStruct Stat(string path, StreamStatOptions options, StreamContext context, bool streamStat)
+		{
+			return proxy.Stat(path, (int)options, null, streamStat);
+		}
+
+		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="Unlink"]/*'/>
+		public override bool Unlink(string path, StreamUnlinkOptions options, StreamContext context)
+		{
+			return proxy.Unlink(path, (int)options, null);
+		}
+
+		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="Listing"]/*'/>
+		public override string[] Listing(string path, StreamListingOptions options, StreamContext context)
+		{
+			return proxy.Listing(path, (int)options, null);
+		}
+
+		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="Rename"]/*'/>
+		public override bool Rename(string fromPath, string toPath, StreamRenameOptions options, StreamContext context)
+		{
+			return proxy.Rename(fromPath, toPath, (int)options, null);
+		}
+
+		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="MakeDirectory"]/*'/>
+		public override bool MakeDirectory(string path, int accessMode, StreamMakeDirectoryOptions options, StreamContext context)
+		{
+			return proxy.MakeDirectory(path, accessMode, (int)options, null);
+		}
+
+		/// <include file='Doc/Wrappers.xml' path='docs/method[@name="RemoveDirectory"]/*'/>
+		public override bool RemoveDirectory(string path, StreamRemoveDirectoryOptions options, StreamContext context)
+		{
+			return proxy.RemoveDirectory(path, (int)options, context);
+		}
+	}
 	#endregion
 }

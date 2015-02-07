@@ -15,8 +15,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net.Sockets;
 using System.IO;
-using System.Threading.Tasks;
-using System.Diagnostics;
 
 namespace PHP.Core
 {
@@ -28,16 +26,6 @@ namespace PHP.Core
 	/// </summary>
 	public abstract partial class PhpStream : PhpResource
 	{
-		public virtual bool CanReadWithoutLock()
-		{
-			return true;
-		}
-
-		public virtual bool CanWriteWithoutLock()
-		{
-			return true;
-		}
-
 		#region Stat (optional)
 		/// <include file='Doc/Streams.xml' path='docs/method[@name="Stat"]/*'/>
 		public virtual StatStruct Stat()
@@ -250,6 +238,114 @@ namespace PHP.Core
 
 	#endregion
 
+	#region ExternalStream class
+	/// <summary>
+	/// Represents a native PHP stream that lives in <c>ExtManager</c>.
+	/// </summary>
+	public class ExternalStream : PhpStream
+	{
+		/// <summary>A MBRO proxy of the (remote) native stream.</summary>
+		private IExternalStream proxy;
+
+		/// <summary>
+		/// Creates a new <see cref="ExternalStream"/> with the given proxy object.
+		/// </summary>
+		/// <param name="proxy">Instance of a class derived from <see cref="MarshalByRefObject"/> that should
+		/// serve as a proxy for this <see cref="ExternalStream"/>.</param>
+		/// <param name="openingWrapper">The parent instance.</param>
+		/// <param name="accessOptions">The additional options parsed from the <c>fopen()</c> mode.</param>
+		/// <param name="openedPath">The absolute path to the opened resource.</param>
+		/// <param name="context">The stream context passed to fopen().</param>
+		internal ExternalStream(IExternalStream proxy, StreamWrapper openingWrapper, StreamAccessOptions accessOptions, string openedPath, StreamContext context)
+			: base(openingWrapper, accessOptions, openedPath, context)
+		{
+			this.proxy = proxy;
+		}
+
+		/// <include file='Doc/Streams.xml' path='docs/method[@name="RawRead"]/*'/>
+		protected override int RawRead(byte[] buffer, int offset, int count)
+		{
+			byte[] new_buffer = buffer;
+			int ret = proxy.Read(ref new_buffer, offset, count);
+
+			// the copying is necessary if proxy.Read was a remote call
+			if (!Object.ReferenceEquals(buffer, new_buffer))
+			{
+				new_buffer.CopyTo(buffer, 0);
+			}
+
+			return ret;
+		}
+
+		/// <include file='Doc/Streams.xml' path='docs/method[@name="RawWrite"]/*'/>
+		protected override int RawWrite(byte[] buffer, int offset, int count)
+		{
+			return proxy.Write(buffer, offset, count);
+		}
+
+		/// <summary>
+		/// Closes the stream.
+		/// </summary>
+		protected override void FreeManaged()
+		{
+			// Call the base implementation to flush the output buffers if any.
+			base.FreeManaged();
+			proxy.Close();
+		}
+
+		/// <include file='Doc/Streams.xml' path='docs/method[@name="RawFlush"]/*'/>
+		protected override bool RawFlush()
+		{
+			return proxy.Flush();
+		}
+
+		/// <include file='Doc/Streams.xml' path='docs/property[@name="RawEof"]/*'/>
+		protected override bool RawEof
+		{
+			get
+			{
+				return proxy.Eof();
+			}
+		}
+
+		/// <summary>
+		/// Returns the status array for the stram.
+		/// </summary>
+		/// <returns>A stat array describing the stream.</returns>
+		public override StatStruct Stat()
+		{
+			return proxy.Stat();
+		}
+
+		#region Seeking
+		/// <include file='Doc/Streams.xml' path='docs/property[@name="CanSeek"]/*'/>
+		public override bool CanSeek
+		{
+			get
+			{
+				return true;
+			}
+		}
+
+
+		/// <include file='Doc/Streams.xml' path='docs/method[@name="RawSeek"]/*'/>
+		protected override bool RawSeek(int offset, SeekOrigin whence)
+		{
+			return proxy.Seek(offset, whence);
+		}
+
+		/// <summary>
+		/// Gets the current position in the stream.
+		/// </summary>
+		/// <returns>The position or <c>-1</c> on error.</returns>
+		protected override int RawTell()
+		{
+			return proxy.Tell();
+		}
+		#endregion
+	}
+	#endregion
+
 	#region SocketStream class
 
 	/// <summary>
@@ -258,16 +354,6 @@ namespace PHP.Core
 	/// </summary>
 	public class SocketStream : PhpStream
 	{
-		public override bool CanReadWithoutLock()
-		{
-			return socket.Available > 0 && (currentTask == null || currentTask.IsCompleted);
-		}
-
-		public override bool CanWriteWithoutLock()
-		{
-			return currentTask == null || currentTask.IsCompleted;
-		}
-
 		/// <summary>
 		/// The encapsulated network socket.
 		/// </summary>
@@ -278,20 +364,15 @@ namespace PHP.Core
 		/// </summary>
 		protected bool eof;
 
-		private bool isAsync;
-		private Task currentTask;
-
 		#region PhpStream overrides
 
-		public SocketStream(Socket socket, string openedPath, StreamContext context, bool isAsync = false)
+		public SocketStream(Socket socket, string openedPath, StreamContext context)
 			: base(null, StreamAccessOptions.Read | StreamAccessOptions.Write, openedPath, context)
 		{
 			Debug.Assert(socket != null);
 			this.socket = socket;
 			this.IsWriteBuffered = false;
 			this.eof = false;
-			this.isAsync = isAsync;
-			this.IsReadBuffered = false;
 		}
 
 		/// <summary>
@@ -311,8 +392,6 @@ namespace PHP.Core
 		/// <include file='Doc/Streams.xml' path='docs/method[@name="RawRead"]/*'/>
 		protected override int RawRead(byte[] buffer, int offset, int count)
 		{
-			if (currentTask != null)
-				currentTask.Wait();
 			try
 			{
 				int rv = socket.Receive(buffer, offset, count, SocketFlags.None);
@@ -331,24 +410,9 @@ namespace PHP.Core
 		{
 			try
 			{
-				if (isAsync)
-				{
-					if (currentTask != null)
-						currentTask.Wait();
-					currentTask = new Task(() =>
-					{
-						int rv = socket.Send(buffer, offset, count, SocketFlags.None);
-						eof = rv == 0;
-					});
-					currentTask.Start();
-					return count;
-				}
-				else
-				{
-					int rv = socket.Send(buffer, offset, count, SocketFlags.None);
-					eof = rv == 0;
-					return rv;
-				}
+				int rv = socket.Send(buffer, offset, count, SocketFlags.None);
+				eof = rv == 0;
+				return rv;
 			}
 			catch (Exception e)
 			{
@@ -376,7 +440,7 @@ namespace PHP.Core
 		{
 			if (option == StreamParameterOptions.ReadTimeout)
 			{
-                int timeout = (int)(Convert.ObjectToDouble(value) * 1000.0);
+				int timeout = Convert.ObjectToInteger(value);
 				socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, timeout);
 				socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, timeout);
 				return true;
@@ -407,5 +471,6 @@ namespace PHP.Core
 			return result;
 		}
 	}
+
 	#endregion
 }

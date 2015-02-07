@@ -19,37 +19,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using PHP.Core;
-using System.Runtime.InteropServices;
 #if SILVERLIGHT
 using PHP.CoreCLR;
 #endif
 
 namespace PHP.Core
 {
-    #region StatStruct
-
-    /// <summary>
-    /// Managed equivalent of the CRT <c>stat</c> structure.
-    /// </summary>
-    [Serializable]
-    [StructLayout(LayoutKind.Sequential)]
-    public struct StatStruct
-    {
-        public uint st_dev;
-        public ushort st_ino;
-        public ushort st_mode;
-        public short st_nlink;
-        public short st_uid;
-        public short st_gid;
-        public uint st_rdev;
-        public int st_size;
-        public long st_atime;
-        public long st_mtime;
-        public long st_ctime;
-    }
-
-    #endregion
-
     #region Open-Mode decoded options
     /// <summary>
     /// Flags returned by <see cref="StreamWrapper.ParseMode"/> indicating
@@ -370,7 +345,7 @@ namespace PHP.Core
         /// <param name="accessOptions">Resulting <see cref="StreamAccessOptions"/> giving 
         /// additional information to the stream opener.</param>
         /// <returns><c>true</c> if the given mode was a valid file opening mode, otherwise <c>false</c>.</returns>
-        public bool ParseMode(string mode, StreamOpenOptions options, out FileMode fileMode, out FileAccess fileAccess, out StreamAccessOptions accessOptions)
+        internal bool ParseMode(string mode, StreamOpenOptions options, out FileMode fileMode, out FileAccess fileAccess, out StreamAccessOptions accessOptions)
         {
             accessOptions = StreamAccessOptions.Empty;
             bool forceBinary = false; // The user requested a text stream
@@ -448,7 +423,7 @@ namespace PHP.Core
             if ((fileMode == FileMode.Append) && (fileAccess == FileAccess.ReadWrite))
             {
                 // Note: .NET does not support the "a+" mode, use "r+" and Seek()
-                fileMode = FileMode.OpenOrCreate;
+                fileMode = FileMode.Open;
                 fileAccess = FileAccess.ReadWrite;
                 accessOptions |= StreamAccessOptions.SeekEnd;
             }
@@ -565,21 +540,6 @@ namespace PHP.Core
         }
 
         /// <summary>
-        /// Register a new system wrapper
-        /// </summary>
-        /// <param name="wrapper">An instance of the corresponding StreamWrapper descendant.</param>
-        /// <returns>True if succeeds, false if the scheme is already registered.</returns>
-        public static bool RegisterSystemWrapper(StreamWrapper wrapper)
-        {
-            if (!systemStreamWrappers.ContainsKey(wrapper.Scheme))
-            {
-                systemStreamWrappers.Add(wrapper.Scheme, wrapper);
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
         /// Checks if a wrapper is already registered for the given scheme.
         /// </summary>
         /// <param name="scheme">The scheme.</param>
@@ -632,13 +592,12 @@ namespace PHP.Core
         /// <returns></returns>
         public static ICollection<string> GetSystemWrapperSchemes()
         {
-            string[] keys = new string[systemStreamWrappers.Count];
-            int i = 0;
-            foreach (string key in systemStreamWrappers.Keys)
+            return new string[]
             {
-                keys[i++] = key;
-            }
-            return keys;
+              "file", 
+              "http", 
+              "php" 
+            };
         }
 
         /// <summary>
@@ -685,8 +644,17 @@ namespace PHP.Core
                 return (StreamWrapper)UserWrappers[scheme];
             }
 
-            // no wrapper for given scheme
-            return null;
+#if !SILVERLIGHT
+            // And finally look inside the extensions. 
+            StreamWrapper externalWrapper =
+              ExternalStreamWrapper.GetExternalWrapperByScheme(scheme);
+
+            // Returns either the found external wrapper or null.
+            return externalWrapper;
+#else
+			// External wrappers N/A on SL
+			return null;
+#endif
         }
 
         /// <summary>
@@ -918,7 +886,7 @@ namespace PHP.Core
             //
             object protocol_version = context.GetOption(scheme, "protocol_version");
             double dprotocol_version = (protocol_version != null) ? Convert.ObjectToDouble(protocol_version) : 1.0;// default: 1.0
-            request.ProtocolVersion = new Version(dprotocol_version.ToString("F01", System.Globalization.CultureInfo.InvariantCulture));
+            request.ProtocolVersion = new Version(dprotocol_version.ToString("F01"));
 #endif
             //
             // method - GET, POST, or any other HTTP method supported by the remote server.
@@ -954,7 +922,7 @@ namespace PHP.Core
                 {
                     int separator = line.IndexOf(':');
                     if (separator <= 0) continue;
-                    string name = line.Substring(0, separator).Trim().ToLowerInvariant();
+                    string name = line.Substring(0, separator).Trim().ToLower();
                     string value = line.Substring(separator + 1, line.Length - separator - 1).Trim();
 
                     switch (name)
@@ -968,39 +936,8 @@ namespace PHP.Core
                         case "user-agent":
                             request.UserAgent = value;
                             break;
-                        case "accept":
-                            request.Accept = value;
-                            break;
-                        case "connection":
-                            request.Connection = value;
-                            break;
-                        case "expect":
-                            request.Expect = value;
-                            break;
-                        case "date":
-                            request.Headers["Date"] =
-                                DateTime.Parse(value, System.Globalization.CultureInfo.InvariantCulture)
-                                .ToUniversalTime()
-                                .ToString("R", System.Globalization.CultureInfo.InvariantCulture);
-                            break;
-                        case "host":
-                            request.Host = value;
-                            break;
-                        case "if-modified-since":
-                            request.IfModifiedSince = System.Convert.ToDateTime(value);
-                            break;
-                        case "range":
-                            request.AddRange(System.Convert.ToInt32(value));
-                            break;
-                        case "referer":
-                            request.Referer = value;
-                            break;
-                        case "transfer-encoding":
-                            request.TransferEncoding = value;
-                            break;
-
                         default:
-                            request.Headers.Add(name, value);
+                            request.Headers[name] = value;
                             break;
                     }
                 }
@@ -1389,7 +1326,7 @@ namespace PHP.Core
         private readonly string scheme;
         private readonly Reflection.DTypeDesc/*!*/wrapperTypeDesc;
         private readonly bool isUrl;
-
+        
         #region Wrapper methods invocation
 
         /// <summary>
@@ -1415,11 +1352,7 @@ namespace PHP.Core
         /// <returns></returns>
         public object InvokeWrapperMethod(string method, params object[] args)
         {
-            if (args == null || args.Length == 0)
-                context.Stack.AddFrame();
-            else
-                context.Stack.AddFrame(args);
-
+            context.Stack.AddFrame(args);
             return WrapperTypeInstance.InvokeMethod(method, null, context);
         }
 
@@ -1452,7 +1385,7 @@ namespace PHP.Core
 
         public override PhpStream Open(ref string path, string mode, StreamOpenOptions options, StreamContext context)
         {
-            var opened_path = new PhpReference(path);
+            var opened_path  = new PhpReference(path);
             object result = InvokeWrapperMethod(PhpUserStream.USERSTREAM_OPEN, path, mode, (int)options, opened_path);
 
             if (Convert.ObjectToBoolean(result))
@@ -1461,8 +1394,8 @@ namespace PHP.Core
                 if (opened_path_str != null) path = opened_path_str;
 
                 FileMode fileMode;
-                FileAccess fileAccess;
-                StreamAccessOptions ao;
+			    FileAccess fileAccess;
+			    StreamAccessOptions ao;
 
                 if (!ParseMode(mode, options, out fileMode, out fileAccess, out ao)) return null;
                 return new PhpUserStream(this, ao, path, context);
@@ -1503,11 +1436,11 @@ namespace PHP.Core
 
         public override StatStruct Stat(string path, StreamStatOptions options, StreamContext context, bool streamStat)
         {
-            PhpArray arr = (streamStat ?
+            PhpArray arr = (streamStat ? 
                 this.InvokeWrapperMethod(PhpUserStream.USERSTREAM_STAT) :
                 this.InvokeWrapperMethod(PhpUserStream.USERSTREAM_STATURL, path, options)) as PhpArray;
 
-            if (arr != null)
+            if (arr!= null)
             {
                 return new StatStruct()
                 {
