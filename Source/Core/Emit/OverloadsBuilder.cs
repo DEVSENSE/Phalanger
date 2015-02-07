@@ -12,7 +12,6 @@
 
 
 using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections;
@@ -20,6 +19,10 @@ using System.Collections.Generic;
 
 using PHP.Core;
 using PHP.Core.Reflection;
+
+#if SILVERLIGHT
+using PHP.CoreCLR;
+#endif
 
 /*
   FUTURE VERSION:
@@ -98,7 +101,7 @@ namespace PHP.Core.Emit
 
                         if (index == overloads[0].ParamCount)
                         {
-                            Debug.Fail(null);
+                            Debug.Fail();
                             overload = overloads[0];
                             childNodes = new Dictionary<Type,OverloadTreeNode>();                            
                             break;
@@ -235,7 +238,7 @@ namespace PHP.Core.Emit
         /// <summary>
 		/// A delegate used to load a parameter to evaluation stack.
 		/// </summary>
-        internal delegate object ParameterLoader(ILEmitter/*!*/ il, int/*!*/ index, object aux, ParameterInfo param);
+		internal delegate object ParameterLoader(ILEmitter/*!*/ il, int/*!*/ index, object aux);
 
 		internal delegate void ParametersLoader(OverloadsBuilder builder, int start, ParameterInfo param, IPlace argCount);
 
@@ -371,7 +374,7 @@ namespace PHP.Core.Emit
 		/// </remarks>
 		public void EmitCallSwitch(IPlace/*!*/ thisRef, IPlace/*!*/script_context, IPlace/*!*/ rtVariables, IPlace/*!*/ namingContext, IPlace/*!*/classContext, List<PhpLibraryFunction.Overload>/*!!*/ overloads)
 		{
-            DebugHelper.AssertAllNonNull(overloads);
+			Debug.AssertAllNonNull(overloads);
 
 			int last = overloads.Count - 1;
 			int min = overloads[0].ParamCount;
@@ -413,7 +416,7 @@ namespace PHP.Core.Emit
 			if ((flags & PhpLibraryFunction.OverloadFlags.NeedsNamingContext) == 0)
 				namingContext = null;
 
-            if ((flags & (PhpLibraryFunction.OverloadFlags.NeedsClassContext | PhpLibraryFunction.OverloadFlags.NeedsLateStaticBind)) == 0)
+            if ((flags & PhpLibraryFunction.OverloadFlags.NeedsClassContext) == 0)
                 classContext = null;
 
 			Label end_label = il.DefineLabel();
@@ -708,7 +711,7 @@ namespace PHP.Core.Emit
 
 				// emits reference argument peeking:
 				// ref = <load reference parameter>
-				loadReferenceParam(il, index, this.aux, param);
+				loadReferenceParam(il, index, this.aux);
 				il.Stloc(ref_loc);
 
 				// loads a value to the holder if parameter is not out-only:
@@ -738,12 +741,12 @@ namespace PHP.Core.Emit
 				if (formal_type == typeof(PhpReference))
 				{
 					// LOAD <load reference parameter>
-					type_or_value = loadReferenceParam(il, index, this.aux, param);
+					type_or_value = loadReferenceParam(il, index, this.aux);
 				}
 				else
 				{
 					// LOAD <load value parameter>
-                    type_or_value = loadValueParam(il, index, this.aux, param);
+					type_or_value = loadValueParam(il, index, this.aux);
 				}
 
 				// emits conversion stuff:
@@ -795,8 +798,7 @@ namespace PHP.Core.Emit
 		/// </param>
 		/// <param name="allowImplicitCast">Whether to allow implicit cast of types PhpArray, PhpObject, PhpResource.</param>
 		/// <param name="param">The formal argument description.</param>
-        /// <param name="additionalValuesOnStackCount">Amount of values pushed on stackl, that have to be cleaned up in case of failed conversion.</param>
-		internal void EmitArgumentConversion(Type dstType, object srcTypeOrValue, bool allowImplicitCast, ParameterInfo param, int additionalValuesOnStackCount = 0)
+		internal void EmitArgumentConversion(Type dstType, object srcTypeOrValue, bool allowImplicitCast, ParameterInfo param)
 		{
 			Debug.Assert(!dstType.IsByRef);
 
@@ -1007,59 +1009,52 @@ namespace PHP.Core.Emit
                 string type_name = PhpVariable.GetAssignableTypeName(dstType);
 
                 Label endif_label = il.DefineLabel();
-                Label endblock_label = il.DefineLabel();
 
-                //LocalBuilder loc_typed = null;
-                bool needsCast;
+                LocalBuilder loc_typed = null;
                 LocalBuilder loc_obj = il.DeclareLocal(typeof(object));
                 il.Emit(OpCodes.Dup);
                 il.Stloc(loc_obj);
                 
                 // IF (obj == null) goto ENDIF;
-                il.Emit(OpCodes.Dup);
                 il.Emit(OpCodes.Ldnull);
-                il.Emit(OpCodes.Beq_S, endblock_label);
+                il.Emit(OpCodes.Beq_S, endif_label);
 
+                //
+                il.Ldloc(loc_obj);
                 // (obj) on top of eval stack, eat it:
 
                 if (dstType.IsSealed)
                 {
-                    needsCast = true;
                     // if (<obj>.GetType() == typeof(<dstType>)) goto ENDIF;    // little JIT hack
-                    il.Emit(OpCodes.Dup);                
                     il.Emit(OpCodes.Callvirt, Methods.Object_GetType);
                     il.Emit(OpCodes.Ldtoken, dstType);
                     il.Emit(OpCodes.Call, Methods.GetTypeFromHandle);
                     il.Emit(OpCodes.Call, Methods.Equality_Type_Type);
                     il.Emit(OpCodes.Brtrue, endif_label);
-                    
-                    // (object)<obj> on stack
                 }
                 else
                 {
-                    needsCast = false;
-
-                    //loc_typed = il.DeclareLocal(dstType);
+                    loc_typed = il.DeclareLocal(dstType);
 
                     // <loc_typed> = <obj> as <dstType>:
                     il.Emit(OpCodes.Isinst, dstType);
-                    //il.Stloc(loc_typed);
+                    il.Emit(OpCodes.Dup);
+                    il.Stloc(loc_typed);
 
                     // (obj as dstType) is on top of the evaluation stack
 
                     // IF (obj!=null) goto ENDIF;
-                    il.Emit(OpCodes.Dup);
                     il.Emit(OpCodes.Brtrue_S, endif_label);
-
-                    // (<obj> as <dstType>) on stack
                 }
 
                 if (true)
                 {
-                    il.Emit(OpCodes.Pop);   // pops <obj> from stack
-
+                    // pops all arguments already pushed:
+                    for (int i = 0; i < pushedArgsCount; ++i)
+                        il.Emit(OpCodes.Pop);
+                    
                     // CALL PhpException.InvalidImplicitCast(obj,<PhpTypeName>,<functionName>);
-                    il.Ldloc(loc_obj);      // pushes original <obj>
+                    il.Ldloc(loc_obj);
                     il.Emit(OpCodes.Ldstr, type_name);
                     il.Emit(OpCodes.Ldstr, this.functionName.ToString());
                     il.Emit(OpCodes.Call, Methods.PhpException.InvalidImplicitCast);
@@ -1067,11 +1062,6 @@ namespace PHP.Core.Emit
                     if (debug)
                         il.Emit(OpCodes.Nop);
 
-                    // pops all arguments already pushed:
-                    int popsCount = pushedArgsCount + additionalValuesOnStackCount;
-                    for (int i = 0; i < popsCount; ++i)
-                        il.Emit(OpCodes.Pop);
-                    
                     Debug.Assert(overloadCallSkipEmitter != null);
 
                     // GOTO <end of call>;
@@ -1082,15 +1072,16 @@ namespace PHP.Core.Emit
                 // ENDIF;
                 il.MarkLabel(endif_label);
 
-                // load <obj>
-                if (needsCast)
+                // load typed <obj> (already casted in <loc_typed> or boxed in <loc_obj>
+                if (loc_typed != null)
                 {
-                    // cast <obj> from top of the stack
+                    il.Ldloc(loc_typed);
+                }
+                else
+                {
+                    il.Ldloc(loc_obj);
                     il.Emit(OpCodes.Castclass, dstType);
                 }
-
-                // ENDBLOCK:
-                il.MarkLabel(endblock_label);
             }
 		}
 
