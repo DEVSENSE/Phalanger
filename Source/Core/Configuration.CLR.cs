@@ -26,7 +26,6 @@ using System.Web.Configuration;
 using PHP.Core;
 using System.Collections.Generic;
 using PHP.Core.Reflection;
-using System.Collections.ObjectModel;
 
 namespace PHP.Core
 {
@@ -381,18 +380,37 @@ namespace PHP.Core
 			/// Can't contain a <B>null</B> reference. Setting the <B>null</B> reference will assign the default handler 
 			/// (<see cref="AspNetSessionHandler.Default"/>).
 			/// </summary>
-			public SessionHandler Handler
+			public SessionHandler/*!*/Handler
 			{
 				get
 				{
-					return handler;
+                    if (handler == null)
+                    {
+                        // lazily initialize the session handler:
+                        if (handler_getter != null)
+                        {
+                            handler = handler_getter() ?? handler;    // keep old one if handler_getter fails and handler is not null
+                            handler_getter = null;  // drop the getter closure
+                        }
+
+                        if (handler == null)
+                            handler = AspNetSessionHandler.Default;
+                    }
+
+                    return handler;
 				}
 				set
 				{
-					handler = value ?? AspNetSessionHandler.Default;
+					handler = value;
+                    handler_getter = null;
 				}
 			}
-			private SessionHandler handler = AspNetSessionHandler.Default;
+			private SessionHandler handler = null;
+
+            /// <summary>
+            /// One-time handler initializer function.
+            /// </summary>
+            private Func<SessionHandler> handler_getter = null;
 
             /// <summary>
             /// url_rewriter.tags specifies which HTML tags are rewritten to include session id
@@ -404,20 +422,20 @@ namespace PHP.Core
             /// 
             /// Cannot be null.
             /// </summary>
-            public Dictionary<string,List<string>> UrlRewriterTags
+            public Dictionary<string,string[]>/*!!*/UrlRewriterTags
             {
                 get
                 {
                     if (urlRewriterTags == null)
                     {
-                        urlRewriterTags = new Dictionary<string, List<string>>()
+                        urlRewriterTags = new Dictionary<string, string[]>()
                         {
-                            { "a", new List<string>(){"href"}},
-                            { "area", new List<string>(){"href"}},
-                            { "frame", new List<string>(){"src"}},
-                            { "input", new List<string>(){"src"}},
-                            { "form", new List<string>()},
-                            { "fieldset", new List<string>()}
+                            { "a", new string[]{"href"}},
+                            { "area", new string[]{"href"}},
+                            { "frame", new string[]{"src"}},
+                            { "input", new string[]{"src"}},
+                            { "form", ArrayUtils.EmptyStrings},
+                            { "fieldset", ArrayUtils.EmptyStrings}
                         };
                     }
                     return urlRewriterTags;
@@ -428,7 +446,7 @@ namespace PHP.Core
                 }
             }
 
-            private Dictionary<string, List<string>> urlRewriterTags = null;
+            private Dictionary<string, string[]> urlRewriterTags = null;
 
 			/// <summary>
 			/// Loads configuration from XML node.
@@ -443,16 +461,20 @@ namespace PHP.Core
 
 					case "Handler":
 						{
-							SessionHandler handler = SessionHandlers.GetHandler(value);
-							if (handler == null)
-								throw new ConfigurationErrorsException(CoreResources.GetString("unknown_session_handler", value), node);
-
-							this.handler = handler;
+                            // postpone this step until sessions are actually used, also not all the handlers are loaded yet
+                            this.handler_getter = () =>
+                                {
+                                    SessionHandler handler = SessionHandlers.GetHandler(value);
+                                    if (handler == null)
+                                        PhpException.Throw(PhpError.Warning, string.Format(CoreResources.unknown_session_handler, value));
+                                    
+                                    return handler;
+                                };
 							return true;
 						}
                     case "UrlRewriterTags":
                         {
-                            Dictionary<string, List<string>> newUrlRewriterTags = new Dictionary<string, List<string>>();
+                            var newUrlRewriterTags = new Dictionary<string, string[]>();
 
                             // value = "a=href,area=href,frame=src,input=src,form=,fieldset="
                             string[] tags = value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -465,11 +487,11 @@ namespace PHP.Core
                                 if (ass >= 1)   // there is at least one character before the assignment
                                 {
                                     string tagName = tag.Remove(ass).ToLower();
-                                    List<string> attrs = null;
-                                    if (!newUrlRewriterTags.TryGetValue(tagName, out attrs))
-                                        newUrlRewriterTags[tagName] = attrs = new List<string>();
+                                    string tagValue = tag.Substring(ass + 1).ToLower();
 
-                                    attrs.Add(tag.Substring(ass + 1).ToLower());
+                                    string[] attrs = null;
+                                    newUrlRewriterTags.TryGetValue(tagName, out attrs);
+                                    newUrlRewriterTags[tagName] = ArrayUtils.Concat(attrs, tagValue);
                                 }
                             }
 

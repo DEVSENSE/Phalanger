@@ -19,7 +19,6 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections;
 using System.Collections.Generic;
-using System.Web.Configuration;
 
 namespace PHP.Core
 {
@@ -97,12 +96,6 @@ namespace PHP.Core
 		/// <param name="httpContext">A current HTTP context. Can't be a <B>null</B> reference.</param>
 		internal protected abstract void Abandoning(ScriptContext context, HttpContext httpContext);
 
-        /// <summary>
-        /// Returns <c>true</c> iff this session handled is able to persist data after session id change.
-        /// </summary>
-        /// <remarks>E.g. ASP.NET session handler does not.</remarks>
-        public virtual bool AllowsSessionIdChange { get { return true; } }
-
 		/// <summary>
 		/// Keeps the object living forever.
 		/// </summary>
@@ -111,28 +104,6 @@ namespace PHP.Core
 		{
 			return null;
 		}
-
-        /// <summary>
-        /// Gets current session name.
-        /// </summary>
-        /// <param name="request">Valid request context.</param>
-        /// <returns>Session name.</returns>
-        public virtual string GetSessionName(RequestContext/*!*/request)
-        {
-            return AspNetSessionHandler.AspNetSessionName;
-        }
-
-        /// <summary>
-        /// Sets new session name.
-        /// </summary>
-        /// <param name="request">Valid request context.</param>
-        /// <param name="name">New session name.</param>
-        /// <returns>Whether session name was changed successfully.</returns>
-        public virtual bool SetSessionName(RequestContext/*!*/request, string name)
-        {
-            PhpException.FunctionNotSupported(PhpError.Notice);
-            return false;
-        }
 	}
 
 	#endregion
@@ -146,20 +117,8 @@ namespace PHP.Core
 	{
 		private AspNetSessionHandler() { }
 
-        #region AspNetSessionName
-
-        public static string AspNetSessionName { get { return _aspNetSessionNmame ?? (_aspNetSessionNmame = GetSessionIdCookieName()); } }
-        private static string _aspNetSessionNmame = null;
-
-        private static string GetSessionIdCookieName()
-        {
-            var section = WebConfigurationManager.GetSection("system.web/sessionState") as SessionStateSection;
-            return (section != null) ? section.CookieName : "ASP.NET_SessionId";
-        }
-
-        #endregion
-
-        public const string PhpNetSessionVars = "Phalanger.SessionVars";
+		public const string AspNetSessionName = "ASP.NET_SessionId";
+		public const string PhpNetSessionVars = "Phalanger.SessionVars";
 		internal const string DummySessionItem = "Phalanger_DummySessionKeepAliveItem(\uffff)";
 
 		/// <summary>
@@ -190,10 +149,10 @@ namespace PHP.Core
 		internal protected override PhpArray Load(ScriptContext context, HttpContext httpContext)
 		{
 			HttpSessionState state = httpContext.Session;
-            
+
 			PhpArray result = null;
 
-            if (state.Mode == SessionStateMode.InProc)
+			if (state.Mode == SessionStateMode.InProc)
 			{
 				result = new PhpArray();
 
@@ -206,7 +165,7 @@ namespace PHP.Core
 			}
 			else
 			{
-                byte[] data = state[PhpNetSessionVars] as byte[];
+				byte[] data = state[PhpNetSessionVars] as byte[];
 
 				if (data != null)
 				{
@@ -228,15 +187,15 @@ namespace PHP.Core
 		{
 			HttpSessionState state = httpContext.Session;
 
-            if (state.Mode == SessionStateMode.InProc)
-			{
-                context.ReleaseArray(variables);
+			// removes all items (some could be changed or removed in PHP):
+            // TODO: some session variables could be added in ASP.NET application
+			state.Clear();
 
-                // removes all items (some could be changed or removed in PHP):
-                // TODO: some session variables could be added in ASP.NET application
-                state.Clear();
-                
-                // populates session collection from variables:
+			if (state.Mode == SessionStateMode.InProc)
+			{
+				context.ReleaseArray(variables);
+
+				// populates session collection from variables:
 				foreach (KeyValuePair<IntStringKey, object> entry in variables)
 				{
 					// skips resources:
@@ -254,7 +213,7 @@ namespace PHP.Core
 				formatter.Serialize(stream, variables);
 
 				// add the serialized $_SESSION to ASP.NET session:
-                state[PhpNetSessionVars] = stream.ToArray();
+				state.Add(PhpNetSessionVars, stream.ToArray());
 			}
 		}
 
@@ -266,12 +225,7 @@ namespace PHP.Core
 
 		}
 
-        /// <summary>
-        /// ASP.NET session handler won't persist data if session id has been changed. New session will be created.
-        /// </summary>
-        public override bool AllowsSessionIdChange { get { return false; } }
-
-        /// <summary>
+		/// <summary>
 		/// Gets session cookie associated with a specified HTTP context.
 		/// </summary>
 		/// <param name="context">The context.</param>

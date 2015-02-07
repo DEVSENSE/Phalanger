@@ -737,9 +737,12 @@ namespace PHP.Library
                 // new SessionId will silently fail (probably).
                 //
                 // Need to implement own SessionStateModule ?
-                Debug.Assert(request_context.ScriptContext.Config.Session.Handler.Name != AspNetSessionHandler.Default.Name);
+                //Debug.Assert(request_context.ScriptContext.Config.Session.Handler.Name != AspNetSessionHandler.Default.Name);
 
-
+                // NOTE:
+                // When using ASP.NET session handler, following process drops all the session data
+                // created during this request ... so next request starts with all new session state.
+                
                 if (!Manager.Validate(session_id))
                     throw new ArgumentException(null, "session_id");
 
@@ -773,7 +776,7 @@ namespace PHP.Library
                 SessionId.Manager.SaveSessionID(request_context.HttpContext, session_id, out redirected, out cookieAdded);
 
                 // set new SID constant
-                RequestContext.UpdateSID(request_context.ScriptContext, request_context.HttpContext);
+                request_context.UpdateSID();
             }
 
             private static ISessionStateItemCollection CloneSessionStateCollection(HttpSessionState session)
@@ -1017,7 +1020,7 @@ namespace PHP.Library
 
 		#endregion
 
-		#region session_save_path, session_name, session_id, (NS) session_regenerate_id
+		#region session_save_path, session_name, session_id, session_regenerate_id
 
 		/// <summary>
 		/// Gets a path where sessions are stored.
@@ -1061,7 +1064,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Sets the current session name. Not supported. Doesn't change session name. 
+		/// Sets the current session name.
 		/// </summary>
 		/// <param name="newName">A new name.</param>
 		/// <returns>An old name.</returns>
@@ -1100,7 +1103,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Changes session id. Not supported. Doesn't change session id. 
+		/// Changes session id.
 		/// </summary>
 		/// <param name="id">A new id value.</param>
 		/// <returns>A session id.</returns>
@@ -1115,14 +1118,14 @@ namespace PHP.Library
                 if (!Web.EnsureRequestContext(out request_context))
                     return null;
 
-                if (request_context.ScriptContext.Config.Session.Handler.Name != AspNetSessionHandler.Default.Name)
+                // writes up new session id
+                SessionId.SetNewSessionId(request_context, id);
+            
+                //
+                if (object.ReferenceEquals(request_context.ScriptContext.Config.Session.Handler, AspNetSessionHandler.Default))
                 {
-                    SessionId.SetNewSessionId(request_context, id);
-                }
-                else
-                {
-                    // TODO: throw warning, unsupported using Asp Sessions
-                    PhpException.ArgumentValueNotSupported("id", id);
+                    // ASP.NET session id change causes session data to be lost:
+                    PhpException.Throw(PhpError.Notice, Strings.aspnet_sessionhandler_id_reset);
                 }
             }
 
@@ -1161,16 +1164,14 @@ namespace PHP.Library
                     session.Clear();
             }
 
-            if (request_context.ScriptContext.Config.Session.Handler.Name != AspNetSessionHandler.Default.Name)
+            // regenerate SessionID
+            string session_id = SessionId.Manager.CreateSessionID(request_context.HttpContext/*not used*/);
+            SessionId.SetNewSessionId(request_context, session_id);
+
+            if (object.ReferenceEquals(request_context.ScriptContext.Config.Session.Handler, AspNetSessionHandler.Default))
             {
-                // regenerate SessionID
-                string session_id = SessionId.Manager.CreateSessionID(request_context.HttpContext/*not used*/);
-                SessionId.SetNewSessionId(request_context, session_id);
-            }
-            else
-            {
-                // TODO: throw warning, unsupported using Asp Sessions
-                PhpException.FunctionNotSupported();
+                // ASP.NET session id change causes session data to be lost:
+                PhpException.Throw(PhpError.Notice, Strings.aspnet_sessionhandler_id_reset);
             }
 
             return true;

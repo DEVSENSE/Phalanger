@@ -144,10 +144,7 @@ namespace PHP.Core
             // disables ASP.NET timeout if possible:
 			try { context.Server.ScriptTimeout = Int32.MaxValue; } catch (HttpException) { }
 
-            // ensure that Session ID is created
-			RequestContext.EnsureSessionId(context);
-			
-			// default culture:
+            // default culture:
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             
             using (RequestContext request_context = RequestContext.Initialize(ApplicationContext.Default, context))
@@ -155,7 +152,7 @@ namespace PHP.Core
                 Debug.WriteLine("REQUEST", "Processing request");
                 if (request_context.ScriptContext.Config.Session.AutoStart)
                     request_context.StartSession();
-
+                
                 ScriptInfo script = null;
                 try
                 {
