@@ -23,7 +23,7 @@ namespace PHP.Core.Compiler.AST
 {
     partial class NodeCompilers
     {
-        [NodeCompiler(typeof(BinaryEx), Singleton = true)]
+        [NodeCompiler(typeof(BinaryEx))]
         sealed class BinaryExCompiler : ExpressionCompiler<BinaryEx>
         {
             #region Analysis
