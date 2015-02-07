@@ -509,8 +509,7 @@ namespace PHP.Core.AST
 				codeGenerator.EmitLoadSelf();
 				codeGenerator.EmitLoadClassContext();
 				codeGenerator.EmitEvalInfoPass(position.FirstLine, position.FirstColumn);
-				codeGenerator.EmitLoadNamingContext();
-                // TODO: pass currentNamespace, aliases
+                this.EmitCurrentNamingContext(codeGenerator);//codeGenerator.EmitLoadNamingContext();
 				il.Emit(OpCodes.Call, (kind == EvalKinds.Assert) ? Methods.DynamicCode.Assert : Methods.DynamicCode.Eval);
 			}
 
@@ -519,6 +518,50 @@ namespace PHP.Core.AST
 			codeGenerator.EmitReturnValueHandling(this, false, ref result);
 			return result;
 		}
+
+        /// <summary>
+        /// Loads (cached) instance of current state of <see cref="NamingContext"/> onto the evaluation stack.
+        /// </summary>
+        /// <param name="codeGenerator"></param>
+        private void EmitCurrentNamingContext(CodeGenerator/*!*/ codeGenerator)
+        {
+            // TODO: J: move into codeGenerator
+            // NOTE: J: we must not pass NamingContext everywhere where codeGenerator.EmitLoadNamingContext() is used!!! (actully only here)
+
+            Debug.Assert(codeGenerator != null);
+            ILEmitter il = codeGenerator.IL;
+            
+            if (NamingContext.NeedsNamingContext(currentNamespace, aliases))
+            {
+                // private static NamingContext <id> = null;
+                string fname = (codeGenerator.SourceUnit != null) ? codeGenerator.SourceUnit.SourceFile.ToString() : string.Empty;
+                string id = String.Format("<namingContext>{0}${1}${2}", unchecked((uint)fname.GetHashCode()), position.FirstLine, position.FirstColumn);
+
+                // create static field for static local index: static int <id>;
+                Debug.Assert(il.TypeBuilder != null, "The method does not have declaring type! (global code in pure mode?)");
+                var fld = il.TypeBuilder.DefineField(id, typeof(NamingContext), System.Reflection.FieldAttributes.Private | System.Reflection.FieldAttributes.Static);
+
+                // <id> ?? (<id> = NamingContext.<EmitNewNamingContext>)
+                Label end = il.DefineLabel();
+
+                il.Emit(OpCodes.Ldsfld, fld);
+                il.Emit(OpCodes.Dup);
+                il.Emit(OpCodes.Brtrue, end);
+                if (true)
+                {
+                    il.Emit(OpCodes.Pop);
+                    NamingContext.EmitNewNamingContext(il, currentNamespace, aliases);
+                    il.Emit(OpCodes.Dup);
+                    il.Emit(OpCodes.Stsfld, fld);
+                }
+
+                il.MarkLabel(end);
+            }
+            else
+            {
+                il.Emit(OpCodes.Ldnull);
+            }
+        }
 
 		#endregion
 

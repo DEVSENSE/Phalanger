@@ -597,7 +597,7 @@ namespace PHP.Core
 		[Emitted]
 		public void DeclareConstant(string name, object value)
 		{
-			Constants[name, false] = value;
+			Constants[name, true] = value;  // case sensitive
 		}
 
 		/// <summary>

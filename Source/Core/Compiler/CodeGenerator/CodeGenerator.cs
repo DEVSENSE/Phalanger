@@ -52,7 +52,7 @@ namespace PHP.Core
 
 		/// <summary>
 		/// Current source unit. Switched by <see cref="GlobalCode"/>.
-        /// Intyernally modifiable in order to change the sourceUnit during the emission of methods/fields in partial classes.
+        /// Internally modifiable in order to change the sourceUnit during the emission of methods/fields in partial classes.
 		/// </summary>
         public SourceUnit SourceUnit { get { return sourceUnit; } internal set { sourceUnit = value; } }
 		private SourceUnit sourceUnit;

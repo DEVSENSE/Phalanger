@@ -320,7 +320,7 @@ namespace PHP.Core.Reflection
 			this.module = module_builder;
 			this.evalKind = kind;
 
-			sourceUnit.Parse(
+            sourceUnit.Parse(
                 context.Errors, this,
                 new Position(descriptor.Line, descriptor.Column, 0, descriptor.Line, descriptor.Column, 0),
                 context.Config.Compiler.LanguageFeatures);
@@ -559,14 +559,16 @@ namespace PHP.Core.Reflection
 					context.DeclareFunction(entry.Value.ArglessStub, entry.Key, entry.Value.MemberAttributes);
 				}
 			}
-			
-			// TODO: constants has to be evaluated at this point (add some constant evaluating DM):
-			//foreach (KeyValuePair<string, PhpRoutineDesc> entry in bakedFunctions)
-			//{
-			//  // checks for conflict on SC:
-			//  if (constant.HasValue)
-			//    context.DeclareConstant(constant.FullName, constant.Value);
-			//}	
+
+            if (bakedConstants != null)
+            {
+                foreach (var entry in this.bakedConstants)
+                {
+                    // checks for conflict on SC:
+                    //if (constant.HasValue)
+                    context.DeclareConstant(entry.Key, entry.Value.LiteralValue);
+                }	
+            }
 		}
 
 		#endregion

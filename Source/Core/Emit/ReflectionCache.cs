@@ -416,9 +416,9 @@ namespace PHP.Core.Emit
             public static MethodInfo DeclareFunction { get { if (_DeclareFunction == null) _DeclareFunction = _this.GetMethod("DeclareFunction"); return _DeclareFunction; } }
             public static MethodInfo DeclareLambda { get { if (_DeclareLambda == null) _DeclareLambda = _this.GetMethod("DeclareLambda"); return _DeclareLambda; } }
             
-            public static MethodInfo Call { get { if (_Call == null) _Call = _this.GetMethod("Call", new Type[] { typeof(Dictionary<string, object>), typeof(NamingContext), typeof(object), typeof(string), typeof(PHP.Core.ScriptContext) }); return _Call; } }
-            public static MethodInfo CallValue { get { return _CallValue ?? (_CallValue = _this.GetMethod("CallValue", new Type[] { typeof(Dictionary<string, object>), typeof(NamingContext), typeof(object), typeof(string), typeof(PHP.Core.ScriptContext) })); } }
-            public static MethodInfo CallVoid { get { return _CallVoid ?? (_CallVoid = _this.GetMethod("CallVoid", new Type[] { typeof(Dictionary<string, object>), typeof(NamingContext), typeof(object), typeof(string), typeof(PHP.Core.ScriptContext) })); } }
+            public static MethodInfo Call { get { if (_Call == null) _Call = _this.GetMethod("Call", new Type[] { typeof(Dictionary<string, object>), typeof(PHP.Core.NamingContext), typeof(object), typeof(string), typeof(PHP.Core.ScriptContext) }); return _Call; } }
+            public static MethodInfo CallValue { get { return _CallValue ?? (_CallValue = _this.GetMethod("CallValue", new Type[] { typeof(Dictionary<string, object>), typeof(PHP.Core.NamingContext), typeof(object), typeof(string), typeof(PHP.Core.ScriptContext) })); } }
+            public static MethodInfo CallVoid { get { return _CallVoid ?? (_CallVoid = _this.GetMethod("CallVoid", new Type[] { typeof(Dictionary<string, object>), typeof(PHP.Core.NamingContext), typeof(object), typeof(string), typeof(PHP.Core.ScriptContext) })); } }
 
             public static MethodInfo DeclareType_Handle { get { if (_DeclareType_Handle == null) _DeclareType_Handle = _this.GetMethod("DeclareType", new Type[] { typeof(RuntimeTypeHandle), Types.String[0] }); return _DeclareType_Handle; } }
             public static MethodInfo DeclareType_TypeDesc { get { if (_DeclareType_TypeDesc == null) _DeclareType_TypeDesc = _this.GetMethod("DeclareType", new Type[] { Types.PhpTypeDesc[0], Types.String[0] }); return _DeclareType_TypeDesc; } }
@@ -898,6 +898,13 @@ namespace PHP.Core.Emit
             public static MethodInfo GetEntryAssembly { get { return _GetEntryAssembly ?? (_GetEntryAssembly = typeof(System.Reflection.Assembly).GetMethod("GetEntryAssembly", Type.EmptyTypes)); } }
         }
 
+        public struct NamingContext
+        {
+            static MethodInfo _AddAlias;
+
+            public static MethodInfo AddAlias { get { return _AddAlias ?? (_AddAlias = typeof(PHP.Core.NamingContext).GetMethod("AddAlias", new[] { Types.String[0], Types.String[0] })); } }
+        }
+
         #endregion
     }
 
@@ -1134,7 +1141,7 @@ namespace PHP.Core.Emit
 		public static ConstructorInfo PhpBytes_ByteArray { get { if (_PhpBytes_ByteArray == null) _PhpBytes_ByteArray = typeof(PhpBytes).GetConstructor(new Type[] { typeof(byte[]) }); return _PhpBytes_ByteArray; } }
 
 		public static ConstructorInfo StdClass_ScriptContext { get { if (_StdClass_ScriptContext == null) _StdClass_ScriptContext = typeof(PHP.Library.stdClass).GetConstructor(Types.ScriptContext); return _StdClass_ScriptContext; } }
-		public static ConstructorInfo NamingContext { get { if (_NamingContext == null)     _NamingContext = typeof(NamingContext).GetConstructor(Types.StringArray); return _NamingContext; } }
+        public static ConstructorInfo NamingContext { get { return _NamingContext ?? (_NamingContext = typeof(PHP.Core.NamingContext).GetConstructor(new[] { Types.String[0], Types.Int[0] })); } }
 
 		public static ConstructorInfo Action_ScriptContext { get { if (_Action_ScriptContext == null) _Action_ScriptContext = typeof(Action<ScriptContext>).GetConstructor(Types.DelegateCtorArgs); return _Action_ScriptContext; } }
 

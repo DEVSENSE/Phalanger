@@ -18,8 +18,10 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Threading;
 using System.Linq;
+using System.Reflection.Emit;
 using PHP.Core.Reflection;
 using PHP.Core.Parsers;
+using PHP.Core.Emit;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
@@ -542,19 +544,19 @@ namespace PHP.Core
 
         #region Construction
 
-        /// <summary>
-		/// Creates a qualified name with or w/o a base name. 
-		/// </summary>
-		internal QualifiedName(string/*!*/ qualifiedName, bool hasBaseName)
-		{
-			Debug.Assert(qualifiedName != null);
-			QualifiedName qn = Parse(qualifiedName, 0, qualifiedName.Length, hasBaseName);
-			this.name = qn.name;
-			this.namespaces = qn.namespaces;
-            this.isFullyQualifiedName = qn.IsFullyQualifiedName;
-		}
+        ///// <summary>
+        ///// Creates a qualified name with or w/o a base name. 
+        ///// </summary>
+        //internal QualifiedName(string/*!*/ qualifiedName, bool hasBaseName)
+        //{
+        //    Debug.Assert(qualifiedName != null);
+        //    QualifiedName qn = Parse(qualifiedName, 0, qualifiedName.Length, hasBaseName);
+        //    this.name = qn.name;
+        //    this.namespaces = qn.namespaces;
+        //    this.isFullyQualifiedName = qn.IsFullyQualifiedName;
+        //}
 
-		internal QualifiedName(List<string>/*!*/ names, bool hasBaseName, bool fullyQualified)
+		internal QualifiedName(IList<string>/*!*/ names, bool hasBaseName, bool fullyQualified)
 		{
 			Debug.Assert(names != null && names.Count > 0);
 
@@ -621,77 +623,77 @@ namespace PHP.Core
             this.isFullyQualifiedName = namespaceName.IsFullyQualifiedName;
 		}
 
-		internal static QualifiedName Parse(string/*!*/ buffer, int startIndex, int length, bool hasBaseName)
-		{
-			Debug.Assert(buffer != null && startIndex >= 0 && startIndex <= buffer.Length - length);
+        //internal static QualifiedName Parse(string/*!*/ buffer, int startIndex, int length, bool hasBaseName)
+        //{
+        //    Debug.Assert(buffer != null && startIndex >= 0 && startIndex <= buffer.Length - length);
 
-			QualifiedName result = new QualifiedName();
+        //    QualifiedName result = new QualifiedName();
 
-            // handle fully qualified namespace name:
-            if (length > 0 && buffer[startIndex] == Separator)
-            {
-                result.isFullyQualifiedName = true;
-                startIndex++;
-                length--;
-            }
+        //    // handle fully qualified namespace name:
+        //    if (length > 0 && buffer[startIndex] == Separator)
+        //    {
+        //        result.isFullyQualifiedName = true;
+        //        startIndex++;
+        //        length--;
+        //    }
 
-            // names separated by Separator:
-            int slash_count = 0;
-			for (int i = startIndex; i < startIndex + length; i++)
-				if (buffer[i] == Separator) slash_count++;
+        //    // names separated by Separator:
+        //    int slash_count = 0;
+        //    for (int i = startIndex; i < startIndex + length; i++)
+        //        if (buffer[i] == Separator) slash_count++;
 
-			int separator_count = slash_count;// / Separator.ToString().Length;
+        //    int separator_count = slash_count;// / Separator.ToString().Length;
 
-			//Debug.Assert(slash_count % Separator.Length == 0);
+        //    //Debug.Assert(slash_count % Separator.Length == 0);
 
-			if (separator_count == 0)
-			{
-				Name entire_name = new Name(buffer.Substring(startIndex, length));
+        //    if (separator_count == 0)
+        //    {
+        //        Name entire_name = new Name(buffer.Substring(startIndex, length));
 
-				if (hasBaseName)
-				{
-					result.namespaces = Name.EmptyNames;
-					result.name = entire_name;
-				}
-				else
-				{
-					result.namespaces = new Name[] { entire_name };
-					result.name = Name.EmptyBaseName;
-				}
-			}
-			else
-			{
-				result.namespaces = new Name[separator_count + (hasBaseName ? 0 : 1)];
+        //        if (hasBaseName)
+        //        {
+        //            result.namespaces = Name.EmptyNames;
+        //            result.name = entire_name;
+        //        }
+        //        else
+        //        {
+        //            result.namespaces = new Name[] { entire_name };
+        //            result.name = Name.EmptyBaseName;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        result.namespaces = new Name[separator_count + (hasBaseName ? 0 : 1)];
 
-				int current_name = startIndex;
-				int next_separator = startIndex;
-				int i = 0;
-				do
-				{
-					while (buffer[next_separator] != Separator)
-						next_separator++;
+        //        int current_name = startIndex;
+        //        int next_separator = startIndex;
+        //        int i = 0;
+        //        do
+        //        {
+        //            while (buffer[next_separator] != Separator)
+        //                next_separator++;
 
-					result.namespaces[i++] = new Name(buffer.Substring(current_name, next_separator - current_name));
-					next_separator += Separator.ToString().Length;
-					current_name = next_separator;
-				}
-				while (i < separator_count);
+        //            result.namespaces[i++] = new Name(buffer.Substring(current_name, next_separator - current_name));
+        //            next_separator += Separator.ToString().Length;
+        //            current_name = next_separator;
+        //        }
+        //        while (i < separator_count);
 
-				Name base_name = new Name(buffer.Substring(current_name, length - current_name));
+        //        Name base_name = new Name(buffer.Substring(current_name, length - current_name));
 
-				if (hasBaseName)
-				{
-					result.name = base_name;
-				}
-				else
-				{
-					result.namespaces[separator_count] = base_name;
-					result.name = Name.EmptyBaseName;
-				}
-			}
+        //        if (hasBaseName)
+        //        {
+        //            result.name = base_name;
+        //        }
+        //        else
+        //        {
+        //            result.namespaces[separator_count] = base_name;
+        //            result.name = Name.EmptyBaseName;
+        //        }
+        //    }
 
-			return result;
-		}
+        //    return result;
+        //}
 
         /// <summary>
         /// Builds <see cref="QualifiedName"/> with first element aliased if posible.
@@ -912,7 +914,123 @@ namespace PHP.Core
         //{
         //    this.prefixes = prefixes;
         //}
-	}
+
+        #region Properties
+
+        /// <summary>
+        /// Current namespace.
+        /// </summary>
+        public readonly QualifiedName? CurrentNamespace;
+
+        /// <summary>
+        /// PHP aliases. Can be null.
+        /// </summary>
+        public readonly Dictionary<string, QualifiedName> Aliases;
+
+        #endregion
+
+        #region Construction
+
+        /// <summary>
+        /// Initialize new instance of <see cref="NamingContext"/>.
+        /// </summary>
+        /// <param name="currentNamespace">Current namespace. Can be null. Not starting with <see cref="QualifiedName.Separator"/>.</param>
+        /// <param name="aliases">Amount of aliases. <c>0</c> means the <see cref="Aliases"/> property will be null.</param>
+        [Emitted]
+        public NamingContext(string currentNamespace, int aliases)
+        {
+            // current namespace:
+            if (string.IsNullOrEmpty(currentNamespace))
+                this.CurrentNamespace = null;
+            else
+            {
+                Debug.Assert(currentNamespace.IndexOf(QualifiedName.Separator) != 0);   // not starting with separator
+                this.CurrentNamespace = new QualifiedName(currentNamespace.Split(QualifiedName.Separator), false, true);
+            }
+
+            // aliases (just initialize dictionary, items added later):
+            this.Aliases = (aliases > 0) ? new Dictionary<string, QualifiedName>(aliases) : null;
+        }
+
+        /// <summary>
+        /// Add an alias into the <see cref="Aliases"/>.
+        /// </summary>
+        /// <param name="alias">Alias name.</param>
+        /// <param name="qualifiedName">Aliased namespace. Not starting with <see cref="QualifiedName.Separator"/>.</param>
+        [Emitted]
+        public void AddAlias(string alias, string qualifiedName)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(alias));
+            Debug.Assert(!string.IsNullOrEmpty(qualifiedName));
+            Debug.Assert(qualifiedName.IndexOf(QualifiedName.Separator) != 0);   // not starting with separator
+            Debug.Assert(this.Aliases != null);
+
+            this.Aliases.Add(alias, new QualifiedName(qualifiedName.Split(QualifiedName.Separator), true, true));
+        }
+
+        #endregion
+
+        #region Utils
+
+        /// <summary>
+        /// Determine if <see cref="NamingContext "/> is needed for the current namespace and aliases.
+        /// </summary>
+        /// <param name="currentNamespace"></param>
+        /// <param name="aliases"></param>
+        /// <returns>True if current namespace is not global namespace or there are some aliases.</returns>
+        public static bool NeedsNamingContext(QualifiedName? currentNamespace, Dictionary<string, QualifiedName> aliases)
+        {
+            return
+                (currentNamespace.HasValue && currentNamespace.Value.Namespaces.Length > 0) ||
+                (aliases != null && aliases.Count > 0);    
+        }
+
+        #endregion
+
+        #region Emit
+
+        /// <summary>
+        /// Emit instantiation and initialization of NamingContext. Leaves reference to new NamingContext on the top of evaluation stack.
+        /// </summary>
+        /// <param name="il"></param>
+        /// <param name="currentNamespace">Namespace to be passed as current namespace to the new instance of <see cref="NamingContext"/>.</param>
+        /// <param name="aliases">Aliases to be passed to the new instance of <see cref="NamingContext"/>.</param>
+        public static void EmitNewNamingContext(Emit.ILEmitter/*!*/il, QualifiedName? currentNamespace, Dictionary<string, QualifiedName> aliases)
+        {
+            if (!NeedsNamingContext(currentNamespace, aliases))
+            {
+                il.Emit(OpCodes.Ldnull);
+                return;
+            }
+
+            //
+            // new NamingContext( currentNamespace.NamespacePhpName, aliases.Count )
+            
+            if (currentNamespace.HasValue && currentNamespace.Value.Namespaces.Length > 0)
+                il.Emit(OpCodes.Ldstr, currentNamespace.Value.NamespacePhpName);
+            else
+                il.Emit(OpCodes.Ldnull);
+            
+            il.LdcI4((aliases != null) ? aliases.Count : 0);
+
+            il.Emit(OpCodes.Newobj, Constructors.NamingContext);
+
+            // tmp.AddAlias( aliases[i].Key, aliases[i].Value.NamespacePhpName
+            if (aliases != null)
+            {
+                foreach (var alias in aliases)
+                {
+                    il.Emit(OpCodes.Dup);                                   // the NamingContext instance
+                    il.Emit(OpCodes.Ldstr, alias.Key);                      // alias
+                    il.Emit(OpCodes.Ldstr, alias.Value.ToString());         // qualifiedName
+                    il.Emit(OpCodes.Call, Methods.NamingContext.AddAlias);  // AddAlias( <alias>, <qualifiedName> )
+                }
+            }
+
+        }
+
+        #endregion
+    }
 
 	#endregion
 }

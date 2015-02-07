@@ -246,7 +246,11 @@ namespace PHP.Core.Reflection
         {
             if (namingContext == null) return;
 
-            throw new NotImplementedException();
+            this.currentNamespace = namingContext.CurrentNamespace;
+            if (namingContext.Aliases != null)
+                foreach (var alias in namingContext.Aliases)
+                    this.Aliases.Add(alias.Key, alias.Value);
+            
             //foreach (string s in namingContext.Prefixes)
             //{
             //    string nsn = s.EndsWith(QualifiedName.Separator.ToString()) ? s.Substring(0, s.Length - QualifiedName.Separator.ToString().Length) : s;
