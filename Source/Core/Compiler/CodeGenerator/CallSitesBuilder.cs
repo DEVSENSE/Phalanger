@@ -1,18 +1,5 @@
-﻿/*
-
- Copyright (c) 2012 DEVSENSE
-
- The use and distribution terms for this software are contained in the file named License.txt, 
- which can be found in the root of the Phalanger distribution. By using this software 
- in any fashion, you are agreeing to be bound by the terms of this license.
- 
- You must not remove this notice from this software.
-
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Runtime.CompilerServices;
@@ -22,10 +9,9 @@ using System.Reflection.Emit;
 using PHP.Core;
 using PHP.Core.Emit;
 using PHP.Core.AST;
-using PHP.Core.Compiler.AST;
 using PHP.Core.Reflection;
 
-namespace PHP.Core
+namespace PHP.Core.Compiler.CodeGenerator
 {
     /// <summary>
     /// CallSite fields manager and emitter.
@@ -63,21 +49,12 @@ namespace PHP.Core
         /// If known and if it can be emitted in static .cctor, defines the place where the class context can be loaded.
         /// Otherwise <c>null</c>, the class context will be determined in run time and passed to binder.
         /// </summary>
-        private IPlace classContextPlace { get { return classContextPlaces.Peek(); } }
-        private Stack<IPlace> classContextPlaces = new Stack<IPlace>(2);
-
-        /// <summary>
-        /// Current type declaration to emit site containers properly.
-        /// </summary>
-        private PhpType classContext { get { return classContexts.Peek(); } }
-        private Stack<PhpType> classContexts = new Stack<PhpType>(2);
+        private readonly IPlace classContextPlace;
 
         /// <summary>
         /// Amount of emitted call sites. Used to build unique call site field name.
         /// </summary>
         private long callSitesCount = 0;
-
-        private readonly DelegateBuilder/*!*/delegateBuilder;
 
         #endregion
 
@@ -90,50 +67,12 @@ namespace PHP.Core
         /// <param name="userFriendlyName">User friendly name used to identify the call sites container by user.</param>
         /// <param name="classContextPlace">If known and if it can be emitted in static .cctor, defines the place where the class context can be loaded. Otherwise <c>null</c> if the class context will be determined in run time.</param>
         public CallSitesBuilder(ModuleBuilder/*!*/moduleBuilder, string/*!*/userFriendlyName, IPlace classContextPlace)
-            : this(moduleBuilder, userFriendlyName, classContextPlace, null)
-        {
-            
-        }
-
-        /// <summary>
-        /// Create new call sites builder.
-        /// </summary>
-        /// <param name="moduleBuilder">Module to contain call sites container.</param>
-        /// <param name="userFriendlyName">User friendly name used to identify the call sites container by user.</param>
-        /// <param name="classContextPlace">If known and if it can be emitted in static .cctor, defines the place where the class context can be loaded. Otherwise <c>null</c> if the class context will be determined in run time.</param>
-        /// <param name="classContext">Current PHP type context.</param>
-        public CallSitesBuilder(ModuleBuilder/*!*/moduleBuilder, string/*!*/userFriendlyName, IPlace classContextPlace, PhpType classContext)
         {
             Debug.Assert(moduleBuilder != null && userFriendlyName != null);
 
             this.userFriendlyName = userFriendlyName;
             this.moduleBuilder = moduleBuilder;
-            this.PushClassContext(classContextPlace, classContext);
-            this.delegateBuilder = new DelegateBuilder(moduleBuilder);
-        }
-
-        #endregion
-
-        #region Changing class context
-
-        /// <summary>
-        /// Change current class context. Remember the previous ones.
-        /// </summary>
-        /// <param name="classContextPlace">New class context place.</param>
-        /// <param name="classContext">New class context type.</param>
-        internal void PushClassContext(IPlace classContextPlace, PhpType classContext)
-        {
-            this.classContextPlaces.Push(classContextPlace);
-            this.classContexts.Push(classContext);
-        }
-
-        /// <summary>
-        /// Change current class context to the previous one.
-        /// </summary>
-        internal void PopClassContext()
-        {
-            this.classContextPlaces.Pop();
-            this.classContexts.Pop();
+            this.classContextPlace = classContextPlace;
         }
 
         #endregion
@@ -148,18 +87,10 @@ namespace PHP.Core
         {
             if (containerClass == null)
             {
-                if (this.classContext != null && this.classContext.IsGeneric)
-                {
-                    // we will emit single call sites in the class context. It is easier than to build generic sites container.
-                    Debug.Assert(this.classContext.RealTypeBuilder != null);
-                    return this.classContext.RealTypeBuilder;
-                }
-
                 Debug.Assert(staticCtorEmitter == null);
 
                 var containerClassName = string.Format("<{0}>o_Sitescontainer'{1}", this.userFriendlyName.Replace('.', '_'), System.Threading.Interlocked.Increment(ref nextContainerId));
-                containerClass = moduleBuilder.DefineType(containerClassName, TypeAttributes.Sealed | TypeAttributes.Class | TypeAttributes.NotPublic | TypeAttributes.Abstract);
-
+                containerClass = moduleBuilder.DefineType(PluginHandler.ConvertCallSiteName(containerClassName), TypeAttributes.Sealed | TypeAttributes.Class | TypeAttributes.NotPublic | TypeAttributes.Abstract);
                 staticCtorEmitter = new ILEmitter(containerClass.DefineTypeInitializer());
             }
 
@@ -188,87 +119,36 @@ namespace PHP.Core
         }
 
         /// <summary>
-        /// Defines field in callsite's container type.
-        /// </summary>
-        /// <param name="name">Field name.</param>
-        /// <param name="type">Field type.</param>
-        /// <param name="attributes">Field attributes.</param>
-        /// <returns>Instance of newly defined <see cref="FieldInfo"/>.</returns>
-        public FieldBuilder/*!*/DefineField(string name, Type type, FieldAttributes attributes)
-        {
-            // call sites container 
-            var typebuilder = EnsureContainer();
-
-            // define field
-            return typebuilder.DefineField(name, type, attributes);
-        }
-
-        /// <summary>
         /// Define new instance of CallSite&lt;<paramref name="delegateType"/>&gt; and initialize it with specified binder.
         /// </summary>
-        /// <param name="bodyEmitter"><see cref="ILEmitter"/> of the body that is using this call site. This method may emit initialization of the call site into this <paramref name="bodyEmitter"/>.</param>
         /// <param name="userFriendlyName">User friendly name used as name for the CallSite field.</param>
         /// <param name="delegateType">CallSite type argument.</param>
         /// <param name="binderInstanceEmitter">Function used to emit initialization of the binder from within the call sites container .cctor.</param>
         /// <returns>The <see cref="FieldInfo"/> containing the instance of the created CallSite.</returns>
-        public FieldInfo/*!*/DefineCallSite(ILEmitter/*!*/bodyEmitter,string/*!*/userFriendlyName, Type/*!*/delegateType, Action<ILEmitter>/*!*/binderInstanceEmitter)
+        public FieldInfo/*!*/DefineCallSite(string/*!*/userFriendlyName, Type/*!*/delegateType, Action<ILEmitter>/*!*/binderInstanceEmitter)
         {
             Debug.Assert(userFriendlyName != null && delegateType != null && binderInstanceEmitter != null);
 
             userFriendlyName += ("'" + (callSitesCount++));
 
-            // ensures call sites container is initialized
-            // this ensures, {staticCtorEmitter} is set properly
-            var typebuilder = EnsureContainer();
+            // call sites container 
+            var type = EnsureContainer();
 
             // call site type
-            var callSiteType = Types.CallSiteGeneric[0].MakeGenericType(delegateType);
+            var callSiteType = typeof(CallSite<>).MakeGenericType(delegateType);
 
             // define the field:
             // public static readonly CallSite<delegateType> <userFriendlyName>
-            var attrs = FieldAttributes.Static | FieldAttributes.InitOnly | ((staticCtorEmitter == null) ? FieldAttributes.Private : FieldAttributes.Assembly);
-            var field = this.DefineField(userFriendlyName, callSiteType, attrs);
+            var field = type.DefineField(PluginHandler.ConvertCallSiteName(userFriendlyName), callSiteType, FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly);
 
-            if (staticCtorEmitter == null) // => this.classContext != null
-            {
-                // emit initialization of the call site just in the body of current method (as it is in C#, we need current generic arguments):
-                Debug.Assert(this.classContext != null);
-                
-                // check if the call site if not null, otherwise initialize it first:
-
-                // if (<field> == null) <InitializeCallSite>;
-                Label ifend = bodyEmitter.DefineLabel();
-                bodyEmitter.Emit(OpCodes.Ldsfld, field);
-                bodyEmitter.Emit(OpCodes.Brtrue, ifend);
-
-                // init the field:
-                InitializeCallSite(bodyEmitter, callSiteType, field, binderInstanceEmitter);
-
-                bodyEmitter.MarkLabel(ifend);
-            }
-            else
-            {
-                // init the field in .cctor:
-                InitializeCallSite(staticCtorEmitter, callSiteType, field, binderInstanceEmitter);
-            }
+            // init the field in .cctor:
+            // <field> = CallSite<...>.Create( <BINDER> )
+            binderInstanceEmitter(staticCtorEmitter);
+            staticCtorEmitter.Emit(OpCodes.Call, callSiteType.GetMethod("Create", Types.CallSiteBinder));
+            staticCtorEmitter.Emit(OpCodes.Stsfld, field);
 
             //
             return field;
-        }
-
-        /// <summary>
-        /// Emit the initialization code for defined call site.
-        /// </summary>
-        /// <param name="il"></param>
-        /// <param name="callSiteType"></param>
-        /// <param name="field"></param>
-        /// <param name="binderInstanceEmitter"></param>
-        private static void InitializeCallSite(ILEmitter/*!*/il, Type/*!*/callSiteType, FieldBuilder/*!*/field, Action<ILEmitter>/*!*/binderInstanceEmitter)
-        {
-            // <field> = CallSite<...>.Create( <BINDER> )
-            binderInstanceEmitter(il);
-            il.Emit(OpCodes.Call, callSiteType.GetMethod("Create", Types.CallSiteBinder));
-            il.Emit(OpCodes.Stsfld, field);
         }
 
         #endregion
@@ -276,45 +156,10 @@ namespace PHP.Core
         #region EmitMethodCall
 
         /// <summary>
-        /// Helper method, returns additional type arguments for delegate used by <see cref="EmitMethodCall"/>.
-        /// </summary>
-        private static IEnumerable<Type>/*!!*/MethodCallDelegateAdditionalArguments(bool staticCall, bool methodNameIsKnown, bool classContextIsKnown)
-        {
-            if (staticCall) yield return Types.DTypeDesc[0];
-            if (!classContextIsKnown) yield return Types.DTypeDesc[0];
-            if (!methodNameIsKnown) yield return Types.Object[0];
-        }
-
-        /// <summary>
-        /// Helper method, loads parameters onto evaluation stack.
-        /// </summary>
-        private static void EmitMethodCallParameters(PHP.Core.CodeGenerator/*!*/cg, CallSignature callSignature)
-        {
-            foreach (var t in callSignature.GenericParams) t.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors); // load DTypeDescs on the stack
-            foreach (var p in callSignature.Parameters) { cg.EmitBoxing(p.Emit(cg)); }  // load boxed args on the stack            
-        }
-
-        internal static Type/*!*/AccessToReturnType(AccessType access)
-        {
-            Debug.Assert(
-                  access == AccessType.None || access == AccessType.Read || access == AccessType.ReadRef || access == AccessType.ReadUnknown,
-                  "Unhandled access type.");
-
-            switch (access)
-            {
-                case AccessType.None: return Types.Void;
-                case AccessType.Read: return Types.Object[0];
-                case AccessType.ReadRef:
-                case AccessType.ReadUnknown: return Types.PhpReference[0];
-                default: throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>
         /// Emit call of the instance/static method. This defines the call site and call it using given parameters.
         /// </summary>
         /// <param name="cg">Current code <see cref="CodeGenerator"/>.</param>
-        /// <param name="returnType">Return type of the method call determined by current access of the method call.</param>
+        /// <param name="access">Current access of the method call.</param>
         /// <param name="targetExpr">The method call instance expression (the target) if it is an instance method call.</param>
         /// <param name="targetType">The target type if it is a static method call.</param>
         /// <param name="methodFullName">If known at compile time, the method name. Otherwise <c>null</c>.</param>
@@ -322,35 +167,57 @@ namespace PHP.Core
         /// <param name="callSignature">The call signature of the method call.</param>
         /// <returns>The resulting value type code. This value will be pushed onto the evaluation stack.</returns>
         public PhpTypeCode EmitMethodCall(
-            PHP.Core.CodeGenerator/*!*/cg, Type returnType,
+            PHP.Core.CodeGenerator/*!*/cg, AccessType access,
             Expression/*!*/targetExpr, DType/*!*/targetType,
             string methodFullName, Expression methodNameExpr, CallSignature callSignature)
         {
-            Debug.Assert(methodFullName != null ^ methodNameExpr != null);          
+            Debug.Assert(methodFullName != null ^ methodNameExpr != null);
+
+            Debug.Assert(
+                access == AccessType.None || access == AccessType.Read || access == AccessType.ReadRef || access == AccessType.ReadUnknown,
+                "Unhandled access type.");
 
             //
             bool staticCall = (targetExpr == null); // we are going to emit static method call
-            //bool methodNameIsKnown = (methodFullName != null);
-            //bool classContextIsKnown = (this.classContextPlace != null);
+            bool methodNameIsKnown = (methodFullName != null);
+            bool classContextIsKnown = (this.classContextPlace != null);
+
+            //
+            // binder flags:
+            //
+            Type returnType = Types.Void;
+            switch (access)
+            {
+                case AccessType.Read: returnType = Types.Object[0]; break;
+                case AccessType.ReadRef:
+                case AccessType.ReadUnknown: returnType = Types.PhpReference[0]; break;
+            }
 
             //
             // define the call site:
             //
-            var delegateType = /*System.Linq.Expressions.Expression.*/delegateBuilder.GetDelegateType(
-                MethodCallDelegateTypeArgs(
-                    callSignature,
-                    staticCall ? Types.DObject[0] : Types.Object[0],
-                    MethodCallDelegateAdditionalArguments(staticCall, methodFullName != null, this.classContextPlace != null),
-                    returnType),
-                callSitesCount);    // (J) do not create dynamic delegates in dynamic modules, so they can be referenced from non-transient assemblies
 
             //
-            var field = DefineCallSite(cg.IL, string.Format("call_{0}", methodFullName ?? "$"), delegateType, (il) =>
+            List<Type> additionalArgs = new List<Type>();
+            if (staticCall) additionalArgs.Add(Types.DTypeDesc[0]);
+            if (!classContextIsKnown) additionalArgs.Add(Types.DTypeDesc[0]);
+            if (!methodNameIsKnown) additionalArgs.Add(Types.Object[0]);
+
+            var delegateTypeArgs = MethodCallDelegateTypeArgs(
+                callSignature,
+                staticCall ? Types.DObject[0] : Types.Object[0],
+                additionalArgs.ToArray(),
+                returnType);
+
+            var delegateType = System.Linq.Expressions.Expression.GetDelegateType(delegateTypeArgs);
+
+            //
+            var field = DefineCallSite(string.Format("call_{0}", methodFullName ?? "$"), delegateType, (il) =>
             {
                 // <LOAD> Binder.{MethodCall|StaticMethodCall}( methodFullName, genericParamsCount, paramsCount, classContext, <returnType> )
                 if (methodFullName != null) il.Emit(OpCodes.Ldstr, methodFullName); else il.Emit(OpCodes.Ldnull);
-                il.LdcI4(callSignature.GenericParams.Length);
-                il.LdcI4(callSignature.Parameters.Length);
+                il.LdcI4(callSignature.GenericParams.Count);
+                il.LdcI4(callSignature.Parameters.Count);
                 if (this.classContextPlace != null) this.classContextPlace.EmitLoad(il); else il.Emit(OpCodes.Ldsfld, Fields.UnknownTypeDesc.Singleton);
 
                 il.Emit(OpCodes.Ldtoken, returnType);
@@ -370,10 +237,11 @@ namespace PHP.Core
             cg.IL.Emit(OpCodes.Ldsfld, field);
             if (staticCall) cg.EmitLoadSelf(); else EmitMethodTargetExpr(cg, targetExpr);
             cg.EmitLoadScriptContext();
-            EmitMethodCallParameters(cg, callSignature);
+            foreach (var t in callSignature.GenericParams) t.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors); // load DTypeDescs on the stack
+            foreach (var p in callSignature.Parameters) { cg.EmitBoxing(p.Emit(cg)); }  // load boxed args on the stack
             if (staticCall) targetType.EmitLoadTypeDesc(cg, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
-            if (/*!classContextIsKnown*/this.classContextPlace == null) cg.EmitLoadClassContext();
-            if (/*!methodNameIsKnown*/methodFullName == null) cg.EmitName(methodFullName/*null*/, methodNameExpr, true);
+            if (!classContextIsKnown) cg.EmitLoadClassContext();
+            if (!methodNameIsKnown) cg.EmitName(methodFullName/*null*/, methodNameExpr, true);
             
             cg.MarkTransientSequencePoint();
             cg.IL.Emit(OpCodes.Callvirt, delegateType.GetMethod("Invoke"));
@@ -413,9 +281,9 @@ namespace PHP.Core
         /// <param name="additionalArgs">Additional arguments added after the target expression.</param>
         /// <param name="returnType">The return value type.</param>
         /// <returns></returns>
-        private Type[]/*!*/MethodCallDelegateTypeArgs(CallSignature callSignature, Type/*!*/targetType, IEnumerable<Type> additionalArgs, Type/*!*/returnType)
+        private Type[]/*!*/MethodCallDelegateTypeArgs(CallSignature callSignature, Type/*!*/targetType, Type[] additionalArgs, Type/*!*/returnType)
         {
-            List<Type> typeArgs = new List<Type>(callSignature.Parameters.Length + callSignature.GenericParams.Length + 6);
+            List<Type> typeArgs = new List<Type>(callSignature.Parameters.Count + callSignature.GenericParams.Count + 6);
 
             // Type[]{CallSite, <targetType>, ScriptContext, {argsType}, (DTypeDesc)?, (DTypeDesc)?, (object)?, <returnType>}:
 
@@ -518,10 +386,10 @@ namespace PHP.Core
                 additionalArgs.ToArray(),
                 returnType);
 
-            var delegateType = /*System.Linq.Expressions.Expression.*/delegateBuilder.GetDelegateType(delegateTypeArgs, callSitesCount);    // (J) do not create dynamic delegates in dynamic modules, so they can be referenced from non-transient assemblies
+            var delegateType = System.Linq.Expressions.Expression.GetDelegateType(delegateTypeArgs);
 
             //
-            var field = DefineCallSite(cg.IL, string.Format("get{0}_{1}", wantRef ? "ref" : string.Empty, fieldName ?? "$"), delegateType, (il) =>
+            var field = DefineCallSite(string.Format("get{0}_{1}", wantRef ? "ref" : string.Empty, fieldName ?? "$"), delegateType, (il) =>
             {
                 // <LOAD> Binder.{GetProperty|GetStaticProperty}( fieldName, classContext, issetSemantics, <returnType> )
                 if (fieldName != null) il.Emit(OpCodes.Ldstr, fieldName); else il.Emit(OpCodes.Ldnull);
@@ -551,7 +419,7 @@ namespace PHP.Core
             }
             else if (targetObjectPlace != null) targetObjectPlace.EmitLoad(cg.IL);
             else if (targetPlace != null) targetPlace.EmitLoad(cg.IL);
-            else Debug.Fail(null);
+            else Debug.Fail();
             if (!classContextIsKnown) cg.EmitLoadClassContext();
             if (!fieldNameIsKnown) cg.EmitName(fieldName/*null*/, fieldNameExpr, true, PhpTypeCode.String);
 

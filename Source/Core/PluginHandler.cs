@@ -24,5 +24,11 @@ namespace PHP.Core
         /// </summary>
         public static Converter<string, string> ParameterNameConverter;
         public static string ConvertParameterName(string name) { return (ParameterNameConverter != null) ? ParameterNameConverter(name) : name; }
+
+        /// <summary>
+        /// Called on every call site name to allow changing its value.
+        /// </summary>
+        public static Converter<string, string> CallSiteNameConverter;
+        public static string ConvertCallSiteName(string name) { return (CallSiteNameConverter != null) ? CallSiteNameConverter(name) : name; }
     }
 }
