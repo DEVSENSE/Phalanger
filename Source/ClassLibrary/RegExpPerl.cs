@@ -2176,8 +2176,11 @@ namespace PHP.Library
                                 break;
 
                             //groups
-							case 1: 
-                                inner_state = (ch == '?') ? 2 : 0;
+							case 1:
+                                if (ch == '?')
+                                    inner_state = 2;
+                                else if (ch != '(')// stay in inner_state == 1, because this can happen: ((?<blah>...))
+                                    inner_state = 0;
                                 break;
 							case 2:
                                 if (ch == 'P')
