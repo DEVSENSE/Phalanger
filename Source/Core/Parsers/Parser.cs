@@ -163,14 +163,14 @@ namespace PHP.Core.Parsers
         private class TmpMemberInfo
         {
             public PhpMemberAttributes attr;
-            public string docComment;
+            public object docComment;
 
-            public TmpMemberInfo(PhpMemberAttributes attr, string docComment)
+            public TmpMemberInfo(PhpMemberAttributes attr, object docComment)
             {
                 this.Update(attr, docComment);
             }
 
-            public TmpMemberInfo/*!*/Update(PhpMemberAttributes attr, string docComment)
+            public TmpMemberInfo/*!*/Update(PhpMemberAttributes attr, object docComment)
             {
                 this.attr = attr;
                 this.docComment = docComment;

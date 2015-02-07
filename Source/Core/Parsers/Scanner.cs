@@ -35,7 +35,7 @@ namespace PHP.Core.Parsers
     {
         void OnLineComment(Scanner/*!*/scanner, Parsers.Position position);
         void OnComment(Scanner/*!*/scanner, Parsers.Position position);
-        void OnPhpDocComment(Scanner/*!*/scanner, Parsers.Position position);
+        void OnPhpDocComment(Scanner/*!*/scanner, PHPDocBlock phpDocBlock);
 
         void OnOpenTag(Scanner/*!*/scanner, Parsers.Position position);
         void OnCloseTag(Scanner/*!*/scanner, Parsers.Position position);
@@ -53,7 +53,7 @@ namespace PHP.Core.Parsers
 
             public void OnLineComment(Scanner scanner, Parsers.Position position) { }
             public void OnComment(Scanner scanner, Parsers.Position position) { }
-            public void OnPhpDocComment(Scanner scanner, Parsers.Position position) { }
+            public void OnPhpDocComment(Scanner scanner, PHPDocBlock phpDocBlock) { }
             public void OnOpenTag(Scanner scanner, Parsers.Position position) { }
             public void OnCloseTag(Scanner scanner, Parsers.Position position) { }
 
@@ -93,12 +93,7 @@ namespace PHP.Core.Parsers
         /// <summary>
         /// Last doc comment read from input.
         /// </summary>
-        private string lastDocComment;
-
-        /// <summary>
-        /// <see cref="lastDocComment"/> position in the source code.
-        /// </summary>
-        private Parsers.Position lastDocCommentPosition;
+        private PHPDocBlock lastDocComment;
 
         /// <summary>
         /// Tokens that should remember current <see cref="lastDocComment"/>.
@@ -264,9 +259,8 @@ namespace PHP.Core.Parsers
 
                     case Tokens.T_DOC_COMMENT:
                         // remember token value to be used by the next token and skip the current:
-                        this.lastDocComment = base.GetTokenString();
-                        this.lastDocCommentPosition = this.tokenPosition;
-                        this.commentsSink.OnPhpDocComment(this, this.tokenPosition);
+                        this.lastDocComment = new PHPDocBlock(base.GetTokenString(), this.tokenPosition);
+                        this.commentsSink.OnPhpDocComment(this, this.lastDocComment);
                         break;
 
 					case Tokens.T_PRAGMA_FILE:
@@ -628,9 +622,7 @@ namespace PHP.Core.Parsers
                         {
                             // remember PHPDoc for current token
                             if (lastDocCommentRememberTokens.Contains(token))
-                                tokenSemantics.Object = new PHPDocBlock(
-                                    this.lastDocComment,
-                                    new ShortPosition(this.lastDocCommentPosition.FirstLine, this.lastDocCommentPosition.FirstColumn));
+                                tokenSemantics.Object = this.lastDocComment;
 
                             // forget last doc comment text
                             if (!lastDocCommentKeepTokens.Contains(token))
