@@ -28,6 +28,11 @@ namespace PHP.Core
             /// </summary>
             private const char PHPDocTagChar = '@';
 
+            /// <summary>
+            /// String representing new line between PHPDoc comment lines.
+            /// </summary>
+            protected const string NewLineString = "\n";
+
             #region Tags
 
             /// <summary>
@@ -172,7 +177,8 @@ namespace PHP.Core
                 if (line.Length >= 2 && line[line.Length - 1] == '/' && line[line.Length - 2] == '*')  // "*/" found at the end
                     line = line.Remove(line.Length - 2);
 
-                // TODO: any whitespace sequence is converted into single space, but only outside <pre> block
+                // TODO: any whitespace sequence is converted into single space, but only outside <pre> and {} blocks
+                // TODO: handle "{@tag ...}" for @link, @see etc...
 
                 // check tags:
                 next = CreateElement(line);                    
@@ -211,18 +217,6 @@ namespace PHP.Core
                 
                 // unrecognized tag:
                 return null;
-            }
-
-            /// <summary>
-            /// Checks if given string starts with tag name, which is followed by new line or a whitespace.
-            /// </summary>
-            private static bool IsTagLine(string/*!*/line, string/*!*/tagName)
-            {
-                Debug.Assert(line != null);
-                Debug.Assert(tagName != null);
-
-                return line.StartsWith(tagName, StringComparison.Ordinal) &&
-                    (line.Length == tagName.Length || char.IsWhiteSpace(line[tagName.Length]));
             }
 
             /// <summary>
@@ -277,11 +271,11 @@ namespace PHP.Core
                     Debug.Assert(firstLineEndIndex != -1);
 
                     next = new LongDescriptionElement(this.Text.Substring(firstLineEndIndex + 1));
-                    this.Text = this.Text.Remove(firstLineEndIndex).Trim();
+                    this.Text = this.Text.Remove(firstLineEndIndex);
                 }
                 else
                 {
-                    this.Text = (this.Text != null) ? (this.Text + '\n' + line) : line;
+                    this.Text = (this.Text != null) ? (this.Text + NewLineString + line) : line;
                 }
             }
 
@@ -290,7 +284,8 @@ namespace PHP.Core
             internal override void OnEndParsing()
             {
                 base.OnEndParsing();
-                this.Text = this.Text.Trim();
+                if (this.Text != null)
+                    this.Text = this.Text.Trim();
             }
 
             public override string ToString()
@@ -316,7 +311,7 @@ namespace PHP.Core
                 // Long Description can only be followed by PHPDoc tag (handled in TryParseLine)
 
                 next = null;
-                this.Text = (this.Text != null) ? (this.Text + '\n' + line) : line;
+                this.Text = (this.Text != null) ? (this.Text + NewLineString + line) : line;
             }
 
             internal override bool IsEmpty { get { return string.IsNullOrWhiteSpace(this.Text); } }
@@ -324,7 +319,8 @@ namespace PHP.Core
             internal override void OnEndParsing()
             {
                 base.OnEndParsing();
-                this.Text = this.Text.Trim();
+                if (this.Text != null)
+                    this.Text = this.Text.Trim();
             }
 
             public override string ToString()
@@ -647,7 +643,7 @@ namespace PHP.Core
                 next = null;
 
                 // add the line into description:
-                Description = string.IsNullOrWhiteSpace(Description) ? line : (Description + '\n' + line);
+                Description = string.IsNullOrWhiteSpace(Description) ? line : (Description + NewLineString + line);
             }
 
             internal override void OnEndParsing()
@@ -712,13 +708,14 @@ namespace PHP.Core
             internal override void  ParseLine(string line, out Element next)
             {
                 next = null;
-                this.Text = string.IsNullOrEmpty(this.Text) ? line : (this.Text + '\n' + line);
+                this.Text = string.IsNullOrEmpty(this.Text) ? line : (this.Text + NewLineString + line);
             }
 
             internal override void OnEndParsing()
             {
                 base.OnEndParsing();
-                this.Text = this.Text.Trim();
+                if (this.Text != null)
+                    this.Text = this.Text.Trim();
             }
         }
 
@@ -736,7 +733,7 @@ namespace PHP.Core
 
             public override string ToString()
             {
-                return Name + "\n" + Text;
+                return Name + NewLineString + Text;
             }
         }
 
@@ -844,7 +841,7 @@ namespace PHP.Core
 
             public override string ToString()
             {
-                return Name + " " + TypeNames + " " + VariableName + "\n" + Description;
+                return Name + " " + TypeNames + " " + VariableName + NewLineString + Description;
             }
         }
 
@@ -863,7 +860,7 @@ namespace PHP.Core
 
             public override string ToString()
             {
-                return Name + " " + TypeNames + "\n" + Description;
+                return Name + " " + TypeNames + NewLineString + Description;
             }
         }
 
@@ -951,7 +948,7 @@ namespace PHP.Core
 
             public override string ToString()
             {
-                return Name + "\n" + Text;
+                return Name + NewLineString + Text;
             }
         }
 
@@ -1189,7 +1186,7 @@ namespace PHP.Core
                     if (string.IsNullOrEmpty(longdesc))
                         return shortdesc;
 
-                    return shortdesc + '\n' + longdesc;
+                    return shortdesc + "\n" + longdesc;
                 }
 
                 return null;
