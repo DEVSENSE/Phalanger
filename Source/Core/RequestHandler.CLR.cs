@@ -162,31 +162,12 @@ namespace PHP.Core
                     script = request_context.GetCompiledScript(request_context.RequestFile);
 
                     if (script != null)
-                    {
-                        // preallocate ScriptContext's dictionaries:
-                        request_context.ScriptContext.DeclaredFunctionsAllocate(script.MaxDeclaredFunctionsCount);
-                        request_context.ScriptContext.DeclaredTypesAllocate(script.MaxDeclaredTypesCount);
-
-                        // execute the script:
                         request_context.IncludeScript(context.Request.PhysicalPath, script);
-                    }
                 }
                 catch (PhpException)
                 {
                     // A user code or compiler have reported a fatal error.
                     // We don't want to propagate the exception to web server.
-                }
-                finally
-                {
-                    if (script != null)
-                    {
-                        // remember the max capacity of dictionaries to preallocate next time:
-                        if (script.MaxDeclaredFunctionsCount < request_context.ScriptContext.DeclaredFunctions.Count)
-                            script.MaxDeclaredFunctionsCount = request_context.ScriptContext.DeclaredFunctions.Count;
-
-                        if (script.MaxDeclaredTypesCount < request_context.ScriptContext.DeclaredTypes.Count)
-                            script.MaxDeclaredTypesCount = request_context.ScriptContext.DeclaredTypes.Count;
-                    }
                 }
             }
 		}

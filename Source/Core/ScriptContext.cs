@@ -56,6 +56,8 @@ namespace PHP.Core
         }
         private MethodInfo mainHelper = null;
 
+        #region Statistics for preallocation Dictionaries
+
         /// <summary>
         /// Remember max count of declared functions from within this entering script. Used to prealocate <see cref="ScriptContext.DeclaredFunctions"/>.
         /// </summary>
@@ -65,6 +67,24 @@ namespace PHP.Core
         /// Remember max count of declared types from within this entering script. Used to prealocate <see cref="ScriptContext.DeclaredTypes"/>.
         /// </summary>
         internal int MaxDeclaredTypesCount = 0;
+
+        /// <summary>
+        /// Update <see cref="MaxDeclaredTypesCount"/> and <see cref="MaxDeclaredFunctionsCount"/>.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <remarks>Called at the end of request.</remarks>
+        internal void SaveMaxCounts(ScriptContext/*!*/context)
+        {
+            Debug.Assert(context != null);
+
+            if (MaxDeclaredFunctionsCount < context.DeclaredFunctions.Count)
+                MaxDeclaredFunctionsCount = context.DeclaredFunctions.Count;
+
+            if (MaxDeclaredTypesCount < context.DeclaredTypes.Count)
+                MaxDeclaredTypesCount = context.DeclaredTypes.Count;
+        }
+
+        #endregion
 
         #region Constructors
 
@@ -251,6 +271,12 @@ namespace PHP.Core
 		public PhpSourceFile MainScriptFile { get { return mainScriptFile; } }
 		private PhpSourceFile mainScriptFile;
 
+        /// <summary>
+        /// A <see cref="ScriptInfo"/> of main script (first script executed within the current <see cref="RequestContext"/>).
+        /// </summary>
+        internal ScriptInfo MainScriptInfo { get { return mainScriptInfo; } }
+        private ScriptInfo mainScriptInfo;
+
 		/// <summary>
 		/// The configuration used by the class library and script functions and by objects which 
 		/// has this instance of <see cref="ScriptContext"/> associated with itself.
@@ -285,7 +311,7 @@ namespace PHP.Core
         /// Allocate <see cref="_declaredFunctions"/> with given <paramref name="capacity"/>.
         /// </summary>
         /// <param name="capacity">Capacity hint.</param>
-        internal void DeclaredFunctionsAllocate(int capacity)
+        private void DeclaredFunctionsAllocate(int capacity)
         {
             Debug.Assert(capacity >= 0);
             if (_declaredFunctions == null)
@@ -309,7 +335,7 @@ namespace PHP.Core
         /// Allocate <see cref="_declaredTypes"/> with given <paramref name="capacity"/>.
         /// </summary>
         /// <param name="capacity">Capacity hint.</param>
-        internal void DeclaredTypesAllocate(int capacity)
+        private void DeclaredTypesAllocate(int capacity)
         {
             Debug.Assert(capacity >= 0);
             if (_declaredTypes == null)
@@ -2533,12 +2559,17 @@ namespace PHP.Core
 		/// </summary>
         /// <param name="script">The script related to the <c>sourceFile</c>.</param>
         /// <param name="sourceFile">The file path of the <c>script</c>.</param>
-		internal void DefineMainScript(ScriptInfo/*!*/ script, PhpSourceFile/*!*/ sourceFile)
+		private void DefineMainScript(ScriptInfo/*!*/ script, PhpSourceFile/*!*/ sourceFile)
 		{
 			Debug.Assert(mainScriptFile == null, "Main script redefined.");
 
 			scripts.Add(sourceFile, script);
 			mainScriptFile = sourceFile;
+            mainScriptInfo = script;
+
+            // preallocate ScriptContext's dictionaries:
+            DeclaredFunctionsAllocate(script.MaxDeclaredFunctionsCount);
+            DeclaredTypesAllocate(script.MaxDeclaredTypesCount);
 		}
 
 		#endregion

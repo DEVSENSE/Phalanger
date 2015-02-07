@@ -17,7 +17,6 @@ using System.Threading;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections;
-using System.Collections.Generic;
 
 using PHP.Core.Reflection;
 using PHP.Core.Emit;
@@ -65,6 +64,44 @@ namespace PHP.Core
 
 		#endregion
 
+		#region Resources Management
+
+		/// <summary>
+		/// Lazily initialized list of <see cref="PhpResource"/>s created during this web request.
+		/// </summary>
+		/// <remarks>
+		/// The resources are disposed of when the request is over.
+		/// <seealso cref="RegisterResource"/><seealso cref="CleanUpResources"/>
+		/// </remarks>
+		private ArrayList resources; // GENERICS: <PhpResource>
+
+		/// <summary>
+		/// Registers a resource that should be disposed of when the request is over.
+		/// </summary>
+		/// <param name="res">The resource.</param>
+		internal void RegisterResource(PhpResource res)
+		{
+			if (resources == null) resources = new ArrayList();
+			resources.Add(res);
+		}
+
+		/// <summary>
+		/// Disposes of <see cref="PhpResource"/>s created during this web request.
+		/// </summary>
+		private void CleanUpResources()
+		{
+			if (resources != null)
+			{
+				for (int i = 0; i < resources.Count; i++)
+				{
+					((PhpResource)resources[i]).Dispose();
+				}
+				resources = null;
+			}
+		}
+
+		#endregion
+
 		#region Request Processing
 #if !SILVERLIGHT
 		/// <summary>
@@ -83,7 +120,6 @@ namespace PHP.Core
 		/// <exception cref="ArgumentNullException"><paramref name="relativeSourcePath"/> or <paramref name="script"/> are <B>null</B> references.</exception>
 		/// <exception cref="ArgumentException">Script type cannot be resolved.</exception>
 		/// <exception cref="InvalidScriptAssemblyException">The target assembly is not a valid Phalanger compiled assembly.</exception>
-        [DebuggerNonUserCode]
 		public object IncludeScript(string/*!*/ relativeSourcePath, ScriptInfo/*!*/ script)
 		{
 			if (disposed)
@@ -116,18 +152,40 @@ namespace PHP.Core
 		public void Dispose()
 		{
 			if (!disposed)
-			{   
+			{
 				try
 				{
-                    ((IDisposable)scriptContext).Dispose();
+					scriptContext.GuardedCall<object, object>(scriptContext.ProcessShutdownCallbacks, null, false);
+
+					// Session is ended after destructing objects since PHP 5.0.5, use two-phase finalization:
+                    scriptContext.GuardedCall<object, object>(scriptContext.FinalizePhpObjects, null, false);
+                    scriptContext.GuardedCall<object, object>(scriptContext.FinalizeBufferedOutput, null, false);
+
+					TryDisposeBeforeFinalization();
+
+					// finalize objects created during session closing and output finalization:
+					scriptContext.GuardedCall<object, object>(scriptContext.FinalizePhpObjects, null, false);
+
+					// Platforms-specific dispose
+					TryDisposeAfterFinalization();
 				}
 				finally
 				{
-                    if (RequestEnd != null) RequestEnd();
+					CleanUpResources();
 
-                    // cleans this instance:
-					this.disposed = true;
+					// Platforms-specific finally dispose
+					FinallyDispose();
+
+					if (RequestEnd != null) RequestEnd();
+
+                    // remember the max capacity of dictionaries to preallocate next time:
+                    if (scriptContext != null && scriptContext.MainScriptInfo != null)
+                        scriptContext.MainScriptInfo.SaveMaxCounts(scriptContext);                        
+
+					// cleans this instance:
+					disposed = true;
 					this.scriptContext = null;
+					ScriptContext.CurrentContext = null;
 
 					Debug.WriteLine("REQUEST", "-- disposed ----------------------");
 				}
