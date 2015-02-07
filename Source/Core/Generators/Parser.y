@@ -979,11 +979,11 @@ non_empty_statement:
 		statement elseif_list_opt else_opt 
 		{ 
 			List<ConditionalStmt> conditions = (List<ConditionalStmt>)$7;
-			conditions[0] = new ConditionalStmt((Expression)$3, (Statement)$6);
+			conditions[0] = new ConditionalStmt(Position.CombinePositions(@1, @6), (Expression)$3, (Statement)$6);
 			
 			// add else:
 			if ($8 != null)
-				conditions.Add(new ConditionalStmt(null, (Statement)$8));
+				conditions.Add(new ConditionalStmt(@8, null, (Statement)$8));
 			
 			$$ = new IfStmt(@$, conditions);
 			
@@ -997,11 +997,11 @@ non_empty_statement:
 		inner_statement_list_opt elseif_colon_list_opt else_colon_opt T_ENDIF ';' 
 		{ 
 			List<ConditionalStmt> conditions = (List<ConditionalStmt>)$8;
-			conditions[0] = new ConditionalStmt((Expression)$3, new BlockStmt(@7, (List<Statement>)$7));
+			conditions[0] = new ConditionalStmt(Position.CombinePositions(@1, @7), (Expression)$3, new BlockStmt(@7, (List<Statement>)$7));
 			
 			// add else:
 			if ($9 != null)
-				conditions.Add(new ConditionalStmt(null, (Statement)$9));
+				conditions.Add(new ConditionalStmt(@9, null, (Statement)$9));
 			
 			$$ = new IfStmt(@$, conditions);
 			
@@ -1191,7 +1191,7 @@ elseif_list_opt:
 	|	elseif_list_opt T_ELSEIF '(' expr ')' statement
 		{ 
 			$$ = $1; 
-			ListAdd<ConditionalStmt>($$, new ConditionalStmt((Expression)$4, (Statement)$6)); 
+			ListAdd<ConditionalStmt>($$, new ConditionalStmt(Position.CombinePositions(@2, @6), (Expression)$4, (Statement)$6)); 
 		}
 ;
 
@@ -1204,7 +1204,7 @@ elseif_colon_list_opt:
 	|	elseif_colon_list_opt T_ELSEIF '(' expr ')' ':' inner_statement_list_opt 
 		{ 
 			$$ = $1;
-			ListAdd<ConditionalStmt>($$, new ConditionalStmt((Expression)$4, new BlockStmt(@7, (List<Statement>)$7))); 
+			ListAdd<ConditionalStmt>($$, new ConditionalStmt(Position.CombinePositions(@2, @7), (Expression)$4, new BlockStmt(@7, (List<Statement>)$7))); 
 		}
 ;
 
