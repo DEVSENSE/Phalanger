@@ -41,6 +41,13 @@ namespace PHP.Core.AST
 
         public Signature Signature { get { return signature; } }
         private readonly Signature signature;
+
+        /// <summary>
+        /// Parameters specified within <c>use</c> 
+        /// </summary>
+        public List<FormalParam> UseParams { get { return useParams; } }
+        private readonly List<FormalParam> useParams;
+
         //private readonly TypeSignature typeSignature;
         private readonly List<Statement>/*!*/ body;
         public List<Statement>/*!*/ Body { get { return body; } }
@@ -62,7 +69,7 @@ namespace PHP.Core.AST
         public LambdaFunctionExpr(SourceUnit/*!*/ sourceUnit,
             Position position, Position entireDeclarationPosition, ShortPosition headingEndPosition, ShortPosition declarationBodyPosition,
             Scope scope, NamespaceDecl ns,
-            bool aliasReturn, List<FormalParam>/*!*/ formalParams,
+            bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalParam> useParams,
             List<Statement>/*!*/ body)
             : base(position)
         {
@@ -70,6 +77,7 @@ namespace PHP.Core.AST
 
             //this.ns = ns;
             this.signature = new Signature(aliasReturn, formalParams);
+            this.useParams = useParams;
             //this.typeSignature = new TypeSignature(genericParams);
             //this.attributes = new CustomAttributes(attributes);
             this.body = body;

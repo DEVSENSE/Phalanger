@@ -1667,7 +1667,7 @@ lambda_function_expression:
 		$$ = new LambdaFunctionExpr(sourceUnit,
             @2, @$, GetHeadingEnd(@4), GetBodyStart(@6),
             GetScope(), currentNamespace,
-            static_doc_ref.Item3, (List<FormalParam>)$2,
+            static_doc_ref.Item3, (List<FormalParam>)$2, (List<FormalParam>)$4,
             (List<Statement>)$7);
 
 		LeaveConditionalCode();
