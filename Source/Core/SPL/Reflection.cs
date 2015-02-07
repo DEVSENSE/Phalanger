@@ -41,12 +41,6 @@ namespace PHP.Library.SPL
     }
 
     /*
-      class ReflectionException : SPL.Exception 
-      {
-   
-      }
-    */
-    /*
     class ReflectionException extends Exception { }
     class ReflectionFunction implements Reflector { }
     class ReflectionParameter implements Reflector { }

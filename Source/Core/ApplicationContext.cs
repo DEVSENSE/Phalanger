@@ -198,6 +198,8 @@ namespace PHP.Core
             AddExportMethod(addType(typeof(Library.SPL.Reflector)));
             addType(typeof(Library.SPL.Reflection));
             addType(typeof(Library.SPL.ReflectionClass));
+            addType(typeof(Library.SPL.ReflectionFunctionAbstract));
+            addType(typeof(Library.SPL.ReflectionFunction));
             addType(typeof(Library.SPL.ReflectionException));
 
             // Iterators:
