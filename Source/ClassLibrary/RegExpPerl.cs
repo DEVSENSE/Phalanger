@@ -2663,18 +2663,18 @@ namespace PHP.Library
                                 {
                                     //symbol order can be different, not testet with other modes
                                     var seqBreak = false;
-                                    byte from = 0;
-                                    byte to = 0;
+                                    int from = 0;
+                                    int to = 0;
                                     if (encoding.IsSingleByte)
                                     {
                                         var bytes = encoding.GetBytes(new char[] { (char)range_from_character });
-                                        from = bytes[0];
+                                        from = (int)bytes[0];
                                         bytes = encoding.GetBytes(new char[] { (char)ch });
-                                        to = bytes[0];
+                                        to = (int)bytes[0];
                                         var lastChar = range_from_character;
-                                        for (int j = from + 1; j <= to; j++)
+                                        for (int j = from; j < to; j++)
                                         {
-                                            var chars = encoding.GetChars(new[] { (byte)j });
+                                            var chars = encoding.GetChars(new[] { (byte)(j + 1) });
                                             if (chars[0] - lastChar != 1)
                                             {
                                                 seqBreak = true;
@@ -2692,9 +2692,9 @@ namespace PHP.Library
                                     }
                                     else
                                     {
-                                        for (int j = from + 1; j <= to; j++)
+                                        for (int j = from; j < to; j++)
                                         {
-                                            var chars = encoding.GetChars(new[] { (byte)j });
+                                            var chars = encoding.GetChars(new[] { (byte)(j + 1) });
                                             AppendEscaped(result, chars[0]);
                                         }
                                     }
