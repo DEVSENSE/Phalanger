@@ -6,6 +6,7 @@
 *.suo
 *.user
 *.sln.docstates
+*.vspscc
 
 # Build results
 *_i.c

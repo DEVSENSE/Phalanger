@@ -66,6 +66,24 @@ namespace PHP.Core.Compiler.AST
 
                         // x[] .= y -> x[] = null . y
                         if (oldop == Operations.AssignAppend)
+<<<<<<< HEAD
+                            valueassignex.rvalue = new BinaryEx(node.Position, Operations.Concat, new NullLiteral(node.Position), valueassignex.rvalue);
+                        // x[] += y -> x[] = 0 + y
+                        else if (oldop == Operations.AssignAdd)
+                            valueassignex.rvalue = new BinaryEx(node.Position, Operations.Add, new NullLiteral(node.Position), valueassignex.rvalue);
+                        // x[] -= y -> x[] = 0 - y
+                        else if (oldop == Operations.AssignSub)
+                            valueassignex.rvalue = new BinaryEx(node.Position, Operations.Sub, new NullLiteral(node.Position), valueassignex.rvalue);
+                        // x[] *= y -> x[] = 0 * y
+                        else if (oldop == Operations.AssignMul)
+                            valueassignex.rvalue = new BinaryEx(node.Position, Operations.Mul, new NullLiteral(node.Position), valueassignex.rvalue);
+                        // x[] /= y -> x[] = 0 / y
+                        else if (oldop == Operations.AssignDiv)
+                            valueassignex.rvalue = new BinaryEx(node.Position, Operations.Div, new NullLiteral(node.Position), valueassignex.rvalue);
+                        // x[] &= y -> x[] = 0 & y
+                        else if (oldop == Operations.AssignAnd)
+                            valueassignex.rvalue = new BinaryEx(node.Position, Operations.BitAnd, new NullLiteral(node.Position), valueassignex.rvalue);
+=======
                             valueassignex.rvalue = new BinaryEx(node.Span, Operations.Concat, new NullLiteral(node.Span), valueassignex.rvalue);
                         // x[] += y -> x[] = 0 + y
                         else if (oldop == Operations.AssignAdd)
@@ -82,6 +100,7 @@ namespace PHP.Core.Compiler.AST
                         // x[] &= y -> x[] = 0 & y
                         else if (oldop == Operations.AssignAnd)
                             valueassignex.rvalue = new BinaryEx(node.Span, Operations.BitAnd, new NullLiteral(node.Span), valueassignex.rvalue);
+>>>>>>> refs/remotes/tfs/default
                         else
                         {
                             Debug.Fail("Unhandled operation " + oldop.ToString() + " must be reduced!");
@@ -533,7 +552,11 @@ namespace PHP.Core.Compiler.AST
                 if (refassignex.RValue is NewEx)
                 {
                     //PhpException.Throw(PhpError.Deprecated, CoreResources.GetString("assign_new_as_ref_is_deprecated"));
+<<<<<<< HEAD
+                    analyzer.ErrorSink.Add(Warnings.AssignNewByRefDeprecated, analyzer.SourceUnit, node.Position);
+=======
                     analyzer.ErrorSink.Add(Warnings.AssignNewByRefDeprecated, analyzer.SourceUnit, node.Span);
+>>>>>>> refs/remotes/tfs/default
                 }
 
                 return new Evaluation(node);
