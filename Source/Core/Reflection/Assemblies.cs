@@ -370,8 +370,7 @@ namespace PHP.Core.Reflection
 
 		public override PhpModule GetModule(PhpSourceFile name)
 		{
-			Debug.Fail();
-			throw null;
+            throw new NotSupportedException();
 		}
 
 		/// <summary>

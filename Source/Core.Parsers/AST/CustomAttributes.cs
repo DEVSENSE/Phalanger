@@ -145,9 +145,9 @@ namespace PHP.Core.AST
         public List<NamedActualParam>/*!*/ NamedParameters { get { return namedParameters; } }
         private List<NamedActualParam>/*!*/ namedParameters;
 
-        public CustomAttribute(Text.Span span, QualifiedName qualifiedName, List<ActualParam>/*!*/ parameters,
+        public CustomAttribute(Position position, QualifiedName qualifiedName, List<ActualParam>/*!*/ parameters,
                 List<NamedActualParam>/*!*/ namedParameters)
-            : base(span)
+            : base(position)
         {
             this.qualifiedName = qualifiedName;
             this.namedParameters = namedParameters;

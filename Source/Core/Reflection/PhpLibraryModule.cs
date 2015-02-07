@@ -18,6 +18,7 @@ using System.IO;
 using System.Threading;
 using PHP.Core.Emit;
 using System.Collections;
+using System.Diagnostics;
 
 namespace PHP.Core.Reflection
 {

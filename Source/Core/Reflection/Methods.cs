@@ -843,7 +843,7 @@ namespace PHP.Core.Reflection
 		public bool IsMethod { get { return !IsFunction; } }
         public virtual bool IsLambdaFunction { get { return false; } }
 
-		public abstract SourceUnit SourceUnit { get; }
+        public abstract CompilationSourceUnit SourceUnit { get; }
 		public abstract Position Position { get; }
 
         /// <summary>Contains value of the <see cref="IsDllImport"/> property</summary>
@@ -1387,7 +1387,7 @@ namespace PHP.Core.Reflection
 		public Declaration/*!*/ Declaration { get { return declaration; } }
 		private Declaration/*!*/ declaration;
 
-		public override SourceUnit SourceUnit { get { return declaration.SourceUnit; } }
+        public override CompilationSourceUnit SourceUnit { get { return declaration.SourceUnit; } }
 		public override Position Position { get { return declaration.Position; } }
 
 		public override bool IsLambda { get { return isLambda; } }
@@ -1406,7 +1406,7 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		internal PhpFunction(QualifiedName qualifiedName, PhpMemberAttributes memberAttributes,
 			Signature astSignature, TypeSignature astTypeSignature, bool isConditional, Scope scope,
-			SourceUnit/*!*/ sourceUnit, Position position)
+			CompilationSourceUnit/*!*/ sourceUnit, Position position)
 			: base(new PhpRoutineDesc(sourceUnit.CompilationUnit.Module, memberAttributes), astSignature, astTypeSignature)
 		{
 			Debug.Assert(sourceUnit != null && position.IsValid);
@@ -1590,8 +1590,8 @@ namespace PHP.Core.Reflection
 		/// Error reporting (for partial classes).
 		/// <B>null</B> for reflected PHP methods.
 		/// </summary>
-		public override SourceUnit SourceUnit { get { return sourceUnit; } }
-		private SourceUnit sourceUnit;
+		public override CompilationSourceUnit SourceUnit { get { return sourceUnit; } }
+        private CompilationSourceUnit sourceUnit;
 
 		/// <summary>
 		/// Methods only.
@@ -1618,7 +1618,7 @@ namespace PHP.Core.Reflection
 		/// Used by the compiler.
 		/// </summary>
 		internal PhpMethod(PhpType/*!*/ declaringType, Name name, PhpMemberAttributes memberAttributes, bool hasBody,
-	  Signature astSignature, TypeSignature astTypeSignature, SourceUnit/*!*/ sourceUnit, Position position)
+      Signature astSignature, TypeSignature astTypeSignature, CompilationSourceUnit/*!*/ sourceUnit, Position position)
 			: base(new PhpRoutineDesc(declaringType.TypeDesc, memberAttributes), astSignature, astTypeSignature)
 		{
 			Debug.Assert(declaringType != null && sourceUnit != null && position.IsValid);
@@ -1954,8 +1954,8 @@ namespace PHP.Core.Reflection
         public override Position Position { get { return position; } }
         private readonly Position position;
 
-        public override SourceUnit SourceUnit { get { return sourceUnit; } }
-        private SourceUnit sourceUnit;
+        public override CompilationSourceUnit SourceUnit { get { return sourceUnit; } }
+        private CompilationSourceUnit sourceUnit;
 
         internal override bool IsExported { get { return false; } }
 
@@ -1966,7 +1966,7 @@ namespace PHP.Core.Reflection
         /// <summary>
         /// Used by the compiler.
         /// </summary>
-        internal PhpLambdaFunction(Signature astSignature, SourceUnit/*!*/ sourceUnit, Position position)
+        internal PhpLambdaFunction(Signature astSignature, CompilationSourceUnit/*!*/ sourceUnit, Position position)
             : base(
             new PhpRoutineDesc(
                 DTypeDesc.Create(typeof(PHP.Library.SPL.Closure)),
@@ -3112,7 +3112,7 @@ namespace PHP.Core.Reflection
 
         public override bool IsFunction { get { return true; } }
 
-        public override SourceUnit SourceUnit { get { throw new NotSupportedException(); } }
+        public override CompilationSourceUnit SourceUnit { get { throw new NotSupportedException(); } }
         public override Position Position { get { throw new NotSupportedException(); } }
 
         internal override bool IsExported { get { return false; } }

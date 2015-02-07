@@ -15,113 +15,316 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using PHP.Core.Emit;
 using System.Diagnostics;
+
+using PHP.Core.AST;
 using PHP.Core.Parsers;
 
-namespace PHP.Core.AST
+namespace PHP.Core.Compiler.AST
 {
-	#region SwitchStmt
+    partial class NodeCompilers
+    {
+        #region SwitchStmt
 
-	/// <summary>
-	/// Switch statement.
-	/// </summary>
-    [Serializable]
-	public sealed class SwitchStmt : Statement
-	{
-		/// <summary>Value to switch by</summary>
-        public Expression/*!*/ SwitchValue { get { return switchValue; } internal set { switchValue = value; } }
-        private Expression/*!*/ switchValue;
-        /// <summary>Body of switch statement</summary>
-        public List<SwitchItem>/*!*/ SwitchItems { get { return switchItems; } }
-        private List<SwitchItem>/*!*/ switchItems;
-        
-		public SwitchStmt(Position position, Expression/*!*/ switchValue, List<SwitchItem>/*!*/ switchItems)
-			: base(position)
-		{
-			Debug.Assert(switchValue != null && switchItems != null);
-
-			this.switchValue = switchValue;
-			this.switchItems = switchItems;
-		}
-
-		/// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
+        [NodeCompiler(typeof(SwitchStmt), Singleton = true)]
+        sealed class SwitchStmtCompiler : StatementCompiler<SwitchStmt>
         {
-            visitor.VisitSwitchStmt(this);
+            internal override Statement Analyze(SwitchStmt node, Analyzer analyzer)
+            {
+                if (analyzer.IsThisCodeUnreachable())
+                {
+                    analyzer.ReportUnreachableCode(node.Position);
+                    return EmptyStmt.Unreachable;
+                }
+
+                node.SwitchValue = node.SwitchValue.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
+
+                analyzer.EnterSwitchBody();
+
+                foreach (SwitchItem item in node.SwitchItems)
+                    item.Analyze(analyzer);
+
+                analyzer.LeaveSwitchBody();
+                return node;
+            }
+
+            internal override void Emit(SwitchStmt node, CodeGenerator codeGenerator)
+            {
+                Statistics.AST.AddNode("SwitchStmt");
+                ILEmitter il = codeGenerator.IL;
+
+                // Note: 
+                //  SwitchStmt is now implemented in the most general (and unefficient) way. The whole switch
+                //  is understood as a series of if-elseif-else statements.
+
+                Label exit_label = il.DefineLabel();
+                bool fall_through = false;
+                Label fall_through_label = il.DefineLabel();
+                Label last_default_label = il.DefineLabel();
+                DefaultItem last_default = GetLastDefaultItem(node);
+                LocalBuilder branch_to_lastdefault = null;
+
+                if (last_default != null)
+                {
+                    branch_to_lastdefault = il.DeclareLocal(Types.Bool[0]);
+                    il.LdcI4(0);
+                    il.Stloc(branch_to_lastdefault);
+                }
+
+                codeGenerator.BranchingStack.BeginLoop(exit_label, exit_label,
+                  codeGenerator.ExceptionBlockNestingLevel);
+
+                // marks a sequence point containing the discriminator evaluation:
+                codeGenerator.MarkSequencePoint(node.SwitchValue.Position);
+
+                // Evaluate condition value and store the result into local variable
+                codeGenerator.EmitBoxing(node.SwitchValue.Emit(codeGenerator));
+                LocalBuilder condition_value = il.DeclareLocal(Types.Object[0]);
+                il.Stloc(condition_value);
+
+                foreach (SwitchItem item in node.SwitchItems)
+                {
+                    item.MarkSequencePoint(codeGenerator);
+
+                    // switch item is either CaseItem ("case xxx:") or DefaultItem ("default") item:
+                    CaseItem case_item = item as CaseItem;
+                    if (case_item != null)
+                    {
+                        Label false_label = il.DefineLabel();
+
+                        // PhpComparer.Default.CompareEq(<switch expr. value>,<case value>);
+                        /*changed to static method*/
+                        //il.Emit(OpCodes.Ldsfld, Fields.PhpComparer_Default);
+                        codeGenerator.EmitCompareEq(
+                            cg => { cg.IL.Ldloc(condition_value); return PhpTypeCode.Object; },
+                            cg => case_item.CaseVal.Emit(cg));
+
+                        // IF (!STACK) GOTO false_label;
+                        il.Emit(OpCodes.Brfalse, false_label);
+                        if (fall_through == true)
+                        {
+                            il.MarkLabel(fall_through_label, true);
+                            fall_through = false;
+                        }
+
+                        case_item.EmitStatements(codeGenerator);
+
+                        if (fall_through == false)
+                        {
+                            fall_through_label = il.DefineLabel();
+                            fall_through = true;
+                        }
+
+                        il.Emit(OpCodes.Br, fall_through_label);
+
+                        il.MarkLabel(false_label, true);
+                    }
+                    else
+                    {
+                        DefaultItem default_item = (DefaultItem)item;
+
+                        // Only the last default branch defined in source code is used.
+                        // So skip default while testing "case" items at runtime.
+                        Label false_label = il.DefineLabel();
+                        il.Emit(OpCodes.Br, false_label);
+
+                        if (default_item == last_default)
+                        {
+                            il.MarkLabel(last_default_label, false);
+                        }
+
+                        if (fall_through == true)
+                        {
+                            il.MarkLabel(fall_through_label, true);
+                            fall_through = false;
+                        }
+
+                        default_item.EmitStatements(codeGenerator);
+
+                        if (fall_through == false)
+                        {
+                            fall_through_label = il.DefineLabel();
+                            fall_through = true;
+                        }
+
+                        il.Emit(OpCodes.Br, fall_through_label);
+                        il.MarkLabel(false_label, true);
+                    }
+                }
+
+                // If no case branch matched, branch to last default case if any is defined
+                if (last_default != null)
+                {
+                    // marks a sequence point containing the condition evaluation or skip of the default case:
+                    codeGenerator.MarkSequencePoint(last_default.Position);
+
+                    Debug.Assert(branch_to_lastdefault != null);
+                    Label temp = il.DefineLabel();
+
+                    // IF (!branch_to_lastdefault) THEN 
+                    il.Ldloc(branch_to_lastdefault);
+                    il.LdcI4(0);
+                    il.Emit(OpCodes.Bne_Un, temp);
+                    if (true)
+                    {
+                        // branch_to_lastdefault = TRUE; 
+                        il.LdcI4(1);
+                        il.Stloc(branch_to_lastdefault);
+
+                        // GOTO last_default_label;
+                        il.Emit(OpCodes.Br, last_default_label);
+                    }
+                    il.MarkLabel(temp, true);
+                    // END IF;
+
+                    il.ForgetLabel(last_default_label);
+                }
+
+                if (fall_through == true)
+                {
+                    il.MarkLabel(fall_through_label, true);
+                }
+
+                il.MarkLabel(exit_label);
+                codeGenerator.BranchingStack.EndLoop();
+                il.ForgetLabel(exit_label);
+            }
+
+            /// <summary>
+            /// Determines the last default item in the list of switch items.
+            /// </summary>
+            /// <returns>The last default item or a <b>null</b> reference if there is no default item.</returns>
+            private static DefaultItem GetLastDefaultItem(SwitchStmt/*!*/node)
+            {
+                DefaultItem result = null;
+                foreach (SwitchItem item in node.SwitchItems)
+                {
+                    DefaultItem di = item as DefaultItem;
+                    if (di != null) result = di;
+                }
+                return result;
+            }
         }
-	}
 
-	#endregion
+        #endregion
 
-	#region SwitchItem
+        #region SwitchItem
 
-	/// <summary>
-	/// Base class for switch case/default items.
-	/// </summary>
-    [Serializable]
-    public abstract class SwitchItem : LangElement
-	{
-		protected readonly List<Statement>/*!*/ statements;
-        /// <summary>Statements in this part of switch</summary>
-        public List<Statement>/*!*/ Statements { get { return statements; } }
-
-		protected SwitchItem(Position position, List<Statement>/*!*/ statements)
-			: base(position)
-		{
-			Debug.Assert(statements != null);
-			this.statements = statements;
-		}
-	}
-
-	/// <summary>
-	/// Switch <c>case</c> item.
-	/// </summary>
-    [Serializable]
-    public sealed class CaseItem : SwitchItem
-	{
-        /// <summary>Value to compare with swich expression</summary>
-        public Expression CaseVal { get { return caseVal; } internal set { caseVal = value; } }
-        private Expression caseVal;
-
-		public CaseItem(Position position, Expression/*!*/ caseVal, List<Statement>/*!*/ statements)
-			: base(position, statements)
-		{
-			Debug.Assert(caseVal != null);
-			this.caseVal = caseVal;
-		}
-
-		/// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
+        abstract class SwitchItemCompiler<T> : INodeCompiler, ISwitchItemCompiler where T : SwitchItem
         {
-            visitor.VisitCaseItem(this);
+            protected virtual void Analyze(T/*!*/node, Analyzer/*!*/ analyzer)
+            {
+                analyzer.EnterConditionalCode();
+
+                node.Statements.Analyze(analyzer);
+
+                analyzer.LeaveConditionalCode();
+            }
+
+            protected abstract void MarkSequencePoint(T/*!*/node, CodeGenerator/*!*/codeGenerator);
+
+            protected virtual void EmitStatements(T/*!*/node, CodeGenerator/*!*/ codeGenerator)
+            {
+                node.Statements.Emit(codeGenerator);
+            }
+
+            #region ISwitchItemCompiler Members
+
+            void ISwitchItemCompiler.Analyze(SwitchItem node, Analyzer analyzer)
+            {
+                Analyze((T)node, analyzer);
+            }
+
+            void ISwitchItemCompiler.MarkSequencePoint(SwitchItem node, CodeGenerator codeGenerator)
+            {
+                MarkSequencePoint((T)node, codeGenerator);
+            }
+
+            void ISwitchItemCompiler.EmitStatements(SwitchItem node, CodeGenerator codeGenerator)
+            {
+                EmitStatements((T)node, codeGenerator);
+            }
+
+            #endregion
         }
-	}
 
-	/// <summary>
-	/// Switch <c>default</c> item.
-	/// </summary>
-    [Serializable]
-    public sealed class DefaultItem : SwitchItem
-	{
-		public DefaultItem(Position position, List<Statement>/*!*/ statements)
-			: base(position, statements)
-		{
-		}
-
-		/// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
+        [NodeCompiler(typeof(CaseItem))]
+        sealed class CaseItemCompiler : SwitchItemCompiler<CaseItem>
         {
-            visitor.VisitDefaultItem(this);
+            protected override void Analyze(CaseItem/*!*/node, Analyzer analyzer)
+            {
+                node.CaseVal = node.CaseVal.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Literalize();
+
+                if (node.CaseVal.HasValue())
+                    analyzer.AddConstCaseToCurrentSwitch(node.CaseVal.GetValue(), node.Position);
+
+                base.Analyze(node, analyzer);
+            }
+
+            /// <summary>
+            /// Marks a sequence point "case {caseVal}".
+            /// </summary>
+            protected override void MarkSequencePoint(CaseItem/*!*/node, CodeGenerator codeGenerator)
+            {
+                codeGenerator.MarkSequencePoint(node.Position);
+            }
+
+            protected override void EmitStatements(CaseItem/*!*/node, CodeGenerator codeGenerator)
+            {
+                base.EmitStatements(node, codeGenerator);
+            }
+        }
+
+        [NodeCompiler(typeof(DefaultItem))]
+        sealed class DefaultItemCompiler : SwitchItemCompiler<DefaultItem>
+        {
+            protected override void Analyze(DefaultItem/*!*/node, Analyzer analyzer)
+            {
+                analyzer.AddDefaultToCurrentSwitch(node.Position);
+                base.Analyze(node, analyzer);
+            }
+
+            protected override void MarkSequencePoint(DefaultItem/*!*/node, CodeGenerator codeGenerator)
+            {
+                codeGenerator.MarkSequencePoint(node.Position);
+            }
+
+            protected override void EmitStatements(DefaultItem/*!*/node, CodeGenerator/*!*/ codeGenerator)
+            {
+                base.EmitStatements(node, codeGenerator);
+            }
+        }
+
+        #endregion
+    }
+
+    #region ISwitchItemCompiler
+
+    internal interface ISwitchItemCompiler
+    {
+        void Analyze(SwitchItem/*!*/node, Analyzer/*!*/ analyzer);
+
+        void MarkSequencePoint(SwitchItem/*!*/node, CodeGenerator/*!*/codeGenerator);
+
+        void EmitStatements(SwitchItem/*!*/node, CodeGenerator/*!*/ codeGenerator);
+    }
+
+    internal static class SwitchItemCompilerHelper
+    {
+        public static void Analyze(this SwitchItem/*!*/node, Analyzer/*!*/ analyzer)
+        {
+            node.NodeCompiler<ISwitchItemCompiler>().Analyze(node, analyzer);
+        }
+
+        public static void MarkSequencePoint(this SwitchItem/*!*/node, CodeGenerator/*!*/codeGenerator)
+        {
+            node.NodeCompiler<ISwitchItemCompiler>().MarkSequencePoint(node, codeGenerator);
+        }
+
+        public static void EmitStatements(this SwitchItem/*!*/node, CodeGenerator/*!*/ codeGenerator)
+        {
+            node.NodeCompiler<ISwitchItemCompiler>().EmitStatements(node, codeGenerator);
         }
     }
 
-	#endregion
+    #endregion
 }

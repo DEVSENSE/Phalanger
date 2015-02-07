@@ -26,8 +26,8 @@ namespace PHP.Core.AST
     [Serializable]
 	public abstract class ConstantUse : Expression
 	{
-		public ConstantUse(Text.Span span)
-			: base(span)
+		public ConstantUse(Position position)
+			: base(position)
 		{
 		}
 	}
@@ -53,8 +53,8 @@ namespace PHP.Core.AST
         internal QualifiedName? FallbackName { get { return fallbackName; } }
         private QualifiedName? fallbackName;
 
-		public GlobalConstUse(Text.Span span, QualifiedName name, QualifiedName? fallbackName)
-			: base(span)
+		public GlobalConstUse(Position position, QualifiedName name, QualifiedName? fallbackName)
+			: base(position)
 		{
 			this.name = name;
             this.fallbackName = fallbackName;
@@ -99,15 +99,15 @@ namespace PHP.Core.AST
         /// <summary>
         /// Position of <see cref="Name"/> part of the constant use.
         /// </summary>
-        public Text.Span NamePosition { get; private set; }
+        public Position NamePosition { get; private set; }
 
-        public ClassConstUse(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition, string/*!*/ name, Text.Span namePosition)
-            : this(span, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), name, namePosition)
+		public ClassConstUse(Position position, GenericQualifiedName className, Position classNamePosition, string/*!*/ name, Position namePosition)
+            : this(position, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), name, namePosition)
 		{
 		}
 
-        public ClassConstUse(Text.Span span, TypeRef/*!*/typeRef, string/*!*/ name, Text.Span namePosition)
-            : base(span)
+        public ClassConstUse(Position position, TypeRef/*!*/typeRef, string/*!*/ name, Position namePosition)
+            : base(position)
         {
             Debug.Assert(typeRef != null);
             Debug.Assert(!string.IsNullOrEmpty(name));
@@ -144,21 +144,21 @@ namespace PHP.Core.AST
         /// <summary>Type of pseudoconstant</summary>
         public Types Type { get { return consttype; } }
         private Types consttype;
-
-        public PseudoClassConstUse(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition, Types type, Text.Span namePosition)
-            : this(span, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), type, namePosition)
+        
+        public PseudoClassConstUse(Position position, GenericQualifiedName className, Position classNamePosition, Types type, Position namePosition)
+            : this(position, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), type, namePosition)
 		{
 		}
 
-        public PseudoClassConstUse(Text.Span span, TypeRef/*!*/typeRef, Types type, Text.Span namePosition)
-            : base(span, typeRef, type.ToString().ToLowerInvariant(), namePosition)
+        public PseudoClassConstUse(Position position, TypeRef/*!*/typeRef, Types type, Position namePosition)
+            : base(position, typeRef, type.ToString().ToLowerInvariant(), namePosition)
         {
             this.consttype = type;
         }
 
         public override void VisitMe(TreeVisitor visitor)
         {
-            visitor.VisitPseudoClassConstUse(this);
+            base.VisitMe(visitor);
         }
     }
 
@@ -180,8 +180,8 @@ namespace PHP.Core.AST
         /// <summary>Type of pseudoconstant</summary>
         public Types Type { get { return type; } }
 
-		public PseudoConstUse(Text.Span span, Types type)
-			: base(span)
+		public PseudoConstUse(Position position, Types type)
+			: base(position)
 		{
 			this.type = type;
 		}

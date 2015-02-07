@@ -286,7 +286,7 @@ namespace PHP.Core.Reflection
             else if (visibility == PhpMemberAttributes.Protected) return "protected";
             else if (visibility == PhpMemberAttributes.Private) return "private";
 
-            Debug.Fail();
+            Debug.Fail(null);
             return null;
         }
 
@@ -532,14 +532,14 @@ namespace PHP.Core.Reflection
 		internal virtual void ReportAbstractNotImplemented(ErrorSink/*!*/ errors, DType/*!*/ declaringType, PhpType/*!*/ referringType)
 		{
 			// to be implemented by methods and properties
-			Debug.Fail();
+			Debug.Fail(null);
 			throw null;
 		}
 
         internal virtual void ReportMethodNotCompatible(ErrorSink/*!*/ errors, DType/*!*/ declaringType, PhpType/*!*/ referringType)
         {
             // to be implemented by methods and properties
-            Debug.Fail();
+            Debug.Fail(null);
             throw null;
         }
 

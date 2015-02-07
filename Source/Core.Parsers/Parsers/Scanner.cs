@@ -20,7 +20,6 @@ using System.Collections.Generic;
 
 using PHP.Core;
 using PHP.Core.Parsers.GPPG;
-using PHP.Core.Text;
 
 namespace PHP.Core.Parsers
 {
@@ -33,17 +32,17 @@ namespace PHP.Core.Parsers
     /// </summary>
     public interface ICommentsSink
     {
-        void OnLineComment(Scanner/*!*/scanner, Text.TextSpan span);
-        void OnComment(Scanner/*!*/scanner, Text.TextSpan span);
+        void OnLineComment(Scanner/*!*/scanner, Parsers.Position position);
+        void OnComment(Scanner/*!*/scanner, Parsers.Position position);
         void OnPhpDocComment(Scanner/*!*/scanner, PHPDocBlock phpDocBlock);
 
-        void OnOpenTag(Scanner/*!*/scanner, Text.TextSpan span);
-        void OnCloseTag(Scanner/*!*/scanner, Text.TextSpan span);
+        void OnOpenTag(Scanner/*!*/scanner, Parsers.Position position);
+        void OnCloseTag(Scanner/*!*/scanner, Parsers.Position position);
     }
 
     #endregion
 
-    public sealed class Scanner : Lexer, ITokenProvider<SemanticValueType, Text.Span>
+    public sealed class Scanner : Lexer, ITokenProvider<SemanticValueType, Position>
     {
         #region Nested class: _NullCommentsSink
 
@@ -51,29 +50,13 @@ namespace PHP.Core.Parsers
         {
             #region ICommentsSink Members
 
-            public void OnLineComment(Scanner scanner, Text.TextSpan span) { }
-            public void OnComment(Scanner scanner, Text.TextSpan span) { }
+            public void OnLineComment(Scanner scanner, Parsers.Position position) { }
+            public void OnComment(Scanner scanner, Parsers.Position position) { }
             public void OnPhpDocComment(Scanner scanner, PHPDocBlock phpDocBlock) { }
-            public void OnOpenTag(Scanner scanner, Text.TextSpan span) { }
-            public void OnCloseTag(Scanner scanner, Text.TextSpan span) { }
+            public void OnOpenTag(Scanner scanner, Parsers.Position position) { }
+            public void OnCloseTag(Scanner scanner, Parsers.Position position) { }
 
             #endregion
-        }
-
-        #endregion
-
-        #region Nested interface: IScannerHandler
-
-        public interface IScannerHandler
-        {
-            /// <summary>
-            /// Called by <see cref="Scanner"/> when new token is obtained from lexer.
-            /// </summary>
-            /// <param name="token">Token.</param>
-            /// <param name="buffer">Internal text buffer.</param>
-            /// <param name="tokenStart">Position within <paramref name="buffer"/> where the token text starts.</param>
-            /// <param name="tokenLength">Length of the token text.</param>
-            void OnNextToken(Tokens token, char[] buffer, int tokenStart, int tokenLength);
         }
 
         #endregion
@@ -86,32 +69,67 @@ namespace PHP.Core.Parsers
         /// </summary>
         private readonly ICommentsSink/*!*/commentsSink;
 
-        /// <summary>
-        /// Sink for various scanner events.
-        /// </summary>
-        private readonly IScannerHandler scannerHandler;
-
 		public LanguageFeatures LanguageFeatures { get { return features; } }
 		private readonly LanguageFeatures features;
 
 		public SourceUnit/*!*/ SourceUnit { get { return sourceUnit; } }
 		private readonly SourceUnit/*!*/ sourceUnit;
 
-        // encapsed string buffering:
+		// encapsed string buffering:
 		public StringBuilder/*!*/ EncapsedStringBuffer { get { return encapsedStringBuffer; } }
 		private readonly StringBuilder/*!*/ encapsedStringBuffer = new StringBuilder(1000);
 
-        private SemanticValueType tokenSemantics;
-		private Text.Span tokenPosition;
-        private Text.TextSpan TokenTextSpan { get { return new TextSpan(sourceUnit, tokenPosition); } }
+        ///// <summary>
+        ///// Buffer used for qualified names parsing.
+        ///// </summary>
+        //private readonly List<string>/*!*/ qualifiedNameBuffer = new List<string>(10);
 
-        private int charOffset;
+		private SemanticValueType tokenSemantics;
+		private Parsers.Position tokenPosition;
 
-        private Encoding Encoding { get { return sourceUnit.Encoding; } }
-        private bool IsPure { get { return sourceUnit.IsPure; } }
+        #region T_DOC_COMMENT handling
 
-        public Scanner(TextReader/*!*/ reader, SourceUnit/*!*/ sourceUnit, ErrorSink/*!*/ errors,
-            ICommentsSink commentsSink, LanguageFeatures features, int positionShift)
+        /// <summary>
+        /// Last doc comment read from input.
+        /// </summary>
+        private PHPDocBlock lastDocComment;
+
+        /// <summary>
+        /// Tokens that should remember current <see cref="lastDocComment"/>.
+        /// </summary>
+        private static readonly HashSet<Tokens>/*!*/lastDocCommentRememberTokens = new HashSet<Tokens>()
+        {
+            Tokens.T_ABSTRACT, Tokens.T_FINAL, Tokens.T_STATIC, Tokens.T_PUBLIC, Tokens.T_PRIVATE, Tokens.T_PROTECTED,  // modifiers, also holds the doc comment (for class fields without T_VAR)
+            Tokens.T_VAR,       // for class fields
+            Tokens.T_CONST,     // for constants
+            Tokens.T_CLASS, Tokens.T_TRAIT, Tokens.T_INTERFACE, // for type decl
+            Tokens.T_FUNCTION,  // for function/method
+        };
+
+        /// <summary>
+        /// Tokens that keep value of <see cref="lastDocComment"/> to be used later for <see cref="lastDocCommentRememberTokens"/>.
+        /// </summary>
+        private static readonly HashSet<Tokens>/*!*/lastDocCommentKeepTokens = new HashSet<Tokens>()
+        {
+            Tokens.T_ABSTRACT, Tokens.T_STATIC, Tokens.T_PUBLIC, Tokens.T_PRIVATE, Tokens.T_PROTECTED,
+            Tokens.T_FINAL, Tokens.T_PARTIAL,
+            // TODO: tokens within attributes_opt
+        };
+
+        #endregion
+
+        private int streamOffset;
+
+		// position shifts:
+		private int lineShift;
+		private int columnShift;
+		private int offsetShift;
+
+		private readonly Encoding encoding;
+		private bool pure;
+
+        public Scanner(Parsers.Position initialPosition, TextReader/*!*/ reader, SourceUnit/*!*/ sourceUnit,
+			ErrorSink/*!*/ errors, ICommentsSink commentsSink, LanguageFeatures features)
 			: base(reader)
 		{
 			if (reader == null)
@@ -121,12 +139,18 @@ namespace PHP.Core.Parsers
 			if (errors == null)
 				throw new ArgumentNullException("errors");
 
+			this.lineShift = initialPosition.FirstLine;
+			this.columnShift = initialPosition.FirstColumn;
+			this.offsetShift = initialPosition.FirstOffset;
+
 			this.errors = errors;
             this.commentsSink = commentsSink ?? new _NullCommentsSink();
 			this.features = features;
 			this.sourceUnit = sourceUnit;
-            this.scannerHandler = sourceUnit as IScannerHandler;
-            this.charOffset = positionShift;
+
+			this.streamOffset = 0;
+			this.pure = sourceUnit.IsPure;
+			this.encoding = sourceUnit.Encoding;
 
 			AllowAspTags = (features & LanguageFeatures.AspTags) != 0;
 			AllowShortTags = (features & LanguageFeatures.ShortOpenTags) != 0;
@@ -152,15 +176,30 @@ namespace PHP.Core.Parsers
 		}
 
         /// <summary>
-        /// Updates <see cref="charOffset"/> and <see cref="tokenPosition"/>.
+        /// Updates <see cref="streamOffset"/> and <see cref="tokenPosition"/>.
         /// </summary>
         private void UpdateTokenPosition()
 		{
-            int tokenLength = this.TokenLength;
-            
 			// update token position info:
-            tokenPosition = new Span(charOffset, tokenLength);
-            charOffset += tokenLength;
+			int byte_length = base.GetTokenByteLength(encoding);
+
+			tokenPosition.FirstOffset = offsetShift + streamOffset;
+			tokenPosition.FirstLine = lineShift + token_start_pos.Line;
+
+			if (token_start_pos.Line == 0)
+				tokenPosition.FirstColumn = columnShift + token_start_pos.Column;
+			else
+				tokenPosition.FirstColumn = token_start_pos.Column;
+
+			tokenPosition.LastOffset = tokenPosition.FirstOffset + byte_length - 1;
+			tokenPosition.LastLine = lineShift + token_end_pos.Line;
+
+			if (token_end_pos.Line == 0)
+				tokenPosition.LastColumn = columnShift + token_end_pos.Column;
+			else
+				tokenPosition.LastColumn = token_end_pos.Column;
+
+			streamOffset += byte_length;
 		}
 
         public new Tokens GetNextToken()
@@ -171,10 +210,6 @@ namespace PHP.Core.Parsers
                 isCode = false;
                 
                 Tokens token = base.GetNextToken();
-
-                if (this.scannerHandler != null)
-                    this.scannerHandler.OnNextToken(token, this.Buffer, this.BufferTokenStart, this.TokenLength);
-
                 UpdateTokenPosition();
 
 				switch (token)
@@ -183,20 +218,18 @@ namespace PHP.Core.Parsers
 
                     // ignored tokens:
                     case Tokens.T_WHITESPACE: break;
-                    case Tokens.T_COMMENT: this.commentsSink.OnComment(this, TokenTextSpan); break;
-                    case Tokens.T_LINE_COMMENT: this.commentsSink.OnLineComment(this, TokenTextSpan); break;
-                    case Tokens.T_OPEN_TAG: this.commentsSink.OnOpenTag(this, TokenTextSpan); break;
+                    case Tokens.T_COMMENT: this.commentsSink.OnComment(this, this.tokenPosition); break;
+                    case Tokens.T_LINE_COMMENT: this.commentsSink.OnLineComment(this, this.tokenPosition); break;
+                    case Tokens.T_OPEN_TAG: this.commentsSink.OnOpenTag(this, this.tokenPosition); break;
 
                     case Tokens.T_DOC_COMMENT:
-                        {
-                            var phpdoc = new PHPDocBlock(base.GetTokenString(), TokenTextSpan);
-                            this.commentsSink.OnPhpDocComment(this, phpdoc);
-                            tokenSemantics.Object = phpdoc;
-                            goto default;
-                        }
+                        // remember token value to be used by the next token and skip the current:
+                        this.lastDocComment = new PHPDocBlock(base.GetTokenString(), this.tokenPosition);
+                        this.commentsSink.OnPhpDocComment(this, this.lastDocComment);
+                        break;
 
 					case Tokens.T_PRAGMA_FILE:
-                        sourceUnit.AddSourceFileMapping(TokenTextSpan.FirstLine, base.GetTokenAsFilePragma());
+						sourceUnit.AddSourceFileMapping(tokenPosition.FirstLine, base.GetTokenAsFilePragma());
 						break;
 
 					case Tokens.T_PRAGMA_LINE:
@@ -204,7 +237,7 @@ namespace PHP.Core.Parsers
 							int? value = base.GetTokenAsLinePragma();
 
 							if (value.HasValue)
-                                sourceUnit.AddSourceLineMapping(TokenTextSpan.FirstLine, value.Value);
+								sourceUnit.AddSourceLineMapping(tokenPosition.FirstLine, value.Value);
 							else
 								errors.Add(Warnings.InvalidLinePragma, sourceUnit, tokenPosition);
 							
@@ -212,11 +245,11 @@ namespace PHP.Core.Parsers
 						}
 
 					case Tokens.T_PRAGMA_DEFAULT_FILE:
-                        sourceUnit.AddSourceFileMapping(TokenTextSpan.FirstLine, SourceUnit.DefaultFile);
+						sourceUnit.AddSourceFileMapping(tokenPosition.FirstLine, SourceUnit.DefaultFile);
 						break;
 
 					case Tokens.T_PRAGMA_DEFAULT_LINE:
-                        sourceUnit.AddSourceLineMapping(TokenTextSpan.FirstLine, SourceUnit.DefaultLine);
+						sourceUnit.AddSourceLineMapping(tokenPosition.FirstLine, SourceUnit.DefaultLine);
 						break;
 
 					#endregion
@@ -239,6 +272,7 @@ namespace PHP.Core.Parsers
 
                     case Tokens.T_ARRAY:
                     case Tokens.T_LIST:
+                    case Tokens.T_ASSERT:
                         tokenSemantics.Object = base.GetTokenString();  // remember the token string, so we can use these tokens as literals later, case sensitively
                         goto default;
 
@@ -305,7 +339,7 @@ namespace PHP.Core.Parsers
                         {
                             bool forceBinaryString = GetTokenChar(0) == 'b';
 
-                            tokenSemantics.Object = GetTokenAsDoublyQuotedString(forceBinaryString ? 1 : 0, this.Encoding, forceBinaryString);
+                            tokenSemantics.Object = GetTokenAsDoublyQuotedString(forceBinaryString ? 1 : 0, encoding, forceBinaryString);
                             token = Tokens.T_CONSTANT_ENCAPSED_STRING;
                             goto default;
                         }
@@ -315,7 +349,7 @@ namespace PHP.Core.Parsers
                         {
                             bool forceBinaryString = GetTokenChar(0) == 'b';
 
-                            tokenSemantics.Object = GetTokenAsSinglyQuotedString(forceBinaryString ? 1 : 0, this.Encoding, forceBinaryString);
+                            tokenSemantics.Object = GetTokenAsSinglyQuotedString(forceBinaryString ? 1 : 0, encoding, forceBinaryString);
                             token = Tokens.T_CONSTANT_ENCAPSED_STRING;
                             goto default;
                         }
@@ -409,7 +443,7 @@ namespace PHP.Core.Parsers
 
                     // i'xxx'	
 					case Tokens.SingleQuotedIdentifier:
-                        tokenSemantics.Object = (string)GetTokenAsSinglyQuotedString(1, this.Encoding, false);
+						tokenSemantics.Object = (string)GetTokenAsSinglyQuotedString(1, encoding, false);
 						token = Tokens.T_STRING;
 						goto default;
 
@@ -418,25 +452,14 @@ namespace PHP.Core.Parsers
 					#region Token Reinterpreting
 
 					case Tokens.T_OPEN_TAG_WITH_ECHO:
-                        this.commentsSink.OnOpenTag(this, TokenTextSpan);                        
+                        this.commentsSink.OnOpenTag(this, this.tokenPosition);                        
 						token = Tokens.T_ECHO;
 						goto default;
 
 					case Tokens.T_CLOSE_TAG:
-                        this.commentsSink.OnCloseTag(this, TokenTextSpan);                        
+                        this.commentsSink.OnCloseTag(this, this.tokenPosition);                        
 						token = Tokens.T_SEMI;
-						goto default;
-
-                    case Tokens.EOF:
-                        if (this.CurrentLexicalState == LexicalStates.ST_ONE_LINE_COMMENT)
-                        {
-                            this.CurrentLexicalState = LexicalStates.ST_IN_SCRIPTING;
-                            token = Tokens.T_LINE_COMMENT;
-                            _yymore();
-                            goto case Tokens.T_LINE_COMMENT;
-                        }
-                        goto default;
-
+						goto case Tokens.T_SEMI;
 
 					case Tokens.T_TRUE:
 					case Tokens.T_FALSE:
@@ -523,7 +546,7 @@ namespace PHP.Core.Parsers
 
 					case Tokens.T_PARTIAL:
 						{
-							if (!IsPure)
+							if (!pure)
 							{
 								token = Tokens.T_STRING;
 								goto case Tokens.T_STRING;
@@ -542,7 +565,7 @@ namespace PHP.Core.Parsers
 					case Tokens.ErrorInvalidIdentifier:
 						{
 							// invalid identifier i'XXX':
-                            errors.Add(Errors.InvalidIdentifier, SourceUnit, tokenPosition, (string)GetTokenAsSinglyQuotedString(1, this.Encoding, false));
+							errors.Add(Errors.InvalidIdentifier, SourceUnit, tokenPosition, (string)GetTokenAsSinglyQuotedString(1, encoding, false));
 
 							tokenSemantics.Object = GetErrorIdentifier();
 							token = Tokens.T_STRING;
@@ -559,19 +582,31 @@ namespace PHP.Core.Parsers
 
 					case Tokens.T_SEMI:
 					default:
-                        return token;
+
+                        if (lastDocComment != null)
+                        {
+                            // remember PHPDoc for current token
+                            if (lastDocCommentRememberTokens.Contains(token))
+                                tokenSemantics.Object = this.lastDocComment;
+
+                            // forget last doc comment text
+                            if (!lastDocCommentKeepTokens.Contains(token))
+                                lastDocComment = null;
+                        }
+                        
+						return token;
 				}
 			}
 		}
 
         #region ITokenProvider<SemanticValueType, Parsers.Position> Members
 
-        int ITokenProvider<SemanticValueType, Text.Span>.GetNextToken()
+		int ITokenProvider<SemanticValueType, Parsers.Position>.GetNextToken()
 		{
 			return (int)GetNextToken();
 		}
 
-		void ITokenProvider<SemanticValueType, Text.Span>.ReportError(string[] expectedTerminals)
+		void ITokenProvider<SemanticValueType, Parsers.Position>.ReportError(string[] expectedTerminals)
 		{
 			// TODO (expected tokens....)
 			errors.Add(FatalErrors.SyntaxError, SourceUnit, tokenPosition,
@@ -580,15 +615,78 @@ namespace PHP.Core.Parsers
 			//throw new CompilerException();	
 		}
 
-		SemanticValueType ITokenProvider<SemanticValueType, Text.Span>.TokenValue
+		SemanticValueType ITokenProvider<SemanticValueType, Parsers.Position>.TokenValue
 		{
 			get { return tokenSemantics; }
 		}
 
-		Text.Span ITokenProvider<SemanticValueType, Text.Span>.TokenPosition
+		Parsers.Position ITokenProvider<SemanticValueType, Parsers.Position>.TokenPosition
 		{
 			get { return tokenPosition; }
 		}
+
+		#endregion
+
+		#region Positions
+
+		//This field is setted by updateTokenPosition (both versions)
+		//and it is read in GetNextToken.
+		//Position is expressed as byte count, NOT as char count which
+		//are different when e.g. UTF-8 is used.  
+		//AST.Position tokenPosition;
+
+		///// <sumary>
+		///// Position of token before the current token
+		///// </sumary>
+		///// <remarks>
+		///// It is necessarry to remember this because of yymore, when we must return
+		///// to oldTokenPosition to set the next token position right.
+		///// </remarks>
+		//Position oldTokenPosition;
+
+		//private void updateTokenPositionToNewLine()
+		//{
+		//  tokenPosition.LastLine++;
+		//  tokenPosition.LastColumn = 0;
+		//}
+
+		//private void updateTokenPosition(int leng)
+		//{
+		//  //tokenPosition is now position of the previously read token
+		//  oldTokenPosition = tokenPosition;
+
+		//  //This token begins right behind the previously read token
+		//  //First line and column and first and last char are setted always in the right
+		//  //way.
+		//  //In cases that token (potentialy) contains \n, 
+		//  //other updateTokenPosition version is called to repair LastLine and LastColumn
+		//  tokenPosition.FirstLine = tokenPosition.LastLine;
+		//  tokenPosition.FirstColumn = tokenPosition.LastColumn + 1;
+		//  tokenPosition.FirstChar = tokenPosition.LastChar + 1;
+		//  //LastLine has not changed
+		//  tokenPosition.LastColumn += leng;
+		//  tokenPosition.LastChar += leng;
+
+		//  //tokenPosition is now position of the right now read token 
+		//}
+
+		//private unsafe void updateTokenPosition(char* text, int leng)
+		//{
+		//  char *pos = text;
+		//  char *begin_line_pos = 0;
+
+		//  do
+		//  {
+		//    pos = strchr(pos,'\n');
+		//    if(pos != 0) 
+		//    {
+		//      tokenPosition.LastLine++;
+		//      begin_line_pos = ++pos;
+		//    }
+		//  } while(pos != 0);
+
+		//  if(begin_line_pos) tokenPosition.LastColumn = (int)(text + leng - begin_line_pos);
+		//}		
 
 		#endregion
 

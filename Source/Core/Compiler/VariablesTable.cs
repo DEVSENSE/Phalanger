@@ -155,7 +155,7 @@ namespace PHP.Core
                 }
                 else
                 {
-                    Debug.Fail();
+                    Debug.Fail(null);
                     return true;
                 }
 			}

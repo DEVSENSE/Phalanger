@@ -35,7 +35,7 @@ namespace PHP.Core.AST
         public bool Ampersand { get { return ampersand; } }
 		private bool ampersand;
 
-		public ActualParam(Text.Span p, Expression param, bool ampersand)
+		public ActualParam(Position p, Expression param, bool ampersand)
 			: base(p)
 		{
 			Debug.Assert(param != null);
@@ -66,8 +66,8 @@ namespace PHP.Core.AST
 		public VariableName Name { get { return name; } }
 		private VariableName name;
 
-        public NamedActualParam(Text.Span span, string name, Expression/*!*/ expression)
-            : base(span)
+        public NamedActualParam(Position position, string name, Expression/*!*/ expression)
+            : base(position)
         {
             this.name = new VariableName(name);
             this.expression = expression;
@@ -93,42 +93,43 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// List of actual parameters (<see cref="ActualParam"/> nodes).
 		/// </summary>	
-		public ActualParam[]/*!*/ Parameters { get { return parameters; } }
-		private readonly ActualParam[]/*!*/ parameters;
+		public List<ActualParam>/*!*/ Parameters { get { return parameters; } }
+		private readonly List<ActualParam>/*!*/ parameters;
 
 		/// <summary>
 		/// List of generic parameters.
 		/// </summary>
-        public TypeRef[]/*!*/ GenericParams
+		public List<TypeRef>/*!*/ GenericParams
         {
-            get { return this.GetProperty<TypeRef[]>() ?? EmptyArray<TypeRef>.Instance; }
-            set
+            get
             {
-                if (value.Any())
-                    this.SetProperty<TypeRef[]>(value);
+                return this.Properties[GenericParamsPropertyKey] as List<TypeRef> ?? TypeRef.EmptyList;
+            }
+            private set
+            {
+                if (value != null && value.Count > 0)
+                    this.Properties[GenericParamsPropertyKey] = value;
                 else
-                    this.Properties.RemoveProperty<TypeRef[]>();
+                    this.Properties.RemoveProperty(GenericParamsPropertyKey);
             }
         }
 
         /// <summary>
-        /// Initialize new instance of <see cref="CallSignature"/>.
+        /// Key to property collection to get/store generic parameters list.
         /// </summary>
-        /// <param name="parameters">List of parameters.</param>
-        public CallSignature(IList<ActualParam> parameters)
-            : this(parameters, null)
-        {
-        }
-        
+        private const string GenericParamsPropertyKey = "GenericParams";
+		
         /// <summary>
         /// Initialize new instance of <see cref="CallSignature"/>.
         /// </summary>
         /// <param name="parameters">List of parameters.</param>
         /// <param name="genericParams">List of type parameters for generics.</param>
-        public CallSignature(IList<ActualParam> parameters, IList<TypeRef> genericParams)
+        public CallSignature(List<ActualParam>/*!*/ parameters, List<TypeRef> genericParams)
 		{
-			this.parameters = parameters.AsArray();
-            this.GenericParams = genericParams.AsArray();
+			Debug.Assert(parameters != null);
+
+			this.parameters = parameters;
+            this.GenericParams = genericParams;
 		}        
     }
 

@@ -27,15 +27,15 @@ namespace PHP.Core.AST
 		private Expression/*!*/ condExpr;
 		private Expression trueExpr;
 		private Expression/*!*/ falseExpr;
-        /// <summary>Condition</summary>
+        /// <summary>Contition</summary>
         public Expression/*!*/ CondExpr { get { return condExpr; } }
-        /// <summary>Expression evaluated when <see cref="CondExpr"/> is true. Can be <c>null</c> in case of ternary shortcut (?:).</summary>
+        /// <summary>Expression evaluated when <see cref="CondExpr"/> is true</summary>
         public Expression TrueExpr { get { return trueExpr; } set { trueExpr = value; } }
         /// <summary><summary>Expression evaluated when <see cref="CondExpr"/> is false</summary></summary>
         public Expression/*!*/ FalseExpr { get { return falseExpr; } set { falseExpr = value; } }
 
-		public ConditionalEx(Text.Span span, Expression/*!*/ condExpr, Expression trueExpr, Expression/*!*/ falseExpr)
-			: base(span)
+		public ConditionalEx(Position position, Expression/*!*/ condExpr, Expression trueExpr, Expression/*!*/ falseExpr)
+			: base(position)
 		{
             Debug.Assert(condExpr != null);
             // Debug.Assert(trueExpr != null); // allowed to enable ternary shortcut
@@ -47,7 +47,7 @@ namespace PHP.Core.AST
 		}
 
 		public ConditionalEx(Expression/*!*/ condExpr, Expression/*!*/ trueExpr, Expression/*!*/ falseExpr)
-            : this(Text.Span.Invalid, condExpr, trueExpr, falseExpr)
+			: this(Position.Invalid, condExpr, trueExpr, falseExpr)
 		{
 		}
 

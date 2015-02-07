@@ -227,13 +227,13 @@ namespace PHP.Core.Reflection
 
         protected override CompilationUnitBase CreateCompilationUnit()
         {
-            Debug.Fail();
+            Debug.Fail(null);
             throw null;
         }
 
         public override void Reflect(bool full, Dictionary<string, DTypeDesc> types, Dictionary<string, DRoutineDesc> functions, DualDictionary<string, DConstantDesc> constants)
         {
-            Debug.Fail();
+            Debug.Fail(null);
             throw null;
         }
 
@@ -291,7 +291,7 @@ namespace PHP.Core.Reflection
                         continue;
 
                     // converts CLR namespaces and nested types to PHP namespaces:
-                    string full_name = QualifiedName.FromClrNotation(type.FullName, true).ToString();
+                    string full_name = ClrNotationUtils.FromClrNotation(type.FullName, true).ToString();
 
                     DTypeDesc existing;
                     if (types.TryGetValue(full_name, out existing))
@@ -346,7 +346,7 @@ namespace PHP.Core.Reflection
         {
             if (!real_function.IsSpecialName)
             {
-                QualifiedName qualified_name = QualifiedName.FromClrNotation(real_function.Name, true);
+                QualifiedName qualified_name = ClrNotationUtils.FromClrNotation(real_function.Name, true);
                 string full_name = qualified_name.ToString();
 
                 ClrMethod clr_function = null;
@@ -394,7 +394,7 @@ namespace PHP.Core.Reflection
             {
                 if (real_field.IsLiteral && !real_field.IsSpecialName)
                 {
-                    string full_name = QualifiedName.FromClrNotation(real_field.Name, true).ToString();
+                    string full_name = ClrNotationUtils.FromClrNotation(real_field.Name, true).ToString();
 
                     DConstantDesc existing;
                     if (constants.TryGetValue(full_name, out existing))
@@ -485,7 +485,7 @@ namespace PHP.Core.Reflection
             Dictionary<string, DRoutineDesc>/*!*/ functions,
             DualDictionary<string, DConstantDesc>/*!*/ constants)
         {
-            Debug.Fail();
+            Debug.Fail(null);
         }
 
         #endregion

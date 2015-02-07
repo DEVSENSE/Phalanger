@@ -507,7 +507,7 @@ namespace PHP.Core
             DObject obj;
             DRoutineDesc method;
             if ((obj = var as DObject) != null &&
-                obj.TypeDesc.GetMethod(DObject.SpecialMethodNames.Invoke, null, out method) != GetMemberResult.NotFound)
+                obj.TypeDesc.GetMethod(Name.SpecialMethodNames.Invoke, null, out method) != GetMemberResult.NotFound)
             {
                 // __invoke() does not respect visibilities
                 return new PhpCallback(obj, method);
@@ -823,7 +823,7 @@ namespace PHP.Core
 				case NumberInfo.LongInteger: success = true; return lval;
 				case NumberInfo.Double: success = true; return unchecked((decimal)dval);
 				case NumberInfo.Unconvertible: success = false; return 0;
-				default: Debug.Fail(); throw null;
+                default: throw new InvalidOperationException();
 			}
 		}
 
@@ -1082,8 +1082,7 @@ namespace PHP.Core
 
 				default:
 					{
-						Debug.Fail();
-						return null;
+                        throw new ArgumentException();
 					}
 			}
 		}
@@ -1427,7 +1426,7 @@ namespace PHP.Core
                         {
                             result |= NumberInfo.IsHexadecimal;
 
-                            int num = AlphaNumericToDigit(c);
+                            int num = Parsers.Convert.AlphaNumericToDigit(c);
 
                             // unexpected character:
                             if (num <= 15)
@@ -1769,13 +1768,13 @@ namespace PHP.Core
 
 			while (length-- > 0)
 			{
-				int digit = AlphaNumericToDigit(str[position]);
+                int digit = Parsers.Convert.AlphaNumericToDigit(str[position]);
 				if (digit >= @base) break;
 
 				if (!(result < max_div || (result == max_div && digit <= max_rem)))
 				{
 					// reads remaining digits:
-					while (length-- > 0 && AlphaNumericToDigit(str[position]) < @base) position++;
+                    while (length-- > 0 && Parsers.Convert.AlphaNumericToDigit(str[position]) < @base) position++;
 
 					return (sign == -1) ? Int64.MinValue : Int64.MaxValue;
 				}
@@ -1785,40 +1784,6 @@ namespace PHP.Core
 			}
 
 			return result * sign;
-		}
-
-		/// <summary>
-		/// Converts a character to a digit.
-		/// </summary>
-		/// <param name="c">The character [0-9A-Za-z].</param>
-		/// <returns>The digit represented by the character or <see cref="Int32.MaxValue"/> 
-		/// on non-alpha-numeric characters.</returns>
-		public static int AlphaNumericToDigit(char c)
-		{
-			if (c >= '0' && c <= '9')
-				return (int)(c - '0');
-
-			if (c >= 'a' && c <= 'z')
-				return (int)(c - 'a') + 10;
-
-			if (c >= 'A' && c <= 'Z')
-				return (int)(c - 'A') + 10;
-
-			return Int32.MaxValue;
-		}
-
-		/// <summary>
-		/// Converts a character to a digit.
-		/// </summary>
-		/// <param name="c">The character [0-9].</param>
-		/// <returns>The digit represented by the character or <see cref="Int32.MaxValue"/> 
-		/// on non-numeric characters.</returns>
-		public static int NumericToDigit(char c)
-		{
-			if (c >= '0' && c <= '9')
-				return (int)(c - '0');
-
-			return Int32.MaxValue;
 		}
 
 		#endregion

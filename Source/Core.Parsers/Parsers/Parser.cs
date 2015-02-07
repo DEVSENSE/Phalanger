@@ -12,11 +12,11 @@
 */
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Linq;
+using System.Collections.Generic;
 
 using PHP.Core.AST;
 using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeRef>, System.Collections.Generic.List<PHP.Core.AST.ActualParam>, System.Collections.Generic.List<PHP.Core.AST.Expression>>;
@@ -37,8 +37,6 @@ namespace PHP.Core.Parsers
 		void FunctionDeclarationReduced(Parser/*!*/ parser, FunctionDecl/*!*/ decl);
 		void TypeDeclarationReduced(Parser/*!*/ parser, TypeDecl/*!*/ decl);
 		void GlobalConstantDeclarationReduced(Parser/*!*/ parser, GlobalConstantDecl/*!*/ decl);
-        void NamespaceDeclReduced(Parser/*!*/ parser, NamespaceDecl/*!*/ decl);
-        void LambdaFunctionReduced(Parser/*!*/ parser, LambdaFunctionExpr/*!*/ decl);
 	}
 
     // Due to a MCS bug, it has to be in the other partial class in generated (Generated/Parser.cs)
@@ -56,13 +54,55 @@ namespace PHP.Core.Parsers
 		}
 	}
 
+	/// <summary>
+	/// Position in a source file.
+	/// </summary>
+	public partial struct Position
+	{
+		public static Position Invalid = new Position(-1, -1, -1, -1, -1, -1);
+		public static Position Initial = new Position(+1, 0, 0, +1, 0, 0);
+
+		public override string ToString()
+		{
+			return string.Format("({0},{1})-({2},{3})", FirstLine, FirstColumn, LastLine, LastColumn);
+		}
+
+		public ShortPosition Short
+		{
+			get { return new ShortPosition(FirstLine, FirstColumn); }
+		}
+
+		public static implicit operator ShortPosition(Position pos)
+		{
+			return new ShortPosition(pos.FirstLine, pos.FirstColumn);
+		}
+
+		public static implicit operator ErrorPosition(Position pos)
+		{
+			return new ErrorPosition(pos.FirstLine, pos.FirstColumn, pos.LastLine, pos.LastColumn);
+		}
+		
+		public bool IsValid
+		{
+			get
+			{
+				return FirstOffset != -1;
+			}
+		}
+
+        internal static Position CombinePositions(Position first, Position last)
+        {
+            return new Position(first.FirstLine, first.FirstColumn, first.FirstOffset, last.LastLine, last.LastColumn, last.LastOffset);
+        }
+	}
+
 	#endregion
 
 	public partial class Parser
 	{
 		#region Reductions Sinks
 
-        public static readonly IReductionsSink/*!*/ NullReductionSink = new _NullReductionsSink();
+		public static readonly IReductionsSink/*!*/ NullReductionSink = new _NullReductionsSink();
 
 		private sealed class _NullReductionsSink : IReductionsSink
 		{
@@ -81,61 +121,85 @@ namespace PHP.Core.Parsers
 			void IReductionsSink.GlobalConstantDeclarationReduced(Parser/*!*/ parser, GlobalConstantDecl/*!*/ decl)
 			{
 			}
-
-            void IReductionsSink.NamespaceDeclReduced(Parser parser, NamespaceDecl decl)
-            {
-            }
-
-            void IReductionsSink.LambdaFunctionReduced(Parser parser, LambdaFunctionExpr decl)
-            {
-            }
-        }
+		}
 
 		public sealed class ReductionsCounter : IReductionsSink
 		{
-			public int InclusionCount { get { return _inclusionCount; } }
-			private int _inclusionCount = 0;
+			public int InclusionCount { get { return inclusionCount; } }
+			private int inclusionCount;
 
-			public int FunctionCount { get { return _functionCount; } }
-			private int _functionCount = 0;
+			public int FunctionCount { get { return functionCount; } }
+			private int functionCount;
 
-			public int TypeCount { get { return _typeCount; } }
-			private int _typeCount = 0;
+			public int TypeCount { get { return typeCount; } }
+			private int typeCount;
 
-			public int ConstantCount { get { return _constantCount; } }
-			private int _constantCount = 0;
+			public int ConstantCount { get { return constantCount; } }
+			private int constantCount;
 
-            void IReductionsSink.InclusionReduced(Parser/*!*/ parser, IncludingEx/*!*/ incl)
+			public ReductionsCounter()
 			{
-				_inclusionCount++;
+				this.inclusionCount = 0;
+				this.functionCount = 0;
+				this.typeCount = 0;
+				this.constantCount = 0;
+			}
+
+			void IReductionsSink.InclusionReduced(Parser/*!*/ parser, IncludingEx/*!*/ incl)
+			{
+				this.inclusionCount++;
 			}
 
 			void IReductionsSink.FunctionDeclarationReduced(Parser/*!*/ parser, FunctionDecl/*!*/ decl)
 			{
-				_functionCount++;
+				this.functionCount++;
 			}
 
 			void IReductionsSink.TypeDeclarationReduced(Parser/*!*/ parser, TypeDecl/*!*/ decl)
 			{
-				_typeCount++;
+				this.typeCount++;
 			}
 
 			void IReductionsSink.GlobalConstantDeclarationReduced(Parser/*!*/ parser, GlobalConstantDecl/*!*/ decl)
 			{
-				_constantCount++;
+				this.constantCount++;
 			}
-
-            void IReductionsSink.NamespaceDeclReduced(Parser parser, NamespaceDecl decl)
-            {
-            }
-
-            void IReductionsSink.LambdaFunctionReduced(Parser parser, LambdaFunctionExpr decl)
-            {
-            }
 		}
 
 		#endregion
         
+        #region TmpMemberInfo
+
+        /// <summary>
+        /// Singleton used to remember information about modifier + associated doc comment.
+        /// </summary>
+        private class TmpMemberInfo
+        {
+            public PhpMemberAttributes attr;
+            public object docComment;
+
+            public TmpMemberInfo(PhpMemberAttributes attr, object docComment)
+            {
+                this.Update(attr, docComment);
+            }
+
+            public TmpMemberInfo/*!*/Update(PhpMemberAttributes attr, object docComment)
+            {
+                this.attr = attr;
+                this.docComment = docComment;
+
+                return this;
+            }
+        }
+
+        /// <summary>
+        /// Singleton; used to pass information from <c>member_modifier</c> together with doc comment.
+        /// </summary>
+        private TmpMemberInfo TmpMemberInfoSingleton { get { return _tmpMemberInfoSingleton ?? (_tmpMemberInfoSingleton = new TmpMemberInfo(PhpMemberAttributes.Public, null)); } }
+        private TmpMemberInfo _tmpMemberInfoSingleton = null;
+
+        #endregion
+
         protected sealed override int EofToken
 		{
 			get { return (int)Tokens.EOF; }
@@ -146,31 +210,10 @@ namespace PHP.Core.Parsers
 			get { return (int)Tokens.ERROR; }
 		}
 
-        protected override bool IsDocCommentToken(int tok)
-        {
-            return (tok == (int)Tokens.T_DOC_COMMENT);
-        }
-
-        protected override Text.Span CombinePositions(Text.Span first, Text.Span last)
-        {
-            if (last.IsValid)
-            {
-                if (first.IsValid)
-                    return Text.Span.Combine(first, last);
-                else
-                    return last;
-            }
-            else
-                return first;
-        }
-
-        protected override Text.Span InvalidPosition
-        {
-            get
-            {
-                return Text.Span.Invalid;
-            }
-        }
+		protected sealed override Position InvalidPosition
+		{
+			get { return Position.Invalid; }
+		}
 
 		private Scanner scanner;
 		private LanguageFeatures features;
@@ -209,6 +252,9 @@ namespace PHP.Core.Parsers
             Name.SelfClassName.Value,
             Name.StaticClassName.Value,
             Name.ParentClassName.Value,
+            QualifiedName.False.Name.Value,
+            QualifiedName.True.Name.Value,
+            QualifiedName.Null.Name.Value,
         };
 
 		// stack of string buffers; used when processing encaps strings
@@ -223,10 +269,9 @@ namespace PHP.Core.Parsers
 			return false;
 		}
 
-        public GlobalCode Parse(SourceUnit/*!*/ sourceUnit,
-            TextReader/*!*/ reader, ErrorSink/*!*/ errors,
-			IReductionsSink reductionsSink, Lexer.LexicalStates initialLexicalState,
-			LanguageFeatures features, int positionShift = 0)
+		public GlobalCode Parse(SourceUnit/*!*/ sourceUnit, TextReader/*!*/ reader, ErrorSink/*!*/ errors,
+			IReductionsSink reductionsSink, Parsers.Position initialPosition, Lexer.LexicalStates initialLexicalState,
+			LanguageFeatures features)
 		{
 			Debug.Assert(reader != null && errors != null);
 
@@ -238,16 +283,17 @@ namespace PHP.Core.Parsers
             this.reductionsSink = reductionsSink ?? NullReductionSink;
             InitializeFields();
 
-            this.scanner = new Scanner(reader, sourceUnit, errors, (reductionsSink as ICommentsSink) ?? (sourceUnit as ICommentsSink), features, positionShift);
+            this.scanner = new Scanner(initialPosition, reader, sourceUnit, errors, reductionsSink as ICommentsSink, features);
 			this.scanner.CurrentLexicalState = initialLexicalState;
 			this.currentScope = new Scope(1); // starts assigning scopes from 2 (1 is reserved for prepended inclusion)
 
 			this.unicodeSemantics = (features & LanguageFeatures.UnicodeSemantics) != 0;
 
+
 			base.Scanner = this.scanner;
 			base.Parse();
 
-            GlobalCode result = astRoot;
+			GlobalCode result = astRoot;
 
 			// clean and let GC collect unused AST and other stuff:
 			ClearFields();
@@ -265,7 +311,7 @@ namespace PHP.Core.Parsers
 
             if (sourceUnit.CurrentNamespace.HasValue && sourceUnit.CurrentNamespace.Value.Namespaces.Length > 0)
             {   // J: inject current namespace from sourceUnit:
-                this.currentNamespace = new AST.NamespaceDecl(default(Text.Span), sourceUnit.CurrentNamespace.Value.ToStringList(), true);
+                this.currentNamespace = new AST.NamespaceDecl(Position.Initial, sourceUnit.CurrentNamespace.Value.ToStringList(), true);
 
                 // add aliases into the namespace:
                 if (sourceUnit.Aliases.Count > 0)
@@ -289,7 +335,20 @@ namespace PHP.Core.Parsers
 			reader = null;
 		}
 
-        #region Conditional Code, Scope
+        #region DocComments
+
+        private void SetCommentSetHelper(object element, object doccomment)
+        {
+            Debug.Assert(element is AstNode);
+            if (doccomment is PHPDocBlock)
+            {
+                ((AstNode)element).Properties[typeof(PHPDocBlock)] = (PHPDocBlock)doccomment;
+            }
+        }
+
+        #endregion
+
+		#region Conditional Code, Scope
 
 		private int condLevel;
 
@@ -330,7 +389,7 @@ namespace PHP.Core.Parsers
 
 		#region Complex Productions
 
-        private Expression CreateConcatExOrStringLiteral(Text.Span p, List<Expression> exprs, bool trimEoln)
+		private Expression CreateConcatExOrStringLiteral(Position p, List<Expression> exprs, bool trimEoln)
 		{
 			PhpStringBuilder encapsed_str = strBufStack.Pop();
 			
@@ -340,47 +399,47 @@ namespace PHP.Core.Parsers
 			if (exprs.Count > 0)
 			{
                 if (encapsed_str.Length > 0)
-                    exprs.Add(encapsed_str.CreateLiteral());
+                    exprs.Add(encapsed_str.CreateLiteral(p));
 
 				return new ConcatEx(p, exprs);
 			}
             else
             {
-                return encapsed_str.CreateLiteral();
+                return encapsed_str.CreateLiteral(p);
             }
 		}
 
-        private VariableUse CreateStaticFieldUse(Text.Span span, CompoundVarUse/*!*/ className, CompoundVarUse/*!*/ field)
+        private VariableUse CreateStaticFieldUse(Position position, CompoundVarUse/*!*/ className, CompoundVarUse/*!*/ field)
         {
-            return CreateStaticFieldUse(span, new IndirectTypeRef(span, className, TypeRef.EmptyList), field);
+            return CreateStaticFieldUse(position, new IndirectTypeRef(position, className, TypeRef.EmptyList), field);
         }
-        private VariableUse CreateStaticFieldUse(Text.Span span, GenericQualifiedName/*!*/ className, Text.Span classNameSpan, CompoundVarUse/*!*/ field)
+        private VariableUse CreateStaticFieldUse(Position position, GenericQualifiedName/*!*/ className, Position classNamePosition, CompoundVarUse/*!*/ field)
         {
-            return CreateStaticFieldUse(span, DirectTypeRef.FromGenericQualifiedName(classNameSpan, className), field);
+            return CreateStaticFieldUse(position, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), field);
         }
-		private VariableUse CreateStaticFieldUse(Text.Span span, TypeRef/*!*/ typeRef, CompoundVarUse/*!*/ field)
+		private VariableUse CreateStaticFieldUse(Position position, TypeRef/*!*/ typeRef, CompoundVarUse/*!*/ field)
 		{
 			DirectVarUse dvu;
 			IndirectVarUse ivu;
 
 			if ((dvu = field as DirectVarUse) != null)
 			{
-                return new DirectStFldUse(span, typeRef, dvu.VarName, field.Span);
+                return new DirectStFldUse(position, typeRef, dvu.VarName, field.Position);
 			}
 			else if ((ivu = field as IndirectVarUse) != null)
 			{
-                return new IndirectStFldUse(span, typeRef, ivu.VarNameEx);
+                return new IndirectStFldUse(position, typeRef, ivu.VarNameEx);
 			}
 			else
 			{
 				ItemUse iu = (ItemUse)field;
-                iu.Array = CreateStaticFieldUse(iu.Array.Span, typeRef, (CompoundVarUse)iu.Array);
+                iu.Array = CreateStaticFieldUse(iu.Array.Position, typeRef, (CompoundVarUse)iu.Array);
 				return iu;
 			}
 		}
 
-		private ForeachStmt/*!*/ CreateForeachStmt(Text.Span pos, Expression/*!*/ enumeree, ForeachVar/*!*/ var1,
-		  Text.Span pos1, ForeachVar var2, Statement/*!*/ body)
+		private ForeachStmt/*!*/ CreateForeachStmt(Position pos, Expression/*!*/ enumeree, ForeachVar/*!*/ var1,
+		  Position pos1, ForeachVar var2, Statement/*!*/ body)
 		{
 			ForeachVar key, value;
 			if (var2 != null)
@@ -403,12 +462,12 @@ namespace PHP.Core.Parsers
 			return new ForeachStmt(pos, enumeree, key, value, body);
 		}
 
-		private void CheckVariableUse(Text.Span span, object item)
+		private void CheckVariableUse(Position position, object item)
 		{
 			if (item as VariableUse == null)
 			{
-                errors.Add(FatalErrors.CheckVarUseFault, SourceUnit, span);
-                throw new CompilerException();
+				errors.Add(FatalErrors.CheckVarUseFault, SourceUnit, position);
+				throw new CompilerException();
 			}
 		}
 
@@ -423,7 +482,7 @@ namespace PHP.Core.Parsers
             return new FcnParam(fcnParam.Item1, fcnParam.Item2, arrayKeyList);
         }
 
-        private static VarLikeConstructUse/*!*/ CreateFcnArrayDereference(Text.Span pos, VarLikeConstructUse/*!*/varUse, List<Expression> arrayKeysExpression)
+        private static VarLikeConstructUse/*!*/ CreateFcnArrayDereference(Position pos, VarLikeConstructUse/*!*/varUse, List<Expression> arrayKeysExpression)
         {
             if (arrayKeysExpression != null && arrayKeysExpression.Count > 0)
             {
@@ -444,7 +503,7 @@ namespace PHP.Core.Parsers
             return varUse;
         }
 
-		private static VarLikeConstructUse/*!*/ CreateVariableUse(Text.Span pos, VarLikeConstructUse/*!*/ variable, VarLikeConstructUse/*!*/ property,
+		private static VarLikeConstructUse/*!*/ CreateVariableUse(Position pos, VarLikeConstructUse/*!*/ variable, VarLikeConstructUse/*!*/ property,
                                                            FcnParam parameters, VarLikeConstructUse chain)
 		{
 			if (parameters != null)
@@ -460,7 +519,7 @@ namespace PHP.Core.Parsers
 					if ((direct_use = property as DirectVarUse) != null)
 					{
 						QualifiedName method_name = new QualifiedName(new Name(direct_use.VarName.Value), Name.EmptyNames);
-                        property = new DirectFcnCall(pos, method_name, null, property.Span, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
+                        property = new DirectFcnCall(pos, method_name, null, property.Position, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
 					}
 					else
 					{
@@ -503,7 +562,7 @@ namespace PHP.Core.Parsers
 			}
 		}
 
-        private static VarLikeConstructUse/*!*/ CreatePropertyVariable(Text.Span pos, CompoundVarUse/*!*/ property, FcnParam parameters)
+        private static VarLikeConstructUse/*!*/ CreatePropertyVariable(Position pos, CompoundVarUse/*!*/ property, FcnParam parameters)
 		{
 			if (parameters != null)
 			{
@@ -514,7 +573,7 @@ namespace PHP.Core.Parsers
 				if ((direct_use = property as DirectVarUse) != null)
 				{
 					QualifiedName method_name = new QualifiedName(new Name(direct_use.VarName.Value), Name.EmptyNames);
-                    fcnCall = new DirectFcnCall(pos, method_name, null, property.Span, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
+                    fcnCall = new DirectFcnCall(pos, method_name, null, property.Position, (List<ActualParam>)parameters.Item2, (List<TypeRef>)parameters.Item1);
 				}
                 else if ((indirect_use = property as IndirectVarUse) != null)
                 {
@@ -564,7 +623,7 @@ namespace PHP.Core.Parsers
 			return member;
 		}
 
-        private DirectFcnCall/*!*/ CreateDirectFcnCall(Text.Span pos, QualifiedName qname, Text.Span qnamePosition, List<ActualParam> args, List<TypeRef> typeArgs)
+        private DirectFcnCall/*!*/ CreateDirectFcnCall(Position pos, QualifiedName qname, Position qnamePosition, List<ActualParam> args, List<TypeRef> typeArgs)
         {
             QualifiedName? fallbackQName;
 
@@ -572,21 +631,11 @@ namespace PHP.Core.Parsers
             return new DirectFcnCall(pos, qname, fallbackQName, qnamePosition, args, typeArgs);
         }
 
-        private GlobalConstUse/*!*/ CreateGlobalConstUse(Text.Span pos, QualifiedName qname)
+        private GlobalConstUse/*!*/ CreateGlobalConstUse(Position pos, QualifiedName qname)
         {
             QualifiedName? fallbackQName;
 
-            if (qname.IsSimpleName && (qname == QualifiedName.Null || qname == QualifiedName.True || qname == QualifiedName.False))
-            {
-                // special global consts
-                fallbackQName = null;
-                qname.IsFullyQualifiedName = true;
-            }
-            else
-            {
-                TranslateFallbackQualifiedName(ref qname, out fallbackQName);
-            }
-            
+            TranslateFallbackQualifiedName(ref qname, out fallbackQName);
             return new GlobalConstUse(pos, qname, fallbackQName);
         }
 
@@ -619,7 +668,7 @@ namespace PHP.Core.Parsers
             }
         }
 
-		private Expression/*!*/ CheckInitializer(Text.Span pos, Expression/*!*/ initializer)
+		private Expression/*!*/ CheckInitializer(Position pos, Expression/*!*/ initializer)
 		{
 			if (initializer is ArrayEx)
 			{
@@ -630,7 +679,7 @@ namespace PHP.Core.Parsers
 			return initializer;
 		}
 
-		private PhpMemberAttributes CheckPrivateType(Text.Span pos)
+		private PhpMemberAttributes CheckPrivateType(Position pos)
 		{
 			if (currentNamespace != null)
 			{
@@ -641,7 +690,7 @@ namespace PHP.Core.Parsers
 			return PhpMemberAttributes.Private;
 		}
 
-		private int CheckPartialType(Text.Span pos)
+		private int CheckPartialType(Position pos)
 		{
 			if (IsCurrentCodeConditional)
 			{
@@ -669,7 +718,7 @@ namespace PHP.Core.Parsers
 			if (sourceUnit.IsPure && !allowGlobalCode)
 			{
 				if (!statement.SkipInPureGlobalCode())
-					errors.Add(Errors.GlobalCodeInPureUnit, SourceUnit, statement.Span);
+					errors.Add(Errors.GlobalCodeInPureUnit, SourceUnit, statement.Position);
 
 				return EmptyStmt.Skipped;
 			}
@@ -680,55 +729,57 @@ namespace PHP.Core.Parsers
 		/// <summary>
 		/// Checks whether a reserved class name is used in generic qualified name.
 		/// </summary>
-		private void CheckReservedNamesAbsence(Tuple<GenericQualifiedName, Text.Span> genericName)
+		private void CheckReservedNamesAbsence(Tuple<GenericQualifiedName, Position> genericName)
 		{
             if (genericName != null)
                 CheckReservedNamesAbsence(genericName.Item1, genericName.Item2);
 		}
 
-        private void CheckReservedNamesAbsence(GenericQualifiedName genericName, Text.Span span)
+        private void CheckReservedNamesAbsence(GenericQualifiedName genericName, Position position)
         {
             if (genericName.QualifiedName.IsReservedClassName)
             {
-                errors.Add(Errors.CannotUseReservedName, SourceUnit, span, genericName.QualifiedName.Name);
+                errors.Add(Errors.CannotUseReservedName, SourceUnit, position, genericName.QualifiedName.Name);
             }
 
             if (genericName.GenericParams != null)
-                CheckReservedNamesAbsence(genericName.GenericParams, span);
+                CheckReservedNamesAbsence(genericName.GenericParams, position);
         }
 
-        private void CheckReservedNamesAbsence(object[] staticTypeRefs, Text.Span span)
+        private void CheckReservedNamesAbsence(object[] staticTypeRefs, Position position)
         {
             foreach (object static_type_ref in staticTypeRefs)
                 if (static_type_ref is GenericQualifiedName)
-                    CheckReservedNamesAbsence((GenericQualifiedName)static_type_ref, span);
+                    CheckReservedNamesAbsence((GenericQualifiedName)static_type_ref, position);
         }
 
-        private void CheckReservedNamesAbsence(List<Tuple<GenericQualifiedName, Text.Span>> genericNames)
+		private void CheckReservedNamesAbsence(List<KeyValuePair<GenericQualifiedName, Position>> genericNames)
 		{
             if (genericNames != null)
             {
                 int count = genericNames.Count;
                 for (int i = 0; i < count; i++)
-                    CheckReservedNamesAbsence(genericNames[i].Item1, genericNames[i].Item2);
+                    CheckReservedNamesAbsence(genericNames[i].Key, genericNames[i].Value);
             }
 		}
 
-		private bool CheckReservedNameAbsence(Name typeName, Text.Span span)
+		private bool CheckReservedNameAbsence(Name typeName, Position position)
 		{
             if (typeName.IsReservedClassName)
             {
-                errors.Add(Errors.CannotUseReservedName, SourceUnit, span, typeName);
+                errors.Add(Errors.CannotUseReservedName, SourceUnit, position, typeName);
                 return false;
             }
 
             return true;
 		}
 
-        private void CheckTypeNameInUse(Name typeName, Text.Span span)
+        private void CheckTypeNameInUse(Name typeName, Position position)
         {
-            if (CurrentScopeAliases.ContainsKey(typeName.Value) || reservedTypeNames.Contains(typeName.Value))
-                errors.Add(FatalErrors.ClassAlreadyInUse, SourceUnit, span, CurrentNamespaceName + typeName.Value);
+            if (CurrentScopeAliases.ContainsKey(typeName.Value) ||
+                reservedTypeNames.Contains(typeName.Value))
+                errors.Add(FatalErrors.ClassAlreadyInUse, SourceUnit, position,
+                     CurrentNamespaceName + typeName.Value);
         }
 
         /// <summary>
@@ -744,24 +795,24 @@ namespace PHP.Core.Parsers
 			{
 				if (typeParams[i].Name.Equals(declarerName))
 				{
-					ErrorSink.Add(Errors.GenericParameterCollidesWithDeclarer, SourceUnit, typeParams[i].Span, declarerName);
+					ErrorSink.Add(Errors.GenericParameterCollidesWithDeclarer, SourceUnit, typeParams[i].Position, declarerName);
 				}
                 else if (CurrentScopeAliases.ContainsKey(typeParams[i].Name.Value))
                 {
-                    ErrorSink.Add(Errors.GenericAlreadyInUse, SourceUnit, typeParams[i].Span, typeParams[i].Name.Value);
+                    ErrorSink.Add(Errors.GenericAlreadyInUse, SourceUnit, typeParams[i].Position, typeParams[i].Name.Value);
                 }
                 else
                 {
                     for (int j = 0; j < i; j++)
                     {
                         if (typeParams[j].Name.Equals(typeParams[i].Name))
-                            errors.Add(Errors.DuplicateGenericParameter, SourceUnit, typeParams[i].Span);
+                            errors.Add(Errors.DuplicateGenericParameter, SourceUnit, typeParams[i].Position);
                     }
                 }
 			}
 		}
 
-		private CustomAttribute.TargetSelectors IdentifierToTargetSelector(Text.Span span, string/*!*/ identifier)
+		private CustomAttribute.TargetSelectors IdentifierToTargetSelector(Position position, string/*!*/ identifier)
 		{
 			if (identifier.EqualsOrdinalIgnoreCase("assembly"))
 				return CustomAttribute.TargetSelectors.Assembly;
@@ -772,7 +823,7 @@ namespace PHP.Core.Parsers
             if (identifier.EqualsOrdinalIgnoreCase("return"))
                 return CustomAttribute.TargetSelectors.Return;
 
-			errors.Add(Errors.InvalidAttributeTargetSelector, SourceUnit, span, identifier);
+			errors.Add(Errors.InvalidAttributeTargetSelector, SourceUnit, position, identifier);
 			return CustomAttribute.TargetSelectors.Default;
 		}
 
@@ -900,9 +951,7 @@ namespace PHP.Core.Parsers
                 CurrentScopeAliases.Add(alias, fullQualifiedName);
             }
             else
-            {
                 errors.Add(FatalErrors.AliasAlreadyInUse, this.sourceUnit, this.yypos, fullQualifiedName.NamespacePhpName, alias);
-            }
         }
 
         private void ReserveTypeNames(List<FormalTypeParam> typeParams)
@@ -944,8 +993,24 @@ namespace PHP.Core.Parsers
             // skip special names:
             if (qname.IsSimpleName)
             {
+
+                //if (qname.IsReservedClassName)
+                //    return qname;
+            
                 if (reservedTypeNames.Contains(qname.Name.Value))
                     return qname;
+
+                //if ((features & LanguageFeatures.ClrSemantics) != 0)
+                //{
+                //    if (qname == QualifiedName.Array ||
+                //        qname == QualifiedName.Boolean ||
+                //        qname == QualifiedName.Double ||
+                //        qname == QualifiedName.Integer ||
+                //        qname == QualifiedName.LongInteger ||
+                //        qname == QualifiedName.Object ||
+                //        qname == QualifiedName.String)
+                //        return qname;
+                //}
             }
 
             // return the alias if found:
@@ -960,10 +1025,7 @@ namespace PHP.Core.Parsers
         /// <remarks>Fully qualified names are not translated.</remarks>
         private QualifiedName TranslateNamespace(QualifiedName qname)
         {
-            if (qname.IsFullyQualifiedName)
-            {
-                return qname;
-            }
+            if (qname.IsFullyQualifiedName) return qname;
 
             if (qname.IsSimpleName)
             {
@@ -995,32 +1057,10 @@ namespace PHP.Core.Parsers
 
         #endregion
 
-        #region PHPDocBlock
-
-        protected object CreatePHPDocBlockStmt(object/*!*/doccomment)
-        {
-            Debug.Assert(doccomment is PHPDocBlock);
-            return new PHPDocStmt(yypos, (PHPDocBlock)doccomment);
-        }
-
-        protected object SetPHPDoc(object obj, object phpdoc)
-        {
-            Debug.Assert(obj is LangElement);
-            if (!object.ReferenceEquals(phpdoc, null))
-            {
-                Debug.Assert(phpdoc is PHPDocBlock);
-                ((LangElement)obj).SetPHPDoc((PHPDocBlock)phpdoc);
-            }
-
-            return obj;
-        }
-
-        #endregion
-
         #region Helpers
 
         private static readonly List<Statement> emptyStatementList = new List<Statement>();
-        private static readonly List<Tuple<GenericQualifiedName, Text.Span>> emptyGenericQualifiedNamePositionList = new List<Tuple<GenericQualifiedName, Text.Span>>();
+        private static readonly List<KeyValuePair<GenericQualifiedName, Position>> emptyGenericQualifiedNamePositionList = new List<KeyValuePair<GenericQualifiedName, Position>>();
 		private static readonly List<FormalParam> emptyFormalParamListIndex = new List<FormalParam>();
 		private static readonly List<ActualParam> emptyActualParamListIndex = new List<ActualParam>();
 		private static readonly List<Expression> emptyExpressionListIndex = new List<Expression>();
@@ -1029,71 +1069,84 @@ namespace PHP.Core.Parsers
 		private static readonly List<FormalTypeParam> emptyFormalTypeParamList = new List<FormalTypeParam>();
 		private static readonly List<TypeRef> emptyTypeRefList = new List<TypeRef>();
 
-        private static List<T>/*!*/ListAdd<T>(object list, object item)
-        {
+
+		private static List<T>/*!*/ListAdd<T>(object list, object item)
+		{
             Debug.Assert(list is List<T>);
             //Debug.Assert(item is T);
 
             var tlist = (List<T>)list;
-            
-            if (item is T)
+
+            NamespaceDecl nsitem;
+                
+            // little hack when appending statement after simple syntaxed namespace:
+
+            // namespace A;
+            // foo();   // <-- add this statement into namespace A
+
+            if (tlist.Count > 0 &&
+                (nsitem = tlist[tlist.Count - 1] as NamespaceDecl) != null &&
+                nsitem.IsSimpleSyntax &&
+                !(item is NamespaceDecl))
             {
-                tlist.Add((T)item);
+                // adding a statement after simple namespace declaration => add the statement into the namespace:
+                Debug.Assert(item is T);
+                Debug.Assert(item is Statement);
+
+                nsitem.Statements.Add((Statement)item);
+                //nsitem.UpdatePosition(Position.CombinePositions(nsitem.Position, ((Statement)item).Position));
             }
-            else if (item != null)
+            else if (item is List<T>)
             {
-                Debug.Assert(item is List<T>);
                 tlist.AddRange((List<T>)item);
+            }
+            else
+            {
+                Debug.Assert(item == null || item is T);
+                tlist.Add((T)item);
             }
 
             return tlist;
-        }
+		}
 
-        private static object/*!*/StatementListAdd(object/*!*/listObj, object itemObj)
+        private static void ListPrepend<T>(object/*!*/list, object/*!*/item)
         {
-            Debug.Assert(listObj is List<Statement>);
-
-            if (!object.ReferenceEquals(itemObj, null))
-            {
-                Debug.Assert(itemObj is Statement);
-
-                var list = (List<Statement>)listObj;
-                var stmt = (Statement)itemObj;
-
-                NamespaceDecl nsitem;
+            Debug.Assert(list != null);
+            Debug.Assert(item != null);
+            Debug.Assert(item is T);
                 
-                // little hack when appending statement after simple syntaxed namespace:
+            var tlist = (List<T>)list;
 
-                // namespace A;
-                // foo();   // <-- add this statement into namespace A
+            // little hack when prepending simple syntaxed namespace before some statements:
+            
+            // namespace A;  // == {item}
+            // stmt1; stmt2; // <-- add these stamenents into namespace A
+            // namespace B;
 
-                if (list.Count != 0 && (nsitem = list.Last() as NamespaceDecl) != null && nsitem.IsSimpleSyntax && !(stmt is NamespaceDecl))
+            NamespaceDecl nsitem = item as NamespaceDecl;
+            if (nsitem != null && nsitem.IsSimpleSyntax)
+            {
+                Debug.Assert(list is List<Statement>);
+                var slist = (List<Statement>)list;
+
+                // move statements into nsitem namespace:
+                int i = 0;  // find how many Statements from tlist move to nsitem.Statements
+                while (i < slist.Count && !(slist[i] is NamespaceDecl))
+                    ++i;
+
+                if (i > 0)
                 {
-                    // adding a statement after simple namespace declaration => add the statement into the namespace:
-                    StatementListAdd(nsitem.Statements, stmt);
-                    //nsitem.UpdatePosition(Text.Span.CombinePositions(nsitem.Span, ((Statement)item).Span));
-                }
-                else
-                {
-                    if (list.Count != 0)
-                    {
-                        var last = list.Last();
-                        if (last.GetType() == typeof(PHPDocStmt))
-                            stmt.SetPHPDoc(((PHPDocStmt)last).PHPDoc);
-
-                        // last.GetType() == typeof(NamespaceDecl) && last.Statements.Last() is PHPDoc
-                        // ...
-                    }
-
-                    list.Add(stmt);
+                    nsitem.Statements.AddRange(slist.Take(i));
+                    //nsitem.UpdatePosition(Position.CombinePositions(nsitem.Position, slist[i - 1].Position));
+                    tlist.RemoveRange(0, i);
                 }
             }
-
-            //
-            return listObj;
+                
+            // prepend the item:
+            tlist.Insert(0, (T)item);
         }
 
-        private static List<T>/*!*/NewList<T>(T item)
+		private static List<T>/*!*/NewList<T>(T item)
 		{
 			return new List<T>(1){ item };
         }
@@ -1103,24 +1156,24 @@ namespace PHP.Core.Parsers
             return NewList<T>((T)item);
 		}
 
-        private static int GetHeadingEnd(Text.Span lastNonBodySymbolPosition)
+        private ShortPosition GetHeadingEnd(Position lastNonBodySymbolPosition)
         {
-            return lastNonBodySymbolPosition.End;
+            return new ShortPosition(lastNonBodySymbolPosition.LastLine, lastNonBodySymbolPosition.LastColumn + 1);
         }
 
-        private static int GetBodyStart(Text.Span bodyPosition)
+        private ShortPosition GetBodyStart(Position bodyPosition)
         {
-            return bodyPosition.Start;
+            return new ShortPosition(bodyPosition.FirstLine, bodyPosition.FirstColumn);
         }
 
         /// <summary>
         /// Handles token that is not valid PHP class/namespace name token in PHP,
         /// but can be used from referenced C# library.
         /// </summary>
-        /// <param name="span">Token position.</param>
+        /// <param name="position">Token position.</param>
         /// <param name="token">Token text.</param>
         /// <returns>Text of the token.</returns>
-        private string CSharpNameToken(Text.Span span, string token)
+        private string CSharpNameToken(Position position, string token)
         {
             // get token string:
             //string token = this.scanner.GetTokenString(position);
@@ -1129,10 +1182,8 @@ namespace PHP.Core.Parsers
                 throw new ArgumentNullException("token");
             
             // report syntax error if C# names are not allowed
-            if ((this.features & LanguageFeatures.CSharpTypeNames) == 0)
-            {
-                this.ErrorSink.Add(FatalErrors.SyntaxError, this.SourceUnit, span, CoreResources.GetString("unexpected_token", token));
-            }
+			if ((this.features & LanguageFeatures.CSharpTypeNames) == 0)
+                this.ErrorSink.Add(FatalErrors.SyntaxError, this.SourceUnit, position, CoreResources.GetString("unexpected_token", token));
 
             //
             return token;

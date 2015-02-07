@@ -16,6 +16,7 @@ using System.Collections.Generic;
 
 using PHP.Core;
 using PHP.Core.Reflection;
+using System.Diagnostics;
 
 namespace PHP.Library
 {

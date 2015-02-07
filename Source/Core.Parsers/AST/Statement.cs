@@ -28,8 +28,8 @@ namespace PHP.Core.AST
     [Serializable]
     public abstract class Statement : LangElement
     {
-        protected Statement(Text.Span span)
-            : base(span)
+        protected Statement(Position position)
+            : base(position)
         {
         }
 
@@ -51,15 +51,15 @@ namespace PHP.Core.AST
     [Serializable]
     public sealed class BlockStmt : Statement
     {
-        private readonly Statement[]/*!*/_statements;
+        private readonly List<Statement>/*!*/ statements;
         /// <summary>Statements in block</summary>
-        public Statement[]/*!*/ Statements { get { return _statements; } }
+        public List<Statement>/*!*/ Statements { get { return statements; } }
 
-        public BlockStmt(Text.Span span, IList<Statement>/*!*/body)
-            : base(span)
+        public BlockStmt(Position position, List<Statement>/*!*/ body)
+            : base(position)
         {
             Debug.Assert(body != null);
-            _statements = body.AsArray();
+            this.statements = body;
         }
 
         /// <summary>
@@ -86,8 +86,8 @@ namespace PHP.Core.AST
         public Expression/*!*/ Expression { get { return expression; } internal set { expression = value; } }
         private Expression/*!*/ expression;
 
-        public ExpressionStmt(Text.Span span, Expression/*!*/ expression)
-            : base(span)
+        public ExpressionStmt(Position position, Expression/*!*/ expression)
+            : base(position)
         {
             Debug.Assert(expression != null);
             this.expression = expression;
@@ -112,16 +112,16 @@ namespace PHP.Core.AST
     /// </summary>
     public sealed class EmptyStmt : Statement
     {
-        public static readonly EmptyStmt Unreachable = new EmptyStmt(Text.Span.Invalid);
-        public static readonly EmptyStmt Skipped = new EmptyStmt(Text.Span.Invalid);
-        public static readonly EmptyStmt PartialMergeResiduum = new EmptyStmt(Text.Span.Invalid);
+        public static readonly EmptyStmt Unreachable = new EmptyStmt(Position.Invalid);
+        public static readonly EmptyStmt Skipped = new EmptyStmt(Position.Invalid);
+        public static readonly EmptyStmt PartialMergeResiduum = new EmptyStmt(Position.Invalid);
 
         internal override bool SkipInPureGlobalCode()
         {
             return true;
         }
 
-        public EmptyStmt(Text.Span p) : base(p) { }
+        public EmptyStmt(Position p) : base(p) { }
 
         /// <summary>
         /// Call the right Visit* method on the given Visitor object.
@@ -130,33 +130,6 @@ namespace PHP.Core.AST
         public override void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitEmptyStmt(this);
-        }
-    }
-
-    #endregion
-
-    #region PHPDocStmt
-
-    /// <summary>
-    /// Empty statement containing PHPDoc block.
-    /// </summary>
-    [Serializable]
-    public sealed class PHPDocStmt : Statement
-    {
-        public PHPDocBlock/*!*/PHPDoc { get { return _phpdoc; } }
-        private readonly PHPDocBlock _phpdoc;
-
-        internal override bool SkipInPureGlobalCode() { return true; }
-
-        public PHPDocStmt(Text.Span p, PHPDocBlock/*!*/phpdoc) : base(p)
-        {
-            Debug.Assert(phpdoc != null);
-            _phpdoc = phpdoc;
-        }
-
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            visitor.VisitPHPDocStmt(this);
         }
     }
 
@@ -173,8 +146,8 @@ namespace PHP.Core.AST
         /// <summary>List of variables to be unset</summary>
         public List<VariableUse> /*!*/VarList { get { return varList; } }
         private readonly List<VariableUse>/*!*/ varList;
-
-        public UnsetStmt(Text.Span p, List<VariableUse>/*!*/ varList)
+        
+        public UnsetStmt(Position p, List<VariableUse>/*!*/ varList)
             : base(p)
         {
             Debug.Assert(varList != null);
@@ -204,7 +177,7 @@ namespace PHP.Core.AST
         public List<SimpleVarUse>/*!*/ VarList { get { return varList; } }
         private List<SimpleVarUse>/*!*/ varList;
 
-        public GlobalStmt(Text.Span p, List<SimpleVarUse>/*!*/ varList)
+        public GlobalStmt(Position p, List<SimpleVarUse>/*!*/ varList)
             : base(p)
         {
             Debug.Assert(varList != null);
@@ -234,8 +207,8 @@ namespace PHP.Core.AST
         /// <summary>List of static variables</summary>
         public List<StaticVarDecl>/*!*/ StVarList { get { return stVarList; } }
         private List<StaticVarDecl>/*!*/ stVarList;
-
-        public StaticStmt(Text.Span p, List<StaticVarDecl>/*!*/ stVarList)
+        
+        public StaticStmt(Position p, List<StaticVarDecl>/*!*/ stVarList)
             : base(p)
         {
             Debug.Assert(stVarList != null);
@@ -277,8 +250,8 @@ namespace PHP.Core.AST
         public Expression Initializer { get { return initializer; } internal set { initializer = value; } }
         private Expression initializer;
         
-        public StaticVarDecl(Text.Span span, DirectVarUse/*!*/ variable, Expression initializer)
-            : base(span)
+        public StaticVarDecl(Position position, DirectVarUse/*!*/ variable, Expression initializer)
+            : base(position)
         {
             Debug.Assert(variable != null);
 
@@ -293,31 +266,6 @@ namespace PHP.Core.AST
         public override void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitStaticVarDecl(this);
-        }
-    }
-
-    #endregion
-
-    #region DeclareStmt
-
-    [Serializable]
-    public sealed class DeclareStmt : Statement
-    {
-        /// <summary>
-        /// Inner statement.
-        /// </summary>
-        public Statement Statement { get { return this.stmt; } }
-        private readonly Statement/*!*/stmt;
-
-        public DeclareStmt(Text.Span p, Statement statement)
-            : base(p)
-        {
-            this.stmt = statement;
-        }
-
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            visitor.VisitDeclareStmt(this);
         }
     }
 

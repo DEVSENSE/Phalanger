@@ -16,6 +16,7 @@ using System.Xml;
 using System.Collections;
 
 using PHP.Core;
+using System.Diagnostics;
 
 namespace PHP.Library.Soap
 {

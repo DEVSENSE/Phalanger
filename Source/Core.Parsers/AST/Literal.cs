@@ -30,8 +30,8 @@ namespace PHP.Core.AST
         /// </summary>
         internal abstract object ValueObj { get; }
 
-		protected Literal(Text.Span span)
-			: base(span)
+		protected Literal(Position position)
+			: base(position)
 		{
 		}
 	}
@@ -62,8 +62,8 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Initializes a new instance of the IntLiteral class.
 		/// </summary>
-		public IntLiteral(Text.Span span, int value)
-            : base(span)
+		public IntLiteral(Position position, int value)
+			: base(position)
 		{
 			this.value = value;
 		}
@@ -104,8 +104,8 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Initializes a new instance of the IntLiteral class.
 		/// </summary>
-		public LongIntLiteral(Text.Span span, long value)
-			: base(span)
+		public LongIntLiteral(Position position, long value)
+			: base(position)
 		{
 			this.value = value;
 		}
@@ -148,7 +148,7 @@ namespace PHP.Core.AST
 		/// </summary>
 		/// <param name="value">A double value to be stored in node.</param>
 		/// <param name="p">A position.</param>
-        public DoubleLiteral(Text.Span p, double value)
+		public DoubleLiteral(Position p, double value)
 			: base(p)
 		{
 			this.value = value;
@@ -194,8 +194,8 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Initializes a new instance of the StringLiteral class.
 		/// </summary>
-		public StringLiteral(Text.Span span, string value)
-			: base(span)
+		public StringLiteral(Position position, string value)
+			: base(position)
 		{
 			this.value = value;
 		}
@@ -240,8 +240,8 @@ namespace PHP.Core.AST
         /// <summary>
 		/// Initializes a new instance of the StringLiteral class.
 		/// </summary>
-		public BinaryStringLiteral(Text.Span span, byte[]/*!*/ value)
-			: base(span)
+		public BinaryStringLiteral(Position position, byte[]/*!*/ value)
+			: base(position)
 		{
 			this.value = value;
 		}
@@ -279,8 +279,8 @@ namespace PHP.Core.AST
         public bool Value { get { return value; } }
 		private bool value;
 
-		public BoolLiteral(Text.Span span, bool value)
-			: base(span)
+		public BoolLiteral(Position position, bool value)
+			: base(position)
 		{
 			this.value = value;
 		}
@@ -312,8 +312,8 @@ namespace PHP.Core.AST
         /// </summary>
         internal override object ValueObj { get { return null; } }
 
-		public NullLiteral(Text.Span span)
-			: base(span)
+		public NullLiteral(Position position)
+			: base(position)
 		{
 		}
 

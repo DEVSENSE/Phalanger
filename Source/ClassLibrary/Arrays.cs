@@ -28,6 +28,7 @@ using System.Runtime.Serialization;
 using System.ComponentModel;
 using PHP.Core;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;

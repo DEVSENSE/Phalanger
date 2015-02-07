@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Dynamic;
-using PHP.Core.Emit;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
+
+using PHP.Core.Emit;
 using PHP.Core.Reflection;
 
 namespace PHP.Core.Binders

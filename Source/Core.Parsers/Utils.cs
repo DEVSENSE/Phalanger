@@ -146,6 +146,21 @@ namespace PHP.Core
             return result.ToString();
         }
 
+#if DEBUG
+        /// <summary>
+        /// Unit test.
+        /// </summary>
+        [Test]
+        static void TestIncrement()
+        {
+            string[] cases = new string[] { null, "", "z", "ZZ[Z9ZzZ", "ZZz" };
+            string[] results = new string[] { "0", "1", "aa", "ZZ[A0AaA", "AAAa" };
+
+            for (int i = 0; i < cases.Length; i++)
+                Debug.Assert(StringUtils.Increment(cases[i]) == results[i]);
+        }
+#endif
+
         public static string/*!*/ AddCSlashes(string/*!*/ str)
         {
             return AddCSlashes(str, true, true, true);
@@ -451,9 +466,9 @@ namespace PHP.Core
             return result;
         }
 
-        internal static void StringBuilderAppend(PHP.Core.Parsers.PhpStringBuilder/*!*/ dst, StringBuilder/*!*/ src, int startIndex, int length, Text.Span span)
+        internal static void StringBuilderAppend(PHP.Core.Parsers.PhpStringBuilder/*!*/ dst, StringBuilder/*!*/ src, int startIndex, int length)
         {
-            dst.Append(src.ToString(startIndex, length), span);
+            dst.Append(src.ToString(startIndex, length));
         }
 
         public static bool IsAsciiString(string/*!*/ str)
@@ -1102,6 +1117,7 @@ namespace PHP.Core
             return value;
         }
 
+
         /// <summary>
         /// Creates dictionary from two enumerators.
         /// </summary>
@@ -1151,14 +1167,6 @@ namespace PHP.Core
         {
             foreach (T el in en) if (f(el)) yield return el;
         }
-
-        /// <summary>
-        /// Determines whether the collection is not empty.
-        /// </summary>
-        public static bool Any<T>(this ICollection<T> list)
-        {
-            return list != null && list.Count != 0;
-        }
     }
     
     /// <summary>
@@ -1197,74 +1205,11 @@ namespace PHP.Core
         {
             list.RemoveAt(list.Count - 1);
         }
-
-        /// <summary>
-        /// Gets the last element of given list.
-        /// </summary>
-        /// <typeparam name="T">Type of the list elements.</typeparam>
-        /// <param name="list">List.</param>
-        /// <returns>Last element of given list.</returns>
-        public static T Last<T>(this IList<T>/*!*/list)
-        {
-            return list[list.Count - 1];
-        }
-
-        /// <summary>
-        /// Determines whether the list is not empty.
-        /// </summary>
-        public static bool Any<T>(this List<T> list)
-        {
-            return list != null && list.Count != 0;
-        }
-
-        /// <summary>
-        /// Copies entries into new array, or gets empty array if the collection is empty.
-        /// </summary>
-        public static T[]/*!*/AsArray<T>(this IList<T> list)
-        {
-            T[] result = list as T[];
-
-            if (result == null)
-            {
-                if (list.Any())
-                {
-                    result = new T[list.Count];
-                    list.CopyTo(result, 0);
-                }
-                else
-                {
-                    result = EmptyArray<T>.Instance;
-                }
-            }
-
-            return result;
-        }
     }
 
     #endregion
 
     #region Arrays
-
-    /// <summary>
-    /// Helper for an empty array instance.
-    /// </summary>
-    /// <typeparam name="T">Type of array elements.</typeparam>
-    public static class EmptyArray<T>
-    {
-        /// <summary>
-        /// Singleton instance of empty array of <typeparamref name="T"/>.
-        /// </summary>
-        public static T[]/*!*/Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new T[0];
-                return _instance;
-            }
-        }
-        private static volatile T[] _instance;
-    }
 
     /// <summary>
     /// Utilities manipulating arrays.
@@ -1275,27 +1220,32 @@ namespace PHP.Core
         /// <summary>
         /// Empty int array.
         /// </summary>
-        public static int[] EmptyIntegers { get { return EmptyArray<int>.Instance; } }
-
-        /// <summary>
-        /// Empty ushort array.
-        /// </summary>
-        public static ushort[] EmptyUShorts { get { return EmptyArray<ushort>.Instance; } }
+        public static readonly int[] EmptyIntegers = new int[0];
 
         /// <summary>
         /// Empty object array.
         /// </summary>
-        public static object[] EmptyObjects { get { return EmptyArray<object>.Instance; } }
+        public static readonly object[] EmptyObjects = new object[0];
+
+        /// <summary>
+        /// Empty object array.
+        /// </summary>
+        public static readonly char[] EmptyChars = new char[0];
 
         /// <summary>
         /// Empty byte array.
         /// </summary>
-        public static byte[] EmptyBytes { get { return EmptyArray<byte>.Instance; } }
+        public static readonly byte[] EmptyBytes = new byte[0];
+
+        /// <summary>
+        /// Empty <see cref="MethodInfo"/> array.
+        /// </summary>
+        public static readonly MethodInfo[] EmptyMethodInfos = new MethodInfo[0];
 
         /// <summary>
         /// Empty <see cref="string"/> array.
         /// </summary>
-        public static string[] EmptyStrings { get { return EmptyArray<string>.Instance; } }
+        public static readonly string[] EmptyStrings = new string[0];
 
         /// <summary>
         /// Converts a <see cref="IList"/> to an array of strings.
@@ -1604,27 +1554,6 @@ namespace PHP.Core
         }
 
         /// <summary>
-        /// Concats array of <typeparamref name="T"/> with single <typeparamref name="T"/> element.
-        /// </summary>
-        public static T[]/*!*/Concat<T>(T x, T[] y)
-        {
-            T[] result;
-
-            if (y.Any())
-            {
-                result = new T[1 + y.Length];
-                result[0] = x;
-                Array.Copy(y, 0, result, 1, y.Length);
-            }
-            else
-            {
-                result = new T[] { x };
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Concats two arrays of bytes.
         /// </summary>
         /// <param name="x">The first array of bytes to be concatenated.</param>
@@ -1764,8 +1693,7 @@ namespace PHP.Core
         /// <returns>New list of unique items. Cannot return null.</returns>
         public static ICollection<T>/*!*/Unique<T>(IList<T> items)
         {
-            if (items == null || items.Count == 0)
-                return EmptyArray<T>.Instance;
+            if (items == null || items.Count == 0) return (ICollection<T>)new T[0];
 
             return new HashSet<T>(items);
         }
@@ -1778,7 +1706,7 @@ namespace PHP.Core
         /// <returns>Unique array of element. Cannot be null.</returns>
         public static T[]/*!*/EnsureUnique<T>(T[] items)
         {
-            if (items == null) return EmptyArray<T>.Instance;
+            if (items == null) return new T[0];
             if (items.Length == 0) return items;
 
             var set = new HashSet<T>(items);
@@ -1858,44 +1786,62 @@ namespace PHP.Core
             }
         }
 
-        /// <summary>
-        /// Determines whether the array is not empty.
-        /// </summary>
-        public static bool Any<T>(this T[] arr)
+    }
+
+    public struct SubArray<T> : IEnumerable<T>
+    {
+        private readonly T[] array;
+        private int start;
+
+        public int Length { get { return length; } }
+        private int length;
+
+        public bool IsNull { get { return array == null; } }
+
+        public bool IsNullOrEmpty { get { return array == null || length == 0; } }
+
+        public T this[int index] { get { return array[start + index]; } set { array[start + index] = value; } }
+
+        public SubArray(T[] array, int start, int length)
         {
-            return arr != null && arr.Length != 0;
+            this.array = array;
+            this.start = start;
+            this.length = length;
         }
 
-        /// <summary>
-        /// Determines whether the array is empty or <c>null</c> reference.
-        /// </summary>
-        public static bool Empty<T>(this T[] arr)
+        public T[] ToArray()
         {
-            return !Any<T>(arr);
-        }
+            if (array == null) return null;
 
-        /// <summary>
-        /// Copies a part of given array into a new one. If the result array would be the same size as the original one, reference to the original one is returned directly.
-        /// </summary>
-        public static T[] TakeArray<T>(this T[] arr, int from, int count)
-        {
-            if (arr == null)
-                throw new ArgumentNullException();
+            T[] result = new T[length];
 
-            if (count == 0)
-                return EmptyArray<T>.Instance; 
-            
-            if (from == 0 && count == arr.Length)
-                return arr;
+            for (int i = 0, j = start; i < length; i++, j++)
+                result[i] = array[j];
 
-            if (from < 0 || from + count > arr.Length)
-                throw new ArgumentOutOfRangeException();
-
-            //
-            T[] result = new T[count];
-            Array.Copy(arr, from, result, 0, count);
             return result;
         }
+
+        #region IEnumerable<T> Members
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            if (array != null)
+            {
+                for (int i = 0, j = start; i < length; i++, j++)
+                    yield return array[j];
+            }
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        #endregion
     }
 
     #endregion
@@ -1949,7 +1895,7 @@ namespace PHP.Core
         /// </summary>
         public static StringComparer/*!*/StringComparer { get { return EqualityComparer.StringComparer; } }
 
-        public static FullPath[]/*!*/ EmptyArray { get { return EmptyArray<FullPath>.Instance; } }
+        public static readonly FullPath[]/*!*/ EmptyArray = new FullPath[0];
 
         /// <summary>
         /// Empty path.
@@ -2638,6 +2584,65 @@ namespace PHP.Core
             return other.level - this.level;                     // TODO:
         }
 
+        #endregion
+
+        #region Unit Tests
+#if DEBUG
+
+        [Test]
+        static void TestPaths()
+        {
+            FullPath root;
+            FullPath full;
+            RelativePath rel;
+            string str1, str2;
+
+            string[,] cases = 
+      {
+          // root:        // full:          // full canonical:    // relative canonical:
+        { @"C:\a/b/c/",   @"D:\a/b/",       @"D:\a\b\",           @"D:\a\b\" },
+                                            
+        { @"C:\a\b\c",    @"C:\a\b\c",      @"C:\a\b\c",          @"" },
+        { @"C:\a\b\c",    @"C:\a\b\c\",     @"C:\a\b\c\",         @"" },
+        { @"C:\a\b\c\",   @"C:\a\b\c",      @"C:\a\b\c",          @"" },
+        { @"C:\a\b\c\",   @"C:\a\b\c\",     @"C:\a\b\c\",         @"" },
+                                            
+        { @"C:\a\b\c",    @"C:\a\b",        @"C:\a\b",            @".." },
+        { @"C:\a\b\c\",   @"C:\a\b",        @"C:\a\b",            @".." },
+                                            
+        { @"C:\a\b\c",    @"C:\",           @"C:\",                @"..\..\.." },
+        { @"C:\a\b\c\",   @"C:\",           @"C:\",                @"..\..\.." },
+                                            
+        { @"C:\a\b\c\",   @"C:\a\b\x\y\z",  @"C:\a\b\x\y\z",      @"..\x\y\z" },
+        { @"C:\a\b\cd\",  @"C:\a\b\c",      @"C:\a\b\c",          @"..\c" },
+        { @"C:\a\b\cd",   @"C:\a\b\c",      @"C:\a\b\c",          @"..\c" },
+        { @"C:\a\b\cd\",  @"C:\a\b\c\d",    @"C:\a\b\c\d",          @"..\c\d" },
+        { @"C:\a\b\cd",   @"C:\a\b\c\d",    @"C:\a\b\c\d",          @"..\c\d" },
+      };
+
+            for (int i = 0; i < cases.GetLength(0); i++)
+            {
+                root = new FullPath(cases[i, 0]);
+                full = new FullPath(cases[i, 1]);
+                rel = new RelativePath(root, full);
+
+                Debug.Assert(full.ToString() == cases[i, 2]);
+
+                Debug.Assert(rel.ToString() == cases[i, 3]);
+
+                str1 = full;
+                if (str1[str1.Length - 1] == '\\') str1 = str1.Substring(0, str1.Length - 1);
+
+                str2 = rel.ToFullPath(root);
+                if (str2[str2.Length - 1] == '\\') str2 = str2.Substring(0, str2.Length - 1);
+
+                Debug.Assert(str1 == str2);
+
+                Debug.Assert(RelativePath.ParseCanonical(cases[i, 3]).ToString() == cases[i, 3]);
+            }
+        }
+
+#endif
         #endregion
 
     }

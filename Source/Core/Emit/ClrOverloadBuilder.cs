@@ -1307,7 +1307,7 @@ namespace PHP.Core.Emit
 				
                 case PhpTypeCode.PhpRuntimeChain:
 					{
-						Debug.Fail();
+						Debug.Fail(null);
 						return true;
 					}
 			}
@@ -1417,7 +1417,7 @@ namespace PHP.Core.Emit
 					}
 
 				default:
-					Debug.Fail();
+					Debug.Fail(null);
 					return true;
 			}
 
@@ -1505,7 +1505,7 @@ namespace PHP.Core.Emit
 
 				default:
 					{
-						Debug.Fail();
+						Debug.Fail(null);
 						return PhpTypeCode.Invalid;
 					}
 			}

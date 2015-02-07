@@ -16,253 +16,244 @@ using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 
+using PHP.Core.AST;
+using PHP.Core.Emit;
 using PHP.Core.Parsers;
 using PHP.Core.Reflection;
 
-namespace PHP.Core.AST
+namespace PHP.Core.Compiler.AST
 {
-	#region TypeRef
+    partial class NodeCompilers
+    {
+        #region TypeRef
 
-	/// <summary>
-	/// Represents a use of a class name.
-	/// </summary>
-    [Serializable]
-	public abstract class TypeRef : LangElement
-	{
-        /// <summary>
-        /// Immutable empty list of <see cref="TypeRef"/>.
-        /// </summary>
-		internal static readonly List<TypeRef>/*!*/ EmptyList = new List<TypeRef>();
-
-        /// <summary>
-        /// List of generic parameters.
-        /// </summary>
-        public List<TypeRef>/*!*/ GenericParams
+        abstract class TypeRefCompiler<T> : ITypeRefCompiler, INodeCompiler where T : TypeRef
         {
-            get
+            public abstract DType ResolvedType { get; }
+
+            /// <summary>
+            /// Resolves generic arguments.
+            /// </summary>
+            /// <returns><B>true</B> iff all arguments are resolvable to types or constructed types (none is variable).</returns>
+            internal virtual bool Analyze(T/*!*/node, Analyzer/*!*/ analyzer)
             {
-                return this.Properties[GenericParamsPropertyKey] as List<TypeRef> ?? TypeRef.EmptyList;
+                bool result = true;
+
+                foreach (TypeRef arg in node.GenericParams)
+                    result &= TypeRefHelper.Analyze(arg, analyzer);
+
+                return result;
             }
-            private set
+
+            internal abstract void EmitLoadTypeDesc(T node, CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags);
+
+            /// <summary>
+            /// Emits code that loads type descriptors for all generic arguments and a call to 
+            /// <see cref="Operators.MakeGenericTypeInstantiation"/>.
+            /// </summary>
+            internal void EmitMakeGenericInstantiation(TypeRef node, CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags)
             {
-                if (value != null && value.Count > 0)
-                    this.Properties[GenericParamsPropertyKey] = value;
-                else
-                    this.Properties.RemoveProperty(GenericParamsPropertyKey);
-            }
-        }
-        
-        /// <summary>
-        /// Key to property collection to get/store generic parameters list.
-        /// </summary>
-        private const string GenericParamsPropertyKey = "GenericParams";
+                if (node.GenericParams == null || node.GenericParams.Count == 0)
+                    return;
 
-        public GenericQualifiedName GenericQualifiedName
-        {
-            get
-            {
-                return new GenericQualifiedName(this.QualifiedName, ToStaticTypeRefs(this.GenericParams, null, null));
-            }
-        }
+                ILEmitter il = codeGenerator.IL;
 
-        internal abstract QualifiedName QualifiedName { get; }
-
-        public TypeRef(Position position, List<TypeRef> genericParams)
-			: base(position)
-		{
-			this.GenericParams = genericParams;
-		}
-
-        /// <summary>
-		/// Gets the static type reference or <B>null</B> if the reference cannot be resolved at compile time.
-		/// </summary>
-		internal abstract object ToStaticTypeRef(ErrorSink errors, SourceUnit sourceUnit);
-
-		internal static object[]/*!!*/ ToStaticTypeRefs(List<TypeRef>/*!*/ typeRefs, ErrorSink errors, SourceUnit sourceUnit)
-		{
-            if (typeRefs == null || typeRefs.Count == 0)
-                return ArrayUtils.EmptyObjects;
-
-			object[] result = new object[typeRefs.Count];
-
-			for (int i = 0; i < typeRefs.Count; i++)
-			{
-                if ((result[i] = typeRefs[i].ToStaticTypeRef(errors, sourceUnit)) == null)
-				{
-					if (errors != null)
-                        errors.Add(Errors.GenericParameterMustBeType, sourceUnit, typeRefs[i].Position);
-
-					result[i] = new PrimitiveTypeName(QualifiedName.Object);
-				}
-			}
-
-			return result;
-		}
-	}
-
-	#endregion
-
-	#region PrimitiveTypeRef
-
-	/// <summary>
-	/// Primitive type reference.
-	/// </summary>
-    [Serializable]
-	public sealed class PrimitiveTypeRef : TypeRef
-	{
-        private PrimitiveTypeName typeName;
-
-		public PrimitiveTypeRef(Position position, PrimitiveTypeName name)
-			: base(position, null)
-		{
-            this.typeName = name;
-		}
-
-		internal override object ToStaticTypeRef(ErrorSink errors, SourceUnit sourceUnit)
-		{
-			return typeName;
-		}
-
-		/// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            visitor.VisitPrimitiveTypeRef(this);
-        }
-
-        internal override QualifiedName QualifiedName
-        {
-            get { return this.typeName.QualifiedName; }
-        }
-	}
-
-	#endregion
-
-	#region DirectTypeRef
-
-	/// <summary>
-	/// Direct use of class name.
-	/// </summary>
-    [Serializable]
-    public sealed class DirectTypeRef : TypeRef
-	{
-		public QualifiedName ClassName { get { return className; } }
-		private QualifiedName className;
-
-		internal override QualifiedName QualifiedName
-        {
-            get { return this.ClassName; }
-        }
-
-        internal override object ToStaticTypeRef(ErrorSink/*!*/ errors, SourceUnit/*!*/ sourceUnit)
-		{
-			return new GenericQualifiedName(className, TypeRef.ToStaticTypeRefs(GenericParams, errors, sourceUnit));
-		}
-
-		public DirectTypeRef(Position position, QualifiedName className, List<TypeRef>/*!*/ genericParams)
-			: base(position, genericParams)
-		{
-			this.className = className;
-		}
-
-        internal static DirectTypeRef/*!*/FromGenericQualifiedName(Position position, GenericQualifiedName genericQualifiedName)
-        {
-            List<TypeRef> genericParams;
-
-            if (genericQualifiedName.IsGeneric)
-            {
-                genericParams = new List<TypeRef>(genericQualifiedName.GenericParams.Length);
-                foreach (var obj in genericQualifiedName.GenericParams)
+                il.EmitOverloadedArgs(Types.DTypeDesc[0], node.GenericParams.Count, Methods.Operators.MakeGenericTypeInstantiation.ExplicitOverloads, delegate(ILEmitter eil, int i)
                 {
-                    TypeRef objtype;
-                    if (obj is GenericQualifiedName) objtype = FromGenericQualifiedName(Position.Invalid, (GenericQualifiedName)obj);
-                    else if (obj is PrimitiveTypeName) objtype = new PrimitiveTypeRef(Position.Invalid, (PrimitiveTypeName)obj);
-                    else objtype = new PrimitiveTypeRef(Position.Invalid, new PrimitiveTypeName(QualifiedName.Object));
+                    TypeRefHelper.EmitLoadTypeDesc(node.GenericParams[i], codeGenerator, flags);
+                });
 
-                    genericParams.Add(objtype);
-                }
+                if (node.GenericParams.Count > 0)
+                    il.Emit(OpCodes.Call, Methods.Operators.MakeGenericTypeInstantiation.Overload(node.GenericParams.Count));
             }
-            else
+
+            #region ITypeRefCompiler
+
+            DType ITypeRefCompiler.ResolvedType
             {
-                //if (genericQualifiedName.QualifiedName.IsPrimitiveTypeName)
-                //    return new PrimitiveTypeRef(position, new PrimitiveTypeName(genericQualifiedName.QualifiedName));
-
-                genericParams = TypeRef.EmptyList;
+                get { return this.ResolvedType; }
             }
 
-            return new DirectTypeRef(position, genericQualifiedName.QualifiedName, genericParams.ToList());
+            bool ITypeRefCompiler.Analyze(TypeRef node, Analyzer analyzer)
+            {
+                return this.Analyze((T)node, analyzer);
+            }
+
+            void ITypeRefCompiler.EmitLoadTypeDesc(TypeRef node, CodeGenerator codeGenerator, ResolveTypeFlags flags)
+            {
+                this.EmitLoadTypeDesc((T)node, codeGenerator, flags);
+            }
+
+            #endregion
         }
 
-		/// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
+        #endregion
+
+        #region PrimitiveTypeRef
+
+        [NodeCompiler(typeof(PrimitiveTypeRef))]
+        sealed class PrimitiveTypeRefCompiler : TypeRefCompiler<PrimitiveTypeRef>
         {
-            visitor.VisitDirectTypeRef(this);
+            public override DType/*!*/ ResolvedType { get { return type; } }
+            private PrimitiveType/*!A*/ type;
+            public PrimitiveType/*!*/ Type { get { return type; } }
+
+            internal override bool Analyze(PrimitiveTypeRef node, Analyzer analyzer)
+            {
+                Debug.Assert(node.QualifiedName.IsPrimitiveTypeName);
+
+                type = PrimitiveType.GetByName(node.QualifiedName);
+
+                if (type == null)
+                    throw new InvalidOperationException();
+                
+                //
+                return true;
+            }
+
+            internal override void EmitLoadTypeDesc(PrimitiveTypeRef node, CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags)
+            {
+                type.EmitLoadTypeDesc(codeGenerator, ResolveTypeFlags.SkipGenericNameParsing);
+            }
         }
 
-        public override bool Equals(object obj)
+        #endregion
+
+        #region DirectTypeRef
+
+        [NodeCompiler(typeof(DirectTypeRef))]
+        sealed class DirectTypeRefCompiler : TypeRefCompiler<DirectTypeRef>
         {
-            var other = obj as DirectTypeRef;
-            if (other == null)
+            public override DType ResolvedType { get { return resolvedType; } }
+            private DType/*!A*/ resolvedType;
+
+            #region Analysis
+
+            internal override bool Analyze(DirectTypeRef node, Analyzer analyzer)
+            {
+                resolvedType = analyzer.ResolveTypeName(node.ClassName, analyzer.CurrentType, analyzer.CurrentRoutine, node.Position, false);
+
+                // base call must follow the class name resolution:
+                bool args_static = base.Analyze(node, analyzer);
+
+                if (args_static)
+                {
+                    DTypeDesc[] resolved_arguments = DTypeDesc.EmptyArray;
+                    var genericParams = node.GenericParams;
+
+                    if (genericParams != null && genericParams.Count > 0)
+                    {
+                        resolved_arguments = new DTypeDesc[genericParams.Count];
+                        for (int i = 0; i < genericParams.Count; i++)
+                            resolved_arguments[i] = TypeRefHelper.ResolvedType(genericParams[i]).TypeDesc;
+                    }
+
+                    resolvedType = resolvedType.MakeConstructedType(analyzer, resolved_arguments, node.Position);
+                }
+
+                return args_static;
+            }
+
+            #endregion
+
+            #region Emission
+
+            internal override void EmitLoadTypeDesc(DirectTypeRef node, CodeGenerator codeGenerator, ResolveTypeFlags flags)
+            {
+                Debug.Assert(resolvedType != null);
+
+                // disallow generic parameters on generic type which already has generic arguments:
+                resolvedType.EmitLoadTypeDesc(codeGenerator, flags |
+                          ((node.GenericParams.Count > 0) ? ResolveTypeFlags.SkipGenericNameParsing : 0));
+
+                // constructed type already emited its generic parameters:
+                if (!(resolvedType is ConstructedType))
+                    EmitMakeGenericInstantiation(node, codeGenerator, flags);
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region IndirectTypeRef
+
+        [NodeCompiler(typeof(IndirectTypeRef))]
+        sealed class IndirectTypeRefCompiler : TypeRefCompiler<IndirectTypeRef>
+        {
+            public override DType ResolvedType { get { return null; } }
+
+            #region Analysis
+
+            internal override bool Analyze(IndirectTypeRef node, Analyzer analyzer)
+            {
+                node.ClassNameVar.Analyze(analyzer, ExInfoFromParent.DefaultExInfo);
+
+                // base call must follow the class name resolve:
+                base.Analyze(node, analyzer);
+
+                // indirect:
                 return false;
+            }
 
-            return this.QualifiedName.Equals(other.QualifiedName);
+            #endregion
+
+            #region Emission
+
+            internal override void EmitLoadTypeDesc(IndirectTypeRef node, CodeGenerator codeGenerator, ResolveTypeFlags flags)
+            {
+                // disallow generic parameters on generic type which already has generic arguments:
+                codeGenerator.EmitLoadTypeDescOperator(null, node.ClassNameVar, flags |
+                    ((node.GenericParams.Count > 0) ? ResolveTypeFlags.SkipGenericNameParsing : 0));
+
+                EmitMakeGenericInstantiation(node, codeGenerator, flags);
+            }
+
+            #endregion
         }
 
-        public override int GetHashCode()
+        #endregion
+    }
+
+    #region ITypeRefCompiler
+
+    internal static class TypeRefHelper
+    {
+        public static DType ResolvedType(this TypeRef/*!*/node)
         {
-            return this.QualifiedName.GetHashCode();
+            var nodecompiler = node.NodeCompiler<ITypeRefCompiler>();
+            return nodecompiler.ResolvedType;
         }
-	}
 
-	#endregion
-
-	#region IndirectTypeRef
-
-	/// <summary>
-	/// Indirect use of class name (through variable).
-	/// </summary>
-    [Serializable]
-    public sealed class IndirectTypeRef : TypeRef
-	{
-		/// <summary>
-        /// <see cref="VariableUse"/> which value in runtime contains the name of the type.
+        /// <summary>
+        /// <see cref="ResolvedType"/> or new instance of <see cref="UnknownType"/> if the type was not resolved.
         /// </summary>
-        public VariableUse/*!*/ ClassNameVar { get { return this.classNameVar; } }
-        private readonly VariableUse/*!*/ classNameVar;
-
-        internal override QualifiedName QualifiedName
+        public static DType/*!A*/ResolvedTypeOrUnknown(this TypeRef/*!*/node)
         {
-            get { return new QualifiedName(Name.EmptyBaseName); }
+            return ResolvedType(node) ?? new UnknownType(string.Empty, node);
         }
 
-		public IndirectTypeRef(Position position, VariableUse/*!*/ classNameVar, List<TypeRef>/*!*/ genericParams)
-			: base(position, genericParams)
-		{
-			Debug.Assert(classNameVar != null && genericParams != null);
-
-			this.classNameVar = classNameVar;
-		}
-
-        internal override object ToStaticTypeRef(ErrorSink errors, SourceUnit sourceUnit)
-		{
-			return null;
-		}
-
-		/// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
+        public static bool Analyze(this TypeRef/*!*/node, Analyzer/*!*/ analyzer)
         {
-            visitor.VisitIndirectTypeRef(this);
+            var nodecompiler = node.NodeCompiler<ITypeRefCompiler>();
+            return nodecompiler.Analyze(node, analyzer);
         }
-	}
 
-	#endregion
+        public static void EmitLoadTypeDesc(this TypeRef/*!*/node, CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags)
+        {
+            var nodecompiler = node.NodeCompiler<ITypeRefCompiler>();
+            nodecompiler.EmitLoadTypeDesc(node, codeGenerator, flags);
+        }
+    }
+
+    internal interface ITypeRefCompiler
+    {
+        DType ResolvedType { get; }
+        bool Analyze(TypeRef/*!*/node, Analyzer/*!*/ analyzer);
+        void EmitLoadTypeDesc(TypeRef/*!*/node, CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags);
+    }
+
+    #endregion
 }

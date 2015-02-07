@@ -14,7 +14,6 @@
 using System;
 using System.Diagnostics;
 
-using PHP.Core;
 using PHP.Core.Parsers;
 
 namespace PHP.Core.AST
@@ -38,8 +37,8 @@ namespace PHP.Core.AST
 
         #region Construction
 
-        public UnaryEx(Text.Span span, Operations operation, Expression/*!*/ expr)
-			: base(span)
+        public UnaryEx(Position position, Operations operation, Expression/*!*/ expr)
+			: base(position)
 		{
 			Debug.Assert(expr != null);
 			this.operation = operation;
@@ -47,7 +46,7 @@ namespace PHP.Core.AST
 		}
 
 		public UnaryEx(Operations operation, Expression/*!*/ expr)
-			: this(Text.Span.Invalid, operation, expr)
+			: this(Position.Invalid, operation, expr)
 		{
 		}
 

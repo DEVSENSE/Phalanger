@@ -37,7 +37,7 @@ namespace PHP.Core.AST
         /// <param name="x">GlobalCode.</param>
         public virtual void VisitGlobalCode(GlobalCode x)
         {
-            VisitStatements(x.Statements);
+            VisitStatementList(x.Statements);
         }
 
         #region Statements
@@ -49,7 +49,7 @@ namespace PHP.Core.AST
         virtual public void VisitTryStmt(TryStmt x)
         {
             // visit statements
-            VisitStatements(x.Statements);
+            VisitStatementList(x.Statements);
 
             // visit catch blocks
             if (x.Catches != null)
@@ -75,7 +75,7 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitNamespaceDecl(NamespaceDecl x)
         {
-            VisitStatements(x.Statements);
+            VisitStatementList(x.Statements);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace PHP.Core.AST
         /// <param name="x">Block statement.</param>
         virtual public void VisitBlockStmt(BlockStmt x)
         {
-            VisitStatements(x.Statements);
+            VisitStatementList(x.Statements);
         }
 
         /// <summary>
@@ -147,14 +147,6 @@ namespace PHP.Core.AST
         }
 
         /// <summary>
-        /// Visits <c>declare</c> statement and its inner statement.
-        /// </summary>
-        virtual public void VisitDeclareStmt(DeclareStmt x)
-        {
-            VisitElement(x.Statement);
-        }
-
-        /// <summary>
         /// Visit all conditional statements.
         /// See VisitConditionalStmt(ConditionalStmt x).
         /// </summary>
@@ -198,7 +190,7 @@ namespace PHP.Core.AST
                 VisitElement(p);
             
             // method body
-            VisitStatements(x.Body);
+            VisitStatementList(x.Body);
         }
 
         /// <summary>
@@ -259,14 +251,14 @@ namespace PHP.Core.AST
                 VisitElement(p);
 
             // function body
-            VisitStatements(x.Body);
+            VisitStatementList(x.Body);
         }
 
         virtual public void VisitTraitsUse(TraitsUse x)
         {
             // visits adaptation list
             var list = x.TraitAdaptationList;
-            if (list != null && list.Any())
+            if (list != null)
                 foreach(PHP.Core.AST.TraitsUse.TraitAdaptation t in list)
                     VisitElement(t);
         }
@@ -287,29 +279,29 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitEchoStmt(EchoStmt x)
         {
-            VisitExpressions(x.Parameters);
+            VisitExpressionList(x.Parameters);
         }
 
         /// <summary>
         /// Visit all statements in the given list.
         /// </summary>
-        /// <param name="statements">Collection of statements to visit.</param>
-        private void VisitStatements(ICollection<Statement> statements)
+        /// <param name="statements"></param>
+        private void VisitStatementList(List<Statement> statements)
         {
-            if (statements != null && statements.Any())
-                foreach (Statement s in statements)
-                    VisitElement(s);
+            if (statements != null)
+            foreach (Statement s in statements)
+                VisitElement(s);
         }
 
         /// <summary>
         /// Visit all expressions in the given list.
         /// </summary>
         /// <param name="expressions"></param>
-        private void VisitExpressions(ICollection<Expression> expressions)
+        private void VisitExpressionList(List<Expression> expressions)
         {
-            if (expressions != null && expressions.Any())
-                foreach (Expression e in expressions)
-                    VisitElement(e);
+            if (expressions != null)
+            foreach (Expression e in expressions)
+                VisitElement(e);
         }
 
         #endregion
@@ -357,24 +349,28 @@ namespace PHP.Core.AST
         /// <param name="x">SwitchItem, CaseItem or DefaultItem.</param>
         virtual public void VisitSwitchItem(SwitchItem x)
         {
-            VisitStatements(x.Statements);
+            VisitStatementList(x.Statements);
         }
 
         #endregion
 
         #region Jumps statements
 
+        /// <summary>
+        /// see JumpStmt.Expression
+        /// </summary>
+        /// <param name="x"></param>
         virtual public void VisitJumpStmt(JumpStmt x)
         {
-            VisitElement(x.Expression);
+            //VisitElement(x.Expression); // see JumpStmt.Expression
         }
         virtual public void VisitGotoStmt(GotoStmt x)
         {
-            // x.LabelName
+            // LabelName
         }
         virtual public void VisitLabelStmt(LabelStmt x)
         {
-            // x.Name
+            // nothing
         }
         
         #endregion
@@ -398,9 +394,9 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitForStmt(ForStmt x)
         {
-            VisitExpressions(x.InitExList);
-            VisitExpressions(x.CondExList);
-            VisitExpressions(x.ActionExList);
+            VisitExpressionList(x.InitExList);
+            VisitExpressionList(x.CondExList);
+            VisitExpressionList(x.ActionExList);
 
             VisitElement(x.Body);
         }
@@ -439,7 +435,7 @@ namespace PHP.Core.AST
 
         virtual public void VisitDirectVarUse(DirectVarUse x)
         {
-            VisitVarLikeConstructUse(x);
+            //VisitVarLikeConstructUse(x);
         }
         virtual public void VisitGlobalConstUse(GlobalConstUse x)
         {
@@ -447,12 +443,7 @@ namespace PHP.Core.AST
         }
         virtual public void VisitClassConstUse(ClassConstUse x)
         {
-            VisitElement(x.TypeRef);
             VisitConstantUse(x);
-        }
-        virtual public void VisitPseudoClassConstUse(PseudoClassConstUse x)
-        {
-            VisitClassConstUse(x);
         }
         virtual public void VisitPseudoConstUse(PseudoConstUse x)
         {
@@ -460,13 +451,7 @@ namespace PHP.Core.AST
         }
         virtual public void VisitIndirectVarUse(IndirectVarUse x)
         {
-            VisitVarLikeConstructUse(x);
-            VisitElement(x.VarNameEx);
-        }
-
-        virtual public void VisitVarLikeConstructUse(VarLikeConstructUse x)
-        {
-            VisitElement(x.IsMemberOf);
+            //VisitVarLikeConstructUse(x);
         }
 
         /// <summary>
@@ -543,7 +528,7 @@ namespace PHP.Core.AST
             VisitElement(x.Index);
             VisitElement(x.Array);
 
-            VisitVarLikeConstructUse(x);
+            //VisitVarLikeConstructUse(x);
         }
 
         /// <summary>
@@ -561,8 +546,6 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitFunctionCall(FunctionCall x)
         {
-            VisitVarLikeConstructUse(x);
-
             foreach (ActualParam p in x.CallSignature.Parameters)
                 VisitElement(p);
         }
@@ -592,7 +575,6 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitDirectStMtdCall(DirectStMtdCall x)
         {
-            VisitElement(x.TypeRef);            
             VisitFunctionCall(x);
         }
 
@@ -602,17 +584,15 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitIndirectStMtdCall(IndirectStMtdCall x)
         {
-            VisitElement(x.TypeRef);            
             VisitElement(x.MethodNameVar);
             VisitFunctionCall(x);
         }
         virtual public void VisitDirectStFldUse(DirectStFldUse x)
         {
-            VisitElement(x.TypeRef);
+            // nothing
         }
         virtual public void VisitIndirectStFldUse(IndirectStFldUse x)
         {
-            VisitElement(x.TypeRef);            
             VisitElement(x.FieldNameExpr);
         }
 
@@ -623,19 +603,7 @@ namespace PHP.Core.AST
         virtual public void VisitArrayEx(ArrayEx x)
         {
             foreach (Item item in x.Items)
-                VisitArrayItem(item);
-        }
-
-        virtual public void VisitArrayItem(Item item)
-        {
-            // key
-            VisitElement(item.Index);
-
-            // value
-            if (item is ValueItem)
-                VisitElement(((ValueItem)item).ValueExpr);
-            else
-                VisitElement(((RefItem)item).RefToGet);
+                VisitElement(item.Index);
         }
 
         /// <summary>
@@ -702,8 +670,6 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitNewEx(NewEx x)
         {
-            VisitElement(x.ClassNameRef);
-
             foreach (ActualParam p in x.CallSignature.Parameters)
                 VisitElement(p);
         }
@@ -715,7 +681,6 @@ namespace PHP.Core.AST
         virtual public void VisitInstanceOfEx(InstanceOfEx x)
         {
             VisitElement(x.Expression);
-            VisitElement(x.ClassNameRef);
         }
 
         /// <summary>
@@ -733,7 +698,7 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitConcatEx(ConcatEx x)
         {
-            VisitExpressions(x.Expressions);
+            VisitExpressionList(x.Expressions);
         }
 
         /// <summary>
@@ -742,7 +707,7 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitListEx(ListEx x)
         {
-            VisitExpressions(x.LValues);
+            VisitExpressionList(x.LValues);
             VisitElement(x.RValue);
         }
 
@@ -751,17 +716,12 @@ namespace PHP.Core.AST
         /// </summary>
         virtual public void VisitLambdaFunctionExpr(LambdaFunctionExpr x)
         {
-            // use parameters
-            if (x.UseParams != null)
-                foreach (var p in x.UseParams)
-                    VisitElement(p);
-
             // function parameters
             foreach (var p in x.Signature.FormalParams)
                 VisitElement(p);
 
             // function body
-            VisitStatements(x.Body);
+            VisitStatementList(x.Body);
         }
 
         /// <summary>
@@ -824,7 +784,7 @@ namespace PHP.Core.AST
         {
             VisitElement(x.Variable);
 
-            VisitStatements(x.Statements);
+            VisitStatementList(x.Statements);
         }
 
         /// <summary>
@@ -832,7 +792,7 @@ namespace PHP.Core.AST
         /// </summary>
         virtual public void VisitFinallyItem(FinallyItem x)
         {
-            VisitStatements(x.Statements);
+            VisitStatementList(x.Statements);
         }
 
         /// <summary>
@@ -898,10 +858,9 @@ namespace PHP.Core.AST
         }
         virtual public void VisitIndirectTypeRef(IndirectTypeRef x)
         {
-            VisitElement(x.ClassNameVar);
+            // nothing
         }
-
-        virtual public void VisitPHPDocStmt(PHPDocStmt x) { }
+        
 
         #endregion
     }

@@ -45,8 +45,8 @@ namespace PHP.Core.AST
         public Expression Expression { get { return expr; } internal set { expr = value; } }
 		private Expression expr; // can be null
 
-		public JumpStmt(Text.Span span, Types type, Expression expr)
-			: base(span)
+		public JumpStmt(Position position, Types type, Expression expr)
+			: base(position)
 		{
 			this.type = type;
 			this.expr = expr;
@@ -69,22 +69,14 @@ namespace PHP.Core.AST
     [Serializable]
     public sealed class GotoStmt : Statement
 	{
-		/// <summary>Label that is target of goto statement</summary>
-        public VariableName LabelName { get { return _labelName; } }
-        private VariableName _labelName;
+		private VariableName labelName;
+        /// <summary>Label that is target of goto statement</summary>
+        public VariableName LabelName { get { return labelName; } }
 
-        /// <summary>
-        /// Position of the <see cref="LabelName"/>.
-        /// </summary>
-        public Text.Span NameSpan { get { return _nameSpan; } }
-        private readonly Text.Span _nameSpan;
-        
-		public GotoStmt(Text.Span span, string/*!*/labelName, Text.Span nameSpan)
-			: base(span)
+		public GotoStmt(Position position, string/*!*/ labelName)
+			: base(position)
 		{
-            Debug.Assert(!string.IsNullOrEmpty(labelName));
-			_labelName = new VariableName(labelName);
-            _nameSpan = nameSpan;
+			this.labelName = new VariableName(labelName);
 		}
 
 		/// <summary>
@@ -104,8 +96,8 @@ namespace PHP.Core.AST
     [Serializable]
     public sealed class LabelStmt : Statement
 	{
-        public VariableName Name { get { return _name; } }
-		private VariableName _name;
+		internal VariableName Name { get { return name; } }
+		private VariableName name;
 
 		internal Label Label { get { return label; } set { label = value; } }
 		private Label label;
@@ -113,20 +105,10 @@ namespace PHP.Core.AST
 		internal bool IsReferred { get { return isReferred; } set { isReferred = value; } }
 		private bool isReferred;
 
-        /// <summary>
-        /// Position of the <see cref="Name"/>.
-        /// </summary>
-        public Text.Span NameSpan { get { return _nameSpan; } }
-        private readonly Text.Span _nameSpan;
-        
-
-		public LabelStmt(Text.Span span, string/*!*/name, Text.Span nameSpan)
-			: base(span)
+		public LabelStmt(Position position, string/*!*/ name)
+			: base(position)
 		{
-            Debug.Assert(!string.IsNullOrEmpty(name));
-
-			_name = new VariableName(name);
-            _nameSpan = nameSpan;
+			this.name = new VariableName(name);
 		}
 
 		/// <summary>

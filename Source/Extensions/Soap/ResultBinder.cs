@@ -5,6 +5,7 @@ using System.Text;
 using PHP.Core;
 using System.Reflection;
 using System.Xml.Serialization;
+using System.Diagnostics;
 
 namespace PHP.Library.Soap
 {

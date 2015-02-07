@@ -140,9 +140,6 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AssemblyResources.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Attributes.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -166,146 +163,47 @@
     <Compile Include="Compiler\AppCompiler.CLR.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Compiler\AST\ArrayEx.cs" />
+    <Compile Include="Compiler\AST\AssignEx.cs" />
+    <Compile Include="Compiler\AST\BinaryEx.cs" />
+    <Compile Include="Compiler\AST\BuiltInFunctions.cs" />
+    <Compile Include="Compiler\AST\CallSignature.cs" />
+    <Compile Include="Compiler\AST\ConcatEx.cs" />
+    <Compile Include="Compiler\AST\ConstantUse.cs" />
+    <Compile Include="Compiler\AST\CustomAttributes.cs" />
+    <Compile Include="Compiler\AST\DirectVariableUse.cs" />
+    <Compile Include="Compiler\AST\EchoStmt.cs" />
+    <Compile Include="Compiler\AST\FieldUse.cs" />
+    <Compile Include="Compiler\AST\FunctionCall.cs" />
+    <Compile Include="Compiler\AST\FunctionDecl.cs" />
+    <Compile Include="Compiler\AST\GlobalCode.cs" />
+    <Compile Include="Compiler\AST\IfStmt.cs" />
+    <Compile Include="Compiler\AST\IncDecEx.cs" />
+    <Compile Include="Compiler\AST\IndirectVariableUse.cs" />
+    <Compile Include="Compiler\AST\ItemUse.cs" />
+    <Compile Include="Compiler\AST\JumpStmt.cs" />
+    <Compile Include="Compiler\AST\LambdaFunctionExpr.cs" />
+    <Compile Include="Compiler\AST\ListEx.cs" />
+    <Compile Include="Compiler\AST\LoopStmt.cs" />
+    <Compile Include="Compiler\AST\NewAndInstanceof.cs" />
+    <Compile Include="Compiler\AST\ShellEx.cs" />
+    <Compile Include="Compiler\AST\Statement.cs" />
+    <Compile Include="Compiler\AST\SwitchStmt.cs" />
+    <Compile Include="Compiler\AST\TernaryEx.cs" />
+    <Compile Include="Compiler\AST\TryStmt.cs" />
+    <Compile Include="Compiler\AST\TypeDecl.cs" />
     <Compile Include="Compiler\AST\TypeRef.cs" />
-    <Compile Include="Compiler\AST_\ArrayEx.cs" />
-    <Compile Include="Compiler\AST_\AssignEx.cs" />
-    <Compile Include="Compiler\AST_\BinaryEx.cs" />
-    <Compile Include="Compiler\AST_\BuiltInFunctions.cs" />
-    <Compile Include="Compiler\AST_\CallSignature.cs" />
-    <Compile Include="Compiler\AST_\ConcatEx.cs" />
-    <Compile Include="Compiler\AST_\ConstantUse.cs" />
-    <Compile Include="Compiler\AST_\CustomAttributes.cs" />
-    <Compile Include="Compiler\AST_\DirectVariableUse.cs" />
-    <Compile Include="Compiler\AST_\EchoStmt.cs" />
-    <Compile Include="Compiler\AST_\FieldUse.cs" />
-    <Compile Include="Compiler\AST_\FunctionCall.cs" />
-    <Compile Include="Compiler\AST_\FunctionDecl.cs" />
-    <Compile Include="Compiler\AST_\GlobalCode.cs" />
-    <Compile Include="Compiler\AST_\IfStmt.cs" />
-    <Compile Include="Compiler\AST_\IncDecEx.cs" />
-    <Compile Include="Compiler\AST_\IndirectVariableUse.cs" />
-    <Compile Include="Compiler\AST_\ItemUse.cs" />
-    <Compile Include="Compiler\AST_\JumpStmt.cs" />
-    <Compile Include="Compiler\AST_\LambdaFunctionExpr.cs" />
-    <Compile Include="Compiler\AST_\ListEx.cs" />
-    <Compile Include="Compiler\AST_\LoopStmt.cs" />
-    <Compile Include="Compiler\AST_\NewAndInstanceof.cs" />
-    <Compile Include="Compiler\AST_\ShellEx.cs" />
-    <Compile Include="Compiler\AST_\Statement.cs" />
-    <Compile Include="Compiler\AST_\SwitchStmt.cs" />
-    <Compile Include="Compiler\AST_\TernaryEx.cs" />
-    <Compile Include="Compiler\AST_\TryStmt.cs" />
-    <Compile Include="Compiler\AST_\TypeDecl.cs" />
-    <Compile Include="Compiler\AST_\TypeRef.cs" />
-    <Compile Include="Compiler\AST_\UnaryEx.cs" />
-    <Compile Include="Compiler\AST_\VariableUse.cs" />
-    <Compile Include="Compiler\AST_\YieldEx.cs" />
-    <Compile Include="Compiler\AST_\Literal.cs" />
-    <Compile Include="Compiler\AST_\Expression.cs" />
-    <Compile Include="Compiler\AST_\NodeCompiler.cs" />
-    <Compile Include="Compiler\AST_\NodeCompilers.cs" />
-    <Compile Include="Compiler\AST_\AstNodeExtension.cs" />
+    <Compile Include="Compiler\AST\UnaryEx.cs" />
+    <Compile Include="Compiler\AST\VariableUse.cs" />
+    <Compile Include="Compiler\AST\YieldEx.cs" />
+    <Compile Include="Compiler\AST\Literal.cs" />
+    <Compile Include="Compiler\AST\Expression.cs" />
+    <Compile Include="Compiler\AST\NodeCompiler.cs" />
+    <Compile Include="Compiler\AST\NodeCompilers.cs" />
+    <Compile Include="Compiler\AST\AstNodeExtension.cs" />
     <Compile Include="Compiler\AstVisitor.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Compiler\AST\ArrayEx.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\AssignEx.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\BinaryEx.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\BuiltInFunctions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\CallSignature.cs" />
-    <Compile Include="Compiler\AST\ConcatEx.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\ConstantUse.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\YieldEx.cs" />
-    <Compile Include="Compiler\AST\LambdaFunctionExpr.cs" />
-    <Compile Include="Compiler\AST\CustomAttributes.cs" />
-    <Compile Include="Compiler\AST\DirectVariableUse.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\EchoStmt.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\Expression.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\FieldUse.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\FunctionCall.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\FunctionDecl.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\GlobalCode.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\IfStmt.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\IncDecEx.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\IndirectVariableUse.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\ItemUse.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\JumpStmt.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\LangElement.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\ListEx.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\Literal.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\LoopStmt.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\NewAndInstanceof.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\ShellEx.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\Statement.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\SwitchStmt.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\TernaryEx.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\TryStmt.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\TypeDecl.cs" />
-    <Compile Include="Compiler\AST\UnaryEx.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\AST\VariableUse.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Compiler\InclusionTypes.cs" />
-    <Compile Include="Compiler\Members.cs" />
-    <Compile Include="Compiler\PropertyCollection.cs" />
     <Compile Include="Compiler\CodeGenerator\CallSitesBuilder.cs" />
     <Compile Include="Compiler\CodeGenerator\Chains.cs">
       <SubType>Code</SubType>
@@ -319,19 +217,13 @@
     <Compile Include="Compiler\CodeGenerator\Stacks.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Compiler\Errors.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Compiler\Managers.CLR.cs" />
     <Compile Include="Compiler\Managers.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Compiler\Names.cs" />
-    <Compile Include="Compiler\PHPDocBlock.cs" />
     <Compile Include="Compiler\Statistics.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Compiler\TreeVisitor.cs" />
     <Compile Include="Compiler\VariablesTable.cs" />
     <Compile Include="Compiler\WebServerManagers.CLR.cs">
       <SubType>Code</SubType>
@@ -380,15 +272,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ConversionsToClr.cs" />
-    <Compile Include="Generated\Lexer.cs" />
-    <Compile Include="Generated\Parser.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="HttpHeaders.CLR.cs" />
     <Compile Include="Library.CLR.cs" />
     <Compile Include="Logger.CLR.cs" />
     <Compile Include="PhpResourceManager.cs" />
     <Compile Include="PhpStream.CLR.cs" />
+    <Compile Include="Compiler\PhpTypeCode.cs" />
     <Compile Include="PluginHandler.cs" />
     <Compile Include="OrderedDictionary.cs" />
     <Compile Include="Reflection\Assemblies.CLR.cs" />
@@ -438,16 +327,6 @@
     <Compile Include="Output.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Parsers\GPPG.cs" />
-    <Compile Include="Parsers\Lexer.cs" />
-    <Compile Include="Parsers\Parser.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Parsers\Scanner.cs" />
-    <Compile Include="Parsers\Tokenizer.cs" />
-    <Compile Include="Parsers\Tokens.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="PhpArray.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -467,9 +346,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PhpRuntimeChain.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PhpSourceFile.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PhpStack.cs">
@@ -545,11 +421,6 @@
     <Compile Include="StreamWrappers.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Strings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </Compile>
     <Compile Include="Utils.CLR.cs" />
     <Compile Include="Utils.cs">
       <SubType>Code</SubType>
@@ -558,7 +429,7 @@
     <Compile Include="Variables.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Content Include="Compiler\AST_\Doc\Nodes.xml" />
+    <Content Include="Compiler\AST\Doc\Nodes.xml" />
     <Content Include="Doc\Common.xml" />
     <Content Include="Doc\Conversions.xml" />
     <Content Include="Doc\Externals.xml" />
@@ -568,17 +439,8 @@
     <Content Include="Doc\RootPage.html" />
     <Content Include="Doc\Streams.xml" />
     <Content Include="Doc\Wrappers.xml" />
-    <EmbeddedResource Include="Strings.resx">
-      <SubType>Designer</SubType>
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>PHP.Core.Localizations</CustomToolNamespace>
-    </EmbeddedResource>
     <None Include="Core.snk" />
     <None Include="Emit\AssemblyBuilders.cd" />
-    <None Include="Generators\Generate.cmd" />
-    <None Include="Generators\Lexer.lex" />
-    <None Include="Generators\Parser.y" />
     <None Include="Reflection\DAssembly.cd" />
     <None Include="Reflection\DMember.cd" />
     <None Include="Reflection\DMemberDesc.cd" />

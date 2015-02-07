@@ -16,6 +16,7 @@ using System.Collections.Generic;
 
 using PHP.Core;
 using Convert = PHP.Core.Convert;
+using System.Diagnostics;
 
 namespace PHP.Library
 {

@@ -15,6 +15,7 @@ using System;
 using System.Text;
 
 using PHP.Core;
+using System.Diagnostics;
 
 namespace PHP.Library
 {
@@ -399,7 +400,7 @@ namespace PHP.Library
 
 							for (int j = 0; j < repeater; j++)
 							{
-								int digit = Core.Convert.AlphaNumericToDigit(s[j]);
+								int digit = Core.Parsers.Convert.AlphaNumericToDigit(s[j]);
 								if (digit > 15)
 								{
 									PhpException.Throw(PhpError.Warning, LibResources.GetString("illegal_hex_digit", specifier, s[j]));

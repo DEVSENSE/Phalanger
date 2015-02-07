@@ -143,12 +143,7 @@ namespace PHP.Core.AST
 	{
 		public abstract Operations Operation { get; }
 
-        protected Expression(Text.Span span) : base(span) { }
-
-        /// <summary>
-        /// Internal type information determined during type analysis.
-        /// </summary>
-        public ulong/*A*/TypeInfoValue { get; set; }
+		protected Expression(Position position) : base(position) { }
 
 		/// <summary>
         /// Whether the expression is allowed to be passed by reference to a routine.
@@ -174,8 +169,8 @@ namespace PHP.Core.AST
         public Expression/*!*/ Initializer { get { return initializer; } internal set { initializer = value; } }
 		private Expression/*!*/ initializer;
 
-		public ConstantDecl(Text.Span span, string/*!*/ name, Expression/*!*/ initializer)
-			: base(span)
+		public ConstantDecl(Position position, string/*!*/ name, Expression/*!*/ initializer)
+			: base(position)
 		{
 			this.name = new VariableName(name);
 			this.initializer = initializer;
@@ -197,7 +192,7 @@ namespace PHP.Core.AST
             
 		internal override bool AllowsPassByReference { get { return true; } }
 
-		protected VarLikeConstructUse(Text.Span p) : base(p) { }
+		protected VarLikeConstructUse(Position p) : base(p) { }
 	}
 
 	#endregion

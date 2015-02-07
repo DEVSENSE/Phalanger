@@ -408,7 +408,7 @@ namespace PHP.Core
 		/// </summary>
 		/// <remarks>
 		/// Lazy code generation takes place if <see cref="PHP.Core.AST.ItemUse"/><c>.IsMemberOf</c>
-		/// is NOT equal to <B>null</B> which means that the most bottom node in <see cref="ItemUse.array"/>
+		/// is NOT equal to <B>null</B> which means that the most bottom node in <see cref="ItemUse.Array"/>
 		/// objects path should emit <see cref="PHP.Core.Operators.EnsurePropertyIsArray"/> operator call.
 		/// </remarks>
 		internal class ObjectFieldLazyEmitInfo

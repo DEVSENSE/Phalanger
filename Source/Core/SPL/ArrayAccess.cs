@@ -1,5 +1,6 @@
 /*
 
+ Copyright (c) 2012 DEVSENSE
  Copyright (c) 2006 Tomas Matousek.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -11,11 +12,13 @@
 */
 
 using System;
-using PHP.Core;
-using PHP.Core.Reflection;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
+
+using PHP.Core;
+using PHP.Core.Reflection;
 
 namespace PHP.Library.SPL
 {
@@ -965,7 +968,7 @@ namespace PHP.Library.SPL
 		/// </summary>
 		internal PhpArrayObject(DObject/*!*/ arrayAccess)
 		{
-			Core.Debug.Assert(arrayAccess != null && arrayAccess.RealObject is ArrayAccess);
+			Debug.Assert(arrayAccess != null && arrayAccess.RealObject is ArrayAccess);
 			this.arrayAccess = arrayAccess;
 		}
 		

@@ -109,15 +109,6 @@ namespace PHP.Core
         }
 
         /// <summary>
-        /// Constructs new position.
-        /// </summary>
-        /// <param name="position">Position within document.</param>
-        public ShortPosition(Text.TextPoint position)
-            :this(position.Line, position.Column)
-        {
-        }
-
-        /// <summary>
         /// Returns string representation of the position - "(_line_,_column_)" or empty string for invalid position.
         /// </summary>
         /// <returns></returns>
@@ -152,30 +143,11 @@ namespace PHP.Core
     [Serializable]
     public struct ErrorPosition
     {
-        /// <summary>
-        /// First line of the error, indexed from 1.
-        /// </summary>
         public int FirstLine;
-        /// <summary>
-        /// First column of the error, indexed from 1.
-        /// </summary>
         public int FirstColumn;
-        /// <summary>
-        /// Last line of the error, indexed from 1.
-        /// </summary>
         public int LastLine;
-        /// <summary>
-        /// Last column of the error, indexed from 1.
-        /// </summary>
         public int LastColumn;
 
-        /// <summary>
-        /// Initializes new instance of <see cref="ErrorPosition"/>.
-        /// </summary>
-        /// <param name="firstLine">First line of the error, indexed from 1.</param>
-        /// <param name="firstColumn">First column of the error, indexed from 1.</param>
-        /// <param name="lastLine">Last line of the error, indexed from 1.</param>
-        /// <param name="lastColumn">Last column of the error, indexed from 1.</param>
         public ErrorPosition(int firstLine, int firstColumn, int lastLine, int lastColumn)
         {
             this.FirstLine = firstLine;
@@ -184,14 +156,8 @@ namespace PHP.Core
             this.LastColumn = lastColumn;
         }
 
-        /// <summary>
-        /// An invalid <see cref="ErrorPosition"/> singleton.
-        /// </summary>
         public static ErrorPosition Invalid = new ErrorPosition(-1, -1, -1, -1);
 
-        /// <summary>
-        /// Whether 
-        /// </summary>
         public bool IsValid
         {
             get { return FirstLine != -1; }
@@ -404,30 +370,31 @@ namespace PHP.Core
 
         #region Add Overloads
 
-        internal void Add(ErrorInfo info, SourceUnit sourceUnit, Text.Span pos)
+        internal void Add(ErrorInfo info, SourceUnit sourceUnit, Position pos)
         {
             Add(info, CoreResources.GetString(info.MessageId), sourceUnit, pos);
         }
 
-        internal void Add(ErrorInfo info, SourceUnit sourceUnit, Text.Span pos, object arg1)
+        internal void Add(ErrorInfo info, SourceUnit sourceUnit, Position pos, object arg1)
         {
             Add(info, CoreResources.GetString(info.MessageId, arg1), sourceUnit, pos);
         }
 
-        internal void Add(ErrorInfo info, SourceUnit sourceUnit, Text.Span pos, object arg1, object arg2)
+        internal void Add(ErrorInfo info, SourceUnit sourceUnit, Position pos, object arg1, object arg2)
         {
             Add(info, CoreResources.GetString(info.MessageId, arg1, arg2), sourceUnit, pos);
         }
 
-        internal void Add(ErrorInfo info, SourceUnit sourceUnit, Text.Span pos, object arg1, object arg2, object arg3)
+        internal void Add(ErrorInfo info, SourceUnit sourceUnit, Position pos, object arg1, object arg2, object arg3)
         {
             Add(info, CoreResources.GetString(info.MessageId, arg1, arg2, arg3), sourceUnit, pos);
         }
 
-        internal void Add(ErrorInfo info, SourceUnit sourceUnit, Text.Span pos, params string[] args)
+        internal void Add(ErrorInfo info, SourceUnit sourceUnit, Position pos, params string[] args)
         {
             Add(info, CoreResources.GetString(info.MessageId, args), sourceUnit, pos);
         }
+
 
         internal void Add(ErrorInfo info, string fullPath, ErrorPosition pos, string arg)
         {
@@ -448,8 +415,9 @@ namespace PHP.Core
         {
             Add(info, CoreResources.GetString(info.MessageId, args), fullPath, pos);
         }
-        
-        private void Add(ErrorInfo info, string/*!*/ message, SourceUnit sourceUnit, Text.Span pos)
+
+
+        private void Add(ErrorInfo info, string/*!*/ message, SourceUnit sourceUnit, Position pos)
         {
             Debug.Assert(message != null);
 
@@ -457,17 +425,12 @@ namespace PHP.Core
             ErrorPosition mapped_pos;
 
             // missing source unit means the file name shouldn't be reported (it is not available)
-            if (sourceUnit != null && pos.IsValid)
+            if (sourceUnit != null)
             {
-                // get line,column from position
-                sourceUnit.LineBreaks.GetLineColumnFromPosition(pos.Start, out mapped_pos.FirstLine, out mapped_pos.FirstColumn);
-                sourceUnit.LineBreaks.GetLineColumnFromPosition(pos.End - 1, out mapped_pos.LastLine, out mapped_pos.LastColumn);
-
-                //
-                full_path = sourceUnit.GetMappedFullSourcePath(mapped_pos.FirstLine);
+                full_path = sourceUnit.GetMappedFullSourcePath(pos.FirstLine);
                 mapped_pos = new ErrorPosition(
-                    sourceUnit.GetMappedLine(mapped_pos.FirstLine) + 1, mapped_pos.FirstColumn + 1,
-                    sourceUnit.GetMappedLine(mapped_pos.LastLine) + 1, mapped_pos.LastColumn + 1);
+                    sourceUnit.GetMappedLine(pos.FirstLine), pos.FirstColumn,
+                    sourceUnit.GetMappedLine(pos.LastLine), pos.LastColumn);
             }
             else
             {

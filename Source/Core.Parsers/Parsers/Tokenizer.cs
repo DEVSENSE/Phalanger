@@ -58,8 +58,6 @@ namespace PHP.Core.Parsers
 		public TokenCategory TokenCategory { get { return tokenCategory; } }
 		private TokenCategory tokenCategory;
 
-        public Text.Span TokenSpan { get { return Text.Span.FromBounds(token_start_pos.Char, token_end_pos.Char + 1); } }
-
 		public Tokens RealToken { get { return realToken; } }
 		private Tokens realToken;
 
@@ -199,6 +197,7 @@ namespace PHP.Core.Parsers
 					case Tokens.T_TRUE:
 					case Tokens.T_FALSE:
 					case Tokens.T_NULL:
+					case Tokens.T_ASSERT:
 					case Tokens.T_GET:
 					case Tokens.T_SET:
 					case Tokens.T_CALL:
@@ -522,5 +521,70 @@ namespace PHP.Core.Parsers
 				}
 			}
 		}
+
+		#region Unit Test
+#if DEBUG
+
+		[Test(true)]
+		static void Test1()
+		{
+			Tokenizer tokenizer = new Tokenizer(TextReader.Null);
+
+			//tokenizer.Initialize(new StringReader("EOT;\r\n"), LexicalStates.ST_HEREDOC, true);
+			//tokenizer.hereDocLabel = "EOT";
+
+			//tokenizer.Initialize(new StringReader("/*\r\n*/"), LexicalStates.ST_IN_SCRIPTING, true);
+			//tokenizer.hereDocLabel = null;
+
+			//tokenizer.Initialize(new StringReader("$x = 1; ###\r\n $y = 2;"), LexicalStates.ST_IN_SCRIPTING, true);
+			//tokenizer.hereDocLabel = null;
+
+			//tokenizer.Initialize(new StringReader("<? $x = array(); ?>"), LexicalStates.INITIAL, true);
+			//tokenizer.hereDocLabel = null;
+
+			//                    111111111
+			//          0123456789012345678
+			//string s = "echo 'aě'.'řa'.'x';";
+			string s = "echo 'asdě' . 'řčřžý' . 'موقع للأخبا' . 'האתר' . 'as';";
+			//string s = "echo 'abřc'.'e'/*xx\n\nyy\nxxx */;";
+
+			byte[] buffer = new byte[1000];
+
+			byte[] b = Encoding.UTF8.GetBytes(s);
+			Stream stream = new MemoryStream(b);
+			tokenizer.Initialize(new StreamReader(stream), LexicalStates.ST_IN_SCRIPTING, true);
+			tokenizer.hereDocLabel = null;
+
+			int b_start = 0;
+			int b_end = -1;
+			int b_length = 0;
+
+			Tokens token;
+			for (; ; )
+			{
+				token = tokenizer.GetNextToken();
+				b_length = tokenizer.GetTokenByteLength(Encoding.UTF8);
+				b_start = b_end + 1;
+				b_end += b_length;
+
+				// check binary positions:
+				long pos = stream.Position;
+				stream.Seek(b_start, SeekOrigin.Begin);
+				stream.Read(buffer, 0, b_length);
+				stream.Seek(pos, SeekOrigin.Begin);
+
+				Debug.Assert(String.CompareOrdinal(Encoding.UTF8.GetString(buffer, 0, b_length), tokenizer.TokenText) == 0);
+
+				if (token == Tokens.EOF) break;
+
+				Console.WriteLine("{0} '{1}' ({2}:{3}[{4}] - {5}:{6}[{7}])", token, tokenizer.TokenText,
+		  tokenizer.token_start_pos.Line, tokenizer.token_start_pos.Column, b_start,
+					tokenizer.token_end_pos.Line, tokenizer.token_end_pos.Column, b_end);
+			}
+		}
+
+
+#endif
+		#endregion
 	}
 }

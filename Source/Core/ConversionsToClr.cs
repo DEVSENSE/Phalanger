@@ -338,7 +338,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.LongInteger: { strictness = ConversionStrictness.ImplExactMatch; ret = lval; break; }
 				case Convert.NumberInfo.Double: { strictness = ConversionStrictness.ImplPercisionLost; ret = unchecked((decimal)dval); break; }
 				case Convert.NumberInfo.Unconvertible: { strictness = ConversionStrictness.Failed; ret = 0; break; }
-				default: Debug.Fail(); throw null;
+                default: throw new InvalidOperationException();
 			}
 			if (obj is string) strictness = ConversionStrictness.ImplDomainChange;
 			if (obj is bool) strictness = ConversionStrictness.ImplDomainChange;
@@ -663,8 +663,7 @@ namespace PHP.Core
 
 				default:
 					{
-						Debug.Fail();
-						return null;
+                        throw new ArgumentException();
 					}
 			}
 		}

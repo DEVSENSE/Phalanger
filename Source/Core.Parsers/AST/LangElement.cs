@@ -51,34 +51,9 @@ namespace PHP.Core.AST
             return _properties.GetProperty(key);
         }
 
-        public void SetProperty<T>(T value)
-        {
-            _properties.SetProperty<T>(value);
-        }
-
-        public T GetProperty<T>()
-        {
-            return _properties.GetProperty<T>();
-        }
-
-        bool IPropertyCollection.TryGetProperty(object key, out object value)
-        {
-            return _properties.TryGetProperty(key, out value);
-        }
-
-        bool IPropertyCollection.TryGetProperty<T>(out T value)
-        {
-            return _properties.TryGetProperty<T>(out value);
-        }
-
         bool IPropertyCollection.RemoveProperty(object key)
         {
             return _properties.RemoveProperty(key);
-        }
-
-        bool IPropertyCollection.RemoveProperty<T>()
-        {
-            return _properties.RemoveProperty<T>();
         }
 
         void IPropertyCollection.ClearProperties()
@@ -110,15 +85,15 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Position of element in source file.
 		/// </summary>
-        public Text.Span Span { get; protected set; }
+        public Position Position { get; protected set; }
 		
 		/// <summary>
         /// Initialize the LangElement.
         /// </summary>
-        /// <param name="span">The position of the LangElement in the source code.</param>
-		protected LangElement(Text.Span span)
+        /// <param name="position">The position of the LangElement in the source code.</param>
+		protected LangElement(Position position)
 		{
-			this.Span = span;
+			this.Position = position;
 		}
 
         /// <summary>
@@ -156,6 +131,7 @@ namespace PHP.Core.AST
             }
         }
 
+
         public Scope(int start)
         {
             this.start = start;
@@ -173,19 +149,4 @@ namespace PHP.Core.AST
     }
 
     #endregion
-
-#region IHasSourceUnit
-
-    /// <summary>
-    /// Annotates AST nodes having reference to containing source unit.
-    /// </summary>
-    public interface IHasSourceUnit
-    {
-        /// <summary>
-        /// Gets source unit of the containing source file.
-        /// </summary>
-        SourceUnit SourceUnit { get; }
-    }
-
-#endregion
 }

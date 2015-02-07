@@ -28,8 +28,8 @@ namespace PHP.Core.AST
         public Expression/*!*/ Command { get { return command; } internal set { command = value; } }
         private Expression/*!*/ command;
         
-		public ShellEx(Text.Span span, Expression/*!*/ command)
-            : base(span)
+		public ShellEx(Position position, Expression/*!*/ command)
+			: base(position)
 		{
             Debug.Assert(command is StringLiteral || command is ConcatEx || command is BinaryStringLiteral);
 			this.command = command;

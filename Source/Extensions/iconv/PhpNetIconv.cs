@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using PHP.Core;
+using System.Diagnostics;
 
 namespace PHP.Library.Iconv
 {

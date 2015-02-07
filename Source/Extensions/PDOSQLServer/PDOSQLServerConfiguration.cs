@@ -5,6 +5,7 @@ using System.Text;
 using PHP.Core;
 using System.Xml;
 using System.Collections;
+using System.Diagnostics;
 
 namespace PHP.Library.Data
 {

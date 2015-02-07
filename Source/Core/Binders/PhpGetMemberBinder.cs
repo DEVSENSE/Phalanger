@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Dynamic;
-using PHP.Core.Reflection;
 using System.Linq.Expressions;
 using System.Reflection;
 
+using PHP.Core.Emit;
+using PHP.Core.Reflection;
+
 namespace PHP.Core.Binders
 {
-    using PHP.Core.Emit;
 
     /// <summary>
     /// 

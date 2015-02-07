@@ -54,9 +54,9 @@ namespace PHP.Core.AST
 		public SourceUnit/*!*/ SourceUnit { get { return sourceUnit; } }
 		private SourceUnit/*!*/ sourceUnit;
 
-		public IncludingEx(SourceUnit/*!*/ sourceUnit, Scope scope, bool isConditional, Text.Span span,
+		public IncludingEx(SourceUnit/*!*/ sourceUnit, Scope scope, bool isConditional, Position position,
 			InclusionTypes inclusionType, Expression/*!*/ fileName)
-            : base(span)
+			: base(position)
 		{
 			Debug.Assert(fileName != null);
 
@@ -93,8 +93,8 @@ namespace PHP.Core.AST
         /// <summary>List of variables to test</summary>
         public List<VariableUse>/*!*/ VarList { get { return varList; } }
 
-		public IssetEx(Text.Span span, List<VariableUse>/*!*/ varList)
-			: base(span)
+		public IssetEx(Position position, List<VariableUse>/*!*/ varList)
+			: base(position)
 		{
 			Debug.Assert(varList != null && varList.Count > 0);
 			this.varList = varList;
@@ -128,7 +128,7 @@ namespace PHP.Core.AST
         public Expression/*!*/Expression { get { return this.expression; } set { this.expression = value; } }
         private Expression/*!*/expression;
         
-        public EmptyEx(Text.Span p, Expression expression)
+        public EmptyEx(Position p, Expression expression)
 			: base(p)
 		{
             if (expression == null)
@@ -149,7 +149,7 @@ namespace PHP.Core.AST
 
 	#endregion
 
-	#region EvalEx, AssertEx
+	#region EvalEx
 
 	/// <summary>
 	/// Represents <c>eval</c> construct.
@@ -167,17 +167,26 @@ namespace PHP.Core.AST
         /// </summary>
         private Expression/*!*/ code;
         
+		/// <summary>
+		/// Says if this eval is real in source code, or if it was made during analyzis to
+		/// defer some compilation to run-time.
+		/// </summary>
+        public bool IsAssert { get { return isAssert; } }
+		private bool isAssert;
+
 		#region Construction
 
 		/// <summary>
 		/// Creates a node representing an eval or assert constructs.
 		/// </summary>
-        /// <param name="span">Position.</param>
+		/// <param name="position">Position.</param>
 		/// <param name="code">Source code expression.</param>
-		public EvalEx(Text.Span span, Expression/*!*/ code)
-            : base(span)
+		/// <param name="isAssert">Whether the node represents an assert construct.</param>
+		public EvalEx(Position position, Expression/*!*/ code, bool isAssert)
+			: base(position)
 		{
-            this.code = code;
+            this.isAssert = isAssert;
+			this.code = code;
 		}
 
 		#endregion
@@ -191,38 +200,6 @@ namespace PHP.Core.AST
             visitor.VisitEvalEx(this);
         }
 	}
-
-    /// <summary>
-    /// Meta language element used for assert() function call analysis.
-    /// </summary>
-    [Serializable]
-    internal sealed class AssertEx : Expression
-    {
-        public override Operations Operation { get { return Operations.Eval; } }
-
-        /// <summary>Expression containing source code to be evaluated.</summary>
-        public Expression /*!*/ CodeEx { get; internal set; }
-
-        ///// <summary>Description para,eter.</summary>
-        //public Expression DescriptionEx { get; internal set; }
-
-        public AssertEx(Text.Span span, CallSignature callsignature)
-            : base(span)
-        {
-            Debug.Assert(callsignature.Parameters.Any());
-            Debug.Assert(callsignature.GenericParams.Empty());
-
-            this.CodeEx = callsignature.Parameters[0].Expression;
-            //this.DescriptionEx = description;
-        }
-
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            // note: should not be used
-            visitor.VisitElement(this.CodeEx);
-            //visitor.VisitElement(this.DescriptionEx);
-        }
-    }
 
 	#endregion
 
@@ -240,8 +217,8 @@ namespace PHP.Core.AST
         public Expression ResulExpr { get { return resultExpr; } set { resultExpr = value; } }
         private Expression resultExpr; //can be null
         
-		public ExitEx(Text.Span span, Expression resultExpr)
-            : base(span)
+		public ExitEx(Position position, Expression resultExpr)
+			: base(position)
 		{
 			this.resultExpr = resultExpr;
 		}

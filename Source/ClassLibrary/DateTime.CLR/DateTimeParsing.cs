@@ -17,6 +17,7 @@
 using System;
 using System.IO;
 using PHP.Core;
+using System.Diagnostics;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;

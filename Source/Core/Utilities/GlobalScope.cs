@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using PHP.Core.Reflection;
 using PHP.Core.Binders;
 using PHP.Core.Emit;
+using System.Diagnostics;
 
 namespace PHP.Core.Utilities
 {

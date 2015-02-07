@@ -27,6 +27,8 @@ using System.Collections.Generic;
 %ignorecase
 %charmap Map
 %char
+%line
+%column
 
 %x INITIAL
 %x ST_IN_SCRIPTING
@@ -129,6 +131,10 @@ NonVariableStart        [^a-zA-Z_{]
 	return Tokens.T_CLOSE_TAG; 
 }
 
+<ST_IN_SCRIPTING>("declare"|"enddeclare") {
+  return Tokens.ErrorNotSupported; 
+}
+
 <ST_IN_SCRIPTING>"exit"       			{ return Tokens.T_EXIT; }
 <ST_IN_SCRIPTING>"die"        			{ return Tokens.T_EXIT; }
 <ST_IN_SCRIPTING>"function"   			{ return Tokens.T_FUNCTION; }
@@ -146,8 +152,6 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"endfor"     			{ return Tokens.T_ENDFOR; }
 <ST_IN_SCRIPTING>"foreach"    			{ return Tokens.T_FOREACH; }
 <ST_IN_SCRIPTING>"endforeach" 			{ return Tokens.T_ENDFOREACH; }
-<ST_IN_SCRIPTING>"declare" 			    { return Tokens.T_DECLARE; }
-<ST_IN_SCRIPTING>"enddeclare" 			{ return Tokens.T_ENDDECLARE; }
 <ST_IN_SCRIPTING>"as"         			{ return Tokens.T_AS; }
 <ST_IN_SCRIPTING>"switch"     			{ return Tokens.T_SWITCH; }
 <ST_IN_SCRIPTING>"endswitch"  			{ return Tokens.T_ENDSWITCH; }
@@ -221,6 +225,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"<:"           		{ return Tokens.T_LGENERIC; }
 <ST_IN_SCRIPTING>":>"           		{ return Tokens.T_RGENERIC; }
                                 		         
+<ST_IN_SCRIPTING>"assert"						{ return Tokens.T_ASSERT; }
 <ST_IN_SCRIPTING>"__get"        		{ return Tokens.T_GET; }
 <ST_IN_SCRIPTING>"__set"        		{ return Tokens.T_SET; }
 <ST_IN_SCRIPTING>"__call"       		{ return Tokens.T_CALL; }

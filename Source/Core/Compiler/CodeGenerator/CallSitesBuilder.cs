@@ -12,6 +12,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Runtime.CompilerServices;
@@ -550,7 +551,7 @@ namespace PHP.Core
             }
             else if (targetObjectPlace != null) targetObjectPlace.EmitLoad(cg.IL);
             else if (targetPlace != null) targetPlace.EmitLoad(cg.IL);
-            else Debug.Fail();
+            else Debug.Fail(null);
             if (!classContextIsKnown) cg.EmitLoadClassContext();
             if (!fieldNameIsKnown) cg.EmitName(fieldName/*null*/, fieldNameExpr, true, PhpTypeCode.String);
 

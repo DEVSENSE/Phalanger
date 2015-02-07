@@ -12,12 +12,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using PHP.Core.Parsers;
-using PHP.Core.Compiler.AST;
-using PHP.Core.Emit;
 using System.Reflection.Emit;
 using System.Reflection;
 using System.Diagnostics.SymbolStore;
+
+using PHP.Core.AST;
+using PHP.Core.Compiler.AST;
+using PHP.Core.Emit;
+using PHP.Core.Parsers;
+using System.Diagnostics;
 
 namespace PHP.Core.Reflection
 {

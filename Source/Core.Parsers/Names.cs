@@ -22,6 +22,10 @@ using System.Linq;
 using System.Reflection.Emit;
 using PHP.Core.Parsers;
 
+#if SILVERLIGHT
+using PHP.CoreCLR;
+#endif
+
 namespace PHP.Core
 {
 	// 
@@ -50,11 +54,21 @@ namespace PHP.Core
 		public string/*!*/ Value
 		{
 			get { return value; }
+			set
+            {
+                this.value = value;
+                this.hashCode = 0;
+            }
 		}
-		private readonly string/*!*/ value;
-        private readonly int hashCode;
-        
-		#region Special Names
+		private string/*!*/ value;
+        private int hashCode;
+
+		public string/*!*/ LowercaseValue
+		{
+            get { return this.Value.ToLowerInvariant(); }
+		}
+		
+        #region Special Names
 
 		public static readonly Name[] EmptyNames = new Name[0];
 		public static readonly Name EmptyBaseName = new Name("");
@@ -189,8 +203,9 @@ namespace PHP.Core
 		public Name(string/*!*/ value)
 		{
 			Debug.Assert(value != null);
+			// TODO (missing from Mono): this.value = value.Normalize();
 			this.value = value;
-            this.hashCode = StringComparer.OrdinalIgnoreCase.GetHashCode(value);
+            this.hashCode = 0;
 		}
 
         #region Utils
@@ -244,12 +259,16 @@ namespace PHP.Core
 
         public override bool Equals(object obj)
 		{
-            return obj != null && obj.GetType() == typeof(Name) && Equals((Name)obj);
+            return (obj != null && obj.GetType() == typeof(Name))
+                ? Equals((Name)obj)
+                : false;
 		}
 
 		public override int GetHashCode()
 		{
-            return this.hashCode;
+			return (this.hashCode != 0)
+                ? (this.hashCode)
+                : (this.hashCode = this.LowercaseValue.GetHashCode());
 		}
 
 		public override string ToString()
@@ -263,7 +282,10 @@ namespace PHP.Core
 
 		public bool Equals(Name other)
 		{
-            return this.GetHashCode() == other.GetHashCode() && Equals(other.Value);
+            return
+                this.Value.Length == other.Value.Length &&
+                this.GetHashCode() == other.GetHashCode() &&
+                Equals(other.Value);
 		}
 
 		public static bool operator ==(Name name, Name other)
@@ -282,7 +304,7 @@ namespace PHP.Core
 
 		public bool Equals(string other)
 		{
-            return string.Equals(value, other, StringComparison.OrdinalIgnoreCase);
+            return /*other != null &&*/ string.Equals(value, other, StringComparison.OrdinalIgnoreCase);
 		}
 
 		#endregion
@@ -457,22 +479,22 @@ namespace PHP.Core
     {
         #region Special names
 
-        public static readonly QualifiedName Error = new QualifiedName(new Name("<error>"), Name.EmptyNames);
-		public static readonly QualifiedName Global = new QualifiedName(new Name("<Global>"), Name.EmptyNames);
-		public static readonly QualifiedName Lambda = new QualifiedName(new Name("Lambda"), Name.EmptyNames);
-		public static readonly QualifiedName Null = new QualifiedName(new Name("null"), Name.EmptyNames);
-		public static readonly QualifiedName True = new QualifiedName(new Name("true"), Name.EmptyNames);
-		public static readonly QualifiedName False = new QualifiedName(new Name("false"), Name.EmptyNames);
-		public static readonly QualifiedName Array = new QualifiedName(new Name("array"), Name.EmptyNames);
-		public static readonly QualifiedName Object = new QualifiedName(new Name("object"), Name.EmptyNames);
-		public static readonly QualifiedName Integer = new QualifiedName(new Name("int"), Name.EmptyNames);
-		public static readonly QualifiedName LongInteger = new QualifiedName(new Name("int64"), Name.EmptyNames);
-		public static readonly QualifiedName String = new QualifiedName(new Name("string"), Name.EmptyNames);
-		public static readonly QualifiedName Boolean = new QualifiedName(new Name("bool"), Name.EmptyNames);
-		public static readonly QualifiedName Double = new QualifiedName(new Name("double"), Name.EmptyNames);
-		public static readonly QualifiedName Resource = new QualifiedName(new Name("resource"), Name.EmptyNames);
-		public static readonly QualifiedName SystemObject = new QualifiedName(new Name("Object"), new Name[] { new Name("System") });
-        public static readonly QualifiedName Callable = new QualifiedName(new Name("callable"), Name.EmptyNames);
+        internal static readonly QualifiedName Error = new QualifiedName(new Name("<error>"), Name.EmptyNames);
+		internal static readonly QualifiedName Global = new QualifiedName(new Name("<Global>"), Name.EmptyNames);
+		internal static readonly QualifiedName Lambda = new QualifiedName(new Name("Lambda"), Name.EmptyNames);
+		internal static readonly QualifiedName Null = new QualifiedName(new Name("null"), Name.EmptyNames);
+		internal static readonly QualifiedName True = new QualifiedName(new Name("true"), Name.EmptyNames);
+		internal static readonly QualifiedName False = new QualifiedName(new Name("false"), Name.EmptyNames);
+		internal static readonly QualifiedName Array = new QualifiedName(new Name("array"), Name.EmptyNames);
+		internal static readonly QualifiedName Object = new QualifiedName(new Name("object"), Name.EmptyNames);
+		internal static readonly QualifiedName Integer = new QualifiedName(new Name("int"), Name.EmptyNames);
+		internal static readonly QualifiedName LongInteger = new QualifiedName(new Name("int64"), Name.EmptyNames);
+		internal static readonly QualifiedName String = new QualifiedName(new Name("string"), Name.EmptyNames);
+		internal static readonly QualifiedName Boolean = new QualifiedName(new Name("bool"), Name.EmptyNames);
+		internal static readonly QualifiedName Double = new QualifiedName(new Name("double"), Name.EmptyNames);
+		internal static readonly QualifiedName Resource = new QualifiedName(new Name("resource"), Name.EmptyNames);
+		internal static readonly QualifiedName SystemObject = new QualifiedName(new Name("Object"), new Name[] { new Name("System") });
+        internal static readonly QualifiedName Callable = new QualifiedName(new Name("callable"), Name.EmptyNames);
 
         public bool IsSimpleName
         {
@@ -732,54 +754,45 @@ namespace PHP.Core
         /// <summary>
         /// Builds <see cref="QualifiedName"/> with first element aliased if posible.
         /// </summary>
-        /// <param name="qname">Qualified name to translate.</param>
-        /// <param name="aliases">Enumeration of aliases.</param>
+        /// <param name="qname"></param>
+        /// <param name="aliases"></param>
         /// <param name="currentNamespace">Current namespace to be prepended if no alias if found.</param>
-        /// <returns>Qualified name that has been tralated according to given naming context.</returns>
-        public static QualifiedName TranslateAlias(QualifiedName qname, Dictionary<string, QualifiedName>/*!*/aliases, QualifiedName? currentNamespace)
+        /// <returns></returns>
+        internal static QualifiedName TranslateAlias(QualifiedName qname, Dictionary<string, QualifiedName>/*!*/aliases, QualifiedName?currentNamespace)
         {
-            if (!qname.IsFullyQualifiedName)
+            if (qname.IsFullyQualifiedName)
+                return qname;
+
+            // get first part of the qualified name:
+            string first = qname.IsSimpleName ? qname.Name.Value : qname.Namespaces[0].Value;
+            
+            // return the alias if found:
+            QualifiedName alias;
+            if (aliases.TryGetValue(first, out alias))
             {
-                // get first part of the qualified name:
-                string first = qname.IsSimpleName ? qname.Name.Value : qname.Namespaces[0].Value;
+                if (qname.IsSimpleName)
+                    return alias;
 
-                // return the alias if found:
-                QualifiedName alias;
-                if (aliases != null && aliases.TryGetValue(first, out alias))
+                // [ alias.namespaces, alias.name, qname.namespaces+1 ]
+                Name[] names = new Name[ qname.namespaces.Length + alias.namespaces.Length];
+                for (int i = 0; i < alias.namespaces.Length; ++i) names[i] = alias.namespaces[i];
+                names[alias.namespaces.Length] = alias.name;
+                for (int j = 1; j < qname.namespaces.Length; ++j) names[alias.namespaces.Length + j] = qname.namespaces[j];
+
+                return new QualifiedName(qname.name, names) { IsFullyQualifiedName = true };
+            }
+            else
+            {
+                if (currentNamespace.HasValue)
                 {
-                    if (qname.IsSimpleName)
-                    {
-                        qname = alias;
-                    }
-                    else
-                    {
-                        // [ alias.namespaces, alias.name, qname.namespaces+1 ]
-                        Name[] names = new Name[qname.namespaces.Length + alias.namespaces.Length];
-                        for (int i = 0; i < alias.namespaces.Length; ++i) names[i] = alias.namespaces[i];
-                        names[alias.namespaces.Length] = alias.name;
-                        for (int j = 1; j < qname.namespaces.Length; ++j) names[alias.namespaces.Length + j] = qname.namespaces[j];
-
-                        qname = new QualifiedName(qname.name, names);
-                    }
+                    Debug.Assert(string.IsNullOrEmpty(currentNamespace.Value.Name.Value));
+                    return new QualifiedName(qname, currentNamespace.Value);
                 }
                 else
                 {
-                    if (currentNamespace.HasValue)
-                    {
-                        Debug.Assert(string.IsNullOrEmpty(currentNamespace.Value.Name.Value));
-                        qname = new QualifiedName(qname, currentNamespace.Value);
-                    }
-                    else
-                    {
-                        qname = new QualifiedName(qname.Name, qname.Namespaces);
-                    }
+                    return qname;
                 }
-
-                // the name is translated (fully qualified)
-                qname.IsFullyQualifiedName = true;
-            }
-
-            return qname;
+            }   
         }
 
         /// <summary>
@@ -802,7 +815,8 @@ namespace PHP.Core
 
 		public override bool Equals(object obj)
 		{
-			return obj != null && obj.GetType() == typeof(QualifiedName) && this.Equals((QualifiedName)obj);
+			if (!(obj is QualifiedName)) return false;
+			return !Equals((QualifiedName)obj);
 		}
 
 		public override int GetHashCode()
@@ -824,21 +838,14 @@ namespace PHP.Core
         {
             get
             {
-                var ns = this.namespaces;
-                if (ns.Length != 0)
+                StringBuilder result = new StringBuilder();
+                for (int i = 0; i < namespaces.Length; i++)
                 {
-                    StringBuilder result = new StringBuilder(ns[0].Value, ns.Length * 8);
-                    for (int i = 1; i < ns.Length; i++)
-                    {
-                        result.Append(Separator);
-                        result.Append(ns[i].Value);
-                    }
-                    return result.ToString();
+                    if (i != 0) result.Append(Separator);
+                    result.Append(namespaces[i]);
                 }
-                else
-                {
-                    return string.Empty;
-                }
+
+                return result.ToString();
             }
         }
 
@@ -862,22 +869,10 @@ namespace PHP.Core
 
 		public override string ToString()
 		{
-            var ns = this.namespaces;
-            if (ns.Length == 0)
-            {
+            if (this.namespaces.Length == 0)
                 return this.Name.Value;
-            }
-            else
-            {
-                StringBuilder result = new StringBuilder(ns.Length * 8);
-                for (int i = 0; i < ns.Length; i++)
-                {
-                    result.Append(ns[i]);
-                    result.Append(Separator);
-                }
-                result.Append(this.Name.Value);
-                return result.ToString();
-            }
+
+			return ToString(null, false);
 		}
 
 		#endregion
@@ -886,9 +881,11 @@ namespace PHP.Core
 
 		public bool Equals(QualifiedName other)
 		{
-			if (!this.name.Equals(other.name) || this.namespaces.Length != other.namespaces.Length) return false;
+			if (!this.name.Equals(other.name)) return false;
 
-            for (int i = 0; i < namespaces.Length; i++)
+            if (this.namespaces.Length != other.namespaces.Length) return false;
+
+			for (int i = 0; i < namespaces.Length; i++)
 			{
 				if (!this.namespaces[i].Equals(other.namespaces[i]))
 					return false;
@@ -916,7 +913,10 @@ namespace PHP.Core
 
         public bool Equals(QualifiedName x, QualifiedName y)
         {
-            return x.Equals(y) && string.Equals(x.Name.Value, y.Name.Value, StringComparison.Ordinal);   // case sensitive comparison of names
+            if (x == null && y == null) return true;
+            if (x == null || y == null) return false;
+
+            return x.Equals(y) && string.Compare(x.Name.Value, y.Name.Value, StringComparison.Ordinal) == 0;   // case sensitive comparison of names
         }
 
         public int GetHashCode(QualifiedName obj)
@@ -1057,37 +1057,15 @@ namespace PHP.Core
         {
             // current namespace:
             if (string.IsNullOrEmpty(currentNamespace))
-            {
                 this.CurrentNamespace = null;
-            }
             else
             {
-                Debug.Assert(currentNamespace[0] != QualifiedName.Separator);   // not starting with separator
+                Debug.Assert(currentNamespace.IndexOf(QualifiedName.Separator) != 0);   // not starting with separator
                 this.CurrentNamespace = new QualifiedName(currentNamespace.Split(QualifiedName.Separator), false, true);
             }
 
             // aliases (just initialize dictionary, items added later):
             this.Aliases = (aliases > 0) ? new Dictionary<string, QualifiedName>(aliases) : null;
-        }
-
-        /// <summary>
-        /// Initializes new instance of <see cref="NamingContext"/>
-        /// </summary>
-        public NamingContext(QualifiedName? currentNamespace, Dictionary<string, QualifiedName> aliases)
-        {
-            Debug.Assert(!currentNamespace.HasValue || string.IsNullOrEmpty(currentNamespace.Value.Name.Value));
-
-            this.CurrentNamespace = currentNamespace;
-            this.Aliases = aliases;
-        }
-
-        /// <summary>
-        /// Initializes naming context from a namespace declaration.
-        /// </summary>
-        /// <param name="ns">Namespace declaration. Cannot be <c>null</c>.</param>
-        public NamingContext(AST.NamespaceDecl/*!*/ns)
-            :this(ns.QualifiedName, ns.Aliases)
-        {
         }
 
         /// <summary>
@@ -1099,8 +1077,8 @@ namespace PHP.Core
         {
             Debug.Assert(!string.IsNullOrEmpty(alias));
             Debug.Assert(!string.IsNullOrEmpty(qualifiedName));
+            Debug.Assert(qualifiedName.IndexOf(QualifiedName.Separator) != 0);   // not starting with separator
             Debug.Assert(this.Aliases != null);
-            Debug.Assert(qualifiedName[0] != QualifiedName.Separator);   // not starting with separator
 
             this.Aliases.Add(alias, new QualifiedName(qualifiedName.Split(QualifiedName.Separator), true, true));
         }

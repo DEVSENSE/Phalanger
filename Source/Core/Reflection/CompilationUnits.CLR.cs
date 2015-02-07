@@ -11,15 +11,17 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Reflection.Emit;
 using System.Reflection;
 using System.Diagnostics.SymbolStore;
 using System.IO;
 
-using PHP.Core.Parsers;
-using PHP.Core.Emit;
+using PHP.Core.AST;
 using PHP.Core.Compiler.AST;
+using PHP.Core.Emit;
+using PHP.Core.Parsers;
 
 namespace PHP.Core.Reflection
 {
@@ -359,11 +361,11 @@ namespace PHP.Core.Reflection
 			mainHelper = scriptModule.MainHelper;
 
 			foreach (KeyValuePair<string, DTypeDesc> val in typesTmp)
-                types.Add(QualifiedName.FromClrNotation(val.Value.RealType), val.Value.Type);   // TODO: parse the val.Key
+                types.Add(ClrNotationUtils.FromClrNotation(val.Value.RealType), val.Value.Type);   // TODO: parse the val.Key
 			foreach (KeyValuePair<string, DConstantDesc> val in constantsTmp)
-                constants.Add(QualifiedName.FromClrNotation(val.Key, true), val.Value.GlobalConstant);// TODO: parse the val.Key
+                constants.Add(ClrNotationUtils.FromClrNotation(val.Key, true), val.Value.GlobalConstant);// TODO: parse the val.Key
 			foreach (KeyValuePair<string, DRoutineDesc> val in functionsTmp)
-                functions.Add(QualifiedName.FromClrNotation(val.Key, true), val.Value.Routine);// TODO: parse the val.Key
+                functions.Add(ClrNotationUtils.FromClrNotation(val.Key, true), val.Value.Routine);// TODO: parse the val.Key
 
 			state = States.Reflected;
 		}
@@ -631,7 +633,7 @@ namespace PHP.Core.Reflection
 
 				// perform full analysis:
 
-				foreach (SourceFileUnit source_unit in source_units)
+				foreach (var source_unit in source_units)
 					analyzer.Analyze(source_unit);
 
 				if (context.Errors.AnyFatalError) return false;
@@ -652,7 +654,7 @@ namespace PHP.Core.Reflection
 				// close opened streams (analyzer may need to read the source code due to conditional class declarations):
 				if (source_units != null)
 				{
-					foreach (SourceFileUnit source_unit in source_units)
+                    foreach (var source_unit in source_units)
 						source_unit.Close();
 				}
 			}
@@ -667,7 +669,7 @@ namespace PHP.Core.Reflection
 
 			CodeGenerator cg = new CodeGenerator(context);
 
-			foreach (SourceUnit source_unit in source_units)
+            foreach (var source_unit in source_units)
 			{
 				source_unit.Emit(cg);
 			}
@@ -787,8 +789,8 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Source unit or <B>null</B> for reflected units.
 		/// </summary>
-		public SourceUnit SourceUnit { get { return sourceUnit; } set { sourceUnit = value; } }
-		private SourceUnit sourceUnit;
+        public CompilationSourceUnit SourceUnit { get { return sourceUnit; } set { sourceUnit = value; } }
+        private CompilationSourceUnit sourceUnit;
 
 		#endregion
 
@@ -1337,10 +1339,10 @@ namespace PHP.Core.Reflection
 			// inclusions in dynamic code are dynamic: 
 			if (InclusionTypesEnum.IsAutoInclusion(inclusionType))
 			{
-				Debug.Assert(inclusionExpr.Target.HasValue);
+				Debug.Assert(inclusionExpr.Target.HasValue());
 
 				// auto-inclusions contain explicit path:
-				targetFile = DetermineStaticTarget((string)inclusionExpr.Target.Value, inclusionExpr.Target, context);
+				targetFile = DetermineStaticTarget((string)inclusionExpr.Target.GetValue(), inclusionExpr.Target, context);
 				if (targetFile != null) characteristic = Characteristic.StaticAutoInclusion;
 
 				return;
@@ -1373,7 +1375,7 @@ namespace PHP.Core.Reflection
 
 					// evaluation //
 
-					Evaluation eval = inclusionExpr.Target.EvaluatePriorAnalysis(inclusionExpr.SourceUnit);
+					Evaluation eval = inclusionExpr.Target.EvaluatePriorAnalysis((CompilationSourceUnit)inclusionExpr.SourceUnit);
 					if (eval.HasValue)
 					{
 						targetFile = DetermineStaticTarget(Convert.ObjectToString(eval.Value), inclusionExpr.Target, context);

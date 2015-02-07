@@ -72,6 +72,7 @@ namespace PHP.Core.Parsers
 		T_SELF = Toks.T_SELF,
 		T_AUTOLOAD = Toks.T_AUTOLOAD,
 
+		T_ASSERT = Toks.T_ASSERT,
 		T_TRUE = Toks.T_TRUE,
 		T_FALSE = Toks.T_FALSE,
 		T_NULL = Toks.T_NULL,
@@ -217,8 +218,6 @@ namespace PHP.Core.Parsers
 		T_ENDFOR = Toks.T_ENDFOR,
 		T_FOREACH = Toks.T_FOREACH,
 		T_ENDFOREACH = Toks.T_ENDFOREACH,
-        T_DECLARE = Toks.T_DECLARE,
-        T_ENDDECLARE = Toks.T_ENDDECLARE,
 		T_AS = Toks.T_AS,
 		T_SWITCH = Toks.T_SWITCH,
 		T_ENDSWITCH = Toks.T_ENDSWITCH,

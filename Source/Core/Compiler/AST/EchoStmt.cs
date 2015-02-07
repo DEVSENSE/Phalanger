@@ -1,6 +1,5 @@
 /*
 
- Copyright (c) 2006- DEVSENSE
  Copyright (c) 2004-2006 Tomas Matousek, Vaclav Novak and Martin Maly.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -11,69 +10,70 @@
 
 */
 
-using System.Reflection;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using System.Diagnostics;
+using System.Reflection;
+using System.Reflection.Emit;
+
+using PHP.Core.AST;
 using PHP.Core.Parsers;
 
-namespace PHP.Core.AST
+namespace PHP.Core.Compiler.AST
 {
-	/// <summary>
-	/// Represents an <c>echo</c> statement.
-	/// </summary>
-    [Serializable]
-	public sealed class EchoStmt : Statement
-	{
-		/// <summary>Array of parameters - Expressions.</summary>
-        public List<Expression> /*!*/ Parameters { get { return parameters; } }
-        private List<Expression>/*!*/ parameters;
-        
-        /// <summary>
-        /// Gets value indicating whether this <see cref="EchoStmt"/> represents HTML code.
-        /// </summary>
-        public bool IsHtmlCode { get { return isHtmlCode; } }
-        private readonly bool isHtmlCode;
-
-		public EchoStmt(Position position, List<Expression>/*!*/ parameters)
-			: base(position)
-		{
-			Debug.Assert(parameters != null);
-			this.parameters = parameters;
-            this.isHtmlCode = false;
-		}
-
-        /// <summary>
-        /// Initializes new echo statement as a representation of HTML code.
-        /// </summary>
-        public EchoStmt(Position position, string htmlCode)
-            : base(position)
+    partial class NodeCompilers
+    {
+        [NodeCompiler(typeof(EchoStmt))]
+        sealed class EchoStmtCompiler : StatementCompiler<EchoStmt>
         {
-            this.parameters = new List<Expression>(1) { new StringLiteral(position, htmlCode) };
-            this.isHtmlCode = true;
-        }
+            internal override Core.AST.Statement Analyze(EchoStmt node, Analyzer analyzer)
+            {
+                if (analyzer.IsThisCodeUnreachable())
+                {
+                    analyzer.ReportUnreachableCode(node.Position);
+                    return EmptyStmt.Unreachable;
+                }
 
-		internal override bool SkipInPureGlobalCode()
-		{
-			StringLiteral literal;
-			if (parameters.Count == 1 && (literal = parameters[0] as StringLiteral) != null)
-			{
-				return StringUtils.IsWhitespace((string)literal.Value);
-			}
-			else
-			{
-				return false;
-			}
-		}
+                ExInfoFromParent info = ExInfoFromParent.DefaultExInfo;
+                
+                var parameters = node.Parameters;
+                for (int i = 0; i < parameters.Count; i++)
+                {
+                    parameters[i] = parameters[i].Analyze(analyzer, info).Literalize();
+                }
 
-		/// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            visitor.VisitEchoStmt(this);
+                return node;
+            }
+
+            /// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
+            /// <param name="node">Instance.</param>
+            /// <remarks>
+            /// Nothing is expected on the evaluation stack. Nothing is left on the evaluation stack.
+            /// </remarks>
+            internal override void Emit(EchoStmt node, CodeGenerator codeGenerator)
+            {
+                Statistics.AST.AddNode("EchoStmt");
+
+                codeGenerator.MarkSequencePoint(node.Position);
+                foreach (Expression parameter in node.Parameters)
+                {
+                    // skip empty evaluated expression
+                    var value = parameter.GetValue();
+                    if (parameter.HasValue() &&
+                        (
+                            value == null ||
+                            (value is string && ((string)value) == string.Empty) ||
+                            Convert.ObjectToPhpBytes(value).Length == 0
+                        ))
+                    {
+                        continue;
+                    }
+
+                    // emit the echo of parameter expression
+                    codeGenerator.EmitEcho(parameter);
+                }
+            }
         }
-	}
+    }
 }

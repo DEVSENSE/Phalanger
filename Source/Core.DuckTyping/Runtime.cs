@@ -212,36 +212,34 @@ namespace PHP.Core.DuckTyping
 			if (!((DuckTypeAttribute)attrs[0]).GlobalFunctions)
 				throw new ArgumentException("Type parameter should have [DuckType(GlobalFunctions=true)] attribute!");
 
-			lock (this) {
-				Type type;
+			Type type;
 
-				// cache lookup
-				if (!globalCache.TryGetValue(typeof(T), out type))
-				{
-					string typeName;
-					EmitAll(typeof(T), out type, out typeName, true);
-					globalCache.Add(typeof(T), type);
+			// cache lookup
+			if (!globalCache.TryGetValue(typeof(T), out type))
+			{
+				string typeName;
+				EmitAll(typeof(T), out type, out typeName, true);
+				globalCache.Add(typeof(T), type);
 
 #if DEBUG_DUCK_EMIT
-				AssemblyName assembly_name = new AssemblyName(RealAssemblyName);
-				AssemblyBuilder ab = assembly_builder;
-				ModuleBuilder mb = module_builder;
+			AssemblyName assembly_name = new AssemblyName(RealAssemblyName);
+			AssemblyBuilder ab = assembly_builder;
+			ModuleBuilder mb = module_builder;
 
-				assembly_builder = AppDomain.CurrentDomain.DefineDynamicAssembly(
-					assembly_name, AssemblyBuilderAccess.RunAndSave, "C:\\Temp\\", null, null, null, null, true);
-				module_builder = assembly_builder.DefineDynamicModule(RealModuleName, String.Format("test_{0}.dll", type_counter-1), true);
+			assembly_builder = AppDomain.CurrentDomain.DefineDynamicAssembly(
+				assembly_name, AssemblyBuilderAccess.RunAndSave, "C:\\Temp\\", null, null, null, null, true);
+			module_builder = assembly_builder.DefineDynamicModule(RealModuleName, String.Format("test_{0}.dll", type_counter-1), true);
 
-				Type _type; string _string;
-				EmitAll(typeof(T), out _type, out _string);
+			Type _type; string _string;
+			EmitAll(typeof(T), out _type, out _string);
 
-				assembly_builder.Save(String.Format("test_{0}.dll", type_counter-1));
-				assembly_builder = ab;
-				module_builder = mb;
+			assembly_builder.Save(String.Format("test_{0}.dll", type_counter-1));
+			assembly_builder = ab;
+			module_builder = mb;
 
 #endif
-				}
-				return (T)type.GetConstructor(Type.EmptyTypes).Invoke(ArrayUtils.EmptyObjects);
 			}
+            return (T)type.GetConstructor(Type.EmptyTypes).Invoke(ArrayUtils.EmptyObjects);
 		}
 
 
@@ -260,37 +258,35 @@ namespace PHP.Core.DuckTyping
 			if (attrs.Length == 0)
 				throw new ArgumentException("Type parameter should have [DuckType] attribute!");
 
-			lock (this) {
-				TypeTuple cacheKey = new TypeTuple(typeof(T), o.GetType());
-				Type type;
+			TypeTuple cacheKey = new TypeTuple(typeof(T), o.GetType());
+			Type type;
 
-				// cache lookup
-				if (!typeCache.TryGetValue(cacheKey, out type))
-				{
-					string typeName;
-					EmitAll(typeof(T), out type, out typeName, false);
-					typeCache.Add(cacheKey, type);
+			// cache lookup
+			if (!typeCache.TryGetValue(cacheKey, out type))
+			{
+				string typeName;
+				EmitAll(typeof(T), out type, out typeName, false);
+				typeCache.Add(cacheKey, type);
 
 #if DEBUG_DUCK_EMIT
-				AssemblyName assembly_name = new AssemblyName(RealAssemblyName);
-				AssemblyBuilder ab = assembly_builder;
-				ModuleBuilder mb = module_builder;
+			AssemblyName assembly_name = new AssemblyName(RealAssemblyName);
+			AssemblyBuilder ab = assembly_builder;
+			ModuleBuilder mb = module_builder;
 
-				assembly_builder = AppDomain.CurrentDomain.DefineDynamicAssembly(
-					assembly_name, AssemblyBuilderAccess.RunAndSave, "C:\\Temp\\", null, null, null, null, true);
-				module_builder = assembly_builder.DefineDynamicModule(RealModuleName, String.Format("test_{0}.dll", type_counter-1), true);
+			assembly_builder = AppDomain.CurrentDomain.DefineDynamicAssembly(
+				assembly_name, AssemblyBuilderAccess.RunAndSave, "C:\\Temp\\", null, null, null, null, true);
+			module_builder = assembly_builder.DefineDynamicModule(RealModuleName, String.Format("test_{0}.dll", type_counter-1), true);
 
-				Type _type; string _string;
-				EmitAll(typeof(T), out _type, out _string);
+			Type _type; string _string;
+			EmitAll(typeof(T), out _type, out _string);
 
-				assembly_builder.Save(String.Format("test_{0}.dll", type_counter-1));
-				assembly_builder = ab;
-				module_builder = mb;
+			assembly_builder.Save(String.Format("test_{0}.dll", type_counter-1));
+			assembly_builder = ab;
+			module_builder = mb;
 
 #endif
-				}
-				return (T)type.GetConstructor(Types.Object).Invoke(new object[] { o });
 			}
+			return (T)type.GetConstructor(Types.Object).Invoke(new object[] { o });
 		}
 
 		#endregion

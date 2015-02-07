@@ -4,29 +4,28 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2153C1DA-B1C5-4B6F-B6D9-272D6099FFC6}</ProjectGuid>
+    <ProjectGuid>{6BD6294C-D292-41DE-A40C-13202E921E2F}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>App.ico</ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
-    <AssemblyName>PhpNetMsSql</AssemblyName>
-    <AssemblyOriginatorKeyFile>..\Extensions.snk</AssemblyOriginatorKeyFile>
+    <AssemblyName>extutil</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
-    <OutputType>Library</OutputType>
-    <RootNamespace>PHP.Library.Data</RootNamespace>
-    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>extutil</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <StartupObject>
     </StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <SignAssembly>true</SignAssembly>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
@@ -54,15 +53,17 @@
     <OutputPath>bin\Debug\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>bin\Debug\PhpNetMsSql.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>
+    </NoWarn>
     <Optimize>false</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
@@ -70,21 +71,24 @@
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <BaseAddress>436207616</BaseAddress>
+    <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>bin\Release\PhpNetMsSql.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>
+    </NoWarn>
     <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
@@ -92,6 +96,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugType>none</DebugType>
     <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
@@ -101,47 +106,25 @@
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>
-    <Reference Include="System.Web">
-      <Name>System.Web</Name>
-    </Reference>
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\..\ClassLibrary\ClassLibrary.csproj">
-      <Name>ClassLibrary</Name>
-      <Project>{D515E8F4-357C-4CAF-87C1-97D64C5F865A}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core.Parsers\Core.Parsers.csproj">
+    <ProjectReference Include="..\Core.Parsers\Core.Parsers.csproj">
       <Project>{581f1486-5062-459e-bae6-a41886584f81}</Project>
       <Name>Core.Parsers</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Core.csproj">
+    <ProjectReference Include="..\Core\Core.csproj">
       <Name>Core</Name>
       <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App.ico" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Configuration.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="LibraryDescriptor.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MsSql.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PhpSqlDbConnection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PhpSqlDbProcedure.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PhpSqlDbResult.cs">
+    <Compile Include="ExtUtil.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -162,34 +145,18 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>"$(SolutionDir)..\Tools\gacutil" /u $(TargetName) 1&gt;nul
-
-if $(ConfigurationName) == Release (
-xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
-
-REM mkdir "$(SolutionDir)..\Deployment\Bin\Temp"
-REM "$(SolutionDir)..\Deployment\Bin\MkDynamic" "$(SolutionDir)..\Deployment\Bin\$(TargetName).dll" "$(SolutionDir)..\Deployment\Bin\Temp"
-REM "$(SolutionDir)..\Tools\ilmerge" /ndebug /keyfile:"$(ProjectDir)..\Extensions.snk" /out:"$(SolutionDir)..\Deployment\Bin\Temp\$(TargetFileName)" "$(TargetPath)"  REM "$(SolutionDir)..\Deployment\Bin\Temp\$(TargetName).dynamic.dll"
-REM del "$(SolutionDir)..\Deployment\Bin\$(TargetName).dll"
-REM del "$(SolutionDir)..\Deployment\Bin\Temp\$(TargetName).dynamic.dll"
-REM move "$(SolutionDir)..\Deployment\Bin\Temp\$(TargetName).dll" "$(SolutionDir)..\Deployment\Bin"
-REM rmdir "$(SolutionDir)..\Deployment\Bin\Temp"
-
-"$(SolutionDir)..\Tools\gacutil" -f -i "$(SolutionDir)..\Deployment\Bin\$(TargetName).dll" 1&gt;nul
-
-REM "$(SolutionDir)..\Deployment\Bin\PhpVerify" "$(TargetFileName)"
+    <PostBuildEvent>if $(ConfigurationName) == Release (
+xcopy /q /y "$(TargetPath)" "$(SolutionDir)..\Deployment\Bin"
 )
 if $(ConfigurationName) == Debug (
-xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
-"$(SolutionDir)..\Tools\gacutil" -f -i "$(SolutionDir)..\Deployment\Debug\$(TargetName).dll" 1&gt;nul
-)
-if $(ConfigurationName) == DebugNoGac (
-xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
-rmdir "$(SolutionDir)..\Deployment\Debug\Temp"
+xcopy /q /y "$(TargetPath)" "$(SolutionDir)..\Deployment\Debug"
 )</PostBuildEvent>
   </PropertyGroup>
 </Project>

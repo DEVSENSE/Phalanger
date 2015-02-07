@@ -30,16 +30,16 @@ namespace PHP.Core.AST
         public Expression/*!*/ SwitchValue { get { return switchValue; } internal set { switchValue = value; } }
         private Expression/*!*/ switchValue;
         /// <summary>Body of switch statement</summary>
-        public SwitchItem[]/*!*/ SwitchItems { get { return switchItems; } }
-        private SwitchItem[]/*!*/ switchItems;
+        public List<SwitchItem>/*!*/ SwitchItems { get { return switchItems; } }
+        private List<SwitchItem>/*!*/ switchItems;
         
-		public SwitchStmt(Text.Span span, Expression/*!*/ switchValue, IList<SwitchItem>/*!*/ switchItems)
-			: base(span)
+		public SwitchStmt(Position position, Expression/*!*/ switchValue, List<SwitchItem>/*!*/ switchItems)
+			: base(position)
 		{
 			Debug.Assert(switchValue != null && switchItems != null);
 
 			this.switchValue = switchValue;
-			this.switchItems = switchItems.AsArray();
+			this.switchItems = switchItems;
 		}
 
 		/// <summary>
@@ -62,15 +62,15 @@ namespace PHP.Core.AST
     [Serializable]
     public abstract class SwitchItem : LangElement
 	{
-        protected readonly Statement[]/*!*/ statements;
+		protected readonly List<Statement>/*!*/ statements;
         /// <summary>Statements in this part of switch</summary>
-        public Statement[]/*!*/ Statements { get { return statements; } }
+        public List<Statement>/*!*/ Statements { get { return statements; } }
 
-		protected SwitchItem(Text.Span span, IList<Statement>/*!*/ statements)
-			: base(span)
+		protected SwitchItem(Position position, List<Statement>/*!*/ statements)
+			: base(position)
 		{
 			Debug.Assert(statements != null);
-			this.statements = statements.AsArray();
+			this.statements = statements;
 		}
 	}
 
@@ -84,8 +84,8 @@ namespace PHP.Core.AST
         public Expression CaseVal { get { return caseVal; } internal set { caseVal = value; } }
         private Expression caseVal;
 
-		public CaseItem(Text.Span span, Expression/*!*/ caseVal, IList<Statement>/*!*/ statements)
-			: base(span, statements)
+		public CaseItem(Position position, Expression/*!*/ caseVal, List<Statement>/*!*/ statements)
+			: base(position, statements)
 		{
 			Debug.Assert(caseVal != null);
 			this.caseVal = caseVal;
@@ -107,8 +107,8 @@ namespace PHP.Core.AST
     [Serializable]
     public sealed class DefaultItem : SwitchItem
 	{
-		public DefaultItem(Text.Span span, IList<Statement>/*!*/ statements)
-			: base(span, statements)
+		public DefaultItem(Position position, List<Statement>/*!*/ statements)
+			: base(position, statements)
 		{
 		}
 

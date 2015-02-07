@@ -62,7 +62,7 @@ namespace PHP.Core.AST
 		private object typeHint;
 
         /// <summary>Position of <see cref="TypeHint"/> if any.</summary>
-        public Text.Span TypeHintPosition { get; internal set; }
+        public Position TypeHintPosition { get; internal set; }
 
 		/// <summary>
         /// Gets collection of CLR attributes annotating this statement.
@@ -75,9 +75,9 @@ namespace PHP.Core.AST
 
         #region Construction
 
-		public FormalParam(Text.Span span, string/*!*/ name, object typeHint, bool passedByRef,
+		public FormalParam(Position position, string/*!*/ name, object typeHint, bool passedByRef,
 				Expression initValue, List<CustomAttribute> attributes)
-            : base(span)
+			: base(position)
 		{
             Debug.Assert(typeHint == null || typeHint is PrimitiveTypeName || typeHint is GenericQualifiedName);
 
@@ -88,7 +88,7 @@ namespace PHP.Core.AST
             if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);
 
-			this.TypeHintPosition = Text.Span.Invalid;
+			this.TypeHintPosition = Position.Invalid;
 		}
 
 		#endregion
@@ -113,13 +113,13 @@ namespace PHP.Core.AST
 		public bool AliasReturn { get { return aliasReturn; } }
 		private readonly bool aliasReturn;
 
-		public FormalParam[]/*!*/ FormalParams { get { return formalParams; } }
-		private readonly FormalParam[]/*!*/ formalParams;
+		public List<FormalParam>/*!*/ FormalParams { get { return formalParams; } }
+		private readonly List<FormalParam>/*!*/ formalParams;
 
-		public Signature(bool aliasReturn, IList<FormalParam>/*!*/ formalParams)
+		public Signature(bool aliasReturn, List<FormalParam>/*!*/ formalParams)
 		{
 			this.aliasReturn = aliasReturn;
-			this.formalParams = formalParams.AsArray();
+			this.formalParams = formalParams;
 		}
 	}
 
@@ -131,7 +131,7 @@ namespace PHP.Core.AST
 	/// Represents a function declaration.
 	/// </summary>
     [Serializable]
-    public sealed class FunctionDecl : Statement, IHasSourceUnit
+    public sealed class FunctionDecl : Statement
 	{ 
 		internal override bool IsDeclaration { get { return true; } }
 
@@ -146,9 +146,9 @@ namespace PHP.Core.AST
 
         public TypeSignature TypeSignature { get { return typeSignature; } }
 		private readonly TypeSignature typeSignature;
-
-        public Statement[]/*!*/ Body { get { return body; } }
-        private readonly Statement[]/*!*/ body;
+		
+        public List<Statement>/*!*/ Body { get { return body; } }
+        private readonly List<Statement>/*!*/ body;
 
         /// <summary>
         /// Gets value indicating whether the function is declared conditionally.
@@ -161,7 +161,7 @@ namespace PHP.Core.AST
         public PhpMemberAttributes MemberAttributes { get; private set; }
 
         internal Scope Scope { get; private set; }
-        public SourceUnit/*!*/ SourceUnit { get; private set; }
+        internal SourceUnit/*!*/ SourceUnit { get; private set; }
         
         /// <summary>
         /// Gets collection of CLR attributes annotating this statement.
@@ -171,24 +171,24 @@ namespace PHP.Core.AST
             get { return this.GetCustomAttributes(); }
             set { this.SetCustomAttributes(value); }
         }
+		
+		public Position EntireDeclarationPosition { get { return entireDeclarationPosition; } }
+		private Position entireDeclarationPosition;
 
-        public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }
-        private Text.Span entireDeclarationPosition;
+        public ShortPosition HeadingEndPosition { get { return headingEndPosition; } }
+        private ShortPosition headingEndPosition;
 
-        public int HeadingEndPosition { get { return headingEndPosition; } }
-        private int headingEndPosition;
-
-        public int DeclarationBodyPosition { get { return declarationBodyPosition; } }
-        private int declarationBodyPosition;
+        public ShortPosition DeclarationBodyPosition { get { return declarationBodyPosition; } }
+        private ShortPosition declarationBodyPosition;
 
 		#region Construction
 
 		public FunctionDecl(SourceUnit/*!*/ sourceUnit,
-            Text.Span span, Text.Span entireDeclarationPosition, int headingEndPosition, int declarationBodyPosition,
+            Position position, Position entireDeclarationPosition, ShortPosition headingEndPosition, ShortPosition declarationBodyPosition,
 			bool isConditional, Scope scope, PhpMemberAttributes memberAttributes, string/*!*/ name, NamespaceDecl ns,
 			bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalTypeParam>/*!*/ genericParams,
-			IList<Statement>/*!*/ body, List<CustomAttribute> attributes)
-			: base(span)
+			List<Statement>/*!*/ body, List<CustomAttribute> attributes)
+			: base(position)
 		{
 			Debug.Assert(genericParams != null && name != null && formalParams != null && body != null);
 
@@ -198,7 +198,7 @@ namespace PHP.Core.AST
 			this.typeSignature = new TypeSignature(genericParams);
 			if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);
-			this.body = body.AsArray();
+			this.body = body;
 			this.entireDeclarationPosition = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
             this.declarationBodyPosition = declarationBodyPosition;

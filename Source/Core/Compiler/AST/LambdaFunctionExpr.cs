@@ -13,105 +13,169 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
 
+using PHP.Core.AST;
+using PHP.Core.Emit;
 using PHP.Core.Parsers;
 using PHP.Core.Reflection;
 
-namespace PHP.Core.AST
+namespace PHP.Core.Compiler.AST
 {
-    #region LambdaFunctionDecl
-
-    /// <summary>
-    /// Represents a function declaration.
-    /// </summary>
-    [Serializable]
-    public sealed class LambdaFunctionExpr : Expression
+    partial class NodeCompilers
     {
-        //public NamespaceDecl Namespace { get { return ns; } }
-        //private readonly NamespaceDecl ns
+        #region LambdaFunctionDecl
 
-        public override Operations Operation
+        [NodeCompiler(typeof(LambdaFunctionExpr))]
+        sealed class LambdaFunctionExprCompiler : ExpressionCompiler<LambdaFunctionExpr>
         {
-            get { return Operations.Closure; }
-        }
+            private PhpLambdaFunction/*!A*/function;
 
-        /// <summary>
-        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
-        /// </summary>
-        public PHPDocBlock PHPDoc
-        {
-            get { return this.GetPHPDoc(); }
-            set { this.SetPHPDoc(value); }
-        }
+            #region Analysis
 
-        public Signature Signature { get { return signature; } }
-        private readonly Signature signature;
-
-        /// <summary>
-        /// Parameters specified within <c>use</c> 
-        /// </summary>
-        public List<FormalParam> UseParams { get { return useParams; } }
-        private readonly List<FormalParam> useParams;
-
-        //private readonly TypeSignature typeSignature;
-        private readonly List<Statement>/*!*/ body;
-        public List<Statement>/*!*/ Body { get { return body; } }
-        //private readonly CustomAttributes attributes;
-
-        public Position EntireDeclarationPosition { get { return entireDeclarationPosition; } }
-        private Position entireDeclarationPosition;
-
-        public ShortPosition HeadingEndPosition { get { return headingEndPosition; } }
-        private ShortPosition headingEndPosition;
-
-        public ShortPosition DeclarationBodyPosition { get { return declarationBodyPosition; } }
-        private ShortPosition declarationBodyPosition;
-
-        #region Construction
-
-        public LambdaFunctionExpr(SourceUnit/*!*/ sourceUnit,
-            Position position, Position entireDeclarationPosition, ShortPosition headingEndPosition, ShortPosition declarationBodyPosition,
-            Scope scope, NamespaceDecl ns,
-            bool aliasReturn, List<FormalParam>/*!*/ formalParams, List<FormalParam> useParams,
-            List<Statement>/*!*/ body)
-            : base(position)
-        {
-            Debug.Assert(formalParams != null && body != null);
-
-            // inject use parameters at the begining of formal parameters
-            if (useParams != null && useParams.Count > 0)
+            public override Evaluation Analyze(LambdaFunctionExpr node, Analyzer analyzer, ExInfoFromParent info)
             {
-                if (formalParams.Count == 0)
-                    formalParams = useParams;   // also we don't want to modify Parser.emptyFormalParamListIndex singleton.
-                else
-                    formalParams.InsertRange(0, useParams);
+                function = new PhpLambdaFunction(node.Signature, analyzer.SourceUnit, node.Position);
+                function.WriteUp(new TypeSignature(FormalTypeParam.EmptyList).ToPhpRoutineSignature(function));
+
+                SignatureCompiler.AnalyzeMembers(node.Signature, analyzer, function);
+
+                //attributes.Analyze(analyzer, this);
+
+                // ensure 'use' parameters in parent scope:
+                if (node.UseParams != null)
+                    foreach (var p in node.UseParams)
+                        analyzer.CurrentVarTable.Set(p.Name, p.PassedByRef);
+
+                // function is analyzed even if it is unreachable in order to discover more errors at compile-time:
+                analyzer.EnterFunctionDeclaration(function);
+
+                //typeSignature.Analyze(analyzer);
+                SignatureCompiler.Analyze(node.Signature, analyzer);
+
+                node.Body.Analyze(analyzer);
+
+                // validate function and its body:
+                function.ValidateBody(analyzer.ErrorSink);
+
+                analyzer.LeaveFunctionDeclaration();
+
+                return new Evaluation(node);
             }
-            
-            //this.ns = ns;
-            this.signature = new Signature(aliasReturn, formalParams);
-            this.useParams = useParams;
-            //this.typeSignature = new TypeSignature(genericParams);
-            //this.attributes = new CustomAttributes(attributes);
-            this.body = body;
-            this.entireDeclarationPosition = entireDeclarationPosition;
-            this.headingEndPosition = headingEndPosition;
-            this.declarationBodyPosition = declarationBodyPosition;
+
+            #endregion
+
+            #region Emission
+
+            public override bool IsDeeplyCopied(LambdaFunctionExpr node, CopyReason reason, int nestingLevel)
+            {
+                return false;
+            }
+
+            public override PhpTypeCode Emit(LambdaFunctionExpr node, CodeGenerator codeGenerator)
+            {
+                Statistics.AST.AddNode("LambdaFunctionExpr");
+
+                var typeBuilder = codeGenerator.IL.TypeBuilder;
+
+                // define argless and argfull
+                this.function.DefineBuilders(typeBuilder);
+
+                //
+                codeGenerator.MarkSequencePoint(node.Position);
+                if (!codeGenerator.EnterFunctionDeclaration(function))
+                    throw new Exception("EnterFunctionDeclaration() failed!");
+
+                codeGenerator.EmitArgfullOverloadBody(function, node.Body, node.EntireDeclarationPosition, node.DeclarationBodyPosition);
+
+                codeGenerator.LeaveFunctionDeclaration();
+
+                // new Closure( <context>, new RoutineDelegate(null,function.ArgLess), <parameters>, <static> )
+                codeGenerator.EmitLoadScriptContext();
+
+                var/*!*/il = codeGenerator.IL;
+                il.Emit(OpCodes.Ldnull);
+                il.Emit(OpCodes.Ldftn, function.ArgLessInfo);
+                il.Emit(OpCodes.Newobj, Constructors.RoutineDelegate);
+
+                int userParamsCount = (node.UseParams != null) ? node.UseParams.Count : 0;
+                if (node.Signature.FormalParams != null && node.Signature.FormalParams.Count > userParamsCount)
+                {
+                    // array = new PhpArray(<int_count>, <string_count>);
+                    il.Emit(OpCodes.Ldc_I4, 0);
+                    il.Emit(OpCodes.Ldc_I4, node.Signature.FormalParams.Count);
+                    il.Emit(OpCodes.Newobj, Constructors.PhpArray.Int32_Int32);
+
+                    for (int i = userParamsCount; i < node.Signature.FormalParams.Count; i++)
+                    {
+                        var p = node.Signature.FormalParams[i];
+
+                        // CALL array.SetArrayItem("&$name", "<required>" | "<optional>");
+                        il.Emit(OpCodes.Dup);   // PhpArray
+
+                        string keyValue = string.Format("{0}${1}", p.PassedByRef ? "&" : null, p.Name.Value);
+
+                        il.Emit(OpCodes.Ldstr, keyValue);
+                        il.Emit(OpCodes.Ldstr, (p.InitValue != null) ? "<optional>" : "<required>");
+                        il.LdcI4(IntStringKey.StringKeyToArrayIndex(keyValue));
+
+                        il.Emit(OpCodes.Call, Methods.PhpArray.SetArrayItemExact_String);
+                    }
+                }
+                else
+                {
+                    il.Emit(OpCodes.Ldnull);
+                }
+
+                if (userParamsCount > 0)
+                {
+                    // array = new PhpArray(<int_count>, <string_count>);
+                    il.Emit(OpCodes.Ldc_I4, 0);
+                    il.Emit(OpCodes.Ldc_I4, node.UseParams.Count);
+                    il.Emit(OpCodes.Newobj, Constructors.PhpArray.Int32_Int32);
+
+                    foreach (var p in node.UseParams)
+                    {
+                        // <stack>.SetArrayItem{Ref}
+                        il.Emit(OpCodes.Dup);   // PhpArray
+
+                        string variableName = p.Name.Value;
+
+                        il.Emit(OpCodes.Ldstr, variableName);
+                        if (p.PassedByRef)
+                        {
+                            DirectVarUseCompiler.EmitLoadRef(codeGenerator, p.Name);
+                            il.Emit(OpCodes.Call, Methods.PhpArray.SetArrayItemRef_String);
+                        }
+                        else
+                        {
+                            // LOAD PhpVariable.Copy( <name>, Assigned )
+                            DirectVarUseCompiler.EmitLoad(codeGenerator, p.Name);
+                            il.LdcI4((int)CopyReason.Assigned);
+                            il.Emit(OpCodes.Call, Methods.PhpVariable.Copy);
+
+                            // .SetArrayItemExact( <stack>, <stack>, <hashcode> )
+                            il.LdcI4(IntStringKey.StringKeyToArrayIndex(variableName));
+                            il.Emit(OpCodes.Call, Methods.PhpArray.SetArrayItemExact_String);
+                        }
+                    }
+                }
+                else
+                {
+                    il.Emit(OpCodes.Ldnull);
+                }
+
+                il.Emit(OpCodes.Newobj, typeof(PHP.Library.SPL.Closure).GetConstructor(new Type[] { typeof(ScriptContext), typeof(RoutineDelegate), typeof(PhpArray), typeof(PhpArray) }));
+
+                return PhpTypeCode.Object;
+            }
+
+            #endregion
         }
 
         #endregion
-
-        /// <summary>
-        /// Call the right Visit* method on the given Visitor object.
-        /// </summary>
-        /// <param name="visitor">Visitor to be called.</param>
-        public override void VisitMe(TreeVisitor visitor)
-        {
-            visitor.VisitLambdaFunctionExpr(this);
-        }
     }
-
-    #endregion
 }

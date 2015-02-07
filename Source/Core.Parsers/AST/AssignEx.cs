@@ -28,7 +28,7 @@ namespace PHP.Core.AST
         /// <summary>Target of assignment</summary>
         public VariableUse LValue { get { return lvalue; } }
 
-		protected AssignEx(Text.Span p) : base(p) { }
+		protected AssignEx(Position p) : base(p) { }
 	}
 
 	#region ValueAssignEx
@@ -48,8 +48,8 @@ namespace PHP.Core.AST
         /// <summary>Expression being assigned</summary>
         public Expression/*!*/RValue { get { return rvalue; } }
 
-		public ValueAssignEx(Text.Span span, Operations operation, VariableUse/*!*/ lvalue, Expression/*!*/ rvalue)
-			: base(span)
+		public ValueAssignEx(Position position, Operations operation, VariableUse/*!*/ lvalue, Expression/*!*/ rvalue)
+			: base(position)
 		{
 			this.lvalue = lvalue;
 			this.rvalue = rvalue;
@@ -81,8 +81,8 @@ namespace PHP.Core.AST
         public Expression/*!*/RValue { get { return rvalue; } }
         internal Expression/*!*/ rvalue;
         
-		public RefAssignEx(Text.Span span, VariableUse/*!*/ lvalue, Expression/*!*/ rvalue)
-			: base(span)
+		public RefAssignEx(Position position, VariableUse/*!*/ lvalue, Expression/*!*/ rvalue)
+			: base(position)
 		{
 			Debug.Assert(rvalue is VarLikeConstructUse || rvalue is NewEx);
 			this.lvalue = lvalue;

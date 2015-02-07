@@ -40,8 +40,6 @@ namespace PHP.Core.Parsers
         private bool IsUnicode { get { return !IsBinary; } }
         private bool IsBinary { get { return _binaryBuilder != null; } }
 
-        private Text.Span span;
-
         /// <summary>
         /// Length of contained data (string or byte[]).
         /// </summary>
@@ -119,12 +117,12 @@ namespace PHP.Core.Parsers
             }
         }
 
-        public PHP.Core.AST.Literal CreateLiteral()
+        public PHP.Core.AST.Literal CreateLiteral(PHP.Core.Parsers.Position position)
         {
             if (IsBinary)
-                return new PHP.Core.AST.BinaryStringLiteral(span, BinaryBuilder.ToArray());
+                return new PHP.Core.AST.BinaryStringLiteral(position, BinaryBuilder.ToArray());
             else
-                return new PHP.Core.AST.StringLiteral(span, UnicodeBuilder.ToString());
+                return new PHP.Core.AST.StringLiteral(position, UnicodeBuilder.ToString());
         }
 
         #endregion
@@ -142,7 +140,6 @@ namespace PHP.Core.Parsers
             Debug.Assert(encoding != null);
 
             this.encoding = encoding;
-            this.span = Text.Span.Invalid;
 
             //if (binary)
             //    _binaryBuilder = new List<byte>(initialLength);
@@ -150,34 +147,16 @@ namespace PHP.Core.Parsers
                 _unicodeBuilder = new StringBuilder(initialLength);
         }
 
-        public PhpStringBuilder(Encoding/*!*/encoding, string/*!*/value, Text.Span span)
+        public PhpStringBuilder(Encoding/*!*/encoding, string/*!*/value)
             :this(encoding, false, value.Length)
         {
-            Append(value, span);
+            UnicodeBuilder.Append(value);
         }
 
         #endregion
 
         #region Append
 
-        private void Append(Text.Span span)
-        {
-            if (this.span.IsValid)
-            {
-                if (span.IsValid)
-                    this.span = Text.Span.Combine(this.span, span);
-            }
-            else
-            {
-                this.span = span;
-            }
-        }
-
-        public void Append(string str, Text.Span span)
-        {
-            Append(span);
-            Append(str);
-        }
         public void Append(string str)
         {
             if (IsUnicode)
@@ -188,11 +167,6 @@ namespace PHP.Core.Parsers
             }
         }
 
-        public void Append(char c, Text.Span span)
-        {
-            Append(span);
-            Append(c);
-        }
         public void Append(char c)
         {
             if (IsUnicode)
@@ -206,11 +180,6 @@ namespace PHP.Core.Parsers
             }
         }
 
-        public void Append(byte b, Text.Span span)
-        {
-            Append(span);
-            Append(b);
-        }
         public void Append(byte b)
         {
             // force binary string
@@ -224,11 +193,6 @@ namespace PHP.Core.Parsers
                 BinaryBuilder.Add(b);
         }
 
-        public void Append(int c, Text.Span span)
-        {
-            Append(span);
-            Append(c);
-        }
         public void Append(int c)
         {
             Debug.Assert(c >= 0);
@@ -289,8 +253,8 @@ namespace PHP.Core.Parsers
 
     public partial class Lexer
 	{
-		protected bool AllowAspTags = true;
-        protected bool AllowShortTags = true;
+		internal bool AllowAspTags = true;
+		internal bool AllowShortTags = true;
 
 		/// <summary>
 		/// Whether tokens T_STRING, T_VARIABLE, '[', ']', '{', '}', '$', "->" are encapsulated in a string.
@@ -308,8 +272,6 @@ namespace PHP.Core.Parsers
 		protected string hereDocLabel = null;
 		protected Stack<LexicalStates> StateStack { get { return stateStack; } set { stateStack = value; } }
 
-        protected void _yymore() { yymore(); }
-
 		#region Token Buffer Interpretation
 
 		public int GetTokenByteLength(Encoding/*!*/ encoding)
@@ -317,10 +279,12 @@ namespace PHP.Core.Parsers
 			return encoding.GetByteCount(buffer, token_start, token_end - token_start);
 		}
 
-        protected char[] Buffer { get { return buffer; } }
-        protected int BufferTokenStart { get { return token_start; } }
+        public int GetTokenCharLength()
+        {
+            return token_end - token_start;
+        }
 
-        protected char GetTokenChar(int index)
+		protected char GetTokenChar(int index)
 		{
 			return buffer[token_start + index];
 		}
@@ -359,6 +323,7 @@ namespace PHP.Core.Parsers
 			return i == hereDocLabel.Length && (buffer[token_start + i] == ';' ||
 				IsNewLineCharacter(buffer[token_start + i]));
 		}
+
 
 		protected char GetTokenAsEscapedCharacter(int startIndex)
 		{
@@ -573,7 +538,7 @@ namespace PHP.Core.Parsers
             PhpStringBuilder result = new PhpStringBuilder(encoding, forceBinaryString, TokenLength);
 
 			int buffer_pos = token_start + startIndex + 1;
-            
+
 			// the following loops expect the token ending by "
 			Debug.Assert(buffer[buffer_pos - 1] == '"' && buffer[token_end - 1] == '"');
 
@@ -841,6 +806,9 @@ namespace PHP.Core.Parsers
 		{
 			return (c > SByte.MaxValue) ? 'a' : c;
 		}
+
+
+
 
 		/*
 		 * #region Unit Test

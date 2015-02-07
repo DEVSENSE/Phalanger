@@ -45,8 +45,8 @@ namespace PHP.Core.AST
 		/// </summary>
         public Expression Index { get { return index; } internal set { index = value; } }
 		private Expression index;
-
-        public ItemUse(Text.Span p, VarLikeConstructUse/*!*/ array, Expression index, bool functionArrayDereferencing = false)
+		
+		public ItemUse(Position p, VarLikeConstructUse/*!*/ array, Expression index, bool functionArrayDereferencing = false)
 			: base(p)
 		{
 			Debug.Assert(array != null);
@@ -91,8 +91,8 @@ namespace PHP.Core.AST
         /// </summary>
         public Expression/*!*/KeyExpr { get; internal set; }
 
-        public StringLiteralDereferenceEx(Text.Span span, Expression expr, Expression key)
-            : base(span)
+        public StringLiteralDereferenceEx(Position position, Expression expr, Expression key)
+            : base(position)
         {
             this.StringExpr = expr;
             this.KeyExpr = key;

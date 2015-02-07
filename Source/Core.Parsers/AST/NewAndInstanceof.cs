@@ -40,8 +40,8 @@ namespace PHP.Core.AST
         /// <summary>Call signature of constructor</summary>
         public CallSignature CallSignature { get { return callSignature; } }
 
-		public NewEx(Text.Span span, TypeRef/*!*/ classNameRef, List<ActualParam>/*!*/ parameters)
-            : base(span)
+		public NewEx(Position position, TypeRef/*!*/ classNameRef, List<ActualParam>/*!*/ parameters)
+			: base(position)
 		{
 			Debug.Assert(classNameRef != null && parameters != null);
 			this.classNameRef = classNameRef;
@@ -77,8 +77,8 @@ namespace PHP.Core.AST
         /// <summary>Type to test if <see cref="Expression"/> is of</summary>
         public TypeRef/*!*/ ClassNameRef { get { return classNameRef; } }
 		
-		public InstanceOfEx(Text.Span span, Expression/*!*/ expression, TypeRef/*!*/ classNameRef)
-            : base(span)
+		public InstanceOfEx(Position position, Expression/*!*/ expression, TypeRef/*!*/ classNameRef)
+			: base(position)
 		{
 			Debug.Assert(expression != null && classNameRef != null);
 
@@ -111,8 +111,8 @@ namespace PHP.Core.AST
 		public TypeRef/*!*/ ClassNameRef { get { return classNameRef; } }
 		private TypeRef/*!*/ classNameRef;
 
-		public TypeOfEx(Text.Span span, TypeRef/*!*/ classNameRef)
-            : base(span)
+		public TypeOfEx(Position position, TypeRef/*!*/ classNameRef)
+			: base(position)
 		{
 			Debug.Assert(classNameRef != null);
 
