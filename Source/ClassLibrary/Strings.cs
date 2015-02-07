@@ -47,23 +47,86 @@ namespace PHP.Library
     [Flags]
     public enum QuoteStyle
     {
+        /// <summary>
+        /// Default quote style for <c>htmlentities</c>.
+        /// </summary>
+        HtmlEntitiesDefault = QuoteStyle.Compatible | QuoteStyle.Html401,
+
         /// <summary>Single quotes.</summary>
         SingleQuotes = 1,
 
         /// <summary>Double quotes.</summary>
         DoubleQuotes = 2,
 
-        /// <summary>No quotes.</summary>
+        /// <summary>
+        /// No quotes.
+        /// Will leave both double and single quotes unconverted.
+        /// </summary>
         [ImplementsConstant("ENT_NOQUOTES")]
         NoQuotes = 0,
 
-        /// <summary>The default value (double quotes).</summary>
+        /// <summary>
+        /// Will convert double-quotes and leave single-quotes alone.
+        /// </summary>
         [ImplementsConstant("ENT_COMPAT")]
         Compatible = DoubleQuotes,
 
-        /// <summary>Both single and double quotes.</summary>
+        /// <summary>
+        /// Both single and double quotes.
+        /// Will convert both double and single quotes.
+        /// </summary>
         [ImplementsConstant("ENT_QUOTES")]
-        BothQuotes = DoubleQuotes | SingleQuotes
+        BothQuotes = DoubleQuotes | SingleQuotes,
+
+        /// <summary>
+        /// Silently discard invalid code unit sequences instead of
+        /// returning an empty string. Using this flag is discouraged
+        /// as it may have security implications.
+        /// </summary>
+        [ImplementsConstant("ENT_IGNORE")]
+        Ignore = 4,
+
+        /// <summary>
+        /// Replace invalid code unit sequences with a Unicode
+        /// Replacement Character U+FFFD (UTF-8) or &#FFFD;
+        /// (otherwise) instead of returning an empty string.
+        /// </summary>
+        [ImplementsConstant("ENT_SUBSTITUTE")]  //	8
+        Substitute = 8,
+
+        /// <summary>
+        /// Handle code as HTML 4.01.
+        /// </summary>
+        [ImplementsConstant("ENT_HTML401")]     //	0
+        Html401 = NoQuotes,
+
+        /// <summary>
+        /// Handle code as XML 1.
+        /// </summary>
+        [ImplementsConstant("ENT_XML1")]        //	16
+        XML1 = 16,
+
+        /// <summary>
+        /// Handle code as XHTML.
+        /// </summary>
+        [ImplementsConstant("ENT_XHTML")]       //	32
+        XHTML = 32,
+
+        /// <summary>
+        /// Handle code as HTML 5.
+        /// </summary>
+        [ImplementsConstant("ENT_HTML5")]       //	(16|32)
+        HTML5 = XML1 | XHTML,
+
+        /// <summary>
+        /// Replace invalid code points for the given document type
+        /// with a Unicode Replacement Character U+FFFD (UTF-8) or &#FFFD;
+        /// (otherwise) instead of leaving them as is.
+        /// This may be useful, for instance, to ensure the well-formedness
+        /// of XML documents with embedded external content.
+        /// </summary>
+        [ImplementsConstant("ENT_DISALLOWED")]  //	128
+        Disallowed = 128,
     };
 
     /// <summary>Types of HTML entities tables.</summary>
@@ -3128,6 +3191,11 @@ namespace PHP.Library
         #region htmlentities, get_html_translation_table, html_entity_decode
 
         /// <summary>
+        /// Default <c>encoding</c> used in <c>htmlentities</c>.
+        /// </summary>
+        private const string DefaultHtmlEntitiesCharset = "UTF-8";
+
+        /// <summary>
         /// Converts special characters to HTML entities.
         /// </summary>
         /// <param name="str">The string to convert.</param>
@@ -3136,9 +3204,9 @@ namespace PHP.Library
         /// <b>htmlentities</b> (<see cref="EncodeHtmlEntities"/>), all characters that have HTML character entity equivalents are
         /// translated into these entities.</remarks>
         [ImplementsFunction("htmlentities")]
-        public static PhpBytes EncodeHtmlEntities(PhpBytes str)
+        public static string EncodeHtmlEntities(object str)
         {
-            return EncodeHtmlEntities(str, QuoteStyle.Compatible, "ISO-8859-1", true);
+            return EncodeHtmlEntities(str, QuoteStyle.HtmlEntitiesDefault, DefaultHtmlEntitiesCharset, true);
         }
 
         /// <summary>
@@ -3151,9 +3219,9 @@ namespace PHP.Library
         /// <b>htmlentities</b> (<see cref="EncodeHtmlEntities"/>), all characters that have HTML character entity equivalents are
         /// translated into these entities.</remarks>
         [ImplementsFunction("htmlentities")]
-        public static PhpBytes EncodeHtmlEntities(PhpBytes str, QuoteStyle quoteStyle)
+        public static string EncodeHtmlEntities(object str, QuoteStyle quoteStyle)
         {
-            return EncodeHtmlEntities(str, quoteStyle, "ISO-8859-1", true);
+            return EncodeHtmlEntities(str, quoteStyle, DefaultHtmlEntitiesCharset, true);
         }
 
         /// <summary>
@@ -3161,15 +3229,15 @@ namespace PHP.Library
         /// </summary>
         /// <param name="str">The string to convert.</param>
         /// <param name="quoteStyle">Quote conversion.</param>
-        /// <param name="charSet">The character set used in conversion. This parameter is ignored.</param>
+        /// <param name="charSet">The character set used in conversion.</param>
         /// <returns>The converted string.</returns>
         /// <remarks>This method is identical to <see cref="HtmlSpecialChars"/> in all ways, except with
         /// <b>htmlentities</b> (<see cref="EncodeHtmlEntities"/>), all characters that have HTML character entity equivalents are
         /// translated into these entities.</remarks>
         [ImplementsFunction("htmlentities")]
-        public static PhpBytes EncodeHtmlEntities(PhpBytes str, QuoteStyle quoteStyle, string charSet)
+        public static string EncodeHtmlEntities(object str, QuoteStyle quoteStyle, string charSet)
         {
-            return EncodeHtmlEntities(str, quoteStyle, "ISO-8859-1", true);
+            return EncodeHtmlEntities(str, quoteStyle, charSet, true);
         }
 
         /// <summary>
@@ -3184,17 +3252,24 @@ namespace PHP.Library
         /// <b>htmlentities</b> (<see cref="EncodeHtmlEntities"/>), all characters that have HTML character entity equivalents are
         /// translated into these entities.</remarks>
         [ImplementsFunction("htmlentities")]
-        public static PhpBytes EncodeHtmlEntities(PhpBytes str, QuoteStyle quoteStyle, string charSet, bool doubleEncode)
+        public static string EncodeHtmlEntities(object str, QuoteStyle quoteStyle, string charSet, bool doubleEncode)
         {
-            var encoding = Encoding.GetEncoding(charSet);
-            var s = encoding.GetString(str.Data);
-            s = EncodeHtmlEntities(s, quoteStyle, doubleEncode);
-            return new PhpBytes(encoding.GetBytes(s));
+            try
+            {
+                var s = ObjectToString(str, charSet);
+                return EncodeHtmlEntities(s, quoteStyle, doubleEncode);
+            }
+            catch (ArgumentException ex)
+            {
+                PhpException.Throw(PhpError.Warning, ex.Message);
+                return string.Empty;
+            }
         }
 
         private static string EncodeHtmlEntities(string str, QuoteStyle quoteStyle, bool doubleEncode)
         {
-            if (str == null) return String.Empty;
+            if (string.IsNullOrEmpty(str))
+                return string.Empty;
 
             if (!doubleEncode)
             {   // existing HTML entities will not be double encoded // TODO: do it nicely
@@ -3291,9 +3366,9 @@ namespace PHP.Library
         /// <param name="str">The string to convert.</param>
         /// <returns>The converted string.</returns>
         [ImplementsFunction("html_entity_decode")]
-        public static PhpBytes DecodeHtmlEntities(PhpBytes str)
+        public static string DecodeHtmlEntities(object str)
         {
-            return DecodeHtmlEntities(str, QuoteStyle.Compatible, "ISO-8859-1");
+            return DecodeHtmlEntities(str, QuoteStyle.Compatible, DefaultHtmlEntitiesCharset);
         }
 
         /// <summary>
@@ -3303,9 +3378,9 @@ namespace PHP.Library
         /// <param name="quoteStyle">Quote conversion.</param>
         /// <returns>The converted string.</returns>
         [ImplementsFunction("html_entity_decode")]
-        public static PhpBytes DecodeHtmlEntities(PhpBytes str, QuoteStyle quoteStyle)
+        public static string DecodeHtmlEntities(object str, QuoteStyle quoteStyle)
         {
-            return DecodeHtmlEntities(str, quoteStyle, "ISO-8859-1");
+            return DecodeHtmlEntities(str, quoteStyle, DefaultHtmlEntitiesCharset);
         }
 
         /// <summary>
@@ -3313,15 +3388,21 @@ namespace PHP.Library
         /// </summary>
         /// <param name="str">The string to convert.</param>
         /// <param name="quoteStyle">Quote conversion.</param>
-        /// <param name="charset">The character set used in conversion. This parameter is ignored.</param>
+        /// <param name="charSet">The character set used in conversion.</param>
         /// <returns>The converted string.</returns>
         [ImplementsFunction("html_entity_decode")]
-        public static PhpBytes DecodeHtmlEntities(PhpBytes str, QuoteStyle quoteStyle, string charset)
+        public static string DecodeHtmlEntities(object str, QuoteStyle quoteStyle, string charSet)
         {
-            var encoding = Encoding.GetEncoding(charset);
-            var s = encoding.GetString(str.Data);
-            s = DecodeHtmlEntities(s, quoteStyle);
-            return new PhpBytes(encoding.GetBytes(s));
+            try
+            {
+                string s = ObjectToString(str, charSet);
+                return DecodeHtmlEntities(s, quoteStyle);
+            }
+            catch (ArgumentException ex)
+            {
+                PhpException.Throw(PhpError.Warning, ex.Message);
+                return string.Empty;
+            }
         }
 
         private static string DecodeHtmlEntities(string str, QuoteStyle quoteStyle)
@@ -6589,6 +6670,33 @@ namespace PHP.Library
             if (phpstr != null) return phpstr.Length;
 
             return Core.Convert.ObjectToString(x).Length;
+        }
+
+        #endregion
+
+        #region Helpers
+
+        /// <summary>
+        /// Converts object <paramref name="obj"/> to <see cref="System.String"/>.
+        /// In case if bunary string, the conversion routine respects given <paramref name="charSet"/>.
+        /// </summary>
+        /// <param name="obj">Object to be converted.</param>
+        /// <param name="charSet">Character set used to encode binary string to <see cref="System.String"/>.</param>
+        /// <returns>String representation of <paramref name="obj"/>.</returns>
+        internal static string ObjectToString(object obj, string charSet)
+        {
+            if (obj != null && obj.GetType() == typeof(PhpBytes))
+            {
+                var encoding = Encoding.GetEncoding(charSet);
+                if (encoding == null)
+                    throw new ArgumentException(string.Format(Strings.arg_invalid_value, "charSet", charSet), "charSet");
+
+                return encoding.GetString(((PhpBytes)obj).ReadonlyData);
+            }
+            else
+            {
+                return Core.Convert.ObjectToString(obj);
+            }
         }
 
         #endregion
