@@ -864,7 +864,7 @@ namespace PHP
 			//	BindParameters(moduleName, args, refInfo, externalfunc.ExtManager, /*!*/param_binding);
 			if (local_param_binding != nullptr)
 			{
-				Debug::Assert(local_externalfunc != nullptr);
+				System::Diagnostics::Debug::Assert(local_externalfunc != nullptr);
 
 				Label lbl_nobind = il->DefineLabel();
 				il->Ldloc(local_param_binding);
@@ -1169,7 +1169,7 @@ namespace PHP
 
 					field_builder->SetCustomAttribute(attribute_builder);
 				}
-				else Debug::Assert(false, "Invalid constant type.");
+				else System::Diagnostics::Debug::Assert(false, "Invalid constant type.");
 			}
 		}
 
@@ -1446,7 +1446,7 @@ namespace PHP
 
 					PhpObjectBuilder::InfoWithAttributes<MethodInfo ^> info;
 					info.Info = argless;
-					info.Attributes = PHP::Core::Reflection::PhpMemberAttributes::Public;
+					info.Attributes = PHP::Core::PhpMemberAttributes::Public;
 
 					dyn_method_list->Add(info);
 				}

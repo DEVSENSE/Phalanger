@@ -251,7 +251,7 @@ namespace PHP.Library.Xml
         public override object nodeValue
         {
             get
-            { return this.dataImpl; }
+            { return this.dataLengthImpl; }
             set
             {
                 this._value = PHP.Core.Convert.ObjectToString(value);

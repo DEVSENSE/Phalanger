@@ -492,9 +492,9 @@ namespace PHP
 			scg::Dictionary<String ^, ExtensionLibraryDescriptor^> ^extConfig)
 		{
 #ifdef DEBUG
-			Debug::WriteLine("EXT SUP", "RemoteDispatcher::GetInstanceUrl");
+			System::Diagnostics::Debug::WriteLine("EXT SUP", "RemoteDispatcher::GetInstanceUrl");
 #endif
-			Debug::Assert(appConfig != nullptr && extConfig != nullptr);
+			System::Diagnostics::Debug::Assert(appConfig != nullptr && extConfig != nullptr);
 
 			// start a new request now!
 			// (so that client can be sure that we don't time out after publishing our instance URL)
