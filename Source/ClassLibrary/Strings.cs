@@ -1256,7 +1256,7 @@ namespace PHP.Library
         /// <param name="pieces">The array to be impleded.</param>
         /// <returns>The glued string.</returns>
         [ImplementsFunction("join")]
-        public static string JoinGeneric(PhpArray pieces)
+        public static object JoinGeneric(PhpArray pieces)
         {
             return ImplodeGeneric(pieces);
         }
@@ -1269,7 +1269,7 @@ namespace PHP.Library
         /// <returns>The glued string.</returns>
         /// <exception cref="PhpException">Thrown if neither <paramref name="glue"/> nor <paramref name="pieces"/> is not null and of type <see cref="PhpArray"/>.</exception>
         [ImplementsFunction("join")]
-        public static string JoinGeneric(object glue, object pieces)
+        public static object JoinGeneric(object glue, object pieces)
         {
             return ImplodeGeneric(glue, pieces);
         }
@@ -1280,7 +1280,7 @@ namespace PHP.Library
         /// <param name="pieces">The <see cref="PhpArray"/> to be imploded.</param>
         /// <returns>The glued string.</returns>
         [ImplementsFunction("implode")]
-        public static string ImplodeGeneric(PhpArray pieces)
+        public static object ImplodeGeneric(PhpArray pieces)
         {
             if (pieces == null)
             {
@@ -1288,7 +1288,7 @@ namespace PHP.Library
                 return null;
             }
 
-            return Implode("", pieces.Values);
+            return Implode("", pieces);
         }
 
         /// <summary>
