@@ -403,8 +403,10 @@ namespace PHP.Core.Reflection
                 foreach (var type in bakedTypes)
                 {
                     var parent = type.Value.Base;
-                    if (parent is PhpTypeDesc)
+                    if (parent is PhpTypeDesc && parent.RealType.Module != type.Value.RealType.Module)  // base type if from different module (external dependency)
                         dependentTypes.Add(new KeyValuePair<string, DTypeDesc>(parent.MakeFullName(), parent));
+
+                    // TODO: do the same for type.Value.Interfaces
                 }
 
             //
