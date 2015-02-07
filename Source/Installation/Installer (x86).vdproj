@@ -3790,13 +3790,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
+        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_1EA3F4E026354E44AF586FB788996DC1"
+        "OwnerKey" = "8:_2DE3D15FD36F4A30A1A444B58ED7790B"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -13181,15 +13181,15 @@
         "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:TRUE"
         "ProductVersion" = "8:3.0"
-        "Manufacturer" = "8:The Phalanger Team"
+        "Manufacturer" = "8:DEVSENSE"
         "ARPHELPTELEPHONE" = "8:"
-        "ARPHELPLINK" = "8:http://phalanger.codeplex.com/discussions"
+        "ARPHELPLINK" = "8:http://support.devsense.com/"
         "Title" = "8:Phalanger 3.0 for .NET 4.0"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:Tomas Matousek, Ladislav Prosek, Vaclav Novak, Pavel Novak, Jan Benda, Martin Maly, Miloslav Beno, Daniel Balas, Jakub Misek"
+        "ARPCONTACT" = "8:"
         "Keywords" = "8:Phalanger, PHP, .NET, compiler"
         "ARPCOMMENTS" = "8:"
-        "ARPURLINFOABOUT" = "8:http://phalanger.codeplex.com/"
+        "ARPURLINFOABOUT" = "8:http://www.devsense.com/"
         "ARPPRODUCTICON" = "8:"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
