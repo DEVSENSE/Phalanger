@@ -3112,7 +3112,7 @@ namespace PHP.Core.Reflection
     /// <summary>
     /// An interface identifying ClrValue&lt;T&gt; instance object.
     /// </summary>
-    internal interface IClrValue { }
+    public interface IClrValue { }
 
     /// <summary>
     /// Represents non-PHP value typed object at runtime.
