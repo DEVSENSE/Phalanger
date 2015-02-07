@@ -16,7 +16,6 @@ using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -78,7 +77,6 @@ namespace PHP.Core.Reflection
 		public static readonly PrimitiveTypeDesc/*!*/ ResourceTypeDesc;
 		public static readonly PrimitiveTypeDesc/*!*/ ArrayTypeDesc;
 		public static readonly PrimitiveTypeDesc/*!*/ ObjectTypeDesc;
-        public static readonly PrimitiveTypeDesc/*!*/ CallableTypeDesc;
 
 		private static readonly GetMemberDictionary<VariableName, DConstantDesc> getConstantDictionary;
 		private static readonly GetMemberDictionary<VariableName, DPropertyDesc> getPropertyDictionary;
@@ -88,15 +86,15 @@ namespace PHP.Core.Reflection
 		{
 			getConstantDictionary = (GetMemberDictionary<VariableName, DConstantDesc>)
 				Delegate.CreateDelegate(typeof(GetMemberDictionary<VariableName, DConstantDesc>), null,
-				typeof(DTypeDesc).GetProperty("Constants", BindingFlags.Public | BindingFlags.Instance).GetGetMethod(true));
+				typeof(DTypeDesc).GetProperty("Constants", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true));
 
 			getPropertyDictionary = (GetMemberDictionary<VariableName, DPropertyDesc>)
 				Delegate.CreateDelegate(typeof(GetMemberDictionary<VariableName, DPropertyDesc>), null,
-                typeof(DTypeDesc).GetProperty("Properties", BindingFlags.Public | BindingFlags.Instance).GetGetMethod(true));
+				typeof(DTypeDesc).GetProperty("Properties", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true));
 
 			getMethodDictionary = (GetMemberDictionary<Name, DRoutineDesc>)
 				Delegate.CreateDelegate(typeof(GetMemberDictionary<Name, DRoutineDesc>), null,
-                typeof(DTypeDesc).GetProperty("Methods", BindingFlags.Public | BindingFlags.Instance).GetGetMethod(true));
+				typeof(DTypeDesc).GetProperty("Methods", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true));
 
 			if (UnknownModule.RuntimeModule == null)
 				UnknownModule.RuntimeModule = new UnknownModule();
@@ -115,7 +113,6 @@ namespace PHP.Core.Reflection
 			ResourceTypeDesc = new PrimitiveTypeDesc(typeof(PhpResource), PhpTypeCode.PhpResource);
 			ArrayTypeDesc = new PrimitiveTypeDesc(typeof(PhpArray), PhpTypeCode.PhpArray);
 			ObjectTypeDesc = new PrimitiveTypeDesc(typeof(DObject), PhpTypeCode.DObject);
-            CallableTypeDesc = new PrimitiveTypeDesc(typeof(void)/*not used*/, PhpTypeCode.PhpCallable);
 		}
 
 		#endregion
@@ -153,7 +150,6 @@ namespace PHP.Core.Reflection
 		public ClrType ClrType { get { return (ClrType)Type; } }
 
 		public bool IsInterface { get { return (memberAttributes & PhpMemberAttributes.Interface) != 0; } }
-        public bool IsTrait { get { return (memberAttributes & PhpMemberAttributes.Trait) != 0; } }
 		public virtual bool IsValueType { get { return false; } }
 
 		/// <summary>
@@ -243,7 +239,7 @@ namespace PHP.Core.Reflection
 		}
 		protected DTypeDesc[] interfaces;
 
-		public Dictionary<Name, DRoutineDesc> Methods
+		internal Dictionary<Name, DRoutineDesc> Methods
 		{
 			get
 			{
@@ -263,7 +259,7 @@ namespace PHP.Core.Reflection
 		protected Dictionary<Name, DRoutineDesc> methods;
 
 		// TODO: OrderedHashtable
-		public Dictionary<VariableName, DPropertyDesc> Properties
+		internal Dictionary<VariableName, DPropertyDesc> Properties
 		{
 			get
 			{
@@ -282,7 +278,7 @@ namespace PHP.Core.Reflection
 		}
 		protected Dictionary<VariableName, DPropertyDesc> properties;
 
-		public Dictionary<VariableName, DConstantDesc> Constants
+		internal Dictionary<VariableName, DConstantDesc> Constants
 		{
 			get
 			{
@@ -301,11 +297,11 @@ namespace PHP.Core.Reflection
 		}
 		protected Dictionary<VariableName, DConstantDesc> constants;
 
-        #endregion
+		#endregion
 
-        #region Construction
+		#region Construction
 
-        /// <summary>
+		/// <summary>
 		/// Used only by <see cref="GlobalTypeDesc"/>, <see cref="UnknownTypeDesc"/>, <see cref="GenericParameterDesc"/>.
 		/// </summary>
 		protected DTypeDesc()
@@ -435,10 +431,7 @@ namespace PHP.Core.Reflection
 		/// </summary>
         public static DTypeDesc Create(Type realType)
 		{
-            if (object.ReferenceEquals(realType, null))
-                return null;
-
-            return Create(realType.TypeHandle);
+			return (realType != null) ? Create(realType.TypeHandle) : null;
 		}
 
         /// <summary>
@@ -510,126 +503,98 @@ namespace PHP.Core.Reflection
 
         #region Utility
 
-        /// <summary>
-        /// Name of the class excluding namespace name.
-        /// </summary>
         public string/*!*/ MakeSimpleName()
-        {
-            if (simpleName == null)
-            {
-                if (this.Member != null && Member.FullName != null)
-                {
-                    int lastSeparator = this.Member.FullName.LastIndexOf(QualifiedName.Separator);
-                    simpleName = (lastSeparator == -1) ? this.Member.FullName : this.Member.FullName.Substring(lastSeparator + 1);
-                }
-                else
-                {
-                    simpleName = MakeSimpleName(RealType);
-                }
-            }
-            return simpleName;
-        }
-        private string simpleName = null;
+		{
+			return QualifiedName.SubstringWithoutBackquoteAndHash(RealType.Name, 0, RealType.Name.Length);
+		}
+		
+		/// <summary>
+		/// To be used at run-time for error-reporting only (slow).
+		/// </summary>
+		public override string/*!*/ MakeFullName()
+		{
+			if (Member != null)
+				return Member.FullName;
 
-        private static string/*!*/ MakeSimpleName(Type/*!*/realType)
-        {
-            var phpTypeAttr = ImplementsTypeAttribute.Reflect(realType);
-            if (phpTypeAttr != null && phpTypeAttr.PHPTypeName != null)
-                return phpTypeAttr.PHPTypeName;
-            else
-                return ClrNotationUtils.SubstringWithoutBackquoteAndHash(realType.Name, 0, realType.Name.Length);
-        }
+			return GetFullName(RealType, new StringBuilder()).ToString();
+		}
+		
+		/// <summary>
+		/// To be used at run-time for error-reporting only (slow).
+		/// </summary>
+		public override string/*!*/ MakeFullGenericName()
+		{
+			return GetFullGenericName(RealType, new StringBuilder()).ToString();
+		}
 
-        /// <summary>
-        /// Full name of the type, including namespace name. Uses PHP namespace separator.
-        /// </summary>
-        public override string/*!*/ MakeFullName()
-        {
-            if (Member != null)
-                return Member.FullName;
+		internal static StringBuilder/*!*/ GetFullGenericName(Type/*!*/ realType, StringBuilder/*!*/ result)
+		{
+			Debug.Assert(realType != null && result != null);
 
-            return GetFullName(RealType, new StringBuilder()).ToString();
-        }
+			GetFullName(realType, result);
 
-        /// <summary>
-        /// Full name of the type, including namespace name and generic parameters. Uses PHP namespace separator.
-        /// </summary>
-        public override string/*!*/ MakeFullGenericName()
-        {
-            return GetFullGenericName(RealType, new StringBuilder()).ToString();
-        }
+			if (!realType.IsGenericType)
+				return result;
 
-        /// <summary>
-        /// Full name of the type, including namespace name and generic parameters. Uses PHP namespace separator.
-        /// </summary>
-        internal static StringBuilder/*!*/ GetFullGenericName(Type/*!*/ realType, StringBuilder/*!*/ result)
-        {
-            Debug.Assert(realType != null && result != null);
+			ConstructedTypeDesc.GenericArgumentsToString(realType.GetGenericArguments(), result);
 
-            GetFullName(realType, result);
+			return result;
+		}
 
-            if (!realType.IsGenericType)
-                return result;
+		internal static StringBuilder/*!*/ GetFullName(Type/*!*/ realType, StringBuilder/*!*/ result)
+		{
+			Debug.Assert(realType != null && result != null);
 
-            ConstructedTypeDesc.GenericArgumentsToString(realType.GetGenericArguments(), result);
+			// TODO: do this better
+			// proposed solution: RuntimeModule will convert lazily itself to a DModule 
+			// DModule will then implement its policy of naming conventions and unmangling methods
 
-            return result;
-        }
+			// primitive types first:
+			string primitive_name = PrimitiveTypeDesc.GetPrimitiveName(realType);
+			if (primitive_name != null)
+				return result.Append(primitive_name);
 
-        internal static StringBuilder/*!*/ GetFullName(Type/*!*/ realType, StringBuilder/*!*/ result)
-        {
-            Debug.Assert(realType != null && result != null);
+			// naming policy of PhpLibraryModule is PHP.Library.library_namespace.type_name#n`m:
+			// namespace is ignored
+			if (!String.IsNullOrEmpty(realType.Namespace) && !realType.Namespace.StartsWith(Namespaces.Library))
+			{
+				if (realType.Namespace[0] == '<')
+				{
+					// naming policy of ScriptModule is <coded_file_name>.user_namespace_clr.type_name#n`m:
+					int closing = realType.Namespace.IndexOf('>') + 2;
+					if (closing > 1 && closing < realType.Namespace.Length)
+					{
+						result.Append(realType.Namespace.Substring(closing).Replace(".", QualifiedName.Separator));
+						result.Append(QualifiedName.Separator);
+					}
+				}
+				else
+				{
+					// naming policy of Pure Module is user_namespace_clr.type_name#n`m:
+					result.Append(realType.Namespace.Replace(".", QualifiedName.Separator));
+					result.Append(QualifiedName.Separator);
+				}
+			}
 
-            // TODO: do this better
-            // proposed solution: RuntimeModule will convert lazily itself to a DModule 
-            // DModule will then implement its policy of naming conventions and unmangling methods
+			if (realType.DeclaringType != null)
+				GetNestedTypeNames(realType.DeclaringType, result);
 
-            // primitive types first:
-            string primitive_name = PrimitiveTypeDesc.GetPrimitiveName(realType);
-            if (primitive_name != null)
-                return result.Append(primitive_name);
+			result.Append(QualifiedName.SubstringWithoutBackquoteAndHash(realType.Name, 0, realType.Name.Length));
 
-            // naming policy of PhpLibraryModule is PHP.Library.library_namespace.type_name#n`m:
-            // namespace is ignored
-            if (!String.IsNullOrEmpty(realType.Namespace) && !realType.Namespace.StartsWith(Namespaces.Library))
-            {
-                if (realType.Namespace[0] == '<')
-                {
-                    // naming policy of ScriptModule is <coded_file_name>.user_namespace_clr.type_name#n`m:
-                    int closing = realType.Namespace.IndexOf('>') + 2;
-                    if (closing > 1 && closing < realType.Namespace.Length)
-                    {
-                        result.Append(realType.Namespace.Substring(closing).Replace('.', QualifiedName.Separator));
-                        result.Append(QualifiedName.Separator);
-                    }
-                }
-                else
-                {
-                    // naming policy of Pure Module is user_namespace_clr.type_name#n`m:
-                    result.Append(realType.Namespace.Replace('.', QualifiedName.Separator));
-                    result.Append(QualifiedName.Separator);
-                }
-            }
+			return result;
+		}
+		
+		internal static void GetNestedTypeNames(Type/*!*/ type, StringBuilder/*!*/ result)
+		{
+			Debug.Assert(type != null && result != null);
 
-            if (realType.DeclaringType != null)
-                GetNestedTypeNames(realType.DeclaringType, result);
+			// depth first:
+			if (type.DeclaringType != null)
+				GetNestedTypeNames(type.DeclaringType, result);
 
-            result.Append(MakeSimpleName(realType));
-
-            return result;
-        }
-
-        internal static void GetNestedTypeNames(Type/*!*/ type, StringBuilder/*!*/ result)
-        {
-            Debug.Assert(type != null && result != null);
-
-            // depth first:
-            if (type.DeclaringType != null)
-                GetNestedTypeNames(type.DeclaringType, result);
-
-            result.Append(ClrNotationUtils.SubstringWithoutBackquoteAndHash(type.Name, 0, type.Name.Length));
-            result.Append(QualifiedName.Separator);
-        }
+			result.Append(QualifiedName.SubstringWithoutBackquoteAndHash(type.Name, 0, type.Name.Length));
+			result.Append(QualifiedName.Separator);
+		}
 
 		/// <summary>
 		/// Determines whether this instance contains a given <see cref="DTypeDesc"/>
@@ -1645,7 +1610,7 @@ namespace PHP.Core.Reflection
 
 				case ConstructedTypeStart:
 				case ConstructedTypeEnd:
-					Debug.Fail(null);
+					Debug.Fail();
 					throw null;
 
 				case NamedType:
@@ -1760,39 +1725,39 @@ namespace PHP.Core.Reflection
 
 		protected override DType/*!*/ Reflect()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			return null;
 		}
 
 		protected override void ReflectInterfaces()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		protected override void ReflectMethods()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		protected override void ReflectProperties()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		protected override void ReflectConstants()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		public override object New(PhpStack stack, DTypeDesc caller, NamingContext nameContext)
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			return null;
 		}
 
 		public override object New(ScriptContext context)
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			return null;
 		}
 
@@ -1828,39 +1793,39 @@ namespace PHP.Core.Reflection
 
 		protected override DType/*!*/ Reflect()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			return null;
 		}
 
 		protected override void ReflectInterfaces()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		protected override void ReflectMethods()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		protected override void ReflectProperties()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		protected override void ReflectConstants()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		public override object New(PhpStack stack, DTypeDesc caller, NamingContext nameContext)
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			return null;
 		}
 
 		public override object New(ScriptContext context)
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			return null;
 		}
 
@@ -1925,31 +1890,31 @@ namespace PHP.Core.Reflection
 
 		protected override DType/*!*/ Reflect()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			throw null;
 		}
 
 		protected override void ReflectInterfaces()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			throw null;
 		}
 
 		protected override void ReflectMethods()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			throw null;
 		}
 
 		protected override void ReflectProperties()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			throw null;
 		}
 
 		protected override void ReflectConstants()
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		#endregion
@@ -1958,13 +1923,13 @@ namespace PHP.Core.Reflection
 
 		public override object New(PhpStack/*!*/ stack, DTypeDesc caller, NamingContext nameContext)
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			return null;
 		}
 
 		public override object New(ScriptContext/*!*/ context)
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			return null;
 		}
 
@@ -1990,7 +1955,7 @@ namespace PHP.Core.Reflection
 				if (_genericParameters == null)
 				{
 					_genericParameters = genericType.ReflectGenericParameters(null, null, null);
-                    DebugHelper.AssertAllNonNull(_genericParameters);
+					Debug.AssertAllNonNull(_genericParameters);
 				}
 
 				return _genericParameters;
@@ -2008,7 +1973,7 @@ namespace PHP.Core.Reflection
 
 		public GenericTypeDefinition(DTypeDesc/*!*/ genericType, GenericParameterDesc[]/*!!*/ genericParameters)
 		{
-            DebugHelper.AssertAllNonNull(genericParameters);
+			Debug.AssertAllNonNull(genericParameters);
 			Debug.Assert(genericType != null && genericParameters.Length > 0);
 
 			this.genericType = genericType;
@@ -2077,13 +2042,13 @@ namespace PHP.Core.Reflection
 
 		public override object New(PhpStack/*!*/ stack, DTypeDesc caller, NamingContext nameContext)
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			return null;
 		}
 
 		public override object New(ScriptContext/*!*/ context)
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 			return null;
 		}
 
@@ -2294,19 +2259,19 @@ namespace PHP.Core.Reflection
 		protected override void ReflectMethods()
 		{
 			// TODO: fill methods
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		protected override void ReflectProperties()
 		{
 			// TODO: fill properties
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		protected override void ReflectConstants()
 		{
 			// TODO: fill constants
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		#endregion
@@ -2432,7 +2397,7 @@ namespace PHP.Core.Reflection
 		{
 			// this type-desc represents non-generic type or the generic definition => create the ClrType for it:
 			if (!RealType.IsGenericType || RealType.IsGenericTypeDefinition)
-				return new PhpType(this, ClrNotationUtils.FromClrNotation(RealType));
+				return new PhpType(this, QualifiedName.FromClrNotation(RealType.FullName, true));
 
 			// this type-desc represents a generic type instantiation; 
 			// all instantiations of a single generic type share the same ClrType => do not create new ClrType;
@@ -2593,7 +2558,7 @@ namespace PHP.Core.Reflection
                                 return false;
 
                             // create DPropertyDesc
-                            property_desc = new DPhpFieldDesc(this, Enums.GetPropertyAttributes(info));
+                            property_desc = new DPhpFieldDesc(this, PhpMemberAttributes.Public);
                             properties.Add(name, property_desc);
 
                             // remember PropertyInfo
@@ -2655,9 +2620,6 @@ namespace PHP.Core.Reflection
                                     this,
                                     PhpMemberAttributes.Public | PhpMemberAttributes.Static,
                                     info.GetValue(null));
-
-                                if (!info.IsInitOnly && !info.IsLiteral)    // deferred constant value
-                                    constant_desc.ValueIsDeferred = true;
 
                                 constants.Add(name, constant_desc);
                             }
@@ -2768,6 +2730,38 @@ namespace PHP.Core.Reflection
 			}
 		}
 
+		#region Unit Test
+#if DEBUG
+
+		[Test]
+		private static void TestPhpObjectInterfaces()
+		{
+			Type[] ifaces = typeof(PhpObject).GetInterfaces();
+			Type[] expected = new Type[]
+				{ 
+					typeof(PHP.Core.IPhpVariable),
+					typeof(PHP.Core.IPhpConvertible),
+					typeof(PHP.Core.IPhpPrintable),
+					typeof(PHP.Core.IPhpCloneable),
+					typeof(PHP.Core.IPhpComparable),
+					typeof(PHP.Core.IPhpObjectGraphNode),
+					typeof(PHP.Core.IPhpEnumerable),
+					typeof(System.IDisposable),
+#if !SILVERLIGHT
+					typeof(System.Runtime.Serialization.ISerializable),
+					typeof(System.Runtime.Serialization.IDeserializationCallback) 
+#endif
+				};
+
+            Debug.Assert(ifaces.Length == expected.Length && ArrayEx.TrueForAll(ifaces, delegate(System.Type iface)
+			{
+				return Array.IndexOf(expected, iface) != -1;
+			}), "ReflectInterfaces must be updated if PhpObject implements different interfaces than listed");
+		}
+
+#endif
+		#endregion
+
 		private static bool IsRealInterfaceHidden(Type/*!*/ realType, Type/*!*/ realInterface)
 		{
 			// non public:
@@ -2781,8 +2775,7 @@ namespace PHP.Core.Reflection
 			// Note: on silverlight we're using "stubs"
 			bool isPhpObjectInterface = (realInterface == typeof(System.IDisposable) ||
 				realInterface == typeof(ISerializable) ||
-				realInterface == typeof(IDeserializationCallback) ||
-                realInterface == typeof(System.Dynamic.IDynamicMetaObjectProvider));
+				realInterface == typeof(IDeserializationCallback));
 
 			// interfaces implemented by PhpObject/DObject:
 			if (isPhpObjectInterface)
@@ -2805,27 +2798,18 @@ namespace PHP.Core.Reflection
         protected override void ReflectInterfaces()
         {
             Type[] real_interfaces = RealType.GetInterfaces();
-            if (real_interfaces == null || real_interfaces.Length == 0)
-            {
-                this.interfaces = DTypeDesc.EmptyArray;
-            }
-            else
-            {
-                List<DTypeDesc> iface_list = null;
 
-                for (int i = 0; i < real_interfaces.Length; i++)
+            List<DTypeDesc> iface_list = new List<DTypeDesc>(real_interfaces.Length);
+
+            for (int i = 0; i < real_interfaces.Length; i++)
+            {
+                if (!IsRealInterfaceHidden(RealType, real_interfaces[i]))
                 {
-                    if (!IsRealInterfaceHidden(RealType, real_interfaces[i]))
-                    {
-                        if (iface_list == null)
-                            iface_list = new List<DTypeDesc>(real_interfaces.Length - i);
-
-                        iface_list.Add(DTypeDesc.Create(real_interfaces[i]));
-                    }
+                    iface_list.Add(DTypeDesc.Create(real_interfaces[i]));
                 }
-
-                interfaces = (iface_list != null) ? iface_list.ToArray() : DTypeDesc.EmptyArray;
             }
+
+            interfaces = iface_list.ToArray();
         }
 
         protected override void ReflectMethods()
@@ -2865,7 +2849,7 @@ namespace PHP.Core.Reflection
 
         private bool IsPhpConstant(FieldInfo/*!*/ info)
         {
-            return (info.IsStatic && info.IsPublic && (info.IsLiteral || info.IsInitOnly || info.FieldType == typeof(object)/*lazily initialized non-literal constant*/) &&
+            return (info.IsStatic && info.IsPublic && (info.IsLiteral || info.IsInitOnly) &&
                 (
                     info.FieldType == typeof(object) ||
                     info.FieldType == typeof(int) ||
@@ -3010,8 +2994,20 @@ namespace PHP.Core.Reflection
 
 		internal void EnsureThreadStaticFieldsInitialized(ScriptContext context)
 		{
-            if (initializeStaticFields != null)
-                initializeStaticFields(context);
+            // ensure properties are reflected
+            var props = this.Properties;
+
+            //if (properties == null)
+            //{
+            //    lock (this)
+            //        if (properties == null)
+            //        {
+            //            pendingReflect = true;
+            //            AutoPopulateNoLock();
+            //            pendingReflect = false;
+            //        }
+            //}
+			if (initializeStaticFields != null) initializeStaticFields(context);
 		}
 
 		#endregion
@@ -3103,7 +3099,7 @@ namespace PHP.Core.Reflection
 		{
 			// this type-desc represents non-generic type or the generic definition => create the ClrType for it:
 			if (!RealType.IsGenericType || RealType.IsGenericTypeDefinition)
-				return new ClrType(this, ClrNotationUtils.FromClrNotation(RealType.FullName, true));
+				return new ClrType(this, QualifiedName.FromClrNotation(RealType.FullName, true));
 
 			// this type-desc represents a generic type instantiation; 
 			// all instantiations of a single generic type share the same ClrType => do not create new ClrType;
@@ -3185,8 +3181,8 @@ namespace PHP.Core.Reflection
 			IEnumerable<MethodInfo> tmf = tm;
 //#endif
 
-            IDictionary<string, IList<MethodInfo>> all_methods = CollectionUtils.BuildListDictionary<string, MethodInfo>
-                (tmf.Select(_m => _m.Name), tmf);
+			IDictionary<string, IList<MethodInfo>> all_methods = CollectionUtils.BuildListDictionary<string, MethodInfo>
+				(CollectionUtils.Map<MethodInfo, string>(tmf, delegate(MethodInfo m) { return m.Name; }), tmf);
 
 			// TODO: statistics: how many visible overloads in AVG?
 			Dictionary<Name, DRoutineDesc> methods = new Dictionary<Name, DRoutineDesc>(real_methods.Length / 2);
@@ -3233,12 +3229,13 @@ namespace PHP.Core.Reflection
 						{
 							MethodInfo iface_method = mapping.InterfaceMethods[i];
 
-							PhpMemberAttributes attrs = Enums.GetMemberAttributes(real_method) | PhpMemberAttributes.Final;
+							PhpMemberAttributes attrs = Enums.GetMemberAttributes(iface_method) |
+								PhpMemberAttributes.Final;
 
-                            // reflect the method twice - under the iface method name and under the
-                            // compound iface.method name
-                            ReflectMethod(real_method, new Name(iface_method.Name), attrs, declaringType, methods, null);
-                            ReflectMethod(real_method, new Name(iface_type.Name + "." + iface_method.Name), attrs, declaringType, methods, null);
+							// reflect the method twice - under the iface method name and under the
+							// compound iface.method name
+							ReflectMethod(iface_method, new Name(iface_method.Name), attrs, declaringType, methods, null);
+							ReflectMethod(iface_method, new Name(iface_type.Name + "." + iface_method.Name), attrs, declaringType, methods, null);
 						}
 					}
 				}
@@ -3362,8 +3359,8 @@ namespace PHP.Core.Reflection
 
 							// TODO: how to combine attrs?
 							PhpMemberAttributes attrs = PhpMemberAttributes.None;
-							if (has_visible_getter) attrs |= Enums.GetMemberAttributes(getter);
-                            if (has_visible_setter) attrs |= Enums.GetMemberAttributes(setter);
+							if (getter != null) attrs = Enums.GetMemberAttributes(getter);
+							if (setter != null) attrs = Enums.GetMemberAttributes(setter);
 
 							ReflectProperty(name, attrs, real_prop, has_visible_getter, has_visible_setter);
 						}
