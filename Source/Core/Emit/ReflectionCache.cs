@@ -433,7 +433,7 @@ namespace PHP.Core.Emit
         public struct PhpVariable
         {
             static Type _this { get { return typeof(PHP.Core.PhpVariable); } }
-            static MethodInfo _Copy, _IsEmpty, _IsString, _MakeReference, _AsString, _Dereference;
+            static MethodInfo _Copy, _IsEmpty, _IsString, _MakeReference, _AsString, _Dereference, _Unwrap;
 
             public static MethodInfo Copy { get { if (_Copy == null) _Copy = _this.GetMethod("Copy"); return _Copy; } }
             public static MethodInfo IsEmpty { get { if (_IsEmpty == null) _IsEmpty = _this.GetMethod("IsEmpty"); return _IsEmpty; } }
@@ -441,6 +441,7 @@ namespace PHP.Core.Emit
             public static MethodInfo AsString { get { if (_AsString == null) _AsString = _this.GetMethod("AsString"); return _AsString; } }
             public static MethodInfo MakeReference { get { if (_MakeReference == null) _MakeReference = _this.GetMethod("MakeReference"); return _MakeReference; } }
             public static MethodInfo Dereference { get { return _Dereference ?? (_Dereference = _this.GetMethod("Dereference", Types.Object)); } }
+            public static MethodInfo Unwrap { get { return _Unwrap ?? (_Unwrap = _this.GetMethod("Unwrap")); } }
         }
 
         #endregion
@@ -829,7 +830,7 @@ namespace PHP.Core.Emit
             _String_IsInterned, _String_Concat_String_String, _IEnumerator_MoveNext, _DTypeDesc_Create,
             _PhpTypeDesc_Create, _ClrObject_Wrap, _ClrObject_WrapDynamic, _ClrObject_WrapRealObject, _ClrObject_Create, _Object_GetType,
             _Object_ToString, _Object_Finalize, _DObject_InvokeMethod, _DObject_InvokeConstructor, _DObject_Dispose, _DObject_GetRuntimeField, _DObject_SetProperty,
-            _DRoutineDesc_Invoke, _PhpHashtable_Add, _InitializeArray, _ArrayCopy, _ArrayCopyTo;
+            _DRoutineDesc_Invoke, _PhpHashtable_Add, _InitializeArray, _ArrayCopy, _ArrayCopyTo, _PhpCallback_Invoke;
 
         public static MethodInfo GetTypeFromHandle { get { if (_GetTypeFromHandle == null)  _GetTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle"); return _GetTypeFromHandle; } }
 
@@ -873,6 +874,8 @@ namespace PHP.Core.Emit
 #endif
 
         public static MethodInfo PhpHashtable_Add { get { if (_PhpHashtable_Add == null) _PhpHashtable_Add = typeof(PHP.Core.PhpHashtable).GetMethod("Add", Types.Object); return _PhpHashtable_Add; } }
+
+        public static MethodInfo PhpCallback_Invoke { get { if (_PhpCallback_Invoke == null) _PhpCallback_Invoke = typeof(PHP.Core.PhpCallback).GetMethod("Invoke",Types.ObjectArray); return _PhpCallback_Invoke; } }
 
         public struct DynamicCode
         {

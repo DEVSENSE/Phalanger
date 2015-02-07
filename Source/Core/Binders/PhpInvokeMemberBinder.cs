@@ -156,29 +156,6 @@ namespace PHP.Core.Binders
             return arguments;
         }
 
-        /// <summary>
-        /// Converts first #length elements from a given array of DynamicMetaObject to array of Expression
-        /// </summary>
-        /// <param name="args">Array of DynamicMetaObject to be converted to Expression[]</param>
-        /// <param name="startIndex">Index of first argument that's going to be converted</param>
-        /// <param name="length">Count of arguments that are going to be converted</param>
-        /// <returns>Expression[] of values of DynamicMetaObject array</returns>
-        protected static Expression[]/*!*/ PackToExpressions(DynamicMetaObject/*!*/[]/*!*/ args, int startIndex, int length)
-        {
-            int top = startIndex + length;
-            Expression[] arguments = new Expression[length];
-            for (int i = 0; i < length; ++i)
-                arguments[i] = args[i + startIndex].Expression;
-
-            return arguments;
-        }
-
-        protected static Expression[]/*!*/ PackToExpressions(DynamicMetaObject/*!*/[]/*!*/ args)
-        {
-            return PackToExpressions(args, 0, args.Length);
-        }
-
-
 
         protected DynamicMetaObject GetRuntimeClassContext(DynamicMetaObject[] args)
         {
@@ -506,13 +483,13 @@ namespace PHP.Core.Binders
             {
                 //Create array of arguments
                 argsExpr = new Expression[1];
-                argsExpr[0] = Expression.NewArrayInit(Types.Object[0], PackToExpressions(args, 0, argsWithoutScriptContext));
+                argsExpr[0] = Expression.NewArrayInit(Types.Object[0], BinderHelper.PackToExpressions(args, 0, argsWithoutScriptContext));
             }
             else
             {
                 //call overload with < N arguments
                 //argsExpr = new Expression[argsWithoutScriptContext];
-                argsExpr = PackToExpressions(args, 0, argsWithoutScriptContext);
+                argsExpr = BinderHelper.PackToExpressions(args, 0, argsWithoutScriptContext);
             }
 
             var stack = Expression.Field(scriptContext.Expression,
@@ -555,7 +532,7 @@ namespace PHP.Core.Binders
             ParameterExpression[] vars = new ParameterExpression[] { argsArrayVariable, retValVariable };
 
             // Just select real method arguments without ScriptContext and generic type arguments
-            var justParams = PackToExpressions(args, 1 + _genericParamsCount, _paramsCount);
+            var justParams = BinderHelper.PackToExpressions(args, 1 + _genericParamsCount, _paramsCount);
 
             // Expression which calls ((PhpArray)argArray).add method on each real method argument.
             var initArgsArray = Array.ConvertAll<Expression, Expression>(justParams, (x) => Expression.Call(argsArrayVariable, Methods.PhpHashtable_Add, x));
@@ -658,7 +635,7 @@ namespace PHP.Core.Binders
             }
             else
             {
-                arguments = PackToExpressions(args);
+                arguments = BinderHelper.PackToExpressions(args);
             }
 
             //((PhpObject)target))
