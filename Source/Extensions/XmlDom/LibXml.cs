@@ -3,9 +3,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using PHP.Core;
+using System.ComponentModel;
+using PHP.Core.Reflection;
 
 namespace PHP.Library.Xml
 {
+    #region LibXMLError
+    /// <summary>
+    /// Contains various information about errors thrown by libxml.
+    /// </summary>
+    [ImplementsType]
+    public class LibXMLError : PhpObject
+    {
+        #region Properties
+
+        // in PHP, it has runtime fields
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public LibXMLError(ScriptContext/*!*/context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public LibXMLError(ScriptContext/*!*/context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+    }
+
+    #endregion
+
     [ImplementsExtension("libxml")]
     public static class PhpLibXml
     {
@@ -140,7 +180,7 @@ namespace PHP.Library.Xml
 
         #endregion
 
-        #region Nested class: XmlError
+        #region Nested class: LibXMLError
 
         /// <summary>
         /// Represents internal XML error.
@@ -194,7 +234,7 @@ namespace PHP.Library.Xml
             /// <returns>An instance of <see cref="stdClass"/> with properties level, code, column, message, file, line.</returns>
             internal PhpObject/*!*/GetPhpErrorObject(ScriptContext/*!*/context)
             {
-                return new stdClass(context, true)
+                return new LibXMLError(context, true)
                 {
                     RuntimeFields = new PhpArray(6)
                     {
