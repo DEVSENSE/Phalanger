@@ -2759,7 +2759,7 @@ namespace PHP.Library
             using (var enumerator = array.GetFastEnumerator())
                 while (enumerator.MoveNext())
                 {
-                    if (identitySet.Add(enumerator.CurrentValue))
+                    if (identitySet.Add(PhpVariable.Dereference(enumerator.CurrentValue)))
                         result.Add(enumerator.Current);
                 }
 
