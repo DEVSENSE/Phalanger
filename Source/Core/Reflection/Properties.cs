@@ -324,7 +324,86 @@ namespace PHP.Core.Reflection
             return GetterStub((instance == null ? null : instance.InstanceObject));
 		}
 
-		/// <summary>
+        #region nested class: ClrPrintableValue
+
+        /// <summary>
+        /// Get operation used for <see cref="IPhpPrintable"/> operations.
+        /// </summary>
+        /// <param name="instance">Reference to <c>self</c> instance.</param>
+        /// <returns>Value of this property.</returns>
+        /// <remarks>Value of CLR properties are wrapped into <see cref="ClrPrintableValue"/> avoiding infinite recursion and displaying values converted to string if necessary.</remarks>
+        public virtual object DumpGet(DObject instance)
+        {
+            var value = this.Get(instance);
+
+            if (this.Member is ClrProperty)
+                return new ClrPrintableValue(value);
+            else
+                return value;
+        }
+
+        /// <summary>
+        /// Wraps CLR property value to stop recursion and display the value as a string. Same as VisualStudio's Immediate Window.
+        /// </summary>
+        private class ClrPrintableValue : IPhpPrintable
+        {
+            #region Fields & Properties
+
+            private readonly object value;
+
+            /// <summary>
+            /// Determines whether <see cref="value"/> is primitive type and can be printed as it is. Otherwise the <see cref="value"/> should be evaluated to string to be printed.
+            /// </summary>
+            private bool OverridePrint { get { return value != null && !PhpVariable.IsPrimitiveType(value.GetType()); } }
+
+            /// <summary>
+            /// Converts <see cref="value"/> to string enclosed with { and }.
+            /// </summary>
+            private string ValueString { get { if (value == null) throw new ArgumentNullException("value"); return string.Format("{{{0}}}", value.ToString()); } }
+
+            #endregion
+
+            #region constructor
+
+            public ClrPrintableValue(object value)
+            {
+                this.value = value;
+            }
+
+            #endregion
+
+            #region IPhpPrintable
+
+            public void Print(System.IO.TextWriter output)
+            {
+                if (OverridePrint)
+                    output.WriteLine(ValueString);
+                else
+                    PhpVariable.Print(value);
+            }
+
+            public void Dump(System.IO.TextWriter output)
+            {
+                if (OverridePrint)
+                    output.WriteLine(ValueString);
+                else
+                    PhpVariable.Dump(value);
+            }
+
+            public void Export(System.IO.TextWriter output)
+            {
+                if (OverridePrint)
+                    output.Write(ValueString);
+                else
+                    PhpVariable.Export(value);
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        /// <summary>
 		/// If the property is an unset <see cref="PhpReference"/>, it is returned (no modification takes place),
 		/// otherwise <B>null</B> is returned (and the new value is written to the property).
 		/// </summary>

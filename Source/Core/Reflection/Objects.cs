@@ -1908,7 +1908,7 @@ namespace PHP.Core.Reflection
 
 				try
 				{
-					property_value = property.Get(this);
+					property_value = property.DumpGet(this);
 				}
 				catch (Exception e)
 				{
