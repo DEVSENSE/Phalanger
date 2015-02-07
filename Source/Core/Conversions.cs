@@ -1330,6 +1330,14 @@ namespace PHP.Core
                                         // last long integer position:
                                         l = p;
 
+                                        // fix for long.MinValue (which integral part cannot be hold as position long)
+                                        if (sign && num == -(Int64.MinValue % 10))
+                                        {
+                                            // parsed number is still valid long (Int64.MinValue)
+                                            ++l; // move the long position after this character
+                                            doubleValue = -(double)long.MinValue;   // sign will be applied later
+                                        }
+
                                         longValue = sign ? Int64.MinValue : Int64.MaxValue;
                                     }
                                 }
@@ -1536,7 +1544,7 @@ namespace PHP.Core
             }
 
             // if long/integer index hasn't stopped the sign hasn't been applied yet:
-            if (l == -1) { doubleValue = unchecked((double)longValue); if (sign) longValue *= -1; l = p; }
+            if (l == -1) { doubleValue = unchecked((double)longValue); if (sign) longValue = unchecked(-longValue); l = p; }
             
             // determine int/long type:
             // try fit long into int:
@@ -2220,7 +2228,8 @@ namespace PHP.Core
 
 			static int MaxInt = Int32.MaxValue;
 			static int MinInt = Int32.MinValue;
-			static long MaxLong = Int64.MaxValue;
+			static long MinLong = Int64.MinValue;
+            static long MaxLong = Int64.MaxValue;
 			static string LongOvf = "1250456465465412504564654654";
 			static string IntOvf = "12504564654654";
 			static long IntOvfL = long.Parse(IntOvf);
@@ -2231,21 +2240,23 @@ namespace PHP.Core
 			{
 				//           string                 number?    p   i   l   d       iv       lv  dv
                 new TestCase("0",                     true,    1,  1,  1,  1,       0,       0,  0.0),
-				new TestCase("0x",                    true,    2,  2,  2,  1,       0,       0,  0.0),
-				new TestCase("0X",                    true,    2,  2,  2,  1,       0,       0,  0.0),
-				new TestCase("00x1",                 false,    2,  2,  2,  2,       0,       0,  0.0),
-				new TestCase("0x10",                  true,    4,  4,  4,  1,      16,      16,  16.0),  // dv changed in v2
-				new TestCase("-0xf",                  true,    4,  4,  4,  2,     -15,     -15,  -15.0), // dv changed in v2
-				new TestCase("00000000013",           true,   11, 11, 11, 11,      13,      13,  13.0),
-				new TestCase("00000000",              true,    8,  8,  8,  8,       0,       0,  0.0),
-				new TestCase("1",                     true,    1,  1,  1,  1,       1,       1,  1.0),
-				new TestCase("0",                     true,    1,  1,  1,  1,       0,       0,  0.0),
-				new TestCase("00008",                 true,    5,  5,  5,  5,       8,       8,  8.0),
-				new TestCase(IntOvf,                  true,   14, 10, 14, 14,  MaxInt, IntOvfL,  IntOvfD),
-				new TestCase(LongOvf,                 true,   LongOvf.Length,  10, 19, LongOvf.Length, MaxInt, MaxLong,  Double.NaN),
-				new TestCase(LongHOvf,                true,   LongHOvf.Length, 17, 24, 1, MaxInt, MaxLong, Double.NaN),
-				new TestCase(MaxInt.ToString(),       true,   10, 10, 10, 10,  MaxInt,  MaxInt,  MaxInt),
-				new TestCase(MinInt.ToString(),       true,   11, 11, 11, 11,  MinInt,  MinInt,  MinInt),
+                new TestCase("0x",                    true,    2,  2,  2,  1,       0,       0,  0.0),
+                new TestCase("0X",                    true,    2,  2,  2,  1,       0,       0,  0.0),
+                new TestCase("00x1",                 false,    2,  2,  2,  2,       0,       0,  0.0),
+                new TestCase("0x10",                  true,    4,  4,  4,  1,      16,      16,  16.0),  // dv changed in v2
+                new TestCase("-0xf",                  true,    4,  4,  4,  2,     -15,     -15,  -15.0), // dv changed in v2
+                new TestCase("00000000013",           true,   11, 11, 11, 11,      13,      13,  13.0),
+                new TestCase("00000000",              true,    8,  8,  8,  8,       0,       0,  0.0),
+                new TestCase("1",                     true,    1,  1,  1,  1,       1,       1,  1.0),
+                new TestCase("0",                     true,    1,  1,  1,  1,       0,       0,  0.0),
+                new TestCase("00008",                 true,    5,  5,  5,  5,       8,       8,  8.0),
+                new TestCase(IntOvf,                  true,   14, 10, 14, 14,  MaxInt, IntOvfL,  IntOvfD),
+                new TestCase(LongOvf,                 true,   LongOvf.Length,  10, 19, LongOvf.Length, MaxInt, MaxLong,  Double.NaN),
+                new TestCase(LongHOvf,                true,   LongHOvf.Length, 17, 24, 1, MaxInt, MaxLong, Double.NaN),
+                new TestCase(MaxInt.ToString(),       true,   10, 10, 10, 10,  MaxInt,  MaxInt,  MaxInt),
+                new TestCase(MinInt.ToString(),       true,   11, 11, 11, 11,  MinInt,  MinInt,  MinInt),
+                new TestCase(MinLong.ToString(),      true,   20, 11, 20, 20,  MinInt,  MinLong,  MinLong),
+                new TestCase(MaxLong.ToString(),      true,   19, 10, 19, 19,  MaxInt,  MaxLong,  MaxLong),
 				new TestCase("0.587e5",               true,    7,  1,  1,  7,       0,       0,  58700.0),
 				new TestCase("10dfd",                false,    2,  2,  2,  2,      10,      10,  10.0),
 				new TestCase("10efd",                false,    2,  2,  2,  2,      10,      10,  10.0),
