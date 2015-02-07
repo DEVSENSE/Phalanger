@@ -1196,9 +1196,6 @@ Stack trace:
   <data name="output_buffering_disabled" xml:space="preserve">
     <value>Output buffering is disabled</value>
   </data>
-  <data name="object_to_string_conversion" xml:space="preserve">
-    <value>Object of class {0} to string conversion</value>
-  </data>
   <data name="invalid_foreach_argument" xml:space="preserve">
     <value>Invalid argument supplied for foreach statement</value>
   </data>
@@ -2049,10 +2046,7 @@ non-infringement.
   <data name="import_deprecated" xml:space="preserve">
     <value>Import statement is deprecated and will be removed in future versions. Use PHP aliasing instead.</value>
   </data>
-  <data name="object_could_not_be_converted_to_double" xml:space="preserve">
-    <value>Object of class {0} could not be converted to double</value>
-  </data>
-  <data name="object_could_not_be_converted_to_int" xml:space="preserve">
-    <value>Object of class {0} could not be converted to int</value>
+  <data name="object_could_not_be_converted" xml:space="preserve">
+    <value>Object of class {0} could not be converted to {1}</value>
   </data>
 </root>

@@ -3928,29 +3928,11 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Object of class {0} could not be converted to double.
+        ///   Looks up a localized string similar to Object of class {0} could not be converted to {1}.
         /// </summary>
-        internal static string object_could_not_be_converted_to_double {
+        internal static string object_could_not_be_converted {
             get {
-                return ResourceManager.GetString("object_could_not_be_converted_to_double", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Object of class {0} could not be converted to int.
-        /// </summary>
-        internal static string object_could_not_be_converted_to_int {
-            get {
-                return ResourceManager.GetString("object_could_not_be_converted_to_int", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Object of class {0} to string conversion.
-        /// </summary>
-        internal static string object_to_string_conversion {
-            get {
-                return ResourceManager.GetString("object_to_string_conversion", resourceCulture);
+                return ResourceManager.GetString("object_could_not_be_converted", resourceCulture);
             }
         }
         

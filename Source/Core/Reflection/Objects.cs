@@ -1641,7 +1641,7 @@ namespace PHP.Core.Reflection
 		/// </remarks>
 		public virtual int ToInteger()
 		{
-            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted_to_int",TypeName));
+            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted", TypeName, PhpVariable.TypeNameInt));
 			return 1;
 		}
 
@@ -1654,7 +1654,7 @@ namespace PHP.Core.Reflection
 		/// </remarks>
 		public virtual long ToLongInteger()
 		{
-            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted_to_int", TypeName));
+            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted", TypeName, PhpVariable.TypeNameInt));
 			return 1;
 		}
 
@@ -1667,7 +1667,7 @@ namespace PHP.Core.Reflection
 		/// </remarks>
 		public virtual double ToDouble()
 		{
-            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted_to_double", TypeName));
+            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted", TypeName, PhpVariable.TypeNameDouble));
 			return 1.0;
 		}
 
@@ -1721,7 +1721,9 @@ namespace PHP.Core.Reflection
                 return method.Invoke(this, stack);
             }
 
-			// if not found, nothing happens
+			// __toString() not found:
+            // "Object of class %s could not be converted to %s"
+            PhpException.Throw(PhpError.RecoverableError, CoreResources.GetString("object_could_not_be_converted", TypeName, PhpVariable.TypeNameString));
 			return null;
 		}
 
@@ -1737,7 +1739,7 @@ namespace PHP.Core.Reflection
 			intValue = 1;
 			doubleValue = 1.0;
 			longValue = 1;
-            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted_to_int", TypeName));
+            PhpException.Throw(PhpError.Notice, CoreResources.GetString("object_could_not_be_converted", TypeName, PhpVariable.TypeNameInt));
 			return Convert.NumberInfo.Integer;
 		}
 
