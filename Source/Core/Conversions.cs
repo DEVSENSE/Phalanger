@@ -1912,12 +1912,29 @@ namespace PHP.Core
 				return true;
 			}
 
-			string str;
-			if ((str = PhpVariable.AsString(obj)) != null)
-			{
-				key = StringToArrayKey(str);
-				return true;	
-			}
+            //if ((str = PhpVariable.AsString(obj)) != null)
+            //{
+            //    key = StringToArrayKey(str);
+            //    return true;	
+            //}
+            
+            if (obj.GetType() == typeof(string))
+            {
+                key = StringToArrayKey((string)obj);
+                return true;
+            }
+
+            if (obj.GetType() == typeof(PhpBytes))
+            {
+                key = StringToArrayKey(((PhpBytes)obj).ToString());
+                return true;
+            }
+
+            if (obj.GetType() == typeof(PhpString))
+            {
+                key = StringToArrayKey(((PhpString)obj).ToString());
+                return true;
+            }
 
             if (obj.GetType() == typeof(bool))
 			{
@@ -1944,14 +1961,7 @@ namespace PHP.Core
 				return true;
 			}
 
-            PhpArray array = obj as PhpArray;
-            if (array != null)
-            {
-                key = new IntStringKey("Array");
-                return true;
-            }
-
-			// invalid index:
+            // invalid index:
 			key = new IntStringKey();
 			return false;
 		}
