@@ -105,7 +105,8 @@ namespace PHP.Library
 
         #region Methods
 
-        private static DateTime StrToTime(string timestr)
+        private static DateTime StrToTime(string timestr, DateTime time)
+
         {
             if (string.IsNullOrEmpty(timestr) || timestr.EqualsOrdinalIgnoreCase("now"))
             {
@@ -113,7 +114,7 @@ namespace PHP.Library
             }
             else
             {
-                var result = PhpDateTime.StringToTime(timestr);
+                var result = PhpDateTime.StringToTime(timestr, DateTimeUtils.UtcToUnixTimeStamp(time));
                 if (result is int)
                 {
                     return DateTimeUtils.UnixTimeStampToUtc((int)result);
@@ -154,7 +155,7 @@ namespace PHP.Library
             }
 
             var timestr = (time == Arg.Default) ? "now" : PHP.Core.Convert.ObjectToString(time);
-            this.Time = StrToTime(timestr);            
+            this.Time = StrToTime(timestr, DateTime.UtcNow);            
 
             //this.date.Value = this.Time.ToString("yyyy-mm-dd HH:mm:ss");
             //this.timezone_type.Value = 3;
@@ -254,7 +255,7 @@ namespace PHP.Library
             }
 
             string strtime = PHP.Core.Convert.ObjectToString(modify);
-            this.Time = StrToTime(strtime);
+            this.Time = StrToTime(strtime, Time);
 
             return this;
         }
@@ -343,6 +344,81 @@ namespace PHP.Library
             var timezone = stack.PeekValueOptional(3);
             stack.RemoveFrame();
             return createFromFormat(stack.Context, format, time, timezone);
+        }
+
+        [ImplementsMethod]        
+        public object setDate(ScriptContext/*!*/context, object year, object month, object day)
+        {
+            this.Time = new DateTime(
+                PHP.Core.Convert.ObjectToInteger(year),
+                PHP.Core.Convert.ObjectToInteger(month),
+                PHP.Core.Convert.ObjectToInteger(day) + 1,
+                Time.Hour - 1,
+                Time.Minute,
+                Time.Second,
+                Time.Millisecond,
+                Time.Kind
+            );
+
+            return this;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object setDate(object instance, PhpStack stack)
+        {
+            var arg1 = stack.PeekValue(1);
+            var arg2 = stack.PeekValue(2);
+            var arg3 = stack.PeekValue(3);
+            stack.RemoveFrame();
+            return ((__PHP__DateTime)instance).setDate(stack.Context, arg1, arg2, arg3);
+        }
+
+        [ImplementsMethod]
+        public object setTime(ScriptContext/*!*/context, object hour, object minute, object second)
+        {
+            this.Time = new DateTime(
+                Time.Year,
+                Time.Month,
+                Time.Day - 1,
+                PHP.Core.Convert.ObjectToInteger(hour),
+                PHP.Core.Convert.ObjectToInteger(minute),
+                PHP.Core.Convert.ObjectToInteger(second)
+            ).ToUniversalTime();
+
+            return this;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object setTime(object instance, PhpStack stack)
+        {
+            var arg1 = stack.PeekValue(1);
+            var arg2 = stack.PeekValue(2);
+            var arg3 = stack.PeekValue(3);
+            stack.RemoveFrame();
+
+            return ((__PHP__DateTime)instance).setTime(stack.Context, arg1, arg2, arg3);
+        }
+
+        [ImplementsMethod]
+        public object getTimestamp(ScriptContext/*!*/context)
+        {
+            return DateTimeUtils.UtcToUnixTimeStamp(Time);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getTimestamp(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+
+            return ((__PHP__DateTime)instance).getTimestamp(stack.Context);
+        }
+
+        public override int CompareTo(object obj, System.Collections.IComparer comparer)
+        {
+            var other = obj as __PHP__DateTime;
+            return other != null
+                ? Time.CompareTo(other.Time)
+                : base.CompareTo(obj, comparer);
         }
 
         #endregion
@@ -450,6 +526,7 @@ namespace PHP.Library
         /// <summary>
         /// Returns new DateTime object formatted according to the specified format.
         /// </summary>
+        /// <param name="context"><see cref="ScriptContext"/> reference.</param>
         /// <param name="format">The format that the passed in string should be in.</param>
         /// <param name="time">String representing the time.</param>
         /// <returns></returns>
@@ -463,6 +540,7 @@ namespace PHP.Library
         /// <summary>
         /// Returns new DateTime object formatted according to the specified format.
         /// </summary>
+        /// <param name="context"><see cref="ScriptContext"/> reference.</param>
         /// <param name="format">The format that the passed in string should be in.</param>
         /// <param name="time">String representing the time.</param>
         /// <param name="timezone">A DateTimeZone object representing the desired time zone.</param>
@@ -813,7 +891,8 @@ namespace PHP.Library
                         {
                             // Difference to Greenwich time (GMT) in hours Example: +0200
                             TimeSpan offset = zone.GetUtcOffset(local);
-                            result.AppendFormat("{0}{1:00}{2:00}", (offset.Ticks < 0) ? ""/*offset.Hours already < 0*/ : "+", offset.Hours, offset.Minutes);
+                            string sign = (offset.Ticks < 0) ? ((offset.Hours < 0) ? string.Empty : "-") : "+";
+                            result.AppendFormat("{0}{1:00}{2:00}", sign, offset.Hours, offset.Minutes);
                             break;
                         }
 
@@ -822,7 +901,8 @@ namespace PHP.Library
                             // same as 'O' but with the extra colon between hours and minutes
                             // Difference to Greenwich time (GMT) in hours Example: +02:00
                             TimeSpan offset = zone.GetUtcOffset(local);
-                            result.AppendFormat("{0}{1:00}:{2:00}", (offset.Ticks < 0) ? ""/*offset.Hours already < 0*/ : "+", offset.Hours, offset.Minutes);
+                            string sign = (offset.Ticks < 0) ? ((offset.Hours < 0) ? string.Empty : "-") : "+";
+                            result.AppendFormat("{0}{1:00}:{2:00}", sign, offset.Hours, offset.Minutes);
                             break;
                         }
 
