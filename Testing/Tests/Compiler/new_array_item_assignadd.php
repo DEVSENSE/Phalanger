@@ -2,12 +2,6 @@
 [file]
 <?php
 
-function foo($value)
-{
-	echo "($value) ";
-	return $value;
-}
-
 function test($value)
 {
 	echo "\nAssignAdd - $value:\n";
@@ -17,9 +11,8 @@ function test($value)
 	$arr[] .= $value;
 	$arr[] += $value;
 	$arr[] -= $value;
-	$arr[] *= foo($value);
-	$arr[] /= foo($value);
-	$arr[] &= foo($value);
+	$arr[] *= $value;
+	$arr[] /= $value;
 	// ...
 	
 	var_dump($arr);
