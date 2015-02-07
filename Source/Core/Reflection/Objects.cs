@@ -129,14 +129,21 @@ namespace PHP.Core.Reflection
 		{
 			public readonly object Value;
 			public readonly PhpMemberAttributes Attributes;
-            public readonly DTypeDesc DeclaringType;
+
+            public string DeclaringTypeName { get { return (DeclaringType != null) ? DeclaringType.MakeSimpleName() : null; } }
+            private readonly DTypeDesc DeclaringType;
 
             public AttributedValue(object value, PhpMemberAttributes attributes, DTypeDesc DeclaringType)
 			{
 				this.Value = value;
 				this.Attributes = attributes;
-                this.DeclaringType = DeclaringType;
+                this.DeclaringType = DeclaringType; // needed only when value is private
 			}
+
+            public AttributedValue(object value)
+                :this(value, PhpMemberAttributes.None, null)
+            {
+            }
 		}
 
 		#endregion
@@ -1949,7 +1956,7 @@ namespace PHP.Core.Reflection
 						{
 							case PhpMemberAttributes.Public: output.Write("[{0}] => ", pair.Key); break;
 							case PhpMemberAttributes.Protected: output.Write("[{0}:protected] => ", pair.Key); break;
-							case PhpMemberAttributes.Private: output.Write("[{0}:private] => ", pair.Key); break;
+                            case PhpMemberAttributes.Private: output.Write("[{0}:{1}:private] => ", pair.Key, pair.Value.DeclaringTypeName); break;
 						}
 						PhpVariable.Print(output, pair.Value.Value);
                         output.WriteLine();
@@ -2000,7 +2007,7 @@ namespace PHP.Core.Reflection
 					{
 						case PhpMemberAttributes.Public: prop_name = String.Format("[\"{0}\"]=>", pair.Key); break;
                         case PhpMemberAttributes.Protected: prop_name = String.Format("[\"{0}\":protected]=>", pair.Key); break;
-                        case PhpMemberAttributes.Private: prop_name = String.Format("[\"{0}\":\"{1}\":private]=>", pair.Key, pair.Value.DeclaringType.MakeSimpleName()); break;
+                        case PhpMemberAttributes.Private: prop_name = String.Format("[\"{0}\":\"{1}\":private]=>", pair.Key, pair.Value.DeclaringTypeName); break;
 					}
 
 					ct_props.Add(new KeyValuePair<string, object>(prop_name, pair.Value.Value));
