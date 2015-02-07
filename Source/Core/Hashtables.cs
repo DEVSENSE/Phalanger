@@ -3265,13 +3265,14 @@ namespace PHP.Core
 
 		#endregion
 
-        #region Add, AddLast
+        #region Add, AddToEnd
 
         /// <summary>
         /// Add an item onto the end of this array.
         /// </summary>
         /// <param name="value">Value to be added.</param>
         /// <remarks>This method is supposed to be called on newly created arrays. Several checks are not performed to enhance performance of arrays initialization.</remarks>
+        [Emitted]
         public void AddToEnd(object value)
         {
             Debug.Assert(nextNewIndex >= 0, "This method is supposed to be called on newly created arrays which have [nextNewIndex] field initialized!");
