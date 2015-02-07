@@ -22,6 +22,7 @@ using System.Runtime.InteropServices;
 using PHP.Core;
 using PHP.Core.Reflection;
 using System.Collections.Generic;
+using System.Text;
 
 namespace PHP.Library.SPL
 {
@@ -303,7 +304,114 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual object __toString(ScriptContext/*!*/context)
         {
-            throw new NotImplementedException();
+            if (this.typedesc == null)
+                return false;
+
+            StringBuilder result = new StringBuilder();
+
+            // Interface|Class
+            result.Append(this.typedesc.IsInterface ? "Interface [ interface " : "Class [ class ");
+            result.Append(this.name);
+            result.Append(' ');
+            if (this.typedesc.Base != null)
+            {
+                result.Append("extends ");
+                result.Append(this.typedesc.Base.MakeFullName());
+                result.Append(' ');
+            }
+            if (this.typedesc.Interfaces.Length > 0)
+            {
+                result.Append("implements ");
+                result.Append(string.Join(", ", this.typedesc.Interfaces.Select(x => x.MakeFullName())));
+                result.Append(' ');
+            }
+            result.AppendLine("] {");
+
+            // @@ filename
+            var fname = this.getFileName(context);
+            if (fname is string)
+                result.AppendFormat("  @@ {0}\n", (string)fname);
+
+            // Constants
+            result.AppendLine();
+            result.AppendFormat("  - Constants [{0}] {{\n", this.typedesc.Constants.Count);
+            foreach (var cnst in this.typedesc.Constants)
+            {
+                var cnst_value = cnst.Value.GetValue(context);
+                result.AppendFormat("    Constant [ {0} {1} ] {{ {2} }}\n",
+                    PhpVariable.GetTypeName(cnst_value),
+                    cnst.Key.Value,
+                    Core.Convert.ObjectToString(cnst_value));
+            }
+            result.AppendLine("  }");
+
+            // Static properties
+            var static_properties = this.typedesc.Properties.Where(x => x.Value.IsStatic).ToList();
+            result.AppendLine();
+            result.AppendFormat("  - Static properties [{0}] {{\n", static_properties.Count);
+            foreach (var prop in static_properties)
+            {
+                result.AppendFormat("    Property [ {0} static ${1} ]\n",
+                    VisibilityString(prop.Value.MemberAttributes),
+                    prop.Key.Value);
+            }
+            result.AppendLine("  }");
+
+            // Static methods
+            var static_methods = this.typedesc.Methods.Where(x => x.Value.IsStatic).ToList();
+            result.AppendLine();
+            result.AppendFormat("  - Static methods [{0}] {{\n", static_methods.Count);
+            foreach (var mtd in static_methods)
+            {
+                result.AppendFormat("    Method [ static {0} method {1} ] {{}}\n",
+                    VisibilityString(mtd.Value.MemberAttributes),
+                    mtd.Key.Value);
+                // TODO: @@ fname position
+            }
+            result.AppendLine("  }");
+
+            // Properties
+            var properties = this.typedesc.Properties.Where(x => !x.Value.IsStatic).ToList();
+            result.AppendLine();
+            result.AppendFormat("  - Properties [{0}] {{\n", properties.Count);
+            foreach (var prop in properties)
+            {
+                result.AppendFormat("    Property [ {0} ${1} ]\n",
+                    VisibilityString(prop.Value.MemberAttributes),
+                    prop.Key.Value);
+            }
+            result.AppendLine("  }");
+
+            // Methods
+            var methods = this.typedesc.Methods.Where(x => !x.Value.IsStatic).ToList();
+            result.AppendLine();
+            result.AppendFormat("  - Methods [{0}] {{\n", methods.Count);
+            foreach (var mtd in static_methods)
+            {
+                result.AppendFormat("    Method [ {0} method {1} ] {{}}\n",
+                    VisibilityString(mtd.Value.MemberAttributes),
+                    mtd.Key.Value);
+                // TODO: @@ fname position
+            }
+            result.AppendLine("  }");
+
+            // }
+            result.AppendLine("}");
+            
+            //
+            return result.ToString();
+        }
+
+        private static string VisibilityString(PhpMemberAttributes attrs)
+        {
+            var visibility = attrs & PhpMemberAttributes.VisibilityMask;
+            switch (visibility)
+            {
+                case PhpMemberAttributes.Public:
+                    return "public";
+                default:
+                    return visibility.ToString().ToLowerInvariant();
+            }
         }
 
         #endregion
@@ -429,7 +537,7 @@ namespace PHP.Library.SPL
 
         #endregion
 
-        #region getInterfaceNames, getParentClass
+        #region getInterfaceNames, getParentClass, getInterfaces
 
         [ImplementsMethod]
         public virtual object getInterfaceNames(ScriptContext/*!*/context)
@@ -466,6 +574,35 @@ namespace PHP.Library.SPL
             stack.RemoveFrame();
             return ((ReflectionClass)instance).getParentClass(stack.Context);
         }
+
+        [ImplementsMethod]
+        public virtual object getInterfaces(ScriptContext/*!*/context)
+        {
+            if (typedesc == null)
+                return false;
+
+            var ifaces = typedesc.Interfaces;
+
+            PhpArray result = new PhpArray(ifaces.Length);
+            foreach (var ifacedesc in ifaces)
+            {
+                result.Add(
+                    ifacedesc.MakeFullName(),
+                    new ReflectionClass(context, true)
+                    {
+                        typedesc = ifacedesc,
+                    });
+            }
+            return result;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getInterfaces(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionClass)instance).getInterfaces(stack.Context);
+        }
+
         #endregion
 
         #region getConstructor, getMethods, getProperties
