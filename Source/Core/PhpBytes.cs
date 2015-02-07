@@ -455,8 +455,16 @@ namespace PHP.Core
                 // if both PhpByte instances share the same internal byte array:
                 if (this._data == other._data) return 0;
 
-                // as we know the second operand is PhpBytes, compare as strings directly:
-                return comparer.Compare(((IPhpConvertible)this).ToString(), ((IPhpConvertible)other).ToString());
+                if (object.ReferenceEquals(comparer, PhpComparer.Default))
+                {
+                    // we don't have to convert bytes to string:
+                    return ArrayUtils.Compare(this.ReadonlyData, other.ReadonlyData);
+                }
+                else
+                {
+                    // user comparers can handle this operation differently:
+                    return comparer.Compare(((IPhpConvertible)this).ToString(), ((IPhpConvertible)other).ToString());
+                }
             }
 
             // compare this as string with obj
