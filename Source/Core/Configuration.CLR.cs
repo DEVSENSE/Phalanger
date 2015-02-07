@@ -2009,10 +2009,8 @@ namespace PHP.Core
 		[ThreadStatic]
 		private static Configuration current = null;
 
-#if DEBUG
 		[ThreadStatic]
 		private static bool isBeingLoadedToCurrentThread = false;
-#endif
 
         private Configuration(GlobalConfiguration/*!*/ global, LocalConfiguration/*!*/ defaultLocal)
         {
@@ -2028,10 +2026,8 @@ namespace PHP.Core
 		{
 			if (current == null)
 			{
-#if DEBUG
 				Debug.Assert(!isBeingLoadedToCurrentThread, "Configuration loader triggered next configuration load");
 				isBeingLoadedToCurrentThread = true;
-#endif
 
 				try
 				{
@@ -2049,9 +2045,7 @@ namespace PHP.Core
 				}
 				finally
 				{
-#if DEBUG
 					isBeingLoadedToCurrentThread = false;
-#endif
 				}
 			}
 		}
@@ -2095,9 +2089,7 @@ namespace PHP.Core
 		/// </summary>
 		internal static ApplicationConfiguration.PathsSection/*!*/ GetPathsNoLoad()
 		{
-#if DEBUG
 			Debug.Assert(current != null || isBeingLoadedToCurrentThread);
-#endif
 			return application.Paths;
 		}
 
@@ -2141,6 +2133,17 @@ namespace PHP.Core
 				return current != null;
 			}
 		}
+
+        /// <summary>
+        /// Get whether we are loading configuration right not, but it is not loaded yet.
+        /// </summary>
+        internal static bool IsBeingLoaded
+        {
+            get
+            {
+                return isBeingLoadedToCurrentThread;
+            }
+        }
 
 		/// <summary>
 		/// Gets script local configuration record, which is unique per request.
