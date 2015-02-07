@@ -58,40 +58,17 @@ namespace PHP.Core.Reflection
 		}
 		private RoutineDelegate _arglessStub = null;
 
-        /// <summary>
-        /// <see cref="MethodInfo"/> to be called thru .call IL OpCode.
-        /// </summary>
-        /// <remarks>
-        /// By default, it is the Method of <see cref="ArglessStub"/> delegate. In case of emitted <see cref="DynamicMethod"/>,
-        /// we need to remember the original <see cref="DynamicMethod"/> so it can be called within DLR.
-        /// </remarks>
-        internal virtual MethodInfo ArglessStubMethod { get { return this.ArglessStub.Method; } }
-
-        /// <summary>
-        /// Internal index used for call cache.
-        /// </summary>
-        internal int Index = -1;
-        internal static int LastIndex = -1;
-
 		#region Construction
 
 		/// <summary>
 		/// Used by compiler through subclasses (<paramref name="arglessStub"/> is <B>null</B> then).
 		/// Called by a declaring helper at run-time.
 		/// </summary>
-        /// <param name="declaringType">The declaring type. Can be null.</param>
-        /// <param name="memberAttributes">Attributes of the function.</param>
-        /// <param name="arglessStub">The stub to be called. Cannot be null.</param>
-        /// <param name="needsIndex">True to allocate <see cref="Index"/>. Usable for preserved descs, for global functions that can be reused.</param>
-		internal DRoutineDesc(DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes, RoutineDelegate arglessStub, bool needsIndex)
+		internal DRoutineDesc(DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes, RoutineDelegate arglessStub)
 			: base(declaringType, memberAttributes)
 		{
 			Debug.Assert(declaringType != null);
 			this._arglessStub = arglessStub;
-
-            // allocate an index, only for preserved descs
-            if (needsIndex) // assign an index only if needed (save indexes, since they cause prealocation of larger BitArray)
-                this.Index = System.Threading.Interlocked.Increment(ref LastIndex);
 		}
 
 		#endregion
@@ -184,7 +161,7 @@ namespace PHP.Core.Reflection
 		/// Used by compiler for functions.
 		/// </summary>
 		internal PhpRoutineDesc(DModule/*!*/ declaringModule, PhpMemberAttributes memberAttributes)
-			: base(declaringModule.GlobalType.TypeDesc, memberAttributes, null, false)
+			: base(declaringModule.GlobalType.TypeDesc, memberAttributes, null)
 		{
 			Debug.Assert(declaringModule != null);
 			Debug.Assert((memberAttributes & PhpMemberAttributes.Static) != 0);
@@ -194,7 +171,7 @@ namespace PHP.Core.Reflection
 		/// Used by compiler for methods.
 		/// </summary>
 		internal PhpRoutineDesc(DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes)
-			: base(declaringType, memberAttributes, null, false)
+			: base(declaringType, memberAttributes, null)
 		{
 			Debug.Assert(declaringType != null);
 		}
@@ -204,7 +181,7 @@ namespace PHP.Core.Reflection
 		/// Called by declaring helper emitted on PHP types.
 		/// </summary>
 		internal PhpRoutineDesc(DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes, RoutineDelegate/*!*/ arglessStub)
-			: base(declaringType, memberAttributes, arglessStub, false)
+			: base(declaringType, memberAttributes, arglessStub)
 		{
 			Debug.Assert(arglessStub != null);
 		}
@@ -213,8 +190,8 @@ namespace PHP.Core.Reflection
 		/// Creates a descriptor for specified PHP function at run-time if argless stub delegate is available.
 		/// Called by declaring helpers emitted on script or when a callback is created.
 		/// </summary>
-        public PhpRoutineDesc(PhpMemberAttributes memberAttributes, RoutineDelegate/*!*/ arglessStub, bool needsIndex)
-            : base(UnknownModule.RuntimeModule.GlobalType.TypeDesc, memberAttributes, arglessStub, needsIndex)
+		internal PhpRoutineDesc(PhpMemberAttributes memberAttributes, RoutineDelegate/*!*/ arglessStub)
+			: base(UnknownModule.RuntimeModule.GlobalType.TypeDesc, memberAttributes, arglessStub)
 		{
 			Debug.Assert(arglessStub != null);
 		}
@@ -228,18 +205,14 @@ namespace PHP.Core.Reflection
 
 		public override string MakeFullName()
 		{
-            if (fullName != null)
-                return fullName;
-
 			if (Member != null)
-                return fullName = Member.FullName;
+				return Member.FullName;
 
 			if (IsMethod)
-                return fullName = ArglessStub.Method.Name;
+				return ArglessStub.Method.Name;
 
-            return fullName = GetFullName(ArglessStub.Method, new StringBuilder()).ToString();
+			return GetFullName(ArglessStub.Method, new StringBuilder()).ToString();
 		}
-        private string fullName;
 
 		public override string MakeFullGenericName()
 		{
@@ -262,7 +235,7 @@ namespace PHP.Core.Reflection
 		/// Used by both fast and full reflectors.
 		/// </summary>
 		internal PhpLibraryFunctionDesc(PhpLibraryModule/*!*/ declaringModule, RoutineDelegate/*!*/ arglessStub)
-			: base(declaringModule.GlobalType.TypeDesc, PhpMemberAttributes.Public | PhpMemberAttributes.Static, arglessStub, true)
+			: base(declaringModule.GlobalType.TypeDesc, PhpMemberAttributes.Public | PhpMemberAttributes.Static, arglessStub)
 		{
 			Debug.Assert(declaringModule != null && arglessStub != null);
 		}
@@ -301,7 +274,7 @@ namespace PHP.Core.Reflection
 		/// Used by compiler and full-reflect.
 		/// </summary>
 		public ClrMethodDesc(DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes)
-			: base(declaringType, memberAttributes, null, false)
+			: base(declaringType, memberAttributes, null)
 		{
 			Debug.Assert(declaringType != null);
 		}
@@ -321,8 +294,8 @@ namespace PHP.Core.Reflection
 			// TODO: generic arguments
 			return Member.FullName;
 		}
-        
-        protected override RoutineDelegate GenerateArglessStub()
+
+		protected override RoutineDelegate GenerateArglessStub()
 		{
 			ClrMethod clr_method = ClrMethod;
 			Debug.Assert(clr_method != null, "CLR method should be fully reflected");
@@ -352,7 +325,8 @@ namespace PHP.Core.Reflection
 			DynamicMethod stub = new DynamicMethod("<^>." + clr_method.Name.Value, PhpFunctionUtils.DynamicStubAttributes,
 				CallingConventions.Standard, Types.Object[0], Types.Object_PhpStack, this.declaringType.RealType, true);
 #endif
-            ILEmitter il = new ILEmitter(stub);
+
+			ILEmitter il = new ILEmitter(stub);
 
 			IndexedPlace instance = new IndexedPlace(PlaceHolder.Argument, 0);
 			IndexedPlace stack = new IndexedPlace(PlaceHolder.Argument, 1);
@@ -363,19 +337,8 @@ namespace PHP.Core.Reflection
 			// the compiler may get activated:
 			// member = null; 
 
-            this.arglessStubMethod = stub;
-            return (RoutineDelegate)stub.CreateDelegate(typeof(RoutineDelegate));
+			return (RoutineDelegate)stub.CreateDelegate(typeof(RoutineDelegate));
 		}
-
-        private MethodInfo arglessStubMethod = null;
-        internal override MethodInfo ArglessStubMethod
-        {
-            get
-            {
-                var argless = this.ArglessStub; // ensure argless is generated
-                return arglessStubMethod;
-            }
-        }
 
 		// TODO: caller == null when IsProtected == true ?
 
@@ -405,8 +368,6 @@ namespace PHP.Core.Reflection
 		}
 
 		#endregion
-
-        internal override MethodInfo ArglessStubMethod { get { return this.ArglessStub.Method; } }  // ArglessPreStub MethodInfo
 
 		protected override RoutineDelegate GenerateArglessStub()
 		{

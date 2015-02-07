@@ -40,7 +40,8 @@ namespace PHP.Core
 		AspTags = 2,
 
 		/// <summary>
-		/// Enables PHP5 keywords such as <c>private</c>, <c>protected</c>, <c>public</c>, <c>clone</c>, etc.
+        /// Enables PHP5 keywords such as <c>private</c>, <c>protected</c>, <c>public</c>, <c>clone</c>, <c>goto</c>, , etc.
+        /// Enables namespaces.
 		/// </summary>
 		V5Keywords = 4,
 
@@ -57,7 +58,8 @@ namespace PHP.Core
 		Linq = 16,
 
 		/// <summary>
-		/// Enables PHP6 keywords such as <c>goto</c>, <c>import</c>, <c>namespace</c>.
+		/// TO BE REMOVED!
+        /// Enables PHP6 keywords such as <c>import</c>.
 		/// </summary>
 		V6Keywords = 32,
 

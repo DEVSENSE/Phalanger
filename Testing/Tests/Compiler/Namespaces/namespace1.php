@@ -1,3 +1,4 @@
+[clr]
 [expect php]
 [file]
 <?php

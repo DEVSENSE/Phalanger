@@ -564,14 +564,14 @@ namespace PHP.Core.Reflection
 					int closing = realType.Namespace.IndexOf('>') + 2;
 					if (closing > 1 && closing < realType.Namespace.Length)
 					{
-						result.Append(realType.Namespace.Substring(closing).Replace(".", QualifiedName.Separator));
+						result.Append(realType.Namespace.Substring(closing).Replace('.', QualifiedName.Separator));
 						result.Append(QualifiedName.Separator);
 					}
 				}
 				else
 				{
 					// naming policy of Pure Module is user_namespace_clr.type_name#n`m:
-					result.Append(realType.Namespace.Replace(".", QualifiedName.Separator));
+					result.Append(realType.Namespace.Replace('.', QualifiedName.Separator));
 					result.Append(QualifiedName.Separator);
 				}
 			}

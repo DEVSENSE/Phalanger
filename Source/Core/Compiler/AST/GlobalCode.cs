@@ -232,6 +232,11 @@ namespace PHP.Core.AST
 	{
 		internal override bool IsDeclaration { get { return true; } }
 
+        /// <summary>
+        /// Whether the namespace was declared using PHP simple syntax.
+        /// </summary>
+        public readonly bool IsSimpleSyntax;
+
 		public QualifiedName QualifiedName { get { return qualifiedName; } }
 		private QualifiedName qualifiedName;
 
@@ -247,26 +252,28 @@ namespace PHP.Core.AST
 
 		#region Construction
 
-		public NamespaceDecl(Position p)
-			: base(p)
-		{
-			this.isAnonymous = true;
-			this.qualifiedName = new QualifiedName(Core.Name.EmptyBaseName,
-				new Name[] { new Name("__anonymous__") }); // TODO
-		}
+        public NamespaceDecl(Position p)
+            : base(p)
+        {
+            this.isAnonymous = true;
+            this.qualifiedName = new QualifiedName(Core.Name.EmptyBaseName, Core.Name.EmptyNames);
+            this.IsSimpleSyntax = false;
+        }
 
-		public NamespaceDecl(Position p, string/*!*/ simpleName)
+		public NamespaceDecl(Position p, string/*!*/ simpleName, bool simpleSyntax)
 			: base(p)
 		{
 			this.isAnonymous = false;
 			this.qualifiedName = new QualifiedName(simpleName, false);
+            this.IsSimpleSyntax = simpleSyntax;
 		}
 
-		public NamespaceDecl(Position p, List<string>/*!*/ names)
+        public NamespaceDecl(Position p, List<string>/*!*/ names, bool simpleSyntax)
 			: base(p)
 		{
 			this.isAnonymous = false;
 			this.qualifiedName = new QualifiedName(names, false);
+            this.IsSimpleSyntax = simpleSyntax;
 		}
 
 		#endregion
