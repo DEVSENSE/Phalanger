@@ -351,7 +351,7 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// Whether the node has been analyzed.
 		/// </summary>
-		private bool analyzed;
+		protected bool analyzed;
 
         public abstract KnownConstant Constant { get; }
 
@@ -363,7 +363,7 @@ namespace PHP.Core.AST
 			this.analyzed = false;
 		}
 
-		internal void Analyze(Analyzer/*!*/ analyzer)
+		internal virtual void Analyze(Analyzer/*!*/ analyzer)
 		{
             if (!this.analyzed && Constant != null) // J: Constant can be null, if there was an error
 			{
