@@ -1150,6 +1150,15 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot declare class {0} because the name is already in use.
+        /// </summary>
+        internal static string class_in_use {
+            get {
+                return ResourceManager.GetString("class_in_use", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to instantiate class &apos;{0}&apos;..
         /// </summary>
         internal static string class_instantiation_failed {
@@ -2311,6 +2320,15 @@ namespace PHP.Core.Localizations {
         internal static string generic_call_to_library_function {
             get {
                 return ResourceManager.GetString("generic_call_to_library_function", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot declare generic type parameter {0} because the name is already in use.
+        /// </summary>
+        internal static string generic_in_use {
+            get {
+                return ResourceManager.GetString("generic_in_use", resourceCulture);
             }
         }
         

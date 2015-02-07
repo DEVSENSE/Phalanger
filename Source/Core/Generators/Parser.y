@@ -608,6 +608,11 @@ class_declaration_statement:
 		attributes_opt visibility_opt modifier_opt partial_opt class
 		identifier type_parameter_list_opt
 		{
+			Name class_name = new Name((string)$6);
+
+			if (CheckReservedNameAbsence(class_name, @6)) CheckTypeNameInUse(class_name, @6);
+			CheckTypeParameterNames((List<FormalTypeParam>)$7, (string)$6);
+
 			ReserveTypeNames((List<FormalTypeParam>)$7);
 		}
 		extends_opt implements_opt 
@@ -617,8 +622,6 @@ class_declaration_statement:
 		  
 		  CheckReservedNamesAbsence((GenericQualifiedName?)$9, @9);
 		  CheckReservedNamesAbsence((List<GenericQualifiedName>)$10, @10);
-		  CheckReservedNameAbsence(class_name, @6);
-			CheckTypeParameterNames((List<FormalTypeParam>)$7, (string)$6);
 		  
 		  $$ = new TypeDecl(sourceUnit, CombinePositions(@5, @6), @$, GetHeadingEnd(GetLeftValidPosition(10)), GetBodyStart(@11), 
 				IsCurrentCodeConditional, GetScope(), 
@@ -638,6 +641,11 @@ class_declaration_statement:
 	|	attributes_opt visibility_opt modifier_opt partial_opt interface 
 	    identifier type_parameter_list_opt
 		{
+			Name class_name = new Name((string)$6);
+
+			if (CheckReservedNameAbsence(class_name, @6)) CheckTypeNameInUse(class_name, @6);
+			CheckTypeParameterNames((List<FormalTypeParam>)$7, (string)$6);
+		  
 			ReserveTypeNames((List<FormalTypeParam>)$7);
 		}
 		interface_extends_opt 
@@ -646,8 +654,6 @@ class_declaration_statement:
 		  Name class_name = new Name((string)$6);
 		  
 		  CheckReservedNamesAbsence((List<GenericQualifiedName>)$9, @9);
-		  CheckReservedNameAbsence(class_name, @6);
-		  CheckTypeParameterNames((List<FormalTypeParam>)$7, (string)$6);
 		  
 			if ((PhpMemberAttributes)$3 != PhpMemberAttributes.None)
 				errors.Add(Errors.InvalidInterfaceModifier, SourceUnit, @3);
