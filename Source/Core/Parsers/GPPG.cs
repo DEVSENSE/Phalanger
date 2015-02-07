@@ -183,7 +183,7 @@ namespace PHP.Core.Parsers.GPPG
 	public abstract class ShiftReduceParser<ValueType, PositionType>
 		where ValueType : struct
 	{
-		internal bool Trace = false;
+		//internal bool Trace = false;
 
 		public ITokenProvider<ValueType, PositionType> Scanner { get { return scanner; } set { scanner = value; } }
 		private ITokenProvider<ValueType, PositionType> scanner;
@@ -241,8 +241,8 @@ namespace PHP.Core.Parsers.GPPG
 
 			while (true)
 			{
-				if (Trace)
-					Console.Error.WriteLine("Entering state {0} ", states[current_state_index].num);
+                //if (Trace)
+                //    Console.Error.WriteLine("Entering state {0} ", states[current_state_index].num);
 
                 int action = states[current_state_index].defaultAction;
 
@@ -251,14 +251,14 @@ namespace PHP.Core.Parsers.GPPG
 				{
 					if (next == 0)
 					{
-						if (Trace)
-							Console.Error.Write("Reading a token: ");
+                        //if (Trace)
+                        //    Console.Error.Write("Reading a token: ");
 
 						next = scanner.GetNextToken();
 					}
 
-					if (Trace)
-						Console.Error.WriteLine("Next token is {0}", TerminalToString(next));
+                    //if (Trace)
+                    //    Console.Error.WriteLine("Next token is {0}", TerminalToString(next));
 
                     current_state_parser_table.TryGetValue(next, out action);
 				}
@@ -283,8 +283,8 @@ namespace PHP.Core.Parsers.GPPG
 
 		protected void Shift(int state_nr)
 		{
-			if (Trace)
-				Console.Error.Write("Shifting token {0}, ", TerminalToString(next));
+            //if (Trace)
+            //    Console.Error.Write("Shifting token {0}, ", TerminalToString(next));
 
             current_state_index = state_nr; //current_state = states[state_nr];
 
@@ -308,12 +308,13 @@ namespace PHP.Core.Parsers.GPPG
 
 		protected void Reduce(int rule_nr)
 		{
-			if (Trace)
-				DisplayRule(rule_nr);
+            //if (Trace)
+            //    DisplayRule(rule_nr);
 
 			Rule rule = rules[rule_nr];
+            var/*!*/rule_rhs = rule.rhs;
 
-			if (rule.rhs.Length == 1)                   // LHS : RHS{0};
+            if (rule_rhs.Length == 1)                   // LHS : RHS{0};
 			{
 				// $$ = $1;
 				// @$ = @1;
@@ -321,12 +322,12 @@ namespace PHP.Core.Parsers.GPPG
 				yypos = value_stack.PeekPosition();
 				yypos_valid = value_stack.IsValidPosition();
 			}
-			else if (rule.rhs.Length > 1)               // LHS : RHS{n - 1} RHS{n - 2} ... RHS{1} RHS{0} 
+            else if (rule_rhs.Length > 1)               // LHS : RHS{n - 1} RHS{n - 2} ... RHS{1} RHS{0} 
 			{
 				// $$ = { result of the semantic action };
 				// @$ = @1 + @n;
 
-				int first = rule.rhs.Length - 1;
+                int first = rule_rhs.Length - 1;
 				while (first >= 0 && !value_stack.IsValidPosition(first)) first--;
 
 				if (first > 0)
@@ -345,7 +346,7 @@ namespace PHP.Core.Parsers.GPPG
 				
 				yyval = default(ValueType);
 			}
-			else if (rule.rhs.Length == 0)              // LHS : ; 
+            else if (rule_rhs.Length == 0)              // LHS : ; 
 			{
 				// $$ = null;
 				// @$ = <invalid>  -- empty reductions has no position
@@ -360,21 +361,21 @@ namespace PHP.Core.Parsers.GPPG
 				yypos_valid = false;
 			}
 			
-			if (Trace)
-				Console.Error.WriteLine("Rule position: {0}", yypos);
+            //if (Trace)
+            //    Console.Error.WriteLine("Rule position: {0}", yypos);
 
 			currentRule = rule_nr;
             DoAction(rule_nr);
 			currentRule = -1;
 
-			for (int i = 0; i < rule.rhs.Length; i++)
-			{
-				state_stack.Pop();
-				value_stack.Pop();
-			}
+            for (int i = rule_rhs.Length; i > 0; i--)
+            {
+                state_stack.Pop();
+                value_stack.Pop();
+            }
 
-			if (Trace)
-				DisplayStack();
+            //if (Trace)
+            //    DisplayStack();
 
 			current_state_index = state_stack.Peek();
 
@@ -394,8 +395,8 @@ namespace PHP.Core.Parsers.GPPG
 			int index = rules[currentRule].rhs.Length - symbolIndex;
 			while (!value_stack.IsValidPosition(index)) index++;
 			
-			if (Trace)
-				Console.Error.WriteLine("LeftValidPosition({0}) = {1}", symbolIndex, value_stack.PeekPosition(index));
+            //if (Trace)
+            //    Console.Error.WriteLine("LeftValidPosition({0}) = {1}", symbolIndex, value_stack.PeekPosition(index));
 				
 			return value_stack.PeekPosition(index);
 		}
@@ -443,8 +444,8 @@ namespace PHP.Core.Parsers.GPPG
 
 			Shift(states[current_state_index].parser_table[next]);
 
-			if (Trace)
-                Console.Error.WriteLine("Entering state {0} ", states[current_state_index].num);
+            //if (Trace)
+            //    Console.Error.WriteLine("Entering state {0} ", states[current_state_index].num);
 
 			next = old_next;
 		}
@@ -461,19 +462,19 @@ namespace PHP.Core.Parsers.GPPG
                     i /*current_state_parser_table[errToken]*/ > 0) // shift
 					return true;
 
-				if (Trace)
-					Console.Error.WriteLine("Error: popping state {0}", states[state_stack.Peek()].num);
+                //if (Trace)
+                //    Console.Error.WriteLine("Error: popping state {0}", states[state_stack.Peek()].num);
 
 				state_stack.Pop();
 				value_stack.Pop();
 
-				if (Trace)
-					DisplayStack();
+                //if (Trace)
+                //    DisplayStack();
 
 				if (state_stack.Count == 0)
 				{
-					if (Trace)
-						Console.Error.Write("Aborting: didn't find a state that accepts error token");
+                    //if (Trace)
+                    //    Console.Error.Write("Aborting: didn't find a state that accepts error token");
 					return false;
 				}
 				else
@@ -495,14 +496,14 @@ namespace PHP.Core.Parsers.GPPG
 				{
 					if (next == 0)
 					{
-						if (Trace)
-							Console.Error.Write("Reading a token: ");
+                        //if (Trace)
+                        //    Console.Error.Write("Reading a token: ");
 
 						next = scanner.GetNextToken();
 					}
 
-					if (Trace)
-						Console.Error.WriteLine("Next token is {0}", TerminalToString(next));
+                    //if (Trace)
+                    //    Console.Error.WriteLine("Next token is {0}", TerminalToString(next));
 
 					if (next == eofToken)
 						return false;
@@ -515,8 +516,8 @@ namespace PHP.Core.Parsers.GPPG
 						return true;
 					else
 					{
-						if (Trace)
-							Console.Error.WriteLine("Error: Discarding {0}", TerminalToString(next));
+                        //if (Trace)
+                        //    Console.Error.WriteLine("Error: Discarding {0}", TerminalToString(next));
 						next = 0;
 					}
 				}
@@ -537,44 +538,44 @@ namespace PHP.Core.Parsers.GPPG
         //    state.num = statenr;
         //}
 
-		private void DisplayStack()
-		{
-			Console.Error.Write("State now");
-			foreach (var state in state_stack)
-                Console.Error.Write(" {0}", states[state].num);
-			Console.Error.WriteLine();
-		}
+        //private void DisplayStack()
+        //{
+        //    Console.Error.Write("State now");
+        //    foreach (var state in state_stack)
+        //        Console.Error.Write(" {0}", states[state].num);
+        //    Console.Error.WriteLine();
+        //}
 
 
-		private void DisplayRule(int rule_nr)
-		{
-			Console.Error.Write("Reducing stack by rule {0}, ", rule_nr);
-			DisplayProduction(rules[rule_nr]);
-		}
+        //private void DisplayRule(int rule_nr)
+        //{
+        //    Console.Error.Write("Reducing stack by rule {0}, ", rule_nr);
+        //    DisplayProduction(rules[rule_nr]);
+        //}
 
 
-		private void DisplayProduction(Rule rule)
-		{
-			if (rule.rhs.Length == 0)
-				Console.Error.Write("/* empty */ ");
-			else
-				foreach (int symbol in rule.rhs)
-					Console.Error.Write("{0} ", SymbolToString(symbol));
+        //private void DisplayProduction(Rule rule)
+        //{
+        //    if (rule.rhs.Length == 0)
+        //        Console.Error.Write("/* empty */ ");
+        //    else
+        //        foreach (int symbol in rule.rhs)
+        //            Console.Error.Write("{0} ", SymbolToString(symbol));
 
-			Console.Error.WriteLine("-> {0}", SymbolToString(rule.lhs));
-		}
+        //    Console.Error.WriteLine("-> {0}", SymbolToString(rule.lhs));
+        //}
 
 
 		protected abstract string TerminalToString(int terminal);
 
 
-		private string SymbolToString(int symbol)
-		{
-			if (symbol < 0)
-				return nonTerminals[-symbol];
-			else
-				return TerminalToString(symbol);
-		}
+        //private string SymbolToString(int symbol)
+        //{
+        //    if (symbol < 0)
+        //        return nonTerminals[-symbol];
+        //    else
+        //        return TerminalToString(symbol);
+        //}
 
 
 		protected string CharToString(char ch)
