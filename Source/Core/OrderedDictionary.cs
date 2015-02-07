@@ -1,16 +1,4 @@
-﻿/*
-
- Copyright (c) 2012 DEVSENSE
-  
- The use and distribution terms for this software are contained in the file named License.txt, 
- which can be found in the root of the Phalanger distribution. By using this software 
- in any fashion, you are agreeing to be bound by the terms of this license.
- 
- You must not remove this notice from this software.
-
-*/
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -142,7 +130,7 @@ namespace PHP.Core
         {
             if (size < (1 << 30))
             {
-                int i = (1 << 2);   // how big is our smallest possible array? "1" is min, do not put "0" here! Smaller number makes initialization faster, but slows down expanding. However the size is known mostly ...
+                int i = (1 << 3);
                 while (i < size)
                     i <<= 1;
 
@@ -163,14 +151,12 @@ namespace PHP.Core
         {
             Debug.Assert(this.entries == null, "Initialized already!");
 
-            int[] _buckets;
-
-            this.buckets = _buckets = new int[this.tableSize];
+            this.buckets = new int[this.tableSize];
 		    this.tableMask = this.tableSize - 1;
             this.entries = new Entry[this.tableSize];
 
-            for (int i = 0; i < _buckets.Length; i++)
-                _buckets[i] = -1;
+            for (int i = 0; i < this.buckets.Length; i++)
+                this.buckets[i] = -1;
         }
 
         #endregion
@@ -180,7 +166,6 @@ namespace PHP.Core
         /// <summary>
         /// An element stored in the table.
         /// </summary>
-        [Serializable]
         private struct Entry
         {
             /// <summary>
@@ -213,23 +198,13 @@ namespace PHP.Core
             }
 
             public KeyValuePair<IntStringKey, object> KeyValuePair { get { return new KeyValuePair<IntStringKey, object>(_key, _value); } }
-
-            /// <summary>
-            /// Wraps <see cref="Value"/> into new instance of <see cref="PhpReference"/>.
-            /// </summary>
-            /// <returns>New instance of <see cref="PhpReference"/> assigned to <see cref="Value"/>.</returns>
-            internal PhpReference/*!*/MakeValueReferenceNoCheck()
-            {
-                return new PhpReference(ref this._value);
-            }
         }
 
         #endregion
                 
         #region Inner class: Enumerator
 
-        [Serializable]
-        public sealed class Enumerator : IEnumerator<KeyValuePair<IntStringKey, object>>, IDictionaryEnumerator, IDisposable, IPhpEnumerator
+        public class Enumerator : IEnumerator<KeyValuePair<IntStringKey, object>>, IDictionaryEnumerator, IDisposable, IPhpEnumerator
         {
             /// <summary>
             /// Enumerated table.
@@ -436,89 +411,6 @@ namespace PHP.Core
 
         #endregion
 
-        #region Inner class: EmptyEnumerator
-
-        /// <summary>
-        /// An enumerator representing an empty collection. Single instance can be reused.
-        /// </summary>
-        internal sealed class EmptyEnumerator : IEnumerator<KeyValuePair<IntStringKey, object>>, IDictionaryEnumerator, IDisposable, IPhpEnumerator
-        {
-            /// <summary>
-            /// Singleton instance of this class. Can be reused.
-            /// </summary>
-            internal readonly static EmptyEnumerator/*!*/SingletonInstance = new EmptyEnumerator();
-
-            private EmptyEnumerator()
-            {
-            }
-
-            public object CurrentValue { get { throw new InvalidOperationException(); } }
-            public IntStringKey CurrentKey { get { throw new InvalidOperationException(); } }
-            
-            #region IEnumerator<KeyValuePair<IntStringKey, object>>
-
-            public KeyValuePair<IntStringKey, object> Current { get { throw new InvalidOperationException(); } }
-
-            object System.Collections.IEnumerator.Current { get { throw new InvalidOperationException(); } }
-
-            public bool MoveNext()
-            {
-                return false;
-            }
-
-            public void Reset()
-            {
-                // nothing
-            }
-
-            #endregion
-
-            #region IDisposable
-
-            public void Dispose()
-            {
-            }
-
-            #endregion
-
-            #region IDictionaryEnumerator Members
-
-            DictionaryEntry IDictionaryEnumerator.Entry { get { throw new InvalidOperationException(); } }
-            object IDictionaryEnumerator.Key { get { throw new InvalidOperationException(); } }
-            object IDictionaryEnumerator.Value { get { throw new InvalidOperationException(); } }
-
-            #endregion
-
-            #region IPhpEnumerator
-
-            public bool MoveLast()
-            {
-                return false;
-            }
-
-            public bool MoveFirst()
-            {
-                return false;
-            }
-
-            public bool MovePrevious()
-            {
-                return false;
-            }
-
-            public bool AtEnd
-            {
-                get
-                {
-                    return false;
-                }
-            }
-
-            #endregion
-        }
-
-        #endregion
-
         #region Inner class: FastEnumerator
 
         internal FastEnumerator GetFastEnumerator()
@@ -560,18 +452,7 @@ namespace PHP.Core
             }
 
             public IntStringKey CurrentKey { get { return current.Key; } }
-            public object CurrentValue
-            {
-                get
-                {
-                    return current.Value;
-                }
-                set
-                {
-                    ModifyCurrentValue(value);
-                    // current.Value is not updated for performance reasons
-                }
-            }
+            public object CurrentValue { get { return current.Value; } }
             public KeyValuePair<IntStringKey, object> Current { get { return current; } }
 
             public void Reset()
@@ -643,12 +524,6 @@ namespace PHP.Core
                 this.table.entries[this.currentEntry]._key = newkey;
             }
 
-            internal void ModifyCurrentValue(object newvalue)
-            {
-                Debug.Assert(IsValid);
-                this.table.entries[this.currentEntry].Value = newvalue;
-            }
-
             /// <summary>
             /// Delete current entry from the table and advances enumerator to the next entry.
             /// </summary>
@@ -706,45 +581,22 @@ namespace PHP.Core
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void _enlist_to_bucket(ref Entry entry, int entry_index, int list_head)
         {
-            entry.last = -1;
             entry.next = list_head;
+            entry.last = -1;
             if (list_head >= 0)
                 this.entries[list_head].last = entry_index;
         }
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _enlist_to_global(ref Entry entry, int entry_index)
+        private void _enlist_to_global(ref Entry element, int elementIndex)
         {
-            entry.listNext = -1;
-            entry.listLast = this.listTail;
+            element.listLast = this.listTail;
+            this.listTail = elementIndex;
+            element.listNext = -1;
+            if (element.listLast >= 0)
+                this.entries[element.listLast].listNext = elementIndex;
 
-            if (this.listTail >= 0)
-                this.entries[this.listTail].listNext = entry_index;
-
-            this.listTail = entry_index; 
             if (this.listHead < 0)
-                this.listHead = entry_index;
-        }
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _enlist(ref Entry entry, int entry_index, int list_head)
-        {
-            //this._enlist_to_bucket(ref entry, entry_index, list_head);
-            //this._enlist_to_global(ref entry, entry_index);
-
-            entry.next = list_head;
-            entry.last = -1;
-            entry.listNext = -1;
-            entry.listLast = this.listTail;
-            
-            if (list_head >= 0)
-                this.entries[list_head].last = entry_index;
-            
-            if (this.listTail >= 0)
-                this.entries[this.listTail].listNext = entry_index;
-
-            this.listTail = entry_index;
-            if (this.listHead < 0)
-                this.listHead = entry_index;                        
+                this.listHead = elementIndex;
         }
 
         /// <summary>
@@ -893,7 +745,7 @@ namespace PHP.Core
 
         #endregion
 
-        #region _add_or_update, _add_first, _add_last
+        #region _add_or_update, _add_first
 
         /// <summary>
         /// Set <paramref name="value"/> onto given <paramref name="key"/> position.
@@ -948,7 +800,8 @@ namespace PHP.Core
 
             //
             _entries[p]._key = key;
-            this._enlist(ref _entries[p], p, this.buckets[nIndex]);
+            this._enlist_to_bucket(ref _entries[p], p, this.buckets[nIndex]);
+            this._enlist_to_global(ref _entries[p], p);
             _entries[p].Value = value;
             this.buckets[nIndex] = p;
             
@@ -1064,56 +917,8 @@ namespace PHP.Core
             var nIndex = key.Integer & this.tableMask;// index(ref key);
 
             _entries[p]._key = key;
-            this._enlist(ref _entries[p], p, this.buckets[nIndex]);
-            _entries[p].Value = value;
-            this.buckets[nIndex] = p;
-
-            //// update nextNewIndex: // moved to PhpArray
-            //if (key.IsInteger && key.Integer >= this.nextNewIndex)
-            //    this.nextNewIndex = key.Integer + 1;
-
-            return;// true;
-        }
-
-        /// <summary>
-        /// Add specified item at the end of the array.
-        /// </summary>
-        /// <param name="ikey">New item key.</param>
-        /// <param name="value">New item value.</param>
-        /// <remarks>The function does not check if the item already exists.</remarks>
-        internal void _add_last(int ikey, object value)
-        {
-            Debug.Assert(!this.ContainsKey(new IntStringKey(ikey)), "Item with given key already exists!");
-
-            this.EnsureInitialized();
-
-            var _entries = this.entries;
-            int p;
-
-            // find an empty Entry to be used
-            if (this.freeCount > 0)
-            {
-                p = this.freeList;
-                this.freeList = _entries[p].next;
-                --this.freeCount;
-            }
-            else
-            {
-                if (this.count == _entries.Length)
-                {
-                    this._do_resize();  // double the capacity
-
-                    // update locals affected by resize:
-                    _entries = this.entries;
-                }
-                p = this.count++;
-            }
-
-            //
-            var nIndex = ikey & this.tableMask;// index(ref key);
-
-            _entries[p]._key = new IntStringKey(ikey);
-            this._enlist(ref _entries[p], p, this.buckets[nIndex]);
+            this._enlist_to_bucket(ref _entries[p], p, this.buckets[nIndex]);
+            this._enlist_to_global(ref _entries[p], p);
             _entries[p].Value = value;
             this.buckets[nIndex] = p;
 
@@ -1133,14 +938,14 @@ namespace PHP.Core
         /// <param name="entry_index"></param>
         private void _add_before(ref IntStringKey key, object value, int entry_index)
         {
-            this.EnsureInitialized();
-
             if (entry_index < 0)
             {
                 _add_last(ref key, value);
                 return;
             }
 
+            Debug.Assert(!this._contains(ref key), "Item with given key already exists!");
+            
             var _entries = this.entries;
             int p;
 
@@ -1579,11 +1384,9 @@ namespace PHP.Core
             /// <summary>
             /// Sorts items according to given <paramref name="comparer"/>. This changes only the order of items.
             /// </summary>
-            /// <param name="table"><see cref="OrderedDictionary"/> instance to be sorted.</param>
             /// <param name="comparer">Comparer used to sort items.</param>
             internal static void _sort(OrderedDictionary/*!*/table, IComparer<KeyValuePair<IntStringKey, object>>/*!*/ comparer)
             {
-                Debug.Assert(table != null);
                 Debug.Assert(comparer != null);
 
                 var count = table.Count;
@@ -1910,7 +1713,8 @@ namespace PHP.Core
 
             //
             _entries[p]._key = key;
-            this._enlist(ref _entries[p], p, this.buckets[nIndex]);
+            this._enlist_to_bucket(ref _entries[p], p, this.buckets[nIndex]);
+            this._enlist_to_global(ref _entries[p], p);
             _entries[p].Value = value;
             this.buckets[nIndex] = p;
 
@@ -1978,7 +1782,8 @@ namespace PHP.Core
 
             //
             _entries[p]._key = new IntStringKey(ikey);
-            this._enlist(ref _entries[p], p, this.buckets[nIndex]);
+            this._enlist_to_bucket(ref _entries[p], p, this.buckets[nIndex]);
+            this._enlist_to_global(ref _entries[p], p);
             _entries[p].Value = value;
             this.buckets[nIndex] = p;
 
@@ -2031,11 +1836,14 @@ namespace PHP.Core
                             // we have to unshare this, so we can modify the content:
                             array.EnsureWritable();
                             // "this" is not "array.table" anymore!
-                            _entries = array.table.entries;                            
+                            _entries = array.table.entries;
+                            _entries[p].Value = (valueref = new PhpReference(_entries[p].Value));
                         }
-
-                        // wrap _entries[p].Value into PhpReference
-                        valueref = _entries[p].MakeValueReferenceNoCheck();
+                        else
+                        {
+                            valueref = new PhpReference(_entries[p].Value);
+                            _entries[p].Value = valueref;
+                        }
                     }
 
                     //
@@ -2198,21 +2006,12 @@ namespace PHP.Core
             this.listHead = _merge_sort(comparer, _entries, this.listHead, count, out next);
             Debug.Assert(next < 0);
 
-            OrderedDictionary other_table;
-
             foreach (var other_array in arrays)
             {
                 // total number of elements in diff list:
-                if (other_array != null)
-                {
-                    count = other_array.Count;
-                    other_table = other_array.table;
-                }
-                else
-                {
-                    count = 0;
-                    other_table = null;
-                }
+                count = (other_array != null) ? other_array.Count : 0;
+
+                var other_table = other_array.table;
 
                 // result is empty - either the list is differentiated with itself or intersected with an empty set:
                 if (other_table == this && op == SetOperations.Difference || count == 0 && op == SetOperations.Intersection)
@@ -2227,8 +2026,6 @@ namespace PHP.Core
                 // skip operation (nothing new can be added):
                 if (other_table == this && op == SetOperations.Intersection || count == 0 && op == SetOperations.Difference)
                     continue;
-
-                Debug.Assert(other_table != null);
 
                 // sorts other_head's list (doesn't modify Prevs and keeps list cyclic):
                 other_table.listHead = _merge_sort(comparer, other_table.entries, other_table.listHead, count, out next);
@@ -2266,18 +2063,13 @@ namespace PHP.Core
 
         #endregion
 
-        #region Public: IsShared, Share, Unshare, ThrowIfShared, InplaceCopyOnReturn
+        #region Public: IsShared, Share, Unshare, ThrowIfShared
 
         /// <summary>
         /// True iff the data structure is shared by more PhpHashtable instances and must not be modified.
         /// </summary>
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsShared { get { return this.copiesCount > 0; } }
-
-        /// <summary>
-        /// Remember whether this instance and its owner (<see cref="PhpArray"/>) can be recycled upon returning by value from a function.
-        /// </summary>
-        internal bool InplaceCopyOnReturn { get { return this.copiesCount < 0; } set { this.copiesCount = value ? -1 : 0; } }
 
         /// <summary>
         /// Marks this instance as shared (<see cref="IsShared"/>) and returns itself.
@@ -2583,7 +2375,7 @@ namespace PHP.Core
 
         public void CopyTo(KeyValuePair<IntStringKey, object>[] array, int arrayIndex)
         {
-            if (array == null || arrayIndex < 0 || (arrayIndex + this.Count) > array.Length)
+            if (array == null || arrayIndex < 0 || (arrayIndex + this.Count) >= array.Length)
                 throw new ArgumentException();
 
             using (var enumerator = GetFastEnumerator())
@@ -2622,81 +2414,25 @@ namespace PHP.Core
         #region ISerializable (CLR only)
 #if !SILVERLIGHT
 
-        /// <summary>
-        /// Handles serialization and deserialization of <see cref="OrderedDictionary"/>.
-        /// </summary>
-        [Serializable]
-        private class SerializationHelper : ISerializable, IDeserializationCallback, IObjectReference
-        {
-            /// <summary>
-            /// An instance of <see cref="OrderedDictionary"/> lazily created.
-            /// </summary>
-            private OrderedDictionary instance;
-
-            /// <summary>
-            /// Internal data from <see cref="SerializationInfo"/>.
-            /// </summary>
-            private readonly KeyValuePair<IntStringKey, object>[]/*!!*/array;
-
-            /// <summary>
-            /// Name of value field within <see cref="SerializationInfo"/> containing serialized array of keys and objects.
-            /// </summary>
-            private const string InfoValueName = "KeyValuePairs";
-
-            /// <summary>
-            /// Beginning of the deserialization.
-            /// </summary>
-            /// <param name="info"></param>
-            /// <param name="context"></param>
-            private SerializationHelper(SerializationInfo/*!*/info, StreamingContext context)
-            {
-                // careful - the array received here may not be fully deserialized yet
-                // wait until until OnDeserialization to use it
-                this.array = (KeyValuePair<IntStringKey, object>[])info.GetValue(InfoValueName, typeof(KeyValuePair<IntStringKey, object>[]));
-            }
-
-            [System.Security.SecurityCritical]
-            internal static void GetObjectData(OrderedDictionary/*!*/instance, SerializationInfo info, StreamingContext context)
-            {
-                Debug.Assert(instance != null);
-                Debug.Assert(info != null);
-
-                info.SetType(typeof(SerializationHelper));
-
-                var array = new KeyValuePair<IntStringKey, object>[instance.Count];
-                instance.CopyTo(array, 0);
-                info.AddValue(InfoValueName, array);
-            }
-
-            public void GetObjectData(SerializationInfo info, StreamingContext context)
-            {
-                // should never be called
-                throw new InvalidOperationException();
-            }
-
-            public object GetRealObject(StreamingContext context)
-            {
-                return this.instance ?? (this.instance = new OrderedDictionary(null, (this.array != null) ? this.array.Length : 0 ));
-            }
-
-            public virtual void OnDeserialization(object sender)
-            {
-                Debug.Assert(this.instance != null);
-
-                var data = this.array;
-                if (data != null)
-                {
-                    for (int i = 0; i < data.Length; i++)
-                        this.instance.Add(data[i]);
-                }
-            }
-        }
-
         [System.Security.SecurityCritical]
         public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            SerializationHelper.GetObjectData(this, info, context);
-        }
+		{
+            var array = new KeyValuePair<IntStringKey, object>[this.Count];
+            this.CopyTo(array, 0);
+            info.AddValue("KeyValuePairs", array);
+		}
+
+		/// <include file='Doc/Common.xml' path='/docs/method[@name="serialization.ctor"]/*'/>
+        private OrderedDictionary(SerializationInfo/*!*/info, StreamingContext context)
+		{
+            if (info == null)
+                throw new ArgumentNullException();
+
+            var array = (KeyValuePair<IntStringKey, object>[])info.GetValue("KeyValuePairs", typeof(KeyValuePair<IntStringKey, object>[]));
+            if (array != null)
+                foreach (var pair in array)
+                    this.Add(pair);
+		}
 
 #endif
 		#endregion
@@ -2748,18 +2484,8 @@ namespace PHP.Core
                 return;
             }
 
-            // object[]
-            var objects = array as object[];
-            if (objects != null)
-            {
-                using (var enumerator = GetFastEnumerator())
-                    while (enumerator.MoveNext())
-                        objects[index++] = enumerator.Current;
-                return;
-            }
-
             // otherwise
-            throw new ArgumentException("array");
+            throw new ArgumentException();
         }
         public bool IsSynchronized { get { return false; } }
         public object SyncRoot { get { return this; } }

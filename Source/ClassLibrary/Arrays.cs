@@ -559,9 +559,8 @@ namespace PHP.Library
 			// absolutizes range:
 			PhpMath.AbsolutizeRange(ref offset, ref length, array.Count);
 
-			OrderedHashtable<IntStringKey>.Enumerator iterator = array.GetBaseEnumerator();
-			PhpArray result = new PhpArray();
-
+			var iterator = array.GetBaseEnumerator();
+			
 			// moves iterator to the first item of the slice;
 			// starts either from beginning or from the end (which one is more efficient):
 			if (offset < array.Count - offset)
@@ -574,7 +573,8 @@ namespace PHP.Library
 			}
 
 			// copies the slice:
-			int ikey = 0;
+            PhpArray result = new PhpArray(length);
+            int ikey = 0;
 			for (int i = 0; i < length; i++)
 			{
 				KeyValuePair<IntStringKey, object> entry = iterator.Current;
@@ -685,7 +685,7 @@ namespace PHP.Library
 			// converts offset and length to interval [first,last]:
 			PhpMath.AbsolutizeRange(ref offset, ref length, count);
 
-			PhpArray result = new PhpArray();
+            PhpArray result = new PhpArray(length);
 			PhpArray r_array = replacement as PhpArray;
 
 			// replacement is an array:
@@ -2355,12 +2355,12 @@ namespace PHP.Library
 							}
 							else
 							{
-								if (x != null)
+								/*if (x != null)*/
 									item_result.Add((deepCopy) ? PhpVariable.DeepCopy(x) : x);
 							}
 
 							if (ay != null) ay.AddTo(item_result, deepCopy);
-							else if (y != null) item_result.Add((deepCopy) ? PhpVariable.DeepCopy(y) : y);
+							else /*if (y != null)*/ item_result.Add((deepCopy) ? PhpVariable.DeepCopy(y) : y);
 						}
 
 						result[entry.Key] = item_result;
@@ -3312,21 +3312,18 @@ namespace PHP.Library
 		/// </summary>
         /// <remarks>The caller argument is here just because of the second Filter() method. Phalanger shares the function properties over the overloads.</remarks>
         [ImplementsFunction("array_filter", FunctionImplOptions.NeedsClassContext)]
-		[return: PhpDeepCopy]
-		public static PhpArray Filter(PHP.Core.Reflection.DTypeDesc _, PhpArray array)
-		{
-			var _result = new PhpArray();
-			
-			foreach (KeyValuePair<IntStringKey, object> _entry in array)
-            {
-				if (Core.Convert.ObjectToBoolean(_entry.Value))
-                {
-					_result.Add(_entry.Key, _entry.Value);
-				}
-			}
+        [return: PhpDeepCopy]
+        public static PhpArray Filter(PHP.Core.Reflection.DTypeDesc _, PhpArray array)
+        {
+            var _result = new PhpArray();
 
-			return _result;
-		}
+            using (var enumerator = array.GetFastEnumerator())
+                while (enumerator.MoveNext())
+                    if (Core.Convert.ObjectToBoolean(enumerator.CurrentValue))
+                        _result.Add(enumerator.CurrentKey, enumerator.CurrentValue);
+
+            return _result;
+        }
 
 		/// <summary>
 		/// Filters an array using a specified callback.

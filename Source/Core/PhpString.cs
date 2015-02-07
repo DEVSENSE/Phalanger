@@ -438,8 +438,6 @@ namespace PHP.Core
 	/// </summary>
 	internal sealed class PhpArrayString : PhpArray // TODO: Bytes/String
 	{
-		public override bool IsProxy { get { return true; } }
-		
 		internal PhpString String { get { return (PhpString)obj; } }
 		internal PhpBytes Bytes { get { return (PhpBytes)obj; } }
 		internal object Object { get { return obj; } }
@@ -454,106 +452,89 @@ namespace PHP.Core
 		
 		#region Operators
 
-		public override object GetArrayItem(object key, bool quiet)
+        protected override object GetArrayItemOverride(object key, bool quiet)
 		{
 			Debug.Fail("N/A: written chains only");
 			throw null;
 		}
-		
-		public override void SetArrayItem(object key, object value)
-		{
-			PhpString str = obj as PhpString;
 
-			int index;
-			if (Operators.CheckStringIndexRange(index = Convert.ObjectToInteger(key), Int32.MaxValue, false))
-			{	
-				if (str != null)
-					Operators.SetStringItem(str, index, value);
-				else
-					Operators.SetBytesItem((PhpBytes)obj, index, value);
-			}		
-		}
-
-		public override PhpReference/*!*/ GetArrayItemRef()
+        protected override PhpReference/*!*/ GetArrayItemRefOverride()
 		{
 			PhpException.VariableMisusedAsArray(obj, true);
 			return new PhpReference();
 		}
 
-		public override PhpReference/*!*/ GetArrayItemRef(object key)
+        protected override PhpReference/*!*/ GetArrayItemRefOverride(object key)
 		{
 			PhpException.VariableMisusedAsArray(obj, true);
 			return new PhpReference();
 		}
 
-		public override PhpReference/*!*/ GetArrayItemRef(int key)
+        protected override PhpReference/*!*/ GetArrayItemRefOverride(int key)
 		{
 			PhpException.VariableMisusedAsArray(obj, true);
 			return new PhpReference();
 		}
 
-		public override PhpReference/*!*/ GetArrayItemRef(string key)
+        protected override PhpReference/*!*/ GetArrayItemRefOverride(string key)
 		{
 			PhpException.VariableMisusedAsArray(obj, true);
 			return new PhpReference();
 		}
 
-		public override void SetArrayItem(object value)
-		{
-			PhpException.VariableMisusedAsArray(obj, false);
-		}
+        protected override void SetArrayItemOverride(object value)
+        {
+            PhpException.VariableMisusedAsArray(obj, false);
+        }
 
-		public override void SetArrayItemRef(object key, PhpReference value)
-		{
-			PhpException.VariableMisusedAsArray(obj, true);
-		}
+        protected override void SetArrayItemOverride(object key, object value)
+        {
+            int index;
+            if (Operators.CheckStringIndexRange(index = Convert.ObjectToInteger(key), Int32.MaxValue, false))
+            {
+                if (obj.GetType() == typeof(PhpString))
+                    Operators.SetStringItem((PhpString)obj, index, value);
+                else
+                    Operators.SetBytesItem((PhpBytes)obj, index, value);
+            }
+        }
 
-		public override void SetArrayItem(int key, object value)
-		{
-			PhpException.VariableMisusedAsArray(obj, true);
-		}
+        protected override void SetArrayItemOverride(int key, object value)
+        {
+            PhpException.VariableMisusedAsArray(obj, true);
+        }
 
-		public override void SetArrayItem(string key, object value)
-		{
-			PhpException.VariableMisusedAsArray(obj, true);
-		}
+        protected override void SetArrayItemOverride(string key, object value)
+        {
+            PhpException.VariableMisusedAsArray(obj, true);
+        }
 
-		public override void SetArrayItemExact(string key, object value, int hashcode)
-		{
-			PhpException.VariableMisusedAsArray(obj, true);
-		}
-
-		public override void SetArrayItemRef(int key, PhpReference value)
-		{
-			PhpException.VariableMisusedAsArray(obj, true);
-		}
-
-		public override void SetArrayItemRef(string/*!*/ key, PhpReference value)
+        protected override void SetArrayItemRefOverride(object key, PhpReference value)
 		{
 			PhpException.VariableMisusedAsArray(obj, true);
-		}		
+		}
 
-		public override PhpArray EnsureItemIsArray(object key)
+        protected override PhpArray EnsureItemIsArrayOverride(object key)
 		{
 			// error (postponed error, which cannot be reported by the previous operator):  
 			PhpException.VariableMisusedAsArray(obj, false);
 			return null;
 		}
 
-		public override PhpArray EnsureItemIsArray()
+        protected override PhpArray EnsureItemIsArrayOverride()
 		{
 			PhpException.VariableMisusedAsArray(obj, false);
 			return null;
 		}
 
-		public override DObject EnsureItemIsObject(object key, ScriptContext/*!*/ context)
+        protected override DObject EnsureItemIsObjectOverride(object key, ScriptContext/*!*/ context)
 		{
 			// error (postponed error, which cannot be reported by the previous operator):  
 			PhpException.VariableMisusedAsObject(obj, false);
 			return null;
 		}
 
-		public override DObject EnsureItemIsObject(ScriptContext/*!*/ context)
+        protected override DObject EnsureItemIsObjectOverride(ScriptContext/*!*/ context)
 		{
 			PhpException.VariableMisusedAsObject(obj, false);
 			return null;

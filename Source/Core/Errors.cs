@@ -432,6 +432,15 @@ namespace PHP.Core
 			Throw(PhpError.Warning, CoreResources.GetString("illegal_offset_type"));
 		}
 
+        /// <summary>
+        /// Array does not contain given <paramref name="key"/>.
+        /// </summary>
+        /// <param name="key">Key which was not found in the array.</param>
+        public static void UndefinedOffset(object key)
+        {
+            Throw(PhpError.Notice, CoreResources.GetString("undefined_offset", key));
+        }
+
 		/// <summary>
 		/// Emitted to the script's Main() routine. Thrown when an unexpected exception is catched.
 		/// </summary>

@@ -403,9 +403,7 @@ namespace PHP.Core
                 return array;
             
             if ((obj = var as DObject) != null)
-				return obj.ToPhpArray();
-
-			
+				return obj.ToPhpArray();			
 			
 			// Integer, Double, Boolean, String, PhpBytes, PhpResource
 			PhpArray result = new PhpArray(1);
@@ -1907,7 +1905,7 @@ namespace PHP.Core
 		{
 			if (obj == null)
 			{
-				key = new IntStringKey(String.Empty);
+                key = IntStringKey.EmptyStringKey;
 				return true;
 			}
 
@@ -2071,11 +2069,12 @@ namespace PHP.Core
 
             var runtimeFields = new OrderedHashtable<string>(null, array.Count);
             //foreach (KeyValuePair<IntStringKey, object> pair in array)
-            for (var p = array.table.head.Next; p != array.table.head; p = p.Next)
-            {
-                // add elements directly into the hashtable (no duplicity check, since array is already valid)
-                runtimeFields.Add(/*pair.Key*/p.Key.Object.ToString(), PhpVariable.Copy(/*pair*/p.Value, CopyReason.Assigned));
-            }
+            using (var enumerator = array.GetFastEnumerator())
+                while (enumerator.MoveNext())
+                {
+                    // add elements directly into the hashtable (no duplicity check, since array is already valid)
+                    runtimeFields.Add(enumerator.CurrentKey.Object.ToString(), PhpVariable.Copy(enumerator.CurrentValue, CopyReason.Assigned));
+                }
 
             // create a new stdClass with runtime fields:
             return new stdClass(context)

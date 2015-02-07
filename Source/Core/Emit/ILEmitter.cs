@@ -492,6 +492,10 @@ namespace PHP.Core.Emit
 		/// </summary>
 		public void Emit(OpCode opcode, MethodInfo meth)
 		{
+            //Debug.Assert(opcode != OpCodes.Callvirt || meth.IsVirtual, "Non-Virtual method called as virtual!");
+            if (opcode == OpCodes.Callvirt && !meth.IsVirtual)
+                opcode = OpCodes.Call;
+            
 			if (InterceptEmit(opcode, meth)) il.Emit(opcode, meth);
 		}
 

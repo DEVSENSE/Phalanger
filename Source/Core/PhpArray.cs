@@ -61,12 +61,6 @@ namespace PHP.Core
 			new PhpBytes(new byte[] { (byte)'a', (byte)'r', (byte)'r', (byte)'a', (byte)'y' });
 
         /// <summary>
-        /// Creates a new instance of (assuming constant) empty array. Used as a return value of class library functions.
-        /// </summary>
-        public static PhpArray/*!*/NewEmptyArray { get { return new PhpArray(); } }
-        //private static readonly PhpArray/*!*/emptyArray = new PhpArray(0, 0);
-
-		/// <summary>
 		/// If this flag is <B>true</B> the array will be copied inplace by the immediate <see cref="Copy"/> call.
 		/// </summary>
 		public bool InplaceCopyOnReturn { get { return inplaceCopyOnReturn; } set { inplaceCopyOnReturn = value; } }
@@ -75,7 +69,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Intrinsic enumerator associated with the array. Initialized lazily.
 		/// </summary>
-		protected OrderedHashtable<IntStringKey>.Enumerator intrinsicEnumerator;
+        protected OrderedDictionary.Enumerator intrinsicEnumerator;
 
         #endregion
 
@@ -209,8 +203,8 @@ namespace PHP.Core
 			// prevents recursion:
 			if (this.Visited)
 			{
-                output.WriteLine(PrintablePhpTypeName + " [recursion]");
-                //output.Write(" *RECURSION*");
+                output.WriteLine(PrintablePhpTypeName);
+                output.Write(" *RECURSION*");
 			}
 			else
 			{
@@ -256,8 +250,9 @@ namespace PHP.Core
 
 				// prevents recursion - marks the array as visited:
 				this.Visited = false;
-			}
-			output.WriteLine();
+
+                output.WriteLine();
+			}			
 		}
 
 		/// <summary>
@@ -272,8 +267,7 @@ namespace PHP.Core
 			if (this.Visited)
 			{
                 output.Write(PhpTypeName);
-                output.Write("({0}) [recursion]", count);
-                //output.Write("*RECURSION*");
+                output.Write("({0}) *RECURSION*", count);
 			}
 			else
 			{
@@ -504,7 +498,7 @@ namespace PHP.Core
 		/// <returns>The copy.</returns>
 		public override object Clone()
 		{
-			return CopyTo(new PhpArray(IntegerCount, StringCount));
+            return new PhpArray(this, true);
 		}
 
 		#endregion
@@ -517,7 +511,9 @@ namespace PHP.Core
 		/// <returns>The copy.</returns>
 		public object DeepCopy()
 		{
-            return DeepCopyTo(new PhpArray(IntegerCount, StringCount));
+            var clone = new PhpArray(this, true);
+            clone.EnsureWritable();
+            return clone;
 		}
 
 		public object Copy(CopyReason reason)
@@ -880,8 +876,8 @@ namespace PHP.Core
 		/// </remarks>
 		public void RestartIntrinsicEnumerator()
 		{
-			if (intrinsicEnumerator == null) return;
-			intrinsicEnumerator.MoveFirst();
+			if (intrinsicEnumerator != null)
+			    intrinsicEnumerator.MoveFirst();
 		}
 
 		/// <summary>
@@ -897,7 +893,7 @@ namespace PHP.Core
             if (aliasedValues)
                 return new ForeachEnumeratorAliased(this, keyed);
             else
-                return new ForeachEnumeratorValues(this, keyed);
+                return new ForeachEnumeratorValues(this/*, keyed*/);
         }
 
 		#endregion
@@ -913,7 +909,7 @@ namespace PHP.Core
             /// <summary>
             /// The internal enumerator used to iterate through the read only copy of array.
             /// </summary>
-            private readonly OrderedHashtable<IntStringKey>.Enumerator/*!*/enumerator;
+            private readonly OrderedDictionary.Enumerator/*!*/enumerator;
 
             /// <summary>
             /// Wheter the internal enumerator was disposed.
@@ -924,8 +920,7 @@ namespace PHP.Core
 			/// Creates a new instance of the enumerator.
 			/// </summary>
 			/// <param name="array">The array to iterate over.</param>
-			/// <param name="keyed">Whether keys are interesting.</param>
-			public ForeachEnumeratorValues(PhpArray/*!*/ array, bool keyed)
+			public ForeachEnumeratorValues(PhpArray/*!*/ array)
 			{
 				Debug.Assert(array != null);
 
@@ -933,7 +928,7 @@ namespace PHP.Core
                 // get the enumerator, have to be disposed at the end of enumeration, otherwise deep copy will be performed probably
 
                 // note (J): this will not result in registering the enumerator in the PhpArray object, not needed, faster
-                this.enumerator = array.table.Share().GetEnumerator();
+                this.enumerator = (OrderedDictionary.Enumerator)array.table.Share().GetEnumerator();
 			}
 
 			#region IDictionaryEnumerator Members
@@ -947,7 +942,7 @@ namespace PHP.Core
 				{
 					// deep copy is not needed because a key is immutable,
                     // we can access .current directly, the underlaying table is read only:
-                    return enumerator.current.Key.Object;
+                    return enumerator.CurrentKey.Object;
 				}
 			}
 
@@ -962,7 +957,7 @@ namespace PHP.Core
 				{
 					// a deep copy of value stored in the original array should be returned,
                     // we can access .current directly, the underlaying table is read only:
-                    return PhpVariable.Copy(PhpVariable.Dereference(enumerator.current.Value), CopyReason.Assigned);
+                    return PhpVariable.Copy(PhpVariable.Dereference(enumerator.CurrentValue), CopyReason.Assigned);
 				}
 			}
 
@@ -1021,8 +1016,8 @@ namespace PHP.Core
             {
                 if (!disposed)
                 {
-                    disposed = true;                    // do not disposes again
-                    enumerator.head.Table.Unshare();    // return back the table so it can be writable again in most cases
+                    disposed = true;                    // do not dispose again
+                    enumerator.table.Unshare();         // return back the table so it can be writable again in most cases
                     enumerator.Dispose();               // disable the enumerator, free resources if any
                 }
             }
@@ -1042,12 +1037,14 @@ namespace PHP.Core
             /// <summary>
             /// Array to get values from.
             /// </summary>
+            private readonly OrderedDictionary.Enumerator/*!*/enumerator;
             private readonly PhpArray/*!*/array;
 
-            private int currentIndex;
-            private readonly int length;
-            private readonly IntStringKey[] keys;
-            
+            /// <summary>
+            /// Remember the last key (right after <see cref="MoveNext"/>) to detect whether current entry has been deleted during foreach body.
+            /// </summary>
+            private IntStringKey currentKey;
+
             /// <summary>
             /// Creates a new instance of the enumerator.
             /// </summary>
@@ -1058,12 +1055,10 @@ namespace PHP.Core
                 Debug.Assert(array != null);
 
                 this.array = array;
-                this.currentIndex = -1;
-                this.length = array.Count;
+                this.enumerator = new OrderedDictionary.Enumerator(array, true);
 
-                // if keys are needed during the iteration:
-                keys = new IntStringKey[length];
-                array.Keys.CopyTo(keys, 0);
+                // ForeachEnumeratorAliased can leave an undisposed enumerator registered in the array object
+                // (only in case a break; was called inside an aliased foreach loop).
             }
 
             #region IDictionaryEnumerator Members
@@ -1076,7 +1071,7 @@ namespace PHP.Core
                 get
                 {
                     // deep copy is not needed because a key is immutable:
-                    return keys[currentIndex].Object;
+                    return currentKey.Object;
                 }
             }
 
@@ -1089,7 +1084,8 @@ namespace PHP.Core
             {
                 get
                 {
-                    return array.GetArrayItemRef(keys[currentIndex]);
+                    var key = enumerator.CurrentKey;
+                    return array.table._ensure_item_ref(ref key, array);
                 }
             }
 
@@ -1113,12 +1109,24 @@ namespace PHP.Core
             /// <returns>Whether we can continue.</returns>
             public bool MoveNext()
             {
-                if (currentIndex < length)
-                    return ++currentIndex < length;
+                bool hasMore;
+
+                if (enumerator.CurrentKey.Equals(ref currentKey))
+                {
+                    // advance to the next position
+                    hasMore = enumerator.MoveNext();
+                }
                 else
                 {
-                    return false;
+                    hasMore = !enumerator.AtEnd;   // user deleted current entry and enumerator was already advanced to the next position
                 }
+
+                this.currentKey = enumerator.CurrentKey;
+
+                if (!hasMore)
+                    this.Dispose(); // dispose underlaying Enumerator so it can be unregistered from active enumerators list
+                
+                return hasMore;
             }
 
             /// <summary>
@@ -1136,9 +1144,15 @@ namespace PHP.Core
 
             #region IDisposable Members
 
+            private bool disposed = false;
+
             public void Dispose()
             {
-
+                if (!disposed)
+                {
+                    disposed = true;
+                    enumerator.Dispose();
+                }
             }
 
             #endregion
@@ -1187,8 +1201,6 @@ namespace PHP.Core
 		
 		#region Operators
 
-		public virtual bool IsProxy { get { return false; } }
-		
 		#region GetItem
 		
 		/// <summary>
@@ -1200,42 +1212,43 @@ namespace PHP.Core
 		/// <exception cref="PhpException"><paramref name="key"/> is not a legal key (Warning).</exception>
 		/// <exception cref="PhpException">The <paramref name="key"/> is not contained in <see cref="PhpArray"/> (Notice).</exception>
 		[Emitted]
-		public virtual object GetArrayItem(object key, bool quiet)
+		public object GetArrayItem(object key, bool quiet)
 		{
 			Debug.Assert(!(key is PhpReference));
 
-			IntStringKey array_key;
-			if (!Convert.ObjectToArrayKey(key, out array_key))
-			{
-				PhpException.IllegalOffsetType();
-				return null;
-			}
+            if (this.GetType() == typeof(PhpArray))
+            {
+                IntStringKey array_key;
+                if (Convert.ObjectToArrayKey(key, out array_key))
+                {
+                    object value;
+                    if (this.table.TryGetValue(array_key, out value))
+                        return PhpVariable.Dereference(value);
+                }
+                else
+                {
+                    PhpException.IllegalOffsetType();
+                    return null;
+                }                
+            }
 
-			OrderedHashtable<IntStringKey>.Element element;
-			if (!this.table.dict.TryGetValue(array_key, out element))
-			{
-				if (!quiet) PhpException.Throw(PhpError.Notice, CoreResources.GetString("undefined_offset", key));
-				return null;
-			}
-
-			return PhpVariable.Dereference(element.Value);
+            return GetArrayItemOverride(key, quiet);
 		}
 
 		[Emitted]
 		public object GetArrayItem(int key, bool quiet)
 		{
-			OrderedHashtable<IntStringKey>.Element element;
-			if (!this.table.dict.TryGetValue(new IntStringKey(key), out element))
-			{
-				if (IsProxy) return GetArrayItem((object)key, quiet);
-				if (!quiet) PhpException.Throw(PhpError.Notice, CoreResources.GetString("undefined_offset", key));
-				return null;
-			}
-
-			return PhpVariable.Dereference(element.Value);
+            //if (this.GetType() == typeof(PhpArray))   // otherwise just this.table.TryGetValue returns false
+            {
+                object value;
+                if (this.table.TryGetValue(key, out value))
+                    return PhpVariable.Dereference(value);
+            }
+            
+            return GetArrayItemOverride(key, quiet);
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Gets item of the array associated with a specified key of string type (a conversion to integer key may take place).
 		/// </summary>
 		[Emitted]
@@ -1243,245 +1256,335 @@ namespace PHP.Core
 		{
 			Debug.Assert(key != null);
 
-			OrderedHashtable<IntStringKey>.Element element;
-			if (!this.table.dict.TryGetValue(Core.Convert.StringToArrayKey(key), out element))
-			{
-				if (IsProxy) return GetArrayItem((object)key, quiet);
-				if (!quiet) PhpException.Throw(PhpError.Notice, CoreResources.GetString("undefined_offset", key));
-				return null;
-			}
-
-			return PhpVariable.Dereference(element.Value);
+            //if (this.GetType() == typeof(PhpArray))   // otherwise just this.table.TryGetValue returns false
+            {
+                object value;
+                if (this.table.TryGetValue(Core.Convert.StringToArrayKey(key), out value))
+                    return PhpVariable.Dereference(value);
+            }
+            
+            return GetArrayItemOverride(key, quiet);
 		}
 
-		[Emitted]
-		public object GetArrayItemExact(string/*!*/ key, bool quiet, int hashcode)
-		{
-			Debug.Assert(key != null);
-			
-			OrderedHashtable<IntStringKey>.Element element;
-			if (!this.table.dict.TryGetValue(new IntStringKey(key, hashcode), out element))
-			{
-				if (IsProxy) return GetArrayItem((object)key, quiet);
-				if (!quiet) PhpException.Throw(PhpError.Notice, CoreResources.GetString("undefined_offset", key));
-				return null;
-			}
+        [Emitted]
+        public object GetArrayItemExact(string/*!*/ key, bool quiet, int hashcode)
+        {
+            Debug.Assert(key != null);
 
-			return PhpVariable.Dereference(element.Value);
-		}		
-		
-		#endregion
-		
-		#region GetItemRef
+            //if (this.GetType() == typeof(PhpArray))   // otherwise just this.table.TryGetValue returns false
+            {
+                object value;
+                if (this.table.TryGetValue(new IntStringKey(key, hashcode), out value))
+                    return PhpVariable.Dereference(value);
+            }
+            
+            return GetArrayItemOverride(key, quiet);
+        }
 
-		/// <summary>
-		/// Retrieves a reference on an item of an array.
+        #region protected virtual: GetArrayItemOverride
+
+        /// <summary>
+        /// Handles undefined offset when getting a value from the array or derivet PhpArray types. Can be overriden.
+        /// </summary>
+        /// <param name="key">Key.</param>
+        /// <param name="quiet">Whether a notice should not be displayed.</param>
+        /// <returns><c>null</c> reference or an actual value in overriden class.</returns>
+        protected virtual object GetArrayItemOverride(object key, bool quiet)
+        {
+            if (!quiet)
+                PhpException.UndefinedOffset(key);
+
+            return null;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region GetItemRef
+
+        /// <summary>
+		/// Retrieves a reference on new item of the array.
 		/// </summary>
 		[Emitted]
-		public virtual PhpReference/*!*/ GetArrayItemRef()
+		public PhpReference/*!*/ GetArrayItemRef()
 		{
-			PhpReference result = new PhpReference();
-			Add(result);
-			return result;
+            PhpReference result;
+            if (this.GetType() == typeof(PhpArray))
+                Add(result = new PhpReference());
+            else
+                result = GetArrayItemRefOverride();
+            
+            return result;
 		}
 
-		/// <exception cref="PhpException"><paramref name="key"/> is not a legal key (Warning).</exception>
-		[Emitted]
-		public virtual PhpReference/*!*/ GetArrayItemRef(object key)
-		{
-			Debug.Assert(!(key is PhpReference));
-			
-			IntStringKey array_key;
-			if (!Convert.ObjectToArrayKey(key, out array_key))
-			{
-				PhpException.IllegalOffsetType();
-				return new PhpReference();
-			}	
+        /// <summary>
+        /// Retrieves a reference on an item of the array.
+        /// </summary>
+        /// <param name="key">Key of the item.</param>
+        /// <returns><see cref="PhpReference"/> of the item.</returns>
+        /// <exception cref="PhpException"><paramref name="key"/> is not a legal key (Warning).</exception>
+        [Emitted]
+        public PhpReference/*!*/ GetArrayItemRef(object key)
+        {
+            Debug.Assert(!(key is PhpReference));
 
-			return GetArrayItemRef(array_key);
+            if (this.GetType() == typeof(PhpArray))
+            {
+                IntStringKey array_key;
+                if (!Convert.ObjectToArrayKey(key, out array_key))
+                {
+                    PhpException.IllegalOffsetType();
+                    return new PhpReference();
+                }
+
+                return GetArrayItemRef(array_key);
+            }
+            else
+            {
+                return GetArrayItemRefOverride(key);
+            }
+        }
+
+        [Emitted]
+		public PhpReference/*!*/ GetArrayItemRef(int key)
+		{
+            if (this.GetType() == typeof(PhpArray))
+                return GetArrayItemRef(new IntStringKey(key));
+            else
+                return GetArrayItemRefOverride(key);
 		}
 
-		[Emitted]
-		public virtual PhpReference/*!*/ GetArrayItemRef(int key)
-		{
-			return GetArrayItemRef(new IntStringKey(key));
-		}
-
-		[Emitted]
-		public virtual PhpReference/*!*/ GetArrayItemRef(string/*!*/ key)
+        [Emitted]
+		public PhpReference/*!*/ GetArrayItemRef(string/*!*/ key)
 		{
 			Debug.Assert(key != null);
 			
 			// the key cannot be converted by compiler using StringToArrayKey as the compiler doesn't know
 			// whether the array is not actually ArrayAccess unless it performs som type analysis
-			return GetArrayItemRef(Convert.StringToArrayKey(key));
+
+            if (this.GetType() == typeof(PhpArray))
+                return GetArrayItemRef(Convert.StringToArrayKey(key));
+            else
+                return GetArrayItemRefOverride(key);			
 		}
-		
-		private PhpReference/*!*/ GetArrayItemRef(IntStringKey key)
+
+        private PhpReference/*!*/ GetArrayItemRef(IntStringKey key)
 		{
-			PhpReference result;
-			OrderedHashtable<IntStringKey>.Element element;
-			if (this.table.dict.TryGetValue(key, out element))
-			{
-                if (this.table.IsShared &&  // we have to lazily copy the array only if it is shared and:
-                    (
-                        !(element.Value is PhpReference) || // value must be changed to reference or 
-                        table.owner != this && (((PhpReference)element.Value).Value == table.owner)) // reference must be updated
-                    )
-                {
-                    // we are going to change the value of element:
-                    EnsureWritable();
-                    Debug.Assert(!table.IsShared, "Array not set as writable!");
-                    element = this.table.dict[key]; // get the item again
-                    Debug.Assert(element != null, "Element could not be found in lazily copied array! Check the new PhpArray was lazily copied with all the deleted elements and IDs preserved.");
-                }
-
-				// item exists => convert it to a reference if not yet:
-				result = element.MakeValueReference();
-			}
-			else
-			{
-				// item doesn't exist => adds a new empty reference (causes EnsureWritable()):
-				Add(key, result = new PhpReference());
-			}
-			return result;
+            return this.table._ensure_item_ref(ref key, this);
 		}
-		
-		#endregion
-		
-		#region SetArrayItem
 
-		/// <summary>
+        #region protected virtual: GetArrayItemRefOverride
+
+        protected virtual PhpReference/*!*/GetArrayItemRefOverride()
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+
+        protected virtual PhpReference/*!*/ GetArrayItemRefOverride(object key)
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+
+        protected virtual PhpReference/*!*/ GetArrayItemRefOverride(int key)
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+
+        protected virtual PhpReference/*!*/ GetArrayItemRefOverride(string/*!*/ key)
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+
+        #endregion
+
+        #endregion
+
+        #region SetArrayItem
+
+        /// <summary>
 		/// Sets a value to an item of a <see cref="PhpArray"/>. Implements the last keyed [] operator in the chain.
 		/// </summary>
 		/// <param name="value">The value to be set to a new item (value or <see cref="PhpReference"/>).</param>
 		[Emitted]
-		public virtual void SetArrayItem(object value)
+		public void SetArrayItem(object value)
 		{
-			Add(value);
+            if (this.GetType() == typeof(PhpArray))
+                this.Add(value);
+            else
+                this.SetArrayItemOverride(value);
 		}
 
 		[Emitted]
-		public virtual void SetArrayItem(object key, object value)
+		public void SetArrayItem(object key, object value)
 		{
 			Debug.Assert(!(key is PhpReference) && !(value is PhpReference));
-			
-			IntStringKey array_key;
-			if (!Convert.ObjectToArrayKey(key, out array_key))
-			{
-				PhpException.IllegalOffsetType();
-				return;
-			}
 
-			SetArrayItem(array_key, value);
+            if (this.GetType() == typeof(PhpArray))
+            {
+                IntStringKey array_key;
+                if (Convert.ObjectToArrayKey(key, out array_key))
+                    SetArrayItem(array_key, value);
+                else
+                    PhpException.IllegalOffsetType();
+            }
+            else
+            {
+                SetArrayItemOverride(key, value);
+            }
 		}
 
 		[Emitted]
-		public virtual void SetArrayItem(int key, object value)
+		public void SetArrayItem(int key, object value)
 		{
 			Debug.Assert(!(value is PhpReference));
-			SetArrayItem(new IntStringKey(key), value);
+
+            if (this.GetType() == typeof(PhpArray))
+            {
+                this.EnsureWritable();
+                this.table._add_or_update_preserve_ref(this, key, value);
+            }
+            else
+                SetArrayItemOverride(key, value);
 		}
 
 		[Emitted]
-		public virtual void SetArrayItem(string/*!*/ key, object value)
+		public void SetArrayItem(string/*!*/ key, object value)
 		{
 			Debug.Assert(key != null && !(value is PhpReference));
-			
-			// the key cannot be converted by compiler using StringToArrayKey as the compiler doesn't know
-			// whether the array is not actually ArrayAccess unless it performs som type analysis
-			SetArrayItem(Convert.StringToArrayKey(key), value);
+
+            if (this.GetType() == typeof(PhpArray))
+                // the key cannot be converted by compiler using StringToArrayKey as the compiler doesn't know
+                // whether the array is not actually ArrayAccess unless it performs som type analysis
+                SetArrayItem(Convert.StringToArrayKey(key), value);
+            else
+                SetArrayItemOverride(key, value);
 		}
 
 		[Emitted]
-		public virtual void SetArrayItemExact(string/*!*/ key, object value, int hashcode)
+		public void SetArrayItemExact(string/*!*/ key, object value, int hashcode)
 		{
 			Debug.Assert(key != null && !(value is PhpReference));
 
-			SetArrayItem(new IntStringKey(key, hashcode), value);
+            if (this.GetType() == typeof(PhpArray))
+                SetArrayItem(new IntStringKey(key, hashcode), value);
+            else
+                SetArrayItemOverride(key, value);
 		}
 
 		private void SetArrayItem(IntStringKey key, object value)
 		{
-			// gets an item from the array to check whether it is a reference or not:
+            Debug.Assert(this.GetType() == typeof(PhpArray));
 
-            this.EnsureWritable(); // TODO: avoid of copying, see below when element is found and it is PhpReference
-
-			OrderedHashtable<IntStringKey>.Element element;
-			if (this.table.dict.TryGetValue(key, out element))
-			{
-				// assigns value to a reference or changes the array item itself:
-				PhpReference reference;
-                if ((reference = element.Value as PhpReference) != null)
-                    reference.Value = value;
-                else
-                {
-                    //if (this.table.IsShared)
-                    //{
-                    //    throw new NotImplementedException("TBD: lazy copy");
-                    //    //element = this.table.dict[key]; // get the item again
-                    //    //Debug.Assert(!(element.Value is PhpReference));
-                    //}
-                    element.Value = value;
-                }
-			}
-			else
-			{
-				// do not access table.dict directly as the setter has to adjust maxint:
-				Add(key, value);
-			}
+            this.EnsureWritable();
+            this.table._add_or_update_preserve_ref(this, ref key, value);
 		}
-		
-		#endregion
-		
-		#region SetArrayItemRef
 
-		[Emitted]
-		public virtual void SetArrayItemRef(object key, PhpReference value)
+        #region protected virtual: SetArrayItemOverride
+
+        protected virtual void SetArrayItemOverride(object value)
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+
+        protected virtual void SetArrayItemOverride(object key, object value)
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+        protected virtual void SetArrayItemOverride(int key, object value)
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+        protected virtual void SetArrayItemOverride(string key, object value)
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+
+        #endregion
+
+        #endregion
+
+        #region SetArrayItemRef
+
+        [Emitted]
+		public void SetArrayItemRef(object key, PhpReference value)
 		{
 			Debug.Assert(!(key is PhpReference));
-			
-			IntStringKey array_key;
-			if (!Convert.ObjectToArrayKey(key, out array_key))
-			{
-				PhpException.IllegalOffsetType();
-				return;
-			}
 
-            this[array_key] = value;
+            if (this.GetType() == typeof(PhpArray))
+            {
+                IntStringKey array_key;
+                if (Convert.ObjectToArrayKey(key, out array_key))
+                    this[array_key] = value;
+                else
+                    PhpException.IllegalOffsetType();                
+            }
+            else
+                SetArrayItemRefOverride(key, value);
 		}
 
 		[Emitted]
-		public virtual void SetArrayItemRef(int key, PhpReference value)
+		public void SetArrayItemRef(int key, PhpReference value)
 		{
-            this[key] = value;
+            if (this.GetType() == typeof(PhpArray))
+                this[key] = value;
+            else
+                SetArrayItemRefOverride(key, value);
 		}
 
 		[Emitted]
-		public virtual void SetArrayItemRef(string/*!*/ key, PhpReference value)
+		public void SetArrayItemRef(string/*!*/ key, PhpReference value)
 		{
 			Debug.Assert(key != null);
 
-            // the key cannot be converted by compiler using StringToArrayKey as the compiler doesn't know
-			// whether the array is not actually ArrayAccess unless it performs som type analysis
-			this[Convert.StringToArrayKey(key)] = value;
+            if (this.GetType() == typeof(PhpArray))
+                // the key cannot be converted by compiler using StringToArrayKey as the compiler doesn't know
+                // whether the array is not actually ArrayAccess unless it performs som type analysis
+                this[Convert.StringToArrayKey(key)] = value;
+            else
+                SetArrayItemRefOverride(key, value);
 		}
-		
-		#endregion
-		
-		#region Ensure
 
-		/// <summary>
+        #region protected virtual: SetArrayItemRefOverride
+
+        protected virtual void SetArrayItemRefOverride(object key, PhpReference value)
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Ensure
+
+        /// <summary>
 		/// Ensures a specified array item is an instance of <see cref="PhpArray"/>. 
 		/// </summary>
 		/// <remarks>A new instance of <see cref="PhpArray"/> is assigned to the item if it is empty in a meaning of <see cref="Operators.IsEmptyForEnsure"/>.</remarks>
 		/// <returns>The item associated with a key after it might be replaced by a new instance of <see cref="PhpArray"/>.</returns>
 		[Emitted]
-		public virtual PhpArray EnsureItemIsArray()
+		public PhpArray EnsureItemIsArray()
 		{
-			PhpArray result = new PhpArray();
-			Add(result);
-			return result;
+            if (this.GetType() == typeof(PhpArray))
+            {
+                PhpArray result;
+                Add(result = new PhpArray());
+                return result;
+            }
+            else
+            {
+                return EnsureItemIsArrayOverride();
+            }			
 		}
 
 		/// <summary>
@@ -1491,136 +1594,181 @@ namespace PHP.Core
 		/// <remarks>A new instance of <see cref="PHP.Library.stdClass"/> is assigned to the item if it is empty in a meaning of <see cref="Operators.IsEmptyForEnsure"/>.</remarks>
 		/// <returns>The item associated with a key after the potential replacement by a new instance of <see cref="PHP.Library.stdClass"/>.</returns>
 		[Emitted]
-		public virtual DObject EnsureItemIsObject(ScriptContext/*!*/ context)
+		public DObject EnsureItemIsObject(ScriptContext/*!*/ context)
 		{
-			PHP.Library.stdClass result = PHP.Library.stdClass.CreateDefaultObject(context);
-			Add(result);
-			return result;
+            if (this.GetType() == typeof(PhpArray))
+            {
+                PHP.Library.stdClass result;
+                Add(result = PHP.Library.stdClass.CreateDefaultObject(context));
+                return result;
+            }
+            else
+            {
+                return EnsureItemIsObjectOverride(context);
+            }
 		}
 
 		[Emitted]
-		public virtual PhpArray EnsureItemIsArray(object key)
+		public PhpArray EnsureItemIsArray(object key)
 		{
-			Debug.Assert(!(key is PhpReference));
-			
-			IntStringKey array_key;
-			if (!Convert.ObjectToArrayKey(key, out array_key))
-			{
-				PhpException.IllegalOffsetType();
-				return null;
-			}
+            Debug.Assert(!(key is PhpReference));
 
-            // TODO: set writable only if item is not reference
-            this.EnsureWritable();   // if we are not writing here, we can in some child array, MUST be set as writable now
+            if (this.GetType() == typeof(PhpArray))
+            {
+                IntStringKey array_key;
+                if (!Convert.ObjectToArrayKey(key, out array_key))
+                {
+                    PhpException.IllegalOffsetType();
+                    return null;
+                }
 
-			OrderedHashtable<IntStringKey>.Element element = GetElement(array_key);
-			
-			object item = (element != null) ? element.Value : null;
+                // TODO: set writable only if item is not reference
+                this.EnsureWritable();   // if we are not writing here, we can in some child array, MUST be set as writable now
 
-			// dereferences item if it is a reference:
-			PhpReference ref_item = item as PhpReference;
-			if (ref_item != null) item = ref_item.Value;
+                //OrderedHashtable<IntStringKey>.Element element = GetElement(array_key);
 
-			// the item is already an array:
-			PhpArray array_item = item as PhpArray;
-			if (array_item != null) return array_item;
+                object item = this.table[array_key];// = (element != null) ? element.Value : null;
 
-			// an item is empty => creates a new array:
-			if (Operators.IsEmptyForEnsure(item))
-			{
-				array_item = new PhpArray();
+                // dereferences item if it is a reference:
+                PhpReference ref_item = item as PhpReference;
+                if (ref_item != null) item = ref_item.Value;
 
-				// if there was a reference then its value is replaced, 
-				// the value of element is replaced otherwise:
-				if (ref_item != null)
-					ref_item.Value = array_item;
-				else if (element != null)
-					element.Value = array_item;
-				else
-					Add(array_key, array_item);
+                // the item is already an array:
+                PhpArray array_item = item as PhpArray;
+                if (array_item != null) return array_item;
 
-				return array_item;
-			}
-			
+                // an item is empty => creates a new array:
+                if (Operators.IsEmptyForEnsure(item))
+                {
+                    array_item = new PhpArray();
 
-			// checks an object behaving like an array:
-			DObject dobj = item as DObject;
-			if (dobj != null && dobj.RealObject is Library.SPL.ArrayAccess)
-				return new Library.SPL.PhpArrayObject(dobj);
+                    // if there was a reference then its value is replaced, 
+                    // the value of element is replaced otherwise:
+                    if (ref_item != null)
+                        ref_item.Value = array_item;
+                    else
+                        this[array_key] = array_item;
 
-			// checks whether the result is a string whose item can be read by the next operator:
-			string str_item = item as string;
-			if (str_item != null)
-			{
-				PhpString phps = new PhpString(str_item);
+                    return array_item;
+                }
 
-				Debug.Assert(element != null);
-				if (ref_item != null)
-					ref_item.Value = phps;
-				else
-					element.Value = phps;
 
-				return new PhpArrayString(phps);
-			}
+                // checks an object behaving like an array:
+                DObject dobj = item as DObject;
+                if (dobj != null && dobj.RealObject is Library.SPL.ArrayAccess)
+                    return new Library.SPL.PhpArrayObject(dobj);
 
-			if (item is PhpString || item is PhpBytes)
-				return new PhpArrayString(item);
+                // checks whether the result is a string whose item can be read by the next operator:
+                string str_item = item as string;
+                if (str_item != null)
+                {
+                    PhpString phps = new PhpString(str_item);
 
-			// error - the item is a scalar, a DObject:
-			PhpException.VariableMisusedAsArray(item, false);
-			return null;			
+                    if (ref_item != null)
+                        ref_item.Value = phps;
+                    else
+                        this[array_key] = phps;
+
+                    return new PhpArrayString(phps);
+                }
+
+                if (item is PhpString || item is PhpBytes)
+                    return new PhpArrayString(item);
+
+                // error - the item is a scalar, a DObject:
+                PhpException.VariableMisusedAsArray(item, false);
+                return null;
+
+            }
+            else
+            {
+                return EnsureItemIsArrayOverride(key);
+            }
 		}
 
 		[Emitted]
-		public virtual DObject EnsureItemIsObject(object key, ScriptContext/*!*/ context)
+		public DObject EnsureItemIsObject(object key, ScriptContext/*!*/ context)
 		{
 			Debug.Assert(!(key is PhpReference));
-			
-			IntStringKey array_key;
-			if (!Convert.ObjectToArrayKey(key, out array_key))
-			{
-				PhpException.IllegalOffsetType();
-				return null;
-			}
 
-            // TODO: set writable only if item is not reference
-            this.EnsureWritable();   // if we are not writing here, we can in some child array, MUST be set as writable now
+            if (this.GetType() == typeof(PhpArray))
+            {
+                IntStringKey array_key;
+                if (!Convert.ObjectToArrayKey(key, out array_key))
+                {
+                    PhpException.IllegalOffsetType();
+                    return null;
+                }
 
-			OrderedHashtable<IntStringKey>.Element element = GetElement(array_key);
-			object item = (element != null) ? element.Value : null;
+                // TODO: set writable only if item is not reference
+                this.EnsureWritable();   // if we are not writing here, we can in some child array, MUST be set as writable now
 
-			// dereferences item if it is a reference:
-			PhpReference ref_item = item as PhpReference;
-			if (ref_item != null) item = ref_item.Value;
+                //OrderedHashtable<IntStringKey>.Element element = GetElement(array_key);
+                object item = table[array_key]; //(element != null) ? element.Value : null;
 
-			// the item is already an object:
-			DObject object_item = item as DObject;
-			if (object_item != null) return object_item;
+                // dereferences item if it is a reference:
+                PhpReference ref_item = item as PhpReference;
+                if (ref_item != null) item = ref_item.Value;
 
-			// an item is empty => creates a new array:
-			if (Operators.IsEmptyForEnsure(item))
-			{
-				object_item = PHP.Library.stdClass.CreateDefaultObject(context);
+                // the item is already an object:
+                DObject object_item = item as DObject;
+                if (object_item != null) return object_item;
 
-				// if there was a reference then its value is replaced, the item of array is replaced otherwise:
-				if (ref_item != null)
-					ref_item.Value = object_item;
-				else if (element != null)
-					element.Value = object_item;
-				else
-					Add(array_key, object_item);
+                // an item is empty => creates a new array:
+                if (Operators.IsEmptyForEnsure(item))
+                {
+                    object_item = PHP.Library.stdClass.CreateDefaultObject(context);
 
-				return object_item;
-			}
+                    // if there was a reference then its value is replaced, the item of array is replaced otherwise:
+                    if (ref_item != null)
+                        ref_item.Value = object_item;
+                    else
+                        this[array_key] = object_item;
 
-			// error - the item is a scalar, a PhpArray or a non-empty string:
-			PhpException.VariableMisusedAsObject(item, false);
-			return null;
-		}
-		
-		#endregion
-		
-		#endregion
+                    return object_item;
+                }
+
+                // error - the item is a scalar, a PhpArray or a non-empty string:
+                PhpException.VariableMisusedAsObject(item, false);
+                return null;
+            }
+            else
+            {
+                return EnsureItemIsObjectOverride(key, context);
+            }
+        }
+
+        #region protected virtual: EnsureItemIs*Override
+
+        protected virtual PhpArray EnsureItemIsArrayOverride()
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+
+        protected virtual DObject EnsureItemIsObjectOverride(ScriptContext/*!*/ context)
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+
+        protected virtual PhpArray EnsureItemIsArrayOverride(object key)
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+
+        protected virtual DObject EnsureItemIsObjectOverride(object key, ScriptContext/*!*/ context)
+        {
+            Debug.Fail("This method has to be overriden!");
+            throw new InvalidOperationException();
+        }
+
+        #endregion
+
+        #endregion
+
+        #endregion
     }
 
 	#region Debug View

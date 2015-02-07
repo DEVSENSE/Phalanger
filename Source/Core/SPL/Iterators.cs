@@ -144,7 +144,7 @@ namespace PHP.Library.SPL
         #region Fields & Properties
 
         protected PhpArray array;
-        protected OrderedHashtable<IntStringKey>.Enumerator arrayEnumerator;    // lazily instantiated so we can rewind() once when needed
+        protected OrderedDictionary.Enumerator arrayEnumerator;    // lazily instantiated so we can rewind() once when needed
         protected bool isArrayIterator { get { return this.array != null; } }
 
         protected DObject dobj;
@@ -159,7 +159,7 @@ namespace PHP.Library.SPL
         {
             Debug.Assert(this.array != null);
 
-            this.arrayEnumerator = new OrderedHashtable<IntStringKey>.Enumerator(this.array, false);
+            this.arrayEnumerator = new OrderedDictionary.Enumerator(this.array, false);
             this.isValid = this.arrayEnumerator.MoveFirst();
         }
 
