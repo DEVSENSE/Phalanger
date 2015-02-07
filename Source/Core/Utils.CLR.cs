@@ -832,11 +832,18 @@ namespace PHP.Core
 		/// </summary>
 		private NetworkUtils()
 		{
-			WsaData wsa_data;
-			if (InitializeWinsock(2, out wsa_data) != 0)
-			{
-				throw new NotSupportedException(CoreResources.GetString("networkutils_unsupported"));
-			}
+            if (Environment.Is64BitProcess)
+            {
+                var wsa_data = new WsaData64();
+                if (WSAStartup64(WORD_VERSION, ref wsa_data) != 0)
+                    throw new NotSupportedException(CoreResources.GetString("networkutils_unsupported"));
+            }
+            else
+            {
+                var wsa_data = new WsaData32();
+                if (WSAStartup32(WORD_VERSION, ref wsa_data) != 0)
+                    throw new NotSupportedException(CoreResources.GetString("networkutils_unsupported"));
+            }
 		}
 
 		/// <summary>
@@ -844,43 +851,71 @@ namespace PHP.Core
 		/// </summary>
 		~NetworkUtils()
 		{
-			ShutdownWinsock();
+            WSACleanup();
 		}
 
-		/// <summary>
+        const int WSADESCRIPTION_LEN = 256;
+        const int WSASYS_STATUS_LEN = 128;
+
+        public const ushort HIGH_VERSION = 2;
+        public const ushort LOW_VERSION = 2;
+        public const short WORD_VERSION = (ushort)(HIGH_VERSION << 8) + LOW_VERSION;
+        
+        /// <summary>
 		/// Managed representation of the <c>WSADATA</c> structure.
 		/// </summary>
-		[StructLayout(LayoutKind.Explicit)]
-		public struct WsaData
-		{
-			[FieldOffset(0)]
-			ushort wVersion;
-			[FieldOffset(2)]
-			ushort wHighVersion;
-			// skipping szDescription and szSystemStatus
-			[FieldOffset(392)]
-			ushort iMaxSockets;
-			[FieldOffset(394)]
-			ushort iMaxUdpDg;
-			[FieldOffset(396)]
-			string lpVendorInfo;
-		}
-
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WsaData32
+        {
+            public ushort wVersion;
+            public ushort wHighVersion;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = WSADESCRIPTION_LEN + 1)]public String szDescription;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = WSASYS_STATUS_LEN + 1)]public String szSystemStatus;
+            public ushort iMaxSockets;
+            public ushort iMaxUdpDg;
+            public IntPtr lpVendorInfo;
+        }
+        /// <summary>
+        /// Managed representation of the <c>WSADATA</c> structure.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WsaData64
+        {
+            public ushort wVersion;
+            public ushort wHighVersion;
+            public ushort iMaxSockets;
+            public ushort iMaxUdpDg;
+            public IntPtr lpVendorInfo;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = WSADESCRIPTION_LEN + 1)]
+            public String szDescription;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = WSASYS_STATUS_LEN + 1)]
+            public String szSystemStatus;
+        }
+        
 		/// <summary>
 		/// Initializes Winsock for the current process.
 		/// </summary>
-		/// <param name="versionRequested">The Winsock version requested by caller.</param>
+        /// <param name="wVersionRequested">The Winsock version requested by caller.</param>
 		/// <param name="wsaData">Receives information about Winsock implementation.</param>
 		/// <returns>Zero if successfull, a non-zero error code otherwise.</returns>
-		[DllImport("ws2_32.dll", EntryPoint = "WSAStartup")]
-		public static extern int InitializeWinsock(ushort versionRequested, out WsaData wsaData);
+        [DllImport("ws2_32.dll", EntryPoint = "WSAStartup", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern int WSAStartup32(Int16 wVersionRequested, ref WsaData32 wsaData);
+
+        /// <summary>
+        /// Initializes Winsock for the current process.
+        /// </summary>
+        /// <param name="wVersionRequested">The Winsock version requested by caller.</param>
+        /// <param name="wsaData">Receives information about Winsock implementation.</param>
+        /// <returns>Zero if successfull, a non-zero error code otherwise.</returns>
+        [DllImport("ws2_32.dll", EntryPoint = "WSAStartup", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern int WSAStartup64(Int16 wVersionRequested, ref WsaData64 wsaData);
 
 		/// <summary>
 		/// Shuts down Winsock for the current process.
 		/// </summary>
 		/// <returns>Zero if successfull, a non-zero error code otherwise.</returns>
-		[DllImport("ws2_32.dll", EntryPoint = "WSACleanup")]
-		public static extern int ShutdownWinsock();
+		[DllImport("ws2_32.dll")]
+        private static extern int WSACleanup();
 
 		/// <summary>
 		/// Managed representation of the <c>protoent</c> structure.
@@ -888,21 +923,106 @@ namespace PHP.Core
 		[StructLayout(LayoutKind.Sequential)]
 		public class ProtoEnt
 		{
-			public string p_name;
+            [MarshalAs(UnmanagedType.LPStr)]
+            public string p_name;
 			public IntPtr p_aliases;
 			public short p_proto;
+
+            /// <summary>
+            /// Marshales native pointer to <see cref="ProtoEnt"/> instance.
+            /// </summary>
+            /// <param name="ptr">Pointer returned by <see cref="getprotobyname"/> or <see cref="getprotobynumber"/>.</param>
+            /// <remarks>The wrapper avoids freeing of pointer returned from winsoc native library. The returned pointer is managed by winsoc library and must not be freed by CLI.</remarks>
+            internal static ProtoEnt FromIntPtr(IntPtr ptr)
+            {
+                if (ptr == IntPtr.Zero)
+                return null;
+
+                // marshall returned object to ProtoEnt class:
+                ProtoEnt result = new ProtoEnt();
+                Marshal.PtrToStructure(ptr, result);
+                return result;
+            }
 		}
 
 		/// <summary>
 		/// Managed representation of the <c>servent</c> structure.
 		/// </summary>
-		[StructLayout(LayoutKind.Sequential)]
 		public class ServEnt
 		{
-			public string s_name;
-			public IntPtr s_aliases;
+            public string s_name;
 			public short s_port;
-			public string s_proto;
+            public string s_proto;
+
+            //struct  servent
+            //{
+            //    char    FAR * s_name;           /* official service name */
+            //    char    FAR * FAR * s_aliases;  /* alias list */
+            //#ifdef _WIN64
+            //    char    FAR * s_proto;          /* protocol to use */
+            //    short   s_port;                 /* port # */
+            //#else
+            //    short   s_port;                 /* port # */
+            //    char    FAR * s_proto;          /* protocol to use */
+            //#endif
+            //};
+
+            [StructLayout(LayoutKind.Sequential)]
+		    private class x86
+            {
+                [MarshalAs(UnmanagedType.LPStr)]
+                public string s_name;           // official service name
+                public IntPtr s_aliases;        // alias list
+                public short   s_port;          // port #
+                [MarshalAs(UnmanagedType.LPStr)]
+                public string s_proto;          // protocol to use
+            }
+
+            [StructLayout(LayoutKind.Sequential)]
+		    private class x64
+            {
+                [MarshalAs(UnmanagedType.LPStr)]
+                public string s_name;           // official service name
+                public IntPtr s_aliases;        // alias list
+                [MarshalAs(UnmanagedType.LPStr)]
+                public string s_proto;          // protocol to use
+                public short   s_port;          // port #
+            }
+
+            /// <summary>
+            /// Marshales native pointer to <see cref="ServEnt"/> instance.
+            /// </summary>
+            /// <param name="ptr">Pointer returned by <see cref="getservbyname"/> or <see cref="getservbyport"/>.</param>
+            /// <remarks>The wrapper avoids freeing of pointer returned from winsoc native library. The returned pointer is managed by winsoc library and must not be freed by CLI.</remarks>
+            internal static ServEnt FromIntPtr(IntPtr ptr)
+            {
+                if (ptr == IntPtr.Zero)
+                return null;
+
+                // marshall returned object to ProtoEnt class:
+                if (Environment.Is64BitProcess)
+                {
+                    var result = new ServEnt.x64();
+                    Marshal.PtrToStructure(ptr, result);
+                    return new ServEnt()
+                    {
+                        s_name = result.s_name,
+                        s_port = result.s_port,
+                        s_proto = result.s_proto
+                    };
+                }
+                else
+                {
+                    var result = new ServEnt.x86();
+                    Marshal.PtrToStructure(ptr, result);
+                    return new ServEnt()
+                    {
+                        s_name = result.s_name,
+                        s_port = result.s_port,
+                        s_proto = result.s_proto
+                    };
+                }
+            }
 		}
 
 		/// <summary>
@@ -910,16 +1030,37 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="name">The protocol name.</param>
 		/// <returns>Protocol information or <B>null</B> if an error occurs.</returns>
-		[DllImport("ws2_32.dll", EntryPoint = "getprotobyname")]
-		public static extern ProtoEnt GetProtocolByName(string name);
+        [DllImport("ws2_32.dll")]
+        private static extern IntPtr getprotobyname([MarshalAs(UnmanagedType.LPStr)]string name);
+
+        /// <summary>
+        /// Safe wrapper for <see cref="getprotobyname"/> function call.
+        /// </summary>
+        /// <param name="name">The protocol name.</param>
+		/// <returns>Protocol information or <B>null</B> if an error occurs.</returns>
+        /// <remarks>The wrapper avoids freeing of pointer returned from <see cref="getprotobyname"/>. The returned pointer is managed by winsoc library and must not be freed by CLI.</remarks>
+        public static ProtoEnt GetProtocolByName(string name)
+        {
+            return ProtoEnt.FromIntPtr(getprotobyname(name));
+        }
 
 		/// <summary>
 		/// Retrieves protocol information corresponding to a protocol number.
 		/// </summary>
 		/// <param name="number">The protocol number.</param>
 		/// <returns>Protocol information or <B>null</B> if an error occurs.</returns>
-		[DllImport("ws2_32.dll", EntryPoint = "getprotobynumber")]
-		public static extern ProtoEnt GetProtocolByNumber(int number);
+        [DllImport("ws2_32.dll")]
+        private static extern IntPtr getprotobynumber(int number);
+
+        /// <summary>
+        /// Safe wrapper for <see cref="getprotobynumber"/> function call.
+        /// </summary>
+        /// <param name="number">The protocol number.</param>
+		/// <returns>Protocol information or <B>null</B> if an error occurs.</returns>
+        public static ProtoEnt GetProtocolByNumber(int number)
+        {
+            return ProtoEnt.FromIntPtr(getprotobynumber(number));
+        }
 
 		/// <summary>
 		/// Retrieves service information corresponding to a service name and protocol.
@@ -928,8 +1069,20 @@ namespace PHP.Core
 		/// <param name="proto">The protocol name or <B>null</B> if only <paramref name="name"/> should be matched.
 		/// </param>
 		/// <returns>Service information or <B>null</B> if an error occurs.</returns>
-		[DllImport("ws2_32.dll", EntryPoint = "getservbyname")]
-		public static extern ServEnt GetServiceByName(string name, string proto);
+        [DllImport("ws2_32.dll")]
+		private static extern IntPtr getservbyname([MarshalAs(UnmanagedType.LPStr)]string name, [MarshalAs(UnmanagedType.LPStr)]string proto);
+
+        /// <summary>
+        /// Safe wrapper for <see cref="getservbyname"/> function call.
+        /// </summary>
+		/// <param name="name">The service name.</param>
+		/// <param name="proto">The protocol name or <B>null</B> if only <paramref name="name"/> should be matched.
+		/// </param>
+		/// <returns>Service information or <B>null</B> if an error occurs.</returns>
+        public static ServEnt GetServiceByName(string name, string proto)
+        {
+            return ServEnt.FromIntPtr(getservbyname(name, proto));
+        }
 
 		/// <summary>
 		/// Retrieves service information corresponding to a port and protocol.
@@ -938,8 +1091,20 @@ namespace PHP.Core
 		/// <param name="proto">The protocol name or <B>null</B> if only <paramref name="port"/> should be matched.
 		/// </param>
 		/// <returns>Service information or <B>null</B> if an error occurs.</returns>
-		[DllImport("ws2_32.dll", EntryPoint = "getservbyport")]
-		public static extern ServEnt GetServiceByPort(int port, string proto);
+        [DllImport("ws2_32.dll")]
+		public static extern IntPtr getservbyport(int port, [MarshalAs(UnmanagedType.LPStr)]string proto);
+
+        /// <summary>
+		/// Safe wrapper for <see cref="getservbyport"/> function call.
+		/// </summary>
+		/// <param name="port">The port number (network order).</param>
+		/// <param name="proto">The protocol name or <B>null</B> if only <paramref name="port"/> should be matched.
+		/// </param>
+		/// <returns>Service information or <B>null</B> if an error occurs.</returns>
+        public static ServEnt GetServiceByPort(int port, string proto)
+        {
+            return ServEnt.FromIntPtr(getservbyport(port, proto));
+        }
 	}
 
 	#endregion
