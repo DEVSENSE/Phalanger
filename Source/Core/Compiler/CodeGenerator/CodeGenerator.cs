@@ -1685,17 +1685,10 @@ namespace PHP.Core
         /// <param name="flags">Ignored.</param>
         internal void EmitLoadStaticTypeDesc(ResolveTypeFlags flags)
         {
-            // 1. if we have a local variable with the type place
+            // if we have a type place, use it:
             if (this.LateStaticBindTypePlace != null)
             {
                 this.LateStaticBindTypePlace.EmitLoad(this.il);
-            }
-            else
-            // 2. instance method can access this.TypeDesc // if this != null
-            if (this.SelfPlace != LiteralPlace.Null && this.LocationStack.InMethodDecl)    // inside instance method (or instance method called statically)
-            {
-                this.EmitLoadSelf();
-                this.IL.Emit(OpCodes.Call, Properties.DObject_TypeDesc.GetGetMethod());
             }
             else
             {
@@ -2130,20 +2123,41 @@ namespace PHP.Core
         /// </summary>
         private void EmitArgfullLateStaticBindTypeInitialization(PhpRoutine/*!*/routine)
         {
-            if (routine == null || !routine.IsMethod || !routine.IsStatic || !routine.UsesLateStaticBinding)
+            if (routine == null || !routine.UsesLateStaticBinding)
                 return;
 
-            // static method that has late static bind use:
-            Debug.Assert(this.LateStaticBindTypePlace == null);
+            if (routine.IsMethod)
+            {
+                if (routine.IsStatic)
+                {
+                    // static method,
+                    // reads <context>.Stack.LateStaticBindType,
+                    // saves it into a local variable:
 
-            // <context>.Stack.LateStaticBindType
-            this.EmitLoadScriptContext();
-            this.il.Emit(OpCodes.Ldfld, Fields.ScriptContext_Stack);
-            this.il.Emit(OpCodes.Ldfld, Fields.PhpStack_LateStaticBindType);
+                    // <context>.Stack.LateStaticBindType
+                    this.EmitLoadScriptContext();
+                    this.il.Emit(OpCodes.Ldfld, Fields.ScriptContext_Stack);
+                    this.il.Emit(OpCodes.Ldfld, Fields.PhpStack_LateStaticBindType);
 
-            // DTypeDesc <loc_lsb> =
-            this.LateStaticBindTypePlace = new IndexedPlace(il.DeclareLocal(Types.DTypeDesc[0]));
-            this.LateStaticBindTypePlace.EmitStore(il);
+                    // DTypeDesc <loc_lsb> =
+                    this.LateStaticBindTypePlace = new IndexedPlace(il.DeclareLocal(Types.DTypeDesc[0]));
+                    this.LateStaticBindTypePlace.EmitStore(il);
+                }
+                else
+                {
+                    // instance method,
+                    // uses ((DObject)this).TypeDesc
+                    
+                    Debug.Assert(this.SelfPlace != null && this.SelfPlace != LiteralPlace.Null, "SelfPlace expected to be non-NULL");
+                    this.LateStaticBindTypePlace = new MethodCallPlace(Properties.DObject_TypeDesc.GetGetMethod(), false, this.SelfPlace);
+                }
+            }
+            else
+            {
+                this.LateStaticBindTypePlace = LiteralPlace.Null;
+            }
+
+            
         }
 
 		/// <summary>

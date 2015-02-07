@@ -516,6 +516,11 @@ namespace PHP.Core
         /// Needs DTypeDesc class context of the caller.
         /// </summary>
         NeedsClassContext = 256,
+
+        /// <summary>
+        /// Needs DTypeDesc class context of the late static binding.
+        /// </summary>
+        NeedsLateStaticBind = 512,
 	}
 
 	/// <summary>
