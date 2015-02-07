@@ -19,7 +19,6 @@ using System.Collections.Generic;
 
 using PHP.Core;
 using PHP.Core.Reflection;
-using System.Diagnostics;
 
 namespace PHP.Library.Data
 {
@@ -186,8 +185,6 @@ namespace PHP.Library.Data
 		private void LoadData(bool convertTypes)
 		{
             this.resultSets = new List<ResultSet>(16);
-
-            var reader = this.reader;
 
 			do
 			{
@@ -381,7 +378,7 @@ namespace PHP.Library.Data
 			Debug.Assert(currentRowIndex >= 0 && currentRowIndex < RowCount);
 
 			object[] oa = (object[])CurrentSet.Rows[currentRowIndex];
-			var runtimeFields = new PhpArray(FieldCount);
+			OrderedHashtable<string> runtimeFields = new OrderedHashtable<string>(FieldCount);
 			for (int i = 0; i < FieldCount; i++)
 			{
                 runtimeFields[CurrentSet.Names[i]] = oa[i];
