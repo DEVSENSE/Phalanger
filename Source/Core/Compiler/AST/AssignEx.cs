@@ -121,25 +121,35 @@ namespace PHP.Core.AST
 			if (operation == Operations.AssignValue)
 			{
 				// elimination of $x = $x . expr
-				BinaryEx concat = rvalue as BinaryEx;
+				var concat = rvalue as ConcatEx;
 				DirectVarUse vur;
 				DirectVarUse vul = lvalue as DirectVarUse;
 
-				if (concat != null && concat.Operation == Operations.Concat && vul != null && vul.IsMemberOf == null)
+                if (concat != null && concat.Expressions.Count >= 2 && vul != null && vul.IsMemberOf == null)
 				{
-					if ((vur = concat.LeftExpr as DirectVarUse) != null && vur.VarName.Equals(vul.VarName) && vur.IsMemberOf == null)
+					if ((vur = concat.Expressions[0] as DirectVarUse) != null && vur.VarName.Equals(vul.VarName) && vur.IsMemberOf == null)
 					{
-						operation = Operations.AssignAppend;
+                        // $x = $x.a.b.c
+                        // =>
+                        // $x .= a.b.c
+
+                        operation = Operations.AssignAppend;
 						lvalue_info.Access = AccessType.ReadAndWrite;
 
-						rvalue = concat.RightExpr;
+						//rvalue = concat.RightExpr;
+                        concat.Expressions.RemoveAt(0);
 					}
-					else if ((vur = concat.RightExpr as DirectVarUse) != null && vur.VarName.Equals(vul.VarName) && vur.IsMemberOf == null)
+					else if ((vur = concat.Expressions[concat.Expressions.Count - 1] as DirectVarUse) != null && vur.VarName.Equals(vul.VarName) && vur.IsMemberOf == null)
 					{
+                        // $x = a.b.c.$x
+                        // =>
+                        // $x =. a.b.c
+
 						operation = Operations.AssignPrepend;
 						lvalue_info.Access = AccessType.ReadAndWrite;
 
-						rvalue = (Expression)concat.LeftExpr;
+						//rvalue = (Expression)concat.LeftExpr;
+                        concat.Expressions.RemoveAt(concat.Expressions.Count - 1);
 					}
 					else
 						lvalue_info.Access = AccessType.Write;

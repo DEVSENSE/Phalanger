@@ -34,6 +34,11 @@ namespace PHP.Core
 		/// </summary>
 		private CowStringBuilder/*!*/cow;
 
+        /// <summary>
+        /// Internal <see cref="StringBuilder"/> containing string data. Note: Can be shared.
+        /// </summary>
+        internal StringBuilder/*!*/StringBuilder { get { return this.cow.Builder; } }
+
 		#region Nested Class: CowStringBuilder
 
         /// <summary>
