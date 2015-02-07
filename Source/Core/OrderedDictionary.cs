@@ -2524,26 +2524,81 @@ namespace PHP.Core
         #region ISerializable (CLR only)
 #if !SILVERLIGHT
 
+        /// <summary>
+        /// Handles serialization and deserialization of <see cref="OrderedDictionary"/>.
+        /// </summary>
+        [Serializable]
+        private class SerializationHelper : ISerializable, IDeserializationCallback, IObjectReference
+        {
+            /// <summary>
+            /// An instance of <see cref="OrderedDictionary"/> lazily created.
+            /// </summary>
+            private OrderedDictionary instance;
+
+            /// <summary>
+            /// Internal data from <see cref="SerializationInfo"/>.
+            /// </summary>
+            private readonly KeyValuePair<IntStringKey, object>[]/*!!*/array;
+
+            /// <summary>
+            /// Name of value field within <see cref="SerializationInfo"/> containing serialized array of keys and objects.
+            /// </summary>
+            private const string InfoValueName = "KeyValuePairs";
+
+            /// <summary>
+            /// Beginning of the deserialization.
+            /// </summary>
+            /// <param name="info"></param>
+            /// <param name="context"></param>
+            private SerializationHelper(SerializationInfo/*!*/info, StreamingContext context)
+            {
+                // careful - the array received here may not be fully deserialized yet
+                // wait until until OnDeserialization to use it
+                this.array = (KeyValuePair<IntStringKey, object>[])info.GetValue(InfoValueName, typeof(KeyValuePair<IntStringKey, object>[]));
+            }
+
+            [System.Security.SecurityCritical]
+            internal static void GetObjectData(OrderedDictionary/*!*/instance, SerializationInfo info, StreamingContext context)
+            {
+                Debug.Assert(instance != null);
+                Debug.Assert(info != null);
+
+                info.SetType(typeof(SerializationHelper));
+
+                var array = new KeyValuePair<IntStringKey, object>[instance.Count];
+                instance.CopyTo(array, 0);
+                info.AddValue(InfoValueName, array);
+            }
+
+            public void GetObjectData(SerializationInfo info, StreamingContext context)
+            {
+                // should never be called
+                throw new InvalidOperationException();
+            }
+
+            public object GetRealObject(StreamingContext context)
+            {
+                return this.instance ?? (this.instance = new OrderedDictionary(null, (this.array != null) ? this.array.Length : 0 ));
+            }
+
+            public virtual void OnDeserialization(object sender)
+            {
+                Debug.Assert(this.instance != null);
+
+                var data = this.array;
+                if (data != null)
+                {
+                    for (int i = 0; i < data.Length; i++)
+                        this.instance.Add(data[i]);
+                }
+            }
+        }
+
         [System.Security.SecurityCritical]
         public void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-            var array = new KeyValuePair<IntStringKey, object>[this.Count];
-            this.CopyTo(array, 0);
-            info.AddValue("KeyValuePairs", array);
-		}
-
-		/// <include file='Doc/Common.xml' path='/docs/method[@name="serialization.ctor"]/*'/>
-        private OrderedDictionary(SerializationInfo/*!*/info, StreamingContext context)
-            :this(null, 0)
-		{
-            if (info == null)
-                throw new ArgumentNullException();
-
-            var array = (KeyValuePair<IntStringKey, object>[])info.GetValue("KeyValuePairs", typeof(KeyValuePair<IntStringKey, object>[]));
-            if (array != null)
-                foreach (var pair in array)
-                    this.Add(pair);
-		}
+        {
+            SerializationHelper.GetObjectData(this, info, context);
+        }
 
 #endif
 		#endregion
