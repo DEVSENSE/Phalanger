@@ -27,9 +27,9 @@ namespace PHP.Core.AST
 		private Expression/*!*/ condExpr;
 		private Expression trueExpr;
 		private Expression/*!*/ falseExpr;
-        /// <summary>Contition</summary>
+        /// <summary>Condition</summary>
         public Expression/*!*/ CondExpr { get { return condExpr; } }
-        /// <summary>Expression evaluated when <see cref="CondExpr"/> is true</summary>
+        /// <summary>Expression evaluated when <see cref="CondExpr"/> is true. Can be <c>null</c> in case of ternary shortcut (?:).</summary>
         public Expression TrueExpr { get { return trueExpr; } set { trueExpr = value; } }
         /// <summary><summary>Expression evaluated when <see cref="CondExpr"/> is false</summary></summary>
         public Expression/*!*/ FalseExpr { get { return falseExpr; } set { falseExpr = value; } }
