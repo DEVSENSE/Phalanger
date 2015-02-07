@@ -30,7 +30,6 @@ using PHP.CoreCLR;
 using System.Windows.Browser;
 #else
 using System.Web;
-using System.Diagnostics;
 #endif
 
 namespace PHP.Library
@@ -128,7 +127,7 @@ namespace PHP.Library
                 {
                     return
                         (_parseUrlRegEx) ??
-                        (_parseUrlRegEx = new Regex(@"^((?<scheme>[^:]+):(?<scheme_separator>/{0,2}))?((?<user>[^:@/?#\[\]]*)(:(?<pass>[^@/?#\[\]]*))?@)?(?<host>([^/:?#\[\]]+)|(\[[^\[\]]+\]))?(:(?<port>[0-9]*))?(?<path>/[^\?#]*)?(\?(?<query>[^#]+)?)?(#(?<fragment>.*))?$", 
+                        (_parseUrlRegEx = new Regex(@"^((?<scheme>[^:]+):(?<scheme_separator>/{0,2}))?((?<user>[^:@/?#\[\]]*)(:(?<pass>[^@/?#\[\]]*))?@)?(?<host>([^/:?#\[\]]+)|(\[[^\[\]]+\]))?(:(?<port>[0-9]*))?(?<path>(/?[^/\?#]+)*/?)(\?(?<query>[^#]+))?(#(?<fragment>.*))?$", 
 #if !SILVERLIGHT
                             RegexOptions.Compiled |
 #endif
@@ -161,13 +160,20 @@ namespace PHP.Library
             {
                 Debug.Assert(str != null);
 
-                StringBuilder sb = new StringBuilder(str.Length);
+                string result = str;
+
+                int i = 0;
                 foreach (char c in str)
                 {
-                    sb.Append(Char.IsControl(c) ? newChar : c);
+                    byte b = (byte)c;
+
+                    if (b <= 0x1F || b == 0x7F)
+                        result = result.Remove(i) + newChar + result.Substring(i + 1);
+
+                    ++i;
                 }
 
-                return sb.ToString();
+                return result;
             }
         }
 
@@ -295,7 +301,15 @@ namespace PHP.Library
 		public static void ParseUrlQuery(Dictionary<string, object> definedVariables, string str, out PhpArray result)
 		{
 			result = new PhpArray();
-			AutoGlobals.LoadFromCollection(result, HttpUtility.ParseQueryString(str));
+
+			Dictionary<string, object> temp = new Dictionary<string, object>();
+
+			ParseUrlQuery(temp, str);
+
+			foreach(string key in temp.Keys)
+			{
+				result.Add(key, temp[key]);
+			}
 		}
 
 		/// <summary>
@@ -310,7 +324,51 @@ namespace PHP.Library
 			if (str == null) return;
 
 			PhpArray globals = (localVariables != null) ? null : ScriptContext.CurrentContext.GlobalVariables;
-			AutoGlobals.LoadFromCollection(globals, HttpUtility.ParseQueryString(str));
+
+			int index = -1, lastAmp = -1, lastEq = -1;
+			char[] eqAmp = new char[] { '&', '=' };
+			string key = null, val = null;
+
+			// search for = and & if = has not been found yet, or for & if = has already been found
+			while ((index = (lastEq > -1 ? str.IndexOf('&', index + 1) : str.IndexOfAny(eqAmp, index + 1))) > -1)
+			{
+				if (str[index] == '=')
+				{
+					key = str.Substring(lastAmp + 1, index - lastAmp - 1);
+					lastEq = index;
+				}
+				else
+				{
+					if (lastEq > -1)
+						val = str.Substring(lastEq + 1, index - lastEq - 1);
+					else
+						key = str.Substring(lastAmp + 1, index - lastAmp - 1);
+
+					if (key.Length > 0)
+					{
+						// if no variable value is specified (no = or nothing after =),
+						// an empty string is used as the value:
+						ParseUrlQuery_InitVariable(globals, localVariables, HttpUtility.UrlDecode(key),
+							(val == null) ? String.Empty : HttpUtility.UrlDecode(val));
+					}
+
+					lastAmp = index;
+					lastEq = -1;
+					key = val = null;
+				}
+			}
+
+			// process the rest of the string (after last = and &)
+			if (lastEq > -1)
+				val = str.Substring(lastEq + 1, str.Length - lastEq - 1);
+			else
+				key = str.Substring(lastAmp + 1, str.Length - lastAmp - 1);
+
+			if (key.Length > 0)
+			{
+				ParseUrlQuery_InitVariable(globals, localVariables, HttpUtility.UrlDecode(key),
+					(val == null) ? String.Empty : HttpUtility.UrlDecode(val));
+			}
 		}
 
 		private static void ParseUrlQuery_InitVariable(PhpArray globals, Dictionary<string, object> localVariables, string key, object value)
@@ -347,7 +405,7 @@ namespace PHP.Library
 
 		#endregion
 
-		#region rawurlencode, rawurldecode, urlencode, urldecode
+		#region rawurlencode, rawurldecode, urlencode, urldecode, urlencode_unicode
 
 		/// <summary>
 		/// Decode URL-encoded strings
@@ -358,11 +416,15 @@ namespace PHP.Library
 		public static string RawUrlDecode(string str)
 		{
 			if (str == null) return null;
-            return HttpUtility.UrlDecode(str.Replace("+", "%2B"));  // preserve '+'
+#if SILVERLIGHT
+            return HttpUtility.UrlDecode(str);//.Replace(' ','+');
+#else
+            return HttpUtility.UrlDecode(str, Configuration.Application.Globalization.PageEncoding);//.Replace(' ','+');
+#endif
         }
 
 		/// <summary>
-		/// Encodes a URL string keeping spaces in it. Spaces are encoded as '%20'.
+		/// Encodes a URL string keeping spaces in it.
 		/// </summary>  
 		/// <param name="str">The string to be encoded.</param>
 		/// <returns>The encoded string.</returns>
@@ -370,7 +432,11 @@ namespace PHP.Library
 		public static string RawUrlEncode(string str)
 		{
 			if (str == null) return null;
-            return UpperCaseEncodedChars(HttpUtility.UrlEncode(str)).Replace("+", "%20");   // ' ' => '+' => '%20'
+#if SILVERLIGHT
+			return HttpUtility.UrlEncode(str).Replace("+", "%20");
+#else
+			return PhpHttpUtility.UrlEncode(str, Configuration.Application.Globalization.PageEncoding).Replace("+", "%20");
+#endif
 		}
 
 		/// <summary>
@@ -379,42 +445,36 @@ namespace PHP.Library
 		[ImplementsFunction("urldecode")]
 		public static string UrlDecode(string str)
 		{
+#if SILVERLIGHT
             return HttpUtility.UrlDecode(str);
+#else
+			return HttpUtility.UrlDecode(str, Configuration.Application.Globalization.PageEncoding);
+#endif
 		}
 
 		/// <summary>
-        /// Encodes a URL string. Spaces are encoded as '+'.
+		/// Encodes a URL string.
 		/// </summary>  
 		[ImplementsFunction("urlencode")]
 		public static string UrlEncode(string str)
 		{
-            return UpperCaseEncodedChars(HttpUtility.UrlEncode(str));
+#if SILVERLIGHT
+			return HttpUtility.UrlEncode(str);
+#else
+			return PhpHttpUtility.UrlEncode(str, Configuration.Application.Globalization.PageEncoding);
+#endif
 		}
 
-        private static string UpperCaseEncodedChars(string encoded)
-        {
-            char[] temp = encoded.ToCharArray();
-            for (int i = 0; i < temp.Length - 2; i++)
-            {
-                if (temp[i] == '%')
-                {
-                    temp[i + 1] = temp[i + 1].ToUpperAsciiInvariant();
-                    temp[i + 2] = temp[i + 2].ToUpperAsciiInvariant();
-                }
-            }
-            return new string(temp);
-        }
-
-//#if !SILVERLIGHT
-//        /// <summary>
-//        /// Encodes a Unicode URL string.
-//        /// </summary>  
-//        [ImplementsFunction("urlencode_unicode")]
-//        public static string UrlEncodeUnicode(string str)
-//        {
-//            return HttpUtility.UrlEncodeUnicode(str);//TODO: implement this in PhpHttpUtility
-//        }
-//#endif
+#if !SILVERLIGHT
+		/// <summary>
+		/// Encodes a Unicode URL string.
+		/// </summary>  
+		[ImplementsFunction("urlencode_unicode")]
+		public static string UrlEncodeUnicode(string str)
+		{
+			return HttpUtility.UrlEncodeUnicode(str);//TODO: implement this in PhpHttpUtility
+		}
+#endif
 
 		#endregion
 
