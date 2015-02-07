@@ -2964,6 +2964,14 @@ namespace PHP.Core.Reflection
 
                 if (args.Length != functionParams.Length)
                 {
+                    if (args.Length < functionParams.Length)
+                    {
+                        // Warning: InvalidArgumentCount
+                        PhpException.InvalidArgumentCount(
+                            (function.Target == null) ? null : function.Target.GetType().ToString().Replace('.', QualifiedName.Separator),
+                            function.Method.Name);
+                    }
+
                     var args2 = new object[functionParams.Length];  // valid params count
                     int copiedArgs = Math.Min(args2.Length, args.Length);
                     Array.Copy(args, args2, copiedArgs);    // copy passed params
@@ -2972,11 +2980,6 @@ namespace PHP.Core.Reflection
                     // default value for missing args
                     for (int i = copiedArgs; i < args.Length; i++)
                         args[i] = /*functionParams[i].DefaultValue ?? */ReflectionUtils.GetDefault(functionParams[i].ParameterType);
-
-                    // Warning: InvalidArgumentCount
-                    PhpException.InvalidArgumentCount(
-                        (function.Target == null) ? null : function.Target.GetType().ToString().Replace('.', QualifiedName.Separator),
-                        function.Method.Name);
                 }
 
                 return args;
