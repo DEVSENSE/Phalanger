@@ -2628,7 +2628,7 @@ namespace PHP.Core
         /// <param name="realTypeFullName">Expecting <see cref="Type.FullName"/> (type CLR full name, including <c>.</c>, <c>+</c>) of a type from within <see cref="PHP.Core.Reflection.TransientModule"/>, <see cref="PHP.Core.Reflection.ScriptModule"/> or <see cref="PHP.Core.Reflection.PureModule"/>.</param>
         /// <param name="transientId"><c>-1</c> or Id of transiend module.</param>
         /// <param name="sourceFile"><c>null</c> or relative file name of the contained type.</param>
-        /// <param name="typeName">Cannot be null. PHP type name without the prefixed <c>&lt;</c>~<c>&gt;</c> information. CLR notation of namespaces.</param>
+        /// <param name="typeName">PHP type name without the prefixed <c>&lt;</c>~<c>&gt;</c> information. CLR notation of namespaces. Can be <c>null</c> reference if there is no type name (global function in transient module).</param>
         internal static void ParseTypeId(string/*!*/realTypeFullName, out int transientId, out string sourceFile, out string typeName)
         {
             Debug.Assert(!string.IsNullOrEmpty(realTypeFullName));
@@ -2660,16 +2660,23 @@ namespace PHP.Core
                     closing = 1;
                 }
 
-                // parse typeName out:
-                Debug.Assert(
-                    realTypeFullName.Length > closing + 2 && realTypeFullName[closing + 1] == '.',
-                    "Unexpected Type.FullName! Missing '.' after '>' in '" + realTypeFullName + "'.");
+                if (realTypeFullName.Length > closing + 1)
+                {
+                    // parse typeName out:
+                    Debug.Assert(
+                        realTypeFullName.Length > closing + 2 && realTypeFullName[closing + 1] == '.',
+                        "Unexpected Type.FullName! Missing '.' after '>' in '" + realTypeFullName + "'.");
 
-                // get the type name (without version id and generic params):
-                typeName = QualifiedName.SubstringWithoutBackquoteAndHash(
-                    realTypeFullName,
-                    closing + 2,
-                    realTypeFullName.Length - closing - 2);
+                    // get the type name (without version id and generic params):
+                    typeName = QualifiedName.SubstringWithoutBackquoteAndHash(
+                        realTypeFullName,
+                        closing + 2,
+                        realTypeFullName.Length - closing - 2);
+                }
+                else
+                {
+                    typeName = null;
+                }
             }
             else
             {
