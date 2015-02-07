@@ -1644,7 +1644,7 @@ namespace PHP.Core
 			EmitLoadScriptContext();
 			EmitLoadNamingContext();
             EmitLoadGenericArgsArray();
-            il.Emit(OpCodes.Call, Methods.Convert.ObjectToTypeDesc);
+            il.Emit(OpCodes.Call, (typeFullName != null) ? Methods.Convert.StringToTypeDesc : Methods.Convert.ObjectToTypeDesc);
 		}
 
 		internal void EmitNewOperator(string typeFullName, TypeRef typeNameRef, DType type, CallSignature callSignature)
@@ -3151,6 +3151,86 @@ namespace PHP.Core
             il.Emit(OpCodes.Ldftn, mi);
             il.Emit(OpCodes.Newobj, delegateCtor);
             il.Emit(OpCodes.Call, Properties.Delegate_Method.GetGetMethod());
+        }
+
+        /// <summary>
+        /// Emit call to <see cref="DynamicCode.Assert"/> or <see cref="DynamicCode.Eval"/>.
+        /// </summary>
+        internal PhpTypeCode EmitEval(EvalKinds kind, Expression/*!*/code, Position position, QualifiedName? currentNamespace, Dictionary<string, QualifiedName> currentAliases)
+        {
+            Debug.Assert(code != null);
+
+            // LOAD DynamicCode.<Eval | Assert>(<code>, context, definedVariables, self, includer, source, line, column, evalId, naming)
+            if (kind == EvalKinds.Assert)
+            {
+                // an argument of the assert is boxed:
+                EmitBoxing(code.Emit(this));
+            }
+            else if (kind == EvalKinds.SyntheticEval)
+            {
+                Debug.Assert(code.HasValue);
+                Debug.Assert(code.Value is string);
+
+                // an argument of the eval is converted to a string:
+                il.Emit(OpCodes.Ldstr, (string)code.Value);
+                il.Emit(OpCodes.Ldc_I4_1);
+            }
+            else
+            {
+                // an argument of the eval is converted to a string:
+                EmitConversion(code, PhpTypeCode.String);
+                il.Emit(OpCodes.Ldc_I4_0);
+            }
+
+            EmitLoadScriptContext();
+            EmitLoadRTVariablesTable();
+            EmitLoadSelf();
+            EmitLoadClassContext();
+            EmitEvalInfoPass(position.FirstLine, position.FirstColumn);
+            EmitNamingContext(currentNamespace, currentAliases, position);
+
+            il.Emit(OpCodes.Call, (kind == EvalKinds.Assert) ? Methods.DynamicCode.Assert : Methods.DynamicCode.Eval);
+
+            return (kind == EvalKinds.Assert) ? PhpTypeCode.Boolean : PhpTypeCode.Object;
+        }
+
+        /// <summary>
+        /// Loads (cached) instance of given state of <see cref="NamingContext"/> onto the evaluation stack.
+        /// </summary>
+        internal void EmitNamingContext(QualifiedName? currentNamespace, Dictionary<string, QualifiedName> currentAliases, Position position)
+        {
+            ILEmitter il = this.IL;
+
+            if (NamingContext.NeedsNamingContext(currentNamespace, currentAliases))
+            {
+                // private static NamingContext <id> = null;
+                string fname = (this.SourceUnit != null) ? this.SourceUnit.SourceFile.ToString() : string.Empty;
+                string id = String.Format("<namingContext>{0}${1}${2}", unchecked((uint)fname.GetHashCode()), position.FirstLine, position.FirstColumn);
+
+                // create static field for static local index: static int <id>;
+                Debug.Assert(il.TypeBuilder != null, "The method does not have declaring type! (global code in pure mode?)");
+                var fld = il.TypeBuilder.DefineField(id, typeof(NamingContext), System.Reflection.FieldAttributes.Private | System.Reflection.FieldAttributes.Static);
+
+                // <id> ?? (<id> = NamingContext.<EmitNewNamingContext>)
+                Label end = il.DefineLabel();
+
+                il.Emit(OpCodes.Ldsfld, fld);
+                il.Emit(OpCodes.Dup);
+                il.Emit(OpCodes.Brtrue, end);
+                if (true)
+                {
+                    il.Emit(OpCodes.Pop);
+                    NamingContext.EmitNewNamingContext(il, currentNamespace, currentAliases);
+                    il.Emit(OpCodes.Dup);
+                    il.Emit(OpCodes.Stsfld, fld);
+                }
+
+                il.MarkLabel(end);
+            }
+            else
+            {
+                il.Emit(OpCodes.Ldnull);
+            }
         }
 
 		#endregion

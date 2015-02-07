@@ -190,7 +190,7 @@ namespace PHP.Core
 	{
 		#region DebugView
 
-		internal class DebugView
+        internal class DebugView
 		{
 			private readonly ScriptContext/*!*/ context;
 
@@ -202,33 +202,46 @@ namespace PHP.Core
 				this.context = context;
 			}
 
-            [DebuggerDisplay("array({GlobalVariables.Count})", Name = "$GLOBALS", Type = "array")]
-			public PhpArray/*!*/ GlobalVariables
+            [DebuggerDisplay("Count = {GlobalVariables.Count}", Name = "$GLOBALS", Type = "array")]
+            public PhpArray/*!*/ GlobalVariables
 			{
-				get { return context.AutoGlobals.Globals.Value as PhpArray; }
+                get { return context.AutoGlobals.Globals.Value as PhpArray; }
 			}
 
-            [DebuggerDisplay("array({DeclaredFunctions.Length})", Name = "DeclaredFunctions", Type = "array")]
-			public string[]/*!*/ DeclaredFunctions
+            [DebuggerDisplay("Count = {context.DeclaredFunctions.Count}", Name = "Constants", Type = "array")]
+            public PhpHashEntryDebugView[]/*!*/ DefinedConstants
+            {
+                get
+                {
+                    PhpHashEntryDebugView[] result = new PhpHashEntryDebugView[context.Constants.Count];
+
+                    int i = 0;
+                    foreach (var entry in context.Constants)
+                        result[i++] = new PhpHashEntryDebugView(new IntStringKey(entry.Key), entry.Value);
+
+                    return result;
+                }
+            }
+
+            [DebuggerDisplay("Count = {context.DeclaredFunctions.Count}", Name = "Functions", Type = "array")]
+            public string[]/*!*/ DeclaredFunctions
 			{
 				get
 				{
-					string[] result = new string[context.DeclaredFunctions.Count];
-					context.DeclaredFunctions.Keys.CopyTo(result, 0);
-					Array.Sort(result);
-					return result;
+                    string[] keys = new string[context.DeclaredFunctions.Count];
+                    context.DeclaredFunctions.Keys.CopyTo(keys, 0);
+                    return keys;
 				}
 			}
 
-            [DebuggerDisplay("array({DeclaredTypes.Length})", Name = "DeclaredTypes", Type = "array")]
+            [DebuggerDisplay("Count = {context.DeclaredTypes.Count}", Name = "Types", Type = "array")]
 			public string[]/*!*/ DeclaredTypes
 			{
 				get
 				{
-					string[] result = new string[context.DeclaredTypes.Count];
-					context.DeclaredTypes.Keys.CopyTo(result, 0);
-					Array.Sort(result);
-					return result;
+                    string[] keys = new string[context.DeclaredTypes.Count];
+                    context.DeclaredTypes.Keys.CopyTo(keys, 0);
+                    return keys;
 				}
 			}
 
@@ -343,6 +356,13 @@ namespace PHP.Core
         }
 
         /// <summary>
+        /// Set of incomplete (deferred) types (their unique identifier) that were declared already in advance at the beginning of the script.
+        /// These types was declared at the beginning of the script, because it was already possible. This simulates behaviour of PHP,
+        /// since it "loads" type into the context if its base type is known at runtime (not at compile time like Phalanger does).
+        /// </summary>
+        private HashSet<string> IncompleteTypesInAdvance = null;
+
+        /// <summary>
         /// Mapping of static local variables into their unique sequential ID. This allows efficient indexing into <see cref="staticLocals"/> array.
         /// The index starts from 1.
         /// The dictionary is used only when two or more static locals point to the same variable (e.g. when single eval() has different content sometimes).
@@ -352,7 +372,7 @@ namespace PHP.Core
 		/// <summary>
 		/// User defined static locals for the current context.
 		/// </summary>
-		private List<PhpReference> staticLocals;
+        private List<PhpReference> staticLocals;
 
 		/// <summary>
 		/// The stack for performing indirect calls and calls to argument-aware functions.
@@ -1220,6 +1240,45 @@ namespace PHP.Core
 
 			return result;
 		}
+
+        /// <summary>
+        /// Checks whether deferred type can be declared already at current point of execution.
+        /// </summary>
+        /// <param name="uid">Unique type identifier used in <see cref="IncompleteTypesInAdvance"/> hash table.</param>
+        /// <param name="requiredBaseType">Type name required by this type declaration. If this is not declared yet, the type cannot be declared in advance.</param>
+        /// <returns><c>True</c> iff preconditions are met and the type can be declared.</returns>
+        [Emitted]
+        public bool DeclareIncompleteTypeHelper(string/*!*/uid, string requiredBaseType)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(uid));
+
+            if (requiredBaseType == null || this.ResolveType(requiredBaseType, null, null, null, ResolveTypeFlags.SkipGenericNameParsing) != null)
+            {
+                if (this.IncompleteTypesInAdvance == null) this.IncompleteTypesInAdvance = new HashSet<string>();
+                if (!this.IncompleteTypesInAdvance.Add(uid))
+                {
+                    // already declared!
+                    Debug.Fail("Deferred type already declared!"); // PHP Error will be thrown later when the type will be loaded into the context
+                }
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks whether specified incomplete type was already declared in the script beginning.
+        /// </summary>
+        /// <param name="uid">Unique type identifier used in <see cref="IncompleteTypesInAdvance"/> hash table.</param>
+        /// <returns><c>True</c> iff the type was already declared and its declaration stub must not be called again.</returns>
+        [Emitted]
+        public bool IncompleteTypeDeclared(string/*!*/uid)
+        {
+            return this.IncompleteTypesInAdvance != null && this.IncompleteTypesInAdvance.Contains(uid);
+        }
 
 		#endregion
 

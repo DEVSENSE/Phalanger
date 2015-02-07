@@ -19,23 +19,24 @@ using PHP.CoreCLR;
 
 namespace PHP.Core
 {
-	/// <summary>
+    /// <summary>
 	/// Represents a PHP reference.
 	/// </summary>
 	[Serializable]
-    [DebuggerDisplay("&{Value}", Type = "&{PHP.Core.PhpVariable.GetTypeName(Value),nq}")]
-	[DebuggerNonUserCode]
+    [DebuggerDisplay("&{this.Value}", Type = "&{PHP.Core.PhpVariable.GetTypeName(this.Value),nq}")]
+    [DebuggerNonUserCode]
 	public class PhpReference : IPhpVariable, ICloneable, IPhpObjectGraphNode
 	{
-		public const string PhpTypeName = "reference";
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public const string PhpTypeName = "reference";
 
 		#region Fields
 
 		/// <summary>
 		/// Referenced object.
 		/// </summary>
-        [DebuggerDisplay("{Value}", Type = "{PHP.Core.PhpVariable.GetTypeName(Value),nq}")]
-		public object Value
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+        public object Value
 		{
 			[Emitted]
 			get { return value; }
@@ -80,7 +81,8 @@ namespace PHP.Core
 		/// <summary>
 		/// Returns <B>true</B>. Overriden in <see cref="PhpSmartReference"/>.
 		/// </summary>
-		public virtual bool IsAliased
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public virtual bool IsAliased
 		{
 			get { return true; }
 			[Emitted]
@@ -90,7 +92,8 @@ namespace PHP.Core
 		/// <summary>
 		/// Returns <B>true</B>. Overriden in <see cref="PhpSmartReference"/>.
 		/// </summary>
-		public virtual bool IsSet
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public virtual bool IsSet
 		{
 			[Emitted]
 			get { return true; }

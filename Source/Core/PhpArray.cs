@@ -36,7 +36,7 @@ namespace PHP.Core
 	/// Represents PHP associative ordered array.
 	/// </summary>
 	[Serializable]
-	[DebuggerDisplay("array({Count})")]
+	[DebuggerDisplay("array(Count = {Count})")]
 #if !SILVERLIGHT
 	[DebuggerTypeProxy(typeof(PhpArrayDebugView))]
 #endif
@@ -1806,10 +1806,12 @@ namespace PHP.Core
 	internal sealed class PhpHashEntryDebugView
 	{
 		[DebuggerDisplay("{Key}", Name = "Key", Type = "{KeyType,nq}")]
-		public object Key { get { return key.Object; } }
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public object Key { get { return key.Object; } }
 
-		//[DebuggerDisplay("{this.value}", Name = "value", Type = "{ValueType,nq}")]
-		public object Value { get { return value; } }
+		[DebuggerDisplay("{this.value}", Name = "Value", Type = "{ValueType,nq}")]
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+        public object Value { get { return value; } }
 
 		[DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		private IntStringKey key;
