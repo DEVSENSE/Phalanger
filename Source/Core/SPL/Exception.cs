@@ -164,9 +164,9 @@ namespace PHP.Library.SPL
 		[ImplementsMethod]
 		public virtual object __construct(ScriptContext context, [Optional] object message, [Optional] object code, [Optional] object previous)
 		{
-            this.message.Value = (message == Arg.Default) ? CoreResources.GetString("default_exception_message") : message;
-			this.code.Value = (code == Arg.Default) ? 0 : code;
-            this.previous = (previous == Arg.Default) ? null : previous;
+            this.message.Value = (message == Arg.Default || message == Type.Missing) ? CoreResources.GetString("default_exception_message") : message;
+			this.code.Value = (code == Arg.Default || code == Type.Missing) ? 0 : code;
+            this.previous = (previous == Arg.Default || previous == Type.Missing) ? null : previous;
 
             Debug.Assert(this.previous == null || (this.previous is DObject && ((DObject)this.previous).RealObject is Exception));
 
