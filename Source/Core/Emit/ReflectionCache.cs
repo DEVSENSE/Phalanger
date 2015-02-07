@@ -68,6 +68,7 @@ namespace PHP.Core.Emit
         public static readonly Type[] CallSiteBinder = new Type[] { typeof(CallSiteBinder) };
         public static readonly Type[] CallSite = new Type[] { typeof(CallSite) };
         public static readonly Type[] CallSiteGeneric = new Type[] { typeof(CallSite<>) };
+        public static readonly Type[] Action = new Type[] { typeof(Action) };
 
         public static readonly Type[] BigInteger = new Type[] { typeof(System.Numerics.BigInteger) };
         public static readonly Type[] Complex = new Type[] { typeof(System.Numerics.Complex) };
@@ -1133,7 +1134,7 @@ namespace PHP.Core.Emit
 		static ConstructorInfo _PhpReference_Void, _PhpReference_Object,
 			_PhpBytes_ByteArray, _StdClass_ScriptContext, _PhpRuntimeChain_Object_DTypeDesc,
             _RoutineDelegate, _PhpRoutineDesc_Attr_Delegate, _GetterDelegate, _SetterDelegate, _PhpScript_MainHelperDelegate, _LinqContext, _NamingContext,
-			_Action_ScriptContext;
+            _Action_ScriptContext, _PurePhpFunction;
 
 		public static ConstructorInfo RoutineDelegate { get { if (_RoutineDelegate == null) _RoutineDelegate = typeof(RoutineDelegate).GetConstructor(Types.DelegateCtorArgs); return _RoutineDelegate; } }
 		public static ConstructorInfo GetterDelegate { get { if (_GetterDelegate == null) _GetterDelegate = typeof(GetterDelegate).GetConstructor(Types.DelegateCtorArgs); return _GetterDelegate; } }
@@ -1150,6 +1151,7 @@ namespace PHP.Core.Emit
         public static ConstructorInfo NamingContext { get { return _NamingContext ?? (_NamingContext = typeof(PHP.Core.NamingContext).GetConstructor(new[] { Types.String[0], Types.Int[0] })); } }
 
 		public static ConstructorInfo Action_ScriptContext { get { if (_Action_ScriptContext == null) _Action_ScriptContext = typeof(Action<ScriptContext>).GetConstructor(Types.DelegateCtorArgs); return _Action_ScriptContext; } }
+        public static ConstructorInfo PurePhpFunction { get { return _PurePhpFunction ?? (_PurePhpFunction = typeof(PurePhpFunction).GetConstructor(new Type[] { typeof(PhpRoutineDesc), Types.String[0], typeof(MethodInfo) })); } }
 
 		public struct PhpArray
 		{

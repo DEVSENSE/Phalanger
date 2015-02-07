@@ -112,7 +112,10 @@ namespace PHP.Core.Emit
 					il.LdcI4((int)function.MemberDesc.MemberAttributes);
 
                     // LOAD <argfull>
-                    il.Emit(OpCodes.Ldnull); //CodeGenerator.EmitLoadMethodInfo(il, function.ArgFullInfo/*, AssemblyBuilder.DelegateBuilder*/); // argfull is global method, cannot be called from different module
+                    if (function.ArgFullInfo != null && function.ArgFullInfo.DeclaringType != null)
+                        CodeGenerator.EmitLoadMethodInfo(il, function.ArgFullInfo/*, AssemblyBuilder.DelegateBuilder*/);
+                    else
+                        il.Emit(OpCodes.Ldnull); // TODO: argfull is real global method, cannot be called from different module; emit public stub that can be called
                     
 					// CALL <application context>.DeclareFunction(<stub>, <name>, <member attributes>, <argfull>)
 					il.Emit(OpCodes.Call, Methods.ApplicationContext.DeclareFunction);
@@ -136,8 +139,9 @@ namespace PHP.Core.Emit
 
 					// CALL <application context>.DeclareConstant(<name>, <value>);
 					il.Emit(OpCodes.Ldstr, constant.FullName);
-					il.Emit(OpCodes.Ldfld, constant.RealField); // TODO:
-					il.Emit(OpCodes.Box, constant.RealField.FieldType);
+                    //il.Emit(OpCodes.Ldsfld, constant.RealField);
+                    //if (constant.RealField.FieldType.IsValueType) il.Emit(OpCodes.Box, constant.RealField.FieldType);
+                    il.LoadLiteralBox(constant.Value);
 					il.Emit(OpCodes.Call, Methods.ApplicationContext.DeclareConstant);
 				}
 			}
