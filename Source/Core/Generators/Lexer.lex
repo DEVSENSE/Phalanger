@@ -74,7 +74,7 @@ NonVariableStart        [^a-zA-Z_{]
 
 %%
 
-<INITIAL>(([^<]|"<"[^?%s<])+)|"<s"|"<" { 
+<INITIAL>(([^<]|"<"[^?%s<])+)|"<" { 
 	return Tokens.T_INLINE_HTML; 
 }
 
@@ -88,6 +88,10 @@ NonVariableStart        [^a-zA-Z_{]
 	{
 		return Tokens.T_INLINE_HTML;
 	}
+}
+
+<INITIAL>("<s"[^< \n\r\t]*) { 
+	return Tokens.T_INLINE_HTML; 
 }
 
 <INITIAL>"<%="|"<?=" {
