@@ -3672,17 +3672,6 @@ namespace PHP.Core
             return url;
         }
 
-
-        /// <summary>
-        /// Converts path to standardized form using '/' as only directory separator
-        /// </summary>
-        /// <param name="path">Path to be canonicalized</param>
-        /// <returns>Canonicalized path</returns>
-        public static String CanonicalizePath(string path)
-        {
-            return path.Replace('\\', '/');
-        }
-
         public static int FileSize(FileInfo fi)//TODO: Move this to PlatformAdaptationLayer
         {
             if (EnvironmentUtils.IsDotNetFramework)
@@ -3699,7 +3688,6 @@ namespace PHP.Core
                 }
             }
         }
-
     }
 
     #endregion
