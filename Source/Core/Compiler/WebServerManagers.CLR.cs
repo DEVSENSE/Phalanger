@@ -45,6 +45,14 @@ namespace PHP.Core
 		public DateTime RequestTimestamp { get { return requestTimestamp; } }
 		private DateTime requestTimestamp;
 
+        public override bool SaveOnlyAssembly
+        {
+            get
+            {
+                return ((WebServerCompilerManager)Manager).SaveOnlyAssembly;   // in debug mode, do not load built assemblies into memory
+            }
+        }
+
         public WebCompilationContext(ApplicationContext applicationContext, ICompilerManager/*!*/ manager, CompilerConfiguration/*!*/ config, string/*!*/ workingDirectory,
 		  DateTime requestTimestamp)
 			: base(applicationContext, manager, config, new WebErrorSink(config.Compiler.DisabledWarnings, config.Compiler.DisabledWarningNumbers), workingDirectory)
@@ -172,6 +180,18 @@ namespace PHP.Core
 		private const string AssemblyExt = ".dll";
 
 		private const string TemporaryFilesSearchPattern = ".*\\#(?<Stamp>[0-9a-f]*)\\.dll";
+
+        /// <summary>
+        /// Decide whether allow loading built assemblies into memory. This would disallows proper debugging.
+        /// </summary>
+        public bool SaveOnlyAssembly
+        {
+            get
+            {
+                return Configuration.Application.Compiler.Debug;   // in debug mode, do not load built assemblies into memory
+                // only when Debugger.IsAttached ?
+            }
+        }
 
 		/// <summary> Output directory. </summary>
 		private readonly string/*!*/ outDir;
@@ -350,7 +370,7 @@ namespace PHP.Core
 
 			// creates a script assembly builder:
 			SingleScriptAssemblyBuilder builder = new SingleScriptAssemblyBuilder(applicationContext,
-				name, outDir, name.Name + AssemblyExt, AssemblyKinds.WebPage,context.Config.Compiler.Debug, null);
+				name, outDir, name.Name + AssemblyExt, AssemblyKinds.WebPage,context.Config.Compiler.Debug, context.SaveOnlyAssembly, null);
             
 			return builder.DefineScript(unit);
 		}
@@ -370,23 +390,30 @@ namespace PHP.Core
 
 			assembly_builder.Save();
 
-			// makes up a list of dependent assembly names:
-			string[] includers = new string[unit.Includers.Count];
-			int i = 0;
-			foreach (StaticInclusion inclusion in unit.Includers)
-				includers[i++] = ScriptModule.GetSubnamespace(inclusion.Includer.SourceUnit.SourceFile.RelativePath, false);
+            if (!SaveOnlyAssembly)
+            {
+                // We only add the assembly into the cache, if it wass built and loaded into memory.
+                // Otherwise the assembly has to be reloaded from the disk.
+                // This is because of debugging, since we don't want to load dynamic assemblies into memory, which breaks debug symbols.
 
-			// what assemblies are included by this one?
-			string[] inclusions = new string[unit.Inclusions.Count];
-			int j = 0;
-			foreach (StaticInclusion inclusion in unit.Inclusions)
-                inclusions[j++] = ScriptModule.GetSubnamespace(new RelativePath(0, inclusion.Includee.RelativeSourcePath), false);
-			
-			// adds dependencies on the source file and the included assemblies:
-			SetCacheEntry(ScriptModule.GetSubnamespace(unit.SourceUnit.SourceFile.RelativePath, false), 
-				new CacheEntry(
-                    assembly_builder.SingleScriptAssembly.GetScriptType(),
-					assembly_builder.SingleScriptAssembly, context.RequestTimestamp, includers, inclusions, true), true, true);
+                // makes up a list of dependent assembly names:
+                string[] includers = new string[unit.Includers.Count];
+                int i = 0;
+                foreach (StaticInclusion inclusion in unit.Includers)
+                    includers[i++] = ScriptModule.GetSubnamespace(inclusion.Includer.SourceUnit.SourceFile.RelativePath, false);
+
+                // what assemblies are included by this one?
+                string[] inclusions = new string[unit.Inclusions.Count];
+                int j = 0;
+                foreach (StaticInclusion inclusion in unit.Inclusions)
+                    inclusions[j++] = ScriptModule.GetSubnamespace(new RelativePath(0, inclusion.Includee.RelativeSourcePath), false);
+
+                // adds dependencies on the source file and the included assemblies:
+                SetCacheEntry(ScriptModule.GetSubnamespace(unit.SourceUnit.SourceFile.RelativePath, false),
+                    new CacheEntry(
+                        assembly_builder.SingleScriptAssembly.GetScriptType(),
+                        assembly_builder.SingleScriptAssembly, context.RequestTimestamp, includers, inclusions, true), true, true);
+            }
 		}
 
 		/// <summary>
@@ -1026,7 +1053,7 @@ namespace PHP.Core
 
 		#endregion
 		
-		#region Compilation	
+		#region Compilation
 
 		/// <summary>
 		/// Retrives a compiled script.
@@ -1073,7 +1100,7 @@ namespace PHP.Core
                     return cache_entry.ScriptInfo;
                                 
                 Debug.WriteLine("WSSM", "Compile script '{0}'.", sourceFile.ToString());
-                return CompileScript(ns, sourceFile, requestContext);
+                return CompileScriptNoLock(ns, sourceFile, requestContext);
             }
         }
 
@@ -1083,7 +1110,7 @@ namespace PHP.Core
 		/// Called when the script cannot be loaded from pre-compiled assembly and it should be compiled.
 		/// </summary>
 		/// <returns>The compiled script type.</returns>
-		private ScriptInfo CompileScript(string ns, PhpSourceFile/*!*/ sourceFile, RequestContext/*!*/ requestContext)
+		private ScriptInfo CompileScriptNoLock(string ns, PhpSourceFile/*!*/ sourceFile, RequestContext/*!*/ requestContext)
 		{
 			Debug.Assert(sourceFile != null && requestContext != null);
 
@@ -1094,19 +1121,23 @@ namespace PHP.Core
 			try
 			{
 				CacheEntry cache_entry;
-				int remaining_attempts = AttemptsToCompileScript;
-				
-				do
-				{
-					if (!ScriptAssemblyBuilder.CompileScripts(new PhpSourceFile[] { sourceFile }, null, null, context))
-						return null;
-				}
-				while (!TryGetCachedEntry(ns, out cache_entry) && --remaining_attempts > 0);
+                if (ScriptAssemblyBuilder.CompileScripts(new PhpSourceFile[] { sourceFile }, null, null, context))
+                {
+                    if (SaveOnlyAssembly)
+                    {
+                        // assembly is not reflected nor loaded into memory, we have to load it from the disk
+                        if (TryLoadTemporaryCompiledNoLock(ns, sourceFile, out cache_entry))
+                            return cache_entry.ScriptInfo;
+                    }
+                    else
+                    {
+                        // assembly should be already added into the cache by Persist() method
+                        if (TryGetCachedEntry(ns, out cache_entry))
+                            return cache_entry.ScriptInfo;
+                    }
+                }
 
-				if (remaining_attempts == 0)
-					throw new TimeoutException("Compilation timed out"); // TODO
-					
-				return cache_entry.ScriptInfo;
+                return null;
 			}
 			catch (CompilerException)
 			{
