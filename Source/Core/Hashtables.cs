@@ -3114,8 +3114,7 @@ namespace PHP.Core
                 this.EnsureWritable();
 
                 if (nextNewIndex < 0) nextNewIndex = this.table._find_max_int_key() + 1;
-				table.Add(new IntStringKey(checked(nextNewIndex++)), value);
-				++intCount;
+                AddToEnd(value);
 				return 1;
 			}
 			//return 0;
@@ -3266,7 +3265,22 @@ namespace PHP.Core
 
 		#endregion
 
-		#region Add
+        #region Add, AddLast
+
+        /// <summary>
+        /// Add an item onto the end of this array.
+        /// </summary>
+        /// <param name="value">Value to be added.</param>
+        /// <remarks>This method is supposed to be called on newly created arrays. Several checks are not performed to enhance performance of arrays initialization.</remarks>
+        public void AddToEnd(object value)
+        {
+            Debug.Assert(nextNewIndex >= 0, "This method is supposed to be called on newly created arrays which have [nextNewIndex] field initialized!");
+            Debug.Assert(!this.table.IsShared, "This method is supposed to be called on newly created arrays which cannot be shared!");
+            Debug.Assert(this.GetType() == typeof(PhpArray), "This method is not supposed to be called on PHpArray's inherited class!");
+
+            table._add_last(nextNewIndex++, value);
+            ++intCount;
+        }
 
 		/// <summary>
 		/// Adds an entry into the table at its logical end. 

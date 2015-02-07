@@ -1,6 +1,5 @@
 /*
 
- Copyright (c) 2007- DEVSENSE
  Copyright (c) 2003-2006 Martin Maly, Tomas Matousek, Ladislav Prosek.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -19,7 +18,6 @@ using System.Collections;
 
 using PHP.Core;
 using PHP.Core.AST;
-using PHP.Core.Compiler.AST;
 using PHP.Core.Emit;
 using PHP.Core.Reflection;
 
@@ -61,7 +59,6 @@ namespace PHP.Core
 				errorLabelHasValue = false;
 				this.il = il;
 				this.QuietRead = false;
-                this.EnsureWritable = false;
 			}
 
 			/// <summary>
@@ -144,12 +141,6 @@ namespace PHP.Core
 			/// If set to <c>true</c>, no errors are genereted while emitting isset and unset.
 			/// </summary>
 			public bool QuietRead;
-
-            /// <summary>
-            /// If set to <c>true</c>, the chain must not be shared by more variables.
-            /// This happens due to the mechanism of lazy copying (<see cref="PhpArray"/>, <see cref="PhpBytes"/>, etc.).
-            /// </summary>
-            public bool EnsureWritable;
 
 			// obsolete:
 			//			private RefErrorLabelInfo refErrorLabelInfo;
@@ -281,19 +272,6 @@ namespace PHP.Core
 			set { TopChain.IsLastChainMember = value; }
 		}
 
-        /// <summary>
-        /// Gets or sets value indicating, whether the chain must be ensured to be writable (not shared by more variables).
-        /// This happens due to the mechanism of lazy copying (<see cref="PhpArray"/>, <see cref="PhpBytes"/>, etc.).
-        /// </summary>
-        /// <remarks>
-        /// We have to ensure, the array is writable in case where it is marked to be lazy copied and
-        /// we are passing it or its item to a library function parameter marked with <see cref="PhpRwAttribute"/>.</remarks>
-        public bool EnsureWritable
-        {
-            get { return TopChain.EnsureWritable; }
-            set { TopChain.EnsureWritable = value; }
-        }
-
 		/// <summary>
 		/// Gets a <B>bool</B> value indicating whether operators chain exists (its length is greater than one).
 		/// </summary>
@@ -398,7 +376,7 @@ namespace PHP.Core
 			il.Ldloc(temp);
 		}
 
-        #endregion
+		#endregion
 
 		#region Nested Class: ObjectFieldLazyEmitInfo
 
@@ -408,7 +386,7 @@ namespace PHP.Core
 		/// </summary>
 		/// <remarks>
 		/// Lazy code generation takes place if <see cref="PHP.Core.AST.ItemUse"/><c>.IsMemberOf</c>
-		/// is NOT equal to <B>null</B> which means that the most bottom node in <see cref="ItemUse.Array"/>
+		/// is NOT equal to <B>null</B> which means that the most bottom node in <see cref="ItemUse.array"/>
 		/// objects path should emit <see cref="PHP.Core.Operators.EnsurePropertyIsArray"/> operator call.
 		/// </remarks>
 		internal class ObjectFieldLazyEmitInfo
@@ -529,7 +507,8 @@ namespace PHP.Core
 		}
 
 		#endregion
-        
+
+
 		#region Reading...
 
 		/// <summary>
@@ -591,11 +570,7 @@ namespace PHP.Core
 			ILEmitter il = codeGenerator.IL;
 			
 			// array:
-			var arrayTypeCode = array.Emit(codeGenerator);
-
-            // ensure the array is writeable is required
-            if (EnsureWritable)
-                codeGenerator.EmitEnsureWritable(arrayTypeCode);
+			array.Emit(codeGenerator);
 
 			// index:
 			PhpTypeCode index_type_code = codeGenerator.EmitArrayKey(this, index);
@@ -802,7 +777,7 @@ namespace PHP.Core
 		/// Emits IL instructions that ensure that a static field is of <see cref="PhpObject"/> or <see cref="PhpArray"/>
 		/// type. Handles the case when field name is unknown at compile time (see <see cref="AST.IndirectStFldUse"/>).
 		/// </summary>
-        /// <param name="typeRef">The class name (identifier index).</param>
+		/// <param name="typeName">The class name (identifier index).</param>
 		/// <param name="propertyName">The property name.</param>
 		/// <param name="propertyNameExpr">The expression that evaluates to property name.</param>
 		/// <param name="ensureArray">Whether to ensure that static field is an array (or an object).</param>
@@ -810,7 +785,7 @@ namespace PHP.Core
 		/// Nothing is expected on the evaluation stack. A <see cref="PhpArray"/> or <see cref="DObject"/> is left on the
 		/// evaluation stack.
 		/// </remarks>
-		public PhpTypeCode EmitEnsureStaticProperty(TypeRef typeRef, VariableName? propertyName,
+		public PhpTypeCode EmitEnsureStaticProperty(GenericQualifiedName typeName, VariableName? propertyName,
 			Expression propertyNameExpr, bool ensureArray)
 		{
 			Debug.Assert(propertyName != null ^ propertyNameExpr != null);
@@ -818,7 +793,7 @@ namespace PHP.Core
 			ResolveTypeFlags flags = ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors;
 
 			// LOAD Operators.EnsureStaticFieldIs[Object|Array](<type desc>, <field name>, <type desc>, <context>)
-            typeRef.EmitLoadTypeDesc(codeGenerator, flags);
+			codeGenerator.EmitLoadTypeDescOperator(typeName.QualifiedName.ToString(), null, flags);
 
 			if (propertyNameExpr != null)
 				codeGenerator.EmitBoxing(propertyNameExpr.Emit(codeGenerator));
@@ -842,14 +817,14 @@ namespace PHP.Core
 		/// type. Handles the case when field name is known at compile time (see <see cref="AST.DirectStFldUse"/>).
 		/// </summary>
 		/// <param name="property">The corresponding <see cref="DProperty"/> or <B>null</B>.</param>
-        /// <param name="typeRef">The class type reference (identifier index).</param>
+		/// <param name="className">The class name (identifier index).</param>
 		/// <param name="fieldName">The field name (identifier index).</param>
 		/// <param name="ensureArray">Whether to ensure that static field is an array (or an object).</param>
 		/// <remarks>
 		/// Nothing is expected on the evaluation stack. A <see cref="PhpObject"/> or <see cref="DObject"/> is left
 		/// on the evaluation stack or the last emitted instruction is unconditional branch to <see cref="Chain.ErrorLabel"/>.
 		/// </remarks>
-		public PhpTypeCode EmitEnsureStaticProperty(DProperty property, TypeRef typeRef,
+		public PhpTypeCode EmitEnsureStaticProperty(DProperty property, GenericQualifiedName className,
 			VariableName fieldName, bool ensureArray)
 		{
 			ILEmitter il = codeGenerator.IL;
@@ -863,7 +838,7 @@ namespace PHP.Core
 				EmitErrorCheck(ensureArray);
 				return (ensureArray) ? PhpTypeCode.PhpArray : PhpTypeCode.DObject;
 			}
-            else return EmitEnsureStaticProperty(typeRef, fieldName, null, ensureArray);
+			else return EmitEnsureStaticProperty(className, fieldName, null, ensureArray);
 		}
 
 		/// <summary>

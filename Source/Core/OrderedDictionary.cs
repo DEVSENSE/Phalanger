@@ -130,7 +130,7 @@ namespace PHP.Core
         {
             if (size < (1 << 30))
             {
-                int i = (1 << 3);
+                int i = (1 << 2);   // how big is our smallest possible array? "1" is min, do not put "0" here! Smaller number makes initialization faster, but slows down expanding. However the size is known mostly ...
                 while (i < size)
                     i <<= 1;
 
@@ -151,12 +151,14 @@ namespace PHP.Core
         {
             Debug.Assert(this.entries == null, "Initialized already!");
 
-            this.buckets = new int[this.tableSize];
+            int[] _buckets;
+
+            this.buckets = _buckets = new int[this.tableSize];
 		    this.tableMask = this.tableSize - 1;
             this.entries = new Entry[this.tableSize];
 
-            for (int i = 0; i < this.buckets.Length; i++)
-                this.buckets[i] = -1;
+            for (int i = 0; i < _buckets.Length; i++)
+                _buckets[i] = -1;
         }
 
         #endregion
@@ -587,16 +589,24 @@ namespace PHP.Core
                 this.entries[list_head].last = entry_index;
         }
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void _enlist_to_global(ref Entry element, int elementIndex)
+        private void _enlist_to_global(ref Entry entry, int entry_index)
         {
-            element.listLast = this.listTail;
-            this.listTail = elementIndex;
-            element.listNext = -1;
-            if (element.listLast >= 0)
-                this.entries[element.listLast].listNext = elementIndex;
+            entry.listLast = this.listTail;
+            entry.listNext = -1;
+            
+            this.listTail = entry_index;
+            if (entry.listLast >= 0)
+                this.entries[entry.listLast].listNext = entry_index;
 
             if (this.listHead < 0)
-                this.listHead = elementIndex;
+                this.listHead = entry_index;
+        }
+
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void _enlist(ref Entry entry, int entry_index, int list_head)
+        {
+            this._enlist_to_bucket(ref entry, entry_index, list_head);
+            this._enlist_to_global(ref entry, entry_index);
         }
 
         /// <summary>
@@ -745,7 +755,7 @@ namespace PHP.Core
 
         #endregion
 
-        #region _add_or_update, _add_first
+        #region _add_or_update, _add_first, _add_last
 
         /// <summary>
         /// Set <paramref name="value"/> onto given <paramref name="key"/> position.
@@ -800,8 +810,7 @@ namespace PHP.Core
 
             //
             _entries[p]._key = key;
-            this._enlist_to_bucket(ref _entries[p], p, this.buckets[nIndex]);
-            this._enlist_to_global(ref _entries[p], p);
+            this._enlist(ref _entries[p], p, this.buckets[nIndex]);
             _entries[p].Value = value;
             this.buckets[nIndex] = p;
             
@@ -917,8 +926,56 @@ namespace PHP.Core
             var nIndex = key.Integer & this.tableMask;// index(ref key);
 
             _entries[p]._key = key;
-            this._enlist_to_bucket(ref _entries[p], p, this.buckets[nIndex]);
-            this._enlist_to_global(ref _entries[p], p);
+            this._enlist(ref _entries[p], p, this.buckets[nIndex]);
+            _entries[p].Value = value;
+            this.buckets[nIndex] = p;
+
+            //// update nextNewIndex: // moved to PhpArray
+            //if (key.IsInteger && key.Integer >= this.nextNewIndex)
+            //    this.nextNewIndex = key.Integer + 1;
+
+            return;// true;
+        }
+
+        /// <summary>
+        /// Add specified item at the end of the array.
+        /// </summary>
+        /// <param name="ikey">New item key.</param>
+        /// <param name="value">New item value.</param>
+        /// <remarks>The function does not check if the item already exists.</remarks>
+        internal void _add_last(int ikey, object value)
+        {
+            Debug.Assert(!this.ContainsKey(new IntStringKey(ikey)), "Item with given key already exists!");
+
+            this.EnsureInitialized();
+
+            var _entries = this.entries;
+            int p;
+
+            // find an empty Entry to be used
+            if (this.freeCount > 0)
+            {
+                p = this.freeList;
+                this.freeList = _entries[p].next;
+                --this.freeCount;
+            }
+            else
+            {
+                if (this.count == _entries.Length)
+                {
+                    this._do_resize();  // double the capacity
+
+                    // update locals affected by resize:
+                    _entries = this.entries;
+                }
+                p = this.count++;
+            }
+
+            //
+            var nIndex = ikey & this.tableMask;// index(ref key);
+
+            _entries[p]._key = new IntStringKey(ikey);
+            this._enlist(ref _entries[p], p, this.buckets[nIndex]);
             _entries[p].Value = value;
             this.buckets[nIndex] = p;
 
@@ -938,6 +995,8 @@ namespace PHP.Core
         /// <param name="entry_index"></param>
         private void _add_before(ref IntStringKey key, object value, int entry_index)
         {
+            this.EnsureInitialized();
+
             if (entry_index < 0)
             {
                 _add_last(ref key, value);
@@ -1384,9 +1443,11 @@ namespace PHP.Core
             /// <summary>
             /// Sorts items according to given <paramref name="comparer"/>. This changes only the order of items.
             /// </summary>
+            /// <param name="table"><see cref="OrderedDictionary"/> instance to be sorted.</param>
             /// <param name="comparer">Comparer used to sort items.</param>
             internal static void _sort(OrderedDictionary/*!*/table, IComparer<KeyValuePair<IntStringKey, object>>/*!*/ comparer)
             {
+                Debug.Assert(table != null);
                 Debug.Assert(comparer != null);
 
                 var count = table.Count;
@@ -1713,8 +1774,7 @@ namespace PHP.Core
 
             //
             _entries[p]._key = key;
-            this._enlist_to_bucket(ref _entries[p], p, this.buckets[nIndex]);
-            this._enlist_to_global(ref _entries[p], p);
+            this._enlist(ref _entries[p], p, this.buckets[nIndex]);
             _entries[p].Value = value;
             this.buckets[nIndex] = p;
 
@@ -1782,8 +1842,7 @@ namespace PHP.Core
 
             //
             _entries[p]._key = new IntStringKey(ikey);
-            this._enlist_to_bucket(ref _entries[p], p, this.buckets[nIndex]);
-            this._enlist_to_global(ref _entries[p], p);
+            this._enlist(ref _entries[p], p, this.buckets[nIndex]);
             _entries[p].Value = value;
             this.buckets[nIndex] = p;
 

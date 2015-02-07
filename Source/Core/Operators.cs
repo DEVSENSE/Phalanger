@@ -2696,7 +2696,7 @@ namespace PHP.Core
                 }
             }
 
-            SetItemEpilogue(value, key, ref var);
+            SetItemEpilogue(value, (object)key, ref var);
         }
 
         [Emitted]
@@ -2708,7 +2708,7 @@ namespace PHP.Core
             if (var != null && var.GetType() == typeof(PhpArray))
                 ((PhpArray)var).SetArrayItem(key, value);
             else
-                SetItemEpilogue(value, key, ref var);
+                SetItemEpilogue(value, (object)key, ref var);
         }
 
         [Emitted]
@@ -2754,7 +2754,7 @@ namespace PHP.Core
                 }
             }
 
-            SetItemEpilogue(value, key, ref var);
+            SetItemEpilogue(value, (object)key, ref var);
         }
 
         private static void SetItemEpilogue(object value, object key, ref object var)
