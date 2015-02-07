@@ -680,6 +680,11 @@ namespace PHP.Library
 			/// </summary>
 			private int atomCounter;
 
+            /// <summary>
+            /// Temporarily used <see cref="StringBuilder"/>. Remember it to save GC.
+            /// </summary>
+            private StringBuilder tmpStringBuilder;
+
 			#endregion
 
 			#region Construction
@@ -1004,10 +1009,7 @@ namespace PHP.Library
 				// [+-]INF
 				// [+-]?[0-9]*[.]?[0-9]*([eE][+-]?[0-9]+)?
 
-				int sign = 1, exponent = 0;
-				double mantissa = 0, div = 10, exp_base = 10;
-
-				// NaN
+                // NaN
 				if (lookAhead == 'N')
 				{
 					Consume();
@@ -1016,8 +1018,9 @@ namespace PHP.Library
 					return Double.NaN;
 				}
 
-				// mantissa + / -
-				if (lookAhead == '+') Consume();
+                // mantissa + / -
+                int sign = 1;
+                if (lookAhead == '+') Consume();
 				else if (lookAhead == '-')
 				{
 					sign = -1;
@@ -1033,56 +1036,62 @@ namespace PHP.Library
 					return (sign > 0 ? Double.PositiveInfinity : Double.NegativeInfinity);
 				}
 
-				// whole part of mantissa
-				while (Char.IsDigit(lookAhead))
-				{
-					mantissa = mantissa * 10 + Char.GetNumericValue(lookAhead);
-					Consume();
-				}
+                // reconstruct the number:
+                StringBuilder number;
+                if (tmpStringBuilder == null) number = (tmpStringBuilder = new StringBuilder(8));
+                else { number = tmpStringBuilder; number.Length = 0; }
 
+                if (sign < 0) number.Append('-');
+
+				// [0-9]*
+                while (lookAhead >= '0' && lookAhead <= '9')
+                {
+                    number.Append(lookAhead);
+                    Consume();
+                }
+
+                // [.]?[0-9]*
 				if (lookAhead == '.')
 				{
-					Consume();
-
-					// fraction part of mantissa
-					while (Char.IsDigit(lookAhead))
-					{
-						unchecked
-						{
-							mantissa += Char.GetNumericValue(lookAhead) / div;
-							div *= 10;
-						}
-						Consume();
-					}
+                    number.Append('.');
+                    Consume();
+                    
+                    while (lookAhead >= '0' && lookAhead <= '9')
+                    {
+                        number.Append(lookAhead);
+                        Consume();
+                    }
 				}
 
+                // ([eE][+-]?[0-9]+)?
 				if (lookAhead == 'e' || lookAhead == 'E')
 				{
+                    number.Append('e');
 					Consume();
 
 					// exponent + / -
-					if (lookAhead == '+') Consume();
-					else if (lookAhead == '-')
-					{
-						exp_base = 0.1;
-						Consume();
-					}
+                    if (lookAhead == '+')
+                    {
+                        number.Append('+');
+                        Consume();
+                    }
+                    else if (lookAhead == '-')
+                    {
+                        number.Append('-');
+                        Consume();
+                    }
 
 					// exponent
 					if (!Char.IsDigit(lookAhead)) ThrowUnexpected();
-					do
-					{
-						exponent = unchecked((10 * exponent) + (int)Char.GetNumericValue(lookAhead));
-						Consume();
-					}
-					while (Char.IsDigit(lookAhead));
+                    while (lookAhead >= '0' && lookAhead <= '9')
+                    {
+                        number.Append(lookAhead);
+                        Consume();
+                    }
 				}
 
-				unchecked
-				{
-					for (int j = 0; j < exponent; j++) mantissa *= exp_base;
-					return (sign * mantissa);
-				}
+				// parse the number
+                return Double.Parse(number.ToString(), NumberFormatInfo.InvariantInfo);
 			}
 
 			/// <summary>
