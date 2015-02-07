@@ -136,5 +136,15 @@ namespace PHP.Library.Data
         [ImplementsConstant("CURSOR_SCROLL")]
         public const int CURSOR_SCROLL = 1;		/* scrollable cursor */
         #endregion
+
+        #region MySQL
+
+        [ImplementsConstant("MYSQL_ATTR_INIT_COMMAND")]
+        public const int MYSQL_ATTR_INIT_COMMAND = 1002;
+
+        [ImplementsConstant("MYSQL_ATTR_USE_BUFFERED_QUERY")]
+        public const int MYSQL_ATTR_USE_BUFFERED_QUERY = 1000;
+
+        #endregion
     }
 }

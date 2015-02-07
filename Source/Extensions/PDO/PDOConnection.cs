@@ -1,11 +1,34 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data;
 
-//namespace PHP.Library.Data
-//{
+namespace PHP.Library.Data
+{
+    public sealed class PDOConnection : PhpDbConnection
+    {
+        /// <summary>
+        /// Underlying database connection.
+        /// </summary>
+        public IDbConnection/*!*/Connection { get { return this.connection; } }
+
+        public PDOConnection(string/*!*/ connectionString, IDbConnection/*!*/ connection, string/*!*/ name)
+            : base(connectionString, connection, name)
+        {
+        }
+
+        protected override IDbCommand CreateCommand()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override PhpDbResult GetResult(PhpDbConnection connection, IDataReader reader, bool convertTypes)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 //    [Obsolete("replaced into PDO", true)]
 //    public abstract class PDOConnection
 //    {
@@ -162,4 +185,4 @@
 //            return true;
 //        }
 //    }
-//}
+}

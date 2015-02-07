@@ -100,7 +100,9 @@ xcopy /q /y "$(TargetDir)*$(TargetName).dll" "$(SolutionDir)..\Deployment\Bin" 1
 )
 if $(ConfigurationName) == Debug (
 xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
-)</PostBuildEvent>
+)
+
+"$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
