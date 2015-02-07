@@ -199,8 +199,9 @@ namespace PHP.Core
 			if (name == null)
 				name = String.Empty;
 
-			value = GpcEncodeValue(value, isGpc, config);
-
+            if (isGpc)
+                value = GpcEncodeValue(value, config);
+            
 			string key;
 
 			// current left and right square brace positions:
@@ -211,7 +212,7 @@ namespace PHP.Core
 			if (left > 0 && left < name.Length - 1 && (right = name.IndexOf(']', left + 1)) >= 0)
 			{
 				// the variable name is a key to the "array", dots are replaced by underscores in top-level name:
-				key = name.Substring(0, left).Replace('.', '_');
+                key = EncodeTopLevelName(name.Substring(0, left));
 
 				// ensures that all [] operators in the chain except for the last one are applied on an array:
 				for (;;)
@@ -245,7 +246,7 @@ namespace PHP.Core
 			else
 			{
 				// no array pattern in variable name, "name" is a top-level key:
-				name = name.Replace('.', '_');
+                name = EncodeTopLevelName(name);
 
 				// inserts a subname on the next level:
 				if (subname != null)
@@ -255,13 +256,22 @@ namespace PHP.Core
 			}
 		}
 
-		private static object GpcEncodeValue(object value, bool isGpc, LocalConfiguration config)
+        /// <summary>
+        /// Fixes top level variable name to not contain spaces and dots (as it is in PHP);
+        /// </summary>
+        private static string EncodeTopLevelName(string/*!*/name)
+        {
+            Debug.Assert(name != null);
+
+            return name.Replace('.', '_').Replace(' ', '_');
+        }
+
+		private static object GpcEncodeValue(object value, LocalConfiguration config)
 		{
-			string svalue = value as string;
-			if (svalue != null && isGpc)
+            if (value != null && value.GetType() == typeof(string))
 			{
-				// url-decodes the values:
-				svalue = HttpUtility.UrlDecode(svalue, Configuration.Application.Globalization.PageEncoding);
+                 // url-decodes the values:
+                string svalue = HttpUtility.UrlDecode((string)value, Configuration.Application.Globalization.PageEncoding);
 
 				// quotes the values:
 				if (Configuration.Global.GlobalVariables.QuoteGpcVariables)
@@ -271,7 +281,8 @@ namespace PHP.Core
 					svalue = StringUtils.AddCSlashes(svalue, true, true);
 				}
 
-				value = svalue;
+                //
+                value = svalue;
 			}
 
 			return value;
@@ -334,7 +345,7 @@ namespace PHP.Core
 				if (name != null)
 				{
 					foreach (string value in values)
-						AddVariable(result, name, value, null, false, config);
+                        AddVariable(result, name, value, null, isGpc, config);
 				}
 				else
 				{
@@ -342,7 +353,7 @@ namespace PHP.Core
 					// e.g. for GET variables, URL looks like this: ...&test&...
 					// we add the name of the variable and an emtpy string to get what PHP gets:
                     foreach (string value in values)
-						AddVariable(result, value, String.Empty, null, false, config);
+                        AddVariable(result, value, String.Empty, null, isGpc, config);
 				}
 			}
 		}
@@ -595,7 +606,7 @@ namespace PHP.Core
 					// adds a copy of cookie with the same key as the session name;
 					// the name gets encoded and so $_COOKIE[session_name()] doesn't work then:
 					if (cookie.Name == AspNetSessionHandler.AspNetSessionName)
-						cookieArray[AspNetSessionHandler.AspNetSessionName] = GpcEncodeValue(cookie.Value, true, config);
+						cookieArray[AspNetSessionHandler.AspNetSessionName] = GpcEncodeValue(cookie.Value, config);
 				}
 			}
 			else
