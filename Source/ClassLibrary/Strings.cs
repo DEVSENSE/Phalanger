@@ -1204,6 +1204,7 @@ namespace PHP.Library
         [return: CastToFalse]
         public static PhpArray Explode(string separator, string str, int limit)
         {
+            // validate parameters:
             if (String.IsNullOrEmpty(separator))
             {
                 PhpException.InvalidArgument("separator", LibResources.GetString("arg:null_or_empty"));
@@ -1215,36 +1216,30 @@ namespace PHP.Library
             bool last_part_is_the_rest = limit >= 0;
 
             if (limit == 0)
-            {
                 limit = 1;
-            }
             else if (limit < 0)
-            {
                 limit += SubstringCountInternal(str, separator, 0, str.Length) + 2;
-            }
-
-            int str_len = str.Length;
+            
+            // splits <str> by <separator>:
             int sep_len = separator.Length;
             int i = 0;                        // start searching at this position
-            int count = 0;                    // a number of chunks found
             int pos;                          // found separator's first character position
             PhpArray result = new PhpArray(); // creates integer-keyed array with default capacity
 
             while (--limit > 0)
             {
-                pos = str.IndexOf(separator, i);
+                pos = str.IndexOf(separator, i, StringComparison.Ordinal);
 
                 if (pos < 0) break; // not found
 
-                result.Add(count, str.Substring(i, pos - i));
+                result.AddToEnd(str.Substring(i, pos - i)); // faster than Add()
                 i = pos + sep_len;
-                count++;
             }
 
             // Adds last chunk. If separator ends the string, it will add empty string (as PHP do).
-            if (i <= str_len && last_part_is_the_rest)
+            if (i <= str.Length && last_part_is_the_rest)
             {
-                result.Add(count, str.Substring(i));
+                result.AddToEnd(str.Substring(i));
             }
 
             return result;
