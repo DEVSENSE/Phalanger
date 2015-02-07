@@ -1,20 +1,13 @@
 <?
+	import namespace System;
+	import namespace System\Drawing;
+	import namespace System\Windows\Forms;
+
+	import namespace Phalanger;
+
 	namespace Phalanger
 	{
-	    use System;
-	    
-        use System\Windows\Forms;
-        use System\Windows\Forms\Timer;
-        use System\Windows\Forms\Button;
-        use System\Windows\Forms\Cursor;
-        
-        use System\Windows\Forms\MessageBox;
-        use System\Windows\Forms\MessageBoxButtons;
-        use System\Windows\Forms\MessageBoxIcon;
-        
-        use System\Drawing\Point;
-
-    	// A button that performs sophisticated evasive maneuvers ;) 
+		// A button that performs sophisticated evasive maneuvers ;) 
 		class TrickyButton extends Button
 		{
 			const IDLE_TICK_COUNT = 10;
@@ -25,7 +18,7 @@
 			public function __construct()
 			{
 				$timer = new Timer;
-				$timer->Tick->Add(new System\EventHandler(array($this, "Timer_OnTick")));
+				$timer->Tick->Add(new EventHandler(array($this, "Timer_OnTick")));
 				$timer->Interval = 50;
 				$timer->Enabled = true;
 			}

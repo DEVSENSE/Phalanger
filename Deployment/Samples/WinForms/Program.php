@@ -1,14 +1,15 @@
 <?
+import namespace System;
+import namespace System\Windows\Forms;
 
-use System\Windows\Forms;
-use WinForms\Form1;
+import namespace WinForms;
 
 class Program
 {
 	static function Main()
 	{
-		Forms\Application::EnableVisualStyles();
-		Forms\Application::Run(new Form1());
+		Application::EnableVisualStyles();
+		Application::Run(new Form1());
 	}
 }
 ?>
