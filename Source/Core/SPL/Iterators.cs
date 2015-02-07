@@ -1638,6 +1638,37 @@ namespace PHP.Library.SPL
 
         #endregion
 
+        #region __call
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object __call(object instance, PhpStack stack)
+        {
+            var name = stack.PeekValue(1);
+            var args = stack.PeekValue(2);
+            stack.RemoveFrame();
+            return ((RecursiveIteratorIterator)instance).__call(stack.Context, name, args);
+        }
+
+        [ImplementsMethod, NeedsArgless]    // TODO: hide this method to not be visible by PHP code, make this behaviour internal
+        public virtual object __call(ScriptContext context, object name, object args)
+        {
+            var methodname = PhpVariable.AsString(name);
+            var argsarr = args as PhpArray;
+
+            if (this.iterator == null || argsarr == null)
+            {
+                PhpException.UndefinedMethodCalled(this.TypeName, methodname);
+                return null;
+            }
+
+            // call the method on internal iterator, as in PHP,
+            // only PHP leaves $this to self (which is potentionally dangerous and not correctly typed)
+            context.Stack.AddFrame((ICollection)argsarr.Values);
+            return this.iterator.InvokeMethod(methodname, null, context);
+        }
+
+        #endregion
+
         #region OuterIterator
 
         [ImplementsMethod]
