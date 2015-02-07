@@ -497,4 +497,104 @@ namespace PHP.Library.SPL
 #endif
         #endregion
     }
+
+    [ImplementsType]
+#if !SILVERLIGHT
+    [Serializable]
+#endif
+    public class BadFunctionCallException : LogicException
+    {
+        #region Implementation Details
+
+        /// <summary>
+        /// Populates the provided <see cref="DTypeDesc"/> with this class's methods and properties.
+        /// </summary>
+        /// <param name="typeDesc">The type desc to populate.</param>
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        { }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public BadFunctionCallException(ScriptContext context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public BadFunctionCallException(ScriptContext context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
+        protected BadFunctionCallException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+#endif
+        #endregion
+    }
+
+    [ImplementsType]
+#if !SILVERLIGHT
+    [Serializable]
+#endif
+    public class BadMethodCallException : BadFunctionCallException
+    {
+        #region Implementation Details
+
+        /// <summary>
+        /// Populates the provided <see cref="DTypeDesc"/> with this class's methods and properties.
+        /// </summary>
+        /// <param name="typeDesc">The type desc to populate.</param>
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        { }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public BadMethodCallException(ScriptContext context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public BadMethodCallException(ScriptContext context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
+        protected BadMethodCallException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+#endif
+        #endregion
+    }
 }

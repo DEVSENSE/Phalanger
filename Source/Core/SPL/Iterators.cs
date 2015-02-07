@@ -660,4 +660,141 @@ namespace PHP.Library.SPL
 #endif
 		#endregion
     }
+
+    [ImplementsType]
+    public class EmptyIterator : PhpObject, Iterator, Traversable
+    {
+        public virtual object __construct(ScriptContext/*!*/context)
+        {
+            return null;
+        }
+
+        #region Implementation details
+
+        internal static void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Constructor
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public EmptyIterator(ScriptContext/*!*/context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public EmptyIterator(ScriptContext/*!*/context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object __construct(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((EmptyIterator)instance).__construct(stack.Context);
+        }
+
+        #endregion
+
+        #region interface Iterator
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object rewind(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((EmptyIterator)instance).rewind(stack.Context);
+        }
+
+        public static object next(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((EmptyIterator)instance).next(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object valid(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((EmptyIterator)instance).valid(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object key(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((EmptyIterator)instance).key(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object current(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((EmptyIterator)instance).current(stack.Context);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region interface Iterator
+
+        [ImplementsMethod]
+        public object rewind(ScriptContext context)
+        {
+            return null;
+        }
+
+        [ImplementsMethod]
+        public object next(ScriptContext context)
+        {
+            return null;
+        }
+
+        [ImplementsMethod]
+        public virtual object valid(ScriptContext context)
+        {
+            return false;
+        }
+
+        [ImplementsMethod]
+        public virtual object key(ScriptContext context)
+        {
+            var e = new BadMethodCallException(context, true);
+            e.__construct(context, "Accessing the key of an EmptyIterator", 0);
+            throw new PhpUserException(e);
+        }
+
+        [ImplementsMethod]
+        public virtual object current(ScriptContext context)
+        {
+            var e = new BadMethodCallException(context, true);
+            e.__construct(context, "Accessing the value of an EmptyIterator", 0);
+            throw new PhpUserException(e);
+        }
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+		/// <summary>
+		/// Deserializing constructor.
+		/// </summary>
+        protected EmptyIterator(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+		}
+
+#endif
+		#endregion
+}
 }
