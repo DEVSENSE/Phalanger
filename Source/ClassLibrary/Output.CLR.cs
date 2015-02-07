@@ -436,7 +436,7 @@ namespace PHP.Library
         /// <remarks>The function does not support subsequent calls to compress more chunks of data subsequentally.</remarks>
         [ImplementsFunction("ob_gzhandler")]
         [return: CastToFalse]
-        public static PhpBytes GzipHandler(object data, int mode)
+        public static object GzipHandler(object data, int mode)
         {
             // TODO: mode is not passed by Core properly. Therefore it is not possible to make subsequent calls to this handler.
             // Otherwise headers of ZIP stream will be mishmashed.
@@ -450,7 +450,7 @@ namespace PHP.Library
             if (httpcontext == null ||
                 httpcontext.Request == null ||
                 (headers = httpcontext.Request.Headers) == null)
-                return null;
+                return data;
 
             // check if compression is supported by browser
             string acceptEncoding = headers["Accept-Encoding"];
@@ -466,7 +466,7 @@ namespace PHP.Library
                     return DoGzipHandler(data, httpcontext, ContentEncoding.deflate);
             }
 
-            return null;
+            return data;
 
             /*
             ScriptContext context = ScriptContext.CurrentContext;
