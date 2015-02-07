@@ -379,7 +379,7 @@ namespace PHP.Core
 			// $_SESSION (initialized by session_start)
 
 			// $_FILE:
-			InitializeFileVariables(config, request);
+			InitializeFileVariables(config, request, context);
 
 			// $GLOBALS:
 			InitializeGlobals(config, request);
@@ -644,7 +644,7 @@ namespace PHP.Core
 			}
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Loads $_FILES from HttpRequest.Files.
 		/// </summary>
 		/// <remarks>
@@ -656,21 +656,26 @@ namespace PHP.Core
 		///   <item>$_FILES[{var_name}]['error'] - The error code associated with this file upload.</item> 
 		/// </list>
 		/// </remarks>
-		private void InitializeFileVariables(LocalConfiguration/*!*/ config, HttpRequest request)
+        private void InitializeFileVariables(LocalConfiguration/*!*/ config, HttpRequest request, HttpContext context)
 		{
 			Debug.Assert(config != null);
 			PhpArray files;
-			string path;
 			int count;
 
 			GlobalConfiguration global_config = Configuration.Global;
 
 			if (request != null && global_config.PostedFiles.Accept && (count = request.Files.Count) > 0)
 			{
+                Debug.Assert(context != null);
+                Debug.Assert(RequestContext.CurrentContext != null, "PHP.Core.RequestContext not initialized!");
+
 				files = new PhpArray(0, count);
 
 				// gets a path where temporary files are stored:
-				path = global_config.PostedFiles.GetTempPath(global_config.SafeMode);
+				var temppath = global_config.PostedFiles.GetTempPath(global_config.SafeMode);
+                // temporary file name (first part)
+                var basetempfilename = string.Concat("php_", context.Timestamp.Ticks.ToString("x"), "-");
+                var basetempfileid = this.GetHashCode();
 
 				for (int i = 0; i < count; i++)
 				{
@@ -679,14 +684,16 @@ namespace PHP.Core
 					HttpPostedFile file = request.Files[i];
 					PostedFileError error = PostedFileError.None;
 
-					if (file.FileName != String.Empty)
+					if (!string.IsNullOrEmpty(file.FileName))
 					{
 						type = file.ContentType;
-						file_path = Path.Combine(path, RequestContext.GetTempFileName());
+
+                        var tempfilename = string.Concat(basetempfilename, (basetempfileid++).ToString("X"), ".tmp");
+                        file_path = Path.Combine(temppath, tempfilename);
 						file_name = Path.GetFileName(file.FileName);
 
 						// registers the temporary file for deletion at request end:
-						RequestContext.AddTemporaryFile(file_path);
+						RequestContext.CurrentContext.AddTemporaryFile(file_path);
 
 						// saves uploaded content to the temporary file:
 						file.SaveAs(file_path);
