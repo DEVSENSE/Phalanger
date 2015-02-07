@@ -1139,7 +1139,7 @@ namespace PHP.Library
 
 					// named group?
 					string name;
-					if (i > 0 && (name = r.GroupNameFromNumber(i)) != String.Empty)
+					if ((name = r.GroupNameFromNumber(i)) != String.Empty && name != i.ToString(CultureInfo.InvariantCulture))
 					{
 						if (j == 0) matches[name] = new PhpArray();
 						((PhpArray)matches[name])[j] = arr;
