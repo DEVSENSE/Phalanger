@@ -240,39 +240,7 @@ namespace PHP.Core
 		#endregion
 	}
 
-    /// <summary>
-    /// Implements equality comparer of objects, using given <see cref="IComparer"/>.
-    /// </summary>
-    public class ObjectEqualityComparer : IEqualityComparer<object>
-    {
-        /// <summary>
-        /// <see cref="IComparer"/> to use.
-        /// </summary>
-        private readonly IComparer/*!*/ comparer;
 
-        public ObjectEqualityComparer(IComparer/*!*/ comparer)
-        {
-            if (comparer == null)
-                throw new ArgumentNullException("comparer");
-
-            this.comparer = comparer;
-        }
-
-        #region IEqualityComparer<object>
-
-        bool IEqualityComparer<object>.Equals(object x, object y)
-        {
-            return comparer.Compare(x, y) == 0;
-        }
-
-        int IEqualityComparer<object>.GetHashCode(object obj)
-        {
-            return (obj != null) ? obj.GetHashCode() : 0;
-        }
-
-        #endregion
-    }
-    
 	#endregion
 
 	#region Regular Comparer
@@ -314,7 +282,6 @@ namespace PHP.Core
             {
                 if (y == null) return 0; // x == null
                 if (y.GetType() == typeof(int)) return ((int)y == 0) ? 0 : -1;     // obsolete: -Math.Sign((int)y);                 // x == 0
-                if (y.GetType() == typeof(long)) return ((long)y == 0) ? 0 : -1;
                 if (y.GetType() == typeof(double)) return ((double)y == 0.0) ? 0 : -1;// obsolete: CompareDouble(0.0,(double)y);      // x == 0.0
                 if (y.GetType() == typeof(string)) return ((string)y == "") ? 0 : -1;        // obsolete: sy==String.Empty ? 0:-1;            // x == ""  
                 if (y.GetType() == typeof(bool)) return ((bool)y == false) ? 0 : -1;// obsolete: (bool)y ? 1:0;                      // x == false
@@ -342,7 +309,6 @@ namespace PHP.Core
                 if (y == null) return ((double)x == 0.0) ? 0 : 1; // obsolete: CompareDouble((double)x,0.0); // y == 0.0
                 if (y.GetType() == typeof(double)) return CompareDouble((double)x, (double)y);
                 if (y.GetType() == typeof(int)) return CompareDouble((double)x, (int)y);
-                if (y.GetType() == typeof(long)) return CompareDouble((double)x, (long)y);
                 if (y.GetType() == typeof(string)) return -CompareString((string)y, (double)x);
                 if (y.GetType() == typeof(bool)) return ((double)x != 0.0 ? 2 : 1) - ((bool)y ? 2 : 1);
             }
@@ -351,7 +317,6 @@ namespace PHP.Core
                 if (y == null) return (string)x == "" ? 0 : 1; // y == ""
                 if (y.GetType() == typeof(string)) return CompareString((string)x, (string)y);
                 if (y.GetType() == typeof(int)) return CompareString((string)x, (int)y);
-                if (y.GetType() == typeof(long)) return CompareString((string)x, (long)y);
                 if (y.GetType() == typeof(double)) return CompareString((string)x, (double)y);
                 if (y.GetType() == typeof(bool)) return (Convert.StringToBoolean((string)x) ? 2 : 1) - ((bool)y ? 2 : 1);
             }
@@ -390,23 +355,10 @@ namespace PHP.Core
 
             if ((cmp = y as IPhpComparable) != null) return -cmp.CompareTo(x, Default);
 
-            if (x != y) CompareOp_ThrowHelper(x, y);
-
-            return 0;
-        }
-
-        /// <summary>
-        /// Throws <see cref="ArgumentException"/> with information about arguments type.
-        /// </summary>
-        /// <param name="x">Left operand.</param>
-        /// <param name="y">Right operand.</param>
-        /// <exception cref="ArgumentException">Always throws.</exception>
-        private static void CompareOp_ThrowHelper(object x, object y)
-        {
-            throw new ArgumentException(
-                string.Format(CoreResources.incomparable_objects_compared_exception,
-                    (x != null) ? x.GetType().ToString() : PhpVariable.TypeNameNull,
-                    (y != null) ? y.GetType().ToString() : PhpVariable.TypeNameNull));
+            if (x == y)
+                return 0;
+            else
+                throw new ArgumentException();
         }
         
 		public static int CompareOp(int x, int y)
@@ -568,103 +520,6 @@ namespace PHP.Core
             }
 		}
 
-        /// <summary>
-        /// Compares two objects for equality in a manner of the PHP regular comparison.
-        /// </summary>
-        /// <param name="x">The first object.</param>
-        /// <param name="y">The second object.</param>
-        /// <returns>Whether the values of operands are the same.</returns>
-        /// <remarks>Faster than Compare(x,y) == 0.</remarks>
-        [Emitted]
-        public static bool CompareEq(object x, string/*!*/y)
-        {
-            Debug.Assert(y != null);
-
-            if (x == null)
-            {
-                if (y == null) return true;
-                return string.IsNullOrEmpty(y);
-            }
-            else if (x.GetType() == typeof(string))
-            {
-                if (y == null) return (string)x == string.Empty;
-                return CompareString((string)x, (string)y) == 0;
-            }
-            else if (x.GetType() == typeof(int))
-            {
-                if (y == null) return (int)x == 0;
-                return CompareStringEq((string)y, (int)x);
-            }
-            else if (x.GetType() == typeof(long))
-            {
-                if (y == null) return (long)x == 0;
-                return CompareStringEq((string)y, (long)x);
-            }
-            else if (x.GetType() == typeof(double))
-            {
-                if (y == null) return (double)x == 0.0;
-                return CompareStringEq((string)y, (double)x);
-            }
-            else if (x.GetType() == typeof(bool))
-            {
-                return (bool)x == Convert.StringToBoolean(y);
-            }
-
-            try
-            {
-                return (CompareOp_Nonliterals(x, y) == 0);
-            }
-            catch (ArgumentException)
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Compares two objects for equality in a manner of the PHP regular comparison.
-        /// </summary>
-        /// <param name="x">The first object.</param>
-        /// <param name="y">The second object.</param>
-        /// <returns>Whether the values of operands are the same.</returns>
-        /// <remarks>Faster than Compare(x,y) == 0.</remarks>
-        [Emitted]
-        public static bool CompareEq(object x, int y)
-        {
-            if (x == null)
-            {
-                return y == 0;								// y == 0
-            }
-            else if (x.GetType() == typeof(int))
-            {
-                return (int)x == y;
-            }
-            else if (x.GetType() == typeof(long))
-            {
-                return (long)x == (long)y;
-            }
-            else if (x.GetType() == typeof(double))
-            {
-                return (double)x == (double)y;
-            }
-            else if (x.GetType() == typeof(string))
-            {
-                return CompareString((string)x, y) == 0;
-            }
-            else if (x.GetType() == typeof(bool))
-            {
-                return (bool)x == (y != 0);
-            }
-
-            try
-            {
-                return (CompareOp_Nonliterals(x, y) == 0);
-            }
-            catch (ArgumentException)
-            {
-                return false;
-            }
-        }
-
 		#endregion
 
 		#region Auxiliary comparisons
@@ -748,7 +603,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.Double: return CompareDouble(dx, y);
 				case Convert.NumberInfo.Integer: return CompareInteger(ix, y);
 				case Convert.NumberInfo.LongInteger: return CompareLongInteger(lx, y);
-				default: Debug.Fail(null); throw null;
+				default: Debug.Fail(); throw null;
 			}
 		}
 
@@ -769,7 +624,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.Double: return CompareDouble(dx, y);
 				case Convert.NumberInfo.Integer: return CompareLongInteger(ix, y);
 				case Convert.NumberInfo.LongInteger: return CompareLongInteger(lx, y);
-				default: Debug.Fail(null); throw null;
+				default: Debug.Fail(); throw null;
 			}
 		}
 
@@ -790,7 +645,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.Double: return CompareDouble(dx, y);
 				case Convert.NumberInfo.Integer: return CompareDouble(ix, y);
 				case Convert.NumberInfo.LongInteger: return CompareDouble(lx, y);
-				default: Debug.Fail(null); throw null;
+				default: Debug.Fail(); throw null;
 			}
 		}
 
@@ -813,7 +668,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.Double: return dx == y;
 				case Convert.NumberInfo.Integer: return ix == y;
 				case Convert.NumberInfo.LongInteger: return lx == y;
-				default: Debug.Fail(null); throw null;
+				default: Debug.Fail(); throw null;
 			}
 		}
 
@@ -836,7 +691,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.Double: return dx == y;
 				case Convert.NumberInfo.Integer: return ix == y;
 				case Convert.NumberInfo.LongInteger: return lx == y;
-				default: Debug.Fail(null); throw null;
+				default: Debug.Fail(); throw null;
 			}
 		}
 
@@ -859,7 +714,7 @@ namespace PHP.Core
 				case Convert.NumberInfo.Double: return dx == y;
 				case Convert.NumberInfo.Integer: return ix == y;
 				case Convert.NumberInfo.LongInteger: return lx == y;
-				default: Debug.Fail(null); throw null;
+				default: Debug.Fail(); throw null;
 			}
 		}
 

@@ -27,7 +27,7 @@ namespace PHP.Core
 	[Serializable]
 	[DebuggerNonUserCode]
     [DebuggerDisplay("{((IPhpConvertible)this).ToString()}", Type = "string({Length})")]
-	public class PhpBytes : IPhpVariable, IPhpObjectGraphNode, ICloneable         // GENERICS: IEquatable<PhpBytes>
+	public sealed class PhpBytes : IPhpVariable, IPhpObjectGraphNode, ICloneable         // GENERICS: IEquatable<PhpBytes>
 	{
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
 		public const string PhpTypeName = PhpVariable.TypeNameString;
@@ -324,6 +324,11 @@ namespace PHP.Core
 		{
 			return Convert.StringToNumber(((IPhpConvertible)this).ToString(), out intValue, out longValue, out doubleValue);
 		}
+
+        public override string ToString()
+        {
+            return ((IPhpConvertible)this).ToString();
+        }
 
         string IPhpConvertible.ToString()
         {

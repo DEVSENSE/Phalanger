@@ -63,8 +63,8 @@ namespace PHP.Core
         /// <summary>
         /// Creates a new instance of (assuming constant) empty array. Used as a return value of class library functions.
         /// </summary>
-        public static PhpArray/*!*/NewEmptyArray { get { return new PhpArray(emptyArray); } }
-        private static readonly PhpArray/*!*/emptyArray = new PhpArray(0, 0);
+        public static PhpArray/*!*/NewEmptyArray { get { return new PhpArray(); } }
+        //private static readonly PhpArray/*!*/emptyArray = new PhpArray(0, 0);
 
 		/// <summary>
 		/// If this flag is <B>true</B> the array will be copied inplace by the immediate <see cref="Copy"/> call.
@@ -453,7 +453,7 @@ namespace PHP.Core
 			doubleValue = Count;
 			intValue = Count;
 			longValue = Count;
-			return Convert.NumberInfo.Integer;
+			return Convert.NumberInfo.Integer | Convert.NumberInfo.IsPhpArray;
 		}
 
 		/// <summary>
