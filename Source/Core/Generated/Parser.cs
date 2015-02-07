@@ -2417,7 +2417,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 			if (value_stack.array[value_stack.top-2].yyval.Object == null && value_stack.array[value_stack.top-1].yyval.Object == null)
 				errors.Add(FatalErrors.TryWithoutCatchOrFinally, SourceUnit, yypos);
 
-			yyval.Object = new TryStmt(yypos, (List<Statement>)value_stack.array[value_stack.top-4].yyval.Object, (List<CatchItem>)value_stack.array[value_stack.top-2].yyval.Object, (List<Statement>)value_stack.array[value_stack.top-1].yyval.Object);
+			yyval.Object = new TryStmt(yypos, (List<Statement>)value_stack.array[value_stack.top-4].yyval.Object, (List<CatchItem>)value_stack.array[value_stack.top-2].yyval.Object, (FinallyItem)value_stack.array[value_stack.top-1].yyval.Object);
 
 			LeaveConditionalCode();
 		}
@@ -2453,7 +2453,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 { yyval.Object = null; }
         return;
       case 158: // finally_opt -> T_FINALLY '{' inner_statement_list_opt '}' 
-{ yyval.Object = value_stack.array[value_stack.top-2].yyval.Object; }
+{ yyval.Object = new FinallyItem(yypos, (List<Statement>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 159: // reference_opt -> 
 { yyval.Integer = 0; }
