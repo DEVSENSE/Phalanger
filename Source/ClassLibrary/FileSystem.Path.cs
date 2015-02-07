@@ -489,16 +489,16 @@ namespace PHP.Library
 
 		#endregion
 
-		#region NS: fnmatch, glob
+        #region glob, NS: fnmatch
 
-		/// <summary>
+        /// <summary>
 		/// Matches the given path against a pattern. Not supported.
 		/// </summary>
 		/// <param name="pattern">A <see cref="string"/> containing a wildcard.</param>
 		/// <param name="path">The <see cref="string"/> to be matched.</param>
 		/// <returns><c>true</c> if the <paramref name="path"/> matches with the given 
 		/// wildcard <paramref name="pattern"/>.</returns>
-		[ImplementsFunction("fnmatch")]
+		[ImplementsFunction("fnmatch", FunctionImplOptions.NotSupported)]
 		public static bool Match(string pattern, string path)
 		{
 			return Match(pattern, path, 0);

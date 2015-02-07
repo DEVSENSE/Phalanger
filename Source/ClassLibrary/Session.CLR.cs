@@ -1144,7 +1144,7 @@ namespace PHP.Library
 
 
 		/// <summary>
-		/// Update the current session id with a newly generated one. Not supported. 
+		/// Update the current session id with a newly generated one.
 		/// </summary>
         /// <param name="delete_old_session">Whether to delete the old associated session file or not.</param>
 		/// <returns>Returns TRUE on success or FALSE on failure.   </returns>
