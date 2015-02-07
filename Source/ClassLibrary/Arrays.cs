@@ -610,7 +610,7 @@ namespace PHP.Library
 		/// </remarks>
 		/// <para>See <see cref="PhpMath.AbsolutizeRange"/> for details about <paramref name="offset"/>.</para>
 		[ImplementsFunction("array_splice")]
-		public static PhpArray Splice([PhpRw] PhpArray array, int offset)
+		public static PhpArray Splice([PhpRw] ref PhpArray array, int offset)
 		{
 			// Splice would be equivalent to SpliceDc if no replacelent is specified (=> no SpliceDc):
 			return Splice(array, offset, int.MaxValue, null);
@@ -628,7 +628,7 @@ namespace PHP.Library
 		/// </remarks>
 		/// <para>See <see cref="PhpMath.AbsolutizeRange"/> for details about <paramref name="offset"/>.</para>
 		[ImplementsFunction("array_splice")]
-		public static PhpArray Splice([PhpRw] PhpArray array, int offset, int length)
+		public static PhpArray Splice([PhpRw] ref PhpArray array, int offset, int length)
 		{
 			// Splice would be equivalent to SpliceDc if no replacement is specified (=> no SpliceDc):
 			return Splice(array, offset, length, null);
@@ -642,7 +642,7 @@ namespace PHP.Library
 		/// replacement items are deeply copied to the <paramref name="array"/>.</para>
 		/// </remarks>
 		[ImplementsFunction("array_splice")]
-		public static PhpArray SpliceDc([PhpRw] PhpArray array, int offset, int length, object replacement)
+		public static PhpArray SpliceDc([PhpRw] ref PhpArray array, int offset, int length, object replacement)
 		{
 			if (array == null)
 			{
@@ -667,10 +667,13 @@ namespace PHP.Library
 		/// </remarks>
 		public static PhpArray Splice(PhpArray array, int offset, int length, object replacement)
 		{
-			if (array == null)
-				throw new ArgumentNullException("array");
+		  if (array == null)
+		  {
+        PhpException.Throw(PhpError.Warning, "array_splice() expects parameter 1 to be array, null given");
+		    return null;
+		  }
 
-			return SpliceInternal(array, offset, length, replacement, false);
+		  return SpliceInternal(array, offset, length, replacement, false);
 		}
 
 		/// <summary>
@@ -1894,7 +1897,16 @@ namespace PHP.Library
 				return null;
 			}
 
-			Debug.Assert(comparer != null);
+		  for (int i = 0; i < arrays.Length; i++)
+		  {
+		    if (arrays[i] == null)
+		    {
+		      PhpException.Throw(PhpError.Warning, "Argument is not an array");
+		      return null;
+		    }
+		  }
+
+		  Debug.Assert(comparer != null);
 
 			PhpArray result = new PhpArray();
 			array.SetOperation(op, arrays, comparer, result);
