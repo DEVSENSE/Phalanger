@@ -3093,6 +3093,21 @@ namespace PHP.Core.Reflection
 
         #endregion
 
+        #region PHP Operators
+
+        public override string ToString(bool throwOnError, out bool success)
+        {
+            success = true;
+            return this.realObject.ToString();
+        }
+
+        public override PhpBytes ToPhpBytes()
+        {
+            return new PhpBytes(this.realObject.ToString());
+        }
+
+        #endregion
+
         #region Serialization (CLR only)
 #if !SILVERLIGHT
 
@@ -3187,6 +3202,29 @@ namespace PHP.Core.Reflection
             return realValue.ToString();
         }
         
+        #endregion
+
+        #region PHP Operators
+
+        public override string ToString(bool throwOnError, out bool success)
+        {
+            success = true;
+            return this.realValue.ToString();
+        }
+
+        public override PhpBytes ToPhpBytes()
+        {
+            return new PhpBytes(this.realValue.ToString());
+        }
+
+        public override double ToDouble()
+        {
+            if (typeof(T) == typeof(decimal))
+                return (double)(decimal)(object)this.realValue;
+
+            return base.ToDouble();
+        }
+
         #endregion
 
         #region Clone
