@@ -694,7 +694,7 @@ namespace PHP.Core
                 if (word != null && IsTypeName(word))
                 {
                     this.TypeNames = word;
-                    this.TypeNamesOffset = index - word.Length;
+                    this.TypeNamesOffset = index - word.Length + 1;
                     descStart = index;
                     word = NextWord(line, ref index);
                 }
@@ -705,7 +705,7 @@ namespace PHP.Core
                     if (word != null && word[0] == '$')
                     {
                         this.VariableName = word;
-                        this.VariableNameOffset = index - word.Length;
+                        this.VariableNameOffset = index - word.Length + 1;
                         descStart = index;
                         word = NextWord(line, ref index);
                     }
@@ -714,7 +714,7 @@ namespace PHP.Core
                     if (this.TypeNames == null && word != null && IsTypeName(word))
                     {
                         this.TypeNames = word;
-                        this.TypeNamesOffset = index - word.Length;
+                        this.TypeNamesOffset = index - word.Length + 1;
                         descStart = index;
                         word = NextWord(line, ref index);
                     }
