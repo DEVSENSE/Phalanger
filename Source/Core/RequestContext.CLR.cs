@@ -24,7 +24,6 @@ using System.Runtime.Remoting.Messaging;
 
 using PHP.Core.Reflection;
 using PHP.Core.Emit;
-using System.Collections.Generic;
 
 namespace PHP.Core
 {
@@ -38,7 +37,7 @@ namespace PHP.Core
 		static RequestContext()
 		{
 			if (HttpContext.Current != null)
-				DebugUtils.WebInitialize();
+				Debug.WebInitialize();
 		}
 
 		/// <summary>
@@ -107,22 +106,6 @@ namespace PHP.Core
 			scriptContext = ScriptContext.InitWebRequest(appContext, httpContext);
 			TrackClientDisconnection = !scriptContext.Config.RequestControl.IgnoreUserAbort;
 
-            // Session is ended after destructing objects since PHP 5.0.5, use two-phase finalization:
-            scriptContext.TryDispose += () =>
-                {
-                    this.TryDisposeBeforeFinalization(); // ends session
-
-                    // finalize objects created during session closing and output finalization:
-                    this.scriptContext.GuardedCall<object, object>(this.scriptContext.FinalizePhpObjects, null, false);
-
-                    // Platforms-specific dispose
-                    this.TryDisposeAfterFinalization();  // flushes headers
-                };
-
-            // Platforms-specific finally dispose
-            scriptContext.FinallyDispose += FinallyDispose;
-
-            //
 			if (RequestBegin != null) RequestBegin();
 		}
 
@@ -177,25 +160,6 @@ namespace PHP.Core
 			return req_context;
 		}
 
-        /// <summary>
-        /// Invokes <see cref="RequestBegin"/>.
-        /// </summary>
-        internal static void InvokeRequestBegin()
-        {
-            var callback = RequestContext.RequestBegin;
-            if (callback != null)
-                callback();
-        }
-
-        /// <summary>
-        /// Invokes <see cref="RequestEnd"/>.
-        /// </summary>
-        internal static void InvokeRequestEnd()
-        {
-            var callback = RequestContext.RequestEnd;
-            if (callback != null)
-                callback();
-        }
 
 		/// <summary>
 		/// Finalizes (disposes) the current request context, if there is any.
@@ -211,48 +175,68 @@ namespace PHP.Core
 		#region Temporary Per-Request Files
 
 		/// <summary>
-		/// A list of temporary files which was created during the request and should be deleted at its end.
+		/// Temp files counter.
 		/// </summary>
-		private List<string>/*!*/TemporaryFiles
+		private int counter = 0;
+
+		/// <summary>
+		/// A list of temporary files which was created dureng the request and should be deleted at its end.
+		/// </summary>
+		internal ArrayList TemporaryFiles    // GENERICS: <string>
 		{
 			get
 			{
-                if (this._temporaryFiles == null)
-                    this._temporaryFiles = new List<string>();
-
-                return this._temporaryFiles;
+				if (temporaryFiles == null)
+					temporaryFiles = new ArrayList();
+				return temporaryFiles;
 			}
 		}
-        private List<string> _temporaryFiles;
+		private ArrayList temporaryFiles;
 
 		/// <summary>
 		/// Silently deletes all temporary files.
 		/// </summary>
 		private void DeleteTemporaryFiles()
 		{
-            if (this._temporaryFiles != null)
+			if (temporaryFiles != null)
 			{
-                for (int i = 0; i < this._temporaryFiles.Count; i++)
+				for (int i = 0; i < temporaryFiles.Count; i++)
 				{
-                    try
-                    {
-                        File.Delete(this._temporaryFiles[i]);
-                    }
-                    catch { }
+					try
+					{
+						File.Delete((string)temporaryFiles[i]);
+					}
+					catch (Exception)
+					{
+					}
 				}
-
-                this._temporaryFiles = null;
 			}
+			temporaryFiles = null;
+			counter = 0;
 		}
 
 		/// <summary>
 		/// Adds temporary file to current handler's temp files list.
 		/// </summary>
 		/// <param name="path">A path to the file.</param>
-		internal void AddTemporaryFile(string path)
+		internal static void AddTemporaryFile(string path)
 		{
 			Debug.Assert(path != null);
-			this.TemporaryFiles.Add(path);
+			CurrentContext.TemporaryFiles.Add(path.ToLower());
+		}
+
+		/// <summary>
+		/// Gets a temporary file name.
+		/// </summary>
+		/// <returns></returns>
+		internal static string GetTempFileName()
+		{
+			return String.Concat(
+					"php_",
+					HttpContext.Current.Timestamp.Ticks.ToString("x"),
+					"-",
+					CurrentContext.counter++,
+					".tmp");
 		}
 
 		/// <summary>
@@ -266,7 +250,7 @@ namespace PHP.Core
 		public bool IsTemporaryFile(string path)
 		{
 			if (path == null) throw new ArgumentNullException("path");
-            return this._temporaryFiles != null && this._temporaryFiles.IndexOf(path, FullPath.StringComparer) >= 0;
+			return TemporaryFiles.Contains(path.ToLower());
 		}
 
 		/// <summary>
@@ -274,22 +258,10 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="path">A full path to the file.</param>
 		/// <exception cref="ArgumentNullException">Argument is a <B>null</B> reference.</exception>
-		public bool RemoveTemporaryFile(string path)
+		public void RemoveTemporaryFile(string path)
 		{
 			if (path == null) throw new ArgumentNullException("path");
-            if (this._temporaryFiles == null)
-                return false;
-
-            var index = this._temporaryFiles.IndexOf(path, FullPath.StringComparer);
-            if (index >= 0)
-            {
-                this._temporaryFiles.RemoveAt(index);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+			TemporaryFiles.Remove(path.ToLower());
 		}
 
 		#endregion
@@ -416,8 +388,6 @@ namespace PHP.Core
 
 		private void ClientDisconnected()
 		{
-			if (httpContext == null)
-				return; //already disposed
 			// switch off tracking; 
 			// if connection has been aborted then we needn't to track it any more: 
 			TrackClientDisconnection = false;
@@ -437,23 +407,26 @@ namespace PHP.Core
 		public SessionStates SessionState { get { return sessionState; } }
 		private SessionStates sessionState = SessionStates.Closed;
 
-        /// <summary>
+		/// <summary>
 		/// Gets whether a session exists (i.e. has been started or is being closed).
 		/// </summary>
 		public bool SessionExists
 		{
 			get { return sessionState == SessionStates.Started || sessionState == SessionStates.Closing; }
 		}
-        
+
+
 		/// <summary>
 		/// Ensures that Session ID is set, so calls to Flush() don't cause issues
 		/// (if flush() is called, session ID can't be set because cookie can't be created).
 		/// </summary>
-        private void EnsureSessionId()
+		internal static void EnsureSessionId()
 		{
-            Debug.Assert(httpContext != null);
+			HttpContext httpContext = HttpContext.Current;
             if (httpContext.Session != null && httpContext.Session.IsNewSession && httpContext.Session.Count == 0)
             {
+                httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
+
                 // Ensure the internal method SessionStateModule.DelayedGetSessionId() is called now,
                 // not after the request is processed if no one uses SessionId during the request.
                 // Otherwise it causes an attempt to save the Session ID when the response stream was already flushed.
@@ -467,7 +440,7 @@ namespace PHP.Core
         /// Adds/update a SID global PHP constant.
         /// </summary>
         /// <remarks>The constant is non-empty only for cookie-less sessions.</remarks>
-        public void UpdateSID()
+        public static void UpdateSID(ScriptContext scriptContext, HttpContext httpContext)
         {
             Debug.Assert(httpContext.Session != null);
 
@@ -497,17 +470,15 @@ namespace PHP.Core
 			if (disposed || sessionState != SessionStates.Closed) return;
 			sessionState = SessionStates.Starting;
 
-            if (httpContext.Session == null)
+			if (httpContext.Session == null)
 				throw new SessionException(CoreResources.GetString("session_state_unavailable"));
-
-            EnsureSessionId();
 
 			GlobalConfiguration global = Configuration.Global;
 			PhpArray variables = null;
 
-            // removes dummy item keeping the session alive:
-            if (httpContext.Session[AspNetSessionHandler.PhpNetSessionVars] as string == AspNetSessionHandler.DummySessionItem)
-                httpContext.Session.Remove(AspNetSessionHandler.PhpNetSessionVars);
+			// removes dummy item keeping the session alive:
+			if (httpContext.Session[AspNetSessionHandler.PhpNetSessionVars] as string == AspNetSessionHandler.DummySessionItem)
+				httpContext.Session.Remove(AspNetSessionHandler.PhpNetSessionVars);
 
 			// loads an array of session variables using the current session handler:
 			variables = scriptContext.Config.Session.Handler.Load(scriptContext, httpContext);
@@ -524,7 +495,7 @@ namespace PHP.Core
 				scriptContext.RegisterSessionGlobals();
 
 			// adds a SID constant:
-            UpdateSID();
+            UpdateSID(scriptContext, httpContext);
 
 			sessionState = SessionStates.Started;
 		}
@@ -559,9 +530,9 @@ namespace PHP.Core
 			{
 				if (!abandon)
 				{
-                    // if ASP.NET session state is empty then adds a dump item to preserve the session:
-                    if (httpContext.Session.Count == 0)
-                        httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
+					// if ASP.NET session state is empty then adds a dump item to preserve the session:
+					if (httpContext.Session.Count == 0)
+						httpContext.Session.Add(AspNetSessionHandler.PhpNetSessionVars, AspNetSessionHandler.DummySessionItem);
 				}
 				else
 				{
@@ -633,13 +604,14 @@ namespace PHP.Core
 		void TryDisposeAfterFinalization()
 		{
 			// flushes headers (if it wasn't done earlier)
-            scriptContext.Headers.Flush(HttpContext);
+			scriptContext.Headers.Flush(HttpContext.Current);
 		}
 
 		void FinallyDispose()
 		{
 			DeleteTemporaryFiles();
-			
+			Externals.EndRequest();
+
 			// updates session cookie expiration stamp:
 			UpdateSessionCookieExpiration();
 
@@ -651,9 +623,9 @@ namespace PHP.Core
 
 		#region Compilation
 
-        internal MultiScriptAssembly[]/*!!*/GetPrecompiledAssemblies()
+		internal MultiScriptAssembly GetPrecompiledAssembly()
 		{
-            return scriptContext.ApplicationContext.RuntimeCompilerManager.GetPrecompiledAssemblies();
+			return scriptContext.ApplicationContext.GetWebServerCompilerManager(this).GetPrecompiledAssembly();
 		}
 
         /// <summary>
@@ -663,7 +635,7 @@ namespace PHP.Core
         /// <returns>The <see cref="ScriptInfo"/> of required script or null if such script cannot be obtained.</returns>
 		internal ScriptInfo GetCompiledScript(PhpSourceFile/*!*/ sourceFile)
 		{
-            return scriptContext.ApplicationContext.RuntimeCompilerManager.GetCompiledScript(sourceFile, this);
+			return scriptContext.ApplicationContext.GetWebServerCompilerManager(this).GetCompiledScript(sourceFile, this);
 		}
 
 		#endregion
