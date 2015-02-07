@@ -475,10 +475,6 @@ namespace PHP.Core
 
 			InitPlatformSpecific();
 
-			// creates a new buffered output object which sends its data to given sinks:
-			this.bufferedOutput = new BufferedOutput(false, this.textSink, this.streamSink,
-				Configuration.Application.Globalization.PageEncoding);
-
 			// stack:
 			this.Stack = new PhpStack(this);
 
@@ -1833,13 +1829,15 @@ namespace PHP.Core
 		/// <summary>
 		/// Buffered output associated with the request.
 		/// </summary>
-		public BufferedOutput BufferedOutput
+		public BufferedOutput/*!*/BufferedOutput
 		{
 			get
 			{
-				return bufferedOutput;
+                // Initialize lazily as not buffered output by default.
+                return bufferedOutput ?? (bufferedOutput = new BufferedOutput(false, this.textSink, this.streamSink, Configuration.Application.Globalization.PageEncoding));
 			}
 		}
+        /// <remarks>Is <c>null</c> reference until it is not used for the first time.</remarks>
 		private BufferedOutput bufferedOutput;
 
 		/// <summary>
@@ -1854,8 +1852,11 @@ namespace PHP.Core
 			set
 			{
 				this.textSink = value;
-				bufferedOutput.CharSink = value;
-				if (output != bufferedOutput)        // if output is not buffered
+
+                if (bufferedOutput != null)
+				    bufferedOutput.CharSink = value;
+
+                if (!IsOutputBuffered)
 					output = value;
 			}
 		}
@@ -1873,8 +1874,11 @@ namespace PHP.Core
 			set
 			{
 				this.streamSink = value;
-				bufferedOutput.ByteSink = value;
-				if (binaryOutput != bufferedOutput.Stream)        // if output is not buffered
+
+                if (bufferedOutput != null)
+				    bufferedOutput.ByteSink = value;
+
+                if (bufferedOutput == null || binaryOutput != bufferedOutput.Stream)        // if output is not buffered
 					binaryOutput = value;
 			}
 		}
@@ -1893,7 +1897,7 @@ namespace PHP.Core
 			{
 				if (value)
 				{
-					output = bufferedOutput;
+                    output = bufferedOutput ?? (bufferedOutput = new BufferedOutput(true, this.textSink, this.streamSink, Configuration.Application.Globalization.PageEncoding));
 					binaryOutput = bufferedOutput.Stream;
 				}
 				else
@@ -2258,7 +2262,8 @@ namespace PHP.Core
 		internal object FinalizeBufferedOutput(object _)
 		{
 			// flushes output, applies user defined output filter, and disables buffering:
-			bufferedOutput.FlushAll();
+            if (bufferedOutput != null)
+			    bufferedOutput.FlushAll();
 
 			// redirects sinks:
 			IsOutputBuffered = false;

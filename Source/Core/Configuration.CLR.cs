@@ -126,7 +126,13 @@ namespace PHP.Core
 				switch (name)
 				{
 					case "OutputBuffering":
-						outputBuffering = value == "true";
+                        {
+                            int ivalue;
+                            if (int.TryParse(value, out ivalue))
+                                outputBuffering = ivalue != 0;
+						    else
+                                outputBuffering = (value == "true");
+                        }
 						break;
 
 					case "OutputHandler":
