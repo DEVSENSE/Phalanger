@@ -3348,7 +3348,7 @@ namespace PHP.Core
             {
                 // private static NamingContext <id> = null;
                 string fname = (this.SourceUnit != null) ? this.SourceUnit.SourceFile.ToString() : string.Empty;
-                string id = String.Format("<namingContext>{0}${1}${2}", unchecked((uint)fname.GetHashCode()), position);
+                string id = String.Format("<namingContext>{0}${1}", unchecked((uint)fname.GetHashCode()), position);
 
                 // create static field for static local index: static int <id>;
                 Debug.Assert(il.TypeBuilder != null, "The method does not have declaring type! (global code in pure mode?)");
