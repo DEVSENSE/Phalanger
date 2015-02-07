@@ -111,7 +111,7 @@ namespace PHP.Core
 		/// Type context (determined at bind time).
 		/// </summary>
 		private DTypeDesc callingContext;
-
+        
 		/// <summary>
 		/// Returns <B>true</B> if this callback is bound, <B>false</B> otherwise.
 		/// </summary>
@@ -306,6 +306,22 @@ namespace PHP.Core
 			this.state = State.UnboundInstanceMethod;
 		}
 
+        /// <summary>
+        /// Creates bounded PHP instance method callback. Used when we already know the routine.
+        /// </summary>
+        /// <param name="instance">The target PHP object.</param>
+        /// <param name="routine">The target PHP method.</param>
+        internal PhpCallback(DObject instance, DRoutineDesc routine)
+        {
+            Debug.Assert(instance != null);
+            Debug.Assert(routine != null);
+
+            this.instance = instance;
+            this.targetName = routine.Member.FullName;
+            this.state = State.Bound;
+            this.routineDesc = routine;
+        }
+
 		#endregion
 
 		#region Binding
@@ -358,8 +374,8 @@ namespace PHP.Core
 					{
 						if (context == null) context = ScriptContext.CurrentContext;
 
-						if (caller != null && caller.IsUnknown) callingContext = PhpStackTrace.GetClassContext();
-						else callingContext = caller;
+                        if (caller != null && caller.IsUnknown) callingContext = PhpStackTrace.GetClassContext();
+                        else callingContext = caller;
 
 						// try to find the CLR method
 
@@ -384,8 +400,8 @@ namespace PHP.Core
 
 				case State.UnboundInstanceMethod:
 					{
-						if (caller != null && caller.IsUnknown) callingContext = PhpStackTrace.GetClassContext();
-						else callingContext = caller;
+                        if (caller != null && caller.IsUnknown) callingContext = PhpStackTrace.GetClassContext();
+                        else callingContext = caller;
 
 						// ask the instance for a handle to the method
 						bool is_caller_method;
@@ -399,7 +415,7 @@ namespace PHP.Core
 			return true;
 		}
 
-		public void SwitchContext(ScriptContext/*!*/ newContext)
+        public void SwitchContext(ScriptContext/*!*/ newContext)
 		{
 			if (state != State.Bound && state != State.BoundToCaller)
 				throw new InvalidOperationException();

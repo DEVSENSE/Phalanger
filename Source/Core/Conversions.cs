@@ -66,6 +66,13 @@ namespace PHP.Core
 		string ToString();
 
         /// <summary>
+        /// Converts instance to its string representation according to PHP conversion algorithm.
+        /// </summary>
+        /// <param name="caller">DTypeDesc of the caller's class context.</param>
+        /// <returns>The converted value.</returns>
+        string ToString(DTypeDesc caller);
+
+		/// <summary>
 		/// Converts instance to its string representation according to PHP conversion algorithm.
 		/// </summary>
 		/// <param name="success">Indicates whether conversion was successful.</param>
@@ -90,27 +97,20 @@ namespace PHP.Core
         /// </summary>
         /// <param name="value">The literal to be converted.</param>
         /// <returns>PHP (Phalanger) representation of the CLR literal.</returns>
-		public static object ClrLiteralToPhpLiteral(object value)
+		internal static object ClrLiteralToPhpLiteral(object value)
 		{
-            if (value == null ||
-                value.GetType() == typeof(int) ||
-                value.GetType() == typeof(string) ||
-                value.GetType() == typeof(bool) ||
-                value.GetType() == typeof(double) ||
-                value.GetType() == typeof(long))
+			if (value is int || value is string || value == null || value is bool || value is double || value is long)
 				return value;
 
-            // velue != null
-
             if (value is Enum) return ClrEnumToPhpLiteral(value);
-			if (value.GetType() == typeof(sbyte)) return (int)(sbyte)value;
-			if (value.GetType() == typeof(byte)) return (int)(byte)value;
-			if (value.GetType() == typeof(short)) return (int)(short)value;
-			if (value.GetType() == typeof(ushort)) return (int)(ushort)value;
-			if (value.GetType() == typeof(char)) return ((char)value).ToString();
-			if (value.GetType() == typeof(float)) return (double)(float)value;
+			if (value is sbyte) return (int)(sbyte)value;
+			if (value is byte) return (int)(byte)value;
+			if (value is short) return (int)(short)value;
+			if (value is ushort) return (int)(ushort)value;
+			if (value is char) return ((char)value).ToString();
+			if (value is float) return (double)(float)value;
 
-			if (value.GetType() == typeof(uint))
+			if (value is uint)
 			{
 				uint uint_value = (uint)value;
 
@@ -120,7 +120,7 @@ namespace PHP.Core
 					return (long)uint_value;
 			}
 
-			if (value.GetType() == typeof(ulong))
+			if (value is ulong)
 			{
 				ulong ulong_value = (ulong)value;
 
@@ -130,11 +130,9 @@ namespace PHP.Core
 					return unchecked((long)ulong_value);
 			}
 
-			if (value.GetType() == typeof(decimal))
+			if (value is decimal)
 			{
-                decimal decimal_value = (decimal)value;
-                if (Decimal.Truncate(decimal_value) != decimal_value)
-                    return Decimal.ToDouble(decimal_value);
+				decimal decimal_value = (decimal)value;
 				if (decimal_value >= Int32.MinValue && decimal_value <= Int32.MaxValue)
 					return Decimal.ToInt32(decimal_value);
 				else if (decimal_value >= Int64.MinValue && decimal_value <= Int64.MaxValue)
@@ -244,6 +242,31 @@ namespace PHP.Core
 			return result;
 		}
 
+        /// <summary>
+        /// Converts value of an arbitrary PHP/CLR type into string value using the same 
+        /// conversion algorithms as PHP.
+        /// </summary>
+        /// <param name="caller">The DTypeDesc of the caller's class context.</param>
+        /// <param name="obj">The value to convert.</param>
+        /// <returns>The converted value.</returns>
+        /// <remarks>If <paramref name="obj"/> is null then the <see cref="String.Empty"/> is returned. This method cannot return null.</remarks>
+        [Emitted]
+        public static string ObjectToString(object obj, DTypeDesc caller)
+        {
+            if (ReferenceEquals(obj, null)) return String.Empty;
+
+            bool success;
+            string result = TryObjectToString(obj, out success);
+
+            if (!success)
+            {
+                // PhpReference, PhpArray, PhpResource, DObject:
+                IPhpConvertible conv = obj as IPhpConvertible;
+                if (conv != null) return conv.ToString(caller);
+            }
+            return result;
+        }
+
 		/// <summary>
 		/// Converts value of an arbitrary PHP/CLR type into <see cref="PhpBytes"/> value using the same 
 		/// conversion algorithms as PHP when converting to string.
@@ -256,28 +279,30 @@ namespace PHP.Core
 		{
             if (ReferenceEquals(obj, null)) return PhpBytes.Empty;
 
-			if (obj.GetType() == typeof(PhpBytes))
+			string s;
+
+            if (obj is PhpBytes)
             {
                 return (PhpBytes)obj;
             }
-            else if (obj.GetType() == typeof(string))
+			else if ((s = obj as string) != null)
 			{
-				return new PhpBytes((string)obj);
+				return new PhpBytes(s);
 			}
-            else if (obj.GetType() == typeof(int))
+			else if (obj is int)
 			{
 				return new PhpBytes(((int)obj).ToString());
 			}
-            else if (obj.GetType() == typeof(long))
+			else if (obj is long)
 			{
 				return new PhpBytes(((long)obj).ToString());
 			}
-            else if (obj.GetType() == typeof(double))
+			else if (obj is double)
 			{
 				// this is not exactly the same behavior as in PHP, but it's very close: 
 				return new PhpBytes(DoubleToString((double)obj));
 			}
-            else if (obj.GetType() == typeof(bool))
+			else if (obj is bool)
 			{
 				return (bool)obj ? new PhpBytes(1) : PhpBytes.Empty;
 			}
@@ -296,13 +321,13 @@ namespace PHP.Core
 		[Emitted]
 		public static bool ObjectToBoolean(object obj)
 		{
-            if (obj == null) return false;
+			string s;
 
-            if (obj.GetType() == typeof(bool)) return (bool)obj;
-            if (obj.GetType() == typeof(int)) return (int)obj != 0;
-            if (obj.GetType() == typeof(double)) return (double)obj != 0.0;
-            if (obj.GetType() == typeof(long)) return (long)obj != 0;
-			if (obj.GetType() == typeof(string)) return StringToBoolean((string)obj);
+			if (obj is bool) return (bool)obj;
+			if (obj is int) return (int)obj != 0;
+			if (obj is double) return (double)obj != 0.0;
+			if (obj is long) return (long)obj != 0;
+			if ((s = obj as string) != null) return StringToBoolean(s);
 
 			// PhpReference, PhpArray, PhpResource, DObject, PhpBytes:
 			IPhpConvertible conv = obj as IPhpConvertible;
@@ -320,13 +345,13 @@ namespace PHP.Core
 		[Emitted]
 		public static int ObjectToInteger(object obj)
 		{
-            if (obj == null) return 0;
+			string s;
 
-            if (obj.GetType() == typeof(int)) return (int)obj;
-            if (obj.GetType() == typeof(bool)) return (bool)obj ? 1 : 0;
-            if (obj.GetType() == typeof(long)) return unchecked((int)(long)obj);
-            if (obj.GetType() == typeof(double)) return unchecked((int)(double)obj);
-            if (obj.GetType() == typeof(string)) return StringToInteger((string)obj);
+			if (obj is int) return (int)obj;
+			if (obj is bool) return (bool)obj ? 1 : 0;
+			if (obj is long) return unchecked((int)(long)obj);
+			if (obj is double) return unchecked((int)(double)obj);
+			if ((s = obj as string) != null) return StringToInteger(s);
 
 			// PhpString, PhpReference, PhpArray, PhpResource, DObject, PhpBytes:
 			IPhpConvertible conv = obj as IPhpConvertible;
@@ -344,13 +369,13 @@ namespace PHP.Core
 		[Emitted]
 		public static long ObjectToLongInteger(object obj)
 		{
-            if (obj == null) return 0;
+			string s;
 
-            if (obj.GetType() == typeof(long)) return (long)obj;
-            if (obj.GetType() == typeof(int)) return (int)obj;
-            if (obj.GetType() == typeof(bool)) return (long)((bool)obj ? 1 : 0);
-            if (obj.GetType() == typeof(double)) return unchecked((long)(double)obj);
-            if (obj.GetType() == typeof(string)) return StringToLongInteger((string)obj);
+			if (obj is long) return (long)obj;
+			if (obj is int) return (int)obj;
+			if (obj is bool) return (long)((bool)obj ? 1 : 0);
+			if (obj is double) return unchecked((long)(double)obj);
+			if ((s = obj as string) != null) return StringToLongInteger(s);
 
 			// PhpString, PhpReference, PhpArray, PhpResource, DObject, PhpBytes:
 			IPhpConvertible conv = obj as IPhpConvertible;
@@ -368,24 +393,20 @@ namespace PHP.Core
 		[Emitted]
 		public static double ObjectToDouble(object obj)
 		{
-            if (obj == null) return 0.0;
-            if (obj.GetType() == typeof(double)) return (double)obj;
-            return ObjectToDoubleEpilogue(obj);
+			string s;
+
+			if (obj is double) return (double)obj;
+			if (obj is int) return (double)(int)obj;
+			if ((s = obj as string) != null) return StringToDouble(s);
+			if (obj is bool) return (bool)obj ? 1.0 : 0.0;
+			if (obj is long) return (double)(long)obj;
+
+			// PhpString, PhpReference, PhpArray, PhpResource, DObject, PhpBytes:
+			IPhpConvertible conv = obj as IPhpConvertible;
+			if (conv != null) return conv.ToDouble();
+
+			return 0.0;
 		}
-
-        private static double ObjectToDoubleEpilogue(object obj)
-        {
-            if (obj.GetType() == typeof(int)) return (double)(int)obj;
-            if (obj.GetType() == typeof(string)) return StringToDouble((string)obj);
-            if (obj.GetType() == typeof(bool)) return (bool)obj ? 1.0 : 0.0;
-            if (obj.GetType() == typeof(long)) return (double)(long)obj;
-
-            // PhpString, PhpReference, PhpArray, PhpResource, DObject, PhpBytes:
-            IPhpConvertible conv = obj as IPhpConvertible;
-            if (conv != null) return conv.ToDouble();
-
-            return 0.0;
-        }
 
 		/// <summary>
 		/// Converts value of an arbitrary PHP.NET type into <see cref="PhpArray"/> using the same conversion
@@ -397,20 +418,17 @@ namespace PHP.Core
 		[Emitted]
 		public static PhpArray ObjectToPhpArray(object var)
 		{
-            if (var == null) return new PhpArray(0);
-            
             PhpArray array;
 			DObject obj;
 
-            if (var.GetType() == typeof(PhpArray))  // faster type check, otherwise try iherited classes in following check
-                return (PhpArray)var;
+			if ((obj = var as DObject) != null)
+				return obj.ToPhpArray();
 
-            if ((array = var as PhpArray) != null)
-                return array;
-            
-            if ((obj = var as DObject) != null)
-				return obj.ToPhpArray();			
-			
+			if ((array = var as PhpArray) != null)
+				return array;
+
+			if (var == null) return new PhpArray(0);
+
 			// Integer, Double, Boolean, String, PhpBytes, PhpResource
 			PhpArray result = new PhpArray(1);
 			result.Add(var);
@@ -439,7 +457,7 @@ namespace PHP.Core
 
 			// Integer, Double, Boolean, String, PhpBytes, PhpResource:
 			obj = new stdClass(context);
-            obj.RuntimeFields = new PhpArray();
+			obj.RuntimeFields = new OrderedHashtable<string>(null, 1);
 			obj.RuntimeFields.Add("scalar", var);
 			return obj;
 		}
@@ -474,10 +492,7 @@ namespace PHP.Core
 		/// does not have a valid structure to be used as a callback (Warning).</exception>
 		public static PhpCallback ObjectToCallback(object var, bool quiet)
 		{
-            // empty variable
-            if (PhpVariable.IsEmpty(var)) return null;
-            
-            // function name given as string-like type
+			// function name given as string-like type
 			string name = PhpVariable.AsString(var);
 			if (name != null) return new PhpCallback(name);
 
@@ -507,12 +522,15 @@ namespace PHP.Core
             DObject obj;
             DRoutineDesc method;
             if ((obj = var as DObject) != null &&
-                obj.TypeDesc.GetMethod(Name.SpecialMethodNames.Invoke, null, out method) != GetMemberResult.NotFound)
+                obj.TypeDesc.GetMethod(DObject.SpecialMethodNames.Invoke, null, out method) != GetMemberResult.NotFound)
             {
                 // __invoke() does not respect visibilities
                 return new PhpCallback(obj, method);
             }
             
+            // empty variable
+            if (PhpVariable.IsEmpty(var)) return null;
+
             // invalid callback
             if (!quiet) PhpException.Throw(PhpError.Warning, CoreResources.GetString("invalid_callback"));
 			return PhpCallback.Invalid;
@@ -556,7 +574,16 @@ namespace PHP.Core
 					return null;
 				}
 
-                return StringToTypeDesc(name, resolveFlags, caller, context, nameContext, genericArgs);
+				resolveFlags |= ResolveTypeFlags.PreserveFrame;
+				//if (autoload) flags |= (ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
+
+				DTypeDesc type = context.ResolveType(name, nameContext, caller, genericArgs, resolveFlags);
+
+				// fill default type arguments or report an error:
+				if (type != null && type.IsGenericDefinition && (resolveFlags & ResolveTypeFlags.SkipGenericNameParsing) == 0)
+					type = Operators.MakeGenericTypeInstantiation(type, DTypeDesc.EmptyArray, 0);
+
+				return type;
 			}
 		}
 
@@ -576,21 +603,21 @@ namespace PHP.Core
 		[Emitted]
 		public static Boolean TryObjectToBoolean(object obj, out bool success)
 		{
-            if (obj != null)
-            {
-                success = true;
+			string s;
+			PhpBytes b;
+			PhpString ps;
+			success = true;
 
-                if (obj.GetType() == typeof(bool)) return (bool)obj;
-                if (obj.GetType() == typeof(int)) return (int)obj != 0;
-                if (obj.GetType() == typeof(double)) return (double)obj != 0.0;
-                if (obj.GetType() == typeof(long)) return (long)obj != 0;
+			if (obj is bool) return (bool)obj;
+			if (obj is int) return (int)obj != 0;
+			if (obj is double) return (double)obj != 0.0;
+			if (obj is long) return (long)obj != 0;
 
-                // we have to check PHP string types separately from the rest of IPhpConvertibles here
-                // as only these strings are "naturally" convertible to boolean:
-                if (obj.GetType() == typeof(string)) return StringToBoolean((string)obj);
-                if (obj.GetType() == typeof(PhpBytes)) return ((PhpBytes)obj).ToBoolean();
-                if (obj.GetType() == typeof(PhpString)) return ((PhpString)obj).ToBoolean();
-            }
+			// we have to check PHP string types separately from the rest of IPhpConvertibles here
+			// as only these strings are "naturally" convertible to boolean:
+			if ((s = obj as string) != null) return StringToBoolean(s);
+			if ((b = obj as PhpBytes) != null) return b.ToBoolean();
+			if ((ps = obj as PhpString) != null) return ps.ToBoolean();
 
 			success = false;
 			return false;
@@ -644,43 +671,40 @@ namespace PHP.Core
 		[Emitted]
 		public static Int32 TryObjectToInt32(object obj, out bool success)
 		{
-			if (obj != null)
-            {
-                success = true;
+			string s;
+			success = true;
 
-                if (obj.GetType() == typeof(int)) return (int)obj;
-                if (obj.GetType() == typeof(bool)) return (bool)obj ? 1 : 0;
+			if (obj is int) return (int)obj;
+			if (obj is bool) return (bool)obj ? 1 : 0;
 
-                if (obj.GetType() == typeof(long))
-                {
-                    long lval = (long)obj;
-                    success = lval >= Int32.MinValue && lval <= Int32.MaxValue;
-                    return unchecked((Int32)lval);
-                }
+			if (obj is long)
+			{
+				long lval = (long)obj;
+				success = lval >= Int32.MinValue && lval <= Int32.MaxValue;
+				return unchecked((Int32)lval);
+			}
 
-                if (obj.GetType() == typeof(double))
-                {
-                    double dval = (double)obj;
-                    success = dval >= Int32.MinValue && dval <= Int32.MaxValue;
-                    return unchecked((Int32)dval);
-                }
+			if (obj is double)
+			{
+				double dval = (double)obj;
+				success = dval >= Int32.MinValue && dval <= Int32.MaxValue;
+				return unchecked((Int32)dval);
+			}
 
-                string s;
-                if ((s = PhpVariable.AsString(obj)) != null)
-                {
-                    int ival;
-                    double dval;
-                    long lval;
+			if ((s = PhpVariable.AsString(obj)) != null)
+			{
+				int ival;
+				double dval;
+				long lval;
 
-                    // successfull iff the number encoded in the string fits the Int32:
-                    NumberInfo info = StringToNumber(s, out ival, out lval, out dval);
-                    if ((info & (NumberInfo.Integer | NumberInfo.IsNumber)) == (NumberInfo.Integer | NumberInfo.IsNumber))
-                        return ival;
+				// successfull iff the number encoded in the string fits the Int32:
+				NumberInfo info = StringToNumber(s, out ival, out lval, out dval);
+				if ((info & (NumberInfo.Integer | NumberInfo.IsNumber)) == (NumberInfo.Integer | NumberInfo.IsNumber))
+					return ival;
 
-                    success = false;
-                    return unchecked((Int32)lval);
-                }
-            }
+				success = false;
+				return unchecked((Int32)lval);
+			}
 
 			success = false;
 			return 0;
@@ -689,39 +713,36 @@ namespace PHP.Core
 		[Emitted]
 		public static Int64 TryObjectToInt64(object obj, out bool success)
 		{
-            if (obj != null)
-            {
-                success = true;
+			string s;
+			success = true;
 
-                if (obj.GetType() == typeof(int)) return (int)obj;
-                if (obj.GetType() == typeof(long)) return (long)obj;
-                if (obj.GetType() == typeof(bool)) return (bool)obj ? 1 : 0;
+			if (obj is int) return (int)obj;
+			if (obj is long) return (long)obj;
+			if (obj is bool) return (bool)obj ? 1 : 0;
 
-                if (obj.GetType() == typeof(double))
-                {
-                    double dval = (double)obj;
-                    success = dval >= Int64.MinValue && dval <= Int64.MaxValue;
-                    return unchecked((Int32)dval);
-                }
+			if (obj is double)
+			{
+				double dval = (double)obj;
+				success = dval >= Int64.MinValue && dval <= Int64.MaxValue;
+				return unchecked((Int32)dval);
+			}
 
-                string s;
-                if ((s = PhpVariable.AsString(obj)) != null)
-                {
-                    int ival;
-                    double dval;
-                    long lval;
+			if ((s = PhpVariable.AsString(obj)) != null)
+			{
+				int ival;
+				double dval;
+				long lval;
 
-                    // successfull iff the number encoded in the string fits Int32 or Int64:
-                    NumberInfo info = StringToNumber(s, out ival, out lval, out dval);
-                    if ((info & NumberInfo.Integer) != 0)
-                        return ival;
-                    if ((info & NumberInfo.LongInteger) != 0)
-                        return lval;
+				// successfull iff the number encoded in the string fits Int32 or Int64:
+				NumberInfo info = StringToNumber(s, out ival, out lval, out dval);
+				if ((info & NumberInfo.Integer) != 0)
+					return ival;
+				if ((info & NumberInfo.LongInteger) != 0)
+					return lval;
 
-                    success = false;
-                    return unchecked((Int64)dval);
-                }
-            }
+				success = false;
+				return unchecked((Int64)dval);
+			}
 
 			success = false;
 			return 0;
@@ -730,52 +751,48 @@ namespace PHP.Core
 		[Emitted]
 		public static UInt64 TryObjectToUInt64(object obj, out bool success)
 		{
-            if (obj != null)
-            {
-                success = true;
+			string s;
+			success = true;
 
-                if (obj.GetType() == typeof(int))
-                {
-                    int ival = (int)obj;
-                    success = ival >= 0;
-                    return unchecked((UInt64)ival);
-                }
+			if (obj is int)
+			{
+				int ival = (int)obj;
+				success = ival >= 0;
+				return unchecked((UInt64)ival);
+			}
 
-                if (obj.GetType() == typeof(long))
-                {
-                    long lval = (long)obj;
-                    success = lval >= 0;
-                    return unchecked((UInt64)lval);
-                }
+			if (obj is long)
+			{
+				long lval = (long)obj;
+				success = lval >= 0;
+				return unchecked((UInt64)lval);
+			}
 
-                if (obj.GetType() == typeof(bool))
-                    return (ulong)((bool)obj ? 1 : 0);
+			if (obj is bool) return (ulong)((bool)obj ? 1 : 0);
 
-                if (obj.GetType() == typeof(double))
-                {
-                    double dval = (double)obj;
-                    success = dval >= UInt64.MinValue && dval <= UInt64.MaxValue;
-                    return unchecked((UInt64)dval);
-                }
+			if (obj is double)
+			{
+				double dval = (double)obj;
+				success = dval >= UInt64.MinValue && dval <= UInt64.MaxValue;
+				return unchecked((UInt64)dval);
+			}
 
-                string s;
-                if ((s = PhpVariable.AsString(obj)) != null)
-                {
-                    int ival;
-                    double dval;
-                    long lval;
+			if ((s = PhpVariable.AsString(obj)) != null)
+			{
+				int ival;
+				double dval;
+				long lval;
 
-                    // successfull iff the number encoded in the string fits Int32 or Int64:
-                    NumberInfo info = StringToNumber(s, out ival, out lval, out dval);
-                    if ((info & NumberInfo.Integer) != 0)
-                        return unchecked((UInt64)ival);
-                    if ((info & NumberInfo.LongInteger) != 0)
-                        return unchecked((UInt64)lval);
+				// successfull iff the number encoded in the string fits Int32 or Int64:
+				NumberInfo info = StringToNumber(s, out ival, out lval, out dval);
+				if ((info & NumberInfo.Integer) != 0)
+					return unchecked((UInt64)ival);
+				if ((info & NumberInfo.LongInteger) != 0)
+					return unchecked((UInt64)lval);
 
-                    success = dval >= UInt64.MinValue && dval <= UInt64.MaxValue;
-                    return unchecked((UInt64)dval);
-                }
-            }
+				success = dval >= UInt64.MinValue && dval <= UInt64.MaxValue;
+				return unchecked((UInt64)dval);
+			}
 
 			success = false;
 			return 0;
@@ -793,17 +810,14 @@ namespace PHP.Core
 		[Emitted]
 		public static Double TryObjectToDouble(object obj, out bool success)
 		{
-            if (obj != null)
-            {
-                string s;
-                success = true;
+			string s;
+			success = true;
 
-                if (obj.GetType() == typeof(double)) return (double)obj;
-                if (obj.GetType() == typeof(int)) return (double)(int)obj;
-                if ((s = PhpVariable.AsString(obj)) != null) return StringToDouble(s);
-                if (obj.GetType() == typeof(bool)) return (bool)obj ? 1.0 : 0.0;
-                if (obj.GetType() == typeof(long)) return (double)(long)obj;
-            }
+			if (obj is double) return (double)obj;
+			if (obj is int) return (double)(int)obj;
+			if ((s = PhpVariable.AsString(obj)) != null) return StringToDouble(s);
+			if (obj is bool) return (bool)obj ? 1.0 : 0.0;
+			if (obj is long) return (double)(long)obj;
 
 			success = false;
 			return 0.0;
@@ -823,7 +837,7 @@ namespace PHP.Core
 				case NumberInfo.LongInteger: success = true; return lval;
 				case NumberInfo.Double: success = true; return unchecked((decimal)dval);
 				case NumberInfo.Unconvertible: success = false; return 0;
-                default: throw new InvalidOperationException();
+				default: Debug.Fail(); throw null;
 			}
 		}
 
@@ -842,18 +856,15 @@ namespace PHP.Core
 		[Emitted]
 		public static String TryObjectToString(object obj, out bool success)
 		{
+			string s;
 			success = true;
 
+            if ((s = PhpVariable.AsString(obj)) != null) return s;
             if (obj == null) return String.Empty;
-            //if ((s = PhpVariable.AsString(obj)) != null) return s;
-            if (obj.GetType() == typeof(string)) return (string)obj;
-            if (obj.GetType() == typeof(PhpString)) return ((PhpString)obj).ToString();
-            if (obj.GetType() == typeof(PhpBytes)) return ((PhpBytes)obj).ToString();
-
-            if (obj.GetType() == typeof(int)) return obj.ToString();
-            if (obj.GetType() == typeof(bool)) return ((bool)obj) ? "1" : String.Empty;
-            if (obj.GetType() == typeof(double)) return DoubleToString((double)obj);
-            if (obj.GetType() == typeof(long)) return obj.ToString();
+            if (obj is int) return obj.ToString();
+			if (obj is bool) return ((bool)obj) ? "1" : String.Empty;
+			if (obj is double) return DoubleToString((double)obj);
+			if (obj is long) return obj.ToString();
 
 			// others:
 			success = false;
@@ -1082,8 +1093,47 @@ namespace PHP.Core
 
 				default:
 					{
-                        throw new ArgumentException();
+						Debug.Fail();
+						return null;
 					}
+			}
+		}
+
+		#endregion
+
+		#region LINQ
+
+		/// <summary>
+		/// Converts a specified object to enumerable LINQ source.
+		/// If the source is a dictionary, the values are enumerated.
+		/// If the source is a PHP enumerable (array, object, query resource, ...) the enumeration is performed
+		/// using the PHP foreach enumerator (who may deep copy the elements).
+		/// </summary>
+		[Emitted]
+		public static IEnumerable<object> ObjectToLinqSource(object var, DTypeDesc caller)
+		{
+			// try PHP enumerable (CLR object wrapper implements it, so we can enumerate CLR objects):
+			IPhpEnumerable php_enumerable = var as IPhpEnumerable;
+			if (php_enumerable != null)
+			{
+				return EnumerateValues(php_enumerable.GetForeachEnumerator(false, false, caller));
+			}
+
+			PhpException.Throw(PhpError.Warning, CoreResources.GetString("invalid_query_source"));
+			return null;
+		}
+
+		private static IEnumerable<object> EnumerateValues(IDictionaryEnumerator/*!*/ enumerator)
+		{
+			if (enumerator == null)
+			{
+				PhpException.Throw(PhpError.Warning, "Invalid query source.");
+				yield break;
+			}
+
+			while (enumerator.MoveNext())
+			{
+				yield return enumerator.Value;
 			}
 		}
 
@@ -1128,22 +1178,21 @@ namespace PHP.Core
 			TypeMask = Integer | LongInteger | Double | Unconvertible,
 
 			IsNumber = 64,
-			IsHexadecimal = 128,
-
-            /// <summary>
-            /// The original object was PHP array. This has an effect on most PHP arithmetic operators.
-            /// </summary>
-            IsPhpArray = 256,
+			IsHexadecimal = 128
 		}
 
 		/// <summary>
 		/// Converts a string to integer value and double value and decides whether it represents a number as a whole.
 		/// </summary>
 		/// <param name="s">The string to convert.</param>
-		/// <param name="limit">Maximum zero-based index within given <paramref name="s"/> to be proccessed.
-        /// Must be greater than or equal <c>0</c> and less than or equal to string length.</param>
-        /// <param name="from">
-		/// A position where to start parsing.
+		/// <param name="length">A maximal length of the substring to be parsed.</param>
+		/// <param name="p">
+		/// A position where to start parsing. Returns a position where the parsing ended
+		/// (the first character not visited).
+		/// </param>
+		/// <param name="i">
+		/// Returns a position where integer-parsing ended 
+		/// (the first character not included in the resulting double value).
 		/// </param>
 		/// <param name="l">
 		/// Returns a position where long-integer-parsing ended 
@@ -1167,394 +1216,362 @@ namespace PHP.Core
 		/// The return value always includes one of NumberInfo.Integer, NumberInfo.LongInteger, NumberInfo.Double
 		/// and never NumberInfo.Unconvertible (as each string is convertible to a number).
 		/// </returns>
-        internal static NumberInfo IsNumber(string s, int limit, int from, out int l, out int d,
-            out int intValue, out long longValue, out double doubleValue)
-        {
-            if (string.IsNullOrEmpty(s))
-            {
-                l = d = intValue = 0;
-                longValue = 0;
-                doubleValue = 0.0;
-                return NumberInfo.Integer;
-            }
+		private static NumberInfo IsNumber(string s, int length, ref int p, out int i, out int l, out int d,
+			out int intValue, out long longValue, out double doubleValue)
+		{
+			// invariant after return: 0 <= i <= l <= d <= p <= old(p) + length - 1.
+			NumberInfo result = 0;
 
-            // invariant after return: 0 <= i <= l <= d <= p <= old(p) + length - 1.
-            NumberInfo result = 0;
+			if (s == null) s = "";
+			if (p < 0) p = 0;
+			if (length < 0 || length > s.Length - p) length = s.Length - p;
+			int limit = p + length;
 
-            Debug.Assert(from >= 0);
-            //if (from < 0) from = 0;
+			// int:
+			intValue = 0;                       // integer value of already read part of the string
+			i = -1;                             // last position of an integer part of the string
 
-            //Debug.Assert(length >= 0 && length <= s.Length - from);
-            //if (length < 0 || length > s.Length - from) length = s.Length - from;
+			// long:
+			longValue = 0;                      // long integer value of already read part of the string
+			l = -1;                             // last position of an long integer part of the string
 
-            Debug.Assert(limit >= from && limit <= s.Length);
-            //int limit = from + length;
+			// double:
+			int exponent = 0;                   // the value of exponent
+			double expBase = 10;                // sign of the exponent (equivalent to bases 10 and 0.1)
+			double div = 10;                    // decimal factor
+			int e = -1;                         // position where the exponent has started by 'e', 'E', 'd', or 'D'
+			doubleValue = 0.0;                  // double value of already read part of the string
+			d = -1;
 
-            // long:
-            longValue = 0;                      // long integer value of already read part of the string
-            l = -1;                             // last position of an long integer part of the string
+			// common:
+			bool contains_digit = false;        // whether a digit is contained in the string
+			int sign = +1;                      // a sign of whole number
+			int state = 0;                      // automaton state
 
-            // double:
-            doubleValue = 0.0;                  // double value; initialized at the end
-            d = -1;                             // last position where the double has ended
-            int e = -1;                         // position where the exponent has started by 'e', 'E', 'd', or 'D'
-            
-            // common:
-            bool contains_digit = false;        // whether a digit is contained in the string (in the integral and fraction part of the nummber, not an exponent)
-            bool sign = false;                  // whether a sign of whole number is minus
-            int state = 0;                      // automaton state
-            int p = from;                       // current index within parsed string
-            
-            // patterns and states:
-            // [:white:]*[+-]?0?[0-9]*[.]?[0-9]*([eE][+-]?[0-9]+)?
-            //  0000000   11  2  222   2   333    4444  55   666     
-            // [:white:]*[+-]?0(x|X)[0-9A-Fa-f]*    // TODO: PHP does not resolve [+-] at the beginning, however Phalanger does
-            //  0000000   11  2 777  888888888  
+			// patterns and states:
+			// [:white:]*[+-]?0?[0-9]*[.]?[0-9]*([dDeE][+-]?[0-9]+)?
+			//  0000000   11  2  222   2   333    4444  55   666     
+			// [:white:]*[+-]?0(x|X)[0-9A-Fa-f]*    // TODO: PHP does not resolve [+-] at the beginning, however Phalanger does
+			//  0000000   11  2 777  888888888  
 
-            while (p < limit)
-            {
-                char c = s[p];  // TODO: *fixed, no range check
+			while (p < limit)
+			{
+				char c = s[p];
 
-                switch (state)
-                {
-                    case 0: // expecting whitespaces to be skipped
-                        {
-                            if (!Char.IsWhiteSpace(c))
-                            {
-                                state = 1;
-                                goto case 1;
-                            }
-                            break;
-                        }
+				switch (state)
+				{
+					case 0: // expecting whitespaces to be skipped
+						{
+							if (!Char.IsWhiteSpace(c))
+							{
+								state = 1;
+								goto case 1;
+							}
+							break;
+						}
 
-                    case 1: // expecting result + or - or .
-                        {
-                            if (c >= '0' && c <= '9')
-                            {
-                                state = 2;
-                                goto case 2;
-                            }
+					case 1: // expecting result + or - or .
+						{
+							if (c >= '0' && c <= '9')
+							{
+								state = 2;
+								goto case 2;
+							}
 
-                            if (c == '-')
-                            {
-                                sign = true;// -1;
-                                state = 2;
-                                break;
-                            }
+							if (c == '-')
+							{
+								sign = -1;
+								state = 2;
+								break;
+							}
 
-                            if (c == '+')
-                            {
-                                state = 2;
-                                break;
-                            }
+							if (c == '+')
+							{
+								state = 2;
+								break;
+							}
 
-                            // ends reading (long) integer:
-                            l = p;
-                            // doubleValue = 0.0; // already zeroed
+							// ends reading (long) integer:
+							i = l = p;
 
-                            // switch to decimals in next turn:
-                            if (c == '.')
-                            {
-                                state = 3;
-                                break;
-                            }
+							// switch to decimals in next turn:
+							if (c == '.')
+							{
+								state = 3;
+								break;
+							}
 
-                            // unexpected character:
-                            goto Done;
-                        }
+							// unexpected character:
+							goto Done;
+						}
 
-                    case 2: // expecting result
-                        {
-                            Debug.Assert(l == -1, "Reading long.");
+					case 2: // expecting result
+						{
+							// a single leading zero:
+							if (c == '0' && !contains_digit)
+							{
+								contains_digit = true;
+								state = 7;
+								break;
+							}
 
-                            // a single leading zero:
-                            if (c == '0' && !contains_digit)
-                            {
-                                contains_digit = true;
-                                state = 7;
-                                break;
-                            }
+							if (c >= '0' && c <= '9')
+							{
+								int num = (int)(c - '0');
+								contains_digit = true;
 
-                            if (c >= '0' && c <= '9')
-                            {
-                                int num = (int)(c - '0');
-                                contains_digit = true;
+								doubleValue = doubleValue * 10 + num;
 
-                                if (longValue < Int64.MaxValue / 10 || (longValue == Int64.MaxValue / 10 && num <= Int64.MaxValue % 10))
-                                {
-                                    // still fits long
-                                    longValue = longValue * 10 + num;
-                                    break;
-                                }
-                                else
-                                {
-                                    // long not big enough ...
+								// if still reading a long integer (we may read a double only since integer has already overflown):
+								if (l == -1)
+								{
+									if (longValue < Int64.MaxValue / 10 || (longValue == Int64.MaxValue / 10 && num <= Int64.MaxValue % 10))
+									{
+										longValue = longValue * 10 + num;
 
-                                    // last long integer position:
-                                    l = p;
-                                    
-                                    // fix for long.MinValue (which integral part cannot be hold as position long)
-                                    if (sign && num == -(Int64.MinValue % 10))
-                                    {
-                                        // parsed number is still valid long (Int64.MinValue)
-                                        ++l; // move the long position after this character
-                                    }
+										// if still reading an integer:
+										if (i == -1)
+										{
+											if (longValue <= Int32.MaxValue)
+											{
+												intValue = (int)longValue;
+											}
+											else if (sign == -1)
+											{
+												// last integer position:
+												i = (-longValue == Int32.MinValue) ? p + 1 : p;
+												intValue = Int32.MinValue;
+											}
+											else
+											{
+												// last integer position:
+												i = p;
+												intValue = Int32.MaxValue;
+											}
+										}
+									}
+									else if (sign == -1)
+									{
+										// last long integer position:
+										l = p;
+										longValue = Int64.MinValue;
+									}
+									else
+									{
+										// last long integer position:
+										l = p;
+										longValue = Int64.MaxValue;
+									}
+								}
+								break;
+							}
 
-                                    longValue = sign ? Int64.MinValue : Int64.MaxValue;
+							// ends reading (long) integer:
+							i = l = p;
 
-                                    // continue reading as double:
-                                    state = 3;   // => doubleValue will be initialized at the end
-                                    break;
-                                }
-                            }
+							// switch to decimals in next turn:
+							if (c == '.')
+							{
+								state = 3;
+								break;
+							}
 
-                            // ends reading (long) integer:
+							// switch to exponent in next turn:
+							if (c == 'd' || c == 'D' || c == 'e' || c == 'E')
+							{
+								e = p;
+								state = 4;
+								break;
+							}
 
-                            // last long integer position:
-                            l = p;
-                            if (sign) longValue *= -1;
-                            
-                            // switch to decimals in next turn:
-                            if (c == '.')
-                            {
-                                state = 3;  // => doubleValue will be initialized at the end
-                                break;
-                            }
+							// unexpected character:
+							goto Done;
+						}
 
-                            // switch to exponent in next turn:
-                            if ((c == 'e' || c == 'E') && contains_digit)
-                            {
-                                e = p;
-                                state = 4;  // => doubleValue will be initialized at the end
-                                break;
-                            }
+					case 3: // expecting decimals
+						{
+							Debug.Assert(i >= 0 && l >= 0, "Reading double.");
 
-                            doubleValue = unchecked((double)longValue);
+							// reading decimals:
+							if (c >= '0' && c <= '9')
+							{
+								int num = (int)(c - '0');
+								doubleValue += num / div;
+								div *= 10;
+								break;
+							}
 
-                            // unexpected character:
-                            goto Done;
-                        }
+							// switch to exponent in next turn:
+							if (c == 'd' || c == 'D' || c == 'e' || c == 'E')
+							{
+								e = p;
+								state = 4;
+								break;
+							}
 
-                    case 3: // expecting decimals
-                        {
-                            Debug.Assert(l >= 0, "Reading double.");
+							// unexpected character:
+							goto Done;
+						}
 
-                            // reading decimals:
-                            if (c >= '0' && c <= '9')
-                            {
-                                contains_digit = true;
-                                break;
-                            }
+					case 4: // expecting exponent + or -
+						{
+							Debug.Assert(i >= 0 && l >= 0, "Reading double.");
 
-                            // switch to exponent in next turn:
-                            if ((c == 'e' || c == 'E') && contains_digit)
-                            {
-                                e = p;
-                                state = 4;
-                                break;
-                            }
+							// switch to exponent immediately:
+							if (c >= '0' && c <= '9')
+							{
+								state = 6;
+								goto case 6;
+							}
 
-                            // unexpected character:
-                            goto Done;
-                        }
+							// switch to exponent in next turn:
+							if (c == '-')
+							{
+								expBase = 0.1;
+								state = 5;
+								break;
+							}
 
-                    case 4: // expecting exponent + or -
-                        {
-                            Debug.Assert(l >= 0, "Reading double.");
+							// switch to exponent in next turn:
+							if (c == '+')
+							{
+								state = 5;
+								break;
+							}
 
-                            // switch to exponent immediately:
-                            if (c >= '0' && c <= '9')
-                            {
-                                state = 6;
-                                goto case 6;
-                            }
+							// unexpected characters:
+							goto Done;
+						}
 
-                            // switch to exponent in next turn:
-                            if (c == '-')
-                            {
-                                //expBase = 0.1;
-                                state = 5;
-                                break;
-                            }
+					case 5: // expecting exponent after the sign
+						{
+							state = 6;
+							goto case 6;
+						}
 
-                            // switch to exponent in next turn:
-                            if (c == '+')
-                            {
-                                state = 5;
-                                break;
-                            }
+					case 6: // expecting exponent without the sign
+						{
+							if (c >= '0' && c <= '9')
+							{
+								int num = (int)(c - '0');
 
-                            // unexpected characters:
-                            goto Done;
-                        }
+								// if exponent exceeds max{log(MaxValue),|log(Epsilon)|} < 400 then
+								// the result is either infinity or zero, the first is excluded by the condition below;
+								// if the result is zero, we can read arbitrarily long exponent:
+								if (exponent > 400)
+									break;
 
-                    case 5: // expecting exponent after the sign
-                        {
-                            state = 6;
-                            goto case 6;
-                        }
+								exponent = exponent * 10 + num;
 
-                    case 6: // expecting exponent without the sign
-                        {
-                            if (c >= '0' && c <= '9')
-                            {
-                                break;
-                            }
+								// continues reading exponent if the total value is not infinite:
+								if (doubleValue * Math.Pow(expBase, exponent) != Double.PositiveInfinity)
+									break;
+							}
 
-                            // unexpected character:
-                            goto Done;
-                        }
+							// unexpected character:
+							goto Done;
+						}
 
-                    case 7: // a single leading zero read:
-                        {
-                            // check for hexa integer:
-                            if (c == 'x' || c == 'X')
-                            {
-                                // end of double reading:
-                                d = p;
+					case 7: // a single leading zero read:
+						{
+							// check for hexa integer:
+							if (c == 'x' || c == 'X')
+							{
+								// end of double reading:
+								d = p;
 
-                                state = 8;
-                                break;
-                            }
+								state = 8;
+								break;
+							}
 
-                            // other cases -> back to integer reading:
-                            state = 2;
-                            goto case 2;
-                        }
+							// other cases -> back to integer reading:
+							state = 2;
+							goto case 2;
+						}
 
-                    case 8: // hexa integer
-                        {
-                            result |= NumberInfo.IsHexadecimal;
+					case 8: // hexa integer
+						{
+							result |= NumberInfo.IsHexadecimal;
 
-                            int num = Parsers.Convert.AlphaNumericToDigit(c);
+							int num = AlphaNumericToDigit(c);
 
-                            // unexpected character:
-                            if (num <= 15)
-                            {
-                                if (l == -1)
-                                {
-                                    if (longValue < Int64.MaxValue / 16 || (longValue == Int64.MaxValue / 16 && num <= Int64.MaxValue % 16))
-                                    {
-                                        longValue = longValue * 16 + num;
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        // last hexa long integer position:
-                                        doubleValue = unchecked((double)longValue);
-                                        if (sign)
-                                        {
-                                            doubleValue = unchecked(-doubleValue);
-                                            longValue = Int64.MinValue;
-                                        }
-                                        else
-                                        {
-                                            longValue = Int64.MaxValue;
-                                        }
-                                        // fallback to double behaviour below...
-                                    }
-                                }
-                                
-                                l = p;  // last position is advanced even the long is too long?
-                                doubleValue = unchecked(doubleValue * 16.0 + (double)num);
+							// unexpected character:
+							if (num <= 15)
+							{
+								if (longValue < Int64.MaxValue / 16 || (longValue == Int64.MaxValue / 16 && num <= Int64.MaxValue % 16))
+								{
+									longValue = longValue * 16 + num;
 
-                                break;
-                            }
+									if (longValue <= Int32.MaxValue)
+									{
+										intValue = (int)longValue;
+									}
+									else if (sign == -1)
+									{
+										// last hexa integer position:
+										i = (-longValue == Int32.MinValue) ? p + 1 : p;
+										intValue = Int32.MinValue;
+									}
+									else
+									{
+										// last hexa integer position:
+										i = p;
+										intValue = Int32.MaxValue;
+									}
+								}
+								else if (sign == -1)
+								{
+									// last hexa long integer position:
+									l = p;
+									longValue = Int64.MinValue;
+								}
+								else
+								{
+									// last hexa long integer position:
+									l = p;
+									longValue = Int64.MaxValue;
+								}
+								break;
+							}
 
-                            goto Done;
-                        }
-                }
-                p++;
-            }
+							goto Done;
+						}
+				}
+				p++;
+			}
 
-        Done:
+		Done:
 
-            // an exponent ends with 'e', 'E', '-', or '+':
-            if (state == 4 || state == 5)
-            {
-                Debug.Assert(l >= 0 && e >= 0, "Reading exponent of double.");
+			// an exponent ends with 'e', 'd', 'E', 'D', '-', or '+':
+			if (state == 4 || state == 5)
+			{
+				Debug.Assert(i >= 0 && l >= 0 && e >= 0, "Reading exponent of double.");
 
-                // shift back:
-                p = e;
-                state = 3;
-            }
+				// shift back:
+				p = e;
+			}
 
-            // if long/integer index hasn't stopped:
-            // - the sign hasn't been applied yet
-            // - doubleValue hasn't been initialized yet
-            if (l == -1)
-            {
-                l = p;
+			// if double index hasn't stopped neither the exponent nor sign have been applied yet:
+			if (d == -1) { doubleValue *= Math.Pow(expBase, exponent) * sign; d = p; }
 
-                if (sign)
-                    longValue = unchecked(-longValue);
+			// if long/integer index hasn't stopped the sign hasn't been applied yet:
+			if (l == -1) { longValue *= sign; l = p; }
+			if (i == -1) { intValue *= sign; i = p; }
+			
+			// determine the type comparing strictly d, l, i:
+			if (d > l) result |= NumberInfo.Double;
+			else if (l > i) result |= NumberInfo.LongInteger;
+			else result |= NumberInfo.Integer;
+			
+			// the string is a number if it was entirely parsed and contains a digit:
+			if (contains_digit && p == limit)
+				result |= NumberInfo.IsNumber;
 
-                doubleValue = unchecked((double)longValue);
-            }
+			if ((result & NumberInfo.IsHexadecimal) != 0)
+				doubleValue = unchecked((double)longValue);
 
-            // determine int/long type (try fit long into int):
-            intValue = unchecked((int)longValue);
-            if (intValue == longValue)
-            {
-                result |= NumberInfo.Integer;
-            }
-            else
-            {
-                result |= NumberInfo.LongInteger;
-                intValue = (longValue < 0) ? int.MinValue : int.MaxValue;
-            }
-
-            // double parsing states
-            if (state >= 3 && state <= 6)
-            {
-                Debug.Assert(p >= from);            // something was parsed
-                Debug.Assert(doubleValue == 0.0);   // doubleValue not changed yet
-
-                if (contains_digit) // otherwise 0.0
-                    ParseDouble((from == 0 && p == s.Length) ? s : s.Substring(from, p - from), sign, out doubleValue);
-            }
-
-            // if double index hasn't stopped:
-            if (d == -1)
-            {
-                // last double value position:
-                d = p;
-            }
-
-            // determine the double type comparing strictly d, l:
-            if (d > l)
-                result = result & ~NumberInfo.TypeMask | NumberInfo.Double;  // remove Integer|LongInteger, add Double
-
-            // the string is a number if it was entirely parsed and contains a digit:
-            if (contains_digit && p == limit)
-                result |= NumberInfo.IsNumber;
-
-            //
-            return result;
-        }
-
-        /// <summary>
-        /// Parses given string as a <see cref="Double"/>, using invariant culture and proper number styles.
-        /// </summary>
-        private static void ParseDouble(string str, bool sign, out double doubleValue)
-        {
-            Debug.Assert(str != null);
-
-            if (!double.TryParse(
-                str,
-                NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent | NumberStyles.AllowLeadingWhite,
-                CultureInfo.InvariantCulture,
-                out doubleValue))
-            {
-                // overflow: (the only other fail would be format exception which is not possible)
-//#if DEBUG
-//                try { double.Parse(str, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent | NumberStyles.AllowLeadingWhite, CultureInfo.InvariantCulture); }
-//                catch (OverflowException) { /* expected */ }
-//                catch { Debug.Fail("Unexpected double.Parse() exception!"); }
-//#endif
-                doubleValue = sign ? double.NegativeInfinity : double.PositiveInfinity;
-            }
-        }
+			return result;
+		}
 
 		/// <summary>
 		/// Converts value of an arbitrary PHP/CLR type into integer value, long integer value or double value using 
@@ -1567,64 +1584,58 @@ namespace PHP.Core
 		/// <returns>Conversion info.</returns>
 		public static NumberInfo ObjectToNumber(object obj, out int intValue, out long longValue, out double doubleValue)
 		{
-            if (obj == null)
-            {
-                intValue = 0;
-                longValue = 0;
-                doubleValue = 0.0;
-                return NumberInfo.Integer;
-            }
-            else if (obj.GetType() == typeof(int))
-            {
-                intValue = (int)obj;
-                longValue = intValue;
-                doubleValue = intValue;
-                return NumberInfo.Integer | NumberInfo.IsNumber;
-            }
-            else if (obj.GetType() == typeof(double))
-            {
-                doubleValue = (double)obj;
-                intValue = unchecked((int)doubleValue);
-                longValue = unchecked((long)doubleValue);
-                return NumberInfo.Double | NumberInfo.IsNumber;
-            }
-            else return ObjectToNumberEpilogue(obj, out intValue, out longValue, out doubleValue);
+			string s;
+			IPhpConvertible php_conv;
+
+			if (obj is int)
+			{
+				intValue = (int)obj;
+				longValue = intValue;
+				doubleValue = intValue;
+				return NumberInfo.Integer | NumberInfo.IsNumber;
+			}
+			else if (obj is double)
+			{
+				doubleValue = (double)obj;
+				intValue = unchecked((int)doubleValue);
+				longValue = unchecked((long)doubleValue);
+				return NumberInfo.Double | NumberInfo.IsNumber;
+			}
+			else if (obj is long)
+			{
+				longValue = (long)obj;
+				intValue = NarrowToInt32(longValue);
+				doubleValue = (double)longValue;
+				return NumberInfo.LongInteger | NumberInfo.IsNumber;
+			}
+			else if ((s = obj as string) != null)
+			{
+				return StringToNumber(s, out intValue, out longValue, out doubleValue);
+			}
+			else if (obj is bool)
+			{
+				intValue = (bool)obj ? 1 : 0;
+				doubleValue = intValue;
+				longValue = intValue;
+				return NumberInfo.Integer;
+			}
+			else if ((php_conv = obj as IPhpConvertible) != null)
+			{
+				return php_conv.ToNumber(out intValue, out longValue, out doubleValue);
+			}
+			else if (obj == null)
+			{
+				intValue = 0;
+				longValue = 0;
+				doubleValue = 0.0;
+				return NumberInfo.Integer;
+			}
+
+			intValue = 0;
+			longValue = 0;
+			doubleValue = 0.0;
+			return NumberInfo.Unconvertible;
 		}
-
-        private static NumberInfo ObjectToNumberEpilogue(object/*!*/obj, out int intValue, out long longValue, out double doubleValue)
-        {
-            Debug.Assert(obj != null);
-
-            IPhpConvertible php_conv;
-
-            if (obj.GetType() == typeof(long))
-            {
-                longValue = (long)obj;
-                intValue = NarrowToInt32(longValue);
-                doubleValue = (double)longValue;
-                return NumberInfo.LongInteger | NumberInfo.IsNumber;
-            }
-            else if (obj.GetType() == typeof(string))
-            {
-                return StringToNumber((string)obj, out intValue, out longValue, out doubleValue);
-            }
-            else if (obj.GetType() == typeof(bool))
-            {
-                intValue = (bool)obj ? 1 : 0;
-                doubleValue = intValue;
-                longValue = intValue;
-                return NumberInfo.Integer;
-            }
-            else if ((php_conv = obj as IPhpConvertible) != null)
-            {
-                return php_conv.ToNumber(out intValue, out longValue, out doubleValue);
-            }
-            
-            intValue = 0;
-            longValue = 0;
-            doubleValue = 0.0;
-            return NumberInfo.Unconvertible;
-        }
 
 		/// <summary>
 		/// Converts string into integer, long integer and double value using conversion algorithm in a manner of PHP. 
@@ -1637,8 +1648,8 @@ namespace PHP.Core
 		/// <exception cref="ArgumentNullException"><paramref name="str"/> is a <B>null</B> reference.</exception>
 		public static NumberInfo StringToNumber(string str, out int intValue, out long longValue, out double doubleValue)
 		{
-            int l, d;
-			return IsNumber(str, (str != null) ? str.Length : 0, 0, out l, out d, out intValue, out longValue, out doubleValue);
+			int i, l, d, p = 0;
+			return IsNumber(str, -1, ref p, out i, out l, out d, out intValue, out longValue, out doubleValue);
 		}
 
 		/// <summary>
@@ -1648,10 +1659,10 @@ namespace PHP.Core
 		/// <returns>The result of conversion.</returns>
 		public static int StringToInteger(string str)
 		{
-			int ival, l, d;
+			int ival, i, l, d, p = 0;
 			double dval;
 			long lval;
-            IsNumber(str, (str != null) ? str.Length : 0, 0, out l, out d, out ival, out lval, out dval);
+			IsNumber(str, -1, ref p, out i, out l, out d, out ival, out lval, out dval);
 
 			return ival;
 		}
@@ -1663,10 +1674,10 @@ namespace PHP.Core
 		/// <returns>The result of conversion.</returns>
 		public static long StringToLongInteger(string str)
 		{
-            int ival, l, d;
+			int ival, i, l, d, p = 0;
 			double dval;
 			long lval;
-            IsNumber(str, (str != null) ? str.Length : 0, 0, out l, out d, out ival, out lval, out dval);
+			IsNumber(str, -1, ref p, out i, out l, out d, out ival, out lval, out dval);
 
 			return lval;
 		}
@@ -1678,12 +1689,33 @@ namespace PHP.Core
 		/// <returns>The result of conversion.</returns>
 		public static double StringToDouble(string str)
 		{
-            int ival, l, d;
+			int ival, i, l, d, p = 0;
 			double dval;
 			long lval;
-            IsNumber(str, (str != null) ? str.Length : 0, 0, out l, out d, out ival, out lval, out dval);
+			IsNumber(str, -1, ref p, out i, out l, out d, out ival, out lval, out dval);
 
 			return dval;
+		}
+
+		/// <summary>
+		/// Converts a part of a string starting on a specified position to an integer.
+		/// </summary>
+		/// <param name="str">The string to be parsed.</param>
+		/// <param name="length">Maximal length of the substring to parse.</param>
+		/// <param name="position">
+		/// The position where to start. Points to the first character after the substring storing the integer
+		/// when returned.
+		/// </param>
+		/// <returns>The integer stored in the <paramref name="str"/>.</returns>
+		public static int SubstringToInteger(string str, int length, ref int position)
+		{
+			int d, l, p = position;
+			int ival;
+			long lval;
+			double dval;
+			IsNumber(str, length, ref p, out position, out l, out d, out ival, out lval, out dval);
+
+			return ival;
 		}
 
 		/// <summary>
@@ -1698,11 +1730,11 @@ namespace PHP.Core
 		/// <returns>The integer stored in the <paramref name="str"/>.</returns>
 		public static long SubstringToLongInteger(string str, int length, ref int position)
 		{
-            int d;
+			int i, d, p = position;
 			int ival;
 			long lval;
 			double dval;
-            IsNumber(str, position + length, position, out position, out d, out ival, out lval, out dval);
+			IsNumber(str, length, ref p, out i, out position, out d, out ival, out lval, out dval);
 
 			return lval;
 		}
@@ -1710,22 +1742,20 @@ namespace PHP.Core
 		/// <summary>
 		/// Converts a part of a string starting on a specified position to a double.
 		/// </summary>
-		/// <param name="str">The string to be parsed. Cannot be <c>null</c>.</param>
+		/// <param name="str">The string to be parsed.</param>
 		/// <param name="length">Maximal length of the substring to parse.</param>
 		/// <param name="position">
 		/// The position where to start. Points to the first character after the substring storing the double
 		/// when returned.
 		/// </param>
 		/// <returns>The double stored in the <paramref name="str"/>.</returns>
-		public static double SubstringToDouble(string/*!*/str, int length, ref int position)
+		public static double SubstringToDouble(string str, int length, ref int position)
 		{
-            Debug.Assert(str != null && position + length <= str.Length);
-
-            int l;
+			int i, l, p = position;
 			int ival;
 			long lval;
 			double dval;
-            IsNumber(str, position + length, position, out l, out position, out ival, out lval, out dval);
+			IsNumber(str, length, ref p, out i, out l, out position, out ival, out lval, out dval);
 
 			return dval;
 		}
@@ -1768,13 +1798,13 @@ namespace PHP.Core
 
 			while (length-- > 0)
 			{
-                int digit = Parsers.Convert.AlphaNumericToDigit(str[position]);
+				int digit = AlphaNumericToDigit(str[position]);
 				if (digit >= @base) break;
 
 				if (!(result < max_div || (result == max_div && digit <= max_rem)))
 				{
 					// reads remaining digits:
-                    while (length-- > 0 && Parsers.Convert.AlphaNumericToDigit(str[position]) < @base) position++;
+					while (length-- > 0 && AlphaNumericToDigit(str[position]) < @base) position++;
 
 					return (sign == -1) ? Int64.MinValue : Int64.MaxValue;
 				}
@@ -1784,6 +1814,40 @@ namespace PHP.Core
 			}
 
 			return result * sign;
+		}
+
+		/// <summary>
+		/// Converts a character to a digit.
+		/// </summary>
+		/// <param name="c">The character [0-9A-Za-z].</param>
+		/// <returns>The digit represented by the character or <see cref="Int32.MaxValue"/> 
+		/// on non-alpha-numeric characters.</returns>
+		public static int AlphaNumericToDigit(char c)
+		{
+			if (c >= '0' && c <= '9')
+				return (int)(c - '0');
+
+			if (c >= 'a' && c <= 'z')
+				return (int)(c - 'a') + 10;
+
+			if (c >= 'A' && c <= 'Z')
+				return (int)(c - 'A') + 10;
+
+			return Int32.MaxValue;
+		}
+
+		/// <summary>
+		/// Converts a character to a digit.
+		/// </summary>
+		/// <param name="c">The character [0-9].</param>
+		/// <returns>The digit represented by the character or <see cref="Int32.MaxValue"/> 
+		/// on non-numeric characters.</returns>
+		public static int NumericToDigit(char c)
+		{
+			if (c >= '0' && c <= '9')
+				return (int)(c - '0');
+
+			return Int32.MaxValue;
 		}
 
 		#endregion
@@ -1823,8 +1887,7 @@ namespace PHP.Core
 		/// <param name="str">The string to convert.</param>
 		/// <returns>Whether <paramref name="str"/> is empty or equal to "0".</returns>
 		/// <remarks>Asserts that <paramref name="str"/> is not null.</remarks>
-		[Emitted]
-        public static bool StringToBoolean(string str)
+		public static bool StringToBoolean(string str)
 		{
 			if (str == null) return false;
 
@@ -1840,59 +1903,42 @@ namespace PHP.Core
 		/// <include file='Doc/Conversions.xml' path='docs/method[@name="ObjectToArrayKey"]/*' />
 		public static bool ObjectToArrayKey(object obj, out IntStringKey key)
 		{
-			if (obj == null)
-			{
-                key = IntStringKey.EmptyStringKey;
-				return true;
-			}
-
-            if (obj.GetType() == typeof(int))
+			if (obj is int)
 			{
 				key = new IntStringKey((int)obj);
 				return true;
 			}
 
-            //if ((str = PhpVariable.AsString(obj)) != null)
-            //{
-            //    key = StringToArrayKey(str);
-            //    return true;	
-            //}
-            
-            if (obj.GetType() == typeof(string))
-            {
-                key = StringToArrayKey((string)obj);
-                return true;
-            }
-
-            if (obj.GetType() == typeof(PhpBytes))
-            {
-                key = StringToArrayKey(((PhpBytes)obj).ToString());
-                return true;
-            }
-
-            if (obj.GetType() == typeof(PhpString))
-            {
-                key = StringToArrayKey(((PhpString)obj).ToString());
-                return true;
-            }
-
-            if (obj.GetType() == typeof(bool))
+			string str;
+			if ((str = PhpVariable.AsString(obj)) != null)
+			{
+				key = StringToArrayKey(str);
+				return true;	
+			}
+			
+			if (obj is bool)
 			{
 				key = new IntStringKey((bool)obj ? 1 : 0);
 				return true;
 			}
 
-            if (obj.GetType() == typeof(double))
+			if (obj is double)
 			{
 				key = new IntStringKey(unchecked((int)(double)obj));
 				return true;
 			}
 
-            if (obj.GetType() == typeof(long))
+			if (obj is long)
 			{
 				key = new IntStringKey(unchecked((int)(long)obj));
 				return true;
-			}			
+			}
+
+			if (obj == null)
+			{
+				key = new IntStringKey(String.Empty);
+				return true;
+			}
 
 			PhpResource resource = obj as PhpResource;
 			if (resource != null)
@@ -1901,7 +1947,14 @@ namespace PHP.Core
 				return true;
 			}
 
-            // invalid index:
+            PhpArray array = obj as PhpArray;
+            if (array != null)
+            {
+                key = new IntStringKey("Array");
+                return true;
+            }
+
+			// invalid index:
 			key = new IntStringKey();
 			return false;
 		}
@@ -1911,90 +1964,76 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="str">The string in "{0 | -?[1-9][0-9]*}" format.</param>
 		/// <returns>The array key (integer or string).</returns>
-		public static IntStringKey StringToArrayKey(string/*!*/str)
+		public static IntStringKey StringToArrayKey(string str)
 		{
-            Debug.Assert(str != null, "str == null");
+			int digits, i, sgn, d;
 
-            // empty string:
-            if (str.Length == 0)
-                return new IntStringKey(string.Empty);
+			// null or empty string is not converted:
+			if (String.IsNullOrEmpty(str)) return new IntStringKey(str);
 
-            // starts with minus sign?
-            bool sign = false;
-            int index = 0;
+			// if the string starts with '-' character:
+			if (str[0] == '-')
+			{
+				sgn = -1;
+				i = 1;
+				digits = str.Length - 1;
 
-            // check first character:
-            switch (str[0])
-            {
-                case '-':
-                    // negative number starting with zero is always a string key (-0, -0123)
-                    if (str.Length == 1 || str[1] == '0')    // str = "-" or '-0' or '-0...'
-                        return new IntStringKey(str);
+				// minus sign only:
+				if (digits == 0) return new IntStringKey(str);
+			}
+			else
+			{
+				sgn = +1;
+				i = 0;
+				digits = str.Length;
+			}
 
-                    // str = "-..." // continue to <int> parsing
-                    index = 1;
-                    sign = true;
-                    break;
+			// upper limit (MaxInt/MinInt):
+			if (digits > 10) digits = 10;
 
-                case '0':
-                    // (non-negative) number starting with '0' is considered as a string,
-                    // iff there is more than just a '0'
-                    if (str.Length == 1)
-                        return new IntStringKey(0); // just a zero -> convert to int
-                    else
-                        return new IntStringKey(str);   // number starting with zero -> string key
-            }
+			// first digit after optional minus sign:
+			d = (int)(str[i] - '0');
 
-            Debug.Assert(index < str.Length, "str == {" + str + "}");
-            
-            // simple <int> parser:
-            long result = (int)str[index] - '0';
-            Debug.Assert(result != 0, "str == {" + str + "}");
+			// single '0' is converted to zero, number starting by '0' is not converted: 
+			if (d == 0) return (digits == 1) ? new IntStringKey(0) : new IntStringKey(str);
 
-            if (result < 0 || result > 9)   // not a number
-                return new IntStringKey(str);
+			// not a digit:
+			if (d < 0 || d > 9) return new IntStringKey(str);
 
-            while (++index < str.Length)
-            {
-                int c = (int)str[index] - '0';
-                if (c >= 0 && c <= 9)
-                {
-                    // update <result>
-                    result = unchecked(c + result * 10);
+			long result = d;
+			while (--digits > 0)
+			{
+				// next digit:
+				d = (int)(str[++i] - '0');
 
-                    // <int> range check
-                    if (NumberUtils.IsInt32(result))
-                        continue;   // still in <int> range
-                }
-                
-                //
-                return new IntStringKey(str);            
-            }
+				// not a digit:
+				if (d < 0 || d > 9) return new IntStringKey(str);
 
-            if (sign)
-            {
-                result = -result;
-                if (!NumberUtils.IsInt32(result))
-                    return new IntStringKey(str);
-            }
+				result = result * 10 + d;
+			}
 
-            // <int> parsed properly:
-            return new IntStringKey(unchecked((int)result));
+			// sign:
+			result *= sgn;
+
+			// to big/small number:
+			if (result < int.MinValue || result > int.MaxValue) return new IntStringKey(str);
+
+			return new IntStringKey((int)result);
 		}
 
         /// <summary>
-        /// Converts a size specified as a string to integer. 
-        /// </summary>
-        /// <param name="str">The size.</param>
-        /// <returns>The number of bytes.</returns>
-        /// <remarks>
-        /// Size may contain either a number of bytes or number of kilo/mega/giga bytes with suffix "K"/"M"/"G".
-        /// The first non-white-space character from the end of the string is taken as the suffix.
-        /// All numbers may be "PHP numbers", i.e. only a prefix containing an integer is taken.
-        /// Suffixes are case insensitive.
-        /// If integer overflows or underflows the maximal or minimal integer value is returned, respectively.
-        /// </remarks>
-        public static int StringByteSizeToInteger(string str)
+		/// Converts a size specified as a string to integer. 
+		/// </summary>
+		/// <param name="str">The size.</param>
+		/// <returns>The number of bytes.</returns>
+		/// <remarks>
+		/// Size may contain either a number of bytes or number of kilo/mega/giga bytes with suffix "K"/"M"/"G".
+		/// The first non-white-space character from the end of the string is taken as the suffix.
+		/// All numbers may be "PHP numbers", i.e. only a prefix containing an integer is taken.
+		/// Suffixes are case insensitive.
+		/// If integer overflows or underflows the maximal or minimal integer value is returned, respectively.
+		/// </remarks>
+		public static int StringByteSizeToInteger(string str)
 		{
 			if (str == null || str.Length == 0) return 0;
 			str = str.Trim();
@@ -2028,37 +2067,19 @@ namespace PHP.Core
         {
             Debug.Assert(array != null, "Argument 'array' cannot be null!");
 
-            //var runtimeFields = new PhpArray(array.Count);
-            ////foreach (KeyValuePair<IntStringKey, object> pair in array)
-            //using (var enumerator = array.GetFastEnumerator())
-            //    while (enumerator.MoveNext())
-            //    {
-            //        // add elements directly into the hashtable (no duplicity check, since array is already valid)
-            //        runtimeFields.Add(enumerator.CurrentKey.Object.ToString(), PhpVariable.Copy(enumerator.CurrentValue, CopyReason.Assigned));
-            //    }
+            var runtimeFields = new OrderedHashtable<string>(null, array.Count);
+            //foreach (KeyValuePair<IntStringKey, object> pair in array)
+            for (var p = array.table.head.Next; p != array.table.head; p = p.Next)
+            {
+                // add elements directly into the hashtable (no duplicity check, since array is already valid)
+                runtimeFields.Add(/*pair.Key*/p.Key.Object.ToString(), PhpVariable.Copy(/*pair*/p.Value, CopyReason.Assigned));
+            }
 
             // create a new stdClass with runtime fields:
             return new stdClass(context)
             {
-                RuntimeFields = new PhpArray(array, true)
+                RuntimeFields = runtimeFields
             };
-        }
-
-        [Emitted]
-        public static DTypeDesc StringToTypeDesc(string name, ResolveTypeFlags resolveFlags, DTypeDesc caller, ScriptContext/*!*/ context, NamingContext nameContext, object[] genericArgs)
-        {
-            Debug.Assert(!string.IsNullOrEmpty(name));
-
-            resolveFlags |= ResolveTypeFlags.PreserveFrame;
-            //if (autoload) flags |= (ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
-
-            DTypeDesc type = context.ResolveType(name, nameContext, caller, genericArgs, resolveFlags);
-
-            // fill default type arguments or report an error:
-            if (type != null && type.IsGenericDefinition && (resolveFlags & ResolveTypeFlags.SkipGenericNameParsing) == 0)
-                type = Operators.MakeGenericTypeInstantiation(type, DTypeDesc.EmptyArray, 0);
-
-            return type;
         }
 
 		#endregion
@@ -2136,6 +2157,119 @@ namespace PHP.Core
 		}
 
 		#endregion
+
+		#region Unit Testing
+#if DEBUG
+
+		class UnitTest
+		{
+			struct TestCase
+			{
+				public string s;
+				public bool isnum;
+				public int p, i, l, d;
+				public int iv;
+				public long lv;
+				public double dv;
+
+				public TestCase(string s, bool isnum, int p, int i, int l, int d, int iv, long lv, double dv)
+				{
+					this.s = s;
+					this.isnum = isnum;
+					this.p = p;
+					this.i = i;
+					this.l = l;
+					this.d = d;
+					this.iv = iv;
+					this.lv = lv;
+					this.dv = dv;
+				}
+			}
+
+			static int MaxInt = Int32.MaxValue;
+			static int MinInt = Int32.MinValue;
+			static long MaxLong = Int64.MaxValue;
+			static string LongOvf = "1250456465465412504564654654";
+			static string IntOvf = "12504564654654";
+			static long IntOvfL = long.Parse(IntOvf);
+			static double IntOvfD = double.Parse(IntOvf);
+			static string LongHOvf = "0x09213921739830924323423";
+
+			static TestCase[] cases = new TestCase[]
+			{
+				//           string                 number?    p   i   l   d       iv       lv  dv
+				new TestCase("0",                     true,    1,  1,  1,  1,       0,       0,  0.0),
+				new TestCase("0x",                    true,    2,  2,  2,  1,       0,       0,  0.0),
+				new TestCase("0X",                    true,    2,  2,  2,  1,       0,       0,  0.0),
+				new TestCase("00x1",                 false,    2,  2,  2,  2,       0,       0,  0.0),
+				new TestCase("0x10",                  true,    4,  4,  4,  1,      16,      16,  16.0),  // dv changed in v2
+				new TestCase("-0xf",                  true,    4,  4,  4,  2,     -15,     -15,  -15.0), // dv changed in v2
+				new TestCase("00000000013",           true,   11, 11, 11, 11,      13,      13,  13.0),
+				new TestCase("00000000",              true,    8,  8,  8,  8,       0,       0,  0.0),
+				new TestCase("1",                     true,    1,  1,  1,  1,       1,       1,  1.0),
+				new TestCase("0",                     true,    1,  1,  1,  1,       0,       0,  0.0),
+				new TestCase("00008",                 true,    5,  5,  5,  5,       8,       8,  8.0),
+				new TestCase(IntOvf,                  true,   14, 10, 14, 14,  MaxInt, IntOvfL,  IntOvfD),
+				new TestCase(LongOvf,                 true,   LongOvf.Length,  10, 19, LongOvf.Length, MaxInt, MaxLong,  Double.NaN),
+				new TestCase(LongHOvf,                true,   LongHOvf.Length, 17, 24, 1, MaxInt, MaxLong, Double.NaN),
+				new TestCase(MaxInt.ToString(),       true,   10, 10, 10, 10,  MaxInt,  MaxInt,  MaxInt),
+				new TestCase(MinInt.ToString(),       true,   11, 11, 11, 11,  MinInt,  MinInt,  MinInt),
+				new TestCase("0.587e5",               true,    7,  1,  1,  7,       0,       0,  58700.0),
+				new TestCase("10dfd",                false,    2,  2,  2,  2,      10,      10,  10.0),
+				new TestCase("10efd",                false,    2,  2,  2,  2,      10,      10,  10.0),
+				new TestCase("10d",                  false,    2,  2,  2,  2,      10,      10,  10.0),
+				new TestCase("10e",                  false,    2,  2,  2,  2,      10,      10,  10.0),
+				new TestCase("-.14",                 false,    4,  1,  1,  4,       0,       0, -0.14),
+				new TestCase(".14",                  false,    3,  0,  0,  3,       0,       0,  0.14),
+				new TestCase("+.e2",                 false,    4,  1,  1,  4,       0,       0,  0.0),
+				new TestCase("1e10xy",               false,    4,  1,  1,  4,       1,       1,  10000000000.0),
+				new TestCase("   ",                  false,    3,  3,  3,  3,       0,       0,  0.0),
+				new TestCase("     -",               false,    6,  6,  6,  6,       0,       0,  0.0),
+				new TestCase("       d",             false,    7,  7,  7,  7,       0,       0,  0.0),
+				new TestCase("  0  ",                false,    3,  3,  3,  3,       0,       0,  0.0),
+				new TestCase(" 2545as fsdf",         false,    5,  5,  5,  5,    2545,    2545,  2545.0),
+				new TestCase(" 54.dadasdasd",        false,    4,  3,  3,  4,      54,      54,  54.0),
+				new TestCase("54. ",                 false,    3,  2,  2,  3,      54,      54,  54.0),
+				new TestCase("2.",                    true,    2,  1,  1,  2,       2,       2,  2.0),
+				new TestCase("2.e",                  false,    2,  1,  1,  2,       2,       2,  2.0),
+				new TestCase("2.e+",                 false,    2,  1,  1,  2,       2,       2,  2.0),
+				new TestCase(".",                    false,    1,  0,  0,  1,       0,       0,  0.0),
+				new TestCase("+.",                   false,    2,  1,  1,  2,       0,       0,  0.0),
+				new TestCase("-.",                   false,    2,  1,  1,  2,       0,       0,  0.0),
+				new TestCase("-",                    false,    1,  1,  1,  1,       0,       0,  0.0),
+				new TestCase("+",                    false,    1,  1,  1,  1,       0,       0,  0.0),
+				new TestCase("",                     false,    0,  0,  0,  0,       0,       0,  0.0),
+				new TestCase(null,                   false,    0,  0,  0,  0,       0,       0,  0.0),
+				new TestCase("10e1111111111111111",  false,    6,  2,  2,  6,      10,      10,  Double.PositiveInfinity),
+				new TestCase("10e-1111111111111111",  true,   20,  2,  2, 20,      10,      10,  0.0),
+				new TestCase("0e-1111111111111111",   true,   19,  1,  1, 19,       0,       0,  0.0),    
+			};
+
+			[Test]
+			static void TestIsNumber()
+			{
+				foreach (TestCase c in cases)
+				{
+					int d, i, l, iv, p = 0;
+					double dv;
+					long lv;
+					Convert.NumberInfo info = Core.Convert.IsNumber(c.s, -1, ref p, out i, out l, out d, out iv, out lv, out dv);
+
+					Debug.Assert(c.isnum == ((info & Convert.NumberInfo.IsNumber) != 0));
+					Debug.Assert(c.p == p);
+					Debug.Assert(c.i == i);
+					Debug.Assert(c.l == l);
+					Debug.Assert(c.d == d);
+					Debug.Assert(c.iv == iv);
+					Debug.Assert(Double.IsNaN(c.dv) || c.dv == dv);
+					Debug.Assert(c.lv == lv);
+				}
+			}
+		}
+
+#endif
+		#endregion
+
 	}
 
 }

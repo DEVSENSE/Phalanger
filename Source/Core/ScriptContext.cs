@@ -895,9 +895,32 @@ namespace PHP.Core
         /// </summary>
         private static object CallInternal(Dictionary<string, object> localVariables, NamingContext namingContext, object name, ScriptContext/*!*/ context)
         {
-            string function_name = Convert.ObjectToString(name);
+            // <name> should be a string:
+            string function_name = PhpVariable.AsString(name);
+
             if (String.IsNullOrEmpty(function_name))
             {
+                // or <name> can represent an object with __invoke() magic method:
+                DObject obj;
+                if ((obj = name as DObject) != null)
+                {
+                    DRoutineDesc method;
+                    if (obj.TypeDesc.GetMethod(
+                            DObject.SpecialMethodNames.Invoke, null/*caller ignored*/, out method)
+                        != GetMemberResult.NotFound)
+                    {
+                        Debug.Assert(method != null);
+
+                        // (J) maybe:
+                        //// the callee may need table of local variables and/or naming context:
+                        //context.Stack.Variables = localVariables;
+                        //context.Stack.NamingContext = namingContext;
+                        
+                        // (J) __invoke does not respect visibility (thats why caller is not needed)
+                        return method.Invoke(obj, context.Stack);
+                    }
+                }
+
                 context.Stack.RemoveFrame();
                 PhpException.Throw(PhpError.Error, CoreResources.GetString("invalid_function_name"));
             }
