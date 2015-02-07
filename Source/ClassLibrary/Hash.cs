@@ -2098,9 +2098,10 @@ namespace PHP.Library
         /// <summary>
         /// Pump data from valid PHP stream into the hashing incremental algorithm.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="stream"></param>
-        /// <returns></returns>
+        /// <param name="context">Hash resource to be updated from given <paramref name="stream"/>. Cannot be null.</param>
+        /// <param name="stream">The <see cref="PhpStream"/> to read from. Cannot be null.</param>
+        /// <param name="length">Maximum number of bytes to read from <paramref name="stream"/>. Or <c>-1</c> to read entire stream.</param>
+        /// <returns>Number of bytes read from given <paramref name="stream"/>.</returns>
         private static int HashUpdateFromStream(HashPhpResource/*!*/context, PhpStream/*!*/stream, int length/*=-1*/)
         {
             Debug.Assert(context != null);
