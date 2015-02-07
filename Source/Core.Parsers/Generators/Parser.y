@@ -470,10 +470,10 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Integer> visibility_opt                // PhpMemberAttributes
 %type<Integer> partial_opt                   // int (0, 1)
 
-%type<Object>  property_modifiers            // PhpMemberAttributes
+%type<Integer> property_modifiers            // PhpMemberAttributes
 %type<Integer> member_modifiers_opt          // PhpMemberAttributes
-%type<Object>  member_modifiers              // PhpMemberAttributes
-%type<Object>  member_modifier               // PhpMemberAttributes
+%type<Integer> member_modifiers              // PhpMemberAttributes
+%type<Integer> member_modifier               // PhpMemberAttributes
 
 %type<Integer> attribute_target_opt          // CustomAttribute.Targets
 
@@ -1502,17 +1502,17 @@ member_modifiers:
 		  // It is broken anyway, because we assume we have a token on the stack before seeing a modified.
 		  
 		  // return $1
-		  $$ = a1;
+		  $$ = (int)a1;
 		}
 ;
                    
 member_modifier:
-		T_PUBLIC			{ $$ = PhpMemberAttributes.Public; }
-	|	T_PROTECTED			{ $$ = PhpMemberAttributes.Protected; }		
-	|	T_PRIVATE			{ $$ = PhpMemberAttributes.Private; }	
-	|	T_STATIC			{ $$ = PhpMemberAttributes.Static; }	
-	|	T_ABSTRACT			{ $$ = PhpMemberAttributes.Abstract; }		
-	|	T_FINAL				{ $$ = PhpMemberAttributes.Final; }	
+		T_PUBLIC			{ $$ = (int)PhpMemberAttributes.Public; }
+	|	T_PROTECTED			{ $$ = (int)PhpMemberAttributes.Protected; }		
+	|	T_PRIVATE			{ $$ = (int)PhpMemberAttributes.Private; }	
+	|	T_STATIC			{ $$ = (int)PhpMemberAttributes.Static; }	
+	|	T_ABSTRACT			{ $$ = (int)PhpMemberAttributes.Abstract; }		
+	|	T_FINAL				{ $$ = (int)PhpMemberAttributes.Final; }	
 ;
 
 property_declarator_list:
