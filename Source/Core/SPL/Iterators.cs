@@ -11,7 +11,11 @@
 */
 
 using System;
+using System.Collections;
 using PHP.Core;
+using PHP.Core.Reflection;
+using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace PHP.Library.SPL
 {
@@ -127,5 +131,390 @@ namespace PHP.Library.SPL
         /// </summary>
         /// <returns>Returns TRUE if the current entry can be iterated over, otherwise returns FALSE.</returns>
         object hasChildren(ScriptContext context);
+    }
+
+    [ImplementsType]
+    public class ArrayIterator : PhpObject, Iterator, Traversable, ArrayAccess, SeekableIterator, Countable, Serializable
+    {
+        #region Fields & Properties
+
+        private PhpArray array;
+        private OrderedHashtable<IntStringKey>.Enumerator arrayEnumerator;
+        private bool isArrayIterator { get { return this.array != null; } }
+
+        private DObject dobj;
+        private IDictionaryEnumerator dobjEnumerator;
+        private bool isObjectIterator { get { return this.dobj != null; } }
+
+        private bool isValid = false;
+        
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Constructs an <see cref="ArrayIterator"/> object.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="array">The array or object to be iterated on.</param>
+        /// <returns></returns>
+        [ImplementsMethod]
+        public virtual object __construct(ScriptContext/*!*/context, object array)
+        {
+            if ((this.array = array as PhpArray) != null)
+            {
+                this.arrayEnumerator = new OrderedHashtable<IntStringKey>.Enumerator(this.array, false);
+            }
+            else if ((this.dobj = array as DObject) != null)
+            {
+                this.dobjEnumerator = dobj.GetForeachEnumerator(true, false, null);
+            }
+            else
+            {
+                // TODO: throw an PHP.Library.SPL.InvalidArgumentException if anything besides an array or an object is given.
+                throw new ArgumentException("", "array");
+                //return null;
+            }
+
+            // move first:
+            this.rewind(context);
+            return null;
+        }
+
+        #endregion
+
+        #region Implementation details
+
+        internal static void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Constructor
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public ArrayIterator(ScriptContext/*!*/context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public ArrayIterator(ScriptContext/*!*/context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object __construct(object instance, PhpStack stack)
+        {
+            object array = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).__construct(stack.Context, array);
+        }
+
+        #endregion
+
+        #region interface Iterator
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object rewind(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).rewind(stack.Context);
+        }
+
+        public static object next(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).next(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object valid(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).valid(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object key(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).key(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object current(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).current(stack.Context);
+        }
+
+        #endregion
+
+        #region interface ArrayAccess
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object offsetGet(object instance, PhpStack stack)
+        {
+            object index = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).offsetGet(stack.Context, index);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object offsetSet(object instance, PhpStack stack)
+        {
+            object index = stack.PeekValue(1);
+            object value = stack.PeekValue(2);
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).offsetSet(stack.Context, index, value);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object offsetUnset(object instance, PhpStack stack)
+        {
+            object index = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).offsetUnset(stack.Context, index);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object offsetExists(object instance, PhpStack stack)
+        {
+            object index = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).offsetExists(stack.Context, index);
+        }
+
+        #endregion
+
+        #region interface SeekableIterator
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object seek(object instance, PhpStack stack)
+        {
+            object position = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).seek(stack.Context, position);
+        }
+
+        #endregion
+
+        #region interface Countable
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object count(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).count(stack.Context);
+        }
+
+        #endregion
+
+        #region interface Serializable
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object serialize(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).serialize(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object unserialize(object instance, PhpStack stack)
+        {
+            object data = stack.PeekValue(1);
+            stack.RemoveFrame();
+            return ((ArrayIterator)instance).unserialize(stack.Context, data);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region interface Iterator
+
+        [ImplementsMethod]
+        public object rewind(ScriptContext context)
+        {
+            if (isArrayIterator)
+            {
+                this.isValid = arrayEnumerator.MoveFirst();
+            }
+            else if (isObjectIterator)
+            {
+                dobjEnumerator.Reset();
+                this.isValid = dobjEnumerator.MoveNext();
+            }
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public object next(ScriptContext context)
+        {
+            if (isArrayIterator)
+                this.isValid = arrayEnumerator.MoveNext();
+            else if (isObjectIterator)
+                this.isValid = dobjEnumerator.MoveNext();
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public virtual object valid(ScriptContext context)
+        {
+            return this.isValid;
+        }
+
+        [ImplementsMethod]
+        public virtual object key(ScriptContext context)
+        {
+            if (isArrayIterator)
+                return arrayEnumerator.Current.Key.Object;
+            else if (isObjectIterator)
+                return dobjEnumerator.Key;
+
+            return false;
+        }
+
+        [ImplementsMethod]
+        public virtual object current(ScriptContext context)
+        {
+            if (isArrayIterator)
+                return arrayEnumerator.Current.Value;
+            else if (isObjectIterator)
+                return dobjEnumerator.Value;
+
+            return false;
+        }
+
+        #endregion
+
+        #region interface ArrayAccess
+
+        [ImplementsMethod]
+        public virtual object offsetGet(ScriptContext context, object index)
+        {
+            if (isArrayIterator)
+                return array[index];
+            else if (isObjectIterator)
+                return dobj[index];
+
+            return false;
+        }
+
+        [ImplementsMethod]
+        public virtual object offsetSet(ScriptContext context, object index, object value)
+        {
+            if (isArrayIterator)
+            {
+                if (index != null) array.Add(index, value);
+                else array.Add(value);
+            }
+            else if (isObjectIterator)
+            {
+                dobj.Add(index, value);
+            }
+
+            return null;
+        }
+
+        [ImplementsMethod]
+        public virtual object offsetUnset(ScriptContext context, object index)
+        {
+            throw new NotImplementedException();
+        }
+
+        [ImplementsMethod]
+        public virtual object offsetExists(ScriptContext context, object index)
+        {
+            if (isArrayIterator)
+                return array.ContainsKey(new IntStringKey(index));
+            else if (isObjectIterator)
+                return dobj.Contains(index);
+
+            return false;
+        }
+
+        #endregion
+
+        #region interface SeekableIterator
+
+        [ImplementsMethod]
+        public object seek(ScriptContext context, object position)
+        {
+            int currentPosition = 0;
+            int targetPosition = PHP.Core.Convert.ObjectToInteger(position);
+
+            if (targetPosition < 0)
+            {
+                //
+            }
+
+            this.rewind(context);
+
+            while ((bool)this.valid(context) && currentPosition < targetPosition)
+            {
+                this.next(context);
+                currentPosition++;
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region interface Countable
+
+        [ImplementsMethod]
+        public virtual object count(ScriptContext context)
+        {
+            if (isArrayIterator)
+                return array.Count;
+            else if (isObjectIterator)
+                return dobj.Count;
+
+            return false;
+        }
+
+        #endregion
+
+        #region interface Serializable
+
+        [ImplementsMethod]
+        public virtual object serialize(ScriptContext context)
+        {
+            throw new NotImplementedException();
+        }
+
+        [ImplementsMethod]
+        public virtual object unserialize(ScriptContext context, object data)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+		/// <summary>
+		/// Deserializing constructor.
+		/// </summary>
+        protected ArrayIterator(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+		}
+
+#endif
+		#endregion
     }
 }
