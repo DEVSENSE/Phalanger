@@ -821,7 +821,7 @@ namespace PHP.Core
 		public override bool Equals(object obj)
 		{
 			if (!(obj is QualifiedName)) return false;
-			return !Equals((QualifiedName)obj);
+			return this.Equals((QualifiedName)obj);
 		}
 
 		public override int GetHashCode()
