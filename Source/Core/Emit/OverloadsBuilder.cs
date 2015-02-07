@@ -798,6 +798,7 @@ namespace PHP.Core.Emit
 		/// </param>
 		/// <param name="allowImplicitCast">Whether to allow implicit cast of types PhpArray, PhpObject, PhpResource.</param>
 		/// <param name="param">The formal argument description.</param>
+        /// <param name="additionalValuesOnStackCount">Amount of values pushed on stackl, that have to be cleaned up in case of failed conversion.</param>
 		internal void EmitArgumentConversion(Type dstType, object srcTypeOrValue, bool allowImplicitCast, ParameterInfo param, int additionalValuesOnStackCount = 0)
 		{
 			Debug.Assert(!dstType.IsByRef);
