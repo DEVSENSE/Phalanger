@@ -468,7 +468,18 @@ namespace PHP.Core
             }
 
             public IntStringKey CurrentKey { get { return current.Key; } }
-            public object CurrentValue { get { return current.Value; } }
+            public object CurrentValue
+            {
+                get
+                {
+                    return current.Value;
+                }
+                set
+                {
+                    ModifyCurrentValue(value);
+                    // current.Value is not updated for performance reasons
+                }
+            }
             public KeyValuePair<IntStringKey, object> Current { get { return current; } }
 
             public void Reset()

@@ -84,6 +84,10 @@ namespace PHP.Core
 
 		public bool HasTransientAssemblyBuilder { get { return transientAssemblyBuilder != null; } }
 
+        /// <summary>
+        /// Delegate checking for script existance. Created lazily, valid across all the requests on this <see cref="ApplicationContext"/>.
+        /// </summary>
+        private Predicate<FullPath> fileExists = null;
 
 		#endregion
 
@@ -397,6 +401,47 @@ namespace PHP.Core
 		{
 			return transientAssemblyBuilder.IsTransientRealType(realType);
 		}
+
+        /// <summary>
+        /// Build the delegate checking if the given script specified by its FullPath exists on available locations.
+        /// </summary>
+        /// <returns>Function determinig the given script existance or null if no script can be included with current configuration.</returns>
+        internal Predicate<FullPath> BuildFileExistsDelegate()
+        {
+            if (this.fileExists == null)
+            {
+                RequestContext context = RequestContext.CurrentContext;
+
+                Predicate<FullPath> file_exists = null;
+
+                // 1. ScriptLibrary database
+                var database = ScriptLibraryDatabase;
+                if (database != null && database.Count > 0)
+                    file_exists = file_exists.OrElse((path) => database.ContainsScript(path)); // file_exists can really be null
+
+                if (context != null)
+                {
+                    // on web, check following locations too:
+
+                    // 2. bin/WebPages.dll
+                    var msa = context.GetPrecompiledAssembly();
+                    if (msa != null)
+                        file_exists = file_exists.OrElse((path) => msa.ScriptExists(path));
+
+                    // 3. file system
+                    file_exists = file_exists.OrElse((path) => path.FileExists);
+                }
+                else
+                {
+                    // on non-web application, only script library should be checked
+                }
+
+                // remember in ApplicationContext
+                this.fileExists = file_exists;
+            }
+
+            return this.fileExists;
+        }
 
 		#endregion
 	}

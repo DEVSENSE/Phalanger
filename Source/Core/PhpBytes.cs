@@ -671,14 +671,23 @@ namespace PHP.Core
             if (ReferenceEquals(obj, this))
                 return true;
 
-            PhpBytes other;
-            if ((other = obj as PhpBytes) == null)
+            if (obj != null && obj.GetType() == typeof(PhpBytes))
+                return Equals((PhpBytes)obj);
+            else
                 return false;
-
-			return
-                this._data == other._data ||    // compare internal data structures if they are shared first
-                ArrayUtils.Compare(this.ReadonlyData, other.ReadonlyData) == 0; // compare byte by byte
 		}
+
+        public bool Equals(PhpBytes/*!*/other)
+        {
+            Debug.Assert(other != null);
+
+            return
+                this._data == other._data ||    // compare internal data structures if they are shared first
+                (
+                    this._data.Length == other._data.Length &&  // arrays have to be the same length
+                    ArrayUtils.Compare(this.ReadonlyData, other.ReadonlyData) == 0 // compare byte by byte
+                );
+        }
 
 		#endregion
 	}

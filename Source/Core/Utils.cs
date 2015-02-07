@@ -2526,7 +2526,11 @@ namespace PHP.Core
 
         private class PathEqualityComparer : IEqualityComparer<FullPath>
         {
-            private IEqualityComparer<string> stringComparer;
+            /// <summary>
+            /// Underlaying <see cref="StringComparer"/> selected for current environment (win/linux).
+            /// </summary>
+            public StringComparer/*!*/StringComparer { get { return stringComparer; } }
+            private readonly StringComparer/*!*/stringComparer;
 
             public int GetHashCode(FullPath path)
             {
@@ -2540,7 +2544,7 @@ namespace PHP.Core
 
             public PathEqualityComparer()
             {
-                stringComparer = EnvironmentUtils.IsDotNetFramework ? StringComparer.CurrentCultureIgnoreCase : StringComparer.CurrentCulture;
+                stringComparer = EnvironmentUtils.IsDotNetFramework ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
             }
         }
 
@@ -2551,14 +2555,24 @@ namespace PHP.Core
         /// <summary>
         /// Implementation of IEqualityComparer&lt;FullPath&gt; interface.
         /// </summary>
-        public static readonly IEqualityComparer<FullPath> EqualityComparer = new PathEqualityComparer();
+        private static readonly PathEqualityComparer/*!*/EqualityComparer = new PathEqualityComparer();
 
+        /// <summary>
+        /// Underlaying <see cref="StringComparer"/> selected for current environment (win/linux).
+        /// </summary>
+        public static StringComparer/*!*/StringComparer { get { return EqualityComparer.StringComparer; } }
+        
         public static readonly FullPath[]/*!*/ EmptyArray = new FullPath[0];
 
         /// <summary>
         /// Empty path.
         /// </summary>
         public static FullPath Empty = new FullPath(null);
+
+        /// <summary>
+        /// Boxed <see cref="Path.DirectorySeparatorChar"/>.
+        /// </summary>
+        public static string/*!*/DirectorySeparatorString = Path.DirectorySeparatorChar.ToString();
 
         #endregion
 
@@ -2716,9 +2730,10 @@ namespace PHP.Core
             }
 
             // build the absolute path string
-            path = ((rootend == rootpath.Length) ? rootpath : rootpath.Substring(0, rootend))
-                + Path.DirectorySeparatorChar
-                + relativePath.Path;
+            path = String.Concat(
+                    ((rootend == rootpath.Length) ? rootpath : rootpath.Substring(0, rootend)),
+                    DirectorySeparatorString,
+                    relativePath.Path);
         }
 
         #endregion
