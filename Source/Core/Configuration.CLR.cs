@@ -513,7 +513,9 @@ namespace PHP.Core
                     {
                         appContext.AssemblyLoader.Load(_assemblyName, _assemblyUrl, new LibraryConfigStore(_node));
                         return true;
-                    });
+                    },
+                    null // ignore class library sections
+                    );
         }
 
 		/// <summary>
@@ -1451,6 +1453,24 @@ namespace PHP.Core
         private Dictionary<string, AddLibraryInfo> addedLibraries = null;
 
         /// <summary>
+        /// List of class library sections to be parsed when class libraries are loaded.
+        /// </summary>
+        private List<XmlNode> sections = null;
+
+        /// <summary>
+        /// Add class library configuration section to the list to be processed once libraries are loaded.
+        /// </summary>
+        /// <param name="sectionNode"></param>
+        public void AddSection(XmlNode/*!*/sectionNode)
+        {
+            Debug.Assert(sectionNode != null);
+            if (this.sections == null)
+                this.sections = new List<XmlNode>();
+
+            this.sections.Add(sectionNode);
+        }
+
+        /// <summary>
         /// Adds the library to the list of libraries to be loaded lazily.
         /// </summary>
         public bool AddLibrary(string assemblyName, Uri assemblyUrl, string sectionName, XmlNode/*!*/ node)
@@ -1487,9 +1507,9 @@ namespace PHP.Core
         }
 
         /// <summary>
-        /// Load libraries specified by <see cref="AddLibrary"/> lazily.
+        /// Load libraries specified by <see cref="AddLibrary"/> lazily. Also parses postponed sections.
         /// </summary>
-        public void LoadLibrariesNoLock(Func<string,Uri,string,XmlNode,bool>/*!*/callback)
+        public void LoadLibrariesNoLock(Func<string,Uri,string,XmlNode,bool>/*!*/callback, Action<XmlNode> parseSectionCallback)
         {
             if (addedLibraries != null)
             {
@@ -1497,6 +1517,15 @@ namespace PHP.Core
                     callback(lib.assemblyName, lib.assemblyUrl, lib.sectionName, lib.node);
 
                 addedLibraries = null;
+            }
+
+            if (sections != null)
+            {
+                if (parseSectionCallback != null)
+                    foreach (var section in sections)
+                        parseSectionCallback(section);
+
+                sections = null;
             }
         }
     }
@@ -1585,7 +1614,7 @@ namespace PHP.Core
         /// </summary>
         internal void LoadLibrariesNoLock()
         {
-            this.librariesList.LoadLibrariesNoLock(this.LoadLibrary);
+            this.librariesList.LoadLibrariesNoLock(this.LoadLibrary, this.ParseSection);
         }
 
         /// <summary>
@@ -2084,7 +2113,7 @@ namespace PHP.Core
 
 						default:
 							// processes library section:
-							result.ParseSection(node);
+                            result.librariesList.AddSection(node);
 							break;
 					}
 				}
