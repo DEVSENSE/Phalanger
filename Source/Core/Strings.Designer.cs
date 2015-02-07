@@ -2005,7 +2005,9 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;b&gt;{0}&lt;/b&gt;: {1}{2}.&lt;br/&gt;&lt;br/&gt;.
+        ///   Looks up a localized string similar to &lt;br/&gt;
+        ///&lt;b&gt;{0}&lt;/b&gt;: {1}{2}.&lt;br/&gt;
+        ///.
         /// </summary>
         internal static string error_message_html {
             get {
@@ -2014,7 +2016,9 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;b&gt;{0}&lt;/b&gt;: {1}{2} in &lt;b&gt;{3}&lt;/b&gt; at expression on line &lt;b&gt;{4}&lt;/b&gt;, column &lt;b&gt;{5}&lt;/b&gt;.&lt;br/&gt;&lt;br/&gt;.
+        ///   Looks up a localized string similar to &lt;br/&gt;
+        ///&lt;b&gt;{0}&lt;/b&gt;: {1}{2} in &lt;b&gt;{3}&lt;/b&gt; on line &lt;b&gt;{4}&lt;/b&gt;, column &lt;b&gt;{5}&lt;/b&gt;.&lt;br/&gt;
+        ///.
         /// </summary>
         internal static string error_message_html_debug {
             get {
@@ -2053,7 +2057,7 @@ namespace PHP.Core.Localizations {
         
         /// <summary>
         ///   Looks up a localized string similar to 
-        ///{0}: {1}{2} in {3} at expression on line {4}, column {5}.
+        ///{0}: {1}{2} in {3} on line {4}, column {5}.
         ///.
         /// </summary>
         internal static string error_message_plain_debug {
@@ -2077,6 +2081,15 @@ namespace PHP.Core.Localizations {
         internal static string error_message_plain_eval_debug {
             get {
                 return ResourceManager.GetString("error_message_plain_eval_debug", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  in {0} on line {1}, column {2}.
+        /// </summary>
+        internal static string error_place {
+            get {
+                return ResourceManager.GetString("error_place", resourceCulture);
             }
         }
         
