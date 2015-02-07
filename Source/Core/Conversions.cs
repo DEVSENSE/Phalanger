@@ -1983,76 +1983,90 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="str">The string in "{0 | -?[1-9][0-9]*}" format.</param>
 		/// <returns>The array key (integer or string).</returns>
-		public static IntStringKey StringToArrayKey(string str)
+		public static IntStringKey StringToArrayKey(string/*!*/str)
 		{
-			int digits, i, sgn, d;
+            Debug.Assert(str != null, "str == null");
 
-			// null or empty string is not converted:
-			if (String.IsNullOrEmpty(str)) return new IntStringKey(str);
+            // empty string:
+            if (str.Length == 0)
+                return new IntStringKey(string.Empty);
 
-			// if the string starts with '-' character:
-			if (str[0] == '-')
-			{
-				sgn = -1;
-				i = 1;
-				digits = str.Length - 1;
+            // starts with minus sign?
+            bool sign = false;
+            int index = 0;
 
-				// minus sign only:
-				if (digits == 0) return new IntStringKey(str);
-			}
-			else
-			{
-				sgn = +1;
-				i = 0;
-				digits = str.Length;
-			}
+            // check first character:
+            switch (str[0])
+            {
+                case '-':
+                    // negative number starting with zero is always a string key (-0, -0123)
+                    if (str.Length == 1 || str[1] == '0')    // str = "-" or '-0' or '-0...'
+                        return new IntStringKey(str);
 
-			// upper limit (MaxInt/MinInt):
-			if (digits > 10) digits = 10;
+                    // str = "-..." // continue to <int> parsing
+                    index = 1;
+                    sign = true;
+                    break;
 
-			// first digit after optional minus sign:
-			d = (int)(str[i] - '0');
+                case '0':
+                    // (non-negative) number starting with '0' is considered as a string,
+                    // iff there is more than just a '0'
+                    if (str.Length == 1)
+                        return new IntStringKey(0); // just a zero -> convert to int
+                    else
+                        return new IntStringKey(str);   // number starting with zero -> string key
+            }
 
-			// single '0' is converted to zero, number starting by '0' is not converted: 
-			if (d == 0) return (digits == 1) ? new IntStringKey(0) : new IntStringKey(str);
+            Debug.Assert(index < str.Length, "str == {" + str + "}");
+            
+            // simple <int> parser:
+            long result = (int)str[index] - '0';
+            Debug.Assert(result != 0, "str == {" + str + "}");
 
-			// not a digit:
-			if (d < 0 || d > 9) return new IntStringKey(str);
+            if (result < 0 || result > 9)   // not a number
+                return new IntStringKey(str);
 
-			long result = d;
-			while (--digits > 0)
-			{
-				// next digit:
-				d = (int)(str[++i] - '0');
+            while (++index < str.Length)
+            {
+                int c = (int)str[index] - '0';
+                if (c >= 0 && c <= 9)
+                {
+                    // update <result>
+                    result = unchecked(c + result * 10);
 
-				// not a digit:
-				if (d < 0 || d > 9) return new IntStringKey(str);
+                    // <int> range check
+                    if (NumberUtils.IsInt32(result))
+                        continue;   // still in <int> range
+                }
+                
+                //
+                return new IntStringKey(str);            
+            }
 
-				result = result * 10 + d;
-			}
+            if (sign)
+            {
+                result = -result;
+                if (!NumberUtils.IsInt32(result))
+                    return new IntStringKey(str);
+            }
 
-			// sign:
-			result *= sgn;
-
-			// to big/small number:
-			if (result < int.MinValue || result > int.MaxValue) return new IntStringKey(str);
-
-			return new IntStringKey((int)result);
+            // <int> parsed properly:
+            return new IntStringKey(unchecked((int)result));
 		}
 
         /// <summary>
-		/// Converts a size specified as a string to integer. 
-		/// </summary>
-		/// <param name="str">The size.</param>
-		/// <returns>The number of bytes.</returns>
-		/// <remarks>
-		/// Size may contain either a number of bytes or number of kilo/mega/giga bytes with suffix "K"/"M"/"G".
-		/// The first non-white-space character from the end of the string is taken as the suffix.
-		/// All numbers may be "PHP numbers", i.e. only a prefix containing an integer is taken.
-		/// Suffixes are case insensitive.
-		/// If integer overflows or underflows the maximal or minimal integer value is returned, respectively.
-		/// </remarks>
-		public static int StringByteSizeToInteger(string str)
+        /// Converts a size specified as a string to integer. 
+        /// </summary>
+        /// <param name="str">The size.</param>
+        /// <returns>The number of bytes.</returns>
+        /// <remarks>
+        /// Size may contain either a number of bytes or number of kilo/mega/giga bytes with suffix "K"/"M"/"G".
+        /// The first non-white-space character from the end of the string is taken as the suffix.
+        /// All numbers may be "PHP numbers", i.e. only a prefix containing an integer is taken.
+        /// Suffixes are case insensitive.
+        /// If integer overflows or underflows the maximal or minimal integer value is returned, respectively.
+        /// </remarks>
+        public static int StringByteSizeToInteger(string str)
 		{
 			if (str == null || str.Length == 0) return 0;
 			str = str.Trim();
