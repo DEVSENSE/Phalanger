@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection.Emit;
 using PHP.Core.Emit;
+using System.Linq;
 
 namespace PHP.Core
 {
@@ -263,7 +264,7 @@ namespace PHP.Core
 			// disableWarnings and enableWarnings sets are disjoint:
 			compilerConfig.Compiler.DisabledWarnings |= disableWarnings;
 			compilerConfig.Compiler.DisabledWarnings &= ~enableWarnings;
-			compilerConfig.Compiler.DisabledWarningNumbers = disableWarningNumbers;
+            compilerConfig.Compiler.DisabledWarningNumbers = compilerConfig.Compiler.DisabledWarningNumbers.Concat(disableWarningNumbers).Distinct().ToArray();
 
 			// sets source root (overrides any config setting):
 			compilerConfig.Compiler.SourceRoot = new FullPath(sourceRoot);
