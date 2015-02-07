@@ -132,7 +132,7 @@ namespace PHP.Core.Emit
                 _EnsureVariableIsArray, _EnsureVariableIsObject, _EnsurePropertyIsObject, _EnsurePropertyIsArray, _EnsureStaticPropertyIsArray,
                 _EnsureStaticPropertyIsObject, _GetProperty, _GetObjectProperty, _GetPropertyRef, _GetObjectPropertyRef, _SetProperty,
                 _SetObjectProperty, _UnsetProperty, _InvokeMethodObj, _InvokeMethodStr, _Clone, _GetClassConstant, _GetStaticProperty, _GetStaticPropertyRef,
-                _SetStaticProperty, _UnsetStaticProperty, _InvokeStaticMethod, _New, _NewClr, _InstanceOf, _TypeOf, _StrictEquality, _Throw,
+                _SetStaticProperty, _UnsetStaticProperty, _InvokeStaticMethod, _New, _NewClr, _InstanceOf, _TypeOf, _StrictEquality, _StrictEmptyPhpArrayEquality, _StrictEmptyPhpArrayEquality_PhpArray, _Throw,
                 _SetObjectFieldDirect, _SetObjectFieldDirectRef, _GetObjectFieldDirectRef, _GetObjectFieldDirect, _ToAbsoluteSourcePath,
                 _GetItemExact, _SetItemExact,
 
@@ -305,6 +305,8 @@ namespace PHP.Core.Emit
             public static MethodInfo InstanceOf { get { if (_InstanceOf == null) _InstanceOf = _this.GetMethod("InstanceOf"); return _InstanceOf; } }
             public static MethodInfo TypeOf { get { if (_TypeOf == null) _TypeOf = _this.GetMethod("TypeOf"); return _TypeOf; } }
             public static MethodInfo StrictEquality { get { if (_StrictEquality == null) _StrictEquality = _this.GetMethod("StrictEquality"); return _StrictEquality; } }
+            public static MethodInfo StrictEmptyPhpArrayEquality { get { return _StrictEmptyPhpArrayEquality ?? (_StrictEmptyPhpArrayEquality = new Func<object,bool>(Core.Operators.StrictEmptyPhpArrayEquality).Method); } }
+            public static MethodInfo StrictEmptyPhpArrayEquality_PhpArray { get { return _StrictEmptyPhpArrayEquality_PhpArray ?? (_StrictEmptyPhpArrayEquality_PhpArray = new Func<Core.PhpArray, bool>(Core.Operators.StrictEmptyPhpArrayEquality).Method); } }
             public static MethodInfo Throw { get { if (_Throw == null) _Throw = _this.GetMethod("Throw"); return _Throw; } }
             public static MethodInfo ToAbsoluteSourcePath { get { if (_ToAbsoluteSourcePath == null) _ToAbsoluteSourcePath = _this.GetMethod("ToAbsoluteSourcePath"); return _ToAbsoluteSourcePath; } }
             public static MethodInfo IsCallable { get { return _IsCallable ?? (_IsCallable = _this.GetMethod("IsCallable")); } }
@@ -1314,6 +1316,7 @@ namespace PHP.Core.Emit
 		static PropertyInfo _ImplementsConstantCase, _PhpReference_IsSet, _PhpReference_IsAliased,
           _IDictionaryEnumerator_Key, _IDictionaryEnumerator_Value, _Type_TypeHandle, _DObject_RealObject, _DObject_RealType, _DObject_TypeDesc,
           _ClrTypeDesc_Constructor, _ScriptContext_CurrentContext, _Assembly_Location, _InsideCaller, _Delegate_Method,
+          _PhpHashtable_Count,
           _PhpArray_InplaceCopyOnReturn;
 
 		public static PropertyInfo ImplementsConstantCase { get { if (_ImplementsConstantCase == null) _ImplementsConstantCase = typeof(ImplementsConstantAttribute).GetProperty("CaseInsensitive"); return _ImplementsConstantCase; } }
@@ -1339,6 +1342,7 @@ namespace PHP.Core.Emit
         public static PropertyInfo Delegate_Method { get { return _Delegate_Method ?? (_Delegate_Method = typeof(System.Delegate).GetProperty("Method")); } }
 
         public static PropertyInfo PhpArray_InplaceCopyOnReturn { get { return _PhpArray_InplaceCopyOnReturn ?? (_PhpArray_InplaceCopyOnReturn = typeof(PhpArray).GetProperty("InplaceCopyOnReturn")); } }
+        public static PropertyInfo PhpHashtable_Count { get { return _PhpHashtable_Count ?? (_PhpHashtable_Count = typeof(PhpHashtable).GetProperty("Count")); } }
 	}
 
 	/// <exclude/>

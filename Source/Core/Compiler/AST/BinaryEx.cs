@@ -550,20 +550,15 @@ namespace PHP.Core.AST
 
 				case Operations.Identical:
 
-					// LOAD Operators.StrictEquality(box left,box right);
-					codeGenerator.EmitBoxing(leftExpr.Emit(codeGenerator));
-					codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));
-                    codeGenerator.IL.Emit(OpCodes.Call, Methods.Operators.StrictEquality);
-
-					returned_typecode = PhpTypeCode.Boolean;
+                    // LOAD Operators.StrictEquality(box left,box right);
+                    returned_typecode = this.EmitStrictEquality(codeGenerator);
 					break;
 
 				case Operations.NotIdentical:
 
 					// LOAD Operators.StrictEquality(box left,box right) == false;
-					codeGenerator.EmitBoxing(leftExpr.Emit(codeGenerator));
-					codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));
-                    codeGenerator.IL.Emit(OpCodes.Call, Methods.Operators.StrictEquality);
+                    this.EmitStrictEquality(codeGenerator);
+
                     codeGenerator.IL.Emit(OpCodes.Ldc_I4_0);
                     codeGenerator.IL.Emit(OpCodes.Ceq);
 
@@ -712,6 +707,97 @@ namespace PHP.Core.AST
                 }
 			}
 		}
+
+        /// <summary>
+        /// Emits strict equality operation.
+        /// </summary>
+        /// <param name="codeGenerator">A code generator.</param>
+        /// <returns>A type code of the result (boolean).</returns>
+        private PhpTypeCode EmitStrictEquality(CodeGenerator codeGenerator)
+        {
+            if (IsEmptyArrayEx(leftExpr))
+            {
+                EmitEmptyArrayStrictEquality(codeGenerator, rightExpr);
+            }
+            else if (IsEmptyArrayEx(rightExpr))
+            {
+                EmitEmptyArrayStrictEquality(codeGenerator, leftExpr);
+            }
+            else
+            {
+                // LOAD Operators.StrictEquality(box left,box right);
+                codeGenerator.EmitBoxing(leftExpr.Emit(codeGenerator));
+                codeGenerator.EmitBoxing(rightExpr.Emit(codeGenerator));
+                codeGenerator.IL.Emit(OpCodes.Call, Methods.Operators.StrictEquality);
+            }
+
+            return PhpTypeCode.Boolean;
+        }
+
+        /// <summary>
+        /// Emits strict equality to empty PHP array.
+        /// </summary>
+        /// <param name="codeGenerator">A code generator.</param>
+        /// <param name="expr">Expression to be compared against.</param>
+        private static void EmitEmptyArrayStrictEquality(CodeGenerator/*!*/codeGenerator, Expression/*!*/expr)
+        {
+            if (IsEmptyArrayEx(expr))
+            {
+                // array() === array()
+                // LOAD true
+                codeGenerator.IL.LoadBool(true);
+            }
+            else if (expr is Literal)
+            {
+                // array() === NULL|int|double|string|...
+                // LOAD false
+                codeGenerator.IL.LoadBool(false);
+            }
+            else
+            {
+                // array() === <expr>
+
+                // LOAD <expr>
+                var exprTypeCode = expr.Emit(codeGenerator);
+
+                // check whether <expr> type can be an array
+                switch (exprTypeCode)
+                {
+                    case PhpTypeCode.Boolean:
+                    case PhpTypeCode.DObject:
+                    case PhpTypeCode.Double:
+                    case PhpTypeCode.Integer:
+                    case PhpTypeCode.LongInteger:
+                    case PhpTypeCode.PhpBytes:
+                    case PhpTypeCode.PhpString:
+                    case PhpTypeCode.String:
+                        // always FALSE
+                        codeGenerator.IL.Emit(OpCodes.Pop);
+                        codeGenerator.IL.LoadBool(false);
+                        break;
+                    case PhpTypeCode.PhpArray:
+                        // compare (PhpArray)<expr> with array()
+                        codeGenerator.IL.Emit(OpCodes.Call, Methods.Operators.StrictEmptyPhpArrayEquality_PhpArray);
+                        break;
+                    default:
+                        // compare <expr> with array()
+                        codeGenerator.EmitBoxing(exprTypeCode);
+                        codeGenerator.IL.Emit(OpCodes.Call, Methods.Operators.StrictEmptyPhpArrayEquality);
+                        break;
+                }                
+            }
+        }
+
+        /// <summary>
+        /// Determines whether given <paramref name="expr"/> represents an empty array (<c>array()</c> or <c>[]</c>).
+        /// </summary>
+        /// <param name="expr">Expression to be checked.</param>
+        /// <returns>True if <paramref name="expr"/> is an empty array expression.</returns>
+        private static bool IsEmptyArrayEx(Expression/*!*/expr)
+        {
+            Debug.Assert(expr != null);
+            return expr.GetType() == typeof(ArrayEx) && ((ArrayEx)expr).Items.Count == 0;
+        }
 
 		#endregion
 
