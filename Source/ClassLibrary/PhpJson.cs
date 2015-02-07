@@ -169,6 +169,12 @@ namespace PHP.Library
             /// </summary>
             [ImplementsConstant("JSON_FORCE_OBJECT")]
             JSON_FORCE_OBJECT = 16,
+
+            /// <summary>
+            /// Encodes numeric strings as numbers. 
+            /// </summary>
+            [ImplementsConstant("JSON_NUMERIC_CHECK")]
+            JSON_NUMERIC_CHECK = 32,
         }
 
         /// <summary>
@@ -206,7 +212,8 @@ namespace PHP.Library
                     HexAmp = (options & JsonEncodeOptions.JSON_HEX_AMP) != 0,
                     HexApos = (options & JsonEncodeOptions.JSON_HEX_APOS) != 0,
                     HexQuot = (options & JsonEncodeOptions.JSON_HEX_QUOT) != 0,
-                    HexTag = (options & JsonEncodeOptions.JSON_HEX_TAG) != 0
+                    HexTag = (options & JsonEncodeOptions.JSON_HEX_TAG) != 0,
+                    NumericCheck = (options & JsonEncodeOptions.JSON_NUMERIC_CHECK) != 0,
                 },
                 new JsonFormatter.DecodeOptions()
                 ).Serialize(value, UnknownTypeDesc.Singleton);
@@ -658,6 +665,21 @@ namespace PHP.Library
             /// <param name="value">The string.</param>
             private void WriteString(string value)
             {
+                if (encodeOptions.NumericCheck)
+                {
+                    int i;
+                    long l;
+                    double d;
+                    var result = PHP.Core.Convert.StringToNumber(value, out i, out l, out d);
+                    if ((result & Core.Convert.NumberInfo.IsNumber) != 0)
+                    {
+                        if ((result & Core.Convert.NumberInfo.Integer) != 0) writer.Write(i.ToString());
+                        if ((result & Core.Convert.NumberInfo.LongInteger) != 0) writer.Write(l.ToString());
+                        if ((result & Core.Convert.NumberInfo.Double) != 0) writer.Write(d.ToString());
+                        return;
+                    }
+                }
+
                 StringBuilder strVal = new StringBuilder(value.Length + 2);
 
                 strVal.Append(Tokens.Quote);
@@ -882,7 +904,7 @@ namespace PHP.Library
         /// </summary>
         public class EncodeOptions
         {
-            public bool HexTag = false, HexAmp = false, HexApos = false, HexQuot = false, ForceObject = false;
+            public bool HexTag = false, HexAmp = false, HexApos = false, HexQuot = false, ForceObject = false, NumericCheck = false;
         }
 
         /// <summary>
