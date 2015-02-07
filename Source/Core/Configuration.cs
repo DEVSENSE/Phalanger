@@ -16,6 +16,80 @@ using System.Diagnostics;
 
 namespace PHP.Core
 {
+	#region Language Features Enum
+
+	/// <summary>
+	/// PHP language features supported by Phalanger.
+	/// </summary>
+	[Flags]
+	public enum LanguageFeatures
+	{
+		/// <summary>
+		/// Basic features - always present.
+		/// </summary>
+		Basic = 0,
+
+		/// <summary>
+		/// Allows using short open tags in the script.
+		/// </summary>
+		ShortOpenTags = 1,
+
+		/// <summary>
+		/// Allows using ASP tags.
+		/// </summary>
+		AspTags = 2,
+
+		/// <summary>
+		/// Enables PHP5 keywords such as <c>private</c>, <c>protected</c>, <c>public</c>, <c>clone</c>, etc.
+		/// </summary>
+		V5Keywords = 4,
+
+		/// <summary>
+		/// Enables primitive type keywords <c>bool</c>, <c>int</c>, <c>int64</c>, <c>double</c>, <c>string</c>,
+		/// <c>object</c>, <c>resource</c>.
+		/// </summary>
+		TypeKeywords = 8,
+
+		/// <summary>
+		/// Enables LINQ <c>from</c> keyword and LINQ context keywords <c>where</c>, <c>orderby</c>, <c>ascending</c>, 
+		/// <c>descending</c>, <c>select</c>, <c>group</c>, <c>by</c>, <c>in</c>).
+		/// </summary>
+		Linq = 16,
+
+		/// <summary>
+		/// Enables PHP6 keywords such as <c>goto</c>, <c>import</c>, <c>namespace</c>.
+		/// </summary>
+		V6Keywords = 32,
+
+		/// <summary>
+		/// Enables Unicode escapes in strings (\U, \u, \C).
+		/// </summary>
+		UnicodeSemantics = 64,
+
+		/// <summary>
+		/// Allows to treat values of PHP types as CLR objects (e.g. $s = "string"; $s->GetHashCode()).
+		/// </summary>
+		ClrSemantics = 128,
+
+		/// <summary>
+		/// Features enabled by default in the standard mode. Corresponds to the currently supported version of PHP 
+		/// <seealso cref="PhpVersion.Current"/>.
+		/// </summary>
+		Default = Php5,
+
+		/// <summary>
+		/// Features enabled by default in the pure mode. Corresponds to the PHP/CLR language.
+		/// </summary>
+		PureModeDefault = PhpClr,
+
+		Php4 = ShortOpenTags | AspTags,
+		Php5 = Php4 | V5Keywords,
+		Php6 = Php5 | V6Keywords | UnicodeSemantics,
+		PhpClr = Php6 | TypeKeywords | Linq | ClrSemantics
+	}
+
+	#endregion
+
 	// library configuration
 
 	#region Library Configuration Interface
@@ -133,18 +207,6 @@ namespace PHP.Core
 			public bool ImplicitFlush { get { return implicitFlush; } }
 			public bool implicitFlush = false;
 
-            /// <summary>
-            /// Overrides <see cref="System.Web.HttpResponse.Charset"/> if not <c>null</c>.
-            /// </summary>
-            public string CharSet { get { return this.charSet; } }
-            private string charSet = null;
-
-            /// <summary>
-            /// Overrides <see cref="System.Web.HttpResponse.ContentType"/> if not <c>null</c>.
-            /// </summary>
-            public string ContentType { get { return this.contentType; } }
-            private string contentType = null;
-
 			internal OutputControlSection DeepCopy()
 			{
 				return (OutputControlSection)MemberwiseClone();
@@ -215,32 +277,7 @@ namespace PHP.Core
 			/// <summary>
 			/// A file where to log errors if logging is enabled. Empty value means errors are not logged into a file.
 			/// </summary>
-            public string LogFile = null;
-
-            /// <summary>
-            /// Ensures the path is rooted.
-            /// </summary>
-            /// <param name="value">LogFile value.</param>
-            /// <param name="node">Configuration element.</param>
-            private static string AbsolutizeLogFile(string value, System.Xml.XmlNode/*!*/node)
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    return null;
-                }
-                else
-                {
-                    if (System.IO.Path.IsPathRooted(value))
-                    {
-                        return value;
-                    }
-                    else
-                    {
-                        // relative path provided, make it rooted to config directory
-                        return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(ConfigUtils.GetConfigXmlPath(node.OwnerDocument)), value);
-                    }
-                }
-            }
+			public string LogFile = null;
 
 			/// <summary>
 			/// Whether to log errors.
@@ -360,10 +397,10 @@ namespace PHP.Core
 		/// </summary>
 		public sealed partial class VariablesSection : IPhpConfigurationSection
 		{
-            ///// <summary>
-            ///// Whether to emulate Zend Engine 1 behavior.
-            ///// </summary>
-            //public bool ZendEngineV1Compatible = false;
+			/// <summary>
+			/// Whether to emulate Zend Engine 1 behavior.
+			/// </summary>
+			public bool ZendEngineV1Compatible = false;
 
 			/// <summary>
 			/// Whether to quote values returned from some PHP functions.
@@ -373,7 +410,7 @@ namespace PHP.Core
 			/// <summary>
 			/// Whether to quote values in Sybase DB manner, i.e. using '' instead of \'.
 			/// </summary>
-			public readonly bool QuoteInDbManner = false;
+			public bool QuoteInDbManner = false;
 
 			/// <summary>
 			/// User callback called on failed serialization. Can be empty.
@@ -558,7 +595,7 @@ namespace PHP.Core
 			Session = new SessionSection();
 			Library = new LibraryConfigurationsSection();
 
-            LastConfigurationModifiedTimeUtc = DateTime.MinValue;
+            LastConfigurationModificationTime = DateTime.MinValue;
 		}
 
 		/// <summary>
@@ -577,7 +614,7 @@ namespace PHP.Core
 			this.Session = source.Session.DeepCopy();
 			this.Library = source.Library.DeepCopy();
 
-            LastConfigurationModifiedTimeUtc = source.LastConfigurationModifiedTimeUtc;
+            LastConfigurationModificationTime = source.LastConfigurationModificationTime;
 		}
 
 		/// <summary>
@@ -601,7 +638,7 @@ namespace PHP.Core
         /// .config file (set of .config files) latest modification time.
         /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
         /// </summary>
-        public DateTime LastConfigurationModifiedTimeUtc { get; internal set; }
+        public DateTime LastConfigurationModificationTime { get; internal set; }
 
         #endregion
 	}
@@ -752,7 +789,7 @@ namespace PHP.Core
 			public bool? EnableStaticInclusions { get { return enableStaticInclusions; } set { enableStaticInclusions = value; } }
 			private bool? enableStaticInclusions;
 
-            #endregion
+			#endregion
 
 			#region Simple Options
 
@@ -771,7 +808,12 @@ namespace PHP.Core
 			/// </summary>
 			public bool V5Keywords { get { return (_languageFeatures & LanguageFeatures.V5Keywords) != 0; } }
 
-            /// <summary>
+			/// <summary>
+			/// Gets whether <see cref="PHP.Core.LanguageFeatures.V6Keywords"/> feature is enabled.
+			/// </summary>
+			public bool V6Keywords { get { return (_languageFeatures & LanguageFeatures.V6Keywords) != 0; } }
+
+			/// <summary>
 			/// Gets whether <see cref="PHP.Core.LanguageFeatures.UnicodeSemantics"/> feature is enabled.
 			/// </summary>
 			public bool UnicodeSemantics { get { return (_languageFeatures & LanguageFeatures.UnicodeSemantics) != 0; } }
@@ -782,7 +824,12 @@ namespace PHP.Core
 			public bool TypeKeywords { get { return (_languageFeatures & LanguageFeatures.TypeKeywords) != 0; } }
 
 			/// <summary>
-			/// Gets whether <see cref="PHP.Core.LanguageFeatures.ClrSemantics"/> features are enabled.
+			/// Gets whether <see cref="PHP.Core.LanguageFeatures.Linq"/> feature is enabled.
+			/// </summary>
+			public bool Linq { get { return (_languageFeatures & LanguageFeatures.Linq) != 0; } }
+
+			/// <summary>
+			/// Gets whether <see cref="PHP.Core.LanguageFeatures.Linq"/> feature is enabled.
 			/// </summary>
 			public bool ClrSemantics { get { return (_languageFeatures & LanguageFeatures.ClrSemantics) != 0; } }
 
@@ -813,11 +860,6 @@ namespace PHP.Core
 			/// </summary>
 			public int[]/*!*/ DisabledWarningNumbers { get { return disabledWarningNumbers; } set { disabledWarningNumbers = value; } }
 			private int[]/*!*/ disabledWarningNumbers;
-
-            /// <summary>
-            /// Whether to treat warnings as errors, so code containing warnings won't be allowed to be compiled or executed.
-            /// </summary>
-            public bool TreatWarningsAsErrors { get; set; }
 
 			#endregion
 
@@ -914,11 +956,11 @@ namespace PHP.Core
         /// .config file (set of .config files) latest modification time.
         /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
         /// </summary>
-        public DateTime LastConfigurationModifiedTimeUtc
+        public DateTime LastConfigurationModificationTime
         {
             get
             {
-                return Paths.LastConfigurationModificationTimeUtc;
+                return Paths.LastConfigurationModificationTime;
             }
         }
 
@@ -957,10 +999,10 @@ namespace PHP.Core
 			/// </summary>
 			public bool RegisterLongArrays = false;
 
-            /// <summary>
-            /// Whether to quote GET/POST/Cookie variables' values when they are added to respective global arrays.
-            /// </summary>
-            public readonly bool QuoteGpcVariables = false;
+			/// <summary>
+			/// Whether to quote GET/POST/Cookie variables' values when they are added to respective global arrays.
+			/// </summary>
+			public bool QuoteGpcVariables = false;
 
 			internal GlobalVariablesSection DeepCopy()
 			{
@@ -1010,7 +1052,7 @@ namespace PHP.Core
 			PostedFiles = new PostedFilesSection();
 			SafeMode = new SafeModeSection();
 #endif
-            this.LastConfigurationModifiedTimeUtc = DateTime.MinValue;
+            this.LastConfigurationModificationTime = DateTime.MinValue;
 		}
 
 		/// <summary>
@@ -1028,7 +1070,7 @@ namespace PHP.Core
 			this.PostedFiles = source.PostedFiles.DeepCopy();
 			this.SafeMode = source.SafeMode.DeepCopy();
 #endif
-            this.LastConfigurationModifiedTimeUtc = source.LastConfigurationModifiedTimeUtc;
+            this.LastConfigurationModificationTime = source.LastConfigurationModificationTime;
 		}
 
 		/// <summary>
@@ -1057,7 +1099,7 @@ namespace PHP.Core
         /// .config file (set of .config files) latest modification time.
         /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
         /// </summary>
-        public DateTime LastConfigurationModifiedTimeUtc { get; internal set; }
+        public DateTime LastConfigurationModificationTime { get; internal set; }
 
         #endregion
     }

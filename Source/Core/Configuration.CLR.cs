@@ -1056,13 +1056,13 @@ namespace PHP.Core
 			/// <summary>
 			/// Directory path where dynamic wrappers are stored. 
 			/// </summary>
-			public FullPath DynamicWrappers { get { return dynamicWrappers; } }
+            public FullPath DynamicWrappers { get { return dynamicWrappers; } }
 			private FullPath dynamicWrappers;
 
 			/// <summary>
 			/// Directory path where managed libraries are stored. 
 			/// </summary>
-			public FullPath Libraries { get { return libraries; } }
+            public FullPath Libraries { get { return libraries; } }
 			private FullPath libraries;
 
 			/// <summary>
@@ -1089,17 +1089,33 @@ namespace PHP.Core
 			public FullPath ExtTypeDefs { get { return typeDefs; } }
 			private FullPath typeDefs;
 
-			public PathsSection()
-			{
-				libraries = manager = natives = wrappers = typeDefs = new FullPath(".");
-			}
+            /// <summary>
+            /// Last determined modification time. Used to invalidate assemblies compiled before this time.
+            /// </summary>
+            public DateTime LastConfigurationModificationTime { get; private set; }
+
+            public PathsSection()
+            {
+                var http_context = HttpContext.Current;
+
+                // default paths, used when the configuration does not set its own:
+
+                string current_app_dir = (http_context != null) ? http_context.Server.MapPath("/bin") : ".";
+                libraries = manager = natives = wrappers = typeDefs = new FullPath(current_app_dir);
+
+                string dynamic_path = (http_context != null) ? current_app_dir : Path.GetTempPath();
+                dynamicWrappers = new FullPath(dynamic_path);
+            }
 
 			/// <summary>
 			/// Loads paths from XML configuration node.
 			/// </summary>
 			public bool Parse(string name, string value, XmlNode node)
 			{
-				switch (name)
+                // determine last configuration modification time:
+                this.LastConfigurationModificationTime = ConfigUtils.GetConfigModificationTime(node, this.LastConfigurationModificationTime);
+
+                switch (name)
 				{
 					case "DynamicWrappers": dynamicWrappers = CheckedPath(value, node); return true;
 					case "Libraries": libraries = CheckedPath(value, node); return true;
@@ -1111,8 +1127,10 @@ namespace PHP.Core
 				return false;
 			}
 
-			private FullPath CheckedPath(string value, XmlNode node)
+			private FullPath CheckedPath(string value, XmlNode/*!*/node)
 			{
+                Debug.Assert(node != null);
+
 				FullPath result;
 
 				// checks path correctness:
@@ -1135,33 +1153,10 @@ namespace PHP.Core
 				return result;
 			}
 
-			internal void Validate()
-			{
-				try
-				{
-					// dynamic wrappers needs a directory where they can be generated:
-					if (dynamicWrappers.IsEmpty)
-						dynamicWrappers = new FullPath(Path.GetTempPath());
-
-					//          // support a situation when app is distributed without Phalanger installation and
-					//          // all files of the app are contained in a single directory:
-					//          if (libraries.IsEmpty || natives.IsEmpty || manager.IsEmpty || typeDefs.IsEmpty || wrappers.IsEmpty) 
-					//          {
-					//            FullPath current_dir = new FullPath(".");
-					//            
-					//            if (libraries.IsEmpty) libraries = current_dir;
-					//            if (natives.IsEmpty) natives = current_dir;
-					//            if (manager.IsEmpty) manager = current_dir;
-					//            if (typeDefs.IsEmpty) typeDefs = current_dir;
-					//            if (wrappers.IsEmpty) wrappers = current_dir;
-					//          }
-				}
-				catch (Exception e)
-				{
-					// security or other problems may occure:
-					throw new ConfigurationErrorsException(e.Message);
-				}
-			}
+            internal void Validate()
+            {
+                
+            }
 		}
 
 		#endregion
@@ -1469,6 +1464,7 @@ namespace PHP.Core
 		{
 			Debug.Assert(node != null && (assemblyName != null ^ assemblyUrl != null));
 
+            // load the assembly:
 			DAssembly assembly = applicationContext.AssemblyLoader.Load(assemblyName, assemblyUrl, new LibraryConfigStore(node));
 			PhpLibraryAssembly lib_assembly = assembly as PhpLibraryAssembly;
 
@@ -1958,12 +1954,18 @@ namespace PHP.Core
             // parse the class library node at the end
             if (node_ClassLibrary != null)
             {
-                // validate paths, since there may be not configured values that are needed while libraries are being loaded
-                app.Paths.Validate();
-
                 // parses and loads libraries contained in the list:
                 ConfigUtils.ParseLibraryAssemblyList(
-                    node_ClassLibrary, new ConfigUtils.ParseLibraryAssemblyCallback(result.AddLibrary),
+                    node_ClassLibrary,
+                    (string assemblyName, Uri assemblyUrl, string sectionName, XmlNode/*!*/ node) =>
+                    {
+                        // determine configuration modification time:
+                        result.Global.LastConfigurationModificationTime =
+                            ConfigUtils.GetConfigModificationTime(node, result.Global.LastConfigurationModificationTime);
+
+                        //
+                        return result.AddLibrary(assemblyName, assemblyUrl, sectionName, node);
+                    },
                     app.Paths.ExtWrappers,
                     app.Paths.Libraries);
             }
@@ -1971,6 +1973,9 @@ namespace PHP.Core
             // and script library after that
             if (node_ScriptLibrary != null)
             {
+                result.Local.LastConfigurationModificationTime =
+                            ConfigUtils.GetConfigModificationTime(node_ScriptLibrary, result.Local.LastConfigurationModificationTime);
+
                 ConfigUtils.ParseScriptLibraryAssemblyList(node_ScriptLibrary,
                     applicationContext.ScriptLibraryDatabase.AddLibrary,
                     applicationContext.ScriptLibraryDatabase.RemoveLibrary,
@@ -2179,6 +2184,21 @@ namespace PHP.Core
 					throw new ConfigUtils.InvalidAttributeValueException(node, "scope");
 			}
 		}
+
+        /// <summary>
+        /// Latest configuration modification time.
+        /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
+        /// </summary>
+        public static DateTime LastConfigurationModificationTime
+        {
+            get
+            {
+                return DateTimeUtils.Max(
+                    Application.LastConfigurationModificationTime,
+                    Global.LastConfigurationModificationTime,
+                    Local.LastConfigurationModificationTime);
+            }
+        }
 	}
 
 	#endregion

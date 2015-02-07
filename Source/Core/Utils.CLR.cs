@@ -305,14 +305,38 @@ namespace PHP.Core
         {
             Debug.Assert(document != null);
 
+            var errorInfo = document as System.Configuration.Internal.IConfigErrorInfo;
             var configXml = document as System.Configuration.ConfigXmlDocument;
-            
+
             if (document.BaseURI != "")
                 return document.BaseURI;
+            else if (errorInfo != null)
+                return errorInfo.Filename;
             else if (configXml != null)
                 return configXml.Filename;
             else
                 return AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+        }
+
+        /// <summary>
+        /// Determine the configuration file for given <see cref="XmlNode"/> and its last modification time.
+        /// </summary>
+        /// <param name="node"><see cref="XmlNode"/> from a configuration file.</param>
+        /// <param name="maxTime">Currently latest modification time. The returned value cannot be lower.</param>
+        /// <returns>Time of the configuration file modification or <see cref="DateTime.MinValue"/>.</returns>
+        public static DateTime GetConfigModificationTime(XmlNode/*!*/node, DateTime maxTime)
+        {
+            Debug.Assert(node != null);
+
+            try
+            {
+                var d = File.GetLastWriteTime(GetConfigXmlPath(node.OwnerDocument));
+                return (d > maxTime) ? d : maxTime;
+            }
+            catch
+            {
+                return maxTime;
+            }
         }
 
         /// <summary>
@@ -424,7 +448,7 @@ namespace PHP.Core
 
 			foreach (XmlNode child in node.ChildNodes)
 			{
-				if (child.Name == "add")
+                if (child.Name == "add")
 				{
 					if (!Configuration.IsValidInCurrentScope(child)) continue;
 
