@@ -1,9 +1,9 @@
 <?
-	import namespace System;
-	import namespace System\Drawing;
-
 	namespace Phalanger
 	{
+        use System\Random;
+        use System\Drawing\Color;
+
 		// Computes the Mandelbrot set
 		class MandelbrotSet
 		{

@@ -1,13 +1,22 @@
 <?
-import namespace System;
-import namespace System\Drawing;
-import namespace System\Drawing\Imaging;
-import namespace System\Windows\Forms;
-
-import namespace Phalanger;
 
 namespace WinForms{
-	partial class Form1 extends System\Windows\Forms\Form
+    
+    use System;
+    use System\Windows\Forms;
+    use System\Windows\Forms\MouseButtons;
+    use System\Windows\Forms\FormWindowState;
+
+    use System\Drawing\Bitmap;
+    use System\Drawing\Point;
+    use System\Drawing\Imaging\PixelFormat;
+
+    use System\IDisposable;
+    use System\Environment;
+
+    use Phalanger\MandelbrotSet;
+	
+    partial class Form1 extends Forms\Form
 	{
         private $bitmap;
 		private $mandelbrot;
