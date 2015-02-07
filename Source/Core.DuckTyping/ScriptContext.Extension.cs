@@ -18,10 +18,10 @@ namespace PHP.Core.DuckTyping
                 return DuckTyping.Instance.ImplementDuckType<T>(rf.Value);
         }
 
-        public static T Call<T>(string/*!*/ functionName, params object[] arguments)
+        public static T Call<T>(this ScriptContext context, string/*!*/ functionName, params object[] arguments)
             where T : class
         {
-            return Call<T>(functionName, null, null, arguments);
+            return Call<T>(context, functionName, null, null, arguments);
         }
 
         /// <summary>
