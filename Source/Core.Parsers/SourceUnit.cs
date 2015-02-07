@@ -15,7 +15,7 @@ namespace PHP.Core
     /// <summary>
     /// Represents single source document.
     /// </summary>
-    public abstract class SourceUnit : ILineBreaks
+    public abstract class SourceUnit : ILineBreaks, IPropertyCollection
     {
         #region Fields & Properties
 
@@ -28,6 +28,11 @@ namespace PHP.Core
 
         public AST.GlobalCode Ast { get { return ast; } }
         protected AST.GlobalCode ast;
+
+        /// <summary>
+        /// Set of object properties.
+        /// </summary>
+        private PropertyCollection innerProps;
 
         /// <summary>
         /// Gets line breaks for this source unit.
@@ -218,6 +223,67 @@ namespace PHP.Core
         public virtual void GetLineColumnFromPosition(int position, out int line, out int column)
         {
             this.innerLineBreaks.GetLineColumnFromPosition(position, out line, out column);
+        }
+
+        #endregion
+
+        #region IPropertyCollection Members
+
+        void IPropertyCollection.SetProperty(object key, object value)
+        {
+            innerProps.SetProperty(key, value);
+        }
+
+        void IPropertyCollection.SetProperty<T>(T value)
+        {
+            innerProps.SetProperty<T>(value);
+        }
+
+        object IPropertyCollection.GetProperty(object key)
+        {
+            return innerProps.GetProperty(key);
+        }
+
+        T IPropertyCollection.GetProperty<T>()
+        {
+            return innerProps.GetProperty<T>();
+        }
+
+        bool IPropertyCollection.TryGetProperty(object key, out object value)
+        {
+            return innerProps.TryGetProperty(key, out value);
+        }
+
+        bool IPropertyCollection.TryGetProperty<T>(out T value)
+        {
+            return innerProps.TryGetProperty<T>(out value);
+        }
+
+        bool IPropertyCollection.RemoveProperty(object key)
+        {
+            return innerProps.RemoveProperty(key);
+        }
+
+        bool IPropertyCollection.RemoveProperty<T>()
+        {
+            return innerProps.RemoveProperty<T>();
+        }
+
+        void IPropertyCollection.ClearProperties()
+        {
+            innerProps.ClearProperties();
+        }
+
+        object IPropertyCollection.this[object key]
+        {
+            get
+            {
+                return innerProps[key];
+            }
+            set
+            {
+                innerProps[key] = value;
+            }
         }
 
         #endregion
