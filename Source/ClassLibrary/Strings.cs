@@ -133,14 +133,14 @@ namespace PHP.Library
 		private static CharMap _charmap;
 
 		/// <summary>
-		/// Creates or clears <see cref="_charmap"/>.
+		/// Get clear <see cref="CharMap"/> to be used by current thread. <see cref="_charmap"/>.
 		/// </summary>
 		internal static CharMap InitializeCharMap()
 		{
 			CharMap result = _charmap;
 
 			if (result == null)
-				_charmap = result = new CharMap(0x800);
+				_charmap = result = new CharMap(0x0800);
 			else
 				result.ClearAll();
 
@@ -2589,21 +2589,24 @@ namespace PHP.Library
 
 		/// <include file='Doc/Strings.xml' path='docs/method[@name="AddCSlashes"]/*'/>
 		/// <exception cref="PhpException">Thrown if <paramref name="str"/> interval is invalid.</exception>
-		[ImplementsFunction("addcslashes")]
-		public static string AddCSlashesAscii(string str, string mask)
-		{
-			if (str == null) return String.Empty;
-			if (mask == null) return str;
+        [ImplementsFunction("addcslashes")]
+        public static string AddCSlashesAscii(string str, string mask)
+        {
+            if (string.IsNullOrEmpty(str)) return String.Empty;
+            if (string.IsNullOrEmpty(mask)) return str;
 
-			Encoding encoding = Configuration.Application.Globalization.PageEncoding;
+            //Encoding encoding = Configuration.Application.Globalization.PageEncoding;
 
-			// to guarantee the same result both the string and the mask has to be converted to bytes:
-			string c = ArrayUtils.ToString(encoding.GetBytes(mask));
-			string s = ArrayUtils.ToString(encoding.GetBytes(str));
+            //// to guarantee the same result both the string and the mask has to be converted to bytes:
+            //string c = ArrayUtils.ToString(encoding.GetBytes(mask));
+            //string s = ArrayUtils.ToString(encoding.GetBytes(str));
 
-			// the result contains ASCII characters only, so there is no need to conversions:
-			return AddCSlashesInternal(str, s, c);
-		}
+            string c = Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(mask));
+            string s = Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(str));
+
+            // the result contains ASCII characters only, so there is no need to conversions:
+            return AddCSlashesInternal(str, s, c);
+        }
 
 		/// <param name="translatedStr">A sequence of chars or ints from which to take character codes.</param>
 		/// <param name="translatedMask">A mask containing codes.</param>
@@ -2631,11 +2634,13 @@ namespace PHP.Library
 			StringBuilder result = new StringBuilder();
 			for (int i = 0; i < str.Length; i++)
 			{
-				char c = translatedStr[i];
+                //char c = translatedStr[i];
 
-				if (charmap.Contains(c))
+				if (charmap.Contains(translatedStr[i]))
 				{
 					result.Append('\\');
+
+                    char c = str[i];    // J: translatedStr and translatedMask are used only in context of CharMap, later we are working with original str only
 
 					// performs conversion to C representation:
 					if (c < '\u0020' || c > '\u007f')
@@ -2643,7 +2648,7 @@ namespace PHP.Library
 						if (c >= '\u0007' && c <= '\u000d')
 							result.Append(cslashed_chars[c - '\u0007']);
 						else
-							result.Append(System.Convert.ToString((int)c, 8));
+							result.Append(System.Convert.ToString((int)c, 8));  // 0x01234567
 					}
 					else
 						result.Append(c);
