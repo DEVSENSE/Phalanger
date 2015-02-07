@@ -409,25 +409,45 @@ namespace PHP.Library
         [ImplementsFunction("filter_has_var")]
         public static bool filter_has_var(ScriptContext/*!*/context, FilterInput type, string variable_name)
         {
+            var arrayobj = GetArrayByInput(context, type);
+            if (arrayobj != null)
+                return arrayobj.ContainsKey(variable_name);
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Returns <see cref="PhpArray"/> containing required input.
+        /// </summary>
+        /// <param name="context">CUrrent <see cref="ScriptContext"/>.</param>
+        /// <param name="type"><see cref="FilterInput"/> value.</param>
+        /// <returns>An instance of <see cref="PhpArray"/> or <c>null</c> if there is no such input.</returns>
+        private static PhpArray GetArrayByInput(ScriptContext/*!*/context, FilterInput type)
+        {
+            object arrayobj = null;
+
             switch (type)
             {
                 case FilterInput.Get:
-                    return context.AutoGlobals.Get.Value is PhpArray && ((PhpArray)context.AutoGlobals.Get.Value).ContainsKey(variable_name);
+                    arrayobj = context.AutoGlobals.Get.Value; break;
                 case FilterInput.Post:
-                    return context.AutoGlobals.Post.Value is PhpArray && ((PhpArray)context.AutoGlobals.Post.Value).ContainsKey(variable_name);
+                    arrayobj = context.AutoGlobals.Post.Value; break;
                 case FilterInput.Server:
-                    return context.AutoGlobals.Server.Value is PhpArray && ((PhpArray)context.AutoGlobals.Server.Value).ContainsKey(variable_name);
+                    arrayobj = context.AutoGlobals.Server.Value; break;
                 case FilterInput.Request:
-                    return context.AutoGlobals.Request.Value is PhpArray && ((PhpArray)context.AutoGlobals.Request.Value).ContainsKey(variable_name);
+                    arrayobj = context.AutoGlobals.Request.Value; break;
                 case FilterInput.Env:
-                    return context.AutoGlobals.Env.Value is PhpArray && ((PhpArray)context.AutoGlobals.Env.Value).ContainsKey(variable_name);
+                    arrayobj = context.AutoGlobals.Env.Value; break;
                 case FilterInput.Cookie:
-                    return context.AutoGlobals.Cookie.Value is PhpArray && ((PhpArray)context.AutoGlobals.Cookie.Value).ContainsKey(variable_name);
+                    arrayobj = context.AutoGlobals.Cookie.Value; break;
                 case FilterInput.Session:
-                    return context.AutoGlobals.Session.Value is PhpArray && ((PhpArray)context.AutoGlobals.Session.Value).ContainsKey(variable_name);
+                    arrayobj = context.AutoGlobals.Session.Value; break;
                 default:
-                    return false;
+                    return null;
             }
+
+            // cast arrayobj to PhpArray if possible:
+            return PhpArray.AsPhpArray(arrayobj);
         }
 
         [ImplementsFunction("filter_var")]
