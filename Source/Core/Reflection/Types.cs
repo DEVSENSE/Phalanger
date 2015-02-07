@@ -2835,6 +2835,17 @@ namespace PHP.Core.Reflection
 				}
 			}
 
+            // check class constants
+            foreach (var constant in TypeDesc.Constants.Values)
+            {
+                if (constant.ClassConstant != null && !constant.ClassConstant.HasValue)
+                {
+                    // this constant will behave like PHP static field,
+                    // it needs to be initialized every request statically:
+                    this.Builder.HasThreadStaticFields = true;
+                }
+            }
+
 			// abstracts must be implemented in non-abstract class:
 			if (!IsAbstract)
 			{
