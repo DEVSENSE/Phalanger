@@ -1,17 +1,19 @@
-#!/bin/bash
+#!/bin/bash -e
 
 #Installing preconditions
 apt-get install xmlstarlet
 apt-get install apache2 libapache2-mod-mono
 
-echo "Enter Phalanger installation directory: (default=/usr/lib/phalanger)"
+echo "Enter Phalanger installation directory: (default=/usr/lib)"
 read phalanger_folder
 
 if  [ "$phalanger_folder" == "" ]; then
 	phalanger_folder="/usr/lib/phalanger"
 fi
 
-cp -r phalanger $phalanger_folder
+cp -r "phalanger/bin" $phalanger_folder
+cp -r "phalanger/dynamic" $phalanger_folder
+cp -r "phalanger/license.txt" $phalanger_folder
 
 chmod 777 $phalanger_folder/dynamic
 
