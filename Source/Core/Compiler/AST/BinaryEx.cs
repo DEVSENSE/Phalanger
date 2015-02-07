@@ -664,6 +664,9 @@ namespace PHP.Core.AST
                     case PhpTypeCode.Integer:
                         codeGenerator.IL.Emit(OpCodes.Call, Methods.CompareEq_object_int);
                         break;
+                    case PhpTypeCode.String:
+                        codeGenerator.IL.Emit(OpCodes.Call, Methods.CompareEq_object_string);
+                        break;
                     default:
                         codeGenerator.EmitBoxing(right_type);
                         codeGenerator.IL.Emit(OpCodes.Call, Methods.CompareEq_object_object);
