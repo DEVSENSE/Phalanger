@@ -220,7 +220,7 @@ namespace PHP.Core.Parsers
 
                     case Tokens.T_DOC_COMMENT:
                         // remember token value to be used by the next token and skip the current:
-                        this.lastDocComment = new PHPDocBlock(base.GetTokenString(), new ShortPosition(TokenTextSpan.Start));
+                        this.lastDocComment = new PHPDocBlock(base.GetTokenString(), TokenTextSpan);
                         this.commentsSink.OnPhpDocComment(this, this.lastDocComment);
                         break;
 
