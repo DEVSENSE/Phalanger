@@ -577,8 +577,10 @@ namespace PHP.Library.Xml
             if (className == null) return new SimpleXMLElement(xmlAttribute, iterationNamespace);
 
             SimpleXMLElement instance = Create(className);
-            instance.XmlAttribute = xmlAttribute;
+            instance.XmlElement = xmlAttribute.OwnerElement;
+            instance.iterationType = IterationType.Attribute;
             instance.iterationNamespace = iterationNamespace;
+            instance.XmlAttribute = xmlAttribute;
 
             return instance;
         }
@@ -594,8 +596,10 @@ namespace PHP.Library.Xml
             if (className == null) return new SimpleXMLElement(xmlAttribute);
 
             SimpleXMLElement instance = Create(className);
+            instance.XmlElement = xmlAttribute.OwnerElement;
+            instance.iterationType = IterationType.Attribute;
             instance.XmlAttribute = xmlAttribute;
-
+            
             return instance;
         }
 
