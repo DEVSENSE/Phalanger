@@ -118,7 +118,7 @@ namespace PHP.Core.Compiler.AST
                     return EmptyStmt.Unreachable;
                 }
 
-                ExInfoFromParent info = new ExInfoFromParent(this);
+                ExInfoFromParent info = new ExInfoFromParent(node);
                 info.Access = AccessType.None;
 
                 Evaluation expr_eval = node.Expression.Analyze(analyzer, info);
@@ -294,7 +294,7 @@ namespace PHP.Core.Compiler.AST
         {
             public void Analyze(StaticVarDecl/*!*/node, Analyzer analyzer)
             {
-                ExInfoFromParent sinfo = new ExInfoFromParent(this);
+                ExInfoFromParent sinfo = new ExInfoFromParent(node);
                 sinfo.Access = AccessType.WriteRef;
 
                 node.Variable.Analyze(analyzer, sinfo);

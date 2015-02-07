@@ -125,7 +125,7 @@ namespace PHP.Core.Compiler.AST
                     return EmptyStmt.Unreachable;
                 }
 
-                ExInfoFromParent info = new ExInfoFromParent(this);
+                ExInfoFromParent info = new ExInfoFromParent(node);
 
                 info.Access = AccessType.None;
 
@@ -244,7 +244,7 @@ namespace PHP.Core.Compiler.AST
         {
             public void Analyze(ForeachVar/*!*/node, Analyzer analyzer)
             {
-                ExInfoFromParent info = new ExInfoFromParent(this);
+                ExInfoFromParent info = new ExInfoFromParent(node);
                 if (node.Alias) info.Access = AccessType.WriteRef;
                 else info.Access = AccessType.Write;
 

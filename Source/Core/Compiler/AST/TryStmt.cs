@@ -197,7 +197,7 @@ namespace PHP.Core.Compiler.AST
 
             public void Analyze(CatchItem/*!*/node, Analyzer/*!*/ analyzer)
             {
-                ExInfoFromParent info = new ExInfoFromParent(this);
+                ExInfoFromParent info = new ExInfoFromParent(node);
                 info.Access = AccessType.Write;
 
                 resolvedType = analyzer.ResolveTypeName(node.ClassName, analyzer.CurrentType, analyzer.CurrentRoutine, node.Span, false);

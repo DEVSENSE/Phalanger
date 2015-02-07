@@ -24,6 +24,7 @@ namespace PHP.Core.Compiler.AST
     /// <summary>
     /// <see cref="AstNode"/> extension methods.
     /// </summary>
+    [DebuggerNonUserCode]
     internal static class AstNodeExtension
     {
         #region INodeCompiler instantiation
