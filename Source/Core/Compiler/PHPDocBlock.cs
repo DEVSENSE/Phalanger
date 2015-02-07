@@ -229,6 +229,11 @@ namespace PHP.Core
             /// Returns <c>true</c> if current element does not contain any information and can be ignored.
             /// </summary>
             internal virtual bool IsEmpty { get { return false; } }
+
+            /// <summary>
+            /// Called when parsing of this element ended.
+            /// </summary>
+            internal virtual void OnEndParsing() { }
         }
 
         /// <summary>
@@ -272,7 +277,7 @@ namespace PHP.Core
                     Debug.Assert(firstLineEndIndex != -1);
 
                     next = new LongDescriptionElement(this.Text.Substring(firstLineEndIndex + 1));
-                    this.Text = this.Text.Remove(firstLineEndIndex);
+                    this.Text = this.Text.Remove(firstLineEndIndex).Trim();
                 }
                 else
                 {
@@ -281,6 +286,12 @@ namespace PHP.Core
             }
 
             internal override bool IsEmpty { get { return string.IsNullOrWhiteSpace(this.Text); } }
+
+            internal override void OnEndParsing()
+            {
+                base.OnEndParsing();
+                this.Text = this.Text.Trim();
+            }
 
             public override string ToString()
             {
@@ -297,7 +308,7 @@ namespace PHP.Core
 
             public LongDescriptionElement(string initialText)
             {
-                this.Text = initialText;
+                this.Text = string.IsNullOrWhiteSpace(initialText) ? null : initialText;
             }
 
             internal override void ParseLine(string line, out Element next)
@@ -309,6 +320,12 @@ namespace PHP.Core
             }
 
             internal override bool IsEmpty { get { return string.IsNullOrWhiteSpace(this.Text); } }
+
+            internal override void OnEndParsing()
+            {
+                base.OnEndParsing();
+                this.Text = this.Text.Trim();
+            }
 
             public override string ToString()
             {
@@ -633,6 +650,14 @@ namespace PHP.Core
                 Description = string.IsNullOrWhiteSpace(Description) ? line : (Description + '\n' + line);
             }
 
+            internal override void OnEndParsing()
+            {
+                base.OnEndParsing();
+                
+                if (this.Description != null)
+                    this.Description = this.Description.Trim();
+            }
+
             internal override bool IsEmpty
             {
                 get
@@ -688,6 +713,12 @@ namespace PHP.Core
             {
                 next = null;
                 this.Text = string.IsNullOrEmpty(this.Text) ? line : (this.Text + '\n' + line);
+            }
+
+            internal override void OnEndParsing()
+            {
+                base.OnEndParsing();
+                this.Text = this.Text.Trim();
             }
         }
 
@@ -1048,7 +1079,10 @@ namespace PHP.Core
                     if (tmp != null)    // new element created, it is already initialized with the current line
                     {
                         if (!current.IsEmpty)
+                        {
+                            current.OnEndParsing();
                             result.Add(current);
+                        }
 
                         current = tmp;  // it is current element from now
                     }
@@ -1057,7 +1091,10 @@ namespace PHP.Core
 
             // add the last found element
             if (!current.IsEmpty)
+            {
+                current.OnEndParsing();
                 result.Add(current);
+            }
 
             //
             return result;
@@ -1146,10 +1183,10 @@ namespace PHP.Core
 
                 if (shortdesc != null || longdesc != null)
                 {
-                    if (shortdesc == null)
+                    if (string.IsNullOrEmpty(shortdesc))
                         return longdesc;
 
-                    if (longdesc == null)
+                    if (string.IsNullOrEmpty(longdesc))
                         return shortdesc;
 
                     return shortdesc + '\n' + longdesc;
