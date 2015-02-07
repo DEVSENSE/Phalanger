@@ -1583,7 +1583,7 @@ expr_without_chain:
 	|	expr '*' expr	                  { $$ = new BinaryEx(@$, Operations.Mul, (Expression)$1, (Expression)$3); }
 	|	expr '/' expr	                  { $$ = new BinaryEx(@$, Operations.Div, (Expression)$1, (Expression)$3); }
 	|	expr '%' expr 	                { $$ = new BinaryEx(@$, Operations.Mod, (Expression)$1, (Expression)$3); }
-	| expr T_SL expr	                { $$ = new BinaryEx(@$, Operations.ShiftLeft, (Expression)$1, (Expression)$3); }
+	|	expr T_SL expr	                { $$ = new BinaryEx(@$, Operations.ShiftLeft, (Expression)$1, (Expression)$3); }
 	|	expr T_SR expr	                { $$ = new BinaryEx(@$, Operations.ShiftRight, (Expression)$1, (Expression)$3); }
 	|	expr T_IS_IDENTICAL expr				{ $$ = new BinaryEx(@$, Operations.Identical, (Expression)$1, (Expression)$3); }	
 	|	expr T_IS_NOT_IDENTICAL expr		{ $$ = new BinaryEx(@$, Operations.NotIdentical, (Expression)$1, (Expression)$3); }
@@ -1599,12 +1599,13 @@ expr_without_chain:
 	|	expr '?' expr ':' expr          { $$ = new ConditionalEx(@$, (Expression)$1, (Expression)$3, (Expression)$5); }
 	|	expr '?' ':' expr			    { $$ = new ConditionalEx(@$, (Expression)$1, null, (Expression)$4); }
 	
-	| T_LIST '(' assignment_list ')' '=' expr { $$ = new ListEx(@$, (List<Expression>)$3, (Expression)$6); }
+	|	T_LIST '(' assignment_list ')' '=' expr { $$ = new ListEx(@$, (List<Expression>)$3, (Expression)$6); }
 	|	T_ARRAY '(' array_item_list_opt ')'     { $$ = new ArrayEx(@$, (List<Item>)$3); }
+	|	'[' array_item_list_opt ']'				{ $$ = new ArrayEx(@$, (List<Item>)$2); }
 	|	T_ISSET '(' writable_chain_list ')'     { $$ = new IssetEx(@$, (List<VariableUse>)$3); }
 	|	T_EMPTY '(' chain ')'				            { CheckVariableUse(@3, $3); $$ = new EmptyEx(@$, (VariableUse)$3); }		
 	|	T_EVAL '(' expr ')'                     { $$ = new EvalEx(@$, (Expression)$3, false); }
-	| T_ASSERT '(' expr ')'                   { $$ = new EvalEx(@$, (Expression)$3, true); }
+	|	T_ASSERT '(' expr ')'                   { $$ = new EvalEx(@$, (Expression)$3, true); }
 	|	T_EXIT exit_expr_opt		                { $$ = new ExitEx(@$, (Expression)$2); }
 	|	scalar_expr                             { $$ = $1; }			
 	|	'`' composite_string_opt '`'						{ $$ = new ShellEx(@$, CreateConcatExOrStringLiteral(CombinePositions(@1, @3), (List<Expression>)$2, false)); }
@@ -1952,6 +1953,7 @@ ctor_arguments_opt:
 constant_inititalizer:
 	  constant                                  { $$ = $1; }
 	|	T_ARRAY '(' constant_array_item_list_opt ')'	{ $$ = new ArrayEx(@$, (List<Item>)$3); }
+	|	'[' constant_array_item_list_opt ']'	{ $$ = new ArrayEx(@$, (List<Item>)$2); }
 	|	'+' constant_inititalizer	                { $$ = new UnaryEx(@$, Operations.Plus, (Expression)$2); }
 	|	'-' constant_inititalizer	                { $$ = new UnaryEx(@$, Operations.Minus, (Expression)$2); }
 	|	heredoc_expr { $$ = $1; if (!($1 is StringLiteral)) this.ErrorSink.Add(FatalErrors.SyntaxError, SourceUnit, @1, CoreResources.nowdoc_expected); }
