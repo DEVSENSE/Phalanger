@@ -449,26 +449,6 @@ namespace PHP.Core.Parsers
 			return new ForeachStmt(pos, enumeree, key, value, body);
 		}
 
-		private TryStmt/*!*/ CreateTryStmt(Position pos, List<Statement>/*!*/ tryStmts, Position classNamePos,
-			GenericQualifiedName/*!*/ className, Position variablePos, string/*!*/ variable,
-			List<Statement>/*!*/ catchStmts, List<CatchItem> catches)
-		{
-			CatchItem catch_item = new CatchItem(classNamePos, className, new DirectVarUse(variablePos,
-				new VariableName(variable)), catchStmts);
-
-			if (catches != null)
-			{
-				catches.Insert(0, catch_item);
-			}
-			else
-			{
-				catches = new List<CatchItem>();
-				catches.Add(catch_item);
-			}
-
-			return new TryStmt(pos, tryStmts, catches);
-		}
-
 		private void CheckVariableUse(Position position, object item)
 		{
 			if (item as VariableUse == null)

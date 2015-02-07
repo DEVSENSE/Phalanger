@@ -2631,12 +2631,13 @@ namespace PHP.Core.CodeDom
                 block.AddObject(Try, statement);
                 TryStatementContext TryContext = new TryStatementContext(Method, Block as BlockStatementContext, Try, this);
                 TranslateBlock(statement.Statements, Method, TryContext);
-                foreach (CatchItem Catch in statement.Catches)
-                {
-                    Try.CatchClauses.Add(new CodeCatchClause(TranslateDirectVarUse(Catch.Variable, Method), TranslateGenericQualifiedName(Catch.ClassName, true)));
-                    CatchStatementContext @catch = new CatchStatementContext(Method, Block as BlockStatementContext, Try, Try.CatchClauses.Count - 1, this);
-                    TranslateBlock(Catch.Statements, Method, @catch);
-                }
+                if (statement.Catches != null)
+                    foreach (CatchItem Catch in statement.Catches)
+                    {
+                        Try.CatchClauses.Add(new CodeCatchClause(TranslateDirectVarUse(Catch.Variable, Method), TranslateGenericQualifiedName(Catch.ClassName, true)));
+                        CatchStatementContext @catch = new CatchStatementContext(Method, Block as BlockStatementContext, Try, Try.CatchClauses.Count - 1, this);
+                        TranslateBlock(Catch.Statements, Method, @catch);
+                    }
             }
             #endregion
             #region Single-line

@@ -184,9 +184,7 @@ namespace PHP.Library
 			T_CONST = CoreTokens.T_CONST,
 			[ImplementsConstant("T_RETURN")]
 			T_RETURN = CoreTokens.T_RETURN,
-            [ImplementsConstant("T_YIELD")]
-            T_YIELD = CoreTokens.T_YIELD,
-            [ImplementsConstant("T_TRY")]
+			[ImplementsConstant("T_TRY")]
 			T_TRY = CoreTokens.T_TRY,
 			[ImplementsConstant("T_CATCH")]
 			T_CATCH = CoreTokens.T_CATCH,
