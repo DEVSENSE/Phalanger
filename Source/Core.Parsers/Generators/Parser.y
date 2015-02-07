@@ -953,7 +953,7 @@ statement:
 non_empty_statement:
 		identifier ':'     
 		{ 
-		  $$ = new LabelStmt(@$, (string)$1, @2); /* PHP 5.3 */ 
+		  $$ = new LabelStmt(@$, (string)$1, @1); /* PHP 5.3 */ 
 		}
 		
 	|	'{' inner_statement_list_opt '}' 
