@@ -82,37 +82,37 @@ namespace HtmlAgilityPack
             ElementsFlags.Add("script", HtmlElementFlag.CData);
             ElementsFlags.Add("style", HtmlElementFlag.CData);
             ElementsFlags.Add("noxhtml", HtmlElementFlag.CData);
-            
-            //// tags that can not contain other tags
-            //ElementsFlags.Add("base", HtmlElementFlag.Empty);
+
+            // tags that can not contain other tags
+            ElementsFlags.Add("base", HtmlElementFlag.Empty);
             ElementsFlags.Add("link", HtmlElementFlag.Empty);
             ElementsFlags.Add("meta", HtmlElementFlag.Empty);
-            //ElementsFlags.Add("isindex", HtmlElementFlag.Empty);
+            ElementsFlags.Add("isindex", HtmlElementFlag.Empty);
             ElementsFlags.Add("hr", HtmlElementFlag.Empty);
-            //ElementsFlags.Add("col", HtmlElementFlag.Empty);
+            ElementsFlags.Add("col", HtmlElementFlag.Empty);
             ElementsFlags.Add("img", HtmlElementFlag.Empty);
-            //ElementsFlags.Add("param", HtmlElementFlag.Empty);
-            //ElementsFlags.Add("embed", HtmlElementFlag.Empty);
-            //ElementsFlags.Add("frame", HtmlElementFlag.Empty);
-            //ElementsFlags.Add("wbr", HtmlElementFlag.Empty);
-            //ElementsFlags.Add("bgsound", HtmlElementFlag.Empty);
-            //ElementsFlags.Add("spacer", HtmlElementFlag.Empty);
-            //ElementsFlags.Add("keygen", HtmlElementFlag.Empty);
-            //ElementsFlags.Add("area", HtmlElementFlag.Empty);
+            ElementsFlags.Add("param", HtmlElementFlag.Empty);
+            ElementsFlags.Add("embed", HtmlElementFlag.Empty);
+            ElementsFlags.Add("frame", HtmlElementFlag.Empty);
+            ElementsFlags.Add("wbr", HtmlElementFlag.Empty);
+            ElementsFlags.Add("bgsound", HtmlElementFlag.Empty);
+            ElementsFlags.Add("spacer", HtmlElementFlag.Empty);
+            ElementsFlags.Add("keygen", HtmlElementFlag.Empty);
+            ElementsFlags.Add("area", HtmlElementFlag.Empty);
             ElementsFlags.Add("input", HtmlElementFlag.Empty);
-            //ElementsFlags.Add("basefont", HtmlElementFlag.Empty);
+            ElementsFlags.Add("basefont", HtmlElementFlag.Empty);
 
-            //ElementsFlags.Add("form", HtmlElementFlag.CanOverlap);// | HtmlElementFlag.Empty);
+            ElementsFlags.Add("form", HtmlElementFlag.CanOverlap | HtmlElementFlag.Empty);
 
-            //// they sometimes contain, and sometimes they don 't...
-            ////ElementsFlags.Add("option", HtmlElementFlag.Empty);
+            // they sometimes contain, and sometimes they don 't...
+            ElementsFlags.Add("option", HtmlElementFlag.Empty);
 
-            //// tag whose closing tag is equivalent to open tag:
-            //// <p>bla</p>bla will be transformed into <p>bla</p>bla
-            //// <p>bla<p>bla will be transformed into <p>bla<p>bla and not <p>bla></p><p>bla</p> or <p>bla<p>bla</p></p>
-            ////<br> see above
+            // tag whose closing tag is equivalent to open tag:
+            // <p>bla</p>bla will be transformed into <p>bla</p>bla
+            // <p>bla<p>bla will be transformed into <p>bla<p>bla and not <p>bla></p><p>bla</p> or <p>bla<p>bla</p></p>
+            //<br> see above
             ElementsFlags.Add("br", HtmlElementFlag.Empty | HtmlElementFlag.Closed);
-            //ElementsFlags.Add("p", HtmlElementFlag.Empty | HtmlElementFlag.Closed);
+            ElementsFlags.Add("p", HtmlElementFlag.Empty | HtmlElementFlag.Closed);
         }
 
         /// <summary>
@@ -582,7 +582,7 @@ namespace HtmlAgilityPack
                 throw new ArgumentNullException("name");
             }
 
-            object flag = ElementsFlags[name.ToLowerInvariant()];
+            object flag = ElementsFlags[name.ToLower()];
             if (flag == null)
             {
                 return false;
@@ -615,7 +615,7 @@ namespace HtmlAgilityPack
                 throw new ArgumentNullException("name");
             }
 
-            object flag = ElementsFlags[name.ToLowerInvariant()];
+            object flag = ElementsFlags[name.ToLower()];
             if (flag == null)
             {
                 return false;
@@ -635,7 +635,7 @@ namespace HtmlAgilityPack
                 throw new ArgumentNullException("name");
             }
 
-            object flag = ElementsFlags[name.ToLowerInvariant()];
+            object flag = ElementsFlags[name.ToLower()];
             if (flag == null)
             {
                 return false;
@@ -672,7 +672,7 @@ namespace HtmlAgilityPack
                 return true;
             }
 
-            object flag = ElementsFlags[name.ToLowerInvariant()];
+            object flag = ElementsFlags[name.ToLower()];
             if (flag == null)
             {
                 return false;
@@ -1520,9 +1520,7 @@ namespace HtmlAgilityPack
                     html = ((HtmlCommentNode) this).Comment;
                     if (_ownerdocument.OptionOutputAsXml)
                     {
-                        outText.Write("<!--");
-                        outText.Write(GetXmlComment((HtmlCommentNode)this));
-                        outText.Write("-->");
+                        outText.Write("<!--" + GetXmlComment((HtmlCommentNode) this) + " -->");
                     }
                     else
                     {
@@ -1533,9 +1531,8 @@ namespace HtmlAgilityPack
                 case HtmlNodeType.Document:
                     if (_ownerdocument.OptionOutputAsXml)
                     {
-                        outText.Write("<?xml version=\"1.0\" encoding=\"");
-                        outText.Write(_ownerdocument.GetOutEncoding().BodyName);
-                        outText.Write("\"?>");
+                        outText.Write("<?xml version=\"1.0\" encoding=\"" + _ownerdocument.GetOutEncoding().BodyName +
+                                      "\"?>");
 
                         // check there is a root element
                         if (_ownerdocument.DocumentNode.HasChildNodes)
@@ -1551,21 +1548,6 @@ namespace HtmlAgilityPack
 
                                 if (rootnodes > 1)
                                 {
-                                    foreach (HtmlNode node in _childnodes)
-                                    {
-                                        // ignore text attribute outside root element:
-                                        if (node.NodeType == HtmlNodeType.Element)
-                                        {
-                                            // get rid of xmlns attribute:
-                                            if (string.Equals(node.Name, "html", StringComparison.OrdinalIgnoreCase) && node.Attributes != null)
-                                            {
-                                                var xmlns = node.Attributes["xmlns"];
-                                                if (xmlns != null) xmlns.Remove();
-                                            }
-                                            node.WriteTo(outText);
-                                        }
-                                    }
-                                    /*
                                     if (_ownerdocument.OptionOutputUpperCase)
                                     {
                                         outText.Write("<SPAN>");
@@ -1577,7 +1559,7 @@ namespace HtmlAgilityPack
                                         outText.Write("<span>");
                                         WriteContentTo(outText);
                                         outText.Write("</span>");
-                                    }*/
+                                    }
                                     break;
                                 }
                             }
@@ -1590,7 +1572,7 @@ namespace HtmlAgilityPack
                     html = ((HtmlTextNode) this).Text;
                     if (_ownerdocument.OptionOutputAsXml)
                     {
-                        outText.Write(HtmlDocument.HtmlEncode(html, AttributeValueQuote.None));
+                        outText.Write(HtmlDocument.HtmlEncode(html));
                     }
                     else
                     {
@@ -1606,7 +1588,7 @@ namespace HtmlAgilityPack
                     }
                     else
                     {
-                        name = Name;    // already .ToLower();
+                        name = Name;
                     }
 
                     if (_ownerdocument.OptionOutputOriginalCase)
@@ -1614,21 +1596,27 @@ namespace HtmlAgilityPack
 
                     if (_ownerdocument.OptionOutputAsXml)
                     {
-                        if (string.IsNullOrWhiteSpace(name))    // not an empty/whitespace string
-                            break;
-                        
-                        if (name[0] == '?')
+                        if (name.Length > 0)
                         {
-                            // forget this one, it's been done at the document level
+                            if (name[0] == '?')
+                            {
+                                // forget this one, it's been done at the document level
+                                break;
+                            }
+
+                            if (name.Trim().Length == 0)
+                            {
+                                break;
+                            }
+                            name = HtmlDocument.GetXmlName(name);
+                        }
+                        else
+                        {
                             break;
                         }
-                        
-                        name = HtmlDocument.GetXmlName(name);
                     }
 
-                    // write "<name":
-                    outText.Write('<');
-                    outText.Write(name);
+                    outText.Write("<" + name);
                     WriteAttributes(outText, false);
 
                     if (!HasChildNodes)
@@ -1654,9 +1642,7 @@ namespace HtmlAgilityPack
                         }
                         else
                         {
-                            outText.Write("></");
-                            outText.Write(name);
-                            outText.Write(">");
+                            outText.Write("></" + name + ">");
                         }
                     }
                     else
@@ -1669,8 +1655,7 @@ namespace HtmlAgilityPack
                             {
                                 // this code and the following tries to output things as nicely as possible for old browsers.
                                 cdata = true;
-                                if (!string.IsNullOrEmpty(this.InnerText))
-                                    outText.Write("\r\n//<![CDATA[\r\n");
+                                outText.Write("\r\n//<![CDATA[\r\n");
                             }
                         }
 
@@ -1681,8 +1666,7 @@ namespace HtmlAgilityPack
                                 // child must be a text
                                 ChildNodes[0].WriteTo(outText);
                             }
-                            if (!string.IsNullOrEmpty(this.InnerText))
-                                outText.Write("\r\n//]]>//\r\n");
+                            outText.Write("\r\n//]]>//\r\n");
                         }
                         else
                         {
@@ -1772,21 +1756,7 @@ namespace HtmlAgilityPack
         internal static string GetXmlComment(HtmlCommentNode comment)
         {
             string s = comment.Comment;
-            Debug.Assert(s.StartsWith("<!--"));
-            Debug.Assert(s.EndsWith("-->"));
-
-            // remove starting/ending comment tags
-            s = s.Substring(4, s.Length - 7);
-                        
-            // ensure comment does not contain '--'
-            s = s.Replace("--", "- - ");
-
-            // ensure ending char is not '-'
-            if (s.Length > 0 && s[s.Length - 1] == '-')
-                s += ' ';
-            
-            //
-            return s;
+            return s.Substring(4, s.Length - 7).Replace("--", " - -");
         }
 
         internal static void WriteAttributes(XmlWriter writer, HtmlNode node)
@@ -1875,28 +1845,21 @@ namespace HtmlAgilityPack
         internal void WriteAttribute(TextWriter outText, HtmlAttribute att)
         {
             string name;
-            char quote = (att.QuoteType == AttributeValueQuote.DoubleQuote) ? '"' : '\'';
+            string quote = att.QuoteType == AttributeValueQuote.DoubleQuote ? "\"" : "'";
             if (_ownerdocument.OptionOutputAsXml)
             {
+                if (_ownerdocument.OptionOutputUpperCase)
+                {
+                    name = att.XmlName.ToUpper();
+                }
+                else
+                {
+                    name = att.XmlName;
+                }
                 if (_ownerdocument.OptionOutputOriginalCase)
                     name = att.OriginalName;
-                else
-                    name = _ownerdocument.OptionOutputUpperCase ? att.XmlName.ToUpper() : att.XmlName;
 
-                if (!string.IsNullOrEmpty(name))
-                {
-                    char firstChar = name[0];
-
-                    if (firstChar == '-' || (firstChar >= '0' && firstChar <= '9'))  // an invalid XML attribute name
-                        name = '_' + name;  //   // fix such attribute name by prepending '_'
-                }
-
-                outText.Write(' ');
-                outText.Write(name);
-                outText.Write('=');
-                outText.Write(quote);
-                outText.Write(HtmlDocument.HtmlEncode(att.XmlValue, att.QuoteType));
-                outText.Write(quote);
+                outText.Write(" " + name + "=" + quote + HtmlDocument.HtmlEncode(att.XmlValue) + quote);
             }
             else
             {
@@ -1914,8 +1877,7 @@ namespace HtmlAgilityPack
                     if ((att.Name[0] == '<') && (att.Name[1] == '%') &&
                         (att.Name[att.Name.Length - 1] == '>') && (att.Name[att.Name.Length - 2] == '%'))
                     {
-                        outText.Write(' ');
-                        outText.Write(name);
+                        outText.Write(" " + name);
                         return;
                     }
                 }
@@ -1923,29 +1885,16 @@ namespace HtmlAgilityPack
                 {
                     if (att.Value.IndexOfAny(new Char[] {(char) 10, (char) 13, (char) 9, ' '}) < 0)
                     {
-                        outText.Write(' ');
-                        outText.Write(name);
-                        outText.Write('=');
-                        outText.Write(att.Value);
+                        outText.Write(" " + name + "=" + att.Value);
                     }
                     else
                     {
-                        outText.Write(' ');
-                        outText.Write(name);
-                        outText.Write('=');
-                        outText.Write(quote);
-                        outText.Write(att.Value);
-                        outText.Write(quote);
+                        outText.Write(" " + name + "=" + quote + att.Value + quote);
                     }
                 }
                 else
                 {
-                    outText.Write(' ');
-                    outText.Write(name);
-                    outText.Write('=');
-                    outText.Write(quote);
-                    outText.Write(att.Value);
-                    outText.Write(quote);
+                    outText.Write(" " + name + "=" + quote + att.Value + quote);
                 }
             }
         }

@@ -8,9 +8,6 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.XPath;
 
-using PHP.Core;
-using System.Diagnostics; // StringUtils
-
 namespace HtmlAgilityPack
 {
     /// <summary>
@@ -21,7 +18,7 @@ namespace HtmlAgilityPack
         #region Fields
 
         private int _c;
-        //private Crc32 _crc32;
+        private Crc32 _crc32;
         private HtmlAttribute _currentattribute;
         private HtmlNode _currentnode;
         private Encoding _declaredencoding;
@@ -157,23 +154,23 @@ namespace HtmlAgilityPack
 
         #region Properties
 
-        ///// <summary>
-        ///// Gets the document CRC32 checksum if OptionComputeChecksum was set to true before parsing, 0 otherwise.
-        ///// </summary>
-        //public int CheckSum
-        //{
-        //    get
-        //    {
-        //        if (_crc32 == null)
-        //        {
-        //            return 0;
-        //        }
-        //        else
-        //        {
-        //            return (int)_crc32.CheckSum;
-        //        }
-        //    }
-        //}
+        /// <summary>
+        /// Gets the document CRC32 checksum if OptionComputeChecksum was set to true before parsing, 0 otherwise.
+        /// </summary>
+        public int CheckSum
+        {
+            get
+            {
+                if (_crc32 == null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return (int)_crc32.CheckSum;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the document's declared encoding.
@@ -258,139 +255,52 @@ namespace HtmlAgilityPack
         /// <returns>A string that is a valid XML name.</returns>
         public static string GetXmlName(string name)
         {
-            var result = new StringBuilder(name.Length);
-
-            if (char.IsDigit(name[0]))
-                result.Append('_'); // prepend name starting with a number with '_' character
-
+            string xmlname = string.Empty;
+            bool nameisok = true;
             for (int i = 0; i < name.Length; i++)
             {
-                char c = name[i];
-
+                // names are lcase
                 // note: we are very limited here, too much?
-                if ((c >= 'a' && c <= 'z') ||
-                    (c >= 'A' && c <= 'Z') ||
-                    (c >= '0' && c <= '9') ||
-                    //					(c==':') || (c=='_') || (c=='-') || (c=='.')) // these are bads in fact
-                    (c == '_') || (c == '-') || (c == '.'))
+                if (((name[i] >= 'a') && (name[i] <= 'z')) ||
+                    ((name[i] >= '0') && (name[i] <= '9')) ||
+                    //					(name[i]==':') || (name[i]=='_') || (name[i]=='-') || (name[i]=='.')) // these are bads in fact
+                    (name[i] == '_') || (name[i] == '-') || (name[i] == '.'))
                 {
-                    result.Append(c);
+                    xmlname += name[i];
                 }
                 else
                 {
-                    byte[] bytes = Encoding.UTF8.GetBytes(new char[] { c });
+                    nameisok = false;
+                    byte[] bytes = Encoding.UTF8.GetBytes(new char[] { name[i] });
                     for (int j = 0; j < bytes.Length; j++)
                     {
-                        result.Append(bytes[j].ToString("x2"));
+                        xmlname += bytes[j].ToString("x2");
                     }
-                    result.Append('_');
+                    xmlname += "_";
                 }
             }
-
-            return result.ToString();
+            if (nameisok)
+            {
+                return xmlname;
+            }
+            return "_" + xmlname;
         }
 
         /// <summary>
         /// Applies HTML encoding to a specified string.
         /// </summary>
         /// <param name="html">The input string to encode. May not be null.</param>
-        /// <param name="attrQuote">Quotes used to encapsulate this string, used to escape characters properly.</param>
         /// <returns>The encoded string.</returns>
-        public static string HtmlEncode(string html, AttributeValueQuote attrQuote)
+        public static string HtmlEncode(string html)
         {
             if (html == null)
+            {
                 throw new ArgumentNullException("html");
-            
+            }
             // replace & by &amp; but only once!
-            StringBuilder str = new StringBuilder(html.Length);// new StringBuilder(htmlAmpRegex.Replace(html, "&amp;"));
-            //return str.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").ToString();
-            for (int i = 0; i < html.Length; i++)
-            {
-                var c = html[i];
-                if (c == '&')
-                {
-                    // allowed: lt; gt; amp; quot;
-                    if (StartsWithHelperOrdinalIgnoreCase(html, "amp;", i + 1) ||
-                        StartsWithHelperOrdinalIgnoreCase(html, "lt;", i + 1) ||
-                        StartsWithHelperOrdinalIgnoreCase(html, "gt;", i + 1) ||
-                        StartsWithHelperOrdinalIgnoreCase(html, "quot;", i + 1))
-                        str.Append(c);
-                    else
-                        // otherwise convert & to &amp;
-                        str.Append("&amp;");
-                }
-                else if (c == '<')
-                {
-                    str.Append("&lt;");
-                }
-                else if (c == '>')
-                {
-                    str.Append("&gt;");
-                }
-                else if (c == '"')
-                {
-                    str.Append("&quot;");
-                }
-                else if (c == '\'')
-                {
-                    if (attrQuote == AttributeValueQuote.SingleQuote)
-                    {
-                        str.Append("&#39;");    // straight quote mark/apostrophe
-                    }
-                    else
-                    {
-                        str.Append(c);
-                    }
-                }
-                else if (IsXmlCharData(c))
-                {
-                    str.Append(c);
-                }
-                else
-                {
-                    // invalid XML data character
-                    // TODO: warning
-                    str.Append(' ');
-                }
-            }
-
-            //
-            return str.ToString();
+            Regex rx = new Regex("&(?!(amp;)|(lt;)|(gt;)|(quot;))", RegexOptions.IgnoreCase);
+            return rx.Replace(html, "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
         }
-
-        /// <summary>
-        /// Checks whether given <paramref name="c"/> is valid XML data character.
-        /// </summary>
-        /// <param name="c">Character to check.</param>
-        /// <remarks>See <c>XmlCharType.bin</c> resource file within <c>System.Xml.dll</c>.
-        /// 5th bit of each byte is flag determining this validity of corresponding character.</remarks>
-        private static bool IsXmlCharData(char c)
-        {
-            return c >= 32 || c == 9 || c == 10 || c == 13;
-        }
-
-        private static bool StartsWithHelperOrdinalIgnoreCase(string/*!*/str, string/*!*/data, int at)
-        {
-            Debug.Assert(str != null);
-            Debug.Assert(data != null);
-
-            if (at + data.Length > str.Length)
-                return false;
-            
-            int stri = at;
-            int datai = 0;
-            for (; datai < data.Length; ++datai, ++stri)
-            {
-                char a = str[stri];
-                char b = data[datai];
-                if (a != b && a.ToUpperAsciiInvariant() != b.ToUpperAsciiInvariant())
-                    return false;
-            }
-
-            return true;
-        }
-
-        //private static readonly Regex/*!*/htmlAmpRegex = new Regex("&(?!(amp;)|(lt;)|(gt;)|(quot;))", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         /// <summary>
         /// Determines if the specified character is considered as a whitespace character.
@@ -399,7 +309,11 @@ namespace HtmlAgilityPack
         /// <returns>true if if the specified character is considered as a whitespace character.</returns>
         public static bool IsWhiteSpace(int c)
         {
-            return (c == 9) || (c == 10) || (c == 13) || (c == 32);
+            if ((c == 10) || (c == 13) || (c == 32) || (c == 9))
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -1214,17 +1128,8 @@ namespace HtmlAgilityPack
 
                 if (!error)
                 {
-                    if (_lastparentnode != null &&
-                        string.Equals(_currentnode.Name, "tr", StringComparison.OrdinalIgnoreCase) && !_currentnode._starttag &&
-                        string.Equals(_lastparentnode.Name, "table", StringComparison.OrdinalIgnoreCase))
-                    {
-                        // special case, we are ignoring _currentnode (<table><tr></tr></tr>)
-                    }
-                    else
-                    {
-                        _lastnodes[_currentnode.Name] = prev._prevwithsamename;
-                        prev.CloseNode(_currentnode);
-                    }
+                    _lastnodes[_currentnode.Name] = prev._prevwithsamename;
+                    prev.CloseNode(_currentnode);
                 }
             }
 
@@ -1369,11 +1274,11 @@ namespace HtmlAgilityPack
 
         private void IncrementPosition()
         {
-            //if (_crc32 != null)
-            //{
-            //    // REVIEW: should we add some checksum code in DecrementPosition too?
-            //    _crc32.AddToCRC32(_c);
-            //}
+            if (_crc32 != null)
+            {
+                // REVIEW: should we add some checksum code in DecrementPosition too?
+                _crc32.AddToCRC32(_c);
+            }
 
             _index++;
             _maxlineposition = _lineposition;
@@ -1456,10 +1361,10 @@ namespace HtmlAgilityPack
         private void Parse()
         {
             int lastquote = 0;
-            //if (OptionComputeChecksum)
-            //{
-            //    _crc32 = new Crc32();
-            //}
+            if (OptionComputeChecksum)
+            {
+                _crc32 = new Crc32();
+            }
 
             _lastnodes = new Hashtable();
             _c = 0;
@@ -1574,9 +1479,6 @@ namespace HtmlAgilityPack
                             continue;
                         }
 
-                        if (TryFixArgument(_index, (char)_c, (char)lastquote))
-                            continue;
-
                         PushAttributeNameStart(_index - 1);
                         _state = ParseState.AttributeName;
                         break;
@@ -1598,7 +1500,6 @@ namespace HtmlAgilityPack
                                 continue;
                             _state = ParseState.Text;
                             PushNodeStart(HtmlNodeType.Text, _index);
-                            lastquote = 0;
                             continue;
                         }
                         _state = ParseState.BetweenAttributes;
@@ -1608,16 +1509,12 @@ namespace HtmlAgilityPack
                         if (NewCheck())
                             continue;
 
-                        if (TryFixArgument(_index, (char)_c, (char)lastquote))
-                            continue;
-                        
                         if (IsWhiteSpace(_c))
                         {
                             PushAttributeNameEnd(_index - 1);
                             _state = ParseState.AttributeBeforeEquals;
                             continue;
                         }
-
                         if (_c == '=')
                         {
                             PushAttributeNameEnd(_index - 1);
@@ -1637,10 +1534,8 @@ namespace HtmlAgilityPack
                                 continue;
                             _state = ParseState.Text;
                             PushNodeStart(HtmlNodeType.Text, _index);
-                            lastquote = 0;
                             continue;
                         }
-                        
                         break;
 
                     case ParseState.AttributeBeforeEquals:
@@ -1649,10 +1544,6 @@ namespace HtmlAgilityPack
 
                         if (IsWhiteSpace(_c))
                             continue;
-
-                        if (TryFixArgument(_index, (char)_c, (char)lastquote))
-                            continue;
-
                         if (_c == '>')
                         {
                             if (!PushNodeEnd(_index, false))
@@ -1665,7 +1556,6 @@ namespace HtmlAgilityPack
                                 continue;
                             _state = ParseState.Text;
                             PushNodeStart(HtmlNodeType.Text, _index);
-                            lastquote = 0;
                             continue;
                         }
                         if (_c == '=')
@@ -1673,7 +1563,7 @@ namespace HtmlAgilityPack
                             _state = ParseState.AttributeAfterEquals;
                             continue;
                         }
-                        // no equals, no whitespace, it's a new attribute starting
+                        // no equals, no whitespace, it's a new attrribute starting
                         _state = ParseState.BetweenAttributes;
                         DecrementPosition();
                         break;
@@ -1704,7 +1594,6 @@ namespace HtmlAgilityPack
                                 continue;
                             _state = ParseState.Text;
                             PushNodeStart(HtmlNodeType.Text, _index);
-                            lastquote = 0;
                             continue;
                         }
                         PushAttributeValueStart(_index - 1);
@@ -1735,7 +1624,6 @@ namespace HtmlAgilityPack
                                 continue;
                             _state = ParseState.Text;
                             PushNodeStart(HtmlNodeType.Text, _index);
-                            lastquote = 0;
                             continue;
                         }
                         break;
@@ -1780,7 +1668,6 @@ namespace HtmlAgilityPack
                             }
                             _state = ParseState.Text;
                             PushNodeStart(HtmlNodeType.Text, _index);
-                            lastquote = 0;
                             continue;
                         }
                         break;
@@ -1885,86 +1772,6 @@ namespace HtmlAgilityPack
             _currentattribute._valuestartindex = index;
             if (quote == '\'')
                 _currentattribute.QuoteType = AttributeValueQuote.SingleQuote;
-        }
-
-        private bool TryFixArgument(int index, char c, char lastquote)
-        {
-            if (_currentnode == null || _currentnode.Attributes.Count == 0 || lastquote == 0)
-                return false;
-
-            // _state == AttributeName | AttributeBeforeEquals | BetweenAttributes
-
-            if (c == ',')
-            {
-                // last value has to continue
-                return ExtendLastAttributeValue(index, false);
-            }
-
-            if (c == lastquote)
-            {
-                // last value has to end here?
-                return ExtendLastAttributeValue(index - 1, true);
-            }
-
-            if ((_state == ParseState.AttributeName || _state == ParseState.AttributeBeforeEquals) && IsWhiteSpace(c))
-            {
-                // an attribute without a value preceding?
-                // _currentattribute._valuelength == 0
-                // search lastquote, '>' or new line
-                bool onlyws = true;
-                for (int i = index + 1; i < _text.Length; i++)
-                {
-                    var la = _text[i];
-                    if (la == lastquote) return ExtendLastAttributeValue(index, false); // it is possible this attr name should be a part of previous attr value
-                    if (la == '=' && onlyws) return false;   // there is '=' after attr name, probably ok
-                    if (la == '>' || la == '\n' || la == '\r') return false;   // no ending quote, stop looking
-                    if (!IsWhiteSpace((int)la)) onlyws = false;
-                }
-
-                return false;
-            }
-
-            //
-            return false;
-        }
-
-        private bool ExtendLastAttributeValue(int index, bool close)
-        {
-            System.Diagnostics.Debug.Assert(_currentnode != null && _currentnode.Attributes.Count > 0);
-
-            var lastattribute = _currentattribute;
-            
-            // find an attribute with a value to be extended
-            var attrs = _currentnode.Attributes;
-            int candidate = -1;
-            for (int i = attrs.Count - 1; i >= 0; i--)
-                if (attrs[i]._valuelength > 0 || attrs[i]._valuestartindex > (attrs[i]._namestartindex + attrs[i]._namelength))   // an attribute with a value specified
-                {
-                    candidate = i;
-                    break;
-                }
-
-            if (candidate < 0)
-                return false;   // no candidate to be extended
-
-            // set new last attribute
-            _currentattribute = attrs[candidate];
-            while (attrs.Count > candidate + 1)
-                attrs.RemoveAt(attrs.Count - 1);
-
-            // 
-            if (close)
-            {
-                PushAttributeValueEnd(index);
-                _state = ParseState.BetweenAttributes;
-            }
-            else
-            {
-                _currentattribute._valuelength = 0;
-                _state = ParseState.QuotedAttributeValue;
-            }
-
-            return true;
         }
 
         private bool PushNodeEnd(int index, bool close)
