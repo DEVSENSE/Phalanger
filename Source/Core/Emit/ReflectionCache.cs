@@ -142,11 +142,12 @@ namespace PHP.Core.Emit
 
             public struct Add
             {
-                static MethodInfo _Object_Object, _Object_Int32, _Object_Double;
+                static MethodInfo _Object_Object, _Object_Int32, _Object_Double, _Double_Object;
 
                 public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object,object,object>(PHP.Core.Operators.Add).Method; return _Object_Object; } }
                 public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = new Func<object, int, object>(PHP.Core.Operators.Add).Method; return _Object_Int32; } }
                 public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = new Func<object, double, double>(PHP.Core.Operators.Add).Method; return _Object_Double; } }
+                public static MethodInfo Double_Object { get { return _Double_Object ?? (_Object_Double = new Func<double, object, double>(PHP.Core.Operators.Add).Method); } }
             }
 
             public struct Subtract
@@ -174,11 +175,12 @@ namespace PHP.Core.Emit
 
             public struct Multiply
             {
-                static MethodInfo _Object_Object, _Object_Int32, _Object_Double;
+                static MethodInfo _Object_Object, _Object_Int32, _Object_Double, _Double_Object;
 
                 public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Multiply).Method; return _Object_Object; } }
                 public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = new Func<object, int, object>(PHP.Core.Operators.Multiply).Method; return _Object_Int32; } }
                 public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = new Func<object, double, double>(PHP.Core.Operators.Multiply).Method; return _Object_Double; } }
+                public static MethodInfo Double_Object { get { return _Double_Object ?? (_Double_Object = new Func<double, object, double>(PHP.Core.Operators.Multiply).Method); } }
             }
 
             public struct Remainder

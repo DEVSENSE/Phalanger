@@ -184,7 +184,7 @@ namespace PHP.Core.AST
 
 			ILEmitter il = codeGenerator.IL;
 
-			PhpTypeCode returned_typecode;
+			PhpTypeCode returned_typecode, o_typecode;
 
 			switch (operation)
 			{
@@ -230,10 +230,18 @@ namespace PHP.Core.AST
 
 				case Operations.Minus:
 					//Template: "-x"  Operators.Minus(x)
-					codeGenerator.EmitBoxing(expr.Emit(codeGenerator));
-					il.Emit(OpCodes.Call, Methods.Operators.Minus);
-					returned_typecode = PhpTypeCode.Object;
-					break;
+                    switch (o_typecode = expr.Emit(codeGenerator))
+                    {
+                        case PhpTypeCode.Double:
+                            il.Emit(OpCodes.Neg);
+                            returned_typecode = PhpTypeCode.Double;
+                            break;
+                        default:
+					        codeGenerator.EmitBoxing(o_typecode);
+                            returned_typecode = codeGenerator.EmitMethodCall(Methods.Operators.Minus);
+					        break;
+                    }
+                    break;
 
 				case Operations.ObjectCast:
 					//Template: "(object)x"   Convert.ObjectToDObject(x,ScriptContext)

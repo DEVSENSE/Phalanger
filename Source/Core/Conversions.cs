@@ -369,19 +369,23 @@ namespace PHP.Core
 		public static double ObjectToDouble(object obj)
 		{
             if (obj == null) return 0.0;
-
             if (obj.GetType() == typeof(double)) return (double)obj;
+            return ObjectToDoubleEpilogue(obj);
+		}
+
+        private static double ObjectToDoubleEpilogue(object obj)
+        {
             if (obj.GetType() == typeof(int)) return (double)(int)obj;
             if (obj.GetType() == typeof(string)) return StringToDouble((string)obj);
             if (obj.GetType() == typeof(bool)) return (bool)obj ? 1.0 : 0.0;
             if (obj.GetType() == typeof(long)) return (double)(long)obj;
 
-			// PhpString, PhpReference, PhpArray, PhpResource, DObject, PhpBytes:
-			IPhpConvertible conv = obj as IPhpConvertible;
-			if (conv != null) return conv.ToDouble();
+            // PhpString, PhpReference, PhpArray, PhpResource, DObject, PhpBytes:
+            IPhpConvertible conv = obj as IPhpConvertible;
+            if (conv != null) return conv.ToDouble();
 
-			return 0.0;
-		}
+            return 0.0;
+        }
 
 		/// <summary>
 		/// Converts value of an arbitrary PHP.NET type into <see cref="PhpArray"/> using the same conversion
