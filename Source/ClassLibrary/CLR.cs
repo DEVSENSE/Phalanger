@@ -24,12 +24,12 @@ namespace PHP.Library
 	{
 		#region Threads
 
-		private sealed class Worker
+		private class Worker
 		{
 			private ScriptContext context;
 			private object[] args;
 
-			public Worker(ScriptContext/*!*/context, object[] args)
+			public Worker(ScriptContext/*!*/ context, object[] args)
 			{
 				this.context = context;
 				this.args = args;
@@ -37,7 +37,7 @@ namespace PHP.Library
 
 			public void Run(object _)
 			{
-                var callback = (PhpCallback)_;
+                var callback = _ as PhpCallback;
 
 				callback.SwitchContext(context.Fork());
 				callback.Invoke(args);
@@ -45,20 +45,20 @@ namespace PHP.Library
 		}
 
 		[ImplementsFunction("clr_create_thread")]
-		public static bool CreateClrThread(ScriptContext/*!*/context, PhpCallback/*!*/ callback, params object[] args)
+		public static DObject CreateClrThread(PhpCallback/*!*/ callback, params object[] args)
 		{
 			if (callback == null)
 				PhpException.ArgumentNull("callback");
 
 			if (!callback.Bind())
-				return false;
+				return null;
 
 			object[] copies = (args != null) ? new object[args.Length] : ArrayUtils.EmptyObjects;
 
 			for (int i = 0; i < copies.Length; i++)
 				copies[i] = PhpVariable.DeepCopy(args[i]);
 
-            return ThreadPool.QueueUserWorkItem(new Worker(context, copies).Run, callback);
+            return ClrObject.WrapRealObject(ThreadPool.QueueUserWorkItem(new Worker(ScriptContext.CurrentContext, copies).Run, callback));
 		}
 
 		#endregion
@@ -68,6 +68,9 @@ namespace PHP.Library
 		[ImplementsFunction("clr_typeof", FunctionImplOptions.NeedsNamingContext | FunctionImplOptions.NeedsClassContext)]
 		public static DObject GetTypeOf(NamingContext/*!*/ namingContext, DTypeDesc caller, object typeNameOrObject)
 		{
+			if (namingContext == null)
+				throw new ArgumentNullException("namingContext");
+
 			ScriptContext context = ScriptContext.CurrentContext;
 			DTypeDesc type = PhpObjects.ClassNameOrObjectToType(context, namingContext, caller, typeNameOrObject, true);
 			if (type == null) return null;
