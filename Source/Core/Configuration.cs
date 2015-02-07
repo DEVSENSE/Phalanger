@@ -284,7 +284,32 @@ namespace PHP.Core
 			/// <summary>
 			/// A file where to log errors if logging is enabled. Empty value means errors are not logged into a file.
 			/// </summary>
-			public string LogFile = null;
+            public string LogFile = null;
+
+            /// <summary>
+            /// Ensures the path is rooted.
+            /// </summary>
+            /// <param name="value">LogFile value.</param>
+            /// <param name="node">Configuration element.</param>
+            private static string AbsolutizeLogFile(string value, System.Xml.XmlNode/*!*/node)
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    return null;
+                }
+                else
+                {
+                    if (System.IO.Path.IsPathRooted(value))
+                    {
+                        return value;
+                    }
+                    else
+                    {
+                        // relative path provided, make it rooted to config directory
+                        return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(ConfigUtils.GetConfigXmlPath(node.OwnerDocument)), value);
+                    }
+                }
+            }
 
 			/// <summary>
 			/// Whether to log errors.
