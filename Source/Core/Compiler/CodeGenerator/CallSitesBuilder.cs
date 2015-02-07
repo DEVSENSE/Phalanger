@@ -49,12 +49,14 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// If known and if it can be emitted in static .cctor, defines the place where the class context can be loaded.
         /// Otherwise <c>null</c>, the class context will be determined in run time and passed to binder.
         /// </summary>
-        private readonly IPlace classContextPlace;
+        private IPlace classContextPlace { get { return classContextPlaces.Peek(); } }
+        private Stack<IPlace> classContextPlaces = new Stack<IPlace>(2);
 
         /// <summary>
         /// Current type declaration to emit site containers properly.
         /// </summary>
-        private readonly PhpType classContext = null;
+        private PhpType classContext { get { return classContexts.Peek(); } }
+        private Stack<PhpType> classContexts = new Stack<PhpType>(2);
 
         /// <summary>
         /// Amount of emitted call sites. Used to build unique call site field name.
@@ -84,14 +86,37 @@ namespace PHP.Core.Compiler.CodeGenerator
         /// <param name="userFriendlyName">User friendly name used to identify the call sites container by user.</param>
         /// <param name="classContextPlace">If known and if it can be emitted in static .cctor, defines the place where the class context can be loaded. Otherwise <c>null</c> if the class context will be determined in run time.</param>
         /// <param name="classContext">Current PHP type context.</param>
-        public CallSitesBuilder(ModuleBuilder/*!*/moduleBuilder, string/*!*/userFriendlyName, IPlace classContextPlace, PhpType/*!*/classContext)
+        public CallSitesBuilder(ModuleBuilder/*!*/moduleBuilder, string/*!*/userFriendlyName, IPlace classContextPlace, PhpType classContext)
         {
             Debug.Assert(moduleBuilder != null && userFriendlyName != null);
 
             this.userFriendlyName = userFriendlyName;
             this.moduleBuilder = moduleBuilder;
-            this.classContextPlace = classContextPlace;
-            this.classContext = classContext;
+            this.PushClassContext(classContextPlace, classContext);
+        }
+
+        #endregion
+
+        #region Changing class context
+
+        /// <summary>
+        /// Change current class context. Remember the previous ones.
+        /// </summary>
+        /// <param name="classContextPlace">New class context place.</param>
+        /// <param name="classContext">New class context type.</param>
+        internal void PushClassContext(IPlace classContextPlace, PhpType classContext)
+        {
+            this.classContextPlaces.Push(classContextPlace);
+            this.classContexts.Push(classContext);
+        }
+
+        /// <summary>
+        /// Change current class context to the previous one.
+        /// </summary>
+        internal void PopClassContext()
+        {
+            this.classContextPlaces.Pop();
+            this.classContexts.Pop();
         }
 
         #endregion
@@ -163,7 +188,7 @@ namespace PHP.Core.Compiler.CodeGenerator
             var type = EnsureContainer();
 
             // call site type
-            var callSiteType = typeof(CallSite<>).MakeGenericType(delegateType);
+            var callSiteType = Types.CallSiteGeneric[0].MakeGenericType(delegateType);
 
             // define the field:
             // public static readonly CallSite<delegateType> <userFriendlyName>
