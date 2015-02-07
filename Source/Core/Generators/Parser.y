@@ -2098,6 +2098,10 @@ class_constant:
 		{
 			$$ = new ClassConstUse(@$, new IndirectTypeRef(@1, (VariableUse)$1, TypeRef.EmptyList), (string)$3, @3); 
 		}
+	|	qualified_static_type_ref T_DOUBLE_COLON T_CLASS
+		{
+			$$ = new PseudoClassConstUse(@$, (GenericQualifiedName)$1, @1, PseudoClassConstUse.Types.Class, @3);
+		}
 ;
 
 scalar_expr:

@@ -4861,6 +4861,22 @@ namespace PHP.Core
 
         #endregion
 
+        #region Class name resolution
+
+        /// <summary>
+        /// Gets fully qualified class name.
+        /// </summary>
+        [Emitted]
+        public static string GetFullyQualifiedName(DTypeDesc type)
+        {
+            if (type == null)
+                return string.Empty;
+
+            return type.MakeFullName();
+        }
+
+        #endregion
+
         #endregion
 
         #region Strict Equality Operator

@@ -136,6 +136,7 @@ namespace PHP.Core.Emit
                 _SetObjectFieldDirect, _SetObjectFieldDirectRef, _GetObjectFieldDirectRef, _GetObjectFieldDirect, _ToAbsoluteSourcePath,
                 _GetItemExact, _SetItemExact,
 
+                _GetFullyQualifiedName,
                 _IsCallable,
                 _Select, _Where;
 
@@ -310,6 +311,7 @@ namespace PHP.Core.Emit
             public static MethodInfo Throw { get { if (_Throw == null) _Throw = _this.GetMethod("Throw"); return _Throw; } }
             public static MethodInfo ToAbsoluteSourcePath { get { if (_ToAbsoluteSourcePath == null) _ToAbsoluteSourcePath = _this.GetMethod("ToAbsoluteSourcePath"); return _ToAbsoluteSourcePath; } }
             public static MethodInfo IsCallable { get { return _IsCallable ?? (_IsCallable = _this.GetMethod("IsCallable")); } }
+            public static MethodInfo GetFullyQualifiedName { get { return _GetFullyQualifiedName ?? (_GetFullyQualifiedName = new Func<DTypeDesc, string>(PHP.Core.Operators.GetFullyQualifiedName).Method); } }
 
             // LINQ stuff
             public static MethodInfo Where { get { if (_Where == null) _Where = _this.GetMethod("Where"); return _Where; } }
