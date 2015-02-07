@@ -59,7 +59,7 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>Doc\Core.xml</DocumentationFile>
+    <DocumentationFile>Bin\Debug\PhpNetCore.xml</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
@@ -83,7 +83,7 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>Doc\PhpNetCore.xml</DocumentationFile>
+    <DocumentationFile>Bin\Release\PhpNetCore.xml</DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
@@ -602,7 +602,6 @@ xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Bin" 1&g
 REM "$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetDir)policy.3.0.$(TargetFileName)" 1&gt;nul
 
 REM "$(SolutionDir)..\Deployment\Bin\PhpVerify" "$(TargetFileName)"
-REM xcopy /q /y "$(ProjectDir)Doc\$(TargetName).xml" "$(SolutionDir)..\Deployment\Bin"
 )
 if $(ConfigurationName) == Debug (
 xcopy /q /y "$(TargetDir)*$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul

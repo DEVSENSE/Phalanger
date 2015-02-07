@@ -58,7 +58,7 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>Doc\ClassLibrary.xml</DocumentationFile>
+    <DocumentationFile>Bin\Debug\PhpNetClassLibrary.xml</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
@@ -81,7 +81,7 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>Doc\PhpNetClassLibrary.xml</DocumentationFile>
+    <DocumentationFile>Bin\Release\PhpNetClassLibrary.xml</DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
@@ -324,7 +324,6 @@ if $(ConfigurationName) == Release (
 "$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetPath)" 1&gt;nul
 REM "$(SolutionDir)..\Tools\gacutil" -f -i "$(TargetDir)policy.3.0.$(TargetFileName)" 1&gt;nul
 xcopy /q /y "$(TargetDir)*$(TargetName).dll" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
-xcopy /q /y "$(ProjectDir)Doc\$(TargetName).xml" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
 
 REM mkdir "$(SolutionDir)..\Deployment\Bin\Temp"
 REM "$(SolutionDir)..\Deployment\Bin\MkDynamic" "$(SolutionDir)..\Deployment\Bin\$(TargetName).dll" "$(SolutionDir)..\Deployment\Bin\Temp"
