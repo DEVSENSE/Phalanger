@@ -221,11 +221,63 @@ namespace PHP.Core
             return result;
         }
 
-		#endregion
+        #region InitContext
 
-		#region Constants
+        /// <summary>
+        /// Initializes <see cref="ScriptContext"/> for the C#/PHP interoperability.
+        /// </summary>
+        /// <param name="appContext">Application context.</param>
+        /// <returns>New <see cref="ScriptContext"/></returns>
+        /// <remarks>
+        /// Use this method if you want to initialize application in the same way the PHP console/Windows 
+        /// application is initialized. CurrentContext is set, and initialized to simulate request begin and end.
+        /// </remarks>
+        public static ScriptContext/*!*/InitContext(ApplicationContext appContext)
+        {
+            if (appContext == null)
+                appContext = ApplicationContext.Default;
 
-		private void InitConstants(DualDictionary<string, object> _constants)
+            var context = InitApplication(appContext, null, null, null);
+
+            // simulate request lifecycle
+            RequestContext.InvokeRequestBegin();
+            context.FinallyDispose += RequestContext.InvokeRequestEnd;
+
+            //
+            return context;
+        }
+
+        /// <summary>
+        /// Initializes <see cref="ScriptContext"/> for the C#/PHP interoperability.
+        /// </summary>
+        /// <param name="appContext">Application context.</param>
+        /// <param name="output">Output stream.</param>
+        /// <returns>New <see cref="ScriptContext"/></returns>
+        /// <remarks>
+        /// Use this method if you want to initialize application in the same way the PHP console/Windows 
+        /// application is initialized. CurrentContext is set, and initialized to simulate request begin and end.
+        /// </remarks>
+        public static ScriptContext/*!*/InitContext(ApplicationContext appContext, Stream output)
+        {
+            var context = InitContext(appContext);
+
+            // setups output
+            if (output == null)
+                output = Stream.Null;
+
+            context.OutputStream = output;
+            context.Output = new StreamWriter(output);
+
+            return context;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Constants
+
+        private void InitConstants(DualDictionary<string, object> _constants)
 		{
             // Thease constants are here, because they are environment dependent
             // When the code is compiled and assembly is run on another platforms they could be different

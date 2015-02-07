@@ -177,6 +177,25 @@ namespace PHP.Core
 			return req_context;
 		}
 
+        /// <summary>
+        /// Invokes <see cref="RequestBegin"/>.
+        /// </summary>
+        internal static void InvokeRequestBegin()
+        {
+            var callback = RequestContext.RequestBegin;
+            if (callback != null)
+                callback();
+        }
+
+        /// <summary>
+        /// Invokes <see cref="RequestEnd"/>.
+        /// </summary>
+        internal static void InvokeRequestEnd()
+        {
+            var callback = RequestContext.RequestEnd;
+            if (callback != null)
+                callback();
+        }
 
 		/// <summary>
 		/// Finalizes (disposes) the current request context, if there is any.
