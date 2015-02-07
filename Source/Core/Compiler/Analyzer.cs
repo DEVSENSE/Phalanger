@@ -929,7 +929,8 @@ namespace PHP.Core
 		private Scope GetReferringScope(PhpType referringType, PhpRoutine referringRoutine)
 		{
 			if (referringType != null) return referringType.Declaration.Scope;
-			if (referringRoutine != null) return ((PhpFunction)referringRoutine).Declaration.Scope;
+            if (referringRoutine is PhpFunction) return ((PhpFunction)referringRoutine).Declaration.Scope;
+            //if (referringRoutine is PhpLambdaFunction) ...
 
 			// used for global statements during full analysis:
 			Debug.Assert(currentScope.IsValid, "Scope is available only during full analysis.");

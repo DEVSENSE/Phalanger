@@ -2652,7 +2652,7 @@ namespace PHP.Core.Reflection
                                     PhpMemberAttributes.Public | PhpMemberAttributes.Static,
                                     info.GetValue(null));
 
-                                if (!info.IsLiteral)    // deferred constant value
+                                if (!info.IsInitOnly && !info.IsLiteral)    // deferred constant value
                                     constant_desc.ValueIsDeferred = true;
 
                                 constants.Add(name, constant_desc);
