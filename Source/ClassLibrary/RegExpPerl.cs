@@ -433,6 +433,9 @@ namespace PHP.Library
                     for (int i = 0; i <= GetLastSuccessfulGroup(m.Groups); i++)
                     {
                         groupName = converter.Regex.GroupNameFromNumber(i);
+                        //remove sign from the beginning of the groupName
+                        groupName = groupName.Remove(0, PerlRegExpConverter.GroupPrefix.Length);
+
                         if (!String.IsNullOrEmpty(groupName) && groupName != i.ToString())
                         {
                             matches[groupName] = NewArrayItem(m.Groups[i].Value, m.Groups[i].Index, (flags & MatchFlags.OffsetCapture) != 0);
@@ -1139,11 +1142,16 @@ namespace PHP.Library
 
 					// named group?
 					string name;
-					if ((name = r.GroupNameFromNumber(i)) != String.Empty && name != i.ToString(CultureInfo.InvariantCulture))
-					{
-						if (j == 0) matches[name] = new PhpArray();
-						((PhpArray)matches[name])[j] = arr;
-					}
+
+                    name = r.GroupNameFromNumber(i);
+                    //remove sign from the beginning of the groupName
+                    name = name.Remove(0, PerlRegExpConverter.GroupPrefix.Length);
+
+                    if (!String.IsNullOrEmpty(name) && name != i.ToString())
+                    {
+                        if (j == 0) matches[name] = new PhpArray();
+                        ((PhpArray)matches[name])[j] = arr;
+                    }
 
 					if (j == 0) matches[i] = new PhpArray();
 					((PhpArray)matches[i])[j] = arr;
@@ -1180,9 +1188,15 @@ namespace PHP.Library
 					object arr = NewArrayItem(m.Groups[j].Value, m.Groups[j].Index, addOffsets);
 					
 					// named group?
-					string name;
-					if (j > 0 && (name = r.GroupNameFromNumber(j)) != String.Empty)
-						pa[name] = arr;
+                    string name = r.GroupNameFromNumber(j);
+                    //remove sign from the beginning of the groupName
+                    name = name.Remove(0, PerlRegExpConverter.GroupPrefix.Length);
+
+                    if (!String.IsNullOrEmpty(name) && name != j.ToString())
+                    {
+                        pa[name] = arr;
+                    }
+
 
 					pa[j] = arr;
 				}
@@ -1820,6 +1834,13 @@ namespace PHP.Library
 	/// </summary>
 	internal sealed class PerlRegExpConverter
 	{
+        /// <summary>
+        /// All named groups from Perl regexp are renamed to start with this character. 
+        /// In order to enable group names starting with number
+        /// </summary>
+        internal const string GroupPrefix = "a";
+
+
 		#region Properties
 
 		/// <summary>
@@ -2359,6 +2380,14 @@ namespace PHP.Library
 						}
 
 						// In perl regexps, named groups are written like this: "(?P<name> ... )"
+                        //  (\k<name>...)
+                        //  (\k'name'...)
+                        //  (\k{name}...)
+                        //  (\g{name}...)
+                        //  (?'name'...)
+                        //  (?<name>...)
+                        //  (?P=name)
+  
 						// If the group is starting here, we need to skip the 'P' character (see state 4)
 						switch (inner_state)
 						{
@@ -2381,6 +2410,20 @@ namespace PHP.Library
                                     inner_state = 3;
                                     continue; //skip 'P' from resulting pattern
                                 }
+                                else if (ch == '<')
+                                {
+                                    inner_state = 15;
+                                    break;
+                                }
+                                else if (ch == '\'')
+                                {
+                                    i++;
+                                    result.Append('\'');
+                                    result.Append(GroupPrefix);
+
+                                    inner_state = 0;
+                                    continue;
+                                }
                                 
                                 inner_state = 0;
                                 break;
@@ -2394,6 +2437,15 @@ namespace PHP.Library
                                 else if (ch != '<')// if P wasn't part of "(?P<name> ... )" neither '(?P=name)' back reference, so put it back to the pattern
                                 {
                                     result.Append('P');
+                                }
+                                else if (ch == '<')
+                                {
+                                    i++;
+                                    result.Append('<');
+                                    result.Append(GroupPrefix);
+
+                                    inner_state = 0;
+                                    continue;
                                 }
 
                                 inner_state = 0;
@@ -2430,6 +2482,7 @@ namespace PHP.Library
                                 {
                                     // it can be named group
                                     result.Append("k<");
+                                    result.Append(GroupPrefix);
                                     inner_state = 10;
 
                                     //result.Append("g{"); // unexpected character after '/g{', so put it back to pattern
@@ -2450,6 +2503,15 @@ namespace PHP.Library
                                 {
                                     inner_state = 8;
                                 }
+                                else
+                                {
+                                    //name of the group starts with a number
+                                    //put behind PreGroupNameSign
+                                    result.Insert(result.Length - 1,"k<");
+                                    result.Insert(result.Length - 1, GroupPrefix);
+                                    inner_state = 14;
+                                }
+
 
 
                                 break;
@@ -2461,6 +2523,14 @@ namespace PHP.Library
                                     i++;
                                     inner_state = 9;
                                     continue; // skip '}' from resulting pattern
+                                }
+                                else
+                                {
+                                    //name of the group starts with a number
+                                    //put behind PreGroupNameSign
+                                    result.Insert(result.Length - 1, "k<");
+                                    result.Insert(result.Length - 2, GroupPrefix);
+                                    inner_state = 14;
                                 }
 
                                 // there is just 99 back references possible
@@ -2500,7 +2570,26 @@ namespace PHP.Library
                                     i++;
                                     inner_state = 10;
                                     result.Append('<');
+                                    result.Append(GroupPrefix);
                                     continue; // skip '{' from resulting pattern
+                                }
+                                else if (ch == '<')
+                                {
+                                    i++;
+                                    result.Append('<');
+                                    result.Append(GroupPrefix);
+
+                                    inner_state = 0;
+                                    continue;
+                                }
+                                else if (ch == '\'')
+                                {
+                                    i++;
+                                    result.Append('\'');
+                                    result.Append(GroupPrefix);
+
+                                    inner_state = 0;
+                                    continue;
                                 }
 
                                 inner_state = 0;
@@ -2516,6 +2605,7 @@ namespace PHP.Library
                                 
                                 // add '<' so it is '\k<'
                                 result.Append('<');
+                                result.Append(GroupPrefix);
 
                                 inner_state = 13;
 
@@ -2532,6 +2622,34 @@ namespace PHP.Library
                                 }
 
                                 break;
+
+                            case 14:// '\g{[0-9].*?'
+
+                                if (ch == '}')
+                                {
+                                    i++;
+                                    inner_state = 9;
+                                    result.Append(">");
+                                    continue; // skip '}' from resulting pattern
+                                }
+
+                                break;
+
+                            case 15:// (?<
+
+                                //Add group prefix only if it's not lookbehind assertions
+                                //(?<! negative
+                                //(?<= positive
+                                if (ch != '!' && ch != '=')
+                                {
+                                    result.Append(GroupPrefix);
+
+                                }
+
+                                inner_state = 0;
+
+                                break;
+
 
                             
                             default: inner_state = 0; break;
