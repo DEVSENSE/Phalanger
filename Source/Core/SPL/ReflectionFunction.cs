@@ -17,6 +17,7 @@ using PHP.Core;
 using PHP.Core.Reflection;
 using System.ComponentModel;
 using System.Collections;
+using System.Runtime.InteropServices;
 
 namespace PHP.Library.SPL
 {
@@ -446,7 +447,18 @@ namespace PHP.Library.SPL
         }
 
         //public static string export ( string $name [, string $return ] )
-        //public Closure getClosure ( void )
+
+        [ImplementsMethod]
+        public virtual object/*Closure*/getClosure(ScriptContext context)
+        {
+            return new SPL.Closure(context, routine.ArglessStub, null, null);
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getClosure(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((ReflectionFunction)instance).getClosure(stack.Context);
+        }
         
         [ImplementsMethod, NeedsArgless]
         public virtual object/*mixed*/invoke(ScriptContext context)
@@ -616,7 +628,58 @@ namespace PHP.Library.SPL
         #endregion
 
         //public static string export ( string $class , string $name [, bool $return = false ] )
+        
         //public Closure getClosure ( string $object )
+        [ImplementsMethod]
+        public virtual object/*Closure*/getClosure(ScriptContext context, [Optional]object @object)
+        {
+            if (method == null)
+                return false;
+
+            if (@object == Arg.Default)
+                @object = null;
+
+            DObject dobj = null;
+
+            // get instance object
+            if (method.IsStatic)
+            {
+                if (@object != null)
+                {
+                    PhpException.InvalidArgument("object");
+                    @object = null;
+                }
+            }
+            else
+            {
+                dobj = @object as DObject;
+                if (dobj == null)
+                {
+                    PhpException.InvalidArgumentType("object", DObject.PhpTypeName);
+                    return false;
+                }
+            }
+
+            // check whether method can be called on this object
+            if (dobj != null)
+            {
+                if (!this.dtype.IsAssignableFrom(dobj.TypeDesc))
+                {
+                    PhpException.InvalidArgument("object");
+                    return false;
+                }
+            }
+
+            // create closure that calls the method on specified instance:
+            return new SPL.Closure(context, (instance, stack) => method.ArglessStub(dobj, stack), null, null);
+        }
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getClosure(object instance, PhpStack stack)
+        {
+            var @object = stack.PeekValueOptional(1);
+            stack.RemoveFrame();
+            return ((ReflectionMethod)instance).getClosure(stack.Context, @object);
+        }
         
         [ImplementsMethod]
         public virtual object/*int*/getModifiers(ScriptContext context)
