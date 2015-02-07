@@ -4955,16 +4955,24 @@ namespace PHP.Core
         /// <exception cref="PhpException"><paramref name="variable"/> is not valid exception object (Error).</exception>
         /// <exception cref="PhpUserException">The required exception thrown.</exception>
         [Emitted]
+        [DebuggerNonUserCode]
         public static void Throw(ScriptContext context, object variable)
         {
-            Library.SPL.Exception e = variable as Library.SPL.Exception;
-            if (e == null)
+            Library.SPL.Exception splexception;
+            ClrObject clrobj;
+            System.Exception clrexception;
+
+            if ((splexception = variable as Library.SPL.Exception) != null)
             {
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("invalid_exception_object"));
+                throw new PhpUserException(splexception);
+            }
+            else if ((clrobj = variable as ClrObject) != null && (clrexception = clrobj.RealObject as System.Exception) != null)
+            {
+                throw clrexception;
             }
             else
             {
-                throw new PhpUserException(e);
+                PhpException.Throw(PhpError.Error, CoreResources.invalid_exception_object);
             }
         }
 
