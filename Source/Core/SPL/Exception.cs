@@ -117,6 +117,29 @@ namespace PHP.Library.SPL
 			}
 		}
 
+        #region Throw helpers
+
+        /// <summary>
+        /// Throws <see cref="PhpUserException"/>. Internal <see cref="Exception"/> is created using given <paramref name="factory"/>.
+        /// </summary>
+        /// <param name="factory">Factory to create new instance of <see cref="Exception"/>.</param>
+        /// <param name="context">Current <see cref="ScriptContext"/> provided to factory and <see cref="Exception.__construct"/>.</param>
+        /// <param name="message">First parameter to be passed to <see cref="Exception.__construct"/>.</param>
+        /// <param name="code">Second parameter to be passed to <see cref="Exception.__construct"/>.</param>
+        /// <param name="previous">Thhird parameter to be passed to <see cref="Exception.__construct"/>.</param>
+        public static void ThrowSplException(Func<ScriptContext, Exception>/*!*/factory, ScriptContext/*!*/context, object message, object code, object previous)
+        {
+            Debug.Assert(context != null);
+
+            var e = factory(context);
+            e.__construct(context, message, code, previous);
+
+            //
+            throw new PhpUserException(e);
+        }
+
+        #endregion
+
 		#region PHP Fields
 
 		/// <summary>
@@ -422,6 +445,9 @@ namespace PHP.Library.SPL
 		#endregion
 	}
 
+    /// <summary>
+    /// Exception thrown if an error which can only be found on runtime occurs.
+    /// </summary>
     [ImplementsType]
 #if !SILVERLIGHT
     [Serializable]
@@ -472,6 +498,9 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// An Error Exception.
+    /// </summary>
     [ImplementsType]
 #if !SILVERLIGHT
     [Serializable]
@@ -497,6 +526,9 @@ namespace PHP.Library.SPL
             return null;
         }
 
+        /// <summary>
+        /// Returns the severity of the exception.
+        /// </summary>
         [ImplementsMethod]
         public object getSeverity(ScriptContext/*!*/context)
         {
@@ -571,6 +603,10 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// Exception that represents error in the program logic.
+    /// This kind of exceptions should directly lead to a fix in your code.
+    /// </summary>
     [ImplementsType]
 #if !SILVERLIGHT
     [Serializable]
@@ -621,6 +657,9 @@ namespace PHP.Library.SPL
 		#endregion
     }
 
+    /// <summary>
+    /// Exception thrown if an argument does not match with the expected value.
+    /// </summary>
     [ImplementsType]
 #if !SILVERLIGHT
     [Serializable]
@@ -671,6 +710,9 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// Exception thrown if a callback refers to an undefined function or if some arguments are missing.
+    /// </summary>
     [ImplementsType]
 #if !SILVERLIGHT
     [Serializable]
@@ -721,6 +763,9 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// Exception thrown if a callback refers to an undefined method or if some arguments are missing.
+    /// </summary>
     [ImplementsType]
 #if !SILVERLIGHT
     [Serializable]
@@ -771,6 +816,9 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// Exception thrown if a length is invalid.
+    /// </summary>
     [ImplementsType]
 #if !SILVERLIGHT
     [Serializable]
@@ -821,6 +869,10 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// Exception thrown to indicate range errors during program execution.
+    /// Normally this means there was an arithmetic error other than under/overflow.
+    /// </summary>
     [ImplementsType]
 #if !SILVERLIGHT
     [Serializable]
@@ -871,6 +923,9 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// Exception thrown when adding an element to a full container.
+    /// </summary>
     [ImplementsType]
 #if !SILVERLIGHT
     [Serializable]
@@ -921,6 +976,10 @@ namespace PHP.Library.SPL
         #endregion
     }
     
+    /// <summary>
+    /// Exception thrown when performing an invalid operation on an empty container,
+    /// such as removing an element.
+    /// </summary>
     [ImplementsType]
 #if !SILVERLIGHT
     [Serializable]
@@ -971,6 +1030,9 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// Exception thrown if a value does not adhere to a defined valid data domain.
+    /// </summary>
     [ImplementsType]
 #if !SILVERLIGHT
     [Serializable]

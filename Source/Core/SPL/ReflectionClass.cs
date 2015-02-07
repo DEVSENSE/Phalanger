@@ -21,7 +21,9 @@ using PHP.Core.Reflection;
 
 namespace PHP.Library.SPL
 {
-
+    /// <summary>
+    /// The ReflectionClass class reports information about a class.
+    /// </summary>
     [Serializable]
     [ImplementsType]
     public class ReflectionClass : PhpObject, Reflector
@@ -30,6 +32,48 @@ namespace PHP.Library.SPL
         /// Resolved <see cref="DTypeDesc"/> of reflected type.
         /// </summary>
         protected DTypeDesc typedesc;
+
+        #region Constants
+
+        /// <summary>
+        /// Indicates class that is abstract because it has some abstract methods.
+        /// </summary>
+        public const int IS_IMPLICIT_ABSTRACT = 16;
+
+        /// <summary>
+        /// Indicates class that is abstract because of its definition.
+        /// </summary>
+        public const int IS_EXPLICIT_ABSTRACT = 32;
+
+        /// <summary>
+        /// Indicates final class.
+        /// </summary>
+        public const int IS_FINAL = 64;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Name of the class. Read-only, throws <see cref="ReflectionException"/> in attempt to write.
+        /// </summary>
+        [PhpVisible]
+        public string name
+        {
+            get
+            {
+                return (typedesc != null) ? typedesc.MakeSimpleName() : null;
+            }
+            //set   // DPhpFieldDesc.Set does not support properties properly yet
+            //{
+            //    Exception.ThrowSplException(
+            //        _ctx => new ReflectionException(_ctx, true),
+            //        ScriptContext.CurrentContext,
+            //        string.Format(CoreResources.readonly_property_written, "ReflectionClass", "name"), 0, null);
+            //}
+        }
+
+        #endregion
 
         #region Constructor
         /// <summary>

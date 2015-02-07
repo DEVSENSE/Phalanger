@@ -103,9 +103,10 @@ namespace PHP.Library.SPL
         {
             if (index < 0 || array == null || index >= array.LongLength)
             {
-                var e = new RuntimeException(context, true);
-                e.__construct(context, "Index invalid or out of range", 0, null);
-                throw new PhpUserException(e);
+                Exception.ThrowSplException(
+                    _ctx => new RuntimeException(_ctx, true),
+                    context,
+                    CoreResources.spl_index_invalid, 0, null);
             }
         }
 

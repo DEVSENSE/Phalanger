@@ -63,9 +63,9 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to (related location).
         /// </summary>
-        public static string _related_location_ {
+        public static string @__related_location {
             get {
-                return ResourceManager.GetString("(related_location)", resourceCulture);
+                return ResourceManager.GetString("__related_location", resourceCulture);
             }
         }
         
@@ -4015,9 +4015,9 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to Cannot use [] for reading.
         /// </summary>
-        public static string operator___used_for_reading {
+        public static string operator_array_access_used_for_reading {
             get {
-                return ResourceManager.GetString("operator[]_used_for_reading", resourceCulture);
+                return ResourceManager.GetString("operator_array_access_used_for_reading", resourceCulture);
             }
         }
         
@@ -4739,7 +4739,7 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot write to read-only property {0}::${1}.
+        ///   Looks up a localized string similar to Cannot set read-only property {0}::${1}.
         /// </summary>
         public static string readonly_property_written {
             get {
@@ -4906,6 +4906,33 @@ namespace PHP.Core.Localizations {
         public static string source_file_not_found {
             get {
                 return ResourceManager.GetString("source_file_not_found", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accessing the key of an EmptyIterator.
+        /// </summary>
+        public static string spl_empty_iterator_key_access {
+            get {
+                return ResourceManager.GetString("spl_empty_iterator_key_access", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accessing the value of an EmptyIterator.
+        /// </summary>
+        public static string spl_empty_iterator_value_access {
+            get {
+                return ResourceManager.GetString("spl_empty_iterator_value_access", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Index invalid or out of range.
+        /// </summary>
+        public static string spl_index_invalid {
+            get {
+                return ResourceManager.GetString("spl_index_invalid", resourceCulture);
             }
         }
         

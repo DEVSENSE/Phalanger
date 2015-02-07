@@ -715,6 +715,12 @@ namespace PHP.Core.Emit
 
         #endregion
 
+        #region SPL.Exception
+
+
+
+        #endregion
+
         #region PhpRuntimeChain
 
         public struct PhpRuntimeChain

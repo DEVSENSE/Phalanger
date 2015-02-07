@@ -606,7 +606,7 @@ namespace PHP.Core
 		void TryDisposeAfterFinalization()
 		{
 			// flushes headers (if it wasn't done earlier)
-			scriptContext.Headers.Flush(HttpContext.Current);
+            scriptContext.Headers.Flush(HttpContext);
 		}
 
 		void FinallyDispose()

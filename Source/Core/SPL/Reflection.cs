@@ -96,6 +96,7 @@ namespace PHP.Library.SPL
 		/// <summary>
 		/// Gets an array of modifier names contained in modifiers flags.
 		/// </summary>
+        //[ImplementsMethod]
 		public static PhpArray getModifierNames(int modifiers)
 		{
 			PhpArray result = new PhpArray();
@@ -121,8 +122,9 @@ namespace PHP.Library.SPL
 		}
 
 		/// <summary>
-		/// 
+        /// Exports a reflection.
 		/// </summary>
+        //[ImplementsMethod]
 		public static object export(Reflector/*!*/ reflector, bool doReturn)
 		{
 			if (reflector == null)
@@ -213,4 +215,55 @@ namespace PHP.Library.SPL
 #endif
 		#endregion
 	}
+
+    [ImplementsType]
+#if !SILVERLIGHT
+    [Serializable]
+#endif
+
+    public class ReflectionException : Exception
+    {
+        #region Implementation Details
+
+        /// <summary>
+        /// Populates the provided <see cref="DTypeDesc"/> with this class's methods and properties.
+        /// </summary>
+        /// <param name="typeDesc">The type desc to populate.</param>
+        internal static new void __PopulateTypeDesc(PhpTypeDesc typeDesc)
+        { throw new NotImplementedException(); }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public ReflectionException(ScriptContext context, bool newInstance)
+            : base(context, newInstance)
+        {
+        }
+
+        /// <summary>
+        /// For internal purposes only.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public ReflectionException(ScriptContext context, DTypeDesc caller)
+            : base(context, caller)
+        {
+        }
+
+        #endregion
+
+        #region Serialization (CLR only)
+#if !SILVERLIGHT
+
+        /// <summary>
+        /// Deserializing constructor.
+        /// </summary>
+        protected ReflectionException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+#endif
+        #endregion
+    }
 }

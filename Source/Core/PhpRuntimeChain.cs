@@ -268,7 +268,7 @@ namespace PHP.Core
 		/// </summary>
 		public override object Get(object var, ScriptContext context, DTypeDesc caller)
 		{
-			PhpException.Throw(PhpError.Error, CoreResources.GetString("operator[]_used_for_reading"));
+			PhpException.Throw(PhpError.Error, CoreResources.operator_array_access_used_for_reading);
 			return null;
 		}
 

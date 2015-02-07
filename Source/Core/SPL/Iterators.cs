@@ -138,6 +138,13 @@ namespace PHP.Library.SPL
         object hasChildren(ScriptContext context);
     }
 
+    /// <summary>
+    /// This iterator allows to unset and modify values and keys while iterating over Arrays and Objects.
+    /// 
+    /// When you want to iterate over the same array multiple times you need to instantiate ArrayObject
+    /// and let it create ArrayIterator instances that refer to it either by using foreach or by calling
+    /// its getIterator() method manually.
+    /// </summary>
     [ImplementsType]
     public class ArrayIterator : PhpObject, Iterator, Traversable, ArrayAccess, SeekableIterator, Countable, Serializable
     {
@@ -201,9 +208,10 @@ namespace PHP.Library.SPL
             else
             {
                 // throw an PHP.Library.SPL.InvalidArgumentException if anything besides an array or an object is given.
-                var e = new InvalidArgumentException(context, true);
-                e.__construct(context, null, 0, null);
-                throw new PhpUserException(e);
+                Exception.ThrowSplException(
+                    _ctx => new InvalidArgumentException(_ctx, true),
+                    context,
+                    null, 0, null);
             }
 
             return null;
@@ -727,6 +735,9 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// The EmptyIterator class for an empty iterator.
+    /// </summary>
     [ImplementsType]
     public class EmptyIterator : PhpObject, Iterator, Traversable
     {
@@ -835,17 +846,21 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual object key(ScriptContext context)
         {
-            var e = new BadMethodCallException(context, true);
-            e.__construct(context, "Accessing the key of an EmptyIterator", 0, null);
-            throw new PhpUserException(e);
+            Exception.ThrowSplException(
+                _ctx => new BadMethodCallException(_ctx, true),
+                context,
+                CoreResources.spl_empty_iterator_key_access, 0, null);
+            return null;
         }
 
         [ImplementsMethod]
         public virtual object current(ScriptContext context)
         {
-            var e = new BadMethodCallException(context, true);
-            e.__construct(context, "Accessing the value of an EmptyIterator", 0, null);
-            throw new PhpUserException(e);
+            Exception.ThrowSplException(
+                _ctx => new BadMethodCallException(_ctx, true),
+                context,
+                CoreResources.spl_empty_iterator_value_access, 0, null);
+            return null;
         }
 
         #endregion
@@ -865,6 +880,12 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// This iterator wrapper allows the conversion of anything that is Traversable into an Iterator.
+    /// It is important to understand that most classes that do not implement Iterators have reasons
+    /// as most likely they do not allow the full Iterator feature set. If so, techniques should be provided
+    /// to prevent misuse, otherwise expect exceptions or fatal errors.
+    /// </summary>
     [ImplementsType]
     public class IteratorIterator : PhpObject, OuterIterator, Iterator, Traversable
     {
@@ -1099,6 +1120,10 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// This abstract iterator filters out unwanted values. This class should be extended to implement
+    /// custom iterator filters. The FilterIterator::accept() must be implemented in the subclass.
+    /// </summary>
     [ImplementsType]
     public abstract class FilterIterator : IteratorIterator, OuterIterator, Iterator, Traversable
     {
@@ -1183,6 +1208,11 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// This iterator allows to unset and modify values and keys while iterating over Arrays
+    /// and Objects in the same way as the ArrayIterator. Additionally it is possible to iterate
+    /// over the current iterator entry.
+    /// </summary>
     [ImplementsType]
     public class RecursiveArrayIterator : ArrayIterator, RecursiveIterator
     {
@@ -1318,6 +1348,9 @@ namespace PHP.Library.SPL
         }
     }
 
+    /// <summary>
+    /// Can be used to iterate through recursive iterators.
+    /// </summary>
     [ImplementsType]
     public class RecursiveIteratorIterator : PhpObject, OuterIterator, Iterator, Traversable
     {
@@ -1836,6 +1869,9 @@ namespace PHP.Library.SPL
         #endregion
     }
 
+    /// <summary>
+    /// An Iterator that iterates over several iterators one after the other.
+    /// </summary>
     [ImplementsType]
     public class AppendIterator : IteratorIterator, OuterIterator, Traversable, Iterator
     {

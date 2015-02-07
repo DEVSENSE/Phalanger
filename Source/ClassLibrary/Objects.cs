@@ -272,6 +272,7 @@ namespace PHP.Library
 		/// Verifies whether the method given by <paramref name="methodName"/> has been defined for the given
 		/// object <paramref name="obj"/>. 
 		/// </summary>
+        /// <param name="caller">Current class context.</param>
 		/// <param name="obj">The object to test.</param>
 		/// <param name="methodName">The name of the method.</param>
 		/// <returns><B>True</B> if the method given by <paramref name="methodName"/> has been defined for the given
