@@ -1178,6 +1178,17 @@ namespace PHP.Core
         {
             return string.Equals(self, str, StringComparison.OrdinalIgnoreCase);
         }
+
+
+        /// <summary>
+        /// Returns last character of string or -1 if empty
+        /// </summary>
+        /// <param name="str">String</param>
+        /// <returns>Last character of string or -1 if empty</returns>
+        public static int LastCharacter(this string/*!*/ str)
+        {
+            return str.Length == 0 ? -1 : str[str.Length - 1];
+        }
     }
 
     #endregion
@@ -3461,6 +3472,17 @@ namespace PHP.Core
                 }
             }
             return url;
+        }
+
+
+        /// <summary>
+        /// Converts path to standardized form using '/' as only directory separator
+        /// </summary>
+        /// <param name="path">Path to be canonicalized</param>
+        /// <returns>Canonicalized path</returns>
+        public static String CanonicalizePath(string path)
+        {
+            return path.Replace('\\', '/');
         }
     }
 

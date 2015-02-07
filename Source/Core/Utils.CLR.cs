@@ -706,6 +706,40 @@ namespace PHP.Core
 			return Path.GetFullPath(Path.Combine(root, path));
 		}
 
+
+        public static string[] GetFiles(string path, string searchPattern)
+        {
+            return GetFileSystemEntries(path, searchPattern, true, false);
+        }
+
+        public static string[] GetDirectories(string path, string searchPattern)
+        {
+            return GetFileSystemEntries(path, searchPattern, false, true);
+        }
+
+        public static string[] GetFileSystemEntries(string path, string searchPattern)
+        {
+            return GetFileSystemEntries(path, searchPattern, true, true);
+        }
+
+        public static string[] GetFileSystemEntries(string path, string searchPattern, bool includeFiles, bool includeDirectories)
+        {
+            if (includeFiles && includeDirectories)
+            {
+                return System.IO.Directory.GetFileSystemEntries(path, searchPattern);
+            }
+            if (includeFiles)
+            {
+                return System.IO.Directory.GetFiles(path, searchPattern);
+            }
+            if (includeDirectories)
+            {
+                return System.IO.Directory.GetDirectories(path, searchPattern);
+            }
+            return ArrayUtils.EmptyStrings;
+        }
+
+
 		/// <summary>
 		/// Gets a list of file full paths contained in a specified directories.
 		/// </summary>
