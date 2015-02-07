@@ -93,7 +93,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class GlobalConstUse : ConstantUse
 	{
-		internal override Operations Operation { get { return Operations.GlobalConstUse; } }
+        public override Operations Operation { get { return Operations.GlobalConstUse; } }
 
 		public QualifiedName Name { get { return name; } }
 		private QualifiedName name;
@@ -178,7 +178,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class ClassConstUse : ConstantUse
 	{
-		internal override Operations Operation { get { return Operations.ClassConstUse; } }
+		public override Operations Operation { get { return Operations.ClassConstUse; } }
 
         /// <summary>
         /// Class name. May have an empty <see cref="Name"/> if the class is referenced indirectly.
@@ -278,7 +278,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class PseudoConstUse : Expression
 	{
-		internal override Operations Operation { get { return Operations.PseudoConstUse; } }
+        public override Operations Operation { get { return Operations.PseudoConstUse; } }
 
 		public enum Types { Line, File, Class, Function, Method, Namespace, Dir }
 

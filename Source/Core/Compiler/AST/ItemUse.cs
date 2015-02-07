@@ -24,7 +24,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class ItemUse : CompoundVarUse
 	{
-		internal override Operations Operation { get { return Operations.ItemUse; } }
+        public override Operations Operation { get { return Operations.ItemUse; } }
 
         /// <summary>
         /// Whether this represents function array dereferencing.

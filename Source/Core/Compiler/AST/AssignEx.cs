@@ -50,7 +50,7 @@ namespace PHP.Core.AST
 	/// </remarks>
 	public sealed class ValueAssignEx : AssignEx
 	{
-		internal override Operations Operation { get { return operation; } }
+        public override Operations Operation { get { return operation; } }
 		private Operations operation;
 
 		private Expression/*!*/ rvalue;
@@ -555,7 +555,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class RefAssignEx : AssignEx
 	{
-		internal override Operations Operation { get { return Operations.AssignRef; } }
+        public override Operations Operation { get { return Operations.AssignRef; } }
 
 		private Expression/*!*/ rvalue;
         /// <summary>Expression being assigned</summary>

@@ -25,7 +25,7 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class ArrayEx : Expression
 	{
-		internal override Operations Operation { get { return Operations.Array; } }
+		public override Operations Operation { get { return Operations.Array; } }
 
 		private readonly List<Item>/*!*/ items;
         public List<Item>/*!*/ Items{get{return items;}}
