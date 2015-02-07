@@ -29,7 +29,7 @@ namespace MachineConfig
 	/// 
 	/// </summary>
 	[RunInstaller(true)]
-	public class Permissions : Installer
+    public class Permissions : Installer
 	{
         #region Helpers
 
@@ -57,25 +57,18 @@ namespace MachineConfig
 
         #endregion
 
-        #region Uninstall, Install Overrides
+        #region Install, Commit
 
         /// <summary>
 		/// 
 		/// </summary>
-		/// <param name="savedState">An <see cref="IDictionary"/> that contains the state of the computer after
-		/// the installation was complete.</param>
-		public override void Uninstall(IDictionary savedState)
-		{
-			// do nothing
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
 		/// <param name="stateSaver">An <see cref="IDictionary"/> used to save information needed to perform a commit,
 		/// rollback, or uninstall operation.</param>
-		public override void Install(IDictionary stateSaver)
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand)]
+        public override void Install(IDictionary stateSaver)
 		{
+            base.Install(stateSaver);
+
             // check the installation directory
 			string install_dir = Context.Parameters["InstallDir"];
 
@@ -102,13 +95,26 @@ namespace MachineConfig
             }
 		}
 
-		#endregion
-
+		[System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand)]
         public override void Commit(IDictionary savedState)
         {
             base.Commit(savedState);
-
+            
             System.Diagnostics.Process.Start("http://www.php-compiler.net/Phalanger-Installed.html");
         }
-	}
+
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand)]
+        public override void Rollback(IDictionary savedState)
+        {
+            base.Rollback(savedState);
+        }
+
+        [System.Security.Permissions.SecurityPermission(System.Security.Permissions.SecurityAction.Demand)]
+        public override void Uninstall(IDictionary savedState)
+        {
+            base.Uninstall(savedState);
+        }
+
+        #endregion
+    }
 }
