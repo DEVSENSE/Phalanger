@@ -97,10 +97,16 @@ namespace PHP.Core.AST
 		public QualifiedName Name { get { return name; } }
 		private QualifiedName name;
 
-		public GlobalConstUse(Position position, QualifiedName name)
+        /// <summary>
+        /// Name used when the <see cref="Name"/> is not found. Used when reading global constant in a namespace context.
+        /// </summary>
+        private QualifiedName? fallbackName;
+
+		public GlobalConstUse(Position position, QualifiedName name, QualifiedName? fallbackName)
 			: base(position)
 		{
 			this.name = name;
+            this.fallbackName = fallbackName;
 		}
 
 		/// <summary>
@@ -111,6 +117,7 @@ namespace PHP.Core.AST
 		{
 			this.access = access;
 			this.name = name;
+            this.fallbackName = null;
 		}
 
 		internal override Evaluation EvaluatePriorAnalysis(SourceUnit/*!*/ sourceUnit)
@@ -139,7 +146,7 @@ namespace PHP.Core.AST
 			// loads constant only if its value is read:
 			if (access == AccessType.Read)
 			{
-				return constant.EmitGet(codeGenerator, null, false);
+                return constant.EmitGet(codeGenerator, null, false, fallbackName.HasValue ? fallbackName.Value.ToString() : null);
 			}
 			else
 			{
@@ -214,7 +221,7 @@ namespace PHP.Core.AST
 
 			if (access == AccessType.Read)
 			{
-				return constant.EmitGet(codeGenerator, type as ConstructedType, runtimeVisibilityCheck);
+				return constant.EmitGet(codeGenerator, type as ConstructedType, runtimeVisibilityCheck, null);
 			}
 			else
 			{

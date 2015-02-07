@@ -11,17 +11,14 @@
 */
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
 
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Collections;
-
-using PHP.Core.AST;
-using PHP.Core.Emit;
 using PHP.Core.Parsers;
+using PHP.Core.Emit;
 
 namespace PHP.Core.Reflection
 {
@@ -36,19 +33,17 @@ namespace PHP.Core.Reflection
 		{
 			get
 			{
-                Debug.Assert(!ValueIsDeferred, "This constant's literal value cannot be accessed directly. You have to read its realField in runtime after you initialize static fields.");
 				return literalValue;
 			}
 			internal /* friend DConstant */ set
 			{
 				Debug.Assert(value is int || value is string || value == null || value is bool || value is double || value is long);
 				this.literalValue = value;
-                this.ValueIsDeferred = false;
 			}
 		}
 		private object literalValue;
 
-        public GlobalConstant GlobalConstant { get { return (GlobalConstant)Member; } }
+		public GlobalConstant GlobalConstant { get { return (GlobalConstant)Member; } }
 		public ClassConstant ClassConstant { get { return (ClassConstant)Member; } }
 
 		#region Construction
@@ -77,53 +72,16 @@ namespace PHP.Core.Reflection
 
 		public override string MakeFullName()
 		{
-			Debug.Fail("Not Supported");
+			Debug.Fail();
 			return null;
 		}
 
 		public override string MakeFullGenericName()
 		{
-            Debug.Fail("Not Supported");
+			Debug.Fail();
 			return null;
-        }
-
-        #region Run-Time Operations
-
-        /// <summary>
-        /// <c>True</c> if value of this constant is deferred to runtime; hence it must be read from corresponding static field every time.
-        /// </summary>
-        internal bool ValueIsDeferred { get; set; }
-
-        /// <summary>
-        /// Read value of this constant.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public object GetValue(ScriptContext/*!*/ context)
-        {
-            if (ValueIsDeferred)
-            {
-                if (Member.GetType() == typeof(ClassConstant) && DeclaringType.GetType() == typeof(PhpTypeDesc))
-                {
-                    ((PhpTypeDesc)DeclaringType).EnsureThreadStaticFieldsInitialized(context);
-                    return ((ClassConstant)Member).GetValue();
-                }
-
-                if (memberAttributes.GetType() == typeof(GlobalConstant))
-                {
-                    // TODO: initialize deferred global constant
-                    return ((ClassConstant)Member).GetValue();
-                }
-
-                Debug.Fail("Uncaught constant type.");
-            }
-
-            //
-            return this.LiteralValue;
-        }
-
-        #endregion
-    }
+		}
+	}
 
 	#endregion
 
@@ -170,7 +128,7 @@ namespace PHP.Core.Reflection
 
 		internal virtual void ReportCircularDefinition(ErrorSink/*!*/ errors)
 		{
-			Debug.Fail(null);
+			Debug.Fail();
 		}
 
 		internal abstract PhpTypeCode EmitGet(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType,
@@ -248,7 +206,7 @@ namespace PHP.Core.Reflection
 		/// <summary>
 		/// Whether the value of the constant is known and stored in the constant-desc.
 		/// </summary>
-        public sealed override bool HasValue { get { return node == null && !ConstantDesc.ValueIsDeferred; } }
+		public sealed override bool HasValue { get { return node == null; } }
 
 		/// <summary>
 		/// Real storage of the constant (a field).
@@ -257,16 +215,13 @@ namespace PHP.Core.Reflection
 		public FieldBuilder RealFieldBuilder { get { return (FieldBuilder)realField; } }
 		protected FieldInfo realField;
 
-        private Func<object>/*!*/GetterStub { get { if (getterStub == null) GenerateGetterStub(); return getterStub; } }
-        private Func<object>/*!*/getterStub = null;
-
 		/// <summary>
 		/// AST node representing the constant. Used for evaluation only.
 		/// </summary>
 		internal AST.ConstantDecl Node { get { return node; } }
 		private AST.ConstantDecl node;
 
-        public abstract Text.Span Span { get; }
+		public abstract Position Position { get; }
 		public abstract SourceUnit SourceUnit { get; }
 
 		internal ExportAttribute ExportInfo { get { return exportInfo; } set { exportInfo = value; } }
@@ -296,19 +251,6 @@ namespace PHP.Core.Reflection
 			this.node = node;
 		}
 
-        private void GenerateGetterStub()
-        {
-            Debug.Assert(this.realField != null);
-            Debug.Assert(this.realField.FieldType == typeof(object));
-
-            DynamicMethod stub = new DynamicMethod("<^GetterStub>", this.realField.FieldType, Type.EmptyTypes, true);
-            ILEmitter il = new ILEmitter(stub);
-
-            il.Emit(OpCodes.Ldsfld, this.realField);
-            il.Emit(OpCodes.Ret);
-            this.getterStub = (Func<object>)stub.CreateDelegate(typeof(Func<object>));
-        }
-
 		#region Emission
 
 		internal override PhpTypeCode EmitGet(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType,
@@ -316,31 +258,22 @@ namespace PHP.Core.Reflection
 		{
 			ILEmitter il = codeGenerator.IL;
 
+			// TODO: optimize boxing
+
 			if (HasValue)
 			{
-				il.LoadLiteral(Value);
-                return PhpTypeCodeEnum.FromObject(Value);
+				il.LoadLiteralBox(Value);
 			}
 			else
 			{
 				Debug.Assert(realField != null);
-
-                il.Emit(OpCodes.Ldsfld, DType.MakeConstructed(realField, constructedType));
-                return PhpTypeCodeEnum.FromType(realField.FieldType);
+				il.Emit(OpCodes.Ldsfld, DType.MakeConstructed(realField, constructedType));
 			}
+
+			return PhpTypeCode.Object;
 		}
 
 		#endregion
-
-        #region Run-Time Operations
-
-        internal object GetValue()
-        {
-            Debug.Assert(realField != null);
-            return GetterStub();
-        }
-
-        #endregion
 	}
 
 	#endregion
@@ -401,14 +334,8 @@ namespace PHP.Core.Reflection
 		public VersionInfo Version { get { return version; } set { version = value; } }
 		private VersionInfo version;
 
-        public override Text.Span Span { get { return declaration.Span; } }
+		public override Position Position { get { return declaration.Position; } }
 		public override SourceUnit SourceUnit { get { return declaration.SourceUnit; } }
-
-        /// <summary>
-        /// If constant defined within &lt;script&gt; type, remember its builder to define constant field there.
-        /// In case of pure or transient module, this is null. If this is null, the constant is declared in as CLR global.
-        /// </summary>
-        private TypeBuilder scriptTypeBuilder = null;
 
         /// <summary>
         /// Name of the extension where this global constant was defined.
@@ -445,7 +372,6 @@ namespace PHP.Core.Reflection
             : base(new DConstantDesc(declaringModule, PhpMemberAttributes.None, null))
         {
             this.realField = info;
-            this.qualifiedName = qualifiedName;
         }
 
 
@@ -456,24 +382,18 @@ namespace PHP.Core.Reflection
 			: base(new DConstantDesc(UnknownModule.RuntimeModule, PhpMemberAttributes.None, null))
 		{
 			this.realField = info;
-            this.qualifiedName = qualifiedName;
 		}
 
 		/// <summary>
 		/// Used by compiler.
 		/// </summary>
 		public GlobalConstant(QualifiedName qualifiedName, PhpMemberAttributes memberAttributes,
-            CompilationSourceUnit/*!*/ sourceUnit, bool isConditional, Scope scope, Text.Span position)
+            SourceUnit/*!*/ sourceUnit, bool isConditional, Scope scope, Position position)
 			: base(new DConstantDesc(sourceUnit.CompilationUnit.Module, memberAttributes, null))
 		{
-            Debug.Assert(sourceUnit != null);
-
 			this.qualifiedName = qualifiedName;
 			this.declaration = new Declaration(sourceUnit, this, false, isConditional, scope, position);
             //this.origin = origin;
-
-            if (sourceUnit.CompilationUnit is ScriptCompilationUnit)    // J: place the constant into <script> type so it can be reflected properly
-                scriptTypeBuilder = ((ScriptCompilationUnit)sourceUnit.CompilationUnit).ScriptBuilder.ScriptTypeBuilder;
 		}
 
 		#endregion
@@ -485,51 +405,25 @@ namespace PHP.Core.Reflection
 
 		internal override void ReportCircularDefinition(ErrorSink/*!*/ errors)
 		{
-			errors.Add(Errors.CircularConstantDefinitionGlobal, SourceUnit, Span, FullName);
+			errors.Add(Errors.CircularConstantDefinitionGlobal, SourceUnit, Position, FullName);
 		}
 
 		public void ReportRedeclaration(ErrorSink/*!*/ errors)
 		{
-			errors.Add(FatalErrors.ConstantRedeclared, SourceUnit, Span, FullName);
+			errors.Add(FatalErrors.ConstantRedeclared, SourceUnit, Position, FullName);
 		}
 
 		internal void DefineBuilders()
 		{
 			if (realField == null)
 			{
-                // resolve attributes
-                FieldAttributes field_attrs = Enums.ToFieldAttributes(memberDesc.MemberAttributes);
-                field_attrs |= FieldAttributes.Literal;
+				ModuleBuilder module_builder = this.DeclaringModuleBuilder.AssemblyBuilder.RealModuleBuilder;
 
-                Debug.Assert((field_attrs & FieldAttributes.Static) != 0);
+				// represent the class constant as a static initonly field
+				FieldAttributes field_attrs = Enums.ToFieldAttributes(memberDesc.MemberAttributes);
+				field_attrs |= FieldAttributes.Literal;
 
-                // convert name to CLR notation:
-                var clrName = qualifiedName.ToClrNotation(0, 0);
-
-                // type
-                Type type = Types.Object[0];
-                if (this.HasValue && this.Value != null)
-                    type = this.Value.GetType();
-
-                // define public static const field:
-                if (scriptTypeBuilder != null)  // const in SSA or MSA
-                {
-                    realField = scriptTypeBuilder.DefineField(clrName, type, field_attrs);
-                }
-                else // const in Pure or Transient
-                {
-                    ModuleBuilder module_builder = this.DeclaringModuleBuilder.AssemblyBuilder.RealModuleBuilder;
-
-                    // represent the class constant as a static initonly field
-
-                    realField = ReflectionUtils.DefineGlobalField(module_builder, clrName, type, field_attrs);
-                }
-
-                Debug.Assert(realField != null);
-
-                // set value
-                if (this.HasValue)
-                    ((FieldBuilder)realField).SetConstant(this.Value);
+				realField = ReflectionUtils.DefineGlobalField(module_builder, qualifiedName.ToClrNotation(0, 0), Types.Object[0], field_attrs);
 			}
 		}
 
@@ -555,8 +449,8 @@ namespace PHP.Core.Reflection
 		/// Error reporting.
 		/// <see cref="ShortPosition.Invalid"/> for reflected PHP methods.
 		/// </summary>
-        public override Text.Span Span { get { return span; } }
-        private readonly Text.Span span;
+		public override Position Position { get { return position; } }
+		private readonly Position position;
 
 		/// <summary>
 		/// Error reporting (for partial classes).
@@ -577,13 +471,13 @@ namespace PHP.Core.Reflection
 		/// Used by compiler.
 		/// </summary>
 		public ClassConstant(VariableName name, DTypeDesc/*!*/ declaringType, PhpMemberAttributes memberAttributes,
-            SourceUnit/*!*/ sourceUnit, Text.Span position)
+			SourceUnit/*!*/ sourceUnit, Position position)
 			: base(new DConstantDesc(declaringType, memberAttributes, null))
 		{
 			Debug.Assert(declaringType != null);
 
 			this.name = name;
-			this.span = position;
+			this.position = position;
 			this.sourceUnit = sourceUnit;
 		}
 
@@ -617,7 +511,7 @@ namespace PHP.Core.Reflection
 
 		internal override void ReportCircularDefinition(ErrorSink/*!*/ errors)
 		{
-			errors.Add(Errors.CircularConstantDefinitionClass, SourceUnit, Span, DeclaringType.FullName, FullName);
+			errors.Add(Errors.CircularConstantDefinitionClass, SourceUnit, Position, DeclaringType.FullName, FullName);
 		}
 
 		/// <summary>
@@ -643,56 +537,23 @@ namespace PHP.Core.Reflection
 
 				// represent the class constant as a static initonly field
 				FieldAttributes field_attrs = Enums.ToFieldAttributes(memberDesc.MemberAttributes);
-                Type field_type = Types.Object[0];
-                if (this.HasValue)
-                {
-                    var value = this.Value;
-                    if (value == null || value is int || value is double || value is string || value is long || value is bool)
-                    {
-                        if (value != null)
-                            field_type = value.GetType();
+				field_attrs |= FieldAttributes.InitOnly;
 
-                        field_attrs |= FieldAttributes.Literal;
-                    }
-                    else
-                    {
-                        field_attrs |= FieldAttributes.InitOnly;
-                    }
-                }
-                
 				string name = FullName;
 				if (IsExported) name += "#";
 
-				FieldBuilder fb = type_builder.DefineField(name, field_type, field_attrs);
+				FieldBuilder fb = type_builder.DefineField(name, Types.Object[0], field_attrs);
 
 				// [EditorBrowsable(Never)] for user convenience - not on silverlight
-                // [ThreadStatic] for deferred constants
 #if !SILVERLIGHT
 				if (IsExported)
 					fb.SetCustomAttribute(AttributeBuilders.EditorBrowsableNever);
-                if (!this.HasValue) // constant initialized for every request separatelly (same as static PHP field)
-                    fb.SetCustomAttribute(AttributeBuilders.ThreadStatic);
 #endif
 
 				realField = fb;
 			}
-        }
-
-        #region Emission
-
-        internal override PhpTypeCode EmitGet(CodeGenerator codeGenerator, ConstructedType constructedType, bool runtimeVisibilityCheck, string fallbackName)
-        {
-            if (!HasValue)
-            {
-                // __InitializeStaticFields to ensure, this deferred constant has been initialized (same as thread static field):
-                DeclaringPhpType.EmitThreadStaticInit(codeGenerator, constructedType);
-            }
-
-            return base.EmitGet(codeGenerator, constructedType, runtimeVisibilityCheck, fallbackName);
-        }
-
-        #endregion
-    }
+		}
+	}
 
 	#endregion
 }

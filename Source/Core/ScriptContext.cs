@@ -604,12 +604,13 @@ namespace PHP.Core
 		/// Retrieves a value of a constant (either user or library).
 		/// </summary>
 		/// <param name="name">The name of the constant.</param>
+        /// <param name="fallbackName">The name of the constant tried if the first one does not exist.</param>
 		/// <returns>Returns the value of the constant or its name it it is not defined.</returns>
 		/// <exception cref="PhpException">Constant is not defined (Notice).</exception>
 		[Emitted]
-		public object GetConstantValue(string name)
+		public object GetConstantValue(string name, string fallbackName)
 		{
-			return GetConstantValue(name, false, true);
+			return GetConstantValue(name, fallbackName, false, true);
 		}
 
         /// <summary>
@@ -647,19 +648,20 @@ namespace PHP.Core
             return false; // gobal constant
         }
 
-		/// <summary>
-		/// Retrieves a value of a constant (either user or library).
-		/// </summary>
-		/// <param name="name">The name of the constant.</param>
-		/// <param name="quiet">Whether to report a notice if the constant is not defined.</param>
+        /// <summary>
+        /// Retrieves a value of a constant (either user or library).
+        /// </summary>
+        /// <param name="name">The name of the constant.</param>
+        /// <param name="fallbackName">The name of constant tried if <paramref name="name"/> does not exist. (global constants only)</param>
+        /// <param name="quiet">Whether to report a notice if the constant is not defined.</param>
         /// <param name="returnNameIfUndefined">True to return the <paramref name="name"/> instead of <c>null</c> when constant is not defined.</param>
         /// <returns>Returns the value of the constant. If constant is not defined, <c>null</c> or its name is returned.</returns>
-		/// <exception cref="PhpException">Constant is not defined (Notice).</exception>
+        /// <exception cref="PhpException">Constant is not defined (Notice).</exception>
         /// <exception cref="PhpException">Constant is not defined (Warning).</exception>
         /// <exception cref="PhpException">Undefined class constant (Fatal Error).</exception>
-		public object GetConstantValue(string name, bool quiet, bool returnNameIfUndefined)
-		{
-			if (name == null) name = String.Empty;
+        private object GetConstantValue(string name, string fallbackName, bool quiet, bool returnNameIfUndefined)
+        {
+            if (name == null) name = String.Empty;
 
             // global constant or class constant:
             DConstantDesc desc;
@@ -675,12 +677,22 @@ namespace PHP.Core
                 if (Constants.TryGetValue(name, out result))
                     return result;
 
-                // gets system constant if user one is not defined:
-                if (applicationContext.Constants.TryGetValue(name, out desc))
-                    return desc.LiteralValue;
+                    // gets system constant if user one is not defined:
+                    if (applicationContext.Constants.TryGetValue(name, out desc))
+                        return desc.LiteralValue;
+                
+                if (fallbackName != null)
+                {
+                    // try the same with fallbackName:
+
+                    if (Constants.TryGetValue(fallbackName, out result))
+                        return result;
+                    if (applicationContext.Constants.TryGetValue(fallbackName, out desc))
+                        return desc.LiteralValue;
+                }
             }
 
-			// constant is not defined:
+            // constant is not defined:
             if (!quiet)
             {
                 if (returnNameIfUndefined)
@@ -691,6 +703,21 @@ namespace PHP.Core
 
             // default value, if constant is not defined
             return returnNameIfUndefined ? name : null;
+        }
+
+		/// <summary>
+		/// Retrieves a value of a constant (either user or library).
+		/// </summary>
+		/// <param name="name">The name of the constant.</param>
+		/// <param name="quiet">Whether to report a notice if the constant is not defined.</param>
+        /// <param name="returnNameIfUndefined">True to return the <paramref name="name"/> instead of <c>null</c> when constant is not defined.</param>
+        /// <returns>Returns the value of the constant. If constant is not defined, <c>null</c> or its name is returned.</returns>
+		/// <exception cref="PhpException">Constant is not defined (Notice).</exception>
+        /// <exception cref="PhpException">Constant is not defined (Warning).</exception>
+        /// <exception cref="PhpException">Undefined class constant (Fatal Error).</exception>
+		public object GetConstantValue(string name, bool quiet, bool returnNameIfUndefined)
+		{
+            return GetConstantValue(name, null, quiet, returnNameIfUndefined);
 		}
 
 		/// <summary>
@@ -854,6 +881,7 @@ namespace PHP.Core
 		/// <param name="localVariables">Table of local variables if available.</param>
 		/// <param name="namingContext">Naming context.</param>
 		/// <param name="name">The name of the function. Case insensitive.</param>
+        /// <param name="fallbackName">The name of the function tried if the first one does not exist.</param>
 		/// <param name="context">The script context in which to do the call.</param>
 		/// <returns>The return value of the function called.</returns>
 		/// <remarks>

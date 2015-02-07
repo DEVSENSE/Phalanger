@@ -498,8 +498,31 @@ namespace PHP.Core.Parsers
 
         private DirectFcnCall/*!*/ CreateDirectFcnCall(Position pos, QualifiedName qname, List<ActualParam> args, List<TypeRef> typeArgs)
         {
+            QualifiedName? fallbackQName;
+
+            TranslateFallbackQualifiedName(ref qname, out fallbackQName);
+            return new DirectFcnCall(pos, qname, fallbackQName, args, typeArgs);
+        }
+
+        private GlobalConstUse/*!*/ CreateGlobalConstUse(Position pos, QualifiedName qname)
+        {
+            QualifiedName? fallbackQName;
+
+            TranslateFallbackQualifiedName(ref qname, out fallbackQName);
+            return new GlobalConstUse(pos, qname, fallbackQName);
+        }
+
+        /// <summary>
+        /// Process <paramref name="qname"/>. Ensure <paramref name="qname"/> will be fully qualified.
+        /// Outputs <paramref name="fallbackQName"/> which should be used if <paramref name="qname"/> does not refer to any existing entity.
+        /// </summary>
+        /// <param name="qname"></param>
+        /// <param name="fallbackQName"></param>
+        /// <remarks>Used for handling global function call and global constant use.
+        /// In PHP entity in current namespace is tried first, then it falls back to global namespace.</remarks>
+        private void TranslateFallbackQualifiedName(ref QualifiedName qname, out QualifiedName? fallbackQName)
+        {
             qname = TranslateNamespace(qname);
-            QualifiedName? fallbackQName = null;
 
             if (!qname.IsFullyQualifiedName && qname.IsSimpleName &&
                 currentNamespace != null && currentNamespace.QualifiedName.Namespaces.Length > 0)
@@ -512,10 +535,9 @@ namespace PHP.Core.Parsers
             }
             else
             {
+                fallbackQName = null;
                 qname.IsFullyQualifiedName = true;  // just ensure
             }
-
-            return new DirectFcnCall(pos, qname, fallbackQName, args, typeArgs);
         }
 
 		private Expression/*!*/ CheckInitializer(Position pos, Expression/*!*/ initializer)

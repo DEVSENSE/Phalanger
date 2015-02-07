@@ -3074,7 +3074,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 { yyval.Object = new PseudoConstUse(yypos, PseudoConstUse.Types.Namespace); }
         return;
       case 391: // global_constant -> qualified_namespace_name 
-{ yyval.Object = new GlobalConstUse(yypos, TranslateNamespace((QualifiedName)value_stack.array[value_stack.top-1].yyval.Object)); }
+{ yyval.Object = CreateGlobalConstUse(yypos, (QualifiedName)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 392: // class_constant -> qualified_static_type_ref T_DOUBLE_COLON identifier 
 { 

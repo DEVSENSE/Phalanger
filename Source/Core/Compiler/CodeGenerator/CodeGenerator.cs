@@ -986,7 +986,7 @@ namespace PHP.Core
 				try
 				{
 					// read the field
-					PhpTypeCode type_code = constant.EmitGet(this, null, false);
+					PhpTypeCode type_code = constant.EmitGet(this, null, false, null);
 
 					// convert it to the return type
 					//ClrOverloadBuilder.EmitConvertToClr(
@@ -1730,10 +1730,12 @@ namespace PHP.Core
 			il.Emit(OpCodes.Call, Methods.Operators.UnsetStaticProperty);
 		}
 
-		internal void EmitGetConstantValueOperator(DType type, string/*!*/ constantFullName)
+		internal void EmitGetConstantValueOperator(DType type, string/*!*/ constantFullName, string constantFallbackName)
 		{
 			if (type != null)
 			{
+                Debug.Assert(constantFallbackName == null);
+
 				// CALL Operators.GetClassConstant(<type desc>, <constant name>, <type context>, <script context>);
 				type.EmitLoadTypeDesc(this, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
 
@@ -1749,6 +1751,7 @@ namespace PHP.Core
 				// CALL context.GetConstantValue(name);
 				EmitLoadScriptContext();
 				il.Emit(OpCodes.Ldstr, constantFullName);
+                if (constantFallbackName != null) il.Emit(OpCodes.Ldstr, constantFallbackName); else il.Emit(OpCodes.Ldnull);
 				il.Emit(OpCodes.Call, Methods.ScriptContext.GetConstantValue);
 			}
 		}
