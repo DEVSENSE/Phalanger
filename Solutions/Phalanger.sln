@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B1BA64DC-649F-4BC5-A6DA-6649A8029B1D}"
 	ProjectSection(SolutionItems) = preProject
 		..\Documentation\Developer\BaseAddresses.txt = ..\Documentation\Developer\BaseAddresses.txt
@@ -13,13 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\Source\Core\Core
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary", "..\Source\ClassLibrary\ClassLibrary.csproj", "{D515E8F4-357C-4CAF-87C1-97D64C5F865A}"
 	ProjectSection(ProjectDependencies) = postProject
-		{9A2867A2-981C-4B5A-A1C5-EACCC80B5148} = {9A2867A2-981C-4B5A-A1C5-EACCC80B5148}
-		{9A2867A2-981C-4B5A-A1C5-EACCC80B5148} = {9A2867A2-981C-4B5A-A1C5-EACCC80B5148}
-		{9A2867A2-981C-4B5A-A1C5-EACCC80B5148} = {9A2867A2-981C-4B5A-A1C5-EACCC80B5148}
-		{9A2867A2-981C-4B5A-A1C5-EACCC80B5148} = {9A2867A2-981C-4B5A-A1C5-EACCC80B5148}
-		{9A2867A2-981C-4B5A-A1C5-EACCC80B5148} = {9A2867A2-981C-4B5A-A1C5-EACCC80B5148}
-		{9A2867A2-981C-4B5A-A1C5-EACCC80B5148} = {9A2867A2-981C-4B5A-A1C5-EACCC80B5148}
-		{9A2867A2-981C-4B5A-A1C5-EACCC80B5148} = {9A2867A2-981C-4B5A-A1C5-EACCC80B5148}
 		{9A2867A2-981C-4B5A-A1C5-EACCC80B5148} = {9A2867A2-981C-4B5A-A1C5-EACCC80B5148}
 	EndProjectSection
 EndProject
@@ -72,9 +65,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.Xml", "..\Source\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.Zlib", "..\Source\Extensions\Zlib\Extension.Zlib.csproj", "{630C04B5-0B38-4883-981E-2F094982D49D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.CodeDom", "..\Source\Core.CodeDom\Core.CodeDom.csproj", "{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Parsers", "..\Source\Core.Parsers\Core.Parsers.csproj", "{581F1486-5062-459E-BAE6-A41886584F81}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 26
+		SccNumberOfProjects = 27
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
@@ -172,6 +169,9 @@ Global
 		SccProjectTopLevelParentUniqueName25 = Phalanger.sln
 		SccProjectName25 = ../Source/Extensions/Zlib
 		SccLocalPath25 = ..\\Source\\Extensions\\Zlib
+		SccProjectUniqueName26 = ..\\Source\\Core.CodeDom\\Core.CodeDom.csproj
+		SccProjectName26 = ../Source/Core.CodeDom
+		SccLocalPath26 = ..\\Source\\Core.CodeDom
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -546,6 +546,36 @@ Global
 		{630C04B5-0B38-4883-981E-2F094982D49D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{630C04B5-0B38-4883-981E-2F094982D49D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{630C04B5-0B38-4883-981E-2F094982D49D}.Release|Win32.ActiveCfg = Release|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.DebugNoGac|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.DebugNoGac|Any CPU.Build.0 = Debug|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.DebugNoGac|Win32.ActiveCfg = Debug|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5BCE0C1A-03EA-4942-9198-D8FB9F1F69B1}.Release|Win32.ActiveCfg = Release|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.DebugNoGac|Any CPU.ActiveCfg = Debug|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.DebugNoGac|Any CPU.Build.0 = Debug|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.DebugNoGac|Win32.ActiveCfg = Debug|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{581F1486-5062-459E-BAE6-A41886584F81}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

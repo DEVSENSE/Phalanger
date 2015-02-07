@@ -228,8 +228,8 @@ namespace PHP.Core.AST
         /// </summary>
         public PHPDocBlock PHPDoc
         {
-            get { return this.GetProperty<PHPDocBlock>(); }
-            set { this.SetProperty<PHPDocBlock>(value); }
+            get { return (PHPDocBlock)this.GetProperty(typeof(PHPDocBlock)); }
+            set { this.SetProperty(typeof(PHPDocBlock), value); }
         }
 	}
 
@@ -328,8 +328,8 @@ namespace PHP.Core.AST
         /// </summary>
         public PHPDocBlock PHPDoc
         {
-            get { return this.GetProperty<PHPDocBlock>(); }
-            set { this.SetProperty<PHPDocBlock>(value); }
+            get { return (PHPDocBlock)this.GetProperty(typeof(PHPDocBlock)); }
+            set { this.SetProperty(typeof(PHPDocBlock), value); }
         }
 	}
 
@@ -421,8 +421,8 @@ namespace PHP.Core.AST
         /// </summary>
         public PHPDocBlock PHPDoc
         {
-            get { return this.GetProperty<PHPDocBlock>(); }
-            set { this.SetProperty<PHPDocBlock>(value); }
+            get { return (PHPDocBlock)this.GetProperty(typeof(PHPDocBlock)); }
+            set { this.SetProperty(typeof(PHPDocBlock), value); }
         }
 	}
 

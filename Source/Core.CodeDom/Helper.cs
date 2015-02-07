@@ -20,7 +20,7 @@ namespace PHP.Core.CodeDom
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class Helper
     {
-        /// <summary>Translates type specification used by CodeDOM to string that can be used for <see cref="Type.GetType(string)"/>.</summary>
+        /// <summary>Translates type specification used by CodeDOM to string that can be used for <see cref="Type.GetType"/>.</summary>
         /// <param name="t">A <see cref="System.CodeDom.CodeTypeReference"/></param>
         /// <param name="GenericArgs">True for include generic args in string (otherwise only grave and number will be included)</param>
         /// <returns>Type name</returns>
