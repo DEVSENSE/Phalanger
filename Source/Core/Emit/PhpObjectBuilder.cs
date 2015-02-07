@@ -423,33 +423,40 @@ namespace PHP.Core.Emit
 				phpType.Builder.ClrConstructorStubs.Add(
 					new StubInfo(ctor_builder, new ParameterInfo[0], StubInfo.EmptyGenericParameters, null));
 			}
-			else if (!ctor.IsAbstract)
-			{
-				Debug.Assert(!ctor.IsStatic && ctor.Signature.GenericParamCount == 0);
+            else if (!ctor.IsAbstract)
+            {
+                Debug.Assert(!ctor.IsStatic && ctor.Signature.GenericParamCount == 0);
 
-				// infer constructor visibility
-				MethodAttributes attr = Reflection.Enums.ToMethodAttributes(ctor.RoutineDesc.MemberAttributes);
+                if (ctor.Builder == null)
+                {
+                    // contructor not defined in this class
+                    phpType.ClrConstructorInfos = new ConstructorInfo[0];
+                    return;
+                }            
 
-				List<ConstructorInfo> ctor_infos = new List<ConstructorInfo>();
+                // infer constructor visibility
+                List<ConstructorInfo> ctor_infos = new List<ConstructorInfo>();
+                
+                MethodAttributes attr = Reflection.Enums.ToMethodAttributes(ctor.RoutineDesc.MemberAttributes);
 
-				foreach (StubInfo info in ClrStubBuilder.DefineMethodExportStubs(
-					ctor,
-					attr,
-					true,
-					delegate(string[] genericParamNames, object[] parameterTypes, object returnType)
-					{
-						// accept all overloads
-						return true;
-					}))
-				{
-					phpType.Builder.ClrConstructorStubs.Add(info);
+                foreach (StubInfo info in ClrStubBuilder.DefineMethodExportStubs(
+                    ctor,
+                    attr,
+                    true,
+                    delegate(string[] genericParamNames, object[] parameterTypes, object returnType)
+                    {
+                        // accept all overloads
+                        return true;
+                    }))
+                {
+                    phpType.Builder.ClrConstructorStubs.Add(info);
 
-					// infos are returned in ascending order w.r.t. parameter count
-					ctor_infos.Add(info.ConstructorBuilder);
-				}
+                    // infos are returned in ascending order w.r.t. parameter count
+                    ctor_infos.Add(info.ConstructorBuilder);
+                }
 
-				phpType.ClrConstructorInfos = ctor_infos.ToArray();
-			}
+                phpType.ClrConstructorInfos = ctor_infos.ToArray();
+            }
 		}
 
 #if !SILVERLIGHT

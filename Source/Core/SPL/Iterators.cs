@@ -1434,6 +1434,9 @@ namespace PHP.Library.SPL
                 false :
                 ((Core.Convert.ObjectToInteger(mode) & (int)Flags.CatchGetChilds)) != 0;
 
+            if (this.catchGetChild)
+                PhpException.ArgumentValueNotSupported("flags", (int)Flags.CatchGetChilds);
+
             // prepare stack of iterators
             this.iterator = it;
 
