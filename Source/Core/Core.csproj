@@ -229,7 +229,6 @@
     <Compile Include="PhpResourceManager.cs" />
     <Compile Include="PhpStream.CLR.cs" />
     <Compile Include="Compiler\PhpTypeCode.cs" />
-    <Compile Include="PluginHandler.cs" />
     <Compile Include="OrderedDictionary.cs" />
     <Compile Include="Reflection\Assemblies.CLR.cs" />
     <Compile Include="Reflection\CompilationUnits.CLR.cs" />

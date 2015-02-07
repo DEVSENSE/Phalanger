@@ -102,14 +102,14 @@ namespace PHP.Core.Compiler.AST
                 il.Emit(OpCodes.Newobj, Constructors.RoutineDelegate);
 
                 int userParamsCount = (node.UseParams != null) ? node.UseParams.Count : 0;
-                if (node.Signature.FormalParams != null && node.Signature.FormalParams.Count > userParamsCount)
+                if (node.Signature.FormalParams != null && node.Signature.FormalParams.Length > userParamsCount)
                 {
                     // array = new PhpArray(<int_count>, <string_count>);
                     il.Emit(OpCodes.Ldc_I4, 0);
-                    il.Emit(OpCodes.Ldc_I4, node.Signature.FormalParams.Count);
+                    il.Emit(OpCodes.Ldc_I4, node.Signature.FormalParams.Length);
                     il.Emit(OpCodes.Newobj, Constructors.PhpArray.Int32_Int32);
 
-                    for (int i = userParamsCount; i < node.Signature.FormalParams.Count; i++)
+                    for (int i = userParamsCount; i < node.Signature.FormalParams.Length; i++)
                     {
                         var p = node.Signature.FormalParams[i];
 

@@ -1826,7 +1826,7 @@ namespace PHP.Core
 		/// <summary>
 		/// Emits a body of an arg-full function or method overload.
 		/// </summary>
-        public void EmitArgfullOverloadBody(PhpRoutine/*!*/ routine, List<Statement>/*!*/ body, Text.Span entirePosition, int declarationBodyPosition)
+        public void EmitArgfullOverloadBody(PhpRoutine/*!*/ routine, IEnumerable<Statement>/*!*/ body, Text.Span entirePosition, int declarationBodyPosition)
 		{
 			Debug.Assert(!routine.IsAbstract);
 
@@ -1849,9 +1849,6 @@ namespace PHP.Core
 
             // remember late static bind type from <stack>
             EmitArgfullLateStaticBindTypeInitialization(routine);
-
-            // custom body prolog emittion:
-            PluginHandler.EmitBeforeBody(il, body);
 
 			// define user labels:
 			DefineLabels(routine.Builder.Labels);

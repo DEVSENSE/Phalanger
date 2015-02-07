@@ -1102,7 +1102,6 @@ namespace PHP.Core
             return value;
         }
 
-
         /// <summary>
         /// Creates dictionary from two enumerators.
         /// </summary>
@@ -1152,6 +1151,14 @@ namespace PHP.Core
         {
             foreach (T el in en) if (f(el)) yield return el;
         }
+
+        /// <summary>
+        /// Determines whether the collection is not empty.
+        /// </summary>
+        public static bool Any<T>(this ICollection<T> list)
+        {
+            return list != null && list.Count != 0;
+        }
     }
     
     /// <summary>
@@ -1200,6 +1207,34 @@ namespace PHP.Core
         public static T Last<T>(this IList<T>/*!*/list)
         {
             return list[list.Count - 1];
+        }
+
+        /// <summary>
+        /// Determines whether the list is not empty.
+        /// </summary>
+        public static bool Any<T>(this List<T> list)
+        {
+            return list != null && list.Count != 0;
+        }
+
+        /// <summary>
+        /// Copies entries into new array, or gets empty array if the collection is empty.
+        /// </summary>
+        public static T[]/*!*/AsArray<T>(this IList<T> list)
+        {
+            T[] result;
+
+            if (list.Any())
+            {
+                result = new T[list.Count];
+                list.CopyTo(result, 0);
+            }
+            else
+            {
+                result = EmptyArray<T>.Instance;
+            }
+
+            return result;
         }
     }
 
@@ -1566,6 +1601,27 @@ namespace PHP.Core
         }
 
         /// <summary>
+        /// Concats array of <typeparamref name="T"/> with single <typeparamref name="T"/> element.
+        /// </summary>
+        public static T[]/*!*/Concat<T>(T x, T[] y)
+        {
+            T[] result;
+
+            if (y.Any())
+            {
+                result = new T[1 + y.Length];
+                result[0] = x;
+                Array.Copy(y, 0, result, 1, y.Length);
+            }
+            else
+            {
+                result = new T[] { x };
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Concats two arrays of bytes.
         /// </summary>
         /// <param name="x">The first array of bytes to be concatenated.</param>
@@ -1796,6 +1852,14 @@ namespace PHP.Core
                 }
                 return ms.ToArray();
             }
+        }
+
+        /// <summary>
+        /// Determines whether the array is not empty.
+        /// </summary>
+        public static bool Any<T>(this T[] arr)
+        {
+            return arr != null && arr.Length != 0;
         }
     }
 

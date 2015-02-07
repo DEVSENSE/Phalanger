@@ -56,8 +56,8 @@ namespace PHP.Core.AST
         private readonly List<FormalParam> useParams;
 
         //private readonly TypeSignature typeSignature;
-        private readonly List<Statement>/*!*/ body;
-        public List<Statement>/*!*/ Body { get { return body; } }
+        private readonly Statement[]/*!*/ body;
+        public Statement[]/*!*/ Body { get { return body; } }
         //private readonly CustomAttributes attributes;
 
         public Text.Span EntireDeclarationPosition { get { return entireDeclarationPosition; } }
@@ -94,7 +94,7 @@ namespace PHP.Core.AST
             this.useParams = useParams;
             //this.typeSignature = new TypeSignature(genericParams);
             //this.attributes = new CustomAttributes(attributes);
-            this.body = body;
+            this.body = body.AsArray();
             this.entireDeclarationPosition = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
             this.declarationBodyPosition = declarationBodyPosition;

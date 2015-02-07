@@ -113,13 +113,13 @@ namespace PHP.Core.AST
 		public bool AliasReturn { get { return aliasReturn; } }
 		private readonly bool aliasReturn;
 
-		public List<FormalParam>/*!*/ FormalParams { get { return formalParams; } }
-		private readonly List<FormalParam>/*!*/ formalParams;
+		public FormalParam[]/*!*/ FormalParams { get { return formalParams; } }
+		private readonly FormalParam[]/*!*/ formalParams;
 
 		public Signature(bool aliasReturn, List<FormalParam>/*!*/ formalParams)
 		{
 			this.aliasReturn = aliasReturn;
-			this.formalParams = formalParams;
+			this.formalParams = formalParams.AsArray();
 		}
 	}
 
@@ -146,9 +146,9 @@ namespace PHP.Core.AST
 
         public TypeSignature TypeSignature { get { return typeSignature; } }
 		private readonly TypeSignature typeSignature;
-		
-        public List<Statement>/*!*/ Body { get { return body; } }
-        private readonly List<Statement>/*!*/ body;
+
+        public Statement[]/*!*/ Body { get { return body; } }
+        private readonly Statement[]/*!*/ body;
 
         /// <summary>
         /// Gets value indicating whether the function is declared conditionally.
@@ -198,7 +198,7 @@ namespace PHP.Core.AST
 			this.typeSignature = new TypeSignature(genericParams);
 			if (attributes != null && attributes.Count != 0)
                 this.Attributes = new CustomAttributes(attributes);
-			this.body = body;
+			this.body = body.AsArray();
 			this.entireDeclarationPosition = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
             this.declarationBodyPosition = declarationBodyPosition;

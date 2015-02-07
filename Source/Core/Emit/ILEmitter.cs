@@ -1149,8 +1149,7 @@ namespace PHP.Core.Emit
 				case TypeCode.Double: Emit(OpCodes.Ldc_R8, (double)value); break;
 				case TypeCode.Single: Emit(OpCodes.Ldc_R4, (float)value); break;
 				case TypeCode.String:
-                    if (PluginHandler.StringLiteralEmitter != null) PluginHandler.StringLiteralEmitter(this, (string)value);
-                    else Emit(OpCodes.Ldstr, (string)value);
+                    Emit(OpCodes.Ldstr, (string)value);
                     break;
 				case TypeCode.Object:
 					{

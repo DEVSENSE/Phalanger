@@ -158,7 +158,7 @@ namespace PHP.Core
                 Debug.Assert(staticCtorEmitter == null);
 
                 var containerClassName = string.Format("<{0}>o_Sitescontainer'{1}", this.userFriendlyName.Replace('.', '_'), System.Threading.Interlocked.Increment(ref nextContainerId));
-                containerClass = moduleBuilder.DefineType(PluginHandler.ConvertCallSiteName(containerClassName), TypeAttributes.Sealed | TypeAttributes.Class | TypeAttributes.NotPublic | TypeAttributes.Abstract);
+                containerClass = moduleBuilder.DefineType(containerClassName, TypeAttributes.Sealed | TypeAttributes.Class | TypeAttributes.NotPublic | TypeAttributes.Abstract);
 
                 staticCtorEmitter = new ILEmitter(containerClass.DefineTypeInitializer());
             }
@@ -227,7 +227,7 @@ namespace PHP.Core
             // define the field:
             // public static readonly CallSite<delegateType> <userFriendlyName>
             var attrs = FieldAttributes.Static | FieldAttributes.InitOnly | ((staticCtorEmitter == null) ? FieldAttributes.Private : FieldAttributes.Assembly);
-            var field = this.DefineField(PluginHandler.ConvertCallSiteName(userFriendlyName), callSiteType, attrs);
+            var field = this.DefineField(userFriendlyName, callSiteType, attrs);
 
             if (staticCtorEmitter == null) // => this.classContext != null
             {

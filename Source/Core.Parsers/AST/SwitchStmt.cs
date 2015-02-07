@@ -62,15 +62,15 @@ namespace PHP.Core.AST
     [Serializable]
     public abstract class SwitchItem : LangElement
 	{
-		protected readonly List<Statement>/*!*/ statements;
+        protected readonly Statement[]/*!*/ statements;
         /// <summary>Statements in this part of switch</summary>
-        public List<Statement>/*!*/ Statements { get { return statements; } }
+        public Statement[]/*!*/ Statements { get { return statements; } }
 
 		protected SwitchItem(Text.Span span, List<Statement>/*!*/ statements)
 			: base(span)
 		{
 			Debug.Assert(statements != null);
-			this.statements = statements;
+			this.statements = statements.AsArray();
 		}
 	}
 
