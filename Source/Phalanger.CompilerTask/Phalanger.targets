@@ -12,7 +12,7 @@
 
   <!-- Add properties required for WPF -->
   <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildExtensionsPath)\Phalanger\4.0\Phalanger.targets</MSBuildAllProjects>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildExtensionsPath)\Phalanger\2.2\Phalanger.targets</MSBuildAllProjects>
     <DefaultLanguageSourceExtension>.php</DefaultLanguageSourceExtension>
     <Language>Phalanger</Language>
   </PropertyGroup>
@@ -26,7 +26,7 @@
 
   <!--Compile target (this is the target that calls the compiler task)-->
   <Target Name="PhalangerCompilerTarget"
-          Inputs="@(Compile);@(ReferencePath);@(ManifestResourceWithNoCulture);@(ManifestNonResxWithNoCultureOnDisk);@(CompiledLicenseFile);@(Content)"
+          Inputs="@(Compile);@(ReferencePath);@(ManifestResourceWithNoCulture);@(ManifestNonResxWithNoCultureOnDisk);@(CompiledLicenseFile)"
           Outputs="@(IntermediateAssembly)">
     <Message Text="Building: @(IntermediateAssembly)" />
       <PhalangerCompilerTask
@@ -45,7 +45,6 @@
         LanguageFeatures="$(LanguageFeatures)"
         DisabledWarnings="$(DisabledWarnings)"
         KeyFile="$(KeyFile)"
-        TreatWarningsAsErrors="$(TreatWarningsAsErrors)"
         ResourceFiles="@(ManifestResourceWithNoCulture);@(ManifestNonResxWithNoCultureOnDisk);@(CompiledLicenseFile)"
       />
   </Target>

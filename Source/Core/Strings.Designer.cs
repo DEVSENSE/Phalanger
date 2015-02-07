@@ -2542,14 +2542,13 @@ namespace PHP.Core.Localizations {
         /// <summary>
         ///   Looks up a localized string similar to 
         ///    &lt;p align=&apos;justify&apos;&gt;
-        ///      This program can be used and distributed only under the terms of the Apache License 
-        ///      included in the distribution in the file License.txt and also published on
+        ///      This program can be used and distributed only under the terms of the license included in the distribution in the file License.txt and also published on
         ///      &lt;a href=&quot;http://phalanger.codeplex.com/license&quot;&gt;http://phalanger.codeplex.com/license&lt;/a&gt;.
         ///    &lt;/p&gt;
         ///    &lt;p align=&apos;justify&apos;&gt;
         ///      The software is licensed &quot;as-is&quot;. You bear the risk of using it. The Licensor
         ///gives no express warranties, guarantees or conditions. You may have additional
-        ///consumer righ [rest of string was truncated]&quot;;.
+        ///consumer rights under your l [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string info_license_text {
             get {

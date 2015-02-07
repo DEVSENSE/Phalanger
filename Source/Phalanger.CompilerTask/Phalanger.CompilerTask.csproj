@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\Build\Common.Build.settings" />
   <PropertyGroup>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -15,20 +14,26 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build.Framework, Version=4.0.0.0" />
@@ -54,9 +59,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Phalanger.targets">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="Phalanger.targets" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -65,19 +68,28 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="..\Build\Common.Build.targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
     </VisualStudio>
   </ProjectExtensions>
   <!--The following is used for deploying the task and target to Program Files\MSBuild\...-->
   <PropertyGroup>
-    <DeployDestination>$(MSBuildExtensionsPath)\Phalanger\4.0\</DeployDestination>
+    <DeployDestination>$(MSBuildExtensionsPath)\Phalanger\2.2\</DeployDestination>
   </PropertyGroup>
   <Target Name="AfterBuild">
     <Message Text="Deploying..." />
     <MakeDir Directories="$(DeployDestination)" Condition="!Exists($(DeployDestination))" />
-    <CreateItem Include="$(OutputPath)\$(TargetName).*" AdditionalMetadata="Visible=false">
+    <CreateItem Include="$(OutputPath)\*.dll" AdditionalMetadata="Visible=false">
+      <Output TaskParameter="Include" ItemName="DeployToMSBuild" />
+    </CreateItem>
+    <CreateItem Include="$(OutputPath)\*.pdb" AdditionalMetadata="Visible=false">
       <Output TaskParameter="Include" ItemName="DeployToMSBuild" />
     </CreateItem>
     <Copy SourceFiles="%(DeployToMSBuild.Identity)" DestinationFolder="$(DeployDestination)" SkipUnchangedFiles="true" />
@@ -88,10 +100,6 @@
     </DeployToMSBuild>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core.Parsers\Core.Parsers.csproj">
-      <Project>{581f1486-5062-459e-bae6-a41886584f81}</Project>
-      <Name>Core.Parsers</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>
       <Name>Core</Name>

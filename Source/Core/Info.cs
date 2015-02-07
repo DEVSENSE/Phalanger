@@ -81,13 +81,15 @@ namespace PHP.Core
 				WriteCredits(output);
 			}
 
+#if !SILVERLIGHT
 			if ((sections & Sections.Extensions) != 0)
 			{
 				output.Write("<h2>");
 				output.Write(CoreResources.GetString("info_loaded_extensions"));
 				output.Write("</h2>");
-				// TODO: loaded extensions
+				output.Write(Externals.PhpInfo());
 			}
+#endif
 
 			if ((sections & Sections.Environment) != 0)
 			{
@@ -277,14 +279,8 @@ namespace PHP.Core
 
 		private static void WriteLogo(TextWriter output)
 		{
-			output.Write("<h1>Phalanger {0}{1} {2}</h1>",
-                PhalangerVersion.Current,
-#if DEBUG
-                ", DEBUG,",
-#else
-                null,
-#endif
-                (Environment.Is64BitProcess ? "x64" : "x86"));
+			Version ver = Assembly.GetExecutingAssembly().GetName().Version;
+			output.Write("<h1>Phalanger {0}.{1}</h1>", ver.Major, ver.Minor);
 			output.Write("<h4>The PHP language compiler for .NET Framework</h4>");
 		}
 
@@ -294,7 +290,7 @@ namespace PHP.Core
 			output.Write("<tr><td>");
 			output.Write(
 			"<p align='center'>" +
-            "<b>Copyright (c) Jan Benda, Miloslav Beno, Martin Maly, Tomas Matousek, Jakub Misek, Pavel Novak, Vaclav Novak, and Ladislav Prosek.</b>" +
+            "<b>Copyright (c) Daniel Balas, Jan Benda, Miloslav Beno, Martin Maly, Tomas Matousek, Jakub Misek, Pavel Novak, Vaclav Novak, and Ladislav Prosek.</b>" +
 			"</p>");
 			output.Write(CoreResources.GetString("info_license_text"));
 			output.Write("</td></tr>");
@@ -327,7 +323,7 @@ namespace PHP.Core
             output.Write(HtmlRow(false, CoreResources.GetString("credits_configuration"), "Tomas Matousek"));
             output.Write(HtmlRow(false, CoreResources.GetString("credits_aspnet"), "Ladislav Prosek"));
             output.Write(HtmlRow(false, CoreResources.GetString("credits_automatic_tests"), "Pavel Novak"));
-            output.Write(HtmlRow(false, CoreResources.GetString("credits_interactive_tests"), "Jan Benda, Jakub Misek"));
+            output.Write(HtmlRow(false, CoreResources.GetString("credits_interactive_tests"), "Jan Benda"));
 
             output.Write(htmlTableEnd);
 
@@ -515,13 +511,13 @@ namespace PHP.Core
 			ScriptContext context = ScriptContext.CurrentContext;
 
 #if !SILVERLIGHT
-			WriteAutoGlobal(output, context, VariableName.GetName, context.AutoGlobals.Get);
-            WriteAutoGlobal(output, context, VariableName.PostName, context.AutoGlobals.Post);
-            WriteAutoGlobal(output, context, VariableName.CookieName, context.AutoGlobals.Cookie);
-            WriteAutoGlobal(output, context, VariableName.FilesName, context.AutoGlobals.Files);
-            WriteAutoGlobal(output, context, VariableName.SessionName, context.AutoGlobals.Session);
-            WriteAutoGlobal(output, context, VariableName.ServerName, context.AutoGlobals.Server);
-            WriteAutoGlobal(output, context, VariableName.EnvName, context.AutoGlobals.Env);
+			WriteAutoGlobal(output, context, AutoGlobals.GetName, context.AutoGlobals.Get);
+			WriteAutoGlobal(output, context, AutoGlobals.PostName, context.AutoGlobals.Post);
+			WriteAutoGlobal(output, context, AutoGlobals.CookieName, context.AutoGlobals.Cookie);
+			WriteAutoGlobal(output, context, AutoGlobals.FilesName, context.AutoGlobals.Files);
+			WriteAutoGlobal(output, context, AutoGlobals.SessionName, context.AutoGlobals.Session);
+			WriteAutoGlobal(output, context, AutoGlobals.ServerName, context.AutoGlobals.Server);
+			WriteAutoGlobal(output, context, AutoGlobals.EnvName, context.AutoGlobals.Env);
 #endif
 
 			output.Write(htmlTableEnd);
@@ -694,70 +690,20 @@ namespace PHP.Core
 
 	#region Version
 
-    /// <summary>
-    /// Provides version information of Phalanger runtime.
-    /// </summary>
-    public static class PhalangerVersion
-    {
-        /// <summary>
-        /// Current Phalanger version obtained from <see cref="AssemblyFileVersionAttribute"/> or version of this assembly.
-        /// </summary>
-        public static readonly string/*!*/Current;
-
-        /// <summary>
-        /// Phalanger name obtained from <see cref="AssemblyProductAttribute"/>.
-        /// </summary>
-        public static readonly string/*!*/ProductName;
-
-        static PhalangerVersion()
-        {
-            var/*!*/ass = typeof(PhalangerVersion).Assembly;
-
-            object[] attrsPhalangerVer = ass.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
-            Current = attrsPhalangerVer.Length > 0
-                ? ((AssemblyFileVersionAttribute)attrsPhalangerVer[0]).Version
-                : ass.GetName().Version.ToString(4);
-
-            object[] attrsPhalangerProduct = ass.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-            Debug.Assert(attrsPhalangerProduct.Length > 0);
-            ProductName = ((AssemblyProductAttribute)attrsPhalangerProduct[0]).Product;
-        }
-    }
-
 	/// <summary>
 	/// Provides means for working with PHP version as well as the currently supported version.
 	/// </summary>
 	public sealed class PhpVersion
 	{
-        /// <summary>
-        /// Currently supported PHP major version.
-        /// </summary>
-        public const int Major = 5;
-
-        /// <summary>
-        /// Currently supported PHP minor version.
-        /// </summary>
-        public const int Minor = 3;
-
-        /// <summary>
-        /// Currently supported PHP release version.
-        /// </summary>
-        public const int Release = 10;
-
 		/// <summary>
 		/// Currently supported PHP version.
 		/// </summary>
-		public static readonly string Current = Major + "." + Minor + "." + Release;
-
-        /// <summary>
-        /// Extra version string.
-        /// </summary>
-        public const string Extra = "phalanger";
+		public static readonly string Current = "5.2.6";
 
 		/// <summary>
 		/// Currently supported Zend Engine version.
 		/// </summary>
-		public const string Zend = "2.0.0";
+		public static readonly string Zend = "2.0.0";
 
 		/// <summary>
 		/// Compares parts of varsions delimited by '.'.

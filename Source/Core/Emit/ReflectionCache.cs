@@ -910,7 +910,7 @@ namespace PHP.Core.Emit
 #if !SILVERLIGHT
 		static readonly Assembly _Assembly = Assembly.LoadFrom(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)+@"\Reference Assemblies\Microsoft\Framework\v3.5\System.Core.dll");
 #else
-		static readonly Assembly _Assembly = Assembly.Load("System.Core, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+		static readonly Assembly _Assembly = Assembly.Load("System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
 #endif
 
 		public static readonly Type Sequence;

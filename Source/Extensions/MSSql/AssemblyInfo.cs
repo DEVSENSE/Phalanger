@@ -16,5 +16,17 @@ using PHP.Core;
 
 [assembly: AssemblyTitle("Phalanger MsSql")]
 [assembly: AssemblyDescription("Phalanger Managed Extension - MsSql")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("The Phalanger Project Team")]
+[assembly: AssemblyProduct("Phalanger")]
+[assembly: AssemblyCopyright("Copyright (c) 2005-2010 Tomas Matousek, Martin Maly")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+[assembly: AssemblyVersion("2.2.0.0")]
+[assembly: AssemblyKeyName("")]
 
+//#if DEBUG
 [assembly: PhpLibrary(typeof(PHP.Library.Data.MsSqlLibraryDescriptor), "MsSql", new string[]{"mssql"})]
+//#else
+//[assembly: PhpLibrary(typeof(PHP.Library.Data.MsSqlLibraryDescriptor), "MsSql", false, true)]
+//#endif
