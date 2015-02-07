@@ -78,9 +78,9 @@ namespace PHP.Core
 		/// </summary>
 		PureModeDefault = PhpClr,
 
-		Php4 = ShortOpenTags | AspTags,
+		Php4 = ShortOpenTags,
 		Php5 = Php4 | V5Keywords,
-		PhpClr = Php5 | UnicodeSemantics | TypeKeywords | Linq | ClrSemantics
+		PhpClr = Php5 | UnicodeSemantics | TypeKeywords | Linq | ClrSemantics | AspTags
 	}
 
 	#endregion
