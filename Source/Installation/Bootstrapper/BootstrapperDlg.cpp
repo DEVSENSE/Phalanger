@@ -119,7 +119,7 @@ HRESULT CBootstrapperDlg::OnLinkCore(IHTMLElement* pElement)
 }
 
 #define PHALANGER_TOOLS_PATH TEXT("\\Microsoft\\VisualStudio\\10.0\\Extensions\\DEVSENSE\\Phalanger Tools Lite")
-#define PHALANGER_TOOLS_VERSION TEXT("1.0.1954") // CURRENT VERSION OF TOOLS // TODO: extract from .VSIX automatically
+#define PHALANGER_TOOLS_VERSION TEXT("2.2.2062") // CURRENT VERSION OF TOOLS // TODO: extract from .VSIX automatically
 
 // recursively delete directory
 bool DeleteDir(TCHAR*szPath)
