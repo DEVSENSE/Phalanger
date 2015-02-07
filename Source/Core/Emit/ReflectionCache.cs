@@ -24,7 +24,6 @@ using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using PHP.Core;
 using PHP.Core.Reflection;
-using Core = PHP.Core;
 
 namespace PHP.Core.Emit
 {
@@ -34,7 +33,8 @@ namespace PHP.Core.Emit
 		// singles:
         public static Type Void { get { return typeof(void); } }
 
-		public static Type RoutineDelegate { get { return typeof(PHP.Core.RoutineDelegate); } }
+		public static readonly Type IEnumerableOfObject = typeof(IEnumerable<>).MakeGenericType(typeof(object));
+        public static Type RoutineDelegate { get { return typeof(PHP.Core.RoutineDelegate); } }
         public static Type DebuggerHiddenAttribute { get { return typeof(System.Diagnostics.DebuggerHiddenAttribute); } }
 
         public static Type ImplementsTypeAttribute { get { return typeof(ImplementsTypeAttribute); } }
@@ -67,9 +67,9 @@ namespace PHP.Core.Emit
 		public static readonly Type[] PhpTypeDesc = new Type[] { typeof(PHP.Core.Reflection.PhpTypeDesc) };
         public static readonly Type[] CallSiteBinder = new Type[] { typeof(CallSiteBinder) };
         public static readonly Type[] CallSite = new Type[] { typeof(CallSite) };
-        public static readonly Type[] CallSiteGeneric = new Type[] { typeof(CallSite<>) };
-        public static readonly Type[] Action = new Type[] { typeof(Action) };
 
+        public static readonly Type[] BigInteger = new Type[] { typeof(System.Numerics.BigInteger) };
+        public static readonly Type[] Complex = new Type[] { typeof(System.Numerics.Complex) };
         public static readonly Type[] Float = new Type[] { typeof(float) };
 
 		// doublets:
@@ -100,6 +100,10 @@ namespace PHP.Core.Emit
 		public static readonly Type[] Object_Object_ObjectRef = new Type[] { typeof(object), typeof(object), ObjectRef[0] };
 		public static readonly Type[] Object_Object_Object = new Type[] { typeof(object), typeof(object), typeof(object) };
 
+		// quadruplets:
+		public static readonly Type[] LinqContextArgs = new Type[] { typeof(Core.Reflection.DObject), typeof(Dictionary<string, object>), 
+			typeof(PHP.Core.ScriptContext), typeof(PHP.Core.Reflection.DTypeDesc) };
+
 		// CLR only
 #if !SILVERLIGHT
 		// singles:
@@ -127,108 +131,104 @@ namespace PHP.Core.Emit
                 _EnsureVariableIsArray, _EnsureVariableIsObject, _EnsurePropertyIsObject, _EnsurePropertyIsArray, _EnsureStaticPropertyIsArray,
                 _EnsureStaticPropertyIsObject, _GetProperty, _GetObjectProperty, _GetPropertyRef, _GetObjectPropertyRef, _SetProperty,
                 _SetObjectProperty, _UnsetProperty, _InvokeMethodObj, _InvokeMethodStr, _Clone, _GetClassConstant, _GetStaticProperty, _GetStaticPropertyRef,
-                _SetStaticProperty, _UnsetStaticProperty, _InvokeStaticMethod, _New, _NewClr, _InstanceOf, _TypeOf, _StrictEquality, _StrictEmptyPhpArrayEquality, _StrictEmptyPhpArrayEquality_PhpArray, _Throw,
+                _SetStaticProperty, _UnsetStaticProperty, _InvokeStaticMethod, _New, _NewClr, _InstanceOf, _TypeOf, _StrictEquality, _Throw,
                 _SetObjectFieldDirect, _SetObjectFieldDirectRef, _GetObjectFieldDirectRef, _GetObjectFieldDirect, _ToAbsoluteSourcePath,
                 _GetItemExact, _SetItemExact,
 
-                _GetFullyQualifiedName,
-                _IsCallable;
+                _Select, _Where;
 
             public struct Add
             {
-                static MethodInfo _Object_Object, _Object_Int32, _Object_Double, _Double_Object;
+                static MethodInfo _Object_Object, _Object_Int32, _Object_Double;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object,object,object>(PHP.Core.Operators.Add).Method; return _Object_Object; } }
-                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = new Func<object, int, object>(PHP.Core.Operators.Add).Method; return _Object_Int32; } }
-                public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = new Func<object, double, double>(PHP.Core.Operators.Add).Method; return _Object_Double; } }
-                public static MethodInfo Double_Object { get { return _Double_Object ?? (_Double_Object = new Func<double, object, double>(PHP.Core.Operators.Add).Method); } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Add", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
+                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = _this.GetMethod("Add", new Type[] { typeof(Object), typeof(Int32) }); return _Object_Int32; } }
+                public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = _this.GetMethod("Add", new Type[] { typeof(Object), typeof(Double) }); return _Object_Double; } }
             }
 
             public struct Subtract
             {
-                static MethodInfo _Object_Object, _Object_Int, _Int32_Object, _Double_Object;
+                static MethodInfo _Object_Object, _Int32_Object, _Double_Object;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Subtract).Method; return _Object_Object; } }
-                public static MethodInfo Object_Int { get { return _Object_Int ?? (_Object_Int = new Func<object, int, object>(PHP.Core.Operators.Subtract).Method); } }
-                public static MethodInfo Int32_Object { get { if (_Int32_Object == null) _Int32_Object = new Func<int, object, object>(PHP.Core.Operators.Subtract).Method; return _Int32_Object; } }
-                public static MethodInfo Double_Object { get { if (_Double_Object == null) _Double_Object = new Func<double, object, double>(PHP.Core.Operators.Subtract).Method; return _Double_Object; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Subtract", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
+                public static MethodInfo Int32_Object { get { if (_Int32_Object == null) _Int32_Object = _this.GetMethod("Subtract", new Type[] { typeof(Int32), typeof(Object) }); return _Int32_Object; } }
+                public static MethodInfo Double_Object { get { if (_Double_Object == null) _Double_Object = _this.GetMethod("Subtract", new Type[] { typeof(Double), typeof(Object) }); return _Double_Object; } }
             }
 
-            public static MethodInfo Minus { get { if (_Minus == null) _Minus = new Func<object, object>(PHP.Core.Operators.Minus).Method; return _Minus; } }
-            public static MethodInfo Plus { get { if (_Plus == null) _Plus = new Func<object, object>(PHP.Core.Operators.Plus).Method; return _Plus; } }
+            public static MethodInfo Minus { get { if (_Minus == null) _Minus = _this.GetMethod("Minus"); return _Minus; } }
+            public static MethodInfo Plus { get { if (_Plus == null) _Plus = _this.GetMethod("Plus"); return _Plus; } }
             public struct Divide
             {
                 static MethodInfo _Object_Object, _Object_Int32, _Object_Double, _Int32_Object, _Double_Object;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Divide).Method; return _Object_Object; } }
-                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = new Func<object, int, object>(PHP.Core.Operators.Divide).Method; return _Object_Int32; } }
-                public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = new Func<object, double, double>(PHP.Core.Operators.Divide).Method; return _Object_Double; } }
-                public static MethodInfo Int32_Object { get { if (_Int32_Object == null) _Int32_Object = new Func<int, object, object>(PHP.Core.Operators.Divide).Method; return _Int32_Object; } }
-                public static MethodInfo Double_Object { get { if (_Double_Object == null) _Double_Object = new Func<double, object, object>(PHP.Core.Operators.Divide).Method; return _Double_Object; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Divide", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
+                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = _this.GetMethod("Divide", new Type[] { typeof(Object), typeof(Int32) }); return _Object_Int32; } }
+                public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = _this.GetMethod("Divide", new Type[] { typeof(Object), typeof(Double) }); return _Object_Double; } }
+                public static MethodInfo Int32_Object { get { if (_Int32_Object == null) _Int32_Object = _this.GetMethod("Divide", new Type[] { typeof(Int32), typeof(Object) }); return _Int32_Object; } }
+                public static MethodInfo Double_Object { get { if (_Double_Object == null) _Double_Object = _this.GetMethod("Divide", new Type[] { typeof(Double), typeof(Object) }); return _Double_Object; } }
             }
 
             public struct Multiply
             {
-                static MethodInfo _Object_Object, _Object_Int32, _Object_Double, _Double_Object;
+                static MethodInfo _Object_Object, _Object_Int32, _Object_Double;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Multiply).Method; return _Object_Object; } }
-                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = new Func<object, int, object>(PHP.Core.Operators.Multiply).Method; return _Object_Int32; } }
-                public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = new Func<object, double, double>(PHP.Core.Operators.Multiply).Method; return _Object_Double; } }
-                public static MethodInfo Double_Object { get { return _Double_Object ?? (_Double_Object = new Func<double, object, double>(PHP.Core.Operators.Multiply).Method); } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Multiply", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
+                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = _this.GetMethod("Multiply", new Type[] { typeof(Object), typeof(Int32) }); return _Object_Int32; } }
+                public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = _this.GetMethod("Multiply", new Type[] { typeof(Object), typeof(Double) }); return _Object_Double; } }
             }
 
             public struct Remainder
             {
                 static MethodInfo _Object_Object, _Object_Int32;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Remainder).Method; return _Object_Object; } }
-                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = new Func<object, int, object>(PHP.Core.Operators.Remainder).Method; return _Object_Int32; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Remainder", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
+                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = _this.GetMethod("Remainder", new Type[] { typeof(Object), typeof(Int32) }); return _Object_Int32; } }
             }
 
-            public static MethodInfo Increment { get { if (_Increment == null) _Increment = new Func<object, object>(PHP.Core.Operators.Increment).Method; return _Increment; } }
-            public static MethodInfo Decrement { get { if (_Decrement == null) _Decrement = new Func<object, object>(PHP.Core.Operators.Decrement).Method; return _Decrement; } }
-            public static MethodInfo BitOperation { get { if (_BitOperation == null) _BitOperation = new Func<object, object, PHP.Core.Operators.BitOp, object>(PHP.Core.Operators.BitOperation).Method; return _BitOperation; } }
-            public static MethodInfo BitNot { get { if (_BitNot == null) _BitNot = new Func<object, object>(PHP.Core.Operators.BitNot).Method; return _BitNot; } }
-            public static MethodInfo ShiftLeft { get { if (_ShiftLeft == null) _ShiftLeft = new Func<object, object, object>(PHP.Core.Operators.ShiftLeft).Method; return _ShiftLeft; } }
-            public static MethodInfo ShiftRight { get { if (_ShiftRight == null) _ShiftRight = new Func<object, object, object>(PHP.Core.Operators.ShiftRight).Method; return _ShiftRight; } }
+            public static MethodInfo Increment { get { if (_Increment == null) _Increment = _this.GetMethod("Increment"); return _Increment; } }
+            public static MethodInfo Decrement { get { if (_Decrement == null) _Decrement = _this.GetMethod("Decrement"); return _Decrement; } }
+            public static MethodInfo BitOperation { get { if (_BitOperation == null) _BitOperation = _this.GetMethod("BitOperation"); return _BitOperation; } }
+            public static MethodInfo BitNot { get { if (_BitNot == null) _BitNot = _this.GetMethod("BitNot"); return _BitNot; } }
+            public static MethodInfo ShiftLeft { get { if (_ShiftLeft == null) _ShiftLeft = _this.GetMethod("ShiftLeft"); return _ShiftLeft; } }
+            public static MethodInfo ShiftRight { get { if (_ShiftRight == null) _ShiftRight = _this.GetMethod("ShiftRight"); return _ShiftRight; } }
             public struct Concat
             {
                 static MethodInfo _Object_Object, _Object_String, _String_Object, _ObjectArray;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Concat).Method; return _Object_Object; } }
-                public static MethodInfo Object_String { get { if (_Object_String == null) _Object_String = new Func<object, string, object>(PHP.Core.Operators.Concat).Method; return _Object_String; } }
-                public static MethodInfo String_Object { get { if (_String_Object == null) _String_Object = new Func<string, object, object>(PHP.Core.Operators.Concat).Method; return _String_Object; } }
-                public static MethodInfo ObjectArray { get { if (_ObjectArray == null) _ObjectArray = new Func<object[], object>(PHP.Core.Operators.Concat).Method; return _ObjectArray; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Concat", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
+                public static MethodInfo Object_String { get { if (_Object_String == null) _Object_String = _this.GetMethod("Concat", new Type[] { typeof(Object), typeof(String) }); return _Object_String; } }
+                public static MethodInfo String_Object { get { if (_String_Object == null) _String_Object = _this.GetMethod("Concat", new Type[] { typeof(String), typeof(Object) }); return _String_Object; } }
+                public static MethodInfo ObjectArray { get { if (_ObjectArray == null) _ObjectArray = _this.GetMethod("Concat", new Type[] { typeof(Object[]) }); return _ObjectArray; } }
             }
 
             public struct Append
             {
                 static MethodInfo _Object_Object, _Object_String, _Object_ObjectArray;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Append).Method; return _Object_Object; } }
-                public static MethodInfo Object_String { get { if (_Object_String == null) _Object_String = new Func<object, string, object>(PHP.Core.Operators.Append).Method; return _Object_String; } }
-                public static MethodInfo Object_ObjectArray { get { if (_Object_ObjectArray == null) _Object_ObjectArray = new Func<object, object[], object>(PHP.Core.Operators.Append).Method; return _Object_ObjectArray; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Append", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
+                public static MethodInfo Object_String { get { if (_Object_String == null) _Object_String = _this.GetMethod("Append", new Type[] { typeof(Object), typeof(String) }); return _Object_String; } }
+                public static MethodInfo Object_ObjectArray { get { if (_Object_ObjectArray == null) _Object_ObjectArray = _this.GetMethod("Append", new Type[] { typeof(Object), typeof(Object[]) }); return _Object_ObjectArray; } }
             }
 
             public struct Prepend
             {
                 static MethodInfo _Object_Object, _Object_String, _Object_ObjectArray;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Prepend).Method; return _Object_Object; } }
-                public static MethodInfo Object_String { get { if (_Object_String == null) _Object_String = new Func<object, string, object>(PHP.Core.Operators.Prepend).Method; return _Object_String; } }
-                public static MethodInfo Object_ObjectArray { get { if (_Object_ObjectArray == null) _Object_ObjectArray = new Func<object, object[], object>(PHP.Core.Operators.Prepend).Method; return _Object_ObjectArray; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Prepend", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
+                public static MethodInfo Object_String { get { if (_Object_String == null) _Object_String = _this.GetMethod("Prepend", new Type[] { typeof(Object), typeof(String) }); return _Object_String; } }
+                public static MethodInfo Object_ObjectArray { get { if (_Object_ObjectArray == null) _Object_ObjectArray = _this.GetMethod("Prepend", new Type[] { typeof(Object), typeof(Object[]) }); return _Object_ObjectArray; } }
             }
 
             public struct GetItem
             {
                 static MethodInfo _Object, _Int32, _String;
 
-                public static MethodInfo Object { get { if (_Object == null) _Object = new Func<object, object, Core.Operators.GetItemKinds, object>(PHP.Core.Operators.GetItem).Method; return _Object; } }
-                public static MethodInfo Int32 { get { if (_Int32 == null) _Int32 = new Func<object, int, Core.Operators.GetItemKinds, object>(PHP.Core.Operators.GetItem).Method; return _Int32; } }
-                public static MethodInfo String { get { if (_String == null) _String = new Func<object, string, Core.Operators.GetItemKinds, object>(PHP.Core.Operators.GetItem).Method; return _String; } }
+                public static MethodInfo Object { get { if (_Object == null) _Object = _this.GetMethod("GetItem", new Type[] { Types.Object[0], Types.Object[0], typeof(Core.Operators.GetItemKinds) }); return _Object; } }
+                public static MethodInfo Int32 { get { if (_Int32 == null) _Int32 = _this.GetMethod("GetItem", new Type[] { Types.Object[0], Types.Int[0], typeof(Core.Operators.GetItemKinds) }); return _Int32; } }
+                public static MethodInfo String { get { if (_String == null) _String = _this.GetMethod("GetItem", new Type[] { Types.Object[0], Types.String[0], typeof(Core.Operators.GetItemKinds) }); return _String; } }
             }
 
-            public static MethodInfo GetItemExact { get { if (_GetItemExact == null) _GetItemExact = new Func<object, string, Core.Operators.GetItemKinds, int, object>(PHP.Core.Operators.GetItemExact).Method; return _GetItemExact; } }
+            public static MethodInfo GetItemExact { get { if (_GetItemExact == null) _GetItemExact = _this.GetMethod("GetItemExact", new Type[] { Types.Object[0], Types.String[0], typeof(Core.Operators.GetItemKinds), typeof(int) }); return _GetItemExact; } }
 
             public struct GetItemRef
             {
@@ -299,13 +299,13 @@ namespace PHP.Core.Emit
             public static MethodInfo NewClr { get { if (_NewClr == null) _NewClr = _this.GetMethod("NewClr"); return _NewClr; } }
             public static MethodInfo InstanceOf { get { if (_InstanceOf == null) _InstanceOf = _this.GetMethod("InstanceOf"); return _InstanceOf; } }
             public static MethodInfo TypeOf { get { if (_TypeOf == null) _TypeOf = _this.GetMethod("TypeOf"); return _TypeOf; } }
-            public static MethodInfo StrictEquality { get { return _StrictEquality ?? (_StrictEquality = new Func<object, object, bool>(Core.Operators.StrictEquality).Method); } }
-            public static MethodInfo StrictEmptyPhpArrayEquality { get { return _StrictEmptyPhpArrayEquality ?? (_StrictEmptyPhpArrayEquality = new Func<object,bool>(Core.Operators.StrictEmptyPhpArrayEquality).Method); } }
-            public static MethodInfo StrictEmptyPhpArrayEquality_PhpArray { get { return _StrictEmptyPhpArrayEquality_PhpArray ?? (_StrictEmptyPhpArrayEquality_PhpArray = new Func<Core.PhpArray, bool>(Core.Operators.StrictEmptyPhpArrayEquality).Method); } }
+            public static MethodInfo StrictEquality { get { if (_StrictEquality == null) _StrictEquality = _this.GetMethod("StrictEquality"); return _StrictEquality; } }
             public static MethodInfo Throw { get { if (_Throw == null) _Throw = _this.GetMethod("Throw"); return _Throw; } }
             public static MethodInfo ToAbsoluteSourcePath { get { if (_ToAbsoluteSourcePath == null) _ToAbsoluteSourcePath = _this.GetMethod("ToAbsoluteSourcePath"); return _ToAbsoluteSourcePath; } }
-            public static MethodInfo IsCallable { get { return _IsCallable ?? (_IsCallable = _this.GetMethod("IsCallable")); } }
-            public static MethodInfo GetFullyQualifiedName { get { return _GetFullyQualifiedName ?? (_GetFullyQualifiedName = new Func<DTypeDesc, string>(PHP.Core.Operators.GetFullyQualifiedName).Method); } }
+
+            // LINQ stuff
+            public static MethodInfo Where { get { if (_Where == null) _Where = _this.GetMethod("Where"); return _Where; } }
+            public static MethodInfo Select { get { if (_Select == null) _Select = _this.GetMethod("Select"); return _Select; } }
 
             public static class MakeGenericTypeInstantiation
             {
@@ -374,22 +374,22 @@ namespace PHP.Core.Emit
             /// </summary>
             public struct EchoStatic
             {
-                static MethodInfo _bool, _double, _int, _longInt, _object, _string, _phpBytes;
+                static MethodInfo _bool, _double, _int, _longInt, _object, _string, _PhpBytes;
 
-                public static MethodInfo Bool { get { return _bool ?? (_bool = new Action<bool, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
-                public static MethodInfo Double { get { return _double ?? (_double = new Action<double, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
-                public static MethodInfo Int { get { return _int ?? (_int = new Action<int, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
-                public static MethodInfo LongInt { get { return _longInt ?? (_longInt = new Action<long, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
-                public static MethodInfo Object { get { return _object ?? (_object = new Action<object, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
-                public static MethodInfo String { get { return _string?? (_string = new Action<string, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
-                public static MethodInfo PhpBytes { get { return _phpBytes ?? (_phpBytes = new Action<PHP.Core.PhpBytes, PHP.Core.ScriptContext>(PHP.Core.ScriptContext.Echo).Method); } }
+                public static MethodInfo Bool { get { if (_bool == null)   _bool = _this.GetMethod("Echo", new Type[] { typeof(bool), typeof(PHP.Core.ScriptContext) }); return _bool; } }
+                public static MethodInfo Double { get { if (_double == null) _double = _this.GetMethod("Echo", new Type[] { typeof(double), typeof(PHP.Core.ScriptContext) }); return _double; } }
+                public static MethodInfo Int { get { if (_int == null)    _int = _this.GetMethod("Echo", new Type[] { typeof(int), typeof(PHP.Core.ScriptContext) }); return _int; } }
+                public static MethodInfo LongInt { get { if (_longInt == null)_longInt = _this.GetMethod("Echo", new Type[] { typeof(long), typeof(PHP.Core.ScriptContext) }); return _longInt; } }
+                public static MethodInfo Object { get { if (_object == null) _object = _this.GetMethod("Echo", new Type[] { typeof(object), typeof(PHP.Core.ScriptContext) }); return _object; } }
+                public static MethodInfo String { get { if (_string == null) _string = _this.GetMethod("Echo", new Type[] { typeof(string), typeof(PHP.Core.ScriptContext) }); return _string; } }
+                public static MethodInfo PhpBytes { get { if (_PhpBytes == null) _PhpBytes = _this.GetMethod("Echo", new Type[] { typeof(PHP.Core.PhpBytes), typeof(PHP.Core.ScriptContext) }); return _PhpBytes; } }
             }
 
             static MethodInfo
                 _DisableErrorReporting, _EnableErrorReporting,
                 _GetCurrentContext, _Die, _StaticInclude, _DynamicInclude, _GetStaticLocal, _GetStaticLocalId, _AddStaticLocal, _RunApplication,
-                _IsConstantDefined, _GetConstantValue, _DeclareConstant, _RegisterDObjectForFinalization,
-                _DeclareFunction, _DeclareLambda, _Call, _CallValue, _CallVoid, _DeclareType_TypeDesc, _DeclareType_Handle, _DeclareIncompleteTypeHelper, _IncompleteTypeDeclared,
+                _IsConstantDefined, _GetConstantValue, _RegisterDObjectForFinalization,
+                _DeclareFunction, _DeclareLambda, _Call, _CallValue, _CallVoid, _DeclareType_TypeDesc, _DeclareType_Handle,
                 _GetWorkingDirectory;
 
             public static MethodInfo RunApplication { get { if (_RunApplication == null) _RunApplication = _this.GetMethod("RunApplication", new Type[] { typeof(Delegate), typeof(string), typeof(string) }); return _RunApplication; } }
@@ -407,23 +407,21 @@ namespace PHP.Core.Emit
             public static MethodInfo GetStaticLocalId { get { return _GetStaticLocalId ?? (_GetStaticLocalId = _this.GetMethod("GetStaticLocalId")); } }
             public static MethodInfo AddStaticLocal { get { if (_AddStaticLocal == null) _AddStaticLocal = _this.GetMethod("AddStaticLocal"); return _AddStaticLocal; } }
             
-            public static MethodInfo GetConstantValue { get { if (_GetConstantValue == null) _GetConstantValue = _this.GetMethod("GetConstantValue", new Type[] { typeof(string), typeof(string) }); return _GetConstantValue; } }
+            public static MethodInfo GetConstantValue { get { if (_GetConstantValue == null) _GetConstantValue = _this.GetMethod("GetConstantValue", new Type[] { typeof(string) }); return _GetConstantValue; } }
             public static MethodInfo IsConstantDefined { get { if (_IsConstantDefined == null) _IsConstantDefined = _this.GetMethod("IsConstantDefined", new Type[] { typeof(string) }); return _IsConstantDefined; } }
-            public static MethodInfo DeclareConstant { get { return _DeclareConstant ?? (_DeclareConstant = _this.GetMethod("DeclareConstant", new Type[] { typeof(string), typeof(object) })); } }
 
             public static MethodInfo RegisterDObjectForFinalization { get { if (_RegisterDObjectForFinalization == null) _RegisterDObjectForFinalization = _this.GetMethod("RegisterDObjectForFinalization"); return _RegisterDObjectForFinalization; } }
 
             public static MethodInfo DeclareFunction { get { if (_DeclareFunction == null) _DeclareFunction = _this.GetMethod("DeclareFunction"); return _DeclareFunction; } }
             public static MethodInfo DeclareLambda { get { if (_DeclareLambda == null) _DeclareLambda = _this.GetMethod("DeclareLambda"); return _DeclareLambda; } }
             
-            public static MethodInfo Call { get { if (_Call == null) _Call = _this.GetMethod("Call", new Type[] { typeof(Dictionary<string, object>), typeof(PHP.Core.NamingContext), typeof(object), typeof(string), typeof(DRoutineDesc).MakeByRefType(), typeof(PHP.Core.ScriptContext) }); return _Call; } }
-            public static MethodInfo CallValue { get { return _CallValue ?? (_CallValue = _this.GetMethod("CallValue", new Type[] { typeof(Dictionary<string, object>), typeof(PHP.Core.NamingContext), typeof(object), typeof(string), typeof(DRoutineDesc).MakeByRefType(), typeof(PHP.Core.ScriptContext) })); } }
-            public static MethodInfo CallVoid { get { return _CallVoid ?? (_CallVoid = _this.GetMethod("CallVoid", new Type[] { typeof(Dictionary<string, object>), typeof(PHP.Core.NamingContext), typeof(object), typeof(string), typeof(DRoutineDesc).MakeByRefType(), typeof(PHP.Core.ScriptContext) })); } }
+            public static MethodInfo Call { get { if (_Call == null) _Call = _this.GetMethod("Call", new Type[] { typeof(Dictionary<string, object>), typeof(NamingContext), typeof(object), typeof(PHP.Core.ScriptContext) }); return _Call; } }
+            public static MethodInfo CallValue { get { return _CallValue ?? (_CallValue = _this.GetMethod("CallValue", new Type[] { typeof(Dictionary<string, object>), typeof(NamingContext), typeof(object), typeof(PHP.Core.ScriptContext) })); } }
+            public static MethodInfo CallVoid { get { return _CallVoid ?? (_CallVoid = _this.GetMethod("CallVoid", new Type[] { typeof(Dictionary<string, object>), typeof(NamingContext), typeof(object), typeof(PHP.Core.ScriptContext) })); } }
 
             public static MethodInfo DeclareType_Handle { get { if (_DeclareType_Handle == null) _DeclareType_Handle = _this.GetMethod("DeclareType", new Type[] { typeof(RuntimeTypeHandle), Types.String[0] }); return _DeclareType_Handle; } }
             public static MethodInfo DeclareType_TypeDesc { get { if (_DeclareType_TypeDesc == null) _DeclareType_TypeDesc = _this.GetMethod("DeclareType", new Type[] { Types.PhpTypeDesc[0], Types.String[0] }); return _DeclareType_TypeDesc; } }
-            public static MethodInfo DeclareIncompleteTypeHelper { get { return _DeclareIncompleteTypeHelper ?? (_DeclareIncompleteTypeHelper = _this.GetMethod("DeclareIncompleteTypeHelper")); } }
-            public static MethodInfo IncompleteTypeDeclared { get { return _IncompleteTypeDeclared ?? (_IncompleteTypeDeclared = _this.GetMethod("IncompleteTypeDeclared")); } }
+
         }
 
         #endregion
@@ -433,7 +431,7 @@ namespace PHP.Core.Emit
         public struct PhpVariable
         {
             static Type _this { get { return typeof(PHP.Core.PhpVariable); } }
-            static MethodInfo _Copy, _IsEmpty, _IsString, _MakeReference, _AsString, _Dereference, _Unwrap;
+            static MethodInfo _Copy, _IsEmpty, _IsString, _MakeReference, _AsString, _Dereference;
 
             public static MethodInfo Copy { get { if (_Copy == null) _Copy = _this.GetMethod("Copy"); return _Copy; } }
             public static MethodInfo IsEmpty { get { if (_IsEmpty == null) _IsEmpty = _this.GetMethod("IsEmpty"); return _IsEmpty; } }
@@ -441,7 +439,6 @@ namespace PHP.Core.Emit
             public static MethodInfo AsString { get { if (_AsString == null) _AsString = _this.GetMethod("AsString"); return _AsString; } }
             public static MethodInfo MakeReference { get { if (_MakeReference == null) _MakeReference = _this.GetMethod("MakeReference"); return _MakeReference; } }
             public static MethodInfo Dereference { get { return _Dereference ?? (_Dereference = _this.GetMethod("Dereference", Types.Object)); } }
-            public static MethodInfo Unwrap { get { return _Unwrap ?? (_Unwrap = _this.GetMethod("Unwrap")); } }
         }
 
         #endregion
@@ -454,14 +451,15 @@ namespace PHP.Core.Emit
         public struct Convert
         {
             static Type _this { get { return typeof(PHP.Core.Convert); } }
-            static MethodInfo _ObjectToString, _ObjectToChar, _ObjectToPhpBytes, _ObjectToBoolean, _ObjectToInteger, _ObjectToLongInteger,
-                _ObjectToDouble, _ObjectToPhpArray, _ObjectToDObject, _ObjectToCallback, _ObjectToTypeDesc,
+            static MethodInfo _ObjectToString, _ObjectToString_Object_DTypeDesc, _ObjectToChar, _ObjectToPhpBytes, _ObjectToBoolean, _ObjectToInteger, _ObjectToLongInteger,
+                _ObjectToDouble, _ObjectToPhpArray, _ObjectToDObject, _ObjectToCallback, _ObjectToLinqSource, _ObjectToTypeDesc,
                 _TryObjectToBoolean, _TryObjectToInt8, _TryObjectToInt16, _TryObjectToInt32, _TryObjectToInt64, _TryObjectToUInt8,
                 _TryObjectToUInt16, _TryObjectToUInt32, _TryObjectToUInt64, _TryObjectToSingle, _TryObjectToDouble, _TryObjectToDecimal,
                 _TryObjectToChar, _TryObjectToString, _TryObjectToDateTime, _TryObjectToDBNull, _TryObjectToClass, _TryObjectToStruct,
-                _TryObjectToDelegate, _TryObjectToArray, _TryObjectToType, _StringToTypeDesc, _StringToBoolean;
+                _TryObjectToDelegate, _TryObjectToArray, _TryObjectToType;
 
             public static MethodInfo ObjectToString { get { if (_ObjectToString == null) _ObjectToString = _this.GetMethod("ObjectToString", Types.Object); return _ObjectToString; } }
+            public static MethodInfo ObjectToString_Object_DTypeDesc { get { return _ObjectToString_Object_DTypeDesc ?? (_ObjectToString_Object_DTypeDesc = _this.GetMethod("ObjectToString", Types.Object_DTypeDesc)); } }
             public static MethodInfo ObjectToChar { get { if (_ObjectToChar == null) _ObjectToChar = _this.GetMethod("ObjectToChar"); return _ObjectToChar; } }
             public static MethodInfo ObjectToPhpBytes { get { if (_ObjectToPhpBytes == null) _ObjectToPhpBytes = _this.GetMethod("ObjectToPhpBytes"); return _ObjectToPhpBytes; } }
             public static MethodInfo ObjectToBoolean { get { if (_ObjectToBoolean == null) _ObjectToBoolean = _this.GetMethod("ObjectToBoolean"); return _ObjectToBoolean; } }
@@ -472,9 +470,7 @@ namespace PHP.Core.Emit
             public static MethodInfo ObjectToDObject { get { if (_ObjectToDObject == null) _ObjectToDObject = _this.GetMethod("ObjectToDObject"); return _ObjectToDObject; } }
             public static MethodInfo ObjectToCallback { get { if (_ObjectToCallback == null) _ObjectToCallback = _this.GetMethod("ObjectToCallback", Types.Object); return _ObjectToCallback; } }
             public static MethodInfo ObjectToTypeDesc { get { if (_ObjectToTypeDesc == null) _ObjectToTypeDesc = _this.GetMethod("ObjectToTypeDesc"); return _ObjectToTypeDesc; } }
-            
-            public static MethodInfo StringToTypeDesc { get { return _StringToTypeDesc ?? (_StringToTypeDesc = new Func<string, ResolveTypeFlags, DTypeDesc, Core.ScriptContext, Core.NamingContext, object[], DTypeDesc>(Core.Convert.StringToTypeDesc).Method); } }
-            public static MethodInfo StringToBoolean { get { return _StringToBoolean ?? (_StringToBoolean = new Func<string, bool>(Core.Convert.StringToBoolean).Method); } }
+            public static MethodInfo ObjectToLinqSource { get { if (_ObjectToLinqSource == null) _ObjectToLinqSource = _this.GetMethod("ObjectToLinqSource"); return _ObjectToLinqSource; } }
 
             public static MethodInfo TryObjectToBoolean { get { if (_TryObjectToBoolean == null) _TryObjectToBoolean = _this.GetMethod("TryObjectToBoolean"); return _TryObjectToBoolean; } }
             public static MethodInfo TryObjectToInt8 { get { if (_TryObjectToInt8 == null) _TryObjectToInt8 = _this.GetMethod("TryObjectToInt8"); return _TryObjectToInt8; } }
@@ -533,16 +529,64 @@ namespace PHP.Core.Emit
 
         #region Comparisons
 
-        static MethodInfo _CompareEq_object_object, _CompareEq_object_int, _CompareEq_object_string, _CompareOp_object_object_bool, _CompareOp_int_int, _CompareOp_object_int_bool, _CompareOp_int_object_bool;
+        static MethodInfo _CompareEq, _CompareOp_object_object_bool, _CompareOp_int_int, _CompareOp_object_int_bool, _CompareOp_int_object_bool;
 
-        public static MethodInfo CompareEq_object_object { get { return _CompareEq_object_object ?? (_CompareEq_object_object = new Func<object,object,bool>(PHP.Core.PhpComparer.CompareEq).Method); } }
-        public static MethodInfo CompareEq_object_int { get { return _CompareEq_object_int ?? (_CompareEq_object_int = new Func<object, int, bool>(PHP.Core.PhpComparer.CompareEq).Method); } }
-        public static MethodInfo CompareEq_object_string { get { return _CompareEq_object_string ?? (_CompareEq_object_string = new Func<object, string, bool>(PHP.Core.PhpComparer.CompareEq).Method); } }
+        public static MethodInfo CompareEq { get { if (_CompareEq == null) _CompareEq = typeof(PHP.Core.PhpComparer).GetMethod("CompareEq"); return _CompareEq; } }
         public static MethodInfo CompareOp_object_object_bool { get { return _CompareOp_object_object_bool ?? (_CompareOp_object_object_bool = typeof(PHP.Core.PhpComparer).GetMethod("CompareOp", Types.Object_Object_Bool)); } }
         public static MethodInfo CompareOp_int_int { get { return _CompareOp_int_int ?? (_CompareOp_int_int = typeof(PHP.Core.PhpComparer).GetMethod("CompareOp", Types.Int_Int)); } }
         public static MethodInfo CompareOp_object_int_bool { get { return _CompareOp_object_int_bool ?? (_CompareOp_object_int_bool = typeof(PHP.Core.PhpComparer).GetMethod("CompareOp", new Type[] { typeof(object), typeof(int), typeof(bool) })); } }
         public static MethodInfo CompareOp_int_object_bool { get { return _CompareOp_int_object_bool ?? (_CompareOp_int_object_bool = typeof(PHP.Core.PhpComparer).GetMethod("CompareOp", new Type[] { typeof(int), typeof(object), typeof(bool) })); } }
 
+        #endregion
+
+        #region Externals (CLR only)
+#if !SILVERLIGHT
+        public struct Externals
+        {
+            static Type _this { get { return typeof(PHP.Core.Externals); } }
+
+            static MethodInfo _InvokeFunction, _InvokeMethod, _InvokeFunctionDynamic, _InvokeMethodDynamic,
+                _GetFunctionProxy,
+                _MarshalBoundVariables, _MarkParameterForBinding,
+                _PrepareParametersForBinding, _BindParameters;
+
+            public static MethodInfo InvokeFunction { get { if (_InvokeFunction == null)          _InvokeFunction = _this.GetMethod("InvokeFunction"); return _InvokeFunction; } }
+            public static MethodInfo InvokeMethod { get { if (_InvokeMethod == null)            _InvokeMethod = _this.GetMethod("InvokeMethod"); return _InvokeMethod; } }
+            public static MethodInfo InvokeFunctionDynamic { get { if (_InvokeFunctionDynamic == null)   _InvokeFunctionDynamic = _this.GetMethod("InvokeFunctionDynamic"); return _InvokeFunctionDynamic; } }
+            public static MethodInfo InvokeMethodDynamic { get { if (_InvokeMethodDynamic == null)     _InvokeMethodDynamic = _this.GetMethod("InvokeMethodDynamic"); return _InvokeMethodDynamic; } }
+
+            public static MethodInfo GetFunctionProxy { get { return (_GetFunctionProxy ?? (_GetFunctionProxy = _this.GetMethod("GetFunctionProxy"))); } }
+
+            public static MethodInfo MarshalBoundVariables { get { if (_MarshalBoundVariables == null)   _MarshalBoundVariables = _this.GetMethod("MarshalBoundVariables"); return _MarshalBoundVariables; } }
+            public static MethodInfo MarkParameterForBinding { get { if (_MarkParameterForBinding == null) _MarkParameterForBinding = _this.GetMethod("MarkParameterForBinding"); return _MarkParameterForBinding; } }
+
+            public static MethodInfo PrepareParametersForBinding { get { if (_PrepareParametersForBinding == null)   _PrepareParametersForBinding = _this.GetMethod("PrepareParametersForBinding"); return _PrepareParametersForBinding; } }
+            public static MethodInfo BindParameters { get { if (_BindParameters == null) _BindParameters = _this.GetMethod("BindParameters"); return _BindParameters; } }
+
+            public struct ParameterTransformation
+            {
+                static Type _this { get { return typeof(PHP.Core.Externals.ParameterTransformation); } }
+
+                static MethodInfo _TransformInParameters, _TransformOutParameters, _TransformInParameter, _TransformOutParameter;
+
+                public static MethodInfo TransformInParameters { get { if (_TransformInParameters == null)   _TransformInParameters = _this.GetMethod("TransformInParameters"); return _TransformInParameters; } }
+                public static MethodInfo TransformOutParameters { get { if (_TransformOutParameters == null) _TransformOutParameters = _this.GetMethod("TransformOutParameters"); return _TransformOutParameters; } }
+
+                public static MethodInfo TransformInParameter { get { if (_TransformInParameter == null)   _TransformInParameter = _this.GetMethod("TransformInParameter"); return _TransformInParameter; } }
+                public static MethodInfo TransformOutParameter { get { if (_TransformOutParameter == null) _TransformOutParameter = _this.GetMethod("TransformOutParameter"); return _TransformOutParameter; } }
+            }
+
+            public struct IExternalFunction
+            {
+                static Type _this { get { return typeof(PHP.Core.IExternalFunction); } }
+
+                static MethodInfo _Invoke, _GetExtManager;
+
+                public static MethodInfo Invoke { get { if (_Invoke == null)   _Invoke = _this.GetMethod("Invoke"); return _Invoke; } }
+                public static MethodInfo GetExtManager { get { if (_GetExtManager == null)   _GetExtManager = _this.GetMethod("get_ExtManager"); return _GetExtManager; } }
+            }
+        }
+#endif
         #endregion
 
         #region PhpStack
@@ -552,7 +596,7 @@ namespace PHP.Core.Emit
             static Type _this { get { return typeof(PHP.Core.PhpStack); } }
             static MethodInfo _RemoveFrame, _RemoveArgsAwareFrame, _PeekValue, _PeekValueOptional,
               _PeekReference, _PeekReferenceOptional, _PeekReferenceUnchecked, _PeekValueUnchecked,
-              _MakeArgsAware, _PeekType, _PeekTypeOptional, _ThrowIfNotArgsaware;
+              _MakeArgsAware, _PeekType, _PeekTypeOptional;
 
 
             public static class AddFrame
@@ -622,7 +666,6 @@ namespace PHP.Core.Emit
             public static MethodInfo RemoveFrame { get { if (_RemoveFrame == null) _RemoveFrame = _this.GetMethod("RemoveFrame"); return _RemoveFrame; } }
             public static MethodInfo RemoveArgsAwareFrame { get { if (_RemoveArgsAwareFrame == null) _RemoveArgsAwareFrame = _this.GetMethod("RemoveArgsAwareFrame"); return _RemoveArgsAwareFrame; } }
             public static MethodInfo MakeArgsAware { get { if (_MakeArgsAware == null) _MakeArgsAware = _this.GetMethod("MakeArgsAware"); return _MakeArgsAware; } }
-            public static MethodInfo ThrowIfNotArgsaware { get { return _ThrowIfNotArgsaware ?? (_ThrowIfNotArgsaware = _this.GetMethod("ThrowIfNotArgsaware")); } }
         }
 
         #endregion
@@ -631,37 +674,32 @@ namespace PHP.Core.Emit
 
         public struct PhpException
         {
+            static Type _this { get { return typeof(PHP.Core.PhpException); } }
             static MethodInfo _Throw, _MissingArgument, _MissingTypeArgument, _MissingArguments, _InvalidForeachArgument,
                       _InvalidImplicitCast, _InvalidBreakLevelCount,
                       _InvalidArgumentCount, _UndefinedVariable, _CannotReassignThis, _InvalidArgumentType, _ThisUsedOutOfObjectContext,
                       _StaticPropertyUnset, _AbstractMethodCalled, _NoSuitableOverload, _PropertyTypeMismatch, _UndefinedMethodCalled,
                       _FunctionNotSupported_String;
 
-            public static MethodInfo Throw { get { if (_Throw == null) _Throw = new Action<PhpError,string>(Core.PhpException.Throw).Method; return _Throw; } }
-            public static MethodInfo MissingArgument { get { if (_MissingArgument == null) _MissingArgument = new Action<int, string>(Core.PhpException.MissingArgument).Method; return _MissingArgument; } }
-            public static MethodInfo MissingTypeArgument { get { if (_MissingTypeArgument == null) _MissingTypeArgument = new Action<int, string>(Core.PhpException.MissingTypeArgument).Method; return _MissingTypeArgument; } }
-            public static MethodInfo MissingArguments { get { if (_MissingArguments == null) _MissingArguments = new Action<string,string,int,int>(Core.PhpException.MissingArguments).Method; return _MissingArguments; } }
-            public static MethodInfo InvalidArgumentCount { get { if (_InvalidArgumentCount == null) _InvalidArgumentCount = new Action<string, string>(Core.PhpException.InvalidArgumentCount).Method; return _InvalidArgumentCount; } }
-            public static MethodInfo InvalidForeachArgument { get { if (_InvalidForeachArgument == null) _InvalidForeachArgument = new Action(Core.PhpException.InvalidForeachArgument).Method; return _InvalidForeachArgument; } }
-            public static MethodInfo InvalidImplicitCast { get { if (_InvalidImplicitCast == null) _InvalidImplicitCast = new Action<object,string,string>(Core.PhpException.InvalidImplicitCast).Method; return _InvalidImplicitCast; } }
-            public static MethodInfo InvalidBreakLevelCount { get { if (_InvalidBreakLevelCount == null) _InvalidBreakLevelCount = new Action<int>(Core.PhpException.InvalidBreakLevelCount).Method; return _InvalidBreakLevelCount; } }
-            public static MethodInfo UndefinedVariable { get { if (_UndefinedVariable == null) _UndefinedVariable = new Action<string>(Core.PhpException.UndefinedVariable).Method; return _UndefinedVariable; } }
-            public static MethodInfo AbstractMethodCalled { get { if (_AbstractMethodCalled == null) _AbstractMethodCalled = new Action<string, string>(Core.PhpException.AbstractMethodCalled).Method; return _AbstractMethodCalled; } }
-            public static MethodInfo CannotReassignThis { get { if (_CannotReassignThis == null) _CannotReassignThis = new Action(Core.PhpException.CannotReassignThis).Method; return _CannotReassignThis; } }
-            public static MethodInfo InvalidArgumentType { get { if (_InvalidArgumentType == null) _InvalidArgumentType = new Action<string, string>(Core.PhpException.InvalidArgumentType).Method; return _InvalidArgumentType; } }
-            public static MethodInfo ThisUsedOutOfObjectContext { get { if (_ThisUsedOutOfObjectContext == null) _ThisUsedOutOfObjectContext = new Action(Core.PhpException.ThisUsedOutOfObjectContext).Method; return _ThisUsedOutOfObjectContext; } }
-            public static MethodInfo StaticPropertyUnset { get { if (_StaticPropertyUnset == null) _StaticPropertyUnset = new Action<string, string>(Core.PhpException.StaticPropertyUnset).Method; return _StaticPropertyUnset; } }
-            public static MethodInfo NoSuitableOverload { get { if (_NoSuitableOverload == null) _NoSuitableOverload = new Action<string, string>(Core.PhpException.NoSuitableOverload).Method; return _NoSuitableOverload; } }
-            public static MethodInfo PropertyTypeMismatch { get { if (_PropertyTypeMismatch == null) _PropertyTypeMismatch = new Action<string, string>(Core.PhpException.PropertyTypeMismatch).Method; return _PropertyTypeMismatch; } }
-            public static MethodInfo UndefinedMethodCalled { get { if (_UndefinedMethodCalled == null) _UndefinedMethodCalled = new Action<string, string>(Core.PhpException.UndefinedMethodCalled).Method; return _UndefinedMethodCalled; } }
-            public static MethodInfo FunctionNotSupported_String { get { return _FunctionNotSupported_String ?? (_FunctionNotSupported_String = new Action<string>(Core.PhpException.FunctionNotSupported).Method); } }
+            public static MethodInfo Throw { get { if (_Throw == null) _Throw = _this.GetMethod("Throw"); return _Throw; } }
+            public static MethodInfo MissingArgument { get { if (_MissingArgument == null) _MissingArgument = _this.GetMethod("MissingArgument"); return _MissingArgument; } }
+            public static MethodInfo MissingTypeArgument { get { if (_MissingTypeArgument == null) _MissingTypeArgument = _this.GetMethod("MissingTypeArgument"); return _MissingTypeArgument; } }
+            public static MethodInfo MissingArguments { get { if (_MissingArguments == null) _MissingArguments = _this.GetMethod("MissingArguments"); return _MissingArguments; } }
+            public static MethodInfo InvalidArgumentCount { get { if (_InvalidArgumentCount == null) _InvalidArgumentCount = _this.GetMethod("InvalidArgumentCount"); return _InvalidArgumentCount; } }
+            public static MethodInfo InvalidForeachArgument { get { if (_InvalidForeachArgument == null) _InvalidForeachArgument = _this.GetMethod("InvalidForeachArgument"); return _InvalidForeachArgument; } }
+            public static MethodInfo InvalidImplicitCast { get { if (_InvalidImplicitCast == null) _InvalidImplicitCast = _this.GetMethod("InvalidImplicitCast"); return _InvalidImplicitCast; } }
+            public static MethodInfo InvalidBreakLevelCount { get { if (_InvalidBreakLevelCount == null) _InvalidBreakLevelCount = _this.GetMethod("InvalidBreakLevelCount"); return _InvalidBreakLevelCount; } }
+            public static MethodInfo UndefinedVariable { get { if (_UndefinedVariable == null) _UndefinedVariable = _this.GetMethod("UndefinedVariable"); return _UndefinedVariable; } }
+            public static MethodInfo AbstractMethodCalled { get { if (_AbstractMethodCalled == null) _AbstractMethodCalled = _this.GetMethod("AbstractMethodCalled"); return _AbstractMethodCalled; } }
+            public static MethodInfo CannotReassignThis { get { if (_CannotReassignThis == null) _CannotReassignThis = _this.GetMethod("CannotReassignThis"); return _CannotReassignThis; } }
+            public static MethodInfo InvalidArgumentType { get { if (_InvalidArgumentType == null) _InvalidArgumentType = _this.GetMethod("InvalidArgumentType"); return _InvalidArgumentType; } }
+            public static MethodInfo ThisUsedOutOfObjectContext { get { if (_ThisUsedOutOfObjectContext == null) _ThisUsedOutOfObjectContext = _this.GetMethod("ThisUsedOutOfObjectContext"); return _ThisUsedOutOfObjectContext; } }
+            public static MethodInfo StaticPropertyUnset { get { if (_StaticPropertyUnset == null) _StaticPropertyUnset = _this.GetMethod("StaticPropertyUnset"); return _StaticPropertyUnset; } }
+            public static MethodInfo NoSuitableOverload { get { if (_NoSuitableOverload == null) _NoSuitableOverload = _this.GetMethod("NoSuitableOverload"); return _NoSuitableOverload; } }
+            public static MethodInfo PropertyTypeMismatch { get { if (_PropertyTypeMismatch == null) _PropertyTypeMismatch = _this.GetMethod("PropertyTypeMismatch"); return _PropertyTypeMismatch; } }
+            public static MethodInfo UndefinedMethodCalled { get { if (_UndefinedMethodCalled == null) _UndefinedMethodCalled = _this.GetMethod("UndefinedMethodCalled"); return _UndefinedMethodCalled; } }
+            public static MethodInfo FunctionNotSupported_String { get { return _FunctionNotSupported_String ?? (_FunctionNotSupported_String = _this.GetMethod("FunctionNotSupported", Types.String)); } }
         }
-
-        #endregion
-
-        #region SPL.Exception
-
-
 
         #endregion
 
@@ -705,8 +743,6 @@ namespace PHP.Core.Emit
                 _SetArrayItem_String,
                 _SetArrayItemExact_String,
 
-                _AddToEnd_Object,
-
                 _SetArrayItemRef_Object,
                 _SetArrayItemRef_Int32,
                 _SetArrayItemRef_String,
@@ -734,8 +770,6 @@ namespace PHP.Core.Emit
             public static MethodInfo SetArrayItem_Int32 { get { if (_SetArrayItem_Int32 == null) _SetArrayItem_Int32 = _this.GetMethod("SetArrayItem", new Type[] { typeof(int), typeof(object) }); return _SetArrayItem_Int32; } }
             public static MethodInfo SetArrayItem_String { get { if (_SetArrayItem_String == null) _SetArrayItem_String = _this.GetMethod("SetArrayItem", new Type[] { typeof(string), typeof(object) }); return _SetArrayItem_String; } }
             public static MethodInfo SetArrayItemExact_String { get { if (_SetArrayItemExact_String == null) _SetArrayItemExact_String = _this.GetMethod("SetArrayItemExact", new Type[] { typeof(string), typeof(object), typeof(int) }); return _SetArrayItemExact_String; } }
-
-            public static MethodInfo AddToEnd_Object { get { return _AddToEnd_Object ?? (_AddToEnd_Object = _this.GetMethod("AddToEnd", Types.Object)); } }
 
             public static MethodInfo SetArrayItemRef_Object { get { if (_SetArrayItemRef_Object == null) _SetArrayItemRef_Object = _this.GetMethod("SetArrayItemRef", new Type[] { typeof(object), typeof(PhpReference) }); return _SetArrayItemRef_Object; } }
             public static MethodInfo SetArrayItemRef_Int32 { get { if (_SetArrayItemRef_Int32 == null) _SetArrayItemRef_Int32 = _this.GetMethod("SetArrayItemRef", new Type[] { typeof(int), typeof(PhpReference) }); return _SetArrayItemRef_Int32; } }
@@ -789,15 +823,14 @@ namespace PHP.Core.Emit
 
         #region Others
 
-        static MethodInfo _GetTypeFromHandle, _Equality_Type_Type, _Object_Equals, _SetStaticInit, _AddConstant, _AddProperty, _AddMethod,
+        static MethodInfo _GetTypeFromHandle, _Object_Equals, _SetStaticInit, _AddConstant, _AddProperty, _AddMethod,
             _ShellExec, _IPhpEnumerable_GetForeachEnumerator,
             _String_IsInterned, _String_Concat_String_String, _IEnumerator_MoveNext, _DTypeDesc_Create,
             _PhpTypeDesc_Create, _ClrObject_Wrap, _ClrObject_WrapDynamic, _ClrObject_WrapRealObject, _ClrObject_Create, _Object_GetType,
-            _Object_ToString, _Object_Finalize, _DObject_InvokeMethod, _DObject_InvokeConstructor, _DObject_Dispose, _DObject_GetRuntimeField, _DObject_SetProperty,
-            _DRoutineDesc_Invoke, _PhpHashtable_Add, _InitializeArray, _ArrayCopy, _ArrayCopyTo, _PhpCallback_Invoke;
+            _Object_ToString, _Object_Finalize, _DObject_InvokeMethod, _DObject_InvokeConstructor, _DObject_Dispose, _DObject_GetRuntimeField,
+            _DRoutineDesc_Invoke, _PhpHashtable_Add, _InitializeArray, _ArrayCopy, _ArrayCopyTo;
 
         public static MethodInfo GetTypeFromHandle { get { if (_GetTypeFromHandle == null)  _GetTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle"); return _GetTypeFromHandle; } }
-        public static MethodInfo Equality_Type_Type { get { return _Equality_Type_Type ?? (_Equality_Type_Type = typeof(Type).GetMethod("op_Equality")); } }
 
         public static MethodInfo Object_Equals { get { if (_Object_Equals == null)  _Object_Equals = Types.Object[0].GetMethod("Equals", Types.Object); return _Object_Equals; } }
         public static MethodInfo Object_GetType { get { if (_Object_GetType == null)  _Object_GetType = Types.Object[0].GetMethod("GetType", Type.EmptyTypes); return _Object_GetType; } }
@@ -806,8 +839,8 @@ namespace PHP.Core.Emit
 
         public static MethodInfo SetStaticInit { get { if (_SetStaticInit == null)   _SetStaticInit = typeof(Reflection.PhpTypeDesc).GetMethod("SetStaticInit"); return _SetStaticInit; } }
         public static MethodInfo AddConstant { get { if (_AddConstant == null)     _AddConstant = typeof(Reflection.PhpTypeDesc).GetMethod("AddConstant", Types.String_Object); return _AddConstant; } }
-        public static MethodInfo AddProperty { get { if (_AddProperty == null)     _AddProperty = typeof(Reflection.PhpTypeDesc).GetMethod("AddProperty", new Type[] { Types.String[0], typeof(PhpMemberAttributes), typeof(GetterDelegate), typeof(SetterDelegate) }); return _AddProperty; } }
-        public static MethodInfo AddMethod { get { if (_AddMethod == null)       _AddMethod = typeof(Reflection.PhpTypeDesc).GetMethod("AddMethod", new Type[] { Types.String[0], typeof(PhpMemberAttributes), typeof(RoutineDelegate) }); return _AddMethod; } }
+        public static MethodInfo AddProperty { get { if (_AddProperty == null)     _AddProperty = typeof(Reflection.PhpTypeDesc).GetMethod("AddProperty", new Type[] { Types.String[0], typeof(Reflection.PhpMemberAttributes), typeof(GetterDelegate), typeof(SetterDelegate) }); return _AddProperty; } }
+        public static MethodInfo AddMethod { get { if (_AddMethod == null)       _AddMethod = typeof(Reflection.PhpTypeDesc).GetMethod("AddMethod", new Type[] { Types.String[0], typeof(Reflection.PhpMemberAttributes), typeof(RoutineDelegate) }); return _AddMethod; } }
 
         public static MethodInfo DTypeDesc_Create { get { if (_DTypeDesc_Create == null)   _DTypeDesc_Create = Types.DTypeDesc[0].GetMethod("Create", new Type[] { typeof(RuntimeTypeHandle) }); return _DTypeDesc_Create; } }
         public static MethodInfo PhpTypeDesc_Create { get { if (_PhpTypeDesc_Create == null) _PhpTypeDesc_Create = Types.PhpTypeDesc[0].GetMethod("Create"); return _PhpTypeDesc_Create; } }
@@ -821,7 +854,6 @@ namespace PHP.Core.Emit
         public static MethodInfo DObject_InvokeMethod { get { if (_DObject_InvokeMethod == null) _DObject_InvokeMethod = Types.DObject[0].GetMethod("InvokeMethod"); return _DObject_InvokeMethod; } }
         public static MethodInfo DObject_Dispose { get { return _DObject_Dispose ?? (_DObject_Dispose = Types.DObject[0].GetMethod("Dispose", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, Types.Bool, null)); } }
         public static MethodInfo DObject_GetRuntimeField { get { return _DObject_GetRuntimeField ?? (_DObject_GetRuntimeField = Types.DObject[0].GetMethod("GetRuntimeField")); } }
-        public static MethodInfo DObject_SetProperty { get { return _DObject_SetProperty ?? (_DObject_SetProperty = Types.DObject[0].GetMethod("SetProperty")); } }
         public static MethodInfo DRoutineDesc_Invoke { get { if (_DRoutineDesc_Invoke == null) _DRoutineDesc_Invoke = typeof(DRoutineDesc).GetMethod("Invoke", new Type[] { Types.DObject[0], Types.PhpStack[0] }); return _DRoutineDesc_Invoke; } }
         
         public static MethodInfo InitializeArray { get { if (_InitializeArray == null) _InitializeArray = typeof(RuntimeHelpers).GetMethod("InitializeArray"); return _InitializeArray; } }
@@ -839,8 +871,6 @@ namespace PHP.Core.Emit
 #endif
 
         public static MethodInfo PhpHashtable_Add { get { if (_PhpHashtable_Add == null) _PhpHashtable_Add = typeof(PHP.Core.PhpHashtable).GetMethod("Add", Types.Object); return _PhpHashtable_Add; } }
-
-        public static MethodInfo PhpCallback_Invoke { get { if (_PhpCallback_Invoke == null) _PhpCallback_Invoke = typeof(PHP.Core.PhpCallback).GetMethod("Invoke",Types.ObjectArray); return _PhpCallback_Invoke; } }
 
         public struct DynamicCode
         {
@@ -868,15 +898,174 @@ namespace PHP.Core.Emit
             public static MethodInfo GetEntryAssembly { get { return _GetEntryAssembly ?? (_GetEntryAssembly = typeof(System.Reflection.Assembly).GetMethod("GetEntryAssembly", Type.EmptyTypes)); } }
         }
 
-        public struct NamingContext
-        {
-            static MethodInfo _AddAlias;
-
-            public static MethodInfo AddAlias { get { return _AddAlias ?? (_AddAlias = typeof(PHP.Core.NamingContext).GetMethod("AddAlias", new[] { Types.String[0], Types.String[0] })); } }
-        }
-
         #endregion
     }
+
+	#region LINQ Externs
+
+	public static class LinqExterns
+	{
+		#region From LINQ assemblies
+
+		// LINQ: TODO: Using Orcas beta2 or Silverlight preview
+#if !SILVERLIGHT
+		static readonly Assembly _Assembly = Assembly.LoadFrom(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)+@"\Reference Assemblies\Microsoft\Framework\v3.5\System.Core.dll");
+#else
+		static readonly Assembly _Assembly = Assembly.Load("System.Core, Version=2.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+#endif
+
+		public static readonly Type Sequence;
+		public static readonly Type Func2;
+
+		public static readonly Type Func2_object_object;
+		public static readonly Type Func2_object_bool;
+		public static readonly Type Func2_object_IEnumerable_object;
+
+		public static readonly ConstructorInfo Func2_object_object_ctor;
+		public static readonly ConstructorInfo Func2_object_bool_ctor;
+		public static readonly ConstructorInfo Func2_object_IEnumerable_object_ctor;
+
+		public static MethodInfo Where;
+		public static MethodInfo ThenBy;
+		public static MethodInfo ThenByDescending;
+		public static MethodInfo OrderBy;
+		public static MethodInfo OrderByDescending;
+		public static MethodInfo Select;
+		public static MethodInfo SelectMany;
+		public static MethodInfo GroupBy;
+		public static MethodInfo GroupByElementSel;
+
+		static LinqExterns()
+		{
+			// Load stuff from LINQ assembly
+			Sequence = _Assembly.GetType("System.Linq.Enumerable", true);
+
+			Func2 = _Assembly.GetType("System.Func`2", true);
+			Func2_object_object = Func2.MakeGenericType(typeof(object), typeof(object));
+			Func2_object_bool = Func2.MakeGenericType(typeof(object), typeof(bool));
+			Func2_object_IEnumerable_object = Func2.MakeGenericType(typeof(object), Types.IEnumerableOfObject);
+
+			Func2_object_object_ctor = Func2_object_object.GetConstructor(Types.DelegateCtorArgs);
+			Func2_object_bool_ctor = Func2_object_bool.GetConstructor(Types.DelegateCtorArgs);
+			Func2_object_IEnumerable_object_ctor = Func2_object_IEnumerable_object.GetConstructor(Types.DelegateCtorArgs);
+
+			Sequence.FindMembers(MemberTypes.Method, BindingFlags.Public | BindingFlags.Static,
+				delegate(MemberInfo member, object _)
+				{
+					MethodInfo method = (MethodInfo)member;
+
+					switch (method.ToString())
+					{
+						case "System.Collections.Generic.IEnumerable`1[TSource] Where[TSource](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,System.Boolean])":
+							Where = method.MakeGenericMethod(Types.Object);
+							break;
+
+						case "System.Collections.Generic.IEnumerable`1[TResult] Select[TSource,TResult](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TResult])":
+							Select = method.MakeGenericMethod(Types.Object_Object);
+							break;
+
+						case "System.Collections.Generic.IEnumerable`1[TResult] SelectMany[TSource,TResult](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,System.Collections.Generic.IEnumerable`1[TResult]])":
+							SelectMany = method.MakeGenericMethod(Types.Object_Object);
+							break;
+
+						case "System.Linq.IOrderedEnumerable`1[TSource] ThenBy[TSource,TKey](System.Linq.IOrderedEnumerable`1[TSource], System.Func`2[TSource,TKey])":
+							ThenBy = method.MakeGenericMethod(Types.Object_Object);
+							break;
+
+						case "System.Linq.IOrderedEnumerable`1[TSource] ThenByDescending[TSource,TKey](System.Linq.IOrderedEnumerable`1[TSource], System.Func`2[TSource,TKey])":
+							ThenByDescending = method.MakeGenericMethod(Types.Object_Object);
+							break;
+
+						case "System.Linq.IOrderedEnumerable`1[TSource] OrderBy[TSource,TKey](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey])":
+							OrderBy = method.MakeGenericMethod(Types.Object_Object);
+							break;
+
+						case "System.Linq.IOrderedEnumerable`1[TSource] OrderByDescending[TSource,TKey](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey])":
+							OrderByDescending = method.MakeGenericMethod(Types.Object_Object);
+							break;
+
+						case "System.Collections.Generic.IEnumerable`1[System.Linq.IGrouping`2[TKey,TSource]] GroupBy[TSource,TKey](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey])":
+							GroupBy = method.MakeGenericMethod(Types.Object_Object);
+							break;
+
+						case "System.Collections.Generic.IEnumerable`1[System.Linq.IGrouping`2[TKey,TElement]] GroupBy[TSource,TKey,TElement](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey], System.Func`2[TSource,TElement])":
+							GroupByElementSel = method.MakeGenericMethod(Types.Object_Object_Object);
+							break;
+					}
+					return false;
+				}, null);
+
+
+			// Initialize PHP objects cache
+			tupleTypes = new List<TupleInfo>();
+			tupleGenerator = TupleGenerator();
+		}
+
+		#endregion
+		#region From PHP assemblies
+
+		/// <summary>
+		/// Stores information about constructed tuple type
+		/// </summary>
+		public struct TupleInfo
+		{
+			public TupleInfo(Type type)
+			{
+				this.type = type;
+				this.constructor = type.GetConstructors()[0];
+				this.firstGetter = type.GetProperty("First").GetGetMethod();
+				this.secondGetter = type.GetProperty("Second").GetGetMethod();
+			}
+
+			private Type type;
+			private ConstructorInfo constructor;
+			private MethodInfo firstGetter, secondGetter;
+
+			// public properties
+			public Type Type { get { return type; } }
+			public ConstructorInfo Constructor { get { return constructor; } }
+			public MethodInfo FirstGetter { get { return firstGetter; } }
+			public MethodInfo SecondGetter { get { return secondGetter; } }
+		}
+
+		static List<TupleInfo> tupleTypes;
+		static IEnumerator<TupleInfo> tupleGenerator;
+
+		/// <summary>
+		/// Enumerator for lazy loading of tuple types
+		/// </summary>
+		private static IEnumerator<TupleInfo> TupleGenerator()
+		{
+			Type lastType = typeof(object);
+			while (true)
+			{
+				lastType = typeof(Tuple<,>).MakeGenericType(new Type[] { typeof(object), lastType });
+				yield return new TupleInfo(lastType);
+			}
+		}
+
+
+		/// <summary>
+		/// Returns cached tuple information for specified indirection level.
+		/// Indirection equals to zero means Tuple&lt;object, object&gt;>, 1 means
+		/// Tuple&lt;Tuple&lt;object, object&gt;>, object&gt;> etc.
+		/// </summary>
+		public static TupleInfo GetTupleInfo(int indirection)
+		{
+			Debug.Assert(indirection >= 0);
+			while (tupleTypes.Count <= indirection)
+			{
+				tupleGenerator.MoveNext();
+				tupleTypes.Add(tupleGenerator.Current);
+			}
+			return tupleTypes[indirection];
+		}
+
+		#endregion
+	}
+
+	#endregion
+
 
 	// TODO: mark following by [Emitted]
 
@@ -908,7 +1097,7 @@ namespace PHP.Core.Emit
         public static ConstructorInfo ScriptDeclares { get { return _ScriptDeclares ?? (_ScriptDeclares = typeof(ScriptDeclaresAttribute).GetConstructor(new Type[] { typeof(int[]) })); } }
 		public static ConstructorInfo PhpRoutineProperties { get { if (_Routine == null)             _Routine = typeof(RoutineAttribute).GetConstructor(Types.RoutineProperties); return _Routine; } }
 		public static ConstructorInfo PhpEvalId { get { if (_PhpEvalId == null)           _PhpEvalId = typeof(PhpEvalIdAttribute).GetConstructor(Types.Int); return _PhpEvalId; } }
-        public static ConstructorInfo ScriptAssembly { get { return _ScriptAssembly ?? (_ScriptAssembly = typeof(ScriptAssemblyAttribute).GetConstructor(new Type[] { typeof(bool), typeof(Type) })); } }
+		public static ConstructorInfo ScriptAssembly { get { if (_ScriptAssembly == null)    _ScriptAssembly = typeof(ScriptAssemblyAttribute).GetConstructor(new Type[] { typeof(bool) }); return _ScriptAssembly; } }
 		public static ConstructorInfo PurePhpAssembly { get { if (_PurePhpAssembly == null)    _PurePhpAssembly = typeof(PurePhpAssemblyAttribute).GetConstructor(new Type[] { typeof(string[]) }); return _PurePhpAssembly; } }
 		public static ConstructorInfo PhpPublicField { get { if (_PhpPublicField == null)    _PhpPublicField = typeof(PhpPublicFieldAttribute).GetConstructor(Types.String_Bool_Bool); return _PhpPublicField; } }
         public static ConstructorInfo UnknownTypeDesc { get { return _UnknownTypeDesc ?? (_UnknownTypeDesc = typeof(UnknownTypeDesc).GetConstructor(Type.EmptyTypes)); } }
@@ -917,12 +1106,13 @@ namespace PHP.Core.Emit
 
 		#region Attributes - CLR only
 #if !SILVERLIGHT
-		static ConstructorInfo _EditorBrowsable, _ThreadStatic, _STAThread, _MTAThread;
+		static ConstructorInfo _EditorBrowsable, _ThreadStatic, _STAThread, _MTAThread, _ExtensionDescriptor;
 
 		public static ConstructorInfo EditorBrowsable { get { return _EditorBrowsable ?? (_EditorBrowsable = typeof(EditorBrowsableAttribute).GetConstructor(new Type[] { typeof(EditorBrowsableState) })); } }
 		public static ConstructorInfo ThreadStatic { get { if (_ThreadStatic == null)        _ThreadStatic = typeof(ThreadStaticAttribute).GetConstructor(Type.EmptyTypes); return _ThreadStatic; } }
 		public static ConstructorInfo STAThread { get { if (_STAThread == null)           _STAThread = typeof(STAThreadAttribute).GetConstructor(Type.EmptyTypes); return _STAThread; } }
 		public static ConstructorInfo MTAThread { get { if (_MTAThread == null)           _MTAThread = typeof(MTAThreadAttribute).GetConstructor(Type.EmptyTypes); return _MTAThread; } }
+		public static ConstructorInfo ExtensionDescriptor { get { if (_ExtensionDescriptor == null) _ExtensionDescriptor = typeof(ExtensionDescriptorAttribute).GetConstructor(new Type[] { typeof(string), typeof(string), typeof(bool) }); return _ExtensionDescriptor; } }
 #endif
 		#endregion
 
@@ -930,8 +1120,8 @@ namespace PHP.Core.Emit
 
 		static ConstructorInfo _PhpReference_Void, _PhpReference_Object,
 			_PhpBytes_ByteArray, _StdClass_ScriptContext, _PhpRuntimeChain_Object_DTypeDesc,
-            _RoutineDelegate, _PhpRoutineDesc_Attr_Delegate, _GetterDelegate, _SetterDelegate, _PhpScript_MainHelperDelegate, _NamingContext,
-            _Action_ScriptContext, _PurePhpFunction;
+			_RoutineDelegate, _GetterDelegate, _SetterDelegate, _PhpScript_MainHelperDelegate, _LinqContext, _NamingContext,
+			_Action_ScriptContext;
 
 		public static ConstructorInfo RoutineDelegate { get { if (_RoutineDelegate == null) _RoutineDelegate = typeof(RoutineDelegate).GetConstructor(Types.DelegateCtorArgs); return _RoutineDelegate; } }
 		public static ConstructorInfo GetterDelegate { get { if (_GetterDelegate == null) _GetterDelegate = typeof(GetterDelegate).GetConstructor(Types.DelegateCtorArgs); return _GetterDelegate; } }
@@ -942,13 +1132,11 @@ namespace PHP.Core.Emit
 		public static ConstructorInfo PhpReference_Void { get { if (_PhpReference_Void == null) _PhpReference_Void = typeof(PhpReference).GetConstructor(Type.EmptyTypes); return _PhpReference_Void; } }
 		public static ConstructorInfo PhpReference_Object { get { if (_PhpReference_Object == null) _PhpReference_Object = typeof(PhpReference).GetConstructor(Types.Object); return _PhpReference_Object; } }
 		public static ConstructorInfo PhpBytes_ByteArray { get { if (_PhpBytes_ByteArray == null) _PhpBytes_ByteArray = typeof(PhpBytes).GetConstructor(new Type[] { typeof(byte[]) }); return _PhpBytes_ByteArray; } }
-        public static ConstructorInfo PhpRoutineDesc_Attr_Delegate_Bool { get { if (_PhpRoutineDesc_Attr_Delegate == null) _PhpRoutineDesc_Attr_Delegate = typeof(PhpRoutineDesc).GetConstructor(new Type[] { typeof(PhpMemberAttributes), typeof(RoutineDelegate), typeof(bool) }); return _PhpRoutineDesc_Attr_Delegate; } }
 
 		public static ConstructorInfo StdClass_ScriptContext { get { if (_StdClass_ScriptContext == null) _StdClass_ScriptContext = typeof(PHP.Library.stdClass).GetConstructor(Types.ScriptContext); return _StdClass_ScriptContext; } }
-        public static ConstructorInfo NamingContext { get { return _NamingContext ?? (_NamingContext = typeof(PHP.Core.NamingContext).GetConstructor(new[] { Types.String[0], Types.Int[0] })); } }
+		public static ConstructorInfo NamingContext { get { if (_NamingContext == null)     _NamingContext = typeof(NamingContext).GetConstructor(Types.StringArray); return _NamingContext; } }
 
 		public static ConstructorInfo Action_ScriptContext { get { if (_Action_ScriptContext == null) _Action_ScriptContext = typeof(Action<ScriptContext>).GetConstructor(Types.DelegateCtorArgs); return _Action_ScriptContext; } }
-        public static ConstructorInfo PurePhpFunction { get { return _PurePhpFunction ?? (_PurePhpFunction = typeof(PurePhpFunction).GetConstructor(new Type[] { typeof(PhpRoutineDesc), Types.String[0], typeof(MethodInfo) })); } }
 
 		public struct PhpArray
 		{
@@ -977,7 +1165,8 @@ namespace PHP.Core.Emit
 		}
 
 		public static ConstructorInfo PhpRuntimeChain_Object_DTypeDesc { get { if (_PhpRuntimeChain_Object_DTypeDesc == null) _PhpRuntimeChain_Object_DTypeDesc = typeof(PHP.Core.PhpRuntimeChain).GetConstructor(new Type[] { typeof(object), typeof(PHP.Core.Reflection.DTypeDesc) }); return _PhpRuntimeChain_Object_DTypeDesc; } }
-		
+		public static ConstructorInfo LinqContext { get { if (_LinqContext == null) _LinqContext = typeof(PHP.Core.LinqContext).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, Types.LinqContextArgs, null); return _LinqContext; } }
+
 		#endregion
 	}
 
@@ -986,9 +1175,10 @@ namespace PHP.Core.Emit
 	{
 		static FieldInfo _DObject_TypeDesc, _PhpReference_Value, _ScriptContext_Stack,
 			_ScriptContext_Default, _ScriptContext_AutoGlobals, _ScriptContext_HttpVarsArrays,
-            _PhpStack_ArgCount, _PhpStack_Context, _PhpStack_Variables, _PhpStack_NamingContext, _PhpStack_AllowProtectedCall, _PhpStack_LateStaticBindType,
+			_PhpStack_ArgCount, _PhpStack_Context, _PhpStack_Variables, _PhpStack_NamingContext, _PhpStack_AllowProtectedCall,
 	        _PhpStack_CalleeName, _Arg_Default, _Arg_DefaultType, _ScriptContext_EvalId, _ScriptContext_EvalRelativeSourcePath,
 			_ScriptContext_EvalLine, _ScriptContext_EvalColumn, _PhpUserException_UserException,
+			_LinqContext_outerType, _LinqContext_typeHandle, _LinqContext_variables, _LinqContext_context,
 			_PhpVariable_LiteralNull, _PhpVariable_LiteralTrue, _PhpVariable_LiteralFalse;
 
 		public static FieldInfo ScriptContext_Stack { get { if (_ScriptContext_Stack == null)  _ScriptContext_Stack = typeof(ScriptContext).GetField("Stack"); return _ScriptContext_Stack; } }
@@ -1039,7 +1229,6 @@ namespace PHP.Core.Emit
 		public static FieldInfo PhpStack_NamingContext { get { if (_PhpStack_NamingContext == null)   _PhpStack_NamingContext = typeof(PhpStack).GetField("NamingContext"); return _PhpStack_NamingContext; } }
 		public static FieldInfo PhpStack_CalleeName { get { if (_PhpStack_CalleeName == null)  _PhpStack_CalleeName = typeof(PhpStack).GetField("CalleeName"); return _PhpStack_CalleeName; } }
 		public static FieldInfo PhpStack_AllowProtectedCall { get { if (_PhpStack_AllowProtectedCall == null)   _PhpStack_AllowProtectedCall = typeof(PhpStack).GetField("AllowProtectedCall"); return _PhpStack_AllowProtectedCall; } }
-        public static FieldInfo PhpStack_LateStaticBindType { get { return _PhpStack_LateStaticBindType ?? (_PhpStack_LateStaticBindType = typeof(PhpStack).GetField("LateStaticBindType")); } }
 
 		public static FieldInfo ScriptContext_EvalLine { get { if (_ScriptContext_EvalLine == null) _ScriptContext_EvalLine = typeof(ScriptContext).GetField("EvalLine"); return _ScriptContext_EvalLine; } }
 		public static FieldInfo ScriptContext_EvalColumn { get { if (_ScriptContext_EvalColumn == null) _ScriptContext_EvalColumn = typeof(ScriptContext).GetField("EvalColumn"); return _ScriptContext_EvalColumn; } }
@@ -1076,16 +1265,19 @@ namespace PHP.Core.Emit
 
             public static FieldInfo Singleton { get { return _Singleton ?? (_Singleton = _this.GetField("Singleton")); } }
         }
+
+		public static FieldInfo LinqContext_context { get { if (_LinqContext_context == null) _LinqContext_context = typeof(Core.LinqContext).GetField("context", BindingFlags.NonPublic | BindingFlags.Instance); return _LinqContext_context; } }
+		public static FieldInfo LinqContext_variables { get { if (_LinqContext_variables == null) _LinqContext_variables = typeof(Core.LinqContext).GetField("variables", BindingFlags.NonPublic | BindingFlags.Instance); return _LinqContext_variables; } }
+		public static FieldInfo LinqContext_typeHandle { get { if (_LinqContext_typeHandle == null) _LinqContext_typeHandle = typeof(Core.LinqContext).GetField("typeHandle", BindingFlags.NonPublic | BindingFlags.Instance); return _LinqContext_typeHandle; } }
+		public static FieldInfo LinqContext_outerType { get { if (_LinqContext_outerType == null) _LinqContext_outerType = typeof(Core.LinqContext).GetField("outerType", BindingFlags.NonPublic | BindingFlags.Instance); return _LinqContext_outerType; } }
 	}
 
 	/// <exclude/>
 	public static class Properties
 	{
 		static PropertyInfo _ImplementsConstantCase, _PhpReference_IsSet, _PhpReference_IsAliased,
-          _IDictionaryEnumerator_Key, _IDictionaryEnumerator_Value, _Type_TypeHandle, _DObject_RealObject, _DObject_RealType, _DObject_TypeDesc,
-          _ClrTypeDesc_Constructor, _ScriptContext_CurrentContext, _Assembly_Location, _InsideCaller, _Delegate_Method,
-          _PhpHashtable_Count,
-          _PhpArray_InplaceCopyOnReturn;
+          _IDictionaryEnumerator_Key, _IDictionaryEnumerator_Value, _Type_TypeHandle, _DObject_RealObject, _DObject_RealType,
+		  _ClrTypeDesc_Constructor, _ScriptContext_CurrentContext, _Assembly_Location , _InsideCaller;
 
 		public static PropertyInfo ImplementsConstantCase { get { if (_ImplementsConstantCase == null) _ImplementsConstantCase = typeof(ImplementsConstantAttribute).GetProperty("CaseInsensitive"); return _ImplementsConstantCase; } }
 		public static PropertyInfo PhpReference_IsSet { get { if (_PhpReference_IsSet == null) _PhpReference_IsSet = typeof(PhpReference).GetProperty("IsSet"); return _PhpReference_IsSet; } }
@@ -1099,25 +1291,18 @@ namespace PHP.Core.Emit
 		public static PropertyInfo DObject_RealObject { get { if (_DObject_RealObject == null) _DObject_RealObject = typeof(DObject).GetProperty("RealObject"); return _DObject_RealObject; } }
         public static PropertyInfo DObject_RealType { get { return _DObject_RealType ?? (_DObject_RealType = typeof(DObject).GetProperty("RealType")); } }
         public static PropertyInfo DObject_InsideCaller { get { if (_InsideCaller == null) _InsideCaller = typeof(DObject).GetProperty("insideCaller",BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance); return _InsideCaller; } }
-        public static PropertyInfo DObject_TypeDesc { get { return _DObject_TypeDesc ?? (_DObject_TypeDesc = typeof(DObject).GetProperty("TypeDesc", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)); } }
 
         public static PropertyInfo ClrTypeDesc_Constructor { get { if (_ClrTypeDesc_Constructor == null) _ClrTypeDesc_Constructor = typeof(ClrTypeDesc).GetProperty("Constructor"); return _ClrTypeDesc_Constructor; } }
 
 		public static PropertyInfo ScriptContext_CurrentContext { get { if (_ScriptContext_CurrentContext == null) _ScriptContext_CurrentContext = typeof(ScriptContext).GetProperty("CurrentContext"); return _ScriptContext_CurrentContext; } }
 
         public static PropertyInfo Assembly_Location { get { return _Assembly_Location ?? (_Assembly_Location = typeof(System.Reflection.Assembly).GetProperty("Location")); } }
-
-        public static PropertyInfo Delegate_Method { get { return _Delegate_Method ?? (_Delegate_Method = typeof(System.Delegate).GetProperty("Method")); } }
-
-        public static PropertyInfo PhpArray_InplaceCopyOnReturn { get { return _PhpArray_InplaceCopyOnReturn ?? (_PhpArray_InplaceCopyOnReturn = typeof(PhpArray).GetProperty("InplaceCopyOnReturn")); } }
-        public static PropertyInfo PhpHashtable_Count { get { return _PhpHashtable_Count ?? (_PhpHashtable_Count = typeof(PhpHashtable).GetProperty("Count")); } }
 	}
 
 	/// <exclude/>
 	public class AttributeBuilders
 	{
 		private static CustomAttributeBuilder _PhpFinal, _PhpAbstract,
-            _ImplementsTrait,
 			_PhpHasInitValue, _ImplementsType, _DebuggerNonUserCode, _DebuggerHidden, _ParamArray, _Optional;
 
 		public static CustomAttributeBuilder PhpFinal
@@ -1151,14 +1336,6 @@ namespace PHP.Core.Emit
                 return _ImplementsType ?? (_ImplementsType = new CustomAttributeBuilder(typeof(ImplementsTypeAttribute).GetConstructor(Type.EmptyTypes), ArrayUtils.EmptyObjects));
             }
 		}
-
-        public static CustomAttributeBuilder ImplementsTrait
-        {
-            get
-            {
-                return _ImplementsTrait ?? (_ImplementsTrait = new CustomAttributeBuilder(typeof(PhpTraitAttribute).GetConstructor(Type.EmptyTypes), ArrayUtils.EmptyObjects));
-            }
-        }
 
 		public static CustomAttributeBuilder DebuggerNonUserCode
 		{
