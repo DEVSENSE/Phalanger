@@ -526,7 +526,7 @@ non_empty_top_statement:
 	|	namespace_declaration_statement { $$ = $1; } /* PHP 5.3 */
 	|	function_declaration_statement	{ $$ = $1; }
 	|	class_declaration_statement		  { $$ = $1; }
-	|	global_constant_declaration_statement { $$ = $1; } /* PHP/CLR */
+	|	global_constant_declaration_statement { $$ = $1; } /* PHP 5.3 */
 ;
 
 namespace_declaration_statement:   /* PHP 5.3 */ 	 
@@ -569,7 +569,7 @@ namespace_statement:         /* PHP 5.3 */
 	|	use_statement						 { /* nop */ }
 	|	function_declaration_statement       { $$ = $1; }
 	|	class_declaration_statement          { $$ = $1; }
-	|	global_constant_declarator_list ';'  { $$ = $1; }
+	|	global_constant_declaration_statement	{ $$ = $1; }
 ;
 
 function_declaration_statement:
@@ -1427,7 +1427,7 @@ global_constant_declarator:
 ;  
 
 global_constant_declaration_statement:
-	attributes_opt global_constant_declarator_list   
+	attributes_opt global_constant_declarator_list ';'
   { 
 	  $$ = new GlobalConstDeclList(@$, (List<GlobalConstantDecl>)$2, (List<CustomAttribute>)$1, PopDocComment()); 
 	}
