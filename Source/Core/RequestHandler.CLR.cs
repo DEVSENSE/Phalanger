@@ -136,6 +136,7 @@ namespace PHP.Core
 		/// <exception cref="PhpUserException">Uncaught exception.</exception>
 		/// <exception cref="PhpNetInternalException">An internal error.</exception>
 		/// <exception cref="Exception">Uncaught exception thrown by the class library or another error occurred during request processing.</exception>
+        [DebuggerNonUserCode]
 		public void ProcessRequest(HttpContext/*!*/ context)
 		{
 			if (context == null)
