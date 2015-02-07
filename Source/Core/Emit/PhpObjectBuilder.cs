@@ -19,7 +19,6 @@ using System.Runtime.Serialization;
 using PHP.Core.Reflection;
 using System.Collections.Generic;
 using PHP.Core.AST;
-using System.Diagnostics;
 
 namespace PHP.Core.Emit
 {
@@ -143,8 +142,8 @@ namespace PHP.Core.Emit
             // only if __destruct was now defined in some base class, no need to override existing definition on Finalize
             DRoutine basedestruct;
             DRoutineDesc destruct;
-            if ((destruct = phpType.TypeDesc.GetMethod(Name.SpecialMethodNames.Destruct)) != null && (phpType.Base == null ||
-                phpType.Base.GetMethod(Name.SpecialMethodNames.Destruct, phpType, out basedestruct) == GetMemberResult.NotFound))
+            if ((destruct = phpType.TypeDesc.GetMethod(DObject.SpecialMethodNames.Destruct)) != null && (phpType.Base == null ||
+                phpType.Base.GetMethod(DObject.SpecialMethodNames.Destruct, phpType, out basedestruct) == GetMemberResult.NotFound))
             {
                 MethodBuilder finalizer_builder = phpType.RealTypeBuilder.DefineMethod("Finalize", MethodAttributes.HideBySig | MethodAttributes.Virtual | MethodAttributes.Family, typeof(void), Type.EmptyTypes);
                 
@@ -236,8 +235,8 @@ namespace PHP.Core.Emit
 
 			// register this instance for finalization if it introduced the __destruct method
 			DRoutine destruct;
-            if (phpType.TypeDesc.GetMethod(Name.SpecialMethodNames.Destruct) != null && (phpType.Base == null ||
-                phpType.Base.GetMethod(Name.SpecialMethodNames.Destruct, phpType, out destruct) == GetMemberResult.NotFound))
+			if (phpType.TypeDesc.GetMethod(DObject.SpecialMethodNames.Destruct) != null && (phpType.Base == null ||
+				phpType.Base.GetMethod(DObject.SpecialMethodNames.Destruct, phpType, out destruct) == GetMemberResult.NotFound))
 			{
 				cil.Ldarg(FunctionBuilder.ArgContextInstance);
 				cil.Ldarg(FunctionBuilder.ArgThis);
@@ -297,7 +296,7 @@ namespace PHP.Core.Emit
                 // try to find constructor
                 for (DTypeDesc type_desc = phpType.TypeDesc; type_desc != null; type_desc = type_desc.Base)
                 {
-                    construct = type_desc.GetMethod(Name.SpecialMethodNames.Construct);
+                    construct = type_desc.GetMethod(DObject.SpecialMethodNames.Construct);
                     if (construct == null)
                         construct = type_desc.GetMethod(new Name(type_desc.MakeSimpleName()));
 
@@ -305,7 +304,7 @@ namespace PHP.Core.Emit
                     {
                         constructorFound = true;
 
-                        if (!construct.IsPublic || construct.IsStatic || construct.PhpRoutine == null || construct.PhpRoutine.ArgLessInfo == null)
+                        if (!construct.IsPublic || construct.IsStatic || construct.PhpRoutine == null)
                             construct = null; // invalid constructor found, fall back to dynamic behavior
                         
                         break;
@@ -407,7 +406,7 @@ namespace PHP.Core.Emit
 		/// </summary>
 		public static void DefineExportedConstructors(PhpType/*!*/ phpType)
 		{
-            phpType.Builder.ClrConstructorStubs = new List<StubInfo>();
+			phpType.Builder.ClrConstructorStubs = new List<StubInfo>();
 			PhpMethod ctor = phpType.GetConstructor() as PhpMethod;
 
 			if (ctor == null)
@@ -424,40 +423,33 @@ namespace PHP.Core.Emit
 				phpType.Builder.ClrConstructorStubs.Add(
 					new StubInfo(ctor_builder, new ParameterInfo[0], StubInfo.EmptyGenericParameters, null));
 			}
-            else if (!ctor.IsAbstract)
-            {
-                Debug.Assert(!ctor.IsStatic && ctor.Signature.GenericParamCount == 0);
+			else if (!ctor.IsAbstract)
+			{
+				Debug.Assert(!ctor.IsStatic && ctor.Signature.GenericParamCount == 0);
 
-                if (ctor.Builder == null)
-                {
-                    // contructor not defined in this class
-                    phpType.ClrConstructorInfos = new ConstructorInfo[0];
-                    return;
-                }            
+				// infer constructor visibility
+				MethodAttributes attr = Reflection.Enums.ToMethodAttributes(ctor.RoutineDesc.MemberAttributes);
 
-                // infer constructor visibility
-                List<ConstructorInfo> ctor_infos = new List<ConstructorInfo>();
-                
-                MethodAttributes attr = Reflection.Enums.ToMethodAttributes(ctor.RoutineDesc.MemberAttributes);
+				List<ConstructorInfo> ctor_infos = new List<ConstructorInfo>();
 
-                foreach (StubInfo info in ClrStubBuilder.DefineMethodExportStubs(
-                    ctor, phpType,
-                    attr,
-                    true,
-                    delegate(string[] genericParamNames, object[] parameterTypes, object returnType)
-                    {
-                        // accept all overloads
-                        return true;
-                    }))
-                {
-                    phpType.Builder.ClrConstructorStubs.Add(info);
+				foreach (StubInfo info in ClrStubBuilder.DefineMethodExportStubs(
+					ctor,
+					attr,
+					true,
+					delegate(string[] genericParamNames, object[] parameterTypes, object returnType)
+					{
+						// accept all overloads
+						return true;
+					}))
+				{
+					phpType.Builder.ClrConstructorStubs.Add(info);
 
-                    // infos are returned in ascending order w.r.t. parameter count
-                    ctor_infos.Add(info.ConstructorBuilder);
-                }
+					// infos are returned in ascending order w.r.t. parameter count
+					ctor_infos.Add(info.ConstructorBuilder);
+				}
 
-                phpType.ClrConstructorInfos = ctor_infos.ToArray();
-            }
+				phpType.ClrConstructorInfos = ctor_infos.ToArray();
+			}
 		}
 
 #if !SILVERLIGHT
@@ -616,6 +608,10 @@ namespace PHP.Core.Emit
 				Types.ScriptContext);
 			phpType.Builder.InstanceFieldInitEmitter = new ILEmitter(phpType.Builder.InstanceFieldInit);
 
+            // emit custom body prolog:
+            PluginHandler.EmitBeforeBody(phpType.Builder.InstanceFieldInitEmitter, null); 
+            
+
             //
             // <InitializeStaticFields>
             //
@@ -636,6 +632,9 @@ namespace PHP.Core.Emit
 #if !SILVERLIGHT 
 				last_context.SetCustomAttribute(AttributeBuilders.ThreadStatic);
 #endif
+                // emit custom body prolog:
+                PluginHandler.EmitBeforeBody(cil, null); 
+
                 //
                 Label init_needed_label = cil.DefineLabel();
 				// [ if (arg0 == __lastContext) ret ]
@@ -666,6 +665,19 @@ namespace PHP.Core.Emit
 			MethodBuilder populator = DefinePopulateTypeDescMethod(phpType.RealTypeBuilder);
 			ILEmitter il = new ILEmitter(populator);
 
+			// thread static field init
+			if (phpType.Builder.HasThreadStaticFields)
+			{
+				// [ typeDesc.SetStaticInit(new Action<ScriptContext>(__tsinit)) ]
+
+				il.Ldarg(0);
+				il.Emit(OpCodes.Ldnull);
+				il.Emit(OpCodes.Ldftn, phpType.StaticFieldInitMethodInfo);
+				il.Emit(OpCodes.Newobj, Constructors.Action_ScriptContext);
+
+				il.Emit(OpCodes.Call, Methods.SetStaticInit);
+			}
+
 			// methods
 			foreach (KeyValuePair<Name, DRoutineDesc> pair in phpType.TypeDesc.Methods)
 			{
@@ -692,57 +704,57 @@ namespace PHP.Core.Emit
 			// constants
 			foreach (KeyValuePair<VariableName, DConstantDesc> pair in phpType.TypeDesc.Constants)
 			{
-				EmitAddConstant(il, pair.Key.ToString(), pair.Value.ClassConstant);
+				EmitAddConstant(il, pair.Key.ToString(), pair.Value.ClassConstant.RealField);
 			}
 
 			il.Emit(OpCodes.Ret);
 		}
 
-        /// <summary>
-        /// Generates a <c>__PopulateTypeDesc</c> method that populates a <see cref="DTypeDesc"/>
-        /// at runtime (instead of reflecting the class).
-        /// </summary>
-        /// <param name="typeBuilder">The target <see cref="TypeBuilder"/>.</param>
-        /// <param name="methods">The methods to add to the type desc.</param>
-        /// <param name="fields">The fields to add to the type desc.</param>
-        /// <param name="constants">The constants to add to the type desc. Together with their value. (Consts are public static literal fields)</param>
-        /// <remarks>Used by WrapperGen.</remarks>
-        public static void GenerateTypeDescPopulation(TypeBuilder typeBuilder,
-            ICollection<InfoWithAttributes<MethodInfo>> methods,
-            ICollection<InfoWithAttributes<FieldInfo>> fields,
-            ICollection<KeyValuePair<FieldInfo, Object>> constants)
-        {
-            MethodBuilder populator = DefinePopulateTypeDescMethod(typeBuilder);
-            ILEmitter il = new ILEmitter(populator);
+		/// <summary>
+		/// Generates a <c>__PopulateTypeDesc</c> method that populates a <see cref="DTypeDesc"/>
+		/// at runtime (instead of reflecting the class).
+		/// </summary>
+		/// <param name="typeBuilder">The target <see cref="TypeBuilder"/>.</param>
+		/// <param name="methods">The methods to add to the type desc.</param>
+		/// <param name="fields">The fields to add to the type desc.</param>
+		/// <param name="constants">The constants to add to the type desc. Together with their value. (Consts are public static literal fields)</param>
+		/// <remarks>Used by WrapperGen.</remarks>
+		public static void GenerateTypeDescPopulation(TypeBuilder typeBuilder,
+			ICollection<InfoWithAttributes<MethodInfo>> methods,
+			ICollection<InfoWithAttributes<FieldInfo>> fields,
+			ICollection<KeyValuePair<FieldInfo,Object>> constants)
+		{
+			MethodBuilder populator = DefinePopulateTypeDescMethod(typeBuilder);
+			ILEmitter il = new ILEmitter(populator);
 
-            // methods
-            if (methods != null)
-            {
-                foreach (InfoWithAttributes<MethodInfo> info in methods)
-                {
-                    EmitAddMethod(il, info.Info.Name, info.Attributes, info.Info);
-                }
-            }
+			// methods
+			if (methods != null)
+			{
+				foreach (InfoWithAttributes<MethodInfo> info in methods)
+				{
+					EmitAddMethod(il, info.Info.Name, info.Attributes, info.Info);
+				}
+			}
 
-            // fields
-            if (fields != null)
-            {
-                foreach (InfoWithAttributes<FieldInfo> info in fields)
-                {
-                    EmitAddProperty(il, info.Info.DeclaringType, info.Info.Name, info.Attributes, info.Info);
-                }
-            }
+			// fields
+			if (fields != null)
+			{
+				foreach (InfoWithAttributes<FieldInfo> info in fields)
+				{
+					EmitAddProperty(il, info.Info.DeclaringType, info.Info.Name, info.Attributes, info.Info);
+				}
+			}
 
-            // constants
-            if (constants != null)
-            {
-                foreach (var info in constants)
-                {
-                    EmitAddConstant(il, info.Key.Name, info.Value);
-                }
-            }
-            il.Emit(OpCodes.Ret);
-        }
+			// constants
+			if (constants != null)
+			{
+				foreach (var info in constants)
+				{
+					EmitAddConstant(il, info.Key.Name, info.Value);
+				}
+			}
+			il.Emit(OpCodes.Ret);
+		}
 
 		private static void EmitAddMethod(ILEmitter il, string name, PhpMemberAttributes attributes, MethodInfo argless)
 		{
@@ -789,35 +801,28 @@ namespace PHP.Core.Emit
 			il.Emit(OpCodes.Call, Methods.AddProperty);
 		}
 
-        private static void EmitAddConstant(ILEmitter il, string name, object value)
-        {
-            // [ typeDesc.AddConstant("constant", value) ]
-
+		private static void EmitAddConstant(ILEmitter il, string name, object value)
+		{
+			// [ typeDesc.AddConstant("constant", value) ]
+            
             //Debug.Assert(constant.IsStatic);
 
-            il.Ldarg(0);
-            il.Emit(OpCodes.Ldstr, name);
-            il.LoadLiteralBox(value);  // for non dynamic literal fields
-            //il.Emit(OpCodes.Ldsfld, constant);    // for non literal field only !
+			il.Ldarg(0);
+			il.Emit(OpCodes.Ldstr, name);
+            il.LoadLiteral(value);  // for non dynamic literal fields
+			//il.Emit(OpCodes.Ldsfld, constant);    // for non literal field only !
+            
+			il.Emit(OpCodes.Call, Methods.AddConstant);
+		}
 
-            il.Emit(OpCodes.Call, Methods.AddConstant);
-        }
-
-		private static void EmitAddConstant(ILEmitter/*!*/il, string/*!*/name, ClassConstant/*!*/constant)
+        private static void EmitAddConstant(ILEmitter il, string name, FieldInfo constant)
         {
             // [ typeDesc.AddConstant("constant", value) ]
 
             il.Ldarg(0);
             il.Emit(OpCodes.Ldstr, name);
-
-            if (constant.HasValue && constant.RealField.IsLiteral)
-            {
-                il.LoadLiteralBox(constant.Value);  // for non dynamic literal fields
-            }
-            else
-            {
-                il.Emit(OpCodes.Ldsfld, constant.RealField);    // for non literal field only !
-            }
+            //il.LoadLiteral(value);  // for non dynamic literal fields
+            il.Emit(OpCodes.Ldsfld, constant);    // for non literal field only !
 
             il.Emit(OpCodes.Call, Methods.AddConstant);
         }

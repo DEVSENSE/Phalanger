@@ -1752,8 +1752,7 @@ namespace PHP.Core
 			EmitArgfullArgsInitialization(routine);
 
             // custom body prolog emittion:
-            if (PluginHandler.BeforeBodyEmitter != null)
-                PluginHandler.BeforeBodyEmitter(il, body);
+            PluginHandler.EmitBeforeBody(il, body);
 
 			// define user labels:
 			DefineLabels(routine.Builder.Labels);
