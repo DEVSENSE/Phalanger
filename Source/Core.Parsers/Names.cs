@@ -756,39 +756,48 @@ namespace PHP.Core
         /// <returns></returns>
         internal static QualifiedName TranslateAlias(QualifiedName qname, Dictionary<string, QualifiedName>/*!*/aliases, QualifiedName?currentNamespace)
         {
-            if (qname.IsFullyQualifiedName)
-                return qname;
-
-            // get first part of the qualified name:
-            string first = qname.IsSimpleName ? qname.Name.Value : qname.Namespaces[0].Value;
-            
-            // return the alias if found:
-            QualifiedName alias;
-            if (aliases.TryGetValue(first, out alias))
+            if (!qname.IsFullyQualifiedName)
             {
-                if (qname.IsSimpleName)
-                    return alias;
+                // get first part of the qualified name:
+                string first = qname.IsSimpleName ? qname.Name.Value : qname.Namespaces[0].Value;
 
-                // [ alias.namespaces, alias.name, qname.namespaces+1 ]
-                Name[] names = new Name[ qname.namespaces.Length + alias.namespaces.Length];
-                for (int i = 0; i < alias.namespaces.Length; ++i) names[i] = alias.namespaces[i];
-                names[alias.namespaces.Length] = alias.name;
-                for (int j = 1; j < qname.namespaces.Length; ++j) names[alias.namespaces.Length + j] = qname.namespaces[j];
-
-                return new QualifiedName(qname.name, names) { IsFullyQualifiedName = true };
-            }
-            else
-            {
-                if (currentNamespace.HasValue)
+                // return the alias if found:
+                QualifiedName alias;
+                if (aliases.TryGetValue(first, out alias))
                 {
-                    Debug.Assert(string.IsNullOrEmpty(currentNamespace.Value.Name.Value));
-                    return new QualifiedName(qname, currentNamespace.Value);
+                    if (qname.IsSimpleName)
+                    {
+                        qname = alias;
+                    }
+                    else
+                    {
+                        // [ alias.namespaces, alias.name, qname.namespaces+1 ]
+                        Name[] names = new Name[qname.namespaces.Length + alias.namespaces.Length];
+                        for (int i = 0; i < alias.namespaces.Length; ++i) names[i] = alias.namespaces[i];
+                        names[alias.namespaces.Length] = alias.name;
+                        for (int j = 1; j < qname.namespaces.Length; ++j) names[alias.namespaces.Length + j] = qname.namespaces[j];
+
+                        qname = new QualifiedName(qname.name, names);
+                    }
                 }
                 else
                 {
-                    return qname;
+                    if (currentNamespace.HasValue)
+                    {
+                        Debug.Assert(string.IsNullOrEmpty(currentNamespace.Value.Name.Value));
+                        qname = new QualifiedName(qname, currentNamespace.Value);
+                    }
+                    else
+                    {
+                        qname = new QualifiedName(qname.Name, qname.Namespaces);
+                    }
                 }
-            }   
+
+                // the name is translated (fully qualified)
+                qname.IsFullyQualifiedName = true;
+            }
+
+            return qname;
         }
 
         /// <summary>
