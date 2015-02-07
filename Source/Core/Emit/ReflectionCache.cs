@@ -396,7 +396,8 @@ namespace PHP.Core.Emit
                 _GetCurrentContext, _Die, _StaticInclude, _DynamicInclude, _GetStaticLocal, _GetStaticLocalId, _AddStaticLocal, _RunApplication,
                 _IsConstantDefined, _GetConstantValue, _DeclareConstant, _RegisterDObjectForFinalization,
                 _DeclareFunction, _DeclareLambda, _Call, _CallValue, _CallVoid, _DeclareType_TypeDesc, _DeclareType_Handle, _DeclareIncompleteTypeHelper, _IncompleteTypeDeclared,
-                _GetWorkingDirectory;
+                _GetWorkingDirectory,
+                _PushLateStaticBindType, _PopLateStaticBindType;
 
             public static MethodInfo RunApplication { get { if (_RunApplication == null) _RunApplication = _this.GetMethod("RunApplication", new Type[] { typeof(Delegate), typeof(string), typeof(string) }); return _RunApplication; } }
             public static MethodInfo GetCurrentContext { get { if (_GetCurrentContext == null) _GetCurrentContext = _this.GetMethod("get_CurrentContext"); return _GetCurrentContext; } }
@@ -430,6 +431,9 @@ namespace PHP.Core.Emit
             public static MethodInfo DeclareType_TypeDesc { get { if (_DeclareType_TypeDesc == null) _DeclareType_TypeDesc = _this.GetMethod("DeclareType", new Type[] { Types.PhpTypeDesc[0], Types.String[0] }); return _DeclareType_TypeDesc; } }
             public static MethodInfo DeclareIncompleteTypeHelper { get { return _DeclareIncompleteTypeHelper ?? (_DeclareIncompleteTypeHelper = _this.GetMethod("DeclareIncompleteTypeHelper")); } }
             public static MethodInfo IncompleteTypeDeclared { get { return _IncompleteTypeDeclared ?? (_IncompleteTypeDeclared = _this.GetMethod("IncompleteTypeDeclared")); } }
+
+            public static MethodInfo PushLateStaticBindType { get { return _PushLateStaticBindType ?? (_PushLateStaticBindType = _this.GetMethod("PushLateStaticBindType")); } }
+            public static MethodInfo PopLateStaticBindType { get { return _PopLateStaticBindType ?? (_PopLateStaticBindType = _this.GetMethod("PopLateStaticBindType")); } }
         }
 
         #endregion

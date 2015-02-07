@@ -1664,12 +1664,14 @@ namespace PHP.Core
         /// <summary>
         /// Loads <see cref="DTypeDesc"/> of runtime type of current method.
         /// </summary>
+        /// <param name="flags">Ignored.</param>
         internal void EmitLoadStaticTypeDesc(ResolveTypeFlags flags)
         {
             // 1. instance method can access this.TypeDesc // if this != null
             if (this.SelfPlace != LiteralPlace.Null)    // inside instance method (or global code or instance method called statically)
             {
                 this.EmitLoadSelf();
+                // TODO: if (self != null)
                 this.IL.Emit(OpCodes.Call, Properties.DObject_TypeDesc.GetGetMethod());
             }
             else
