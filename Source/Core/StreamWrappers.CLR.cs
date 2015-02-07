@@ -218,8 +218,9 @@ namespace PHP.Core
 			result.st_rdev = device;        // device type, if inode device -1
 			result.st_size = 0;             // size in bytes
 
-			FileInfo file_info = info as FileInfo;
-			if (file_info != null) result.st_size = unchecked((int)file_info.Length);
+            FileInfo file_info = info as FileInfo;
+            if (file_info != null) 
+                result.st_size = FileSystemUtils.FileSize(file_info);
 
 			result.st_atime = atime;        // time of last access (unix timestamp) 
 			result.st_mtime = mtime;        // time of last modification (unix timestamp) 

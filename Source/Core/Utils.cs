@@ -3484,6 +3484,24 @@ namespace PHP.Core
         {
             return path.Replace('\\', '/');
         }
+
+        public static int FileSize(FileInfo fi)//TODO: Move this to PlatformAdaptationLayer
+        {
+            if (EnvironmentUtils.IsDotNetFramework)
+            {
+                // we are not calling full stat(), it is slow
+                return (int)fi.Length;
+            }
+            else
+            {
+                //bypass Mono bug in FileInfo.Length
+                using (FileStream stream = new FileStream(fi.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    return unchecked((int)stream.Length);
+                }
+            }
+        }
+
     }
 
     #endregion
