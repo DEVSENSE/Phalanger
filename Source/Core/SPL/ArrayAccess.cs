@@ -1,6 +1,5 @@
 /*
 
- Copyright (c) 2012 DEVSENSE
  Copyright (c) 2006 Tomas Matousek.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -12,13 +11,11 @@
 */
 
 using System;
+using PHP.Core;
+using PHP.Core.Reflection;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
-
-using PHP.Core;
-using PHP.Core.Reflection;
 
 namespace PHP.Library.SPL
 {
@@ -39,7 +36,6 @@ namespace PHP.Library.SPL
 	}
 
     [ImplementsType]
-    [Serializable]
     public class SplFixedArray : PhpObject, ArrayAccess, Iterator, Countable
     {
         /// <summary>
@@ -107,10 +103,9 @@ namespace PHP.Library.SPL
         {
             if (index < 0 || array == null || index >= array.LongLength)
             {
-                Exception.ThrowSplException(
-                    _ctx => new RuntimeException(_ctx, true),
-                    context,
-                    CoreResources.spl_index_invalid, 0, null);
+                var e = new RuntimeException(context, true);
+                e.__construct(context, "Index invalid or out of range", 0, null);
+                throw new PhpUserException(e);
             }
         }
 
@@ -119,10 +114,10 @@ namespace PHP.Library.SPL
         #region SplFixedArray
 
         /// <summary>
-        /// Constructs an <see cref="SplFixedArray"/> object.
+        /// Constructs an <see cref="ArrayIterator"/> object.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="size">The initial array size.</param>
+        /// <param name="array">The array or object to be iterated on.</param>
         /// <returns></returns>
         [ImplementsMethod]
         public virtual object __construct(ScriptContext/*!*/context, [Optional] object size /*= 0*/)
@@ -162,18 +157,16 @@ namespace PHP.Library.SPL
 
                 ReallocArray(arrdata.MaxIntegerKey + 1);
 
-                using (var enumerator = arrdata.GetFastEnumerator())
-                    while (enumerator.MoveNext())
-                        this.array[enumerator.CurrentKey.Integer] = enumerator.CurrentValue;
+                foreach (var pair in arrdata)
+                    this.array[pair.Key.Integer] = pair.Value;
             }
             else //if (!bindexes)
             {
                 ReallocArray(arrdata.Count);
 
                 int i = 0;
-                using (var enumerator = arrdata.GetFastEnumerator())
-                    while (enumerator.MoveNext())
-                        this.array[i++] = enumerator.CurrentValue;
+                foreach (var pair in arrdata)
+                    this.array[i++] = pair.Value;
             }
 
             return null;
@@ -182,7 +175,7 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual object toArray(ScriptContext/*!*/context)
         {
-            if (array == null) return new PhpArray();
+            if (array == null) return PhpArray.NewEmptyArray;
 
             Debug.Assert(array.LongLength <= int.MaxValue);
 
@@ -472,489 +465,10 @@ namespace PHP.Library.SPL
         #endregion
     }
 
-    /// <summary>
-    /// This class allows objects to work as arrays.
-    /// </summary>
-    [ImplementsType]
-    [Serializable]
-    public class ArrayObject : PhpObject, IteratorAggregate, Traversable, ArrayAccess, Serializable, Countable
-    {
-        #region Constants
-
-        /// <summary>
-        /// Properties of the object have their normal functionality when accessed as list (var_dump, foreach, etc.).
-        /// </summary>
-        public const int STD_PROP_LIST = 1;
-
-        /// <summary>
-        /// Entries can be accessed as properties (read and write).
-        /// </summary>
-        public const int ARRAY_AS_PROPS = 2;
-
-        #endregion
-
-        #region Implementation details
-
-        /// <summary>
-        /// For internal purposes only.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public ArrayObject(ScriptContext/*!*/context, bool newInstance)
-            : base(context, newInstance)
-        {
-        }
-
-        /// <summary>
-        /// For internal purposes only.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public ArrayObject(ScriptContext/*!*/context, DTypeDesc caller)
-            : base(context, caller)
-        {
-        }
-
-        internal static void __PopulateTypeDesc(PhpTypeDesc typeDesc)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region ArrayObject
-
-        /// <summary>
-        /// Construct a new array object.
-        /// </summary>
-        /// <param name="context">Script Context. Cannot be null.</param>
-        /// <param name="input">Optional. The input parameter accepts an array or an Object.</param>
-        /// <param name="flags">Optional. Flags to control the behaviour of the ArrayObject object. See ArrayObject::setFlags().</param>
-        /// <param name="iterator_class">Optional. Specify the class that will be used for iteration of the ArrayObject object.</param>
-        [ImplementsMethod]
-        public virtual object __construct(ScriptContext/*!*/context, [Optional]object input, [Optional]object/*int*/flags/*= 0*/, [Optional]object/*string*/iterator_class/*= "ArrayIterator"*/ )
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object __construct(object instance, PhpStack stack)
-        {
-            var input = stack.PeekValueOptional(1);
-            var flags = stack.PeekValueOptional(2);
-            var iterator_class = stack.PeekValueOptional(3);
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).__construct(stack.Context, input, flags, iterator_class);
-        }
-
-        //public void append ( mixed $value )
-        //public array exchangeArray ( mixed $input )
-        //public array getArrayCopy ( void )
-        
-        /// <summary>
-        /// Appends a new value as the last element.
-        /// </summary>
-        /// <param name="context">Script Context. Cannot be null.</param>
-        /// <param name="value">The value being appended.</param>
-        /// <remarks>This method cannot be called when the ArrayObject was constructed from an object. Use ArrayObject::offsetSet() instead.</remarks>
-        [ImplementsMethod]
-        public virtual object append(ScriptContext context, object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object append(object instance, PhpStack stack)
-        {
-            var value = stack.PeekValue(1);
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).append(stack.Context, value);
-        }
-
-        /// <summary>
-        /// Exchange the current array with another array or object.
-        /// </summary>
-        /// <param name="context">Script Context. Cannot be null.</param>
-        /// <param name="input">The new array or object to exchange with the current array.</param>
-        /// <returns>Returns the old array.</returns>
-        [ImplementsMethod]
-        public virtual object exchangeArray(ScriptContext context, object input)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object exchangeArray(object instance, PhpStack stack)
-        {
-            var input = stack.PeekValue(1);
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).exchangeArray(stack.Context, input);
-        }
-
-        /// <summary>
-        /// Exports the ArrayObject to an array.
-        /// </summary>
-        /// <param name="context">Script Context. Cannot be null.</param>
-        /// <returns>Returns a copy of the array. When the ArrayObject refers to an object an array of the public properties of that object will be returned.</returns>
-        [ImplementsMethod]
-        public virtual object getArrayCopy(ScriptContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object getArrayCopy(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).getArrayCopy(stack.Context);
-        }
-
-        //public int getFlags ( void )
-        //public void setFlags ( int $flags )
-
-        /// <summary>
-        /// Gets the behavior flags of the ArrayObject. See the ArrayObject::setFlags method for a list of the available flags.
-        /// </summary>
-        /// <param name="context">Script Context. Cannot be null.</param>
-        /// <returns>Returns the behavior flags of the ArrayObject.</returns>
-        [ImplementsMethod]
-        public virtual object getFlags(ScriptContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object getFlags(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).getFlags(stack.Context);
-        }
-
-        /// <summary>
-        /// Set the flags that change the behavior of the ArrayObject.
-        /// </summary>
-        /// <param name="context">Script Context. Cannot be null.</param>
-        /// <param name="flags">The new ArrayObject behavior. It takes on either a bitmask, or named constants. Using named constants is strongly encouraged to ensure compatibility for future versions.</param>
-        [ImplementsMethod]
-        public virtual object setFlags(ScriptContext context, object/*int*/flags)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object setFlags(object instance, PhpStack stack)
-        {
-            var flags = stack.PeekValue(1);
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).setFlags(stack.Context, flags);
-        }
-        
-        //public string getIteratorClass ( void )
-        //public void setIteratorClass ( string $iterator_class )
-
-        /// <summary>
-        /// Gets the class name of the array iterator that is used by ArrayObject::getIterator().
-        /// </summary>
-        /// <param name="context">Script Context. Cannot be null.</param>
-        /// <returns>Returns the iterator class name that is used to iterate over this object.</returns>
-        [ImplementsMethod]
-        public virtual object getIteratorClass(ScriptContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object getIteratorClass(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).getIteratorClass(stack.Context);
-        }
-
-        /// <summary>
-        /// Sets the classname of the array iterator that is used by ArrayObject::getIterator().
-        /// </summary>
-        /// <param name="context">Script Context. Cannot be null.</param>
-        /// <param name="iterator_class">The classname of the array iterator to use when iterating over this object.</param>
-        [ImplementsMethod]
-        public virtual object setIteratorClass(ScriptContext context, object/*string*/iterator_class)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object setIteratorClass(object instance, PhpStack stack)
-        {
-            var iterator_class = stack.PeekValue(1);
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).setIteratorClass(stack.Context, iterator_class);
-        }
-        
-        //public void asort ( void )
-        //public void ksort ( void )
-        //public void natcasesort ( void )
-        //public void natsort ( void )
-        
-        /// <summary>
-        /// Sorts the entries such that the keys maintain their correlation with the entries they are associated with. This is used mainly when sorting associative arrays where the actual element order is significant.
-        /// </summary>
-        [ImplementsMethod]
-        public virtual object asort(ScriptContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object asort(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).asort(stack.Context);
-        }
-
-        /// <summary>
-        /// Sorts the entries by key, maintaining key to entry correlations. This is useful mainly for associative arrays.
-        /// </summary>
-        [ImplementsMethod]
-        public virtual object ksort(ScriptContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object ksort(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).ksort(stack.Context);
-        }
-
-        /// <summary>
-        /// This method is a case insensitive version of ArrayObject::natsort.
-        /// This method implements a sort algorithm that orders alphanumeric strings in the way a human being would while maintaining key/value associations. This is described as a "natural ordering".
-        /// </summary>
-        [ImplementsMethod]
-        public virtual object natcasesort(ScriptContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object natcasesort(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).natcasesort(stack.Context);
-        }
-
-        /// <summary>
-        /// This method implements a sort algorithm that orders alphanumeric strings in
-        /// the way a human being would while maintaining key/value associations. This is
-        /// described as a "natural ordering". An example of the difference between this
-        /// algorithm and the regular computer string sorting algorithms (used in ArrayObject::asort)
-        /// method can be seen in the example below.
-        /// </summary>
-        [ImplementsMethod]
-        public virtual object natsort(ScriptContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object natsort(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).natsort(stack.Context);
-        }
-
-        //public void uasort ( callable $cmp_function )
-        //public void uksort ( callable $cmp_function )
-
-        /// <summary>
-        /// This function sorts the entries such that keys maintain their correlation with the entry that they are associated with, using a user-defined comparison function.
-        /// This is used mainly when sorting associative arrays where the actual element order is significant.
-        /// </summary>
-        /// <param name="context">Script Context. Cannot be null.</param>
-        /// <param name="cmp_function">Function cmp_function should accept two parameters
-        /// which will be filled by pairs of entries. The comparison function must return
-        /// an integer less than, equal to, or greater than zero if the first argument is
-        /// considered to be respectively less than, equal to, or greater than the second.</param>
-        [ImplementsMethod]
-        public virtual object uasort(ScriptContext context, object/*callable*/cmp_function)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object uasort(object instance, PhpStack stack)
-        {
-            var cmp_function = stack.PeekValue(1);
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).uasort(stack.Context, cmp_function);
-        }
-
-        /// <summary>
-        /// This function sorts the keys of the entries using a user-supplied comparison function. The key to entry correlations will be maintained.
-        /// </summary>
-        /// <param name="context">Script Context. Cannot be null.</param>
-        /// <param name="cmp_function">The callback comparison function.
-        /// Function cmp_function should accept two parameters which will be filled by
-        /// pairs of entry keys. The comparison function must return an integer less than,
-        /// equal to, or greater than zero if the first argument is considered to be
-        /// respectively less than, equal to, or greater than the second.</param>
-        [ImplementsMethod]
-        public virtual object uksort(ScriptContext context, object/*callable*/cmp_function)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object uksort(object instance, PhpStack stack)
-        {
-            var cmp_function = stack.PeekValue(1);
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).uksort(stack.Context, cmp_function);
-        }
-        
-        #endregion
-
-        #region Serialization (CLR only)
-#if !SILVERLIGHT
-
-        /// <summary>
-        /// Deserializing constructor.
-        /// </summary>
-        protected ArrayObject(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
-#endif
-        #endregion
-
-        #region Serializable Members
-
-        [ImplementsMethod]
-        public virtual object serialize(ScriptContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object serialize(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).serialize(stack.Context);
-        }
-
-        [ImplementsMethod]
-        public virtual object unserialize(ScriptContext context, object data)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object unserialize(object instance, PhpStack stack)
-        {
-            var serialized = stack.PeekValue(1);
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).unserialize(stack.Context, serialized);
-        }
-
-        #endregion
-
-        #region Countable Members
-
-        [ImplementsMethod]
-        public virtual object count(ScriptContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object count(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).count(stack.Context);
-        }
-
-        #endregion
-
-        #region IteratorAggregate Members
-
-        [ImplementsMethod]
-        public virtual object getIterator(ScriptContext context)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object getIterator(object instance, PhpStack stack)
-        {
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).getIterator(stack.Context);
-        }
-
-        #endregion
-
-        #region ArrayAccess Members
-
-        [ImplementsMethod]
-        public virtual object offsetGet(ScriptContext context, object index)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object offsetGet(object instance, PhpStack stack)
-        {
-            var index = stack.PeekValue(1);
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).offsetGet(stack.Context, index);
-        }
-
-        [ImplementsMethod]
-        public virtual object offsetSet(ScriptContext context, object index, object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object offsetSet(object instance, PhpStack stack)
-        {
-            var index = stack.PeekValue(1);
-            var value = stack.PeekValue(2);
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).offsetSet(stack.Context, index, value);
-        }
-
-        [ImplementsMethod]
-        public virtual object offsetUnset(ScriptContext context, object index)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object offsetUnset(object instance, PhpStack stack)
-        {
-            var index = stack.PeekValue(1);
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).offsetUnset(stack.Context, index);
-        }
-
-        [ImplementsMethod]
-        public virtual object offsetExists(ScriptContext context, object index)
-        {
-            throw new NotImplementedException();
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static object offsetExists(object instance, PhpStack stack)
-        {
-            var index = stack.PeekValue(1);
-            stack.RemoveFrame();
-            return ((ArrayObject)instance).offsetExists(stack.Context, index);
-        }
-
-        #endregion
-    }
-
 	internal class PhpArrayObject : PhpArray
 	{
+		public override bool IsProxy { get { return true; } }
+		
 		internal DObject ArrayAccess { get { return arrayAccess; } }
 		readonly private DObject arrayAccess/*!*/;
 
@@ -968,87 +482,102 @@ namespace PHP.Library.SPL
 		/// </summary>
 		internal PhpArrayObject(DObject/*!*/ arrayAccess)
 		{
-			Debug.Assert(arrayAccess != null && arrayAccess.RealObject is ArrayAccess);
+			Core.Debug.Assert(arrayAccess != null && arrayAccess.RealObject is ArrayAccess);
 			this.arrayAccess = arrayAccess;
 		}
 		
 		#region Operators
 
-        protected override object GetArrayItemOverride(object key, bool quiet)
+		public override object GetArrayItem(object key, bool quiet)
 		{
 			PhpStack stack = ScriptContext.CurrentContext.Stack;
 			stack.AddFrame(key);
 			return PhpVariable.Dereference(arrayAccess.InvokeMethod(offsetGet, null, stack.Context));
 		}
-
-        protected override PhpReference GetArrayItemRefOverride()
+		
+		public override PhpReference GetArrayItemRef()
 		{
 			return GetUserArrayItemRef(arrayAccess, null, ScriptContext.CurrentContext);
 		}
 
-        protected override PhpReference GetArrayItemRefOverride(object key)
+		public override PhpReference GetArrayItemRef(object key)
 		{
 			return GetUserArrayItemRef(arrayAccess, key, ScriptContext.CurrentContext);
 		}
 
-        protected override PhpReference/*!*/ GetArrayItemRefOverride(int key)
+		public override PhpReference/*!*/ GetArrayItemRef(int key)
 		{
 			return GetUserArrayItemRef(arrayAccess, key, ScriptContext.CurrentContext);
 		}
 
-        protected override PhpReference/*!*/ GetArrayItemRefOverride(string key)
+		public override PhpReference/*!*/ GetArrayItemRef(string key)
 		{
 			return GetUserArrayItemRef(arrayAccess, key, ScriptContext.CurrentContext);
 		}	
 
-		protected override void SetArrayItemOverride(object value)
+		public override void SetArrayItem(object value)
 		{
 			PhpStack stack = ScriptContext.CurrentContext.Stack;
 			stack.AddFrame(null, value);
 			arrayAccess.InvokeMethod(offsetSet, null, stack.Context);
 		}
 
-		protected override void SetArrayItemOverride(object key, object value)
+		public override void SetArrayItem(object key, object value)
 		{
 			PhpStack stack = ScriptContext.CurrentContext.Stack;
 			stack.AddFrame(key, value);
 			arrayAccess.InvokeMethod(offsetSet, null, stack.Context);
 		}
 
-        protected override void SetArrayItemOverride(int key, object value)
+		public override void SetArrayItem(int key, object value)
 		{
-            SetArrayItemOverride((object)key, value);
+			SetArrayItem((object)key, value);
 		}
 
-        protected override void SetArrayItemOverride(string key, object value)
+		public override void SetArrayItem(string key, object value)
 		{
-            SetArrayItemOverride((object)key, value);
+			SetArrayItem((object)key, value);
 		}
 
-        protected override void SetArrayItemRefOverride(object key, PhpReference value)
+		public override void SetArrayItemExact(string key, object value, int hashcode)
+		{
+			SetArrayItem((object)key, value);
+		}
+
+		public override void SetArrayItemRef(object key, PhpReference value)
 		{
 			PhpStack stack = ScriptContext.CurrentContext.Stack;
 			stack.AddFrame(key, value);
 			arrayAccess.InvokeMethod(offsetSet, null, stack.Context);
 		}
 
-        protected override PhpArray EnsureItemIsArrayOverride()
+		public override void SetArrayItemRef(int key, PhpReference value)
+		{
+			SetArrayItemRef((object)key, value);
+		}
+
+		public override void SetArrayItemRef(string/*!*/ key, PhpReference value)
+		{
+			SetArrayItemRef((object)key, value);			
+		}
+
+		public override PhpArray EnsureItemIsArray()
 		{
 			return EnsureIndexerResultIsRefArray(null);
 		}
 		
-		protected override PhpArray EnsureItemIsArrayOverride(object key)
+		public override PhpArray EnsureItemIsArray(object key)
 		{
 			// an object behaving like an array:
 			return EnsureIndexerResultIsRefArray(key);
 		}
 
-		protected override DObject EnsureItemIsObjectOverride(ScriptContext/*!*/ context)
+		public override DObject EnsureItemIsObject(ScriptContext/*!*/ context)
 		{
 			return EnsureIndexerResultIsRefObject(null, context);
 		}
 
-        protected override DObject EnsureItemIsObjectOverride(object key, ScriptContext/*!*/ context)
+		public override DObject EnsureItemIsObject(object key, ScriptContext/*!*/ context)
 		{
 			return EnsureIndexerResultIsRefObject(key, context);
 		}
@@ -1064,13 +593,32 @@ namespace PHP.Library.SPL
 		{
 			PhpReference ref_result = GetUserArrayItemRef(arrayAccess, key, ScriptContext.CurrentContext);
 
-            object new_value;
-            var wrappedwarray = Operators.EnsureObjectIsArray(ref_result.Value, out new_value);
-            if (wrappedwarray != null)
-            {
-                if (new_value != null) ref_result.Value = new_value;
-                return wrappedwarray;
-            }
+			// is the result an array:
+			PhpArray result = ref_result.Value as PhpArray;
+			if (result != null) return result;
+
+			// checks an object behaving like an array:
+			DObject dobj = ref_result.Value as DObject;
+			if (dobj != null && dobj.RealObject is Library.SPL.ArrayAccess) return new Library.SPL.PhpArrayObject(dobj);
+
+			// is result empty => creates a new array and writes it back:
+			if (Operators.IsEmptyForEnsure(ref_result.Value))
+			{
+				ref_result.Value = result = new PhpArray();
+				return result;
+			}
+
+			// non-empty immutable string:
+			string str_value = ref_result.Value as string;
+			if (str_value != null)
+			{
+				ref_result.Value = new PhpString(str_value);
+				return new PhpArrayString(ref_result.Value);
+			}
+
+			// non-empty string:
+			if (ref_result.Value is PhpString || ref_result.Value is PhpBytes)
+				return new PhpArrayString(ref_result.Value);
 
 			// the result is neither array nor object behaving like array:
 			PhpException.VariableMisusedAsArray(ref_result.Value, false);

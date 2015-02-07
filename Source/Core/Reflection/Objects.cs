@@ -224,6 +224,7 @@ namespace PHP.Core.Reflection
 					if (obj == null) return 0;
 					if (PhpVariable.IsString(obj)) return obj;
 					if (obj is int) return obj;
+                    if (obj is long) return obj;
 					if (obj is bool) return ((bool)obj ? 1 : 0);
 					if (obj is double) return unchecked((int)(double)obj);
 
