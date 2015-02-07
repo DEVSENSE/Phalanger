@@ -401,8 +401,10 @@ namespace PHP.VisualStudio.PhalangerTasks
 				//  remoteCompiler = null;
 				//}
 
-				if (remoteCompiler == null)
-					remoteCompiler = ApplicationCompiler.CreateRemoteCompiler();
+                if (remoteCompiler != null)
+                    AppDomain.Unload(remoteCompiler.Domain);
+
+				remoteCompiler = ApplicationCompiler.CreateRemoteCompiler();
 
 				remoteCompiler.RemoteCompile(ref errorSink, ps);
 			}
