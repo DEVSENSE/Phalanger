@@ -317,35 +317,13 @@ namespace PHP.Core.Parsers
 
         #region DocComments
 
-        ///// <summary>
-        ///// Stack of PHPDoc content. Used internally during parsing.
-        ///// </summary>
-        //private Stack<string> docCommentStack = null;
-
-        //private String PopDocComment()
-        //{
-        //    Debug.Assert(docCommentStack != null && docCommentStack.Count > 0);
-        //    return docCommentStack.Pop();
-        //}
-
-        //private void PushDocComment(object comment)
-        //{
-        //    Debug.Assert(comment == null || comment is string);
-
-        //    if (docCommentStack == null)
-        //        docCommentStack = new Stack<string>(3);
-
-        //    docCommentStack.Push((string)comment);
-        //}
-
         private void SetCommentSetHelper(object element, object doccomment)
         {
-            Debug.Assert(element is LangElement);
+            Debug.Assert(element is IHasPhpDoc);
             if (doccomment != null)
             {
                 Debug.Assert(doccomment is string);
-                var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, (string)doccomment)} );
-                ((LangElement)element).Annotations.Set<CommentSet>(cs);
+                ((IHasPhpDoc)element).PHPDoc = new PHPDocBlock((string)doccomment);
             }
         }
 

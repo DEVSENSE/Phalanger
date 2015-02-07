@@ -35,7 +35,7 @@ namespace PHP.Core.AST
 	/// by GlobalCode node. Finally, it is emitted into Main() method of concrete PHPPage 
 	/// class. The sample code below illustrates a part of PHP global code
 	/// </remarks>
-	public sealed class GlobalCode : AstNode
+	public sealed class GlobalCode : AstNode, IHasPhpDoc
 	{
 		/// <summary>
 		/// Array of nodes representing statements in PHP global code
@@ -222,13 +222,18 @@ namespace PHP.Core.AST
         {
             visitor.VisitGlobalCode(this);
         }
+
+        /// <summary>
+        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public PHPDocBlock PHPDoc { get; set; }
 	}
 
 	#endregion
 
 	#region NamespaceDecl
 
-	public sealed class NamespaceDecl : Statement
+	public sealed class NamespaceDecl : Statement, IHasPhpDoc
 	{
 		internal override bool IsDeclaration { get { return true; } }
 
@@ -313,13 +318,18 @@ namespace PHP.Core.AST
         {
             visitor.VisitNamespaceDecl(this);
         }
+
+        /// <summary>
+        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public PHPDocBlock PHPDoc { get; set; }
 	}
 
 	#endregion
 
 	#region GlobalConstDeclList, GlobalConstantDecl
 
-	public sealed class GlobalConstDeclList : Statement, IPhpCustomAttributeProvider
+	public sealed class GlobalConstDeclList : Statement, IPhpCustomAttributeProvider, IHasPhpDoc
 	{
 		private CustomAttributes attributes;
 
@@ -404,6 +414,11 @@ namespace PHP.Core.AST
         {
             visitor.VisitGlobalConstDeclList(this);
         }
+
+        /// <summary>
+        /// <see cref="PHPDocBlock"/> instance or <c>null</c> reference.
+        /// </summary>
+        public PHPDocBlock PHPDoc { get; set; }
 	}
 
 	public sealed class GlobalConstantDecl : ConstantDecl
