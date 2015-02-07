@@ -631,6 +631,16 @@ namespace PHP.Library.Xml
 
             return sb.ToString();
 		}
+
+        /// <summary>
+        /// String representation of the XML element.
+        /// </summary>
+        /// <returns>XML element content.</returns>
+        public override string ToString()
+        {
+            bool success;
+            return ToString(false, out success);
+        }
 		
 		/// <summary>
 		/// Internal to-<see cref="int"/> conversion.
