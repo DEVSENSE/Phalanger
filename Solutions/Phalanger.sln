@@ -70,7 +70,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.Soap", "..\Source
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.Xml", "..\Source\Extensions\Xml\Extension.Xml.csproj", "{8145F722-1B6C-4162-92DC-824DFDC3ED6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.Zlib", "..\Source\Extensions\zlib\Extension.Zlib.csproj", "{630C04B5-0B38-4883-981E-2F094982D49D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.Zlib", "..\Source\Extensions\Zlib\Extension.Zlib.csproj", "{630C04B5-0B38-4883-981E-2F094982D49D}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -168,10 +168,10 @@ Global
 		SccProjectTopLevelParentUniqueName24 = Phalanger.sln
 		SccProjectName24 = ../Source/Extensions/Xml
 		SccLocalPath24 = ..\\Source\\Extensions\\Xml
-		SccProjectUniqueName25 = ..\\Source\\Extensions\\zlib\\Extension.Zlib.csproj
+		SccProjectUniqueName25 = ..\\Source\\Extensions\\Zlib\\Extension.Zlib.csproj
 		SccProjectTopLevelParentUniqueName25 = Phalanger.sln
-		SccProjectName25 = ../Source/Extensions/zlib
-		SccLocalPath25 = ..\\Source\\Extensions\\zlib
+		SccProjectName25 = ../Source/Extensions/Zlib
+		SccLocalPath25 = ..\\Source\\Extensions\\Zlib
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
