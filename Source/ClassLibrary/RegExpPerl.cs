@@ -411,7 +411,6 @@ namespace PHP.Library
 
 			string converted = ConvertData(data, converter);
 			Match m = converter.Regex.Match(converted, offset>converted.Length?converted.Length:offset);
-            string groupName = null;
 
 			if ((converter.PerlOptions & PerlRegexOptions.Anchored) > 0 && m.Success && m.Index != offset)
 			{
@@ -432,14 +431,10 @@ namespace PHP.Library
 				{
                     for (int i = 0; i <= GetLastSuccessfulGroup(m.Groups); i++)
                     {
-                        groupName = converter.Regex.GroupNameFromNumber(i);
-                        //remove sign from the beginning of the groupName
-                        groupName = groupName.Remove(0, PerlRegExpConverter.GroupPrefix.Length);
-
-                        if (!String.IsNullOrEmpty(groupName) && groupName != i.ToString())
+                        AddGroupNameToResult(converter.Regex, matches, i, (ms,groupName) =>
                         {
-                            matches[groupName] = NewArrayItem(m.Groups[i].Value, m.Groups[i].Index, (flags & MatchFlags.OffsetCapture) != 0);
-                        }
+                            ms[groupName] = NewArrayItem(m.Groups[i].Value, m.Groups[i].Index, (flags & MatchFlags.OffsetCapture) != 0);
+                        });
 
                         matches[i] = NewArrayItem(m.Groups[i].Value, m.Groups[i].Index, (flags & MatchFlags.OffsetCapture) != 0);
                     }
@@ -461,15 +456,10 @@ namespace PHP.Library
 				matches = new PhpArray(m.Groups.Count);
                 for (int i = 0; i < converter.Regex.GetGroupNumbers().Length; i++)
                 {
-                    // named group?
-                    string name = converter.Regex.GroupNameFromNumber(i);
-                    //remove sign from the beginning of the groupName
-                    name = name.Remove(0, PerlRegExpConverter.GroupPrefix.Length);
-
-                    if (!String.IsNullOrEmpty(name) && name != i.ToString())
+                    AddGroupNameToResult(converter.Regex, matches, i, (ms,groupName) =>
                     {
-                        matches[name] = new PhpArray(0);
-                    }
+                        ms[groupName] = new PhpArray(0);
+                    });
 
                     matches[i] = new PhpArray(0);
                 }
@@ -1078,6 +1068,20 @@ namespace PHP.Library
 
 		#region Helper methods
 
+
+        private static void AddGroupNameToResult(Regex regex,PhpArray matches, int i, Action<PhpArray, string> action)
+        {
+            // named group?
+            var groupName = regex.GroupNameFromNumber(i);
+            //remove sign from the beginning of the groupName
+            groupName = groupName[0] == PerlRegExpConverter.GroupPrefix ? groupName.Remove(0, 1) : groupName;
+
+            if (!String.IsNullOrEmpty(groupName) && groupName != i.ToString())
+            {
+                action(matches, groupName);
+            }
+        }
+
 		private static PerlRegExpConverter ConvertPattern(object pattern, string replacement)
 		{
 			Encoding encoding = Configuration.Application.Globalization.PageEncoding;
@@ -1152,18 +1156,11 @@ namespace PHP.Library
 				{
 					object arr = NewArrayItem(m.Groups[i].Value, m.Groups[i].Index, addOffsets);
 
-					// named group?
-					string name;
-
-                    name = r.GroupNameFromNumber(i);
-                    //remove sign from the beginning of the groupName
-                    name = name.Remove(0, PerlRegExpConverter.GroupPrefix.Length);
-
-                    if (!String.IsNullOrEmpty(name) && name != i.ToString())
+                    AddGroupNameToResult(r, matches, i, (ms, groupName) =>
                     {
-                        if (j == 0) matches[name] = new PhpArray();
-                        ((PhpArray)matches[name])[j] = arr;
-                    }
+                        if (j == 0) ms[groupName] = new PhpArray();
+                        ((PhpArray)ms[groupName])[j] = arr;
+                    });
 
 					if (j == 0) matches[i] = new PhpArray();
 					((PhpArray)matches[i])[j] = arr;
@@ -1201,13 +1198,11 @@ namespace PHP.Library
 					
 					// named group?
                     string name = r.GroupNameFromNumber(j);
-                    //remove sign from the beginning of the groupName
-                    name = name.Remove(0, PerlRegExpConverter.GroupPrefix.Length);
 
-                    if (!String.IsNullOrEmpty(name) && name != j.ToString())
+                    AddGroupNameToResult(r, matches, i, (p, groupName) =>
                     {
-                        pa[name] = arr;
-                    }
+                        p[groupName] = arr;
+                    });
 
 
 					pa[j] = arr;
@@ -1850,7 +1845,7 @@ namespace PHP.Library
         /// All named groups from Perl regexp are renamed to start with this character. 
         /// In order to enable group names starting with number
         /// </summary>
-        internal const string GroupPrefix = "a";
+        internal const char GroupPrefix = 'a';
 
 
 		#region Properties
