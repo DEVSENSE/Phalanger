@@ -1299,15 +1299,13 @@ namespace PHP.Library
         /// <returns>The glued string.</returns>
         /// <exception cref="PhpException">Thrown if neither <paramref name="glue"/> nor <paramref name="pieces"/> is not null and of type <see cref="PhpArray"/>.</exception>
         [ImplementsFunction("implode")]
-        public static string ImplodeGeneric(object glue, object pieces)
+        public static object ImplodeGeneric(object glue, object pieces)
         {
-            PhpArray array;
+            if (pieces != null && pieces.GetType() == typeof(PhpArray))
+                return Implode(glue, (PhpArray)pieces);
 
-            array = pieces as PhpArray;
-            if (array != null) return Implode(Core.Convert.ObjectToString(glue), array.Values);
-
-            array = glue as PhpArray;
-            if (array != null) return Implode(Core.Convert.ObjectToString(pieces), array.Values);
+            if (glue != null && glue.GetType() == typeof(PhpArray))
+                return Implode(pieces, (PhpArray)glue);
 
             PhpException.InvalidArgument("pieces");
             return null;
@@ -1324,27 +1322,65 @@ namespace PHP.Library
         /// (i.e. by <see cref="PHP.Core.Convert.ObjectToString"/>).
         /// </remarks>
         /// <exception cref="PhpException">Thrown if <paramref name="pieces"/> is null.</exception>
-        public static string Implode(string glue, IEnumerable pieces)
+        public static object Implode(object glue, PhpArray/*!*/pieces)
         {
-            if (pieces == null)
-            {
-                PhpException.ArgumentNull("pieces");
-                return null;
-            }
+            Debug.Assert(pieces != null);
+
+            // handle empty pieces:
+            if (pieces.Count == 0)
+                return string.Empty;
+
+            // check whether we have to preserve a binary string
+            bool binary = glue != null && glue.GetType() == typeof(PhpBytes);
+            if (!binary)    // try to find any binary string within pieces:
+                using (var x = pieces.GetFastEnumerator())
+                    while (x.MoveNext())
+                        if (x.CurrentValue != null && x.CurrentValue.GetType() == typeof(PhpBytes))
+                        {
+                            binary = true;
+                            break;
+                        }
+
+            // concatenate pieces and glue:
 
             bool not_first = false;                       // not the first iteration
-            StringBuilder result = new StringBuilder();
 
-            IEnumerator iterator = pieces.GetEnumerator();
-            while (iterator.MoveNext())
+            if (binary)
             {
-                if (not_first) result.Append(glue);
-                not_first = true;
+                Debug.Assert(pieces.Count > 0);
 
-                result.Append(PHP.Core.Convert.ObjectToString(iterator.Current));
+                PhpBytes gluebytes = PHP.Core.Convert.ObjectToPhpBytes(glue);
+                PhpBytes[] piecesBytes = new PhpBytes[pieces.Count + pieces.Count - 1]; // buffer of PhpBytes to be concatenated
+                int p = 0;
+                
+                 using (var x = pieces.GetFastEnumerator())
+                     while (x.MoveNext())
+                     {
+                         if (not_first) piecesBytes[p++] = gluebytes;
+                         else not_first = true;
+
+                         piecesBytes[p++] = PHP.Core.Convert.ObjectToPhpBytes(x.CurrentValue);
+                     }
+
+                 return PhpBytes.Concat(piecesBytes, 0, piecesBytes.Length);
             }
+            else
+            {
+                string gluestr = PHP.Core.Convert.ObjectToString(glue);
 
-            return result.ToString();
+                StringBuilder result = new StringBuilder();
+
+                using (var x = pieces.GetFastEnumerator())
+                    while (x.MoveNext())
+                    {
+                        if (not_first) result.Append(gluestr);
+                        else not_first = true;
+
+                        result.Append(PHP.Core.Convert.ObjectToString(x.CurrentValue));
+                    }
+
+                return result.ToString();
+            }            
         }
 
         #endregion
