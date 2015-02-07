@@ -80,12 +80,8 @@ namespace PHP.Core.Text
                 throw new ArgumentOutOfRangeException("position");
             
             //
-            if (this.Count == 0 || position < this.EndOfLineBreak(0))
-                return 0;
-            
-            if (position >= this.EndOfLineBreak(this.Count - 1))
+            if (position == this.TextLength)
                 return this.LinesCount - 1;
-
             
             // binary search
             int a = 0;
