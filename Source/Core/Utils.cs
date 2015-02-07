@@ -1085,6 +1085,17 @@ namespace PHP.Core
 
             return (result.Length > 0) ? result.ToString() : "_";
         }
+
+        /// <summary>
+        /// Compare two strings ordinally (which is ok for ascii strings) case insensitively.
+        /// </summary>
+        /// <param name="self">First string.</param>
+        /// <param name="str">Second string.</param>
+        /// <returns>True iff two given strings are equals when using <see cref="StringComparison.OrdinalIgnoreCase"/>.</returns>
+        public static bool EqualsOrdinalIgnoreCase(this string self, string str)
+        {
+            return 0 == string.Compare(self, str, StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     #endregion
@@ -1688,6 +1699,7 @@ namespace PHP.Core
     /// <summary>
     /// Utilities manipulating arrays.
     /// </summary>
+    [DebuggerNonUserCode]
     public static class ArrayUtils
     {
         /// <summary>
