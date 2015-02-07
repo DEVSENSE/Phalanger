@@ -314,6 +314,7 @@ namespace PHP.Core
             {
                 if (y == null) return 0; // x == null
                 if (y.GetType() == typeof(int)) return ((int)y == 0) ? 0 : -1;     // obsolete: -Math.Sign((int)y);                 // x == 0
+                if (y.GetType() == typeof(long)) return ((long)y == 0) ? 0 : -1;
                 if (y.GetType() == typeof(double)) return ((double)y == 0.0) ? 0 : -1;// obsolete: CompareDouble(0.0,(double)y);      // x == 0.0
                 if (y.GetType() == typeof(string)) return ((string)y == "") ? 0 : -1;        // obsolete: sy==String.Empty ? 0:-1;            // x == ""  
                 if (y.GetType() == typeof(bool)) return ((bool)y == false) ? 0 : -1;// obsolete: (bool)y ? 1:0;                      // x == false
@@ -341,6 +342,7 @@ namespace PHP.Core
                 if (y == null) return ((double)x == 0.0) ? 0 : 1; // obsolete: CompareDouble((double)x,0.0); // y == 0.0
                 if (y.GetType() == typeof(double)) return CompareDouble((double)x, (double)y);
                 if (y.GetType() == typeof(int)) return CompareDouble((double)x, (int)y);
+                if (y.GetType() == typeof(long)) return CompareDouble((double)x, (long)y);
                 if (y.GetType() == typeof(string)) return -CompareString((string)y, (double)x);
                 if (y.GetType() == typeof(bool)) return ((double)x != 0.0 ? 2 : 1) - ((bool)y ? 2 : 1);
             }
@@ -349,6 +351,7 @@ namespace PHP.Core
                 if (y == null) return (string)x == "" ? 0 : 1; // y == ""
                 if (y.GetType() == typeof(string)) return CompareString((string)x, (string)y);
                 if (y.GetType() == typeof(int)) return CompareString((string)x, (int)y);
+                if (y.GetType() == typeof(long)) return CompareString((string)x, (long)y);
                 if (y.GetType() == typeof(double)) return CompareString((string)x, (double)y);
                 if (y.GetType() == typeof(bool)) return (Convert.StringToBoolean((string)x) ? 2 : 1) - ((bool)y ? 2 : 1);
             }
