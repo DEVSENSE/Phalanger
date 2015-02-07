@@ -1025,7 +1025,7 @@ namespace PHP.Library
 					break;
 
 				default:
-					PhpException.ArgumentValueNotSupported("daylightSaving");
+                    PhpException.ArgumentValueNotSupported("daylightSaving", daylightSaving);
 					break;
 			}
 

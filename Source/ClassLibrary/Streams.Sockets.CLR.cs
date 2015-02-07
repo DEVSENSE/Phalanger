@@ -135,16 +135,6 @@ namespace PHP.Library
 
 		#region TODO: stream_socket_client
 
-		private static void SplitSocketAddressPort(ref string socket, out int port)
-		{
-			port = 0;
-			var arr = socket.Split(new[] {':'}, 2, StringSplitOptions.RemoveEmptyEntries);
-			if (arr.Length == 2)
-			{
-				socket = arr[0];
-				port = int.Parse(arr[1]);
-			}
-		}
 		/// <summary>
 		/// Open client socket.
 		/// </summary>
@@ -153,9 +143,7 @@ namespace PHP.Library
 		{
 			int errno;
 			string errstr;
-			int port;
-			SplitSocketAddressPort(ref remoteSocket, out port);
-			return Connect(remoteSocket, port, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
+			return Connect(remoteSocket, 0, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
 		}
 
 		/// <summary>
@@ -165,9 +153,7 @@ namespace PHP.Library
 		public static PhpResource ConnectClient(string remoteSocket, out int errno)
 		{
 			string errstr;
-			int port;
-			SplitSocketAddressPort(ref remoteSocket, out port);
-			return Connect(remoteSocket, port, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
+			return Connect(remoteSocket, 0, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
 		}
 
 		/// <summary>
@@ -176,9 +162,7 @@ namespace PHP.Library
 		[ImplementsFunction("stream_socket_client")]
 		public static PhpResource ConnectClient(string remoteSocket, out int errno, out string errstr)
 		{
-			int port;
-			SplitSocketAddressPort(ref remoteSocket, out port);
-			return Connect(remoteSocket, port, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
+			return Connect(remoteSocket, 0, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
 		}
 
 		/// <summary>
@@ -188,9 +172,7 @@ namespace PHP.Library
 		public static PhpResource ConnectClient(string remoteSocket, out int errno, out string errstr,
 		  double timeout)
 		{
-			int port;
-			SplitSocketAddressPort(ref remoteSocket, out port);
-			return Connect(remoteSocket, port, out errno, out errstr, timeout, SocketOptions.None, StreamContext.Default);
+			return Connect(remoteSocket, 0, out errno, out errstr, timeout, SocketOptions.None, StreamContext.Default);
 		}
 
 		/// <summary>
@@ -200,9 +182,7 @@ namespace PHP.Library
 		public static PhpResource ConnectClient(string remoteSocket, out int errno, out string errstr,
 		  double timeout, SocketOptions flags)
 		{
-			int port;
-			SplitSocketAddressPort(ref remoteSocket, out port);
-			return Connect(remoteSocket, port, out errno, out errstr, timeout, flags, StreamContext.Default);
+			return Connect(remoteSocket, 0, out errno, out errstr, timeout, flags, StreamContext.Default);
 		}
 
 		/// <summary>
@@ -220,9 +200,7 @@ namespace PHP.Library
 				return null;
 			}
 
-			int port;
-			SplitSocketAddressPort(ref remoteSocket, out port);
-			return Connect(remoteSocket, port, out errno, out errstr, timeout, flags, sc);
+			return Connect(remoteSocket, 0, out errno, out errstr, timeout, flags, sc);
 		}
 
 		#endregion
@@ -237,9 +215,7 @@ namespace PHP.Library
 		{
 			int errno;
 			string errstr;
-			int port;
-			SplitSocketAddressPort(ref localSocket, out port);
-			return Connect(localSocket, port, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
+			return Connect(localSocket, 0, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
 		}
 
 		/// <summary>
@@ -249,9 +225,7 @@ namespace PHP.Library
 		public static PhpResource ConnectServer(string localSocket, out int errno)
 		{
 			string errstr;
-			int port;
-			SplitSocketAddressPort(ref localSocket, out port);
-			return Connect(localSocket, port, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
+			return Connect(localSocket, 0, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
 		}
 
 		/// <summary>
@@ -260,9 +234,7 @@ namespace PHP.Library
 		[ImplementsFunction("stream_socket_server")]
 		public static PhpResource ConnectServer(string localSocket, out int errno, out string errstr)
 		{
-			int port;
-			SplitSocketAddressPort(ref localSocket, out port);
-			return Connect(localSocket, port, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
+			return Connect(localSocket, 0, out errno, out errstr, Double.NaN, SocketOptions.None, StreamContext.Default);
 		}
 
 		/// <summary>
@@ -272,9 +244,7 @@ namespace PHP.Library
 		public static PhpResource ConnectServer(string localSocket, out int errno, out string errstr,
 		  double timeout)
 		{
-			int port;
-			SplitSocketAddressPort(ref localSocket, out port);
-			return Connect(localSocket, port, out errno, out errstr, timeout, SocketOptions.None, StreamContext.Default);
+			return Connect(localSocket, 0, out errno, out errstr, timeout, SocketOptions.None, StreamContext.Default);
 		}
 
 		/// <summary>
@@ -284,9 +254,7 @@ namespace PHP.Library
 		public static PhpResource ConnectServer(string localSocket, out int errno, out string errstr,
 		  double timeout, SocketOptions flags)
 		{
-			int port;
-			SplitSocketAddressPort(ref localSocket, out port);
-			return Connect(localSocket, port, out errno, out errstr, timeout, flags, StreamContext.Default);
+			return Connect(localSocket, 0, out errno, out errstr, timeout, flags, StreamContext.Default);
 		}
 
 		/// <summary>
@@ -304,9 +272,7 @@ namespace PHP.Library
 				return null;
 			}
 
-			int port;
-			SplitSocketAddressPort(ref localSocket, out port);
-			return Connect(localSocket, port, out errno, out errstr, timeout, flags, sc);
+			return Connect(localSocket, 0, out errno, out errstr, timeout, flags, sc);
 		}
 
 		#endregion
@@ -444,7 +410,7 @@ namespace PHP.Library
 				timeout = Configuration.Local.FileSystem.DefaultSocketTimeout;
 
 			// TODO:
-			if (flags != SocketOptions.None && flags != SocketOptions.Asynchronous)
+			if (flags != SocketOptions.None)
 				PhpException.ArgumentValueNotSupported("flags", (int)flags);
 
 			try
@@ -478,7 +444,7 @@ namespace PHP.Library
 				socket.EndConnect(res);
 
 				//        socket.Connect(new IPEndPoint(address, port));
-				return new SocketStream(socket, remoteSocket, context, (flags & SocketOptions.Asynchronous) == SocketOptions.Asynchronous);
+				return new SocketStream(socket, remoteSocket, context);
 			}
 			catch (SocketException e)
 			{

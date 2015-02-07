@@ -959,7 +959,7 @@ Stack trace:
     <value>Parameter '{0}' must be passed by reference</value>
   </data>
   <data name="argument_value_not_supported" xml:space="preserve">
-    <value>Specified value of argument '{0}' is not supported</value>
+    <value>Value '{0}' of argument '{1}' is not supported</value>
   </data>
   <data name="too_many_type_arguments_in_type_use" xml:space="preserve">
     <value>Use of type '{0}' requires at most {1} generic type arguments</value>

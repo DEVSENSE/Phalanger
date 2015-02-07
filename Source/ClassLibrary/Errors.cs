@@ -15,7 +15,6 @@ using System.Collections;
 using System.Text;
 using System.ComponentModel;
 using PHP.Core;
-using System.Diagnostics;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
@@ -216,32 +215,9 @@ namespace PHP.Library
 
 		#endregion
 
-        #region error_get_last
+		#region trigger_error, user_error
 
-        [ImplementsFunction("error_get_last")]
-        public static PhpArray GetLastError(ScriptContext/*!*/context)
-        {
-            Debug.Assert(context != null);
-
-            if (context.LastErrorType != 0)
-            {
-                PhpArray result = new PhpArray(0, 5);
-                result.Add("type", (int)context.LastErrorType);
-                result.Add("message", context.LastErrorMessage);
-                result.Add("file", context.LastErrorFile);
-                result.Add("line", context.LastErrorLine);
-                //result.Add("column", context.LastErrorColumn);
-                return result;
-            }
-
-            return null;
-        }
-
-        #endregion
-
-        #region trigger_error, user_error
-
-        /// <summary>
+		/// <summary>
 		/// Triggers user notice with a specified message.
 		/// </summary>
 		/// <param name="message">The message.</param>

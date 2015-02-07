@@ -15,7 +15,6 @@
 using System;
 //using System.Web;
 using System.IO;
-using System.Linq;
 using System.Collections;
 using System.ComponentModel;
 using System.Threading;
@@ -23,7 +22,6 @@ using System.Reflection;
 using PHP.Core;
 using PHP.Core.Reflection;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 #if SILVERLIGHT
 using PHP.CoreCLR;
@@ -141,13 +139,14 @@ namespace PHP.Library
 		/// Retrieves a string version of PHP language which features is supported by the Phalanger.
 		/// </summary>
 		/// <returns>PHP language version.</returns>
-		[ImplementsFunction("phpversion")]
+		[ImplementsFunction("phpversion"/*, FunctionImplOptions.Special*/)]
         [PureFunction]
         public static string PhpVersion()
 		{
 			return Core.PhpVersion.Current;
 		}
 
+#if !SILVERLIGHT
 		/// <summary>
 		/// Retrieves a string version of a specified extension.
 		/// </summary>
@@ -156,10 +155,10 @@ namespace PHP.Library
 		[return: CastToFalse]
 		public static string PhpVersion(string extensionName)
 		{
-            PhpException.FunctionNotSupported();
-			//return ApplicationContext.Default.GetLoadedLibraries().FirstOrDefault(x => x.Descriptor.AssemblyAttribute ...
-            return null;
+			bool dummy;
+			return Externals.GetModuleVersion(extensionName, true, out dummy);
 		}
+#endif
 
 		/// <summary>
 		/// Compares PHP versions.
@@ -167,7 +166,7 @@ namespace PHP.Library
 		/// <param name="ver1">The first version.</param>
 		/// <param name="ver2">The second version.</param>
 		/// <returns>The result of comparison (-1,0,+1).</returns>
-		[ImplementsFunction("version_compare")]
+		[ImplementsFunction("version_compare"/*, FunctionImplOptions.Special*/)]
         [PureFunction]
         public static int VersionCompare(string ver1, string ver2)
 		{
@@ -181,7 +180,7 @@ namespace PHP.Library
 		/// <param name="ver2">The second version.</param>
 		/// <param name="op">The operator to be used.</param>
 		/// <returns>A boolean result of comparison or a <B>null</B> reference if the operator is invalid.</returns>
-		[ImplementsFunction("version_compare")]
+		[ImplementsFunction("version_compare"/*, FunctionImplOptions.Special*/)]
         [PureFunction]
         public static object VersionCompare(string ver1, string ver2, string op)
 		{
@@ -318,34 +317,6 @@ namespace PHP.Library
             return (int)ws;
         }
 
-
-        /// <summary>
-        /// Returns the peak of memory, in bytes, that's been allocated to the PHP script.
-        /// </summary>
-        /// <returns>The size.</returns>
-        [ImplementsFunction("memory_get_peak_usage", FunctionImplOptions.NotSupported)]
-        public static int MemoryGetPeakUsage()
-        {
-            return MemoryGetPeakUsage(false);
-        }
-
-        /// <summary>
-        /// Returns the peak of memory, in bytes, that's been allocated to the PHP script.
-        /// </summary>
-        /// <param name="real_usage">
-        /// Set this to TRUE to get the real size of memory allocated from system.
-        /// If not set or FALSE only the memory used by emalloc() is reported.</param>
-        /// <returns>The size.</returns>
-        [ImplementsFunction("memory_get_peak_usage", FunctionImplOptions.NotSupported)]
-        public static int MemoryGetPeakUsage(bool real_usage)
-        {
-            //if (real_usage == false)// TODO: real_usage = false
-            //    PhpException.ArgumentValueNotSupported("real_usage");
-
-            long ws = System.Diagnostics.Process.GetCurrentProcess().NonpagedSystemMemorySize64;    // can't get current thread's memory
-            if (ws > Int32.MaxValue) return Int32.MaxValue;
-            return (int)ws;
-        }
 
 		/// <summary>
 		/// Returns the type of interface between web server and Phalanger. 
@@ -533,7 +504,7 @@ namespace PHP.Library
 
 			PhpArray result = new PhpArray();
 
-			foreach (KeyValuePair<string, DRoutineDesc> function in app_context.Functions)
+			foreach (KeyValuePair<string, DRoutineDesc> function in app_context.GetFunctions())
 			{
 				if (function.Value.DeclaringType.DeclaringModule == desc.Module)
 				{
@@ -578,9 +549,9 @@ namespace PHP.Library
 		{
 			PhpArray result = new PhpArray();
 
-			foreach (var source_file in ScriptContext.CurrentContext.GetIncludedScripts())
+			foreach (PhpSourceFile source_file in ScriptContext.CurrentContext.GetIncludedScripts())
 			{
-				result.Add(source_file/*.FullPath.ToString()*/);
+				result.Add(source_file.FullPath.ToString());
 			}
 			return result;
 		}
@@ -645,15 +616,5 @@ namespace PHP.Library
 		}
 
 		#endregion
-
-        #region gc_enabled
-
-        [ImplementsFunction("gc_enabled")]
-        public static bool gc_enabled()
-        {
-            return true;    // status of the circular reference collector
-        }
-
-        #endregion
-    }
+	}
 }

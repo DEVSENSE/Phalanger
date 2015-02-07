@@ -24,10 +24,6 @@ using System.Globalization;
 
 using PHP.Core;
 using PHP.Core.Reflection;
-using System.Web.Configuration;
-using System.Security.Cryptography;
-using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace PHP.Library
 {
@@ -182,7 +178,7 @@ namespace PHP.Library
 			{
 				if (file != null)
 				{
-                    result = file.ReadBinaryContents(-1);
+					result = file.ReadMaximumBytes();
 					file.Close();
 				}
 			}
@@ -473,442 +469,6 @@ namespace PHP.Library
 
 	#endregion
 
-    #region AspNetThruSessionHandler
-
-    /// <summary>
-    /// Session handler based of ASP.NET sessions.
-    /// </summary>
-    public sealed class AspNetThruSessionHandler : SessionHandler
-    {
-        #region Inner class: AspNetSessionArray
-
-        private sealed class AspNetSessionArray : PhpArray
-        {
-            private readonly HttpSessionState/*!*/state;
-
-            public AspNetSessionArray(HttpSessionState/*!*/httpSessionState)
-            {
-                Debug.Assert(httpSessionState != null);
-                this.state = httpSessionState;
-            }
-
-            #region Helpers
-
-            /// <summary>
-            /// Checks whether given object DOES NOT implement <c>__wakeup</c> and <c>__sleep</c> magic methods.
-            /// </summary>
-            [System.Diagnostics.Conditional("DEBUG")]
-            private static void NotWakeupThrowHelper(object obj)
-            {
-                if (obj != null && obj is DObject)
-                {
-                    var dobj = (DObject)obj;
-
-                    if (dobj.TypeDesc.GetMethod(Core.Name.SpecialMethodNames.Wakeup) != null)
-                        throw new ArgumentException("__wakeup not handled yet in aspnet session handler!");
-
-                    if (dobj.TypeDesc.GetMethod(Core.Name.SpecialMethodNames.Sleep) != null)
-                        throw new ArgumentException("__sleep not handled yet in aspnet session handler!");
-                }
-            }
-
-            private string FindNewKey()
-            {
-                for (int i = 0; ; i++)
-                {
-                    string name = i.ToString();
-                    if (state[name] == null)
-                        return name;
-                }
-            }
-
-            #endregion
-
-            #region Operators
-
-            public override object Clone()
-            {
-                var result = new PhpArray(state.Count);
-
-                foreach (string name in state)
-                    result[name] = ClrObject.WrapDynamic(state[name]);
-
-                return result;
-            }
-
-            protected override PhpArray EnsureItemIsArrayOverride()
-            {
-                // find max integer key, add new array at the next position
-                var result = new PhpArray();
-                state[FindNewKey()] = result;
-                return result;
-            }
-
-            protected override PhpArray EnsureItemIsArrayOverride(object key)
-            {
-                IntStringKey array_key;
-                if (!PHP.Core.Convert.ObjectToArrayKey(key, out array_key))
-                {
-                    PhpException.IllegalOffsetType();
-                    return null;
-                }
-                string name = array_key.ToString();
-
-                var obj = state[name];
-                var objref = obj as PhpReference;
-
-                if (objref != null)
-                    obj = objref.Value;
-
-                // wrap CLR types into DObject (needed for checks below):
-                obj = ClrObject.WrapDynamic(obj);
-
-                // convert obj into an array or wrap it into an array if possible:
-                object new_obj;
-                var wrappedarray = Operators.EnsureObjectIsArray(obj, out new_obj);
-                if (wrappedarray != null)
-                {
-                    if (new_obj != null)
-                    {
-                        if (objref != null) objref.Value = new_obj;
-                        else state[name] = new_obj;
-                    }
-
-                    return wrappedarray;
-                }
-
-                // cannot be represented as an array:
-                PhpException.VariableMisusedAsArray(obj, false);
-                return null;
-            }
-
-            protected override DObject EnsureItemIsObjectOverride(object key, ScriptContext context)
-            {
-                IntStringKey array_key;
-                if (!PHP.Core.Convert.ObjectToArrayKey(key, out array_key))
-                {
-                    PhpException.IllegalOffsetType();
-                    return null;
-                }
-                string name = array_key.ToString();
-                var obj = state[name];
-                var objref = obj as PhpReference;
-
-                if (objref != null)
-                    obj = objref.Value;
-
-                obj = ClrObject.WrapDynamic(obj);
-
-                if (obj is DObject)
-                    return (DObject)obj;
-
-                if (Operators.IsEmptyForEnsure(obj))
-                {
-                    var newobj = PHP.Library.stdClass.CreateDefaultObject(context);
-
-                    if (objref != null)
-                        objref.Value = newobj;
-                    else
-                        state[name] = newobj;
-
-                    return newobj;
-                }
-
-                PhpException.VariableMisusedAsObject(obj, false);
-                return null;
-            }
-
-            protected override DObject EnsureItemIsObjectOverride(ScriptContext context)
-            {
-                var obj = PHP.Library.stdClass.CreateDefaultObject(context);
-                state[FindNewKey()] = obj;
-                return obj;
-            }
-
-            protected override object GetArrayItemOverride(object key, bool quiet)
-            {
-                IntStringKey array_key;
-                if (!PHP.Core.Convert.ObjectToArrayKey(key, out array_key))
-                {
-                    if (!quiet)
-                        PhpException.IllegalOffsetType();
-
-                    return null;
-                }
-
-                string name = array_key.ToString();
-                var item = state[name];
-                NotWakeupThrowHelper(item);
-                return ClrObject.WrapDynamic(PhpVariable.Dereference(item));
-            }
-
-            protected override PhpReference GetArrayItemRefOverride()
-            {
-                var result = new PhpReference();
-                state[FindNewKey()] = result;
-                return result;
-            }
-
-            protected override PhpReference GetArrayItemRefOverride(int key)
-            {
-                return SessionGetArrayItemRef(key.ToString());
-            }
-
-            protected override PhpReference GetArrayItemRefOverride(string key)
-            {
-                return SessionGetArrayItemRef(key ?? string.Empty);
-            }
-
-            protected override PhpReference GetArrayItemRefOverride(object key)
-            {
-                IntStringKey array_key;
-                if (PHP.Core.Convert.ObjectToArrayKey(key, out array_key))
-                {
-                    return SessionGetArrayItemRef(array_key.ToString());
-                }
-                else
-                {
-                    PhpException.IllegalOffsetType();
-                    return null;
-                }
-            }
-
-            private PhpReference SessionGetArrayItemRef(string name)
-            {
-                Debug.Assert(name != null);
-
-                var obj = state[name];
-                NotWakeupThrowHelper(obj);
-
-                if (obj is PhpReference)
-                    return (PhpReference)obj;
-
-                var objref = new PhpReference(ClrObject.WrapDynamic(obj));
-                state[name] = objref;
-                return objref;
-            }
-
-            protected override void SetArrayItemOverride(object value)
-            {
-                state[FindNewKey()] = value;
-            }
-
-            protected override void SetArrayItemOverride(int key, object value)
-            {
-                SessionSetArrayItem(key.ToString(), value);
-            }
-
-            protected override void SetArrayItemOverride(object key, object value)
-            {
-                IntStringKey array_key;
-                if (PHP.Core.Convert.ObjectToArrayKey(key, out array_key))
-                {
-                    SessionSetArrayItem(array_key.ToString(), value);
-                }
-                else
-                {
-                    PhpException.IllegalOffsetType();
-                }
-            }
-
-            protected override void SetArrayItemOverride(string key, object value)
-            {
-                SessionSetArrayItem(key ?? string.Empty, value);
-            }
-
-            private void SessionSetArrayItem(string name, object value)
-            {
-                Debug.Assert(name != null);
-                NotWakeupThrowHelper(value);
-
-                var obj = state[name];
-
-                // preserve reference:
-                if (obj != null && obj is PhpReference)
-                    ((PhpReference)obj).Value = value;
-                else
-                    state[name] = value;
-            }
-
-            protected override void SetArrayItemRefOverride(object key, PhpReference value)
-            {
-                IntStringKey array_key;
-                if (PHP.Core.Convert.ObjectToArrayKey(key, out array_key))
-                {
-                    NotWakeupThrowHelper(value.Value);
-                    state[array_key.ToString()] = value;
-                }
-                else
-                {
-                    PhpException.IllegalOffsetType();
-                }
-            }
-
-            public override bool Remove(IntStringKey key)
-            {
-                state.Remove(key.ToString());
-                return true;
-            }
-
-            public override int Count { get { return state.Count; } }
-
-            public override void Clear()
-            {
-                state.Clear();
-            }
-
-            private class SessionStateEnumerator : IDictionaryEnumerator
-            {
-                private AspNetSessionArray array;
-                private bool aliasedValues;
-
-                private readonly IEnumerator namesEnumerator;
-
-                public SessionStateEnumerator(AspNetSessionArray array, bool aliasedValues)
-                {
-                    this.array = array;
-                    this.aliasedValues = aliasedValues;
-
-                    this.namesEnumerator = new System.Collections.ArrayList(array.state).GetEnumerator();   // make a copy of names, and get enumerator on this
-                }
-
-                public DictionaryEntry Entry
-                {
-                    get { throw new NotImplementedException(); }
-                }
-
-                public object Key
-                {
-                    get { return namesEnumerator.Current; }
-                }
-
-                public object Value
-                {
-                    get
-                    {
-                        if (aliasedValues)
-                            return array.GetArrayItemRefOverride((string)Key);
-                        else
-                            return PhpVariable.Copy(ClrObject.WrapDynamic(PhpVariable.Dereference(array.state[(string)Key])), CopyReason.Assigned);
-                    }
-                }
-
-                public object Current
-                {
-                    get { throw new NotImplementedException(); }
-                }
-
-                public bool MoveNext()
-                {
-                    return namesEnumerator.MoveNext();
-                }
-
-                public void Reset()
-                {
-                    namesEnumerator.Reset();
-                }
-            }
-
-            public override IDictionaryEnumerator GetForeachEnumerator(bool keyed, bool aliasedValues, DTypeDesc caller)
-            {
-                return new SessionStateEnumerator(this, aliasedValues);
-            }
-
-            #endregion
-
-            #region Enumeration
-
-            public override IEnumerator<KeyValuePair<IntStringKey, object>>/*!*/ GetEnumerator()
-            {
-                foreach (string name in state)
-                {
-                    string key = (string)name;
-                    yield return new KeyValuePair<IntStringKey, object>(new IntStringKey(key), state[key]);
-                }
-            }
-
-            #endregion
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Does not allow instantiation from outside.
-        /// </summary>
-        private AspNetThruSessionHandler() { }
-
-        public static string AspNetSessionName { get { return AspNetSessionHandler.AspNetSessionName; } }
-
-        /// <summary>
-        /// Singleton instance.
-        /// </summary>
-        public static readonly AspNetThruSessionHandler Default = new AspNetThruSessionHandler();
-
-        /// <summary>
-        /// Gets a string representation.
-        /// </summary>
-        /// <returns>The name of the handler.</returns>
-        public override string ToString()
-        {
-            return Name;
-        }
-
-        /// <summary>
-        /// Gets a name of the handler used in the configuration.
-        /// </summary>
-        public override string Name
-        {
-            get { return "aspnet_thru"; }
-        }
-
-        /// <summary>
-        /// Loads variables from ASP.NET session to an array.
-        /// </summary>
-        protected override PhpArray Load(ScriptContext context, HttpContext httpContext)
-        {
-            return new AspNetSessionArray(httpContext.Session);
-        }
-
-        /// <summary>
-        /// Stores session variables to ASP.NET session.
-        /// </summary>
-        protected override void Persist(PhpArray variables, ScriptContext context, HttpContext httpContext)
-        {
-
-        }
-
-        /// <summary>
-        /// Called immediately before the session is abandoned.
-        /// </summary>
-        protected override void Abandoning(ScriptContext context, HttpContext httpContext)
-        {
-
-        }
-
-        /// <summary>
-        /// ASP.NET session handler won't persist data if session id has been changed. New session will be created.
-        /// </summary>
-        public override bool AllowsSessionIdChange { get { return false; } }
-
-        /// <summary>
-        /// Gets session cookie associated with a specified HTTP context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns>The cookie.</returns>
-        public static HttpCookie GetCookie(HttpContext/*!*/ context)
-        {
-            if (context == null) throw new ArgumentNullException("context");
-
-            // no cookies available:
-            if (context.Session == null || context.Session.IsCookieless) return null;
-
-            // gets cookie from request:
-            return context.Request.Cookies[AspNetSessionName];
-        }
-    }
-
-    #endregion
-
 	/// <summary>
 	/// PHP session handling functions.
 	/// </summary>
@@ -1177,12 +737,9 @@ namespace PHP.Library
                 // new SessionId will silently fail (probably).
                 //
                 // Need to implement own SessionStateModule ?
-                //Debug.Assert(request_context.ScriptContext.Config.Session.Handler.Name != AspNetSessionHandler.Default.Name);
+                Debug.Assert(request_context.ScriptContext.Config.Session.Handler.Name != AspNetSessionHandler.Default.Name);
 
-                // NOTE:
-                // When using ASP.NET session handler, following process drops all the session data
-                // created during this request ... so next request starts with all new session state.
-                
+
                 if (!Manager.Validate(session_id))
                     throw new ArgumentException(null, "session_id");
 
@@ -1216,7 +773,7 @@ namespace PHP.Library
                 SessionId.Manager.SaveSessionID(request_context.HttpContext, session_id, out redirected, out cookieAdded);
 
                 // set new SID constant
-                request_context.UpdateSID();
+                RequestContext.UpdateSID(request_context.ScriptContext, request_context.HttpContext);
             }
 
             private static ISessionStateItemCollection CloneSessionStateCollection(HttpSessionState session)
@@ -1460,7 +1017,7 @@ namespace PHP.Library
 
 		#endregion
 
-		#region session_save_path, session_name, session_id, session_regenerate_id
+		#region session_save_path, session_name, session_id, (NS) session_regenerate_id
 
 		/// <summary>
 		/// Gets a path where sessions are stored.
@@ -1497,30 +1054,25 @@ namespace PHP.Library
 		[ImplementsFunction("session_name")]
 		public static string Name()
 		{
-            return Name(null);
+			HttpContext context;
+			if (!Web.EnsureHttpContext(out context)) return null;
+
+			return AspNetSessionHandler.AspNetSessionName;
 		}
 
 		/// <summary>
-		/// Sets the current session name.
+		/// Sets the current session name. Not supported. Doesn't change session name. 
 		/// </summary>
 		/// <param name="newName">A new name.</param>
 		/// <returns>An old name.</returns>
 		[ImplementsFunction("session_name")]
 		public static string Name(string newName)
 		{
-            RequestContext request_context;
-            if (!Web.EnsureRequestContext(out request_context)) return null;
+			HttpContext context;
+			if (!Web.EnsureHttpContext(out context)) return null;
 
-            var/*!*/handler = request_context.ScriptContext.Config.Session.Handler;
-            Debug.Assert(handler != null);
-
-            var oldName = handler.GetSessionName(request_context);
-            if (newName != null)
-            {
-                handler.SetSessionName(request_context, newName);
-            }
-			
-			return oldName;
+			PhpException.FunctionNotSupported(PhpError.Notice);
+			return AspNetSessionHandler.AspNetSessionName;
 		}
 
 		/// <summary>
@@ -1548,7 +1100,7 @@ namespace PHP.Library
 		}
 
 		/// <summary>
-		/// Changes session id.
+		/// Changes session id. Not supported. Doesn't change session id. 
 		/// </summary>
 		/// <param name="id">A new id value.</param>
 		/// <returns>A session id.</returns>
@@ -1563,14 +1115,14 @@ namespace PHP.Library
                 if (!Web.EnsureRequestContext(out request_context))
                     return null;
 
-                // writes up new session id
-                SessionId.SetNewSessionId(request_context, id);
-            
-                //
-                if (!request_context.ScriptContext.Config.Session.Handler.AllowsSessionIdChange)
+                if (request_context.ScriptContext.Config.Session.Handler.Name != AspNetSessionHandler.Default.Name)
                 {
-                    // ASP.NET session id change causes session data to be lost:
-                    PhpException.Throw(PhpError.Notice, Strings.aspnet_sessionhandler_id_reset);
+                    SessionId.SetNewSessionId(request_context, id);
+                }
+                else
+                {
+                    // TODO: throw warning, unsupported using Asp Sessions
+                    PhpException.ArgumentValueNotSupported("id", id);
                 }
             }
 
@@ -1589,7 +1141,7 @@ namespace PHP.Library
 
 
 		/// <summary>
-		/// Update the current session id with a newly generated one.
+		/// Update the current session id with a newly generated one. Not supported. 
 		/// </summary>
         /// <param name="delete_old_session">Whether to delete the old associated session file or not.</param>
 		/// <returns>Returns TRUE on success or FALSE on failure.   </returns>
@@ -1604,17 +1156,21 @@ namespace PHP.Library
 
             if (delete_old_session)
             {
-                // TODO: delete old session file
+                PhpArray session = PhpReference.AsPhpArray(request_context.ScriptContext.AutoGlobals.Session);
+                if (session != null)
+                    session.Clear();
             }
 
-            // regenerate SessionID
-            string session_id = SessionId.Manager.CreateSessionID(request_context.HttpContext/*not used*/);
-            SessionId.SetNewSessionId(request_context, session_id);
-
-            if (!request_context.ScriptContext.Config.Session.Handler.AllowsSessionIdChange)
+            if (request_context.ScriptContext.Config.Session.Handler.Name != AspNetSessionHandler.Default.Name)
             {
-                // ASP.NET session id change causes session data to be lost:
-                PhpException.Throw(PhpError.Notice, Strings.aspnet_sessionhandler_id_reset);
+                // regenerate SessionID
+                string session_id = SessionId.Manager.CreateSessionID(request_context.HttpContext/*not used*/);
+                SessionId.SetNewSessionId(request_context, session_id);
+            }
+            else
+            {
+                // TODO: throw warning, unsupported using Asp Sessions
+                PhpException.FunctionNotSupported();
             }
 
             return true;

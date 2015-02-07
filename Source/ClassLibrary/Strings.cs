@@ -2851,7 +2851,7 @@ namespace PHP.Library
         public static string HtmlSpecialCharsEncode(string str, QuoteStyle quoteStyle, string charSet,  bool doubleEncode /* = true */)
         {
             if (!doubleEncode)
-                PhpException.ArgumentValueNotSupported("doubleEncode"); // TODO: is doubleEncode is false
+                PhpException.ArgumentValueNotSupported("doubleEncode", doubleEncode); // TODO: is doubleEncode is false
 
             return HtmlSpecialCharsEncode(str, 0, str.Length, quoteStyle, charSet);
         }

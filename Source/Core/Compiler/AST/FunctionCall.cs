@@ -76,8 +76,9 @@ namespace PHP.Core.AST
         }
 
         /// <summary>
-        /// Emit <see cref="PhpVariable.Copy"/> if needed. It means <see cref="access"/> has to be <see cref="AccessType.Read"/> and <paramref name="returnType"/> has to be copiable.
+        /// Emit <see cref="PhpVariable.Copy"/> if needed. It means <see cref="Expression.Access"/> has to be <see cref="AccessType.Read"/> and <paramref name="returnType"/> has to be copiable.
         /// </summary>
+        /// <param name="il">The <see cref="ILEmitter"/>.</param>
         /// <param name="returnType"><see cref="PhpTypeCode"/> of function call return value.</param>
         protected void EmitReturnValueCopy(ILEmitter/*!*/il, PhpTypeCode returnType)
         {

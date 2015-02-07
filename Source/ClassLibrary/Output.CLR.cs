@@ -418,15 +418,6 @@ namespace PHP.Library
         //    return GzipHandler(data, 4);
         //}
 
-        /// <summary>
-        /// Available content encodings.
-        /// </summary>
-        /// <remarks>Values correspond to "content-encoding" response header.</remarks>
-        private enum ContentEncoding
-        {
-            gzip, deflate
-        }
-
 		/// <summary>
 		/// Compresses data by gzip compression.
 		/// </summary>
@@ -436,7 +427,7 @@ namespace PHP.Library
         /// <remarks>The function does not support subsequent calls to compress more chunks of data subsequentally.</remarks>
         [ImplementsFunction("ob_gzhandler")]
         [return: CastToFalse]
-        public static object GzipHandler(object data, int mode)
+        public static PhpBytes GzipHandler(object data, int mode)
         {
             // TODO: mode is not passed by Core properly. Therefore it is not possible to make subsequent calls to this handler.
             // Otherwise headers of ZIP stream will be mishmashed.
@@ -446,27 +437,18 @@ namespace PHP.Library
 
             // check if we are running web application
             var httpcontext = HttpContext.Current;
-            System.Collections.Specialized.NameValueCollection headers;
-            if (httpcontext == null ||
-                httpcontext.Request == null ||
-                (headers = httpcontext.Request.Headers) == null)
-                return data;
+            if (httpcontext == null) return null;
 
             // check if compression is supported by browser
-            string acceptEncoding = headers["Accept-Encoding"];
+            string acceptEncoding = httpcontext.Request.Headers["Accept-Encoding"].ToLower();
 
-            if (acceptEncoding != null)
-            {
-                acceptEncoding = acceptEncoding.ToLower(System.Globalization.CultureInfo.InvariantCulture);
+            if (acceptEncoding.Contains("gzip"))
+                return DoGzipHandler(data, httpcontext, "gzip");
 
-                if (acceptEncoding.Contains("gzip"))
-                    return DoGzipHandler(data, httpcontext, ContentEncoding.gzip);
+            if (acceptEncoding.Contains("*") || acceptEncoding.Contains("deflate"))
+                return DoGzipHandler(data, httpcontext, "deflate");
 
-                if (acceptEncoding.Contains("*") || acceptEncoding.Contains("deflate"))
-                    return DoGzipHandler(data, httpcontext, ContentEncoding.deflate);
-            }
-
-            return data;
+            return null;
 
             /*
             ScriptContext context = ScriptContext.CurrentContext;
@@ -490,7 +472,7 @@ namespace PHP.Library
         /// <param name="httpcontext">Current HttpContext.</param>
         /// <param name="contentEncoding">gzip or deflate</param>
         /// <returns>Byte stream of compressed data.</returns>
-        private static PhpBytes DoGzipHandler(object data, HttpContext/*!*/httpcontext, ContentEncoding contentEncoding)
+        private static PhpBytes DoGzipHandler(object data, HttpContext/*!*/httpcontext, string/*!*/contentEncoding)
         {
             PhpBytes phpbytes = data as PhpBytes;
 
@@ -501,17 +483,12 @@ namespace PHP.Library
             using (var outputStream = new System.IO.MemoryStream())
             {
                 System.IO.Stream compressionStream;
-                switch (contentEncoding)
-                {
-                    case ContentEncoding.gzip:
-                        compressionStream = new System.IO.Compression.GZipStream(outputStream, System.IO.Compression.CompressionMode.Compress);
-                        break;
-                    case ContentEncoding.deflate:
-                        compressionStream = new System.IO.Compression.DeflateStream(outputStream, System.IO.Compression.CompressionMode.Compress);
-                        break;
-                    default:
-                        throw new ArgumentException("Not recognized content encoding to be compressed to.", "contentEncoding");
-                }
+                if (contentEncoding == "gzip")
+                    compressionStream = new System.IO.Compression.GZipStream(outputStream, System.IO.Compression.CompressionMode.Compress);
+                else if (contentEncoding == "deflate")
+                    compressionStream = new System.IO.Compression.DeflateStream(outputStream, System.IO.Compression.CompressionMode.Compress);
+                else
+                    throw new ArgumentException("Not recognized content encoding to be compressed to.", "contentEncoding");
 
                 using (compressionStream)
                 {
@@ -522,7 +499,7 @@ namespace PHP.Library
                 //    ScriptContext.CurrentContext.Headers["content-encoding"] != contentEncoding,
                 //    "The content encoding was already set to '" + contentEncoding + "'. The ob_gzhandler() was called subsequently probably.");
 
-                ScriptContext.CurrentContext.Headers["content-encoding"] = contentEncoding.ToString();
+                ScriptContext.CurrentContext.Headers["content-encoding"] = contentEncoding;
 
                 return new PhpBytes(outputStream.ToArray());
             }

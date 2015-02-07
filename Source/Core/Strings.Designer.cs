@@ -304,7 +304,7 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Specified value of argument &apos;{0}&apos; is not supported.
+        ///   Looks up a localized string similar to Value &apos;{0}&apos; of argument &apos;{1}&apos; is not supported.
         /// </summary>
         internal static string argument_value_not_supported {
             get {
