@@ -3130,7 +3130,7 @@ namespace PHP.Core
 
         private static string CombinePath(FullPath root, string path)
         {
-            if (((string)root).ToLower().StartsWith("http://"))
+            if ( CultureInfo.InvariantCulture.TextInfo.ToLower((string)root).StartsWith("http://")) // we don't need Unicode characters to be lowercased properly // CurrentCulture is slow
                 return System.IO.Path.Combine(root, path).Replace('\\', '/');
             else
                 return System.IO.Path.Combine(root, path);

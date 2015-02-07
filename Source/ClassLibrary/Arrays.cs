@@ -2401,12 +2401,18 @@ namespace PHP.Library
 			}
 
 			PhpArray result = new PhpArray();
+
+            System.Globalization.TextInfo textInfo = null; // cache current culture to avoid repetitious CurrentCulture.get
+
 			foreach (KeyValuePair<IntStringKey, object> entry in array)
 			{
-				if (entry.Key.IsString)
-					result[entry.Key.String.ToLower()] = entry.Value;
-				else
-					result[entry.Key] = entry.Value;
+                if (entry.Key.IsString)
+                {
+                    if (textInfo == null) textInfo = System.Globalization.CultureInfo.CurrentCulture.TextInfo;
+                    result[textInfo.ToLower(entry.Key.String)] = entry.Value;
+                }
+                else
+                    result[entry.Key] = entry.Value;
 			}
 			return result;
 		}

@@ -22,7 +22,6 @@ using PHP;
 using PHP.Core;
 using Convert = PHP.Core.Convert;
 using System.Web.Configuration;
-using System.Diagnostics;
 
 namespace PHP.Library
 {
@@ -106,7 +105,7 @@ namespace PHP.Library
 			{
 				#region <paths>
 
-				case "extension_dir": Debug.Assert(action == IniAction.Get); return app.Paths.Libraries;
+				case "extension_dir": Debug.Assert(action == IniAction.Get); return app.Paths.ExtNatives;
 
 				#endregion
 
@@ -191,10 +190,10 @@ namespace PHP.Library
 
 				#region <variables>
 
-                case "zend.ze1_compatibility_mode": Debug.Assert(action != IniAction.Set || OptionValueToBoolean(value) == false); return false;// GSR(ref local.Variables.ZendEngineV1Compatible, @default.Variables.ZendEngineV1Compatible, value, action);
+				case "zend.ze1_compatibility_mode": return GSR(ref local.Variables.ZendEngineV1Compatible, @default.Variables.ZendEngineV1Compatible, value, action);
 				case "magic_quotes_runtime": return GSR(ref local.Variables.QuoteRuntimeVariables, @default.Variables.QuoteRuntimeVariables, value, action);
-                case "magic_quotes_sybase": Debug.Assert(action == IniAction.Get || OptionValueToBoolean(value) == local.Variables.QuoteInDbManner); return local.Variables.QuoteInDbManner; //GSR(ref local.Variables.QuoteInDbManner, @default.Variables.QuoteInDbManner, value, action);
-                case "magic_quotes_gpc": Debug.Assert(action == IniAction.Get || OptionValueToBoolean(value) == global.GlobalVariables.QuoteGpcVariables); return global.GlobalVariables.QuoteGpcVariables;
+				case "magic_quotes_sybase": return GSR(ref local.Variables.QuoteInDbManner, @default.Variables.QuoteInDbManner, value, action);
+				case "magic_quotes_gpc": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.QuoteGpcVariables;
 				case "register_argc_argv": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.RegisterArgcArgv;
 				case "register_globals": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.RegisterGlobals;
 				case "register_long_arrays": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.RegisterLongArrays;
@@ -262,8 +261,6 @@ namespace PHP.Library
 
 				case "default_charset": return GsrDefaultCharset(value, action);
 				case "default_mimetype": return GsrDefaultMimetype(value, action);
-                case "memory_limit": return GsrMemoryLimit(value, action);
-                case "disable_functions": return GsrDisableFunctions(value, action);
 
 				#endregion
 			}
@@ -296,14 +293,14 @@ namespace PHP.Library
 			ow.WriteOption("asp_tags", "AspTags", false, app.Compiler.AspTags);
 
 			ow.StartSection("variables");
-			//ow.WriteOption("zend.ze1_compatibility_mode", "ZendEngineV1Compatible", false, local.Variables.ZendEngineV1Compatible);
+			ow.WriteOption("zend.ze1_compatibility_mode", "ZendEngineV1Compatible", false, local.Variables.ZendEngineV1Compatible);
 			ow.WriteOption("register_globals", "RegisterGlobals", false, global.GlobalVariables.RegisterGlobals);
 			ow.WriteOption("register_argc_argv", "RegisterArgcArgv", true, global.GlobalVariables.RegisterArgcArgv);
 			ow.WriteOption("register_long_arrays", "RegisterLongArrays", true, global.GlobalVariables.RegisterLongArrays);
 			ow.WriteOption("variables_order", "RegisteringOrder", "EGPCS", local.Variables.RegisteringOrder);
-			//ow.WriteOption("magic_quotes_gpc", "QuoteGpcVariables", true, global.GlobalVariables.QuoteGpcVariables);
+			ow.WriteOption("magic_quotes_gpc", "QuoteGpcVariables", true, global.GlobalVariables.QuoteGpcVariables);
 			ow.WriteOption("magic_quotes_runtime", "QuoteRuntimeVariables", false, local.Variables.QuoteRuntimeVariables);
-			//ow.WriteOption("magic_quotes_sybase", "QuoteInDbManner", false, local.Variables.QuoteInDbManner);
+			ow.WriteOption("magic_quotes_sybase", "QuoteInDbManner", false, local.Variables.QuoteInDbManner);
 			ow.WriteOption("unserialize_callback_func", "DeserializationCallback", null, local.Variables.DeserializationCallback);
 
 			ow.StartSection("output-control");
@@ -490,38 +487,6 @@ namespace PHP.Library
 			return result;
 		}
 
-        /// <summary>
-        /// Gets, sets or restores "memory_limit" option.
-        /// </summary>
-        private static object GsrMemoryLimit(object value, IniAction action)
-        {
-            object result = -1;
-            switch (action)
-            {
-                case IniAction.Set:
-                case IniAction.Restore:
-                    PhpException.ArgumentValueNotSupported("memory_limit", action);
-                    break;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Gets, sets or restores "disable_functions" option.
-        /// </summary>
-        private static object GsrDisableFunctions(object value, IniAction action)
-        {
-            object result = "";
-            switch (action)
-            {
-                case IniAction.Set:
-                case IniAction.Restore:
-                    PhpException.ArgumentValueNotSupported("disable_functions", action);
-                    break;
-            }
-            return result;
-        }
-
 		/// <summary>
 		/// Gets, sets or restores "variables_order" option.
 		/// </summary>
@@ -676,7 +641,7 @@ namespace PHP.Library
 		[ImplementsFunction("ini_get_all")]
 		public static PhpArray GetAll(string extension)
 		{
-            PhpArray result = new PhpArray();
+			PhpArray result = Externals.IniGetAll(extension);
 
 			// adds options from managed libraries:
 			IniOptions.GetAllOptionStates(extension, result);
@@ -790,7 +755,7 @@ namespace PHP.Library
 		[ImplementsFunction("get_magic_quotes_gpc")]
 		public static bool GetMagicQuotesGPC()
 		{
-            return Configuration.Global.GlobalVariables.QuoteGpcVariables;
+			return Configuration.Global.GlobalVariables.QuoteGpcVariables;
 		}
 
 		/// <summary>

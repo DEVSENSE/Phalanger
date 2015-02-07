@@ -23,7 +23,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 using PHP.Core;
-using System.Diagnostics;
 
 namespace PHP.Library
 {
@@ -87,13 +86,13 @@ namespace PHP.Library
 
             protected override void OnTagAttribute(string tagName, ref string attributeName, ref string attributeValue, ref char attributeValueQuote)
             {
-                string[] attrs;
+                List<string> attrs;
 
                 if (ScriptContext.CurrentContext.Config.Session.UrlRewriterTags.TryGetValue(tagName.ToLower(), out attrs))
                 {
-                    for (int i = 0; i < attrs.Length; i++)
+                    foreach ( string att in attrs )
                     {
-                        if (string.Equals(attrs[i], attributeName, StringComparison.InvariantCultureIgnoreCase))
+                        if (att == attributeName.ToLower())
                         {
                             if (protocolPattern.IsMatch(attributeValue))
                                 return; // the URL must NOT be an absolute URL (not start with the protocol name)

@@ -24,7 +24,6 @@ using PHP.CoreCLR;
 #else
 using System.Web;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Diagnostics;
 #endif
 
 namespace PHP.Library
@@ -107,26 +106,8 @@ namespace PHP.Library
 		/// <summary>
 		/// No file was uploaded.
 		/// </summary>
-		[ImplementsConstant("UPLOAD_ERR_NO_FILE")]
-		NoFile,
-
-        /// <summary>
-        /// Missing a temporary folder
-        /// </summary>
-        [ImplementsConstant("UPLOAD_ERR_NO_TMP_DIR")]
-        NoTempDirectory,
-
-        /// <summary>
-        /// Missing a temporary folder
-        /// </summary>
-        [ImplementsConstant("UPLOAD_ERR_CANT_WRITE")]
-        CantWrite,
-
-        /// <summary>
-        /// A PHP extension stopped the file upload
-        /// </summary>
-        [ImplementsConstant("UPLOAD_ERR_EXTENSION")]
-        ErrorExtension
+		[ImplementsConstant("UPLOAD_ERR_NOFILE")]
+		NoFile
 	}
 
 	#endregion
@@ -166,21 +147,6 @@ namespace PHP.Library
 		{
             return Count(variable, CountNormal);
 		}
-        
-        /// <summary>
-        /// Counts items in a variable.
-        /// </summary>
-        /// <param name="variable">The variable which items to count.</param>
-        /// <param name="mode">Whether to count recursively.</param>
-        /// <returns>The number of items in all arrays contained recursivelly in <paramref name="variable"/>.</returns>
-        /// <remarks>If any item of the <paramref name="variable"/> contains infinite recursion 
-        /// skips items that are repeating because of such recursion.
-        /// </remarks>
-        [ImplementsFunction("sizeof")]
-        public static int SizeOf(object variable, int mode)
-        {
-            return Count(variable, mode);
-        }
 
 		/// <summary>
 		/// Counts items in a variable.
@@ -248,10 +214,6 @@ namespace PHP.Library
                     object cnt = dobj.InvokeMethod("count", null, ScriptContext.CurrentContext);
                     return (cnt != null) ? PHP.Core.Convert.ObjectToInteger(cnt) : 0;
                 }
-                else if (dobj.RealObject is ICollection)
-                {
-                    return ((ICollection)dobj.RealObject).Count;
-                }
             }            
 
             // count not supported
@@ -260,7 +222,7 @@ namespace PHP.Library
 
 		#endregion
 
-		#region doubleval, floatval, intval, strval, settype, gettype, boolval
+		#region doubleval, floatval, intval, strval, settype, gettype
 
 		/// <summary>
 		/// Converts to double.
@@ -325,18 +287,6 @@ namespace PHP.Library
 		{
 			return PHP.Core.Convert.ObjectToString(variable);
 		}
-
-        /// <summary>
-        /// Converts to boolean.
-        /// </summary>
-        /// <param name="variable">The variable.</param>
-        /// <returns>The converted value.</returns>
-        [ImplementsFunction("boolval")]
-        [PureFunction]
-        public static bool BoolVal(object variable)
-        {
-            return PHP.Core.Convert.ObjectToBoolean(variable);
-        }
 
 		/// <summary>
 		/// Sets variable's type.
@@ -576,45 +526,12 @@ namespace PHP.Library
         [PureFunction]
         public static bool IsNumeric(object variable)
 		{
-            if (variable == null)
-                return false;
+			int ival;
+			long lval;
+			double dval;
 
-            // real numbers
-            if (variable.GetType() == typeof(int) ||
-                variable.GetType() == typeof(long) ||
-                variable.GetType() == typeof(double))
-                return true;
-
-            // string            
-            if (variable.GetType() == typeof(string))
-                return IsNumericString((string)variable);
-            
-            if (variable.GetType() == typeof(PhpBytes))
-                return IsNumericString(variable.ToString());
-
-            // some .NET types:
-            if (variable is Core.Reflection.IClrValue)
-            {
-                // decimal ?
-            }
-
-            // anything else:
-            return false;
+			return (Core.Convert.ObjectToNumber(variable, out ival, out lval, out dval) & Core.Convert.NumberInfo.IsNumber) != 0;
 		}
-
-        /// <summary>
-        /// Checks whether given string can be converted to a number.
-        /// </summary>
-        /// <param name="str">A string value.</param>
-        /// <returns><c>True</c> if the string represents a number. Otherwise <c>false</c>.</returns>
-        private static bool IsNumericString(string str)
-        {
-            int ival;
-            long lval;
-            double dval;
-
-            return (Core.Convert.StringToNumber(str, out ival, out lval, out dval) & Core.Convert.NumberInfo.IsNumber) != 0;
-        }
 
 		/// <summary>
 		/// Verifies that the contents of a variable can be called as a function.
@@ -642,7 +559,10 @@ namespace PHP.Library
 		[ImplementsFunction("is_callable", FunctionImplOptions.NeedsClassContext)]
 		public static bool IsCallable(PHP.Core.Reflection.DTypeDesc caller, object variable, bool syntaxOnly)
 		{
-            return Operators.IsCallable(variable, caller, syntaxOnly);
+			PhpCallback callback = PHP.Core.Convert.ObjectToCallback(variable, true);
+			if (callback == null || callback.IsInvalid) return false;
+
+            return (syntaxOnly ? true : callback.Bind(true, caller, null));
 		}
 
 		/// <summary>
@@ -685,7 +605,7 @@ namespace PHP.Library
 
 		#endregion
 
-		#region serialize, unserialize (CLR only)
+		#region serialize, unserialize, custom_serialize, custom_unserialize (CLR only)
 #if !SILVERLIGHT
 
 		/// <summary>
@@ -711,12 +631,37 @@ namespace PHP.Library
         [ImplementsFunction("unserialize", FunctionImplOptions.NeedsClassContext)]
         public static PhpReference Unserialize(PHP.Core.Reflection.DTypeDesc caller, PhpBytes bytes)
 		{
-            if (bytes == null || bytes.Length == 0)
-                return new PhpReference(false);
-
             LibraryConfiguration config = LibraryConfiguration.GetLocal(ScriptContext.CurrentContext);
 
             return config.Serialization.DefaultSerializer.Deserialize(bytes, caller);
+		}
+
+		/// <summary>
+		/// Serializes a graph of connected objects to a byte array using a specified serializer.
+		/// </summary>
+        /// <param name="caller">DTypeDesc of the caller's class context if it is known or UnknownTypeDesc if it should be determined lazily.</param>
+        /// <param name="variable">The variable to serialize.</param>
+		/// <param name="serializerName">A name of the serializer.</param>
+		/// <returns>The serialized representation of the <paramref name="variable"/>.</returns>
+        [ImplementsFunction("custom_serialize", FunctionImplOptions.NeedsClassContext)]
+        public static PhpBytes CustomSerialize(PHP.Core.Reflection.DTypeDesc caller, object variable, string serializerName)
+		{
+			Serializer serializer = Serializers.GetSerializerVerbose(serializerName);
+			return (serializer != null) ? serializer.Serialize(variable, caller) : null;
+		}
+
+		/// <summary>
+		/// Deserializes a graph of connected object from a byte array using a specified serializer.
+		/// </summary>
+        /// <param name="caller">DTypeDesc of the caller's class context if it is known or UnknownTypeDesc if it should be determined lazily.</param>
+        /// <param name="bytes">The byte array to deserialize the graph from.</param>
+		/// <param name="serializerName">A name of the serializer.</param>
+		/// <returns>The deserialized object graph.</returns>
+        [ImplementsFunction("custom_unserialize", FunctionImplOptions.NeedsClassContext)]
+        public static PhpReference CustomUnserialize(PHP.Core.Reflection.DTypeDesc caller, PhpBytes bytes, string serializerName)
+		{
+			Serializer serializer = Serializers.GetSerializerVerbose(serializerName);
+			return (serializer != null) ? serializer.Deserialize(bytes, caller) : new PhpReference(false);
 		}
 
 #endif
@@ -853,9 +798,6 @@ namespace PHP.Library
 				PhpException.ArgumentNull("vars");
 				return 0;
 			}
-
-            if (vars.Count == 0)
-                return 0;
 
             // unfortunately, type contains flags are combined with enumeration: 
             bool refs = (type & ExtractType.Refs) != 0;
@@ -1110,10 +1052,10 @@ namespace PHP.Library
 			foreach (KeyValuePair<IntStringKey, object> entry in gpcArray)
 			{
 				string name = prefix + entry.Key.ToString();
-				if (name == VariableName.GlobalsName)
+				if (name == AutoGlobals.GlobalsName)
 				{
 					PhpException.Throw(PhpError.Warning, LibResources.GetString("attempted_variable_override",
-                            VariableName.GlobalsName));
+							AutoGlobals.GlobalsName));
 				}
 				else
 				{

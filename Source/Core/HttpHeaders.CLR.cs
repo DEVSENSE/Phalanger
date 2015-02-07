@@ -11,9 +11,8 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
+using System.Collections.Generic;
 using System.Text;
 using System.Web;
 
@@ -29,8 +28,6 @@ namespace PHP.Core
 	/// </summary>
     public class HttpHeaders : IEnumerable<KeyValuePair<string, string>>
     {
-        protected readonly HttpContext/*!*/httpContext;
-        
         #region Initialization
 
         #region HttpRuntime.UsingIntegratedPipeline helper
@@ -63,7 +60,7 @@ namespace PHP.Core
         /// <returns>Instance of HttpHeaders object.</returns>
         public static HttpHeaders Create()
         {
-            if (UsingIntegratedPipeline)
+            if (/*HttpRuntime.*/UsingIntegratedPipeline)
                 return new IntegratedPipelineHeaders();
             
             return new HttpHeaders(true);
@@ -75,12 +72,12 @@ namespace PHP.Core
         /// </summary>
         private HttpHeaders(bool attach)
         {
-            this.httpContext = HttpContext.Current;
-                
             if (attach)
             {
-                if (this.httpContext != null)
-                    TryAttachApplication(this.httpContext.ApplicationInstance);
+                var context = HttpContext.Current;
+
+                if (context != null)
+                    TryAttachApplication(context.ApplicationInstance);
             }
         }
 
@@ -278,7 +275,7 @@ namespace PHP.Core
         {
             if (location != null)
             {
-                HttpResponse response = this.httpContext.Response;
+                HttpResponse response = HttpContext.Current.Response;
                 if (response.StatusCode == 302)
                     response.StatusCode = 200;
 
@@ -318,11 +315,11 @@ namespace PHP.Core
             if (contentType != null)
                 yield return new KeyValuePair<string, string>("content-type", contentType);
 
-            //if (this.httpContext != null)
+            //if (HttpContext.Current != null)
             //{
             //    try
             //    {
-            //        HttpResponse response = this.httpContext.Response;
+            //        HttpResponse response = HttpContext.Current.Response;
             //        foreach (string key in response.Headers.Keys)
             //        {
             //            string values = response.Headers[key];
@@ -397,7 +394,7 @@ namespace PHP.Core
         protected virtual void OnLocationSet(string location)
         {
             // set status code 302 unless the 201 or a 3xx status code has already been set 
-            HttpResponse response = this.httpContext.Response;
+            HttpResponse response = HttpContext.Current.Response;
             if (location != null && response.StatusCode != 201 && (response.StatusCode < 300 || response.StatusCode >= 400))
                 response.StatusCode = 302;
         }
@@ -422,22 +419,12 @@ namespace PHP.Core
 
         private class IntegratedPipelineHeaders : HttpHeaders
         {
-            #region Fields
-
-            /// <summary>
-            /// Value of "X-Powered-By" header.
-            /// </summary>
-            private static readonly string/*!*/PoweredByHeader = PhalangerVersion.ProductName + " " + PhalangerVersion.Current;
-
-            #endregion
-
             #region ctor
 
             public IntegratedPipelineHeaders()
                 :base(false)
             {
-                if (httpContext != null)
-                    httpContext.Response.Headers["X-Powered-By"] = PoweredByHeader;
+
             }
 
             #endregion
@@ -474,55 +461,41 @@ namespace PHP.Core
             {
                 get
                 {
-                    return base[header] ?? httpContext.Response.Headers[header];
+                    return base[header] ?? HttpContext.Current.Response.Headers[header];
                 }
                 set
                 {
                     base[header] = value;
 
                     // store the header immediately into the buffered response
-                    //header = header.ToLowerInvariant();
-                    var response = httpContext.Response;
+                    header = header.ToLower();
+                    var response = HttpContext.Current.Response;
 
-                    if (header.EqualsOrdinalIgnoreCase("location"))
+                    switch (header)
                     {
-                        response.RedirectLocation = location;
-                    }
-                    else if (header.EqualsOrdinalIgnoreCase("content-type"))
-                    {
-                        response.ContentType = contentType;
-                        response.ContentEncoding = contentEncoding.Encoding;
-                    }
-                    //else if (header.EqualsOrdinalIgnoreCase("set-cookie"))
-                    //{
-                    //    response.AddHeader(header, value);
-                    //}
-                    else if (header.EqualsOrdinalIgnoreCase("content-length"))
-                    {
-                        // ignore content-length header, it is set correctly by IIS. If set by the app, mostly it is not correct value (strlen() issue).
-                    }
-                    else if (header.EqualsOrdinalIgnoreCase("content-encoding"))
-                    {
-                        if (_contentEncoding != null) _contentEncoding.SetEncoding(response);// on IntegratedPipeline, set immediately to Headers
-                        else response.ContentEncoding = RequestContext.CurrentContext.DefaultResponseEncoding;
-                    }
-                    else if (header.EqualsOrdinalIgnoreCase("expires"))
-                    {
-                        SetExpires(response, value);
-                    }
-                    else if (header.EqualsOrdinalIgnoreCase("cache-control"))
-                    {
-                        CacheLimiter(response, value, null);// ignore invalid cache limiter?
-                    }
-                    else if (header.EqualsOrdinalIgnoreCase("set-cookie"))
-                    {
-                        if (value != null)
-                            response.AddHeader(header, value);
-                    }
-                    else
-                    {
-                        if (value != null) response.Headers[header] = value;
-                        else response.Headers.Remove(header);
+                        case "location":
+                            response.RedirectLocation = location;
+                            break;
+                        case "content-type":
+                            response.ContentType = contentType;
+                            response.ContentEncoding = contentEncoding.Encoding;
+                            break;
+                        case "content-length":
+                            break;  // ignore content-length header, it is set correctly by IIS. If set by the app, mostly it is not correct value (strlen() issue).
+                        case "content-encoding":
+                            if (_contentEncoding != null) _contentEncoding.SetEncoding(response);// on IntegratedPipeline, set immediately to Headers
+                            else response.ContentEncoding = RequestContext.CurrentContext.DefaultResponseEncoding;
+                            break;
+                        case "expires":
+                            SetExpires(response,value);
+                            break;
+                        case "cache-control":
+                            CacheLimiter(response, value, null);// ignore invalid cache limiter?
+                            break;
+                        default:
+                            if (value != null) response.Headers[header] = value;
+                            else response.Headers.Remove(header);
+                            break;
                     }
                 }
             }
@@ -537,7 +510,7 @@ namespace PHP.Core
             {
                 base.Clear();
 
-                HttpResponse response = httpContext.Response;
+                HttpResponse response = HttpContext.Current.Response;
 
                 response.RedirectLocation = null;
                 response.ContentEncoding = RequestContext.CurrentContext.DefaultResponseEncoding;
@@ -558,7 +531,7 @@ namespace PHP.Core
             //    {
             //        // return flushed headers from HttpContext (may be also set by ASP application)
 
-            //        var context = httpContext;
+            //        var context = HttpContext.Current;
             //        if (context != null)
             //        {
             //            HttpResponse response = context.Response;
