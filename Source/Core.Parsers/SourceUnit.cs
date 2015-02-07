@@ -6,9 +6,15 @@ using System.Text;
 
 using PHP.Core.Parsers;
 using PHP.Core.Text;
+using System.IO;
 
 namespace PHP.Core
 {
+    #region SourceUnit
+
+    /// <summary>
+    /// Represents single source document.
+    /// </summary>
     public abstract class SourceUnit : ILineBreaks
     {
         #region Fields & Properties
@@ -216,4 +222,109 @@ namespace PHP.Core
 
         #endregion
     }
+
+    #endregion
+
+    #region CodeSourceUnit
+
+    /// <summary>
+    /// Source unit from string representation of code.
+    /// </summary>
+    public class CodeSourceUnit : SourceUnit
+    {
+        #region Fields & Properties
+
+        public string/*!*/ Code { get { return code; } }
+        private readonly string/*!*/ code;
+
+        /// <summary>
+        /// Initial state of source code parser. Used by <see cref="Parse"/>.
+        /// </summary>
+        private readonly Lexer.LexicalStates initialState;
+
+        #endregion
+
+        #region SourceUnit
+
+        public CodeSourceUnit(string/*!*/ code, PhpSourceFile/*!*/ sourceFile,
+            Encoding/*!*/ encoding, Lexer.LexicalStates initialState)
+            : base(sourceFile, encoding, Text.LineBreaks.Create(code))
+        {
+            this.code = code;
+            this.initialState = initialState;
+        }
+
+        public override void Parse(ErrorSink/*!*/ errors, IReductionsSink/*!*/ reductionsSink, LanguageFeatures features)
+        {
+            Parser parser = new Parser();
+
+            using (StringReader source_reader = new StringReader(code))
+            {
+                ast = parser.Parse(this, source_reader, errors, reductionsSink, initialState, features);
+            }
+        }
+
+        public override string GetSourceCode(Text.Span span)
+        {
+            return span.GetText(code);
+        }
+
+        public override void Close()
+        {
+
+        }
+
+        #endregion
+
+        #region Helpers
+
+        /// <summary>
+        /// Creates source unit and parses given <paramref name="code"/>.
+        /// </summary>
+        /// <param name="code">Source code to be parsed.</param>
+        /// <param name="sourceFile">Source file used for error reporting.</param>
+        /// <param name="errors">Errors sink. Can be <c>null</c>.</param>
+        /// <param name="reductionsSink">Reduction sink. Can be <c>null</c>.</param>
+        /// <param name="features">Optional. Language features.</param>
+        /// <param name="initialState">
+        /// Optional. Initial parser state.
+        /// This allows e.g. to parse PHP code without encapsulating the code into opening and closing tags.</param>
+        /// <returns></returns>
+        public static SourceUnit/*!*/ParseCode(string code, PhpSourceFile sourceFile,
+            ErrorSink/*!*/ errors,
+            IReductionsSink/*!*/ reductionsSink = null,
+            LanguageFeatures features = LanguageFeatures.Php5,
+            Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL)
+        {
+            var/*!*/unit = new CodeSourceUnit(code, sourceFile, Encoding.UTF8, initialState);
+            unit.Parse(errors, reductionsSink, features);
+            unit.Close();
+
+            //
+            return unit;
+        }
+
+        #endregion
+
+        //#region ILineBreaks Members
+
+        //public override int GetLineFromPosition(int position)
+        //{
+        //    // shift the position
+        //    return base.GetLineFromPosition(position) + this.Line;
+        //}
+
+        //public override void GetLineColumnFromPosition(int position, out int line, out int column)
+        //{
+        //    // shift the position
+        //    base.GetLineColumnFromPosition(position, out line, out column);
+        //    if (line == 0)
+        //        column += this.Column;
+        //    line += this.Line;
+        //}
+
+        //#endregion
+    }
+
+    #endregion
 }
