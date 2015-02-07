@@ -501,9 +501,14 @@ namespace PHP.Core
                     {
                         CacheLimiter(response, value, null);// ignore invalid cache limiter?
                     }
+                    else if (header.EqualsOrdinalIgnoreCase("set-cookie"))
+                    {
+                        if (value != null)
+                            response.AddHeader(header, value);
+                    }
                     else
                     {
-                        if (value != null) response.AddHeader(header, value);//response.Headers[header] = value;
+                        if (value != null) response.Headers[header] = value;
                         else response.Headers.Remove(header);
                     }
                 }

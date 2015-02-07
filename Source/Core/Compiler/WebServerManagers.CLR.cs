@@ -574,7 +574,7 @@ namespace PHP.Core
 				// removes assembly files (do not remove a multiscript assembly):  
 				foreach (ScriptAssembly removed_assembly in removed_assemblies)
 				{
-					if (!removed_assembly.IsMultiScript)
+                    if (!removed_assembly.IsMultiScript && !string.IsNullOrEmpty(removed_assembly.Path))
 					{
 						Debug.WriteLine("WATCHER", "Deleting file '{0}'.", removed_assembly.Path);
 
