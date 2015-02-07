@@ -308,6 +308,8 @@ namespace PHP.Core.Parsers
 		protected string hereDocLabel = null;
 		protected Stack<LexicalStates> StateStack { get { return stateStack; } set { stateStack = value; } }
 
+        protected void _yymore() { yymore(); }
+
 		#region Token Buffer Interpretation
 
 		public int GetTokenByteLength(Encoding/*!*/ encoding)
