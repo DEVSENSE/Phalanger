@@ -365,32 +365,37 @@ namespace Lex
 			this.outstream.WriteLine();
 			if (this.spec.CountLines || this.spec.CountColumns || this.spec.CountChars)
 			{
-                this.outstream.WriteLine("private void AdvanceEndPosition(int from, int to)");
-                this.outstream.WriteLine("{"); this.outstream.Indent++;
-                if (this.spec.CountColumns) this.outstream.WriteLine("int last_eoln = from - token_end_pos.Column;");
-                if (this.spec.CountColumns || this.spec.CountLines)
-                {
-                    this.outstream.WriteLine("for (int i = from; i < to; i++)");
-                    this.outstream.WriteLine("{"); this.outstream.Indent++;
-                    this.outstream.WriteLine("char ch = buffer[i];");
-                    this.outstream.WriteLine("// Line endings supported by Visual Studio:");
-                    this.outstream.WriteLine("// CRLF:  Windows, U+000D + U+000A");
-                    this.outstream.WriteLine("// LF:    Unix, U+000A");
-                    this.outstream.WriteLine("// CR:    Mac, U+000D");
-                    this.outstream.WriteLine("// LS:    Line Separator, U+2028");
-                    this.outstream.WriteLine("// PS:    Paragraph Separator, U+2029");
-                    this.outstream.WriteLine("if ((ch == '\n') || // CRLF, LF"); this.outstream.Indent++;
-                    this.outstream.WriteLine("(ch == '\r' && ((i + 1 < buffer.Length) ? buffer[i + 1] : '\0') != '\n') ||    // CR, not CRLF");
-                    this.outstream.WriteLine("(ch == (char)0x2028) || ");
-                    this.outstream.WriteLine("(ch == (char)0x2029)) {");
-                    if (this.spec.CountLines) this.outstream.WriteLine("token_end_pos.Line++;");
-                    if (this.spec.CountColumns) this.outstream.WriteLine("last_eoln = i;");
-                    this.outstream.Indent--; this.outstream.WriteLine("}");
-                    this.outstream.Indent--; this.outstream.WriteLine("}");
-                }
-                this.outstream.WriteLine("token_end_pos.Char += to - from;");
-                if (this.spec.CountColumns) this.outstream.WriteLine("token_end_pos.Column = to - last_eoln;");
-                this.outstream.Indent--; this.outstream.WriteLine("}");
+                WriteCode(@"
+private void AdvanceEndPosition(int from, int to)
+{
+	int last_eoln = from - token_end_pos.Column;
+
+    for (int i = from; i < to; i++)
+	{
+        char ch = buffer[i];
+        
+        // Line endings supported by Visual Studio:
+
+        // CRLF:  Windows, U+000D + U+000A
+        // LF:    Unix, U+000A
+        // CR:    Mac, U+000D
+        // LS:    Line Separator, U+2028
+        // PS:    Paragraph Separator, U+2029
+
+        if ((ch == '\n') || // CRLF, LF
+            (ch == '\r' && ((i + 1 < buffer.Length) ? buffer[i + 1] : '\0') != '\n') ||    // CR, not CRLF
+            (ch == (char)0x2028) || 
+            (ch == (char)0x2029))
+        {
+            token_end_pos.Line++;
+            last_eoln = i;
+        }
+	}
+
+	token_end_pos.Char += to - from;
+	token_end_pos.Column = to - last_eoln;
+}
+");
 			}
             WriteCode(
                 @"
