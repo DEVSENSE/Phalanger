@@ -682,9 +682,25 @@ namespace PHP.Library
 
             /// <summary>
             /// Temporarily used <see cref="StringBuilder"/>. Remember it to save GC.
+            /// This method always returns the same instance of <see cref="StringBuilder"/>, it will always reset its <see cref="StringBuilder.Length"/> to <c>0</c>.
             /// </summary>
-            private StringBuilder tmpStringBuilder;
+            private StringBuilder/*!*/GetTemporaryStringBuilder(int initialCapacity)
+            {
+                var tmp = tmpStringBuilder;
 
+                if (tmp != null)
+                {
+                    tmp.Length = 0;
+                }
+                else
+                {
+                    tmpStringBuilder = tmp = new StringBuilder(initialCapacity, int.MaxValue);
+                }
+
+                return tmp;
+            }
+            private StringBuilder tmpStringBuilder;
+            
 			#endregion
 
 			#region Construction
@@ -1037,61 +1053,21 @@ namespace PHP.Library
 				}
 
                 // reconstruct the number:
-                StringBuilder number;
-                if (tmpStringBuilder == null) number = (tmpStringBuilder = new StringBuilder(8));
-                else { number = tmpStringBuilder; number.Length = 0; }
-
+                StringBuilder number = GetTemporaryStringBuilder(16);
                 if (sign < 0) number.Append('-');
 
-				// [0-9]*
-                while (lookAhead >= '0' && lookAhead <= '9')
+                // [^;]*
+                while (Tokens.Semicolon != lookAhead)
                 {
                     number.Append(lookAhead);
                     Consume();
                 }
 
-                // [.]?[0-9]*
-				if (lookAhead == '.')
-				{
-                    number.Append('.');
-                    Consume();
-                    
-                    while (lookAhead >= '0' && lookAhead <= '9')
-                    {
-                        number.Append(lookAhead);
-                        Consume();
-                    }
-				}
+                double result;
+                if (!Double.TryParse(number.ToString(), NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, NumberFormatInfo.InvariantInfo, out result))
+                    ThrowUnexpected();
 
-                // ([eE][+-]?[0-9]+)?
-				if (lookAhead == 'e' || lookAhead == 'E')
-				{
-                    number.Append('e');
-					Consume();
-
-					// exponent + / -
-                    if (lookAhead == '+')
-                    {
-                        number.Append('+');
-                        Consume();
-                    }
-                    else if (lookAhead == '-')
-                    {
-                        number.Append('-');
-                        Consume();
-                    }
-
-					// exponent
-					if (!Char.IsDigit(lookAhead)) ThrowUnexpected();
-                    while (lookAhead >= '0' && lookAhead <= '9')
-                    {
-                        number.Append(lookAhead);
-                        Consume();
-                    }
-				}
-
-				// parse the number
-                return Double.Parse(number.ToString(), NumberFormatInfo.InvariantInfo);
+                return result;
 			}
 
 			/// <summary>
@@ -1158,7 +1134,7 @@ namespace PHP.Library
             /// <returns></returns>
             private string ReadStringLegacy(int length)
             {
-                StringBuilder sb = new StringBuilder(length);
+                var sb = GetTemporaryStringBuilder(length);
 
                 Consume(Tokens.Quote);
                 while (length-- > 0) sb.Append(ConsumeLegacy());
