@@ -10,70 +10,117 @@
 
 */
 
-using System;
+using System.Reflection.Emit;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using System.Diagnostics;
-using System.Reflection;
-using System.Reflection.Emit;
-
-using PHP.Core.AST;
 using PHP.Core.Parsers;
 
-namespace PHP.Core.Compiler.AST
+namespace PHP.Core.AST
 {
-    partial class NodeCompilers
-    {
-        [NodeCompiler(typeof(EchoStmt), Singleton = true)]
-        sealed class EchoStmtCompiler : StatementCompiler<EchoStmt>
+	/// <summary>
+	/// Represents an <c>echo</c> statement.
+	/// </summary>
+	public sealed class EchoStmt : Statement
+	{
+		/// <summary>
+		/// Array of parameters - Expressions.
+		/// </summary>
+		private List<Expression>/*!*/ parameters;
+        /// <summary>Array of parameters - Expressions.</summary>
+        public List<Expression> /*!*/ Parameters { get { return parameters; } }
+
+        /// <summary>
+        /// Returns <c>true</c> if this <see cref="EchoStmt"/> represents HTML code.
+        /// </summary>
+        public bool IsHtmlCode { get { return isHtmlCode; } }
+        private readonly bool isHtmlCode;
+
+		public EchoStmt(Position position, List<Expression>/*!*/ parameters)
+			: base(position)
+		{
+			Debug.Assert(parameters != null);
+			this.parameters = parameters;
+            this.isHtmlCode = false;
+		}
+
+        /// <summary>
+        /// Initializes new echo statement as a representation of HTML code.
+        /// </summary>
+        public EchoStmt(Position position, string htmlCode)
+            : base(position)
         {
-            internal override Core.AST.Statement Analyze(EchoStmt node, Analyzer analyzer)
-            {
-                if (analyzer.IsThisCodeUnreachable())
-                {
-                    analyzer.ReportUnreachableCode(node.Span);
-                    return EmptyStmt.Unreachable;
-                }
-
-                ExInfoFromParent info = ExInfoFromParent.DefaultExInfo;
-                
-                var parameters = node.Parameters;
-                for (int i = 0; i < parameters.Length; i++)
-                {
-                    parameters[i] = parameters[i].Analyze(analyzer, info).Literalize();
-                }
-
-                return node;
-            }
-
-            /// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
-            /// <param name="node">Instance.</param>
-            /// <remarks>
-            /// Nothing is expected on the evaluation stack. Nothing is left on the evaluation stack.
-            /// </remarks>
-            internal override void Emit(EchoStmt node, CodeGenerator codeGenerator)
-            {
-                Statistics.AST.AddNode("EchoStmt");
-
-                codeGenerator.MarkSequencePoint(node.Span);
-                foreach (Expression parameter in node.Parameters)
-                {
-                    // skip empty evaluated expression
-                    var value = parameter.GetValue();
-                    if (parameter.HasValue() &&
-                        (
-                            value == null ||
-                            (value is string && ((string)value) == string.Empty) ||
-                            Convert.ObjectToPhpBytes(value).Length == 0
-                        ))
-                    {
-                        continue;
-                    }
-
-                    // emit the echo of parameter expression
-                    codeGenerator.EmitEcho(parameter);
-                }
-            }
+            this.parameters = new List<Expression>(1) { new StringLiteral(position, htmlCode) };
+            this.isHtmlCode = true;
         }
-    }
+
+		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Statement.Analyze"]/*'/>
+		internal override Statement Analyze(Analyzer/*!*/ analyzer)
+		{
+			if (analyzer.IsThisCodeUnreachable())
+			{
+				analyzer.ReportUnreachableCode(position);
+				return EmptyStmt.Unreachable;
+			}
+
+			ExInfoFromParent info = ExInfoFromParent.DefaultExInfo;
+			for (int i = 0; i < parameters.Count; i++)
+			{
+				parameters[i] = parameters[i].Analyze(analyzer, info).Literalize();
+			}
+
+			return this;
+		}
+
+		internal override bool SkipInPureGlobalCode()
+		{
+			StringLiteral literal;
+			if (parameters.Count == 1 && (literal = parameters[0] as StringLiteral) != null)
+			{
+				return StringUtils.IsWhitespace((string)literal.Value);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
+		/// <remarks>
+		/// Nothing is expected on the evaluation stack. Nothing is left on the evaluation stack.
+		/// </remarks>
+		internal override void Emit(CodeGenerator/*!*/ codeGenerator)
+		{
+			Statistics.AST.AddNode("EchoStmt");
+
+			codeGenerator.MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 2);
+			foreach (Expression parameter in parameters)
+			{
+                // skip empty evaluated expression
+                if (parameter.HasValue &&
+                    (
+                        parameter.Value == null ||
+                        (parameter.Value is string && ((string)parameter.Value) == string.Empty) ||
+                        Convert.ObjectToPhpBytes(parameter.Value).Length == 0
+                    ))
+                {
+                    continue;
+                }
+
+                // emit the echo of parameter expression
+				codeGenerator.EmitEcho(parameter);
+			}
+		}
+
+        /// <summary>
+        /// Call the right Visit* method on the given Visitor object.
+        /// </summary>
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitEchoStmt(this);
+        }
+	}
 }

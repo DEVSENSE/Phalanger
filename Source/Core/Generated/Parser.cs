@@ -2210,9 +2210,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
         return;
       case 140: // non_empty_statement -> T_INLINE_HTML 
 { 
-			List<Expression> list = new List<Expression>(1); 
-			list.Add(new StringLiteral(yypos, (string)value_stack.array[value_stack.top-1].yyval.Object)); 
-			yyval.Object = new EchoStmt(yypos, list); 
+			yyval.Object = new EchoStmt(yypos, (string)value_stack.array[value_stack.top-1].yyval.Object); 
 		}
         return;
       case 141: // non_empty_statement -> expression_statement 
