@@ -1817,8 +1817,6 @@ namespace PHP.Core
 							CoreResources.GetString("stream_seek_filtered", (textWriteFilter != null) ? "text" : "filtered"));
 					}
 					return SeekInternal(offset, current, whence);
-                    
-					break;
 			}
 			return true;
 			// CHECKME: [PhpStream.Seek]
