@@ -823,7 +823,10 @@ namespace PHP.Library
 
 		#region exp, expm1, log, log10, log1p, pow, sqrt, hypot
 
-		[ImplementsFunction("exp"/*, FunctionImplOptions.Special*/)]
+        /// <summary>
+        /// Returns <c>e</c> raised to the power of <paramref name="x"/>.
+        /// </summary>
+        [ImplementsFunction("exp"/*, FunctionImplOptions.Special*/)]
         [PureFunction]
         public static double Exp(double x)
 		{
@@ -844,21 +847,27 @@ namespace PHP.Library
             return Math.Exp(x) - 1.0;   // TODO: implement exp(x)-1 for x near to zero
 		}
 
-		[ImplementsFunction("log10")]
+        /// <summary>
+        /// Returns the base-10 logarithm of <paramref name="x"/>.
+        /// </summary>
+        [ImplementsFunction("log10")]
         [PureFunction]
         public static double Log10(double x)
 		{
 			return Math.Log10(x);
 		}
 
-		[ImplementsFunction("log"/*, FunctionImplOptions.Special*/)]
+        [ImplementsFunction("log"/*, FunctionImplOptions.Special*/)]
         [PureFunction]
         public static double Log(double x)
 		{
 			return Math.Log(x);
 		}
 
-		[ImplementsFunction("log"/*, FunctionImplOptions.Special*/)]
+        /// <summary>
+        /// If the optional <paramref name="logBase"/> parameter is specified, log() returns log(<paramref name="logBase"/>) <paramref name="x"/>, otherwise log() returns the natural logarithm of <paramref name="x"/>.
+        /// </summary>
+        [ImplementsFunction("log"/*, FunctionImplOptions.Special*/)]
         [PureFunction]
         public static double Log(double x, double logBase)
 		{
@@ -879,6 +888,9 @@ namespace PHP.Library
             return Math.Log(x + 1.0);   // TODO: implement log(x+1) for x near to zero
 		}
 
+        /// <summary>
+        /// Returns <paramref name="base"/> raised to the power of <paramref name="exp"/>.
+        /// </summary>
 		[ImplementsFunction("pow")]
         [PureFunction]
         public static object Power(object @base, object exp)
