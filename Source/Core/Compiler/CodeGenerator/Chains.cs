@@ -777,7 +777,7 @@ namespace PHP.Core
 		/// Emits IL instructions that ensure that a static field is of <see cref="PhpObject"/> or <see cref="PhpArray"/>
 		/// type. Handles the case when field name is unknown at compile time (see <see cref="AST.IndirectStFldUse"/>).
 		/// </summary>
-		/// <param name="typeName">The class name (identifier index).</param>
+        /// <param name="typeRef">The class name (identifier index).</param>
 		/// <param name="propertyName">The property name.</param>
 		/// <param name="propertyNameExpr">The expression that evaluates to property name.</param>
 		/// <param name="ensureArray">Whether to ensure that static field is an array (or an object).</param>
@@ -785,7 +785,7 @@ namespace PHP.Core
 		/// Nothing is expected on the evaluation stack. A <see cref="PhpArray"/> or <see cref="DObject"/> is left on the
 		/// evaluation stack.
 		/// </remarks>
-		public PhpTypeCode EmitEnsureStaticProperty(GenericQualifiedName typeName, VariableName? propertyName,
+		public PhpTypeCode EmitEnsureStaticProperty(TypeRef typeRef, VariableName? propertyName,
 			Expression propertyNameExpr, bool ensureArray)
 		{
 			Debug.Assert(propertyName != null ^ propertyNameExpr != null);
@@ -793,7 +793,7 @@ namespace PHP.Core
 			ResolveTypeFlags flags = ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors;
 
 			// LOAD Operators.EnsureStaticFieldIs[Object|Array](<type desc>, <field name>, <type desc>, <context>)
-			codeGenerator.EmitLoadTypeDescOperator(typeName.QualifiedName.ToString(), null, flags);
+            typeRef.EmitLoadTypeDesc(codeGenerator, flags);
 
 			if (propertyNameExpr != null)
 				codeGenerator.EmitBoxing(propertyNameExpr.Emit(codeGenerator));
@@ -824,7 +824,7 @@ namespace PHP.Core
 		/// Nothing is expected on the evaluation stack. A <see cref="PhpObject"/> or <see cref="DObject"/> is left
 		/// on the evaluation stack or the last emitted instruction is unconditional branch to <see cref="Chain.ErrorLabel"/>.
 		/// </remarks>
-		public PhpTypeCode EmitEnsureStaticProperty(DProperty property, GenericQualifiedName className,
+		public PhpTypeCode EmitEnsureStaticProperty(DProperty property, TypeRef typeRef,
 			VariableName fieldName, bool ensureArray)
 		{
 			ILEmitter il = codeGenerator.IL;
@@ -838,7 +838,7 @@ namespace PHP.Core
 				EmitErrorCheck(ensureArray);
 				return (ensureArray) ? PhpTypeCode.PhpArray : PhpTypeCode.DObject;
 			}
-			else return EmitEnsureStaticProperty(className, fieldName, null, ensureArray);
+            else return EmitEnsureStaticProperty(typeRef, fieldName, null, ensureArray);
 		}
 
 		/// <summary>

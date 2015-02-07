@@ -843,13 +843,24 @@ namespace PHP.Core.Reflection
 
 		public override KnownRoutine Constructor { get { return null; } }
 
-		public UnknownType(string/*!*/ fullName)
+        /// <summary>
+        /// Optionally a <see cref="TypeRef"/> instead of full name.
+        /// </summary>
+        private readonly TypeRef typeRef;
+
+        public UnknownType(string/*!*/ fullName)
+            : this(fullName, null)
+        {
+        }
+
+        public UnknownType(string/*!*/ fullName, TypeRef typeRef)
             : base(new UnknownTypeDesc()/*use own instance here, not a singleton*/, fullName)
 		{
 			Debug.Assert(fullName != null);
+            this.typeRef = typeRef;
 		}
 
-		public override string GetFullName()
+        public override string GetFullName()
 		{
 			Debug.Fail("full name is set by ctor");
 			throw null;
@@ -867,23 +878,26 @@ namespace PHP.Core.Reflection
 		  DRoutine/*!*/ constructor, CallSignature callSignature, bool runtimeVisibilityCheck)
 		{
 			Debug.Assert(constructor.IsUnknown);
-			codeGenerator.EmitNewOperator(null, null, (constructedType != null) ? constructedType : (DType)this, callSignature);
+            codeGenerator.EmitNewOperator(null, typeRef, (constructedType != null) ? constructedType : (DType)this, callSignature);
 			return PhpTypeCode.Object;
 		}
 
 		internal override void EmitInstanceOf(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType)
 		{
-			codeGenerator.EmitInstanceOfOperator(null, null, (constructedType != null) ? constructedType : (DType)this);
+            codeGenerator.EmitInstanceOfOperator(null, typeRef, (constructedType != null) ? constructedType : (DType)this);
 		}
 
 		internal override void EmitTypeOf(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType)
 		{
-			codeGenerator.EmitTypeOfOperator(null, null, (constructedType != null) ? constructedType : (DType)this);
+            codeGenerator.EmitTypeOfOperator(null, typeRef, (constructedType != null) ? constructedType : (DType)this);
 		}
 
 		internal override void EmitLoadTypeDesc(CodeGenerator/*!*/ codeGenerator, ResolveTypeFlags flags)
 		{
-			codeGenerator.EmitLoadTypeDescOperator(this.FullName, null, flags);
+            if (typeRef != null)
+                typeRef.EmitLoadTypeDesc(codeGenerator, flags);
+            else
+			    codeGenerator.EmitLoadTypeDescOperator(this.FullName, null, flags);
 		}
 
 		internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)

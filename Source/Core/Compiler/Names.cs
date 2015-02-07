@@ -396,7 +396,7 @@ namespace PHP.Core
 
         public bool IsReservedClassName
         {
-            get { return IsParentClassName || IsSelfClassName; }
+            get { return IsParentClassName || IsSelfClassName || IsStaticClassName; }
         }
 
         public bool IsAutoloadName

@@ -180,34 +180,53 @@ namespace PHP.Core.AST
 	{
 		internal override Operations Operation { get { return Operations.ClassConstUse; } }
 
-		public GenericQualifiedName ClassName { get { return className; } }
-		private GenericQualifiedName className;
+        /// <summary>
+        /// Class name. May have an empty <see cref="Name"/> if the class is referenced indirectly.
+        /// </summary>
+        public GenericQualifiedName ClassName { get { return this.typeRef.GenericQualifiedName; } }
+
+        /// <summary>
+        /// Class type reference.
+        /// </summary>
+        public TypeRef/*!*/TypeRef { get { return this.typeRef; } }
+        private readonly TypeRef/*!*/typeRef;
+        private DType/*!A*/type;
 
 		public VariableName Name { get { return name; } }
-		private VariableName name;
-
-		private DType/*!A*/ type;
+		private readonly VariableName name;
 
 		bool runtimeVisibilityCheck;
 
 		public ClassConstUse(Position position, GenericQualifiedName className, string/*!*/ name)
-			: base(position)
+			: this(position, DirectTypeRef.FromGenericQualifiedName(position, className), name)
 		{
-			this.className = className;
-			this.name = new VariableName(name);
 		}
+
+        public ClassConstUse(Position position, TypeRef/*!*/typeRef, string/*!*/ name)
+            : base(position)
+        {
+            Debug.Assert(typeRef != null);
+            Debug.Assert(!string.IsNullOrEmpty(name));
+
+            this.typeRef = typeRef;
+			this.name = new VariableName(name);
+        }
 
 		internal override Evaluation EvaluatePriorAnalysis(SourceUnit/*!*/ sourceUnit)
 		{
-			constant = sourceUnit.TryResolveClassConstantGlobally(className, name);
+            var className = this.ClassName;
+            if (!string.IsNullOrEmpty(className.QualifiedName.Name.Value))
+                constant = sourceUnit.TryResolveClassConstantGlobally(className, name);
+
 			return (constant != null && constant.HasValue) ? new Evaluation(this, constant.Value) : new Evaluation(this);
 		}
 
 		internal override void ResolveName(Analyzer/*!*/ analyzer)
 		{
-			type = analyzer.ResolveTypeName(className, analyzer.CurrentType, analyzer.CurrentRoutine, position, false);
+            this.typeRef.Analyze(analyzer);
+            this.type = this.typeRef.ResolvedTypeOrUnknown;
 
-			// analyze constructed type (we are in the full analysis):
+            // analyze constructed type (we are in the full analysis):
 			analyzer.AnalyzeConstructedType(type);
 
 			constant = analyzer.ResolveClassConstantName(type, name, position, analyzer.CurrentType, analyzer.CurrentRoutine,
@@ -222,7 +241,7 @@ namespace PHP.Core.AST
 
 			if (access == AccessType.Read)
 			{
-				return constant.EmitGet(codeGenerator, type as ConstructedType, runtimeVisibilityCheck, null);
+                return constant.EmitGet(codeGenerator, type as ConstructedType, runtimeVisibilityCheck, null);
 			}
 			else
 			{
@@ -246,9 +265,9 @@ namespace PHP.Core.AST
 
 	#endregion
 
-	#region PseudoConstUse
+    #region PseudoConstUse
 
-	/// <summary>
+    /// <summary>
 	/// Pseudo-constant use (PHP keywords: __LINE__, __FILE__, __DIR__, __FUNCTION__, __METHOD__, __CLASS__, __NAMESPACE__)
 	/// </summary>
 	public sealed class PseudoConstUse : Expression

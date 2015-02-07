@@ -391,23 +391,31 @@ namespace PHP.Core.Parsers
             }
 		}
 
-		private VariableUse CreateStaticFieldUse(Position position, GenericQualifiedName/*!*/ className, CompoundVarUse/*!*/ field)
+        private VariableUse CreateStaticFieldUse(Position position, CompoundVarUse/*!*/ className, CompoundVarUse/*!*/ field)
+        {
+            return CreateStaticFieldUse(position, new IndirectTypeRef(position, className, TypeRef.EmptyList), field);
+        }
+        private VariableUse CreateStaticFieldUse(Position position, GenericQualifiedName/*!*/ className, CompoundVarUse/*!*/ field)
+        {
+            return CreateStaticFieldUse(position, DirectTypeRef.FromGenericQualifiedName(position, className), field);
+        }
+		private VariableUse CreateStaticFieldUse(Position position, TypeRef/*!*/ typeRef, CompoundVarUse/*!*/ field)
 		{
 			DirectVarUse dvu;
 			IndirectVarUse ivu;
 
 			if ((dvu = field as DirectVarUse) != null)
 			{
-				return new DirectStFldUse(position, className, dvu.VarName);
+                return new DirectStFldUse(position, typeRef, dvu.VarName);
 			}
 			else if ((ivu = field as IndirectVarUse) != null)
 			{
-				return new IndirectStFldUse(position, className, ivu.VarNameEx);
+                return new IndirectStFldUse(position, typeRef, ivu.VarNameEx);
 			}
 			else
 			{
 				ItemUse iu = (ItemUse)field;
-				iu.Array = CreateStaticFieldUse(iu.Array.Position, className, (CompoundVarUse)iu.Array);
+                iu.Array = CreateStaticFieldUse(iu.Array.Position, typeRef, (CompoundVarUse)iu.Array);
 				return iu;
 			}
 		}
