@@ -503,11 +503,18 @@ namespace PHP.Core.Parsers
 		protected double GetTokenAsDouble(int startIndex)
 		{
             string str = new string(buffer, token_start, token_end - token_start);
-            
-            return double.Parse(
-                str,
-                NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent,
-                CultureInfo.InvariantCulture);
+
+            try
+            {
+                return double.Parse(
+                    str,
+                    NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent,
+                    CultureInfo.InvariantCulture);
+            }
+            catch (OverflowException)
+            {
+                return (str.Length > 0 && str[0] == '-') ? double.NegativeInfinity : double.PositiveInfinity;
+            }
 		}
 
         //protected void GetTokenAsQualifiedName(int startIndex, List<string>/*!*/ result)
