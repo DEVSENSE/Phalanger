@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2004-2012 Pavel Novak, Tomas Matousek, DEVSENSE.
+ Copyright (c) 2004-2010 Pavel Novak, Tomas Matousek and Daniel Balas.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
  which can be found in the root of the Phalanger distribution. By using this software 
@@ -22,7 +22,6 @@ using System.Net;
 using System.IO;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Diagnostics;
 
 namespace PHP.Library
 {
@@ -72,20 +71,34 @@ namespace PHP.Library
 			// get current configuration, we need some fields for mailing
 			LibraryConfiguration config = LibraryConfiguration.Local;
 
+			// set basic mail fields
+            string from = null;
+
+			if (!String.IsNullOrEmpty(config.Mailer.DefaultFromHeader))
+			{
+				try
+				{
+					from = config.Mailer.DefaultFromHeader;
+				}
+				catch (FormatException ex)
+				{
+                    PhpException.Throw(PhpError.Warning, LibResources.GetString("cannot_send_email", ex.Message));
+					return false;
+				}
+			}
+
 			// set SMTP server we are using
             RawSmtpClient client = new RawSmtpClient(config.Mailer.SmtpServer, config.Mailer.SmtpPort);
-
-            // X-PHP-Originating-Script
-            if (config.Mailer.AddXHeader)
-                additionalHeaders = "X-PHP-Originating-Script: 1:" + ScriptContext.CurrentContext.MainScriptFile.RelativePath.Path + "\n" + additionalHeaders;
 
             try
             {
                 client.Connect();
                 client.SendMessage(
-                    config.Mailer.DefaultFromHeader, to,
+                    from, to,
                     subject,
-                    additionalHeaders,
+                    string.Format(
+                        "X-PHP-Originating-Script: 1:{0}\n{1}", ScriptContext.CurrentContext.MainScriptFile.RelativePath.Path,
+                        additionalHeaders),
                     message);
                 return true;
             }
@@ -96,11 +109,7 @@ namespace PHP.Library
                 while ((inner = inner.InnerException) != null)
                     error_message += "; " + inner.Message;
 
-                PhpException.Throw(PhpError.Warning, LibResources.GetString("cannot_send_email", error_message)
-#if DEBUG
-                    + "\n\n" + e.StackTrace
-#endif
-                    );
+                PhpException.Throw(PhpError.Warning, LibResources.GetString("cannot_send_email", error_message) + "\n" + e.StackTrace);
                 return false;
             }
             finally
@@ -299,15 +308,16 @@ namespace PHP.Library
 		/// <returns><c>MailPriority</c> specified by header value.</returns>
 		private static MailPriority ExtractPriority(string p)
 		{
-            switch (p.Trim().ToLowerInvariant())
+			switch (p.Trim().ToLower())
 			{
 				case "high":
 					return MailPriority.High;
 				case "low":
 					return MailPriority.Low;
 				case "normal":
+					return MailPriority.Normal;
 				default:
-                    return MailPriority.Normal;
+					goto case "normal";
 			}
 		}
 
@@ -358,7 +368,18 @@ namespace PHP.Library
 		#endregion
 
         #region RawSmtpClient
-        
+        /*
+         
+         Copyright (c) 2010 Daniel Balas
+
+         The use and distribution terms for this software are contained in the file named License.txt, 
+         which can be found in the root of the Phalanger distribution. By using this software 
+         in any fashion, you are agreeing to be bound by the terms of this license.
+         
+         You must not remove this notice from this software.
+
+        */
+
         /// <summary>
         /// Raw SMTP client serving the needs of PHP mail functions. This is reimplemented mainly because .NET SmtpClient provides
         /// certain level of abstraction which is incompatible with mail function usage. Currently not as much advanced, but it can easily be.
@@ -384,20 +405,20 @@ namespace PHP.Library
             /// <summary>
             /// Gets or sets a value indicating whether this client should implicitly use ESMTP to connect to the server.
             /// </summary>
-            public bool UseExtendedSmtp { get { return _useExtendedSmtp; } }
+            public bool UseExtendedSmtp { get { return _useExtendedSmtp; } set { _useExtendedSmtp = value; } }
             private bool _useExtendedSmtp;
 
             /// <summary>
             /// Gets host name set for this client to connect to.
             /// </summary>
-            public string/*!*/HostName { get { return _hostName; } }
-            private readonly string/*!*/_hostName;
+            public string HostName { get { return _hostName; } }
+            private string _hostName;
 
             /// <summary>
             /// Gets port number set for this client to connect to.
             /// </summary>
             public int Port { get { return _port; } }
-            private readonly int _port;
+            private int _port;
 
             /// <summary>
             /// Gets a list of SMTP extensions supported by current connection.
@@ -423,7 +444,7 @@ namespace PHP.Library
             /// <param name="port">Port on which SMTP server runs.</param>
             public RawSmtpClient(string hostName, int port)
             {
-                _hostName = hostName ?? string.Empty;
+                _hostName = hostName;
                 _port = port;
                 _connected = false;
                 _useExtendedSmtp = true;
@@ -662,9 +683,8 @@ namespace PHP.Library
             }
 
             /// <summary>
-            /// Starts mail transaction and prepares the data lines from supplied message properties.
-            /// Processes provided headers to determine cc, bcc and from values.
-            /// All data will be send as ASCII if possible.
+            /// Prepares the data lines from supplied message properties. All data will be send as
+            /// ASCII if possible, otherwise 
             /// </summary>
             /// <param name="from">Sender of the mail.</param>
             /// <param name="to">Recipients of the mail.</param>
@@ -672,11 +692,10 @@ namespace PHP.Library
             /// <param name="headers">Additional headers.</param>
             /// <param name="body">Message body.</param>
             /// <returns>List of message body lines.</returns>
-            private IEnumerable<string>/*!*/ProcessMessageHeaders(string from, string to, string subject, string headers, string body)
+            private IEnumerable<string>/*!*/ProcessMessageData(string from, string to, string subject, string headers, string body)
             {
                 Dictionary<string, int> headerHashtable = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
                 List<KeyValuePair<string, string>> headerList = new List<KeyValuePair<string, string>>();
-                List<string> recipients = new List<string>(1) { to };
 
                 //parse headers
                 if (headers != null)
@@ -697,26 +716,12 @@ namespace PHP.Library
                                 headerList.Add(new KeyValuePair<string, string>(name, value));
 
                                 // process known headers:
-                                if (from == null && name.EqualsOrdinalIgnoreCase("from"))
-                                    from = value;
                                 if (name.EqualsOrdinalIgnoreCase("cc") || name.EqualsOrdinalIgnoreCase("bcc"))
-                                    recipients.Add(value); //PostRcptTo(value); // postponed until we are discovering from address
+                                    PostRcptTo(value);
                             }
                         }
                     }
 
-                // check from address:
-                if (from == null)
-                    throw new SmtpException(LibResources.GetString("smtp_sendmail_from_not_set"));
-
-                // start mail transaction:
-                Post(FormatEmailAddress(from, "MAIL FROM:<{0}>"));
-                Ack("250");
-
-                for (int i = 0; i < recipients.Count; i++)
-                    PostRcptTo(recipients[i]);
-
-                // additional message lines:
                 List<string> ret = new List<string>();
 
                 // Date:
@@ -748,7 +753,7 @@ namespace PHP.Library
                 while (bodyReader.Peek() != -1)
                     ret.Add(bodyReader.ReadLine());
 
-                return ret;
+                return ret.ToArray();
             }
 
             /// <summary>
@@ -849,11 +854,16 @@ namespace PHP.Library
                 if (!_connected)
                     throw new SmtpException("NOT CONNECTED");
                 
-                // start mail transaction and
-                // process headers (may contain additional recipients and from address)
+                // start mail transaction
+                Post(FormatEmailAddress(from, "MAIL FROM:<{0}>"));
+                Ack("250");
+
+                PostRcptTo(to);
+
+                // process headers (may contain additional recipients)
                 // and prepare data that is broken up to form data lines.
                 // Note ProcessMessageData may add additional recipients, so it must be called before "DATA" section.
-                var dataLines = ProcessMessageHeaders(from, to, subject, headers, body);
+                var dataLines = ProcessMessageData(from, to, subject, headers, body);
 
                 // send DATA
                 Post("DATA");
