@@ -102,7 +102,7 @@ namespace HtmlAgilityPack
             ElementsFlags.Add("input", HtmlElementFlag.Empty);
             ElementsFlags.Add("basefont", HtmlElementFlag.Empty);
 
-            ElementsFlags.Add("form", HtmlElementFlag.CanOverlap | HtmlElementFlag.Empty);
+            ElementsFlags.Add("form", HtmlElementFlag.CanOverlap /*| HtmlElementFlag.Empty*/);
 
             // they sometimes contain, and sometimes they don 't...
             ElementsFlags.Add("option", HtmlElementFlag.Empty);
@@ -112,7 +112,7 @@ namespace HtmlAgilityPack
             // <p>bla<p>bla will be transformed into <p>bla<p>bla and not <p>bla></p><p>bla</p> or <p>bla<p>bla</p></p>
             //<br> see above
             ElementsFlags.Add("br", HtmlElementFlag.Empty | HtmlElementFlag.Closed);
-            ElementsFlags.Add("p", HtmlElementFlag.Empty | HtmlElementFlag.Closed);
+            //ElementsFlags.Add("p", HtmlElementFlag.Empty | HtmlElementFlag.Closed);
         }
 
         /// <summary>
@@ -1670,7 +1670,8 @@ namespace HtmlAgilityPack
                             {
                                 // this code and the following tries to output things as nicely as possible for old browsers.
                                 cdata = true;
-                                outText.Write("\r\n//<![CDATA[\r\n");
+                                if (!string.IsNullOrEmpty(this.InnerText))
+                                    outText.Write("\r\n//<![CDATA[\r\n");
                             }
                         }
 
@@ -1681,7 +1682,8 @@ namespace HtmlAgilityPack
                                 // child must be a text
                                 ChildNodes[0].WriteTo(outText);
                             }
-                            outText.Write("\r\n//]]>//\r\n");
+                            if (!string.IsNullOrEmpty(this.InnerText))
+                                outText.Write("\r\n//]]>//\r\n");
                         }
                         else
                         {

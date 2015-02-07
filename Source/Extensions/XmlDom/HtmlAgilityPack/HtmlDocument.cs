@@ -256,13 +256,12 @@ namespace HtmlAgilityPack
         public static string GetXmlName(string name)
         {
             string xmlname = string.Empty;
-            bool nameisok = true;
             for (int i = 0; i < name.Length; i++)
             {
-                // names are lcase
                 // note: we are very limited here, too much?
                 if (((name[i] >= 'a') && (name[i] <= 'z')) ||
                     ((name[i] >= '0') && (name[i] <= '9')) ||
+                    ((name[i] >= 'A') && (name[i] <= 'Z')) ||
                     //					(name[i]==':') || (name[i]=='_') || (name[i]=='-') || (name[i]=='.')) // these are bads in fact
                     (name[i] == '_') || (name[i] == '-') || (name[i] == '.'))
                 {
@@ -270,7 +269,6 @@ namespace HtmlAgilityPack
                 }
                 else
                 {
-                    nameisok = false;
                     byte[] bytes = Encoding.UTF8.GetBytes(new char[] { name[i] });
                     for (int j = 0; j < bytes.Length; j++)
                     {
@@ -279,11 +277,8 @@ namespace HtmlAgilityPack
                     xmlname += "_";
                 }
             }
-            if (nameisok)
-            {
-                return xmlname;
-            }
-            return "_" + xmlname;
+
+            return xmlname;
         }
 
         /// <summary>
@@ -1479,6 +1474,9 @@ namespace HtmlAgilityPack
                             continue;
                         }
 
+                        if (TryFixArgument(_index, (char)_c, (char)lastquote))
+                            continue;
+
                         PushAttributeNameStart(_index - 1);
                         _state = ParseState.AttributeName;
                         break;
@@ -1500,6 +1498,7 @@ namespace HtmlAgilityPack
                                 continue;
                             _state = ParseState.Text;
                             PushNodeStart(HtmlNodeType.Text, _index);
+                            lastquote = 0;
                             continue;
                         }
                         _state = ParseState.BetweenAttributes;
@@ -1509,12 +1508,16 @@ namespace HtmlAgilityPack
                         if (NewCheck())
                             continue;
 
+                        if (TryFixArgument(_index, (char)_c, (char)lastquote))
+                            continue;
+                        
                         if (IsWhiteSpace(_c))
                         {
                             PushAttributeNameEnd(_index - 1);
                             _state = ParseState.AttributeBeforeEquals;
                             continue;
                         }
+
                         if (_c == '=')
                         {
                             PushAttributeNameEnd(_index - 1);
@@ -1534,8 +1537,10 @@ namespace HtmlAgilityPack
                                 continue;
                             _state = ParseState.Text;
                             PushNodeStart(HtmlNodeType.Text, _index);
+                            lastquote = 0;
                             continue;
                         }
+                        
                         break;
 
                     case ParseState.AttributeBeforeEquals:
@@ -1544,6 +1549,10 @@ namespace HtmlAgilityPack
 
                         if (IsWhiteSpace(_c))
                             continue;
+
+                        if (TryFixArgument(_index, (char)_c, (char)lastquote))
+                            continue;
+
                         if (_c == '>')
                         {
                             if (!PushNodeEnd(_index, false))
@@ -1556,6 +1565,7 @@ namespace HtmlAgilityPack
                                 continue;
                             _state = ParseState.Text;
                             PushNodeStart(HtmlNodeType.Text, _index);
+                            lastquote = 0;
                             continue;
                         }
                         if (_c == '=')
@@ -1563,7 +1573,7 @@ namespace HtmlAgilityPack
                             _state = ParseState.AttributeAfterEquals;
                             continue;
                         }
-                        // no equals, no whitespace, it's a new attrribute starting
+                        // no equals, no whitespace, it's a new attribute starting
                         _state = ParseState.BetweenAttributes;
                         DecrementPosition();
                         break;
@@ -1594,6 +1604,7 @@ namespace HtmlAgilityPack
                                 continue;
                             _state = ParseState.Text;
                             PushNodeStart(HtmlNodeType.Text, _index);
+                            lastquote = 0;
                             continue;
                         }
                         PushAttributeValueStart(_index - 1);
@@ -1624,6 +1635,7 @@ namespace HtmlAgilityPack
                                 continue;
                             _state = ParseState.Text;
                             PushNodeStart(HtmlNodeType.Text, _index);
+                            lastquote = 0;
                             continue;
                         }
                         break;
@@ -1668,6 +1680,7 @@ namespace HtmlAgilityPack
                             }
                             _state = ParseState.Text;
                             PushNodeStart(HtmlNodeType.Text, _index);
+                            lastquote = 0;
                             continue;
                         }
                         break;
@@ -1772,6 +1785,86 @@ namespace HtmlAgilityPack
             _currentattribute._valuestartindex = index;
             if (quote == '\'')
                 _currentattribute.QuoteType = AttributeValueQuote.SingleQuote;
+        }
+
+        private bool TryFixArgument(int index, char c, char lastquote)
+        {
+            if (_currentnode == null || _currentnode.Attributes.Count == 0 || lastquote == 0)
+                return false;
+
+            // _state == AttributeName | AttributeBeforeEquals | BetweenAttributes
+
+            if (c == ',')
+            {
+                // last value has to continue
+                return ExtendLastAttributeValue(index, false);
+            }
+
+            if (c == lastquote)
+            {
+                // last value has to end here?
+                return ExtendLastAttributeValue(index - 1, true);
+            }
+
+            if ((_state == ParseState.AttributeName || _state == ParseState.AttributeBeforeEquals) && IsWhiteSpace(c))
+            {
+                // an attribute without a value preceding?
+                // _currentattribute._valuelength == 0
+                // search lastquote, '>' or new line
+                bool onlyws = true;
+                for (int i = index + 1; i < _text.Length; i++)
+                {
+                    var la = _text[i];
+                    if (la == lastquote) return ExtendLastAttributeValue(index, false); // it is possible this attr name should be a part of previous attr value
+                    if (la == '=' && onlyws) return false;   // there is '=' after attr name, probably ok
+                    if (la == '>' || la == '\n' || la == '\r') return false;   // no ending quote, stop looking
+                    if (!IsWhiteSpace((int)la)) onlyws = false;
+                }
+
+                return false;
+            }
+
+            //
+            return false;
+        }
+
+        private bool ExtendLastAttributeValue(int index, bool close)
+        {
+            System.Diagnostics.Debug.Assert(_currentnode != null && _currentnode.Attributes.Count > 0);
+
+            var lastattribute = _currentattribute;
+            
+            // find an attribute with a value to be extended
+            var attrs = _currentnode.Attributes;
+            int candidate = -1;
+            for (int i = attrs.Count - 1; i >= 0; i--)
+                if (attrs[i]._valuelength > 0 || attrs[i]._valuestartindex > (attrs[i]._namestartindex + attrs[i]._namelength))   // an attribute with a value specified
+                {
+                    candidate = i;
+                    break;
+                }
+
+            if (candidate < 0)
+                return false;   // no candidate to be extended
+
+            // set new last attribute
+            _currentattribute = attrs[candidate];
+            while (attrs.Count > candidate + 1)
+                attrs.RemoveAt(attrs.Count - 1);
+
+            // 
+            if (close)
+            {
+                PushAttributeValueEnd(index);
+                _state = ParseState.BetweenAttributes;
+            }
+            else
+            {
+                _currentattribute._valuelength = 0;
+                _state = ParseState.QuotedAttributeValue;
+            }
+
+            return true;
         }
 
         private bool PushNodeEnd(int index, bool close)
