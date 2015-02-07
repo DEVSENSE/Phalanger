@@ -247,6 +247,10 @@ namespace PHP.Library
                     object cnt = dobj.InvokeMethod("count", null, ScriptContext.CurrentContext);
                     return (cnt != null) ? PHP.Core.Convert.ObjectToInteger(cnt) : 0;
                 }
+                else if (dobj.RealObject is ICollection)
+                {
+                    return ((ICollection)dobj.RealObject).Count;
+                }
             }            
 
             // count not supported
