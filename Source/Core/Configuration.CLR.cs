@@ -1147,7 +1147,7 @@ namespace PHP.Core
 
                 libraries = new FullPath(current_app_dir);
 
-                string dynamic_path = (http_context != null) ? current_app_dir : Path.GetTempPath();
+                string dynamic_path = /*(http_context != null) ? current_app_dir : */Path.GetTempPath();
                 dynamicWrappers = new FullPath(dynamic_path);
             }
 
