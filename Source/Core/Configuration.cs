@@ -558,7 +558,7 @@ namespace PHP.Core
 			Session = new SessionSection();
 			Library = new LibraryConfigurationsSection();
 
-            LastConfigurationModificationTime = DateTime.MinValue;
+            LastConfigurationModifiedTimeUtc = DateTime.MinValue;
 		}
 
 		/// <summary>
@@ -577,7 +577,7 @@ namespace PHP.Core
 			this.Session = source.Session.DeepCopy();
 			this.Library = source.Library.DeepCopy();
 
-            LastConfigurationModificationTime = source.LastConfigurationModificationTime;
+            LastConfigurationModifiedTimeUtc = source.LastConfigurationModifiedTimeUtc;
 		}
 
 		/// <summary>
@@ -601,7 +601,7 @@ namespace PHP.Core
         /// .config file (set of .config files) latest modification time.
         /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
         /// </summary>
-        public DateTime LastConfigurationModificationTime { get; internal set; }
+        public DateTime LastConfigurationModifiedTimeUtc { get; internal set; }
 
         #endregion
 	}
@@ -914,11 +914,11 @@ namespace PHP.Core
         /// .config file (set of .config files) latest modification time.
         /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
         /// </summary>
-        public DateTime LastConfigurationModificationTime
+        public DateTime LastConfigurationModifiedTimeUtc
         {
             get
             {
-                return Paths.LastConfigurationModificationTime;
+                return Paths.LastConfigurationModificationTimeUtc;
             }
         }
 
@@ -1010,7 +1010,7 @@ namespace PHP.Core
 			PostedFiles = new PostedFilesSection();
 			SafeMode = new SafeModeSection();
 #endif
-            this.LastConfigurationModificationTime = DateTime.MinValue;
+            this.LastConfigurationModifiedTimeUtc = DateTime.MinValue;
 		}
 
 		/// <summary>
@@ -1028,7 +1028,7 @@ namespace PHP.Core
 			this.PostedFiles = source.PostedFiles.DeepCopy();
 			this.SafeMode = source.SafeMode.DeepCopy();
 #endif
-            this.LastConfigurationModificationTime = source.LastConfigurationModificationTime;
+            this.LastConfigurationModifiedTimeUtc = source.LastConfigurationModifiedTimeUtc;
 		}
 
 		/// <summary>
@@ -1057,7 +1057,7 @@ namespace PHP.Core
         /// .config file (set of .config files) latest modification time.
         /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
         /// </summary>
-        public DateTime LastConfigurationModificationTime { get; internal set; }
+        public DateTime LastConfigurationModifiedTimeUtc { get; internal set; }
 
         #endregion
     }

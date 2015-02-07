@@ -320,20 +320,20 @@ namespace PHP.Core
         /// Determine the configuration file for given <see cref="XmlNode"/> and its last modification time.
         /// </summary>
         /// <param name="node"><see cref="XmlNode"/> from a configuration file.</param>
-        /// <param name="maxTime">Currently latest modification time. The returned value cannot be lower.</param>
+        /// <param name="maxTimeUtc">Currently latest modification time. The returned value cannot be lower.</param>
         /// <returns>Time of the configuration file modification or <see cref="DateTime.MinValue"/>.</returns>
-        public static DateTime GetConfigModificationTime(XmlNode/*!*/node, DateTime maxTime)
+        public static DateTime GetConfigModificationTimeUtc(XmlNode/*!*/node, DateTime maxTimeUtc)
         {
             Debug.Assert(node != null);
 
             try
             {
-                var d = File.GetLastWriteTime(GetConfigXmlPath(node.OwnerDocument));
-                return (d > maxTime) ? d : maxTime;
+                var d = FileSystemUtils.GetLastModifiedTimeUtc(GetConfigXmlPath(node.OwnerDocument));
+                return (d > maxTimeUtc) ? d : maxTimeUtc;
             }
             catch
             {
-                return maxTime;
+                return maxTimeUtc;
             }
         }
 

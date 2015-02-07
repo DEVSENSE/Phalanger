@@ -1158,7 +1158,7 @@ namespace PHP.Core
             /// <summary>
             /// Last determined modification time. Used to invalidate assemblies compiled before this time.
             /// </summary>
-            public DateTime LastConfigurationModificationTime { get; private set; }
+            public DateTime LastConfigurationModificationTimeUtc { get; private set; }
 
             public PathsSection()
             {
@@ -1182,7 +1182,7 @@ namespace PHP.Core
 			public bool Parse(string name, string value, XmlNode node)
 			{
                 // determine last configuration modification time:
-                this.LastConfigurationModificationTime = ConfigUtils.GetConfigModificationTime(node, this.LastConfigurationModificationTime);
+                this.LastConfigurationModificationTimeUtc = ConfigUtils.GetConfigModificationTimeUtc(node, this.LastConfigurationModificationTimeUtc);
 
                 switch (name)
 				{
@@ -2046,7 +2046,7 @@ namespace PHP.Core
             XmlNode node_ScriptLibrary = null;
 
             // determine configuration modification time:
-            result.Global.LastConfigurationModificationTime = ConfigUtils.GetConfigModificationTime(section, result.Global.LastConfigurationModificationTime);
+            result.Global.LastConfigurationModifiedTimeUtc = ConfigUtils.GetConfigModificationTimeUtc(section, result.Global.LastConfigurationModifiedTimeUtc);
             
 			// parses XML tree:
 			foreach (XmlNode node in section.ChildNodes)
@@ -2359,14 +2359,14 @@ namespace PHP.Core
         /// Latest configuration modification time.
         /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
         /// </summary>
-        public static DateTime LastConfigurationModificationTime
+        public static DateTime LastConfigurationModifiedTimeUtc
         {
             get
             {
                 return DateTimeUtils.Max(
-                    Application.LastConfigurationModificationTime,
-                    Global.LastConfigurationModificationTime,
-                    Local.LastConfigurationModificationTime);
+                    Application.LastConfigurationModifiedTimeUtc,
+                    Global.LastConfigurationModifiedTimeUtc,
+                    Local.LastConfigurationModifiedTimeUtc);
             }
         }
 	}
