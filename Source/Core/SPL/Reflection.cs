@@ -680,7 +680,12 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual object/*string*/__toString(ScriptContext context)
         {
-            throw new NotImplementedException();
+            if (property == null)
+                return false;
+
+            return string.Format("Property [ {0} ${1} ]",
+                (property.IsStatic ? "static " : string.Empty) + (property.IsPublic ? "public" : (property.IsProtected ? "protected" : "private")),
+                this.name);
         }
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static object __toString(object instance, PhpStack stack)
