@@ -59,6 +59,7 @@ namespace PHP.Core
 				errorLabelHasValue = false;
 				this.il = il;
 				this.QuietRead = false;
+                this.EnsureWritable = false;
 			}
 
 			/// <summary>
@@ -141,6 +142,12 @@ namespace PHP.Core
 			/// If set to <c>true</c>, no errors are genereted while emitting isset and unset.
 			/// </summary>
 			public bool QuietRead;
+
+            /// <summary>
+            /// If set to <c>true</c>, the chain must not be shared by more variables.
+            /// This happens due to the mechanism of lazy copying (<see cref="PhpArray"/>, <see cref="PhpBytes"/>, etc.).
+            /// </summary>
+            public bool EnsureWritable;
 
 			// obsolete:
 			//			private RefErrorLabelInfo refErrorLabelInfo;
@@ -272,6 +279,19 @@ namespace PHP.Core
 			set { TopChain.IsLastChainMember = value; }
 		}
 
+        /// <summary>
+        /// Gets or sets value indicating, whether the chain must be ensured to be writable (not shared by more variables).
+        /// This happens due to the mechanism of lazy copying (<see cref="PhpArray"/>, <see cref="PhpBytes"/>, etc.).
+        /// </summary>
+        /// <remarks>
+        /// We have to ensure, the array is writable in case where it is marked to be lazy copied and
+        /// we are passing it or its item to a library function parameter marked with <see cref="PhpRwAttribute"/>.</remarks>
+        public bool EnsureWritable
+        {
+            get { return TopChain.EnsureWritable; }
+            set { TopChain.EnsureWritable = value; }
+        }
+
 		/// <summary>
 		/// Gets a <B>bool</B> value indicating whether operators chain exists (its length is greater than one).
 		/// </summary>
@@ -376,7 +396,7 @@ namespace PHP.Core
 			il.Ldloc(temp);
 		}
 
-		#endregion
+        #endregion
 
 		#region Nested Class: ObjectFieldLazyEmitInfo
 
@@ -507,8 +527,7 @@ namespace PHP.Core
 		}
 
 		#endregion
-
-
+        
 		#region Reading...
 
 		/// <summary>
@@ -570,7 +589,11 @@ namespace PHP.Core
 			ILEmitter il = codeGenerator.IL;
 			
 			// array:
-			array.Emit(codeGenerator);
+			var arrayTypeCode = array.Emit(codeGenerator);
+
+            // ensure the array is writeable is required
+            if (EnsureWritable)
+                codeGenerator.EmitEnsureWritable(arrayTypeCode);
 
 			// index:
 			PhpTypeCode index_type_code = codeGenerator.EmitArrayKey(this, index);

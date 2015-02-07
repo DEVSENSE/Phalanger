@@ -3336,6 +3336,35 @@ namespace PHP.Core
             }
         }
 
+        /// <summary>
+        /// Ensures the object on top of the evaluation stack is writable,
+        /// and so not shared by more PHP variables.
+        /// </summary>
+        internal void EmitEnsureWritable(PhpTypeCode typeCode)
+        {
+            switch (typeCode)
+            {
+                case PhpTypeCode.Boolean:
+                case PhpTypeCode.Double:
+                case PhpTypeCode.Integer:
+                case PhpTypeCode.PhpCallable:
+                case PhpTypeCode.PhpResource:
+                case PhpTypeCode.PhpReference:
+                case PhpTypeCode.String:
+                case PhpTypeCode.Void:
+                case PhpTypeCode.LongInteger:
+                    // these types cannot be lazy copied for sure
+                    break;
+
+                default:
+                    // Operators.EnsureObjectIsWritable( <TOP> )
+                    this.IL.Emit(OpCodes.Dup);
+                    this.EmitBoxing(typeCode);
+                    this.IL.Emit(OpCodes.Call, new Action<object>(Operators.EnsureObjectIsWritable).Method);
+                    break;
+            }
+        }
+
 		#endregion
 
 		#region Array Keys and Operators

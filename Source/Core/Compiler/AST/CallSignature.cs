@@ -96,13 +96,26 @@ namespace PHP.Core.AST
 		}
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
-		internal PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator)
-		{
-			codeGenerator.ChainBuilder.Create();
-			PhpTypeCode result = expression.Emit(codeGenerator);
-			codeGenerator.ChainBuilder.End();
+        internal PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator)
+        {
+            return this.Emit(codeGenerator, false);
+        }
 
-			return result;
+		internal PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator, bool ensureChainWritable)
+		{
+            codeGenerator.ChainBuilder.Create();
+
+            if (ensureChainWritable)
+                codeGenerator.ChainBuilder.EnsureWritable = true;
+
+            try
+            {
+                return expression.Emit(codeGenerator);
+            }
+            finally
+            {
+                codeGenerator.ChainBuilder.End();
+            }
 		}
 
         /// <summary>
@@ -387,8 +400,9 @@ namespace PHP.Core.AST
 		/// <param name="il">Emitter.</param>
 		/// <param name="index">The index of the parameter starting from 0.</param>
 		/// <param name="codeGenerator">Code generator.</param>
+        /// <param name="param">Target <see cref="ParameterInfo"/>.</param>
 		/// <returns>The type of the actual argument or its value if it is a leteral.</returns>
-		internal object EmitLibraryLoadArgument(ILEmitter/*!*/ il, int index, object/*!*/ codeGenerator)
+        internal object EmitLibraryLoadArgument(ILEmitter/*!*/ il, int index, object/*!*/ codeGenerator, ParameterInfo param)
 		{
 			Debug.Assert(codeGenerator != null);
 			Debug.Assert(index < parameters.Count, "Missing arguments prevents code generation");
@@ -398,7 +412,7 @@ namespace PHP.Core.AST
 				return parameters[index].Expression.Value;
 
 			// emits parameter evaluation:
-			return PhpTypeCodeEnum.ToType(parameters[index].Emit((CodeGenerator)codeGenerator));
+			return PhpTypeCodeEnum.ToType(parameters[index].Emit((CodeGenerator)codeGenerator, PhpRwAttribute.IsDefined(param)));
 		}
 
 		/// <summary>
@@ -431,7 +445,7 @@ namespace PHP.Core.AST
                 il.LdcI4(i - start);
 
                 // <parameter value>
-                object type_or_value = EmitLibraryLoadArgument(il, i, builder.Aux);
+                object type_or_value = EmitLibraryLoadArgument(il, i, builder.Aux, param);
                 builder.EmitArgumentConversion(elem_type, type_or_value, false, param, 3);
 				
                 // <arr>[i - start] = <parameter value>;
