@@ -457,6 +457,7 @@ namespace PHP.Core.AST
         virtual public void VisitIndirectVarUse(IndirectVarUse x)
         {
             VisitVarLikeConstructUse(x);
+            VisitElement(x.VarNameEx);
         }
 
         virtual public void VisitVarLikeConstructUse(VarLikeConstructUse x)
@@ -587,6 +588,7 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitDirectStMtdCall(DirectStMtdCall x)
         {
+            VisitElement(x.TypeRef);            
             VisitFunctionCall(x);
         }
 
@@ -596,15 +598,17 @@ namespace PHP.Core.AST
         /// <param name="x"></param>
         virtual public void VisitIndirectStMtdCall(IndirectStMtdCall x)
         {
+            VisitElement(x.TypeRef);            
             VisitElement(x.MethodNameVar);
             VisitFunctionCall(x);
         }
         virtual public void VisitDirectStFldUse(DirectStFldUse x)
         {
-            // nothing
+            VisitElement(x.TypeRef);
         }
         virtual public void VisitIndirectStFldUse(IndirectStFldUse x)
         {
+            VisitElement(x.TypeRef);            
             VisitElement(x.FieldNameExpr);
         }
 
@@ -885,7 +889,7 @@ namespace PHP.Core.AST
         }
         virtual public void VisitIndirectTypeRef(IndirectTypeRef x)
         {
-            // nothing
+            VisitElement(x.ClassNameVar);
         }
         
 
