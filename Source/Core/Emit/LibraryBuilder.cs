@@ -31,9 +31,9 @@ namespace PHP.Core.Emit
 		/// <summary>
 		/// Creates a dynamic wrapper of a specified assembly.
 		/// </summary>
-		public static string CreateDynamicWrapper(Assembly/*!*/ assembly, string directory)
+		public static string CreateDynamicWrapper(Assembly/*!*/ assembly, string directory, string filename)
 		{
-			return CreateDynamicWrapper(null, assembly, directory);
+			return CreateDynamicWrapper(null, assembly, directory, filename);
 		}
 
 		/// <summary>
@@ -43,6 +43,7 @@ namespace PHP.Core.Emit
 		/// <param name="directory">A target directory. A <B>null</B> reference means CL dynamic directory.</param>
 		/// <param name="attr">Specifies a type of the 'ImplementsFunction' attribute. If it
 		/// ios set to null, the type from the current assembly is used.</param>
+        /// <param name="filename">File name of the resulting dynamic wrapper.</param>
 		/// <returns>The generated assembly file path.</returns>
 		/// <remarks>
 		/// <para>
@@ -56,17 +57,17 @@ namespace PHP.Core.Emit
 		/// </para>
 		/// </remarks>
 		/// <exception cref="Exception">Something went wrong during assembly building.</exception>
-		public static string CreateDynamicWrapper(Type/*!*/ attr, Assembly/*!*/ assembly, string directory)
+		public static string CreateDynamicWrapper(Type/*!*/ attr, Assembly/*!*/ assembly, string directory, string filename)
 		{
-			return CreateDynamicWrapperInternal(attr, assembly, directory);
+			return CreateDynamicWrapperInternal(attr, assembly, directory, filename);
 		}
 #endif
 
 		// Ugly silverlight hacking
 #if SILVERLIGHT
-		private static Assembly CreateDynamicWrapperInternal(Type/*!*/ attr, Assembly/*!*/ assembly)
+		private static Assembly CreateDynamicWrapperInternal(Type/*!*/ attr, Assembly/*!*/ assembly, string directory, string filename)
 #else
-		private static string CreateDynamicWrapperInternal(Type/*!*/ attr, Assembly/*!*/ assembly, string directory)
+        private static string CreateDynamicWrapperInternal(Type/*!*/ attr, Assembly/*!*/ assembly, string directory, string filename)
 #endif
 		{
 			string assembly_base_name;
@@ -127,8 +128,7 @@ namespace PHP.Core.Emit
 			assembly_builder = AppDomain.CurrentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Save, directory);
 
 			// defines a module:
-            string file_name = PhpLibraryModule.DynamicWrapperFileName(assembly);
-			module_builder = assembly_builder.DefineDynamicModule(PhpLibraryModule.DynamicWrapperModuleName, file_name);
+            module_builder = assembly_builder.DefineDynamicModule(PhpLibraryModule.DynamicWrapperModuleName, filename);
 #endif
 
 			// defines type which will contain all mathods:  
@@ -164,8 +164,8 @@ namespace PHP.Core.Emit
 #if SILVERLIGHT
 			return assembly_builder;
 #else
-			assembly_builder.Save(file_name);
-			return Path.Combine(directory, file_name);
+            assembly_builder.Save(filename);
+            return Path.Combine(directory, filename);
 #endif
 		}
 
