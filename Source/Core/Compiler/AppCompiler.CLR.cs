@@ -1302,9 +1302,9 @@ namespace PHP.Core
 				if (ps.DuckPath != null)
 					Directory.CreateDirectory(ps.DuckPath);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				errorSink.Add(FatalErrors.ErrorCreatingFile, null, ErrorPosition.Invalid, ps.OutPath);
+				errorSink.Add(FatalErrors.ErrorCreatingFile, null, ErrorPosition.Invalid, ps.OutPath, ex.Message);
 			}	
 				
 			AssemblyKinds kind;
