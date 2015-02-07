@@ -42,19 +42,27 @@ namespace PHP.VisualStudio.PhalangerTasks
 		/// <summary>
 		/// Log Errors/Warnings/Messages when the compiler reports them.
 		/// </summary>
-		protected override bool Add(int id, string/*!*/ message, ErrorSeverity severity, int group, string fullPath, ErrorPosition pos)
+		/// <param name="path">Path to the file where the error was found (null/empty if N/A)</param>
+		/// <param name="message">Text of the error/warning/message</param>
+		/// <param name="startLine">First line of the block containing the error (0 if N/A)</param>
+		/// <param name="startColumn">First column of the block containing the error (0 if N/A)</param>
+		/// <param name="endLine">Last line of the block containing the error (0 if N/A)</param>
+		/// <param name="endColumn">Last column of the block containing the error (0 if N/A)</param>
+		/// <param name="errorCode">Code corresponding to the error</param>
+		/// <param name="severity">Error/Warning/Message</param>
+		protected override bool Add(int id, string/*!*/ message, ErrorSeverity severity, int group, string fullPath,
+			ErrorPosition pos)
 		{
 			string code = ErrorIdToCode(id);
 			switch (severity.Value)
 			{
-                case ErrorSeverity.Values.FatalError:
+				case ErrorSeverity.Values.FatalError:
 				case ErrorSeverity.Values.Error:
-                case ErrorSeverity.Values.WarningAsError:
-                    logger.LogError(severity.Value.ToString(), code, "", fullPath, pos.FirstLine, pos.FirstColumn, pos.LastLine, pos.LastColumn, message);
+					logger.LogError("", code, "", fullPath, pos.FirstLine, Math.Max(0, pos.FirstColumn - 1), pos.LastLine, pos.LastColumn, message);
 					break;
 
 				case ErrorSeverity.Values.Warning:
-                    logger.LogWarning(severity.Value.ToString(), code, "", fullPath, pos.FirstLine, pos.FirstColumn, pos.LastLine, pos.LastColumn, message);
+                    logger.LogWarning("", code, "", fullPath, pos.FirstLine, Math.Max(0, pos.FirstColumn - 1), pos.LastLine, pos.LastColumn, message);
 					break;
 			}
 			return true;
