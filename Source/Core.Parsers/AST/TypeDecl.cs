@@ -356,7 +356,7 @@ namespace PHP.Core.AST
             this.signature = new Signature(aliasReturn, formalParams);
             this.typeSignature = new TypeSignature(genericParams);
             this.body = (body != null) ? body.AsArray() : null;
-            this.baseCtorParams = baseCtorParams.AsArray();
+            this.baseCtorParams = (baseCtorParams != null) ? baseCtorParams.AsArray() : null;
             this.entireDeclarationPosition = entireDeclarationPosition;
             this.headingEndPosition = headingEndPosition;
             this.declarationBodyPosition = declarationBodyPosition;
