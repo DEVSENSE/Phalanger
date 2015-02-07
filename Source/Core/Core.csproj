@@ -489,6 +489,7 @@
     <Compile Include="SPL\ArrayAccess.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SPL\Misc.cs" />
     <Compile Include="SPL\SplObjectStorage.cs" />
     <Compile Include="SPL\Countable.cs" />
     <Compile Include="SPL\Exception.cs">
