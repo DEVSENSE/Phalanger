@@ -451,14 +451,15 @@ namespace PHP.Core.Binders
             //Select arguments without scriptContext
             DynamicMetaObject[] realArgs = GetArgumentsRange(args, 1, RealMethodArgumentCount - 1);
 
+
+#if DLR_OVERLOAD_RESOLUTION
+
             // Convert arguments
             DynamicMetaObject[] realArgsConverted = Array.ConvertAll<DynamicMetaObject, DynamicMetaObject>(realArgs, (x) =>
             {
                 return x.ToPhpDynamicMetaObject();
 
             });
-
-#if DLR_OVERLOAD_RESOLUTION
 
             //DLR overload resolution
             DynamicMetaObject res = PhpBinder.Instance.CallClrMethod(method.ClrMethod, target, realArgsConverted);
@@ -467,7 +468,7 @@ namespace PHP.Core.Binders
 
 #else
             // Old overload resolution
-            InvokeArgLess(target, scriptContext, method, realArgsConverted, out restrictions, out invokeMethodExpr);
+            InvokeArgLess(target, scriptContext, method, realArgs, out restrictions, out invokeMethodExpr);
 #endif
         }
 
