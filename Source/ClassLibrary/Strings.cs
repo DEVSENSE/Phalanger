@@ -2586,7 +2586,7 @@ namespace PHP.Library
                 {
                     
                     if (char.IsControl(c) ||
-                        c == 0x7f || ((c & 0x80) > 0) || // is not ascii char
+                        c >= 0x7F || // is not ascii char
                         (c == '=') ||
                         ((c == ' ') && i + 1 < str.Length && (str[i + 1] == '\r')))
                     {
