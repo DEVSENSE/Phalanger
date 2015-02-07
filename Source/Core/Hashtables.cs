@@ -2560,10 +2560,12 @@ namespace PHP.Core
         /// Creates PhpHashtable that shares internal <see cref="table"/> with another array.
         /// </summary>
         /// <param name="array">The table to be shared.</param>
-        public PhpHashtable(PhpHashtable/*!*/array)
+        /// <param name="preserveMaxInt">True to copy the <see cref="PhpHashtable.MaxIntegerKey"/> from <paramref name="array"/>.
+        /// Otherwise the value will be recomputed when needed.</param>
+        public PhpHashtable(PhpHashtable/*!*/array, bool preserveMaxInt)
         {
             this.table = array.table.Share();
-            this.maxInt = array.MaxIntegerKey;
+            this.maxInt = preserveMaxInt ? array.MaxIntegerKey : maxIntInvalid;
             this.intCount = array.IntegerCount;
             this.stringCount = array.StringCount;
         }
