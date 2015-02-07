@@ -891,7 +891,8 @@ namespace PHP.Core.AST
         {
             VisitElement(x.ClassNameVar);
         }
-        
+
+        virtual public void VisitPHPDocStmt(PHPDocStmt x) { }
 
         #endregion
     }
