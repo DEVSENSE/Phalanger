@@ -1807,6 +1807,10 @@ qualified_static_type_ref:
 		{ 
 			$$ = new GenericQualifiedName(TranslateAny((QualifiedName)$1), TypeRef.ToStaticTypeRefs((List<TypeRef>)$2, errors, sourceUnit)); 
 		}
+	|	T_STATIC
+		{
+			$$ = new GenericQualifiedName(new QualifiedName(Name.StaticClassName));
+		}
 ;
 
 type_ref:
@@ -1823,6 +1827,11 @@ type_ref:
 	|	primitive_type
 		{ 
 			$$ = new PrimitiveTypeRef(@$, (PrimitiveType)$1); 
+		}
+
+	|	T_STATIC
+		{
+			$$ = new DirectTypeRef(@$, new QualifiedName(Name.StaticClassName), TypeRef.EmptyList);
 		}
 ;
 

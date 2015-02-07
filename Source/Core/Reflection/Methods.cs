@@ -73,6 +73,11 @@ namespace PHP.Core.Reflection
 		/// </summary>
 		UseVarArgs = 32,
 
+        /// <summary>
+        /// A function contains late static binding call (use of <c>static</c> keyword referring to current runtime type).
+        /// </summary>
+        LateStaticBinding = 64,
+
 		/// <summary>
 		/// A function uses arguments from <see cref="PhpStack"/>.
 		/// </summary>

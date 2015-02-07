@@ -808,8 +808,9 @@ namespace PHP.Core
 
 		public static readonly ErrorInfo ParentUsedOutOfClass = new ErrorInfo(1110, "parent_used_out_of_class", ErrorSeverity.Error);
 		public static readonly ErrorInfo SelfUsedOutOfClass = new ErrorInfo(1111, "self_used_out_of_class", ErrorSeverity.Error);
-		public static readonly ErrorInfo ClassHasNoParent = new ErrorInfo(1112, "class_has_no_parent", ErrorSeverity.Error);
-
+        public static readonly ErrorInfo ClassHasNoParent = new ErrorInfo(1112, "class_has_no_parent", ErrorSeverity.Error);
+        public static readonly ErrorInfo StaticUsedOutOfClass = new ErrorInfo(1113, "static_used_out_of_class", ErrorSeverity.Error);
+		
 		//
 
 		public static readonly ErrorInfo UnknownCustomAttribute = new ErrorInfo(1120, "unknown_custom_attribute", ErrorSeverity.Error);

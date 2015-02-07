@@ -994,55 +994,82 @@ namespace PHP.Core
 					result = UnknownType.UnknownSelf;
 				}
 			}
-			else if (qualifiedName.IsParentClassName)
-			{
-				if (referringType != null)
-				{
-					if (referringType.IsInterface)
-					{
-						ErrorSink.Add(Errors.SelfUsedOutOfClass, SourceUnit, position);
-						result = UnknownType.UnknownParent;
-					}
-					else
-					{
-						DType base_type = referringType.Base;
-						if (base_type == null)
-						{
-							ErrorSink.Add(Errors.ClassHasNoParent, SourceUnit, position, referringType.FullName);
-							result = UnknownType.UnknownParent;
-						}
-						else
-						{
-							result = base_type;
-						}
-					}
-				}
-				else
-				{
-					// we are sure the self is used incorrectly when we are in a function:
-					if (referringRoutine != null)
-						ErrorSink.Add(Errors.ParentUsedOutOfClass, SourceUnit, position);
+            else if (qualifiedName.IsStaticClassName)
+            {
+                if (referringType != null)
+                {
+                    if (referringType.IsFinal)
+                    {
+                        // we are sure the 'static' == 'self'
+                        result = referringType;
+                    }
+                    else
+                    {
+                        if (referringRoutine != null)
+                            referringRoutine.Properties |= RoutineProperties.LateStaticBinding;
 
-					// global code can be included to the method:
-					result = UnknownType.UnknownParent;
-				}
-			}
-			else
-			{
-				// try resolve the name as a type parameter name:
-				if (qualifiedName.IsSimpleName)
-				{
-					result = ResolveTypeParameterName(qualifiedName.Name, referringType, referringRoutine);
-					if (result != null)
-						return result;
-				}
+                        result = StaticType.Singleton;
+                    }
+                }
+                else
+                {
+                    // we are sure the static is used incorrectly in function:
+                    //if (referringRoutine != null) // do not allow 'static' in global code:
+                        ErrorSink.Add(Errors.StaticUsedOutOfClass, SourceUnit, position);
 
-				Scope referring_scope = GetReferringScope(referringType, referringRoutine);
-				QualifiedName? alias;
-				result = sourceUnit.ResolveTypeName(qualifiedName, referring_scope, out alias, ErrorSink, position, mustResolve);
+                    // global code can be included to the method:
+                    result = UnknownType.UnknownStatic;
+                }
+            }
+            else if (qualifiedName.IsParentClassName)
+            {
+                if (referringType != null)
+                {
+                    if (referringType.IsInterface)
+                    {
+                        ErrorSink.Add(Errors.ParentUsedOutOfClass, SourceUnit, position);
+                        result = UnknownType.UnknownParent;
+                    }
+                    else
+                    {
+                        DType base_type = referringType.Base;
+                        if (base_type == null)
+                        {
+                            ErrorSink.Add(Errors.ClassHasNoParent, SourceUnit, position, referringType.FullName);
+                            result = UnknownType.UnknownParent;
+                        }
+                        else
+                        {
+                            result = base_type;
+                        }
+                    }
+                }
+                else
+                {
+                    // we are sure the self is used incorrectly when we are in a function:
+                    if (referringRoutine != null)
+                        ErrorSink.Add(Errors.ParentUsedOutOfClass, SourceUnit, position);
 
-				ReportUnknownType(result, alias, position);
-			}
+                    // global code can be included to the method:
+                    result = UnknownType.UnknownParent;
+                }
+            }
+            else
+            {
+                // try resolve the name as a type parameter name:
+                if (qualifiedName.IsSimpleName)
+                {
+                    result = ResolveTypeParameterName(qualifiedName.Name, referringType, referringRoutine);
+                    if (result != null)
+                        return result;
+                }
+
+                Scope referring_scope = GetReferringScope(referringType, referringRoutine);
+                QualifiedName? alias;
+                result = sourceUnit.ResolveTypeName(qualifiedName, referring_scope, out alias, ErrorSink, position, mustResolve);
+
+                ReportUnknownType(result, alias, position);
+            }
 
 			return result;
 		}

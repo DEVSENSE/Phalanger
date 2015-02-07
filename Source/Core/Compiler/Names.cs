@@ -73,6 +73,7 @@ namespace PHP.Core
 		public static readonly Name[] EmptyNames = new Name[0];
 		public static readonly Name EmptyBaseName = new Name("");
 		public static readonly Name SelfClassName = new Name("self");
+        public static readonly Name StaticClassName = new Name("static");
 		public static readonly Name ParentClassName = new Name("parent");
 		public static readonly Name AutoloadName = new Name("__autoload");
 		public static readonly Name ClrCtorName = new Name(".ctor");
@@ -203,11 +204,7 @@ namespace PHP.Core
 
 		public bool Equals(Name other)
 		{
-            // use lowerCaseValue if initialized, otherwise compare values case-insensitively
-            //if (this.lowerCaseValue != null && other.lowerCaseValue != null)
-                return this.lowerCaseValue.Equals(other.lowerCaseValue);
-            //else
-            //    return this.Equals(other.value);
+            return this.lowerCaseValue.Equals(other.lowerCaseValue, StringComparison.Ordinal);
 		}
 
 		public static bool operator ==(Name name, Name other)
@@ -390,6 +387,11 @@ namespace PHP.Core
         public bool IsSelfClassName
         {
             get { return IsSimpleName && name == Name.SelfClassName; }
+        }
+
+        public bool IsStaticClassName
+        {
+            get { return IsSimpleName && name == Name.StaticClassName; }
         }
 
         public bool IsReservedClassName

@@ -1661,6 +1661,23 @@ namespace PHP.Core
             il.Emit(OpCodes.Call, (typeFullName != null) ? Methods.Convert.StringToTypeDesc : Methods.Convert.ObjectToTypeDesc);
 		}
 
+        /// <summary>
+        /// Loads <see cref="DTypeDesc"/> of runtime type of current method.
+        /// </summary>
+        internal void EmitLoadStaticTypeDesc(ResolveTypeFlags flags)
+        {
+            // 1. instance method can access this.TypeDesc // if this != null
+            if (this.SelfPlace != LiteralPlace.Null)    // inside instance method (or global code or instance method called statically)
+            {
+                this.EmitLoadSelf();
+                this.IL.Emit(OpCodes.Call, Properties.DObject_TypeDesc.GetGetMethod());
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
 		internal void EmitNewOperator(string typeFullName, TypeRef typeNameRef, DType type, CallSignature callSignature)
 		{
 			Debug.AssertNonNull(1, typeFullName, typeNameRef, type);
