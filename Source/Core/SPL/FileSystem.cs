@@ -43,12 +43,12 @@ namespace PHP.Library.SPL
 //    [ImplementsType]
 //    class SplFileObject : SplFileInfo, /*RecursiveIterator ,*/ Traversable , Iterator , SeekableIterator
 //    {
-        ///* Constants */
+        //// Constants
         //const int DROP_NEW_LINE = 1 ;
         //const int READ_AHEAD = 2 ;
         //const int SKIP_EMPTY = 6 ;
         //const int READ_CSV = 8 ;
-        ///* Methods */
+        //// Methods
         //__construct (ScriptContext/*!*/context , string $filename [, string $open_mode = "r" [, bool $use_include_path = false [, resource $context ]]] )
         //public string|array current (ScriptContext/*!*/context )
         //public bool eof (ScriptContext/*!*/context )
@@ -79,7 +79,7 @@ namespace PHP.Library.SPL
         //public void setFlags (ScriptContext/*!*/context , int $flags )
         //public void setMaxLineLen (ScriptContext/*!*/context , int $max_len )
         //public bool valid (ScriptContext/*!*/context )
-        ///* Inherited methods */
+        //// Inherited methods
         //SplFileInfo::__construct (ScriptContext/*!*/context , string $file_name )
         //public int SplFileInfo::getATime (ScriptContext/*!*/context )
         //public string SplFileInfo::getBasename (ScriptContext/*!*/context [ string $suffix ] )
