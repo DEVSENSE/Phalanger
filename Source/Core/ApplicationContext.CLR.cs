@@ -378,7 +378,7 @@ namespace PHP.Core
         /// <summary>
         /// Ensures that libraries are reflected.
         /// </summary>
-        private void EnsureLibrariesReflected()
+        internal void EnsureLibrariesReflected()
         {
             if (libraries != null)
                 lock (this)

@@ -651,9 +651,9 @@ namespace PHP.Core
 
 		#region Compilation
 
-		internal MultiScriptAssembly GetPrecompiledAssembly()
+        internal MultiScriptAssembly[]/*!!*/GetPrecompiledAssemblies()
 		{
-            return scriptContext.ApplicationContext.RuntimeCompilerManager.GetPrecompiledAssembly();
+            return scriptContext.ApplicationContext.RuntimeCompilerManager.GetPrecompiledAssemblies();
 		}
 
         /// <summary>
