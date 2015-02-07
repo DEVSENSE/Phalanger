@@ -36,7 +36,7 @@ namespace PHP.Core
 	/// Represents PHP associative ordered array.
 	/// </summary>
 	[Serializable]
-	[DebuggerDisplay("array(Count = {Count})", Type = PhpArray.PhpTypeName)]
+	[DebuggerDisplay("Count = {Count}", Type = PhpArray.PhpTypeName)]
 #if !SILVERLIGHT
 	[DebuggerTypeProxy(typeof(PhpArrayDebugView))]
 #endif
