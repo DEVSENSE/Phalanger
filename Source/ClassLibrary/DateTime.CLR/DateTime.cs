@@ -349,16 +349,26 @@ namespace PHP.Library
         [ImplementsMethod]        
         public object setDate(ScriptContext/*!*/context, object year, object month, object day)
         {
-            this.Time = new DateTime(
-                PHP.Core.Convert.ObjectToInteger(year),
-                PHP.Core.Convert.ObjectToInteger(month),
-                PHP.Core.Convert.ObjectToInteger(day) + 1,
-                Time.Hour - 1,
-                Time.Minute,
-                Time.Second,
-                Time.Millisecond,
-                Time.Kind
-            );
+            var y = PHP.Core.Convert.ObjectToInteger(year);
+            var m = PHP.Core.Convert.ObjectToInteger(month);
+            var d = PHP.Core.Convert.ObjectToInteger(day);
+            try
+            {
+                var time = TimeZoneInfo.ConvertTimeFromUtc(Time, TimeZone);
+                this.Time = TimeZoneInfo.ConvertTimeToUtc(
+                    new DateTime(
+                        y, m, d,
+                        time.Hour, time.Minute, time.Second,
+                        time.Millisecond
+                    ),
+                    TimeZone
+                );
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                throw new ArgumentOutOfRangeException(string.Format("The date {0}-{1}-{2} is not valid.", y, m, d), e);
+            }
+
 
             return this;
         }
@@ -376,17 +386,23 @@ namespace PHP.Library
         [ImplementsMethod]
         public object setTime(ScriptContext/*!*/context, object hour, object minute, object second)
         {
-            this.Time = new DateTime(
-                Time.Year,
-                Time.Month,
-                Time.Day - 1,
-                PHP.Core.Convert.ObjectToInteger(hour),
-                PHP.Core.Convert.ObjectToInteger(minute),
-                PHP.Core.Convert.ObjectToInteger(second)
-            ).ToUniversalTime();
+            var h = PHP.Core.Convert.ObjectToInteger(hour);
+            var m = PHP.Core.Convert.ObjectToInteger(minute);
+            var s = PHP.Core.Convert.ObjectToInteger(second);
+            try
+            {
+                this.Time = TimeZoneInfo.ConvertTimeToUtc(
+                    new DateTime(Time.Year, Time.Month, Time.Day, h, m, s),
+                    TimeZone
+                );
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                throw new ArgumentOutOfRangeException(string.Format("The time {0}:{1}:{2} is not valid.", h, m, s), e);
+            }
 
-            return this;
-        }
+
+            return this;        }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static object setTime(object instance, PhpStack stack)
