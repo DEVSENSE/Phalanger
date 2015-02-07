@@ -48,7 +48,7 @@ namespace PHP.Core.AST
 		{
 			if (analyzer.IsThisCodeUnreachable())
 			{
-				analyzer.ReportUnreachableCode(position);
+                analyzer.ReportUnreachableCode(this.Position);
 				return EmptyStmt.Unreachable;
 			}
 

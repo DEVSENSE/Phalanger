@@ -151,7 +151,7 @@ namespace PHP.Core.AST
             this.function.DefineBuilders(typeBuilder);
 
             //
-            codeGenerator.MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn + 2);
+            codeGenerator.MarkSequencePoint(this.Position);
             if (!codeGenerator.EnterFunctionDeclaration(function))
                 throw new Exception("EnterFunctionDeclaration() failed!");
 

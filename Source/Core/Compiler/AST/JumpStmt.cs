@@ -57,7 +57,7 @@ namespace PHP.Core.AST
 		{
 			if (analyzer.IsThisCodeUnreachable())
 			{
-				analyzer.ReportUnreachableCode(position);
+                analyzer.ReportUnreachableCode(this.Position);
 				return EmptyStmt.Unreachable;
 			}
 
@@ -79,13 +79,13 @@ namespace PHP.Core.AST
 					int level = Convert.ObjectToInteger(expr.Value);
 					if (level > analyzer.LoopNestingLevel || level < 0)
 					{
-						analyzer.ErrorSink.Add(Errors.InvalidBreakLevelCount, analyzer.SourceUnit, position, level);
+                        analyzer.ErrorSink.Add(Errors.InvalidBreakLevelCount, analyzer.SourceUnit, this.Position, level);
 					}
 				}
 			}
 			else if (type != Types.Return && analyzer.LoopNestingLevel == 0)
 			{
-				analyzer.ErrorSink.Add(Errors.InvalidBreakLevelCount, analyzer.SourceUnit, position, 1);
+                analyzer.ErrorSink.Add(Errors.InvalidBreakLevelCount, analyzer.SourceUnit, this.Position, 1);
 			}
 
 			// code in the same block after return, break, continue is unreachable
@@ -99,11 +99,7 @@ namespace PHP.Core.AST
 			Statistics.AST.AddNode("JumpStmt");
 
 			// marks a sequence point:
-			codeGenerator.MarkSequencePoint(
-			  position.FirstLine,
-			  position.FirstColumn,
-			  position.LastLine,
-			  position.LastColumn + 1);
+            codeGenerator.MarkSequencePoint(this.Position);
 
 			switch (type)
 			{
@@ -268,7 +264,7 @@ namespace PHP.Core.AST
 
 			if (analyzer.IsThisCodeUnreachable())
 			{
-				analyzer.ReportUnreachableCode(position);
+                analyzer.ReportUnreachableCode(this.Position);
 				return EmptyStmt.Unreachable;
 			}
 
@@ -296,11 +292,7 @@ namespace PHP.Core.AST
 			Debug.Assert(codeGenerator.CurrentLabels[labelName] is LabelStmt);
 
 			// marks a sequence point:
-			codeGenerator.MarkSequencePoint(
-				position.FirstLine,
-				position.FirstColumn,
-				position.LastLine,
-				position.LastColumn + 2);
+            codeGenerator.MarkSequencePoint(this.Position);
 
 			codeGenerator.IL.Emit(OpCodes.Br, ((LabelStmt)codeGenerator.CurrentLabels[labelName]).Label);
 		}
@@ -345,7 +337,7 @@ namespace PHP.Core.AST
 			{
 				if (stmt is LabelStmt)
 				{
-					analyzer.ErrorSink.Add(Errors.LabelRedeclared, analyzer.SourceUnit, this.position, name);
+                    analyzer.ErrorSink.Add(Errors.LabelRedeclared, analyzer.SourceUnit, this.Position, name);
 					analyzer.ErrorSink.Add(Errors.RelatedLocation, analyzer.SourceUnit, stmt.Position);
 				}
 				else

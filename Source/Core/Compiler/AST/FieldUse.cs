@@ -212,7 +212,7 @@ namespace PHP.Core.AST
 		{
 			base.Analyze(analyzer, info);
 
-			property = analyzer.ResolveProperty(type, propertyName, position, true, analyzer.CurrentType, analyzer.CurrentRoutine, out runtimeVisibilityCheck);
+            property = analyzer.ResolveProperty(type, propertyName, this.Position, true, analyzer.CurrentType, analyzer.CurrentRoutine, out runtimeVisibilityCheck);
 
 			return new Evaluation(this);
 		}

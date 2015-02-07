@@ -130,7 +130,7 @@ namespace PHP.Core.AST
 		internal override void ResolveName(Analyzer/*!*/ analyzer)
 		{
 			if (constant == null)
-				constant = analyzer.ResolveGlobalConstantName(name, position);
+                constant = analyzer.ResolveGlobalConstantName(name, this.Position);
 		}
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
@@ -235,7 +235,7 @@ namespace PHP.Core.AST
             // analyze constructed type (we are in the full analysis):
 			analyzer.AnalyzeConstructedType(type);
 
-			constant = analyzer.ResolveClassConstantName(type, name, position, analyzer.CurrentType, analyzer.CurrentRoutine,
+            constant = analyzer.ResolveClassConstantName(type, name, this.Position, analyzer.CurrentType, analyzer.CurrentRoutine,
 				  out runtimeVisibilityCheck);
 		}
 
@@ -445,7 +445,7 @@ namespace PHP.Core.AST
 			switch (type)
 			{
 				case Types.Line:
-                    return (int)position.FirstLine; // __LINE__ is of type Integer in PHP
+                    return (int)this.Position.FirstLine; // __LINE__ is of type Integer in PHP
 
 				case Types.Class:
 					if (analyzer.CurrentType != null)

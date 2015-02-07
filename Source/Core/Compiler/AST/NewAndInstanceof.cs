@@ -237,7 +237,7 @@ namespace PHP.Core.AST
 
 		internal override bool Analyze(Analyzer/*!*/ analyzer)
 		{
-			resolvedType = analyzer.ResolveTypeName(className, analyzer.CurrentType, analyzer.CurrentRoutine, position, false);
+            resolvedType = analyzer.ResolveTypeName(className, analyzer.CurrentType, analyzer.CurrentRoutine, this.Position, false);
 
 			// base call must follow the class name resolution:
 			bool args_static = base.Analyze(analyzer);
@@ -248,7 +248,7 @@ namespace PHP.Core.AST
 				for (int i = 0; i < genericParams.Count; i++)
 					resolved_arguments[i] = genericParams[i].ResolvedType.TypeDesc;
 
-				resolvedType = resolvedType.MakeConstructedType(analyzer, resolved_arguments, position);
+                resolvedType = resolvedType.MakeConstructedType(analyzer, resolved_arguments, this.Position);
 			}
 
 			return args_static;
@@ -433,7 +433,7 @@ namespace PHP.Core.AST
 					if (type.IsAbstract || type.IsInterface)
 					{
 						analyzer.ErrorSink.Add(Errors.AbstractClassOrInterfaceInstantiated, analyzer.SourceUnit,
-							position, type.FullName);
+                            this.Position, type.FullName);
 						error_reported = true;
 					}
 				}
@@ -441,20 +441,20 @@ namespace PHP.Core.AST
                 // disallow instantiation of Closure
                 if (type.RealType == typeof(PHP.Library.SPL.Closure))
                 {
-                    analyzer.ErrorSink.Add(Errors.ClosureInstantiated, analyzer.SourceUnit, position, type.FullName);
+                    analyzer.ErrorSink.Add(Errors.ClosureInstantiated, analyzer.SourceUnit, this.Position, type.FullName);
                     error_reported = true;
                 }
 
 				// type name resolved, look the constructor up:
-				constructor = analyzer.ResolveConstructor(type, position, analyzer.CurrentType, analyzer.CurrentRoutine,
+                constructor = analyzer.ResolveConstructor(type, this.Position, analyzer.CurrentType, analyzer.CurrentRoutine,
 				  out runtimeVisibilityCheck);
 
-				if (constructor.ResolveOverload(analyzer, callSignature, position, out signature) == DRoutine.InvalidOverloadIndex)
+                if (constructor.ResolveOverload(analyzer, callSignature, this.Position, out signature) == DRoutine.InvalidOverloadIndex)
 				{
 					if (!error_reported)
 					{
 						analyzer.ErrorSink.Add(Errors.ClassHasNoVisibleCtor, analyzer.SourceUnit,
-						  position, type.FullName);
+                          this.Position, type.FullName);
 					}
 				}
 			}

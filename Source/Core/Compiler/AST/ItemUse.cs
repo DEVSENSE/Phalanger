@@ -72,7 +72,7 @@ namespace PHP.Core.AST
 					|| access == AccessType.ReadAndWriteAndReadRef
 					|| access == AccessType.ReadAndWriteAndReadUnknown))
 			{
-				analyzer.ErrorSink.Add(Errors.EmptyIndexInReadContext, analyzer.SourceUnit, position);
+                analyzer.ErrorSink.Add(Errors.EmptyIndexInReadContext, analyzer.SourceUnit, this.Position);
 				return new Evaluation(this);
 			}
 
