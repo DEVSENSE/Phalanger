@@ -293,6 +293,7 @@ namespace HtmlAgilityPack
         /// Applies HTML encoding to a specified string.
         /// </summary>
         /// <param name="html">The input string to encode. May not be null.</param>
+        /// <param name="attrQuote">Quotes used to encapsulate this string, used to escape characters properly.</param>
         /// <returns>The encoded string.</returns>
         public static string HtmlEncode(string html, AttributeValueQuote attrQuote)
         {
@@ -308,10 +309,10 @@ namespace HtmlAgilityPack
                 if (c == '&')
                 {
                     // allowed: lt; gt; amp; quot;
-                    if (StartsWithHelperOrdinalIgnoreCase(html, "amp;", i + i) ||
-                        StartsWithHelperOrdinalIgnoreCase(html, "lt;", i + i) ||
-                        StartsWithHelperOrdinalIgnoreCase(html, "gt;", i + i) ||
-                        StartsWithHelperOrdinalIgnoreCase(html, "quot;", i + i))
+                    if (StartsWithHelperOrdinalIgnoreCase(html, "amp;", i + 1) ||
+                        StartsWithHelperOrdinalIgnoreCase(html, "lt;", i + 1) ||
+                        StartsWithHelperOrdinalIgnoreCase(html, "gt;", i + 1) ||
+                        StartsWithHelperOrdinalIgnoreCase(html, "quot;", i + 1))
                         str.Append(c);
                     else
                         // otherwise convert & to &amp;
