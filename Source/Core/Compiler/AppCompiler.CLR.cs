@@ -135,6 +135,12 @@ namespace PHP.Core
 		public bool? Debuggable { get { return debuggable; } set { debuggable = value; } }
 		private bool? debuggable;
 
+        /// <summary>
+        /// Whether to force saving the resulting assembly with 32BIT+ flag.
+        /// </summary>
+        /// <remarks>This is useful for debuggers or deployment when 64bit execution is not supported.</remarks>
+        public bool Force32Bit { get; set; }
+
 		public bool? StaticInclusions { get { return staticInclusions; } set { staticInclusions = value; } }
 		private bool? staticInclusions;
 
@@ -1288,7 +1294,7 @@ namespace PHP.Core
 			}
 
 			PhpAssemblyBuilder assembly_builder = PhpAssemblyBuilder.Create(applicationContext, kind, ps.Pure, ps.OutPath,
-				ps.DocPath, entry_point_file, ps.Version, ps.Key, ps.Icon, resource_files, config.Compiler.Debug);
+				ps.DocPath, entry_point_file, ps.Version, ps.Key, ps.Icon, resource_files, config.Compiler.Debug, ps.Force32Bit);
 
 			assembly_builder.IsMTA = ps.IsMTA;
 			

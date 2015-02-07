@@ -179,7 +179,10 @@ namespace PHP.VisualStudio.PhalangerTasks
 			}
 
 			// debug symbols:
-			ps.Debuggable = this.debug;
+			ps.Debuggable = this.Debug;
+
+            // compilation of executables in debug mode from VisualStudio/MSBuild will produce 32bit assembly to EE working properly
+            ps.Force32Bit = this.Debug && assembly_extension.EqualsOrdinalIgnoreCase(".exe");
 
 			// language features:
 			ps.Pure = ApplicationCompiler.IsPureUnit(compilationMode);
