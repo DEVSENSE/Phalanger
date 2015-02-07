@@ -28,10 +28,6 @@ namespace PHP.Library.Data
             PDOSQLiteConfiguration.RegisterLegacyOptions();
 
             PDOLibraryDescriptor.RegisterProvider(new SQLitePDODriver());
-
-            var tPDO = Core.Reflection.DTypeDesc.Create(typeof(PDO));
-            PhpMemberAttributes att = PhpMemberAttributes.Public | PhpMemberAttributes.Static;
-            ApplicationContext.Default.AddMethodToType(tPDO, att, "sqliteCreateFunction", SQLitePDODriver.PDO_sqliteCreateFunction);
         }
 
         /// <summary>
