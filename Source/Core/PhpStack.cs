@@ -786,7 +786,7 @@ namespace PHP.Core
 			Callback = false;
 			Variables = null;
 			NamingContext = null;
-            LateStaticBindType = null;
+            //LateStaticBindType = null;
 		}
 
 		/// <summary>
@@ -800,7 +800,7 @@ namespace PHP.Core
 		{
 			Top -= (encodedActualCount & 0xffff) + 1;  // +1 for encoded args count
 			TypesTop -= (encodedActualCount >> 16);
-            LateStaticBindType = null;
+            //LateStaticBindType = null;
 		}
 
 		/// <summary>
@@ -1140,8 +1140,8 @@ namespace PHP.Core
         public void ThrowIfNotArgsaware(string/*!*/routineName)
         {
             //if (CalleeName != routineName)
-            if (Top == 0)
-                throw new InvalidOperationException(string.Format(CoreResources.argsaware_routine_needs_args, routineName));
+            //if (Top == 0 && CalleeName == null)
+            //    throw new InvalidOperationException(string.Format(CoreResources.argsaware_routine_needs_args, routineName));
         }
 
         #endregion

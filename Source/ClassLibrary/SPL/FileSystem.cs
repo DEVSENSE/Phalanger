@@ -24,29 +24,10 @@ namespace PHP.Library.SPL
         protected FileSystemInfo fs_info = null;
 
         [PhpVisible]
-        private string pathName
-        {
-            get
-            {
-                if (fs_info == null)
-                    return string.Empty;
-
-                // handle . and ..
-                var originalPath = fs_info.ToString();
-                if (originalPath.EndsWith("."))
-                {
-                    string fname = Path.GetFileName(originalPath);
-                    if (fname == "." || fname == "..")
-                        return originalPath;
-                }
-
-                // otherwise use FullName
-                return fs_info.FullName;
-            }
-        }
+        private string pathName { get { return getPathnameInternal(this.fs_info); } }
 
         [PhpVisible]
-        private string fileName { get { return fs_info != null ? Path.GetFileName(fs_info.ToString()) : string.Empty; } }
+        private string fileName { get { return getFilenameInternal(fs_info); } }
 
         ///// <summary>
         ///// <see cref="_info"/> as <see cref="FileInfo"/>.
@@ -120,6 +101,24 @@ namespace PHP.Library.SPL
         //public string getExtension ( void )
         //public SplFileInfo getFileInfo ([ string $class_name ] )
 
+        protected static string getPathnameInternal(FileSystemInfo info)
+        {
+            if (info == null)
+                return string.Empty;
+
+            // handle . and ..
+            var originalPath = info.ToString();
+            if (originalPath.EndsWith("."))
+            {
+                string fname = Path.GetFileName(originalPath);
+                if (fname == "." || fname == "..")
+                    return originalPath;
+            }
+
+            // otherwise use FullName
+            return info.FullName;
+        }
+
         protected static string getFilenameInternal(FileSystemInfo info)
         {
             return (info != null) ? Path.GetFileName(info.ToString()) : string.Empty;   // we need original path, including "." and ".."
@@ -165,10 +164,39 @@ namespace PHP.Library.SPL
         }
 
         //public SplFileInfo getPathInfo ([ string $class_name ] )
-        //public string getPathname ( void )
+
+        [ImplementsMethod]
+        public virtual object/*string*/getPathname(ScriptContext context)
+        {
+            return getPathnameInternal(this.fs_info);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getPathname(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((SplFileInfo)instance).getPathname(stack.Context);
+        }
+
         //public int getPerms ( void )
         //public string getRealPath ( void )
-        //public int getSize ( void )
+
+        [ImplementsMethod]
+        public virtual object/*bool*/getSize(ScriptContext context)
+        {
+            if (this.fs_info is FileInfo)
+                return ((FileInfo)this.fs_info).Length;
+
+            return false;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getSize(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((SplFileInfo)instance).getSize(stack.Context);
+        }
+
         //public string getType ( void )
 
         [ImplementsMethod]
@@ -310,7 +338,7 @@ namespace PHP.Library.SPL
 
             try
             {
-                this.fs_info = new DirectoryInfo(pathstr);
+                this.fs_info = new DirectoryInfo(Path.Combine(context.WorkingDirectory, pathstr));
                 this.CreateEnumeratorInternal();
             }
             catch (System.Exception ex)
@@ -350,7 +378,7 @@ namespace PHP.Library.SPL
         {
             string str;
             return
-                this.dir_enumerator_key < 2 &&  // . and .. are first 2 entries
+                //this.dir_enumerator_key < 2 &&  // . and .. are first 2 entries
                 validInternal() && (str = this.dir_enumerator.Current.ToString()).EndsWith(".", StringComparison.Ordinal) &&
                 ((str = Path.GetFileName(str)) == ".." || str == ".");
         }
@@ -372,19 +400,103 @@ namespace PHP.Library.SPL
         //public string getBasename ([ string $suffix ] )
         //public int getCTime ( void )
         //public string getExtension ( void )
-        //public string getFilename ( void )
+
+        [ImplementsMethod]
+        public override object/*string*/getFilename(ScriptContext context)
+        {
+            return validInternal() ? getFilenameInternal(this.dir_enumerator.Current) : string.Empty;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new static object getFilename(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((DirectoryIterator)instance).getFilename(stack.Context);
+        }
+
         //public int getGroup ( void )
         //public int getInode ( void )
         //public int getMTime ( void )
         //public int getOwner ( void )
-        //public string getPath ( void )
-        //public string getPathname ( void )
+
+        [ImplementsMethod]
+        public override object/*string*/getPath(ScriptContext context)
+        {
+            return validInternal() ? getPathInternal(this.dir_enumerator.Current) : string.Empty;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new static object getPath(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((DirectoryIterator)instance).getPath(stack.Context);
+        }
+
+        [ImplementsMethod]
+        public override object/*string*/getPathname(ScriptContext context)
+        {
+            return validInternal() ? getPathnameInternal(this.dir_enumerator.Current) : string.Empty;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new static object getPathname(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((DirectoryIterator)instance).getPathname(stack.Context);
+        }
+
         //public int getPerms ( void )
-        //public int getSize ( void )
+
+        [ImplementsMethod]
+        public override object/*bool*/getSize(ScriptContext context)
+        {
+            if (validInternal())
+            {
+                var info = this.dir_enumerator.Current as FileInfo;
+                if (info != null)
+                    return info.Length;
+            }
+
+            return false;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new static object getSize(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((DirectoryIterator)instance).getSize(stack.Context);
+        }
+
         //public string getType ( void )
-        //public bool isDir ( void )
+
+        [ImplementsMethod]
+        public override object/*bool*/isDir(ScriptContext context)
+        {
+            return validInternal() && this.dir_enumerator.Current is DirectoryInfo;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new static object isDir(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((DirectoryIterator)instance).isDir(stack.Context);
+        }
+
         //public bool isExecutable ( void )
-        //public bool isFile ( void )
+
+        [ImplementsMethod]
+        public virtual object/*bool*/isFile(ScriptContext context)
+        {
+            return validInternal() && this.dir_enumerator.Current is FileInfo;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object isFile(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((DirectoryIterator)instance).isFile(stack.Context);
+        }
+
         //public bool isLink ( void )
         //public bool isReadable ( void )
         //public bool isWritable ( void )
@@ -688,6 +800,31 @@ namespace PHP.Library.SPL
     [ImplementsType]
     public class RecursiveDirectoryIterator : FilesystemIterator, RecursiveIterator
     {
+        #region Fields & Properties
+
+        /// <summary>
+        /// Sub path used internally to track nesting of the iterator.
+        /// </summary>
+        private string sub_path = null;
+
+        protected string SubPathname
+        {
+            get
+            {
+                var fname = (this.dir_enumerator != null) ? this.dir_enumerator.Current.Name : null;
+                if (this.sub_path != null)
+                {
+                    return string.Concat(this.sub_path, Path.DirectorySeparatorChar.ToString(), fname);
+                }
+                else
+                {
+                    return fname ?? string.Empty;
+                }
+            }
+        }
+
+        #endregion
+
         #region Constructor
 
         /// <summary>
@@ -742,7 +879,23 @@ namespace PHP.Library.SPL
 
         #region Methods
 
+        [ImplementsMethod]
+        public virtual object/*string*/getSubPath(ScriptContext/*!*/context)
+        {
+            return this.sub_path ?? string.Empty;
+        }
 
+        [ImplementsMethod]
+        public virtual object/*string*/getSubPathname(ScriptContext/*!*/context)
+        {
+            return this.SubPathname;
+        }
+
+        //public string getSubPathname ( void )
+        //public bool hasChildren ([ bool $allow_links = false ] )
+        //public string key ( void )
+        //public void next ( void )
+        //public void rewind ( void )
 
         #endregion
 
@@ -758,26 +911,36 @@ namespace PHP.Library.SPL
             {
                 return new RecursiveDirectoryIterator(context, true)
                 {
-                    fs_info = this.dir_enumerator.Current
+                    fs_info = this.dir_enumerator.Current,
+                    sub_path = this.SubPathname,
                 };
             }
 
             return null;
         }
 
-        public virtual object hasChildren(ScriptContext context)
-        {
-            return this.hasChildren(context, false);
-        }
-
         [ImplementsMethod]
-        public virtual object hasChildren(ScriptContext context, [Optional]object allowLinks/*=false*/)
+        public virtual object hasChildren(ScriptContext context/*, [Optional]object allowLinks/*=false*/)
         {
             //bool bAllowLinks = (allowLinks == null || allowLinks == Arg.Default) ? false : Core.Convert.ObjectToBoolean(allowLinks);
             return this.validInternal() && !this.isDotInternal() && this.dir_enumerator.Current is DirectoryInfo;
         }
 
         #region Arglesses
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getSubPath(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveDirectoryIterator)instance).getSubPath(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object getSubPathname(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((RecursiveDirectoryIterator)instance).getSubPathname(stack.Context);
+        }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static object getChildren(object instance, PhpStack stack)
@@ -791,7 +954,7 @@ namespace PHP.Library.SPL
         {
             var allowLinks = stack.PeekValueOptional(1);
             stack.RemoveFrame();
-            return ((RecursiveDirectoryIterator)instance).hasChildren(stack.Context, allowLinks);
+            return ((RecursiveDirectoryIterator)instance).hasChildren(stack.Context/*, allowLinks*/);
         }
 
         #endregion
