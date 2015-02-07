@@ -18,7 +18,6 @@ using System.IO;
 using System.Threading;
 using PHP.Core.Emit;
 using System.Collections;
-using System.Diagnostics;
 
 namespace PHP.Core.Reflection
 {
@@ -29,15 +28,16 @@ namespace PHP.Core.Reflection
 	{
 		#region Constants
 
-        /// <summary>
-        /// Suffix for dynamically generated wrapper assemblies.
-        /// </summary>
-        internal const string DynamicAssemblySuffix = ".dynamic";
+		/// <summary>
+		/// Dynamic wrapper assembly name suffix.
+		/// </summary>
+		internal const string DynamicAssemblySuffix = ".dynamic";
 
 		/// <summary>
 		/// A name of the primary module of dynamic library wrappers.
 		/// </summary>
 		internal const string DynamicWrapperModuleName = "DynamicWrapper";
+
 
 		#endregion
 
@@ -83,14 +83,18 @@ namespace PHP.Core.Reflection
 
             if (dynamicWrapper == null)
             {
-                Debug.Assert(!Configuration.IsLoaded && !Configuration.IsBeingLoaded, "No dynamic wrappers are allowed only for configuration-less reflection!");
+                // loading without dynamic wrapper
+                Debug.Assert(!Configuration.IsLoaded); // no configuration
+
                 real_types = Assembly.RealAssembly.GetTypes();
 
                 // functions
-                // only argfulls
+                
             }
             else
             {
+                Debug.Assert(Configuration.IsLoaded);
+
                 real_types = dynamicWrapper.GetTypes();
 
                 // functions (scan arglesses in the dynamic wrapper - full reflect needs this info as well):
@@ -104,8 +108,8 @@ namespace PHP.Core.Reflection
                 if (dynamicWrapper != Assembly.RealAssembly)
                     real_types = Assembly.RealAssembly.GetTypes();
             }
-            
-            foreach (Type type in real_types)
+
+			foreach (Type type in real_types)
 			{
                 ReflectArgfulls(types, functions, constants, type, full);
 			}
@@ -188,8 +192,7 @@ namespace PHP.Core.Reflection
 
             if (PhpType.IsPhpRealType(type))
             {
-                var dtype = PhpTypeDesc.Create(type);
-                types[dtype.MakeSimpleName()] = dtype;
+                types[type.Name] = PhpTypeDesc.Create(type);
             }
             
             // reflect even if it is PhpType to find global functions [ImplementsFunction] and constants [ImplementsConstant]
@@ -270,7 +273,7 @@ namespace PHP.Core.Reflection
         /// <returns></returns>
         private DRoutineDesc/*!*/AddEmptyArglessStub(Dictionary<string, DRoutineDesc>/*!*/functions, string functionName)
         {
-            var desc = new PhpLibraryFunctionDesc(this, (instance, stack) => { throw new NotImplementedException("empty argless!"); });
+            var desc = new PhpLibraryFunctionDesc(this, (instance, stack) => { return null; });
             functions.Add(functionName, desc);
             return desc;
         }
@@ -300,7 +303,7 @@ namespace PHP.Core.Reflection
                         // otherwise an exception is thrown:
                         if (functions.TryGetValue(impl_func.Name, out desc) ||  
                             (lookForArgless && (desc = FindArglessStub(realMethods, functions, method, impl_func)) != null) ||
-                            (!Configuration.IsLoaded && !Configuration.IsBeingLoaded && (desc = AddEmptyArglessStub(functions, impl_func.Name)) != null))
+                            (!Configuration.IsLoaded && (desc = AddEmptyArglessStub(functions, impl_func.Name)) != null))
                         {
                             if (desc.Member == null)
                             {
@@ -407,27 +410,24 @@ namespace PHP.Core.Reflection
 #if SILVERLIGHT
 			this.dynamicWrapper = LibraryBuilder.CreateDynamicWrapper(real_assembly);
 #else
-            if (!Configuration.IsLoaded && !Configuration.IsBeingLoaded) { return; } // continue without wrappers !! (VS Integration does not need it)
+            if (!Configuration.IsLoaded) { return; } // continue without wrappers !! (VS Integration does not need it)
 			string wrappers_dir = Configuration.GetPathsNoLoad().DynamicWrappers;
 
-            // determine wrapper file name,
-            // we are looking for an up-to-date wrapper or a writable location:
-            string wrapper_file = DetermineDynamicWrapperFileName(wrappers_dir, real_assembly);
-            string wrapper_fullfile = Path.Combine(wrappers_dir, wrapper_file);
+			string wrapper_name = Path.Combine(wrappers_dir,
+				String.Concat(real_assembly.GetName(false).Name, DynamicAssemblySuffix, ".dll"));
 
-            // 
 			try
 			{
 				// builds wrapper if it doesn't exist:
-                if (!IsDynamicWrapperUpToDate(real_assembly, wrapper_fullfile))
+				if (!File.Exists(wrapper_name))
 				{
-                    Mutex mutex = new Mutex(false, String.Concat(@"Global\", wrapper_fullfile.ToLowerInvariant().Replace('\\', '/').Replace(':', '+')));   // do not use \ and : characters, to not confuse Mutex with file system which may not be accessible in this moment
+					Mutex mutex = new Mutex(false, String.Concat(@"Global\", wrapper_name.Replace('\\', '/')));
 					mutex.WaitOne();
 					try
 					{
 						// if the file still does not exist, we are in charge!
-                        if (!IsDynamicWrapperUpToDate(real_assembly, wrapper_fullfile))
-                            LibraryBuilder.CreateDynamicWrapper(real_assembly, wrappers_dir, wrapper_file);
+						if (!File.Exists(wrapper_name))
+							LibraryBuilder.CreateDynamicWrapper(real_assembly, wrappers_dir);
 					}
 					finally
 					{
@@ -436,11 +436,11 @@ namespace PHP.Core.Reflection
 				}
 
 				// loads wrapper:
-                this.dynamicWrapper = System.Reflection.Assembly.LoadFrom(wrapper_fullfile);
+				this.dynamicWrapper = System.Reflection.Assembly.LoadFrom(wrapper_name);
 			}
 			catch (Exception e)
 			{
-                throw new DynamicWrapperLoadException(wrapper_fullfile, e);
+				throw new DynamicWrapperLoadException(wrapper_name, e);
 			}
 #endif
 		}
@@ -488,77 +488,6 @@ namespace PHP.Core.Reflection
 
             return PhpLibraryAssembly.DefaultExtension;
 		}
-
-        /// <summary>
-        /// Get the dynamic wrapper file name based on the given extension assembly.
-        /// </summary>
-        /// <param name="ass">Extension assembly which dynamic wrapper file is needed.</param>
-        /// <param name="version">Wrapper version to to be appended to the file name.</param>
-        /// <returns>Dynamic wrapper assembly file name corresponding to given <paramref name="ass"/>.</returns>
-        public static string/*!*/DynamicWrapperFileName(Assembly/*!*/ass, int version)
-        {
-            var name = ass.GetName(false);
-            return String.Concat(name.Name, DynamicAssemblySuffix, (version > 0) ? version.ToString() : string.Empty  ,".dll");
-        }
-
-        /// <summary>
-        /// Determine file name to be use for dynamic wrapper. The resulting file has to not exists, be writable or up-to-date.
-        /// </summary>
-        /// <param name="wrappers_dir">Directory with dynamic wrappers.</param>
-        /// <param name="ass">Class library assembly.</param>
-        /// <returns>File name (relatively to <paramref name="wrappers_dir"/>) for dyamic wrapper.</returns>
-        private static string/*!*/DetermineDynamicWrapperFileName(string/*!*/wrappers_dir, Assembly/*!*/ass)
-        {
-            Debug.Assert(!string.IsNullOrEmpty(wrappers_dir));
-            Debug.Assert(ass != null);
-
-            for (int version = 0; ; version++)
-            {
-                var fname = DynamicWrapperFileName(ass, version);
-                var fullname = Path.Combine(wrappers_dir, fname);
-
-                if (!File.Exists(fullname) || IsDynamicWrapperUpToDate(ass, fullname) || FileIsWritable(fullname))
-                    return fname;
-            }
-        }
-
-        /// <summary>
-        /// Determine whether given <paramref name="filename"/> can be overwritten.
-        /// </summary>
-        /// <param name="filename">Full file name to be checked.</param>
-        /// <returns><c>True</c> if file can be overwritten.</returns>
-        private static bool FileIsWritable(string/*!*/filename)
-        {
-            try
-            {
-                using (var stream = File.OpenWrite(filename))
-                { }
-                return true;
-            }
-            catch(IOException){}    // how else determine the file is writable ??
-
-            return false;
-        }
-
-        /// <summary>
-        /// Check wheter dynamic wrapper for given <see cref="Assembly"/> <paramref name="ass"/> does exist and is up to date.
-        /// </summary>
-        /// <param name="ass">Class library assembly.</param>
-        /// <param name="wrapper_name">Wrapper file name corresponding to the given assembly <paramref name="ass"/>.</param>
-        /// <returns>True iff there is a valid up-to-date dynamic wrapper for given assembly.</returns>
-        private static bool IsDynamicWrapperUpToDate(Assembly/*!*/ass, string/*!*/wrapper_name)
-        {
-            Debug.Assert(ass != null);
-            Debug.Assert(wrapper_name != null);
-
-            if (File.Exists(wrapper_name))
-            {
-                if (FileSystemUtils.GetLastModifiedTimeUtc(ass.Location) < FileSystemUtils.GetLastModifiedTimeUtc(wrapper_name))
-                    return true;
-            }
-
-            return false;
-        }
 
 		#endregion
 	}

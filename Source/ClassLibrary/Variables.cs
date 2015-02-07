@@ -147,6 +147,21 @@ namespace PHP.Library
 		{
             return Count(variable, CountNormal);
 		}
+        
+        /// <summary>
+        /// Counts items in a variable.
+        /// </summary>
+        /// <param name="variable">The variable which items to count.</param>
+        /// <param name="mode">Whether to count recursively.</param>
+        /// <returns>The number of items in all arrays contained recursivelly in <paramref name="variable"/>.</returns>
+        /// <remarks>If any item of the <paramref name="variable"/> contains infinite recursion 
+        /// skips items that are repeating because of such recursion.
+        /// </remarks>
+        [ImplementsFunction("sizeof")]
+        public static int SizeOf(object variable, int mode)
+        {
+            return Count(variable, mode);
+        }
 
 		/// <summary>
 		/// Counts items in a variable.

@@ -532,7 +532,7 @@ namespace PHP.Library
 
 			PhpArray result = new PhpArray();
 
-			foreach (KeyValuePair<string, DRoutineDesc> function in app_context.GetFunctions())
+			foreach (KeyValuePair<string, DRoutineDesc> function in app_context.Functions)
 			{
 				if (function.Value.DeclaringType.DeclaringModule == desc.Module)
 				{
