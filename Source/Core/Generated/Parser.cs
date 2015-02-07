@@ -2157,7 +2157,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
       case 125: // non_empty_statement -> T_IF '(' expr ')' ':' @8 inner_statement_list_opt elseif_colon_list_opt else_colon_opt T_ENDIF ';' 
 { 
 			List<ConditionalStmt> conditions = (List<ConditionalStmt>)value_stack.array[value_stack.top-4].yyval.Object;
-			conditions[0] = new ConditionalStmt(Position.CombinePositions(value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-5].yypos), (Expression)value_stack.array[value_stack.top-9].yyval.Object, new BlockStmt(value_stack.array[value_stack.top-5].yypos, (List<Statement>)value_stack.array[value_stack.top-5].yyval.Object));
+			conditions[0] = new ConditionalStmt(Position.CombinePositions(value_stack.array[value_stack.top-11].yypos, value_stack.array[value_stack.top-1].yypos), (Expression)value_stack.array[value_stack.top-9].yyval.Object, new BlockStmt(value_stack.array[value_stack.top-5].yypos, (List<Statement>)value_stack.array[value_stack.top-5].yyval.Object));
 			
 			// add else:
 			if (value_stack.array[value_stack.top-3].yyval.Object != null)
