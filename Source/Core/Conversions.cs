@@ -90,7 +90,7 @@ namespace PHP.Core
         /// </summary>
         /// <param name="value">The literal to be converted.</param>
         /// <returns>PHP (Phalanger) representation of the CLR literal.</returns>
-		internal static object ClrLiteralToPhpLiteral(object value)
+		public static object ClrLiteralToPhpLiteral(object value)
 		{
             if (value == null ||
                 value.GetType() == typeof(int) ||
