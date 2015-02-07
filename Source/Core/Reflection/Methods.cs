@@ -1834,7 +1834,8 @@ namespace PHP.Core.Reflection
 
             // strict standards: function reference
             // Declaration of bar::a() should be compatible with that of foo::a()
-            if ( !Signature.CanOverride( overridden.GetSignature(0) ) )
+            // This check is not performed for __construct() function in PHP.
+            if (!Signature.CanOverride(overridden.GetSignature(0)) && !this.Name.IsConstructName)
             {
                 errors.Add(Warnings.DeclarationShouldBeCompatible, SourceUnit, position,
                     DeclaringType.FullName, this.FullName, overridden.DeclaringType.FullName, overridden.FullName);
