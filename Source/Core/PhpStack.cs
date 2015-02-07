@@ -1088,5 +1088,20 @@ namespace PHP.Core
 		}
 
 		#endregion
-	}
+
+        #region ThrowIfNotArgsaware
+
+        /// <summary>
+        /// Check whether current <see cref="CalleeName"/> matches currently called function.
+        /// </summary>
+        /// <param name="routineName">Currently called function name.</param>
+        /// <exception cref="InvalidOperationException">If currently caled function does not match <see cref="CalleeName"/>.</exception>
+        public void ThrowIfNotArgsaware(string/*!*/routineName)
+        {
+            if (CalleeName != routineName)
+                throw new InvalidOperationException(string.Format(CoreResources.argsaware_routine_needs_args, routineName));
+        }
+
+        #endregion
+    }
 }

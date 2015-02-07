@@ -1036,7 +1036,7 @@ namespace PHP.Core.Reflection
 #endif
 
             // [NeedsArglessAttribute] to mark the function if it should be called via argless stub
-            if ((this.Properties & RoutineProperties.UseVarArgs) != 0)  // function calls class-library function that needs PhpStack
+            if ((this.Properties & RoutineProperties.IsArgsAware) != 0)  // function requires PhpStack to be loaded
                 ReflectionUtils.SetCustomAttribute(argfull,
                     new CustomAttributeBuilder(typeof(NeedsArglessAttribute).GetConstructor(Type.EmptyTypes), ArrayUtils.EmptyObjects));
             

@@ -2059,4 +2059,7 @@ non-infringement.
   <data name="class_could_not_be_loaded" xml:space="preserve">
     <value>Class {0} could not be loaded</value>
   </data>
+  <data name="argsaware_routine_needs_args" xml:space="preserve">
+    <value>Function '{0}'() is ArgsAware. It requires to be called via ArgLess stub, but was called via ArgFull. It requires arguments to be loaded on PhpStack.</value>
+  </data>
 </root>

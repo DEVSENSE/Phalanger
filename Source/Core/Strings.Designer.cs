@@ -232,6 +232,15 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Function &apos;{0}&apos;() is ArgsAware. It requires to be called via ArgLess stub, but was called via ArgFull. It requires arguments to be loaded on PhpStack..
+        /// </summary>
+        public static string argsaware_routine_needs_args {
+            get {
+                return ResourceManager.GetString("argsaware_routine_needs_args", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Argument {0} cannot be equal to {1}..
         /// </summary>
         public static string argument_equals {
