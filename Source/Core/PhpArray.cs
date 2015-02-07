@@ -129,7 +129,7 @@ namespace PHP.Core
             if (data != null)
             {
                 foreach (object value in data)
-                    this.Add(value);
+                    this.AddToEnd(value);
             }
         }
 
