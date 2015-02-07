@@ -21,7 +21,7 @@ namespace PHP.Library.Data
         public override bool ExecuteStatement()
         {
             this.m_com.Transaction = (SQLiteTransaction)this.m_pdo.Transaction;
-            this.m_com.CommandTimeout = (int)this.m_pdo.GetAttribute(PDO.ATTR_TIMEOUT, 30);
+            this.m_com.CommandTimeout = (int)this.m_pdo.GetAttribute(PDO.ATTR_TIMEOUT, 30000);
             this.m_dr = this.m_com.ExecuteReader();
             return true;
         }

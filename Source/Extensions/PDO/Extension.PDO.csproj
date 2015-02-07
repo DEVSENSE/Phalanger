@@ -54,26 +54,30 @@
     <Compile Include="PDO.Const.cs" />
     <Compile Include="PDO.cs" />
     <Compile Include="PDOAttributeType.cs" />
+    <Compile Include="PDOCaseConversion.cs" />
     <Compile Include="PDOConfiguration.cs" />
     <Compile Include="PDOConnection.cs" />
+    <Compile Include="PDOCursorType.cs" />
+    <Compile Include="PDOErrorMode.cs" />
     <Compile Include="PDOException.cs" />
     <Compile Include="PDOFetchType.cs" />
     <Compile Include="PDOGlobalConfig.cs" />
     <Compile Include="PDOLibraryDescriptor.cs" />
     <Compile Include="PDOLocalConfig.cs" />
+    <Compile Include="PDONullHandling.cs" />
+    <Compile Include="PDOParamType.cs" />
     <Compile Include="PDOStatement.cs" />
+    <Compile Include="PDOStatement.PHP.cs" />
     <Compile Include="PDOStatics.cs" />
-    <Compile Include="PDOStatics.pdo_case_conversion.cs" />
-    <Compile Include="PDOStatics.pdo_cursor_type.cs" />
-    <Compile Include="PDOStatics.pdo_error_mode .cs" />
-    <Compile Include="PDOStatics.pdo_null_handling.cs" />
-    <Compile Include="PDOStatics.pdo_param_type.cs" />
     <Compile Include="PDODriver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Extensions.snk">
       <Link>Extensions.snk</Link>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ClassLibrary\ClassLibrary.csproj">
@@ -84,9 +88,6 @@
       <Project>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</Project>
       <Name>Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

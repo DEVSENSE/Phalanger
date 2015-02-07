@@ -16,7 +16,6 @@ namespace PHP.Library.Data
         [return: CastToFalse]
         public static PhpResource Open(string filename)
         {
-            string error = null;
             return Open(filename, DEFAULT_FILE_MODE, null, false);
         }
 
@@ -267,6 +266,27 @@ namespace PHP.Library.Data
                 return null;
             }
             return arr;
+        }
+        #endregion
+
+        #region sqlite_create_function
+        [ImplementsFunction("sqlite_create_function")]
+        [PhpVisible]
+        public static void CreateFunction(PhpResource dbhandle, string function_name, string callback)
+        {
+            CreateFunction(dbhandle, function_name, callback, -1);
+        }
+        [ImplementsFunction("sqlite_create_function")]
+        [PhpVisible]
+        public static void CreateFunction(PhpResource dbhandle, string function_name, object callback, int num_args)
+        {
+            PhpSQLiteDbConnection connection = PhpSQLiteDbConnection.ValidConnection(dbhandle);
+            PhpCallback cb = PHP.Core.Convert.ObjectToCallback(callback);
+
+            int paramCount = cb.TargetRoutine.PhpFunction.ArgFullInfo.GetParameters().Length;
+            Delegate d = null;
+            connection.Connection.RegisterFunction(function_name, paramCount, FunctionType.Scalar, d);
+            //SQLiteFunction.RegisterFunction()
         }
         #endregion
     }

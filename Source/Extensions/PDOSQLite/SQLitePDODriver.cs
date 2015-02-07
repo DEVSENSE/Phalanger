@@ -5,14 +5,16 @@ using System.Text;
 using System.Data.SQLite;
 using PHP.Core;
 using System.IO;
+using System.Data;
 
 namespace PHP.Library.Data
 {
+
     public sealed class SQLitePDODriver : PDODriver
     {
         public override string Scheme { get { return "sqlite"; } }
 
-        public override PDOConnection OpenConnection(ScriptContext context, string dsn_data, string username, string password, object argdriver_options)
+        public override IDbConnection OpenConnection(ScriptContext context, string dsn_data, string username, string password, object argdriver_options)
         {
             //Determine file path
             string filename = dsn_data.Replace('/', Path.DirectorySeparatorChar);
@@ -25,10 +27,10 @@ namespace PHP.Library.Data
             SQLiteConnection con = new SQLiteConnection(csb.ConnectionString);
             con.Open();
 
-            return new SQLitePDOConnection(this, con);
+            return con;
         }
 
-        public override object Quote(ScriptContext context, object strobj, PDOStatics.pdo_param_type param_type)
+        public override object Quote(ScriptContext context, object strobj, PDOParamType param_type)
         {
             //From mysql extension
             if (strobj == null)
@@ -81,6 +83,50 @@ namespace PHP.Library.Data
             }
 
             return sb.ToString();
+        }
+
+        public override PDOStatement CreateStatement(ScriptContext context, PDO pdo)
+        {
+            SQLitePDOStatement stmt = new SQLitePDOStatement(context, pdo);
+            return stmt;
+        }
+
+        protected override bool IsValueValidForAttribute(int att, object value)
+        {
+            PDOAttributeType attE = (PDOAttributeType)att;
+            switch (attE)
+            {
+                case PDOAttributeType.PDO_ATTR_EMULATE_PREPARES:
+                    return value is bool;
+                case PDOAttributeType.PDO_ATTR_ERRMODE:
+                    return Enum.IsDefined(typeof(PDOErrorMode), value);
+                default:
+                    break;
+            }
+            return false;
+        }
+
+        internal static object PDO_sqliteCreateFunction(object instance, PhpStack stack)
+        {
+            string func_name = PHP.Core.Convert.ObjectToString(stack.PeekValue(1));
+            PhpCallback callback = PHP.Core.Convert.ObjectToCallback(stack.PeekValue(2));
+            object nbr = stack.PeekValueOptional(3);
+            stack.RemoveFrame();
+
+            int nbr_arg;
+            if (nbr == null)
+            {
+                nbr_arg = -1;
+            }
+            else
+            {
+                nbr_arg = PHP.Core.Convert.ObjectToInteger(nbr);
+            }
+
+            Delegate d = new Func<object[], object>(callback.Invoke);
+
+            SQLiteFunction.RegisterFunction(func_name, FunctionType.Scalar, nbr_arg, d);
+            return null;
         }
     }
 }
