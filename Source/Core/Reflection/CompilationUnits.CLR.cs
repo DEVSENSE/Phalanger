@@ -1042,6 +1042,15 @@ namespace PHP.Core.Reflection
 					dstTable.Add(entry.Key, entry.Value.CloneWithScope(inclusion.Scope));
 					added_count++;
 				}
+                else if (existing.Scope.Start > inclusion.Scope.Start && inclusion.Scope.IsValid)  // better Scope level?
+                {
+                    if (existing.Member == entry.Value.Member ||                    // mostly DMember is the same reference, just in different Scope level
+                        !entry.Value.Member.IsUnknown || existing.Member.IsUnknown) // otherwise, we don't want to overwrite a Known member with an Unknown!
+                    {
+                        // overwrite the existing declaration with better inclusion scope:
+                        dstTable[entry.Key] = entry.Value.CloneWithScope(inclusion.Scope);
+                    }
+                }
 			}
 
 			return added_count;
