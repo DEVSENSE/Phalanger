@@ -80,7 +80,7 @@ namespace PHP.Core
 			sb.Append(config.Compiler.HashCode.ToString("x"));
 			sb.Append('#');
 
-			return sb.Replace("_", "__").Replace('\\', '_').Replace(':', '_').ToString();
+            return sb.Replace("_", "__").Replace('/', '_').Replace('\\', '_').Replace(':', '_').ToString();
 		}
 
 		/// <summary>
@@ -759,6 +759,9 @@ namespace PHP.Core
             long sourceStamp = Math.Max(sourceTime.Ticks, configTime.Ticks);
 
             // Find specified file in temporary files
+
+            if (Directory.Exists(outDir))
+
             foreach (string file in Directory.GetFiles(outDir, name + "*.dll"))
             {
                 Match match = reFileStamp.Match(file);

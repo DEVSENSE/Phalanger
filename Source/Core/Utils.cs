@@ -3330,6 +3330,17 @@ namespace PHP.Core
         }
         private static bool? isDotNetFramework;
 
+        /// <summary>
+        /// Determine if the current OS is Windows.
+        /// </summary>
+        public static bool IsWindows
+        {
+            get
+            {
+                var os = Environment.OSVersion;
+                return os.Platform != PlatformID.MacOSX && os.Platform != PlatformID.Unix;
+            }
+        }
     }
 
     #endregion
