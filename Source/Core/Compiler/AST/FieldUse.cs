@@ -170,11 +170,7 @@ namespace PHP.Core.Compiler.AST
             {
                 base.Analyze(node, analyzer, info);
 
-<<<<<<< HEAD
-                property = analyzer.ResolveProperty(type, node.PropertyName, node.Position, true, analyzer.CurrentType, analyzer.CurrentRoutine, out runtimeVisibilityCheck);
-=======
                 property = analyzer.ResolveProperty(type, node.PropertyName, node.Span, true, analyzer.CurrentType, analyzer.CurrentRoutine, out runtimeVisibilityCheck);
->>>>>>> refs/remotes/tfs/default
 
                 return new Evaluation(node);
             }

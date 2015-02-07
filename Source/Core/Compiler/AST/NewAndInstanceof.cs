@@ -60,11 +60,7 @@ namespace PHP.Core.Compiler.AST
                         if (type.IsAbstract || type.IsInterface)
                         {
                             analyzer.ErrorSink.Add(Errors.AbstractClassOrInterfaceInstantiated, analyzer.SourceUnit,
-<<<<<<< HEAD
-                                node.Position, type.FullName);
-=======
                                 node.Span, type.FullName);
->>>>>>> refs/remotes/tfs/default
                             error_reported = true;
                         }
                     }
@@ -72,35 +68,19 @@ namespace PHP.Core.Compiler.AST
                     // disallow instantiation of Closure
                     if (type.RealType == typeof(PHP.Library.SPL.Closure))
                     {
-<<<<<<< HEAD
-                        analyzer.ErrorSink.Add(Errors.ClosureInstantiated, analyzer.SourceUnit, node.Position, type.FullName);
-=======
                         analyzer.ErrorSink.Add(Errors.ClosureInstantiated, analyzer.SourceUnit, node.Span, type.FullName);
->>>>>>> refs/remotes/tfs/default
                         error_reported = true;
                     }
 
                     // type name resolved, look the constructor up:
-<<<<<<< HEAD
-                    constructor = analyzer.ResolveConstructor(type, node.Position, analyzer.CurrentType, analyzer.CurrentRoutine,
-                      out runtimeVisibilityCheck);
-
-                    if (constructor.ResolveOverload(analyzer, node.CallSignature, node.Position, out signature) == DRoutine.InvalidOverloadIndex)
-=======
                     constructor = analyzer.ResolveConstructor(type, node.Span, analyzer.CurrentType, analyzer.CurrentRoutine,
                       out runtimeVisibilityCheck);
 
                     if (constructor.ResolveOverload(analyzer, node.CallSignature, node.Span, out signature) == DRoutine.InvalidOverloadIndex)
->>>>>>> refs/remotes/tfs/default
                     {
                         if (!error_reported)
                         {
-                            analyzer.ErrorSink.Add(Errors.ClassHasNoVisibleCtor, analyzer.SourceUnit,
-<<<<<<< HEAD
-                              node.Position, type.FullName);
-=======
-                              node.Span, type.FullName);
->>>>>>> refs/remotes/tfs/default
+                            analyzer.ErrorSink.Add(Errors.ClassHasNoVisibleCtor, analyzer.SourceUnit, node.Span, type.FullName);
                         }
                     }
                 }
