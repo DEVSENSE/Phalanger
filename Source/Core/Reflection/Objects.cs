@@ -1727,7 +1727,7 @@ namespace PHP.Core.Reflection
 		/// <param name="intValue">This instance converted to integer.</param>
 		/// <param name="longValue">Not applicable.</param>
 		/// <returns><see cref="Convert.NumberInfo.Integer"/>.</returns>
-		public Convert.NumberInfo ToNumber(out int intValue, out long longValue, out double doubleValue)
+		public virtual Convert.NumberInfo ToNumber(out int intValue, out long longValue, out double doubleValue)
 		{
 			intValue = 1;
 			doubleValue = 1.0;
@@ -3230,14 +3230,30 @@ namespace PHP.Core.Reflection
         }
 
         /// <summary>
-        /// Overrides basic double cast of CLR object in case of <see cref="decimal"/> type.
+        /// Overrides default double cast of CLR object in case of <see cref="decimal"/> type.
         /// </summary>
         public override double ToDouble()
         {
             if (typeof(T) == typeof(decimal))
-                return (double)(decimal)(object)this.realValue;
+                return (double)(decimal)this.RealObject;
 
             return base.ToDouble();
+        }
+
+        /// <summary>
+        /// Overrides default number conversion of CLR object in of <see cref="decimal"/> type.
+        /// </summary>
+        public override Convert.NumberInfo ToNumber(out int intValue, out long longValue, out double doubleValue)
+        {
+            if (typeof(T) == typeof(decimal))
+            {
+                doubleValue = (double)(decimal)this.RealObject;
+                intValue = unchecked((int)doubleValue);
+                longValue = unchecked((long)doubleValue);
+                return Convert.NumberInfo.Double | Convert.NumberInfo.IsNumber;
+            }
+
+            return base.ToNumber(out intValue, out longValue, out doubleValue);
         }
 
         #endregion
