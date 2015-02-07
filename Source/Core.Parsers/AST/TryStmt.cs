@@ -50,7 +50,7 @@ namespace PHP.Core.AST
         public FinallyItem FinallyItem { get { return finallyItem; } }
         internal bool HasFinallyStatements { get { return finallyItem != null && finallyItem.Statements.Length != 0; } }
 
-        public TryStmt(Text.Span p, List<Statement>/*!*/ statements, List<CatchItem> catches, FinallyItem finallyItem)
+        public TryStmt(Text.Span p, IList<Statement>/*!*/ statements, List<CatchItem> catches, FinallyItem finallyItem)
 			: base(p)
 		{
             Debug.Assert(statements != null);
@@ -98,7 +98,7 @@ namespace PHP.Core.AST
         public GenericQualifiedName ClassName { get { return className; } }
 
         public CatchItem(Text.Span p, GenericQualifiedName className, DirectVarUse/*!*/ variable,
-			List<Statement>/*!*/ statements)
+			IList<Statement>/*!*/ statements)
 			: base(p)
 		{
 			Debug.Assert(variable != null && statements != null);
@@ -131,7 +131,7 @@ namespace PHP.Core.AST
         /// <summary>A list of statements contained in the try-block.</summary>
         public Statement[]/*!*/Statements { get { return statements; } }
 
-        public FinallyItem(Text.Span span, List<Statement>/*!*/statements)
+        public FinallyItem(Text.Span span, IList<Statement>/*!*/statements)
             : base(span)
         {
             this.statements = statements.AsArray();

@@ -27,8 +27,8 @@ namespace PHP.Core.AST
 	public sealed class EchoStmt : Statement
 	{
 		/// <summary>Array of parameters - Expressions.</summary>
-        public List<Expression> /*!*/ Parameters { get { return parameters; } }
-        private List<Expression>/*!*/ parameters;
+        public Expression[] /*!*/ Parameters { get { return parameters; } }
+        private Expression[]/*!*/ parameters;
         
         /// <summary>
         /// Gets value indicating whether this <see cref="EchoStmt"/> represents HTML code.
@@ -36,11 +36,11 @@ namespace PHP.Core.AST
         public bool IsHtmlCode { get { return isHtmlCode; } }
         private readonly bool isHtmlCode;
 
-		public EchoStmt(Text.Span span, List<Expression>/*!*/ parameters)
+		public EchoStmt(Text.Span span, IList<Expression>/*!*/ parameters)
             : base(span)
 		{
 			Debug.Assert(parameters != null);
-			this.parameters = parameters;
+			this.parameters = parameters.AsArray();
             this.isHtmlCode = false;
 		}
 
@@ -50,14 +50,14 @@ namespace PHP.Core.AST
         public EchoStmt(Text.Span span, string htmlCode)
             : base(span)
         {
-            this.parameters = new List<Expression>(1) { new StringLiteral(span, htmlCode) };
+            this.parameters = new Expression[] { new StringLiteral(span, htmlCode) };
             this.isHtmlCode = true;
         }
 
 		internal override bool SkipInPureGlobalCode()
 		{
 			StringLiteral literal;
-			if (parameters.Count == 1 && (literal = parameters[0] as StringLiteral) != null)
+			if (parameters.Length == 1 && (literal = parameters[0] as StringLiteral) != null)
 			{
 				return StringUtils.IsWhitespace((string)literal.Value);
 			}

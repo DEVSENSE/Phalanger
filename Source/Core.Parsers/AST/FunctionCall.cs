@@ -37,7 +37,7 @@ namespace PHP.Core.AST
         /// </summary>
         public Text.Span NameSpan { get; protected set; }
 
-        public FunctionCall(Text.Span span, Text.Span nameSpan, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+        public FunctionCall(Text.Span span, Text.Span nameSpan, IList<ActualParam> parameters, IList<TypeRef> genericParams)
 			: base(span)
 		{
 			Debug.Assert(parameters != null);
@@ -67,7 +67,7 @@ namespace PHP.Core.AST
 
         public DirectFcnCall(Text.Span span,
             QualifiedName qualifiedName, QualifiedName? fallbackQualifiedName, Text.Span qualifiedNameSpan,
-            List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+            IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : base(span, qualifiedNameSpan, parameters, genericParams)
 		{
             this.qualifiedName = qualifiedName;
@@ -96,7 +96,7 @@ namespace PHP.Core.AST
 		public Expression/*!*/ NameExpr { get { return nameExpr; } }
 		internal Expression/*!*/ nameExpr;
 
-		public IndirectFcnCall(Text.Span p, Expression/*!*/ nameExpr, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+		public IndirectFcnCall(Text.Span p, Expression/*!*/ nameExpr, IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : base(p, nameExpr.Span, parameters, genericParams)
 		{
 			this.nameExpr = nameExpr;
@@ -129,12 +129,12 @@ namespace PHP.Core.AST
 
         public TypeRef/*!*/ TypeRef { get { return this.typeRef; } }
 
-        public StaticMtdCall(Text.Span span, Text.Span methodNamePosition, GenericQualifiedName className, Text.Span classNamePosition, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+        public StaticMtdCall(Text.Span span, Text.Span methodNamePosition, GenericQualifiedName className, Text.Span classNamePosition, IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : this(span, methodNamePosition, DirectTypeRef.FromGenericQualifiedName(classNamePosition, className), parameters, genericParams)
 		{	
 		}
 
-        public StaticMtdCall(Text.Span span, Text.Span methodNamePosition, TypeRef typeRef, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+        public StaticMtdCall(Text.Span span, Text.Span methodNamePosition, TypeRef typeRef, IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : base(span, methodNamePosition, parameters, genericParams)
         {
             Debug.Assert(typeRef != null);
@@ -156,14 +156,14 @@ namespace PHP.Core.AST
         public Name MethodName { get { return methodName; } }
 		
 		public DirectStMtdCall(Text.Span span, ClassConstUse/*!*/ classConstant,
-            List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+            IList<ActualParam>/*!*/ parameters, IList<TypeRef>/*!*/ genericParams)
 			: base(span, classConstant.NamePosition, classConstant.TypeRef, parameters, genericParams)
 		{
 			this.methodName = new Name(classConstant.Name.Value);
 		}
 
         public DirectStMtdCall(Text.Span span, GenericQualifiedName className, Text.Span classNamePosition,
-            Name methodName, Text.Span methodNamePosition, List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+            Name methodName, Text.Span methodNamePosition, IList<ActualParam> parameters, IList<TypeRef> genericParams)
 			: base(span, methodNamePosition, className, classNamePosition, parameters, genericParams)
 		{
 			this.methodName = methodName;
@@ -194,7 +194,7 @@ namespace PHP.Core.AST
 
 		public IndirectStMtdCall(Text.Span span,
                                  GenericQualifiedName className, Text.Span classNamePosition, CompoundVarUse/*!*/ mtdNameVar,
-	                             List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+	                             IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : base(span, mtdNameVar.Span, className, classNamePosition, parameters, genericParams)
 		{
 			this.methodNameVar = mtdNameVar;
@@ -202,7 +202,7 @@ namespace PHP.Core.AST
 
         public IndirectStMtdCall(Text.Span span,
                                  TypeRef/*!*/typeRef, CompoundVarUse/*!*/ mtdNameVar,
-                                 List<ActualParam>/*!*/ parameters, List<TypeRef>/*!*/ genericParams)
+                                 IList<ActualParam> parameters, IList<TypeRef> genericParams)
             : base(span, mtdNameVar.Span, typeRef, parameters, genericParams)
         {
             this.methodNameVar = mtdNameVar;

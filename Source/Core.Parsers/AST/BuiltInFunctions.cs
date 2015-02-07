@@ -209,8 +209,8 @@ namespace PHP.Core.AST
         public AssertEx(Text.Span span, CallSignature callsignature)
             : base(span)
         {
-            Debug.Assert(callsignature.Parameters.Count >= 1);
-            Debug.Assert(callsignature.GenericParams.Count == 0);
+            Debug.Assert(callsignature.Parameters.Any());
+            Debug.Assert(callsignature.GenericParams.Empty());
 
             this.CodeEx = callsignature.Parameters[0].Expression;
             //this.DescriptionEx = description;

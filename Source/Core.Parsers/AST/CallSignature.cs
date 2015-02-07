@@ -93,43 +93,42 @@ namespace PHP.Core.AST
 		/// <summary>
 		/// List of actual parameters (<see cref="ActualParam"/> nodes).
 		/// </summary>	
-		public List<ActualParam>/*!*/ Parameters { get { return parameters; } }
-		private readonly List<ActualParam>/*!*/ parameters;
+		public ActualParam[]/*!*/ Parameters { get { return parameters; } }
+		private readonly ActualParam[]/*!*/ parameters;
 
 		/// <summary>
 		/// List of generic parameters.
 		/// </summary>
-		public List<TypeRef>/*!*/ GenericParams
+        public TypeRef[]/*!*/ GenericParams
         {
-            get
+            get { return this.GetProperty<TypeRef[]>() ?? EmptyArray<TypeRef>.Instance; }
+            set
             {
-                return this.Properties[GenericParamsPropertyKey] as List<TypeRef> ?? TypeRef.EmptyList;
-            }
-            private set
-            {
-                if (value != null && value.Count > 0)
-                    this.Properties[GenericParamsPropertyKey] = value;
+                if (value.Any())
+                    this.SetProperty<TypeRef[]>(value);
                 else
-                    this.Properties.RemoveProperty(GenericParamsPropertyKey);
+                    this.Properties.RemoveProperty<TypeRef[]>();
             }
         }
 
         /// <summary>
-        /// Key to property collection to get/store generic parameters list.
+        /// Initialize new instance of <see cref="CallSignature"/>.
         /// </summary>
-        private const string GenericParamsPropertyKey = "GenericParams";
-		
+        /// <param name="parameters">List of parameters.</param>
+        public CallSignature(IList<ActualParam> parameters)
+            : this(parameters, null)
+        {
+        }
+        
         /// <summary>
         /// Initialize new instance of <see cref="CallSignature"/>.
         /// </summary>
         /// <param name="parameters">List of parameters.</param>
         /// <param name="genericParams">List of type parameters for generics.</param>
-        public CallSignature(List<ActualParam>/*!*/ parameters, List<TypeRef> genericParams)
+        public CallSignature(IList<ActualParam> parameters, IList<TypeRef> genericParams)
 		{
-			Debug.Assert(parameters != null);
-
-			this.parameters = parameters;
-            this.GenericParams = genericParams;
+			this.parameters = parameters.AsArray();
+            this.GenericParams = genericParams.AsArray();
 		}        
     }
 

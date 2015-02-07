@@ -1034,7 +1034,7 @@ namespace PHP.Core.Compiler.AST
                     {
                         // base class has no constructor, the default parameterless is silently called (and that does nothing);
                         // report error, if there are any parameters passed to the parameterless ctor:
-                        if (node.BaseCtorParams.Count > 0)
+                        if (node.BaseCtorParams.Length > 0)
                             analyzer.ErrorSink.Add(Errors.UnexpectedParentCtorInvocation, analyzer.SourceUnit, node.Span);
                         node.BaseCtorParams = null;
                     }
@@ -1091,7 +1091,7 @@ namespace PHP.Core.Compiler.AST
                 {
                     analyzer.ErrorSink.Add(Errors.ClassHasNoVisibleCtor, analyzer.SourceUnit, node.Span, clrBase.FullName);
                 }
-                else if (base_ctor.Overloads[overload_index].MandatoryParamCount != call_sig.Parameters.Count)
+                else if (base_ctor.Overloads[overload_index].MandatoryParamCount != call_sig.Parameters.Length)
                 {
                     // invalid argument count passed to the base ctor:
                     analyzer.ErrorSink.Add(Errors.InvalidArgumentCount, analyzer.SourceUnit, node.Span);

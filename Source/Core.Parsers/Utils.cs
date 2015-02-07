@@ -1222,16 +1222,19 @@ namespace PHP.Core
         /// </summary>
         public static T[]/*!*/AsArray<T>(this IList<T> list)
         {
-            T[] result;
+            T[] result = list as T[];
 
-            if (list.Any())
+            if (result == null)
             {
-                result = new T[list.Count];
-                list.CopyTo(result, 0);
-            }
-            else
-            {
-                result = EmptyArray<T>.Instance;
+                if (list.Any())
+                {
+                    result = new T[list.Count];
+                    list.CopyTo(result, 0);
+                }
+                else
+                {
+                    result = EmptyArray<T>.Instance;
+                }
             }
 
             return result;
@@ -1860,6 +1863,37 @@ namespace PHP.Core
         public static bool Any<T>(this T[] arr)
         {
             return arr != null && arr.Length != 0;
+        }
+
+        /// <summary>
+        /// Determines whether the array is empty or <c>null</c> reference.
+        /// </summary>
+        public static bool Empty<T>(this T[] arr)
+        {
+            return !Any<T>(arr);
+        }
+
+        /// <summary>
+        /// Copies a part of given array into a new one. If the result array would be the same size as the original one, reference to the original one is returned directly.
+        /// </summary>
+        public static T[] TakeArray<T>(this T[] arr, int from, int count)
+        {
+            if (arr == null)
+                throw new ArgumentNullException();
+
+            if (count == 0)
+                return EmptyArray<T>.Instance; 
+            
+            if (from == 0 && count == arr.Length)
+                return arr;
+
+            if (from < 0 || from + count > arr.Length)
+                throw new ArgumentOutOfRangeException();
+
+            //
+            T[] result = new T[count];
+            Array.Copy(arr, from, result, 0, count);
+            return result;
         }
     }
 

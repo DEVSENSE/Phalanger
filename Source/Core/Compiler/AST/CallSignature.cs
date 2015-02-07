@@ -160,7 +160,7 @@ namespace PHP.Core.Compiler.AST
 
                 // regular:
 
-                analyzer.EnterActualParams(signature, node.Parameters.Count);
+                analyzer.EnterActualParams(signature, node.Parameters.Length);
 
                 foreach (var p in node.Parameters)
                     p.NodeCompiler<ActualParamCompiler>().Analyze(p, analyzer, isBaseCtorCallConstrained);
@@ -174,9 +174,9 @@ namespace PHP.Core.Compiler.AST
             /// <returns></returns>
             public ArrayEx/*!*/BuildPhpArray(CallSignature/*!*/node)
             {
-                Debug.Assert(node.GenericParams == null || node.GenericParams.Count == 0);
+                Debug.Assert(node.GenericParams.Empty());
 
-                List<Item> arrayItems = new List<Item>(node.Parameters.Count);
+                List<Item> arrayItems = new List<Item>(node.Parameters.Length);
                 var pos = Text.Span.Invalid;
 
                 foreach (var p in node.Parameters)
@@ -204,10 +204,10 @@ namespace PHP.Core.Compiler.AST
             /// </remarks>
             public void EmitLoadOnPhpStack(CallSignature/*!*/node, CodeGenerator/*!*/ codeGenerator)
             {
-                List<ActualParam> parameters = node.Parameters;
-                List<TypeRef> genericParams = node.GenericParams;
+                var parameters = node.Parameters;
+                var genericParams = node.GenericParams;
 
-                PhpStackBuilder.EmitAddFrame(codeGenerator.IL, codeGenerator.ScriptContextPlace, genericParams.Count, parameters.Count,
+                PhpStackBuilder.EmitAddFrame(codeGenerator.IL, codeGenerator.ScriptContextPlace, genericParams.Length, parameters.Length,
                   delegate(ILEmitter il, int i)
                   {
                       // generic arguments:
@@ -255,7 +255,7 @@ namespace PHP.Core.Compiler.AST
 
                 int mandatory_count = (routine.Signature != null) ? routine.Signature.MandatoryGenericParamCount : 0;
                 int formal_count = (routine.Signature != null) ? routine.Signature.GenericParamCount : 0;
-                int actual_count = node.GenericParams.Count;
+                int actual_count = node.GenericParams.Length;
 
                 // loads all actual parameters which are not superfluous:
                 for (int i = 0; i < Math.Min(actual_count, formal_count); i++)
@@ -287,7 +287,7 @@ namespace PHP.Core.Compiler.AST
 
                 int mandatory_count = (routine.Signature != null) ? routine.Signature.MandatoryParamCount : 0;
                 int formal_count = (routine.Signature != null) ? routine.Signature.ParamCount : 0;
-                int actual_count = node.Parameters.Count;
+                int actual_count = node.Parameters.Length;
                 PhpTypeCode param_type;
 
                 // loads all actual parameters which are not superfluous:
@@ -336,7 +336,7 @@ namespace PHP.Core.Compiler.AST
             public object EmitLibraryLoadArgument(CallSignature/*!*/node, ILEmitter/*!*/ il, int index, object/*!*/ codeGenerator, ParameterInfo param)
             {
                 Debug.Assert(codeGenerator != null);
-                Debug.Assert(index < node.Parameters.Count, "Missing arguments prevents code generation");
+                Debug.Assert(index < node.Parameters.Length, "Missing arguments prevents code generation");
 
                 // returns value if the parameter is evaluable at compile time:
                 if (node.Parameters[index].Expression.HasValue())
@@ -367,11 +367,11 @@ namespace PHP.Core.Compiler.AST
                 Type array_type = elem_type.MakeArrayType();
 
                 // NEW <alem_type>[<parameters count - start>]
-                il.LdcI4(node.Parameters.Count - start);
+                il.LdcI4(node.Parameters.Length - start);
                 il.Emit(OpCodes.Newarr, elem_type);
 
                 // loads each optional parameter into the appropriate bucket of the array:
-                for (int i = start; i < node.Parameters.Count; i++)
+                for (int i = start; i < node.Parameters.Length; i++)
                 {
                     // <arr>[i - start]
                     il.Emit(OpCodes.Dup);

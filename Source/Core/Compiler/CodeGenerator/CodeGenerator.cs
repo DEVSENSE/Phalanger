@@ -1256,20 +1256,20 @@ namespace PHP.Core
         /// Emits IL instructions to process the <B>echo</B> and <B>print</B> commands.
         /// </summary>
         /// <param name="expressions">List of expressions to be echoed. They will be evaluated first. The list cannot be null and it must contain at least one element.</param>
-        public void EmitEcho(List<Expression>/*!*/expressions)
+        public void EmitEcho(Expression[]/*!*/expressions)
         {
             Debug.Assert(expressions != null);
-            Debug.Assert(expressions.Count > 0);
+            Debug.Assert(expressions.Length > 0);
 
             // known types of resulting values
-            PhpTypeCode[] types = new PhpTypeCode[expressions.Count];
+            PhpTypeCode[] types = new PhpTypeCode[expressions.Length];
 
             // construct the array with values
             // to preserve the proper order of evaluation and output
-            il.LdcI4(expressions.Count);
+            il.LdcI4(expressions.Length);
             il.Emit(OpCodes.Newarr, typeof(object));
 
-            for (int i = 0; i < expressions.Count; ++i)
+            for (int i = 0; i < expressions.Length; ++i)
             {
                 // array[<i>] = <expressions[i]>;
                 il.Emit(OpCodes.Dup);
@@ -1279,7 +1279,7 @@ namespace PHP.Core
             }
 
             // echo the values
-            for (int i = 0; i < expressions.Count; ++i)
+            for (int i = 0; i < expressions.Length; ++i)
             {
                 il.Emit(OpCodes.Dup);   // array
                 il.LdcI4(i);            // <i>
@@ -1308,7 +1308,7 @@ namespace PHP.Core
 			ConcatEx concat;
 			//BinaryEx binary_expr;
 
-			if ((concat = parameter as ConcatEx) != null && concat.Expressions.Count > 1)
+			if ((concat = parameter as ConcatEx) != null && concat.Expressions.Length > 1)
 			{
                 //foreach (Expression expr in concat.Expressions)
                 //{
@@ -3060,7 +3060,7 @@ namespace PHP.Core
 		/// If <B>null</B> then a new local variable is defined.
 		/// </param>
 		/// <returns>The local variable where the resulting array is stored.</returns>
-		public LocalBuilder EmitObjectArrayPopulation(List<Expression>/*!*/ expressions, LocalBuilder result)
+		public LocalBuilder EmitObjectArrayPopulation(Expression[]/*!*/ expressions, LocalBuilder result)
 		{
             // constructs the array and pushes it onto the top of the evaluation stack
             EmitObjectArrayPopulation(expressions);
@@ -3082,14 +3082,14 @@ namespace PHP.Core
         /// </summary>
         /// <param name="expressions">A list of expressions.</param>
         /// <remarks>PUshes the resulting array onto the top of the evaluation stack.</remarks>
-        public void EmitObjectArrayPopulation(List<Expression>/*!*/ expressions)
+        public void EmitObjectArrayPopulation(Expression[]/*!*/ expressions)
         {
             Debug.Assert(expressions != null);
 
-            il.LdcI4(expressions.Count);
+            il.LdcI4(expressions.Length);
             il.Emit(OpCodes.Newarr, typeof(object));
 
-            for (int i = 0; i < expressions.Count; i++)
+            for (int i = 0; i < expressions.Length; i++)
             {
                 // array[<i>] = <expressions[i]>;
                 il.Emit(OpCodes.Dup);

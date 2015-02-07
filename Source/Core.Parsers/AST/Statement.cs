@@ -55,7 +55,7 @@ namespace PHP.Core.AST
         /// <summary>Statements in block</summary>
         public Statement[]/*!*/ Statements { get { return _statements; } }
 
-        public BlockStmt(Text.Span span, List<Statement>/*!*/body)
+        public BlockStmt(Text.Span span, IList<Statement>/*!*/body)
             : base(span)
         {
             Debug.Assert(body != null);

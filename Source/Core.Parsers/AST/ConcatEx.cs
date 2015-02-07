@@ -27,8 +27,8 @@ namespace PHP.Core.AST
     {
         public override Operations Operation { get { return Operations.ConcatN; } }
 
-        public List<Expression>/*!*/ Expressions { get { return this.expressions; } internal set { this.expressions = value; } }
-        private List<Expression>/*!*/ expressions;
+        public Expression[]/*!*/ Expressions { get { return this.expressions; } internal set { this.expressions = value; } }
+        private Expression[]/*!*/ expressions;
 
         /// <summary>
         /// Initialize the ConcatEx AST node and optimize the subtree if possible. Look for child expressions and chain possible concatenations. This prevents StackOverflowException in case of huge concatenation expressions.
@@ -36,11 +36,11 @@ namespace PHP.Core.AST
         /// <param name="span"></param>
         /// <param name="expressions">List of expressions to concatenate.</param>
         /// <remarks>This method tries to propagate child concatenations and chain them.</remarks>
-        public ConcatEx(Text.Span span, List<Expression>/*!*/ expressions)
+        public ConcatEx(Text.Span span, IList<Expression>/*!*/ expressions)
             : base(span)
         {
             Debug.Assert(expressions != null);
-            this.expressions = expressions;
+            this.expressions = expressions.AsArray();
         }
 
         /// <summary>

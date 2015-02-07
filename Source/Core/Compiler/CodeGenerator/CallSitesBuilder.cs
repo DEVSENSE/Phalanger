@@ -349,8 +349,8 @@ namespace PHP.Core
             {
                 // <LOAD> Binder.{MethodCall|StaticMethodCall}( methodFullName, genericParamsCount, paramsCount, classContext, <returnType> )
                 if (methodFullName != null) il.Emit(OpCodes.Ldstr, methodFullName); else il.Emit(OpCodes.Ldnull);
-                il.LdcI4(callSignature.GenericParams.Count);
-                il.LdcI4(callSignature.Parameters.Count);
+                il.LdcI4(callSignature.GenericParams.Length);
+                il.LdcI4(callSignature.Parameters.Length);
                 if (this.classContextPlace != null) this.classContextPlace.EmitLoad(il); else il.Emit(OpCodes.Ldsfld, Fields.UnknownTypeDesc.Singleton);
 
                 il.Emit(OpCodes.Ldtoken, returnType);
@@ -415,7 +415,7 @@ namespace PHP.Core
         /// <returns></returns>
         private Type[]/*!*/MethodCallDelegateTypeArgs(CallSignature callSignature, Type/*!*/targetType, IEnumerable<Type> additionalArgs, Type/*!*/returnType)
         {
-            List<Type> typeArgs = new List<Type>(callSignature.Parameters.Count + callSignature.GenericParams.Count + 6);
+            List<Type> typeArgs = new List<Type>(callSignature.Parameters.Length + callSignature.GenericParams.Length + 6);
 
             // Type[]{CallSite, <targetType>, ScriptContext, {argsType}, (DTypeDesc)?, (DTypeDesc)?, (object)?, <returnType>}:
 
