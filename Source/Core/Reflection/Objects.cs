@@ -1874,10 +1874,12 @@ namespace PHP.Core.Reflection
 		/// <returns>The copy.</returns>
 		public object DeepCopy()
 		{
-			ScriptContext context = ScriptContext.CurrentContext;
+            //ScriptContext context = ScriptContext.CurrentContext;
 
-            if (context.Config.Variables.ZendEngineV1Compatible) return CloneObject(null, context, true);
-			else return this;
+            //if (context.Config.Variables.ZendEngineV1Compatible)
+            //    return CloneObject(null, context, true);
+            //else
+                return this;
 		}
 
 		/// <summary>

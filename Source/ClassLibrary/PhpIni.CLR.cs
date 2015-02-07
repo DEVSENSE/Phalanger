@@ -190,7 +190,7 @@ namespace PHP.Library
 
 				#region <variables>
 
-				case "zend.ze1_compatibility_mode": return GSR(ref local.Variables.ZendEngineV1Compatible, @default.Variables.ZendEngineV1Compatible, value, action);
+                case "zend.ze1_compatibility_mode": Debug.Assert(action == IniAction.Get); return false;// GSR(ref local.Variables.ZendEngineV1Compatible, @default.Variables.ZendEngineV1Compatible, value, action);
 				case "magic_quotes_runtime": return GSR(ref local.Variables.QuoteRuntimeVariables, @default.Variables.QuoteRuntimeVariables, value, action);
 				case "magic_quotes_sybase": return GSR(ref local.Variables.QuoteInDbManner, @default.Variables.QuoteInDbManner, value, action);
 				case "magic_quotes_gpc": Debug.Assert(action == IniAction.Get); return global.GlobalVariables.QuoteGpcVariables;
@@ -293,7 +293,7 @@ namespace PHP.Library
 			ow.WriteOption("asp_tags", "AspTags", false, app.Compiler.AspTags);
 
 			ow.StartSection("variables");
-			ow.WriteOption("zend.ze1_compatibility_mode", "ZendEngineV1Compatible", false, local.Variables.ZendEngineV1Compatible);
+			//ow.WriteOption("zend.ze1_compatibility_mode", "ZendEngineV1Compatible", false, local.Variables.ZendEngineV1Compatible);
 			ow.WriteOption("register_globals", "RegisterGlobals", false, global.GlobalVariables.RegisterGlobals);
 			ow.WriteOption("register_argc_argv", "RegisterArgcArgv", true, global.GlobalVariables.RegisterArgcArgv);
 			ow.WriteOption("register_long_arrays", "RegisterLongArrays", true, global.GlobalVariables.RegisterLongArrays);

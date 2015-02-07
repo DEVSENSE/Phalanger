@@ -151,7 +151,8 @@ namespace PHP.Core
             //Debug.Assert(QualifiedName.Separator.ToString() == ":::" && !value.Contains(QualifiedName.Separator.ToString())); // be aware of deprecated namespace syntax
 
             int separator;
-            if ((separator = value.IndexOf(ClassMemberSeparator)) >= 0)
+            if ((separator = value.IndexOf(':')) >= 0 &&    // value.Contains( ':' )
+                (separator = System.Globalization.CultureInfo.InvariantCulture.CompareInfo.IndexOf(value, ClassMemberSeparator, separator, value.Length - separator, System.Globalization.CompareOptions.Ordinal)) > 0) // value.Contains( "::" )
             {
                 className = value.Remove(separator);
                 memberName = value.Substring(separator + ClassMemberSeparator.Length);
