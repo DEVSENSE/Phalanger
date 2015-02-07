@@ -21,7 +21,7 @@ namespace PHP.Core
         /// <seealso cref="RegisterResource"/><seealso cref="CleanUpResources"/>
         /// </remarks>
         [ThreadStatic]
-        private static LinkedList<PhpResource> resources;
+        private static LinkedList<WeakReference> resources;
 
         #endregion
 
@@ -42,21 +42,21 @@ namespace PHP.Core
         /// Registers a resource that should be disposed of when the request is over.
         /// </summary>
         /// <param name="res">The resource.</param>
-        internal static LinkedListNode<PhpResource> RegisterResource(PhpResource/*!*/res)
+        internal static LinkedListNode<WeakReference> RegisterResource(PhpResource/*!*/res)
         {
             Debug.Assert(res != null);
             //Debug.Assert(this method can only be called on the request thread)
 
             if (resources == null)
-                resources = new LinkedList<PhpResource>();
+                resources = new LinkedList<WeakReference>();
 
-            return resources.AddFirst(res);
+            return resources.AddFirst(new WeakReference(res));
         }
 
         /// <summary>
         /// Unregisters disposed resource.
         /// </summary>
-        internal static void UnregisterResource(LinkedListNode<PhpResource>/*!*/node)
+        internal static void UnregisterResource(LinkedListNode<WeakReference>/*!*/node)
         {
             Debug.Assert(node != null);
             
@@ -73,7 +73,12 @@ namespace PHP.Core
                 for (var p = resources.First; p != null; )
                 {
                     var next = p.Next;
-                    p.Value.Close();
+                    if (p.Value.IsAlive)
+                    {
+                        var phpresource = (PhpResource)p.Value.Target;
+                        if (phpresource != null)
+                            phpresource.Close();
+                    }
                     p = next;
                 }
 

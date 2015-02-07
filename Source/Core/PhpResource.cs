@@ -272,7 +272,7 @@ namespace PHP.Core
         /// <summary>
         /// If this resource is registered into <see cref="RequestContext"/>, this points into linked list containing registered resources.
         /// </summary>
-        private System.Collections.Generic.LinkedListNode<PhpResource> reqContextRegistrationNode;
+        private System.Collections.Generic.LinkedListNode<WeakReference> reqContextRegistrationNode;
 
 		/// <summary>Static counter for unique PhpResource instance Id's</summary>
 		private static int ResourceIdCounter = 0;
