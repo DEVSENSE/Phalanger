@@ -339,6 +339,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 %type<Object> inner_statement_list_opt                // List<Statement>
 %type<Object> inner_statement                         // Statement
 %type<Object> expr                                    // Expression
+%type<Object> array_ex								  // VarLikeConstructUse
 %type<Object> concat_exprs							  // List<Expression>
 %type<Object> assignment_expression                   // AssignEx
 %type<Integer> cast_operation                         // Operation
@@ -1687,10 +1688,8 @@ expr_without_chain:
 	|	'(' expr ')'                    { $$ = $2;}
 	|	expr '?' expr ':' expr          { $$ = new ConditionalEx(@$, (Expression)$1, (Expression)$3, (Expression)$5); }
 	|	expr '?' ':' expr			    { $$ = new ConditionalEx(@$, (Expression)$1, null, (Expression)$4); }
-	
+	|	array_ex						{ $$ = $1; }
 	|	T_LIST '(' assignment_list ')' '=' expr { $$ = new ListEx(@$, (List<Expression>)$3, (Expression)$6); }
-	|	T_ARRAY '(' array_item_list_opt ')'     { $$ = new ArrayEx(@$, (List<Item>)$3); }
-	|	'[' array_item_list_opt ']'				{ $$ = new ArrayEx(@$, (List<Item>)$2); }
 	|	T_ISSET '(' writable_chain_list ')'     { $$ = new IssetEx(@$, (List<VariableUse>)$3); }
 	|	T_EMPTY '(' chain ')'				            { $$ = new EmptyEx(@$, (Expression)$3); }		
 	|	T_EVAL '(' expr ')'                     { $$ = new EvalEx(@$, (Expression)$3, false); }
@@ -1707,6 +1706,13 @@ expr_without_chain:
 	| linq_query_expression				{ $$ = $1; }
 
 	| lambda_function_expression		{ $$ = $1; }
+;
+
+array_ex:
+		array_ex '[' expr ']'					{ $$ = new ItemUse(@$, (VarLikeConstructUse)$1, (Expression)$3); }
+	|	T_ARRAY '(' array_item_list_opt ')'     { $$ = new ArrayEx(@$, (List<Item>)$3); }
+	|	'[' array_item_list_opt ']'				{ $$ = new ArrayEx(@$, (List<Item>)$2); }
+	
 ;
 
 new_expr:
