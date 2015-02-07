@@ -1128,7 +1128,7 @@ namespace PHP.Core.Emit
 
 		static ConstructorInfo _PhpReference_Void, _PhpReference_Object,
 			_PhpBytes_ByteArray, _StdClass_ScriptContext, _PhpRuntimeChain_Object_DTypeDesc,
-			_RoutineDelegate, _GetterDelegate, _SetterDelegate, _PhpScript_MainHelperDelegate, _LinqContext, _NamingContext,
+            _RoutineDelegate, _PhpRoutineDesc_Attr_Delegate, _GetterDelegate, _SetterDelegate, _PhpScript_MainHelperDelegate, _LinqContext, _NamingContext,
 			_Action_ScriptContext;
 
 		public static ConstructorInfo RoutineDelegate { get { if (_RoutineDelegate == null) _RoutineDelegate = typeof(RoutineDelegate).GetConstructor(Types.DelegateCtorArgs); return _RoutineDelegate; } }
@@ -1140,6 +1140,7 @@ namespace PHP.Core.Emit
 		public static ConstructorInfo PhpReference_Void { get { if (_PhpReference_Void == null) _PhpReference_Void = typeof(PhpReference).GetConstructor(Type.EmptyTypes); return _PhpReference_Void; } }
 		public static ConstructorInfo PhpReference_Object { get { if (_PhpReference_Object == null) _PhpReference_Object = typeof(PhpReference).GetConstructor(Types.Object); return _PhpReference_Object; } }
 		public static ConstructorInfo PhpBytes_ByteArray { get { if (_PhpBytes_ByteArray == null) _PhpBytes_ByteArray = typeof(PhpBytes).GetConstructor(new Type[] { typeof(byte[]) }); return _PhpBytes_ByteArray; } }
+        public static ConstructorInfo PhpRoutineDesc_Attr_Delegate { get { if (_PhpRoutineDesc_Attr_Delegate == null) _PhpRoutineDesc_Attr_Delegate = typeof(PhpRoutineDesc).GetConstructor(new Type[] { typeof(PhpMemberAttributes), typeof(RoutineDelegate) }); return _PhpRoutineDesc_Attr_Delegate; } }
 
 		public static ConstructorInfo StdClass_ScriptContext { get { if (_StdClass_ScriptContext == null) _StdClass_ScriptContext = typeof(PHP.Library.stdClass).GetConstructor(Types.ScriptContext); return _StdClass_ScriptContext; } }
         public static ConstructorInfo NamingContext { get { return _NamingContext ?? (_NamingContext = typeof(PHP.Core.NamingContext).GetConstructor(new[] { Types.String[0], Types.Int[0] })); } }

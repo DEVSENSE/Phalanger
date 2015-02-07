@@ -84,8 +84,8 @@ namespace PHP.Core.Emit
 		/// Emits helper declaring all single-declared functions and classes in the script being built.
 		/// </summary>
 		/// <remarks>
-		/// For each function and class emits a call to <see cref="ScriptContext.DeclareFunction"/> and 
-		/// <see cref="ScriptContext.DeclareType"/>, respectively, which declares it.
+		/// For each function and class emits a call to <see cref="ApplicationContext.DeclareFunction"/> and 
+        /// <see cref="ApplicationContext.DeclareType"/>, respectively, which declares it.
 		/// The helper is called as the first instruction of Main helper. 
 		/// </remarks>		
 		private void EmitDeclareHelper()
@@ -288,21 +288,7 @@ namespace PHP.Core.Emit
 			{
 				if (function.IsDefinite)
 				{
-					script_context_place.EmitLoad(il);
-
-					// NEW RoutineDelegate(<function argless>);
-					il.Emit(OpCodes.Ldnull);
-					il.Emit(OpCodes.Ldftn, function.ArgLessInfo);
-					il.Emit(OpCodes.Newobj, Constructors.RoutineDelegate);
-
-					// LOAD <full name>;
-					il.Emit(OpCodes.Ldstr, function.FullName);
-
-					// LOAD <attributes>;
-					il.LdcI4((int)function.MemberDesc.MemberAttributes);
-
-					// CALL <context>.DeclareFunction(<stub>, <name>, <member attributes>)
-					il.Emit(OpCodes.Call, Methods.ScriptContext.DeclareFunction);
+                    CodeGenerator.EmitDeclareFunction(il, script_context_place, function);
 				}
 			}
 

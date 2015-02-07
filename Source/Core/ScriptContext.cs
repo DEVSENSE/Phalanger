@@ -881,23 +881,22 @@ namespace PHP.Core
 		/// Declares a PHP function.
 		/// Emitted.
 		/// </summary>
-		/// <param name="function">The <see cref="RoutineDelegate"/> of the function.</param>
+        /// <param name="function">The <see cref="PhpRoutineDesc"/> of the function. Contains ArgLess stub and modifiers. (new PhpRoutineDesc(Attributes, ArglessStub)).</param>
 		/// <param name="fullName">The name of the function.</param>
-		/// <param name="memberAttributes">Modifiers.</param>
 		/// <exception cref="PhpException">A function of the given name has already been declared. (Error)</exception>
 		[Emitted]
-		public void DeclareFunction(RoutineDelegate/*!*/ function, string/*!*/ fullName, PhpMemberAttributes memberAttributes)
+        public void DeclareFunction(PhpRoutineDesc/*!*/ function, string/*!*/ fullName)
 		{
 			Debug.Assert(function != null && fullName != null);
-			DRoutineDesc existing;
-
-			if (!DeclaredFunctions.TryGetValue(fullName, out existing))
-			{
-				DeclaredFunctions.Add(fullName, new PhpRoutineDesc(memberAttributes, function));
-				return;
-			}
-
-			PhpException.Throw(PhpError.Error, CoreResources.GetString("function_redeclared", existing.MakeFullName()));
+			
+            try
+            {
+                DeclaredFunctions.Add(fullName, function);
+            }
+            catch (ArgumentException)
+            {
+                PhpException.Throw(PhpError.Error, CoreResources.GetString("function_redeclared", fullName));
+            }
 		}
 
 		/// <summary>

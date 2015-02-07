@@ -556,7 +556,7 @@ namespace PHP.Core.Reflection
 					//  PhpException.Throw(PhpError.Error, CoreResources.GetString("type_redeclared", entry.Value));
 
 					// checks for conflict on SC:
-					context.DeclareFunction(entry.Value.ArglessStub, entry.Key, entry.Value.MemberAttributes);
+					context.DeclareFunction(new PhpRoutineDesc(entry.Value.MemberAttributes, entry.Value.ArglessStub), entry.Key);
 				}
 			}
 
