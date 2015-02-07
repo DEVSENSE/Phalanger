@@ -203,6 +203,11 @@ namespace PHP.Core
 		/// <summary> Searching for precompiled files in ASP.NET temporary files </summary>
 		private static Regex reFileStamp = new Regex(TemporaryFilesSearchPattern, RegexOptions.Compiled);
 
+        /// <summary>
+        /// Time of AppCode assembly was created. Any SSA compiled before this time should be recompiled.
+        /// </summary>
+        private DateTime appCodeAssemblyCreated = DateTime.MinValue;
+
 		#endregion
 
 		#region Construction
@@ -256,9 +261,9 @@ namespace PHP.Core
             var node = xml.DocumentElement.SelectSingleNode(@"/preserve[@assembly]");
             if (node != null)
             {
-                ApplicationContext.AssemblyLoader.Load(
-                    Assembly.LoadFrom(Path.Combine(Path.GetDirectoryName(app_code_compiled_path), node.Attributes["assembly"].Value + ".dll")),
-                    null);
+                var assemblyFile = Path.Combine(Path.GetDirectoryName(app_code_compiled_path), node.Attributes["assembly"].Value + ".dll");
+                appCodeAssemblyCreated = File.GetLastWriteTime(assemblyFile);
+                ApplicationContext.AssemblyLoader.Load(Assembly.LoadFrom(assemblyFile), null);
             }
         }
 		
@@ -779,7 +784,8 @@ namespace PHP.Core
             DateTime sourceTime = sourceExists ? File.GetLastWriteTime(sourcePath) : DateTime.UtcNow.AddYears(1);   // If file does not exist, fake the sourceTime to NOT load any SSA DLL. Delete them instead.
             DateTime configTime = Configuration.LastConfigurationModificationTime;
 
-            long sourceStamp = Math.Max(sourceTime.Ticks, configTime.Ticks);
+            // here find the max modification of all dependant files (configuration, script itself, other DLLs):
+            long sourceStamp = Math.Max(Math.Max(sourceTime.Ticks, configTime.Ticks), appCodeAssemblyCreated.Ticks);
 
             // Find specified file in temporary files
 
