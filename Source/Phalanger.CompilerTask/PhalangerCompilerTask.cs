@@ -79,8 +79,6 @@ namespace PHP.VisualStudio.PhalangerTasks
 		public bool Debug { get { return debug; } set { debug = value; } }
 		private bool debug;
 
-        public bool TreatWarningsAsErrors { get; set; }
-
 		public string CompilationMode { get { return compilationMode; } set { compilationMode = value; } }
 		private string compilationMode;
 
@@ -132,7 +130,7 @@ namespace PHP.VisualStudio.PhalangerTasks
 
 			// target type:
 			string assembly_extension;
-            switch (outputType.ToLowerInvariant())
+			switch (outputType.ToLower())
 			{
 				case "dll":
 				case "library":
@@ -181,10 +179,7 @@ namespace PHP.VisualStudio.PhalangerTasks
 			}
 
 			// debug symbols:
-			ps.Debuggable = this.Debug;
-
-            // compilation of executables in debug mode from VisualStudio/MSBuild will produce 32bit assembly to EE working properly
-            ps.Force32Bit = this.Debug && assembly_extension.EqualsOrdinalIgnoreCase(".exe");
+			ps.Debuggable = this.debug;
 
 			// language features:
 			ps.Pure = ApplicationCompiler.IsPureUnit(compilationMode);
@@ -313,7 +308,7 @@ namespace PHP.VisualStudio.PhalangerTasks
                 ps.Key = null;
                 if (!string.IsNullOrEmpty(keyFile))
                 {
-                    using (FileStream file = new FileStream(new FullPath(keyFile, ps.SourceRoot), FileMode.Open, FileAccess.Read))
+                    using (FileStream file = new FileStream(new FullPath(keyFile, ps.SourceRoot), FileMode.Open))
                         ps.Key = new StrongNameKeyPair(file);
                 }
             }
@@ -343,21 +338,12 @@ namespace PHP.VisualStudio.PhalangerTasks
 			{
                 foreach (ITaskItem assemblyReference in references/*referencedAssemblies*/)
                 {
-                    // script library root:
-                    var scriptLibraryRoot = assemblyReference.GetMetadata("MSARoot");
-
-                    if (scriptLibraryRoot != null)
-                        scriptLibraryRoot = scriptLibraryRoot.Trim();
-
-                    if (string.IsNullOrEmpty(scriptLibraryRoot))
-                        scriptLibraryRoot = null;
-
-                    // add the reference to CompilationParameters:
-                    ps.References.Add(new CompilationParameters.ReferenceItem()
-                    {
-                        Reference = assemblyReference.ItemSpec,
-                        LibraryRoot = scriptLibraryRoot
-                    });
+                    //string hintPath = assemblyReference.GetMetadata("HintPath");
+                    //if (!string.IsNullOrEmpty(hintPath) &&
+                    //    System.IO.File.Exists(assemblyReference.GetMetadata("HintPath")))
+                    //    ps.References.Add(hintPath);    // add the assembly reference by its file name
+                    //else
+                        ps.References.Add(assemblyReference.ItemSpec);
                 }
 			}
 
@@ -382,8 +368,6 @@ namespace PHP.VisualStudio.PhalangerTasks
 			}
 
             ps.EnableWarnings |= WarningGroups.DeferredToRuntime;   // enable deferred to runtime warnings
-            
-            ps.TreatWarningsAsErrors = this.TreatWarningsAsErrors;
 
             // compile
 
@@ -417,10 +401,8 @@ namespace PHP.VisualStudio.PhalangerTasks
 				//  remoteCompiler = null;
 				//}
 
-                if (remoteCompiler != null)
-                    AppDomain.Unload(remoteCompiler.Domain);
-
-				remoteCompiler = ApplicationCompiler.CreateRemoteCompiler();
+				if (remoteCompiler == null)
+					remoteCompiler = ApplicationCompiler.CreateRemoteCompiler();
 
 				remoteCompiler.RemoteCompile(ref errorSink, ps);
 			}
