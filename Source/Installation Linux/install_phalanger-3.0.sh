@@ -1,5 +1,30 @@
 #!/bin/bash -e
 
+#Check mono version
+s=`mono --version`;
+a=( $s );
+
+mono_version=`echo ${a[4]}`;
+mono_version_major=`echo $mono_version | awk -F"." '{print $1}'`
+mono_version_minor=`echo $mono_version | awk -F"." '{print $2}'`
+mono_version_build=`echo $mono_version | awk -F"." '{print $3}'`
+
+if [ $mono_version_major -ge 2 -a $mono_version_minor -eq 10 ]
+then
+	if [ $mono_version_build -ge 8 ] 
+	then
+		:
+	fi
+else
+	if [ $mono_version_major -ge 2 -a $mono_version_minor -ge 11 ]
+	then
+		:
+	else
+		echo "You do not have mono 2.10.8 or higher!";
+		exit;
+	fi
+fi
+
 #Installing preconditions
 apt-get install xmlstarlet
 apt-get install apache2 libapache2-mod-mono
@@ -28,7 +53,7 @@ version="3.0.0.0"
 machine_config="$mono_etc_folder/4.0/machine.config"
 web_config="$mono_etc_folder/4.0/web.config"
 public_key="0a8e8c4c76728c71"
-public_key2="4af37afe3cde05fb"
+public_key_lib="4af37afe3cde05fb"
 pars="-P -L"
 
 # Adding definition of phpNet section
@@ -54,7 +79,13 @@ xmlstarlet ed $pars -s "/configuration/phpNet/paths/set[last()]" -t attr -n "val
 #Registering PhpNetClassLibrary
 xmlstarlet ed $pars -s "/configuration/phpNet" -t elem -n "classLibrary" -v "" $machine_config
 xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary" -t elem -n "add" -v "" $machine_config
-xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add" -t attr -n "assembly" -v "PhpNetClassLibrary, Version=$version, Culture=neutral, PublicKeyToken=$public_key2" $machine_config
+xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add" -t attr -n "assembly" -v "PhpNetClassLibrary, Version=$version, Culture=neutral, PublicKeyToken=$public_key_lib" $machine_config
+xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add" -t attr -n "section" -v "bcl" $machine_config
+
+#Registering PhpNetXmlDom
+xmlstarlet ed $pars -s "/configuration/phpNet" -t elem -n "classLibrary" -v "" $machine_config
+xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary" -t elem -n "add" -v "" $machine_config
+xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add" -t attr -n "assembly" -v "PhpNetXmlDom, Version=$version, Culture=neutral, PublicKeyToken=$public_key_lib" $machine_config
 xmlstarlet ed $pars -s "/configuration/phpNet/classLibrary/add" -t attr -n "section" -v "bcl" $machine_config
 
 #Registering Phalanger as HttpHandler
@@ -64,7 +95,6 @@ xmlstarlet ed $pars -s "/configuration/system.web/httpHandlers/add[last()]" -t a
 xmlstarlet ed $pars -s "/configuration/system.web/httpHandlers/add[last()]" -t attr -n "type" -v "PHP.Core.RequestHandler, PhpNetCore, Version=$version, Culture=neutral, PublicKeyToken=$public_key" $web_config
 
 #Installing necessary assemblies in GAC
-#gacutil -i $phalanger_folder/bin/PhpNetCore.IL.dll
 gacutil -i $phalanger_folder/bin/PhpNetCore.dll
 gacutil -i $phalanger_folder/bin/PhpNetClassLibrary.dll
 gacutil -i $phalanger_folder/bin/PhpNetXmlDom.dll
