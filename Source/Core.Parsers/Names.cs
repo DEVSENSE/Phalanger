@@ -457,22 +457,22 @@ namespace PHP.Core
     {
         #region Special names
 
-        internal static readonly QualifiedName Error = new QualifiedName(new Name("<error>"), Name.EmptyNames);
-		internal static readonly QualifiedName Global = new QualifiedName(new Name("<Global>"), Name.EmptyNames);
-		internal static readonly QualifiedName Lambda = new QualifiedName(new Name("Lambda"), Name.EmptyNames);
-		internal static readonly QualifiedName Null = new QualifiedName(new Name("null"), Name.EmptyNames);
-		internal static readonly QualifiedName True = new QualifiedName(new Name("true"), Name.EmptyNames);
-		internal static readonly QualifiedName False = new QualifiedName(new Name("false"), Name.EmptyNames);
-		internal static readonly QualifiedName Array = new QualifiedName(new Name("array"), Name.EmptyNames);
-		internal static readonly QualifiedName Object = new QualifiedName(new Name("object"), Name.EmptyNames);
-		internal static readonly QualifiedName Integer = new QualifiedName(new Name("int"), Name.EmptyNames);
-		internal static readonly QualifiedName LongInteger = new QualifiedName(new Name("int64"), Name.EmptyNames);
-		internal static readonly QualifiedName String = new QualifiedName(new Name("string"), Name.EmptyNames);
-		internal static readonly QualifiedName Boolean = new QualifiedName(new Name("bool"), Name.EmptyNames);
-		internal static readonly QualifiedName Double = new QualifiedName(new Name("double"), Name.EmptyNames);
-		internal static readonly QualifiedName Resource = new QualifiedName(new Name("resource"), Name.EmptyNames);
-		internal static readonly QualifiedName SystemObject = new QualifiedName(new Name("Object"), new Name[] { new Name("System") });
-        internal static readonly QualifiedName Callable = new QualifiedName(new Name("callable"), Name.EmptyNames);
+        public static readonly QualifiedName Error = new QualifiedName(new Name("<error>"), Name.EmptyNames);
+		public static readonly QualifiedName Global = new QualifiedName(new Name("<Global>"), Name.EmptyNames);
+		public static readonly QualifiedName Lambda = new QualifiedName(new Name("Lambda"), Name.EmptyNames);
+		public static readonly QualifiedName Null = new QualifiedName(new Name("null"), Name.EmptyNames);
+		public static readonly QualifiedName True = new QualifiedName(new Name("true"), Name.EmptyNames);
+		public static readonly QualifiedName False = new QualifiedName(new Name("false"), Name.EmptyNames);
+		public static readonly QualifiedName Array = new QualifiedName(new Name("array"), Name.EmptyNames);
+		public static readonly QualifiedName Object = new QualifiedName(new Name("object"), Name.EmptyNames);
+		public static readonly QualifiedName Integer = new QualifiedName(new Name("int"), Name.EmptyNames);
+		public static readonly QualifiedName LongInteger = new QualifiedName(new Name("int64"), Name.EmptyNames);
+		public static readonly QualifiedName String = new QualifiedName(new Name("string"), Name.EmptyNames);
+		public static readonly QualifiedName Boolean = new QualifiedName(new Name("bool"), Name.EmptyNames);
+		public static readonly QualifiedName Double = new QualifiedName(new Name("double"), Name.EmptyNames);
+		public static readonly QualifiedName Resource = new QualifiedName(new Name("resource"), Name.EmptyNames);
+		public static readonly QualifiedName SystemObject = new QualifiedName(new Name("Object"), new Name[] { new Name("System") });
+        public static readonly QualifiedName Callable = new QualifiedName(new Name("callable"), Name.EmptyNames);
 
         public bool IsSimpleName
         {
