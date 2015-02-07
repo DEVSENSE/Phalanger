@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using PHP.Core;
 using PHP.Core.Reflection;
-using System.Diagnostics;
 
 namespace PHP.Library
 {

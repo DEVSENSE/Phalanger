@@ -543,7 +543,7 @@
     <Content Include="Doc\Wrappers.xml" />
     <EmbeddedResource Include="Strings.resx">
       <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       <CustomToolNamespace>PHP.Core.Localizations</CustomToolNamespace>
     </EmbeddedResource>
