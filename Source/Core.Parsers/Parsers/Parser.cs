@@ -1070,7 +1070,7 @@ namespace PHP.Core.Parsers
                 if (list.Count != 0 && (nsitem = list.Last() as NamespaceDecl) != null && nsitem.IsSimpleSyntax && !(stmt is NamespaceDecl))
                 {
                     // adding a statement after simple namespace declaration => add the statement into the namespace:
-                    nsitem.Statements.Add(stmt);
+                    StatementListAdd(nsitem.Statements, stmt);
                     //nsitem.UpdatePosition(Text.Span.CombinePositions(nsitem.Span, ((Statement)item).Span));
                 }
                 else
