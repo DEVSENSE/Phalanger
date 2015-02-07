@@ -890,7 +890,7 @@ namespace PHP.Library.Xml
             // setup HTML parser
             htmlDoc.OptionOutputAsXml = true;
             //htmlDoc.OptionOutputOriginalCase = true;  // NOTE: we need lower-cased names because of XPath queries
-            htmlDoc.OptionFixNestedTags = true;
+            //htmlDoc.OptionFixNestedTags = true;
             htmlDoc.OptionCheckSyntax = false;
             htmlDoc.OptionWriteEmptyNodes = true;
             
