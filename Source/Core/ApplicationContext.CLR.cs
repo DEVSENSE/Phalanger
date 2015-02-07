@@ -33,7 +33,8 @@ namespace PHP.Core
         /// Singleton instance of <see cref="WebServerCompilerManager"/> manager. Created lazily in HTTP context. 
 		/// </summary>
 		private volatile WebServerCompilerManager webServerCompilerManager;
-		
+		private readonly object/*!*/ webServerCompilerManagerMutex = new object();
+
         /// <summary>
         /// Contains database of scripts, which are contained in loaded script libraries. Used by dynamic inclusions and compiler.
         /// </summary>
@@ -52,20 +53,20 @@ namespace PHP.Core
 
 		#region Initialization
 
-        /// <summary>
-        /// Gets instance to compiler manager that manages script libraries, WebPages.dll and scripts compiled dynamically in runtime.
-        /// </summary>
-		internal WebServerCompilerManager/*!*/ RuntimeCompilerManager
+		internal WebServerCompilerManager/*!*/ GetWebServerCompilerManager(RequestContext/*!*/ requestContext)
 		{
-            get
-            {
-                if (webServerCompilerManager == null)
-                    lock (this)
-                        if (webServerCompilerManager == null)
-                            webServerCompilerManager = new WebServerCompilerManager(this);
+			Debug.Assert(requestContext != null && HttpContext.Current != null);
 
-                return webServerCompilerManager;
-            }
+			if (webServerCompilerManager == null)
+			{
+				lock (webServerCompilerManagerMutex)
+				{
+					if (webServerCompilerManager == null)
+						webServerCompilerManager = new WebServerCompilerManager(this);
+				}
+			}
+
+			return webServerCompilerManager;
 		}
 
 		#endregion
@@ -76,20 +77,21 @@ namespace PHP.Core
 
     public sealed partial class AssemblyLoader
     {
+
         /// <summary>
         /// Loads assemblies whose paths or full names are listed in references.
         /// </summary>
         /// <param name="references">Enumeration of paths to or full names of assemblies to load.</param>
         /// <exception cref="ArgumentNullException"><paramref name="references"/> is a <B>null</B> reference.</exception>
         /// <exception cref="ConfigurationErrorsException">An error occured while loading a library.</exception>
-        public void Load(IEnumerable<CompilationParameters.ReferenceItem>/*!*/ references)
+        public void Load(IEnumerable<string>/*!*/ references)
         {
             if (references == null)
                 throw new ArgumentNullException("references");
 
-            foreach (var reference in references)
+            foreach (string reference in references)
             {
-                LoadReference(reference.Reference, reference.LibraryRoot);
+                LoadReference(reference);
             }
         }
 
@@ -97,8 +99,7 @@ namespace PHP.Core
         /// Loads single reference.
         /// </summary>
         /// <param name="reference">Path to or full name of references assembly.</param>
-        /// <param name="libraryRoot">If the reference represents a script library, this optional parameter can move scripts in the loaded library to a subdirectory.</param>
-        private void LoadReference(string reference, string libraryRoot)
+        private void LoadReference(string reference)
         {
             Assembly realAssembly;
 
@@ -120,7 +121,7 @@ namespace PHP.Core
             if (attr is ScriptAssemblyAttribute && ((ScriptAssemblyAttribute)attr).IsMultiScript)
             {
                 //load this as script library
-                LoadScriptLibrary(realAssembly, libraryRoot);
+                LoadScriptLibrary(realAssembly, ".");
 
                 return;
             }
@@ -188,7 +189,7 @@ namespace PHP.Core
                 if (loadedAssemblies.ContainsKey(realAssembly))
                     return loadedAssemblies[realAssembly];
 
-                scriptAssembly = ScriptAssembly.LoadFromAssembly(applicationContext, realAssembly, libraryRoot);
+                scriptAssembly = ScriptAssembly.LoadFromAssembly(applicationContext, realAssembly);
                 loadedAssemblies.Add(realAssembly, scriptAssembly);
             }
 
@@ -378,7 +379,7 @@ namespace PHP.Core
         /// <summary>
         /// Ensures that libraries are reflected.
         /// </summary>
-        internal void EnsureLibrariesReflected()
+        private void EnsureLibrariesReflected()
         {
             if (libraries != null)
                 lock (this)
