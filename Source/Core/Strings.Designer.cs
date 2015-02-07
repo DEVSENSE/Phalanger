@@ -2414,6 +2414,15 @@ namespace PHP.Core.Localizations {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Import statement is deprecated and will be removed in future versions. Use PHP aliasing instead..
+        /// </summary>
+        internal static string import_deprecated {
+            get {
+                return ResourceManager.GetString("import_deprecated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import statement is only available in pure mode.
         /// </summary>
         internal static string import_only_in_pure {

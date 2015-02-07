@@ -32,10 +32,9 @@ namespace PHP.Core.Parsers
 
 			AllowAspTags = 16,
 			AllowShortTags = 32,
-			V6Keywords = 64,
-			TypeKeywords = 128,
+			TypeKeywords = 64,
 
-			Default = V5Keywords | V6Keywords | AllowAspTags | AllowShortTags | Linq | ContextKeywords | TypeKeywords
+			Default = V5Keywords | AllowAspTags | AllowShortTags | Linq | ContextKeywords | TypeKeywords
 		}
 
 		private Features features;
@@ -286,17 +285,17 @@ namespace PHP.Core.Parsers
 							return token;
 						}
 
-                    //case Tokens.T_IMPORT:
-                    //    {
-                    //        if ((features & Features.V6Keywords) == 0)
-                    //        {
-                    //            token = Tokens.T_STRING;
-                    //            goto case Tokens.T_STRING;
-                    //        }
+                    case Tokens.T_IMPORT:
+                        {
+                            //if ((features & Features.V6Keywords) == 0)
+                            //{
+                            //    token = Tokens.T_STRING;
+                            //    goto case Tokens.T_STRING;
+                            //}
 
-                    //        tokenCategory = TokenCategory.Keyword;
-                    //        return token;
-                    //    }
+                            tokenCategory = TokenCategory.Keyword;
+                            return token;
+                        }
 
 					#endregion
 

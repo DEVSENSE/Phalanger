@@ -788,6 +788,8 @@ namespace PHP.Core.Parsers
         {
             if (sourceUnit.CompilationUnit.IsPure)
             {
+                ErrorSink.Add(Warnings.ImportDeprecated, SourceUnit, this.yypos);   // deprecated statement
+
                 sourceUnit.ImportedNamespaces.Add(namespaceName);
             }
             else

@@ -652,6 +652,7 @@ namespace PHP.Core
 
 		public static readonly ErrorInfo ClassBehaviorMayBeUnexpected = new ErrorInfo(160, "class_behavior_may_be_unexpected", ErrorSeverity.Warning);
         public static readonly ErrorInfo IncompleteClass = new ErrorInfo(161, "incomplete_class", WarningGroups.DeferredToRuntimeOthers);
+        public static readonly ErrorInfo ImportDeprecated = new ErrorInfo(162, "import_deprecated", ErrorSeverity.Warning);
 
         public static readonly ErrorInfo BodyOfDllImportedFunctionIgnored = new ErrorInfo(170, "dll_import_body_ignored", ErrorSeverity.Warning);
 

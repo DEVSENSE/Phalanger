@@ -2046,4 +2046,7 @@ non-infringement.
   <data name="import_only_in_pure" xml:space="preserve">
     <value>Import statement is only available in pure mode</value>
   </data>
+  <data name="import_deprecated" xml:space="preserve">
+    <value>Import statement is deprecated and will be removed in future versions. Use PHP aliasing instead.</value>
+  </data>
 </root>
