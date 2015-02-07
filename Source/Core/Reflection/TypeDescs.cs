@@ -434,7 +434,10 @@ namespace PHP.Core.Reflection
 		/// </summary>
         public static DTypeDesc Create(Type realType)
 		{
-			return (realType != null) ? Create(realType.TypeHandle) : null;
+            if (object.ReferenceEquals(realType, null))
+                return null;
+
+            return Create(realType.TypeHandle);
 		}
 
         /// <summary>
