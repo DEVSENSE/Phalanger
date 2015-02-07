@@ -21,7 +21,6 @@ using PHP.CoreCLR;
 using MathEx = PHP.CoreCLR.MathEx;
 #else
 using MathEx = System.Math;
-using System.Diagnostics;
 #endif
 
 namespace PHP.Library
@@ -419,12 +418,6 @@ namespace PHP.Library
             return DoubleToBaseUnicode(temp, 2);
         }
 
-        /// <summary>
-        /// Returns the decimal equivalent of the binary number represented by the binary_string argument.
-        /// bindec() converts a binary number to an integer or, if needed for size reasons, double.
-        /// </summary>
-        /// <param name="str">The binary string to convert.</param>
-        /// <returns>The decimal value of <paramref name="str"/>.</returns>
 		[ImplementsFunction("bindec")]
 		public static object BinToDec(PhpBytes str)
 		{
@@ -440,11 +433,6 @@ namespace PHP.Library
             return ConvertToInt(BaseToDoubleUnicode(str, 2));
         }
 
-        /// <summary>
-        /// Returns a string containing an octal representation of the given number argument.
-        /// </summary>
-        /// <param name="number">Decimal value to convert.</param>
-        /// <returns>Octal string representation of <paramref name="number"/>.</returns>
         [ImplementsFunction("decoct")]
         public static PhpBytes DecToOct(int number)
         {
@@ -457,11 +445,6 @@ namespace PHP.Library
 			return System.Convert.ToString(number, 8);
 		}
 
-        /// <summary>
-        /// Returns the decimal equivalent of the octal number represented by the <paramref name="str"/> argument.
-        /// </summary>
-        /// <param name="str">The octal string to convert.</param>
-        /// <returns>The decimal representation of <paramref name="str"/>.</returns>
         [ImplementsFunction("octdec")]
         public static object OctToDec(PhpBytes str)
         {
@@ -476,11 +459,6 @@ namespace PHP.Library
 			return ConvertToInt(BaseToDoubleUnicode(str, 8));
 		}
 
-        /// <summary>
-        /// Returns a string containing a hexadecimal representation of the given number argument.
-        /// </summary>
-        /// <param name="number">Decimal value to convert.</param>
-        /// <returns>Hexadecimal string representation of <paramref name="number"/>.</returns>
 		[ImplementsFunction("dechex")]
 		public static PhpBytes DecToHex(int number)
 		{
@@ -493,13 +471,6 @@ namespace PHP.Library
             return System.Convert.ToString(number, 16);
         }
 
-        /// <summary>
-        /// Hexadecimal to decimal.
-        /// Returns the decimal equivalent of the hexadecimal number represented by the hex_string argument. hexdec() converts a hexadecimal string to a decimal number.
-        /// hexdec() will ignore any non-hexadecimal characters it encounters.
-        /// </summary>
-        /// <param name="str">The hexadecimal string to convert.</param>
-        /// <returns>The decimal representation of <paramref name="str"/>.</returns>
         [ImplementsFunction("hexdec")]
         public static object HexToDec(PhpBytes str)
         {
@@ -531,7 +502,7 @@ namespace PHP.Library
             double fnum = 0;
             for (int i = 0; i < number.Length; i++)
             {
-                int digit = Core.Parsers.Convert.AlphaNumericToDigit((char)number.ReadonlyData[i]);
+                int digit = Core.Convert.AlphaNumericToDigit((char)number.ReadonlyData[i]);
                 if (digit < fromBase)
                     fnum = fnum * fromBase + digit;
             }
@@ -557,7 +528,7 @@ namespace PHP.Library
 			double fnum = 0;
 			for (int i = 0; i < number.Length; i++)
 			{
-                int digit = Core.Parsers.Convert.AlphaNumericToDigit(number[i]);
+				int digit = Core.Convert.AlphaNumericToDigit(number[i]);
 				if (digit < fromBase)
 					fnum = fnum * fromBase + digit;
 			}
@@ -636,14 +607,6 @@ namespace PHP.Library
 			return PhpStrings.Reverse(sb.ToString());
 		}
 
-        /// <summary>
-        /// Convert a number between arbitrary bases.
-        /// Returns a string containing number represented in base tobase. The base in which number is given is specified in <paramref name="fromBase"/>. Both <paramref name="fromBase"/> and <paramref name="toBase"/> have to be between 2 and 36, inclusive. Digits in numbers with a base higher than 10 will be represented with the letters a-z, with a meaning 10, b meaning 11 and z meaning 35.
-        /// </summary>
-        /// <param name="number">The number to convert</param>
-        /// <param name="fromBase">The base <paramref name="number"/> is in.</param>
-        /// <param name="toBase">The base to convert <paramref name="number"/> to</param>
-        /// <returns><paramref name="number"/> converted to base <paramref name="toBase"/>.</returns>
 		[ImplementsFunction("base_convert")]
 		[return: CastToFalse]
 		public static string BaseConvert(string number, int fromBase, int toBase)
@@ -698,23 +661,13 @@ namespace PHP.Library
 			return radians / Math.PI * 180;
 		}
 
-        /// <summary>
-        /// Returns an approximation of pi.
-        /// </summary>
-        /// <returns>The value of pi as <c>double</c>.</returns>
-		[ImplementsFunction("pi")]
+		[ImplementsFunction("pi"/*, FunctionImplOptions.Special*/)]
         [PureFunction]
         public static double PI()
 		{
 			return Math.PI;
 		}
 
-        /// <summary>
-        /// Returns the arc cosine of arg in radians.
-        /// acos() is the complementary function of cos(), which means that <paramref name="x"/>==cos(acos(<paramref name="x"/>)) for every value of a that is within acos()' range.
-        /// </summary>
-        /// <param name="x">The argument to process.</param>
-        /// <returns>The arc cosine of <paramref name="x"/> in radians.</returns>
 		[ImplementsFunction("acos"/*, FunctionImplOptions.Special*/)]
         [PureFunction]
         public static double Acos(double x)
@@ -722,11 +675,6 @@ namespace PHP.Library
 			return Math.Acos(x);
 		}
 
-        /// <summary>
-        /// Returns the arc sine of arg in radians. asin() is the complementary function of sin(), which means that <paramref name="x"/>==sin(asin(<paramref name="x"/>)) for every value of a that is within asin()'s range.
-        /// </summary>
-        /// <param name="x">The argument to process.</param>
-        /// <returns>The arc sine of <paramref name="x"/> in radians.</returns>
 		[ImplementsFunction("asin"/*, FunctionImplOptions.Special*/)]
         [PureFunction]
         public static double Asin(double x)
@@ -824,10 +772,7 @@ namespace PHP.Library
 
 		#region exp, expm1, log, log10, log1p, pow, sqrt, hypot
 
-        /// <summary>
-        /// Returns <c>e</c> raised to the power of <paramref name="x"/>.
-        /// </summary>
-        [ImplementsFunction("exp"/*, FunctionImplOptions.Special*/)]
+		[ImplementsFunction("exp"/*, FunctionImplOptions.Special*/)]
         [PureFunction]
         public static double Exp(double x)
 		{
@@ -848,27 +793,21 @@ namespace PHP.Library
             return Math.Exp(x) - 1.0;   // TODO: implement exp(x)-1 for x near to zero
 		}
 
-        /// <summary>
-        /// Returns the base-10 logarithm of <paramref name="x"/>.
-        /// </summary>
-        [ImplementsFunction("log10")]
+		[ImplementsFunction("log10")]
         [PureFunction]
         public static double Log10(double x)
 		{
 			return Math.Log10(x);
 		}
 
-        [ImplementsFunction("log"/*, FunctionImplOptions.Special*/)]
+		[ImplementsFunction("log"/*, FunctionImplOptions.Special*/)]
         [PureFunction]
         public static double Log(double x)
 		{
 			return Math.Log(x);
 		}
 
-        /// <summary>
-        /// If the optional <paramref name="logBase"/> parameter is specified, log() returns log(<paramref name="logBase"/>) <paramref name="x"/>, otherwise log() returns the natural logarithm of <paramref name="x"/>.
-        /// </summary>
-        [ImplementsFunction("log"/*, FunctionImplOptions.Special*/)]
+		[ImplementsFunction("log"/*, FunctionImplOptions.Special*/)]
         [PureFunction]
         public static double Log(double x, double logBase)
 		{
@@ -889,9 +828,6 @@ namespace PHP.Library
             return Math.Log(x + 1.0);   // TODO: implement log(x+1) for x near to zero
 		}
 
-        /// <summary>
-        /// Returns <paramref name="base"/> raised to the power of <paramref name="exp"/>.
-        /// </summary>
 		[ImplementsFunction("pow")]
         [PureFunction]
         public static object Power(object @base, object exp)
@@ -998,11 +934,6 @@ namespace PHP.Library
 
 		#region  ceil, floor, round, abs, fmod, max, min
 
-        /// <summary>
-        /// Returns the next highest integer value by rounding up <paramref name="x"/> if necessary.
-        /// </summary>
-        /// <param name="x">The value to round.</param>
-        /// <returns><paramref name="x"/> rounded up to the next highest integer. The return value of ceil() is still of type <c>double</c> as the value range of double is usually bigger than that of integer.</returns>
 		[ImplementsFunction("ceil")]
         [PureFunction]
         public static double Ceiling(double x)
@@ -1010,11 +941,6 @@ namespace PHP.Library
 			return Math.Ceiling(x);
 		}
 
-        /// <summary>
-        /// Returns the next lowest integer value by rounding down <paramref name="x"/> if necessary.
-        /// </summary>
-        /// <param name="x">The numeric value to round.</param>
-        /// <returns><paramref name="x"/> rounded to the next lowest integer. The return value of floor() is still of type <c>double</c> because the value range of double is usually bigger than that of integer.</returns>
 		[ImplementsFunction("floor")]
         [PureFunction]
         public static double Floor(double x)
@@ -1160,7 +1086,7 @@ namespace PHP.Library
 			1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1,
 			1e0,  1e1,  1e2,  1e3,  1e4,  1e5,  1e6,  1e7,
 			1e8,  1e9,  1e10, 1e11, 1e12, 1e13, 1e14, 1e15,
-			1e16, 1e17, 1e18, 1e19, 1e20, 1e21, 1e22, 1e23
+			1e16, 1e17, 1e18, 1e19, 1e20, 1e21, 1e22
         };
 
         private static int _Log10Abs(double value)
@@ -1220,7 +1146,7 @@ namespace PHP.Library
         [PureFunction]
         public static double Round(double x, int precision /*= 0*/, RoundMode mode /*= RoundMode.HalfUp*/)
         {
-            if (Double.IsInfinity(x) || Double.IsNaN(x) || x == default(double))
+            if (Double.IsInfinity(x) || Double.IsNaN(x))
                 return x;
 
             if (precision == 0)
@@ -1297,11 +1223,6 @@ namespace PHP.Library
             }
         }
 
-        /// <summary>
-        /// Returns the absolute value of <paramref name="x"/>.
-        /// </summary>
-        /// <param name="x">The numeric value to process.</param>
-        /// <returns></returns>
 		[ImplementsFunction("abs")]
         [PureFunction]
         public static object Abs(object x)
@@ -1331,12 +1252,6 @@ namespace PHP.Library
 			return null;
 		}
 
-        /// <summary>
-        /// Returns the floating point remainder (modulo) of the division of the arguments.
-        /// </summary>
-        /// <param name="x">The dividend.</param>
-        /// <param name="y">The divisor.</param>
-        /// <returns>The floating point remainder of <paramref name="x"/>/<paramref name="y"/>.</returns>
 		[ImplementsFunction("fmod")]
         [PureFunction]
         public static double Fmod(double x, double y)
@@ -1347,14 +1262,6 @@ namespace PHP.Library
 			return (x >= 0) ? rem : -rem;
 		}
 
-        /// <summary>
-        /// Find highest value.
-        /// If the first and only parameter is an array, max() returns the highest value in that array. If at least two parameters are provided, max() returns the biggest of these values.
-        /// </summary>
-        /// <param name="numbers">An array containing the values or values separately.</param>
-        /// <returns>max() returns the numerically highest of the parameter values. If multiple values can be considered of the same size, the one that is listed first will be returned.
-        /// When max() is given multiple arrays, the longest array is returned. If all the arrays have the same length, max() will use lexicographic ordering to find the return value.
-        /// When given a string it will be cast as an integer when comparing.</returns>
 		[ImplementsFunction("max")]
         [PureFunction]
         public static object Max(params object[] numbers)
@@ -1362,12 +1269,6 @@ namespace PHP.Library
 			return GetExtreme(numbers, true);
 		}
 
-        /// <summary>
-        /// Find lowest value.
-        /// If the first and only parameter is an array, min() returns the lowest value in that array. If at least two parameters are provided, min() returns the smallest of these values.
-        /// </summary>
-        /// <param name="numbers">An array containing the values or values separately.</param>
-        /// <returns>min() returns the numerically lowest of the parameter values.</returns>
 		[ImplementsFunction("min")]
         [PureFunction]
         public static object Min(params object[] numbers)
