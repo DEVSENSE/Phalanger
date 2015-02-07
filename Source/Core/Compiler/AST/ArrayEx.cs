@@ -231,14 +231,15 @@ namespace PHP.Core.AST
 	/// </summary>
 	public sealed class RefItem : Item
 	{
-		private VariableUse refToGet;
+		private readonly VariableUse/*!*/refToGet;
         /// <summary>Object to obtain reference of</summary>
-        public VariableUse RefToGet { get { return RefToGet; } }
+        public VariableUse/*!*/RefToGet { get { return this.refToGet; } }
 
 		public RefItem(Expression index, VariableUse refToGet)
 			: base(index)
 		{
-			this.refToGet = refToGet;
+            Debug.Assert(refToGet != null);
+            this.refToGet = refToGet;
 		}
 
 		internal override void Analyze(Analyzer analyzer)
