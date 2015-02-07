@@ -2907,15 +2907,32 @@ namespace PHP.Core
 
             // object behaving as array:
             DObject dobj = var as DObject;
-            if (dobj != null && dobj.RealObject is Library.SPL.ArrayAccess)
+            if (dobj != null)
             {
-                //PhpStack stack = ScriptContext.CurrentContext.Stack;
-                //stack.AddFrame(key, value);
-                //dobj.InvokeMethod(Library.SPL.PhpArrayObject.offsetSet, null, stack.Context);
-                ((Library.SPL.ArrayAccess)dobj.RealObject).offsetSet(ScriptContext.CurrentContext, key, value);
-                return;
-            }
+                var realObject = dobj.RealObject;
 
+                if (realObject is Library.SPL.ArrayAccess)
+                {
+                    //PhpStack stack = ScriptContext.CurrentContext.Stack;
+                    //stack.AddFrame(key, value);
+                    //dobj.InvokeMethod(Library.SPL.PhpArrayObject.offsetSet, null, stack.Context);
+                    ((Library.SPL.ArrayAccess)realObject).offsetSet(ScriptContext.CurrentContext, key, value);
+                    return;
+                }
+
+                if (realObject is IList)
+                {
+                    ((IList)realObject)[Convert.ObjectToInteger(key)] = value;
+                    return;
+                }
+
+                if (realObject is IDictionary)
+                {
+                    ((IDictionary)realObject)[key] = value;
+                    return;
+                }
+            }
+            
             // errors - DObject, scalars:
             PhpException.VariableMisusedAsArray(var, false);
         }

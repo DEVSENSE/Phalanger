@@ -533,7 +533,7 @@ namespace PHP.Core.Reflection
                 { }
                 return true;
             }
-            catch{}
+            catch(IOException){}    // how else determine the file is writable ??
 
             return false;
         }
