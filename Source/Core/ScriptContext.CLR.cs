@@ -624,28 +624,14 @@ namespace PHP.Core
 		/// <param name="sourceFile">Script's source file.</param>
 		private ScriptInfo LoadDynamicScriptType(PhpSourceFile/*!*/ sourceFile)
 		{
-            RequestContext context = RequestContext.CurrentContext;
+            Debug.WriteLine("SC", "LoadDynamicScriptType: '{0}'", sourceFile);
 
-            if (context != null)
-			{
-				Debug.WriteLine("SC", "LoadDynamicScriptType: '{0}'", sourceFile);
+            // runtime compiler manages:
+            // - 1. script library
+            // - 2. optionally bin/WebPages.dll
+            // - 3. compiles file from file system if allowed
 
-				// web context //
-				return context.GetCompiledScript(sourceFile);
-			}
-			else
-			{
-                // the script can be only found in the script library
-                var scriptLibraryModule = applicationContext.ScriptLibraryDatabase.GetScriptModule(sourceFile.FullPath);
-                if (scriptLibraryModule != null)
-                    return scriptLibraryModule.ScriptInfo;
-                
-                // no such script could be found
-                PhpException.Throw(PhpError.Error, CoreResources.GetString("assembly_script_inclusion_failed",
-				    sourceFile.ToString()/*, msa.GetQualifiedScriptTypeName(sourceFile)*/ ));
-				
-				return null;
-			}
+            return this.ApplicationContext.RuntimeCompilerManager.GetCompiledScript(sourceFile, RequestContext.CurrentContext);
 		}
 
 		#endregion

@@ -43,7 +43,7 @@ namespace PHP.Core
 		/// A timestamp of the current request.
 		/// </summary>
 		public DateTime RequestTimestamp { get { return requestTimestamp; } }
-		private DateTime requestTimestamp;
+		private readonly DateTime requestTimestamp;
 
         public override bool SaveOnlyAssembly
         {
@@ -241,29 +241,32 @@ namespace PHP.Core
 		{
 			Debug.Assert(appContext != null);
 
-			this.outDir = HttpRuntime.CodegenDir;
+            bool isWebApp = HttpContext.Current != null;    // whether we are running web app or an executable app
+
+            this.outDir = isWebApp ? HttpRuntime.CodegenDir : Path.GetTempPath();
 			this.events = new Dictionary<PhpSourceFile, ManualResetEvent>();
 			this.applicationContext = appContext;
 
             // On Windows it's case-insensitive, because same file can be accessed with various cases
             cache = new Dictionary<string, CacheEntry>(100, FullPath.StringComparer);
 
-            if (Configuration.Application.Compiler.WatchSourceChanges &&
+            // install file system watcher to invalidate cache of files that have been modified:
+            if (isWebApp &&
+                Configuration.Application.Compiler.WatchSourceChanges &&
                 !Configuration.Application.Compiler.OnlyPrecompiledCode)
             {
-                watcher = new FileSystemWatcher();
-
-                // TODO: multiple paths:
-                watcher.Path = Configuration.Application.Compiler.SourceRoot.ToString();
-
-                watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite;
-                watcher.IncludeSubdirectories = true;
+                watcher = new FileSystemWatcher()
+                {
+                    // TODO: multiple paths (multiple watchers?):
+                    Path = Configuration.Application.Compiler.SourceRoot.ToString(),
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,
+                    IncludeSubdirectories = true,
+                    EnableRaisingEvents = false,
+                };
 
                 watcher.Changed += OnFileChanged;
                 watcher.Renamed += OnFileRenamed;
                 watcher.Deleted += OnFileChanged;
-
-                watcher.EnableRaisingEvents = false;
             }
             else
             {
@@ -271,7 +274,8 @@ namespace PHP.Core
             }
 
             // look for "App_Code.compiled" file
-            LoadAppCode(Path.Combine(HttpRuntime.CodegenDir, "App_Code.compiled"));
+            if (isWebApp)
+                LoadAppCode(Path.Combine(HttpRuntime.CodegenDir, "App_Code.compiled"));
 		}
 
         /// <summary>
@@ -1018,6 +1022,9 @@ namespace PHP.Core
 
 		private MultiScriptAssembly LoadPrecompiledAssemblyNoLock()
 		{
+            if (HttpContext.Current == null)
+                return null;    // following is only for web app
+
 			string path = Path.Combine(HttpRuntime.BinDirectory, PhpScript.CompiledWebAppAssemblyName);
 			if (!File.Exists(path)) return null;
 
@@ -1092,12 +1099,12 @@ namespace PHP.Core
         /// 3. Unmodified source file in precompiled WebPages.dll.
 		/// </summary>
 		/// <param name="sourceFile">Script source file.</param>
-		/// <param name="requestContext">The current HTTP context.</param>
+		/// <param name="requestContext">The current HTTP context. Can be <c>null</c> in case of desktop app.</param>
 		/// <returns>The script type or a <B>null</B> reference on failure.</returns>
         /// <remarks>The method do check the script library database.</remarks>
-        public ScriptInfo GetCompiledScript(PhpSourceFile/*!*/ sourceFile, RequestContext/*!*/ requestContext)
+        public ScriptInfo GetCompiledScript(PhpSourceFile/*!*/ sourceFile, RequestContext requestContext)
         {
-            Debug.Assert(requestContext != null && sourceFile != null);
+            Debug.Assert(sourceFile != null);
 
             // try to get the script from precompiled script library first
             var scriptLibraryModule = applicationContext.ScriptLibraryDatabase.GetScriptModule(sourceFile.FullPath);
@@ -1151,13 +1158,13 @@ namespace PHP.Core
 		/// Called when the script cannot be loaded from pre-compiled assembly and it should be compiled.
 		/// </summary>
 		/// <returns>The compiled script type.</returns>
-		private ScriptInfo CompileScriptNoLock(string ns, PhpSourceFile/*!*/ sourceFile, RequestContext/*!*/ requestContext)
+        private ScriptInfo CompileScriptNoLock(string ns, PhpSourceFile/*!*/ sourceFile, RequestContext requestContext)
 		{
-            Debug.Assert(sourceFile != null && requestContext != null);
+            Debug.Assert(sourceFile != null);
 
 			CompilerConfiguration config = new CompilerConfiguration(Configuration.Application);
 			WebCompilationContext context = new WebCompilationContext(applicationContext, this, config, sourceFile.Directory, 
-				requestContext.HttpContext.Timestamp);
+				(requestContext != null) ? requestContext.HttpContext.Timestamp : DateTime.UtcNow);
 
 			try
 			{

@@ -33,8 +33,7 @@ namespace PHP.Core
         /// Singleton instance of <see cref="WebServerCompilerManager"/> manager. Created lazily in HTTP context. 
 		/// </summary>
 		private volatile WebServerCompilerManager webServerCompilerManager;
-		private readonly object/*!*/ webServerCompilerManagerMutex = new object();
-
+		
         /// <summary>
         /// Contains database of scripts, which are contained in loaded script libraries. Used by dynamic inclusions and compiler.
         /// </summary>
@@ -53,20 +52,20 @@ namespace PHP.Core
 
 		#region Initialization
 
-		internal WebServerCompilerManager/*!*/ GetWebServerCompilerManager(RequestContext/*!*/ requestContext)
+        /// <summary>
+        /// Gets instance to compiler manager that manages script libraries, WebPages.dll and scripts compiled dynamically in runtime.
+        /// </summary>
+		internal WebServerCompilerManager/*!*/ RuntimeCompilerManager
 		{
-			Debug.Assert(requestContext != null && HttpContext.Current != null);
+            get
+            {
+                if (webServerCompilerManager == null)
+                    lock (this)
+                        if (webServerCompilerManager == null)
+                            webServerCompilerManager = new WebServerCompilerManager(this);
 
-			if (webServerCompilerManager == null)
-			{
-				lock (webServerCompilerManagerMutex)
-				{
-					if (webServerCompilerManager == null)
-						webServerCompilerManager = new WebServerCompilerManager(this);
-				}
-			}
-
-			return webServerCompilerManager;
+                return webServerCompilerManager;
+            }
 		}
 
 		#endregion

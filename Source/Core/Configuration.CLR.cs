@@ -2328,11 +2328,6 @@ namespace PHP.Core
 		}
 
 		/// <summary>
-		/// A flag signaling whether we are in compilation domain.
-		/// </summary>
-		internal static bool IsCompilationDomain = false;
-
-		/// <summary>
 		/// Whether the application being run is a command line compiler.
 		/// Influences a scope of configuration options during their load.
 		/// </summary>

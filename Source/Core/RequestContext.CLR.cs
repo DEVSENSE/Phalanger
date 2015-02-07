@@ -627,7 +627,7 @@ namespace PHP.Core
 
 		internal MultiScriptAssembly GetPrecompiledAssembly()
 		{
-			return scriptContext.ApplicationContext.GetWebServerCompilerManager(this).GetPrecompiledAssembly();
+            return scriptContext.ApplicationContext.RuntimeCompilerManager.GetPrecompiledAssembly();
 		}
 
         /// <summary>
@@ -637,7 +637,7 @@ namespace PHP.Core
         /// <returns>The <see cref="ScriptInfo"/> of required script or null if such script cannot be obtained.</returns>
 		internal ScriptInfo GetCompiledScript(PhpSourceFile/*!*/ sourceFile)
 		{
-			return scriptContext.ApplicationContext.GetWebServerCompilerManager(this).GetCompiledScript(sourceFile, this);
+            return scriptContext.ApplicationContext.RuntimeCompilerManager.GetCompiledScript(sourceFile, this);
 		}
 
 		#endregion
