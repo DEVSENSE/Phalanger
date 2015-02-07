@@ -188,10 +188,13 @@ namespace PHP.Core
             
             addType(typeof(Library.SPL.Serializable));
             addType(typeof(Library.SPL.Countable));
-            AddExportMethod(addType(typeof(Library.SPL.Reflector)));
             addType(typeof(Library.SPL.SplObjectStorage));
             addType(typeof(Library.SPL.SplObserver));
             addType(typeof(Library.SPL.SplSubject));
+
+            // Reflection:
+            AddExportMethod(addType(typeof(Library.SPL.Reflector)));
+            addType(typeof(Library.SPL.ReflectionClass));
 
             // Iterators:
             addType(typeof(Library.SPL.Traversable));
