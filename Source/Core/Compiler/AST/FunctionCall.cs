@@ -1,5 +1,6 @@
 /*
 
+ Copyright (c) 2007- DEVSENSE
  Copyright (c) 2004-2006 Tomas Matousek, Ladislav Prosek, Vaclav Novak and Martin Maly.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -879,7 +880,7 @@ namespace PHP.Core.AST
                         //result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, qualifiedName.ToString(), null, null, callSignature, access);
                         result = codeGenerator.CallSitesBuilder.EmitMethodCall(
                             codeGenerator,
-                            Compiler.CodeGenerator.CallSitesBuilder.AccessToReturnType(access),
+                            CallSitesBuilder.AccessToReturnType(access),
                             isMemberOf, null,
                             qualifiedName.ToString(), null,
                             callSignature);
