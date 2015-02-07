@@ -47,10 +47,37 @@ namespace PHP.Core.Parsers
 		private SemanticValueType tokenSemantics;
 		private Parsers.Position tokenPosition;
 
-		// last doc comment read from input
-		private string lastDocComment;
+        #region T_DOC_COMMENT handling
 
-		private int streamOffset;
+        /// <summary>
+        /// Last doc comment read from input.
+        /// </summary>
+        private string lastDocComment;
+
+        /// <summary>
+        /// Tokens that should remember current <see cref="lastDocComment"/>.
+        /// </summary>
+        private static readonly HashSet<Tokens>/*!*/lastDocCommentRememberTokens = new HashSet<Tokens>()
+        {
+            Tokens.T_STATIC, Tokens.T_PUBLIC, Tokens.T_PRIVATE, Tokens.T_PROTECTED, Tokens.T_VAR,       // for class fields
+            Tokens.T_CONST,     // for constants
+            Tokens.T_CLASS, Tokens.T_INTERFACE, // for type decl
+            Tokens.T_FUNCTION,  // for function/method
+        };
+
+        /// <summary>
+        /// Tokens that keep value of <see cref="lastDocComment"/> to be used later for <see cref="lastDocCommentRememberTokens"/>.
+        /// </summary>
+        private static readonly HashSet<Tokens>/*!*/lastDocCommentKeepTokens = new HashSet<Tokens>()
+        {
+            Tokens.T_ABSTRACT, Tokens.T_STATIC, Tokens.T_PUBLIC, Tokens.T_PRIVATE, Tokens.T_PROTECTED,
+            Tokens.T_FINAL, Tokens.T_PARTIAL,
+            // TODO: tokens within attributes_opt
+        };
+
+        #endregion
+
+        private int streamOffset;
 
 		// position shifts:
 		private int lineShift;
@@ -106,7 +133,7 @@ namespace PHP.Core.Parsers
 			return encapsedStringBuffer.ToString(offset, length);
 		}
 
-		private void UpdateTokenPosition()
+        private void UpdateTokenPosition()
 		{
 			// update token position info:
 			int byte_length = base.GetTokenByteLength(encoding);
@@ -134,10 +161,18 @@ namespace PHP.Core.Parsers
 		{
 			for (; ; )
 			{
-				inString = false;
-				isCode = false;
+                Tokens token = base.GetNextToken();
 
-				Tokens token = base.GetNextToken();
+                // ignored tokens // do not even call UpdateTokenPosition()
+                if (token == Tokens.T_WHITESPACE ||
+                    token == Tokens.T_COMMENT ||
+                    token == Tokens.T_LINE_COMMENT ||
+                    token == Tokens.T_OPEN_TAG)
+                    continue;
+                
+                //
+                inString = false;
+				isCode = false;
 
 				UpdateTokenPosition();
 
@@ -145,12 +180,10 @@ namespace PHP.Core.Parsers
 				{
 					#region Comments
 
-					case Tokens.T_COMMENT:
-					case Tokens.T_LINE_COMMENT:
-					case Tokens.T_OPEN_TAG:
-					case Tokens.T_WHITESPACE:
-						// skip the token
-						break;
+                    case Tokens.T_DOC_COMMENT:
+                        // remember token value to be used by the next token and skip the current:
+                        lastDocComment = base.GetTokenString();
+                        break;
 
 					case Tokens.T_PRAGMA_FILE:
 						sourceUnit.AddSourceFileMapping(tokenPosition.FirstLine, base.GetTokenAsFilePragma());
@@ -179,19 +212,6 @@ namespace PHP.Core.Parsers
 					#endregion
 
 					#region String Semantics
-
-					case Tokens.T_DOC_COMMENT:
-						// remember token value to be used by the next token and skip the current:
-						lastDocComment = base.GetTokenString();
-						break;
-
-					case Tokens.T_FUNCTION:
-					case Tokens.T_CLASS:
-					case Tokens.T_VAR:
-					case Tokens.T_CONST:
-					// Tokens.T_INTERFACE: // handled later in V5Keywords
-						tokenSemantics.Object = lastDocComment;
-						goto default;
 
 					case Tokens.T_VARIABLE:
 						// exclude initial $ from the name:
@@ -366,14 +386,7 @@ namespace PHP.Core.Parsers
 
 					#region Another Semantics
 
-                    //// (xxx\)+xxx
-                    //case Tokens.T_NAMESPACE_NAME:
-                    //    qualifiedNameBuffer.Clear(); // TODO: slightly inefficient (nulls the elements of the array)
-                    //    GetTokenAsQualifiedName(0, qualifiedNameBuffer);
-                    //    tokenSemantics.Object = qualifiedNameBuffer;
-                    //    goto default;
-
-					// i'xxx'	
+                    // i'xxx'	
 					case Tokens.SingleQuotedIdentifier:
 						tokenSemantics.Object = (string)GetTokenAsSinglyQuotedString(1, encoding, false);
 						token = Tokens.T_STRING;
@@ -432,9 +445,6 @@ namespace PHP.Core.Parsers
 								token = Tokens.T_STRING;
 								goto case Tokens.T_STRING;
 							}
-
-							if (token == Tokens.T_INTERFACE)
-								tokenSemantics.Object = lastDocComment;
 
 							goto default;
 						}
@@ -528,13 +538,15 @@ namespace PHP.Core.Parsers
 					case Tokens.T_SEMI:
 					default:
 
-                        // clear last PHPDoc if there is a token not corresponding to function or class declaration
-                        if (lastDocComment != null &&
-                            token != Tokens.T_PUBLIC && token != Tokens.T_PRIVATE && token != Tokens.T_PROTECTED &&
-                            token != Tokens.T_STATIC && token != Tokens.T_FINAL &&
-                            token != Tokens.T_ABSTRACT)
+                        if (lastDocComment != null)
                         {
-                            this.lastDocComment = null;
+                            // remember PHPDoc for current token
+                            if (lastDocCommentRememberTokens.Contains(token))
+                                tokenSemantics.Object = lastDocComment;
+
+                            // forget last doc comment text
+                            if (!lastDocCommentKeepTokens.Contains(token))
+                                lastDocComment = null;
                         }
 
 						return token;
@@ -542,7 +554,7 @@ namespace PHP.Core.Parsers
 			}
 		}
 
-		#region ITokenProvider<SemanticValueType, Parsers.Position> Members
+        #region ITokenProvider<SemanticValueType, Parsers.Position> Members
 
 		int ITokenProvider<SemanticValueType, Parsers.Position>.GetNextToken()
 		{

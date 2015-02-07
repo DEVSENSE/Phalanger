@@ -149,7 +149,34 @@ namespace PHP.Core.Parsers
 
 		#endregion
 
-		protected sealed override int EofToken
+        #region TmpMemberInfo
+
+        /// <summary>
+        /// Singleton used to remember information about modifier + associated doc comment.
+        /// </summary>
+        private class TmpMemberInfo
+        {
+            public PhpMemberAttributes attr;
+            public string docComment;
+
+            public TmpMemberInfo/*!*/Update(PhpMemberAttributes attr, string docComment)
+            {
+                this.attr = attr;
+                this.docComment = docComment;
+
+                return this;
+            }
+        }
+
+        /// <summary>
+        /// Singleton; used to pass information from <c>member_modifier</c> together with doc comment.
+        /// </summary>
+        private TmpMemberInfo TmpMemberInfoSingleton { get { return _tmpMemberInfoSingleton ?? (_tmpMemberInfoSingleton = new TmpMemberInfo()); } }
+        private TmpMemberInfo _tmpMemberInfoSingleton = null;
+
+        #endregion
+
+        protected sealed override int EofToken
 		{
 			get { return (int)Tokens.EOF; }
 		}
@@ -196,7 +223,7 @@ namespace PHP.Core.Parsers
         /// Special names not namespaced. These names will not be translated using aliases and current namespace.
         /// The list is dynamically extended during parsing with generic arguments.
         /// </summary>
-        private readonly List<string>/*!*/reservedTypeNames = new List<string>()
+        private readonly HashSet<string>/*!*/reservedTypeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             Name.SelfClassName.Value,
             Name.ParentClassName.Value,
@@ -252,7 +279,7 @@ namespace PHP.Core.Parsers
 		private void InitializeFields()
 		{
 			strBufStack.Clear();
-			docCommentStack.Clear();
+            //docCommentStack = null;
 			condLevel = 0;
 
             Debug.Assert(sourceUnit != null);
@@ -283,21 +310,55 @@ namespace PHP.Core.Parsers
 			reader = null;
 		}
 
-		#region DocComments
+        //#region DocComments
 
-		private readonly Stack<string> docCommentStack = new Stack<string>(10);
+        ///// <summary>
+        ///// Stack of PHPDoc content. Used internally during parsing.
+        ///// </summary>
+        //private Stack<string> docCommentStack = null;
 
-		private String PopDocComment()
-		{
-			return (docCommentStack.Count > 0) ? docCommentStack.Pop() : null;
-		}
+        //private String PopDocComment()
+        //{
+        //    Debug.Assert(docCommentStack != null && docCommentStack.Count > 0);
+        //    return docCommentStack.Pop();
+        //}
 
-		private void PushDocComment(object comment)
-		{
-			docCommentStack.Push((string)comment);
-		}
+        //private void PushDocComment(object comment)
+        //{
+        //    Debug.Assert(comment == null || comment is string);
 
-		#endregion
+        //    if (docCommentStack == null)
+        //        docCommentStack = new Stack<string>(3);
+
+        //    docCommentStack.Push((string)comment);
+        //}
+
+        protected override bool ErrorRecovery()
+        {
+            //if (this.next == (int)Tokens.T_DOC_COMMENT)
+            //{
+            //    // ignore T_DOC_COMMENT
+            //    this.next = this.Scanner.GetNextToken();
+            //    return true;
+            //}
+            //else
+            {
+                return base.ErrorRecovery();
+            }
+        }
+
+        private void SetCommentSetHelper(object element, object doccomment)
+        {
+            Debug.Assert(element is LangElement);
+            if (doccomment != null)
+            {
+                Debug.Assert(doccomment is string);
+                var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, (string)doccomment)} );
+                ((LangElement)element).Annotations.Set<CommentSet>(cs);
+            }
+        }
+
+        //#endregion
 
 		#region Conditional Code, Scope
 
@@ -561,7 +622,7 @@ namespace PHP.Core.Parsers
 
             if (!qname.IsFullyQualifiedName && qname.IsSimpleName &&
                 !IsInGlobalNamespace && !sourceUnit.HasImportedNamespaces &&
-                !reservedTypeNames.Contains(qname.Name.Value, StringComparer.OrdinalIgnoreCase))
+                !reservedTypeNames.Contains(qname.Name.Value))
             {
                 // "\foo"
                 fallbackQName = new QualifiedName(qname.Name) { IsFullyQualifiedName = true };
@@ -682,7 +743,7 @@ namespace PHP.Core.Parsers
         private void CheckTypeNameInUse(Name typeName, Position position)
         {
             if (CurrentScopeAliases.ContainsKey(typeName.Value) ||
-                reservedTypeNames.Contains(typeName.Value, StringComparer.OrdinalIgnoreCase))
+                reservedTypeNames.Contains(typeName.Value))
                 errors.Add(FatalErrors.ClassAlreadyInUse, SourceUnit, position,
                      CurrentNamespaceName + typeName.Value);
         }
@@ -848,7 +909,7 @@ namespace PHP.Core.Parsers
             // add the alias:
             
             // check for alias duplicity:
-            if (!CurrentScopeAliases.ContainsKey(alias) && !reservedTypeNames.Contains(alias, StringComparer.OrdinalIgnoreCase))
+            if (!CurrentScopeAliases.ContainsKey(alias) && !reservedTypeNames.Contains(alias))
             {
                 // TODO: check if there is no conflict with some class declaration (this should be in runtime ... but this overriding looks like useful features)
 
@@ -889,7 +950,7 @@ namespace PHP.Core.Parsers
                 //if (qname.Name == Name.ParentClassName ||
                 //    qname.Name == Name.SelfClassName)
                 {
-                    if (reservedTypeNames.Contains(qname.Name.Value, StringComparer.OrdinalIgnoreCase))
+                    if (reservedTypeNames.Contains(qname.Name.Value))
                         return qname;
                 }
 

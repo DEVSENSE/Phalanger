@@ -167,7 +167,7 @@ using Pair = System.Tuple<object,object>;
 %token<Object> T_CONST                    // string (doc comment)
 %token T_RETURN
 %token T_GLOBAL
-%token T_STATIC 
+%token<Object> T_STATIC					  // string (doc comment)
 %token<Object> T_VAR                      // string (doc comment)
 %token T_UNSET
 %token T_ISSET
@@ -220,11 +220,11 @@ using Pair = System.Tuple<object,object>;
 %token T_THROW
 %token<Object> T_INTERFACE                // string (doc comment)
 %token T_IMPLEMENTS
-%token T_ABSTRACT 
-%token T_FINAL 
-%token T_PRIVATE 
-%token T_PROTECTED 
-%token T_PUBLIC 
+%token<Object> T_ABSTRACT				  // string (doc comment)
+%token<Object> T_FINAL					  // string (doc comment)
+%token<Object> T_PRIVATE				  // string (doc comment)
+%token<Object> T_PROTECTED				  // string (doc comment)
+%token<Object> T_PUBLIC					  // string (doc comment)
 %token T_CLONE
 %token T_INSTANCEOF
 %token T_NAMESPACE
@@ -468,10 +468,10 @@ using Pair = System.Tuple<object,object>;
 %type<Integer> visibility_opt                // PhpMemberAttributes
 %type<Integer> partial_opt                   // int (0, 1)
 
-%type<Integer> property_modifiers            // PhpMemberAttributes
+%type<Object>  property_modifiers            // TmpMemberInfo	// <modifiers, doccomment>
 %type<Integer> member_modifiers_opt          // PhpMemberAttributes
-%type<Integer> member_modifiers              // PhpMemberAttributes
-%type<Integer> member_modifier               // PhpMemberAttributes
+%type<Object>  member_modifiers              // TmpMemberInfo	// <modifiers, doccomment>
+%type<Object>  member_modifier               // TmpMemberInfo	// <modifiers, doccomment>
 
 %type<Integer> attribute_target_opt          // CustomAttribute.Targets
 
@@ -633,12 +633,7 @@ function_declaration_statement:
 				func_name, currentNamespace, attrs_doc_ref.Item3, 
 			  (List<FormalParam>)$6, (List<FormalTypeParam>)$3, (List<Statement>)$10, attrs_doc_ref.Item1);
 			  
-			var doc_comment = attrs_doc_ref.Item2;
-			if (doc_comment != null)
-			{
-				var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, doc_comment)} );			  
-				($$ as LangElement).Annotations.Set<CommentSet>(cs);
-			}
+			SetCommentSetHelper($$, attrs_doc_ref.Item2);
 			
 			reductionsSink.FunctionDeclarationReduced(this,	(FunctionDecl)$$); 
 			  
@@ -655,7 +650,7 @@ function_declaration_head:
 ;
 
 class_declaration_statement:
-		attributes_opt visibility_opt modifier_opt partial_opt class
+		attributes_opt visibility_opt modifier_opt partial_opt T_CLASS
 		class_identifier type_parameter_list_opt
 		{
 			Name class_name = new Name((string)$6);
@@ -679,19 +674,14 @@ class_declaration_statement:
 				(List<FormalTypeParam>)$7, (GenericQualifiedName?)$9, (List<GenericQualifiedName>)$10, 
 		    (List<TypeMemberDecl>)$12, (List<CustomAttribute>)$1);
 		    
-		  string doc_comment = PopDocComment();
-		  if (doc_comment != null)
-		  {
-			var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, doc_comment)} );
-			($$ as LangElement).Annotations.Set<CommentSet>(cs);
-		  }
+		  SetCommentSetHelper($$, $5);
 				
 		  reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
 
 		  UnreserveTypeNames((List<FormalTypeParam>)$7);
 		}
 			
-	|	attributes_opt visibility_opt modifier_opt partial_opt interface 
+	|	attributes_opt visibility_opt modifier_opt partial_opt T_INTERFACE 
 	    identifier type_parameter_list_opt
 		{
 			Name class_name = new Name((string)$6);
@@ -717,12 +707,7 @@ class_declaration_statement:
 				$4 != 0, class_name, currentNamespace, (List<FormalTypeParam>)$7, null, (List<GenericQualifiedName>)$9, (List<TypeMemberDecl>)$11, 
 				(List<CustomAttribute>)$1); 
 				
-			string doc_comment = PopDocComment();
-			if (doc_comment != null)
-			{
-				var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, doc_comment)} );
-				($$ as LangElement).Annotations.Set<CommentSet>(cs);
-			}
+			SetCommentSetHelper($$, $5);
 			
 			reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
 
@@ -730,17 +715,9 @@ class_declaration_statement:
 	  }
 ;
 
-class:
-	T_CLASS { PushDocComment($1); }
-;
-
 class_identifier:
 	  identifier { $$ = $1; }
 	| T_ASSERT { $$ = $1.Object; }
-;
-
-interface:
-	T_INTERFACE { PushDocComment($1); }
 ;
 
 modifier_opt:
@@ -1347,26 +1324,15 @@ class_statement_list_opt:
 class_statement:
 		attributes_opt property_modifiers property_declarator_list ';'			
 		{ 
-			$$ = new FieldDeclList(@$, (PhpMemberAttributes)$2, (List<FieldDecl>)$3, (List<CustomAttribute>)$1); 
-			
-			string doc_comment = PopDocComment();
-			if (doc_comment != null)
-			{
-				var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, doc_comment)} );
-				($$ as LangElement).Annotations.Set<CommentSet>(cs);
-			}
+			var modifier_comment = (TmpMemberInfo)$2;
+			$$ = new FieldDeclList(@$, modifier_comment.attr, (List<FieldDecl>)$3, (List<CustomAttribute>)$1); 
+			SetCommentSetHelper($$, modifier_comment.docComment);
 		}
 		 
-	|	attributes_opt class_constant_declarator_list ';'
+	|	attributes_opt T_CONST class_constant_declarator_list ';'
 		{ 
-		  $$ = new ConstDeclList(@$, (List<ClassConstantDecl>)$2, (List<CustomAttribute>)$1);
-
-			string doc_comment = PopDocComment();
-			if (doc_comment != null)		  
-			{
-				var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, doc_comment)} );
-				($$ as LangElement).Annotations.Set<CommentSet>(cs);
-			}
+		  $$ = new ConstDeclList(@$, (List<ClassConstantDecl>)$3, (List<CustomAttribute>)$1);
+		  SetCommentSetHelper($$, $2);
 		}
 		
 	|	attributes_opt member_modifiers_opt T_FUNCTION reference_opt class_method_identifier 
@@ -1386,11 +1352,7 @@ class_statement:
 			$$ = new MethodDecl(@5, @$, GetHeadingEnd(GetLeftValidPosition(11)),GetBodyStart(@13), (string)$5, (int)$4 != 0, (List<FormalParam>)$9, (List<FormalTypeParam>)$6,
 				(List<Statement>)$13, (PhpMemberAttributes)$2, (List<ActualParam>)$11, (List<CustomAttribute>)$1); 
 				
-			if ($3 != null)
-			{
-				var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, (string)$3)} );
-				($$ as LangElement).Annotations.Set<CommentSet>(cs);
-			}
+			SetCommentSetHelper($$, $3);
 			
 			LeaveConditionalCode();
 			UnreserveTypeNames((List<FormalTypeParam>)$6);
@@ -1422,12 +1384,12 @@ method_body:
 
 property_modifiers:
 		member_modifiers	{ $$ = $1; }
-	|	T_VAR						  { $$ = (int)PhpMemberAttributes.Public; PushDocComment($1); }
+	|	T_VAR				{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Public, (string)$1); }
 ;
 
 member_modifiers_opt:
-		/* empty */				{ $$ = (int)PhpMemberAttributes.Public; }
-	|	member_modifiers	{ $$ = $1; }
+		/* empty */			{ $$ = (int)PhpMemberAttributes.Public; }
+	|	member_modifiers	{ $$ = (int)((TmpMemberInfo)$1).attr; }
 ;
 
 member_modifiers:
@@ -1437,24 +1399,28 @@ member_modifiers:
 		}
 	|	member_modifiers member_modifier	
 		{ 
-		  if (($1 & (int)PhpMemberAttributes.VisibilityMask) != 0 && ($2 & (int)PhpMemberAttributes.VisibilityMask) != 0)
-		  {
+		  var a1 = (TmpMemberInfo)$1;
+		  var a2 = (TmpMemberInfo)$2;
+
+		  if ((a1.attr & PhpMemberAttributes.VisibilityMask) != 0 && (a2.attr & PhpMemberAttributes.VisibilityMask) != 0)
 		    errors.Add(Errors.MultipleVisibilityModifiers, SourceUnit, @2);
-		  }
-		  else
-		  {
-		    $$ = $1 | $2;
-		  }  
+		  
+		  // merge $2 into $1
+		  a1.attr |= a2.attr;
+		  Debug.Assert(object.ReferenceEquals(a1.docComment, a2.docComment));
+
+		  // return $1
+		  $$ = $1;
 		}
 ;
                    
 member_modifier:
-		T_PUBLIC			{ $$ = (int)PhpMemberAttributes.Public; }
-	|	T_PROTECTED		{ $$ = (int)PhpMemberAttributes.Protected; }		
-	|	T_PRIVATE			{ $$ = (int)PhpMemberAttributes.Private; }	
-	|	T_STATIC			{ $$ = (int)PhpMemberAttributes.Static; }	
-	|	T_ABSTRACT		{ $$ = (int)PhpMemberAttributes.Abstract; }		
-	|	T_FINAL				{ $$ = (int)PhpMemberAttributes.Final; }	
+		T_PUBLIC			{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Public, (string)$1); }
+	|	T_PROTECTED			{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Protected, (string)$1); }		
+	|	T_PRIVATE			{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Private, (string)$1); }	
+	|	T_STATIC			{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Static, (string)$1); }	
+	|	T_ABSTRACT			{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Abstract, (string)$1); }		
+	|	T_FINAL				{ $$ = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Final, (string)$1); }	
 ;
 
 property_declarator_list:
@@ -1483,16 +1449,15 @@ property_declarator:
 ;
 
 class_constant_declarator_list:
-		class_constant_declarator_list ',' class_constant_declarator
+		class_constant_declarator ',' class_constant_declarator_list
 		{ 
-		  $$ = $1; 
-		  ListAdd<ClassConstantDecl>($$, $3); 
+		  $$ = $3; 
+		  ListAdd<ClassConstantDecl>($3, $1); 
 		}
 		
-	|	T_CONST class_constant_declarator
+	|	class_constant_declarator
 		{ 
-			$$ = NewList<ClassConstantDecl>($2); 
-			PushDocComment($1);
+			$$ = NewList<ClassConstantDecl>($1); 
 		}
 ;
 
@@ -1504,15 +1469,14 @@ class_constant_declarator:
 ;
 
 global_constant_declarator_list:
-		global_constant_declarator_list ',' global_constant_declarator
+		global_constant_declarator ',' global_constant_declarator_list
 		{ 
-			$$ = $1;
-			ListAdd<GlobalConstantDecl>($1, $3);
+			$$ = $3;
+			ListAdd<GlobalConstantDecl>($3, $1);
 		}
-	|	T_CONST global_constant_declarator
+	|	global_constant_declarator
 		{ 
-			$$ = NewList<GlobalConstantDecl>($2);
-			PushDocComment($1);
+			$$ = NewList<GlobalConstantDecl>($1);
 		}
 ;
 
@@ -1529,9 +1493,10 @@ global_constant_declarator:
 ;  
 
 global_constant_declaration_statement:
-	attributes_opt global_constant_declarator_list ';'
+	attributes_opt T_CONST global_constant_declarator_list ';'
   { 
-	  $$ = new GlobalConstDeclList(@$, (List<GlobalConstantDecl>)$2, (List<CustomAttribute>)$1, PopDocComment()); 
+	  $$ = new GlobalConstDeclList(@$, (List<GlobalConstantDecl>)$3, (List<CustomAttribute>)$1); 
+	  SetCommentSetHelper($$, $2);
 	}
 ;
 
