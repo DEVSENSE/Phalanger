@@ -680,13 +680,40 @@ namespace PHP.Library.Xml
                 case IterationType.Attribute:
                     return true;
 
+                #region modified from this.GetEnumerator()
+
+                case IterationType.Element:
+                    {
+                        // find at least one sibling:
+                        for (XmlNode sibling = XmlElement; sibling != null; sibling = sibling.NextSibling)
+                            if (sibling.NodeType == XmlNodeType.Element && sibling.LocalName.Equals(XmlElement.LocalName, StringComparison.Ordinal) && iterationNamespace.IsIn(sibling))
+                                return true;
+                        return false;
+                    }
+
+                case IterationType.ChildElements:
+                    {
+                        // find at least one child element:
+                        foreach (XmlNode child in XmlElement)
+                            if (child.NodeType == XmlNodeType.Element && iterationNamespace.IsIn(child))
+                                return true;
+                        return false;
+                    }
+
+                case IterationType.AttributeList:
+                    {
+                        // find at least one attribute
+                        foreach (XmlAttribute attr in XmlElement.Attributes)
+                            if (!attr.Name.Equals("xmlns", StringComparison.Ordinal) && iterationNamespace.IsIn(attr))
+                                return true;
+                        return false;
+                    }
+
+                #endregion
+
                 default:
                     // return true iff the instance has at least one property
-                    foreach (KeyValuePair<object, object> pair in this)
-                    {
-                        return true;
-                    }
-                    return false;
+                    return this.GetEnumerator().MoveNext();
             }
         }
 
@@ -1470,16 +1497,13 @@ namespace PHP.Library.Xml
 				case IterationType.Element:
 				{
 					// yield return siblings
-					XmlNode sibling = XmlElement;
-					while (sibling != null)
+					for (XmlNode sibling = XmlElement; sibling != null; sibling = sibling.NextSibling)
 					{
-                        if (sibling.NodeType == XmlNodeType.Element && iterationNamespace.IsIn(sibling) /*sibling.NamespaceURI == namespaceUri*/ && sibling.LocalName == XmlElement.LocalName)
+                        if (sibling.NodeType == XmlNodeType.Element && sibling.LocalName.Equals(XmlElement.LocalName, StringComparison.Ordinal) && iterationNamespace.IsIn(sibling) /*sibling.NamespaceURI == namespaceUri*/)
 						{
 							yield return new KeyValuePair<object, object>
                                 (sibling.LocalName, Create(className, (XmlElement)sibling, IterationType.ChildElements, iterationNamespace /* preserve namespaceUri */));
 						}
-
-						sibling = sibling.NextSibling;
 					}
 					break;
 				}
@@ -1508,7 +1532,7 @@ namespace PHP.Library.Xml
 					// yield return attributes
 					foreach (XmlAttribute attr in XmlElement.Attributes)
 					{
-						if (iterationNamespace.IsIn(attr)/*attr.NamespaceURI == namespaceUri*/ && attr.Name != "xmlns")
+						if (!attr.Name.Equals("xmlns", StringComparison.Ordinal) && iterationNamespace.IsIn(attr)/*attr.NamespaceURI == namespaceUri*/)
 						{
 							yield return new KeyValuePair<object, object>
                                 (attr.LocalName, Create(className, attr));
