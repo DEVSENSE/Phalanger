@@ -312,6 +312,7 @@ using Pair = System.Tuple<object,object>;
 %type<Object> top_statement_list                      // List<Statement> 
 %type<Object> use_statement_content_list              // null
 %type<Object> use_statement_content                   // null
+%type<Object> ns_separator_opt						  // null
 %type<Object> use_statement		                      // EmptyStmt
 %type<Object> import_statement		                  // EmptyStmt
 %type<Object> import_statement_list                   // EmptyStmt
@@ -525,8 +526,8 @@ use_statement: /* PHP 5.3 */
 ;
 
 use_statement_content_list: /* PHP 5.3 */
-		use_statement_content_list ',' use_statement_content	{ /* nop */ }
-	|	use_statement_content									{ /* nop */ }
+		use_statement_content_list ',' ns_separator_opt use_statement_content	{ /* nop */ }
+	|	ns_separator_opt use_statement_content									{ /* nop */ }
 ;
 
 use_statement_content: /* PHP 5.3 */
@@ -1810,6 +1811,11 @@ indirect_type_ref:
 	  { 
 	    $$ = $1; 
 	  }
+;
+
+ns_separator_opt:
+						{/*null*/}
+	|	T_NS_SEPARATOR	{/*null*/}
 ;
 
 qualified_namespace_name:
