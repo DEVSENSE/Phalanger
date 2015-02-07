@@ -338,6 +338,12 @@ namespace PHP.Core.Reflection
 		public override SourceUnit SourceUnit { get { return declaration.SourceUnit; } }
 
         /// <summary>
+        /// If constant defined within &lt;script&gt; type, remember its builder to define constant field there.
+        /// In case of pure or transient module, this is null. If this is null, the constant is declared in as CLR global.
+        /// </summary>
+        private TypeBuilder scriptTypeBuilder = null;
+
+        /// <summary>
         /// Name of the extension where this global constant was defined.
         /// </summary>
         public string Extension
@@ -391,9 +397,14 @@ namespace PHP.Core.Reflection
             SourceUnit/*!*/ sourceUnit, bool isConditional, Scope scope, Position position)
 			: base(new DConstantDesc(sourceUnit.CompilationUnit.Module, memberAttributes, null))
 		{
+            Debug.Assert(sourceUnit != null);
+
 			this.qualifiedName = qualifiedName;
 			this.declaration = new Declaration(sourceUnit, this, false, isConditional, scope, position);
             //this.origin = origin;
+
+            if (sourceUnit.CompilationUnit is ScriptCompilationUnit)    // J: place the constant into <script> type so it can be reflected properly
+                scriptTypeBuilder = ((ScriptCompilationUnit)sourceUnit.CompilationUnit).ScriptBuilder.ScriptTypeBuilder;
 		}
 
 		#endregion
@@ -417,13 +428,39 @@ namespace PHP.Core.Reflection
 		{
 			if (realField == null)
 			{
-				ModuleBuilder module_builder = this.DeclaringModuleBuilder.AssemblyBuilder.RealModuleBuilder;
+                // resolve attributes
+                FieldAttributes field_attrs = Enums.ToFieldAttributes(memberDesc.MemberAttributes);
+                field_attrs |= FieldAttributes.Literal;
 
-				// represent the class constant as a static initonly field
-				FieldAttributes field_attrs = Enums.ToFieldAttributes(memberDesc.MemberAttributes);
-				field_attrs |= FieldAttributes.Literal;
+                Debug.Assert((field_attrs & FieldAttributes.Static) != 0);
 
-				realField = ReflectionUtils.DefineGlobalField(module_builder, qualifiedName.ToClrNotation(0, 0), Types.Object[0], field_attrs);
+                // convert name to CLR notation:
+                var clrName = qualifiedName.ToClrNotation(0, 0);
+
+                // type
+                Type type = Types.Object[0];
+                if (this.HasValue && this.Value != null)
+                    type = this.Value.GetType();
+
+                // define public static const field:
+                if (scriptTypeBuilder != null)  // const in SSA or MSA
+                {
+                    realField = scriptTypeBuilder.DefineField(clrName, type, field_attrs);
+                }
+                else // const in Pure or Transient
+                {
+                    ModuleBuilder module_builder = this.DeclaringModuleBuilder.AssemblyBuilder.RealModuleBuilder;
+
+                    // represent the class constant as a static initonly field
+
+                    realField = ReflectionUtils.DefineGlobalField(module_builder, clrName, type, field_attrs);
+                }
+
+                Debug.Assert(realField != null);
+
+                // set value
+                if (this.HasValue)
+                    ((FieldBuilder)realField).SetConstant(this.Value);
 			}
 		}
 
