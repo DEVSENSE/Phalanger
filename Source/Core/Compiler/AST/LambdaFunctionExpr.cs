@@ -162,15 +162,18 @@ namespace PHP.Core.AST
             il.Emit(OpCodes.Ldftn, function.ArgLessInfo);
             il.Emit(OpCodes.Newobj, Constructors.RoutineDelegate);
 
-            if (signature.FormalParams != null && signature.FormalParams.Count > 0)
+            int userParamsCount = (useParams != null) ? useParams.Count : 0;
+            if (signature.FormalParams != null && signature.FormalParams.Count > userParamsCount)
             {
                 // array = new PhpArray(<int_count>, <string_count>);
                 il.Emit(OpCodes.Ldc_I4, 0);
                 il.Emit(OpCodes.Ldc_I4, signature.FormalParams.Count);
                 il.Emit(OpCodes.Newobj, Constructors.PhpArray.Int32_Int32);
 
-                foreach (var p in signature.FormalParams)
+                for (int i = userParamsCount; i < signature.FormalParams.Count; i++)
                 {
+                    var p = signature.FormalParams[i];
+
                     // CALL array.SetArrayItem("&$name", "<required>" | "<optional>");
                     il.Emit(OpCodes.Dup);   // PhpArray
 
@@ -188,7 +191,7 @@ namespace PHP.Core.AST
                 il.Emit(OpCodes.Ldnull);
             }
 
-            if (useParams != null & useParams.Count > 0)
+            if (userParamsCount > 0)
             {
                 // array = new PhpArray(<int_count>, <string_count>);
                 il.Emit(OpCodes.Ldc_I4, 0);

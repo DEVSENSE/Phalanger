@@ -99,5 +99,17 @@ namespace PHP.Library.SPL
             // this method should not be called, its argless should.
             throw new InvalidOperationException();
         }
+
+        /// <summary>
+        /// Alters special behaviour of var_dump, export and print_r.
+        /// </summary>
+        protected override IEnumerable<KeyValuePair<VariableName, DObject.AttributedValue>> PropertyIterator()
+        {
+            if (this.@static != null)
+                yield return new KeyValuePair<VariableName, DObject.AttributedValue>(new VariableName("static"), new AttributedValue(this.@static));
+
+            if (this.parameter != null)
+                yield return new KeyValuePair<VariableName, DObject.AttributedValue>(new VariableName("parameter"), new AttributedValue(this.parameter));
+        }
     }
 }
