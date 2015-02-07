@@ -387,10 +387,23 @@ namespace PHP.Core
 
             if ((cmp = y as IPhpComparable) != null) return -cmp.CompareTo(x, Default);
 
-            if (x == y)
-                return 0;
-            else
-                throw new ArgumentException();
+            if (x != y) CompareOp_ThrowHelper(x, y);
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Throws <see cref="ArgumentException"/> with information about arguments type.
+        /// </summary>
+        /// <param name="x">Left operand.</param>
+        /// <param name="y">Right operand.</param>
+        /// <exception cref="ArgumentException">Always throws.</exception>
+        private static void CompareOp_ThrowHelper(object x, object y)
+        {
+            throw new ArgumentException(
+                string.Format(CoreResources.incomparable_objects_compared_exception,
+                    (x != null) ? x.GetType().ToString() : PhpVariable.TypeNameNull,
+                    (y != null) ? y.GetType().ToString() : PhpVariable.TypeNameNull));
         }
         
 		public static int CompareOp(int x, int y)
