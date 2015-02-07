@@ -749,7 +749,7 @@ namespace PHP.Core
             /// </summary>
             /// <param name="str">String to check.</param>
             /// <returns>Whether given string may be a PHP type name.</returns>
-            private static bool IsTypeName(string str)
+            internal static bool IsTypeName(string str)
             {
                 if (string.IsNullOrEmpty(str))
                     return false;
@@ -1153,21 +1153,21 @@ namespace PHP.Core
             {
                 Debug.Assert(line.StartsWith(tagName));
 
-                // [type] name() [name(params ...)] [description]
+                // [type] [name()] [name(params ...)] [description]
 
                 int index = tagName.Length; // current index within line
                 int descStart = index;  // start of description, moved when [type] or [name] found
 
                 // try to find [type]
                 string word = NextWord(line, ref index);
-                if (word != null && !word.EndsWith("()", StringComparison.Ordinal))
+                if (word != null && TypeVarDescTag.IsTypeName(word))
                 {
                     this.TypeNames = word;
                     descStart = index;
                     word = NextWord(line, ref index);
                 }
 
-                // name()
+                // [name()]
                 if (word != null && word.EndsWith("()", StringComparison.Ordinal))
                 {
                     this.MethodName = word.Remove(word.Length - 2);
@@ -1175,26 +1175,34 @@ namespace PHP.Core
                     word = NextWord(line, ref index);
                 }
 
-                // name(params ...)
+                // [name(params ...)]
                 while (descStart < line.Length && char.IsWhiteSpace(line[descStart]))
                     descStart++;    // skip whitespaces
 
                 this.Parameters = null;
+                
+                int nameStart = descStart;
+                int paramsFrom = -1;
+                while (descStart < line.Length && char.IsLetterOrDigit(line[descStart]))
+                    descStart++;
 
-                if (this.MethodName == null)
+                if (line[descStart] == '(')
                 {
-                    int nameStart = descStart;
-                    while (descStart < line.Length && line[descStart] != '(' && char.IsLetterOrDigit(line[descStart]))
-                        descStart++;
-                    if (descStart > nameStart)
-                        this.MethodName = line.Substring(nameStart, descStart - nameStart);
+                    paramsFrom = descStart;
+
+                    if (this.MethodName == null && paramsFrom > nameStart)
+                        this.MethodName = line.Substring(nameStart, paramsFrom - nameStart);
+                }
+                else
+                {
+                    descStart = nameStart;
                 }
 
                 if (string.IsNullOrEmpty(this.MethodName))
                     return;
 
-                int paramsFrom = descStart + this.MethodName.Length;
-                if (paramsFrom < line.Length && line.IndexOf(this.MethodName, descStart, StringComparison.Ordinal) == descStart && line[paramsFrom] == '(')
+                if (paramsFrom > 0)
+                if (paramsFrom < line.Length && line[paramsFrom] == '(')
                 {
                     // "name(" found
                     int paramsEnd = line.IndexOf(')', paramsFrom);
