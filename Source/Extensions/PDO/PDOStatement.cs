@@ -489,6 +489,25 @@ namespace PHP.Library.Data
         }
         #endregion
 
+        #region columnCount
+        [PhpVisible, ImplementsMethod]
+        public virtual object columnCount(ScriptContext context)
+        {
+            if (this.CurrentReader != null)
+            {
+                return this.CurrentReader.FieldCount;
+            }
+            return -1;
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static object columnCount(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((PDOStatement)instance).columnCount(stack.Context);
+        }
+        #endregion
+
         #region fetchAll
         
         [PhpVisible, ImplementsMethod]

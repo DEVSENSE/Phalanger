@@ -1949,7 +1949,7 @@ namespace PHP.Core
         /// </summary>
         public static StringComparer/*!*/StringComparer { get { return EqualityComparer.StringComparer; } }
 
-        public readonly FullPath[]/*!*/ EmptyArray { get { return EmptyArray<FullPath>.Instance; } }
+        public static FullPath[]/*!*/ EmptyArray { get { return EmptyArray<FullPath>.Instance; } }
 
         /// <summary>
         /// Empty path.
