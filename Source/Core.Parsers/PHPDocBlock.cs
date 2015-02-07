@@ -1751,7 +1751,14 @@ namespace PHP.Core
         public static void SetPHPDoc(this IPropertyCollection/*!*/properties, PHPDocBlock phpdoc)
         {
             if (phpdoc != null)
+            {
                 properties.SetProperty<PHPDocBlock>(phpdoc);
+
+                // remember LangElement associated with phpdoc
+                var element = properties as AST.LangElement;
+                if (element != null)
+                    phpdoc.SetProperty<AST.LangElement>(element);
+            }
             else
                 properties.RemoveProperty<PHPDocBlock>();
         }
