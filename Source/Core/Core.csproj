@@ -358,6 +358,7 @@
     <Compile Include="HttpHeaders.CLR.cs" />
     <Compile Include="Library.CLR.cs" />
     <Compile Include="Logger.CLR.cs" />
+    <Compile Include="PhpResourceManager.cs" />
     <Compile Include="PhpStream.CLR.cs" />
     <Compile Include="PluginHandler.cs" />
     <Compile Include="OrderedDictionary.cs" />

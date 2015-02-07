@@ -185,7 +185,7 @@ namespace PHP.Core
     /// The context of an executing script. Contains data associated with a request.
     /// </summary>
     [DebuggerNonUserCode]
-    public sealed partial class ScriptContext : MarshalByRefObject
+    public sealed partial class ScriptContext : MarshalByRefObject, IDisposable
     {
         #region DebugView
 
@@ -435,6 +435,21 @@ namespace PHP.Core
         /// Used as a recursion prevention of <b>autoload</b>.
         /// </summary>
         private List<string> pendingAutoloads;
+
+        /// <summary>
+        /// Set when the context started finalization.
+        /// </summary>
+        private bool disposed = false;
+
+        /// <summary>
+        /// Additional disposal action.
+        /// </summary>
+        internal event Action TryDispose;
+
+        /// <summary>
+        /// Additional disposal action processed in <c>finally</c> block.
+        /// </summary>
+        internal event Action FinallyDispose;
 
 #if DEBUG
 
@@ -2879,6 +2894,47 @@ namespace PHP.Core
                     globalScope = new Utilities.GlobalScope(this);
 
                 return globalScope;
+            }
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        /// <summary>
+        /// Disposes this instance of <see cref="ScriptContext"/>,
+        /// calls PHP shutdown functions, finalizes PHP objects and finalizes buffer output.
+        /// </summary>
+        void IDisposable.Dispose()
+        {
+            if (!disposed)
+            {
+                try
+                {
+                    this.GuardedCall<object, object>(this.ProcessShutdownCallbacks, null, false);
+                    this.GuardedCall<object, object>(this.FinalizePhpObjects, null, false);
+                    this.GuardedCall<object, object>(this.FinalizeBufferedOutput, null, false);
+
+                    // additional disposal action
+                    if (this.TryDispose != null)
+                        this.TryDispose();
+                }
+                finally
+                {
+                    // additional disposal action
+                    if (this.FinallyDispose != null)
+                        this.FinallyDispose();
+
+                    if (object.ReferenceEquals(this, CurrentContext))
+                        CurrentContext = null;
+
+                    // remember the max capacity of dictionaries to preallocate next time:
+                    if (this.MainScriptInfo != null)
+                        this.MainScriptInfo.SaveMaxCounts(this);
+
+                    //
+                    this.disposed = true;
+                }
             }
         }
 

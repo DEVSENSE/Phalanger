@@ -107,6 +107,22 @@ namespace PHP.Core
 			scriptContext = ScriptContext.InitWebRequest(appContext, httpContext);
 			TrackClientDisconnection = !scriptContext.Config.RequestControl.IgnoreUserAbort;
 
+            // Session is ended after destructing objects since PHP 5.0.5, use two-phase finalization:
+            scriptContext.TryDispose += () =>
+                {
+                    this.TryDisposeBeforeFinalization(); // ends session
+
+                    // finalize objects created during session closing and output finalization:
+                    this.scriptContext.GuardedCall<object, object>(this.scriptContext.FinalizePhpObjects, null, false);
+
+                    // Platforms-specific dispose
+                    this.TryDisposeAfterFinalization();  // flushes headers
+                };
+
+            // Platforms-specific finally dispose
+            scriptContext.FinallyDispose += FinallyDispose;
+
+            //
 			if (RequestBegin != null) RequestBegin();
 		}
 

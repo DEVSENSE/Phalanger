@@ -84,11 +84,9 @@ namespace PHP.Core
 
             if (registerInReqContext)
             {
-                // register this resource into RequestContext,
+                // register this resource into PhpResourceManager,
                 // so the resource will be automatically disposed at the request end.
-                RequestContext req_context = RequestContext.CurrentContext;
-                if (req_context != null)
-                    reqContextRegistrationNode = req_context.RegisterResource(this);
+                this.reqContextRegistrationNode = PhpResourceManager.RegisterResource(this);
             }
 		}
 
@@ -211,8 +209,7 @@ namespace PHP.Core
         {
             if (this.reqContextRegistrationNode != null)
             {
-                Debug.Assert(RequestContext.CurrentContext != null);
-                RequestContext.CurrentContext.UnregisterResource(this.reqContextRegistrationNode);
+                PhpResourceManager.UnregisterResource(this.reqContextRegistrationNode);
                 this.reqContextRegistrationNode = null;
             }
         }

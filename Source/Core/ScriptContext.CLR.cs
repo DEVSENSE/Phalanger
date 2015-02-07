@@ -36,7 +36,7 @@ namespace PHP.Core
 	/// The context of an executing script. Contains data associated with a request.
 	/// </summary>
 	[DebuggerTypeProxy(typeof(ScriptContext.DebugView))]
-	public sealed partial class ScriptContext : MarshalByRefObject, ILogicalThreadAffinative
+	public sealed partial class ScriptContext : ILogicalThreadAffinative
 	{
 		#region Initialization of requests and applications
 
@@ -133,18 +133,9 @@ namespace PHP.Core
                 app_context.AssemblyLoader.LoadScriptLibrary(System.Reflection.Assembly.GetEntryAssembly(), ".");
             }
 
-            ScriptContext context = InitApplication(app_context, main_script, relativeSourcePath, sourceRoot);
-
-            try
+            using (ScriptContext context = InitApplication(app_context, main_script, relativeSourcePath, sourceRoot))
             {
                 context.GuardedCall<object, object>(context.GuardedMain, mainRoutine, true);
-                context.GuardedCall<object, object>(context.FinalizeBufferedOutput, null, false);
-                context.GuardedCall<object, object>(context.ProcessShutdownCallbacks, null, false);
-                context.GuardedCall<object, object>(context.FinalizePhpObjects, null, false);
-            }
-            finally
-            {
-                Externals.EndRequest();
             }
         }
 
@@ -224,7 +215,9 @@ namespace PHP.Core
             ScriptContext.CurrentContext = result;
 
             Externals.BeginRequest();
+            result.FinallyDispose += Externals.EndRequest;
 
+            //
             return result;
         }
 

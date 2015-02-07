@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -21,7 +20,7 @@ namespace PHP.Core
         /// <seealso cref="RegisterResource"/><seealso cref="CleanUpResources"/>
         /// </remarks>
         [ThreadStatic]
-        private static LinkedList<WeakReference> resources;
+        private static LinkedList<PhpResource> resources;
 
         #endregion
 
@@ -42,23 +41,23 @@ namespace PHP.Core
         /// Registers a resource that should be disposed of when the request is over.
         /// </summary>
         /// <param name="res">The resource.</param>
-        internal static LinkedListNode<WeakReference> RegisterResource(PhpResource/*!*/res)
+        internal static LinkedListNode<PhpResource> RegisterResource(PhpResource/*!*/res)
         {
             Debug.Assert(res != null);
-            //Debug.Assert(this method can only be called on the request thread)
 
             if (resources == null)
-                resources = new LinkedList<WeakReference>();
+                resources = new LinkedList<PhpResource>();
 
-            return resources.AddFirst(new WeakReference(res));
+            return resources.AddFirst(res);
         }
 
         /// <summary>
         /// Unregisters disposed resource.
         /// </summary>
-        internal static void UnregisterResource(LinkedListNode<WeakReference>/*!*/node)
+        internal static void UnregisterResource(LinkedListNode<PhpResource>/*!*/node)
         {
             Debug.Assert(node != null);
+            Debug.Assert(node.List == resources);
             
             node.List.Remove(node); // node.list == resources
         }
@@ -73,12 +72,7 @@ namespace PHP.Core
                 for (var p = resources.First; p != null; )
                 {
                     var next = p.Next;
-                    if (p.Value.IsAlive)
-                    {
-                        var phpresource = (PhpResource)p.Value.Target;
-                        if (phpresource != null)
-                            phpresource.Close();
-                    }
+                    p.Value.Close();
                     p = next;
                 }
 
