@@ -2861,7 +2861,7 @@ namespace PHP.Core
 			attributes |= MethodAttributes.HideBySig;
 
 			foreach (StubInfo stub in ClrStubBuilder.DefineMethodExportStubs(
-				target,
+				target, target.DeclaringPhpType,
 				attributes,
 				false,
 				delegate(string[] genericParamNames, object[] parameterTypes, object returnType)

@@ -547,7 +547,7 @@ namespace PHP.Core.Emit
 		/// Enumerates all export overloads for the given target PHP method.
 		/// </summary>
 		public static IEnumerable<StubInfo> DefineMethodExportStubs(
-			PhpRoutine/*!*/ target,
+			PhpRoutine/*!*/ target, PhpType/*!*/ declaringType,
 			MethodAttributes attributes,
 			bool defineConstructors,
 			StubSignatureFilter/*!*/ signatureFilter)
@@ -599,7 +599,7 @@ namespace PHP.Core.Emit
 
 					if (!defineConstructors)
 					{
-						method = target.DeclaringType.RealTypeBuilder.DefineMethod(target.FullName, attributes);
+                        method = declaringType.RealTypeBuilder.DefineMethod(target.FullName, attributes);
 
 						// determine generic parameters
 						if (generic_param_names.Length > 0) generic_params = method.DefineGenericParameters(generic_param_names);
@@ -653,7 +653,7 @@ namespace PHP.Core.Emit
 						attributes |= MethodAttributes.SpecialName | MethodAttributes.RTSpecialName;
 						attributes &= ~MethodAttributes.Virtual;
 
-						ConstructorBuilder constructor = target.DeclaringType.RealTypeBuilder.DefineConstructor(
+                        ConstructorBuilder constructor = declaringType.RealTypeBuilder.DefineConstructor(
 							attributes, CallingConventions.Standard, real_parameter_types);
 						constructor.SetCustomAttribute(AttributeBuilders.DebuggerHidden);
 
