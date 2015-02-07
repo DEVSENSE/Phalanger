@@ -241,6 +241,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SPL\Autoload.cs" />
+    <Compile Include="SPL\FileSystem.cs" />
     <Compile Include="SPL\Iterators.cs" />
     <Compile Include="SPL\Objects.cs" />
     <Compile Include="Streams.cs">
