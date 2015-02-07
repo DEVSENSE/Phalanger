@@ -4,7 +4,7 @@ ok
 <?php
 
 	$x = 0;
-	if (!$x)
+	if (!x)
 		if (true)
 		{
 			echo 'ok';
