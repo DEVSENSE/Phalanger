@@ -440,7 +440,7 @@ namespace PHP.Core
 			else                      // x is not an array
 			{
 				// filters unsupported types:
-				if (y is PhpArray || x is DObject || y is DObject)
+				if (y is PhpArray)
 				{
 					PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 					return 0;
@@ -495,7 +495,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference));
 
 			// filters unsupported types:
-			if (x is PhpArray || x is DObject)
+			if (x is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0;
@@ -548,7 +548,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference));
 
 			// filters unsupported types:
-			if (x is PhpArray || x is DObject)
+			if (x is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0.0;
@@ -585,7 +585,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference) && !(y is PhpReference));
 
 			// filters unsupported types:
-			if (x is PhpArray || y is PhpArray || x is DObject || y is DObject)
+			if (x is PhpArray || y is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0;
@@ -637,7 +637,7 @@ namespace PHP.Core
 			Debug.Assert(!(y is PhpReference));
 
 			// filters unsupported types:
-			if (y is PhpArray || y is DObject)
+			if (y is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0;
@@ -687,7 +687,7 @@ namespace PHP.Core
 			Debug.Assert(!(y is PhpReference));
 
 			// filters unsupported types:
-			if (y is PhpArray || y is DObject)
+			if (y is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0.0;
@@ -723,7 +723,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference));
 
 			// filters unsupported types:
-			if (x is PhpArray || x is DObject)
+			if (x is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0;
@@ -772,7 +772,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference));
 
 			// filters unsupported types:
-			if (x is PhpArray || x is DObject)
+			if (x is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return false;
@@ -811,7 +811,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference) && !(y is PhpReference));
 
 			// filter unsupported types:
-			if (x is PhpArray || x is DObject || y is PhpArray || y is DObject)
+			if (x is PhpArray || y is PhpArray )
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0.0;
@@ -867,7 +867,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference));
 
 			// filters unsupported types:
-			if (x is PhpArray || x is DObject)
+			if (x is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0.0;
@@ -914,7 +914,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference));
 
 			// filters unsupported types:
-			if (x is PhpArray || x is DObject)
+			if (x is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0.0;
@@ -943,7 +943,7 @@ namespace PHP.Core
 			Debug.Assert(!(y is PhpReference));
 
 			// filters unsupported types:
-			if (y is PhpArray || y is DObject)
+			if (y is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0.0;
@@ -993,7 +993,7 @@ namespace PHP.Core
 			Debug.Assert(!(y is PhpReference));
 
 			// filters unsupported types:
-			if (y is PhpArray || y is DObject)
+			if (y is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0.0;
@@ -1025,7 +1025,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference) && !(y is PhpReference));
 
 			// filters unsupported types:
-			if (x is PhpArray || x is DObject || y is PhpArray || y is DObject)
+			if (x is PhpArray || y is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0.0;
@@ -1077,7 +1077,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference));
 
 			// filters unsupported types:
-			if (x is PhpArray || x is DObject)
+			if (x is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0.0;
@@ -1128,7 +1128,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference));
 
 			// filters unsupported types:
-			if (x is PhpArray || x is DObject)
+			if (x is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0.0;
@@ -1168,7 +1168,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference) && !(y is PhpReference));
 
 			// filters unsupported types:
-			if (x is PhpArray || x is DObject || y is PhpArray || y is DObject)
+			if (x is PhpArray || y is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0;
@@ -1217,7 +1217,7 @@ namespace PHP.Core
 			Debug.Assert(!(x is PhpReference));
 
 			// filters unsupported types:
-			if (x is PhpArray || x is DObject)
+			if (x is PhpArray)
 			{
 				PhpException.Throw(PhpError.Error, CoreResources.GetString("unsupported_operand_types"));
 				return 0;
