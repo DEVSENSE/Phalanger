@@ -1255,7 +1255,6 @@ namespace PHP.Library
         /// </summary>
         /// <param name="pieces">The array to be impleded.</param>
         /// <returns>The glued string.</returns>
-        /// <exception cref="PhpException">Thrown if neither <paramref name="glue"/> nor <paramref name="pieces"/> is not null and of type <see cref="PhpArray"/>.</exception>
         [ImplementsFunction("join")]
         public static string JoinGeneric(PhpArray pieces)
         {
