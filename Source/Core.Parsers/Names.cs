@@ -50,21 +50,11 @@ namespace PHP.Core
 		public string/*!*/ Value
 		{
 			get { return value; }
-			set
-            {
-                this.value = value;
-                this.hashCode = 0;
-            }
 		}
-		private string/*!*/ value;
-        private int hashCode;
-
-		public string/*!*/ LowercaseValue
-		{
-            get { return this.Value.ToLowerInvariant(); }
-		}
-		
-        #region Special Names
+		private readonly string/*!*/ value;
+        private readonly int hashCode;
+        
+		#region Special Names
 
 		public static readonly Name[] EmptyNames = new Name[0];
 		public static readonly Name EmptyBaseName = new Name("");
@@ -199,9 +189,8 @@ namespace PHP.Core
 		public Name(string/*!*/ value)
 		{
 			Debug.Assert(value != null);
-			// TODO (missing from Mono): this.value = value.Normalize();
 			this.value = value;
-            this.hashCode = 0;
+            this.hashCode = StringComparer.OrdinalIgnoreCase.GetHashCode(value);
 		}
 
         #region Utils
@@ -255,16 +244,12 @@ namespace PHP.Core
 
         public override bool Equals(object obj)
 		{
-            return (obj != null && obj.GetType() == typeof(Name))
-                ? Equals((Name)obj)
-                : false;
+            return obj != null && obj.GetType() == typeof(Name) && Equals((Name)obj);
 		}
 
 		public override int GetHashCode()
 		{
-			return (this.hashCode != 0)
-                ? (this.hashCode)
-                : (this.hashCode = this.LowercaseValue.GetHashCode());
+            return this.hashCode;
 		}
 
 		public override string ToString()
@@ -278,10 +263,7 @@ namespace PHP.Core
 
 		public bool Equals(Name other)
 		{
-            return
-                this.Value.Length == other.Value.Length &&
-                this.GetHashCode() == other.GetHashCode() &&
-                Equals(other.Value);
+            return this.GetHashCode() == other.GetHashCode() && Equals(other.Value);
 		}
 
 		public static bool operator ==(Name name, Name other)
@@ -300,7 +282,7 @@ namespace PHP.Core
 
 		public bool Equals(string other)
 		{
-            return /*other != null &&*/ string.Equals(value, other, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(value, other, StringComparison.OrdinalIgnoreCase);
 		}
 
 		#endregion
@@ -820,8 +802,7 @@ namespace PHP.Core
 
 		public override bool Equals(object obj)
 		{
-			if (!(obj is QualifiedName)) return false;
-			return this.Equals((QualifiedName)obj);
+			return obj != null && obj.GetType() == typeof(QualifiedName) && this.Equals((QualifiedName)obj);
 		}
 
 		public override int GetHashCode()
@@ -843,14 +824,21 @@ namespace PHP.Core
         {
             get
             {
-                StringBuilder result = new StringBuilder();
-                for (int i = 0; i < namespaces.Length; i++)
+                var ns = this.namespaces;
+                if (ns.Length != 0)
                 {
-                    if (i != 0) result.Append(Separator);
-                    result.Append(namespaces[i]);
+                    StringBuilder result = new StringBuilder(ns[0].Value, ns.Length * 8);
+                    for (int i = 1; i < ns.Length; i++)
+                    {
+                        result.Append(Separator);
+                        result.Append(ns[i].Value);
+                    }
+                    return result.ToString();
                 }
-
-                return result.ToString();
+                else
+                {
+                    return string.Empty;
+                }
             }
         }
 
@@ -874,10 +862,22 @@ namespace PHP.Core
 
 		public override string ToString()
 		{
-            if (this.namespaces.Length == 0)
+            var ns = this.namespaces;
+            if (ns.Length == 0)
+            {
                 return this.Name.Value;
-
-			return ToString(null, false);
+            }
+            else
+            {
+                StringBuilder result = new StringBuilder(ns.Length * 8);
+                for (int i = 0; i < ns.Length; i++)
+                {
+                    result.Append(ns[i]);
+                    result.Append(Separator);
+                }
+                result.Append(this.Name.Value);
+                return result.ToString();
+            }
 		}
 
 		#endregion
@@ -886,11 +886,9 @@ namespace PHP.Core
 
 		public bool Equals(QualifiedName other)
 		{
-			if (!this.name.Equals(other.name)) return false;
+			if (!this.name.Equals(other.name) || this.namespaces.Length != other.namespaces.Length) return false;
 
-            if (this.namespaces.Length != other.namespaces.Length) return false;
-
-			for (int i = 0; i < namespaces.Length; i++)
+            for (int i = 0; i < namespaces.Length; i++)
 			{
 				if (!this.namespaces[i].Equals(other.namespaces[i]))
 					return false;

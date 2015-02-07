@@ -660,7 +660,7 @@ namespace PHP.Core.CodeDom
                     }
                     else if (GParam is PrimitiveTypeName)
                     {
-                        ret.TypeArguments.Add(new CodeTypeReference(((PrimitiveTypeName)GParam).Name.LowercaseValue));
+                        ret.TypeArguments.Add(new CodeTypeReference(((PrimitiveTypeName)GParam).Name.Value.ToLowerInvariant()));
                     }
                     else
                     {
@@ -2183,7 +2183,7 @@ namespace PHP.Core.CodeDom
                     throw new PhpToCodeDomNotSupportedException(Localizations.Strings.cdp_unsup_indirect_type_ref, typeRef);
                 }
                 else if (typeRef is PrimitiveTypeRef)
-                    return new CodeTypeReference(((PrimitiveTypeRef)typeRef).QualifiedName.Name.LowercaseValue);
+                    return new CodeTypeReference(((PrimitiveTypeRef)typeRef).QualifiedName.Name.Value.ToLowerInvariant());
                 else throw new PhpToCodeDomNotSupportedException(string.Format(Localizations.Strings.cdp_unsup_unknown_ref_kind), typeRef);
             }
             #endregion
