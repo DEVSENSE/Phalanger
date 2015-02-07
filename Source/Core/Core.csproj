@@ -587,8 +587,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>cd "$(SolutionDir).."
+Tools\UpdateFileVersionFromChangeset.cmd "$(ProjectDir)AssemblyInfo.cs"</PreBuildEvent>
     <PostBuildEvent>REM ECHO Uninstalling previous version from GAC ...
 REM "$(SolutionDir)..\Tools\gacutil" /u $(TargetName) 1&gt;nul
 

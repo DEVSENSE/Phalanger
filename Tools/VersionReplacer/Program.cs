@@ -35,6 +35,7 @@ namespace VersionReplacer
                 {
                     if (line.Contains("<Version>"))
                     {
+                        // 1.2.3
                         var regex = new Regex(@"<Version>[0-9]+\.[0-9]+\.(.+)</Version>");
                         var newline = (regex.Replace(line, versionChanger));
                         result.AppendLine(newline);
@@ -45,6 +46,7 @@ namespace VersionReplacer
                 {
                     if (line.Contains("public const string Version"))
                     {
+                        // 1.2.3
                         var regex = new Regex(@"public\s+const\s+string\s+Version\s+\=\s+""[0-9]+\.[0-9]+\.(.+)""");
                         var newline = (regex.Replace(line, versionChanger));
                         result.AppendLine(newline);
@@ -53,7 +55,8 @@ namespace VersionReplacer
 
                     if (line.Contains("[assembly: AssemblyFileVersion"))
                     {
-                        var regex = new Regex(@"[assembly\:\s+AssemblyFileVersion\(""[0-9]+\.[0-9]+\.[0-9]+\.(.+)""\)");
+                        // 1.2.3
+                        var regex = new Regex(@"[assembly\:\s+AssemblyFileVersion\(""[0-9]+\.[0-9]+\.([0-9]+)""\)");
                         var newline = (regex.Replace(line, versionChanger));
                         result.AppendLine(newline);
                         continue;

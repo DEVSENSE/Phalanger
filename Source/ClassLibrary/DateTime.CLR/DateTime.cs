@@ -32,6 +32,9 @@ namespace PHP.Library
 {
     #region DateTime
 
+    /// <summary>
+    /// Representation of date and time.
+    /// </summary>
 #if !SILVERLIGHT
     [Serializable]
 #endif

@@ -33,6 +33,9 @@ namespace PHP.Library
 {
     #region DateTimeZone
 
+    /// <summary>
+    /// Representation of time zone.
+    /// </summary>
 #if !SILVERLIGHT
     [Serializable]
 #endif
@@ -152,7 +155,7 @@ namespace PHP.Library
                 return false;
             }
 
-            return (int)this.timezone.BaseUtcOffset.TotalSeconds + (this.timezone.IsDaylightSavingTime(dt.time) ? 3600 : 0);
+            return (int)this.timezone.BaseUtcOffset.TotalSeconds + (this.timezone.IsDaylightSavingTime(dt.Time) ? 3600 : 0);
         }
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static object getOffset(object instance, PhpStack stack)
