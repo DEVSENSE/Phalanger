@@ -2476,9 +2476,16 @@ namespace PHP.Core
         {
             if (table.IsShared)
             {
-                table.Unshare();
-                table = DeepCopyTo(new OrderedHashtable<IntStringKey>(this, table.Count, IntStringKey.EqualityComparer.Default));
+                Unshare();
             }
+        }
+
+        private void Unshare()
+        {
+            Debug.Assert(table.IsShared);
+
+            table.Unshare();
+            table = DeepCopyTo(new OrderedHashtable<IntStringKey>(this, table.Count, IntStringKey.EqualityComparer.Default));
         }
 
         #endregion
