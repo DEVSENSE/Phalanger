@@ -136,7 +136,6 @@ namespace PHP.Core
 		/// <exception cref="PhpUserException">Uncaught exception.</exception>
 		/// <exception cref="PhpNetInternalException">An internal error.</exception>
 		/// <exception cref="Exception">Uncaught exception thrown by the class library or another error occurred during request processing.</exception>
-        [DebuggerNonUserCode]
 		public void ProcessRequest(HttpContext/*!*/ context)
 		{
 			if (context == null)
@@ -145,7 +144,10 @@ namespace PHP.Core
             // disables ASP.NET timeout if possible:
 			try { context.Server.ScriptTimeout = Int32.MaxValue; } catch (HttpException) { }
 
-            // default culture:
+            // ensure that Session ID is created
+			RequestContext.EnsureSessionId();
+			
+			// default culture:
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             
             using (RequestContext request_context = RequestContext.Initialize(ApplicationContext.Default, context))
@@ -153,24 +155,38 @@ namespace PHP.Core
                 Debug.WriteLine("REQUEST", "Processing request");
                 if (request_context.ScriptContext.Config.Session.AutoStart)
                     request_context.StartSession();
-                
+
                 ScriptInfo script = null;
                 try
                 {
                     script = request_context.GetCompiledScript(request_context.RequestFile);
 
                     if (script != null)
+                    {
+                        // preallocate ScriptContext's dictionaries:
+                        request_context.ScriptContext.DeclaredFunctionsAllocate(script.MaxDeclaredFunctionsCount);
+                        request_context.ScriptContext.DeclaredTypesAllocate(script.MaxDeclaredTypesCount);
+
+                        // execute the script:
                         request_context.IncludeScript(context.Request.PhysicalPath, script);
+                    }
                 }
                 catch (PhpException)
                 {
                     // A user code or compiler have reported a fatal error.
                     // We don't want to propagate the exception to web server.
                 }
-                catch (InvalidSourceException)
+                finally
                 {
-                    // the source file could not be found neither in a script library and file system
-                    context.Response.StatusCode = 404;
+                    if (script != null)
+                    {
+                        // remember the max capacity of dictionaries to preallocate next time:
+                        if (script.MaxDeclaredFunctionsCount < request_context.ScriptContext.DeclaredFunctions.Count)
+                            script.MaxDeclaredFunctionsCount = request_context.ScriptContext.DeclaredFunctions.Count;
+
+                        if (script.MaxDeclaredTypesCount < request_context.ScriptContext.DeclaredTypes.Count)
+                            script.MaxDeclaredTypesCount = request_context.ScriptContext.DeclaredTypes.Count;
+                    }
                 }
             }
 		}

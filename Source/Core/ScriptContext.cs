@@ -42,11 +42,33 @@ namespace PHP.Core
     public class ScriptInfo
 	{
         /// <summary>
-		/// The script type.
-		/// </summary>
-		public readonly Type Script;
+        /// The script type.
+        /// </summary>
+        public readonly Type/*!*/Script;
 
-		internal ScriptInfo(Type/*!*/script)
+        /// <summary>
+        /// <see cref="MethodInfo"/> of the &lt;Main&gt; method.
+        /// </summary>
+        internal MethodInfo MainHelper
+        {
+            get { return mainHelper ?? (mainHelper = this.mainHelper = Script.GetMethod(ScriptModule.MainHelperName, ScriptModule.MainHelperArgTypes)); }
+            set { mainHelper = value; }
+        }
+        private MethodInfo mainHelper = null;
+
+        /// <summary>
+        /// Remember max count of declared functions from within this entering script. Used to prealocate <see cref="ScriptContext.DeclaredFunctions"/>.
+        /// </summary>
+        internal int MaxDeclaredFunctionsCount = 0;
+
+        /// <summary>
+        /// Remember max count of declared types from within this entering script. Used to prealocate <see cref="ScriptContext.DeclaredTypes"/>.
+        /// </summary>
+        internal int MaxDeclaredTypesCount = 0;
+
+        #region Constructors
+
+        internal ScriptInfo(Type/*!*/script)
 		{
             if (!PhpScript.IsScriptType(script))
                 throw new ArgumentException("Given script type is not IPhpScript.", "script");
@@ -61,13 +83,10 @@ namespace PHP.Core
             this.mainHelper = mainHelper;
         }
 
-        internal MethodInfo MainHelper
-        {
-            get { return mainHelper ?? (mainHelper = this.mainHelper = Script.GetMethod(ScriptModule.MainHelperName, ScriptModule.MainHelperArgTypes)); }
-            set { mainHelper = value; }
-        }
-        private MethodInfo mainHelper = null;
+        #endregion
 
+        #region Delegates
+        
         /// <summary>
         /// Get delegate that Invokes the Main helper method of the script.
         /// Unwraps any thrown <c>InnerException</c> of <c>PhpException</c>, <c>PhpUserException</c>, <c>ScriptDiedException</c> and <c>ThreadAbortException</c>.
@@ -107,7 +126,9 @@ namespace PHP.Core
             }
         }
         private MainRoutineDelegate mainRoutine = null;
-	}
+
+        #endregion
+    }
 
 	#endregion
 
@@ -252,13 +273,24 @@ namespace PHP.Core
 		/// </summary>
 		public Dictionary<string, DRoutineDesc>/*!*/ DeclaredFunctions
 		{
-			get
-			{
-				if (_declaredFunctions == null) _declaredFunctions = new Dictionary<string, DRoutineDesc>(StringComparer.OrdinalIgnoreCase);
-				return _declaredFunctions;
-			}
+            get
+            {
+                if (_declaredFunctions == null) DeclaredFunctionsAllocate(29);   // preallocate 29 by default, it is 6th prime number; see HashHelpers.GetPrime(int)
+                return _declaredFunctions;
+            }
 		}
 		private Dictionary<string, DRoutineDesc> _declaredFunctions;
+
+        /// <summary>
+        /// Allocate <see cref="_declaredFunctions"/> with given <paramref name="capacity"/>.
+        /// </summary>
+        /// <param name="capacity">Capacity hint.</param>
+        internal void DeclaredFunctionsAllocate(int capacity)
+        {
+            Debug.Assert(capacity >= 0);
+            if (_declaredFunctions == null)
+                _declaredFunctions = new Dictionary<string, DRoutineDesc>(capacity, StringComparer.OrdinalIgnoreCase);
+        }
 
 		/// <summary>
 		/// Declarators of user classes.
@@ -267,11 +299,22 @@ namespace PHP.Core
 		{
 			get
 			{
-				if (_declaredTypes == null) _declaredTypes = new Dictionary<string, DTypeDesc>(StringComparer.OrdinalIgnoreCase);
+                if (_declaredTypes == null) DeclaredTypesAllocate(29);  // see DeclaredFunctions
 				return _declaredTypes;
 			}
 		}
 		private Dictionary<string, DTypeDesc> _declaredTypes;
+
+        /// <summary>
+        /// Allocate <see cref="_declaredTypes"/> with given <paramref name="capacity"/>.
+        /// </summary>
+        /// <param name="capacity">Capacity hint.</param>
+        internal void DeclaredTypesAllocate(int capacity)
+        {
+            Debug.Assert(capacity >= 0);
+            if (_declaredTypes == null)
+                _declaredTypes = new Dictionary<string, DTypeDesc>(capacity, StringComparer.OrdinalIgnoreCase);
+        }
 
         /// <summary>
         /// Mapping of static local variables into their unique sequential ID. This allows efficient indexing into <see cref="staticLocals"/> array.
