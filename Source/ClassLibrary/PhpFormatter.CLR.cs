@@ -1064,7 +1064,7 @@ namespace PHP.Library
                 }
 
                 double result;
-                if (!Double.TryParse(number.ToString(), NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent, NumberFormatInfo.InvariantInfo, out result))
+                if (!Double.TryParse(number.ToString(), NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent | NumberStyles.AllowLeadingSign, NumberFormatInfo.InvariantInfo, out result))
                     ThrowUnexpected();
 
                 return result;
