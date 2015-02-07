@@ -360,6 +360,7 @@ using FcnParam = System.Tuple<System.Collections.Generic.List<PHP.Core.AST.TypeR
 
 %type<Object> constant                                // Expression 
 %type<Object> literal_constant                        // Literal 
+%type<Object> string_constant						  // Literal
 %type<Object> pseudo_constant                         // PseudoConstUse 
 %type<Object> global_constant                         // GlobalConstUse 
 %type<Object> class_constant                          // ClassConstUse
@@ -1689,6 +1690,7 @@ expr_without_chain:
 	|	expr '?' expr ':' expr          { $$ = new ConditionalEx(@$, (Expression)$1, (Expression)$3, (Expression)$5); }
 	|	expr '?' ':' expr			    { $$ = new ConditionalEx(@$, (Expression)$1, null, (Expression)$4); }
 	|	array_ex						{ $$ = $1; }
+	|	array_ex '[' expr ']'					{ $$ = new ItemUse(@$, (VarLikeConstructUse)$1, (Expression)$3); }
 	|	T_LIST '(' assignment_list ')' '=' expr { $$ = new ListEx(@$, (List<Expression>)$3, (Expression)$6); }
 	|	T_ISSET '(' writable_chain_list ')'     { $$ = new IssetEx(@$, (List<VariableUse>)$3); }
 	|	T_EMPTY '(' chain ')'				            { $$ = new EmptyEx(@$, (Expression)$3); }		
@@ -1696,6 +1698,7 @@ expr_without_chain:
 	|	T_ASSERT '(' expr ')'                   { $$ = new EvalEx(@$, (Expression)$3, true); }
 	|	T_EXIT exit_expr_opt		                { $$ = new ExitEx(@$, (Expression)$2); }
 	|	scalar_expr                             { $$ = $1; }			
+	|	string_constant '[' expr ']'			{ $$ = new StringLiteralDereferenceEx(@$, (Expression)$1, (Expression)$3); }
 	|	'`' composite_string_opt '`'						{ $$ = new ShellEx(@$, CreateConcatExOrStringLiteral(CombinePositions(@1, @3), (List<Expression>)$2, false)); }
 
 	|	T_INCLUDE expr 									{ $$ = new IncludingEx(sourceUnit, GetScope(), IsCurrentCodeConditional, @$, InclusionTypes.Include, (Expression)$2); reductionsSink.InclusionReduced(this, (IncludingEx)$$); }
@@ -1709,10 +1712,8 @@ expr_without_chain:
 ;
 
 array_ex:
-		array_ex '[' expr ']'					{ $$ = new ItemUse(@$, (VarLikeConstructUse)$1, (Expression)$3); }
-	|	T_ARRAY '(' array_item_list_opt ')'     { $$ = new ArrayEx(@$, (List<Item>)$3); }
+		T_ARRAY '(' array_item_list_opt ')'     { $$ = new ArrayEx(@$, (List<Item>)$3); }
 	|	'[' array_item_list_opt ']'				{ $$ = new ArrayEx(@$, (List<Item>)$2); }
-	
 ;
 
 new_expr:
@@ -2078,7 +2079,11 @@ literal_constant:
 		T_LNUMBER					{ $$ = new IntLiteral(@$, $1); }					
 	|	T_L64NUMBER					{ $$ = new LongIntLiteral(@$, $1); }
 	|	T_DNUMBER					{ $$ = new DoubleLiteral(@$, $1); }					
-	|	T_CONSTANT_ENCAPSED_STRING	{ $$ = ($1 is string) ? (Literal)new StringLiteral(@$, (string)$1) : (Literal)new BinaryStringLiteral(@$, new PhpBytes((byte[])$1)); }	
+	|	string_constant				{ $$ = $1; }
+;
+
+string_constant:
+		T_CONSTANT_ENCAPSED_STRING	{ $$ = ($1 is string) ? (Literal)new StringLiteral(@$, (string)$1) : (Literal)new BinaryStringLiteral(@$, new PhpBytes((byte[])$1)); }	
 ;
 
 pseudo_constant:
