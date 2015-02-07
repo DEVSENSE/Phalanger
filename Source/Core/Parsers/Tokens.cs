@@ -259,6 +259,7 @@ namespace PHP.Core.Parsers
 		T_DOUBLE_ARROW = Toks.T_DOUBLE_ARROW,
 		T_LIST = Toks.T_LIST,
 		T_ARRAY = Toks.T_ARRAY,
+        T_CALLABLE = Toks.T_CALLABLE,
 		T_CLASS_C = Toks.T_CLASS_C,
 		T_METHOD_C = Toks.T_METHOD_C,
 		T_FUNC_C = Toks.T_FUNC_C,

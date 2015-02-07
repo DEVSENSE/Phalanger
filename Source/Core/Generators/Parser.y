@@ -178,6 +178,7 @@ using Pair = System.Tuple<object,object>;
 %token T_DOUBLE_ARROW
 %token T_LIST
 %token T_ARRAY
+%token T_CALLABLE
 %token T_CLASS_C
 %token T_METHOD_C
 %token T_FUNC_C
@@ -1218,7 +1219,8 @@ formal_parameter:
 
 type_hint_opt:
 		/* empty */                { $$ = null; }	
-	|	qualified_static_type_ref  { $$ = $1; } 
+	|	qualified_static_type_ref  { $$ = $1; }
+	|	T_CALLABLE				   { $$ = PrimitiveType.Callable; }
 	|	primitive_type             { $$ = $1; }
 ;
 

@@ -68,6 +68,9 @@ namespace PHP.Core
 		/// <summary>The type code of the <see cref="PHP.Core.PhpRuntimeChain"/> type.</summary>
 		PhpRuntimeChain,
 
+        /// <summary>The type code of a callable PHP object. Used as a type hint only.</summary>
+        PhpCallable,
+
 		/// <summary>The type code of the types which are not PHP.NET ones.</summary>
 		Invalid,
 		/// <summary>The type code of the <see cref="System.Void"/> type.</summary>

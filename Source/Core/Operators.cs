@@ -2229,7 +2229,7 @@ namespace PHP.Core
 
         #endregion
 
-        #region Helpers: IsEmptyForEnsure, CheckStringIndexRange
+        #region Helpers: IsEmptyForEnsure, CheckStringIndexRange, IsCallable
 
         /// <summary>
         /// Decides whether a variable is empty i.e. should be replaced by new array or object.
@@ -2252,6 +2252,24 @@ namespace PHP.Core
                 (var.GetType() == typeof(long) && (long)var == 0);
         }
 
+        /// <summary>
+        /// Verifies that the contents of a variable can be called as a function.
+        /// </summary>
+        /// <param name="caller">Current class context.</param>
+        /// <param name="variable">The variable.</param>
+        /// <param name="syntaxOnly">If <B>true</B>, it is only checked that has <pararef name="variable"/>
+        /// a valid structure to be used as a callback. if <B>false</B>, the existence of the function (or
+        /// method) is also verified.</param>
+        /// <returns><B>true</B> if <paramref name="variable"/> denotes a function, <B>false</B>
+        /// otherwise.</returns>
+        [Emitted]
+        public static bool IsCallable(object variable, DTypeDesc caller, bool syntaxOnly)
+        {
+            PhpCallback callback = PHP.Core.Convert.ObjectToCallback(variable, true);
+            if (callback == null || callback.IsInvalid) return false;
+
+            return (syntaxOnly ? true : callback.Bind(true, caller, null));
+        }
 
         public static bool CheckStringIndexRange(int index, int length, bool quiet)
         {

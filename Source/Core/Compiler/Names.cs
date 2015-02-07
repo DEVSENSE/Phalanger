@@ -371,6 +371,7 @@ namespace PHP.Core
 		internal static readonly QualifiedName Double = new QualifiedName(new Name("double"), Name.EmptyNames);
 		internal static readonly QualifiedName Resource = new QualifiedName(new Name("resource"), Name.EmptyNames);
 		internal static readonly QualifiedName SystemObject = new QualifiedName(new Name("Object"), new Name[] { new Name("System") });
+        internal static readonly QualifiedName Callable = new QualifiedName(new Name("callable"), Name.EmptyNames);
 
         public bool IsSimpleName
         {

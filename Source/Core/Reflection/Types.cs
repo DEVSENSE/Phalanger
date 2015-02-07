@@ -1031,6 +1031,7 @@ namespace PHP.Core.Reflection
 		public static readonly PrimitiveType/*!*/ Resource;
 		public static readonly PrimitiveType/*!*/ Array;
 		public static readonly PrimitiveType/*!*/ Object;
+        public static readonly PrimitiveType/*!*/ Callable;
 
 		static PrimitiveType()
 		{
@@ -1044,6 +1045,7 @@ namespace PHP.Core.Reflection
 			Resource = new PrimitiveType(DTypeDesc.ResourceTypeDesc, QualifiedName.Resource);
 			Array = new PrimitiveType(DTypeDesc.ArrayTypeDesc, QualifiedName.Array);
 			Object = new PrimitiveType(DTypeDesc.ObjectTypeDesc, QualifiedName.Object);
+            Callable = new PrimitiveType(DTypeDesc.CallableTypeDesc, QualifiedName.Callable);
 		}
 
 		#endregion
@@ -1150,6 +1152,9 @@ namespace PHP.Core.Reflection
 					il.Emit(OpCodes.Newobj, Constructors.StdClass_ScriptContext);
 					break;
 
+                case PhpTypeCode.PhpCallable:
+                    throw new InvalidOperationException();
+
 				default:
 					throw null;
 			}
@@ -1190,6 +1195,13 @@ namespace PHP.Core.Reflection
 						il.Emit(OpCodes.Ldc_I4_1); // true; all values are of type System.Object	
 					break;
 
+                case PhpTypeCode.PhpCallable:
+                    // LOAD Operators.IsCallable( <stack>, <classcontext>, false)
+                    codeGenerator.EmitLoadClassContext();
+                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Call, Methods.Operators.IsCallable);
+                    break;
+
 				default:
 					throw null;
 			}
@@ -1198,6 +1210,9 @@ namespace PHP.Core.Reflection
 		internal override void EmitTypeOf(CodeGenerator/*!*/ codeGenerator, ConstructedType constructedType)
 		{
 			Debug.Assert(constructedType == null, "primitive types cannot be generic");
+
+            if (this.TypeCode == PhpTypeCode.PhpCallable)
+                throw new InvalidOperationException();
 
 			ILEmitter il = codeGenerator.IL;
 			il.Emit(OpCodes.Ldtoken, this.RealType);
@@ -1219,6 +1234,7 @@ namespace PHP.Core.Reflection
 				case PhpTypeCode.PhpResource: field = Fields.DTypeDesc.ResourceTypeDesc; break;
 				case PhpTypeCode.PhpArray: field = Fields.DTypeDesc.ArrayTypeDesc; break;
 				case PhpTypeCode.DObject: field = Fields.DTypeDesc.ObjectTypeDesc; break;
+                case PhpTypeCode.PhpCallable: throw new InvalidOperationException();
 				default: throw null;
 			}
 
@@ -1227,7 +1243,7 @@ namespace PHP.Core.Reflection
 
 		internal override DTypeSpec GetTypeSpec(SourceUnit/*!*/ referringUnit)
 		{
-			return new DTypeSpec(TypeCode);
+            return new DTypeSpec(TypeCode);
 		}
 
 		#endregion
