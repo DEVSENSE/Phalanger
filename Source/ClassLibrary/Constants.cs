@@ -58,9 +58,16 @@ namespace PHP.Library
 			return ScriptContext.CurrentContext.IsConstantDefined(name);
         }
 
-        #region analyzer of defined
+        #region analyzer of: defined(), constant()
 
-        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo Defined_Analyze(Analyzer analyzer, string name)
+        /// <summary>
+        /// Try to find constant by given <paramref name="name"/> in compile time.
+        /// </summary>
+        /// <param name="analyzer">Actual <see cref="Analyzer"/>.</param>
+        /// <param name="name">Constant name, including class constants.</param>
+        /// <param name="exists">Outputs <c>true</c> or <c>false</c> if the existance of the constant was determined.</param>
+        /// <returns>Constant descriptor.</returns>
+        private static PHP.Core.Reflection.DConstant EvaluateConstant(Analyzer analyzer, string name, out bool? exists)
         {
             if (name == null)
                 name = string.Empty;
@@ -70,10 +77,10 @@ namespace PHP.Library
             var constant = analyzer.SourceUnit.ResolveConstantName(new QualifiedName(new Name(name)), analyzer.CurrentScope, out alias, null, PHP.Core.Parsers.Position.Invalid, false);
 
             if (constant != null)
-                return new Core.AST.DirectFcnCall.EvaluateInfo()
-                {
-                    value = true    // constant exists in compile time
-                };
+            {
+                exists = true;  // we surely know, the constant is defined.
+                return constant;
+            }
             
             // try class constant:
             if (name.Contains("::"))
@@ -88,14 +95,43 @@ namespace PHP.Library
                     Core.Reflection.ClassConstant classconst;
                     type.GetConstant(new VariableName(constname), null /* class constants are global only */, out classconst);
                     Debug.Assert(classconst == null || classconst.IsPublic, "Class constant are expected to be public only.");
-                    return new Core.AST.DirectFcnCall.EvaluateInfo()
-                    {
-                        value = classconst != null
-                    };
+                    exists = (classconst != null);  // we surely know, wheter the constant is or is not defined.
+                    return classconst;
                 }
             }
 
             // do not evaluate in compile time
+            exists = null;   // we are not sure about existance of this constant.
+            return null;
+        }
+
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo Defined_Analyze(Analyzer analyzer, string name)
+        {
+            bool? exists;
+            var constant = EvaluateConstant(analyzer, name, out exists);
+
+            if (exists != null)
+                return new Core.AST.DirectFcnCall.EvaluateInfo()
+                {
+                    value = exists.Value    // constant existance is known in compile time
+                };
+
+            // check in run time:
+            return null;
+        }
+
+        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo Constant_Analyze(Analyzer analyzer, string name)
+        {
+            bool? exists;
+            var constant = EvaluateConstant(analyzer, name, out exists);
+
+            if (constant != null && constant.HasValue)
+                return new Core.AST.DirectFcnCall.EvaluateInfo()
+                {
+                    value = constant.Value  // evaluated value in compile time
+                };
+
+            // check in run time:
             return null;
         }
 
@@ -107,12 +143,13 @@ namespace PHP.Library
 		/// <param name="name">The name of the constant.</param>
 		/// <returns>The value.</returns>
 		[ImplementsFunction("constant")]
-		public static object Constant(string name)
+        [PureFunction(typeof(PhpConstants), "Constant_Analyze")]
+        public static object Constant(string name)
 		{
 			return ScriptContext.CurrentContext.GetConstantValue(name, false, false);
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Retrieves defined constants.
 		/// </summary>
 		/// <returns>The array which contains pairs (constant name,constant value).</returns>
