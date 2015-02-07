@@ -2582,22 +2582,22 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 		}
         return;
       case 227: // member_modifier -> T_PUBLIC 
-{ yyval.Object = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Public, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Public, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 228: // member_modifier -> T_PROTECTED 
-{ yyval.Object = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Protected, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Protected, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 229: // member_modifier -> T_PRIVATE 
-{ yyval.Object = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Private, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Private, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 230: // member_modifier -> T_STATIC 
-{ yyval.Object = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Static, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Static, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 231: // member_modifier -> T_ABSTRACT 
-{ yyval.Object = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Abstract, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Abstract, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 232: // member_modifier -> T_FINAL 
-{ yyval.Object = TmpMemberInfoSingleton.Update(PhpMemberAttributes.Final, (string)value_stack.array[value_stack.top-1].yyval.Object); }
+{ yyval.Object = new TmpMemberInfo(PhpMemberAttributes.Final, (string)value_stack.array[value_stack.top-1].yyval.Object); }
         return;
       case 233: // property_declarator_list -> property_declarator_list ',' property_declarator 
 { 

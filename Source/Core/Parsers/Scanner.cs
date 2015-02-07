@@ -59,7 +59,8 @@ namespace PHP.Core.Parsers
         /// </summary>
         private static readonly HashSet<Tokens>/*!*/lastDocCommentRememberTokens = new HashSet<Tokens>()
         {
-            Tokens.T_STATIC, Tokens.T_PUBLIC, Tokens.T_PRIVATE, Tokens.T_PROTECTED, Tokens.T_VAR,       // for class fields
+            Tokens.T_ABSTRACT, Tokens.T_STATIC, Tokens.T_PUBLIC, Tokens.T_PRIVATE, Tokens.T_PROTECTED,  // modifiers, also holds the doc comment (for class fields without T_VAR)
+            Tokens.T_VAR,       // for class fields
             Tokens.T_CONST,     // for constants
             Tokens.T_CLASS, Tokens.T_INTERFACE, // for type decl
             Tokens.T_FUNCTION,  // for function/method
@@ -133,6 +134,9 @@ namespace PHP.Core.Parsers
 			return encapsedStringBuffer.ToString(offset, length);
 		}
 
+        /// <summary>
+        /// Updates <see cref="streamOffset"/> and <see cref="tokenPosition"/>.
+        /// </summary>
         private void UpdateTokenPosition()
 		{
 			// update token position info:
@@ -161,24 +165,22 @@ namespace PHP.Core.Parsers
 		{
 			for (; ; )
 			{
-                Tokens token = base.GetNextToken();
-
-                // ignored tokens // do not even call UpdateTokenPosition()
-                if (token == Tokens.T_WHITESPACE ||
-                    token == Tokens.T_COMMENT ||
-                    token == Tokens.T_LINE_COMMENT ||
-                    token == Tokens.T_OPEN_TAG)
-                    continue;
-                
-                //
                 inString = false;
-				isCode = false;
-
-				UpdateTokenPosition();
+                isCode = false;
+                
+                Tokens token = base.GetNextToken();
+                UpdateTokenPosition();
 
 				switch (token)
 				{
 					#region Comments
+
+                    // ignored tokens:
+                    case Tokens.T_WHITESPACE:
+                    case Tokens.T_COMMENT:
+                    case Tokens.T_LINE_COMMENT:
+                    case Tokens.T_OPEN_TAG:
+                        break;
 
                     case Tokens.T_DOC_COMMENT:
                         // remember token value to be used by the next token and skip the current:
