@@ -103,7 +103,7 @@ namespace PHP.Core.Parsers
             Tokens.T_ABSTRACT, Tokens.T_FINAL, Tokens.T_STATIC, Tokens.T_PUBLIC, Tokens.T_PRIVATE, Tokens.T_PROTECTED,  // modifiers, also holds the doc comment (for class fields without T_VAR)
             Tokens.T_VAR,       // for class fields
             Tokens.T_CONST,     // for constants
-            Tokens.T_CLASS, Tokens.T_INTERFACE, // for type decl
+            Tokens.T_CLASS, Tokens.T_TRAIT, Tokens.T_INTERFACE, // for type decl
             Tokens.T_FUNCTION,  // for function/method
         };
 

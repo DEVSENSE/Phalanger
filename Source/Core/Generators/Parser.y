@@ -163,16 +163,17 @@ using Pair = System.Tuple<object,object>;
 %token T_DEFAULT
 %token T_BREAK
 %token T_CONTINUE
-%token<Object> T_FUNCTION                 // string (doc comment)
-%token<Object> T_CONST                    // string (doc comment)
+%token<Object> T_FUNCTION                 // PHPDocBlock
+%token<Object> T_CONST                    // PHPDocBlock
 %token T_RETURN
 %token T_GLOBAL
-%token<Object> T_STATIC					  // string (doc comment)
-%token<Object> T_VAR                      // string (doc comment)
+%token<Object> T_STATIC					  // PHPDocBlock
+%token<Object> T_VAR                      // PHPDocBlock
 %token T_UNSET
 %token T_ISSET
 %token T_EMPTY
-%token<Object> T_CLASS                    // string (doc comment)
+%token<Object> T_CLASS                    // PHPDocBlock
+%token<Object> T_TRAIT                    // PHPDocBlock
 %token T_EXTENDS
 %token T_OBJECT_OPERATOR
 %token T_DOUBLE_ARROW
@@ -180,6 +181,7 @@ using Pair = System.Tuple<object,object>;
 %token T_ARRAY
 %token T_CALLABLE
 %token T_CLASS_C
+%token T_TRAIT_C
 %token T_METHOD_C
 %token T_FUNC_C
 %token T_LINE
@@ -218,13 +220,13 @@ using Pair = System.Tuple<object,object>;
 %token T_TRY
 %token T_CATCH
 %token T_THROW
-%token<Object> T_INTERFACE                // string (doc comment)
+%token<Object> T_INTERFACE                // PHPDocBlock
 %token T_IMPLEMENTS
-%token<Object> T_ABSTRACT				  // string (doc comment)
-%token<Object> T_FINAL					  // string (doc comment)
-%token<Object> T_PRIVATE				  // string (doc comment)
-%token<Object> T_PROTECTED				  // string (doc comment)
-%token<Object> T_PUBLIC					  // string (doc comment)
+%token<Object> T_ABSTRACT				  // PHPDocBlock
+%token<Object> T_FINAL					  // PHPDocBlock
+%token<Object> T_PRIVATE				  // PHPDocBlock
+%token<Object> T_PROTECTED				  // PHPDocBlock
+%token<Object> T_PUBLIC					  // PHPDocBlock
 %token T_CLONE
 %token T_INSTANCEOF
 %token T_NAMESPACE
@@ -326,6 +328,7 @@ using Pair = System.Tuple<object,object>;
 %type<Object> function_declaration_statement          // FunctionDecl
 %type<Object> function_declaration_head				  // Tuple<List<CustomAttribute>,object,bool>!	// <attributes,doc_comment,is_ref>
 %type<Object> ref_opt_identifier					  // Tuple<bool,string>!	// <is_ref, func_name>
+%type<Object> class_entry_type						  // Tuple<Tokens, PHPDocBlock>	// T_CLASS|T_TRAIT, PHPDocBlock
 %type<Object> class_declaration_statement             // TypeDecl
 %type<Object> class_identifier                        // String
 %type<Object> namespace_declaration_statement         // NamespaceDecl
@@ -443,6 +446,20 @@ using Pair = System.Tuple<object,object>;
 %type<Object> class_method_identifier				  // String
 %type<Object> implements_opt 
 %type<Object> ctor_arguments_opt
+
+%type<Object> trait_use_statement
+%type<Object> trait_list
+%type<Object> trait_adaptations
+%type<Object> trait_adaptation_list
+%type<Object> non_empty_trait_adaptation_list
+%type<Object> trait_adaptation_statement
+%type<Object> trait_precedence
+%type<Object> trait_reference_list
+%type<Object> trait_method_reference
+%type<Object> trait_method_reference_fully_qualified
+%type<Object> trait_alias
+%type<Object> trait_modifiers
+
 %type<Object> dynamic_class_name_variable_property 
 %type<Object> additional_catches_opt 
 %type<Object> additional_catches
@@ -651,8 +668,13 @@ function_declaration_head:
 	|	attributes T_FUNCTION '&'	{ $$ = new Tuple<List<CustomAttribute>,object,bool>((List<CustomAttribute>)$1, $2, true); }
 ;
 
+class_entry_type:
+		T_CLASS		{ $$ = new Tuple<Tokens,PHPDocBlock>(Tokens.T_CLASS, $1 as PHPDocBlock); }
+	|	T_TRAIT		{ $$ = new Tuple<Tokens,PHPDocBlock>(Tokens.T_TRAIT, $1 as PHPDocBlock); }
+;
+
 class_declaration_statement:
-		attributes_opt visibility_opt modifier_opt partial_opt T_CLASS
+		attributes_opt visibility_opt modifier_opt partial_opt class_entry_type
 		class_identifier type_parameter_list_opt
 		{
 			Name class_name = new Name((string)$6);
@@ -676,7 +698,7 @@ class_declaration_statement:
 				(List<FormalTypeParam>)$7, (Tuple<GenericQualifiedName,Position>)$9, (List<KeyValuePair<GenericQualifiedName,Position>>)$10, 
 		    (List<TypeMemberDecl>)$12, (List<CustomAttribute>)$1);
 		    
-		  SetCommentSetHelper($$, $5);
+		  SetCommentSetHelper($$, ((Tuple<Tokens,PHPDocBlock>)$5).Item2);
 				
 		  reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
 
@@ -1363,7 +1385,65 @@ class_statement:
 			
 			LeaveConditionalCode();
 			UnreserveTypeNames((List<FormalTypeParam>)$6);
-		} 
+		}
+	|	trait_use_statement		{ $$ = $1; }
+;
+
+trait_use_statement:
+		T_USE trait_list trait_adaptations
+;
+
+trait_list:
+		qualified_namespace_name
+	|	trait_list ',' qualified_namespace_name
+;
+
+trait_adaptations:
+		';'
+	|	'{' trait_adaptation_list '}'
+;
+
+trait_adaptation_list:
+		/* empty */
+	|	non_empty_trait_adaptation_list
+;
+
+non_empty_trait_adaptation_list:
+		trait_adaptation_statement
+	|	non_empty_trait_adaptation_list trait_adaptation_statement
+;
+
+trait_adaptation_statement:
+		trait_precedence ';'
+	|	trait_alias ';'
+;
+
+trait_precedence:
+	trait_method_reference_fully_qualified T_INSTEADOF trait_reference_list
+;
+
+trait_reference_list:
+		qualified_namespace_name
+	|	trait_reference_list ',' qualified_namespace_name
+;
+
+trait_method_reference:
+		T_STRING
+	|	trait_method_reference_fully_qualified
+;
+
+trait_method_reference_fully_qualified:
+	qualified_namespace_name T_DOUBLE_COLON identifier
+;
+
+trait_alias:
+		trait_method_reference T_AS trait_modifiers identifier
+	|	trait_method_reference T_AS member_modifier
+;
+
+trait_modifiers:
+		/* empty */		{ $$ = null; }
+	|	member_modifier	{ $$ = $1; }
 ;
 
 class_method_identifier:
