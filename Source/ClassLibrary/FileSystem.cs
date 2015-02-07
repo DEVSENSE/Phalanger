@@ -24,11 +24,7 @@ using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Runtime.CompilerServices;
 
-using System.Runtime.InteropServices;
-using Microsoft.Win32.SafeHandles;
-
 using PHP.Core;
-using System.Diagnostics;
 #if SILVERLIGHT
 using PHP.CoreCLR;
 #endif
@@ -286,7 +282,7 @@ namespace PHP.Library
 			if (!PhpStream.ResolvePath(ref path, out wrapper, CheckAccessMode.FileMayExist, CheckAccessOptions.Empty))
 				return null;
 
-			return wrapper.Open(ref path, "w+b", StreamOpenOptions.Temporary, StreamContext.Default);
+			return wrapper.Open(ref path, "wb", StreamOpenOptions.Temporary, StreamContext.Default);
 		}
 
         /// <summary>
@@ -619,14 +615,7 @@ namespace PHP.Library
 			if (i == line.Length)
 			{
 				// do not add eoln to the field:
-                int dec = 0;
-                if (line[i - 1] == '\n')
-                {
-                    dec++;
-                    if (i > 1 && line[i - 2] == '\r')
-                        dec++;
-                }
-                return i - dec;
+				return (line[i - 1] == '\n') ? i - 1 : i;
 			}
 			else
 			{
@@ -1488,96 +1477,27 @@ namespace PHP.Library
 		/// <param name="handle"></param>
 		/// <param name="operation"></param>
 		/// <returns></returns>
-        [ImplementsFunction("flock")]
+        [ImplementsFunction("flock", FunctionImplOptions.NotSupported)]
 		public static bool Lock(PhpResource handle, int operation)
 		{
 			int dummy = 0;
 			return Lock(handle, operation, ref dummy);
 		}
 
-        /// <summary>
-        /// Portable advisory file locking.
-        /// </summary>
-        /// <param name="handle">A file system pointer resource that is typically created using fopen().</param>
-        /// <param name="operation">Operation is one of the following:
-        /// <c>LOCK_SH</c> to acquire a shared lock (reader).
-        /// <c>LOCK_EX</c> to acquire an exclusive lock (writer).
-        /// <c>LOCK_UN</c> to release a lock (shared or exclusive).
-        /// 
-        /// It is also possible to add <c>LOCK_NB</c> as a bitmask to one of the above operations if you don't want flock() to block while locking. (not supported on Windows)
-        /// </param>
-        /// <param name="wouldblock">The optional third argument is set to TRUE if the lock would block (EWOULDBLOCK errno condition). (not supported on Windows)</param>
-        /// <returns>Returns <c>true</c> on success or <c>false</c> on failure.</returns>
-        [ImplementsFunction("flock")]
-        public static bool Lock(PhpResource handle, int operation, ref int wouldblock)
-        {
-            // Get the native file handle for the PHP resource
-            var phpStream = PhpStream.GetValid(handle);
-            if (phpStream == null) return false;
+		/// <summary>
+		/// Portable advisory file locking.
+		/// </summary>
+		/// <param name="handle"></param>
+		/// <param name="operation"></param>
+		/// <param name="wouldblock"></param>
+		/// <returns></returns>
+        [ImplementsFunction("flock", FunctionImplOptions.NotSupported)]
+		public static bool Lock(PhpResource handle, int operation, ref int wouldblock)
+		{
+			PhpException.FunctionNotSupported();
+			return false;
+		}
 
-            var fileStream = phpStream.RawStream as FileStream;
-            if (fileStream == null) return false;
-
-            //
-            if (EnvironmentUtils.IsDotNetFramework)
-            {
-                return Lock_dotNET(fileStream, (StreamLockOptions)operation);
-            }
-            else
-            {
-                PhpException.FunctionNotSupported();
-                return false;
-            }
-        }
-
-        #region flock (Windows)
-
-        // Constants passed to LockFileEx for the flags
-        private const uint LOCKFILE_FAIL_IMMEDIATELY = 0x00000001;
-        private const uint LOCKFILE_EXCLUSIVE_LOCK = 0x00000002;
-
-        [DllImport("kernel32.dll")]
-        static extern bool LockFileEx(SafeFileHandle hFile, uint dwFlags, uint dwReserved, uint nNumberOfBytesToLockLow, uint nNumberOfBytesToLockHigh, [In] ref NativeOverlapped lpOverlapped);
-
-        [DllImport("kernel32.dll")]
-        static extern bool UnlockFileEx(SafeFileHandle hFile, uint dwReserved, uint nNumberOfBytesToUnlockLow, uint nNumberOfBytesToUnlockHigh, [In] ref NativeOverlapped lpOverlapped);
-
-        private static bool Lock_dotNET(FileStream/*!*/fileStream, StreamLockOptions op)
-        {
-            Debug.Assert(fileStream != null);
-
-            var hFile = fileStream.SafeFileHandle;
-
-            // Set up some parameters
-            uint low = 1, high = 0;
-            var offset = new NativeOverlapped();
-            bool noBlocking = (op & StreamLockOptions.NoBlocking) != 0;
-
-            // bug for bug compatible with Unix 
-            UnlockFileEx(hFile, 0, low, high, ref offset);
-
-            //
-            switch (op & ~StreamLockOptions.NoBlocking)
-            {
-                case StreamLockOptions.Exclusive:
-                    // Exclusive lock
-                    return LockFileEx(hFile, LOCKFILE_EXCLUSIVE_LOCK + (noBlocking ? LOCKFILE_FAIL_IMMEDIATELY : 0), 0, low, high, ref offset);
-
-                case StreamLockOptions.Shared:
-                    // Shared lock
-                    return LockFileEx(hFile, (noBlocking ? LOCKFILE_FAIL_IMMEDIATELY : 0), 0, low, high, ref offset);
-
-                case StreamLockOptions.Unlock:
-                    // Unlock always succeeds
-                    return true;
-            }
-
-            // Bad call
-            return false;
-        }
-
-        #endregion
-
-        #endregion
-    }
+		#endregion
+	}
 }
