@@ -33,7 +33,7 @@ namespace PHP.Core
 	/// <summary>
 	/// Type codes of Phalanger special variables.
 	/// </summary>
-	public enum PhpTypeCode : short
+	public enum PhpTypeCode : byte
 	{
 		/// <summary>The type code of the <see cref="string"/> type.</summary>
 		String,

@@ -744,6 +744,37 @@ namespace PHP.Core.AST
         //    return routine == null || !routine.ReturnValueDeepCopyEmitted;  // true if Copy has to be emitted by parent expression ($a = func())
         //}
 
+        //private int depth
+        //{
+        //    get
+        //    {
+        //        int depth = 1;
+        //        for (var p = isMemberOf; p != null; p = p.IsMemberOf)
+        //            depth++;
+
+        //        return depth;
+        //    }
+        //}
+
+        /// <summary>
+        /// Returns string representation of <see cref="fallbackQualifiedName"/> or <c>null</c> reference if the fallback name is not needed.
+        /// </summary>
+        private string fallbackFunctionName { get { return fallbackQualifiedName.HasValue ? fallbackQualifiedName.Value.ToString() : null; } }
+
+        private Compiler.CodeGenerator.CallSitesBuilder.EmitMethodCallArgs/*!*/EmitMethodCallArgs
+        {
+            get
+            {
+                return new Compiler.CodeGenerator.CallSitesBuilder.EmitMethodCallArgs()
+                        {
+                            returnType = Compiler.CodeGenerator.CallSitesBuilder.AccessToReturnType(access),
+                            targetExpr = isMemberOf,
+                            methodFullName = qualifiedName.ToString(),
+                            callSignature = callSignature
+                        };
+            }
+        }
+
         /// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
 		internal override PhpTypeCode Emit(CodeGenerator/*!*/ codeGenerator)
 		{
@@ -751,11 +782,9 @@ namespace PHP.Core.AST
 				|| access == AccessType.None, "Invalid access type in FunctionCall");
 			Statistics.AST.AddNode("FunctionCall.Direct");
 
-			PhpTypeCode result;
-
 			if (inlined != InlinedFunction.None)
 			{
-				result = EmitInlinedFunctionCall(codeGenerator);
+				return EmitReturnValueHandling(EmitInlinedFunctionCall(codeGenerator), this, codeGenerator);
 			}
 			else
 			{
@@ -763,35 +792,42 @@ namespace PHP.Core.AST
                 if (isMemberOf != null)
                 {
                     if (routine == null)
-                        result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, qualifiedName.ToString(), null, null, callSignature, access);
+                    {
+                        //Console.WriteLine(qualifiedName.ToString() + ", depth: " + depth);
+                        //result = codeGenerator.EmitRoutineOperatorCall(null, isMemberOf, qualifiedName.ToString(), null, null, callSignature, access);
+                        return EmitReturnValueHandling(Compiler.CodeGenerator.CallSitesBuilder.EmitMethodCall(codeGenerator, this.EmitMethodCallArgs), this, codeGenerator);
+                    }
                     else
-                        result = routine.EmitCall(
+                        return EmitReturnValueHandling(routine.EmitCall(
                             codeGenerator, null, callSignature,
                             new ExpressionPlace(codeGenerator, isMemberOf), false, overloadIndex,
-                            null/*TODO when CFG*/, position, access, true);
+                            null/*TODO when CFG*/, position, access, true), this, codeGenerator);
                 }
                 else
                 {
                     // the node represents a function call:
-                    result = routine.EmitCall(
-                        codeGenerator, fallbackQualifiedName.HasValue ? fallbackQualifiedName.Value.ToString() : null,
+                    return EmitReturnValueHandling(routine.EmitCall(
+                        codeGenerator, fallbackFunctionName,
                         callSignature, null, false, overloadIndex,
-                        null, position, access, false);
+                        null, position, access, false), this, codeGenerator);
                 }
 			}
+		}
 
+        private static PhpTypeCode EmitReturnValueHandling(PhpTypeCode result, DirectFcnCall/*!*/self, CodeGenerator/*!*/codeGenerator)
+        {
             // (J) Emit Copy if necessary:
             // routine == null => Copy emitted by EmitRoutineOperatorCall
             // routine.ReturnValueDeepCopyEmitted => Copy emitted
             // otherwise emit Copy if we are going to read it by value
-            if (routine != null && !routine.ReturnValueDeepCopyEmitted)
-                EmitReturnValueCopy(codeGenerator.IL, result);
-            
+            if (self.routine != null && !self.routine.ReturnValueDeepCopyEmitted)
+                self.EmitReturnValueCopy(codeGenerator.IL, result);
+
             // handles return value:
-			codeGenerator.EmitReturnValueHandling(this, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);
+            codeGenerator.EmitReturnValueHandling(self, codeGenerator.ChainBuilder.LoadAddressOfFunctionReturnValue, ref result);
 
             return result;
-		}
+        }
 
 		/// <summary>
 		/// Emits library function that can be inlined.
