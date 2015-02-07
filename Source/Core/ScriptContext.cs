@@ -431,10 +431,10 @@ namespace PHP.Core
         private DRoutineDesc autoloadFunction;
 
         /// <summary>
-        /// Lazily created stack of types name (in lower case) being auto-loaded.
+        /// Lazily created list of types name being auto-loaded.
         /// Used as a recursion prevention of <b>autoload</b>.
         /// </summary>
-        private Stack<string> pendingAutoloads;
+        private List<string> pendingAutoloads;
 
 #if DEBUG
 
@@ -1395,13 +1395,6 @@ namespace PHP.Core
                 if (type_desc != null) return type_desc;
             }
 
-            #region Dede
-            if (fullName == "HTTPNegotiator")
-            {
-
-            }
-            #endregion
-
             // try to invoke __autoload
             if ((flags & ResolveTypeFlags.UseAutoload) != 0)
             {
@@ -1431,16 +1424,18 @@ namespace PHP.Core
         {
             DTypeDesc resolved_type_desc = null;    // result of the autoload
 
-            string fullNameLower = fullName.ToLower();
-
             if (pendingAutoloads == null)
-                pendingAutoloads = new Stack<string>();
+            {
+                this.pendingAutoloads = new List<string>(1);
+            }
             else
-                if (pendingAutoloads.Contains(fullNameLower))
+            {
+                if (this.pendingAutoloads.IndexOf(fullName, StringComparer.OrdinalIgnoreCase) >= 0)
                     return null;    // "Class '{0}' not found"
+            }
 
             // recursion prevention
-            pendingAutoloads.Push(fullNameLower);
+            this.pendingAutoloads.Add(fullName);
 
             // try to invoke autoload function and check fullName again
             if (IsSplAutoloadEnabled)
@@ -1494,7 +1489,7 @@ namespace PHP.Core
             }
 
             // recursion prevention end
-            pendingAutoloads.Pop();
+            this.pendingAutoloads.RemoveLast();
 
             // return found class description
             return resolved_type_desc;
