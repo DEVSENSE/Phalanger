@@ -116,6 +116,7 @@ namespace PHP.Core.Reflection
 			{
 				PhpLibraryAttribute lib;
 				PurePhpAssemblyAttribute pure;
+                PluginAssemblyAttribute plug;
 
 				if ((lib = attr as PhpLibraryAttribute) != null)
 				{
@@ -131,18 +132,25 @@ namespace PHP.Core.Reflection
 					return new PureAssembly(applicationContext, realAssembly, pure, config);
 #endif
 				}
-				else
-				{
+                else 
+                {
 #if SILVERLIGHT
 					throw new NotSupportedException("Loading of pre-compiled script assemblies is not supported!");
 #else
-					// compiled PHP script assembly:
-					return ScriptAssembly.Create(applicationContext, realAssembly, (ScriptAssemblyAttribute)attr);
+                    // compiled PHP script assembly:
+                    return ScriptAssembly.Create(applicationContext, realAssembly, (ScriptAssemblyAttribute)attr);
 #endif
-				}
+                }
 			}
-			else
+            else
 			{
+                // plugin assembly:
+                var plugs = PluginAssemblyAttribute.Reflect(realAssembly);
+                if (plugs != null)
+                {
+                    return new PluginAssembly(applicationContext, realAssembly, config, plugs);
+                }
+                
 				// CLR assembly:
 				return new ClrAssembly(applicationContext, realAssembly, config);
 			}
@@ -546,9 +554,40 @@ namespace PHP.Core.Reflection
 
 	#endregion
 
-	#region PhpLibraryAssembly
+    #region PluginAssembly
 
-	public sealed class PhpLibraryAssembly : DAssembly
+    public sealed class PluginAssembly : DAssembly
+    {
+        internal override DModule ExportModule { get { return module; } }
+
+        public PluginModule/*!*/ Module { get { return module; } }
+        private readonly PluginModule/*!*/ module;
+
+        public override string/*!*/ DisplayName { get { return RealAssembly.FullName; } }
+
+        internal const string LoaderMethod = "Load";
+        internal readonly static Type[] LoaderMethodParameters = new Type[] { typeof(ApplicationContext) };
+
+        #region Construction
+
+        /// <summary>
+        /// Called by the loader.
+        /// </summary>
+        internal PluginAssembly(ApplicationContext/*!*/ applicationContext, Assembly/*!*/ realAssembly,
+            LibraryConfigStore configStore, IEnumerable<PluginAssemblyAttribute>/*!*/attrs)
+            : base(applicationContext, realAssembly)
+        {
+            this.module = new PluginModule(this);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region PhpLibraryAssembly
+
+    public sealed class PhpLibraryAssembly : DAssembly
 	{
 		internal static int LoadedLibraryCount { get { return uniqueIndex; } }
 		private static int uniqueIndex = 0;

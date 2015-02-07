@@ -166,19 +166,26 @@ namespace PHP.Core
 		/// Determines whether there are multiple scripts stored in the assembly.
 		/// </summary>
 		public bool IsMultiScript { get { return isMultiScript; } }
-		private readonly bool isMultiScript;
+		private bool isMultiScript;
 
-        /// <summary>
-        /// <see cref="Type"/> of a <c>&lt;Script&gt;</c> class in case of SingleScriptAssembly.
-        /// </summary>
-        public Type SSAScriptType { get { return ssaScriptType; } }
-        private readonly Type ssaScriptType;
-
-		public ScriptAssemblyAttribute(bool isMultiScript, Type ssaScriptType)
+		public ScriptAssemblyAttribute(bool isMultiScript)
 		{
 			this.isMultiScript = isMultiScript;
-            this.ssaScriptType = ssaScriptType;
 		}
+
+		/* TODO: Not needed?
+		public static ScriptAssemblyAttribute/*!* / Reflect(CustomAttributeData/*!* / data)
+		{
+			if (data == null)
+				throw new ArgumentNullException("data");
+
+			switch (data.ConstructorArguments.Count)
+			{
+				case 1: return new ScriptAssemblyAttribute((bool)data.ConstructorArguments[0].Value);
+			}
+
+			throw new ArgumentException();
+		}*/
 
 		internal new static ScriptAssemblyAttribute Reflect(Assembly/*!*/ assembly)
 		{
@@ -228,7 +235,34 @@ namespace PHP.Core
 		}
 	}
 
-    #endregion
+    /// <summary>
+    /// Attribute marks an assembly as a plugin extending set of compiler and runtime features.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
+    public sealed class PluginAssemblyAttribute : Attribute
+    {
+        public readonly Type/*!*/LoaderType;
+
+        public PluginAssemblyAttribute(Type/*!*/loaderType)
+        {
+            Debug.Assert(loaderType != null);
+            Debug.Assert(loaderType.GetMethod(PluginAssembly.LoaderMethod, BindingFlags.Public | BindingFlags.Static, null, PluginAssembly.LoaderMethodParameters, null) != null, "Plugin loader method cannot be found!");
+
+            this.LoaderType = loaderType;
+        }
+
+        internal static IEnumerable<PluginAssemblyAttribute> Reflect(Assembly/*!*/ assembly)
+        {
+#if !SILVERLIGHT
+            Debug.Assert(!assembly.ReflectionOnly);
+#endif
+            object[] attrs = assembly.GetCustomAttributes(typeof(PluginAssemblyAttribute), false);
+            return (attrs != null && attrs.Length > 0) ? attrs.Cast<PluginAssemblyAttribute>() : null;
+        }
+    }
+
+
+	#endregion
 
 	#region Language
 
@@ -238,38 +272,9 @@ namespace PHP.Core
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
 	public sealed class ImplementsTypeAttribute : Attribute
 	{
-        /// <summary>
-        /// If not <c>null</c>, defines the PHP type name instead of the reflected name. CLR notation of namespaces.
-        /// </summary>
-        public readonly string PHPTypeName;
-
-        /// <summary>
-        /// Initialized new instance of <see cref="ImplementsTypeAttribute"/> specifying that
-        /// the type is visible in PHP code and the type is named using the reflected <see cref="Type.FullName"/>.
-        /// </summary>
 		public ImplementsTypeAttribute()
 		{
 		}
-
-        /// <summary>
-        /// Initialized new instance of <see cref="ImplementsTypeAttribute"/> with PHP type name specified.
-        /// </summary>
-        /// <param name="PHPTypeName">If not <c>null</c>, defines the PHP type name instead of the reflected name. Uses CLR notation of namespaces.</param>
-        /// <remarks>This overload is only valid within class library types.</remarks>
-        public ImplementsTypeAttribute(string PHPTypeName)
-        {
-            Debug.Assert(!string.IsNullOrWhiteSpace(PHPTypeName));
-            Debug.Assert(!PHPTypeName.Contains(QualifiedName.Separator));
-            
-            this.PHPTypeName = PHPTypeName;
-        }
-
-        internal static ImplementsTypeAttribute Reflect(Type/*!*/type)
-        {
-            Debug.Assert(type != null);
-            var attrs = type.GetCustomAttributes(typeof(ImplementsTypeAttribute), false);
-            return (attrs != null && attrs.Length == 1) ? (ImplementsTypeAttribute)attrs[0] : null;
-        }
 	}
 
 	/// <summary>
@@ -329,15 +334,6 @@ namespace PHP.Core
 	public sealed class PhpNamespacePrivateAttribute : Attribute
 	{
 	}
-
-    /// <summary>
-    /// Marks CLR type representing a PHP trait.
-    /// </summary>
-    /// <remarks>Attribute is used by <see cref="Reflection"/>.</remarks>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public sealed class PhpTraitAttribute : Attribute
-    {
-    }
 
 	/// <summary>
 	/// CLI does not allow static final methods. If a static method is declared as
@@ -498,11 +494,6 @@ namespace PHP.Core
         /// Needs DTypeDesc class context of the caller.
         /// </summary>
         NeedsClassContext = 256,
-
-        /// <summary>
-        /// Needs DTypeDesc class context of the late static binding.
-        /// </summary>
-        NeedsLateStaticBind = 512,
 	}
 
 	/// <summary>
@@ -800,10 +791,7 @@ namespace PHP.Core
 	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
 	public sealed class PhpRwAttribute : Attribute
 	{
-        internal static bool IsDefined(ParameterInfo/*!*/ param)
-        {
-            return param != null && param.IsDefined(typeof(PhpRwAttribute), false);
-        }
+
 	}
 
 	/// <summary>
@@ -852,7 +840,7 @@ namespace PHP.Core
         /// <summary>
 		/// A timestamp of the source file when the script builder is created.
 		/// </summary>
-		public DateTime SourceTimestamp  { get { return new DateTime(sourceTimestamp, DateTimeKind.Utc); } }
+		public DateTime SourceTimestamp  { get { return new DateTime(sourceTimestamp); } }
         private readonly long sourceTimestamp;
 
         /// <summary>
@@ -1152,24 +1140,27 @@ namespace PHP.Core
         }
     }
 
-    /// <summary>
-    /// Attribute specifying that function contains usage of <c>static</c> (late static binding),
-    /// runtime should pass type used to call a static method into script context, so it can be used by late static binding.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
-    public class UsesLateStaticBindingAttribute : Attribute
-    {
-        /// <summary>
-        /// Determines if given <c>method</c> has [UsesLateStaticBinding] attribute set.
-        /// </summary>
-        /// <param name="method">The method to reflect from.</param>
-        /// <returns>True if the method is marked.</returns>
-        internal static bool IsSet(MethodInfo/*!*/method)
-        {
-            object[] attrs;
-            return (attrs = method.GetCustomAttributes(typeof(UsesLateStaticBindingAttribute), false)) != null && attrs.Length > 0;
-        }
-    }
+
+#if DEBUG
+
+	// GENERICS: replace with VSUnit
+	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+	public class TestAttribute : Attribute
+	{
+		public TestAttribute()
+		{
+			this.One = false;
+		}
+
+		public TestAttribute(bool one)
+		{
+			this.One = one;
+		}
+
+		public readonly bool One;
+	}
+
+#endif
 
 	#endregion
 }
