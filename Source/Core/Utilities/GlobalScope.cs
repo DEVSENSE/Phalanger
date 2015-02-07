@@ -365,6 +365,19 @@ namespace PHP.Core.Utilities
             return true;
         }
 
+
+        /// <summary>
+        /// Specifies dynamic behavior for set operation for static variable
+        /// </summary>
+        public override bool TrySetMember(
+            SetMemberBinder binder,
+            Object value
+        )
+        {
+            Operators.SetStaticProperty(type, binder.Name, ClrObject.WrapDynamic(value), null, Context);
+            return true;
+
+        }
     }
 
     #endregion
@@ -450,7 +463,7 @@ namespace PHP.Core.Utilities
         }
 
         /// <summary>
-        /// Specifies dynamic behavior for get operation for  global variable
+        /// Specifies dynamic behavior for get operation for a constant
         /// </summary>
         public override bool TryGetMember(
             GetMemberBinder binder,
@@ -468,7 +481,7 @@ namespace PHP.Core.Utilities
         }
 
         /// <summary>
-        /// Specifies dynamic behavior for set operation for global function
+        /// Specifies dynamic behavior for set operation for a constant
         /// </summary>
         public override bool TrySetMember(
             SetMemberBinder binder,
