@@ -54,12 +54,13 @@ namespace PHP.Core
 	{
 		public enum Values
 		{
-			Warning, Error, FatalError
+			Warning, Error, FatalError, WarningAsError
 		}
 
 		public static readonly ErrorSeverity Warning = new ErrorSeverity(Values.Warning);
 		public static readonly ErrorSeverity Error = new ErrorSeverity(Values.Error);
 		public static readonly ErrorSeverity FatalError = new ErrorSeverity(Values.FatalError);
+        public static readonly ErrorSeverity WarningAsError = new ErrorSeverity(Values.WarningAsError);
 
 		public Values Value { get { return value; } }
 		private readonly Values value;
@@ -332,6 +333,11 @@ namespace PHP.Core
 		}
 		private int[]/*!*/ disabledWarnings;
 
+        /// <summary>
+        /// Whether to treat warnings as errors.
+        /// </summary>
+        public bool TreatWarningsAsErrors { get; set; }
+
 		public ErrorSink()
 			: this(WarningGroups.None, ArrayUtils.EmptyIntegers)
 		{
@@ -351,10 +357,14 @@ namespace PHP.Core
 		public int FatalErrorCount { get { return counts[ErrorSeverity.FatalError]; } }
 		public int ErrorCount { get { return counts[ErrorSeverity.Error]; } }
 		public int WarningCount { get { return counts[ErrorSeverity.Warning]; } }
+        public int WarningAsErrorCount { get { return counts[ErrorSeverity.WarningAsError]; } }
 
 		public bool AnyError
 		{
-			get { return counts[ErrorSeverity.Error] + counts[ErrorSeverity.FatalError] > 0; }
+			get
+            {
+                return counts[ErrorSeverity.Error] + counts[ErrorSeverity.FatalError] + counts[ErrorSeverity.WarningAsError] > 0;
+            }
 		}
 
 		public bool AnyFatalError
@@ -362,7 +372,7 @@ namespace PHP.Core
 			get { return counts[ErrorSeverity.FatalError] > 0; }
 		}
 
-		private int[] counts = { 0, 0, 0 };
+		private int[] counts = { 0, 0, 0, 0 };
 
 		#endregion
 
@@ -440,17 +450,20 @@ namespace PHP.Core
 			if (info.Id < 0 || (info.Group & (int)disabledGroups) == 0 && Array.IndexOf(disabledWarnings, info.Id) == -1)
 			{
 				// do not count disabled warnings and related locations et. al.:
-				if (Add(info.Id, message, info.Severity, info.Group, full_path, mapped_pos) && info.Id >= 0)
-					counts[info.Severity]++;
+                var severity = UpgradeSeverity(info.Severity);
+                if (Add(info.Id, message, severity, info.Group, full_path, mapped_pos) && info.Id >= 0)
+					counts[severity]++;
 			}		
 		}
 
 		private void Add(ErrorInfo info, string/*!*/ message, string fullPath, ErrorPosition pos, params string[] args)
 		{
 			Debug.Assert(message != null);
-			
-			if (Add(info.Id, message, info.Severity, info.Group, fullPath, pos) && info.Id >= 0)
-				counts[info.Severity]++;
+
+            var severity = UpgradeSeverity(info.Severity);
+
+            if (Add(info.Id, message, severity, info.Group, fullPath, pos) && info.Id >= 0)
+                counts[severity]++;
 		}
 
 		#endregion
@@ -475,7 +488,6 @@ namespace PHP.Core
 
 			Add(FatalErrors.InternalError, null, ErrorPosition.Invalid, BugTrackerUrl, message.ToString());
 		}
-
 
 		public void AddConfigurationError(ConfigurationErrorsException/*!*/ e)
 		{
@@ -513,6 +525,8 @@ namespace PHP.Core
 
         internal bool AddInternal(int id, string message, ErrorSeverity severity, int group, string fullPath, ErrorPosition pos, bool increaseCount)
         {
+            severity = UpgradeSeverity(severity);
+
             bool result = Add(id, message, severity, group, fullPath, pos);
 
             if (increaseCount)
@@ -523,7 +537,19 @@ namespace PHP.Core
 
 		#endregion
 
-		/// <summary>
+        #region Helper methods
+
+        /// <summary>
+        /// Upgrades <see cref="ErrorSeverity.Warning"/> to <see cref="ErrorSeverity.WarningAsError"/> is <see cref="TreatWarningsAsErrors"/> is enabled.
+        /// </summary>
+        private ErrorSeverity UpgradeSeverity(ErrorSeverity severity)
+        {
+            return (severity.Value == ErrorSeverity.Values.Warning && TreatWarningsAsErrors) ? ErrorSeverity.WarningAsError : severity;
+        }
+
+        #endregion
+
+        /// <summary>
 		/// Returns whether the warning has been reported.
 		/// </summary>
 		protected abstract bool Add(int id, string message, ErrorSeverity severity, int group, string fullPath, ErrorPosition pos);

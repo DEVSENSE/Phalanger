@@ -23,7 +23,6 @@ using System.Text.RegularExpressions;
 
 using PHP.Core;
 using PHP.Core.Reflection;
-using System.Diagnostics;
 
 namespace PHP.Core
 {
@@ -290,7 +289,7 @@ namespace PHP.Core
                 errorSink.TreatWarningsAsErrors = compiler_config.Compiler.TreatWarningsAsErrors;
 			
 				// initializes log:
-				DebugUtils.ConsoleInitialize(Path.GetDirectoryName(p.Parameters.OutPath));
+				Debug.ConsoleInitialize(Path.GetDirectoryName(p.Parameters.OutPath));
 
                 new ApplicationCompiler().Compile(app_context, compiler_config, errorSink, p.Parameters);
 			}

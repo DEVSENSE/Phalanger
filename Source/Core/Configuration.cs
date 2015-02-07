@@ -869,6 +869,11 @@ namespace PHP.Core
 			public int[]/*!*/ DisabledWarningNumbers { get { return disabledWarningNumbers; } set { disabledWarningNumbers = value; } }
 			private int[]/*!*/ disabledWarningNumbers;
 
+            /// <summary>
+            /// Whether to treat warnings as errors, so code containing warnings won't be allowed to be compiled or executed.
+            /// </summary>
+            public bool TreatWarningsAsErrors { get; set; }
+
 			#endregion
 
 			#region Validation

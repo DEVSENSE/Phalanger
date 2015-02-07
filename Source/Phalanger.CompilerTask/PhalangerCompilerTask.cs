@@ -79,6 +79,8 @@ namespace PHP.VisualStudio.PhalangerTasks
 		public bool Debug { get { return debug; } set { debug = value; } }
 		private bool debug;
 
+        public bool TreatWarningsAsErrors { get; set; }
+
 		public string CompilationMode { get { return compilationMode; } set { compilationMode = value; } }
 		private string compilationMode;
 
@@ -380,6 +382,8 @@ namespace PHP.VisualStudio.PhalangerTasks
 			}
 
             ps.EnableWarnings |= WarningGroups.DeferredToRuntime;   // enable deferred to runtime warnings
+            
+            ps.TreatWarningsAsErrors = this.TreatWarningsAsErrors;
 
             // compile
 

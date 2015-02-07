@@ -56,13 +56,14 @@ namespace PHP.VisualStudio.PhalangerTasks
 			string code = ErrorIdToCode(id);
 			switch (severity.Value)
 			{
-				case ErrorSeverity.Values.FatalError:
+                case ErrorSeverity.Values.FatalError:
 				case ErrorSeverity.Values.Error:
-					logger.LogError("", code, "", fullPath, pos.FirstLine, Math.Max(0, pos.FirstColumn - 1), pos.LastLine, pos.LastColumn, message);
+                case ErrorSeverity.Values.WarningAsError:
+                    logger.LogError(severity.Value.ToString(), code, "", fullPath, pos.FirstLine, Math.Max(0, pos.FirstColumn - 1), pos.LastLine, pos.LastColumn, message);
 					break;
 
 				case ErrorSeverity.Values.Warning:
-                    logger.LogWarning("", code, "", fullPath, pos.FirstLine, Math.Max(0, pos.FirstColumn - 1), pos.LastLine, pos.LastColumn, message);
+                    logger.LogWarning(severity.Value.ToString(), code, "", fullPath, pos.FirstLine, Math.Max(0, pos.FirstColumn - 1), pos.LastLine, pos.LastColumn, message);
 					break;
 			}
 			return true;
