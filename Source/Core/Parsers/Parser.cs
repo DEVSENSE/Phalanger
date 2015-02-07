@@ -1087,7 +1087,7 @@ namespace PHP.Core.Parsers
 
 		private static List<T>/*!*/NewList<T>(T item)
 		{
-			return new List<T>(){ item };
+			return new List<T>(1){ item };
         }
 
 		private static List<T>/*!*/NewList<T>(object item)

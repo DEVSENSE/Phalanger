@@ -158,6 +158,7 @@ NonVariableStart        [^a-zA-Z_{]
 <ST_IN_SCRIPTING>"print"      			{ return Tokens.T_PRINT; }
 <ST_IN_SCRIPTING>"class"      			{ return Tokens.T_CLASS; }
 <ST_IN_SCRIPTING>"trait"      			{ return Tokens.T_TRAIT; }
+<ST_IN_SCRIPTING>"insteadof"      		{ return Tokens.T_INSTEADOF; }
 <ST_IN_SCRIPTING>"extends"    			{ return Tokens.T_EXTENDS; }
 <ST_IN_SCRIPTING>"new"        			{ return Tokens.T_NEW; }
 <ST_IN_SCRIPTING>"var"        			{ return Tokens.T_VAR; }

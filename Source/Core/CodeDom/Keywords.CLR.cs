@@ -52,6 +52,7 @@ namespace PHP.Core.CodeDom
 		public const string Echo           = "echo";
 		public const string Print          = "print";
 		public const string Class          = "class";
+        public const string Trait          = "trait";
 		public const string Extends        = "extends";
 		public const string New            = "new";
 		public const string Var            = "var";
