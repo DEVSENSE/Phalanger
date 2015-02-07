@@ -483,7 +483,7 @@ namespace PHP.Core
 		{
 			if (option == StreamParameterOptions.ReadTimeout)
 			{
-				int timeout = Convert.ObjectToInteger(value);
+                int timeout = (int)(Convert.ObjectToDouble(value) * 1000.0);
 				socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, timeout);
 				socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, timeout);
 				return true;
