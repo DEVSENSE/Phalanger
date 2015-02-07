@@ -177,7 +177,7 @@ namespace PHP.Core.AST
                     // <array>.InplaceCopyOnReturn = true;
                     il.Emit(OpCodes.Dup);
                     il.Emit(OpCodes.Ldc_I4_1);
-                    il.Emit(OpCodes.Call, Properties.PhpArray_InplaceCopyOnReturn.GetSetMethod());
+                    il.Emit(OpCodes.Call, Core.Emit.Properties.PhpArray_InplaceCopyOnReturn.GetSetMethod());
                 }
 				else
                 {

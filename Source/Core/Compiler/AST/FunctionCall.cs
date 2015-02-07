@@ -177,8 +177,8 @@ namespace PHP.Core.AST
         /// </summary>
         private AnalysisResult/*!A*/Analysis
         {
-            get { return (AnalysisResult)this.GetProperty(typeof(AnalysisResult)); }
-            set { this.SetProperty(typeof(AnalysisResult), value); }
+            get { return (AnalysisResult)this.Properties[typeof(AnalysisResult)]; }
+            set { this.Properties[typeof(AnalysisResult)] = value; }
         }
 
         /// <summary>
