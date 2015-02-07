@@ -139,7 +139,7 @@ namespace PHP.Core.Reflection
 		public int Id { get { return id; } }
 		private readonly int id;
 
-		private readonly string stringId;
+		private readonly string sourcePath;
 
 		internal EvalKinds Kind { get { return kind; } }
 		private readonly EvalKinds kind;
@@ -148,13 +148,13 @@ namespace PHP.Core.Reflection
 		/// Used by the builder.
 		/// </summary>
 		public TransientModule(int id, EvalKinds kind, TransientCompilationUnit/*!*/ unit, TransientAssembly/*!*/ scriptAssembly,
-			TransientModule containingModule)
+			TransientModule containingModule, string sourcePath)
 			: base(unit, scriptAssembly)
 		{
 			Debug.Assert(unit != null && scriptAssembly != null);
 
 			this.id = id;
-			this.stringId = id.ToString();
+            this.sourcePath = sourcePath;
 			this.kind = kind;
 			this.containingModule = containingModule;
 		}
@@ -163,7 +163,7 @@ namespace PHP.Core.Reflection
 		{
 			// <> ensures, the eval-id is removed from the name
 			// '?'/'^' distinguish from the file path used by MSA and among regular and special names
-			return String.Concat(isSpecialName ? "<^" : "<?", stringId, ">.", name);
+            return String.Concat("<", this.sourcePath, isSpecialName ? "^" : "?", this.Id.ToString(), ">.", name);
 		}
 
 		private static int ParseEvalId(string/*!*/ name)

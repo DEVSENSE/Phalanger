@@ -316,7 +316,7 @@ namespace PHP.Core.Reflection
 
 			this.assembly_builder = scriptContext.ApplicationContext.TransientAssemblyBuilder;
 			this.module_builder = assembly_builder.DefineModule(this, context.Config.Compiler.Debug,
-				descriptor.ContainingTransientModuleId, kind);
+				descriptor.ContainingTransientModuleId, kind, descriptor.ContainingSourcePath);
 			this.module = module_builder;
 			this.evalKind = kind;
 

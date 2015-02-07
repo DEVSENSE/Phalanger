@@ -410,7 +410,7 @@ namespace PHP.Core.Reflection
 		}
 
 		internal TransientModuleBuilder/*!*/ DefineModule(TransientAssemblyBuilder/*!*/ assemblyBuilder,
-			TransientCompilationUnit/*!*/ compilationUnit, int containerId, EvalKinds kind)
+			TransientCompilationUnit/*!*/ compilationUnit, int containerId, EvalKinds kind, string sourcePath)
 		{
 			TransientModule container = GetModule(containerId);
 
@@ -429,7 +429,7 @@ namespace PHP.Core.Reflection
                 rwLock.ExitWriteLock();
 			}
 
-			return new TransientModuleBuilder(new_id, kind, compilationUnit, assemblyBuilder, container);
+			return new TransientModuleBuilder(new_id, kind, compilationUnit, assemblyBuilder, container, sourcePath);
 		}
 
 		internal TransientModule/*!*/ AddModule(TransientModule/*!*/ module, List<ProvidedType>/*!*/ dependentTypes,

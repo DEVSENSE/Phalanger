@@ -259,12 +259,12 @@ namespace PHP.Core.Emit
 		public TransientAssembly TransientAssembly { get { return (TransientAssembly)assembly; } }
 
 		public TransientModuleBuilder/*!*/ DefineModule(TransientCompilationUnit/*!*/ compilationUnit, bool debuggable,
-			int containerId, EvalKinds kind)
+			int containerId, EvalKinds kind, string sourcePath)
 		{
 			InitializeRealAssembly(debuggable);
 			Debug.Assert(this.debuggable == debuggable);
 
-			return TransientAssembly.DefineModule(this, compilationUnit, containerId, kind);
+			return TransientAssembly.DefineModule(this, compilationUnit, containerId, kind, sourcePath);
 		}
 
 		internal bool IsTransientRealType(Type/*!*/ realType)
