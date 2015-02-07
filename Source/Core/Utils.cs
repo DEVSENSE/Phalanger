@@ -2586,25 +2586,96 @@ namespace PHP.Core
             return (type.IsValueType) ? Activator.CreateInstance(type) : null;
         }
 
-        private static readonly Regex reg_paseTypeId = new Regex(@"\<(\^(?<id>\d+)|((?<src>.+)?(\?(?<id>\d+))?))\>\.(?<typename>.+)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-        internal static void ParseTypeId(string name, out int id, out string srcFile, out string typename)
+        /// <summary>
+        /// Parses the <paramref name="realType"/> into <paramref name="transientId"/>, <paramref name="sourceFile"/> and <paramref name="typeName"/>.
+        /// </summary>
+        /// <param name="realType">Type from within <see cref="PHP.Core.Reflection.TransientModule"/>, <see cref="PHP.Core.Reflection.ScriptModule"/> or <see cref="PHP.Core.Reflection.PureModule"/>.</param>
+        /// <param name="transientId"><c>-1</c> or Id of transiend module.</param>
+        /// <param name="sourceFile"><c>null</c> or relative file name of the contained type.</param>
+        /// <param name="typeName">Cannot be null. PHP type name without the prefixed <c>&lt;</c>~<c>&gt;</c> information. CLR notation of namespaces.</param>
+        /// <remarks>Handles special cases of types from ClassLibrary and Core.</remarks>
+        public static void ParseTypeId(Type/*!*/realType, out int transientId, out string sourceFile, out string typeName)
         {
-            id = PHP.Core.Reflection.TransientAssembly.InvalidEvalId;
-            srcFile = null;
-            typename = null;
+            Debug.Assert(realType != null);
 
-            Match m = reg_paseTypeId.Match(name);
-            if (m.Success)
+            // parse the type name (ScriptModule, PureModule, TransientModule):
+            ParseTypeId(realType.FullName, out transientId, out sourceFile, out typeName);
+
+            //
+            // handle special cases:
+            //
+
+            // [ImplementsTypeAttribute] with PHPTypeName specified => take the PHPTypeName only
+            var attr = ImplementsTypeAttribute.Reflect(realType);
+            if (attr != null && attr.PHPTypeName != null)
             {
-                if (m.Groups["id"].Success)
+                typeName = attr.PHPTypeName;
+                return;
+            }
+            
+            // PHP.Library. => cut of the namespace, keep realType.Name only
+            // J: HACK because of PHP types in ClassLibrary and Core
+            if (realType.Namespace.StartsWith(Namespaces.Library, StringComparison.Ordinal))
+            {
+                typeName = realType.Name;
+                return;
+            }            
+        }
+
+        /// <summary>
+        /// Parses the <paramref name="realTypeFullName"/> into <paramref name="transientId"/>, <paramref name="sourceFile"/> and <paramref name="typeName"/>.
+        /// </summary>
+        /// <param name="realTypeFullName">Expecting <see cref="Type.FullName"/> (type CLR full name, including <c>.</c>, <c>+</c>) of a type from within <see cref="PHP.Core.Reflection.TransientModule"/>, <see cref="PHP.Core.Reflection.ScriptModule"/> or <see cref="PHP.Core.Reflection.PureModule"/>.</param>
+        /// <param name="transientId"><c>-1</c> or Id of transiend module.</param>
+        /// <param name="sourceFile"><c>null</c> or relative file name of the contained type.</param>
+        /// <param name="typeName">Cannot be null. PHP type name without the prefixed <c>&lt;</c>~<c>&gt;</c> information. CLR notation of namespaces.</param>
+        internal static void ParseTypeId(string/*!*/realTypeFullName, out int transientId, out string sourceFile, out string typeName)
+        {
+            Debug.Assert(!string.IsNullOrEmpty(realTypeFullName));
+
+            //
+            transientId = PHP.Core.Reflection.TransientAssembly.InvalidEvalId;
+
+            // <srcFile{[^?]id}>.typeName
+            if (realTypeFullName[0] == '<')
+            {
+                // naming policy of TransientModule, ScriptModule
+                int closing;
+                if ((closing = realTypeFullName.IndexOf('>', 1)) >= 0)
                 {
-                    id = Int32.Parse(m.Groups["id"].Value);
+                    // find ^ or ?
+                    int idDelim;
+                    if ((idDelim = realTypeFullName.IndexOfAny(PHP.Core.Reflection.TransientModule.IdDelimiters, 1, closing)) >= 0)
+                        transientId = int.Parse(realTypeFullName.Substring(idDelim + 1, closing - idDelim - 1));
+                    else
+                        idDelim = closing;
+                    
+                    // parse sourceFile out:
+                    sourceFile = realTypeFullName.Substring(1, idDelim - 1);
                 }
-                if (m.Groups["src"].Success)
+                else
                 {
-                    srcFile = m.Groups["src"].Value;
+                    Debug.Fail("Unexpected Type.FullName! Missing closing '>' in '" + realTypeFullName + "'.");
+                    sourceFile = null;
+                    closing = 1;
                 }
-                typename = m.Groups["typename"].Value;
+
+                // parse typeName out:
+                Debug.Assert(
+                    realTypeFullName.Length > closing + 2 && realTypeFullName[closing + 1] == '.',
+                    "Unexpected Type.FullName! Missing '.' after '>' in '" + realTypeFullName + "'.");
+
+                // get the type name (without version id and generic params):
+                typeName = QualifiedName.SubstringWithoutBackquoteAndHash(
+                    realTypeFullName,
+                    closing + 2,
+                    realTypeFullName.Length - closing - 2);
+            }
+            else
+            {
+                // naming policy of PureModule:
+                sourceFile = null;  // we are not able to determine the file name here
+                typeName = realTypeFullName;
             }
         }
     }
