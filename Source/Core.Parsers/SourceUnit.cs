@@ -297,7 +297,10 @@ namespace PHP.Core
             Lexer.LexicalStates initialState = Lexer.LexicalStates.INITIAL)
         {
             var/*!*/unit = new CodeSourceUnit(code, sourceFile, Encoding.UTF8, initialState);
-            unit.Parse(errors, reductionsSink, features);
+
+            try { unit.Parse(errors, reductionsSink, features); }
+            catch { }
+
             unit.Close();
 
             //
