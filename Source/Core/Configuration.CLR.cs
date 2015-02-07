@@ -288,7 +288,7 @@ namespace PHP.Core
 				{
                     case "ZendEngineV1Compatible": throw new NotSupportedException(name); // ZendEngineV1Compatible = (value == "true"); break;
 					case "QuoteRuntimeVariables": QuoteRuntimeVariables = (value == "true"); break;
-					case "QuoteInDbManner": QuoteInDbManner = (value == "true"); break;
+                    case "QuoteInDbManner": /*QuoteInDbManner =*/ if (value == "true") throw new ConfigUtils.InvalidAttributeValueException(node, "value"); break;
 					case "DeserializationCallback": DeserializationCallback = (value != String.Empty) ? new PhpCallback(value) : null; break;
                     case "AlwaysPopulateRawPostData": AlwaysPopulateRawPostData = (value == "true"); break;
 
@@ -1222,7 +1222,7 @@ namespace PHP.Core
 					case "RegisterGlobals": RegisterGlobals = t; break;
 					case "RegisterArgcArgv": RegisterArgcArgv = t; break;
 					case "RegisterLongArrays": RegisterLongArrays = t; break;
-					case "QuoteGpcVariables": QuoteGpcVariables = t; break;
+                    case "QuoteGpcVariables": /*QuoteGpcVariables = t;*/ if (t) throw new ConfigUtils.InvalidAttributeValueException(node, "value"); break;
 					default:
 						return false;
 				}

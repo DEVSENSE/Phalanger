@@ -268,22 +268,23 @@ namespace PHP.Core
 
 		private static object GpcEncodeValue(object value, LocalConfiguration config)
 		{
-            if (value != null && value.GetType() == typeof(string))
-			{
-                 // url-decodes the values:
-                string svalue = HttpUtility.UrlDecode((string)value, Configuration.Application.Globalization.PageEncoding);
+            //if (value != null && value.GetType() == typeof(string))
+            //{
+            //    var svalue = (string)value;
 
-				// quotes the values:
-				if (Configuration.Global.GlobalVariables.QuoteGpcVariables)
-				{
-					if (config.Variables.QuoteInDbManner)
-						svalue = StringUtils.AddDbSlashes(svalue);
-					svalue = StringUtils.AddCSlashes(svalue, true, true);
-				}
+            //    //// url-decodes the values:
+            //    //svalue = HttpUtility.UrlDecode(svalue, Configuration.Application.Globalization.PageEncoding);
+                
+            //    // quotes the values:
+            //    if (Configuration.Global.GlobalVariables.QuoteGpcVariables)
+            //    {
+            //        if (config.Variables.QuoteInDbManner)
+            //            svalue = StringUtils.AddDbSlashes(svalue);
+            //        svalue = StringUtils.AddCSlashes(svalue, true, true);
+            //    }
 
-                //
-                value = svalue;
-			}
+            //    return svalue;
+            //}
 
 			return value;
 		}
