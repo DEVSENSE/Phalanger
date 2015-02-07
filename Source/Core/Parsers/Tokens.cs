@@ -44,6 +44,7 @@ namespace PHP.Core.Parsers
 		T_LINE_COMMENT = -21,
 
 		// commands:
+        ParseBinaryNumber = -25,
 		ParseDecimalNumber = -26,
 		ParseHexadecimalNumber = -27,
 		ParseDouble = -28,

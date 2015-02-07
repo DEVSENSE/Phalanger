@@ -407,18 +407,30 @@ namespace PHP.Core.Parsers
 						}
 
 					// {HNUM}
-					case Tokens.ParseHexadecimalNumber:
-						{
-							// parse hexadecimal value
-							token = GetTokenAsDecimalNumber(2, 16, ref tokenSemantics);
+                    case Tokens.ParseHexadecimalNumber:
+                        {
+                            // parse hexadecimal value
+                            token = GetTokenAsDecimalNumber(2, 16, ref tokenSemantics);
 
-							if (token == Tokens.T_DNUMBER)
-							{
-								// conversion to double causes data loss
-								errors.Add(Warnings.TooBigIntegerConversion, SourceUnit, tokenPosition, GetTokenString());
-							}
-							goto default;
-						}
+                            if (token == Tokens.T_DNUMBER)
+                            {
+                                // conversion to double causes data loss
+                                errors.Add(Warnings.TooBigIntegerConversion, SourceUnit, tokenPosition, GetTokenString());
+                            }
+                            goto default;
+                        }
+
+                    // {BNUM}
+                    case Tokens.ParseBinaryNumber:
+                        // parse binary number value
+                        token = GetTokenAsDecimalNumber(2, 2, ref tokenSemantics);
+
+                        if (token == Tokens.T_DNUMBER)
+                        {
+                            // conversion to double causes data loss
+                            errors.Add(Warnings.TooBigIntegerConversion, SourceUnit, tokenPosition, GetTokenString());
+                        }
+                        goto default;
 
 					// {DNUM}|{EXPONENT_DNUM}
 					case Tokens.ParseDouble:
@@ -426,7 +438,7 @@ namespace PHP.Core.Parsers
 						token = Tokens.T_DNUMBER;
 						goto default;
 
-					#endregion
+                    #endregion
 
 					#region Another Semantics
 
