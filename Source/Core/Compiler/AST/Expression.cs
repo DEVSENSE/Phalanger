@@ -271,6 +271,9 @@ namespace PHP.Core.AST
 
 	#region ExpressionPlace
 
+    /// <summary>
+    /// <see cref="IPlace"/> representing an <see cref="Expression"/>. Supports only loading onto the top of evaluation stack.
+    /// </summary>
 	internal sealed class ExpressionPlace : IPlace
 	{
 		private CodeGenerator/*!*/ codeGenerator;
@@ -280,19 +283,14 @@ namespace PHP.Core.AST
 		private PhpTypeCode typeCode;
 
         /// <summary>
-        /// Expression used by this IPLace.
-        /// </summary>
-        public Expression/*!*/Expression { get { return expression; } }
-
-        /// <summary>
         /// Get the expression if given place represents ExpressionPlace.
         /// </summary>
         /// <param name="place"></param>
         /// <returns></returns>
         public static Expression GetExpression(IPlace place)
         {
-            if (place is ExpressionPlace)
-                return (place as ExpressionPlace).Expression;
+            if (place != null && place.GetType() == typeof(ExpressionPlace))
+                return ((ExpressionPlace)place).expression;
             else
                 return null;
         }
