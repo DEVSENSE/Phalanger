@@ -182,64 +182,65 @@ namespace PHP.Core.Reflection
 
 		#endregion
 
-		#region Aliases and Imported Namespaces
+        //#region Aliases and Imported Namespaces
 
-		public bool AddTypeAlias(QualifiedName typeName, Name alias)
-		{
-			if (typeAliases == null)
-				typeAliases = new Dictionary<Name, QualifiedName>();
-			else if (typeAliases.ContainsKey(alias))
-				return false;
+        //public bool AddTypeAlias(QualifiedName typeName, Name alias)
+        //{
+        //    if (typeAliases == null)
+        //        typeAliases = new Dictionary<Name, QualifiedName>();
+        //    else if (typeAliases.ContainsKey(alias))
+        //        return false;
 
-			typeAliases.Add(alias, typeName);
-			return true;
-		}
+        //    typeAliases.Add(alias, typeName);
+        //    return true;
+        //}
 
-		public bool AddFunctionAlias(QualifiedName functionName, Name alias)
-		{
-			if (functionAliases == null)
-				functionAliases = new Dictionary<Name, QualifiedName>();
-			else if (functionAliases.ContainsKey(alias))
-				return false;
+        //public bool AddFunctionAlias(QualifiedName functionName, Name alias)
+        //{
+        //    if (functionAliases == null)
+        //        functionAliases = new Dictionary<Name, QualifiedName>();
+        //    else if (functionAliases.ContainsKey(alias))
+        //        return false;
 
-			functionAliases.Add(alias, functionName);
-			return true;
-		}
+        //    functionAliases.Add(alias, functionName);
+        //    return true;
+        //}
 
-		public bool AddConstantAlias(QualifiedName constantName, Name alias)
-		{
-			if (constantAliases == null)
-				constantAliases = new Dictionary<Name, QualifiedName>();
-			else if (constantAliases.ContainsKey(alias))
-				return false;
+        //public bool AddConstantAlias(QualifiedName constantName, Name alias)
+        //{
+        //    if (constantAliases == null)
+        //        constantAliases = new Dictionary<Name, QualifiedName>();
+        //    else if (constantAliases.ContainsKey(alias))
+        //        return false;
 
-			constantAliases.Add(alias, constantName);
-			return true;
-		}
+        //    constantAliases.Add(alias, constantName);
+        //    return true;
+        //}
 
-		public void AddImportedNamespace(QualifiedName namespaceName)
-		{
-			if (importedNamespaces == null)
-				importedNamespaces = new List<QualifiedName>();
+        //public void AddImportedNamespace(QualifiedName namespaceName)
+        //{
+        //    if (importedNamespaces == null)
+        //        importedNamespaces = new List<QualifiedName>();
 
-			importedNamespaces.Add(namespaceName);
-		}
+        //    importedNamespaces.Add(namespaceName);
+        //}
 
-		/// <summary>
-		/// Used to merge namespaces included by the caller of 'eval' function.
-		/// </summary>
-		/// <param name="namingContext">Naming context of the caller</param>
-		public void AddImportedNamespaces(NamingContext namingContext)
-		{
-			if (namingContext == null) return;
-			foreach (string s in namingContext.Prefixes)
-			{
-                string nsn = s.EndsWith(QualifiedName.Separator.ToString()) ? s.Substring(0, s.Length - QualifiedName.Separator.ToString().Length) : s;
-				AddImportedNamespace(new QualifiedName(nsn, false));
-			}
-		}
+        /// <summary>
+        /// Used to merge namespaces included by the caller of 'eval' function.
+        /// </summary>
+        /// <param name="namingContext">Naming context of the caller</param>
+        public void AddImportedNamespaces(NamingContext namingContext)
+        {
+            throw new NotImplementedException();
+            //if (namingContext == null) return;
+            //foreach (string s in namingContext.Prefixes)
+            //{
+            //    string nsn = s.EndsWith(QualifiedName.Separator.ToString()) ? s.Substring(0, s.Length - QualifiedName.Separator.ToString().Length) : s;
+            //    AddImportedNamespace(new QualifiedName(nsn, false));
+            //}
+        }
 
-		#endregion
+        //#endregion
 
 		#region Name Resolving
 
