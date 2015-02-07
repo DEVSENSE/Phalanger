@@ -218,7 +218,7 @@ namespace PHP.Core.AST
         /// Call the right Visit* method on the given Visitor object.
         /// </summary>
         /// <param name="visitor">Visitor to be called.</param>
-        internal void VisitMe(TreeVisitor visitor)
+        public void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitGlobalCode(this);
         }

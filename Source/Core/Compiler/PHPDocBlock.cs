@@ -163,7 +163,7 @@ namespace PHP.Core
                     // trim end
                     int endIndex = line.Length;
                     while (endIndex > startIndex && char.IsWhiteSpace(line[endIndex - 1])) endIndex--;  // skip whitespaces from end
-                    line = line.Substring(startIndex, endIndex - startIndex);
+                    line = line.Substring(startIndex, endIndex - startIndex).Replace("{@*}", "*/");
                 }
 
                 // check "*/" at the end
@@ -560,6 +560,11 @@ namespace PHP.Core
             public readonly string TypeNames;
 
             /// <summary>
+            /// Array of type names. Cannot be <c>null</c>. Can be an empty array.
+            /// </summary>
+            public string[]/*!!*/TypeNamesArray { get { return string.IsNullOrEmpty(TypeNames) ? ArrayUtils.EmptyStrings : TypeNames.Split(new char[] { TypeNamesSeparator }, StringSplitOptions.RemoveEmptyEntries); } }
+
+            /// <summary>
             /// Optional. Variable name, starts with '$'.
             /// </summary>
             public readonly string VariableName;
@@ -704,24 +709,24 @@ namespace PHP.Core
             }
         }
 
-        /// <summary>
-        /// URL information.
-        /// </summary>
-        public sealed class LinkTag : SingleLineTag
-        {
-            public const string Name = "@link";
+        ///// <summary>
+        ///// URL information.
+        ///// </summary>
+        //public sealed class LinkTag : SingleLineTag
+        //{
+        //    public const string Name = "@link";
 
-            /// <summary>
-            /// URL
-            /// </summary>
-            public string Url { get { return this.text; } }
+        //    /// <summary>
+        //    /// URL
+        //    /// </summary>
+        //    public string Url { get { return this.text; } }
 
-            public LinkTag(string/*!*/line)
-                :base(Name, line)
-            {
+        //    public LinkTag(string/*!*/line)
+        //        :base(Name, line)
+        //    {
 
-            }
-        }
+        //    }
+        //}
 
         /// <summary>
         /// Specifies an alias for a variable. For example, $GLOBALS['myvariable'] becomes $myvariable.
@@ -1062,6 +1067,16 @@ namespace PHP.Core
 
         #region Helper access methods
 
+        public T GetElement<T>()  where T: Element
+        {
+            var elements = this.Elements;
+            for (int i = 0; i < elements.Length; i++)
+                if (elements[i] is T)
+                    return (T)elements[i];
+
+            return null;
+        }
+
         /// <summary>
         /// Enumerate all the '@param' tags.
         /// </summary>
@@ -1080,7 +1095,7 @@ namespace PHP.Core
         {
             get
             {
-                return (ReturnTag)this.Elements.FirstOrDefault(e => e is ReturnTag);
+                return GetElement<ReturnTag>();
             }
         }
 
@@ -1091,7 +1106,7 @@ namespace PHP.Core
         {
             get
             {
-                return this.Elements.FirstOrDefault(e => e is IgnoreTag) != null;
+                return GetElement<IgnoreTag>() != null;
             }
         }
 
@@ -1102,7 +1117,7 @@ namespace PHP.Core
         {
             get
             {
-                var tag = (ShortDescriptionElement)this.Elements.FirstOrDefault(e => e is ShortDescriptionElement);
+                var tag = GetElement<ShortDescriptionElement>();
                 return (tag != null) ? tag.Text : null;
             }
         }
@@ -1114,8 +1129,45 @@ namespace PHP.Core
         {
             get
             {
-                var tag = (LongDescriptionElement)this.Elements.FirstOrDefault(e => e is LongDescriptionElement);
+                var tag = GetElement<LongDescriptionElement>();
                 return (tag != null) ? tag.Text : null;
+            }
+        }
+
+        /// <summary>
+        /// Gets whole description, as a concatenation of <see cref="ShortDescription"/> and <see cref="LongDescription"/>.
+        /// </summary>
+        public string Summary
+        {
+            get
+            {
+                var shortdesc = ShortDescription;
+                var longdesc = LongDescription;
+
+                if (shortdesc != null || longdesc != null)
+                {
+                    if (shortdesc == null)
+                        return longdesc;
+
+                    if (longdesc == null)
+                        return shortdesc;
+
+                    return shortdesc + '\n' + longdesc;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets '@access' value or 'Public' if no such tag is found.
+        /// </summary>
+        public PhpMemberAttributes Access
+        {
+            get
+            {
+                var access = GetElement<AccessTag>();
+                return (access != null) ? access.Access : PhpMemberAttributes.Public;
             }
         }
         

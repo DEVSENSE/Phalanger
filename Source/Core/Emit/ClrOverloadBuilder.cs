@@ -1304,10 +1304,10 @@ namespace PHP.Core.Emit
 						break;
 					}
 
-				
-                case PhpTypeCode.PhpRuntimeChain:
+				case PhpTypeCode.LinqSource:
+				case PhpTypeCode.PhpRuntimeChain:
 					{
-						Debug.Fail(null);
+						Debug.Fail();
 						return true;
 					}
 			}
@@ -1417,7 +1417,7 @@ namespace PHP.Core.Emit
 					}
 
 				default:
-					Debug.Fail(null);
+					Debug.Fail();
 					return true;
 			}
 
@@ -1505,7 +1505,7 @@ namespace PHP.Core.Emit
 
 				default:
 					{
-						Debug.Fail(null);
+						Debug.Fail();
 						return PhpTypeCode.Invalid;
 					}
 			}
