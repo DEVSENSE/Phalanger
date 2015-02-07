@@ -151,9 +151,10 @@ namespace PHP.Core.Emit
 
             public struct Subtract
             {
-                static MethodInfo _Object_Object, _Int32_Object, _Double_Object;
+                static MethodInfo _Object_Object, _Object_Int, _Int32_Object, _Double_Object;
 
                 public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Subtract).Method; return _Object_Object; } }
+                public static MethodInfo Object_Int { get { return _Object_Int ?? (_Object_Int = new Func<object, int, object>(PHP.Core.Operators.Subtract).Method); } }
                 public static MethodInfo Int32_Object { get { if (_Int32_Object == null) _Int32_Object = new Func<int, object, object>(PHP.Core.Operators.Subtract).Method; return _Int32_Object; } }
                 public static MethodInfo Double_Object { get { if (_Double_Object == null) _Double_Object = new Func<double, object, double>(PHP.Core.Operators.Subtract).Method; return _Double_Object; } }
             }
