@@ -261,6 +261,8 @@ namespace PHP.Library
 
 				case "default_charset": return GsrDefaultCharset(value, action);
 				case "default_mimetype": return GsrDefaultMimetype(value, action);
+                case "memory_limit": return GsrMemoryLimit(value, action);
+                case "disable_functions": return GsrDisableFunctions(value, action);
 
 				#endregion
 			}
@@ -486,6 +488,38 @@ namespace PHP.Library
 			}
 			return result;
 		}
+
+        /// <summary>
+        /// Gets, sets or restores "memory_limit" option.
+        /// </summary>
+        private static object GsrMemoryLimit(object value, IniAction action)
+        {
+            object result = -1;
+            switch (action)
+            {
+                case IniAction.Set:
+                case IniAction.Restore:
+                    PhpException.ArgumentValueNotSupported("memory_limit", action);
+                    break;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Gets, sets or restores "disable_functions" option.
+        /// </summary>
+        private static object GsrDisableFunctions(object value, IniAction action)
+        {
+            object result = "";
+            switch (action)
+            {
+                case IniAction.Set:
+                case IniAction.Restore:
+                    PhpException.ArgumentValueNotSupported("disable_functions", action);
+                    break;
+            }
+            return result;
+        }
 
 		/// <summary>
 		/// Gets, sets or restores "variables_order" option.
