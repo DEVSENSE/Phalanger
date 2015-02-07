@@ -222,6 +222,9 @@ namespace PHP.Library
         [ImplementsFunction("json_decode")]
         public static PhpReference Unserialize(PhpBytes json)
         {
+            if (json == null)
+                return null;
+
             return PhpJsonSerializer.Default.Deserialize(json, UnknownTypeDesc.Singleton);
         }
 
@@ -248,6 +251,9 @@ namespace PHP.Library
 		[ImplementsFunction("json_decode")]
         public static PhpReference Unserialize(PhpBytes json, bool assoc /* = false*/ , int depth /* = 512*/  , JsonDecodeOptions options /* = 0 */)
 		{
+            if (json == null)
+                return null;
+
             return new PhpJsonSerializer(
                 new JsonFormatter.EncodeOptions(),
                 new JsonFormatter.DecodeOptions()

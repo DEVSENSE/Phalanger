@@ -270,7 +270,7 @@ namespace PHP.Library
 		{
 			if (array == null)
 			{
-				PhpException.ReferenceNull("array");
+				//PhpException.ReferenceNull("array");
 				return null;
 			}
 			
@@ -301,7 +301,7 @@ namespace PHP.Library
 		{
 			if (array == null)
 			{
-				PhpException.ReferenceNull("array");
+				//PhpException.ReferenceNull("array");
 				return null;
 			}
 
