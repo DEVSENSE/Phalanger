@@ -142,64 +142,64 @@ namespace PHP.Core.Emit
             {
                 static MethodInfo _Object_Object, _Object_Int32, _Object_Double;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Add", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
-                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = _this.GetMethod("Add", new Type[] { typeof(Object), typeof(Int32) }); return _Object_Int32; } }
-                public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = _this.GetMethod("Add", new Type[] { typeof(Object), typeof(Double) }); return _Object_Double; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object,object,object>(PHP.Core.Operators.Add).Method; return _Object_Object; } }
+                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = new Func<object, int, object>(PHP.Core.Operators.Add).Method; return _Object_Int32; } }
+                public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = new Func<object, double, double>(PHP.Core.Operators.Add).Method; return _Object_Double; } }
             }
 
             public struct Subtract
             {
                 static MethodInfo _Object_Object, _Int32_Object, _Double_Object;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Subtract", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
-                public static MethodInfo Int32_Object { get { if (_Int32_Object == null) _Int32_Object = _this.GetMethod("Subtract", new Type[] { typeof(Int32), typeof(Object) }); return _Int32_Object; } }
-                public static MethodInfo Double_Object { get { if (_Double_Object == null) _Double_Object = _this.GetMethod("Subtract", new Type[] { typeof(Double), typeof(Object) }); return _Double_Object; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Subtract).Method; return _Object_Object; } }
+                public static MethodInfo Int32_Object { get { if (_Int32_Object == null) _Int32_Object = new Func<int, object, object>(PHP.Core.Operators.Subtract).Method; return _Int32_Object; } }
+                public static MethodInfo Double_Object { get { if (_Double_Object == null) _Double_Object = new Func<double, object, double>(PHP.Core.Operators.Subtract).Method; return _Double_Object; } }
             }
 
-            public static MethodInfo Minus { get { if (_Minus == null) _Minus = _this.GetMethod("Minus"); return _Minus; } }
-            public static MethodInfo Plus { get { if (_Plus == null) _Plus = _this.GetMethod("Plus"); return _Plus; } }
+            public static MethodInfo Minus { get { if (_Minus == null) _Minus = new Func<object, object>(PHP.Core.Operators.Minus).Method; return _Minus; } }
+            public static MethodInfo Plus { get { if (_Plus == null) _Plus = new Func<object, object>(PHP.Core.Operators.Plus).Method; return _Plus; } }
             public struct Divide
             {
                 static MethodInfo _Object_Object, _Object_Int32, _Object_Double, _Int32_Object, _Double_Object;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Divide", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
-                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = _this.GetMethod("Divide", new Type[] { typeof(Object), typeof(Int32) }); return _Object_Int32; } }
-                public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = _this.GetMethod("Divide", new Type[] { typeof(Object), typeof(Double) }); return _Object_Double; } }
-                public static MethodInfo Int32_Object { get { if (_Int32_Object == null) _Int32_Object = _this.GetMethod("Divide", new Type[] { typeof(Int32), typeof(Object) }); return _Int32_Object; } }
-                public static MethodInfo Double_Object { get { if (_Double_Object == null) _Double_Object = _this.GetMethod("Divide", new Type[] { typeof(Double), typeof(Object) }); return _Double_Object; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Divide).Method; return _Object_Object; } }
+                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = new Func<object, int, object>(PHP.Core.Operators.Divide).Method; return _Object_Int32; } }
+                public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = new Func<object, double, double>(PHP.Core.Operators.Divide).Method; return _Object_Double; } }
+                public static MethodInfo Int32_Object { get { if (_Int32_Object == null) _Int32_Object = new Func<int, object, object>(PHP.Core.Operators.Divide).Method; return _Int32_Object; } }
+                public static MethodInfo Double_Object { get { if (_Double_Object == null) _Double_Object = new Func<double, object, object>(PHP.Core.Operators.Divide).Method; return _Double_Object; } }
             }
 
             public struct Multiply
             {
                 static MethodInfo _Object_Object, _Object_Int32, _Object_Double;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Multiply", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
-                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = _this.GetMethod("Multiply", new Type[] { typeof(Object), typeof(Int32) }); return _Object_Int32; } }
-                public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = _this.GetMethod("Multiply", new Type[] { typeof(Object), typeof(Double) }); return _Object_Double; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Multiply).Method; return _Object_Object; } }
+                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = new Func<object, int, object>(PHP.Core.Operators.Multiply).Method; return _Object_Int32; } }
+                public static MethodInfo Object_Double { get { if (_Object_Double == null) _Object_Double = new Func<object, double, double>(PHP.Core.Operators.Multiply).Method; return _Object_Double; } }
             }
 
             public struct Remainder
             {
                 static MethodInfo _Object_Object, _Object_Int32;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Remainder", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
-                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = _this.GetMethod("Remainder", new Type[] { typeof(Object), typeof(Int32) }); return _Object_Int32; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Remainder).Method; return _Object_Object; } }
+                public static MethodInfo Object_Int32 { get { if (_Object_Int32 == null) _Object_Int32 = new Func<object, int, object>(PHP.Core.Operators.Remainder).Method; return _Object_Int32; } }
             }
 
-            public static MethodInfo Increment { get { if (_Increment == null) _Increment = _this.GetMethod("Increment"); return _Increment; } }
-            public static MethodInfo Decrement { get { if (_Decrement == null) _Decrement = _this.GetMethod("Decrement"); return _Decrement; } }
-            public static MethodInfo BitOperation { get { if (_BitOperation == null) _BitOperation = _this.GetMethod("BitOperation"); return _BitOperation; } }
-            public static MethodInfo BitNot { get { if (_BitNot == null) _BitNot = _this.GetMethod("BitNot"); return _BitNot; } }
-            public static MethodInfo ShiftLeft { get { if (_ShiftLeft == null) _ShiftLeft = _this.GetMethod("ShiftLeft"); return _ShiftLeft; } }
-            public static MethodInfo ShiftRight { get { if (_ShiftRight == null) _ShiftRight = _this.GetMethod("ShiftRight"); return _ShiftRight; } }
+            public static MethodInfo Increment { get { if (_Increment == null) _Increment = new Func<object, object>(PHP.Core.Operators.Increment).Method; return _Increment; } }
+            public static MethodInfo Decrement { get { if (_Decrement == null) _Decrement = new Func<object, object>(PHP.Core.Operators.Decrement).Method; return _Decrement; } }
+            public static MethodInfo BitOperation { get { if (_BitOperation == null) _BitOperation = new Func<object, object, PHP.Core.Operators.BitOp, object>(PHP.Core.Operators.BitOperation).Method; return _BitOperation; } }
+            public static MethodInfo BitNot { get { if (_BitNot == null) _BitNot = new Func<object, object>(PHP.Core.Operators.BitNot).Method; return _BitNot; } }
+            public static MethodInfo ShiftLeft { get { if (_ShiftLeft == null) _ShiftLeft = new Func<object, object, object>(PHP.Core.Operators.ShiftLeft).Method; return _ShiftLeft; } }
+            public static MethodInfo ShiftRight { get { if (_ShiftRight == null) _ShiftRight = new Func<object, object, object>(PHP.Core.Operators.ShiftRight).Method; return _ShiftRight; } }
             public struct Concat
             {
                 static MethodInfo _Object_Object, _Object_String, _String_Object, _ObjectArray;
 
-                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = _this.GetMethod("Concat", new Type[] { typeof(Object), typeof(Object) }); return _Object_Object; } }
-                public static MethodInfo Object_String { get { if (_Object_String == null) _Object_String = _this.GetMethod("Concat", new Type[] { typeof(Object), typeof(String) }); return _Object_String; } }
-                public static MethodInfo String_Object { get { if (_String_Object == null) _String_Object = _this.GetMethod("Concat", new Type[] { typeof(String), typeof(Object) }); return _String_Object; } }
-                public static MethodInfo ObjectArray { get { if (_ObjectArray == null) _ObjectArray = _this.GetMethod("Concat", new Type[] { typeof(Object[]) }); return _ObjectArray; } }
+                public static MethodInfo Object_Object { get { if (_Object_Object == null) _Object_Object = new Func<object, object, object>(PHP.Core.Operators.Concat).Method; return _Object_Object; } }
+                public static MethodInfo Object_String { get { if (_Object_String == null) _Object_String = new Func<object, string, object>(PHP.Core.Operators.Concat).Method; return _Object_String; } }
+                public static MethodInfo String_Object { get { if (_String_Object == null) _String_Object = new Func<string, object, object>(PHP.Core.Operators.Concat).Method; return _String_Object; } }
+                public static MethodInfo ObjectArray { get { if (_ObjectArray == null) _ObjectArray = new Func<object[], object>(PHP.Core.Operators.Concat).Method; return _ObjectArray; } }
             }
 
             public struct Append
