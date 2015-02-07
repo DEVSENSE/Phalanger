@@ -56,9 +56,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.Zip", "..\Source\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extension.PDOSQLServer", "..\Source\Extensions\PDOSQLServer\Extension.PDOSQLServer.csproj", "{7445CDB5-09EE-4884-B606-B1D870E03B3B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Utils", "..\Source\Core.Utils\Core.Utils.csproj", "{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 18
+		SccNumberOfProjects = 19
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://team.corp.devsense.com:8443/tfs/projects
 		SccLocalPath0 = .
@@ -124,6 +126,9 @@ Global
 		SccProjectTopLevelParentUniqueName17 = Phalanger.sln
 		SccProjectName17 = ../Source/Extensions/PDOSQLServer
 		SccLocalPath17 = ..\\Source\\Extensions\\PDOSQLServer
+		SccProjectUniqueName18 = ..\\Source\\Core.Utils\\Core.Utils.csproj
+		SccProjectName18 = ../Source/Core.Utils
+		SccLocalPath18 = ..\\Source\\Core.Utils
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -380,6 +385,18 @@ Global
 		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7445CDB5-09EE-4884-B606-B1D870E03B3B}.Release|Win32.ActiveCfg = Release|Any CPU
+		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.DebugNoGac|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.DebugNoGac|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.DebugNoGac|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.DebugNoGac|Win32.ActiveCfg = Debug|Any CPU
+		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BFDBBA9E-D6BF-4BA0-88BC-B3853A4D6808}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

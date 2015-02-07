@@ -1135,7 +1135,7 @@ namespace PHP.Core
 			try
 			{
 				CacheEntry cache_entry;
-                if (ScriptAssemblyBuilder.CompileScripts(new PhpSourceFile[] { sourceFile }, null, null, context))
+                if (ScriptAssemblyBuilder.CompileScripts(new PhpSourceFile[] { sourceFile }, context))
                 {
                     // assembly should be already added into the cache by Persist() method
                     if (TryGetCachedEntry(ns, out cache_entry))
