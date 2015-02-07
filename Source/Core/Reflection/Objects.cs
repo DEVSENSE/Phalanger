@@ -2331,7 +2331,7 @@ namespace PHP.Core.Reflection
 				if (obj == null || !(obj.RealObject is Library.SPL.Iterator))
 				{
 					Library.SPL.Exception e = new Library.SPL.Exception(context, true);
-					e.__construct(context, CoreResources.GetString("getiterator_must_return_traversable", last_obj.TypeName), 0);
+					e.__construct(context, CoreResources.GetString("getiterator_must_return_traversable", last_obj.TypeName), 0, null);
 
 					throw new PhpUserException(e);
 				}
