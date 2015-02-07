@@ -7,6 +7,7 @@ using System.ComponentModel;
 using PHP.Library.SPL;
 using System.Data;
 using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 
 namespace PHP.Library.Data
 {
@@ -395,49 +396,47 @@ namespace PHP.Library.Data
         #endregion
 
         #region execute
-        [PhpVisible, ImplementsMethod]
-        public object execute(ScriptContext context)
-        {
-            return this.ExecuteInternal(null);
-        }
-
+        
         private bool ExecuteInternal(object input_parameters)
         {
             if (input_parameters != null)
             {
-                if (input_parameters is PhpArray)
+                PhpArray arr;
+                if ((arr = input_parameters as PhpArray) != null)
                 {
-                    PhpArray arr = (PhpArray)input_parameters;
-                    PreparedMode mode = PreparedMode.None;
-                    foreach (IntStringKey key in arr.Keys)
+                    if (arr.Count != 0)
                     {
-                        if (key.IsInteger && (mode == PreparedMode.Numbers || mode == PreparedMode.None))
+                        PreparedMode mode = PreparedMode.None;
+                        foreach (var item in arr)
                         {
-                            mode = PreparedMode.Numbers;
-                            if (!this.bindValue(key.Integer, arr[key], PDOParamType.PDO_PARAM_STR))
+                            Debug.Assert(item.Key.Object != null);
+
+                            if (item.Key.IsString && (mode == PreparedMode.Named || mode == PreparedMode.None))
                             {
-                                PhpException.Throw(PhpError.Warning, "Can't bind parameter n°" + key.Integer);
+                                mode = PreparedMode.Named;
+                            }
+                            else if (item.Key.IsInteger && (mode == PreparedMode.Numbers || mode == PreparedMode.None))
+                            {
+                                mode = PreparedMode.Numbers;
+                            }
+                            else
+                            {
+                                PhpException.Throw(PhpError.Warning, "Invalid bind parameter " + item.Key.Object.ToString());
                                 return false;
                             }
-                            continue;
-                        }
-                        if (key.IsString && (mode == PreparedMode.Named || mode == PreparedMode.None))
-                        {
-                            mode = PreparedMode.Named;
-                            if (!this.bindValue(key.String, arr[key], PDOParamType.PDO_PARAM_STR))
+
+                            // bind the parameter
+                            if (!this.bindValue(item.Key.Object, item.Value, PDOParamType.PDO_PARAM_STR))
                             {
-                                PhpException.Throw(PhpError.Warning, "Can't bind parameter " + key.String);
+                                PhpException.Throw(PhpError.Warning, "Can't bind parameter " + item.Key.Object.ToString());
                                 return false;
                             }
-                            continue;
                         }
-                        PhpException.Throw(PhpError.Warning, "Invalid prepared statement");
-                        return false;
                     }
                 }
                 else
                 {
-                    PhpException.Throw(PhpError.Warning, "input_parameters is not an array");
+                    PhpException.InvalidArgumentType("input_parameters", PhpArray.PhpTypeName);
                     return false;
                 }
             }
@@ -445,9 +444,9 @@ namespace PHP.Library.Data
         }
 
         [PhpVisible, ImplementsMethod]
-        public object execute(ScriptContext context, object input_parameters)
+        public object execute(ScriptContext context, [Optional] object input_parameters)
         {
-            return this.ExecuteInternal(input_parameters);
+            return this.ExecuteInternal((input_parameters != Arg.Default) ? input_parameters : null);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]

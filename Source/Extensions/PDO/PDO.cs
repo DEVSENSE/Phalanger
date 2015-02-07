@@ -262,7 +262,6 @@ namespace PHP.Library.Data
         
         [PhpVisible]
         [ImplementsMethod]
-        [return: CastToFalse]
         public object query(ScriptContext context, object statement, [Optional] object fetch_to_mode, [Optional] object fetch_to_dest, [Optional] object fetch_to_args)
         {
             string query = PHP.Core.Convert.ObjectToString(statement);
@@ -462,7 +461,9 @@ namespace PHP.Library.Data
         [ImplementsMethod, PhpVisible]
         public object lastInsertId(ScriptContext context, [Optional] object name)
         {
-            return this.getLastInsertId(context, null);
+            return this.getLastInsertId(
+                context,
+                (name != Arg.Default && name != null) ? Core.Convert.ObjectToString(name) : null);
         }
 
         private object getLastInsertId(ScriptContext context, string name)
