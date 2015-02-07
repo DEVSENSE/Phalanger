@@ -472,6 +472,8 @@ namespace PHP.Core.Reflection
                 if (info == null || !PhpFunctionUtils.IsArgfullOverload(info, null))
                     continue;
 
+                // TODO: namespaces!!
+
                 if (functions.ContainsKey(info.Name))
                     throw new InvalidOperationException("Function '" + info.Name + "' redeclaration.");   // compilation unit contains more functions with the same name
 
@@ -513,6 +515,8 @@ namespace PHP.Core.Reflection
         {
             foreach (var field in scriptType.GetFields(BindingFlags.Public | BindingFlags.Static))
             {
+                // TODO: namespaces!!
+
                 GlobalConstant constant = new GlobalConstant(this, QualifiedName.FromClrNotation(field.Name, true), field);
                 constant.SetValue(Convert.ClrLiteralToPhpLiteral(field.GetValue(null)));
                 constants.Add(field.Name, constant.ConstantDesc, false);
