@@ -1919,6 +1919,30 @@ namespace PHP.Core
         }
 
         /// <summary>
+        /// Compare arrays of <see cref="Type"/> reference.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns>True if <paramref name="x"/> and <paramref name="y"/> references are equal or single elements matches.</returns>
+        public static bool Equals(Type[] x, Type[] y)
+        {
+            if (object.ReferenceEquals(x, y))
+                return true;
+
+            if (object.ReferenceEquals(x, null) ^ object.ReferenceEquals(y, null))
+                return false;
+
+            if (x.Length != y.Length)
+                return false;
+
+            for (int i = 0; i < x.Length; ++i)
+                if (x[i] != y[i])
+                    return false;
+
+            return true;
+        }
+
+        /// <summary>
         /// Returns an array of indices of items in an array which are equal to or not equal to the specified value.
         /// </summary>
         /// <param name="bytes">The array of values. Assumes that length of the array is less or equal to 256.</param>
