@@ -532,7 +532,7 @@ namespace PHP.Core.Parsers
                         if (lastDocComment != null &&
                             token != Tokens.T_PUBLIC && token != Tokens.T_PRIVATE && token != Tokens.T_PROTECTED &&
                             token != Tokens.T_STATIC && token != Tokens.T_FINAL &&
-                            token != Tokens.T_NAMESPACE)
+                            token != Tokens.T_ABSTRACT)
                         {
                             this.lastDocComment = null;
                         }
