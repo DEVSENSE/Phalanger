@@ -633,17 +633,42 @@ namespace PHP.Library.Xml
 		}
 		
 		/// <summary>
-		/// Internal to-<see cref="bool"/> conversion.
+		/// Internal to-<see cref="int"/> conversion.
 		/// </summary>
-		public override bool ToBoolean()
+		public override int ToInteger()
 		{
-			// return true iff the instance has at least one property
-			foreach (KeyValuePair<object, object> pair in this)
-			{
-				return true;
-			}
-			return false;
+            return PHP.Core.Convert.StringToInteger(ToString());
 		}
+
+        /// <summary>
+        /// Internal to-<see cref="long"/> conversion.
+        /// </summary>
+        public override long ToLongInteger()
+        {
+            return PHP.Core.Convert.StringToLongInteger(ToString());
+        }
+
+        /// <summary>
+        /// Internal to-<see cref="double"/> conversion.
+        /// </summary>
+        public override double ToDouble()
+        {
+            return PHP.Core.Convert.StringToDouble(ToString());
+        }
+
+        /// <summary>
+        /// Internal to-<see cref="bool"/> conversion.
+        /// </summary>
+        public override bool ToBoolean()
+        {
+            // return true iff the instance has at least one property
+            foreach (KeyValuePair<object, object> pair in this)
+            {
+                return true;
+            }
+            return false;
+        }
+
 
 		/// <summary>
 		/// Internal dump enumeration.
