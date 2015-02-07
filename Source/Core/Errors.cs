@@ -1112,7 +1112,7 @@ namespace PHP.Core
 #endif
 
         /// <summary>
-        /// Exception details. Contains also details of <see cref="InnerException"/> to pass this into event logs.
+        /// Exception details. Contains also details of <see cref="Exception.InnerException"/> to pass this into event logs.
         /// </summary>
         public override string Message
         {
