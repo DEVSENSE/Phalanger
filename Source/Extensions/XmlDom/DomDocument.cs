@@ -857,7 +857,7 @@ namespace PHP.Library.Xml
 		[PhpVisible]
         public object loadHTML(string source)
 		{
-            if (source == null)
+            if (string.IsNullOrEmpty(source))
                 return false;
 
             return loadHTML(new StringReader(source));
