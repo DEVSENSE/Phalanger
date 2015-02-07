@@ -131,11 +131,11 @@ HRESULT CBootstrapperDlg::OnLinkCore(IHTMLElement* pElement)
 	return -1;
 }
 
-#define PHALANGER_TOOLS_PATH TEXT("\\Microsoft\\VisualStudio\\10.0\\Extensions\\DEVSENSE\\Phalanger Tools Lite")
-#define PHALANGER_TOOLS_VERSION TEXT("3.0.2286") // CURRENT VERSION OF TOOLS // TODO: extract from .VSIX automatically
+//#define PHALANGER_TOOLS_PATH TEXT("\\Microsoft\\VisualStudio\\10.0\\Extensions\\DEVSENSE\\Phalanger Tools Lite")
+//#define PHALANGER_TOOLS_VERSION TEXT("3.0.2286") // CURRENT VERSION OF TOOLS // TODO: extract from .VSIX automatically
 
 // recursively delete directory
-bool DeleteDir(TCHAR*szPath)
+/*bool DeleteDir(TCHAR*szPath)
 {
 	TCHAR szPathFilter[512];
 
@@ -183,43 +183,43 @@ bool DeleteDir(TCHAR*szPath)
 	}
 
 	return true;
-}
+}*/
 
 HRESULT CBootstrapperDlg::OnLinkIntegration(IHTMLElement* pElement)
 {
-	// remove any previously installed integration
-	TCHAR szPath[512];
-	if(SUCCEEDED(SHGetFolderPath(NULL, 
-					CSIDL_LOCAL_APPDATA, 
-					NULL, 
-					0, 
-					szPath))) 
-	{
-		PathAppend(szPath, PHALANGER_TOOLS_PATH);
+	//// remove any previously installed integration
+	//TCHAR szPath[512];
+	//if(SUCCEEDED(SHGetFolderPath(NULL, 
+	//				CSIDL_LOCAL_APPDATA, 
+	//				NULL, 
+	//				0, 
+	//				szPath))) 
+	//{
+	//	PathAppend(szPath, PHALANGER_TOOLS_PATH);
 
-		// if there is an old tools installed, try to remove it:
-		if (GetFileAttributes(szPath) != INVALID_FILE_ATTRIBUTES)
-		{
-			// move to tmp location to check rights
-			TCHAR szTmpPath[512];
-			_tcscpy_s(szTmpPath, szPath);
-			do
-			{_tcscat_s(szTmpPath, TEXT(".d"));}
-			while (GetFileAttributes(szTmpPath) != INVALID_FILE_ATTRIBUTES);
+	//	// if there is an old tools installed, try to remove it:
+	//	if (GetFileAttributes(szPath) != INVALID_FILE_ATTRIBUTES)
+	//	{
+	//		// move to tmp location to check rights
+	//		TCHAR szTmpPath[512];
+	//		_tcscpy_s(szTmpPath, szPath);
+	//		do
+	//		{_tcscat_s(szTmpPath, TEXT(".d"));}
+	//		while (GetFileAttributes(szTmpPath) != INVALID_FILE_ATTRIBUTES);
 
-			// delete old phalanger tools
-			if (!MoveFile(szPath, szTmpPath) || !DeleteDir(szTmpPath))
-			{
-				TCHAR buf[1024];
-				sprintf_s(buf, sizeof(buf), "Could not remove previous installation of Phalanger Tools.\nPlease ensure you have closed all Visual Studio processes.");
-				MessageBox(buf, "Could not launch the installer", MB_OK | MB_ICONSTOP);
-				return -1;
-			}
-		}
-	}
+	//		// delete old phalanger tools
+	//		if (!MoveFile(szPath, szTmpPath) || !DeleteDir(szTmpPath))
+	//		{
+	//			TCHAR buf[1024];
+	//			sprintf_s(buf, sizeof(buf), "Could not remove previous installation of Phalanger Tools.\nPlease ensure you have closed all Visual Studio processes.");
+	//			MessageBox(buf, "Could not launch the installer", MB_OK | MB_ICONSTOP);
+	//			return -1;
+	//		}
+	//	}
+	//}
 
 	// install
-	Launch("Setup\\Phalanger.VS2010.vsix");
+	Launch("Setup\\Phalanger.VS.vsix");
 	LogVisit(L"phalanger.vs2010");
 
 	return -1;
@@ -288,7 +288,7 @@ bool CBootstrapperDlg::FwInstalled()
 bool CBootstrapperDlg::VcInstalled()
 {
 	CRegKey key;
-	return (key.Open(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\\VisualStudio\\10.0\\VC\\VCRedist\\x86", KEY_QUERY_VALUE) == ERROR_SUCCESS);
+	return (key.Open(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\VisualStudio\\10.0\\VC\\VCRedist\\x86", KEY_QUERY_VALUE) == ERROR_SUCCESS);
 }
 
 bool CBootstrapperDlg::CoreInstalled()
@@ -315,26 +315,26 @@ bool CBootstrapperDlg::VsNetInstalled()
 
 bool CBootstrapperDlg::IntegrationInstalled()
 {
-	// true iff current version of Phalanger Tools is installed
+	//// true iff current version of Phalanger Tools is installed
 
-	TCHAR szPath[512];
+	//TCHAR szPath[512];
 
-	if(SUCCEEDED(SHGetFolderPath(NULL, 
-					CSIDL_LOCAL_APPDATA, 
-					NULL, 
-					0, 
-					szPath))) 
-	{
-		PathAppend(szPath, PHALANGER_TOOLS_PATH);
-		PathAppend(szPath, PHALANGER_TOOLS_VERSION);
-		return (GetFileAttributes(szPath) != INVALID_FILE_ATTRIBUTES);
-		
-		/*WIN32_FIND_DATA FindFileData;
-		HANDLE hFind;
-		if ( (hFind = FindFirstFile(szPath, &FindFileData)) == INVALID_HANDLE_VALUE)
-			return 0;*/
-		
-	}
+	//if(SUCCEEDED(SHGetFolderPath(NULL, 
+	//				CSIDL_LOCAL_APPDATA, 
+	//				NULL, 
+	//				0, 
+	//				szPath))) 
+	//{
+	//	PathAppend(szPath, PHALANGER_TOOLS_PATH);
+	//	PathAppend(szPath, PHALANGER_TOOLS_VERSION);
+	//	return (GetFileAttributes(szPath) != INVALID_FILE_ATTRIBUTES);
+	//	
+	//	/*WIN32_FIND_DATA FindFileData;
+	//	HANDLE hFind;
+	//	if ( (hFind = FindFirstFile(szPath, &FindFileData)) == INVALID_HANDLE_VALUE)
+	//		return 0;*/
+	//	
+	//}
 
 	return false;
 }
