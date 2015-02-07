@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2004-2010 Pavel Novak, Tomas Matousek and Daniel Balas.
+ Copyright (c) 2004-2012 Pavel Novak, Tomas Matousek, DEVSENSE.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
  which can be found in the root of the Phalanger distribution. By using this software 
@@ -356,18 +356,7 @@ namespace PHP.Library
 		#endregion
 
         #region RawSmtpClient
-        /*
-         
-         Copyright (c) 2010 Daniel Balas
-
-         The use and distribution terms for this software are contained in the file named License.txt, 
-         which can be found in the root of the Phalanger distribution. By using this software 
-         in any fashion, you are agreeing to be bound by the terms of this license.
-         
-         You must not remove this notice from this software.
-
-        */
-
+        
         /// <summary>
         /// Raw SMTP client serving the needs of PHP mail functions. This is reimplemented mainly because .NET SmtpClient provides
         /// certain level of abstraction which is incompatible with mail function usage. Currently not as much advanced, but it can easily be.

@@ -351,6 +351,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ConversionsToClr.cs" />
+    <Compile Include="Generated\Lexer.cs" />
+    <Compile Include="Generated\Parser.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="HttpHeaders.CLR.cs" />
     <Compile Include="Library.CLR.cs" />
     <Compile Include="Logger.CLR.cs" />
@@ -378,10 +382,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Functions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Generated\Lexer.cs" />
-    <Compile Include="Generated\Parser.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GlobalVariables.CLR.cs">
@@ -546,7 +546,6 @@
       <CustomToolNamespace>PHP.Core.Localizations</CustomToolNamespace>
     </EmbeddedResource>
     <None Include="Core.snk" />
-    <None Include="EmbeddedDoc\Generated\Parser.log" />
     <None Include="EmbeddedDoc\Generators\Lexer.lex" />
     <None Include="EmbeddedDoc\Generators\Parser.y" />
     <None Include="Emit\AssemblyBuilders.cd" />

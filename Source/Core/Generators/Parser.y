@@ -441,6 +441,12 @@ using Pair = System.Tuple<object,object>;
 %type<Object> additional_catches_opt 
 %type<Object> additional_catches
 
+%type<Object> lambda_function_expression				// LambdaFuncExpr!
+%type<Integer> lambda_function_head						// PhpMemberAttributes
+%type<Object> lambda_function_use_var					// FormalParam!
+%type<Object> lambda_function_use_var_list				// List<FormalParam>!
+%type<Object> lambda_function_use_vars					// List<FormalParam>
+
 %type<Object> linq_query_expression 
 %type<Object> linq_from_clause 
 %type<Object> linq_generator_list 
@@ -601,10 +607,10 @@ namespace_statement:         /* PHP 5.3 */
 ;
 
 function_declaration_statement:
-		attributes_opt visibility_opt T_FUNCTION attributes_opt reference_opt identifier 
+		attributes_opt T_FUNCTION reference_opt identifier 
 		type_parameter_list_opt
 		{
-			ReserveTypeNames((List<FormalTypeParam>)$7);
+			ReserveTypeNames((List<FormalTypeParam>)$5);
 		}
 		'(' formal_parameter_list_opt ')' 
 		{ 
@@ -612,23 +618,24 @@ function_declaration_statement:
 		}
 		'{' inner_statement_list_opt '}'
 		{ 
-			CheckTypeParameterNames((List<FormalTypeParam>)$7, (string)$6);
+			CheckTypeParameterNames((List<FormalTypeParam>)$5, (string)$4);
 			
-			$$ = new FunctionDecl(sourceUnit, @6, @$, GetHeadingEnd(@11), GetBodyStart(@13), 
+			$$ = new FunctionDecl(sourceUnit, @4, @$, GetHeadingEnd(@9), GetBodyStart(@11), 
 				IsCurrentCodeOneLevelConditional, GetScope(), 
-				(PhpMemberAttributes)$2 | PhpMemberAttributes.Static,
-				(string)$6, currentNamespace, $5 != 0, 
-			  (List<FormalParam>)$10, (List<FormalTypeParam>)$7, (List<Statement>)$14, (List<CustomAttribute>)$1, 
-			  (List<CustomAttribute>)$4);
+				PhpMemberAttributes.Public | PhpMemberAttributes.Static,
+				(string)$4, currentNamespace, (int)$3 != 0, 
+			  (List<FormalParam>)$8, (List<FormalTypeParam>)$5, (List<Statement>)$12, (List<CustomAttribute>)$1);
 			  
-			CommentSet cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, (string)$3)} );
-			  
-			($$ as LangElement).Annotations.Set<CommentSet>(cs);
+			if ($2 != null)
+			{
+				var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, (string)$2)} );			  
+				($$ as LangElement).Annotations.Set<CommentSet>(cs);
+			}
 			
 			reductionsSink.FunctionDeclarationReduced(this,	(FunctionDecl)$$); 
 			  
 			LeaveConditionalCode();
-			UnreserveTypeNames((List<FormalTypeParam>)$7);
+			UnreserveTypeNames((List<FormalTypeParam>)$5);
 		} 
 ;
 
@@ -657,9 +664,12 @@ class_declaration_statement:
 				(List<FormalTypeParam>)$7, (GenericQualifiedName?)$9, (List<GenericQualifiedName>)$10, 
 		    (List<TypeMemberDecl>)$12, (List<CustomAttribute>)$1);
 		    
-		  CommentSet cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, PopDocComment())} );
-			  
-		  ($$ as LangElement).Annotations.Set<CommentSet>(cs);
+		  string doc_comment = PopDocComment();
+		  if (doc_comment != null)
+		  {
+			var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, doc_comment)} );
+			($$ as LangElement).Annotations.Set<CommentSet>(cs);
+		  }
 				
 		  reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
 
@@ -692,9 +702,12 @@ class_declaration_statement:
 				$4 != 0, class_name, currentNamespace, (List<FormalTypeParam>)$7, null, (List<GenericQualifiedName>)$9, (List<TypeMemberDecl>)$11, 
 				(List<CustomAttribute>)$1); 
 				
-		  CommentSet cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, PopDocComment())} );
-			  
-		  ($$ as LangElement).Annotations.Set<CommentSet>(cs);
+			string doc_comment = PopDocComment();
+			if (doc_comment != null)
+			{
+				var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, doc_comment)} );
+				($$ as LangElement).Annotations.Set<CommentSet>(cs);
+			}
 			
 			reductionsSink.TypeDeclarationReduced(this, (TypeDecl)$$);
 
@@ -910,9 +923,9 @@ inner_statement_list_opt:
 ;
 
 inner_statement:
-		statement												{ $$ = $1; }
+		statement						{ $$ = $1; }
 	|	function_declaration_statement	{ $$ = $1; }
-	|	class_declaration_statement			{ $$ = $1; }
+	|	class_declaration_statement		{ $$ = $1; }
 ;
 
 empty_statement:
@@ -1096,7 +1109,7 @@ foreach_optional_arg:
 ;
 
 foreach_variable:
-	reference_opt writable_chain    { $$ = new ForeachVar((VariableUse)$2, $1 == 1); }	
+	reference_opt writable_chain    { $$ = new ForeachVar((VariableUse)$2, (int)$1 == 1); }	
 ;
 
 for_statement:
@@ -1209,11 +1222,11 @@ formal_parameter_list:
 formal_parameter:         
     attributes_opt type_hint_opt reference_opt T_VARIABLE                   
     { 
-			$$ = new FormalParam(@4, (string)$4, $2, $3 == 1, null, (List<CustomAttribute>)$1); 
+			$$ = new FormalParam(@4, (string)$4, $2, (int)$3 == 1, null, (List<CustomAttribute>)$1); 
 		}
   | attributes_opt type_hint_opt reference_opt T_VARIABLE '=' constant_inititalizer 
 		{ 
-			$$ = new FormalParam(@4, (string)$4, $2, $3 == 1, (Expression)$6, (List<CustomAttribute>)$1); 
+			$$ = new FormalParam(@4, (string)$4, $2, (int)$3 == 1, (Expression)$6, (List<CustomAttribute>)$1); 
 		}
 ;
 
@@ -1316,24 +1329,30 @@ class_statement:
 		{ 
 			$$ = new FieldDeclList(@$, (PhpMemberAttributes)$2, (List<FieldDecl>)$3, (List<CustomAttribute>)$1); 
 			
-			CommentSet cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, PopDocComment())} );
-			  
-			($$ as LangElement).Annotations.Set<CommentSet>(cs); 
+			string doc_comment = PopDocComment();
+			if (doc_comment != null)
+			{
+				var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, doc_comment)} );
+				($$ as LangElement).Annotations.Set<CommentSet>(cs);
+			}
 		}
 		 
 	|	attributes_opt class_constant_declarator_list ';'
 		{ 
 		  $$ = new ConstDeclList(@$, (List<ClassConstantDecl>)$2, (List<CustomAttribute>)$1);
-		  
-		  CommentSet cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, PopDocComment())} );
-			  
-		  ($$ as LangElement).Annotations.Set<CommentSet>(cs);
+
+			string doc_comment = PopDocComment();
+			if (doc_comment != null)		  
+			{
+				var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, doc_comment)} );
+				($$ as LangElement).Annotations.Set<CommentSet>(cs);
+			}
 		}
 		
-	|	attributes_opt member_modifiers_opt T_FUNCTION attributes_opt reference_opt class_method_identifier 
+	|	attributes_opt member_modifiers_opt T_FUNCTION reference_opt class_method_identifier 
 	  type_parameter_list_opt
 	  {
-			ReserveTypeNames((List<FormalTypeParam>)$7);
+			ReserveTypeNames((List<FormalTypeParam>)$6);
 	  }
 	  '(' formal_parameter_list_opt ')' 
 		base_ctor_call_opt
@@ -1342,18 +1361,19 @@ class_statement:
 		}
 		method_body
 		{ 
-			CheckTypeParameterNames((List<FormalTypeParam>)$7, null);
+			CheckTypeParameterNames((List<FormalTypeParam>)$6, null);
 		  
-			$$ = new MethodDecl(@6, @$, GetHeadingEnd(GetLeftValidPosition(12)),GetBodyStart(@14), (string)$6, $5 != 0, (List<FormalParam>)$10, (List<FormalTypeParam>)$7,
-				(List<Statement>)$14, (PhpMemberAttributes)$2, (List<ActualParam>)$12, (List<CustomAttribute>)$1,
-				(List<CustomAttribute>)$4); 
+			$$ = new MethodDecl(@5, @$, GetHeadingEnd(GetLeftValidPosition(11)),GetBodyStart(@13), (string)$5, (int)$4 != 0, (List<FormalParam>)$9, (List<FormalTypeParam>)$6,
+				(List<Statement>)$13, (PhpMemberAttributes)$2, (List<ActualParam>)$11, (List<CustomAttribute>)$1); 
 				
-			CommentSet cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, (string)$3)} );
-			  
-			($$ as LangElement).Annotations.Set<CommentSet>(cs);
+			if ($3 != null)
+			{
+				var cs = new CommentSet(new Comment[] {new Comment(CommentType.Documentation, CommentPosition.Before, (string)$3)} );
+				($$ as LangElement).Annotations.Set<CommentSet>(cs);
+			}
 			
 			LeaveConditionalCode();
-			UnreserveTypeNames((List<FormalTypeParam>)$7);
+			UnreserveTypeNames((List<FormalTypeParam>)$6);
 		} 
 ;
 
@@ -1573,7 +1593,6 @@ expr_without_chain:
 	|	expr '|' expr	                  { $$ = new BinaryEx(@$, Operations.BitOr, (Expression)$1, (Expression)$3); }
 	|	expr '&' expr	                  { $$ = new BinaryEx(@$, Operations.BitAnd, (Expression)$1, (Expression)$3); }
 	|	expr '^' expr	                  { $$ = new BinaryEx(@$, Operations.BitXor, (Expression)$1, (Expression)$3); }
-//	|	expr '.' expr                   { $$ = new BinaryEx(@$, Operations.Concat, (Expression)$1, (Expression)$3); }		// we are using concat_exprs to chain the concatenation
 	|	concat_exprs					{ $$ = new ConcatEx(@$, new List<Expression>((List<Expression>)$1)); }
 	|	expr '+' expr                   { $$ = new BinaryEx(@$, Operations.Add, (Expression)$1, (Expression)$3); }
 	|	expr '-' expr                   { $$ = new BinaryEx(@$, Operations.Sub, (Expression)$1, (Expression)$3); }	
@@ -1611,7 +1630,40 @@ expr_without_chain:
 	|	T_REQUIRE expr		              { $$ = new IncludingEx(sourceUnit, GetScope(), IsCurrentCodeConditional, @$, InclusionTypes.Require, (Expression)$2); reductionsSink.InclusionReduced(this, (IncludingEx)$$); }
 	|	T_REQUIRE_ONCE expr		          { $$ = new IncludingEx(sourceUnit, GetScope(), IsCurrentCodeConditional, @$, InclusionTypes.RequireOnce, (Expression)$2); reductionsSink.InclusionReduced(this, (IncludingEx)$$); }
 
-	| linq_query_expression           { $$ = $1; }
+	| linq_query_expression				{ $$ = $1; }
+
+	//| lambda_function_expression		{ $$ = $1; }
+;
+
+lambda_function_expression:
+	lambda_function_head reference_opt '(' formal_parameter_list_opt ')' lambda_function_use_vars
+	{ 
+		EnterConditionalCode(); 
+	}
+	'{' inner_statement_list_opt '}'
+	{ 
+		throw new NotImplementedException();
+		LeaveConditionalCode();
+	}
+;
+
+lambda_function_head:
+		T_FUNCTION				{ $$ = (int)PhpMemberAttributes.None; }
+	|	T_STATIC T_FUNCTION		{ $$ = (int)PhpMemberAttributes.Static; }
+;
+
+lambda_function_use_vars:
+		/* empty */									{ $$ = null; }
+	|	T_USE '(' lambda_function_use_var_list ')'	{ $$ = $3; }
+;
+
+lambda_function_use_var_list:
+		lambda_function_use_var_list ',' lambda_function_use_var	{ $$ = $1; ListAdd<FormalParam>($$, (FormalParam)$3); }
+	|	lambda_function_use_var										{ $$ = NewList<FormalParam>((FormalParam)$1); }
+;
+
+lambda_function_use_var:
+		reference_opt T_VARIABLE		{ $$ = new FormalParam(@2, (string)$2, null, (int)$1 == 1, null, null); }
 ;
 
 concat_exprs:

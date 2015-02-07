@@ -1028,6 +1028,8 @@ namespace PHP.Core.CodeDom
         protected override void GenerateMethod(CodeMemberMethod e, CodeTypeDeclaration c)
         {
             OutputAttributes(e.CustomAttributes, false);
+            if (e.ReturnTypeCustomAttributes.Count > 0)
+                OutputAttributes(e.ReturnTypeCustomAttributes, false, "return:");
 
             if (!IsCurrentInterface)
             {
@@ -1038,11 +1040,6 @@ namespace PHP.Core.CodeDom
             // signature
             Output.Write(Keywords.Function + WhiteSpace.Space);
             Output.Write(e.Name);
-
-            if (e.ReturnTypeCustomAttributes.Count > 0)
-            {
-                OutputAttributes(e.ReturnTypeCustomAttributes, true);
-            }
 
             OutputTypeParameters(e.TypeParameters);
 
