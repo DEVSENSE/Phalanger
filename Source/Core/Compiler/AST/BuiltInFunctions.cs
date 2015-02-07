@@ -213,13 +213,22 @@ namespace PHP.Core.AST
 	{
         public override Operations Operation { get { return Operations.Empty; } }
 
-		private VariableUse variable;
-        public VariableUse Variable { get { return variable; } }
+        [Obsolete]
+        public Expression Variable { get { return expression; } }
 
-		public EmptyEx(Position p, VariableUse variable)
+        /// <summary>
+        /// Expression to be checked for emptiness.
+        /// </summary>
+        public Expression/*!*/Expression { get { return this.expression; } }
+        private Expression/*!*/expression;
+        
+        public EmptyEx(Position p, Expression expression)
 			: base(p)
 		{
-			this.variable = variable;
+            if (expression == null)
+                throw new ArgumentNullException("expression");
+
+            this.expression = expression;
 		}
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Expression.Analyze"]/*'/>
@@ -227,10 +236,13 @@ namespace PHP.Core.AST
 		{
 			access = info.Access;
 
-			variable.Analyze(analyzer, ExInfoFromParent.DefaultExInfo);
-
-			return new Evaluation(this);
+            return expression.Analyze(analyzer, ExInfoFromParent.DefaultExInfo).Evaluate(this, out expression);
 		}
+
+        internal override object Evaluate(object value)
+        {
+            return !Convert.ObjectToBoolean(value);
+        }
 
 		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
 		/// <remarks>
@@ -242,14 +254,28 @@ namespace PHP.Core.AST
 			Debug.Assert(access == AccessType.Read || access == AccessType.None);
 			Statistics.AST.AddNode("EmptyEx");
 
-			codeGenerator.ChainBuilder.Create();
-			codeGenerator.ChainBuilder.QuietRead = true;
+            var variable = this.Expression as VariableUse;
 
-			// call EmitIsset in order to evaluate the variable quietly
-			codeGenerator.EmitBoxing(variable.EmitIsset(codeGenerator, true));
-			codeGenerator.IL.Emit(OpCodes.Call, Methods.PhpVariable.IsEmpty);
+            //
+            codeGenerator.ChainBuilder.Create();
 
-			codeGenerator.ChainBuilder.End();
+            if (variable != null)
+            {
+                // legacy isset behaviour (before PHP 5.5)
+                codeGenerator.ChainBuilder.QuietRead = true;
+
+                // call EmitIsset in order to evaluate the variable quietly
+                codeGenerator.EmitBoxing(variable.EmitIsset(codeGenerator, true));
+                codeGenerator.IL.Emit(OpCodes.Call, Methods.PhpVariable.IsEmpty);
+            }
+            else
+            {
+                codeGenerator.EmitObjectToBoolean(this.Expression, true);
+            }
+
+            //
+            codeGenerator.ChainBuilder.End();
+
 
 			if (access == AccessType.None)
 			{
@@ -267,6 +293,11 @@ namespace PHP.Core.AST
         public override void VisitMe(TreeVisitor visitor)
         {
             visitor.VisitEmptyEx(this);
+        }
+
+        internal override bool IsDeeplyCopied(CopyReason reason, int nestingLevel)
+        {
+            return false;
         }
 	}
 

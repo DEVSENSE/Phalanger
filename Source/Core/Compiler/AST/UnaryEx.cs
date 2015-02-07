@@ -218,13 +218,7 @@ namespace PHP.Core.AST
 
 				case Operations.LogicNegation:
 					//Template: "!x"  !Convert.ObjectToBoolean(x);                              
-                    if (((returned_typecode = expr.Emit(codeGenerator)) != PhpTypeCode.Boolean))
-                    {
-                        codeGenerator.EmitBoxing(returned_typecode);
-                        il.Emit(OpCodes.Call, Methods.Convert.ObjectToBoolean);
-                    }
-					il.Emit(OpCodes.Ldc_I4_0);
-					il.Emit(OpCodes.Ceq);
+                    codeGenerator.EmitObjectToBoolean(expr, true);
 					returned_typecode = PhpTypeCode.Boolean;
 					break;
 
@@ -267,12 +261,8 @@ namespace PHP.Core.AST
 
 				case Operations.BoolCast:
 					//Template: "(bool)x"     Convert.ObjectToBoolean(x)
-                    if (((returned_typecode = expr.Emit(codeGenerator)) != PhpTypeCode.Boolean))
-                    {
-                        codeGenerator.EmitBoxing(returned_typecode);
-                        il.Emit(OpCodes.Call, Methods.Convert.ObjectToBoolean);
-                        returned_typecode = PhpTypeCode.Boolean;
-                    }
+                    codeGenerator.EmitObjectToBoolean(expr, false);
+                    returned_typecode = PhpTypeCode.Boolean;
 					break;
 
 				case Operations.Int8Cast:

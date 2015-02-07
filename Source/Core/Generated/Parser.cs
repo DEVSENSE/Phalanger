@@ -3079,7 +3079,7 @@ public  partial class Parser: ShiftReduceParser<SemanticValueType,Position>
 { yyval.Object = new IssetEx(yypos, (List<VariableUse>)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 334: // expr_without_chain -> T_EMPTY '(' chain ')' 
-{ CheckVariableUse(value_stack.array[value_stack.top-2].yypos, value_stack.array[value_stack.top-2].yyval.Object); yyval.Object = new EmptyEx(yypos, (VariableUse)value_stack.array[value_stack.top-2].yyval.Object); }
+{ yyval.Object = new EmptyEx(yypos, (Expression)value_stack.array[value_stack.top-2].yyval.Object); }
         return;
       case 335: // expr_without_chain -> T_EVAL '(' expr ')' 
 { yyval.Object = new EvalEx(yypos, (Expression)value_stack.array[value_stack.top-2].yyval.Object, false); }
