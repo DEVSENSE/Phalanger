@@ -3452,5 +3452,38 @@ namespace PHP.Core
 
 		#endregion
 
-	}
+        #region Operators
+
+        /// <summary>
+        /// Emits most efficient form of equality comparison operator.
+        /// </summary>
+        /// <param name="leftExprEmitter"></param>
+        /// <param name="rightExprEmitter"></param>
+        internal PhpTypeCode EmitCompareEq(Func<CodeGenerator, PhpTypeCode>/*!*/leftExprEmitter, Func<CodeGenerator, PhpTypeCode>/*!*/rightExprEmitter)
+        {
+            Debug.Assert(leftExprEmitter != null && rightExprEmitter != null);
+
+            this.EmitBoxing(leftExprEmitter(this));      // x = leftExpr
+            var right_type = rightExprEmitter(this);     // y = rightExpr
+
+            switch (right_type)
+            {
+                case PhpTypeCode.Integer:
+                    this.IL.Emit(OpCodes.Call, Methods.CompareEq_object_int);
+                    break;
+                case PhpTypeCode.String:
+                    this.IL.Emit(OpCodes.Call, Methods.CompareEq_object_string);
+                    break;
+                default:
+                    this.EmitBoxing(right_type);
+                    this.IL.Emit(OpCodes.Call, Methods.CompareEq_object_object);
+                    break;
+            }
+
+            return PhpTypeCode.Boolean;
+        }
+
+        #endregion
+
+    }
 }
