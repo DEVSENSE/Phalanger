@@ -28,63 +28,11 @@ namespace PHP.Core.Reflection
 {
 	[Serializable]
 	[DebuggerNonUserCode]
-#if !SILVERLIGHT
-    [DebuggerTypeProxy(typeof(DObject.DebugView))]
-    [DebuggerDisplay("object ({this.TypeName,nq})", Type = "{this.TypeName,nq}")]
-#endif
 	public abstract class DObject : IPhpComparable, IPhpConvertible, IPhpCloneable, IPhpPrintable,
 		IPhpVariable, IDisposable, IPhpObjectGraphNode, IPhpEnumerable, ISerializable,
 		IDeserializationCallback , IDynamicMetaObjectProvider
 	{
-        #region Debug View
-
-        [DebuggerDisplay("object ({this.obj.TypeName,nq})", Type = "{this.obj.TypeName,nq}")]
-        internal sealed class DebugView
-        {
-            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-            private readonly DObject obj;
-
-            public DebugView(DObject obj)
-            {
-                this.obj = obj;
-            }
-
-            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public PhpHashEntryDebugView[] Items
-            {
-                get
-                {
-                    List<PhpHashEntryDebugView> result = new List<PhpHashEntryDebugView>();
-
-                    for (DTypeDesc desc = obj.TypeDesc; desc != null; desc= desc.Base)
-                    {
-                        foreach (var field in desc.Properties)
-                        {
-                            if (field.Key.Value == PhpObjectBuilder.ProxyFieldName ||
-                                field.Key.Value == PhpObjectBuilder.TypeDescFieldName)
-                                continue;
-
-                            var fielddesc = field.Value;
-
-                            object value = fielddesc.Get(obj);
-                            if (value is PhpReference && !((PhpReference)value).IsAliased) value = ((PhpReference)value).Value;
-
-                            result.Add(new PhpHashEntryDebugView(new IntStringKey(field.Key.Value), value));
-                        }
-                    }
-
-                    if (obj.RuntimeFields != null)
-                        foreach (var field in obj.RuntimeFields)
-                            result.Add(new PhpHashEntryDebugView(field.Key, field.Value));
-
-                    return result.ToArray();
-                }
-            }
-        }
-
-        #endregion
-
-		#region ObjectFlags
+        #region ObjectFlags
 
 		/// <summary>
 		/// Instance flags grouped into an enum to conserve space.
@@ -2828,7 +2776,7 @@ namespace PHP.Core.Reflection
 	/// </remarks>
     [Serializable]
     [DebuggerNonUserCode]
-    [DebuggerDisplay("{realObject}", Type = "{realObject.GetType(),nq}")]
+    [DebuggerDisplay("{realObject}", Type = "{TypeName,nq}")]
     public sealed class ClrObject : DObject
     {
         #region Fields and Properties
@@ -2859,6 +2807,7 @@ namespace PHP.Core.Reflection
             this.realObject = obj;
         }
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         protected override bool ReadyForDisposal
         {
             get
