@@ -1095,11 +1095,11 @@ namespace PHP.Core
             public FullPath Libraries { get { return libraries; } }
 			private FullPath libraries;
 
-			/// <summary>
-			/// Path to Extensions Manager root.
-			/// </summary>
-			public FullPath ExtManager { get { return manager; } }
-			private FullPath manager;
+            ///// <summary>
+            ///// Path to Extensions Manager root.
+            ///// </summary>
+            //public FullPath ExtManager { get { return manager; } }
+            //private FullPath manager;
 
 			/// <summary>
 			/// Path to PHP native extensions directory.
@@ -1134,7 +1134,7 @@ namespace PHP.Core
                 try { current_app_dir = (http_context != null) ? http_context.Server.MapPath("/bin") : "."; }  // this can throw on Mono
                 catch (InvalidOperationException) { current_app_dir = "bin"; }
 
-                libraries = manager = natives = wrappers = typeDefs = new FullPath(current_app_dir);
+                libraries = /*manager =*/ natives = wrappers = typeDefs = new FullPath(current_app_dir);
 
                 string dynamic_path = (http_context != null) ? current_app_dir : Path.GetTempPath();
                 dynamicWrappers = new FullPath(dynamic_path);
@@ -1155,7 +1155,7 @@ namespace PHP.Core
 					case "ExtWrappers": wrappers = CheckedPath(value, node); return true;
 					case "ExtTypeDefs": typeDefs = CheckedPath(value, node); return true;
 					case "ExtNatives": natives = CheckedPath(value, node); return true;
-					case "ExtManager": manager = CheckedPath(value, node); return true;
+					case "ExtManager": /*manager = CheckedPath(value, node); // DEPRECATED: will be removed in future versions */  return true;
 				}
 				return false;
 			}
