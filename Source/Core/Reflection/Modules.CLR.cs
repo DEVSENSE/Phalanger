@@ -19,7 +19,6 @@ using System.Reflection;
 using System.Threading;
 using PHP.Core.Emit;
 using System.Reflection.Emit;
-using System.Diagnostics;
 
 namespace PHP.Core.Reflection
 {
@@ -365,7 +364,6 @@ namespace PHP.Core.Reflection
 
                 ReflectScriptTypeFunctions(scriptType, functions);
                 ReflectScriptTypeClasses(scriptType, types);
-                ReflectScriptTypeConstants(scriptType, constants);
             }
 		}
 
@@ -423,7 +421,7 @@ namespace PHP.Core.Reflection
                 if (PhpType.IsPhpRealType(type) && !PhpType.IsRealConditionalDefinition(type))
                 {
                     // converts CLR namespaces and nested types to PHP namespaces:
-                    string full_name = ClrNotationUtils.FromClrNotation(type.FullName, true).ToString();
+                    string full_name = QualifiedName.FromClrNotation(type.FullName, true).ToString();
 
                     // Creating PhpTypeDesc with cache lookup since this type can be in the cache already:
                     // Also force PHP type, because we already checked PhpType.IsPhpRealType(type)
@@ -473,8 +471,6 @@ namespace PHP.Core.Reflection
                 if (info == null || !PhpFunctionUtils.IsArgfullOverload(info, null))
                     continue;
 
-                // TODO: namespaces!!
-
                 if (functions.ContainsKey(info.Name))
                     throw new InvalidOperationException("Function '" + info.Name + "' redeclaration.");   // compilation unit contains more functions with the same name
 
@@ -493,7 +489,7 @@ namespace PHP.Core.Reflection
                     PhpMemberAttributes attrs = Enums.GetMemberAttributes(info);
 
                     // this method has not been populated -> create a new PhpRoutineDesc
-                    func_desc = new PhpRoutineDesc(attrs, (RoutineDelegate)Delegate.CreateDelegate(Types.RoutineDelegate, argless_info), true);
+                    func_desc = new PhpRoutineDesc(attrs, (RoutineDelegate)Delegate.CreateDelegate(Types.RoutineDelegate, argless_info));
                     functions.Add(info.Name, func_desc);
 
                     //
@@ -506,23 +502,6 @@ namespace PHP.Core.Reflection
                 }
             }
 		}
-
-        /// <summary>
-        /// Reflect global constants in &lt;script&gt; class.
-        /// </summary>
-        /// <param name="scriptType">The type representing single script.</param>
-        /// <param name="constants">Dictionary for constants.</param>
-        private void ReflectScriptTypeConstants(Type scriptType, DualDictionary<string, DConstantDesc>/*!*/ constants)
-        {
-            foreach (var field in scriptType.GetFields(BindingFlags.Public | BindingFlags.Static))
-            {
-                // TODO: namespaces!!
-
-                GlobalConstant constant = new GlobalConstant(this, ClrNotationUtils.FromClrNotation(field.Name, true), field);
-                constant.SetValue(Convert.ClrLiteralToPhpLiteral(field.GetValue(null)));
-                constants.Add(field.Name, constant.ConstantDesc, false);
-            }            
-        }
 
 		#endregion
 	}
