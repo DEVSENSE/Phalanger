@@ -350,6 +350,13 @@ namespace PHP.Core.AST
 					}
 				}
 
+                // disallow instantiation of Closure
+                if (type.RealType == typeof(PHP.Library.SPL.Closure))
+                {
+                    analyzer.ErrorSink.Add(Errors.ClosureInstantiated, analyzer.SourceUnit, position, type.FullName);
+                    error_reported = true;
+                }
+
 				// type name resolved, look the constructor up:
 				constructor = analyzer.ResolveConstructor(type, position, analyzer.CurrentType, analyzer.CurrentRoutine,
 				  out runtimeVisibilityCheck);

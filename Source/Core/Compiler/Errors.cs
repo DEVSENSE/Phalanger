@@ -776,7 +776,7 @@ namespace PHP.Core
 		public static readonly ErrorInfo IncompleteClass = new ErrorInfo(1092, "incomplete_class", ErrorSeverity.Error);
 		public static readonly ErrorInfo ClassHasNoVisibleCtor = new ErrorInfo(1093, "class_has_no_visible_ctor", ErrorSeverity.Error);
 		public static readonly ErrorInfo AbstractClassOrInterfaceInstantiated = new ErrorInfo(1094, "abstract_class_or_interface_instantiated", ErrorSeverity.Error);
-
+        public static readonly ErrorInfo ClosureInstantiated = new ErrorInfo(1095, "instantiation_not_allowed", ErrorSeverity.Error);
 
 		//
 

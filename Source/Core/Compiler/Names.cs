@@ -481,10 +481,21 @@ namespace PHP.Core
 			return result.ToString();
 		}
 
+        /// <summary>
+        /// Handles PHP type and parses its name.
+        /// </summary>
+        public static QualifiedName FromClrNotation(Type/*!*/type)
+        {
+            Debug.Assert(type != null);
+
+            if (type.Assembly == typeof(ApplicationContext).Assembly)
+                return new QualifiedName(new Name(type.Name));  // ignore namespace in Core
+            else
+                return FromClrNotation(type.FullName, true);
+        }
+
 		/// <summary>
 		/// Parses CLR full name. 
-		/// TODO: In some cases, we need to create a PHP full name string (not qualified name), so a similar method
-		/// producing a string would be useful.
 		/// </summary>
 		public static QualifiedName FromClrNotation(string/*!*/ fullName, bool hasBaseName)
 		{
@@ -498,7 +509,7 @@ namespace PHP.Core
                     fullName = fullName.Substring(lastGt + 2);
                 }
             }
-
+            
 			int component_count = 1;
 			for (int i = 0; i < fullName.Length; i++)
 			{
