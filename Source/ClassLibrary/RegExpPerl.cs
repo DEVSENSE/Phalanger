@@ -787,21 +787,13 @@ namespace PHP.Library
 			Debug.Assert(replacement != null ^ callback != null);
 
 			// get eval info if it has been captured - is needed even if we do not need them later
-            SourceCodeDescriptor descriptor = /*ScriptContext.CurrentContext*/context.GetCapturedSourceCodeDescriptor();
+            SourceCodeDescriptor descriptor = context.GetCapturedSourceCodeDescriptor();
 
 			// PHP's behaviour for undocumented limit range
 			if (limit < -1)
 				limit = 0;
-
-			PhpArray pattern_array = pattern as PhpArray;
-			PhpArray replacement_array = replacement as PhpArray;
-
-			if (pattern_array == null && replacement_array != null)
-			{
-				// string pattern and array replacement not allowed:
-				PhpException.InvalidArgument("replacement", LibResources.GetString("replacement_array_pattern_not"));
-				return null;
-			}
+            
+            PhpArray replacement_array = replacement as PhpArray;
 
 			string replacement_string = null;
 			if (replacement_array == null && replacement != null)
@@ -810,40 +802,61 @@ namespace PHP.Library
 			// we should return new array, if there is an array passed as subject, it should remain unchanged:
 			object data_copy = PhpVariable.DeepCopy(data);
 
-			// pattern should be treated as string and therefore replacement too:
-			if (pattern_array == null)
-				return SimpleReplace(self, definedVariables, pattern, replacement_string, callback, data_copy, limit, descriptor, ref count);
-
-			// enumerators for arrays
-			IEnumerator<object> pattern_enumerator = pattern_array.Values.GetEnumerator();
-			IEnumerator<object> replacement_enumerator = (replacement_array != null) ? replacement_array.Values.GetEnumerator() : null;
-
-            try
+            PhpArray pattern_array = pattern as PhpArray;
+            if (pattern_array == null)
             {
-                // call replacement on data for all pattern array items
-                while (pattern_enumerator.MoveNext())
+                // string pattern
+                // string replacement
+
+                if (replacement_array != null)
                 {
-                    if (replacement_array != null)
+                    // string pattern and array replacement not allowed:
+                    PhpException.InvalidArgument("replacement", LibResources.GetString("replacement_array_pattern_not"));
+                    return null;
+                }
+
+                // pattern should be treated as string and therefore replacement too:
+                return SimpleReplace(self, definedVariables, pattern, replacement_string, callback, data_copy, limit, descriptor, ref count);
+            }
+            else if (replacement_array == null)
+            {
+                // array  pattern
+                // string replacement
+
+                using (var pattern_enumerator = pattern_array.GetFastEnumerator())
+                    while (pattern_enumerator.MoveNext())
+                    {
+                        data_copy = SimpleReplace(self, definedVariables, pattern_enumerator.CurrentValue, replacement_string,
+                                    callback, data_copy, limit, descriptor, ref count);
+                    }
+            }
+            else //if (replacement_array != null)
+            {
+                // array pattern
+                // array replacement
+
+                var replacement_enumerator = replacement_array.GetFastEnumerator();
+                bool replacement_valid = true;
+
+                using (var pattern_enumerator = pattern_array.GetFastEnumerator())
+                    while (pattern_enumerator.MoveNext())
                     {
                         // replacements are in array, move to next item and take it if possible, in other case take empty string:
-                        replacement_string = (replacement_enumerator.MoveNext())
-                                ? Core.Convert.ObjectToString(replacement_enumerator.Current)
-                                : String.Empty;
+                        if (replacement_valid && replacement_enumerator.MoveNext())
+                        {
+                            replacement_string = Core.Convert.ObjectToString(replacement_enumerator.CurrentValue);
+                        }
+                        else
+                        {
+                            replacement_string = string.Empty;
+                            replacement_valid = false;  // end of replacement_enumerator, do not call MoveNext again!
+                        }
+
+                        data_copy = SimpleReplace(self, definedVariables, pattern_enumerator.CurrentValue, replacement_string,
+                                    callback, data_copy, limit, descriptor, ref count);
                     }
-
-                    data_copy = SimpleReplace(self, definedVariables, pattern_enumerator.Current, replacement_string,
-                                callback, data_copy, limit, descriptor, ref count);
-                }
             }
-            finally
-            {
-                // dispose enumerators!
-                pattern_enumerator.Dispose();
-
-                if (replacement_enumerator != null)
-                    replacement_enumerator.Dispose();
-            }
-
+            
 			// return resulting array or string assigned to data
 			return data_copy;
 		}
@@ -883,18 +896,24 @@ namespace PHP.Library
 			string data_string = (data_array == null) ? ConvertData(data, converter) : null;
 
 			// data comprising of a single string:
-			if (data_array == null)
-				return ReplaceInternal(self, definedVariables, converter, callback, data_string, limit, descriptor, ref count);
+            if (data_array == null)
+            {
+                return ReplaceInternal(self, definedVariables, converter, callback, data_string, limit, descriptor, ref count);
+            }
+            else
+            {
+                // data is array, process each item:
+                var enumerator = data_array.GetFastEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    enumerator.CurrentValue = ReplaceInternal(self, definedVariables, converter, callback,
+                        ConvertData(enumerator.CurrentValue, converter), limit, descriptor, ref count);
+                }
+                enumerator.Dispose();
 
-			// data is array, process each item:
-			foreach (KeyValuePair<IntStringKey, object> entry in data_array)
-			{
-				data_array[entry.Key] = ReplaceInternal(self, definedVariables, converter, callback, 
-					ConvertData(entry.Value, converter), limit, descriptor, ref count);
-			}
-
-			// return array with items replaced:
-			return data;
+                // return array with items replaced:
+                return data;
+            }
 		}
 
 		/// <summary>
@@ -936,7 +955,7 @@ namespace PHP.Library
 			}
 			else
 			{
-				StringBuilder result = new StringBuilder();
+                StringBuilder result = new StringBuilder((str != null) ? str.Length : 0);
 				int last_index = 0;
 
 				Match m = converter.Regex.Match(str);
@@ -1016,7 +1035,7 @@ namespace PHP.Library
 			}
 
 			/// <summary>
-            /// Expects replacement string produced by <see cref="PerlRegExpReplacementCache.ConvertReplacement"/>, 
+            /// Expects replacement string produced by <see cref="PerlRegExpReplacement.ConvertReplacement"/>, 
 			/// i.e. only ${n} refer to valid groups.
 			/// </summary>
 			private string Substitute(string replacement, GroupCollection groups)
@@ -1084,37 +1103,39 @@ namespace PHP.Library
 
 		private static PerlRegExpConverter ConvertPattern(object pattern, string replacement)
 		{
-			Encoding encoding = Configuration.Application.Globalization.PageEncoding;
+            var converter = PerlRegExpCache.Get(pattern, replacement, true);
 
-			try
-			{
-				return new PerlRegExpConverter(pattern, replacement, encoding);
-			}
-			catch (ArgumentException e)
-			{
-				// Exception message might contain substrings like "{2}" so it cannot be passed to any
-				// method that formats the string and replaces these numbers with parameters.
-				PhpException.Throw(PhpError.Warning, LibResources.GetString("invalid_argument", "pattern") + ": " + e.Message);
-				return null;
-			}
+            // converter can contain a warning message,
+            // it means it is invalid and we cannot use it:
+            if (converter.ArgumentException != null)
+            {
+                // Exception message might contain substrings like "{2}" so it cannot be passed to any
+                // method that formats the string and replaces these numbers with parameters.
+                PhpException.Throw(PhpError.Warning, LibResources.GetString("invalid_argument", "pattern") + ": " + converter.ArgumentException);
+                return null;
+            }
+
+            //
+            return converter;
 		}
 
-		private static string ConvertData(object data, PerlRegExpConverter/*!*/ converter)
+        private static string ConvertData(object data, PerlRegExpConverter/*!*/ converter)
 		{
-			PhpBytes bytes;
-
-			if ((bytes = data as PhpBytes) != null)
-			{
-                return converter.ConvertBytes(bytes.ReadonlyData, 0, bytes.Length);
-			}
-			else
+            if (data == null)
+            {
+                return string.Empty;
+            }
+            else if (data.GetType() == typeof(PhpBytes))
+            {
+                return converter.ConvertBytes(((PhpBytes)data).ReadonlyData);
+            }
+            else
 			{
 				string str = Core.Convert.ObjectToString(data);
 				return converter.ConvertString(str, 0, str.Length);
 			}
 		}
-
-
+        
 		/// <summary>
 		/// Used for handling Offset Capture flags. Returns just <paramref name="item"/> if
 		/// <paramref name="offsetCapture"/> is <B>false</B> or an <see cref="PhpArray"/> containing
@@ -1297,451 +1318,23 @@ namespace PHP.Library
 		#endregion
 	}
 
-    #region PerlRegExpCache
-    /// <summary>
-    /// Provides request-independent caching mechanism for PerlRegExp.
-    /// </summary>
-    internal static class PerlRegExpCache
+    #region PerlRegExpReplacement
+
+    internal static class PerlRegExpReplacement
     {
-        #region Types
-        /// <summary>
-        /// Unified regex cache key, which handles both strings and PhpBytes. Will be removed after PhpString implementation.
-        /// </summary>
-        public class RegexCacheKey : IEquatable<RegexCacheKey>
-        {
-            private int _hash;
-            private PhpBytes _binaryValue;
-            private string _stringValue;
-
-            private bool IsBinary { get { return _binaryValue != null; } }
-            private bool IsString { get { return _stringValue != null; } }
-
-            /// <summary>
-            /// Initizalizes binary string instance of the key.
-            /// </summary>
-            /// <param name="binaryValue">Key value.</param>
-            public RegexCacheKey(PhpBytes binaryValue)
-            {
-                _binaryValue = binaryValue;
-                _hash = binaryValue.GetHashCode();
-            }
-
-            /// <summary>
-            /// Initialized string instance of the key.
-            /// </summary>
-            /// <param name="stringValue">Key value.</param>
-            public RegexCacheKey(string stringValue)
-            {
-                _stringValue = stringValue;
-                _hash = stringValue.GetHashCode();
-            }
-
-            /// <summary>
-            /// Makes the key persistent. In case of binary keys this needs to be done
-            /// because PhpBytes is not immutable. This is fast, because copy is done lazily.
-            /// </summary>
-            public void MakePersistent()
-            {
-                if (_binaryValue != null)
-                {
-                    _binaryValue = (PhpBytes)_binaryValue.DeepCopy();
-                }
-            }
-
-            /// <summary>
-            /// Gets boolean indicating whether the RegexCacheKey is equal to another object.
-            /// </summary>
-            /// <param name="other">Other object.</param>
-            /// <returns>True if objects are identical. Otherwise false.</returns>
-            public override bool Equals(object other)
-            {
-                RegexCacheKey otherCacheKey =  other as RegexCacheKey;
-                if (otherCacheKey != null)
-                    return Equals(otherCacheKey);
-                return false;
-            }
-
-            /// <summary>
-            /// Gets boolean indicating whether the RegexCacheKey is equal to another RegexCacheKey.
-            /// </summary>
-            /// <param name="other">Other RegexCacheKey.</param>
-            /// <returns>True if RegexCacheKeys are identical. Otherwise false.</returns>
-            public bool Equals(RegexCacheKey other)
-            {
-                if (_hash != other._hash) return false;
-
-                if (IsBinary)
-                {
-                    if (other.IsBinary)
-                        return _binaryValue.Equals(other._binaryValue);
-                    else
-                        return false;
-
-                }
-                else
-                {
-                    if (other.IsString)
-                        return String.CompareOrdinal(_stringValue, other._stringValue) == 0;
-                    else
-                        return false;
-                }
-            }
-
-            /// <summary>
-            /// Gets cached hash code.
-            /// </summary>
-            /// <returns>Hash code.</returns>
-            public override int GetHashCode()
-            {
-                return _hash;
-            }
-        }
-
-        /// <summary>
-		/// Contains all things that is necessary to remember along with Regex in regex cache.
-		/// </summary>
-		private sealed class RegexCacheEntry
-		{
-            /// <summary>
-            /// Regex expression, used for creation of compiled Regex.
-            /// </summary>
-            public string/*!*/ RegexExpr;
-
-            /// <summary>
-            /// Regex options, used for creation of compiled Regex.
-            /// </summary>
-            public RegexOptions RegexOpt;
-
-            /// <summary>
-            /// Original Regex.
-            /// </summary>
-            public PerlRegexOptions PerlOpt;
-
-            /// <summary>
-            /// Perl regular expression options.
-            /// </summary>
-            public Regex/*!*/ Regex;
-
-            /// <summary>
-            /// Hit count.
-            /// </summary>
-            public int Hits;
-
-            /// <summary>
-            /// Request id we have used this entry first time.
-            /// </summary>
-            public int FirstRequestID;
-
-            /// <summary>
-            /// Request id we have used this entry last time.
-            /// </summary>
-            public int LastRequestID;
-
-            /// <summary>
-            /// Initializes new cache entry.
-            /// </summary>
-            /// <param name="regexExpr">Regex expression, used for creation of compiled Regex.</param>
-            /// <param name="regexOpt">Regex options, used for creation of compiled Regex.</param>
-            /// <param name="regex">Original Regex.</param>
-            /// <param name="perlOpt">Perl regular expression options.</param>
-            public RegexCacheEntry(string/*!*/ regexExpr, RegexOptions regexOpt, Regex/*!*/ regex, PerlRegexOptions perlOpt)
-			{
-                RegexExpr = regexExpr;
-                RegexOpt = regexOpt;
-                Regex = regex;
-                PerlOpt = perlOpt;
-                Hits = 1;
-                FirstRequestID = _currentRequestID;
-                LastRequestID = _currentRequestID;
-			}
-		}
-
-        #endregion
-
-        #region Initialization
-        /// <summary>
-        /// Initializes static stuff.
-        /// </summary>
-        static PerlRegExpCache()
-        {
-            _cacheLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-            _regexFirstGen = new Dictionary<RegexCacheKey, RegexCacheEntry>();
-            _regexSecondGen = new Dictionary<RegexCacheKey, RegexCacheEntry>();
-            RequestContext.RequestBegin += RequestInit;
-            RequestContext.RequestEnd += RequestCleanup;
-        }
-        #endregion
-
-        #region Fields & Properties
-        /// <summary>
-        /// Maximum time between cache cleanups (in seconds).
-        /// </summary>
-        private const int CacheCleanUpTimeInterval = 60;
-
-        /// <summary>
-        /// Minimal number of requests between cache cleanup.
-        /// </summary>
-        private const int CacheCleanUpRequestDelay = 8;
-
-        /// <summary>
-        /// Internal id of newest request.
-        /// </summary>
-        [ThreadStatic]
-        private static int _currentRequestID;
-
-        /// <summary>
-        /// Internal id of finished request.
-        /// </summary>
-        private static int _requestCounter;
-
-
-        #if !SILVERLIGHT
-        /// <summary>
-        /// Cache lock.
-        /// </summary>
-        private static ReaderWriterLockSlim/*!*/ _cacheLock;
-        #endif
-
-        /// <summary>
-        /// Mapping of strings to first generation of already prepared regular expressions.
-        /// </summary>
-        private static Dictionary<RegexCacheKey, RegexCacheEntry>/*!*/ _regexFirstGen;
-
-        /// <summary>
-        /// Mapping of strings to already prepared regular expressions.
-        /// </summary>
-        private static Dictionary<RegexCacheKey, RegexCacheEntry>/*!*/ _regexSecondGen;
-
-        /// <summary>
-        /// Last clean up time.
-        /// </summary>
-        private static DateTime lastCleanupTime;
-
-        /// <summary>
-        /// Last clean up request.
-        /// </summary>
-        private static int lastCleanupRequest;
-
-        #endregion
-
-        #region Methods
-        /// <summary>
-        /// Is called on request start. Inits local request id counter and updates current request id.
-        /// </summary>
-        private static void RequestInit()
-        {
-            // increments internal request id
-            _currentRequestID = Interlocked.Increment(ref _requestCounter);
-        }
-
-        /// <summary>
-        /// Is called on request end. If needed, cleans up the first gen cache.
-        /// </summary>
-        private static void RequestCleanup()
-        {
-            if ((DateTime.Now - lastCleanupTime).TotalSeconds < (double)CacheCleanUpTimeInterval
-                && _currentRequestID < lastCleanupRequest + CacheCleanUpRequestDelay)
-            {
-                // cleanup not needed
-                return;
-            }
-
-            lastCleanupTime = DateTime.Now;
-            lastCleanupRequest = _currentRequestID;
-
-#if !SILVERLIGHT
-            _cacheLock.EnterWriteLock();
-#endif
-
-            try
-            {
-                // do cleanup
-                _regexFirstGen = new Dictionary<RegexCacheKey, RegexCacheEntry>();
-            }
-            finally
-            {
-#if !SILVERLIGHT
-                _cacheLock.ExitWriteLock();
-#endif
-            }
-        }
-
-        /// <summary>
-        /// Gets cached regex for specified key.
-        /// </summary>
-        /// <param name="key">Key.</param>
-        /// <param name="regex">Found regex.</param>
-        /// <param name="options">Found Perl Options.</param>
-        /// <returns>True iff the regex was found in cache.</returns>
-        public static bool GetCachedRegex(RegexCacheKey/*!*/ key, out Regex regex, out PerlRegexOptions options)
-        {
-#if !SILVERLIGHT
-            _cacheLock.EnterUpgradeableReadLock();
-#endif
-
-            try
-            {
-                RegexCacheEntry entry;
-
-                // first look into second gen
-                if (_regexSecondGen.TryGetValue(key, out entry))
-                {
-                    regex = entry.Regex;
-                    options = entry.PerlOpt;
-                    return true;
-                    //return new Tuple<Regex, PerlRegexOptions>(entry.Regex, entry.PerlOpt);
-                }
-                //then into first gen
-                else if (_regexFirstGen.TryGetValue(key, out entry))
-                {
-                    TryUpgradeEntry(key, entry);
-
-                    regex = entry.Regex;
-                    options = entry.PerlOpt;
-                    return true;
-                    //return new Tuple<Regex, PerlRegexOptions>(entry.Regex, entry.PerlOpt);
-                }
-                else
-                {
-                    regex = null;
-                    options = PerlRegexOptions.None;
-                    return false;
-                    //return null;
-                }
-            }
-            finally
-            {
-#if !SILVERLIGHT
-                _cacheLock.ExitUpgradeableReadLock();
-#endif
-            }
-        }
-
-        /// <summary>
-        /// Adds regex into the cache.
-        /// </summary>
-        /// <param name="key">Cache key.</param>
-        /// <param name="pattern">Pattern used for Regex creation.</param>
-        /// <param name="regexOpt">Options user for Regex creation.</param>
-        /// <param name="regex">Regex object.</param>
-        /// <param name="perlOpt">Perl regex options.</param>
-        public static void AddRegex(RegexCacheKey/*!*/ key, string/*!*/ pattern, RegexOptions regexOpt, Regex/*!*/ regex, PerlRegexOptions perlOpt)
-        {
-#if !SILVERLIGHT
-            _cacheLock.EnterWriteLock();
-#endif
-
-            //makes the key persistent
-            key.MakePersistent();
-
-            try
-            {
-                //Debug.Assert(!_regexFirstGen.ContainsKey(key)); // (J) between GetCachedKey and AddRegex is no lock ! Surely this can fail.
-                _regexFirstGen[key] = new RegexCacheEntry(pattern, regexOpt, regex, perlOpt);
-            }
-            finally
-            {
-#if !SILVERLIGHT
-                _cacheLock.ExitWriteLock();
-#endif
-            }
-        }
-
-        /// <summary>
-        /// Tries to upgrade the cache entry if possible.
-        /// </summary>
-        /// <param name="key">Key.</param>
-        /// <param name="entry">Entry.</param>
-        private static void TryUpgradeEntry(RegexCacheKey/*!*/ key, RegexCacheEntry/*!*/ entry)
-        {
-            lock (entry)
-            {
-                // update hit count
-                entry.Hits++;
-
-                // update last request id (use finished request id, which is always lower than started request id)
-                // we increase it by one because we are in fact in that request
-                entry.LastRequestID = _currentRequestID;
-
-                // check rule (if the cache item was seen for 2 requests, upgrade it to second gen)
-                if (entry.LastRequestID > entry.FirstRequestID)
-                {
-                    // prepare new compiled regex
-                    Regex newRegex = new Regex(entry.RegexExpr, entry.RegexOpt | RegexOptions.Compiled);
-
-                    // swap the regexes
-                    entry.Regex = newRegex;
-
-#if !SILVERLIGHT
-                    _cacheLock.EnterWriteLock();
-#endif
-
-                    try
-                    {
-                        // remove from first gen not needed
-                        // key should not be in second gen
-                        _regexSecondGen.Add(key, entry);
-                    }
-                    finally
-                    {
-#if !SILVERLIGHT
-                        _cacheLock.ExitWriteLock();
-#endif
-                    }
-                }
-            }
-        }
-        #endregion
-    }
-    #endregion
-
-    #region PerlRegExpReplacementCache
-
-    internal static class PerlRegExpReplacementCache
-    {
-        //private const char KeySeparator = '\n';
-
-        ///// <summary>
-        ///// Cache of converted replacements. The key is concatenation of maximum group number, '\n' and replacement string.
-        ///// </summary>
-        //private static readonly PHP.Core.SynchronizedCache<string, string>/*!*/cache =
-        //    new SynchronizedCache<string, string>(group_replacement =>
-        //    {
-        //        int n = group_replacement.IndexOf(KeySeparator);
-        //        Debug.Assert(n >= 0, "Invalid cache key '" + group_replacement + "'");
-                
-        //        return ConvertReplacement(int.Parse(group_replacement.Remove(n)), group_replacement.Substring(n + 1));
-        //    });
-
         /// <summary>
         /// Get the converted replacement from the cache or perform conversion and cache.
         /// </summary>
         /// <param name="regex"></param>
         /// <param name="replacement"></param>
         /// <returns></returns>
-        public static string Get(Regex/*!*/regex, string/*!*/replacement)
+        internal static string ConvertReplacement(Regex/*!*/regex, string/*!*/replacement)
         {
-            //return cache.Get(CreateReplacementKey(regex, replacement));   // cache is slower than the ConvertReplacement itself ?
-
             int[] group_numbers = regex.GetGroupNumbers();
             int max_number = (group_numbers.Length > 0) ? group_numbers[group_numbers.Length - 1] : 0;
 
             return ConvertReplacement(max_number, replacement);
         }
-
-        ///// <summary>
-        ///// Get the key representing the replacement.
-        ///// </summary>
-        ///// <param name="regex"></param>
-        ///// <param name="replacement"></param>
-        ///// <returns></returns>
-        //private static string CreateReplacementKey(Regex/*!*/regex, string/*!*/replacement)
-        //{
-        //    int[] group_numbers = regex.GetGroupNumbers();
-        //    int max_number = (group_numbers.Length > 0) ? group_numbers[group_numbers.Length - 1] : 0;
-
-        //    return max_number.ToString() + KeySeparator + replacement;
-        //}
 
         /// <summary>
         /// Converts substitutions of the form \\xx to $xx (perl to .NET format).
@@ -1831,23 +1424,130 @@ namespace PHP.Library
 
     #endregion
 
+    #region PerlRegExpCache
+
+    internal static class PerlRegExpCache
+    {
+        private const uint BucketsLength = 64;
+        private static readonly PerlRegExpConverter[]/*!*/buckets = new PerlRegExpConverter[BucketsLength];
+        private static readonly object[] locks = new object[8];
+        static PerlRegExpCache()
+        {
+            var locks = PerlRegExpCache.locks;
+            for (int i = 0; i < locks.Length; i++)
+                locks[i] = new object();
+
+            Debug.Assert(BucketsLength == 64); // must be 2^x
+            RequestContext.RequestEnd += CleanupBuckets;
+        }
+
+        private static int generation = 0;
+
+        public static PerlRegExpConverter Get(object pattern, string replacement, bool add)
+        {
+            uint hash = unchecked(
+                ((pattern != null)
+                    ? (uint)pattern.GetHashCode()   // little slow, some virtual method call
+                    : 0)
+                & (BucketsLength - 1));
+
+            for (var item = buckets[hash]; item != null; item = item.nextcache)
+            {
+                if (item.CacheEquals(item, pattern, replacement))
+                {
+                    item.Cachehit();
+                    item.generation = PerlRegExpCache.generation;   // move item to the current generation
+                    return item;
+                }
+            }
+
+            return add ? EnsureGet(pattern, replacement, hash) : null;
+        }
+
+        private static PerlRegExpConverter/*!*/EnsureGet(object pattern, string replacement, uint hash)
+        {
+            PerlRegExpConverter item;
+
+            lock (locks[hash % locks.Length])
+            {
+                // double checked lock
+                if ((item = Get(pattern, replacement, false)) == null)
+                {
+                    // avoid growing of the table in non-web applications (console etc.)
+                    CleanupBuckets();
+
+                    // new item
+                    item = new PerlRegExpConverter(pattern, replacement, Configuration.Application.Globalization.PageEncoding)
+                    {
+                        nextcache = PerlRegExpCache.buckets[hash],
+                        generation = PerlRegExpCache.generation
+                    };
+                    buckets[hash] = item;   // enlist the item
+                }
+            }
+
+            return item;
+        }
+
+        private static int requestsCounter = 0;
+        private static uint cleanupBucket = 0;
+        private static void CleanupBuckets()
+        {
+            var requestsCounter = PerlRegExpCache.requestsCounter;
+            if (requestsCounter < 32)
+            {
+                PerlRegExpCache.requestsCounter = requestsCounter + 1;
+            }
+            else if (requestsCounter < 64)
+            {
+                if (Interlocked.Increment(ref PerlRegExpCache.requestsCounter) == 64)
+                {
+                    // do some cleanup
+                    var generation = PerlRegExpCache.generation;
+                    var hash = PerlRegExpCache.cleanupBucket;
+                    PerlRegExpCache.cleanupBucket = (uint)(hash + 1) & (BucketsLength - 1);
+
+                    //
+                    PerlRegExpConverter prev = null;
+                    for (var p = buckets[hash]; p != null; p = p.nextcache)
+                    {
+                        if (p.generation != generation && unchecked(p.generation + 1) != generation)
+                        {
+                            if (prev != null) prev.nextcache = p.nextcache;
+                            else buckets[hash] = p.nextcache;
+                        }
+                        else
+                            prev = p;
+                    }
+
+                    // 
+                    if ((hash & 1) == 1)    // every 2nd
+                        PerlRegExpCache.generation = unchecked(generation + 1);
+                }
+            }
+            else
+                PerlRegExpCache.requestsCounter = 0;
+        }
+    }
+
+    #endregion
+
     #region PerlRegExpConverter
 
     /// <summary>
 	/// Used for converting PHP Perl like regular expressions to .NET regular expressions.
 	/// </summary>
 	internal sealed class PerlRegExpConverter
-	{
+    {
+        #region Static & Constants
+
         /// <summary>
         /// All named groups from Perl regexp are renamed to start with this character. 
         /// In order to enable group names starting with number
         /// </summary>
         internal const char GroupPrefix = 'a';
 
-
-		#region Properties
-
-		/// <summary>
+        /// <summary>
 		/// Regular expression used for matching quantifiers, they are changed ungreedy to greedy and vice versa if
 		/// needed.
 		/// </summary>
@@ -1876,27 +1576,20 @@ namespace PHP.Library
 		}
 		private static Regex _posixCharClasses = null;
 
-		/// <summary>
-		/// Original perl regular expression passed to the constructor.
-		/// </summary>
-		private string perlRegEx;
+        #endregion
 
-		/// <summary>
+        #region Fields & Properties
+
+        /// <summary>
 		/// Returns <see cref="Regex"/> class that can be used for matching.
 		/// </summary>
 		public Regex/*!*/ Regex { get { return regex; } }
 		private Regex/*!*/ regex;
 
 		/// <summary>
-		/// .NET regular expression string. May be <B>null</B> if <see cref="regex"/> is already set.
-		/// </summary>
-		private string dotNetMatchExpression;
-
-		/// <summary>
 		/// Returns .NET replacement string.
 		/// </summary>
-		public string DotNetReplaceExpression { get { return dotNetReplaceExpression; } }
-		private string dotNetReplaceExpression;
+        public readonly string DotNetReplaceExpression;
 
 		/// <summary>
 		/// <see cref="RegexOptions"/> which should be set while matching the expression. May be <B>null</B>
@@ -1908,10 +1601,105 @@ namespace PHP.Library
 		public PerlRegexOptions PerlOptions { get { return perlOptions; } }
 		private PerlRegexOptions perlOptions = PerlRegexOptions.None;
 
-		public Encoding/*!*/ Encoding { get { return encoding; } }
 		private readonly Encoding/*!*/ encoding;
 
+        /// <summary>
+        /// An error message. Is <c>null</c> if all the conversions are ok.
+        /// </summary>
+        public string ArgumentException { get; private set; }
+
 		#endregion
+
+        #region Cache helper
+
+        /// <summary>
+        /// Internal pointer to the next <see cref="PerlRegExpConverter"/> in the list of cached <see cref="PerlRegExpConverter"/> instances.
+        /// </summary>
+        internal PerlRegExpConverter nextcache;
+        
+        /// <summary>
+        /// Internal hits counter. Once it gets to specified constant number, <see cref="regex"/> gets compiled.
+        /// </summary>
+        private int hitsCount = 0;
+        
+        /// <summary>
+        /// Current generation. Old generations can be removed from cache.
+        /// </summary>
+        internal long generation;
+        
+        internal readonly object _pattern;
+        internal readonly string _replacement, _strpattern;
+        
+        internal void Cachehit()
+        {
+            int hitsCount = this.hitsCount;
+
+            if (hitsCount < 3 && (Interlocked.Increment(ref this.hitsCount) == 3))
+            {
+                if (this.regex != null) // && (this.regex.Options & RegexOptions.Compiled) == 0)
+                    this.regex = new Regex(this.regex.ToString(), this.dotNetOptions | RegexOptions.Compiled);
+            }
+        }
+        
+        /// <summary>
+        /// Function that efficiently compares <c>this</c> instance of <see cref="PerlRegExpConverter"/> with another <see cref="PerlRegExpConverter"/>.
+        /// 1st argument is reference to <c>this</c>.
+        /// 2nd argument is the other's <see cref="PerlRegExpConverter._pattern"/>.
+        /// 3nd argument is the other's <see cref="PerlRegExpConverter._replacement"/>.
+        /// Function returns <c>true</c> if pattern and replacement match.
+        /// </summary>
+        internal readonly Func<PerlRegExpConverter, object, string, bool>/*!*/CacheEquals;
+
+        /// <summary>
+        /// Functions for efficient equality check.
+        /// </summary>
+        private struct CacheEqualsFunctions
+        {
+            static bool eq_null(PerlRegExpConverter self, object otherpattern, string otherreplacement) { return otherpattern == null && otherreplacement == self._replacement; }
+            static bool eq_string_null(PerlRegExpConverter self, object otherpattern, string otherreplacement) { return otherpattern != null && otherreplacement == null && otherpattern.GetType() == typeof(string) && self._strpattern.Equals((string)otherpattern); }
+            static bool eq_string(PerlRegExpConverter self, object otherpattern, string otherreplacement) { return otherpattern != null && otherreplacement != null && otherpattern.GetType() == typeof(string) && self._strpattern.Equals((string)otherpattern) && self._replacement.Equals(otherreplacement); }
+            static bool eq_phpbytes(PerlRegExpConverter self, object otherpattern, string otherreplacement) { return otherpattern != null && otherpattern.GetType() == typeof(PhpBytes) && ((PhpBytes)otherpattern).Equals((PhpBytes)self._pattern) && otherreplacement == self._replacement; }
+            static bool eq_phpstring(PerlRegExpConverter self, object otherpattern, string otherreplacement) { return otherpattern != null && otherpattern.GetType() == typeof(PhpString) && ((PhpString)otherpattern).Equals((PhpString)self._pattern) && otherreplacement == self._replacement; }
+            static bool eq_default(PerlRegExpConverter self, object otherpattern, string otherreplacement) { return otherpattern != null && otherpattern.GetType() == self._pattern.GetType() && otherpattern.Equals(self._pattern) && otherreplacement == self._replacement; }
+
+            // cached delegates
+            static Func<PerlRegExpConverter, object, string, bool>/*!*/
+                cacheeq_null = eq_null,
+                cacheeq_string_null = eq_string_null,
+                cacheeq_string = eq_string,
+                cacheeq_phpbytes = eq_phpbytes,
+                cacheeq_phpstring = eq_phpstring,
+                cacheeq_default = eq_default;
+
+            /// <summary>
+            /// Select appropriate equality function delegate for given <see cref="PerlRegExpConverter"/>'s pattern and replacement.
+            /// </summary>
+            public static Func<PerlRegExpConverter, object, string, bool>/*!*/SelectEqualsFunction(object pattern, string replacement)
+            {
+                if (pattern == null) return CacheEqualsFunctions.cacheeq_null;
+                else if (pattern.GetType() == typeof(string) && replacement == null) return CacheEqualsFunctions.cacheeq_string_null;
+                else if (pattern.GetType() == typeof(string)) return CacheEqualsFunctions.cacheeq_string;
+                else if (pattern.GetType() == typeof(PhpBytes)) return CacheEqualsFunctions.cacheeq_phpbytes;
+                else if (pattern.GetType() == typeof(PhpString)) return CacheEqualsFunctions.cacheeq_phpstring;
+                else return CacheEqualsFunctions.cacheeq_default;
+            }
+        }
+
+        /// <summary>
+        /// Initializes cache-specific fields of <see cref="PerlRegExpConverter"/> new instance.
+        /// </summary>
+        private PerlRegExpConverter(object pattern, string replacement)
+        {
+            // used for caching:
+            this._pattern = PhpVariable.Copy(pattern, CopyReason.Assigned);
+            this._strpattern = pattern as string;
+            this._replacement = replacement;
+
+            // initialize function that effectively checks given pattern whether it is equal to this pattern
+            this.CacheEquals = CacheEqualsFunctions.SelectEqualsFunction(pattern, replacement);
+        }
+        
+        #endregion
 
         /// <summary>
 		/// Creates new <see cref="PerlRegExpConverter"/> and converts Perl regular expression to .NET.
@@ -1920,99 +1708,69 @@ namespace PHP.Library
 		/// <param name="replacement">Perl replacement string to convert or a <B>null</B> reference for match only.</param>
 		/// <param name="encoding">Encoding used in the case the pattern is a binary string.</param>
 		public PerlRegExpConverter(object pattern, string replacement, Encoding/*!*/ encoding)
+            :this(pattern, replacement)
 		{
 			if (encoding == null)
 				throw new ArgumentNullException("encoding");
 
 			this.encoding = encoding;
 
-			ConvertPattern(pattern);
+            ConvertPattern(pattern);
 
-            if (replacement != null)
-                dotNetReplaceExpression = (replacement.Length == 0) ? string.Empty : PerlRegExpReplacementCache.Get(regex, replacement);
+            if (replacement != null && this.regex != null)
+                this.DotNetReplaceExpression = (replacement.Length == 0) ? string.Empty : PerlRegExpReplacement.ConvertReplacement(regex, replacement);
 		}
 
 		private void ConvertPattern(object pattern)
 		{
-			PhpBytes bytes_pattern;
-			string string_pattern = null;
-            PerlRegExpCache.RegexCacheKey cache_key;
+            string perlRegEx;
+            string dotNetMatchExpression = null;
 
-			if ((bytes_pattern = pattern as PhpBytes) != null)
-			{
-                //Tuple<Regex, PerlRegexOptions> cache_entry;
+            try
+            {
+                // convert pattern into string, parse options:
+                if (pattern != null && pattern.GetType() == typeof(PhpBytes))
+                    perlRegEx = LoadPerlRegex(((PhpBytes)pattern).ReadonlyData);
+			    else
+                    perlRegEx = LoadPerlRegex(PHP.Core.Convert.ObjectToString(pattern));
+			
+                // convert pattern into regex:
+                dotNetMatchExpression = ConvertRegex(perlRegEx, perlOptions);
 
-                cache_key = new PerlRegExpCache.RegexCacheKey(bytes_pattern);
-
-                //if (null != (cache_entry = PerlRegExpCache.GetCachedRegex(cache_key)))
-                if (PerlRegExpCache.GetCachedRegex(cache_key, out regex, out perlOptions))
-                {
-                    //regex = cache_entry.Item1;
-                    //perlOptions = cache_entry.Item2;
-                    return;
-                }
-
-				LoadPerlRegex(bytes_pattern.ReadonlyData);
-			}
-			else
-			{
-				string_pattern = Core.Convert.ObjectToString(pattern);
-
-                //Tuple<Regex, PerlRegexOptions> cache_entry;
-
-                cache_key = new PerlRegExpCache.RegexCacheKey(string_pattern);
-
-                //if (null != (cache_entry = PerlRegExpCache.GetCachedRegex(cache_key)))
-                if (PerlRegExpCache.GetCachedRegex(cache_key, out regex, out perlOptions))
-                {
-                    //regex = cache_entry.Item1;
-                    //perlOptions = cache_entry.Item2;
-                    return;
-                }
-
-				LoadPerlRegex(string_pattern);
-			}
-
-			dotNetMatchExpression = ConvertRegex(perlRegEx, perlOptions, encoding);
-
-			try
-			{
-				regex = new Regex(dotNetMatchExpression, dotNetOptions);
+                // process the regex:
+                this.regex = new Regex(dotNetMatchExpression, dotNetOptions);
 			}
 			catch (ArgumentException e)
 			{
-				throw new ArgumentException(ExtractExceptionalMessage(e.Message));
+                this.ArgumentException = ExtractExceptionalMessage(e.Message, dotNetMatchExpression);
 			}
-
-            if (bytes_pattern != null)
-            {
-                PerlRegExpCache.AddRegex(cache_key, dotNetMatchExpression, dotNetOptions, regex, perlOptions);
-            }
-            else
-            {
-                PerlRegExpCache.AddRegex(cache_key, dotNetMatchExpression, dotNetOptions, regex, perlOptions);
-            }
 		}
 
 		/// <summary>
 		/// Extracts the .NET exceptional message from the message stored in an exception.
 		/// The message has format 'parsing "{pattern}" - {message}\r\nParameter name {pattern}' in .NET 1.1.
 		/// </summary>
-		private string ExtractExceptionalMessage(string message)
+        private static string ExtractExceptionalMessage(string message, string dotNetMatchExpression)
 		{
-			if (message != null)
-			{
-				message = message.Replace(dotNetMatchExpression, "<pattern>");
+            if (message != null)
+            {
+                if (dotNetMatchExpression != null)
+                    message = message.Replace(dotNetMatchExpression, "<pattern>");
 
-				int i = message.IndexOf("\r\n");
-				if (i >= 0)
-					message = message.Substring(0, i);
+                int i = message.IndexOf("\r\n");
+                if (i >= 0)
+                    message = message.Substring(0, i);
 
-				i = message.IndexOf("-");
-				if (i >= 0)
-					message = message.Substring(i + 2);
-			}
-			return message;
+                i = message.IndexOf("-");
+                if (i >= 0)
+                    message = message.Substring(i + 2);
+
+                return message;
+            }
+            else
+            {
+                return string.Empty;
+            }
 		}
 
 		internal string ConvertString(string str, int start, int length)
@@ -2031,6 +1789,11 @@ namespace PHP.Library
 				return str.Substring(start, length);
 		}
 
+        internal string ConvertBytes(byte[] bytes)
+        {
+            return ConvertBytes(bytes, 0, bytes.Length);
+        }
+
 		internal string ConvertBytes(byte[] bytes, int start, int length)
 		{
 			if ((perlOptions & PerlRegexOptions.UTF8) != 0)
@@ -2039,7 +1802,7 @@ namespace PHP.Library
 				return encoding.GetString(bytes, start, length);
 		}
 
-		private void LoadPerlRegex(byte[] pattern)
+		private string LoadPerlRegex(byte[] pattern)
 		{
 			if (pattern == null) pattern = ArrayUtils.EmptyBytes;
 			int regex_start, regex_end;
@@ -2049,10 +1812,10 @@ namespace PHP.Library
 			FindRegexDelimiters(upattern, out regex_start, out regex_end);
 			ParseRegexOptions(upattern, regex_end + 2, out dotNetOptions, out perlOptions);
 
-			perlRegEx = ConvertBytes(pattern, regex_start, regex_end - regex_start + 1);
+			return ConvertBytes(pattern, regex_start, regex_end - regex_start + 1);
 		}
 
-		private void LoadPerlRegex(string pattern)
+		private string LoadPerlRegex(string pattern)
 		{
 			if (pattern == null) pattern = "";
 			int regex_start, regex_end;
@@ -2062,7 +1825,7 @@ namespace PHP.Library
 			FindRegexDelimiters(upattern, out regex_start, out regex_end);
 			ParseRegexOptions(upattern, regex_end + 2, out dotNetOptions, out perlOptions);
 
-			perlRegEx = ConvertString(pattern, regex_start, regex_end - regex_start + 1);
+			return ConvertString(pattern, regex_start, regex_end - regex_start + 1);
 		}
 
 		private void FindRegexDelimiters(StringUtils.UniformWrapper pattern, out int start, out int end)
@@ -2319,9 +2082,8 @@ namespace PHP.Library
 		/// </summary>
 		/// <param name="perlExpr">Perl regular expression to convert.</param>
 		/// <param name="opt">Regexp options - some of them must be processed by changes in match string.</param>
-		/// <param name="encoding">Encoding.</param>
 		/// <returns>Resulting .NET regular expression.</returns>
-		private static string ConvertRegex(string perlExpr, PerlRegexOptions opt, Encoding/*!*/ encoding)
+		private static string ConvertRegex(string perlExpr, PerlRegexOptions opt)
 		{
 			// Ranges in bracket expressions should be replaced with appropriate characters
 
@@ -3300,13 +3062,13 @@ namespace PHP.Library
 		private static void TestConvertRegex()
 		{
 			string s;
-			s = ConvertRegex(@"?a+sa?s (?:{1,2})", PerlRegexOptions.Ungreedy, Encoding.Default);
+			s = ConvertRegex(@"?a+sa?s (?:{1,2})", PerlRegexOptions.Ungreedy);
 			Debug.Assert(s == "??a+?sa??s (?:{1,2}?)");
 
-			s = ConvertRegex(@"(X+)(?:\|(.+?))?]](.*)$", PerlRegexOptions.Ungreedy, Encoding.Default);
+			s = ConvertRegex(@"(X+)(?:\|(.+?))?]](.*)$", PerlRegexOptions.Ungreedy);
 			Debug.Assert(s == @"(X+?)(?:\|(.+))??]](.*?)$");
 
-			s = ConvertRegex(@"([X$]+)$", PerlRegexOptions.DollarMatchesEndOfStringOnly, Encoding.Default);
+			s = ConvertRegex(@"([X$]+)$", PerlRegexOptions.DollarMatchesEndOfStringOnly);
 			Debug.Assert(s == @"([X$]+)\z");
 		}
 #endif
