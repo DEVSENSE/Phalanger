@@ -16,7 +16,6 @@ using System.Collections.Generic;
 
 using PHP.Core;
 using Convert = PHP.Core.Convert;
-using System.Diagnostics;
 
 namespace PHP.Library
 {
@@ -167,7 +166,7 @@ namespace PHP.Library
 			RegisterCoreOption("default_socket_timeout", IniFlags.Supported | IniFlags.Local);
 			RegisterCoreOption("define_syslog_variables", IniFlags.Unsupported | IniFlags.Local);
 			RegisterCoreOption("disable_classes", IniFlags.Unsupported | IniFlags.Global);
-			RegisterCoreOption("disable_functions", IniFlags.Supported | IniFlags.Global);
+			RegisterCoreOption("disable_functions", IniFlags.Unsupported | IniFlags.Global);
 			RegisterCoreOption("display_errors", IniFlags.Supported | IniFlags.Local);
 			RegisterCoreOption("display_startup_errors", IniFlags.Unsupported | IniFlags.Local);
 			RegisterCoreOption("doc_root", IniFlags.Unsupported | IniFlags.Global);
@@ -197,7 +196,7 @@ namespace PHP.Library
 			RegisterCoreOption("magic_quotes_sybase", IniFlags.Supported | IniFlags.Local);
 			RegisterCoreOption("max_execution_time", IniFlags.Supported | IniFlags.Local);
 			RegisterCoreOption("max_input_time", IniFlags.Unsupported | IniFlags.Global);
-            RegisterCoreOption("memory_limit", IniFlags.Supported | IniFlags.Local);
+			RegisterCoreOption("memory_limit", IniFlags.Unsupported | IniFlags.Local);
 			RegisterCoreOption("mime_magic.magicfile", IniFlags.Unsupported | IniFlags.Global);
 			RegisterCoreOption("open_basedir", IniFlags.Supported | IniFlags.Global);
 			RegisterCoreOption("output_buffering", IniFlags.Supported | IniFlags.Global);
@@ -255,8 +254,16 @@ namespace PHP.Library
 			// option not found:
 			if (option == null)
 			{
-				PhpException.Throw(PhpError.Warning, LibResources.GetString("unknown_option", name));
-				return null;
+				// check for options in native extensions:
+				string result = null;
+				switch (action)
+				{
+					case IniAction.Get: error = !Externals.IniGet(name, out result); break;
+					case IniAction.Set: error = !Externals.IniSet(name, Convert.ObjectToString(value), out result); break;
+					case IniAction.Restore: error = !Externals.IniRestore(name); break;
+				}
+				if (error) PhpException.Throw(PhpError.Warning, LibResources.GetString("unknown_option", name));
+				return result;
 			}
 
 			// the option is known but not supported:
