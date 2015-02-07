@@ -37,176 +37,126 @@ namespace PHP.Core.Reflection
 		BadVisibility,
 	}
 
-	#region PhpMemberAttributes
+    [DebuggerNonUserCode]
+    public static partial class Enums
+    {
+        #region GetUserEntryPoint Attributes
 
-	[Flags]
-	public enum PhpMemberAttributes : short
-	{
-		None = 0,
+        public static PhpMemberAttributes GetMemberAttributes(MethodInfo/*!*/ info)
+        {
+            PhpMemberAttributes value = PhpMemberAttributes.None;
 
-		Public = 0,
-		Private = 1,
-		Protected = 2,
-		NamespacePrivate = Private,
+            if (info.IsPublic) value |= PhpMemberAttributes.Public;
+            else if (info.IsFamily) value |= PhpMemberAttributes.Protected;
+            else if (info.IsPrivate) value |= PhpMemberAttributes.Private;
 
-		Static = 4,
-		AppStatic = Static | 8,
-		Abstract = 16,
-		Final = 32,
+            if (info.IsStatic)
+            {
+                value |= (PhpMemberAttributes.Static | PhpMemberAttributes.AppStatic);
+            }
+
+            // "finalness" and "abstractness" is stored as attributes, if the method is static, not in MethodInfo
+            // (static+abstract, static+final are not allowed in CLR)
+            //Debug.Assert(!(info.IsStatic && (info.IsFinal || info.IsAbstract)), "User static method cannot have CLR final or abstract modifier.");
+
+            if (info.IsAbstract || info.IsDefined(typeof(PhpAbstractAttribute), false))
+                value |= PhpMemberAttributes.Abstract;
+
+            if (info.IsFinal || info.IsDefined(typeof(PhpFinalAttribute), false))
+                value |= PhpMemberAttributes.Final;
+
+            return value;
+        }
 
         /// <summary>
-        /// The type is an interface.
+        /// <para>Returns <see cref="MethodAttributes"/> that are used while emitting the method.</para>
+        /// <para>NOTE: Combinations static/final and static/abstract can be returned. Such methods are
+        /// not allowed in CLI, so final or abstract flag must be removed and PhpFinalAttribute or
+        /// PhpAbstractAttribute added instead.</para>
         /// </summary>
-		Interface = 64,
+        /// <returns></returns>
+        public static MethodAttributes ToMethodAttributes(PhpMemberAttributes value)
+        {
+            MethodAttributes result = 0;
+            PhpMemberAttributes visibility = value & PhpMemberAttributes.VisibilityMask;
 
-        /// <summary>
-        /// The type is a trait.
-        /// </summary>
-        Trait = 128,
+            if (visibility == PhpMemberAttributes.Public) result |= MethodAttributes.Public;
+            else if (visibility == PhpMemberAttributes.Private) result |= MethodAttributes.Private;
+            else if (visibility == PhpMemberAttributes.Protected) result |= MethodAttributes.Family;
 
-		/// <summary>
-		/// The member is a constructor.
-		/// </summary>
-		Constructor = 256,
+            if ((value & PhpMemberAttributes.Final) != 0)
+                result |= MethodAttributes.Final;
 
-		/// <summary>
-		/// The member is imported type, function or global constant with ambiguous fully qualified name.
-		/// </summary>
-		Ambiguous = 1024,
+            if ((value & PhpMemberAttributes.Static) != 0)
+            {
+                result |= MethodAttributes.Static;
 
-		/// <summary>
-		/// The member needs to be activated before it can be resolved.
-		/// TODO: useful when analysis checks whether there are any imported conditional types/functions.
-		/// TODO: add the first conditional to the AC, ignore the others. Add the flag handling to Resolve* and to analyzer.
-		/// </summary>
-		InactiveConditional = 2048,
+                // abstract statics are not allowed in CLR => custom attribute is added
+                // final statics as well
+            }
+            else
+            {
+                result |= MethodAttributes.Virtual;
 
-        StaticMask = Static | AppStatic,
-		VisibilityMask = Public | Private | Protected | NamespacePrivate,
-		SpecialMembersMask = Constructor,
-		PartialMerged = Abstract | Final
-	}
+                if ((value & PhpMemberAttributes.Abstract) != 0)
+                    result |= MethodAttributes.Abstract;
+            }
 
-	[DebuggerNonUserCode]
-	public static partial class Enums
-	{
-		#region GetUserEntryPoint Attributes
+            Debug.Assert((value & PhpMemberAttributes.Interface) == 0);
 
-		public static PhpMemberAttributes GetMemberAttributes(MethodInfo/*!*/ info)
-		{
-			PhpMemberAttributes value = PhpMemberAttributes.None;
+            return result;
+        }
 
-			if (info.IsPublic) value |= PhpMemberAttributes.Public;
-			else if (info.IsFamily) value |= PhpMemberAttributes.Protected;
-			else if (info.IsPrivate) value |= PhpMemberAttributes.Private;
+        internal static void DefineCustomAttributes(PhpMemberAttributes attrs, MethodInfo/*!*/ method)
+        {
+            Debug.Assert(method != null);
 
-			if (info.IsStatic)
-			{
-				value |= (PhpMemberAttributes.Static | PhpMemberAttributes.AppStatic);
-			}
+            if ((attrs & PhpMemberAttributes.Static) != 0)
+            {
+                if ((attrs & PhpMemberAttributes.Abstract) != 0)
+                    ReflectionUtils.SetCustomAttribute(method, AttributeBuilders.PhpAbstract);
 
-			// "finalness" and "abstractness" is stored as attributes, if the method is static, not in MethodInfo
-			// (static+abstract, static+final are not allowed in CLR)
-			//Debug.Assert(!(info.IsStatic && (info.IsFinal || info.IsAbstract)), "User static method cannot have CLR final or abstract modifier.");
+                if ((attrs & PhpMemberAttributes.Final) != 0)
+                    ReflectionUtils.SetCustomAttribute(method, AttributeBuilders.PhpFinal);
+            }
+        }
 
-			if (info.IsAbstract || info.IsDefined(typeof(PhpAbstractAttribute), false))
-				value |= PhpMemberAttributes.Abstract;
+        #endregion
 
-			if (info.IsFinal || info.IsDefined(typeof(PhpFinalAttribute), false))
-				value |= PhpMemberAttributes.Final;
+        #region Property Attributes
 
-			return value;
-		}
+        public static PropertyAttributes ToPropertyAttributes(PhpMemberAttributes value)
+        {
+            return PropertyAttributes.None;
+        }
 
-		/// <summary>
-		/// <para>Returns <see cref="MethodAttributes"/> that are used while emitting the method.</para>
-		/// <para>NOTE: Combinations static/final and static/abstract can be returned. Such methods are
-		/// not allowed in CLI, so final or abstract flag must be removed and PhpFinalAttribute or
-		/// PhpAbstractAttribute added instead.</para>
-		/// </summary>
-		/// <returns></returns>
-		public static MethodAttributes ToMethodAttributes(PhpMemberAttributes value)
-		{
-			MethodAttributes result = 0;
-			PhpMemberAttributes visibility = value & PhpMemberAttributes.VisibilityMask;
+        #endregion
 
-			if (visibility == PhpMemberAttributes.Public) result |= MethodAttributes.Public;
-			else if (visibility == PhpMemberAttributes.Private) result |= MethodAttributes.Private;
-			else if (visibility == PhpMemberAttributes.Protected) result |= MethodAttributes.Family;
+        #region Field Attributes
 
-			if ((value & PhpMemberAttributes.Final) != 0)
-				result |= MethodAttributes.Final;
+        public static PhpMemberAttributes GetMemberAttributes(FieldInfo/*!*/ info)
+        {
+            PhpMemberAttributes value = PhpMemberAttributes.None;
 
-			if ((value & PhpMemberAttributes.Static) != 0)
-			{
-				result |= MethodAttributes.Static;
+            if (info.IsPublic) value |= PhpMemberAttributes.Public;
+            else if (info.IsFamily) value |= PhpMemberAttributes.Protected;
+            else if (info.IsPrivate) value |= PhpMemberAttributes.Private;
 
-				// abstract statics are not allowed in CLR => custom attribute is added
-				// final statics as well
-			}
-			else
-			{
-				result |= MethodAttributes.Virtual;
+            if (info.IsStatic)
+            {
+                value |= PhpMemberAttributes.Static;
 
-				if ((value & PhpMemberAttributes.Abstract) != 0)
-					result |= MethodAttributes.Abstract;
-			}
-
-			Debug.Assert((value & PhpMemberAttributes.Interface) == 0);
-
-			return result;
-		}
-
-		internal static void DefineCustomAttributes(PhpMemberAttributes attrs, MethodInfo/*!*/ method)
-		{
-			Debug.Assert(method != null);
-
-			if ((attrs & PhpMemberAttributes.Static) != 0)
-			{
-				if ((attrs & PhpMemberAttributes.Abstract) != 0)
-					ReflectionUtils.SetCustomAttribute(method, AttributeBuilders.PhpAbstract);
-
-				if ((attrs & PhpMemberAttributes.Final) != 0)
-					ReflectionUtils.SetCustomAttribute(method, AttributeBuilders.PhpFinal);
-			}
-		}
-
-		#endregion
-
-		#region Property Attributes
-
-		public static PropertyAttributes ToPropertyAttributes(PhpMemberAttributes value)
-		{
-			return PropertyAttributes.None;
-		}
-
-		#endregion
-
-		#region Field Attributes
-
-		public static PhpMemberAttributes GetMemberAttributes(FieldInfo/*!*/ info)
-		{
-			PhpMemberAttributes value = PhpMemberAttributes.None;
-
-			if (info.IsPublic) value |= PhpMemberAttributes.Public;
-			else if (info.IsFamily) value |= PhpMemberAttributes.Protected;
-			else if (info.IsPrivate) value |= PhpMemberAttributes.Private;
-
-			if (info.IsStatic)
-			{
-				value |= PhpMemberAttributes.Static;
-
-				// AppStatic == Static on Silverlight
+                // AppStatic == Static on Silverlight
 #if !SILVERLIGHT
-				if (!info.IsDefined(typeof(ThreadStaticAttribute), false))
-					value |= PhpMemberAttributes.AppStatic;
+                if (!info.IsDefined(typeof(ThreadStaticAttribute), false))
+                    value |= PhpMemberAttributes.AppStatic;
 #else
 				value |= PhpMemberAttributes.AppStatic;
 #endif
-			}
+            }
 
-			return value;
-		}
+            return value;
+        }
 
         /// <summary>
         /// Determines lowest accessibility of all property accessors and other member attributes.
@@ -215,7 +165,7 @@ namespace PHP.Core.Reflection
         {
             var accessors = info.GetAccessors(true);
             PhpMemberAttributes attributes = PhpMemberAttributes.None;
-            
+
             // find lowest visibility in all property accessors:
             for (int i = 0; i < accessors.Length; i++)
             {
@@ -233,146 +183,144 @@ namespace PHP.Core.Reflection
             return attributes;
         }
 
-		public static FieldAttributes ToFieldAttributes(PhpMemberAttributes value)
-		{
-			FieldAttributes result = 0;
-			PhpMemberAttributes visibility = value & PhpMemberAttributes.VisibilityMask;
+        public static FieldAttributes ToFieldAttributes(PhpMemberAttributes value)
+        {
+            FieldAttributes result = 0;
+            PhpMemberAttributes visibility = value & PhpMemberAttributes.VisibilityMask;
 
-			if (visibility == PhpMemberAttributes.Public) result |= FieldAttributes.Public;
-			else if (visibility == PhpMemberAttributes.Private) result |= FieldAttributes.Private;
-			else if (visibility == PhpMemberAttributes.Protected) result |= FieldAttributes.Family;
+            if (visibility == PhpMemberAttributes.Public) result |= FieldAttributes.Public;
+            else if (visibility == PhpMemberAttributes.Private) result |= FieldAttributes.Private;
+            else if (visibility == PhpMemberAttributes.Protected) result |= FieldAttributes.Family;
 
-			if ((value & PhpMemberAttributes.Static) != 0)
-				result |= FieldAttributes.Static;
+            if ((value & PhpMemberAttributes.Static) != 0)
+                result |= FieldAttributes.Static;
 
-			Debug.Assert((value & PhpMemberAttributes.Interface) == 0);
-			Debug.Assert((value & PhpMemberAttributes.Abstract) == 0);
-			Debug.Assert((value & PhpMemberAttributes.Final) == 0);
+            Debug.Assert((value & PhpMemberAttributes.Interface) == 0);
+            Debug.Assert((value & PhpMemberAttributes.Abstract) == 0);
+            Debug.Assert((value & PhpMemberAttributes.Final) == 0);
 
-			return result;
-		}
+            return result;
+        }
 
-		internal static void DefineCustomAttributes(PhpMemberAttributes attrs, FieldBuilder/*!*/ fieldBuilder)
-		{
-			Debug.Assert(fieldBuilder != null);
+        internal static void DefineCustomAttributes(PhpMemberAttributes attrs, FieldBuilder/*!*/ fieldBuilder)
+        {
+            Debug.Assert(fieldBuilder != null);
 
-			// AppStatic == Static on Silverlight
+            // AppStatic == Static on Silverlight
 #if !SILVERLIGHT
-			// static but not app-static => thread static
-			if ((attrs & PhpMemberAttributes.AppStatic) == PhpMemberAttributes.Static)
-				fieldBuilder.SetCustomAttribute(AttributeBuilders.ThreadStatic);
+            // static but not app-static => thread static
+            if ((attrs & PhpMemberAttributes.AppStatic) == PhpMemberAttributes.Static)
+                fieldBuilder.SetCustomAttribute(AttributeBuilders.ThreadStatic);
 #endif
-		}
+        }
 
-		#endregion
+        #endregion
 
-		#region Type Attributes
+        #region Type Attributes
 
-		public static PhpMemberAttributes GetMemberAttributes(Type/*!*/ type)
-		{
-			PhpMemberAttributes value = PhpMemberAttributes.None;
+        public static PhpMemberAttributes GetMemberAttributes(Type/*!*/ type)
+        {
+            PhpMemberAttributes value = PhpMemberAttributes.None;
 
-			if (type.IsDefined(typeof(PhpNamespacePrivateAttribute), false))
-				value |= PhpMemberAttributes.NamespacePrivate;
-			else
-				value |= PhpMemberAttributes.Public;
+            if (type.IsDefined(typeof(PhpNamespacePrivateAttribute), false))
+                value |= PhpMemberAttributes.NamespacePrivate;
+            else
+                value |= PhpMemberAttributes.Public;
 
-			if (type.IsSealed)
-			{
-				value |= PhpMemberAttributes.Final;
-			}
-			else
-			{
-				if (type.IsInterface) value |= PhpMemberAttributes.Interface | PhpMemberAttributes.Abstract;
-				else if (type.IsAbstract) value |= PhpMemberAttributes.Abstract;
+            if (type.IsSealed)
+            {
+                value |= PhpMemberAttributes.Final;
+            }
+            else
+            {
+                if (type.IsInterface) value |= PhpMemberAttributes.Interface | PhpMemberAttributes.Abstract;
+                else if (type.IsAbstract) value |= PhpMemberAttributes.Abstract;
 
                 if (type.IsDefined(typeof(PhpTraitAttribute), false))
                     value |= PhpMemberAttributes.Trait;
-			}
+            }
 
-			return value;
-		}
+            return value;
+        }
 
-		public static TypeAttributes ToTypeAttributes(PhpMemberAttributes attrs)
-		{
-			TypeAttributes result = TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit;
+        public static TypeAttributes ToTypeAttributes(PhpMemberAttributes attrs)
+        {
+            TypeAttributes result = TypeAttributes.AnsiClass | TypeAttributes.BeforeFieldInit;
 
-			result = TypeAttributes.Public;
+            result = TypeAttributes.Public;
 
-			Debug.Assert((attrs & PhpMemberAttributes.VisibilityMask) != PhpMemberAttributes.Protected);
+            Debug.Assert((attrs & PhpMemberAttributes.VisibilityMask) != PhpMemberAttributes.Protected);
 
-			if ((attrs & PhpMemberAttributes.Abstract) != 0)
-				result |= TypeAttributes.Abstract;
+            if ((attrs & PhpMemberAttributes.Abstract) != 0)
+                result |= TypeAttributes.Abstract;
 
-			if ((attrs & PhpMemberAttributes.Interface) != 0)
-				result |= TypeAttributes.Interface;
-			else
-				result |= TypeAttributes.Class | TypeAttributes.Serializable;
+            if ((attrs & PhpMemberAttributes.Interface) != 0)
+                result |= TypeAttributes.Interface;
+            else
+                result |= TypeAttributes.Class | TypeAttributes.Serializable;
 
-			if ((attrs & PhpMemberAttributes.Final) != 0)
-				result |= TypeAttributes.Sealed;
+            if ((attrs & PhpMemberAttributes.Final) != 0)
+                result |= TypeAttributes.Sealed;
 
-			return result;
-		}
+            return result;
+        }
 
-		internal static void DefineCustomAttributes(PhpMemberAttributes attrs, TypeBuilder/*!*/ typeBuilder)
-		{
-			Debug.Assert(typeBuilder != null);
+        internal static void DefineCustomAttributes(PhpMemberAttributes attrs, TypeBuilder/*!*/ typeBuilder)
+        {
+            Debug.Assert(typeBuilder != null);
 
             if ((attrs & PhpMemberAttributes.Trait) != 0)
                 typeBuilder.SetCustomAttribute(AttributeBuilders.ImplementsTrait);
-			// no attributes so far
-		}
+            // no attributes so far
+        }
 
-		#endregion
+        #endregion
 
-		#region Visibility
+        #region Visibility
 
-		public static string VisibilityToString(PhpMemberAttributes value)
-		{
-			PhpMemberAttributes visibility = value & PhpMemberAttributes.VisibilityMask;
+        public static string VisibilityToString(PhpMemberAttributes value)
+        {
+            PhpMemberAttributes visibility = value & PhpMemberAttributes.VisibilityMask;
 
-			if (visibility == PhpMemberAttributes.Public) return "public";
-			else if (visibility == PhpMemberAttributes.Protected) return "protected";
-			else if (visibility == PhpMemberAttributes.Private) return "private";
+            if (visibility == PhpMemberAttributes.Public) return "public";
+            else if (visibility == PhpMemberAttributes.Protected) return "protected";
+            else if (visibility == PhpMemberAttributes.Private) return "private";
 
-			Debug.Fail();
-			return null;
-		}
+            Debug.Fail();
+            return null;
+        }
 
-		public static bool VisibilityEquals(PhpMemberAttributes attr1, PhpMemberAttributes attr2)
-		{
-			return ((attr1 & PhpMemberAttributes.VisibilityMask) == (attr2 & PhpMemberAttributes.VisibilityMask));
-		}
+        public static bool VisibilityEquals(PhpMemberAttributes attr1, PhpMemberAttributes attr2)
+        {
+            return ((attr1 & PhpMemberAttributes.VisibilityMask) == (attr2 & PhpMemberAttributes.VisibilityMask));
+        }
 
-		public static bool GenericParameterAttrTest(GenericParameterAttributes parameterAttrs,
-			GenericParameterAttributes testAttrs)
-		{
-			return ((parameterAttrs & testAttrs) == testAttrs);
-		}
+        public static bool GenericParameterAttrTest(GenericParameterAttributes parameterAttrs,
+            GenericParameterAttributes testAttrs)
+        {
+            return ((parameterAttrs & testAttrs) == testAttrs);
+        }
 
-		#endregion
+        #endregion
 
-		#region Debug
+        #region Debug
 
 #if DEBUG
 
-		internal static void Print(PhpMemberAttributes value, TextWriter output)
-		{
-			if ((value & PhpMemberAttributes.Abstract) != 0) output.Write("abstract ");
-			if ((value & PhpMemberAttributes.Final) != 0) output.Write("final ");
+        internal static void Print(PhpMemberAttributes value, TextWriter output)
+        {
+            if ((value & PhpMemberAttributes.Abstract) != 0) output.Write("abstract ");
+            if ((value & PhpMemberAttributes.Final) != 0) output.Write("final ");
 
-			output.Write(VisibilityToString(value));
+            output.Write(VisibilityToString(value));
 
-			if ((value & PhpMemberAttributes.AppStatic) != 0) output.Write("appstatic ");
-			else if ((value & PhpMemberAttributes.Static) != 0) output.Write("static ");
-		}
+            if ((value & PhpMemberAttributes.AppStatic) != 0) output.Write("appstatic ");
+            else if ((value & PhpMemberAttributes.Static) != 0) output.Write("static ");
+        }
 
 #endif
-		#endregion
-	}
-
-	#endregion
+        #endregion
+    }
 
 	#region IPhpMember
 

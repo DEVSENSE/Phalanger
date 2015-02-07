@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using PHP.Core;
-using PHP.Core.Reflection;
 using System.Xml;
 
 namespace PHP.Library.Data
@@ -30,12 +29,10 @@ namespace PHP.Library.Data
 
             PDOLibraryDescriptor.RegisterProvider(new SQLServerPDODriver());
 
-            string fullname = typeof(PDO).Name;
-            DType tPDO = ApplicationContext.Default.GetType(new QualifiedName(new Name(typeof(PDO).FullName)), ref fullname);
-            Core.Reflection.PhpMemberAttributes att = Core.Reflection.PhpMemberAttributes.Public | Core.Reflection.PhpMemberAttributes.Static;
-            //ApplicationContext.Default.AddMethodToType(tPDO.TypeDesc, att, "sqliteCreateFunction", SQLServerPDODriver.PDO_sqliteCreateFunction);
-
-            ApplicationContext.Default.AddConstantToType(tPDO.TypeDesc, att, "SQLSRV_TXN_READ_UNCOMMITTED", SQLServerPDODriver.SQLSRV_TXN_READ_UNCOMMITTED);
+            var tPDO = Core.Reflection.DTypeDesc.Create(typeof(PDO));
+            PhpMemberAttributes att = PhpMemberAttributes.Public | PhpMemberAttributes.Static;
+            //ApplicationContext.Default.AddMethodToType(tPDO, att, "sqliteCreateFunction", SQLServerPDODriver.PDO_sqliteCreateFunction);
+            ApplicationContext.Default.AddConstantToType(tPDO, att, "SQLSRV_TXN_READ_UNCOMMITTED", SQLServerPDODriver.SQLSRV_TXN_READ_UNCOMMITTED);
         }
 
         /// <summary>

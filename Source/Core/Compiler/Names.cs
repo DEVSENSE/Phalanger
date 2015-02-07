@@ -38,6 +38,7 @@ namespace PHP.Core
 	//  namespace constant    QualifiedName    (case-sensitive)
 	//  method                Name             (case-insensitive)
 	//  class, function       QualifiedName    (case-insensitive)
+    //  primitive type        PrimitiveTypeName(case-insensitive)
 	//  namespace component   Name             (case-sensitive?)
 	//  label                 VariableName     (case-sensitive?)
 	//
@@ -83,12 +84,18 @@ namespace PHP.Core
 		public static readonly Name AppStaticAttributeName = new Name("AppStaticAttribute");
 		public static readonly Name ExportName = new Name("Export");
 		public static readonly Name ExportAttributeName = new Name("ExportAttribute");
+        public static readonly Name DllImportAttributeName = new Name("DllImportAttribute");
         public static readonly Name DllImportName = new Name("DllImport");
 		public static readonly Name OutAttributeName = new Name("OutAttribute");
 		public static readonly Name OutName = new Name("Out");
 		public static readonly Name DeclareHelperName = new Name("<Declare>");
 		public static readonly Name LambdaFunctionName = new Name("<Lambda>");
         public static readonly Name ClosureFunctionName = new Name("{closure}");
+
+        /// <summary>
+        /// Name suffix of attribute class name.
+        /// </summary>
+        internal const string AttributeNameSuffix = "Attribute";
 
 		public bool IsCloneName
 		{
@@ -231,7 +238,7 @@ namespace PHP.Core
             return
                 this.Value.Length == other.Value.Length &&
                 this.GetHashCode() == other.GetHashCode() &&
-                this.Value.Equals(other.Value, StringComparison.InvariantCultureIgnoreCase);
+                Equals(other.Value);
 		}
 
 		public static bool operator ==(Name name, Name other)
@@ -248,14 +255,9 @@ namespace PHP.Core
 
 		#region IEquatable<string> Members
 
-		/*public bool EqualsLowercase(string otherLowercase)
-		{
-            return this.LowercaseValue.Equals(otherLowercase);
-		}*/
-
 		public bool Equals(string other)
 		{
-            return /*other != null &&*/ string.Compare(value, other, StringComparison.OrdinalIgnoreCase) == 0;// this.lowerCaseValue.Equals(other.ToLower());
+            return /*other != null &&*/ string.Equals(value, other, StringComparison.OrdinalIgnoreCase);
 		}
 
 		#endregion
@@ -371,9 +373,9 @@ namespace PHP.Core
 
 	#endregion
 
-	#region QualifiedName
+    #region QualifiedName
 
-	/// <summary>
+    /// <summary>
 	/// Case-insensitive culture-sensitive (TODO ???) qualified name in Unicode C normal form.
 	/// </summary>
 	[Serializable]
@@ -404,6 +406,26 @@ namespace PHP.Core
             get
             {
                 return Namespaces.Length == 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets value indicating whether this name represents a primitive type.
+        /// </summary>
+        public bool IsPrimitiveTypeName
+        {
+            get
+            {
+                return IsSimpleName &&
+                    (   Equals(Array) ||
+                        Equals(Object) ||
+                        Equals(Integer) ||
+                        Equals(LongInteger) ||
+                        Equals(String) ||
+                        Equals(Boolean) ||
+                        Equals(Double) ||
+                        Equals(Resource) ||
+                        Equals(Callable));
             }
         }
 
@@ -440,6 +462,11 @@ namespace PHP.Core
         public bool IsExportAttributeName
         {
             get { return IsSimpleName && (name == Name.ExportName || name == Name.ExportAttributeName); }
+        }
+
+        public bool IsDllImportAttributeName
+        {
+            get { return IsSimpleName && (name == Name.DllImportName || name == Name.DllImportAttributeName); }
         }
 
         public bool IsOutAttributeName
@@ -938,18 +965,32 @@ namespace PHP.Core
     [Serializable]
 	public struct GenericQualifiedName
 	{
+        /// <summary>
+        /// Empty GenericQualifiedName array.
+        /// </summary>
+        public static readonly GenericQualifiedName[] EmptyGenericQualifiedNames = new GenericQualifiedName[0];
+
+        /// <summary>
+        /// Qualified name without generics.
+        /// </summary>
 		public QualifiedName QualifiedName { get { return qualifiedName; } }
 		private QualifiedName qualifiedName;
 
 		/// <summary>
-		/// Array of GenericQualifiedNames and PrimitiveTypes.
+        /// Array of <see cref="GenericQualifiedName"/> or <see cref="PrimitiveTypeName"/>.
 		/// </summary>
-		public object[]/*!!*/ GenericParams { get { return genericParams; } }
-		private object[]/*!!*/ genericParams;
+        public object[]/*!!*/ GenericParams { get { return genericParams; } }
+        private object[]/*!!*/ genericParams;
 
-		public GenericQualifiedName(QualifiedName qualifiedName, object[]/*!!*/ genericParams)
+        /// <summary>
+        /// Gets value indicating whether the name has generic type parameters.
+        /// </summary>
+        public bool IsGeneric { get { return genericParams != null && genericParams.Length != 0; } }
+
+        public GenericQualifiedName(QualifiedName qualifiedName, object[]/*!!*/ genericParams)
 		{
 			Debug.Assert(genericParams != null);
+            Debug.Assert(genericParams.All(obj => obj == null || obj is PrimitiveTypeName || obj is GenericQualifiedName));
 
 			this.qualifiedName = qualifiedName;
 			this.genericParams = genericParams;
@@ -963,6 +1004,56 @@ namespace PHP.Core
 	}
 
 	#endregion
+
+    #region PrimitiveTypeName
+
+    /// <summary>
+    /// Represents primitive type name.
+    /// </summary>
+    public struct PrimitiveTypeName : IEquatable<PrimitiveTypeName>, IEquatable<QualifiedName>, IEquatable<string>
+    {
+        public QualifiedName QualifiedName { get { return qualifiedName; } }
+        private readonly QualifiedName qualifiedName;
+
+        public Name Name { get { return qualifiedName.Name; } }
+
+        public PrimitiveTypeName(QualifiedName qualifiedName)
+        {
+            if (!qualifiedName.IsPrimitiveTypeName)
+                throw new ArgumentException();
+
+            this.qualifiedName = qualifiedName;
+        }
+
+        #region IEquatable<PrimitiveName> Members
+
+        public bool Equals(PrimitiveTypeName other)
+        {
+            return Equals(other.qualifiedName);
+        }
+
+        #endregion
+
+        #region IEquatable<QualifiedName> Members
+
+        public bool Equals(QualifiedName other)
+        {
+            return Equals(other.Name.Value);
+        }
+
+        #endregion
+
+        #region IEquatable<string> Members
+
+        public bool Equals(string other)
+        {
+            return qualifiedName.Name.Value.Equals(other, StringComparison.OrdinalIgnoreCase);
+        }
+
+        #endregion
+    }
+
+    #endregion
 
 	#region NamingContext
 

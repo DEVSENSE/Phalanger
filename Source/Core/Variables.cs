@@ -50,8 +50,6 @@ namespace PHP.Core
 		Object,
 		/// <summary>The type code of the <see cref="object"/>&amp; type.</summary>
 		ObjectAddress,
-		/// <summary>The type code of LINQ source.</summary>
-		LinqSource,
 
 		/// <summary>The type code of the <see cref="PHP.Core.PhpReference"/> type.</summary>
 		PhpReference,
@@ -101,7 +99,6 @@ namespace PHP.Core
 				case PhpTypeCode.PhpBytes: return typeof(PhpBytes);
 				case PhpTypeCode.PhpString: return typeof(PhpString);
 				case PhpTypeCode.Void: return Types.Void;
-				case PhpTypeCode.LinqSource: return Types.IEnumerableOfObject;
 				default: return null;
 			}
 		}

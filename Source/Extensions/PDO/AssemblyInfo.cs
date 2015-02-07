@@ -11,7 +11,7 @@ using PHP.Core;
 [assembly: AssemblyCopyright("Copyright (c) 2012 Damien DALY")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyVersion("4.0.0.0")]
 [assembly: AssemblyDelaySign(false)]
 
 [assembly: PhpLibrary(typeof(PHP.Library.Data.PDOLibraryDescriptor), "PDO", new string[] { "pdo" })]

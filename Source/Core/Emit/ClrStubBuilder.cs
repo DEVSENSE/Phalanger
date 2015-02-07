@@ -512,7 +512,12 @@ namespace PHP.Core.Emit
 							else
 							{
 								// default generic parameter
-								DType default_type = formalTypeParams[gen_type_hint.Index].DefaultType as DType;
+                                var typeparam = formalTypeParams[gen_type_hint.Index].DefaultType;
+                                
+                                DType default_type = typeparam as DType;
+                                if (default_type == null && typeparam is GenericQualifiedName)
+                                    default_type = PrimitiveType.GetByName((GenericQualifiedName)typeparam);
+
 								parameter_types[i] = (default_type == null ? Types.Object[0] : default_type.RealType);
 							}
 						}

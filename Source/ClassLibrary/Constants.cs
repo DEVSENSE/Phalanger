@@ -111,13 +111,13 @@ namespace PHP.Library
             return null;
         }
 
-        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo Defined_Analyze(Analyzer analyzer, string name)
+        public static PHP.Core.Compiler.AST.FunctionCallEvaluateInfo Defined_Analyze(Analyzer analyzer, string name)
         {
             bool? exists;
             var constant = EvaluateConstant(analyzer, name, out exists);
 
             if (exists != null)
-                return new Core.AST.DirectFcnCall.EvaluateInfo()
+                return new Core.Compiler.AST.FunctionCallEvaluateInfo()
                 {
                     value = exists.Value    // constant existance is known in compile time
                 };
@@ -126,13 +126,13 @@ namespace PHP.Library
             return null;
         }
 
-        public static PHP.Core.AST.DirectFcnCall.EvaluateInfo Constant_Analyze(Analyzer analyzer, string name)
+        public static PHP.Core.Compiler.AST.FunctionCallEvaluateInfo Constant_Analyze(Analyzer analyzer, string name)
         {
             bool? exists;
             var constant = EvaluateConstant(analyzer, name, out exists);
 
             if (constant != null && constant.HasValue)
-                return new Core.AST.DirectFcnCall.EvaluateInfo()
+                return new Core.Compiler.AST.FunctionCallEvaluateInfo()
                 {
                     value = constant.Value  // evaluated value in compile time
                 };

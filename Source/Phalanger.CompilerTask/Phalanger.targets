@@ -12,7 +12,7 @@
 
   <!-- Add properties required for WPF -->
   <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildExtensionsPath)\Phalanger\3.0\Phalanger.targets</MSBuildAllProjects>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildExtensionsPath)\Phalanger\4.0\Phalanger.targets</MSBuildAllProjects>
     <DefaultLanguageSourceExtension>.php</DefaultLanguageSourceExtension>
     <Language>Phalanger</Language>
   </PropertyGroup>

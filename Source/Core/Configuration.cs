@@ -52,12 +52,6 @@ namespace PHP.Core
 		TypeKeywords = 8,
 
 		/// <summary>
-		/// Enables LINQ <c>from</c> keyword and LINQ context keywords <c>where</c>, <c>orderby</c>, <c>ascending</c>, 
-		/// <c>descending</c>, <c>select</c>, <c>group</c>, <c>by</c>, <c>in</c>).
-		/// </summary>
-		Linq = 16,
-
-        /// <summary>
 		/// Enables Unicode escapes in strings (\U, \u, \C).
 		/// </summary>
 		UnicodeSemantics = 32,
@@ -86,7 +80,7 @@ namespace PHP.Core
 
 		Php4 = ShortOpenTags,
 		Php5 = Php4 | V5Keywords,
-        PhpClr = Php5 | UnicodeSemantics | TypeKeywords | Linq | ClrSemantics | AspTags | CSharpTypeNames
+        PhpClr = Php5 | UnicodeSemantics | TypeKeywords | ClrSemantics | AspTags | CSharpTypeNames
 	}
 
 	#endregion
@@ -857,12 +851,7 @@ namespace PHP.Core
 			public bool TypeKeywords { get { return (_languageFeatures & LanguageFeatures.TypeKeywords) != 0; } }
 
 			/// <summary>
-			/// Gets whether <see cref="PHP.Core.LanguageFeatures.Linq"/> feature is enabled.
-			/// </summary>
-			public bool Linq { get { return (_languageFeatures & LanguageFeatures.Linq) != 0; } }
-
-			/// <summary>
-			/// Gets whether <see cref="PHP.Core.LanguageFeatures.Linq"/> feature is enabled.
+			/// Gets whether <see cref="PHP.Core.LanguageFeatures.ClrSemantics"/> features are enabled.
 			/// </summary>
 			public bool ClrSemantics { get { return (_languageFeatures & LanguageFeatures.ClrSemantics) != 0; } }
 

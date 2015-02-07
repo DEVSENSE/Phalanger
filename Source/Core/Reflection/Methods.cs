@@ -23,6 +23,7 @@ using System.Diagnostics;
 
 using PHP.Core;
 using PHP.Core.AST;
+using PHP.Core.Compiler.AST;
 using PHP.Core.Emit;
 using PHP.Core.Parsers;
 

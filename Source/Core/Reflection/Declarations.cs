@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.Text;
 
 using PHP.Core;
-using PHP.Core.AST;
 using PHP.Core.Parsers;
 using System.Diagnostics;
 
@@ -36,6 +35,48 @@ namespace PHP.Core.Reflection
 		string/*!*/ FullName { get; }
 
 		void ReportRedeclaration(ErrorSink/*!*/ errors);
+	}
+
+	public struct Scope
+	{
+		public int Start { get { return start; } }
+		private int start;
+
+		public static readonly Scope Invalid = new Scope(-1);
+		public static readonly Scope Global = new Scope(0);
+		public static readonly Scope Ignore = new Scope(Int32.MaxValue);
+
+		public bool IsGlobal
+		{
+			get
+			{
+				return start == 0;
+			}
+		}
+
+		public bool IsValid
+		{
+			get
+			{
+				return start >= 0;
+			}
+		}
+
+
+		public Scope(int start)
+		{
+			this.start = start;
+		}
+
+		public void Increment()
+		{
+			start++;
+		}
+
+		public override string ToString()
+		{
+			return start.ToString();
+		}
 	}
 
 	public sealed class DeclarationGroup
@@ -83,8 +124,8 @@ namespace PHP.Core.Reflection
 		public bool IsConditional { get { return isConditional; } }
 		private bool isConditional;
 
-        public CompilationSourceUnit/*!*/ SourceUnit { get { return sourceUnit; } }
-        private readonly CompilationSourceUnit/*!*/ sourceUnit;
+		public SourceUnit/*!*/ SourceUnit { get { return sourceUnit; } }
+		private readonly SourceUnit/*!*/ sourceUnit;
 
 		/// <summary>
 		/// Compile-time non-pure only. Used when added to the containing compilation unit.
@@ -109,14 +150,14 @@ namespace PHP.Core.Reflection
 		public DeclarationGroup Group { get { return group; } set { group = value; } }
 		private DeclarationGroup group;
 
-        public Text.Span Span { get { return span; } }
-        private readonly Text.Span span;
+		public Position Position { get { return position; } }
+		private readonly Position position;
 
 		/// <summary>
 		/// Set by analyzer.
 		/// </summary>
-        public bool IsUnreachable { get { return isUnreachable; } internal set { isUnreachable = value; } }
-        private bool isUnreachable = true;
+		public bool IsUnreachable { get { return isReachable; } internal set { isReachable = value; } }
+		private bool isReachable = true;
 
 		/// <summary>
 		/// Set by analyzer.
@@ -131,13 +172,13 @@ namespace PHP.Core.Reflection
 		private bool isInsideIncompleteClass = false;
 		public bool IsInsideIncompleteClass { get { return isInsideIncompleteClass; } internal set { isInsideIncompleteClass = value; } }
 
-        public Declaration(CompilationSourceUnit/*!*/ sourceUnit, IDeclaree/*!*/ declaree, bool isPartial, bool isConditional,
-            Scope scope, Text.Span position)
+		public Declaration(SourceUnit/*!*/ sourceUnit, IDeclaree/*!*/ declaree, bool isPartial, bool isConditional,
+			Scope scope, Position position)
 		{
 			this.sourceUnit = sourceUnit;
 			this.declaree = declaree;
 			this.scope = scope;
-			this.span = position;
+			this.position = position;
 			this.isPartial = isPartial;
 			this.isConditional = isConditional;
 		}

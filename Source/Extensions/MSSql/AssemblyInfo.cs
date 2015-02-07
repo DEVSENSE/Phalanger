@@ -22,11 +22,7 @@ using PHP.Core;
 [assembly: AssemblyCopyright("Copyright (c) 2005-2010 Tomas Matousek, Martin Maly")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyVersion("4.0.0.0")]
 [assembly: AssemblyKeyName("")]
 
-//#if DEBUG
 [assembly: PhpLibrary(typeof(PHP.Library.Data.MsSqlLibraryDescriptor), "MsSql", new string[]{"mssql"})]
-//#else
-//[assembly: PhpLibrary(typeof(PHP.Library.Data.MsSqlLibraryDescriptor), "MsSql", false, true)]
-//#endif

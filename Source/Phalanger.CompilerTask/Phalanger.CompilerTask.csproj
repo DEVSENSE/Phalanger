@@ -83,7 +83,7 @@
   </ProjectExtensions>
   <!--The following is used for deploying the task and target to Program Files\MSBuild\...-->
   <PropertyGroup>
-    <DeployDestination>$(MSBuildExtensionsPath)\Phalanger\3.0\</DeployDestination>
+    <DeployDestination>$(MSBuildExtensionsPath)\Phalanger\4.0\</DeployDestination>
   </PropertyGroup>
   <Target Name="AfterBuild">
     <Message Text="Deploying..." />

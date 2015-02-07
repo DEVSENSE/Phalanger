@@ -1090,44 +1090,6 @@ namespace PHP.Core
 
 		#endregion
 
-		#region LINQ
-
-		/// <summary>
-		/// Converts a specified object to enumerable LINQ source.
-		/// If the source is a dictionary, the values are enumerated.
-		/// If the source is a PHP enumerable (array, object, query resource, ...) the enumeration is performed
-		/// using the PHP foreach enumerator (who may deep copy the elements).
-		/// </summary>
-		[Emitted]
-		public static IEnumerable<object> ObjectToLinqSource(object var, DTypeDesc caller)
-		{
-			// try PHP enumerable (CLR object wrapper implements it, so we can enumerate CLR objects):
-			IPhpEnumerable php_enumerable = var as IPhpEnumerable;
-			if (php_enumerable != null)
-			{
-				return EnumerateValues(php_enumerable.GetForeachEnumerator(false, false, caller));
-			}
-
-			PhpException.Throw(PhpError.Warning, CoreResources.GetString("invalid_query_source"));
-			return null;
-		}
-
-		private static IEnumerable<object> EnumerateValues(IDictionaryEnumerator/*!*/ enumerator)
-		{
-			if (enumerator == null)
-			{
-				PhpException.Throw(PhpError.Warning, "Invalid query source.");
-				yield break;
-			}
-
-			while (enumerator.MoveNext())
-			{
-				yield return enumerator.Value;
-			}
-		}
-
-		#endregion
-
 		#region Narrowing & Coercion
 
 		public static int NarrowToInt32(long value)

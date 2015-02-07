@@ -644,9 +644,13 @@ namespace PHP.Core.CodeDom
                     {
                         ret.TypeArguments.Add(TranslateGenericQualifiedName((GenericQualifiedName)GParam, true));
                     }
-                    else if (GParam is PrimitiveType)
+                    else if (GParam is PrimitiveTypeName)
                     {
-                        ret.TypeArguments.Add(((PrimitiveType)GParam).RealType);
+                        ret.TypeArguments.Add(new CodeTypeReference(((PrimitiveTypeName)GParam).Name.LowercaseValue));
+                    }
+                    else
+                    {
+                        ret.TypeArguments.Add(new CodeTypeReference(QualifiedName.Object.Name.Value));
                     }
                 }
                 return ret;
@@ -739,7 +743,7 @@ namespace PHP.Core.CodeDom
                             CodeBinaryOperatorType.Assign,
                             TranslateExpression(((ValueAssignEx)Expression).RValue, method, IC));
                     else
-                        return TranslateBinaryOperation(new BinaryEx(Expression.Operation, ((ValueAssignEx)Expression).LValue, ((ValueAssignEx)Expression).RValue), method, IC);
+                        return TranslateBinaryOperation(new BinaryEx(Expression.Position, Expression.Operation, ((ValueAssignEx)Expression).LValue, ((ValueAssignEx)Expression).RValue), method, IC);
                 }
                 else if (Expression is BinaryEx)
                 {//$left × $right
@@ -840,22 +844,6 @@ namespace PHP.Core.CodeDom
                 else if (Expression is IssetEx)
                 {//isset($var)
                     return TranslateIsSet((IssetEx)Expression, method, IC);
-                }
-                else if (Expression is AST.Linq.LinqExpression)
-                {
-                    throw new PhpToCodeDomNotSupportedException(Localizations.Strings.cdp_unsup_LINQ, Expression);
-                }
-                else if (Expression is AST.Linq.LinqOpChain)
-                {
-                    throw new PhpToCodeDomNotSupportedException(Localizations.Strings.cdp_unsup_LINQ, Expression);
-                }
-                else if (Expression is AST.Linq.LinqTuple)
-                {
-                    throw new PhpToCodeDomNotSupportedException(Localizations.Strings.cdp_unsup_LINQ, Expression);
-                }
-                else if (Expression is AST.Linq.LinqTupleItemAccess)
-                {
-                    throw new PhpToCodeDomNotSupportedException(Localizations.Strings.cdp_unsup_LINQ, Expression);
                 }
                 else if (Expression is ListEx)
                 {//list($v1,$v2) = $array
@@ -2106,8 +2094,9 @@ namespace PHP.Core.CodeDom
                         new CodeTypeReference(((PrimitiveType)Param.TypeHint).RealType) :
                         TranslateGenericQualifiedName((GenericQualifiedName)Param.TypeHint, true),
                     Param.Name.Value);
-                if (Param.Attributes.Attributes != null)
-                    foreach (CustomAttribute Attr in Param.Attributes.Attributes)
+                var attributes = Param.Attributes;
+                if (attributes != null && attributes.Attributes != null)
+                    foreach (CustomAttribute Attr in attributes.Attributes)
                     {
                         CodeAttributeDeclaration attr = TranslateAttribute(Attr);
                         if (attr != null) ret.CustomAttributes.Add(attr);
@@ -2180,7 +2169,7 @@ namespace PHP.Core.CodeDom
                     throw new PhpToCodeDomNotSupportedException(Localizations.Strings.cdp_unsup_indirect_type_ref, typeRef);
                 }
                 else if (typeRef is PrimitiveTypeRef)
-                    return new CodeTypeReference(((PrimitiveTypeRef)typeRef).Type.RealType);
+                    return new CodeTypeReference(((PrimitiveTypeRef)typeRef).QualifiedName.Name.LowercaseValue);
                 else throw new PhpToCodeDomNotSupportedException(string.Format(Localizations.Strings.cdp_unsup_unknown_ref_kind), typeRef);
             }
             #endregion
@@ -2195,8 +2184,10 @@ namespace PHP.Core.CodeDom
                 CodeMemberField ret = new CodeMemberField(typeof(object), Const.Name.Value);
                 ret.Attributes = TranslateModifiers(List.Modifiers);
                 ret.Attributes |= MemberAttributes.Static | MemberAttributes.Const;
-                if (List.Attributes.Attributes != null)
-                    foreach (CustomAttribute attribute in List.Attributes.Attributes)
+                
+                var attributes = List.Attributes;
+                if (attributes != null && attributes.Attributes != null)
+                    foreach (CustomAttribute attribute in attributes.Attributes)
                     {
                         CodeAttributeDeclaration attr = TranslateAttribute(attribute);
                         if (attribute != null) ret.CustomAttributes.Add(attr);
@@ -2238,8 +2229,10 @@ namespace PHP.Core.CodeDom
                 } else {*/
                 CodeMemberField ret = new CodeMemberField(typeof(object), Field.Name.Value);
                 ret.Attributes = TranslateModifiers(List.Modifiers);
-                if (List.Attributes.Attributes != null)
-                    foreach (CustomAttribute attribute in List.Attributes.Attributes)
+
+                var attributes = List.Attributes;
+                if (attributes != null && attributes.Attributes != null)
+                    foreach (CustomAttribute attribute in attributes.Attributes)
                     {
                         CodeAttributeDeclaration attr = TranslateAttribute(attribute);
                         if (attribute != null) ret.CustomAttributes.Add(attr);
@@ -2289,8 +2282,9 @@ namespace PHP.Core.CodeDom
                 foreach (GenericQualifiedName Interface in sType.ImplementsList)
                     cType.BaseTypes.Add(TranslateGenericQualifiedName(Interface, true));
                 //Attributes
-                if (sType.Attributes.Attributes != null)
-                    foreach (CustomAttribute Attribute in sType.Attributes.Attributes)
+                var attributes = sType.Attributes;
+                if (attributes != null && attributes.Attributes != null)
+                    foreach (CustomAttribute Attribute in attributes.Attributes)
                     {
                         CodeAttributeDeclaration attr = TranslateAttribute(Attribute);
                         if (attr != null) cType.CustomAttributes.Add(attr);
@@ -2300,25 +2294,25 @@ namespace PHP.Core.CodeDom
                 foreach (TypeAttributes val in System.Enum.GetValues(typeof(TypeAttributes)))
                     if (!typeAttributes.ContainsKey(val))
                         typeAttributes.Add(val, false);
-                typeAttributes[TypeAttributes.Class] = !sType.Type.IsValueType;
-                cType.IsStruct = sType.Type.IsValueType;
-                typeAttributes[TypeAttributes.Abstract] = sType.Type.IsAbstract;
-                typeAttributes[TypeAttributes.Public] = sType.Type.IsPublic;
+                typeAttributes[TypeAttributes.Class] = true;// !sType.Type.IsValueType;
+                cType.IsStruct = false;// sType.Type.IsValueType;
+                typeAttributes[TypeAttributes.Abstract] = (sType.MemberAttributes & PhpMemberAttributes.Abstract) != 0;
+                typeAttributes[TypeAttributes.Public] = (sType.MemberAttributes & PhpMemberAttributes.Public) != 0;
                 //typeAttributes[TypeAttributes.NestedFamily] = sType.Type.IsProtected;
                 //typeAttributes[TypeAttributes.NestedPrivate] = sType.Type.IsPrivate;
-                typeAttributes[TypeAttributes.Interface] = sType.Type.IsInterface;
-                typeAttributes[TypeAttributes.NotPublic] = sType.Type.IsPrivate;
-                typeAttributes[TypeAttributes.Sealed] = sType.Type.IsFinal;
+                typeAttributes[TypeAttributes.Interface] = (sType.MemberAttributes & PhpMemberAttributes.Interface) != 0;
+                typeAttributes[TypeAttributes.NotPublic] = (sType.MemberAttributes & PhpMemberAttributes.Public) == 0;
+                typeAttributes[TypeAttributes.Sealed] = (sType.MemberAttributes & PhpMemberAttributes.Final) == 0;
                 TypeAttributes ta = 0;
                 foreach (KeyValuePair<TypeAttributes, bool> attr in typeAttributes) if (attr.Value) ta |= attr.Key;
                 cType.TypeAttributes = ta;
 
                 //Generic information
-                if (sType.Type.IsGeneric)
+                if (sType.TypeSignature.TypeParams.Count != 0)
                 {
-                    foreach (GenericParameterDesc GPar in sType.Type.GenericParams)
+                    foreach (var GPar in sType.TypeSignature.TypeParams)
                     {
-                        cType.TypeParameters.Add(TranslateGenericParameterDeclaration(GPar));
+                        cType.TypeParameters.Add(TranslateFormalTypeParam(GPar));
                     }
                 }
                 //Translate members
@@ -2351,8 +2345,10 @@ namespace PHP.Core.CodeDom
                     cMethod = new CodeMemberMethod();
                 cMethod.LinePragma = getPragma(Method.Position.FirstLine - 1);
                 cMethod.Name = Method.Name.Value;
-                if (Method.Attributes.Attributes != null)
-                    foreach (CustomAttribute Attr in Method.Attributes.Attributes)
+
+                var attributes = Method.Attributes;
+                if (attributes != null && attributes.Attributes != null)
+                    foreach (CustomAttribute Attr in attributes.Attributes)
                     {
                         CodeAttributeDeclaration attr = TranslateAttribute(Attr);
                         if (attr != null)

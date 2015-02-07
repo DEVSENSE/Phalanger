@@ -1637,4 +1637,26 @@ namespace PHP.Core
 
         #endregion
     }
+
+    internal static class PHPDocBlockHelper
+    {
+        /// <summary>
+        /// Gets <see cref="PHPDocBlock"/> associated with <paramref name="properties"/>.
+        /// </summary>
+        public static PHPDocBlock GetPHPDoc(this IPropertyCollection/*!*/properties)
+        {
+            return properties[typeof(PHPDocBlock)] as PHPDocBlock;
+        }
+
+        /// <summary>
+        /// Sets <see cref="PHPDocBlock"/> to <paramref name="properties"/>.
+        /// </summary>
+        public static void SetPHPDoc(this IPropertyCollection/*!*/properties, PHPDocBlock phpdoc)
+        {
+            if (phpdoc != null)
+                properties[typeof(PHPDocBlock)] = phpdoc;
+            else
+                properties.RemoveProperty(typeof(PHPDocBlock));
+        }
+    }
 }
