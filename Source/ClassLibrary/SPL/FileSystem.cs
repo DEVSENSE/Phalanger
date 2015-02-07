@@ -252,14 +252,24 @@ namespace PHP.Library.SPL
         }
 
         /// <summary>
-        /// Initializaes <see cref="dir_enumerator"/>.
+        /// Gets enumeration of file system entries for this iterator.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual IEnumerable<FileSystemInfo>/*!*/EnumerateFileSystemInfos()
+        {
+            var dir = this.fs_info as DirectoryInfo;
+            return dir != null ? dir.EnumerateFileSystemInfos() : new FileSystemInfo[0];
+        }
+
+        /// <summary>
+        /// Initializes <see cref="dir_enumerator"/>.
         /// </summary>
         private void CreateEnumeratorInternal()
         {
             var dir = this.fs_info as DirectoryInfo;
             if (dir != null)
             {
-                var enumerable = ((DirectoryInfo)this.fs_info).EnumerateFileSystemInfos();
+                var enumerable = this.EnumerateFileSystemInfos();
 
                 if (dir.Root != dir)
                 {
@@ -276,14 +286,13 @@ namespace PHP.Library.SPL
             }
         }
 
-        [ImplementsMethod]
-        public virtual new object __construct(ScriptContext/*!*/context, object path)
+        protected void ConstructDirectoryIteratorInternal(ScriptContext/*!*/context, object path)
         {
             string pathstr = PhpVariable.AsString(path);
             if (string.IsNullOrEmpty(pathstr))
             {
                 RuntimeException.ThrowSplException(c => new RuntimeException(c, true), context, @"Directory name must not be empty.", 0, null);
-                return null;
+                return;
             }
 
             string errmessage = null;
@@ -302,7 +311,12 @@ namespace PHP.Library.SPL
             {
                 UnexpectedValueException.ThrowSplException(c => new UnexpectedValueException(c, true), context, errmessage, 0, null);
             }
+        }
 
+        [ImplementsMethod]
+        public virtual new object __construct(ScriptContext/*!*/context, object path)
+        {
+            ConstructDirectoryIteratorInternal(context, path);
             return null;
         }
 
@@ -364,7 +378,7 @@ namespace PHP.Library.SPL
             return null;
         }
 
-        private bool validInternal()
+        protected bool validInternal()
         {
             return
                 this.dir_enumerator_key >= 0 &&
@@ -498,17 +512,33 @@ namespace PHP.Library.SPL
     {
         #region Constants
 
-        public const int CURRENT_AS_PATHNAME = 32 ;
-        public const int CURRENT_AS_FILEINFO = 0 ;
-        public const int CURRENT_AS_SELF = 16 ;
-        public const int CURRENT_MODE_MASK = 240 ;
-        public const int KEY_AS_PATHNAME = 0 ;
-        public const int KEY_AS_FILENAME = 256 ;
-        public const int FOLLOW_SYMLINKS = 512 ;
-        public const int KEY_MODE_MASK = 3840 ;
-        public const int NEW_CURRENT_AND_KEY = 256 ;
-        public const int SKIP_DOTS = 4096 ;
-        public const int UNIX_PATHS = 8192 ;
+        public const int CURRENT_AS_PATHNAME = 32;
+        public const int CURRENT_AS_FILEINFO = 0;
+        public const int CURRENT_AS_SELF = 16;
+        public const int CURRENT_MODE_MASK = 240;
+        public const int KEY_AS_PATHNAME = 0;
+        public const int KEY_AS_FILENAME = 256;
+        public const int FOLLOW_SYMLINKS = 512;
+        public const int KEY_MODE_MASK = 3840;
+        public const int NEW_CURRENT_AND_KEY = 256;
+        public const int SKIP_DOTS = 4096;
+        public const int UNIX_PATHS = 8192;
+
+        #endregion
+
+        #region Fields
+
+        /// <summary>
+        /// Flags of the iterator. See <see cref="FilesystemIterator"/> constants.
+        /// </summary>
+        protected int flags = 0;
+
+        protected bool CurrentAsPathName { get { return (this.flags & CURRENT_AS_PATHNAME) != 0; } }
+        protected bool CurrentAsFileInfo { get { return (this.flags & CURRENT_MODE_MASK) == CURRENT_AS_FILEINFO; } }
+        protected bool CurrentAsSelf { get { return (this.flags & CURRENT_AS_SELF) != 0; } }
+
+        protected bool KeyAsPathName { get { return (this.flags & KEY_MODE_MASK) == KEY_AS_PATHNAME; } }
+        protected bool KeyAsFileName { get { return (this.flags & KEY_AS_FILENAME) != 0; } }        
 
         #endregion
 
@@ -536,9 +566,9 @@ namespace PHP.Library.SPL
         public virtual object __construct(ScriptContext/*!*/context, object/*string*/path, [Optional]object/*int*/flags /*= FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO | FilesystemIterator.SKIP_DOTS*/ )
         {
             if (flags == Arg.Default)
-                flags = FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO | FilesystemIterator.SKIP_DOTS;
-
-            int intflags = Core.Convert.ObjectToInteger(flags);
+                this.flags = FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO | FilesystemIterator.SKIP_DOTS;
+            else
+                this.flags = Core.Convert.ObjectToInteger(flags);
 
             throw new NotImplementedException();
         }
@@ -551,6 +581,61 @@ namespace PHP.Library.SPL
             stack.RemoveFrame();
             return ((FilesystemIterator)instance).__construct(stack.Context, path, flags);
         }
+
+        #endregion
+
+        #region interface Iterator
+
+        [ImplementsMethod]
+        public override object key(ScriptContext context)
+        {
+            if (validInternal())
+            {
+                if (KeyAsFileName)
+                    return dir_enumerator.Current.Name;
+                else// if (KeyAsPathName)
+                    return dir_enumerator.Current.FullName;
+            }
+
+            return false;
+        }
+
+        [ImplementsMethod]
+        public override object current(ScriptContext context)
+        {
+            if (validInternal())
+            {
+                if (CurrentAsSelf)
+                    return this;
+                else if (CurrentAsPathName)
+                    return dir_enumerator.Current.FullName;
+                else //if (CurrentAsFileInfo)
+                    return new FilesystemIterator(context, true)
+                    {
+                        fs_info = dir_enumerator.Current
+                    };
+            }
+
+            return false;
+        }
+
+        #region Arglesses
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new static object key(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((FilesystemIterator)instance).key(stack.Context);
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new static object current(object instance, PhpStack stack)
+        {
+            stack.RemoveFrame();
+            return ((FilesystemIterator)instance).current(stack.Context);
+        }
+
+        #endregion
 
         #endregion
     }
@@ -584,13 +669,16 @@ namespace PHP.Library.SPL
         [ImplementsMethod]
         public virtual new object __construct(ScriptContext/*!*/context, object/*string*/path , [Optional]object/*int*/flags /*= FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO*/ )
         {
+            // setup flags
             if (flags == Arg.Default)
-                flags = FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO;
+                this.flags = FilesystemIterator.KEY_AS_PATHNAME | FilesystemIterator.CURRENT_AS_FILEINFO;
+            else
+                this.flags = Core.Convert.ObjectToInteger(flags);
 
-            int intflags = Core.Convert.ObjectToInteger(flags);
+            // init path and enumerator
+            ConstructDirectoryIteratorInternal(context, path);
 
-
-            throw new NotImplementedException();
+            return null;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -600,6 +688,12 @@ namespace PHP.Library.SPL
             var flags = stack.PeekValueOptional(2);
             stack.RemoveFrame();
             return ((RecursiveDirectoryIterator)instance).__construct(stack.Context, path, flags);
+        }
+
+        protected override IEnumerable<FileSystemInfo> EnumerateFileSystemInfos()
+        {
+            var dir = this.fs_info as DirectoryInfo;
+            return dir != null ? dir.EnumerateFileSystemInfos("*", SearchOption.AllDirectories) : new FileSystemInfo[0];
         }
 
         #endregion
