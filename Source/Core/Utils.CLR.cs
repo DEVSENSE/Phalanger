@@ -34,9 +34,9 @@ namespace PHP.Core
 	#region Debug
 
 	/// <summary>
-	/// Support for debugging.
+	/// Support for debugging (replaces <see cref="System.Diagnostics.Debug"/>).
 	/// </summary>
-	public static partial class DebugUtils
+	public static partial class Debug
 	{
 		/// <summary>
 		/// Initializes log logging in the context of web server.
@@ -204,7 +204,9 @@ namespace PHP.Core
 				{
 					string name = MandatoryAttribute(child, "name");
 					string allow_override = OptionalAttribute(child, "allowOverride");
-					string/*!*/value = OptionalAttribute(child, "value") ?? string.Empty;
+					string value = OptionalAttribute(child, "value");
+
+					if (value == null) value = "";
 
 					// checks for sealed nodes:
 					if (context != null)
@@ -220,7 +222,7 @@ namespace PHP.Core
 					}
 
 					// processes the option:                             					
-					if ((/*section1 == null ||*/ !section1.Parse(name, value, child)) &&
+					if ((section1 == null || !section1.Parse(name, value, child)) &&
 						(section2 == null || !section2.Parse(name, value, child)) &&
 						(section3 == null || !section3.Parse(name, value, child)))
 						throw new InvalidAttributeValueException(child, "name");
@@ -303,38 +305,14 @@ namespace PHP.Core
         {
             Debug.Assert(document != null);
 
-            var errorInfo = document as System.Configuration.Internal.IConfigErrorInfo;
             var configXml = document as System.Configuration.ConfigXmlDocument;
-
+            
             if (document.BaseURI != "")
                 return document.BaseURI;
-            else if (errorInfo != null)
-                return errorInfo.Filename;
             else if (configXml != null)
                 return configXml.Filename;
             else
                 return AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
-        }
-
-        /// <summary>
-        /// Determine the configuration file for given <see cref="XmlNode"/> and its last modification time.
-        /// </summary>
-        /// <param name="node"><see cref="XmlNode"/> from a configuration file.</param>
-        /// <param name="maxTimeUtc">Currently latest modification time. The returned value cannot be lower.</param>
-        /// <returns>Time of the configuration file modification or <see cref="DateTime.MinValue"/>.</returns>
-        public static DateTime GetConfigModificationTimeUtc(XmlNode/*!*/node, DateTime maxTimeUtc)
-        {
-            Debug.Assert(node != null);
-
-            try
-            {
-                var d = FileSystemUtils.GetLastModifiedTimeUtc(GetConfigXmlPath(node.OwnerDocument));
-                return (d > maxTimeUtc) ? d : maxTimeUtc;
-            }
-            catch
-            {
-                return maxTimeUtc;
-            }
         }
 
         /// <summary>
@@ -427,7 +405,8 @@ namespace PHP.Core
 		/// Parses list of library assemblies.
 		/// </summary>
 		/// <param name="node">Node containing the list.</param>
-		/// <param name="libraries">List of libraries to be modified by given <paramref name="node"/>.</param>
+		/// <param name="callback">Callback called for each parsed library.</param>
+		/// <param name="extensionsPath">Full path to the extensions directory.</param>
 		/// <param name="librariesPath">Full path to the libraries directory.</param>
 		/// <remarks>
 		/// The following node type is allowed to be contained in the <paramref name="node"/>:
@@ -435,17 +414,17 @@ namespace PHP.Core
 		///   &lt;add assembly="{string}" [section="{string}"] {additional attributes specific to library} /&gt;
 		/// </code>
 		/// </remarks>
-		public static void ParseLibraryAssemblyList(XmlNode/*!*/ node,
-            LibrariesConfigurationList/*!*/ libraries, FullPath librariesPath)
+		public static void ParseLibraryAssemblyList(XmlNode/*!*/ node, ParseLibraryAssemblyCallback/*!*/ callback,
+			FullPath extensionsPath, FullPath librariesPath)
 		{
 			if (node == null)
 				throw new ArgumentNullException("node");
-            if (libraries == null)
-                throw new ArgumentNullException("libraries");
+			if (callback == null)
+				throw new ArgumentNullException("callback");
 
 			foreach (XmlNode child in node.ChildNodes)
 			{
-                if (child.Name == "add" || child.Name == "remove")
+				if (child.Name == "add")
 				{
 					if (!Configuration.IsValidInCurrentScope(child)) continue;
 
@@ -473,7 +452,14 @@ namespace PHP.Core
 
 					if (extension_name != null)
 					{
-                        throw new NotSupportedException();
+						try
+						{
+							uri = new Uri("file:///" + Externals.GetWrapperPath(extension_name, extensionsPath.IsEmpty ? "" : extensionsPath));
+						}
+						catch (UriFormatException)
+						{
+							throw new InvalidAttributeValueException(child, "extension");
+						}
 					}
 
 					if (url != null)
@@ -488,17 +474,16 @@ namespace PHP.Core
 						}
 					}
 
-                    if (child.Name == "add")
-                        libraries.AddLibrary(assembly_name, uri, section_name, child);
-                    else if (child.Name == "remove")
-                        libraries.RemoveLibrary(assembly_name, uri);
-                    else
-                        Debug.Fail(null);
+					if (!callback(assembly_name, uri, section_name, child)) break;
 				}
+                /*else if (child.Name == "remove")
+                {
+
+                }
                 else if (child.Name == "clear")
                 {
-                    libraries.ClearLibraries();
-                }
+
+                }*/
                 else if (child.NodeType == XmlNodeType.Element)
                 {
                     throw new ConfigUtils.InvalidNodeException(child);
@@ -506,12 +491,19 @@ namespace PHP.Core
 			}
 		}
 
-        internal static void ParseScriptLibraryAssemblyList(XmlNode/*!*/ node, ScriptLibraryDatabase/*!*/librares)
+        public static void ParseScriptLibraryAssemblyList(XmlNode/*!*/ node,
+            ParseScriptLibraryAssemblyCallback/*!*/ addCallback,
+            ParseScriptLibraryAssemblyCallback/*!*/ removeCallback,
+            Action<object>/*!*/ clearCallback)
         {
             if (node == null)
                 throw new ArgumentNullException("node");
-            if (librares == null)
-                throw new ArgumentNullException("librares");
+            if (addCallback == null)
+                throw new ArgumentNullException("addCallback");
+            if (removeCallback == null)
+                throw new ArgumentNullException("removeCallback");
+            if (clearCallback == null)
+                throw new ArgumentNullException("clearCallback");
 
             foreach (XmlNode child in node.ChildNodes)
             {
@@ -521,12 +513,12 @@ namespace PHP.Core
 
                     string assemblyName = ConfigUtils.OptionalAttribute(child, "assembly");
                     //purposefully disabled (not needed and there are some integrity problems regarding library root)
-                    string libraryRoot = ConfigUtils.OptionalAttribute(child, "root");
+                    string libraryRoot = "."; // ConfigUtils.OptionalAttribute(child, "root") ?? "";
                     string assemblyUrl = ConfigUtils.OptionalAttribute(child, "url");
                     Uri uri = null;
 
                     if (assemblyName == null && assemblyUrl == null)
-                        throw new ConfigurationErrorsException(string.Format(CoreResources.missing_attribute, "assembly"), child);
+                        throw new ConfigurationErrorsException(CoreResources.GetString("missing_attribute", "assembly"), child);
 
                     if (assemblyUrl != null)
                     {
@@ -541,13 +533,13 @@ namespace PHP.Core
                     }
 
                     if (child.Name == "add")
-                        librares.AddLibrary(assemblyName, uri, assemblyUrl, libraryRoot);
+                        addCallback(assemblyName, uri, libraryRoot);
                     else
-                        librares.RemoveLibrary(assemblyName, uri, assemblyUrl, libraryRoot);
+                        removeCallback(assemblyName, uri, libraryRoot);
                 }
                 else if (child.Name == "clear")
                 {
-                    librares.ClearLibraries();
+                    clearCallback(null);
                 }
                 else if (child.NodeType == XmlNodeType.Element)
                 {
@@ -595,6 +587,16 @@ namespace PHP.Core
         }
 
         /// <summary>
+        /// Load plugin from its full type name.
+        /// </summary>
+        /// <param name="typename">Full type name.</param>
+        public static void LoadPlugin(string/*!*/typename)
+        {
+            var type = Type.GetType(typename, true);
+            type.GetMethod("Initialize", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[] { });
+        }
+
+		/// <summary>
 		/// Parses an integer from a string.
 		/// </summary>
 		/// <param name="value">The string.</param>
@@ -689,40 +691,6 @@ namespace PHP.Core
 		{
 			return Path.GetFullPath(Path.Combine(root, path));
 		}
-
-
-        public static string[] GetFiles(string path, string searchPattern)
-        {
-            return GetFileSystemEntries(path, searchPattern, true, false);
-        }
-
-        public static string[] GetDirectories(string path, string searchPattern)
-        {
-            return GetFileSystemEntries(path, searchPattern, false, true);
-        }
-
-        public static string[] GetFileSystemEntries(string path, string searchPattern)
-        {
-            return GetFileSystemEntries(path, searchPattern, true, true);
-        }
-
-        public static string[] GetFileSystemEntries(string path, string searchPattern, bool includeFiles, bool includeDirectories)
-        {
-            if (includeFiles && includeDirectories)
-            {
-                return System.IO.Directory.GetFileSystemEntries(path, searchPattern);
-            }
-            if (includeFiles)
-            {
-                return System.IO.Directory.GetFiles(path, searchPattern);
-            }
-            if (includeDirectories)
-            {
-                return System.IO.Directory.GetDirectories(path, searchPattern);
-            }
-            return ArrayUtils.EmptyStrings;
-        }
-
 
 		/// <summary>
 		/// Gets a list of file full paths contained in a specified directories.
@@ -848,18 +816,11 @@ namespace PHP.Core
 		/// </summary>
 		private NetworkUtils()
 		{
-            if (Environment.Is64BitProcess)
-            {
-                var wsa_data = new WsaData64();
-                if (WSAStartup64(WORD_VERSION, ref wsa_data) != 0)
-                    throw new NotSupportedException(CoreResources.GetString("networkutils_unsupported"));
-            }
-            else
-            {
-                var wsa_data = new WsaData32();
-                if (WSAStartup32(WORD_VERSION, ref wsa_data) != 0)
-                    throw new NotSupportedException(CoreResources.GetString("networkutils_unsupported"));
-            }
+			WsaData wsa_data;
+			if (InitializeWinsock(2, out wsa_data) != 0)
+			{
+				throw new NotSupportedException(CoreResources.GetString("networkutils_unsupported"));
+			}
 		}
 
 		/// <summary>
@@ -867,71 +828,43 @@ namespace PHP.Core
 		/// </summary>
 		~NetworkUtils()
 		{
-            WSACleanup();
+			ShutdownWinsock();
 		}
 
-        const int WSADESCRIPTION_LEN = 256;
-        const int WSASYS_STATUS_LEN = 128;
-
-        public const ushort HIGH_VERSION = 2;
-        public const ushort LOW_VERSION = 2;
-        public const short WORD_VERSION = (ushort)(HIGH_VERSION << 8) + LOW_VERSION;
-        
-        /// <summary>
+		/// <summary>
 		/// Managed representation of the <c>WSADATA</c> structure.
 		/// </summary>
-        [StructLayout(LayoutKind.Sequential)]
-        public struct WsaData32
-        {
-            public ushort wVersion;
-            public ushort wHighVersion;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = WSADESCRIPTION_LEN + 1)]public String szDescription;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = WSASYS_STATUS_LEN + 1)]public String szSystemStatus;
-            public ushort iMaxSockets;
-            public ushort iMaxUdpDg;
-            public IntPtr lpVendorInfo;
-        }
-        /// <summary>
-        /// Managed representation of the <c>WSADATA</c> structure.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential)]
-        public struct WsaData64
-        {
-            public ushort wVersion;
-            public ushort wHighVersion;
-            public ushort iMaxSockets;
-            public ushort iMaxUdpDg;
-            public IntPtr lpVendorInfo;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = WSADESCRIPTION_LEN + 1)]
-            public String szDescription;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = WSASYS_STATUS_LEN + 1)]
-            public String szSystemStatus;
-        }
-        
+		[StructLayout(LayoutKind.Explicit)]
+		public struct WsaData
+		{
+			[FieldOffset(0)]
+			ushort wVersion;
+			[FieldOffset(2)]
+			ushort wHighVersion;
+			// skipping szDescription and szSystemStatus
+			[FieldOffset(392)]
+			ushort iMaxSockets;
+			[FieldOffset(394)]
+			ushort iMaxUdpDg;
+			[FieldOffset(396)]
+			string lpVendorInfo;
+		}
+
 		/// <summary>
 		/// Initializes Winsock for the current process.
 		/// </summary>
-        /// <param name="wVersionRequested">The Winsock version requested by caller.</param>
+		/// <param name="versionRequested">The Winsock version requested by caller.</param>
 		/// <param name="wsaData">Receives information about Winsock implementation.</param>
 		/// <returns>Zero if successfull, a non-zero error code otherwise.</returns>
-        [DllImport("ws2_32.dll", EntryPoint = "WSAStartup", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern int WSAStartup32(Int16 wVersionRequested, ref WsaData32 wsaData);
-
-        /// <summary>
-        /// Initializes Winsock for the current process.
-        /// </summary>
-        /// <param name="wVersionRequested">The Winsock version requested by caller.</param>
-        /// <param name="wsaData">Receives information about Winsock implementation.</param>
-        /// <returns>Zero if successfull, a non-zero error code otherwise.</returns>
-        [DllImport("ws2_32.dll", EntryPoint = "WSAStartup", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern int WSAStartup64(Int16 wVersionRequested, ref WsaData64 wsaData);
+		[DllImport("ws2_32.dll", EntryPoint = "WSAStartup")]
+		public static extern int InitializeWinsock(ushort versionRequested, out WsaData wsaData);
 
 		/// <summary>
 		/// Shuts down Winsock for the current process.
 		/// </summary>
 		/// <returns>Zero if successfull, a non-zero error code otherwise.</returns>
-		[DllImport("ws2_32.dll")]
-        private static extern int WSACleanup();
+		[DllImport("ws2_32.dll", EntryPoint = "WSACleanup")]
+		public static extern int ShutdownWinsock();
 
 		/// <summary>
 		/// Managed representation of the <c>protoent</c> structure.
@@ -939,106 +872,21 @@ namespace PHP.Core
 		[StructLayout(LayoutKind.Sequential)]
 		public class ProtoEnt
 		{
-            [MarshalAs(UnmanagedType.LPStr)]
-            public string p_name;
+			public string p_name;
 			public IntPtr p_aliases;
 			public short p_proto;
-
-            /// <summary>
-            /// Marshales native pointer to <see cref="ProtoEnt"/> instance.
-            /// </summary>
-            /// <param name="ptr">Pointer returned by <see cref="getprotobyname"/> or <see cref="getprotobynumber"/>.</param>
-            /// <remarks>The wrapper avoids freeing of pointer returned from winsoc native library. The returned pointer is managed by winsoc library and must not be freed by CLI.</remarks>
-            internal static ProtoEnt FromIntPtr(IntPtr ptr)
-            {
-                if (ptr == IntPtr.Zero)
-                return null;
-
-                // marshall returned object to ProtoEnt class:
-                ProtoEnt result = new ProtoEnt();
-                Marshal.PtrToStructure(ptr, result);
-                return result;
-            }
 		}
 
 		/// <summary>
 		/// Managed representation of the <c>servent</c> structure.
 		/// </summary>
+		[StructLayout(LayoutKind.Sequential)]
 		public class ServEnt
 		{
-            public string s_name;
+			public string s_name;
+			public IntPtr s_aliases;
 			public short s_port;
-            public string s_proto;
-
-            //struct  servent
-            //{
-            //    char    FAR * s_name;           /* official service name */
-            //    char    FAR * FAR * s_aliases;  /* alias list */
-            //#ifdef _WIN64
-            //    char    FAR * s_proto;          /* protocol to use */
-            //    short   s_port;                 /* port # */
-            //#else
-            //    short   s_port;                 /* port # */
-            //    char    FAR * s_proto;          /* protocol to use */
-            //#endif
-            //};
-
-            [StructLayout(LayoutKind.Sequential)]
-		    private class x86
-            {
-                [MarshalAs(UnmanagedType.LPStr)]
-                public string s_name;           // official service name
-                public IntPtr s_aliases;        // alias list
-                public short   s_port;          // port #
-                [MarshalAs(UnmanagedType.LPStr)]
-                public string s_proto;          // protocol to use
-            }
-
-            [StructLayout(LayoutKind.Sequential)]
-		    private class x64
-            {
-                [MarshalAs(UnmanagedType.LPStr)]
-                public string s_name;           // official service name
-                public IntPtr s_aliases;        // alias list
-                [MarshalAs(UnmanagedType.LPStr)]
-                public string s_proto;          // protocol to use
-                public short   s_port;          // port #
-            }
-
-            /// <summary>
-            /// Marshales native pointer to <see cref="ServEnt"/> instance.
-            /// </summary>
-            /// <param name="ptr">Pointer returned by <see cref="getservbyname"/> or <see cref="getservbyport"/>.</param>
-            /// <remarks>The wrapper avoids freeing of pointer returned from winsoc native library. The returned pointer is managed by winsoc library and must not be freed by CLI.</remarks>
-            internal static ServEnt FromIntPtr(IntPtr ptr)
-            {
-                if (ptr == IntPtr.Zero)
-                return null;
-
-                // marshall returned object to ProtoEnt class:
-                if (Environment.Is64BitProcess)
-                {
-                    var result = new ServEnt.x64();
-                    Marshal.PtrToStructure(ptr, result);
-                    return new ServEnt()
-                    {
-                        s_name = result.s_name,
-                        s_port = result.s_port,
-                        s_proto = result.s_proto
-                    };
-                }
-                else
-                {
-                    var result = new ServEnt.x86();
-                    Marshal.PtrToStructure(ptr, result);
-                    return new ServEnt()
-                    {
-                        s_name = result.s_name,
-                        s_port = result.s_port,
-                        s_proto = result.s_proto
-                    };
-                }
-            }
+			public string s_proto;
 		}
 
 		/// <summary>
@@ -1046,37 +894,16 @@ namespace PHP.Core
 		/// </summary>
 		/// <param name="name">The protocol name.</param>
 		/// <returns>Protocol information or <B>null</B> if an error occurs.</returns>
-        [DllImport("ws2_32.dll")]
-        private static extern IntPtr getprotobyname([MarshalAs(UnmanagedType.LPStr)]string name);
-
-        /// <summary>
-        /// Safe wrapper for <see cref="getprotobyname"/> function call.
-        /// </summary>
-        /// <param name="name">The protocol name.</param>
-		/// <returns>Protocol information or <B>null</B> if an error occurs.</returns>
-        /// <remarks>The wrapper avoids freeing of pointer returned from <see cref="getprotobyname"/>. The returned pointer is managed by winsoc library and must not be freed by CLI.</remarks>
-        public static ProtoEnt GetProtocolByName(string name)
-        {
-            return ProtoEnt.FromIntPtr(getprotobyname(name));
-        }
+		[DllImport("ws2_32.dll", EntryPoint = "getprotobyname")]
+		public static extern ProtoEnt GetProtocolByName(string name);
 
 		/// <summary>
 		/// Retrieves protocol information corresponding to a protocol number.
 		/// </summary>
 		/// <param name="number">The protocol number.</param>
 		/// <returns>Protocol information or <B>null</B> if an error occurs.</returns>
-        [DllImport("ws2_32.dll")]
-        private static extern IntPtr getprotobynumber(int number);
-
-        /// <summary>
-        /// Safe wrapper for <see cref="getprotobynumber"/> function call.
-        /// </summary>
-        /// <param name="number">The protocol number.</param>
-		/// <returns>Protocol information or <B>null</B> if an error occurs.</returns>
-        public static ProtoEnt GetProtocolByNumber(int number)
-        {
-            return ProtoEnt.FromIntPtr(getprotobynumber(number));
-        }
+		[DllImport("ws2_32.dll", EntryPoint = "getprotobynumber")]
+		public static extern ProtoEnt GetProtocolByNumber(int number);
 
 		/// <summary>
 		/// Retrieves service information corresponding to a service name and protocol.
@@ -1085,20 +912,8 @@ namespace PHP.Core
 		/// <param name="proto">The protocol name or <B>null</B> if only <paramref name="name"/> should be matched.
 		/// </param>
 		/// <returns>Service information or <B>null</B> if an error occurs.</returns>
-        [DllImport("ws2_32.dll")]
-		private static extern IntPtr getservbyname([MarshalAs(UnmanagedType.LPStr)]string name, [MarshalAs(UnmanagedType.LPStr)]string proto);
-
-        /// <summary>
-        /// Safe wrapper for <see cref="getservbyname"/> function call.
-        /// </summary>
-		/// <param name="name">The service name.</param>
-		/// <param name="proto">The protocol name or <B>null</B> if only <paramref name="name"/> should be matched.
-		/// </param>
-		/// <returns>Service information or <B>null</B> if an error occurs.</returns>
-        public static ServEnt GetServiceByName(string name, string proto)
-        {
-            return ServEnt.FromIntPtr(getservbyname(name, proto));
-        }
+		[DllImport("ws2_32.dll", EntryPoint = "getservbyname")]
+		public static extern ServEnt GetServiceByName(string name, string proto);
 
 		/// <summary>
 		/// Retrieves service information corresponding to a port and protocol.
@@ -1107,20 +922,8 @@ namespace PHP.Core
 		/// <param name="proto">The protocol name or <B>null</B> if only <paramref name="port"/> should be matched.
 		/// </param>
 		/// <returns>Service information or <B>null</B> if an error occurs.</returns>
-        [DllImport("ws2_32.dll")]
-		public static extern IntPtr getservbyport(int port, [MarshalAs(UnmanagedType.LPStr)]string proto);
-
-        /// <summary>
-		/// Safe wrapper for <see cref="getservbyport"/> function call.
-		/// </summary>
-		/// <param name="port">The port number (network order).</param>
-		/// <param name="proto">The protocol name or <B>null</B> if only <paramref name="port"/> should be matched.
-		/// </param>
-		/// <returns>Service information or <B>null</B> if an error occurs.</returns>
-        public static ServEnt GetServiceByPort(int port, string proto)
-        {
-            return ServEnt.FromIntPtr(getservbyport(port, proto));
-        }
+		[DllImport("ws2_32.dll", EntryPoint = "getservbyport")]
+		public static extern ServEnt GetServiceByPort(int port, string proto);
 	}
 
 	#endregion

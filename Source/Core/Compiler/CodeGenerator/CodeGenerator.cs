@@ -1,6 +1,5 @@
 /*
 
-  Copyright (c) 2007- DEVSENSE
   Copyright (c) 2003-2006 Tomas Matousek, Ladislav Prosek 
   Copyright (c) 2003-2004 Martin Maly.
 
@@ -24,7 +23,6 @@ using PHP.Core.AST;
 using PHP.Core.Emit;
 using PHP.Core.Parsers;
 using PHP.Core.Reflection;
-using PHP.Core.Compiler.AST;
 
 namespace PHP.Core
 {
@@ -43,6 +41,9 @@ namespace PHP.Core
 		public ILEmitter IL { get { return il; } set { il = value; } }
 		private ILEmitter il;
 
+		public LinqBuilder LinqBuilder { get { return linqBuilder; } set { linqBuilder = value; } }
+		private LinqBuilder linqBuilder;
+
 		/// <summary>
 		/// The current compilation context.
 		/// </summary>
@@ -51,10 +52,10 @@ namespace PHP.Core
 
 		/// <summary>
 		/// Current source unit. Switched by <see cref="GlobalCode"/>.
-        /// Internally modifiable in order to change the sourceUnit during the emission of methods/fields in partial classes.
+        /// Intyernally modifiable in order to change the sourceUnit during the emission of methods/fields in partial classes.
 		/// </summary>
-        public CompilationSourceUnit SourceUnit { get { return sourceUnit; } internal set { sourceUnit = value; } }
-        private CompilationSourceUnit sourceUnit;
+        public SourceUnit SourceUnit { get { return sourceUnit; } internal set { sourceUnit = value; } }
+		private SourceUnit sourceUnit;
 
 		public CompilationUnitBase CompilationUnit { get { return sourceUnit.CompilationUnit; } }
 
@@ -160,12 +161,6 @@ namespace PHP.Core
 		public IPlace/*!*/ TypeContextPlace;
 		public void EmitLoadClassContext() { TypeContextPlace.EmitLoad(il); }
 
-        /// <summary>
-        /// A place to load late static bind type from.
-        /// It may be a local variable with value copied from <see cref="PhpStack.LateStaticBindType"/>.
-        /// </summary>
-        public IPlace LateStaticBindTypePlace;
-
 		/// <summary>
 		/// A place to load <see cref="NamingContext"/> representing current name context from.
 		/// </summary>
@@ -208,12 +203,12 @@ namespace PHP.Core
         /// Current scope CallSites.
         /// Will not be null within the GlobalCode and its sub-tree.
         /// </summary>
-        private CallSitesBuilder callSites = null;
+        private PHP.Core.Compiler.CodeGenerator.CallSitesBuilder callSites = null;
 
         /// <summary>
         /// Current scope CallSitesBuilder.
         /// </summary>
-        public CallSitesBuilder CallSitesBuilder
+        public PHP.Core.Compiler.CodeGenerator.CallSitesBuilder CallSitesBuilder
         {
             get
             {
@@ -258,28 +253,28 @@ namespace PHP.Core
 		internal void EmitConversion(Expression/*!*/ expression, PhpTypeCode dst)
 		{
 			// expression is evaluable:
-			if (expression.HasValue())
+			if (expression.HasValue)
 			{
 				switch (dst)
 				{
 					case PhpTypeCode.String:
-						il.Emit(OpCodes.Ldstr, PHP.Core.Convert.ObjectToString(expression.GetValue()));
+						il.Emit(OpCodes.Ldstr, PHP.Core.Convert.ObjectToString(expression.Value));
 						break;
 
 					case PhpTypeCode.Boolean:
-                        il.LdcI4(PHP.Core.Convert.ObjectToBoolean(expression.GetValue()) ? 1 : 0);
+						il.LdcI4(PHP.Core.Convert.ObjectToBoolean(expression.Value) ? 1 : 0);
 						break;
 
 					case PhpTypeCode.Integer:
-                        il.LdcI4(PHP.Core.Convert.ObjectToInteger(expression.GetValue()));
+						il.LdcI4(PHP.Core.Convert.ObjectToInteger(expression.Value));
 						break;
 
 					case PhpTypeCode.Double:
-                        il.Emit(OpCodes.Ldc_R8, PHP.Core.Convert.ObjectToDouble(expression.GetValue()));
+						il.Emit(OpCodes.Ldc_R8, PHP.Core.Convert.ObjectToDouble(expression.Value));
 						break;
 
 					case PhpTypeCode.Object:
-                        il.LoadLiteral(expression.GetValue());
+						il.LoadLiteral(expression.Value);
 						break;
 
 					default:
@@ -318,6 +313,15 @@ namespace PHP.Core
 
 					case PhpTypeCode.Object:
 						// nop //
+						break;
+
+					case PhpTypeCode.LinqSource:
+						// LOAD Convert.ObjectToLinqSource(<variable>, <type desc>);
+                        TypeContextPlace.EmitLoad(il);
+                        il.Emit(OpCodes.Call, Methods.Convert.ObjectToLinqSource);
+						
+						// nop //
+
 						break;
 
 					default:
@@ -430,7 +434,7 @@ namespace PHP.Core
 		/// Called when a <see cref="PHP.Core.AST.GlobalCode"/> AST node is entered during the emit phase.
 		/// </summary>
 		public void EnterGlobalCodeDeclaration(VariablesTable variablesTable,
-            Dictionary<VariableName, Statement> labels, CompilationSourceUnit/*!*/ sourceUnit)
+			Dictionary<VariableName, Statement> labels, SourceUnit/*!*/ sourceUnit)
 		{
 			CompilerLocationStack.GlobalCodeContext gc_context = new CompilerLocationStack.GlobalCodeContext();
 
@@ -447,7 +451,7 @@ namespace PHP.Core
 
             // CallSites
             Debug.Assert(this.callSites == null, "Unclosed CallSite!");
-            this.callSites = new CallSitesBuilder(
+            this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
                 sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
                 sourceUnit.SourceFile.RelativePath.ToString(),
                 null/*Unknown at compile time*/);
@@ -480,10 +484,6 @@ namespace PHP.Core
 			gc_context.SelfPlace = SelfPlace;
 			SelfPlace = new IndexedPlace(PlaceHolder.Argument, ScriptBuilder.ArgSelf);
 
-            // set late static bind place
-            gc_context.LateStaticBindTypePlace = LateStaticBindTypePlace;
-            LateStaticBindTypePlace = null;
-
 			// set Result place and return label
 			gc_context.ResultPlace = ResultPlace;
 			gc_context.ReturnLabel = ReturnLabel;
@@ -515,7 +515,6 @@ namespace PHP.Core
 			this.il = gc_context.IL;
 			this.ScriptContextPlace = gc_context.ScriptContextPlace;
 			this.TypeContextPlace = gc_context.ClassContextPlace;
-            this.LateStaticBindTypePlace = null;
 			this.SelfPlace = gc_context.SelfPlace;
 			this.ResultPlace = gc_context.ResultPlace;
 			this.ReturnLabel = gc_context.ReturnLabel;
@@ -533,25 +532,13 @@ namespace PHP.Core
 		/// <param name="function">The function to enter.</param>
 		/// <returns><B>true</B> if the function should be emitted, <B>false</B> if it should not be emitted
 		/// (an error was emitted instead due to the incorrect declaration).</returns>
-        public bool EnterFunctionDeclaration(PhpFunction/*!*/ function)
-        {
-            return EnterFunctionDeclarationInternal(function, function.QualifiedName);
-        }
-
-        public bool EnterFunctionDeclaration(PhpLambdaFunction/*!*/ function)
-        {
-            return EnterFunctionDeclarationInternal(function, new QualifiedName(function.Name));
-        }
-
-        private bool EnterFunctionDeclarationInternal(PhpRoutine/*!*/ function, QualifiedName qualifiedName)
+		public bool EnterFunctionDeclaration(PhpFunction/*!*/ function)
 		{
-            Debug.Assert(function.IsFunction);
-
 			bool is_optimized = (function.Properties & RoutineProperties.HasUnoptimizedLocals) == 0;
 			bool indirect_local_access = (function.Properties & RoutineProperties.IndirectLocalAccess) != 0;
 
 			CompilerLocationStack.FunctionDeclContext fd_context = new CompilerLocationStack.FunctionDeclContext();
-            fd_context.Name = qualifiedName;
+			fd_context.Name = function.QualifiedName;
 
 			// Set whether access to variables should be generated via locals or table
 			fd_context.OptimizedLocals = this.OptimizedLocals;
@@ -562,13 +549,11 @@ namespace PHP.Core
 			this.ReturnsPhpReference = function.Signature.AliasReturn;
 
             // CallSites
-            fd_context.CallSites = null;//fd_context.CallSites = callSites;
-            //this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
-            //    sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
-            //    fd_context.Name.ToString(),
-            //    LiteralPlace.Null);
-            // keep current site container, just change the class context (to avoid of creating and baking so many types)
-            this.callSites.PushClassContext(LiteralPlace.Null, null);
+            fd_context.CallSites = callSites;
+            this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
+                sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
+                fd_context.Name.ToString(),
+                LiteralPlace.Null);
             
             // Set ILEmitter to function's body
 			fd_context.IL = this.il;
@@ -607,15 +592,11 @@ namespace PHP.Core
 			fd_context.SelfPlace = this.SelfPlace;
 			this.SelfPlace = LiteralPlace.Null;
 
-            // Set Static
-            fd_context.LateStaticBindTypePlace = this.LateStaticBindTypePlace;
-            this.LateStaticBindTypePlace = null;
-
-            // set Result place
+			// set Result place
 			fd_context.ResultPlace = this.ResultPlace;
 			fd_context.ReturnLabel = this.ReturnLabel;
 			this.ResultPlace = null;
-            
+
 			// set exception block nesting:
 			fd_context.ExceptionBlockNestingLevel = this.ExceptionBlockNestingLevel;
 			this.ExceptionBlockNestingLevel = 0;
@@ -638,14 +619,13 @@ namespace PHP.Core
 			locationStack.Pop();
 
             // close CallSites:
-            //this.callSites.Bake();
-            
+            this.callSites.Bake();
+
 			// restore:
-            this.callSites.PopClassContext();//this.callSites = fd_context.CallSites;
-            this.il = fd_context.IL;
+            this.callSites = fd_context.CallSites;
+			this.il = fd_context.IL;
 			this.ScriptContextPlace = fd_context.ScriptContextPlace;
 			this.TypeContextPlace = fd_context.ClassContextPlace;
-            this.LateStaticBindTypePlace = fd_context.LateStaticBindTypePlace;
 			this.SelfPlace = fd_context.SelfPlace;
 			this.ResultPlace = fd_context.ResultPlace;
 			this.ReturnLabel = fd_context.ReturnLabel;
@@ -672,13 +652,11 @@ namespace PHP.Core
 			this.ReturnsPhpReference = aliasReturn;
 
             // CallSites
-            fd_context.CallSites = null;
-            //this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
-            //    sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
-            //    fd_context.Name.ToString(),
-            //    null/*class_context = Unknown (at compile time)*/);
-            // keep current site container, to be compatible with LeaveFunctionDeclaration
-            this.callSites.PushClassContext(null, null);
+            fd_context.CallSites = callSites;
+            this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
+                sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
+                fd_context.Name.ToString(),
+                null/*class_context = Unknown (at compile time)*/);
             
             // Set ILEmitter to function's body
 			fd_context.IL = this.il;
@@ -709,9 +687,7 @@ namespace PHP.Core
 			// set Result place
 			fd_context.ResultPlace = this.ResultPlace;
 			fd_context.ReturnLabel = this.ReturnLabel;
-            fd_context.LateStaticBindTypePlace = this.LateStaticBindTypePlace;
 			this.ResultPlace = null;
-            this.LateStaticBindTypePlace = null;
 
 			// set exception block nesting:
 			fd_context.ExceptionBlockNestingLevel = this.ExceptionBlockNestingLevel;
@@ -742,11 +718,10 @@ namespace PHP.Core
 
             // CallSites
             cd_context.CallSites = callSites;
-            this.callSites = new CallSitesBuilder(
+            this.callSites = new Compiler.CodeGenerator.CallSitesBuilder(
                 sourceUnit.CompilationUnit.Module.GlobalType.RealModuleBuilder,
-                type.QualifiedName.ToString(),
-                TypeContextPlace, /*class_context = TypeContextPlace, can be used in .cctor of call sites container*/
-                type);
+                cd_context.Type.QualifiedName.ToString(),
+                TypeContextPlace/*class_context = TypeContextPlace, can be used in .cctor of call sites container*/);
 
             //
             locationStack.PushTypeDecl(cd_context);
@@ -823,7 +798,6 @@ namespace PHP.Core
 			md_context.ClassContextPlace = TypeContextPlace;
 			md_context.ScriptContextPlace = ScriptContextPlace;
 			md_context.SelfPlace = SelfPlace;
-            md_context.LateStaticBindTypePlace = LateStaticBindTypePlace;
 
 			if (method.IsStatic)
 			{
@@ -849,7 +823,6 @@ namespace PHP.Core
 			md_context.ResultPlace = ResultPlace;
 			md_context.ReturnLabel = ReturnLabel;
 			ResultPlace = null;
-            LateStaticBindTypePlace = null;
 
 			// set exception block nesting:
 			md_context.ExceptionBlockNestingLevel = ExceptionBlockNestingLevel;
@@ -875,7 +848,6 @@ namespace PHP.Core
 			this.il = md_context.IL;
 			this.ScriptContextPlace = md_context.ScriptContextPlace;
 			this.TypeContextPlace = md_context.ClassContextPlace;
-            this.LateStaticBindTypePlace = md_context.LateStaticBindTypePlace;
 			this.SelfPlace = md_context.SelfPlace;
 			this.ResultPlace = md_context.ResultPlace;
 			this.ReturnLabel = md_context.ReturnLabel;
@@ -900,30 +872,21 @@ namespace PHP.Core
 		{
 			Debug.Assert(constant != null);
 
-            // real constant definition
-            if (constant.RealField.IsLiteral)
-            {
-                Debug.Assert(constant.RealFieldBuilder != null);
-                constant.RealFieldBuilder.SetConstant(constant.Value);
-                return;
-            }
-
 			// class constant initialization is emitted into the static constructor
 			ILEmitter old_il = il;
 			IPlace old_sc_emitter = ScriptContextPlace;
 			try
 			{
 				// set il and SC-emitter appropriately
-				
+				il = constant.DeclaringPhpType.Builder.StaticCtorEmitter;
+
 				if (constant.HasValue)
 				{
-					il = constant.DeclaringPhpType.Builder.StaticCtorEmitter;
-                    il.LoadLiteralBox(constant.Value);
+					il.LoadLiteralBox(constant.Value);
 				}
 				else
 				{
-                    il = new ILEmitter(constant.DeclaringPhpType.StaticFieldInitMethodBuilder);
-                    ScriptContextPlace = new IndexedPlace(PlaceHolder.Argument, ScriptBuilder.ArgContext);
+					ScriptContextPlace = new LazyLoadSCPlace();
 
 					// emit the expression evaluating code
 					EmitBoxing(constant.Node.Initializer.Emit(this));
@@ -947,12 +910,11 @@ namespace PHP.Core
 		{
 			ILEmitter cil;
 			IPlace sc_place;
-            
+
 			if (field.IsStatic)
 			{
-                // (J) even overiding static field is created again in derivating type
 				// there is no initialization taking place if the implementing CLI field does not live in current class
-				//if (field.Overrides != null) return;
+				if (field.Overrides != null) return;
 
 				if (field.IsAppStatic)
 				{
@@ -971,9 +933,6 @@ namespace PHP.Core
 			}
 			else
 			{
-                if (initVal == null && field.Implementor != field.DeclaringType)
-                    return;
-
 				// instance field initialization is emitted into the <InitializeInstanceFields> method
 				cil = field.DeclaringPhpType.Builder.InstanceFieldInitEmitter;
 
@@ -1008,7 +967,6 @@ namespace PHP.Core
 			else cil.Emit(OpCodes.Newobj, Constructors.PhpSmartReference.Void);
 
 			// store it in the field
-            Debug.Assert(field.IsStatic == field.RealField.IsStatic);
 			cil.Emit(field.IsStatic ? OpCodes.Stsfld : OpCodes.Stfld, field.RealField);
 		}
 
@@ -1027,7 +985,7 @@ namespace PHP.Core
 				try
 				{
 					// read the field
-					PhpTypeCode type_code = constant.EmitGet(this, null, false, null);
+					PhpTypeCode type_code = constant.EmitGet(this, null, false);
 
 					// convert it to the return type
 					//ClrOverloadBuilder.EmitConvertToClr(
@@ -1259,20 +1217,20 @@ namespace PHP.Core
         /// Emits IL instructions to process the <B>echo</B> and <B>print</B> commands.
         /// </summary>
         /// <param name="expressions">List of expressions to be echoed. They will be evaluated first. The list cannot be null and it must contain at least one element.</param>
-        public void EmitEcho(Expression[]/*!*/expressions)
+        public void EmitEcho(List<Expression>/*!*/expressions)
         {
             Debug.Assert(expressions != null);
-            Debug.Assert(expressions.Length > 0);
+            Debug.Assert(expressions.Count > 0);
 
             // known types of resulting values
-            PhpTypeCode[] types = new PhpTypeCode[expressions.Length];
+            PhpTypeCode[] types = new PhpTypeCode[expressions.Count];
 
             // construct the array with values
             // to preserve the proper order of evaluation and output
-            il.LdcI4(expressions.Length);
+            il.LdcI4(expressions.Count);
             il.Emit(OpCodes.Newarr, typeof(object));
 
-            for (int i = 0; i < expressions.Length; ++i)
+            for (int i = 0; i < expressions.Count; ++i)
             {
                 // array[<i>] = <expressions[i]>;
                 il.Emit(OpCodes.Dup);
@@ -1282,7 +1240,7 @@ namespace PHP.Core
             }
 
             // echo the values
-            for (int i = 0; i < expressions.Length; ++i)
+            for (int i = 0; i < expressions.Count; ++i)
             {
                 il.Emit(OpCodes.Dup);   // array
                 il.LdcI4(i);            // <i>
@@ -1311,7 +1269,7 @@ namespace PHP.Core
 			ConcatEx concat;
 			//BinaryEx binary_expr;
 
-			if ((concat = parameter as ConcatEx) != null && concat.Expressions.Length > 1)
+			if ((concat = parameter as ConcatEx) != null && concat.Expressions.Count > 1)
 			{
                 //foreach (Expression expr in concat.Expressions)
                 //{
@@ -1475,7 +1433,7 @@ namespace PHP.Core
 			}
 
 			IndirectVarUse indirect_var = (IndirectVarUse)variable;
-			indirect_var.EmitSwitch_LoadLocal(this);
+			indirect_var.EmitSwitch(this, new IndirectVarUse.SwitchMethod(indirect_var.LoadLocal));
 			il.Emit(OpCodes.Ldnull);
 			il.Emit(OpCodes.Ceq);
 			il.Emit(OpCodes.Ldc_I4_0);
@@ -1513,116 +1471,80 @@ namespace PHP.Core
 		/// <summary>
 		/// Emits a call to a routine with specified name using an operator.
 		/// </summary>
-        internal PhpTypeCode EmitRoutineOperatorCall(DType type, Expression targetExpr,
-            string routineFullName, string fallbackRoutineFullname, Expression routineNameExpr, CallSignature callSignature, AccessType access)
-        {
-            Debug.Assert(routineFullName != null ^ routineNameExpr != null);
+		internal PhpTypeCode EmitRoutineOperatorCall(DType type, Expression targetExpr,
+			string routineFullName, Expression routineNameExpr, CallSignature callSignature, AccessType access)
+		{
+			Debug.Assert(routineFullName != null ^ routineNameExpr != null);
 
-            MethodInfo operator_method;
-            PhpTypeCode return_type_code;
+			MethodInfo operator_method;
 
             // (J) use call sites to call the method:
             if (targetExpr != null /*|| type != null*/)
-            {
-                Debug.Assert(fallbackRoutineFullname == null);
-
-                return this.CallSitesBuilder.EmitMethodCall(this, CallSitesBuilder.AccessToReturnType(access), targetExpr, type, routineFullName, routineNameExpr, callSignature);
-            }
-            else if (targetExpr != null)
-            {
-                Debug.Assert(fallbackRoutineFullname == null);
-
+                return this.CallSitesBuilder.EmitMethodCall(this, access, targetExpr, type, routineFullName, routineNameExpr, callSignature);
+            else
+            if (targetExpr != null)
+			{
                 // LOAD Operators.InvokeMethod(<target>, <method name>, <type desc>, <context>);
 
                 // start a new operators chain (as the rest of chain is read)
-                this.ChainBuilder.Create();
-                this.ChainBuilder.Begin();
-                this.ChainBuilder.Lengthen(); // for hop over ->
+				this.ChainBuilder.Create();
+				this.ChainBuilder.Begin();
+				this.ChainBuilder.Lengthen(); // for hop over ->
 
-                // prepare for operator invocation
-                this.EmitBoxing(targetExpr.Emit(this));
-                this.ChainBuilder.End();
+				// prepare for operator invocation
+				this.EmitBoxing(targetExpr.Emit(this));
+				this.ChainBuilder.End();
 
-                this.EmitName(routineFullName, routineNameExpr, true);
-                this.EmitLoadClassContext();
-                this.EmitLoadScriptContext();
+				this.EmitName(routineFullName, routineNameExpr, true);
+				this.EmitLoadClassContext();
+				this.EmitLoadScriptContext();
 
-                if (routineFullName != null)
-                    operator_method = Methods.Operators.InvokeMethodStr;
-                else
-                    operator_method = Methods.Operators.InvokeMethodObj;
+				if (routineFullName != null)
+					operator_method = Methods.Operators.InvokeMethodStr;
+				else
+					operator_method = Methods.Operators.InvokeMethodObj;
+			}
+			else if (type != null)
+			{
+				// LOAD Operators.InvokeStaticMethod(<type desc>, <method name>, <self>, <type desc>, context);
+				type.EmitLoadTypeDesc(this, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
 
-                return_type_code = PhpTypeCode.PhpReference;
-            }
-            else if (type != null)
-            {
-                Debug.Assert(fallbackRoutineFullname == null);
+				this.EmitName(routineFullName, routineNameExpr, true);
 
-                // LOAD Operators.InvokeStaticMethod(<type desc>, <method name>, <self>, <type desc>, context);
-                type.EmitLoadTypeDesc(this, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
+				this.EmitLoadSelf();
+				this.EmitLoadClassContext();
+				this.EmitLoadScriptContext();
 
-                this.EmitName(routineFullName, routineNameExpr, true);
-
-                this.EmitLoadSelf();
-                this.EmitLoadClassContext();
-                this.EmitLoadScriptContext();
-
-                operator_method = Methods.Operators.InvokeStaticMethod;
-                return_type_code = PhpTypeCode.PhpReference;
-            }
+				operator_method = Methods.Operators.InvokeStaticMethod;
+			}
             else
             {
-                Debug.Assert(routineNameExpr == null || fallbackRoutineFullname == null);   // (routineNameExpr != null) => (fallbackRoutineFullName == null)
-
-                // DRoutineDesc <callHint>;
-                FieldInfo hintField = this.CallSitesBuilder.DefineField(
-                    "<callHint>'" + (routineFullName ?? "indirect"),
-                    typeof(PHP.Core.Reflection.DRoutineDesc),
-                    FieldAttributes.Static | FieldAttributes.Assembly);
-
-                // LOAD ScriptContext.Call{|Void|Value}(<local variables>, <naming context>, <function name>, ref <hint>, context);
+                // LOAD ScriptContext.Call(<local variables>, <naming context>, <function name>, context);
                 this.EmitLoadRTVariablesTable();
                 this.EmitLoadNamingContext();
                 this.EmitName(routineFullName, routineNameExpr, true);
-                if (fallbackRoutineFullname != null) il.Emit(OpCodes.Ldstr, fallbackRoutineFullname); else il.Emit(OpCodes.Ldnull); // fallback fcn name
-                il.Emit(OpCodes.Ldsflda, hintField);
                 this.EmitLoadScriptContext();
 
-                // (J) only necessary copying, dereferencing or reference making:
-                if (access == AccessType.None)
-                {
-                    operator_method = Methods.ScriptContext.CallVoid;
-                    return_type_code = PhpTypeCode.Void;
-                }
-                else if (access == AccessType.Read)
-                {
-                    operator_method = Methods.ScriptContext.CallValue;
-                    return_type_code = PhpTypeCode.Object;
-                }
-                else
-                {
-                    operator_method = Methods.ScriptContext.Call;
-                    return_type_code = PhpTypeCode.PhpReference;
-                }
+                operator_method = Methods.ScriptContext.Call;
             }
 
-            // emits load of parameters to the PHP stack:
-            callSignature.EmitLoadOnPhpStack(this);
+			// emits load of parameters to the PHP stack:
+			callSignature.EmitLoadOnPhpStack(this);
 
-            // marks transient sequence point just before the call:
-            this.MarkTransientSequencePoint();
+			// marks transient sequence point just before the call:
+			this.MarkTransientSequencePoint();
 
-            il.Emit(OpCodes.Call, operator_method);
+			il.Emit(OpCodes.Call, operator_method);
 
-            // marks transient sequence point just after the call:
-            this.MarkTransientSequencePoint();
+			// marks transient sequence point just after the call:
+			this.MarkTransientSequencePoint();
 
-            return return_type_code;
-        }
+			return PhpTypeCode.PhpReference;
+		}
 
 		private void EmitLoadTypeDesc(string typeFullName, TypeRef typeNameRef, DType type, ResolveTypeFlags flags)
 		{
-            DebugHelper.AssertNonNull(1, typeFullName, typeNameRef, type);
+			Debug.AssertNonNull(1, typeFullName, typeNameRef, type);
 
 			if (typeFullName != null)
 				EmitLoadTypeDescOperator(typeFullName, null, flags);
@@ -1662,7 +1584,7 @@ namespace PHP.Core
                     int genericParamIndex = _i / 2;
                     if ((_i&1) == 0)
                     {   // arg name
-                        il.Emit(OpCodes.Ldstr, signature.GenericParams[genericParamIndex].Name.Value.ToLowerInvariant());
+                        il.Emit(OpCodes.Ldstr, signature.GenericParams[genericParamIndex].Name.LowercaseValue);
                     }
                     else
                     {   // DTypeDesc
@@ -1683,30 +1605,12 @@ namespace PHP.Core
 			EmitLoadScriptContext();
 			EmitLoadNamingContext();
             EmitLoadGenericArgsArray();
-            il.Emit(OpCodes.Call, (typeFullName != null) ? Methods.Convert.StringToTypeDesc : Methods.Convert.ObjectToTypeDesc);
+            il.Emit(OpCodes.Call, Methods.Convert.ObjectToTypeDesc);
 		}
-
-        /// <summary>
-        /// Loads <see cref="DTypeDesc"/> of runtime type of current method.
-        /// </summary>
-        /// <param name="flags">Ignored.</param>
-        internal void EmitLoadStaticTypeDesc(ResolveTypeFlags flags)
-        {
-            // if we have a type place, use it:
-            if (this.LateStaticBindTypePlace != null)
-            {
-                this.LateStaticBindTypePlace.EmitLoad(this.il);
-            }
-            else
-            {
-                // not handled yet
-                throw new NotImplementedException();
-            }
-        }
 
 		internal void EmitNewOperator(string typeFullName, TypeRef typeNameRef, DType type, CallSignature callSignature)
 		{
-            DebugHelper.AssertNonNull(1, typeFullName, typeNameRef, type);
+			Debug.AssertNonNull(1, typeFullName, typeNameRef, type);
 
 			// prepare stack frame for the constructor:
 			callSignature.EmitLoadOnPhpStack(this);
@@ -1721,7 +1625,7 @@ namespace PHP.Core
 
 		internal void EmitInstanceOfOperator(string typeFullName, TypeRef typeNameRef, DType type)
 		{
-            DebugHelper.AssertNonNull(1, typeFullName, typeNameRef, type);
+			Debug.AssertNonNull(1, typeFullName, typeNameRef, type);
 
 			// LOAD Operators.InstanceOf(STACK, <type desc>);
 			EmitLoadTypeDesc(typeFullName, typeNameRef, type, ResolveTypeFlags.None);
@@ -1730,7 +1634,7 @@ namespace PHP.Core
 
 		internal void EmitTypeOfOperator(string typeFullName, TypeRef typeNameRef, DType type)
 		{
-            DebugHelper.AssertNonNull(1, typeFullName, typeNameRef, type);
+			Debug.AssertNonNull(1, typeFullName, typeNameRef, type);
 
 			// LOAD Operators.InstanceOf(STACK, <type desc>, <context type desc>, <script context>);
 			EmitLoadTypeDesc(typeFullName, typeNameRef, type, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
@@ -1796,12 +1700,10 @@ namespace PHP.Core
 			il.Emit(OpCodes.Call, Methods.Operators.UnsetStaticProperty);
 		}
 
-		internal void EmitGetConstantValueOperator(DType type, string/*!*/ constantFullName, string constantFallbackName)
+		internal void EmitGetConstantValueOperator(DType type, string/*!*/ constantFullName)
 		{
 			if (type != null)
 			{
-                Debug.Assert(constantFallbackName == null);
-
 				// CALL Operators.GetClassConstant(<type desc>, <constant name>, <type context>, <script context>);
 				type.EmitLoadTypeDesc(this, ResolveTypeFlags.UseAutoload | ResolveTypeFlags.ThrowErrors);
 
@@ -1817,19 +1719,19 @@ namespace PHP.Core
 				// CALL context.GetConstantValue(name);
 				EmitLoadScriptContext();
 				il.Emit(OpCodes.Ldstr, constantFullName);
-                if (constantFallbackName != null) il.Emit(OpCodes.Ldstr, constantFallbackName); else il.Emit(OpCodes.Ldnull);
 				il.Emit(OpCodes.Call, Methods.ScriptContext.GetConstantValue);
 			}
 		}
 
 		#endregion
-        
+
+
 		#region Routines Body Emission (Tomas Matousek)
 
 		/// <summary>
 		/// Emits a body of an arg-full function or method overload.
 		/// </summary>
-        public void EmitArgfullOverloadBody(PhpRoutine/*!*/ routine, IEnumerable<Statement>/*!*/ body, Text.Span entirePosition, int declarationBodyPosition)
+		public void EmitArgfullOverloadBody(PhpRoutine/*!*/ routine, List<Statement>/*!*/ body, Position entirePosition, ShortPosition declarationBodyPosition)
 		{
 			Debug.Assert(!routine.IsAbstract);
 
@@ -1837,11 +1739,10 @@ namespace PHP.Core
             {
                 if (!routine.IsLambda)
                 {
-                    MarkSequencePoint(declarationBodyPosition);
+                    MarkSequencePoint(declarationBodyPosition.Line, declarationBodyPosition.Column,
+                        declarationBodyPosition.Line, declarationBodyPosition.Column + 1);
                 }
                 il.Emit(OpCodes.Nop);
-
-                EmitArgsAwareCheck(routine);
             }
 
 			// declares and initializes real locals (should be before args init):
@@ -1850,44 +1751,30 @@ namespace PHP.Core
 			// initializes locals (from arguments or by empty value):
 			EmitArgfullArgsInitialization(routine);
 
-            // remember late static bind type from <stack>
-            EmitArgfullLateStaticBindTypeInitialization(routine);
+            // custom body prolog emittion:
+            if (PluginHandler.BeforeBodyEmitter != null)
+                PluginHandler.BeforeBodyEmitter(il, body);
 
 			// define user labels:
 			DefineLabels(routine.Builder.Labels);
 
 			// emits function's body:
-            body.Emit(this);
+			foreach (Statement statement in body)
+				statement.Emit(this);
 
 			// marks ending "}" as the last sequence point of the routine:
 			// (do not mark it in lambda functions as they are created from source code without braces);
 			if (!routine.IsLambda)
 			{
-				MarkSequencePoint(entirePosition.End);
-			}
-            else if (context.Config.Compiler.Debug)
+				MarkSequencePoint(entirePosition.LastLine, entirePosition.LastColumn,
+					entirePosition.LastLine, entirePosition.LastColumn + 1);
+			}else if (context.Config.Compiler.Debug)
             {
                 il.Emit(OpCodes.Nop);
             }
 
 			EmitRoutineEpilogue(null, false);
 		}
-
-        /// <summary>
-        /// Emit check whether the argsaware routine was called properly with <see cref="PhpStack"/> initialized.
-        /// </summary>
-        /// <remarks>Emitted code is equivalent to <code>context.Stack.ThrowIfNotArgsaware(routine.Name.Value);</code></remarks>
-        private void EmitArgsAwareCheck(PhpRoutine/*!*/ routine)
-        {
-            if (routine.IsArgsAware)
-            {
-                //  <context>.Stack.ThrowIfNotArgsaware(routine.Name.Value)
-                this.EmitLoadScriptContext();   // <context>
-                this.IL.Emit(OpCodes.Ldfld, Fields.ScriptContext_Stack);    // .Stack
-                this.IL.Emit(OpCodes.Ldstr, routine.Name.Value);    // routine.Name.Value
-                this.IL.Emit(OpCodes.Call, Methods.PhpStack.ThrowIfNotArgsaware);   // .call ThrowIfNotArgsaware
-            }
-        }
 
 		/// <summary>
 		/// Declares all locals used in a function.
@@ -1994,8 +1881,6 @@ namespace PHP.Core
 				// sets variables place in the table:
 				VariablesTable.Entry entry = routine.Builder.LocalVariables[param.Name];
 
-                bool optional = index >= routine.Signature.MandatoryParamCount;
-
 				// only variables accessible by function's code are initialized;
 				// these are 
 				// - all if function has unoptimized locals or contains indirect access 
@@ -2006,10 +1891,16 @@ namespace PHP.Core
 					// if the argument is reference => the local should also be a reference:
 					Debug.Assert(!param.PassedByRef || entry.IsPhpReference);
 
+					bool optional = index >= routine.Signature.MandatoryParamCount;
+
 					// marks a sequence point if a parameter is initialized or type hinted:
 					if (optional || param.TypeHint != null)
 					{
-						this.MarkSequencePoint(param.Span);
+						this.MarkSequencePoint(
+							param.Position.FirstLine,
+							param.Position.FirstColumn,
+							param.Position.LastLine,
+							param.Position.LastColumn + 2);
 					}
 
 					if (optional)
@@ -2082,80 +1973,14 @@ namespace PHP.Core
 				}
 				else
 				{
-                    if (param.TypeHint != null)
-                    {
-                        if (optional)
-                        {
-                            // convert Arg.Default to proper default value (so TypeHint test will check the proper value):
-
-                            Label is_default = il.DefineLabel();
-                            Label end_if = il.DefineLabel();
-
-                            // if (ARG[arg_idx] = Arg.Default) THEN
-                            il.Ldarg(real_index);
-                            il.Emit(OpCodes.Ldsfld, Fields.Arg_Default);
-                            il.Emit(OpCodes.Beq_S, is_default);
-                            il.Emit(OpCodes.Br_S, end_if);
-                            {
-                                // ARG[arg_idx] = <default value>;
-                                il.MarkLabel(is_default);
-                                EmitLoadArgumentDefaultValue(index, param, routine.FullName);
-                                il.Starg(real_index);
-                            }
-                            il.MarkLabel(end_if);
-                        }
-
-                        // emits type hint test (if specified):
-                        param.EmitTypeHintTest(this);
-                    }
+					// emits type hint test (if specified):
+					param.EmitTypeHintTest(this);
 				}
 
 				real_index++;
 				index++;
 			}
 		}
-
-        /// <summary>
-        /// Stores late static binding type information if necessary.
-        /// </summary>
-        private void EmitArgfullLateStaticBindTypeInitialization(PhpRoutine/*!*/routine)
-        {
-            if (routine == null || !routine.UsesLateStaticBinding)
-                return;
-
-            if (routine.IsMethod)
-            {
-                if (routine.IsStatic)
-                {
-                    // static method,
-                    // reads <context>.Stack.LateStaticBindType,
-                    // saves it into a local variable:
-
-                    // <context>.Stack.LateStaticBindType
-                    this.EmitLoadScriptContext();
-                    this.il.Emit(OpCodes.Ldfld, Fields.ScriptContext_Stack);
-                    this.il.Emit(OpCodes.Ldfld, Fields.PhpStack_LateStaticBindType);
-
-                    // DTypeDesc <loc_lsb> =
-                    this.LateStaticBindTypePlace = new IndexedPlace(il.DeclareLocal(Types.DTypeDesc[0]));
-                    this.LateStaticBindTypePlace.EmitStore(il);
-                }
-                else
-                {
-                    // instance method,
-                    // uses ((DObject)this).TypeDesc
-                    
-                    Debug.Assert(this.SelfPlace != null && this.SelfPlace != LiteralPlace.Null, "SelfPlace expected to be non-NULL");
-                    this.LateStaticBindTypePlace = new MethodCallPlace(Properties.DObject_TypeDesc.GetGetMethod(), false, this.SelfPlace);
-                }
-            }
-            else
-            {
-                this.LateStaticBindTypePlace = LiteralPlace.Null;
-            }
-
-            
-        }
 
 		/// <summary>
 		/// Emits non-reference argument deep copying.
@@ -2235,7 +2060,7 @@ namespace PHP.Core
 				return;
 			}
 
-			switch (callExpression.GetAccess())
+			switch (callExpression.Access)
 			{
 				case AccessType.None:
 
@@ -2285,7 +2110,7 @@ namespace PHP.Core
 					break;
 
 				default:
-					Debug.Fail(null);
+					Debug.Fail();
 					break;
 			}
 		}
@@ -2295,8 +2120,7 @@ namespace PHP.Core
 		/// </summary>
 		public void EmitRoutineEpilogue(GlobalCode globalCode, bool transient)
 		{
-            IncludingEx appendedInclusion;
-            if (globalCode != null && (appendedInclusion = globalCode.NodeCompiler<IGlobalCodeCompiler>().AppendedInclusion) != null)
+            if (globalCode != null && globalCode.AppendedInclusion != null)
 			{
 				// marks the return label, however return value is ignored since it is 
 				// overriden by appended script's return value (TODO: HOW DOES PHP BEHAVE?):
@@ -2304,7 +2128,7 @@ namespace PHP.Core
 					il.MarkLabel(ReturnLabel);
 
 				// IF (<is main script>) LOAD <appended file script>.Main(...):
-				appendedInclusion.Emit(this);
+				globalCode.AppendedInclusion.Emit(this);
 
 				// returns the value retured by the appended script:
 				il.Emit(OpCodes.Ret);
@@ -2375,7 +2199,8 @@ namespace PHP.Core
 		}
 
 		#endregion
-        
+
+
 		#region Ghost GetUserEntryPoint/Property Implement Stub Emission (Ladislav Prosek)
 
 		/// <summary>
@@ -2768,7 +2593,7 @@ namespace PHP.Core
             // if signatures match, only explicit override must be stated
 
             if (target.Name.ToString() != php_template.Name.ToString() ||           // the names differ (perhaps only in casing)
-                target.Signature.ParamCount != php_template.Signature.ParamCount    // signature was extended (additional arguments added, with implicit value only)
+                target.Signature.ParamCount > php_template.Signature.ParamCount     // signature was extended (additional arguments added, with implicit value only)
                 )
 			{
 				MethodInfo target_argfull = DType.MakeConstructed(target.ArgFullInfo, targetType as ConstructedType);
@@ -2808,10 +2633,10 @@ namespace PHP.Core
 					// determine stub return and parameters type
 					Type return_type;
 					Type[] param_types = php_template.Signature.ToArgfullSignature(1, out return_type);
-                    param_types[0] = Types.ScriptContext[0];
+					param_types[0] = Types.ScriptContext[0];
 
 					MethodBuilder override_stub = type_builder.DefineMethod(
-                        (sre_bug_workaround ? php_template.ArgFullInfo.Name : "<Override>"),
+						(sre_bug_workaround ? php_template.ArgFullInfo.Name : "<Override>"),
 						attrs, return_type, param_types);
 
 					ILEmitter il = new ILEmitter(override_stub);
@@ -2821,13 +2646,8 @@ namespace PHP.Core
                     //
 
 					// pass-thru all arguments, including this (arg0)
-                    int pass_args = Math.Min(param_types.Length, target.Signature.ParamCount + 1);
-					for (int i = 0; i <= pass_args; ++i) il.Ldarg(i);  // this, param1, ....
-                    for (int i = pass_args; i <= target.Signature.ParamCount; ++i)
-                    {
-                        // ... // PhpException.MissingArgument(i, target.FullName); // but in some override it can be optional argument 
-                        il.Emit(OpCodes.Ldsfld, PHP.Core.Emit.Fields.Arg_Default);  // paramN
-                    }
+					for (int i = 0; i <= param_types.Length; ++i) il.Ldarg(i);  // this, param1, ....
+                    for (int i = param_types.Length; i <= target.Signature.ParamCount; ++i) il.Emit(OpCodes.Ldsfld, PHP.Core.Emit.Fields.Arg_Default);
                     il.Emit(OpCodes.Callvirt, target_argfull);
 					il.Emit(OpCodes.Ret);
 
@@ -2837,9 +2657,6 @@ namespace PHP.Core
 					}
 					else
 					{
-                        if (!php_template.ArgFullInfo.IsVirtual)
-                            throw new InvalidOperationException(string.Format("Cannot override non-virtual method '{0}'!", php_template.ArgFullInfo.Name));
-
 						type_builder.DefineMethodOverride(override_stub,
 							DType.MakeConstructed(php_template.ArgFullInfo, template.Type as ConstructedType));
 					}
@@ -2861,7 +2678,7 @@ namespace PHP.Core
 			attributes |= MethodAttributes.HideBySig;
 
 			foreach (StubInfo stub in ClrStubBuilder.DefineMethodExportStubs(
-				target, target.DeclaringPhpType,
+				target,
 				attributes,
 				false,
 				delegate(string[] genericParamNames, object[] parameterTypes, object returnType)
@@ -2900,7 +2717,8 @@ namespace PHP.Core
 		}
 
 		#endregion
-        
+
+
 		#region EmitPhpException, EmitThrow (Tomas Matousek)
 
 		/// <summary>
@@ -2948,7 +2766,7 @@ namespace PHP.Core
 				if (symbol_writer != null && startLine >= 0)
 				{
 					Debug.Assert(startLine >= 0 && startColumn >= 0 && endLine >= 0 && endColumn >= 0, "Invalid position values.");
-					il.MarkSequencePoint(symbol_writer, startLine + 1, startColumn + 1, endLine + 1, endColumn + 1);
+					il.MarkSequencePoint(symbol_writer, startLine, startColumn, endLine, endColumn);
 				}
 
 				if (CompilationUnit.IsTransient)
@@ -2960,48 +2778,6 @@ namespace PHP.Core
 			}
 		}
 
-        /// <summary>
-        /// Marks a sequence point (see <see cref="MarkSequencePoint"/>) using position of given <paramref name="expression"/>.
-        /// </summary>
-        /// <param name="expression">Expression which position is used to mark sequence point.</param>
-        internal void MarkSequencePoint(Expression/*!*/expression)
-        {
-            Debug.Assert(expression != null);
-            MarkSequencePoint(expression.Span);
-        }
-
-        internal void MarkSequencePoint(List<Expression>/*!*/expressions)
-        {
-            if (expressions != null && expressions.Count != 0)
-            {
-                if (expressions.Count == 1)
-                {
-                    MarkSequencePoint(expressions[0]);
-                }
-                else
-                {
-                    var first = expressions[0];
-                    var last = expressions.Last();
-                    MarkSequencePoint(Text.Span.FromBounds(first.Span.Start, last.Span.End));
-                }
-            }
-        }
-
-        internal void MarkSequencePoint(Text.Span span)
-        {
-            if (span.IsValid)
-            {
-                var position = new Text.TextSpan(SourceUnit.LineBreaks, span);
-                MarkSequencePoint(position.FirstLine, position.FirstColumn, position.LastLine, position.LastColumn);
-            }
-        }
-
-        internal void MarkSequencePoint(int position)
-        {
-            if (position >= 0)
-                MarkSequencePoint(new Text.Span(position, 0));
-        }
-
 		internal void MarkTransientSequencePoint()
 		{
 			if (context.Config.Compiler.Debug && CompilationUnit.IsTransient)
@@ -3010,14 +2786,6 @@ namespace PHP.Core
 				EmitEvalInfoCapture(LastTransientLine, LastTransientColumn, true);
 			}
 		}
-
-        internal void EmitEvalInfoCapture(int position, bool positionOnly)
-        {
-            int line, column;
-            SourceUnit.LineBreaks.GetLineColumnFromPosition(position, out line, out column);
-
-            EmitEvalInfoCapture(line, column, positionOnly);
-        }
 
 		internal void EmitEvalInfoCapture(int line, int column, bool positionOnly)
 		{
@@ -3063,7 +2831,7 @@ namespace PHP.Core
 		/// If <B>null</B> then a new local variable is defined.
 		/// </param>
 		/// <returns>The local variable where the resulting array is stored.</returns>
-		public LocalBuilder EmitObjectArrayPopulation(Expression[]/*!*/ expressions, LocalBuilder result)
+		public LocalBuilder EmitObjectArrayPopulation(List<Expression>/*!*/ expressions, LocalBuilder result)
 		{
             // constructs the array and pushes it onto the top of the evaluation stack
             EmitObjectArrayPopulation(expressions);
@@ -3085,14 +2853,14 @@ namespace PHP.Core
         /// </summary>
         /// <param name="expressions">A list of expressions.</param>
         /// <remarks>PUshes the resulting array onto the top of the evaluation stack.</remarks>
-        public void EmitObjectArrayPopulation(Expression[]/*!*/ expressions)
+        public void EmitObjectArrayPopulation(List<Expression>/*!*/ expressions)
         {
             Debug.Assert(expressions != null);
 
-            il.LdcI4(expressions.Length);
+            il.LdcI4(expressions.Count);
             il.Emit(OpCodes.Newarr, typeof(object));
 
-            for (int i = 0; i < expressions.Length; i++)
+            for (int i = 0; i < expressions.Count; i++)
             {
                 // array[<i>] = <expressions[i]>;
                 il.Emit(OpCodes.Dup);
@@ -3141,70 +2909,27 @@ namespace PHP.Core
 			return PhpTypeCodeEnum.FromType(method.ReturnType);
 		}
 
-        /// <summary>
-		/// Emits call to <see cref="ScriptContext.DeclareFunction"/>.
-		/// </summary>
-        internal void EmitDeclareFunction(PhpFunction/*!*/ function)
-        {
-            EmitDeclareFunction(il, ScriptContextPlace, function);
-        }
-
 		/// <summary>
 		/// Emits call to <see cref="ScriptContext.DeclareFunction"/>.
 		/// </summary>
-		internal static void EmitDeclareFunction(ILEmitter/*!*/il, IPlace/*!*/scriptContextPlace, PhpFunction/*!*/ function)
-        {
-            Label lbl_fieldinitialized = il.DefineLabel();
+		internal void EmitDeclareFunction(PhpFunction/*!*/ function)
+		{
+			// CALL ScriptContent.DeclareFunction(<delegate>, <name>, <member attributes>);
+			EmitLoadScriptContext();
 
-            // private static PhpRoutine <routine>'function = null;
-            var attrs = FieldAttributes.Static | FieldAttributes.Private;
-            var field = il.TypeBuilder.DefineField(string.Format("<routine>'{0}", function.FullName), typeof(PhpRoutineDesc), attrs);
+			il.Emit(OpCodes.Ldnull);
+			il.Emit(OpCodes.Ldftn, function.ArgLessInfo);
+			il.Emit(OpCodes.Newobj, Constructors.RoutineDelegate);
 
-            // if (<field> == null)
-            il.Emit(OpCodes.Ldsfld, field);
-            il.Emit(OpCodes.Brtrue, lbl_fieldinitialized);
-            {
-                // <field> = new PhpRoutineDesc(<attributes>, new RoutineDelegate(null, <delegate>))
+			il.Emit(OpCodes.Ldstr, function.FullName);
 
-                // LOAD <attributes>;
-                il.LdcI4((int)function.MemberDesc.MemberAttributes);
+			// LOAD <attributes>;
+			il.LdcI4((int)function.MemberDesc.MemberAttributes);
 
-                // new RoutineDelegate(null, <delegate>, true)
-                il.Emit(OpCodes.Ldnull);
-                il.Emit(OpCodes.Ldftn, function.ArgLessInfo);
-                il.Emit(OpCodes.Newobj, Constructors.RoutineDelegate);
-                il.LoadBool(true);
+			il.Emit(OpCodes.Call, Methods.ScriptContext.DeclareFunction);
+		}
 
-                // new PhpRoutineDesc:
-                il.Emit(OpCodes.Newobj, Constructors.PhpRoutineDesc_Attr_Delegate_Bool);
-
-                // <field> = <STACK>
-                il.Emit(OpCodes.Stsfld, field);
-
-                // new PurePhpFunction(<field>, fullName, argfull);   // writes desc.Member
-                il.Emit(OpCodes.Ldsfld, field);
-                il.Emit(OpCodes.Ldstr, function.FullName);
-                CodeGenerator.EmitLoadMethodInfo(il, function.ArgFullInfo/*, AssemblyBuilder.DelegateBuilder*/);
-                il.Emit(OpCodes.Newobj, Constructors.PurePhpFunction);
-                il.Emit(OpCodes.Pop);
-                
-            }
-            il.MarkLabel(lbl_fieldinitialized);
-
-            // CALL ScriptContent.DeclareFunction(<field>, <name>);
-            scriptContextPlace.EmitLoad(il);
-            
-            // LOAD <field>
-            il.Emit(OpCodes.Ldsfld, field);            
-
-            // LOAD <fullName>
-            il.Emit(OpCodes.Ldstr, function.FullName);
-
-            //
-            il.Emit(OpCodes.Call, Methods.ScriptContext.DeclareFunction);
-        }
-
-        /// <summary>
+		/// <summary>
 		/// Emits call to <see cref="ScriptContext.DeclareLambda"/>.
 		/// </summary>
 		/// <param name="info">A method info.</param>
@@ -3245,206 +2970,7 @@ namespace PHP.Core
 				}
 			}
 		}
-
-        /// <summary>
-        /// Emits load of <see cref="MethodInfo"/> onto the top of evaluation stack.
-        /// </summary>
-        /// <param name="il"></param>
-        /// <param name="mi"></param>
-        internal static void EmitLoadMethodInfo(ILEmitter/*!*/il, MethodInfo/*!*/mi/*, DelegateBuilder dbuild*/)
-        {
-            if (mi == null)
-                throw new ArgumentNullException("mi");
-
-            if (!mi.IsStatic)
-                throw new NotSupportedException();
-
-            // following code uses hack, where we can create delegate in "compile time", and then takes its MethodInfo property.
-            // new Func<...>( null, <mi> ).Method
-
-            //// construct the type
-            ////var miArgs = mi.GetParameters();    // THIS FAILS WHEN <mi> IS NOT BAKED YET
-            ////Type[] delegateArgs = new Type[1 + miArgs.Length];
-            ////delegateArgs[0] = mi.ReturnType;
-            ////for (int i = 0; i < miArgs.Length; i++) delegateArgs[i + 1] = miArgs[i].ParameterType;
-            //var delegateCtor = DelegateBuilder.GetDelegateCtor(dbuild.GetDelegateType(delegateArgs, il.GetNextUniqueIndex()));
-            var delegateCtor = DelegateBuilder.GetDelegateCtor(Types.Action[0]); // NOT NICE
-
-            //.ldnull
-            //.ldftn <mi>
-            //.newobj instance void Action::.ctor(object, native int)
-            //.call get_Method
-
-            il.Emit(OpCodes.Ldnull);
-            il.Emit(OpCodes.Ldftn, mi);
-            il.Emit(OpCodes.Newobj, delegateCtor);
-            il.Emit(OpCodes.Call, Properties.Delegate_Method.GetGetMethod());
-        }
-
-        /// <summary>
-        /// Emit call to <see cref="DynamicCode.Assert"/> or <see cref="DynamicCode.Eval"/>.
-        /// </summary>
-        internal PhpTypeCode EmitEval(EvalKinds kind, Expression/*!*/code, Text.Span span, QualifiedName? currentNamespace, Dictionary<string, QualifiedName> currentAliases)
-        {
-            Debug.Assert(code != null);
-
-            // LOAD DynamicCode.<Eval | Assert>(<code>, context, definedVariables, self, includer, source, line, column, evalId, naming)
-            if (kind == EvalKinds.Assert)
-            {
-                // an argument of the assert is boxed:
-                EmitBoxing(code.Emit(this));
-            }
-            else if (kind == EvalKinds.SyntheticEval)
-            {
-                Debug.Assert(code.HasValue());
-                Debug.Assert(code.GetValue() is string);
-
-                // an argument of the eval is converted to a string:
-                il.Emit(OpCodes.Ldstr, (string)code.GetValue());
-                il.Emit(OpCodes.Ldc_I4_1);
-            }
-            else
-            {
-                // an argument of the eval is converted to a string:
-                EmitConversion(code, PhpTypeCode.String);
-                il.Emit(OpCodes.Ldc_I4_0);
-            }
-
-            var position = new Text.TextPoint(this.SourceUnit.LineBreaks, span.Start);
-
-            EmitLoadScriptContext();
-            EmitLoadRTVariablesTable();
-            EmitLoadSelf();
-            EmitLoadClassContext();
-            EmitEvalInfoPass(position.Line, position.Column);
-            EmitNamingContext(currentNamespace, currentAliases, span.Start);
-
-            il.Emit(OpCodes.Call, (kind == EvalKinds.Assert) ? Methods.DynamicCode.Assert : Methods.DynamicCode.Eval);
-
-            return (kind == EvalKinds.Assert) ? PhpTypeCode.Boolean : PhpTypeCode.Object;
-        }
-
-        /// <summary>
-        /// Determine if <see cref="NamingContext "/> is needed for the current namespace and aliases.
-        /// </summary>
-        /// <param name="currentNamespace"></param>
-        /// <param name="aliases"></param>
-        /// <returns>True if current namespace is not global namespace or there are some aliases.</returns>
-        private static bool NeedsNamingContext(QualifiedName? currentNamespace, Dictionary<string, QualifiedName> aliases)
-        {
-            return
-                (currentNamespace.HasValue && currentNamespace.Value.Namespaces.Length > 0) ||
-                (aliases != null && aliases.Count > 0);
-        }
-
-        /// <summary>
-        /// Loads (cached) instance of given state of <see cref="NamingContext"/> onto the evaluation stack.
-        /// </summary>
-        internal void EmitNamingContext(QualifiedName? currentNamespace, Dictionary<string, QualifiedName> currentAliases, int position)
-        {
-            ILEmitter il = this.IL;
-
-            if (NeedsNamingContext(currentNamespace, currentAliases))
-            {
-                // private static NamingContext <id> = null;
-                string fname = (this.SourceUnit != null) ? this.SourceUnit.SourceFile.ToString() : string.Empty;
-                string id = String.Format("<namingContext>{0}${1}", unchecked((uint)fname.GetHashCode()), position);
-
-                // create static field for static local index: static int <id>;
-                Debug.Assert(il.TypeBuilder != null, "The method does not have declaring type! (global code in pure mode?)");
-                var fld = il.TypeBuilder.DefineField(id, typeof(NamingContext), System.Reflection.FieldAttributes.Private | System.Reflection.FieldAttributes.Static);
-
-                // <id> ?? (<id> = NamingContext.<EmitNewNamingContext>)
-                Label end = il.DefineLabel();
-
-                il.Emit(OpCodes.Ldsfld, fld);
-                il.Emit(OpCodes.Dup);
-                il.Emit(OpCodes.Brtrue, end);
-                if (true)
-                {
-                    il.Emit(OpCodes.Pop);
-                    EmitNewNamingContext(il, currentNamespace, currentAliases);
-                    il.Emit(OpCodes.Dup);
-                    il.Emit(OpCodes.Stsfld, fld);
-                }
-
-                il.MarkLabel(end);
-            }
-            else
-            {
-                il.Emit(OpCodes.Ldnull);
-            }
-        }
-
-        /// <summary>
-        /// Emit instantiation and initialization of NamingContext. Leaves reference to new NamingContext on the top of evaluation stack.
-        /// </summary>
-        /// <param name="il"></param>
-        /// <param name="currentNamespace">Namespace to be passed as current namespace to the new instance of <see cref="NamingContext"/>.</param>
-        /// <param name="aliases">Aliases to be passed to the new instance of <see cref="NamingContext"/>.</param>
-        internal static void EmitNewNamingContext(Emit.ILEmitter/*!*/il, QualifiedName? currentNamespace, Dictionary<string, QualifiedName> aliases)
-        {
-            if (!NeedsNamingContext(currentNamespace, aliases))
-            {
-                il.Emit(OpCodes.Ldnull);
-                return;
-            }
-
-            //
-            // new NamingContext( currentNamespace.NamespacePhpName, aliases.Count )
-
-            if (currentNamespace.HasValue && currentNamespace.Value.Namespaces.Length > 0)
-                il.Emit(OpCodes.Ldstr, currentNamespace.Value.NamespacePhpName);
-            else
-                il.Emit(OpCodes.Ldnull);
-
-            il.LdcI4((aliases != null) ? aliases.Count : 0);
-
-            il.Emit(OpCodes.Newobj, Constructors.NamingContext);
-
-            // tmp.AddAlias( aliases[i].Key, aliases[i].Value.NamespacePhpName
-            if (aliases != null)
-            {
-                foreach (var alias in aliases)
-                {
-                    il.Emit(OpCodes.Dup);                                   // the NamingContext instance
-                    il.Emit(OpCodes.Ldstr, alias.Key);                      // alias
-                    il.Emit(OpCodes.Ldstr, alias.Value.ToString());         // qualifiedName
-                    il.Emit(OpCodes.Call, Methods.NamingContext.AddAlias);  // AddAlias( <alias>, <qualifiedName> )
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Ensures the object on top of the evaluation stack is writable,
-        /// and so not shared by more PHP variables.
-        /// </summary>
-        internal void EmitEnsureWritable(PhpTypeCode typeCode)
-        {
-            switch (typeCode)
-            {
-                case PhpTypeCode.Boolean:
-                case PhpTypeCode.Double:
-                case PhpTypeCode.Integer:
-                case PhpTypeCode.PhpCallable:
-                case PhpTypeCode.PhpResource:
-                case PhpTypeCode.PhpReference:
-                case PhpTypeCode.String:
-                case PhpTypeCode.Void:
-                case PhpTypeCode.LongInteger:
-                    // these types cannot be lazy copied for sure
-                    break;
-
-                default:
-                    // Operators.EnsureObjectIsWritable( <TOP> )
-                    this.IL.Emit(OpCodes.Dup);
-                    this.EmitBoxing(typeCode);
-                    this.IL.Emit(OpCodes.Call, new Action<object>(Operators.EnsureObjectIsWritable).Method);
-                    break;
-            }
-        }
-
+		
 		#endregion
 
 		#region Array Keys and Operators
@@ -3459,7 +2985,7 @@ namespace PHP.Core
 				
                 // convert the key into integer if necessary and possible in compile time
                 IntStringKey array_key;
-                if (key.HasValue() && Convert.ObjectToArrayKey(key.GetValue(), out array_key) && array_key.IsInteger)
+                if (key.HasValue && Convert.ObjectToArrayKey(key.Value, out array_key) && array_key.IsInteger)
                 {
                     il.LdcI4(array_key.Integer);
                     result = PhpTypeCode.Integer;
@@ -3492,9 +3018,9 @@ namespace PHP.Core
 		
 		private bool EmitExactStringKeyHash(PhpTypeCode keyTypeCode, Expression keyExpr)
 		{
-			if (keyExpr != null && keyTypeCode == PhpTypeCode.String && keyExpr.HasValue())
+			if (keyExpr != null && keyTypeCode == PhpTypeCode.String && keyExpr.HasValue)
 			{
-                string skey = (string)keyExpr.GetValue();
+				string skey = (string)keyExpr.Value;
 				IntStringKey array_key = Convert.StringToArrayKey(skey);
 				if (array_key.IsString && skey == array_key.String) // skey was not converted to int
 				{
@@ -3538,12 +3064,13 @@ namespace PHP.Core
 					break;
 
 				default:
-                    throw new ArgumentException();
+					Debug.Fail();
+					throw null;
 			}
 			il.Emit(method.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, method);
 		}
 
-		internal void EmitSetArrayItem(PhpTypeCode keyTypeCode, Expression keyExpr, bool reference, bool ctor)
+		internal void EmitSetArrayItem(PhpTypeCode keyTypeCode, Expression keyExpr, bool reference)
 		{
 			MethodInfo method; 
 			switch (keyTypeCode)
@@ -3567,17 +3094,18 @@ namespace PHP.Core
 					break;
 
 				case PhpTypeCode.Object:
-                    method = reference ? Methods.PhpArray.SetArrayItemRef_Object : Methods.PhpArray.SetArrayItem_Object;
+					method = (reference) ? Methods.PhpArray.SetArrayItemRef_Object : Methods.PhpArray.SetArrayItem_Object;
 					break;
 					
 				case PhpTypeCode.Invalid:
-					method = ctor ? Methods.PhpArray.AddToEnd_Object : Methods.PhpArray.SetArrayItem;
+					method = Methods.PhpArray.SetArrayItem;
 					break;
 					
 				default:
-                    throw new ArgumentException();
+					Debug.Fail();
+					throw null;
 			}
-            il.Emit(method.IsVirtual ? OpCodes.Callvirt : OpCodes.Call, method);
+			il.Emit(OpCodes.Callvirt, method);
 		}
 
 		internal void EmitGetItem(PhpTypeCode keyTypeCode, Expression keyExpr, bool reference)
@@ -3614,7 +3142,8 @@ namespace PHP.Core
 					break;
 
 				default:
-                    throw new ArgumentException();
+					Debug.Fail();
+					throw null;
 			}
 			
 			il.Emit(OpCodes.Call, method);	
@@ -3652,128 +3181,13 @@ namespace PHP.Core
 					break;
 
 				default:
-                    throw new ArgumentException();
+					Debug.Fail();
+					throw null;
 			}
 			il.Emit(OpCodes.Call, method);
 		}
 
 		#endregion
 
-        #region Operators
-
-        /// <summary>
-        /// Emits most efficient form of equality comparison operator.
-        /// </summary>
-        /// <param name="leftExprEmitter"></param>
-        /// <param name="rightExprEmitter"></param>
-        internal PhpTypeCode EmitCompareEq(Func<CodeGenerator, PhpTypeCode>/*!*/leftExprEmitter, Func<CodeGenerator, PhpTypeCode>/*!*/rightExprEmitter)
-        {
-            Debug.Assert(leftExprEmitter != null && rightExprEmitter != null);
-
-            this.EmitBoxing(leftExprEmitter(this));      // x = leftExpr
-            var right_type = rightExprEmitter(this);     // y = rightExpr
-
-            switch (right_type)
-            {
-                case PhpTypeCode.Integer:
-                    this.IL.Emit(OpCodes.Call, Methods.CompareEq_object_int);
-                    break;
-                case PhpTypeCode.String:
-                    this.IL.Emit(OpCodes.Call, Methods.CompareEq_object_string);
-                    break;
-                default:
-                    this.EmitBoxing(right_type);
-                    this.IL.Emit(OpCodes.Call, Methods.CompareEq_object_object);
-                    break;
-            }
-
-            return PhpTypeCode.Boolean;
-        }
-
-        /// <summary>
-        /// Emits "!= 0" operation. This method expects I4 valua on top of evaluation stack.
-        /// </summary>
-        internal void EmitLogicNegation()
-        {
-            il.Emit(OpCodes.Ldc_I4_0);
-            il.Emit(OpCodes.Ceq);
-        }
-
-        /// <summary>
-        /// Emits conversion to boolean.
-        /// </summary>
-        /// <param name="expr">Expression to be converted.</param>
-        internal void EmitObjectToBoolean(Expression/*!*/expr)
-        {
-            EmitObjectToBoolean(expr, false);
-        }
-        
-        /// <summary>
-        /// Emits conversion to boolean.
-        /// </summary>
-        /// <param name="expr">Expression to be converted.</param>
-        /// <param name="negation">Whether the result should be logic negation of original conversion.</param>
-        internal void EmitObjectToBoolean(Expression/*!*/expr, bool negation)
-        {
-            // <expr>
-            var typecode = expr.Emit(this);
-
-            //
-            switch (typecode)
-            {
-                case PhpTypeCode.Boolean:
-                    if (negation)
-                        this.EmitLogicNegation();
-                    break;
-
-                case PhpTypeCode.Integer:
-                    // <int> != 0
-                    this.EmitLogicNegation();
-                    if (!negation)
-                        this.EmitLogicNegation();
-                    break;
-
-                case PhpTypeCode.LongInteger:
-                    // <long> != 0
-                    il.Emit(OpCodes.Ldc_I4_0);
-                    il.Emit(OpCodes.Conv_I8);
-					il.Emit(OpCodes.Ceq);
-                    if (!negation)
-                        this.EmitLogicNegation();
-                    break;
-
-                case PhpTypeCode.Double:
-                    // <double> != 0.0
-                    il.Emit(OpCodes.Ldc_R8, 0.0);
-                    il.Emit(OpCodes.Ceq);
-                    if (!negation)
-                        this.EmitLogicNegation();
-                    break;
-
-                case PhpTypeCode.Void:
-                    if (negation)
-                        il.Emit(OpCodes.Ldc_I4_1);
-                    else
-                        il.Emit(OpCodes.Ldc_I4_0);
-                    break;
-
-                case PhpTypeCode.String:
-                    // StringToBoolean( <string> )
-                    IL.Emit(OpCodes.Call, Methods.Convert.StringToBoolean);
-                    if (negation)
-                        this.EmitLogicNegation();
-                    break;
-
-                default:
-                    // ObjectToBoolean( (object)<expr> )
-                    EmitBoxing(typecode);
-                    IL.Emit(OpCodes.Call, Methods.Convert.ObjectToBoolean);
-                    if (negation)
-                        this.EmitLogicNegation();
-                    break;
-            }
-        }
-
-        #endregion
-    }
+	}
 }

@@ -26,6 +26,7 @@ using System.Web.Configuration;
 using PHP.Core;
 using System.Collections.Generic;
 using PHP.Core.Reflection;
+using System.Collections.ObjectModel;
 
 namespace PHP.Core
 {
@@ -125,13 +126,7 @@ namespace PHP.Core
 				switch (name)
 				{
 					case "OutputBuffering":
-                        {
-                            int ivalue;
-                            if (int.TryParse(value, out ivalue))
-                                outputBuffering = ivalue != 0;
-						    else
-                                outputBuffering = (value == "true");
-                        }
+						outputBuffering = value == "true";
 						break;
 
 					case "OutputHandler":
@@ -143,11 +138,13 @@ namespace PHP.Core
 						break;
 
 					case "ContentType":
-                        this.contentType = (value != "") ? value : null;
+						if (HttpContext.Current != null)
+							HttpContext.Current.Response.ContentType = value;
 						break;
 
 					case "Charset":
-						this.charSet = (value != "") ? value : null;
+						if (HttpContext.Current != null)
+							HttpContext.Current.Response.Charset = value;
 						break;
 
 					default:
@@ -179,13 +176,11 @@ namespace PHP.Core
 					case "ReportErrors":
 						ReportErrors = (PhpErrorSet)ConfigUtils.ParseFlags(node, (int)ReportErrors, typeof(PhpError));
 						break;
+
 					case "UserHandler": UserHandler = (value != String.Empty) ? new PhpCallback(value) : null; break;
-					case "UserHandlerErrors":
-            UserHandlerErrors = (PhpError)ConfigUtils.ParseFlags(node, (int)UserHandlerErrors, typeof(PhpError));
-						break;
 					case "UserExceptionHandler": UserExceptionHandler = (value != String.Empty) ? new PhpCallback(value) : null; break;
 					case "DisplayErrors": DisplayErrors = t; break;
-					case "LogFile": LogFile = AbsolutizeLogFile(value, node); break;
+					case "LogFile": LogFile = value; break;
 					case "EnableLogging": EnableLogging = t; break;
 					case "SysLog": SysLog = t; break;
 					case "ErrorPrependString": ErrorPrependString = value; break;
@@ -291,9 +286,9 @@ namespace PHP.Core
 			{
 				switch (name)
 				{
-                    case "ZendEngineV1Compatible": throw new NotSupportedException(name); // ZendEngineV1Compatible = (value == "true"); break;
+					case "ZendEngineV1Compatible": ZendEngineV1Compatible = (value == "true"); break;
 					case "QuoteRuntimeVariables": QuoteRuntimeVariables = (value == "true"); break;
-                    case "QuoteInDbManner": /*QuoteInDbManner =*/ if (value == "true") throw new ConfigUtils.InvalidAttributeValueException(node, "value"); break;
+					case "QuoteInDbManner": QuoteInDbManner = (value == "true"); break;
 					case "DeserializationCallback": DeserializationCallback = (value != String.Empty) ? new PhpCallback(value) : null; break;
                     case "AlwaysPopulateRawPostData": AlwaysPopulateRawPostData = (value == "true"); break;
 
@@ -382,37 +377,18 @@ namespace PHP.Core
 			/// Can't contain a <B>null</B> reference. Setting the <B>null</B> reference will assign the default handler 
 			/// (<see cref="AspNetSessionHandler.Default"/>).
 			/// </summary>
-			public SessionHandler/*!*/Handler
+			public SessionHandler Handler
 			{
 				get
 				{
-                    if (handler == null)
-                    {
-                        // lazily initialize the session handler:
-                        if (handler_getter != null)
-                        {
-                            handler = handler_getter() ?? handler;    // keep old one if handler_getter fails and handler is not null
-                            handler_getter = null;  // drop the getter closure
-                        }
-
-                        if (handler == null)
-                            handler = AspNetSessionHandler.Default;
-                    }
-
-                    return handler;
+					return handler;
 				}
 				set
 				{
-					handler = value;
-                    handler_getter = null;
+					handler = value ?? AspNetSessionHandler.Default;
 				}
 			}
-			private SessionHandler handler = null;
-
-            /// <summary>
-            /// One-time handler initializer function.
-            /// </summary>
-            private Func<SessionHandler> handler_getter = null;
+			private SessionHandler handler = AspNetSessionHandler.Default;
 
             /// <summary>
             /// url_rewriter.tags specifies which HTML tags are rewritten to include session id
@@ -424,20 +400,20 @@ namespace PHP.Core
             /// 
             /// Cannot be null.
             /// </summary>
-            public Dictionary<string,string[]>/*!!*/UrlRewriterTags
+            public Dictionary<string,List<string>> UrlRewriterTags
             {
                 get
                 {
                     if (urlRewriterTags == null)
                     {
-                        urlRewriterTags = new Dictionary<string, string[]>()
+                        urlRewriterTags = new Dictionary<string, List<string>>()
                         {
-                            { "a", new string[]{"href"}},
-                            { "area", new string[]{"href"}},
-                            { "frame", new string[]{"src"}},
-                            { "input", new string[]{"src"}},
-                            { "form", ArrayUtils.EmptyStrings},
-                            { "fieldset", ArrayUtils.EmptyStrings}
+                            { "a", new List<string>(){"href"}},
+                            { "area", new List<string>(){"href"}},
+                            { "frame", new List<string>(){"src"}},
+                            { "input", new List<string>(){"src"}},
+                            { "form", new List<string>()},
+                            { "fieldset", new List<string>()}
                         };
                     }
                     return urlRewriterTags;
@@ -448,7 +424,7 @@ namespace PHP.Core
                 }
             }
 
-            private Dictionary<string, string[]> urlRewriterTags = null;
+            private Dictionary<string, List<string>> urlRewriterTags = null;
 
 			/// <summary>
 			/// Loads configuration from XML node.
@@ -463,20 +439,16 @@ namespace PHP.Core
 
 					case "Handler":
 						{
-                            // postpone this step until sessions are actually used, also not all the handlers are loaded yet
-                            this.handler_getter = () =>
-                                {
-                                    SessionHandler handler = SessionHandlers.GetHandler(value);
-                                    if (handler == null)
-                                        PhpException.Throw(PhpError.Warning, string.Format(CoreResources.unknown_session_handler, value));
-                                    
-                                    return handler;
-                                };
+							SessionHandler handler = SessionHandlers.GetHandler(value);
+							if (handler == null)
+								throw new ConfigurationErrorsException(CoreResources.GetString("unknown_session_handler", value), node);
+
+							this.handler = handler;
 							return true;
 						}
                     case "UrlRewriterTags":
                         {
-                            var newUrlRewriterTags = new Dictionary<string, string[]>();
+                            Dictionary<string, List<string>> newUrlRewriterTags = new Dictionary<string, List<string>>();
 
                             // value = "a=href,area=href,frame=src,input=src,form=,fieldset="
                             string[] tags = value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -489,11 +461,11 @@ namespace PHP.Core
                                 if (ass >= 1)   // there is at least one character before the assignment
                                 {
                                     string tagName = tag.Remove(ass).ToLower();
-                                    string tagValue = tag.Substring(ass + 1).ToLower();
+                                    List<string> attrs = null;
+                                    if (!newUrlRewriterTags.TryGetValue(tagName, out attrs))
+                                        newUrlRewriterTags[tagName] = attrs = new List<string>();
 
-                                    string[] attrs = null;
-                                    newUrlRewriterTags.TryGetValue(tagName, out attrs);
-                                    newUrlRewriterTags[tagName] = ArrayUtils.Concat(attrs, tagValue);
+                                    attrs.Add(tag.Substring(ass + 1).ToLower());
                                 }
                             }
 
@@ -525,34 +497,12 @@ namespace PHP.Core
 	{
 		#region Loading
 
-        /// <summary>
-        /// Class libraries collected while parsing configuration files.
-        /// </summary>
-        private LibrariesConfigurationList/*!*/addedLibraries = new LibrariesConfigurationList();
-
-        /// <summary>
-        /// Load class libraries collected while parsing configuration files.
-        /// </summary>
-        /// <param name="appContext"></param>
-        internal void LoadLibraries(ApplicationContext/*!*/ appContext)
-        {
-            addedLibraries.LoadLibrariesNoLock(
-                    (_assemblyName, _assemblyUrl, _sectionName, /*!*/ _node) =>
-                    {
-                        appContext.AssemblyLoader.Load(_assemblyName, _assemblyUrl, new LibraryConfigStore(_node));
-                        return true;
-                    },
-                    null // ignore class library sections
-                    );
-        }
-
 		/// <summary>
 		/// Parses a XML node and loads the configuration values from it.
 		/// </summary>
 		/// <param name="applicationContext">Context where to load libraries.</param>
 		/// <param name="section">The "phpNet" section node.</param>
-        /// <param name="addedLibraries">List of class libraries to be loaded lazily.</param>
-        internal void Parse(ApplicationContext/*!*/ applicationContext, XmlNode/*!*/ section, LibrariesConfigurationList/*!*/addedLibraries)
+		internal void Parse(ApplicationContext/*!*/ applicationContext, XmlNode/*!*/ section)
 		{
 			// parses XML tree:
 			foreach (XmlNode node in section.ChildNodes)
@@ -562,14 +512,31 @@ namespace PHP.Core
 					switch (node.Name)
 					{
 						case ConfigurationSectionHandler.NodeClassLibrary:
-							ConfigUtils.ParseLibraryAssemblyList(
-                                node,
-                                addedLibraries,
+							ConfigUtils.ParseLibraryAssemblyList(node, new ConfigUtils.ParseLibraryAssemblyCallback(
+								delegate(string _assemblyName, Uri _assemblyUrl, string _sectionName, XmlNode/*!*/ _node)
+								{
+									applicationContext.AssemblyLoader.Load(_assemblyName, _assemblyUrl, new LibraryConfigStore(_node));
+									return true;
+								}),
+								Paths.ExtWrappers,
 								Paths.Libraries);
 							break;
 
                         case ConfigurationSectionHandler.NodeScriptLibrary:
-                            ConfigUtils.ParseScriptLibraryAssemblyList(node, applicationContext.ScriptLibraryDatabase);
+                            ConfigUtils.ParseScriptLibraryAssemblyList(node,
+                                applicationContext.ScriptLibraryDatabase.AddLibrary,
+                                applicationContext.ScriptLibraryDatabase.RemoveLibrary,
+                                applicationContext.ScriptLibraryDatabase.ClearLibraries);
+                            break;
+
+                        case ConfigurationSectionHandler.NodePlugin:
+                            {
+                                ConfigUtils.ParseTypesList(node,
+                                    (typename) => { ConfigUtils.LoadPlugin(typename); },
+                                    (typename) => { throw new NotImplementedException(); },
+                                    (_) => { throw new NotImplementedException(); }
+                                );
+                            }
                             break;
 
 						case ConfigurationSectionHandler.NodeCompiler:
@@ -614,13 +581,13 @@ namespace PHP.Core
 
 
 		/// <summary>
-		/// Loads compiler configuration values from a specified .config file into a given record.
+		/// Loads compiler configuration values from a sspecfiiced .config file into a given record.
 		/// </summary>
 		/// <param name="appContext">Application context where to load libraries.</param>
 		/// <param name="path">A full path to the .config file.</param>
 		/// <returns>The new configuration record.</returns>
 		/// <exception cref="ConfigurationErrorsException">An error in configuration.</exception>
-        public void LoadFromFile(ApplicationContext/*!*/ appContext, FullPath path)
+		public void LoadFromFile(ApplicationContext/*!*/ appContext, FullPath path)
 		{
 			if (appContext == null)
 				throw new ArgumentNullException("appContext");
@@ -639,39 +606,26 @@ namespace PHP.Core
 			}
 
 			XmlNode root = doc.DocumentElement;
-            if (root.Name == "configuration")
-            {
-                ProcessNodes(appContext, root, addedLibraries);
-            }
+			if (root.Name == "configuration")
+			{
+				foreach (XmlNode node in root.ChildNodes)
+				{
+					if (node.NodeType == XmlNodeType.Element)
+					{
+						switch (node.Name)
+						{
+							case Configuration.SectionName:
+								Parse(appContext, node);
+								break;
+
+							case "system.web":
+								ParseSystemWebSection(node);
+								break;
+						}
+					}
+				}
+			}
 		}
-
-        /// <summary>
-        /// Recursively handles loading of the configuration file sections, to handle the inheritance properly
-        /// </summary>
-        /// <param name="appContext">Application context where to load libraries.</param>
-        /// <param name="root">Root to parse child nodes from</param>
-        /// <param name="addedLibraries">List of class libraries that are collected while parsing configuration node.</param>
-        private void ProcessNodes(ApplicationContext appContext, XmlNode root, LibrariesConfigurationList/*!*/addedLibraries)
-        {
-            foreach (XmlNode node in root.ChildNodes) {
-                if (node.NodeType == XmlNodeType.Element) {
-                    switch (node.Name) {
-                        case Configuration.SectionName:
-                            Parse(appContext, node, addedLibraries);
-                            break;
-
-                        case Configuration.LocationName:
-                            // Recursively parse the Web.config file to include everything in the <location> element
-                            ProcessNodes(appContext, node, addedLibraries);
-                            break;
-
-                        case "system.web":
-                            ParseSystemWebSection(node);
-                            break;
-                    }
-                }
-            }
-        }
 
 		#endregion
 	}
@@ -701,14 +655,8 @@ namespace PHP.Core
 			/// <summary>
 			/// Whether to watch source code for changes. Applicable only on web applications.
 			/// </summary>
-            public bool WatchSourceChanges { get { return watchSourceChanges; } }
+			public bool WatchSourceChanges { get { return watchSourceChanges; } set { WatchSourceChanges = value; } }
 			private bool watchSourceChanges = true;
-
-            /// <summary>
-			/// Whether to allow SSAs. Otherwise Phalanger will ignore physical script files completely.
-			/// </summary>
-            public bool OnlyPrecompiledCode { get { return onlyPrecompiledCode; } }
-            private bool onlyPrecompiledCode = false;
 
 			/// <summary>
 			/// Paths searched for statically evaluated inclusion targets.
@@ -755,6 +703,8 @@ namespace PHP.Core
                 }
             }
             private List<string> forcedDynamicInclusionTranslatedFullPaths = null;
+
+
 
 			/// <summary>
 			/// List of regular expressions and replacements to use when converting include expressions.
@@ -902,7 +852,7 @@ namespace PHP.Core
 						LanguageFeatures = (LanguageFeatures)ConfigUtils.ParseFlags(node, (int)LanguageFeatures, typeof(LanguageFeatures));
 						return true;
 
-                    case "EnableStaticInclusions":
+					case "EnableStaticInclusions":
 						{
 							if (Configuration.IsValidInCurrentScope(node))
 								EnableStaticInclusions = value == "true";
@@ -987,25 +937,10 @@ namespace PHP.Core
 							if (HttpContext.Current == null)
 								throw new ConfigurationErrorsException(CoreResources.GetString("web_only_option"), node);
 
-                            watchSourceChanges = value == "true" && !OnlyPrecompiledCode;   // OnlyPrecompiledCode => !WatchSourceChanges
-                            
+							watchSourceChanges = value == "true";
+
 							return true;
 						}
-
-                    case "OnlyPrecompiledCode":
-                        {
-                            // applicable only in run-time:
-                            if (Configuration.IsBuildTime)
-                                return true;
-
-                            if (HttpContext.Current == null)
-                                throw new ConfigurationErrorsException(CoreResources.GetString("web_only_option"), node);
-
-                            onlyPrecompiledCode = value == "true";
-                            if (OnlyPrecompiledCode) watchSourceChanges = false;    // OnlyPrecompiledCode => !WatchSourceChanges
-
-                            return true;
-                        }
 
 					case "DisabledWarnings":
 						{
@@ -1121,60 +1056,63 @@ namespace PHP.Core
 			/// <summary>
 			/// Directory path where dynamic wrappers are stored. 
 			/// </summary>
-            public FullPath DynamicWrappers { get { return dynamicWrappers; } }
+			public FullPath DynamicWrappers { get { return dynamicWrappers; } }
 			private FullPath dynamicWrappers;
 
 			/// <summary>
 			/// Directory path where managed libraries are stored. 
 			/// </summary>
-            public FullPath Libraries { get { return libraries; } }
+			public FullPath Libraries { get { return libraries; } }
 			private FullPath libraries;
 
-            /// <summary>
-            /// Last determined modification time. Used to invalidate assemblies compiled before this time.
-            /// </summary>
-            public DateTime LastConfigurationModificationTimeUtc { get; private set; }
+			/// <summary>
+			/// Path to Extensions Manager root.
+			/// </summary>
+			public FullPath ExtManager { get { return manager; } }
+			private FullPath manager;
 
-            public PathsSection()
-            {
-                var http_context = HttpContext.Current;
+			/// <summary>
+			/// Path to PHP native extensions directory.
+			/// </summary>
+			public FullPath ExtNatives { get { return natives; } }
+			private FullPath natives;
 
-                // default paths, used when the configuration does not set its own:
+			/// <summary>
+			/// Path to PHP extensions wrappers directory.
+			/// </summary>
+			public FullPath ExtWrappers { get { return wrappers; } }
+			private FullPath wrappers;
 
-                string current_app_dir;
-                try { current_app_dir = (http_context != null) ? http_context.Server.MapPath("/bin") : "."; }  // this can throw on Mono
-                catch (InvalidOperationException) { current_app_dir = "bin"; }
+			/// <summary>
+			/// Directory path where type definitions of extensions are stored. 
+			/// </summary>
+			public FullPath ExtTypeDefs { get { return typeDefs; } }
+			private FullPath typeDefs;
 
-                libraries = new FullPath(current_app_dir);
-
-                string dynamic_path = /*(http_context != null) ? current_app_dir : */Path.GetTempPath();
-                dynamicWrappers = new FullPath(dynamic_path);
-            }
+			public PathsSection()
+			{
+				libraries = manager = natives = wrappers = typeDefs = new FullPath(".");
+			}
 
 			/// <summary>
 			/// Loads paths from XML configuration node.
 			/// </summary>
 			public bool Parse(string name, string value, XmlNode node)
 			{
-                // determine last configuration modification time:
-                this.LastConfigurationModificationTimeUtc = ConfigUtils.GetConfigModificationTimeUtc(node, this.LastConfigurationModificationTimeUtc);
-
-                switch (name)
+				switch (name)
 				{
 					case "DynamicWrappers": dynamicWrappers = CheckedPath(value, node); return true;
 					case "Libraries": libraries = CheckedPath(value, node); return true;
-					case "ExtWrappers": /* DEPRECATED */ return true;
-                    case "ExtTypeDefs": /* DEPRECATED */ return true;
-                    case "ExtNatives": /* DEPRECATED */ return true;
-                    case "ExtManager": /* DEPRECATED */ return true;
+					case "ExtWrappers": wrappers = CheckedPath(value, node); return true;
+					case "ExtTypeDefs": typeDefs = CheckedPath(value, node); return true;
+					case "ExtNatives": natives = CheckedPath(value, node); return true;
+					case "ExtManager": manager = CheckedPath(value, node); return true;
 				}
 				return false;
 			}
 
-			private FullPath CheckedPath(string value, XmlNode/*!*/node)
+			private FullPath CheckedPath(string value, XmlNode node)
 			{
-                Debug.Assert(node != null);
-
 				FullPath result;
 
 				// checks path correctness:
@@ -1197,10 +1135,33 @@ namespace PHP.Core
 				return result;
 			}
 
-            internal void Validate()
-            {
-                
-            }
+			internal void Validate()
+			{
+				try
+				{
+					// dynamic wrappers needs a directory where they can be generated:
+					if (dynamicWrappers.IsEmpty)
+						dynamicWrappers = new FullPath(Path.GetTempPath());
+
+					//          // support a situation when app is distributed without Phalanger installation and
+					//          // all files of the app are contained in a single directory:
+					//          if (libraries.IsEmpty || natives.IsEmpty || manager.IsEmpty || typeDefs.IsEmpty || wrappers.IsEmpty) 
+					//          {
+					//            FullPath current_dir = new FullPath(".");
+					//            
+					//            if (libraries.IsEmpty) libraries = current_dir;
+					//            if (natives.IsEmpty) natives = current_dir;
+					//            if (manager.IsEmpty) manager = current_dir;
+					//            if (typeDefs.IsEmpty) typeDefs = current_dir;
+					//            if (wrappers.IsEmpty) wrappers = current_dir;
+					//          }
+				}
+				catch (Exception e)
+				{
+					// security or other problems may occure:
+					throw new ConfigurationErrorsException(e.Message);
+				}
+			}
 		}
 
 		#endregion
@@ -1237,7 +1198,7 @@ namespace PHP.Core
 					case "RegisterGlobals": RegisterGlobals = t; break;
 					case "RegisterArgcArgv": RegisterArgcArgv = t; break;
 					case "RegisterLongArrays": RegisterLongArrays = t; break;
-                    case "QuoteGpcVariables": /*QuoteGpcVariables = t;*/ if (t) throw new ConfigUtils.InvalidAttributeValueException(node, "value"); break;
+					case "QuoteGpcVariables": QuoteGpcVariables = t; break;
 					default:
 						return false;
 				}
@@ -1428,113 +1389,6 @@ namespace PHP.Core
 
 	#region Configuration Context
 
-    public sealed class LibrariesConfigurationList
-    {
-        /// <summary>
-        /// Information about library being load to be loaded lazily.
-        /// </summary>
-        private class AddLibraryInfo
-        {
-            public AddLibraryInfo(string assemblyName, Uri assemblyUrl, string sectionName, XmlNode/*!*/ node)
-            {
-                Debug.Assert(node != null && (assemblyName != null ^ assemblyUrl != null));
-
-                this.assemblyName = assemblyName;
-                this.assemblyUrl = assemblyUrl;
-                this.sectionName = sectionName;
-                this.node = node;
-            }
-
-            public readonly string assemblyName;
-            public readonly Uri assemblyUrl;
-            public readonly string sectionName;
-            public readonly XmlNode/*!*/ node;
-        }
-
-        /// <summary>
-        /// Libraries to be loaded lazily at the and of parsing of all the configuration sections.
-        /// Checks for duplicities, loads libraries using the same configuration after processing all sub-configurations.
-        /// </summary>
-        private Dictionary<string, AddLibraryInfo> addedLibraries = null;
-
-        /// <summary>
-        /// List of class library sections to be parsed when class libraries are loaded.
-        /// </summary>
-        private List<XmlNode> sections = null;
-
-        /// <summary>
-        /// Add class library configuration section to the list to be processed once libraries are loaded.
-        /// </summary>
-        /// <param name="sectionNode"></param>
-        public void AddSection(XmlNode/*!*/sectionNode)
-        {
-            Debug.Assert(sectionNode != null);
-            if (this.sections == null)
-                this.sections = new List<XmlNode>();
-
-            this.sections.Add(sectionNode);
-        }
-
-        /// <summary>
-        /// Adds the library to the list of libraries to be loaded lazily.
-        /// </summary>
-        public bool AddLibrary(string assemblyName, Uri assemblyUrl, string sectionName, XmlNode/*!*/ node)
-        {
-            if (addedLibraries == null)
-                addedLibraries = new Dictionary<string, AddLibraryInfo>();
-
-            // add the library to be loaded lazily, avoids duplicities in config sections by overwriting previously added library
-            addedLibraries[LibraryKey(assemblyName, assemblyUrl)] = new AddLibraryInfo(assemblyName, assemblyUrl, sectionName, node);
-            return true;
-        }
-
-        /// <summary>
-        /// Remove given library from the list of libraries that will be loaded.
-        /// </summary>
-        public bool RemoveLibrary(string assemblyName, Uri assemblyUrl)
-        {
-            return addedLibraries != null && addedLibraries.Remove(LibraryKey(assemblyName, assemblyUrl));
-        }
-
-        /// <summary>
-        /// Clear the list of libraries that will be loaded.
-        /// </summary>
-        public void ClearLibraries()
-        {
-            addedLibraries = null;
-        }
-
-        private string LibraryKey(string assemblyName, Uri assemblyUrl)
-        {
-            return string.Format("{0}^{1}",
-                (assemblyName != null) ? assemblyName.ToLowerInvariant() : string.Empty,
-                (assemblyUrl != null) ? assemblyUrl.ToString().ToLowerInvariant() : string.Empty);
-        }
-
-        /// <summary>
-        /// Load libraries specified by <see cref="AddLibrary"/> lazily. Also parses postponed sections.
-        /// </summary>
-        public void LoadLibrariesNoLock(Func<string,Uri,string,XmlNode,bool>/*!*/callback, Action<XmlNode> parseSectionCallback)
-        {
-            if (addedLibraries != null)
-            {
-                foreach (var lib in addedLibraries.Values)
-                    callback(lib.assemblyName, lib.assemblyUrl, lib.sectionName, lib.node);
-
-                addedLibraries = null;
-            }
-
-            if (sections != null)
-            {
-                if (parseSectionCallback != null)
-                    foreach (var section in sections)
-                        parseSectionCallback(section);
-
-                sections = null;
-            }
-        }
-    }
-
 	/// <summary>
 	/// Configuration context used when loading configuration from XML files.
 	/// </summary>
@@ -1570,10 +1424,10 @@ namespace PHP.Core
 		/// </summary>
 		internal GlobalConfiguration Global { get { return global; } }
 		private GlobalConfiguration global;
+		
+		private readonly ApplicationContext/*!*/ applicationContext;
 
-        private readonly ApplicationContext/*!*/ applicationContext;
-
-        /// <summary>
+		/// <summary>
 		/// Creates an empty configuration context used as a root context.
 		/// </summary>
 		internal PhpConfigurationContext(ApplicationContext/*!*/ applicationContext, string virtualPath)
@@ -1584,7 +1438,6 @@ namespace PHP.Core
 
 			this.sections = new Dictionary<string, LibrarySection>();
 			this.sealedSections = new Dictionary<string, string>();
-            this.librariesList = new LibrariesConfigurationList();
 
 			this.local = new LocalConfiguration();
 			this.global = new GlobalConfiguration();
@@ -1603,81 +1456,67 @@ namespace PHP.Core
 			// section tables are shared:
 			this.sections = parent.sections;
 			this.sealedSections = parent.sealedSections;
-            this.librariesList = parent.librariesList;
 
 			// configuration records are copied:
 			this.local = (LocalConfiguration)parent.local.DeepCopy();
 			this.global = (GlobalConfiguration)parent.global.DeepCopy();
 		}
 
-        #region Libraries loading
+		/// <summary>
+		/// Loads a library and adds a new section to the list of sections if available.
+		/// </summary>
+		internal bool AddLibrary(string assemblyName, Uri assemblyUrl, string sectionName, XmlNode/*!*/ node)
+		{
+			Debug.Assert(node != null && (assemblyName != null ^ assemblyUrl != null));
 
-        internal LibrariesConfigurationList/*!*/librariesList;
+			DAssembly assembly = applicationContext.AssemblyLoader.Load(assemblyName, assemblyUrl, new LibraryConfigStore(node));
+			PhpLibraryAssembly lib_assembly = assembly as PhpLibraryAssembly;
 
-        /// <summary>
-        /// Actually loads libraries specified in <see cref="librariesList"/>.
-        /// </summary>
-        internal void LoadLibrariesNoLock()
-        {
-            this.librariesList.LoadLibrariesNoLock(this.LoadLibrary, this.ParseSection);
-        }
+			// not a PHP library or the library is loaded for reflection only:
+			if (lib_assembly == null)
+				return true;
 
-        /// <summary>
-        /// Loads a library and adds a new section to the list of sections if available.
-        /// </summary>
-        private bool LoadLibrary(string assemblyName, Uri assemblyUrl, string sectionName, XmlNode/*!*/ node)
-        {
-            // load the assembly:
-            DAssembly assembly = applicationContext.AssemblyLoader.Load(assemblyName, assemblyUrl, new LibraryConfigStore(node));
-            PhpLibraryAssembly lib_assembly = assembly as PhpLibraryAssembly;
+			PhpLibraryDescriptor descriptor = lib_assembly.Descriptor;
 
-            // not a PHP library or the library is loaded for reflection only:
-            if (lib_assembly == null)
-                return true;
+			// section name not stated or the descriptor is not available (reflected-only assembly):
+			if (sectionName == null || descriptor == null)
+				return true;
 
-            PhpLibraryDescriptor descriptor = lib_assembly.Descriptor;
+			if (descriptor.ConfigurationSectionName == sectionName)
+			{
+				// an assembly has already been assigned a section? => ok
+				if (sections.ContainsKey(sectionName)) return true;
 
-            // section name not stated or the descriptor is not available (reflected-only assembly):
-            if (sectionName == null || descriptor == null)
-                return true;
+				// TODO (TP): Consider whether this is correct behavior?
+				//       This occurs under stress test, because ASP.NET calls 
+				//       ConfigurationSectionHandler.Create even though we already loaded assemblies
+				Debug.WriteLine("CONFIG", "WARNING: Loading configuration for section '{0}'. "+
+					"Library has been loaded, but the section is missing.", sectionName);
+			}
+			else if (descriptor.ConfigurationSectionName != null)
+			{
+				// an assembly has already been loaded with another section name => error:
+				throw new ConfigurationErrorsException(CoreResources.GetString("cannot_change_library_section",
+					descriptor.RealAssembly.FullName, descriptor.ConfigurationSectionName), node);
+			}
 
-            if (descriptor.ConfigurationSectionName == sectionName)
-            {
-                // an assembly has already been assigned a section? => ok
-                if (sections.ContainsKey(sectionName)) return true;
+			// checks whether the section has not been used yet:
+			LibrarySection existing_section;
+			if (sections.TryGetValue(sectionName, out existing_section))
+			{
+				Assembly conflicting_assembly = existing_section.Descriptor.RealAssembly;
+				throw new ConfigurationErrorsException(CoreResources.GetString("library_section_redeclared",
+						sectionName, conflicting_assembly.FullName), node);
+			}
 
-                // TODO (TP): Consider whether this is correct behavior?
-                //       This occurs under stress test, because ASP.NET calls 
-                //       ConfigurationSectionHandler.Create even though we already loaded assemblies
-                Debug.WriteLine("CONFIG", "WARNING: Loading configuration for section '{0}'. " +
-                    "Library has been loaded, but the section is missing.", sectionName);
-            }
-            else if (descriptor.ConfigurationSectionName != null)
-            {
-                // an assembly has already been loaded with another section name => error:
-                throw new ConfigurationErrorsException(CoreResources.GetString("cannot_change_library_section",
-                    descriptor.RealAssembly.FullName, descriptor.ConfigurationSectionName), node);
-            }
+			// maps section name to the library descriptor:
+			descriptor.WriteConfigurationUp(sectionName);
+			sections.Add(sectionName, new LibrarySection(descriptor));
 
-            // checks whether the section has not been used yet:
-            LibrarySection existing_section;
-            if (sections.TryGetValue(sectionName, out existing_section))
-            {
-                Assembly conflicting_assembly = existing_section.Descriptor.RealAssembly;
-                throw new ConfigurationErrorsException(CoreResources.GetString("library_section_redeclared",
-                        sectionName, conflicting_assembly.FullName), node);
-            }
+			return true;
+		}
 
-            // maps section name to the library descriptor:
-            descriptor.WriteConfigurationUp(sectionName);
-            sections.Add(sectionName, new LibrarySection(descriptor));
-
-            return true;
-        }
-
-        #endregion
-
-        /// <summary>
+		/// <summary>
 		/// Processes library configuration section.
 		/// </summary>
 		/// <param name="node">Configuration node of the section.</param>
@@ -1706,7 +1545,7 @@ namespace PHP.Core
 			}
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Finishes and validates the configuration. 
 		/// Creates an array of library configurations and stores it to local and global config records.
 		/// The first validated configuration is the global one, local ones follows in the order in which 
@@ -1893,7 +1732,8 @@ namespace PHP.Core
 		internal const string NodePaths = "paths";
 		internal const string NodeClassLibrary = "classLibrary";
         internal const string NodeScriptLibrary = "scriptLibrary";
-        internal const string NodeCompiler = "compiler";
+        internal const string NodePlugin = "plugin";
+		internal const string NodeCompiler = "compiler";
 		internal const string NodeGlobalization = "globalization";
 		internal const string NodeVariables = "variables";
 		internal const string NodeSafeMode = "safe-mode";
@@ -1937,11 +1777,8 @@ namespace PHP.Core
 					// a new context has been loaded from .config file //
 
 					// fills in missing configuration and checks whether the configuration has been loaded properly:
-                    if (context != null)
-                    {
-                        context.LoadLibrariesNoLock();
-                        context.ValidateNoLock();
-                    }
+					if (context != null)
+						context.ValidateNoLock();
 
 					// validates application configuration if it has not been validated yet;
 					// the application configuration is shared among all requests (threads); 
@@ -2017,12 +1854,12 @@ namespace PHP.Core
 			// configuration loading is assumed to be synchronized:
 			ApplicationConfiguration app = Configuration.application;
 
+            // little hack, parse the NodeClassLibrary as the last one (must be parsed after the <paths> node)
+            XmlNode node_ClassLibrary = null;
+
             // same with script libraries - these need to be parsed after <sourceRoot>
             XmlNode node_ScriptLibrary = null;
 
-            // determine configuration modification time:
-            result.Global.LastConfigurationModifiedTimeUtc = ConfigUtils.GetConfigModificationTimeUtc(section, result.Global.LastConfigurationModifiedTimeUtc);
-            
 			// parses XML tree:
 			foreach (XmlNode node in section.ChildNodes)
 			{
@@ -2041,12 +1878,8 @@ namespace PHP.Core
 							// libraries can be loaded only in application root config and above:
 							result.EnsureApplicationConfig(node);
 
-                            // parses and loads libraries contained in the list (lazy):
-                            ConfigUtils.ParseLibraryAssemblyList(
-                                node,
-                                result.librariesList,
-                                app.Paths.Libraries);
-                            break;
+                            node_ClassLibrary = node;// postpone parsing							
+							break;
 
                         case NodeScriptLibrary:
                             // script libraries can be loaded only in application root config and above:
@@ -2054,6 +1887,15 @@ namespace PHP.Core
 
                             node_ScriptLibrary = node;
 
+                            break;
+                        case NodePlugin:
+                            {
+                                ConfigUtils.ParseTypesList(node,
+                                    (typename) => { ConfigUtils.LoadPlugin(typename); },
+                                    (typename) => { throw new NotImplementedException(); },
+                                    (_) => { throw new NotImplementedException(); }
+                                );
+                            }
                             break;
 						case NodeCompiler:
 							// options can be specified only in application root:
@@ -2107,16 +1949,32 @@ namespace PHP.Core
 
 						default:
 							// processes library section:
-                            result.librariesList.AddSection(node);
+							result.ParseSection(node);
 							break;
 					}
 				}
 			}
 
+            // parse the class library node at the end
+            if (node_ClassLibrary != null)
+            {
+                // validate paths, since there may be not configured values that are needed while libraries are being loaded
+                app.Paths.Validate();
+
+                // parses and loads libraries contained in the list:
+                ConfigUtils.ParseLibraryAssemblyList(
+                    node_ClassLibrary, new ConfigUtils.ParseLibraryAssemblyCallback(result.AddLibrary),
+                    app.Paths.ExtWrappers,
+                    app.Paths.Libraries);
+            }
+
             // and script library after that
             if (node_ScriptLibrary != null)
             {
-                ConfigUtils.ParseScriptLibraryAssemblyList(node_ScriptLibrary, applicationContext.ScriptLibraryDatabase);
+                ConfigUtils.ParseScriptLibraryAssemblyList(node_ScriptLibrary,
+                    applicationContext.ScriptLibraryDatabase.AddLibrary,
+                    applicationContext.ScriptLibraryDatabase.RemoveLibrary,
+                    applicationContext.ScriptLibraryDatabase.ClearLibraries);
             }
 
 			return result;
@@ -2136,7 +1994,6 @@ namespace PHP.Core
 	public sealed class Configuration
 	{
 		public const string SectionName = "phpNet";
-        public const string LocationName = "location";
 
 		private readonly GlobalConfiguration/*!*/ global;
 		private readonly LocalConfiguration/*!*/ defaultLocal;
@@ -2144,21 +2001,15 @@ namespace PHP.Core
 		[ThreadStatic]
 		private static Configuration current = null;
 
+#if DEBUG
 		[ThreadStatic]
 		private static bool isBeingLoadedToCurrentThread = false;
+#endif
 
         private Configuration(GlobalConfiguration/*!*/ global, LocalConfiguration/*!*/ defaultLocal)
         {
             this.global = global;
             this.defaultLocal = defaultLocal;
-        }
-
-        /// <summary>
-        /// Loads configuration using default <see cref="ApplicationContext"/>.
-        /// </summary>
-        private static void LoadDefault()
-        {
-            Load(ApplicationContext.Default);
         }
 
 		/// <summary>
@@ -2169,8 +2020,10 @@ namespace PHP.Core
 		{
 			if (current == null)
 			{
+#if DEBUG
 				Debug.Assert(!isBeingLoadedToCurrentThread, "Configuration loader triggered next configuration load");
 				isBeingLoadedToCurrentThread = true;
+#endif
 
 				try
 				{
@@ -2188,7 +2041,9 @@ namespace PHP.Core
 				}
 				finally
 				{
+#if DEBUG
 					isBeingLoadedToCurrentThread = false;
+#endif
 				}
 			}
 		}
@@ -2221,7 +2076,7 @@ namespace PHP.Core
 			get
 			{
 				// note: more threads can start loading the configuration, but that ok:
-                if (!application.IsLoaded) LoadDefault();
+				if (!application.IsLoaded) Load(ApplicationContext.Default);
 				return application;
 			}
 		}
@@ -2232,7 +2087,9 @@ namespace PHP.Core
 		/// </summary>
 		internal static ApplicationConfiguration.PathsSection/*!*/ GetPathsNoLoad()
 		{
+#if DEBUG
 			Debug.Assert(current != null || isBeingLoadedToCurrentThread);
+#endif
 			return application.Paths;
 		}
 
@@ -2245,7 +2102,7 @@ namespace PHP.Core
 		{
 			get
 			{
-                LoadDefault();
+				Load(ApplicationContext.Default);
 				Debug.Assert(current != null);
 				return current.global;
 			}
@@ -2260,7 +2117,7 @@ namespace PHP.Core
 		{
 			get
 			{
-                LoadDefault();
+				Load(ApplicationContext.Default);
 				Debug.Assert(current != null);
 				return current.defaultLocal;
 			}
@@ -2277,17 +2134,6 @@ namespace PHP.Core
 			}
 		}
 
-        /// <summary>
-        /// Get whether we are loading configuration right not, but it is not loaded yet.
-        /// </summary>
-        internal static bool IsBeingLoaded
-        {
-            get
-            {
-                return isBeingLoadedToCurrentThread;
-            }
-        }
-
 		/// <summary>
 		/// Gets script local configuration record, which is unique per request.
 		/// </summary>
@@ -2298,6 +2144,11 @@ namespace PHP.Core
 				return ScriptContext.CurrentContext.Config;
 			}
 		}
+
+		/// <summary>
+		/// A flag signaling whether we are in compilation domain.
+		/// </summary>
+		internal static bool IsCompilationDomain = false;
 
 		/// <summary>
 		/// Whether the application being run is a command line compiler.
@@ -2328,21 +2179,6 @@ namespace PHP.Core
 					throw new ConfigUtils.InvalidAttributeValueException(node, "scope");
 			}
 		}
-
-        /// <summary>
-        /// Latest configuration modification time.
-        /// If it cannot be determined, it is equal to <see cref="DateTime.MinValue"/>.
-        /// </summary>
-        public static DateTime LastConfigurationModifiedTimeUtc
-        {
-            get
-            {
-                return DateTimeUtils.Max(
-                    Application.LastConfigurationModifiedTimeUtc,
-                    Global.LastConfigurationModifiedTimeUtc,
-                    Local.LastConfigurationModifiedTimeUtc);
-            }
-        }
 	}
 
 	#endregion

@@ -1,6 +1,5 @@
 /*
 
- Copyright (c) 2007- DEVSENSE
  Copyright (c) 2004-2006 Tomas Matousek and Vaclav Novak.
 
  The use and distribution terms for this software are contained in the file named License.txt, 
@@ -20,416 +19,433 @@ using System.Diagnostics;
 using System.Diagnostics.SymbolStore;
 
 using PHP.Core;
-using PHP.Core.AST;
 using PHP.Core.Parsers;
 using PHP.Core.Emit;
 using PHP.Core.Reflection;
 
-namespace PHP.Core.Compiler.AST
+namespace PHP.Core.AST
 {
-    partial class NodeCompilers
-    {
-        #region GlobalCode
+	#region GlobalCode
 
-        [NodeCompiler(typeof(GlobalCode))]
-        sealed class GlobalCodeCompiler : INodeCompiler, IGlobalCodeCompiler
-        {
-            /// <summary>
-            /// Global variables. Not available in pure mode, non-null otherwise.
-            /// </summary>
-            public VariablesTable/*!*/ VarTable { get { return varTable; } }
-            private readonly VariablesTable/*!*/ varTable;
+	/// <summary>
+	/// Represents a container for global statements.
+	/// </summary>
+	/// <remarks>
+	/// PHP source file can contain global code definition which is represented in AST 
+	/// by GlobalCode node. Finally, it is emitted into Main() method of concrete PHPPage 
+	/// class. The sample code below illustrates a part of PHP global code
+	/// </remarks>
+	public sealed class GlobalCode : AstNode
+	{
+		/// <summary>
+		/// Array of nodes representing statements in PHP global code
+		/// </summary>
+		public List<Statement>/*!*/ Statements { get { return statements; } }
+		private readonly List<Statement>/*!*/ statements;
 
-            /// <summary>
-            /// Labels (PHP6 feature).
-            /// </summary>
-            public Dictionary<VariableName, Statement> Labels { get { return labels; } }
-            private readonly Dictionary<VariableName, Statement> labels;
+		/// <summary>
+		/// Global variables. Not available in pure mode, non-null otherwise.
+		/// </summary>
+		internal VariablesTable/*!*/ VarTable { get { return varTable; } }
+		private readonly VariablesTable/*!*/ varTable;
 
-            public IncludingEx PrependedInclusion { get; set; }
-            public IncludingEx AppendedInclusion { get; set; }
+		/// <summary>
+		/// Labels (PHP6 feature).
+		/// </summary>
+		internal Dictionary<VariableName, Statement> Labels { get { return labels; } }
+		private Dictionary<VariableName, Statement> labels;
 
-            public GlobalCodeCompiler(GlobalCode/*!*/ast)
-            {
-                if (!ast.SourceUnit.IsPure)
-                {
-                    this.varTable = new VariablesTable(20);
-                    this.varTable.SetAllRef();
-                    this.labels = new Dictionary<VariableName, Statement>();
-                }
-            }
+		/// <summary>
+		/// Represented source unit.
+		/// </summary>
+		public SourceUnit/*!*/ SourceUnit { get { return sourceUnit; } }
+		private readonly SourceUnit/*!*/ sourceUnit;
 
-            #region Analysis
+		internal IncludingEx PrependedInclusion { get { return prependedInclusion; } set { prependedInclusion = value; } }
+		private IncludingEx prependedInclusion;
 
-            public void Analyze(GlobalCode/*!*/ast, Analyzer/*!*/ analyzer)
-            {
-                analyzer.LeaveUnreachableCode();
+		internal IncludingEx AppendedInclusion { get { return appendedInclusion; } set { appendedInclusion = value; } }
+		private IncludingEx appendedInclusion;
 
-                ExInfoFromParent info = new ExInfoFromParent(ast);
+		#region Constructors
 
-                // analyze auto-prepended inclusion (no code reachability checks):
-                if (PrependedInclusion != null)
-                {
-                    info.Access = AccessType.None;
-                    PrependedInclusion.Analyze(analyzer, info);
-                }
+		/// <summary>
+		/// Initializes a new instance of the GlobalCode class.
+		/// </summary>
+		public GlobalCode(List<Statement>/*!*/ statements, SourceUnit/*!*/ sourceUnit)
+		{
+			Debug.Assert(statements != null && sourceUnit != null);
 
-                for (int i = 0; i < ast.Statements.Length; i++) // NOTE: ast.Statements may change during analysis, iterate in this way!
-                {
-                    if (analyzer.IsThisCodeUnreachable() && ast.Statements[i].IsDeclaration)
-                    {
-                        //unreachable declarations in global code are valid
-                        analyzer.LeaveUnreachableCode();
-                        ast.Statements[i] = ast.Statements[i].Analyze(analyzer);
-                        analyzer.EnterUnreachableCode();
-                    }
-                    else
-                    {
-                        ast.Statements[i] = ast.Statements[i].Analyze(analyzer);
-                    }
-                }
+			this.sourceUnit = sourceUnit;
+			this.statements = statements;
+			this.prependedInclusion = null;
+			this.AppendedInclusion = null;
 
-                if (!ast.SourceUnit.IsPure)
-                    Analyzer.ValidateLabels(analyzer.ErrorSink, ast.SourceUnit, labels);
+			if (!sourceUnit.CompilationUnit.IsPure)
+			{
+				varTable = new VariablesTable(20);
+				varTable.SetAllRef();
+				labels = new Dictionary<VariableName, Statement>();
+			}
+		}
 
-                // analyze auto-prepended inclusion (no code reachability checks):
-                if (AppendedInclusion != null)
-                {
-                    info.Access = AccessType.Read;
-                    AppendedInclusion.Analyze(analyzer, info);
-                }
+		#endregion
 
-                analyzer.LeaveUnreachableCode();
-            }
+		#region Analysis
 
-            #endregion
+		internal void Analyze(Analyzer/*!*/ analyzer)
+		{
+			analyzer.LeaveUnreachableCode();
+			
+			ExInfoFromParent info = new ExInfoFromParent(this);
 
-            #region Emission
+			// analyze auto-prepended inclusion (no code reachability checks):
+			if (prependedInclusion != null)
+			{
+				info.Access = AccessType.None;
+				prependedInclusion.Analyze(analyzer, info);
+			}
 
-            /// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
-            /// <param name="ast">Instance.</param>
-            public void Emit(GlobalCode/*!*/ast, CodeGenerator/*!*/ codeGenerator)
-            {
-                // TODO: improve
-                codeGenerator.EnterGlobalCodeDeclaration(this.varTable, labels, (CompilationSourceUnit)ast.SourceUnit);
+			for (int i = 0; i < statements.Count; i++)
+			{
+				if (analyzer.IsThisCodeUnreachable() && statements[i].IsDeclaration)
+				{
+					//unreachable declarations in global code are valid
+					analyzer.LeaveUnreachableCode();
+					statements[i] = statements[i].Analyze(analyzer);
+					analyzer.EnterUnreachableCode();
+				}
+				else
+				{
+					statements[i] = statements[i].Analyze(analyzer);
+				}
+			}
 
-                //
-                if (codeGenerator.CompilationUnit.IsTransient)
-                {
-                    codeGenerator.DefineLabels(labels);
+			if (!sourceUnit.CompilationUnit.IsPure)
+				Analyzer.ValidateLabels(analyzer.ErrorSink, sourceUnit, labels);
 
-                    codeGenerator.ChainBuilder.Create();
+			// analyze auto-prepended inclusion (no code reachability checks):
+			if (appendedInclusion != null)
+			{
+				info.Access = AccessType.Read;
+				appendedInclusion.Analyze(analyzer, info);
+			}
 
-                    foreach (Statement statement in ast.Statements)
-                        statement.Emit(codeGenerator);
+			analyzer.LeaveUnreachableCode();
+		}
 
-                    codeGenerator.ChainBuilder.End();
+		#endregion
 
-                    // return + appended file emission:
-                    codeGenerator.EmitRoutineEpilogue(ast, true);
-                }
+		#region Emission
+
+		/// <include file='Doc/Nodes.xml' path='doc/method[@name="Emit"]/*'/>
+		internal void Emit(CodeGenerator/*!*/ codeGenerator)
+		{
+			// TODO: improve
+			codeGenerator.EnterGlobalCodeDeclaration(this.varTable, labels, sourceUnit);
+
+            // custom body prolog emittion:
+            if (PluginHandler.BeforeBodyEmitter != null)
+                PluginHandler.BeforeBodyEmitter(codeGenerator.IL, statements);
+
+            //
+			if (codeGenerator.CompilationUnit.IsTransient)
+			{
+				codeGenerator.DefineLabels(labels);
+
+				codeGenerator.ChainBuilder.Create();
+
+				foreach (Statement statement in statements)
+					statement.Emit(codeGenerator);
+
+				codeGenerator.ChainBuilder.End();
+
+				// return + appended file emission:
+				codeGenerator.EmitRoutineEpilogue(this, true);
+			}
 #if !SILVERLIGHT
-                else if (codeGenerator.CompilationUnit.IsPure)
+			else if (codeGenerator.CompilationUnit.IsPure)
+			{
+				codeGenerator.ChainBuilder.Create();
+
+				foreach (Statement statement in statements)
+				{
+					// skip empty statements in global code (they emit sequence points, which is undesirable):
+					if (!(statement is EmptyStmt))
+						statement.Emit(codeGenerator);
+				}
+
+				codeGenerator.ChainBuilder.End();
+			}
+			else
+			{
+				ScriptCompilationUnit unit = (ScriptCompilationUnit)codeGenerator.CompilationUnit;
+
+				ILEmitter il = codeGenerator.IL;
+
+                if (codeGenerator.Context.Config.Compiler.Debug)
                 {
-                    codeGenerator.ChainBuilder.Create();
-
-                    foreach (Statement statement in ast.Statements)
-                    {
-                        // skip empty statements in global code (they emit sequence points, which is undesirable):
-                        if (!(statement is EmptyStmt))
-                            statement.Emit(codeGenerator);
-                    }
-
-                    codeGenerator.ChainBuilder.End();
+                    codeGenerator.MarkSequencePoint(1, 1, 1, 2);
+                    il.Emit(OpCodes.Nop);
                 }
-                else
-                {
-                    ScriptCompilationUnit unit = (ScriptCompilationUnit)codeGenerator.CompilationUnit;
 
-                    ILEmitter il = codeGenerator.IL;
+				codeGenerator.DefineLabels(labels);
 
-                    if (codeGenerator.Context.Config.Compiler.Debug)
-                    {
-                        codeGenerator.MarkSequencePoint(0);
-                        il.Emit(OpCodes.Nop);
-                    }
+				// CALL <self>.<Declare>(context); 
+				codeGenerator.EmitLoadScriptContext();
+				il.Emit(OpCodes.Call, unit.ScriptBuilder.DeclareHelperBuilder);
 
-                    codeGenerator.DefineLabels(labels);
+				// IF (<is main script>) CALL <prepended script>.Main()
+				if (prependedInclusion != null)
+					prependedInclusion.Emit(codeGenerator);
 
-                    // CALL <self>.<Declare>(context); 
-                    codeGenerator.EmitLoadScriptContext();
-                    il.Emit(OpCodes.Call, unit.ScriptBuilder.DeclareHelperBuilder);
+				codeGenerator.ChainBuilder.Create();
 
-                    // IF (<is main script>) CALL <prepended script>.Main()
-                    if (PrependedInclusion != null)
-                        PrependedInclusion.Emit(codeGenerator);
+				foreach (Statement statement in statements)
+					statement.Emit(codeGenerator);
 
-                    codeGenerator.ChainBuilder.Create();
+				codeGenerator.ChainBuilder.End();
 
-                    foreach (Statement statement in ast.Statements)
-                        statement.Emit(codeGenerator);
-
-                    codeGenerator.ChainBuilder.End();
-
-                    // return + appended file emission:
-                    codeGenerator.EmitRoutineEpilogue(ast, false);
-                }
+				// return + appended file emission:
+				codeGenerator.EmitRoutineEpilogue(this, false);
+			}
 #endif
-                codeGenerator.LeaveGlobalCodeDeclaration();
-            }
+			codeGenerator.LeaveGlobalCodeDeclaration();
+		}
 
-            #endregion
-        }
-
-        #endregion
-
-        #region NamespaceDecl
-
-        [NodeCompiler(typeof(NamespaceDecl), Singleton = true)]
-        sealed class NamespaceDeclCompiler : StatementCompiler<NamespaceDecl>
-        {
-            internal override Statement Analyze(NamespaceDecl node, Analyzer analyzer)
-            {
-                analyzer.EnterNamespace(node);
-
-                node.Statements.Analyze(analyzer);
-
-                analyzer.LeaveNamespace();
-
-                return node;
-            }
-
-            internal override void Emit(NamespaceDecl node, CodeGenerator codeGenerator)
-            {
-                foreach (Statement statement in node.Statements)
-                {
-                    if (!(statement is EmptyStmt))
-                        statement.Emit(codeGenerator);
-                }
-            }
-        }
-
-        #endregion
-
-        #region GlobalConstDeclList
-
-        [NodeCompiler(typeof(GlobalConstDeclList), Singleton = true)]
-        sealed class GlobalConstDeclListCompiler : StatementCompiler<GlobalConstDeclList>
-        {
-            #region CustomAttributesProvider
-
-            private sealed class CustomAttributesProvider : IPhpCustomAttributeProvider
-            {
-                private readonly GlobalConstDeclList node;
-                public CustomAttributesProvider(GlobalConstDeclList node)
-                {
-                    this.node = node;
-                }
-
-                #region IPhpCustomAttributeProvider Members
-
-                public PhpAttributeTargets AttributeTarget { get { return PhpAttributeTargets.Constant; } }
-                public AttributeTargets AcceptsTargets { get { return AttributeTargets.Field; } }
-
-                public int GetAttributeUsageCount(DType/*!*/ type, CustomAttribute.TargetSelectors selector)
-                {
-                    var attributes = node.Attributes;
-                    if (attributes == null || attributes.Attributes == null)
-                        return 0;
-                    else
-                        return attributes.Count(type, selector);
-                }
-
-                public void ApplyCustomAttribute(SpecialAttributes kind, Attribute attribute, CustomAttribute.TargetSelectors selector)
-                {
-                    foreach (GlobalConstantDecl cd in node.Constants)
-                    {
-                        var cdcompiler = cd.NodeCompiler<IGlobalConstantDeclCompiler>();
-                        cdcompiler.ApplyCustomAttribute(kind, attribute, selector);
-                    }
-                }
-
-                public void EmitCustomAttribute(CustomAttributeBuilder/*!*/ builder, CustomAttribute.TargetSelectors selector)
-                {
-                    foreach (GlobalConstantDecl cd in node.Constants)
-                    {
-                        var cdcompiler = cd.NodeCompiler<IGlobalConstantDeclCompiler>();
-                        cdcompiler.EmitCustomAttribute(builder);
-                    }
-                }
-
-                #endregion
-            }
-
-            #endregion
-
-            internal override Statement Analyze(GlobalConstDeclList node, Analyzer analyzer)
-            {
-                var attributes = node.Attributes;
-                if (attributes != null)
-                {
-                    attributes.AnalyzeMembers(analyzer, analyzer.CurrentScope);
-                    attributes.Analyze(analyzer, new CustomAttributesProvider(node));
-                }
-
-                bool is_unreachable = analyzer.IsThisCodeUnreachable();
-
-                foreach (GlobalConstantDecl cd in node.Constants)
-                {
-                    var cdcompiler = cd.NodeCompiler<IGlobalConstantDeclCompiler>();
-                    cdcompiler.GlobalConstant.Declaration.IsUnreachable = is_unreachable;
-                    cdcompiler.Analyze(cd, analyzer);
-                }
-
-                if (is_unreachable)
-                {
-                    analyzer.ReportUnreachableCode(node.Span);
-                    return EmptyStmt.Unreachable;
-                }
-                else
-                {
-                    return node;
-                }
-            }
-
-            internal override void Emit(GlobalConstDeclList node, CodeGenerator codeGenerator)
-            {
-                // TODO: initialization
-            }
-        }
-
-        #endregion
-
-        #region GlobalConstantDecl
-
-        [NodeCompiler(typeof(GlobalConstantDecl))]
-        sealed class GlobalConstantDeclCompiler : ConstantDeclCompiler<GlobalConstantDecl>, IGlobalConstantDeclCompiler
-        {
-            public override KnownConstant/*!*/Constant { get { return constant; } }
-            public GlobalConstant/*!*/GlobalConstant { get { return constant; } }
-            private readonly GlobalConstant/*!*/constant;
-
-            public GlobalConstantDeclCompiler(GlobalConstantDecl/*!*/node)
-            {
-                QualifiedName qn = (node.Namespace != null)
-                            ? new QualifiedName(new Name(node.Name.Value), node.Namespace.QualifiedName)
-                            : new QualifiedName(new Name(node.Name.Value));
-                constant = new GlobalConstant(qn, PhpMemberAttributes.Public, (CompilationSourceUnit)node.SourceUnit, node.IsConditional, node.Scope, node.Span);
-                constant.SetNode(node);
-            }
-
-            public override void Analyze(GlobalConstantDecl node, Analyzer analyzer)
-            {
-                if (!this.analyzed)
-                {
-                    base.Analyze(node, analyzer);
-
-                    // check some special constants (ignoring namespace)
-                    if (node.Name.Value == GlobalConstant.Null.FullName ||
-                        node.Name.Value == GlobalConstant.False.FullName ||
-                        node.Name.Value == GlobalConstant.True.FullName)
-                        analyzer.ErrorSink.Add(FatalErrors.ConstantRedeclared, analyzer.SourceUnit, node.Span, node.Name.Value);
-                }
-            }
-
-            public void ApplyCustomAttribute(SpecialAttributes kind, Attribute attribute, CustomAttribute.TargetSelectors selector)
-            {
-                switch (kind)
-                {
-                    case SpecialAttributes.Export:
-                        constant.ExportInfo = (ExportAttribute)attribute;
-                        break;
-
-                    default:
-                        Debug.Fail("N/A");
-                        throw null;
-                }
-            }
-
-            public void EmitCustomAttribute(CustomAttributeBuilder/*!*/ builder)
-            {
-                constant.RealFieldBuilder.SetCustomAttribute(builder);
-            }
-        }
-
-        #endregion
-    }
-
-    #region IGlobalCodeCompiler
-
-    internal interface IGlobalCodeCompiler
-    {
-        /// <summary>
-        /// Global variables. Is <c>null</c> in pure mode.
-        /// </summary>
-        VariablesTable VarTable { get; }
+		#endregion
 
         /// <summary>
-        /// Labels (PHP6 feature).
+        /// Call the right Visit* method on the given Visitor object.
         /// </summary>
-        Dictionary<VariableName, Statement> Labels { get; }
+        /// <param name="visitor">Visitor to be called.</param>
+        internal void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitGlobalCode(this);
+        }
+	}
+
+	#endregion
+
+	#region NamespaceDecl
+
+	public sealed class NamespaceDecl : Statement
+	{
+		internal override bool IsDeclaration { get { return true; } }
+
+		public QualifiedName QualifiedName { get { return qualifiedName; } }
+		private QualifiedName qualifiedName;
+
+		public bool IsAnonymous { get { return isAnonymous; } }
+		private readonly bool isAnonymous;
+
+		public List<Statement>/*!*/ Statements
+		{
+			get { return statements; }
+			internal /* friend Parser */ set { statements = value; }
+		}
+		private List<Statement>/*!*/ statements;
+
+		#region Construction
+
+		public NamespaceDecl(Position p)
+			: base(p)
+		{
+			this.isAnonymous = true;
+			this.qualifiedName = new QualifiedName(Core.Name.EmptyBaseName,
+				new Name[] { new Name("__anonymous__") }); // TODO
+		}
+
+		public NamespaceDecl(Position p, string/*!*/ simpleName)
+			: base(p)
+		{
+			this.isAnonymous = false;
+			this.qualifiedName = new QualifiedName(simpleName, false);
+		}
+
+		public NamespaceDecl(Position p, List<string>/*!*/ names)
+			: base(p)
+		{
+			this.isAnonymous = false;
+			this.qualifiedName = new QualifiedName(names, false);
+		}
+
+		#endregion
+
+		internal override Statement/*!*/ Analyze(Analyzer/*!*/ analyzer)
+		{
+			analyzer.EnterNamespace(this);
+
+			for (int i = 0; i < statements.Count; i++)
+				statements[i] = statements[i].Analyze(analyzer);
+
+			analyzer.LeaveNamespace();
+
+			return this;
+		}
+
+		internal override void Emit(CodeGenerator/*!*/ codeGenerator)
+		{
+			foreach (Statement statement in statements)
+			{
+				statement.Emit(codeGenerator);
+			}
+		}
 
         /// <summary>
-        /// Prepended inclusion by compiler.
+        /// Call the right Visit* method on the given Visitor object.
         /// </summary>
-        IncludingEx PrependedInclusion { get; set; }
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitNamespaceDecl(this);
+        }
+	}
+
+	#endregion
+
+	#region GlobalConstDeclList, GlobalConstantDecl
+
+	public sealed class GlobalConstDeclList : Statement, IPhpCustomAttributeProvider
+	{
+		private CustomAttributes attributes;
+
+		private readonly List<GlobalConstantDecl>/*!*/ constants;
+        public List<GlobalConstantDecl>/*!*/ Constants { get { return constants; } }
+
+		private string docComment;
+
+		public GlobalConstDeclList(Position position, List<GlobalConstantDecl>/*!*/ constants,
+	  List<CustomAttribute> attributes, string docComment)
+			: base(position)
+		{
+			Debug.Assert(constants != null);
+
+			this.constants = constants;
+			this.docComment = docComment;
+			this.attributes = new CustomAttributes(attributes);
+		}
+
+		internal override Statement/*!*/ Analyze(Analyzer/*!*/ analyzer)
+		{
+			attributes.AnalyzeMembers(analyzer, analyzer.CurrentScope);
+			attributes.Analyze(analyzer, this);
+
+			bool is_unreachable = analyzer.IsThisCodeUnreachable();
+
+			foreach (GlobalConstantDecl cd in constants)
+			{
+				cd.GlobalConstant.Declaration.IsUnreachable = is_unreachable;
+				// cd.Constant.CustomAttributes = attributes;
+				cd.Analyze(analyzer);
+			}
+
+			if (is_unreachable)
+			{
+				analyzer.ReportUnreachableCode(position);
+				return EmptyStmt.Unreachable;
+			}
+			else
+			{
+				return this;
+			}
+		}
+
+#if !SILVERLIGHT
+		internal void AnalyzeDocComment(Analyzer/*!*/ analyzer, XmlDocFileBuilder/*!*/ builder)
+		{
+			// TODO
+		}
+#endif
+
+		internal override void Emit(CodeGenerator/*!*/ codeGenerator)
+		{
+			// TODO: initialization
+		}
+
+		#region IPhpCustomAttributeProvider Members
+
+		public PhpAttributeTargets AttributeTarget { get { return PhpAttributeTargets.Constant; } }
+		public AttributeTargets AcceptsTargets { get { return AttributeTargets.Field; } }
+
+		public int GetAttributeUsageCount(DType/*!*/ type, CustomAttribute.TargetSelectors selector)
+		{
+			return attributes.Count(type, selector);
+		}
+
+		public void ApplyCustomAttribute(SpecialAttributes kind, Attribute attribute, CustomAttribute.TargetSelectors selector)
+		{
+			foreach (GlobalConstantDecl cd in constants)
+				cd.ApplyCustomAttribute(kind, attribute, selector);
+		}
+
+		public void EmitCustomAttribute(CustomAttributeBuilder/*!*/ builder, CustomAttribute.TargetSelectors selector)
+		{
+			foreach (GlobalConstantDecl cd in constants)
+				cd.EmitCustomAttribute(builder);
+		}
+
+		#endregion
 
         /// <summary>
-        /// Appended inclusion by compiler.
+        /// Call the right Visit* method on the given Visitor object.
         /// </summary>
-        IncludingEx AppendedInclusion { get; set; }
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
+        {
+            visitor.VisitGlobalConstDeclList(this);
+        }
+	}
+
+	public sealed class GlobalConstantDecl : ConstantDecl
+	{
+		private NamespaceDecl/*!*/ ns;
+
+		public override KnownConstant Constant { get { return constant; } }
+		internal GlobalConstant GlobalConstant { get { return constant; } }
+		private readonly GlobalConstant/*!*/ constant;
+
+		public GlobalConstantDecl(SourceUnit/*!*/ sourceUnit, Position position, bool isConditional, Scope scope,
+			string/*!*/ name, NamespaceDecl ns, Expression/*!*/ initializer)
+			: base(position, name, initializer)
+		{
+			this.ns = ns;
+
+			QualifiedName qn = (ns != null) ? new QualifiedName(new Name(name), ns.QualifiedName) : new QualifiedName(new Name(name));
+			constant = new GlobalConstant(qn, PhpMemberAttributes.Public, sourceUnit, isConditional, scope, position);
+
+			constant.SetNode(this);
+		}
+
+		internal void ApplyCustomAttribute(SpecialAttributes kind, Attribute attribute, CustomAttribute.TargetSelectors selector)
+		{
+			switch (kind)
+			{
+				case SpecialAttributes.Export:
+					constant.ExportInfo = (ExportAttribute)attribute;
+					break;
+
+				default:
+					Debug.Fail("N/A");
+					throw null;
+			}
+		}
+
+		internal void EmitCustomAttribute(CustomAttributeBuilder/*!*/ builder)
+		{
+			constant.RealFieldBuilder.SetCustomAttribute(builder);
+		}
 
         /// <summary>
-        /// Analyzes entire AST.
+        /// Call the right Visit* method on the given Visitor object.
         /// </summary>
-        void Analyze(GlobalCode/*!*/ast, Analyzer/*!*/ analyzer);
-
-        /// <summary>
-        /// Emits entire AST.
-        /// </summary>
-        void Emit(GlobalCode/*!*/ast, CodeGenerator/*!*/ codeGenerator);
-    }
-
-    internal static class GlobalCodeCompilerHelper
-    {
-        public static VariablesTable GetVarTable(this GlobalCode/*!*/ast)
+        /// <param name="visitor">Visitor to be called.</param>
+        public override void VisitMe(TreeVisitor visitor)
         {
-            return ast.NodeCompiler<IGlobalCodeCompiler>().VarTable;
+            visitor.VisitGlobalConstantDecl(this);
         }
+	}
 
-        public static Dictionary<VariableName, Statement> GetLabels(this GlobalCode/*!*/ast)
-        {
-            return ast.NodeCompiler<IGlobalCodeCompiler>().Labels;
-        }
+	#endregion
 
-        public static void Analyze(this GlobalCode/*!*/ast, Analyzer/*!*/ analyzer)
-        {
-            ast.NodeCompiler<IGlobalCodeCompiler>().Analyze(ast, analyzer);
-        }
-        public static void Emit(this GlobalCode/*!*/ast, CodeGenerator/*!*/ codeGenerator)
-        {
-            ast.NodeCompiler<IGlobalCodeCompiler>().Emit(ast, codeGenerator);
-        }
-    }
-
-    #endregion
-
-    #region IGlobalConstantDeclCompiler
-
-    internal static class GlobalConstantDeclCompilerHelper
-    {
-        public static GlobalConstant GetGlobalConstant(this GlobalConstantDecl/*!*/node)
-        {
-            return node.NodeCompiler<IGlobalConstantDeclCompiler>().GlobalConstant;
-        }
-    }
-
-    internal interface IGlobalConstantDeclCompiler : IConstantDeclCompiler
-    {
-        GlobalConstant/*!*/GlobalConstant { get; }
-        void ApplyCustomAttribute(SpecialAttributes kind, Attribute attribute, CustomAttribute.TargetSelectors selector);
-        void EmitCustomAttribute(CustomAttributeBuilder/*!*/ builder);
-    }
-
-    #endregion
 }

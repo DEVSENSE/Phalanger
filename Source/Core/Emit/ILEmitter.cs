@@ -492,10 +492,6 @@ namespace PHP.Core.Emit
 		/// </summary>
 		public void Emit(OpCode opcode, MethodInfo meth)
 		{
-            //Debug.Assert(opcode != OpCodes.Callvirt || meth.IsVirtual, "Non-Virtual method called as virtual!");
-            if (opcode == OpCodes.Callvirt && !meth.IsVirtual)
-                opcode = OpCodes.Call;
-            
 			if (InterceptEmit(opcode, meth)) il.Emit(opcode, meth);
 		}
 
@@ -1103,7 +1099,7 @@ namespace PHP.Core.Emit
 				default:
 					{
 						if (type == typeof(IntPtr)) Emit(overflow ? OpCodes.Conv_Ovf_I : OpCodes.Conv_I);
-						else Debug.Fail(null);
+						else Debug.Fail();
 						break;
 					}
 			}
@@ -1149,7 +1145,8 @@ namespace PHP.Core.Emit
 				case TypeCode.Double: Emit(OpCodes.Ldc_R8, (double)value); break;
 				case TypeCode.Single: Emit(OpCodes.Ldc_R4, (float)value); break;
 				case TypeCode.String:
-                    Emit(OpCodes.Ldstr, (string)value);
+                    if (PluginHandler.StringLiteralEmitter != null) PluginHandler.StringLiteralEmitter(this, (string)value);
+                    else Emit(OpCodes.Ldstr, (string)value);
                     break;
 				case TypeCode.Object:
 					{
@@ -1172,24 +1169,6 @@ namespace PHP.Core.Emit
 			return type;
 		}
 
-        internal FieldBuilder/*!*/DefineInitializedData(string name, byte[] data, FieldAttributes attributes)
-        {
-            // TODO: cache values, reuse existing PhpBytes or datafld
-            
-            // regular function, we have a type builder:
-            if (TypeBuilder != null)
-                return TypeBuilder.DefineInitializedData(name, data, attributes);
-
-            // global function in pure mode:
-            var moduleBuilder = this.MethodBuilder.Module as ModuleBuilder;
-            if (moduleBuilder != null)
-                return moduleBuilder.DefineInitializedData(name, data, attributes);
-
-            //
-            throw new NotImplementedException();
-        }
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -1199,16 +1178,26 @@ namespace PHP.Core.Emit
 		{
             Debug.Assert(value != null);
 
+            // TODO: cache values, reuse existing PhpBytes or datafld
+
+            //LocalBuilder array = EmitInitializedArray(typeof(byte), value.Length, delegate(ILEmitter _il, int i)
+            //    {
+            //        _il.LdcI4(value.Data[i]);
+            //    });
+            /*LocalBuilder array = *///EmitInitializedArray(value.Data);
+            //Emit(OpCodes.Ldtoken, )
+			/*Emit(OpCodes.Ldloc, array);*/
+
             // create array of bytes
             LdcI4(value.Length);
             Emit(OpCodes.Newarr, typeof(byte));
 
             if (value.Length > 0)   // not valid for zero-length byte arrays
             {
-                FieldBuilder datafld = this.DefineInitializedData(
-                        string.Concat("byte'", value.ReadonlyData.Length.ToString("x"), "'", value.ReadonlyData.GetHashCode().ToString()),
-                        value.ReadonlyData,
-                        FieldAttributes.Assembly | FieldAttributes.Static);
+                FieldBuilder datafld = TypeBuilder.DefineInitializedData(
+                    "<PhpBytes>" + System.Guid.NewGuid().ToString("B"),
+                    value.ReadonlyData,
+                    FieldAttributes.Assembly | FieldAttributes.Static);
 
                 Emit(OpCodes.Dup);
                 Emit(OpCodes.Ldtoken, datafld);
@@ -1416,7 +1405,6 @@ namespace PHP.Core.Emit
 						case TypeCode.Int64: Emit(OpCodes.Stelem_I8); break;
 						case TypeCode.Double: Emit(OpCodes.Stelem_R8); break;
 						case TypeCode.Single: Emit(OpCodes.Stelem_R4); break;
-						case TypeCode.Object: Emit(OpCodes.Stelem, type); break;
 						default:
 							throw new ArgumentException("type");
 					}

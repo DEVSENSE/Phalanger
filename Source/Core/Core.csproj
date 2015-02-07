@@ -1,72 +1,114 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="..\Build\Common.Build.settings" />
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{9A2867A2-981C-4B5A-A1C5-EACCC80B5148}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
     <AssemblyName>PhpNetCore</AssemblyName>
     <AssemblyOriginatorKeyFile>Core.snk</AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
     <RootNamespace>PHP.Core</RootNamespace>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
     <SignAssembly>true</SignAssembly>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <NoWarn>$(NoWarn),1591,419</NoWarn>
     <OldToolsVersion>3.5</OldToolsVersion>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <PublishUrl>http://localhost/PhpNetCore/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>Bin\Debug\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>Doc\Core.xml</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
+    <NoWarn>1591,419</NoWarn>
     <Optimize>false</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>Bin\Release\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <BaseAddress>402653184</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
     <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>Doc\PhpNetCore.xml</DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
+    <NoWarn>1591,419</NoWarn>
     <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
     <DebugType>none</DebugType>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugNoGac|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <BaseAddress>285212672</BaseAddress>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <FileAlignment>4096</FileAlignment>
-    <NoWarn>1591,419</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ShmChannel\ShmChannel.csproj">
+      <Project>{0D5B7BFC-1236-4D9D-AC17-4A5C0964C1A2}</Project>
+      <Name>ShmChannel</Name>
+    </ProjectReference>
+    <ProjectReference Include="MSIL\Core.IL.vcxproj">
+      <Project>{7F13AC5E-1B8D-467E-83F1-912D12F44370}</Project>
+      <Name>MSIL</Name>
+    </ProjectReference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data">
       <Name>System.Data</Name>
@@ -74,6 +116,7 @@
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
     </Reference>
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Remoting">
       <Name>System.Runtime.Remoting</Name>
     </Reference>
@@ -90,12 +133,14 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="AssemblyResources.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Attributes.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Binders\Binder.cs" />
     <Compile Include="Binders\BinderHelper.cs" />
-    <Compile Include="Binders\InteropBinder.cs" />
     <Compile Include="Binders\PhpRoutineExtensions.cs" />
     <Compile Include="Binders\PhpDynamicMetaObjects.cs" />
     <Compile Include="Binders\PhpGetMemberBinder.cs" />
@@ -104,6 +149,16 @@
     <Compile Include="Binders\PhpInvokeMemberBinder.cs" />
     <Compile Include="Binders\PhpOverloadResolver.cs" />
     <Compile Include="Binders\ReturnArgumentHelpers.cs" />
+    <Compile Include="CodeDom\CodeProvider.CLR.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CodeDom\Helper.cs" />
+    <Compile Include="CodeDom\Keywords.CLR.cs" />
+    <Compile Include="CodeDom\CodeDomUnits.cs" />
+    <Compile Include="CodeDom\PhpCodeDomParser.cs" />
+    <Compile Include="CodeDom\PhpCompiler.CLR.cs" />
+    <Compile Include="CodeDom\PhpGenerator.CLR.cs" />
+    <Compile Include="CodeDom\TypeConverters.CLR.cs" />
     <Compile Include="Comparisons.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -113,46 +168,105 @@
     <Compile Include="Compiler\AppCompiler.CLR.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Compiler\AST\ArrayEx.cs" />
-    <Compile Include="Compiler\AST\AssignEx.cs" />
-    <Compile Include="Compiler\AST\BinaryEx.cs" />
-    <Compile Include="Compiler\AST\BuiltInFunctions.cs" />
-    <Compile Include="Compiler\AST\CallSignature.cs" />
-    <Compile Include="Compiler\AST\ConcatEx.cs" />
-    <Compile Include="Compiler\AST\ConstantUse.cs" />
-    <Compile Include="Compiler\AST\PHPDocBlock.cs" />
-    <Compile Include="Compiler\AST\CustomAttributes.cs" />
-    <Compile Include="Compiler\AST\DirectVariableUse.cs" />
-    <Compile Include="Compiler\AST\EchoStmt.cs" />
-    <Compile Include="Compiler\AST\FieldUse.cs" />
-    <Compile Include="Compiler\AST\FunctionCall.cs" />
-    <Compile Include="Compiler\AST\FunctionDecl.cs" />
-    <Compile Include="Compiler\AST\GlobalCode.cs" />
-    <Compile Include="Compiler\AST\IfStmt.cs" />
-    <Compile Include="Compiler\AST\IncDecEx.cs" />
-    <Compile Include="Compiler\AST\IndirectVariableUse.cs" />
-    <Compile Include="Compiler\AST\ItemUse.cs" />
-    <Compile Include="Compiler\AST\JumpStmt.cs" />
-    <Compile Include="Compiler\AST\LambdaFunctionExpr.cs" />
-    <Compile Include="Compiler\AST\ListEx.cs" />
-    <Compile Include="Compiler\AST\LoopStmt.cs" />
-    <Compile Include="Compiler\AST\NewAndInstanceof.cs" />
-    <Compile Include="Compiler\AST\ShellEx.cs" />
-    <Compile Include="Compiler\AST\Statement.cs" />
-    <Compile Include="Compiler\AST\SwitchStmt.cs" />
-    <Compile Include="Compiler\AST\TernaryEx.cs" />
-    <Compile Include="Compiler\AST\TryStmt.cs" />
-    <Compile Include="Compiler\AST\TypeDecl.cs" />
-    <Compile Include="Compiler\AST\TypeRef.cs" />
-    <Compile Include="Compiler\AST\UnaryEx.cs" />
-    <Compile Include="Compiler\AST\VariableUse.cs" />
-    <Compile Include="Compiler\AST\YieldEx.cs" />
-    <Compile Include="Compiler\AST\Literal.cs" />
-    <Compile Include="Compiler\AST\Expression.cs" />
-    <Compile Include="Compiler\AST\NodeCompiler.cs" />
-    <Compile Include="Compiler\AST\NodeCompilers.cs" />
-    <Compile Include="Compiler\AST\AstNodeExtension.cs" />
     <Compile Include="Compiler\AstVisitor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\ArrayEx.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\AssignEx.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\BinaryEx.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\BuiltInFunctions.CLR.cs" />
+    <Compile Include="Compiler\AST\BuiltInFunctions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\CallSignature.cs" />
+    <Compile Include="Compiler\AST\CommentSet.cs" />
+    <Compile Include="Compiler\AST\ConcatEx.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\ConstantUse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\CustomAttributes.cs" />
+    <Compile Include="Compiler\AST\DirectVariableUse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\EchoStmt.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\Expression.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\FieldUse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\FunctionCall.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\FunctionDecl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\GlobalCode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\IfStmt.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\IncDecEx.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\IndirectVariableUse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\ItemUse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\JumpStmt.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\LangElement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\Linq.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\ListEx.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\Literal.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\LoopStmt.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\NewAndInstanceof.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\ShellEx.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\Statement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\SwitchStmt.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\TernaryEx.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\TryStmt.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\TypeDecl.cs" />
+    <Compile Include="Compiler\AST\UnaryEx.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Compiler\AST\VariableUse.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Compiler\CodeGenerator\CallSitesBuilder.cs" />
@@ -168,13 +282,20 @@
     <Compile Include="Compiler\CodeGenerator\Stacks.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DuckTyping\Generator.CLR.cs" />
+    <Compile Include="DuckTyping\Runtime.cs" />
+    <Compile Include="Compiler\Errors.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Compiler\Managers.CLR.cs" />
     <Compile Include="Compiler\Managers.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Compiler\Names.cs" />
     <Compile Include="Compiler\Statistics.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Compiler\TreeVisitor.cs" />
     <Compile Include="Compiler\VariablesTable.cs" />
     <Compile Include="Compiler\WebServerManagers.CLR.cs">
       <SubType>Code</SubType>
@@ -186,14 +307,26 @@
     <Compile Include="Conversions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DuckTyping\Enumerables.cs" />
+    <Compile Include="DuckTyping\Multitypes.cs" />
     <Compile Include="DynamicCode.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="EmbeddedDoc\DocAttribute.cs" />
+    <Compile Include="EmbeddedDoc\DocBlock.cs" />
+    <Compile Include="EmbeddedDoc\DocElement.cs" />
+    <Compile Include="EmbeddedDoc\DocExpression.cs" />
+    <Compile Include="EmbeddedDoc\DocResolver.cs" />
+    <Compile Include="EmbeddedDoc\DocVisitor.cs" />
+    <Compile Include="EmbeddedDoc\Generated\Lexer.cs" />
+    <Compile Include="EmbeddedDoc\Generated\Parser.cs" />
+    <Compile Include="EmbeddedDoc\Parsers\Lexer.cs" />
+    <Compile Include="EmbeddedDoc\Parsers\Parser.cs" />
+    <Compile Include="EmbeddedDoc\Parsers\Scanner.cs" />
     <Compile Include="Emit\AssemblyBuilders.CLR.cs" />
     <Compile Include="Emit\AssemblyBuilders.cs" />
     <Compile Include="Emit\ClrOverloadBuilder.cs" />
     <Compile Include="Emit\ClrStubBuilder.cs" />
-    <Compile Include="Emit\DelegateBuilder.cs" />
     <Compile Include="Emit\DocFileBuilder.CLR.cs" />
     <Compile Include="Emit\FunctionBuilder.cs">
       <SubType>Code</SubType>
@@ -202,6 +335,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Emit\LibraryBuilder.cs" />
+    <Compile Include="Emit\LinqBuilder.cs" />
     <Compile Include="Emit\ModuleBuilders.CLR.cs" />
     <Compile Include="Emit\ModuleBuilders.cs" />
     <Compile Include="Emit\OverloadsBuilder.cs">
@@ -226,10 +360,8 @@
     <Compile Include="HttpHeaders.CLR.cs" />
     <Compile Include="Library.CLR.cs" />
     <Compile Include="Logger.CLR.cs" />
-    <Compile Include="PhpResourceManager.cs" />
     <Compile Include="PhpStream.CLR.cs" />
-    <Compile Include="Compiler\PhpTypeCode.cs" />
-    <Compile Include="OrderedDictionary.cs" />
+    <Compile Include="PluginHandler.cs" />
     <Compile Include="Reflection\Assemblies.CLR.cs" />
     <Compile Include="Reflection\CompilationUnits.CLR.cs" />
     <Compile Include="Reflection\CompilationUnits.cs" />
@@ -239,7 +371,6 @@
     <Compile Include="Reflection\MethodDescs.cs" />
     <Compile Include="Reflection\Modules.CLR.cs" />
     <Compile Include="Reflection\Modules.cs" />
-    <Compile Include="Reflection\MetaObject.cs" />
     <Compile Include="Reflection\PhpLibraryModule.cs" />
     <Compile Include="Errors.cs">
       <SubType>Code</SubType>
@@ -247,7 +378,14 @@
     <Compile Include="Execution.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Externals.CLR.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Functions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Generated\Lexer.cs" />
+    <Compile Include="Generated\Parser.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GlobalVariables.CLR.cs">
@@ -265,6 +403,7 @@
     <Compile Include="LibraryVerifier.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="LinqHelper.cs" />
     <Compile Include="Namespaces.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -272,6 +411,16 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Output.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Parsers\GPPG.cs" />
+    <Compile Include="Parsers\Lexer.cs" />
+    <Compile Include="Parsers\Parser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Parsers\Scanner.cs" />
+    <Compile Include="Parsers\Tokenizer.cs" />
+    <Compile Include="Parsers\Tokens.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PhpArray.cs">
@@ -293,6 +442,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PhpRuntimeChain.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PhpSourceFile.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PhpStack.cs">
@@ -335,8 +487,6 @@
     <Compile Include="SPL\ArrayAccess.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SPL\Closure.cs" />
-    <Compile Include="SPL\Misc.cs" />
     <Compile Include="SPL\Countable.cs" />
     <Compile Include="SPL\Exception.cs">
       <SubType>Code</SubType>
@@ -356,7 +506,6 @@
     <Compile Include="SPL\Serializable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SPL\SplObjectStorage.cs" />
     <Compile Include="StackTrace.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -368,11 +517,15 @@
     <Compile Include="StreamWrappers.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
     <Compile Include="Utils.CLR.cs" />
     <Compile Include="Utils.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Utilities\GlobalScope.cs" />
     <Compile Include="Variables.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -386,8 +539,19 @@
     <Content Include="Doc\RootPage.html" />
     <Content Include="Doc\Streams.xml" />
     <Content Include="Doc\Wrappers.xml" />
+    <EmbeddedResource Include="Strings.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>PHP.Core.Localizations</CustomToolNamespace>
+    </EmbeddedResource>
     <None Include="Core.snk" />
+    <None Include="EmbeddedDoc\Generated\Parser.log" />
+    <None Include="EmbeddedDoc\Generators\Lexer.lex" />
+    <None Include="EmbeddedDoc\Generators\Parser.y" />
     <None Include="Emit\AssemblyBuilders.cd" />
+    <None Include="Generators\Lexer.lex" />
+    <None Include="Generators\Parser.y" />
     <None Include="Reflection\DAssembly.cd" />
     <None Include="Reflection\DMember.cd" />
     <None Include="Reflection\DMemberDesc.cd" />
@@ -419,12 +583,25 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Core.Parsers\Core.Parsers.csproj">
-      <Project>{581f1486-5062-459e-bae6-a41886584f81}</Project>
-      <Name>Core.Parsers</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="..\Build\Common.Build.targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>"$(SolutionDir)..\Tools\gacutil" /u $(TargetName) 1&gt;nul
+
+if $(ConfigurationName) == Release (
+xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Bin" 1&gt;nul
+"$(SolutionDir)..\Tools\gacutil" -f -i "$(SolutionDir)..\Deployment\Bin\$(TargetName).dll" 1&gt;nul
+
+REM "$(SolutionDir)..\Deployment\Bin\PhpVerify" "$(TargetFileName)"
+REM xcopy /q /y "$(ProjectDir)Doc\$(TargetName).xml" "$(SolutionDir)..\Deployment\Bin"
+)
+if $(ConfigurationName) == Debug (
+xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
+"$(SolutionDir)..\Tools\gacutil" -f -i "$(SolutionDir)..\Deployment\Debug\$(TargetName).dll" 1&gt;nul
+)
+if $(ConfigurationName) == DebugNoGac (
+xcopy /q /y "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Deployment\Debug" 1&gt;nul
+)</PostBuildEvent>
+  </PropertyGroup>
 </Project>

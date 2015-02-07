@@ -12,7 +12,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Diagnostics;
 using System.Diagnostics.SymbolStore;
@@ -85,8 +84,8 @@ namespace PHP.Core.Emit
 		/// Emits helper declaring all single-declared functions and classes in the script being built.
 		/// </summary>
 		/// <remarks>
-		/// For each function and class emits a call to <see cref="ApplicationContext.DeclareFunction"/> and 
-        /// <see cref="ApplicationContext.DeclareType"/>, respectively, which declares it.
+		/// For each function and class emits a call to <see cref="ScriptContext.DeclareFunction"/> and 
+		/// <see cref="ScriptContext.DeclareType"/>, respectively, which declares it.
 		/// The helper is called as the first instruction of Main helper. 
 		/// </remarks>		
 		private void EmitDeclareHelper()
@@ -94,7 +93,6 @@ namespace PHP.Core.Emit
 			PureCompilationUnit unit = this.PureCompilationUnit;
 			ILEmitter il = new ILEmitter(declareHelperBuilder);
 			IndexedPlace app_context_place = new IndexedPlace(PlaceHolder.Argument, 0);
-            TypeBuilder publicsContainer = null;    // container type for public stubs of global declarations (which are inaccessible from other assemblies)
 
 			foreach (PhpFunction function in unit.GetDeclaredFunctions())
 			{
@@ -113,18 +111,7 @@ namespace PHP.Core.Emit
 					// LOAD <attributes>;
 					il.LdcI4((int)function.MemberDesc.MemberAttributes);
 
-                    // LOAD <argfull>
-                    if (function.ArgFullInfo != null)
-                        CodeGenerator.EmitLoadMethodInfo(
-                            il,
-                            (function.ArgFullInfo.DeclaringType != null)
-                                ? function.ArgFullInfo
-                                : EmitPhpFunctionPublicStub(ref publicsContainer, function) // function.ArgFullInfo is real global method not accessible from other assemblies, must be wrapped
-                            /*, AssemblyBuilder.DelegateBuilder*/);
-                    else
-                        il.Emit(OpCodes.Ldnull);
-                    
-					// CALL <application context>.DeclareFunction(<stub>, <name>, <member attributes>, <argfull>)
+					// CALL <application context>.DeclareFunction(<stub>, <name>, <member attributes>)
 					il.Emit(OpCodes.Call, Methods.ApplicationContext.DeclareFunction);
 				}
 			}
@@ -146,65 +133,16 @@ namespace PHP.Core.Emit
 
 					// CALL <application context>.DeclareConstant(<name>, <value>);
 					il.Emit(OpCodes.Ldstr, constant.FullName);
-                    //il.Emit(OpCodes.Ldsfld, constant.RealField);
-                    //if (constant.RealField.FieldType.IsValueType) il.Emit(OpCodes.Box, constant.RealField.FieldType);
-                    il.LoadLiteralBox(constant.Value);
+					il.Emit(OpCodes.Ldfld, constant.RealField); // TODO:
+					il.Emit(OpCodes.Box, constant.RealField.FieldType);
 					il.Emit(OpCodes.Call, Methods.ApplicationContext.DeclareConstant);
 				}
 			}
 
 			il.Emit(OpCodes.Ret);
-
-            // complete the publicsContainer type, if created:
-            if (publicsContainer != null)
-                publicsContainer.CreateType();
 		}
 
-        /// <summary>
-        /// Emit publically accessible stub that just calls argfull of <paramref name="function"/>.
-        /// </summary>
-        /// <returns><see cref="MethodInfo"/> of newly created function stub.</returns>
-        private MethodInfo/*!*/EmitPhpFunctionPublicStub(ref TypeBuilder publicsContainer, PhpFunction/*!*/function)
-        {
-            Debug.Assert(function != null);
-            Debug.Assert(function.ArgFullInfo != null, "!function.ArgFullInfo");
-
-            if (publicsContainer == null)
-            {
-                publicsContainer = PureAssemblyBuilder.RealModuleBuilder.DefineType(
-                    string.Format("{1}<{0}>",
-                        StringUtils.ToClsCompliantIdentifier(Path.ChangeExtension(PureAssemblyBuilder.FileName, "")),
-                        QualifiedName.Global.ToString()),
-                    TypeAttributes.Public | TypeAttributes.Sealed | TypeAttributes.Class | TypeAttributes.SpecialName);
-            }
-
-            Type returnType;
-            var parameterTypes = function.Signature.ToArgfullSignature(1, out returnType);
-            parameterTypes[0] = Types.ScriptContext[0];
-
-            var mi = publicsContainer.DefineMethod(function.GetFullName(), MethodAttributes.Public | MethodAttributes.Static, returnType, parameterTypes);
-            var il = new ILEmitter(mi);
-
-            // load arguments
-            for (int i = 0; i < parameterTypes.Length; i++)
-            {
-                if (function.Builder != null)
-                    mi.DefineParameter(i + 1, ParameterAttributes.None, function.Builder.ParameterBuilders[i].Name);
-
-                il.Ldarg(i);
-            }
-            
-            // call function.ArgFullInfo
-            il.Emit(OpCodes.Call, function.ArgFullInfo);
-            
-            // .ret
-            il.Emit(OpCodes.Ret);
-
-            //
-            return mi;
-        }
-
-        #endregion
+		#endregion
 	}
 
 	#endregion
@@ -238,8 +176,8 @@ namespace PHP.Core.Emit
 		/// <summary>
 		/// Timestamp of the source file when the script builder is created.
 		/// </summary>
-        public DateTime SourceTimestampUtc { get { return sourceTimestampUtc; } }
-		private DateTime sourceTimestampUtc;
+		public DateTime SourceTimestamp { get { return SourceTimestamp; } }
+		private DateTime sourceTimestamp;
 
 		#endregion
 
@@ -260,7 +198,7 @@ namespace PHP.Core.Emit
 			this.assemblyBuilder = assemblyBuilder;
 
 			// remembers a timestamp of the source file:
-			this.sourceTimestampUtc = FileSystemUtils.GetLastModifiedTimeUtc(unit.SourceUnit.SourceFile.FullPath);
+			this.sourceTimestamp = File.GetLastWriteTime(unit.SourceUnit.SourceFile.FullPath);
 
 			DefineBuilders(subnamespace);
 		}
@@ -319,11 +257,11 @@ namespace PHP.Core.Emit
 				MainHelperArgTypes);
 
 			// gives arguments names (for comfortable debugging):
-            result.DefineParameter(1, ParameterAttributes.None, PhpRoutine.ContextParamName);
-            result.DefineParameter(2, ParameterAttributes.None, PhpRoutine.LocalVariablesTableName);
-            result.DefineParameter(3, ParameterAttributes.None, "<self>");
-            result.DefineParameter(4, ParameterAttributes.None, "<includer>");
-            result.DefineParameter(5, ParameterAttributes.None, "<request>");
+            result.DefineParameter(1, ParameterAttributes.None, PluginHandler.ConvertParameterName(PhpRoutine.ContextParamName));
+            result.DefineParameter(2, ParameterAttributes.None, PluginHandler.ConvertParameterName(PhpRoutine.LocalVariablesTableName));
+            result.DefineParameter(3, ParameterAttributes.None, PluginHandler.ConvertParameterName("<self>"));
+            result.DefineParameter(4, ParameterAttributes.None, PluginHandler.ConvertParameterName("<includer>"));
+            result.DefineParameter(5, ParameterAttributes.None, PluginHandler.ConvertParameterName("<request>"));
 
 			return result;
 		}
@@ -350,7 +288,21 @@ namespace PHP.Core.Emit
 			{
 				if (function.IsDefinite)
 				{
-                    CodeGenerator.EmitDeclareFunction(il, script_context_place, function);
+					script_context_place.EmitLoad(il);
+
+					// NEW RoutineDelegate(<function argless>);
+					il.Emit(OpCodes.Ldnull);
+					il.Emit(OpCodes.Ldftn, function.ArgLessInfo);
+					il.Emit(OpCodes.Newobj, Constructors.RoutineDelegate);
+
+					// LOAD <full name>;
+					il.Emit(OpCodes.Ldstr, function.FullName);
+
+					// LOAD <attributes>;
+					il.LdcI4((int)function.MemberDesc.MemberAttributes);
+
+					// CALL <context>.DeclareFunction(<stub>, <name>, <member attributes>)
+					il.Emit(OpCodes.Call, Methods.ScriptContext.DeclareFunction);
 				}
 			}
 
@@ -361,34 +313,20 @@ namespace PHP.Core.Emit
 					// CALL <context>.DeclareType(<type desc>, <name>);
 					type.EmitAutoDeclareOnScriptContext(il, script_context_place);
 				}
-                else if (!type.IsComplete)
-                {
-                    if (type.IncompleteClassDeclareMethodInfo != null)
-                    {
-                        // check whether base class is known at this point of execution,
-                        // if so, declare this incomplete class immediately. As PHP does.
-
-                        type.EmitDeclareIncompleteOnScriptContext(il, script_context_place);
-                    }
-                }
 			}
 
-            foreach (GlobalConstant constant in unit.GetDeclaredConstants())
-            {
-                if (constant.IsDefinite)
-                {
-                    var field = constant.RealField;
-                    Debug.Assert(field != null);
-                    Debug.Assert(field.IsStatic);
-
-                    // CALL <context>.DeclareConstant(<name>, <value>);
-                    script_context_place.EmitLoad(il);
-
-                    il.Emit(OpCodes.Ldstr, constant.FullName);
-                    il.LoadLiteralBox(constant.Value);  //il.Emit(OpCodes.Ldsfld, field);   // const field cannot be referenced in IL
-                    il.Emit(OpCodes.Call, Methods.ScriptContext.DeclareConstant);
-                }
-            }
+			//TODO:
+			//  foreach (GlobalConstant constant in unit.GetUnconditionals<GlobalConstant>(unit.Constants.Values))
+			//  {
+			//    if (constant.IsDefinite)
+			//    {
+			//      // CALL ApplicationContext.DeclareConstant(<name>, <value>);
+			//      il.Emit(OpCodes.Ldstr, constant.FullName);
+			//      il.Emit(OpCodes.Ldfld, constant.RealField); // TODO:
+			//      il.Emit(OpCodes.Box, constant.RealField.FieldType);
+			//      il.Emit(OpCodes.Call, Methods.ApplicationContext.DeclareConstant);
+			//    }
+			//  }
 
 			il.Emit(OpCodes.Ret);
 		}
@@ -491,7 +429,7 @@ namespace PHP.Core.Emit
             if ((emitAttributes & ScriptAttributes.Script) != 0)
             {
                 // construct the [Script] attribute:
-                CustomAttributeBuilder cab = new CustomAttributeBuilder(Constructors.Script, new object[] { sourceTimestampUtc.Ticks, CompilationUnit.RelativeSourcePath });
+                CustomAttributeBuilder cab = new CustomAttributeBuilder(Constructors.Script, new object[] { sourceTimestamp.Ticks, CompilationUnit.RelativeSourcePath });
                 ScriptTypeBuilder.SetCustomAttribute(cab);
             }
 
@@ -499,7 +437,7 @@ namespace PHP.Core.Emit
             if ((emitAttributes & ScriptAttributes.ScriptIncluders) != 0 && CompilationUnit.Includers.Count > 0)
             {
                 // determine includers type token, remove duplicities:
-                int[] includers = ArrayUtils.Unique(Array.ConvertAll(CompilationUnit.Includers.ToArray(), x => real_builder.GetTypeToken(x.Includer.ScriptBuilder.ScriptType).Token)).ToArray();
+                int[] includers = new List<int>(ArrayUtils.Unique(Array.ConvertAll(CompilationUnit.Includers.ToArray(), x => real_builder.GetTypeToken(x.Includer.ScriptBuilder.ScriptType).Token))).ToArray();
             
                 // construct the [ScriptIncluders] attribute:
                 CustomAttributeBuilder cab = new CustomAttributeBuilder(Constructors.ScriptIncluders, new object[] { includers });
